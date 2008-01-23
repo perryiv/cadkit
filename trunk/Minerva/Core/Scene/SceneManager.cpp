@@ -10,23 +10,14 @@
 
 #include "Minerva/Core/Scene/SceneManager.h"
 
-#include "Usul/Interfaces/IVectorLayer.h"
-#include "Usul/Interfaces/IAddRowLegend.h"
-#include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Trace/Trace.h"
 
-#include "OsgTools/Animate/AnimationCallback.h"
 #include "OsgTools/State/StateSet.h"
-#include "OsgTools/Font.h"
 
 #include "osg/Geode"
 #include "osg/Material"
-#include "osg/Sequence"
 #include "osg/Version"
-#include "osg/Light"
-
-#include "osgText/Text"
-#include "osgDB/WriteFile"
 
 #include <algorithm>
 
@@ -43,48 +34,9 @@ SceneManager::SceneManager() :
 BaseClass(),
 _mutex(),
 _root ( new osg::Group ),
-_camera ( new osg::Camera ),
-_dateText ( new osgText::Text ),
 _layers(),
-_dirty ( false ),
-_width( 0 ),
-_height( 0 ),
-_legend( new OsgTools::Legend::Legend ),
-_showLegend( true ),
-_legendWidth ( 0.40f ),
-_legendHeightPerItem ( 30 ),
-_legendPadding ( 20.0f, 20.0f ),
-_legendPosition ( LEGEND_BOTTOM_RIGHT )
+_dirty ( false )
 {
-  _camera->setName ( "Minerva_Camera" );
-  _camera->setRenderOrder ( osg::Camera::POST_RENDER );
-  _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
-  _camera->setClearMask( GL_DEPTH_BUFFER_BIT );
-  _camera->setViewMatrix( osg::Matrix::identity() );
-
-  osg::ref_ptr<osg::StateSet> ss ( _camera->getOrCreateStateSet() );
-
-  {
-    osg::ref_ptr< osg::Light > light ( new osg::Light );
-    light->setLightNum ( 1 );
-    light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-    light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
-  
-    ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-  }
-
-  {
-    osg::ref_ptr< osg::Light > light ( new osg::Light );
-    light->setLightNum ( 0 );
-  
-    ss->setAttributeAndModes ( light.get(), osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-  }
-
-  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
-  _dateText->setFont( font.get() );
-  _dateText->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-  _dateText->setText ( "" );
-  _dateText->setColor( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
 }
 
 
@@ -114,147 +66,27 @@ void SceneManager::buildScene( Usul::Interfaces::IUnknown *caller )
 
   if ( this->dirty() )
   {
-    Usul::Interfaces::IViewport::QueryPtr vp ( caller );
-    if ( vp.valid () )
-    {
-      _width  = static_cast < unsigned int > ( vp->width  () );
-      _height = static_cast < unsigned int > ( vp->height () );
-      _camera->setViewport ( 0, 0, _width, _height );
-      _camera->setProjectionMatrixAsOrtho ( 0, _width, 0, _height, -40.0, 40.0 );
-    }
-
-    _legend->clear();
-
     // Clear what we have
     _root->removeChild( 0, _root->getNumChildren() );
-    _camera->removeChild ( 0, _camera->getNumChildren() );
-
+    
     // Loop throught the layers
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
     {
       if( iter->second->showLayer() )
       {
-        Usul::Interfaces::IVectorLayer::QueryPtr vector ( iter->second.get() );
-        if( vector.valid() )
+        Usul::Interfaces::IBuildScene::QueryPtr build ( iter->second.get() );
+        if( build.valid() )
         {
-          osg::ref_ptr< osg::Group > group ( new osg::Group );
-          vector->buildScene( group.get() );
-          _root->addChild( group.get() );
+          // Build the scene with default options.
+          _root->addChild( build->buildScene( Usul::Interfaces::IBuildScene::Options(), caller ) );
         }
       }
     }
 
-    _root->addChild ( _camera.get() );
-
-    /// Build the legend.
-    this->_buildLegend();
-
-    // Set the date text's position.
-    _dateText->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
-
-    // Add the date text.
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable( _dateText.get() );
-
-    //osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    //mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-    //mt->addChild ( geode.get() );
-
-    _camera->addChild ( geode.get() );
-
     _root->dirtyBound();
-    //_projectionNode->dirtyBound();
   }
 
   this->dirty( false );
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the legend.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::_buildLegend()
-{
-  if( this->showLegend() )
-  {
-    // Set the legend size.
-    unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
-    unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
-
-    _legend->maximiumSize( legendWidth, legendHeight );
-    _legend->heightPerItem( _legendHeightPerItem );
-
-    for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
-    {
-      Usul::Interfaces::IAddRowLegend::QueryPtr addRow ( iter->second.get() );
-      if( iter->second->showLayer() && addRow.valid() && addRow->showInLegend() )
-      {
-        OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
-        addRow->addLegendRow( row.get() );
-        _legend->addLegendObject( row.get() );
-      }
-    }
-
-    // Must be called after rows are added to the legend.
-    this->_setLegendPosition( legendWidth );
-
-    // Build the legend.
-    _camera->addChild( _legend->buildScene() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the legend position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::_setLegendPosition ( unsigned int legendWidth )
-{
-  // Translate legend to correct location.
-  unsigned int x ( 0 );
-  unsigned int y ( 0 );
-
-  unsigned legendHeight ( _legend->height() );
-
-  switch ( _legendPosition )
-  {
-  case LEGEND_TOP_LEFT:
-    {
-      x = static_cast < unsigned int > ( _legendPadding.x() );
-      y = static_cast < unsigned int > ( _height - legendHeight -_legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
-    }
-    break;
-  case LEGEND_TOP_RIGHT:
-    {
-      x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
-      y = static_cast < unsigned int > ( _height - legendHeight - _legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
-    }
-    break;
-  case LEGEND_BOTTOM_RIGHT:
-    {
-      x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
-      y = static_cast < unsigned int > ( _legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
-    }
-    break;
-  case LEGEND_BOTTOM_LEFT:
-    {
-      x = static_cast < unsigned int > ( _legendPadding.x() );
-      y = static_cast < unsigned int > ( _legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
-    }
-    break;
-  }
-
-  _legend->position( x, y );
 }
 
 
@@ -267,7 +99,6 @@ void SceneManager::_setLegendPosition ( unsigned int legendWidth )
 bool SceneManager::dirty() const
 {
   Guard guard ( _mutex );
-
   return _dirty;
 }
 
@@ -281,7 +112,6 @@ bool SceneManager::dirty() const
 void SceneManager::dirty( bool b )
 {
   Guard guard ( _mutex );
-
   _dirty = b;
 }
 
@@ -297,28 +127,6 @@ void SceneManager::clear()
   Guard guard ( _mutex );
 
   _layers.clear();
-  _legend->clear();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Resize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::resize( unsigned int width, unsigned int height )
-{
-  {
-    Guard guard ( _mutex );
-    _camera->setViewport ( 0, 0, width, height );
-    _camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -40.0, 40.0 );
-
-    _width = width;
-    _height = height;
-  }
-
-  this->dirty( true );
 }
 
 
@@ -404,154 +212,4 @@ SceneManager::Layer *  SceneManager::getLayer ( const std::string& guid )
   }
 
   throw std::runtime_error( "Error 284022903: could not find layer id." );
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the show legend flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::showLegend( bool b )
-{
-  if( b != _showLegend )
-  {
-    {
-      Guard guard ( _mutex );
-      _showLegend = b;
-    }
-    this->dirty( true );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the show legend flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool SceneManager::showLegend() const
-{
-  Guard guard ( _mutex );
-  return _showLegend;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the legend width percentage.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::legendWidth ( float p )
-{
-  Guard guard ( _mutex );
-  _legendWidth = p;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the legend width percentage.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float SceneManager::legendWidth() const
-{
-  Guard guard ( _mutex );
-  return _legendWidth;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the legend padding.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::legendPadding( const osg::Vec2& padding )
-{
-  Guard guard ( _mutex );
-  _legendPadding = padding;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the legend padding.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Vec2& SceneManager::legendPadding () const
-{
-  Guard guard ( _mutex );
-  return _legendPadding;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Height of each item showing in the legend.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::legendHeightPerItem( unsigned int height )
-{
-  Guard guard ( _mutex );
-  _legendHeightPerItem = height;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Height of each item showing in the legend.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int SceneManager::legendHeightPerItem() const
-{
-  Guard guard ( _mutex );
-  return _legendHeightPerItem;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the legend position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneManager::legendPosition ( LegendPosition position )
-{
-  Guard guard ( _mutex );
-  _legendPosition = position;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the legend position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-SceneManager::LegendPosition SceneManager::legendPosition () const
-{
-  Guard guard ( _mutex );
-  return _legendPosition;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the date text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osgText::Text& SceneManager::dateText ()
-{
-  Guard guard ( _mutex );
-  return *_dateText;
 }

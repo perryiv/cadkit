@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 
-#include "Minerva/Core/DataObjects/PointTime.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -44,14 +44,14 @@ TemporalAnimation::~TemporalAnimation ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TemporalAnimation::visit ( Minerva::Core::DataObjects::PointTime &pointTime )
+void TemporalAnimation::visit ( Minerva::Core::DataObjects::DataObject &object )
 {
   // Have to add one more the end of the date duration.
   // This is because if the duration is 1/1/2006 to 1/31/2006 and the date is 1/31/2006, the contains function will return false.
-  Minerva::Core::Animate::Date temp ( pointTime.lastDate () );
+  Minerva::Core::Animate::Date temp ( object.lastDate () );
   temp.increment();
-  boost::gregorian::date_period period ( pointTime.firstDate ().date(), temp.date() );
+  boost::gregorian::date_period period ( object.firstDate ().date(), temp.date() );
 
   bool visible ( _period.intersects ( period ) ? true : false );
-  pointTime.visibility ( visible );
+  object.visibility ( visible );
 }

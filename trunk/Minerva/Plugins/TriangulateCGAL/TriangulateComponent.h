@@ -45,7 +45,7 @@ public:
   TriangulateComponent();
   
   /// Generate triangles.
-  virtual void triangulate ( const Vertices3D &in, Vertices3D &out, Vertices3D &normalsOut );
+  virtual void triangulate ( const Vertices3D &in, Vertices3D &out );
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;

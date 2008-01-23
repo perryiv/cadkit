@@ -14,7 +14,6 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Vector2.h"
 #include "Usul/Functions/GUID.h"
-#include "Usul/Functions/ToString.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
@@ -58,8 +57,6 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Layer::Layer() : BaseClass(),
-  _guid ( Usul::Functions::GUID::generate() ),
-  _name( "Layer" ),
   _primaryKeyColumn( "id" ),
   _tablename(),
   _labelColumn(),
@@ -68,13 +65,11 @@ Layer::Layer() : BaseClass(),
   _xOffset ( 0.0 ),
   _yOffset ( 0.0 ),
   _zOffset ( 0.0 ),
-  _dataObjects(),
   _connection(),
   _colorFunctor( 0x0 ),
   _legendText( "" ),
   _showInLegend ( true ),
   _showLabel ( false ),
-  _shown ( true ),
   _labelColor( 1.0, 1.0, 1.0, 1.0 ),
   _labelZOffset( 1000.0 ),
   _labelSize ( 25.0f ),
@@ -82,8 +77,7 @@ Layer::Layer() : BaseClass(),
   _customQuery ( false ),
   _legendFlags ( 0 ),
   _minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
-  _alpha ( 1.0f ),
-  SERIALIZE_XML_INITIALIZER_LIST
+  _alpha ( 1.0f )
 {
   USUL_TRACE_SCOPE;
 
@@ -98,8 +92,6 @@ Layer::Layer() : BaseClass(),
 ///////////////////////////////////////////////////////////////////////////////
 
 Layer::Layer( const Layer& layer )  : BaseClass(),
-_guid ( layer._guid ),
-_name( layer._name ),
 _primaryKeyColumn( layer._primaryKeyColumn ),
 _tablename( layer._tablename ),
 _labelColumn( layer._labelColumn ),
@@ -108,13 +100,11 @@ _renderBin ( layer._renderBin ),
 _xOffset ( layer._xOffset ),
 _yOffset ( layer._yOffset ),
 _zOffset ( layer._zOffset ),
-_dataObjects( layer._dataObjects ),
 _connection( layer._connection ),
 _colorFunctor( 0x0 ),
 _legendText( layer._legendText ),
 _showInLegend ( layer._showInLegend ),
 _showLabel ( layer._showLabel ),
-_shown ( layer._shown ),
 _labelColor( layer._labelColor ),
 _labelZOffset( layer._labelZOffset ),
 _labelSize ( layer._labelSize ),
@@ -141,8 +131,6 @@ _alpha ( layer._alpha )
 
 void Layer::_registerMembers()
 {
-  SERIALIZE_XML_ADD_MEMBER ( _guid );
-  SERIALIZE_XML_ADD_MEMBER ( _name );
   SERIALIZE_XML_ADD_MEMBER ( _primaryKeyColumn );
   SERIALIZE_XML_ADD_MEMBER ( _tablename );
   SERIALIZE_XML_ADD_MEMBER ( _labelColumn );
@@ -157,7 +145,6 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _legendText );
   SERIALIZE_XML_ADD_MEMBER ( _showInLegend );
   SERIALIZE_XML_ADD_MEMBER ( _showLabel );
-  SERIALIZE_XML_ADD_MEMBER ( _shown );
   SERIALIZE_XML_ADD_MEMBER ( _labelColor );
   SERIALIZE_XML_ADD_MEMBER ( _labelZOffset );
   SERIALIZE_XML_ADD_MEMBER ( _labelSize );
@@ -175,31 +162,6 @@ void Layer::_registerMembers()
 
 Layer::~Layer()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Accept the visitor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::accept ( Minerva::Core::Visitor& visitor )
-{
-  visitor.visit ( *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Traverse all DataObjects.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::traverse ( Minerva::Core::Visitor& visitor )
-{
-  for ( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
-    (*iter)->accept ( visitor );
 }
 
 
@@ -322,23 +284,6 @@ Usul::Types::Uint32 Layer::renderBin( ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::buildScene( osg::Group* parent )
-{
-  Guard guard( this->mutex() );
-
-  for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
-  {
-    parent->addChild( (*iter)->buildScene() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the query for data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -360,44 +305,6 @@ const std::string& Layer::query ( ) const
 {
   Guard guard( this->mutex() );
   return _query;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a data object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::_addDataObject ( Minerva::Core::DataObjects::DataObject *dataObject )
-{
-  Guard guard ( this->mutex() );
-  _dataObjects.push_back( dataObject );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clear all the data objects.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::_clearDataObjects ()
-{
-  Guard guard ( this->mutex() );
-  _dataObjects.clear();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get all the data objects.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Layer::DataObjects& Layer::_getDataObjects()
-{
-  return _dataObjects;
 }
 
 
@@ -583,32 +490,6 @@ bool Layer::showLabel() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the show label.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::showLayer( bool b )
-{
-  Guard guard ( this->mutex() );
-  _shown = b;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the show label.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Layer::showLayer() const
-{
-  Guard guard ( this->mutex() );
-  return _shown;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the label color.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -687,18 +568,6 @@ const std::string& Layer::colorColumn() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Get the number of data objects in this layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Layer::number() const
-{
-  return _dataObjects.size();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Label the data object.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -706,49 +575,50 @@ unsigned int Layer::number() const
 void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* dataObject, Usul::Interfaces::IUnknown* caller )
 {
   dataObject->renderBin ( this->renderBin() );
-  dataObject->connection ( this->connection() );
+  dataObject->dataSource ( Usul::Interfaces::IUnknown::QueryPtr ( this->connection() ) );
 
   // Label parameters.
   dataObject->showLabel ( this->showLabel() );
   dataObject->labelColor( this->labelColor() );
-  dataObject->labelSize( _labelSize );
+  dataObject->labelSize( this->labelSize() );
 
   // If we have a column to use for a label.
   if( this->showLabel() && !this->labelColumn().empty() )
   {
-    std::string value ( this->connection()->getColumnDataString( dataObject->tableName(), dataObject->rowId(), this->labelColumn() ) );
+    int id ( Usul::Convert::Type<std::string, int>::convert ( dataObject->objectId() ) );
+    std::string value ( this->connection()->getColumnDataString( this->tablename(), id, this->labelColumn() ) );
 
     dataObject->label( value );
-  }
-
-  osg::Vec3 center;
-  unsigned int srid ( 0 );
-  Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( dataObject->geometry() );
-  if( geometryCenter.valid() )
-  {
-    center = geometryCenter->geometryCenter( srid );
-  }
-
-  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-  Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( caller );
-
-  if( project.valid() )
-  {
-    Usul::Math::Vec3d orginal;
-    orginal[0] = center[0];
-    orginal[1] = center[1];
-    orginal[2] = this->labelZOffset();
-    Usul::Math::Vec3d point;
-    project->projectToSpherical( orginal, srid, point );
-
-    if( planet.valid() )
+  
+    osg::Vec3 center;
+    unsigned int srid ( 0 );
+    Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( dataObject->geometry() );
+    if( geometryCenter.valid() )
     {
-      planet->convertToPlanet( point, point );
-      center.set ( point[0], point[1], point[2] );
+      center = geometryCenter->geometryCenter( srid );
     }
+    
+    Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( caller );
+    
+    if( project.valid() )
+    {
+      Usul::Math::Vec3d orginal;
+      orginal[0] = center[0];
+      orginal[1] = center[1];
+      orginal[2] = this->labelZOffset();
+      Usul::Math::Vec3d point;
+      project->projectToSpherical( orginal, srid, point );
+      
+      if( planet.valid() )
+      {
+        planet->convertToPlanet( point, point );
+        center.set ( point[0], point[1], point[2] );
+      }
+    }
+    
+    dataObject->labelPosition( center );
   }
-
-  dataObject->labelPosition( center );
 }
 
 
@@ -775,32 +645,6 @@ float Layer::labelSize() const
 {
   Guard guard( this->mutex() );
   return _labelSize;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Layer::name( const std::string& name )
-{
-  Guard guard( this->mutex() );
-  _name = name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Layer::name() const
-{
-  Guard guard ( this->mutex() );
-  return _name;
 }
 
 
@@ -872,6 +716,7 @@ std::string Layer::geometryColumn() const
 
 void Layer::customQuery( bool value )
 {
+  Guard guard ( this->mutex() );
   _customQuery = value;
 }
 
@@ -884,19 +729,8 @@ void Layer::customQuery( bool value )
 
 bool Layer::customQuery() const
 {
+  Guard guard ( this->mutex() );
   return _customQuery;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the guid.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Layer::guid() const
-{
-  return _guid;
 }
 
 
@@ -992,18 +826,14 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ILayer::IID:
-    return static_cast < Usul::Interfaces::ILayer* > ( this );
   case Usul::Interfaces::IVectorLayer::IID:
     return static_cast < Usul::Interfaces::IVectorLayer* > ( this );
   case Usul::Interfaces::IAddRowLegend::IID:
     return static_cast < Usul::Interfaces::IAddRowLegend* > ( this );
-  case Usul::Interfaces::ISerialize::IID:
-    return static_cast < Usul::Interfaces::ISerialize* > ( this );
   case Usul::Interfaces::IClonable::IID:
     return static_cast < Usul::Interfaces::IClonable* > ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 
@@ -1017,7 +847,7 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
 void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
   // Clear what we have.
-  this->_clearDataObjects();
+  this->clearDataObjects();
 
   // Set the query.
   if( true == _query.empty() && false == this->customQuery() )
@@ -1068,7 +898,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
 
       if( this->showCountLegend() )
       {
-        unsigned int index ( row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( this->number() ) ) ) );
+        unsigned int index ( row->addText ( new OsgTools::Legend::Text ( Usul::Strings::format( this->number() ) ) ) );
 	      row->at ( index )->alignment ( OsgTools::Legend::Text::RIGHT );
         row->percentage( index ) = 0.20;
       }
@@ -1078,9 +908,9 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         double min ( _minMax.first );
         bool valid ( min != std::numeric_limits< double >::max() && !Usul::Math::nan( min ) );
         
-        std::string text ( valid ? Usul::Functions::toString( min ) : "NA" );
+        std::string text ( valid ? Usul::Strings::format( min ) : "NA" );
         
-        row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( min ) ) );
+        row->addText ( new OsgTools::Legend::Text ( text ) );
       }
 
       if( this->showMaxLegend() )
@@ -1088,9 +918,9 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         double max ( _minMax.second );
         bool valid ( max != std::numeric_limits< double >::min() && !Usul::Math::nan( max ) );
         
-        std::string text ( valid ? Usul::Functions::toString( max ) : "NA" );
+        std::string text ( valid ? Usul::Strings::format( max ) : "NA" );
         
-        row->addText ( new OsgTools::Legend::Text ( Usul::Functions::toString( max ) ) );
+        row->addText ( new OsgTools::Legend::Text ( text ) );
       }
 
       /// Find out how many columns we have.
@@ -1307,6 +1137,9 @@ int Layer::srid() const
   if ( false == connection.valid() )
     return -1;
   
+  // Scope the connection.
+  Minerva::Core::DB::Connection::ScopedConnection scoped ( *connection );
+  
   // Get the schema and table name.
   std::string schema ( "public" ), table ( this->tablename() );
   Detail::split ( this->tablename(), schema, table );
@@ -1355,6 +1188,9 @@ std::string Layer::projectionWKT( int srid ) const
   if ( false == connection.valid() )
     return std::string();
 
+  // Scope the connection.
+  Minerva::Core::DB::Connection::ScopedConnection scoped ( *connection );
+  
   // Get the tablename.
   std::string tablename ( this->tablename() );
   

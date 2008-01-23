@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 
+#include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/Functors/BaseColorFunctor.h"
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/DB/Connection.h"
@@ -20,18 +21,14 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IVectorLayer.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
-#include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Math/Vector2.h"
 
 #include "Serialize/XML/Macros.h"
 
-namespace osg { class Group; }
 #include "osg/Vec4"
 
 #ifdef _MSC_VER
@@ -49,19 +46,16 @@ namespace Core {
 
 namespace Layers {
 
-class MINERVA_EXPORT Layer : public Usul::Base::Object,
-                             public Usul::Interfaces::ILayer,
+class MINERVA_EXPORT Layer : public Minerva::Core::Layers::Vector,
                              public Usul::Interfaces::IVectorLayer,
                              public Usul::Interfaces::IAddRowLegend,
-                             public Usul::Interfaces::ISerialize,
                              public Usul::Interfaces::IClonable
 {
 public:
   /// Typedefs.
-  typedef Usul::Base::Object                        BaseClass;
+  typedef Minerva::Core::Layers::Vector             BaseClass;
   typedef Minerva::Core::DataObjects::DataObject    DataObject;
   typedef DataObject::RefPtr                        DataObjectPtr;
-  typedef std::vector< DataObjectPtr >	            DataObjects;
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
   typedef Usul::Interfaces::IUnknown                IUnknown;
 
@@ -81,20 +75,10 @@ public:
   /// Clone this layer.
   virtual IUnknown*           clone() const = 0;
 
-  /// Accept the visitor.
-  virtual void                accept ( Minerva::Core::Visitor& visitor );
-
-  /// Traverse all DataObjects.
-  virtual void                traverse ( Minerva::Core::Visitor& visitor );
-
   /// Get/Set the color functor. 
   void                        colorFunctor( ColorFunctor *colorFunctor );
   ColorFunctor *              colorFunctor();
   const ColorFunctor *        colorFunctor() const;
-
-  /// Get/Set the name.
-  void                        name( const std::string& name );
-  std::string                 name() const;
 
   /// Get/Set the connection.
   void                        connection ( DB::Connection *connection );
@@ -141,9 +125,6 @@ public:
   void                        zOffset( float f );
   float                       zOffset( ) const;
 
-  /// Build the scene.
-  virtual void                buildScene( osg::Group* parent );
-
   /// Get/Set the custom query flag.
   void                        customQuery( bool value );
   bool                        customQuery() const;
@@ -172,16 +153,9 @@ public:
   void                        showInLegend ( bool b );
   bool                        showInLegend () const;
 
-  /// Get/Set show layer.
-  void                        showLayer( bool b );
-  bool                        showLayer() const;
-
   /// Get/Set the color column.
   void                        colorColumn( const std::string& column );
   const std::string&          colorColumn() const;
-
-  /// Get the number of data objects in this layer.
-  virtual unsigned int        number() const;
 
   /// Get/Set the primary key column.
   void                        primaryKeyColumn( const std::string& );
@@ -189,9 +163,6 @@ public:
 
   /// Get the geometry column name.
   std::string                 geometryColumn() const;
-
-  /// Get the guid.
-  std::string                 guid() const;
 
   /// Get/Set show count in legend.
   void                        showCountLegend( bool b );
@@ -227,10 +198,6 @@ protected:
   /// Copy constructor.
   Layer( const Layer& layer );
 
-  void                        _addDataObject ( DataObject *dataObject );
-  void                        _clearDataObjects ();
-  DataObjects&                _getDataObjects();
-
   template < class T >
   osg::Vec4                   _color( const T& iter );
 
@@ -251,8 +218,6 @@ protected:
 
 private:
 
-  std::string _guid;
-  std::string _name;
   std::string _primaryKeyColumn;
   std::string _tablename;
   std::string _labelColumn;
@@ -261,13 +226,11 @@ private:
   float _xOffset;
   float _yOffset;
   float _zOffset;
-  DataObjects _dataObjects;
   DB::Connection::RefPtr _connection;
   Functors::BaseColorFunctor::RefPtr _colorFunctor;
   std::string                  _legendText;
   bool                         _showInLegend;
   bool                         _showLabel;
-  bool                         _shown;
   osg::Vec4                    _labelColor;
   float                        _labelZOffset;
   float                        _labelSize;
@@ -277,16 +240,7 @@ private:
   std::pair < double, double > _minMax;
   float                        _alpha;
 
-  SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( Layer );
-  SERIALIZE_XML_SERIALIZE_FUNCTION;
-public:
-  virtual void deserialize ( const XmlTree::Node &node )
-  {
-    _dataMemberMap.deserialize ( node );
-  }
-
-  SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

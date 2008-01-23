@@ -24,16 +24,11 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Interfaces/ILayer.h"
 
-#include "OsgTools/Legend/Legend.h"
-
 #include "osg/ref_ptr"
 #include "osg/Group"
 #include "osg/Array"
 #include "osg/Node"
-#include "osg/Camera"
 #include "osg/MatrixTransform"
-
-#include "osgText/Text"
 
 #include <map>
 
@@ -79,43 +74,10 @@ public:
   /// Clear the internal state.
   void                       clear();
 
-  enum LegendPosition
-  {
-    LEGEND_TOP_LEFT,
-    LEGEND_TOP_RIGHT,
-    LEGEND_BOTTOM_RIGHT,
-    LEGEND_BOTTOM_LEFT
-  };
-
-  /// Get/Set the legend position.
-  void                       legendPosition ( LegendPosition position );
-  LegendPosition             legendPosition ( ) const;
-
-  /// Toggle the legend on and off.
-  bool                       showLegend() const;
-  void                       showLegend( bool b );
-
-  /// Legend width in percentage of screen width.
-  void                       legendWidth( float p );
-  float                      legendWidth( ) const;
-
-  /// Height of each item showing in the legend.
-  void                       legendHeightPerItem( unsigned int height );
-  unsigned int               legendHeightPerItem() const;
-
-  /// Legend padding from the sides of the screen.  Value in pixels.
-  void                       legendPadding( const osg::Vec2& padding );
-  const osg::Vec2&           legendPadding() const;
-
-  /// Text for updating current date.
-  osgText::Text &            dateText ();
 protected:
 
   virtual ~SceneManager();
   
-  void                       _buildLegend();
-
-  void                       _setLegendPosition ( unsigned int legendWidth );
 private:
 
   typedef std::map < std::string, Layer::QueryPtr >               Layers;
@@ -125,24 +87,10 @@ private:
 
   // OSG nodes.
   osg::ref_ptr < osg::Group >      _root;
-  osg::ref_ptr < osg::Camera >     _camera;
-  osg::ref_ptr < osgText::Text >   _dateText;
 
   Layers _layers;
 
   bool _dirty;
-
-  /// Screen size members.
-  unsigned int _width;
-  unsigned int _height;
-
-  /// Legend members.
-  OsgTools::Legend::Legend::RefPtr _legend;
-  bool _showLegend;
-  float _legendWidth;
-  unsigned int _legendHeightPerItem;
-  osg::Vec2 _legendPadding;
-  LegendPosition _legendPosition;
 };
 
 }

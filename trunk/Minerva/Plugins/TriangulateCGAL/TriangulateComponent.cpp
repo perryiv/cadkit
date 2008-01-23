@@ -94,7 +94,7 @@ Usul::Interfaces::IUnknown *TriangulateComponent::queryInterface ( unsigned long
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangulateComponent::triangulate ( const Vertices3D &in, Vertices3D &verticesOut, Vertices3D &normalsOut )
+void TriangulateComponent::triangulate ( const Vertices3D &in, Vertices3D &verticesOut )
 {
   CDT cdt;
 
@@ -127,12 +127,11 @@ void TriangulateComponent::triangulate ( const Vertices3D &in, Vertices3D &verti
   Mesher mesher(cdt);
   mesher.refine_mesh();
 
-  unsigned int numFaces ( cdt.number_of_faces() );
-  unsigned int numVertices ( cdt.number_of_vertices() );
+  const unsigned int numFaces ( cdt.number_of_faces() );
+  const unsigned int numVertices ( cdt.number_of_vertices() );
 
   // Make enough room.
   verticesOut.reserve ( numVertices );
-  normalsOut.reserve ( numFaces / 3 );
 
   // Loop through the faces.
   for( CDT::Finite_faces_iterator faceIter = cdt.finite_faces_begin(); faceIter != cdt.finite_faces_end(); ++faceIter )
@@ -154,8 +153,6 @@ void TriangulateComponent::triangulate ( const Vertices3D &in, Vertices3D &verti
       verticesOut.push_back ( v0 );
       verticesOut.push_back ( v1 );
       verticesOut.push_back ( v2 );
-
-      normalsOut.push_back ( Vertices3D::value_type ( 0.0, 0.0, 1.0 ) );
     }
   }
 }

@@ -60,15 +60,17 @@ BaseClass(),
 _dirty ( true ),
 _renderBin ( osg::StateSet::DEFAULT_BIN ),
 _color ( 0.0, 0.0, 0.0, 1.0 ),
-_tableName(),
-_rowId ( -1 ),
+_objectId ( "" ),
 _label(),
 _labelPosition(),
 _labelColor( 1.0, 1.0, 1.0, 1.0 ),
 _labelSize( 25.0f ),
 _showLabel ( false ),
 _geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
-_connection ( 0x0 )
+_dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
+_firstDate( boost::date_time::min_date_time ),
+_lastDate( boost::date_time::max_date_time ),
+_altitudeMode ( CLAMP_TO_GROUND )
 {
 }
 
@@ -177,49 +179,25 @@ void DataObject::color ( const osg::Vec4& color )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the table name.
+//  Set the id.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::tableName ( const std::string& name )
+void DataObject::objectId( const std::string & id )
 {
-  _tableName = name;
+  _objectId = id;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the table name.
+//  Get the id.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string & DataObject::tableName () const
+const std::string & DataObject::objectId() const
 {
-  return _tableName;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the row id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::rowId( int id )
-{
-  _rowId = id;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the row id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-int DataObject::rowId() const
-{
-  return _rowId;
+  return _objectId;
 }
 
 
@@ -367,9 +345,9 @@ float DataObject::labelSize() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::connection ( Minerva::Core::DB::Connection* c )
+void DataObject::dataSource ( Unknown* c )
 {
-  _connection = c;
+  _dataSource = c;
 }
 
 
@@ -379,21 +357,21 @@ void DataObject::connection ( Minerva::Core::DB::Connection* c )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::DB::Connection* DataObject::connection()
+DataObject::Unknown* DataObject::dataSource()
 {
-  return _connection.get();
+  return _dataSource.get();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the connection.
+//  Get the data source.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Minerva::Core::DB::Connection* DataObject::connection() const
+const DataObject::Unknown* DataObject::dataSource() const
 {
-  return _connection.get();
+  return _dataSource.get();
 }
 
 
@@ -539,4 +517,76 @@ bool DataObject::visibility ( ) const
 {
   Guard guard ( this );
   return _root.valid () ? ( _root->getNodeMask () != 0x0 ) : ( _preBuiltScene.valid() ? _preBuiltScene->getNodeMask() != 0x0 : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Minerva::Core::Animate::Date& DataObject::firstDate() const
+{
+  return _firstDate;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the first date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::firstDate( const Minerva::Core::Animate::Date& date )
+{
+  _firstDate = date;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the last date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Minerva::Core::Animate::Date& DataObject::lastDate() const
+{
+  return _lastDate;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the last date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::lastDate( const Minerva::Core::Animate::Date& date )
+{
+  _lastDate = date;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the altitude mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::altitudeMode ( AltitudeMode mode )
+{
+  _altitudeMode = mode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the altitude mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DataObject::AltitudeMode DataObject::altitudeMode () const
+{
+  return _altitudeMode;
 }

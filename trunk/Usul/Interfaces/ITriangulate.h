@@ -40,7 +40,7 @@ struct ITriangulate : public Usul::Interfaces::IUnknown
   enum { IID = 2740627666u };
 
   // Triangulate.  The z component may be ignored by implementation.
-  virtual void triangulate ( const Vertices3D &in, Vertices3D &out, Vertices3D &normalsOut ) = 0;
+  virtual void triangulate ( const Vertices3D &in, Vertices3D &out ) = 0;
 };
 
 

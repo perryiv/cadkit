@@ -13,15 +13,17 @@
 
 #include "Minerva/Core/Export.h"
 
+#include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/IDatabaseConnection.h"
+#include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Base/Referenced.h"
-#include "Usul/Pointers/Pointers.h"
 
 #include "Serialize/XML/Macros.h"
 
 #include "boost/shared_ptr.hpp"
 
+// Forward declarations.
 namespace pqxx
 {
   class result;
@@ -37,7 +39,8 @@ namespace Minerva {
 namespace Core {
 namespace DB {
 
-class MINERVA_EXPORT Connection : public Usul::Base::Referenced
+class MINERVA_EXPORT Connection : public Usul::Base::Referenced,
+  public Usul::Interfaces::IDatabaseConnection
 {
 public:
   /// Typedefs.
@@ -49,7 +52,10 @@ public:
   typedef pqxx::basic_connection < pqxx::connect_lazy > ConnectionType;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Connection );
+  USUL_DECLARE_QUERY_POINTERS ( Connection );
+  
+  /// IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Connection();
 
@@ -116,9 +122,6 @@ protected:
 
   /// Get the maximium primary id in the given table.
   int                  _getMaxId( const std::string& table );
-
-  /// Create Connection.
-  ConnectionType*          _createConnection();
 
 private:
 

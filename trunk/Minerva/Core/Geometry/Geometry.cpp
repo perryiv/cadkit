@@ -8,9 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/Geometry/Geometry.h"
 
-using namespace Minerva::Core::postGIS;
+#include "pqxx/pqxx"
+
+using namespace Minerva::Core::Geometry;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 
@@ -24,7 +26,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 Geometry::Geometry(  ) : BaseClass(),
 _connection ( 0x0 ),
 _tableName ( ),
-_id ( -1 ),
+_id ( 4326 ),  // By default, use lat,lon.
 _srid ( 0 ) ,
 _offset( 0.0, 0.0, 0.0 ),
 _dirty ( false )

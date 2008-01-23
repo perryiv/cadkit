@@ -70,7 +70,7 @@ public:
   bool                    autotransform () const;
 
   /// Get the default query.
-  virtual std::string         defaultQuery() const;
+  virtual std::string     defaultQuery() const;
 
 protected:
   virtual ~PointLayer();

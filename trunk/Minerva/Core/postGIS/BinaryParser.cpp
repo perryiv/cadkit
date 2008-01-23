@@ -9,9 +9,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/postGIS/BinaryParser.h"
-#include "Minerva/Core/postGIS/Point.h"
-#include "Minerva/Core/postGIS/Line.h"
-#include "Minerva/Core/postGIS/Polygon.h"
+#include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Geometry/Line.h"
+#include "Minerva/Core/Geometry/Polygon.h"
 
 #include "Usul/Endian/Endian.h"
 
@@ -19,6 +19,16 @@
 
 using namespace Minerva::Core::postGIS;
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef Minerva::Core::Geometry::Point Point;
+typedef Minerva::Core::Geometry::Line Line;
+typedef Minerva::Core::Geometry::Polygon Polygon;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

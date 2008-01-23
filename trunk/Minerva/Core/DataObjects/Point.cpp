@@ -363,7 +363,7 @@ osg::Node* Point::_buildPoint()
 osg::Node* Point::_buildSphere()
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  //geode->setUserData( new UserData( this ) );
+  geode->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
   unsigned int size ( static_cast < unsigned int > ( 20.0f * this->quality() ) );
   OsgTools::ShapeFactory::MeshSize meshSize ( size, size );

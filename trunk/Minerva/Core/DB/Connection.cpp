@@ -29,6 +29,7 @@
 using namespace Minerva::Core::DB;
 
 USUL_FACTORY_REGISTER_CREATOR ( Connection );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Connection, Connection::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -185,7 +186,7 @@ void Connection::connect()
   try
   {
     // Set up a connection to the backend.
-    _connection = ConnectionPtr ( this->_createConnection() );
+    _connection = ConnectionPtr ( new ConnectionType( this->connectionString() ) );
   }
   catch ( const std::exception& e )
   {
@@ -207,6 +208,7 @@ void Connection::connect()
 std::string Connection::connectionString() const
 {
 #ifndef _MSC_VER
+  /// HACK for viz cluster.
   std::string host ( Usul::System::Host::name() );
   if( boost::algorithm::find_first ( host, "viz" ) )
     (const_cast<Connection*>(this))->_host = "cinema";
@@ -219,32 +221,6 @@ std::string Connection::connectionString() const
   std::string password ( Usul::Strings::format ( "password=", this->password() ) );
     
   return Usul::Strings::format ( hostname, " ", username, " ", password, " ", database );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a connection.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Connection::ConnectionType* Connection::_createConnection()
-{
-  std::ostringstream os;
-
-#if 0
-#ifndef _MSC_VER
-  std::string host ( Usul::System::Host::name() );
-  if( boost::algorithm::find_first ( host, "viz" ) )
-    _host = "cinema";
-#endif
-
-  os << "dbname=" << _database << " "
-    << "user=" << _user << " "
-    << "password=" << _password << " "
-    << "host=" << _host;
-#endif
-  return new ConnectionType( this->connectionString() /*os.str().c_str()*/ );
 }
 
 
@@ -578,4 +554,23 @@ void Connection::getMinAndMax ( const std::string& tableName, const std::string&
 
   min = r[0]["lowest"].as < double > ();
   max = r[0]["highest"].as < double > ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for an interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Connection::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+    case Usul::Interfaces::IUnknown::IID:
+    case Usul::Interfaces::IDatabaseConnection::IID:
+      return static_cast < Usul::Interfaces::IDatabaseConnection* > ( this );
+    default:
+      return 0x0;
+  }
 }

@@ -18,16 +18,14 @@
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IOffset.h"
 
-#include "osg/Array"
+#include "osg/Vec3f"
 namespace osg { class Geometry; class Node; }
-
-#include "pqxx/pqxx"
 
 #include <vector>
 
 namespace Minerva {
 namespace Core {
-namespace postGIS {
+namespace Geometry {
 
 class MINERVA_EXPORT Geometry : public Usul::Base::Referenced,
                                 public Usul::Interfaces::IGeometryCenter,

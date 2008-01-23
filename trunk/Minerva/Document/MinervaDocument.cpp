@@ -23,8 +23,10 @@
 #include "Minerva/Core/Commands/ToggleShown.h"
 #include "Minerva/Core/Commands/ShowPastEvents.h"
 #include "Minerva/Core/Commands/ChangeTimestepType.h"
+#include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
+#include "Minerva/Core/Visitors/StackPoints.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -32,12 +34,14 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Interfaces/IAddRowLegend.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IVectorLayer.h"
+#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/System/Host.h"
@@ -46,7 +50,10 @@
 #include "MenuKit/ToggleButton.h"
 #include "MenuKit/RadioButton.h"
 
-#include "osgText/Text"
+#include "OsgTools/Font.h"
+
+#include "osg/Geode"
+#include "osg/Light"
 
 #include <sstream>
 
@@ -63,28 +70,41 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaDocument::MinervaDocument() : BaseClass( "Minerva Document" ),
-_layers(),
-_sceneManager ( new Minerva::Core::Scene::SceneManager ),
-_planet ( 0x0 ),
-_commandsSend ( false ),
-_commandsReceive ( false ),
-_sessionName(),
-_sender ( new CommandSender ),
-_receiver ( new CommandReceiver ),
-_connection ( 0x0 ),
-_commandUpdate ( 5000 ),
-_commandJob ( 0x0 ),
-_animateSettings ( new Minerva::Core::Animate::Settings ),
-_datesDirty ( false ),
-_lastDate ( boost::date_time::min_date_time ),
-_global ( new TimeSpan ),
-_current ( _global ),
-_timeSpans (),
-_lastTime ( -1.0 ),
-_animationSpeed ( 0.1f ),
-_timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
-SERIALIZE_XML_INITIALIZER_LIST
+MinervaDocument::MinervaDocument() : 
+  BaseClass( "Minerva Document" ),
+  _dirty ( false ),
+  _layers(),
+  _sceneManager ( new Minerva::Core::Scene::SceneManager ),
+  _root ( new osg::Group ),
+  _camera ( new osg::Camera ),
+  _dateText ( new osgText::Text ),
+  _planet ( 0x0 ),
+  _commandsSend ( false ),
+  _commandsReceive ( false ),
+  _sessionName(),
+  _sender ( new CommandSender ),
+  _receiver ( new CommandReceiver ),
+  _connection ( 0x0 ),
+  _commandUpdate ( 5000 ),
+  _commandJob ( 0x0 ),
+  _animateSettings ( new Minerva::Core::Animate::Settings ),
+  _datesDirty ( false ),
+  _lastDate ( boost::date_time::min_date_time ),
+  _global ( new TimeSpan ),
+  _current ( _global ),
+  _timeSpans (),
+  _lastTime ( -1.0 ),
+  _animationSpeed ( 0.1f ),
+  _timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
+  _legend( new OsgTools::Legend::Legend ),
+  _showLegend( true ),
+  _legendWidth ( 0.40f ),
+  _legendHeightPerItem ( 30 ),
+  _legendPadding ( 20.0f, 20.0f ),
+  _legendPosition ( LEGEND_BOTTOM_RIGHT ),
+  _width( 0 ),
+  _height( 0 ),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _layers );
   SERIALIZE_XML_ADD_MEMBER ( _commandsSend );
@@ -93,6 +113,35 @@ SERIALIZE_XML_INITIALIZER_LIST
   SERIALIZE_XML_ADD_MEMBER ( _connection );
   SERIALIZE_XML_ADD_MEMBER ( _timeSpans );
 
+  _camera->setName ( "Minerva_Camera" );
+  _camera->setRenderOrder ( osg::Camera::POST_RENDER );
+  _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
+  _camera->setClearMask( GL_DEPTH_BUFFER_BIT );
+  _camera->setViewMatrix( osg::Matrix::identity() );
+  
+  osg::ref_ptr<osg::StateSet> ss ( _camera->getOrCreateStateSet() );
+  
+  {
+    osg::ref_ptr< osg::Light > light ( new osg::Light );
+    light->setLightNum ( 1 );
+    light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
+    light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
+    
+    ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  }
+  
+  {
+    osg::ref_ptr< osg::Light > light ( new osg::Light );
+    light->setLightNum ( 0 );
+    
+    ss->setAttributeAndModes ( light.get(), osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+  }
+  
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+  _dateText->setFont( font.get() );
+  _dateText->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  _dateText->setText ( "" );
+  _dateText->setColor( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   
 #ifndef _MSC_VER
 #ifndef __APPLE__
@@ -145,8 +194,6 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
-  //case Usul::Interfaces::IMatrixManipulator::IID:
-  //  return static_cast < Usul::Interfaces::IMatrixManipulator* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Minerva::Interfaces::IAnimationControl::IID:
@@ -194,6 +241,15 @@ bool MinervaDocument::canExport ( const std::string &file ) const
 
 bool MinervaDocument::canInsert ( const std::string &file ) const
 {
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
+  
+  Filters filters ( this->filtersInsert() );
+  for ( Filters::const_iterator iter = filters.begin(); iter != filters.end(); ++iter )
+  {
+    if ( Usul::Strings::lowerCase ( Usul::File::extension ( iter->second ) ) == ext )
+      return true;
+  }
+  
   return false;
 }
 
@@ -248,8 +304,7 @@ MinervaDocument::Filters MinervaDocument::filtersExport() const
 
 MinervaDocument::Filters MinervaDocument::filtersInsert() const
 {
-  Filters filters;
-  return filters;
+  return Minerva::Core::Factory::Readers::instance().filters();
 }
 
 
@@ -298,6 +353,17 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
     MinervaReader reader ( filename, caller, this );
     reader();
   }
+  else
+  {
+    Usul::Interfaces::IUnknown::RefPtr unknown ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
+    Usul::Interfaces::IRead::QueryPtr read ( unknown );
+    
+    if ( read.valid() )
+      read->read ( filename, caller, progress );
+    
+    Usul::Interfaces::ILayer::QueryPtr layer ( read );
+    this->addLayer ( layer.get() );
+  }
 }
 
 
@@ -335,6 +401,7 @@ void MinervaDocument::clear ( Unknown *caller )
   _sceneManager->clear();
   this->_connectToDistributedSession();
   _sender->deleteSession();
+  _legend->clear();
 }
 
 
@@ -350,6 +417,7 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
   
   osg::ref_ptr<osg::Group> group ( _planet->buildScene() );
   group->addChild ( _sceneManager->root() );
+  group->addChild ( _root.get() );
   return group.release();
 }
 
@@ -398,54 +466,6 @@ Minerva::Interfaces::IAnimationControl::TimestepType MinervaDocument::timestepTy
 {
   Guard guard ( this->mutex () );
   return static_cast < Minerva::Interfaces::IAnimationControl::TimestepType > ( _animateSettings->timestepType() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is the legend showing?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool MinervaDocument::isShowLegend() const
-{
-  return _sceneManager->showLegend();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the show legend flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::showLegend( bool b )
-{
-  _sceneManager->showLegend( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set percent screen width for legend.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::percentScreenWidth ( float percent )
-{
-  _sceneManager->legendWidth ( percent );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set percent screen width for legend.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float MinervaDocument::percentScreenWidth()
-{
-  return _sceneManager->legendWidth();
 }
 
 
@@ -513,6 +533,7 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   }
 
   this->modified( true );
+  this->dirty( true );
 }
 
 
@@ -545,6 +566,7 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 
   // We are modified.
   this->modified ( true );
+  this->dirty( true );
 }
 
 
@@ -698,8 +720,8 @@ void MinervaDocument::stopAnimation()
   }
 
   // Update the text.
-  this->sceneManager()->dateText().setText( "" );
-  this->sceneManager()->dateText().update ();
+  _dateText->setText( "" );
+  _dateText->update ();
 }
 
 
@@ -877,6 +899,12 @@ namespace Detail
 void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  
+  if ( this->dirty() )
+  {
+    Minerva::Core::Visitors::StackPoints::RefPtr visitor ( new Minerva::Core::Visitors::StackPoints );
+    this->accept ( *visitor );
+  }
 
   // Build the scene.
   this->_buildScene ( caller );
@@ -893,6 +921,8 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
   // Animate.
   this->_animate ( caller );
+  
+  this->dirty ( false );
 }
 
 
@@ -904,6 +934,8 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 void MinervaDocument::dirtyScene ()
 {
+  Guard guard ( this );
+  _dirty = true;
   _sceneManager->dirty ( true );
 }
 
@@ -1100,8 +1132,8 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
         }
 
         // Update the text.
-        this->sceneManager()->dateText().setText( lastDate.toString() );
-        this->sceneManager()->dateText().update ();
+        _dateText->setText( lastDate.toString() );
+        _dateText->update ();
         _lastDate = lastDate;
 
         // Set the dates to show.
@@ -1348,12 +1380,69 @@ bool MinervaDocument::isSplitMetric ( double value ) const
 
 void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
 {
+  Guard guard ( this );
+  
+  // Clear what we have.
+  _root->removeChild( 0, _root->getNumChildren() );
+  
+  bool viewportChanged ( false );
+  bool buildLegend ( false );
+  
+  Usul::Interfaces::IViewport::QueryPtr vp ( caller );
+  if ( vp.valid () )
+  {
+    const unsigned int width  ( static_cast < unsigned int > ( vp->width () ) );
+    const unsigned int height ( static_cast < unsigned int > ( vp->height () ) );
+    
+    if ( width != _width || height != _height )
+    {
+      _width = width;
+      _height = height;
+      viewportChanged = true;
+      
+      // Set the date text's position.
+      _dateText->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
+      
+      // Set the build legend flag.
+      buildLegend = true;
+    }
+  }
+  
+  if ( viewportChanged )
+  {
+    _camera->setViewport ( 0, 0, _width, _height );
+    _camera->setProjectionMatrixAsOrtho ( 0, _width, 0, _height, -40.0, 40.0 );
+    
+    // Build the legend.
+    this->_buildLegend( caller );
+  }
+  
   // Rebuild the scene if it's dirty.
   if ( _sceneManager->dirty () )
   {
-    _sceneManager->buildScene ( caller );
+    _sceneManager->buildScene ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
     _sceneManager->dirty ( false );
+    
+    // Set the build legend flag.
+    buildLegend = true;
+    
   }
+
+  if ( buildLegend )
+  {
+    _camera->removeChild ( 0, _camera->getNumChildren() );
+    
+    // Build the legend.
+    this->_buildLegend( caller );
+    
+    // Add the date text.
+    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+    geode->addDrawable( _dateText.get() );
+    
+    _camera->addChild ( geode.get() );
+  }
+  
+  _root->addChild ( _camera.get() );
 
   _planet->updateScene( caller );
 }
@@ -1408,4 +1497,258 @@ void MinervaDocument::_makePlanet()
     return;
   
   _planet = new Planet;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showLegend( bool b )
+{
+  Guard guard ( this );
+  if( b != _showLegend )
+  {
+    _showLegend = b;
+    this->dirty( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show legend flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isShowLegend() const
+{
+  Guard guard ( this );
+  return _showLegend;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend width percentage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::legendWidth ( float p )
+{
+  Guard guard ( this );
+  _legendWidth = p;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the legend width percentage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float MinervaDocument::legendWidth() const
+{
+  Guard guard ( this );
+  return _legendWidth;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend padding.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::legendPadding( const osg::Vec2& padding )
+{
+  Guard guard ( this );
+  _legendPadding = padding;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the legend padding.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec2& MinervaDocument::legendPadding () const
+{
+  Guard guard ( this );
+  return _legendPadding;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Height of each item showing in the legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::legendHeightPerItem( unsigned int height )
+{
+  Guard guard ( this );
+  _legendHeightPerItem = height;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Height of each item showing in the legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int MinervaDocument::legendHeightPerItem() const
+{
+  Guard guard ( this );
+  return _legendHeightPerItem;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::legendPosition ( LegendPosition position )
+{
+  Guard guard ( this );
+  _legendPosition = position;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MinervaDocument::LegendPosition MinervaDocument::legendPosition () const
+{
+  Guard guard ( this );
+  return _legendPosition;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
+{
+  // Always clear.
+  _legend->clear();
+  
+  if( this->isShowLegend() )
+  {
+    // Set the legend size.
+    unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
+    unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
+    
+    _legend->maximiumSize( legendWidth, legendHeight );
+    _legend->heightPerItem( _legendHeightPerItem );
+    
+    for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+    {
+      Usul::Interfaces::ILayer::QueryPtr layer ( *iter );
+      if ( layer.valid() )
+      {
+        Usul::Interfaces::IAddRowLegend::QueryPtr addRow ( layer );
+        if( layer->showLayer() && addRow.valid() && addRow->showInLegend() )
+        {
+          OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
+          addRow->addLegendRow( row.get() );
+          _legend->addLegendObject( row.get() );
+        }
+      }
+    }
+    
+    // Must be called after rows are added to the legend.
+    this->_setLegendPosition( legendWidth );
+    
+    // Build the legend.
+    _camera->addChild( _legend->buildScene() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the legend position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_setLegendPosition ( unsigned int legendWidth )
+{
+  // Translate legend to correct location.
+  unsigned int x ( 0 );
+  unsigned int y ( 0 );
+  
+  unsigned legendHeight ( _legend->height() );
+  
+  switch ( _legendPosition )
+  {
+    case LEGEND_TOP_LEFT:
+    {
+      x = static_cast < unsigned int > ( _legendPadding.x() );
+      y = static_cast < unsigned int > ( _height - legendHeight -_legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+      break;
+    case LEGEND_TOP_RIGHT:
+    {
+      x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
+      y = static_cast < unsigned int > ( _height - legendHeight - _legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+      break;
+    case LEGEND_BOTTOM_RIGHT:
+    {
+      x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
+      y = static_cast < unsigned int > ( _legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+      break;
+    case LEGEND_BOTTOM_LEFT:
+    {
+      x = static_cast < unsigned int > ( _legendPadding.x() );
+      y = static_cast < unsigned int > ( _legendPadding.y() );
+      _legend->growDirection( OsgTools::Legend::Legend::UP );
+    }
+      break;
+  }
+  
+  _legend->position( x, y );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the scene dirty?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::dirty() const
+{
+  Guard guard ( this );
+  return _dirty;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::dirty( bool b )
+{
+  Guard guard ( this );
+  _dirty = b;
 }

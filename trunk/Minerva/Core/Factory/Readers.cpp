@@ -1,27 +1,27 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2006, Arizona State University
+//  Copyright (c) 2008, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Factory.h"
-#include "BinaryParser.h"
-#include "TextParser.h"
+#include "Minerva/Core/Factory/Readers.h"
 
-using namespace Minerva::Core::postGIS;
+#include "Usul/File/Path.h"
+
+using namespace Minerva::Core::Factory;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize static data member.
+//  Static member initialization.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory* Factory::_instance ( 0x0 );
+Readers* Readers::_instance ( 0x0 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,11 +30,10 @@ Factory* Factory::_instance ( 0x0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory& Factory::instance()
+Readers& Readers::instance()
 {
-  if( 0x0 == _instance )
-    _instance = new Factory;
-
+  if ( 0x0 == _instance )
+    _instance = new Readers;
   return *_instance;
 }
 
@@ -45,7 +44,10 @@ Factory& Factory::instance()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Factory()
+Readers::Readers() :
+  _mutex    ( new Readers::Mutex ),
+  _filters  (),
+  _creators ()
 {
 }
 
@@ -56,32 +58,51 @@ Factory::Factory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::~Factory()
+Readers::~Readers()
 {
+  delete _mutex; _mutex = 0x0;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create the geometry.
+//  Add a creator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Geometries Factory::createFromBinary ( const unsigned char *buffer ) const
+void Readers::add ( const std::string &filter, const std::string& extension, BaseCreator *creator )
 {
-  BinaryParser parser;
-  return parser ( buffer );
+  Guard guard ( *_mutex );
+  _filters.push_back ( Filter ( filter, extension ) );
+  _creators.insert ( Creators::value_type ( Usul::File::extension ( extension ), creator ) );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create the geometry.
+//  Create.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Factory::Geometry* Factory::createFromText   ( const char *buffer ) const 
+Usul::Interfaces::IUnknown * Readers::create ( const std::string &extension )
 {
-  TextParser parser;
-  return parser ( buffer );
+  Guard guard ( *_mutex );
+  Creators::iterator iter = _creators.find ( extension );
+  if ( _creators.end() != iter )
+    return (*iter->second) ();
+  
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all filters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Readers::Filters Readers::filters() const
+{
+  Guard guard ( *_mutex );
+  return _filters;
 }

@@ -14,20 +14,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  I'm in the process of refactoring this class to return a pointer to the 
-//  base geometry class.  When finished I believe it will be the better design.
-//  However, I'm having some trouble figuring out a good way to implement it.
-//  For now, use getVertices().
-//
-///////////////////////////////////////////////////////////////////////////////
-
 #ifndef __MINERVA_POSTGIS_BINARY_PARSER_H__
 #define __MINERVA_POSTGIS_BINARY_PARSER_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/postGIS/Geometry.h"
+#include "Minerva/Core/Geometry/Geometry.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Types/Types.h"
@@ -46,6 +37,7 @@ public:
   BinaryParser();
   ~BinaryParser();
 
+  typedef Minerva::Core::Geometry::Geometry Geometry;
   typedef std::vector < Geometry::RefPtr > Geometries;
 
   enum wkbGeometryType 

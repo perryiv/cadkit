@@ -12,8 +12,9 @@
 #define __USUL_INTERFACES_IPOLYGON_DATA_H__
 
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Math/Vector3.h"
 
-namespace osg { class Node; }
+#include <vector>
 
 namespace Usul {
 namespace Interfaces {
@@ -21,14 +22,20 @@ namespace Interfaces {
 
 struct IPolygonData : public Usul::Interfaces::IUnknown
 {
+  /// Typedefs.
+  typedef Usul::Math::Vec3d                Vertex;
+  typedef std::vector < Vertex >           Vertices;
+  typedef std::vector<Vertices>            Boundaries;
+  
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IPolygonData );
 
   /// Id for this interface.
   enum { IID = 2101968926u };
 
-  virtual osg::Node* buildPolygonData () = 0;
-
+  virtual const Vertices&               outerBoundary() const = 0;
+  virtual const Boundaries&             innerBoundaries() const = 0;
+  
 }; // struct IPolygonData
 
 

@@ -30,6 +30,7 @@
 #include "QtGui/QDialog.h"
 #include "QtGui/QMainWindow.h"
 #include "QtGui/QMenu"
+#include "QtGui/QSlider"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -66,6 +67,7 @@ _document ()
   
   topLayout->addLayout ( buttonLayout );
   topLayout->addLayout ( treeLayout );
+  topLayout->addWidget ( new QSlider ( Qt::Horizontal ));
 
   this->_connectTreeViewSlots ();
 

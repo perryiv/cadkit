@@ -41,7 +41,7 @@ struct IDatabaseConnection : public Usul::Interfaces::IUnknown
 
   /// Get/Set the password.
   virtual void                         password ( const std::string& ) = 0;
-  virtual const std::string&           password () = 0;
+  virtual const std::string&           password () const = 0;
 
   /// Connect.
   virtual void                         connect () = 0;

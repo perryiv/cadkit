@@ -43,7 +43,7 @@ TextParser::~TextParser()
 
 namespace Detail
 {
-  Geometry* createGeometry( const char* buffer )
+  TextParser::Geometry* createGeometry( const char* buffer )
   {
     return 0x0;
   }
@@ -56,7 +56,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Geometry* TextParser::operator ()( const char *buffer )
+TextParser::Geometry* TextParser::operator ()( const char *buffer )
 {
   return Detail::createGeometry( buffer );
 }

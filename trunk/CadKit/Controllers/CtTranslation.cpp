@@ -42,6 +42,7 @@
 #include "Interfaces/IOutputAttribute.h"
 #include "Interfaces/IOutputPrecision.h"
 #include "Interfaces/IScale.h"
+#include "Interfaces/IOutputUnits.h"
 
 #include <time.h>
 #include <stdexcept>
@@ -374,6 +375,12 @@ bool CtTranslation::_parseArguments ( int argc, char **argv, std::list<std::stri
       //  std::cout << "Error: unable to create output directory: " << _outputDir << '\n';
       //  return false;
       //}
+    }
+
+    else if ( arg == "-ou" || arg == "--output-units" )
+    {
+      // Get the next argument, if there is one.
+      this->_setUnits(std::string( ( i + 1 == argc ) ? "" : argv[++i] ));
     }
 
     // Otherwise just save the argument.
@@ -795,6 +802,26 @@ void CtTranslation::_setScale ( double x, double y, double z )
   SlQueryPtr<IScaleFloat> sf ( _source );
   if ( sf.isValid() )
     sf->scale ( static_cast<float> ( x ), static_cast<float> ( y ), static_cast<float> ( z ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the units for the output file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setUnits ( const std::string &units )
+{
+  SL_PRINT3 ( "In CtTranslation::_setUnits(), this = %X, units = %s\n", this, units.c_str() );
+
+  // Set the scale if the interface is available. 
+  SlQueryPtr<IOutputUnits> su ( _target );
+  if ( su.isValid() )
+  {
+    su->setUnits ( units );
+    return;
+  }
 }
 
 

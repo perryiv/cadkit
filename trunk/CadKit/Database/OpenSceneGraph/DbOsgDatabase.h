@@ -25,6 +25,7 @@
 #include "Interfaces/IFileExtension.h"
 #include "Interfaces/IDataWrite.h"
 #include "Interfaces/IOutputAttribute.h"
+#include "Interfaces/IOutputUnits.h"
 
 #include "Standard/SlStack.h"
 #include "Standard/SlErrorPolicy.h"
@@ -53,7 +54,8 @@ class DB_OSG_API DbOsgDatabase : public DbBaseTarget,
                                  public ISetNotify,
                                  public IFileExtension,
                                  public IDataWrite,
-                                 public IOutputAttribute
+                                 public IOutputAttribute,
+                                 public IOutputUnits
 {
 public:
 
@@ -182,12 +184,23 @@ public:
   // Set the output attribute.
   virtual bool            setOutputAttribute ( const FormatAttribute &attribute );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IOutputUnits interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Set the output units.
+  virtual void            setUnits ( const std::string &units );
+
 protected:
 
   typedef CadKit::ErrorPolicy::Throw < std::out_of_range > StackErrorPolicy;
   typedef SlStack < osg::Group *, StackErrorPolicy > GroupStack;
   std::auto_ptr<GroupStack> _groupStack;
   FormatAttribute _outputAttribute;
+  std::string _outputUnits;
+  bool _scaled;
 
   virtual ~DbOsgDatabase();
 

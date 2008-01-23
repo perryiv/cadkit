@@ -25,12 +25,15 @@
 #include "Interfaces/IQueryNormals.h"
 #include "Interfaces/IQueryTexCoords.h"
 #include "Interfaces/IClientData.h"
+#include "Interfaces/IUnits.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
 #include "Standard/SlQueryPtr.h"
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
+
+#include "../../../Units/Length.h"
 
 #include "osg/LOD"             // Keep these in here because they bring in 
 #include "osg/Geode"           // <cmath> which fauls up <math.h> in 
@@ -64,7 +67,8 @@ CADKIT_IMPLEMENT_IUNKNOWN_MEMBERS ( DbOsgDatabase, SlRefBase );
 
 DbOsgDatabase::DbOsgDatabase() : DbBaseTarget(),
   _groupStack ( new GroupStack ),
-  _outputAttribute ( FORMAT_ATTRIBUTE_ASCII )
+  _outputAttribute ( FORMAT_ATTRIBUTE_ASCII ),
+  _scaled ( false )
 {
   SL_PRINT2 ( "In DbOsgDatabase::DbOsgDatabase(), this = %X\n", this );
   SL_ASSERT ( NULL != _groupStack.get() );
@@ -187,6 +191,8 @@ IUnknown *DbOsgDatabase::queryInterface ( unsigned long iid )
     return static_cast<IDataWrite *>(this);
   case IOutputAttribute::IID:
     return static_cast<IOutputAttribute *>(this);
+  case IOutputUnits::IID:
+    return static_cast<IOutputUnits *>(this);
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
@@ -260,6 +266,17 @@ bool DbOsgDatabase::setOutputAttribute ( const FormatAttribute &attribute )
   return true;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the output units.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbOsgDatabase::setUnits ( const std::string &units )
+{
+  _outputUnits = units;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -294,17 +311,38 @@ bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, assembly = %X, caller = %X\n", this, assembly, caller );
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groupStack->empty() );
-
+  
+  // Get the units interface from the caller
+  float scaleFactor = 1.0f;
+  if(!_scaled)
+  {
+    SlQueryPtr<IUnits> units ( caller );
+    if( !units.isNull() )
+    {
+      try
+      {
+        SL_PRINT3 ( "Performing units conversion from %s to %s.", units->getUnits(), _outputUnits );
+        scaleFactor = Units::Length::convert( units->getUnits(), _outputUnits, 1.0f );
+      }
+      catch(...)
+      {
+        WARNING ( "Failed to perform units conversion.", CadKit::UNSUPPORTED );
+        scaleFactor = 1.0f;
+      }
+    }
+    _scaled = true;
+  }
+  
   // Get the interface we need from the caller.
   SlQueryPtr<IAssemblyQueryFloat> query ( caller );
   if ( query.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Create a group (really a MatrixTransform).
-  SlRefPtr<osg::Group> mt = CadKit::createGroup ( assembly, query.getValue(), (osg::Group *) NULL );
+  SlRefPtr<osg::Group> mt = CadKit::createGroup ( assembly, query.getValue(), (osg::Group *) NULL, scaleFactor );
   if ( mt.isNull() )
     return ERROR ( "Failed to create osg::MatrixTransform for assembly.", CadKit::FAILED );
-
+  
   // Add this group to the scene.
   _groupStack->top()->addChild ( mt );
 

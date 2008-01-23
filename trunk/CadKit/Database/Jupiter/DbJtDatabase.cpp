@@ -171,6 +171,8 @@ IUnknown *DbJtDatabase::queryInterface ( unsigned long iid )
     return static_cast<IFileExtension *>(this);
   case IDataRead::IID:
     return static_cast<IDataRead *>(this);
+  case IUnits::IID:
+    return static_cast<IUnits *>(this);
   default:
     return DbBaseSource::queryInterface ( iid );
   }
@@ -210,6 +212,17 @@ bool DbJtDatabase::isAttributeSupported ( const FormatAttribute &attribute ) con
     SL_ASSERT ( 0 ); // What format is this?
     return false;
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the units.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DbJtDatabase::getUnits ( ) const
+{
+  return _units;
 }
 
 
@@ -708,6 +721,54 @@ bool DbJtDatabase::_startAssembly ( eaiAssembly *assembly )
 {
   SL_PRINT3 ( "In DbJtDatabase::_startAssembly(), assembly = %X, level = %d\n", assembly, _current->getLevel() );
   SL_ASSERT ( assembly );
+  
+  // set the model's units.
+  if(_units.empty())
+  {
+    JtkUnits units;
+    if(Jtk_OK == assembly->getUnits(units))
+    {
+      switch(units)
+      {
+      case JtkMICROMETERS:
+        _units = "Micrometers";
+        break;
+      case JtkMILLIMETERS:
+        _units = "Millimeters";
+        break;
+      case JtkCENTIMETERS:
+        _units = "Centimeters";
+        break;
+      case JtkDECIMETERS:
+        _units = "Decimeters";
+        break;
+      case JtkMETERS:
+        _units = "Meters";
+        break;
+      case JtkKILOMETERS:
+        _units = "Kilometers";
+        break;
+      case JtkINCHES:
+        _units = "Inches";
+        break;
+      case JtkFEET:
+        _units = "Feet";
+        break;
+      case JtkYARDS:
+        _units = "Yards";
+        break;
+      case JtkMILES:
+        _units = "Miles";
+        break;
+      case JtkMILS:
+        _units = "Mils";
+        break;
+      default:
+        _units = "Unknown";
+        break;
+      }
+    }
+  }
 
   if ( false == PROGRESS ( FORMAT ( "Assembly, level %2d, name: %s", _current->getLevel(), assembly->name() ) ) )
     return false;

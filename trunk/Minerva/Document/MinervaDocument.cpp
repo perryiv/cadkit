@@ -584,14 +584,10 @@ void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
   {
     _planet->addLayer ( layer );
     
-    Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
-    if( vector.valid() )
+    if ( _sceneManager.valid () && 0x0 != layer )
     {
-      if ( _sceneManager.valid () )
-      {
-        _sceneManager->addLayer( layer );
-        _sceneManager->dirty ( true );
-      }
+      _sceneManager->addLayer( layer );
+      _sceneManager->dirty ( true );
     }
   }
   catch ( const std::exception& e )

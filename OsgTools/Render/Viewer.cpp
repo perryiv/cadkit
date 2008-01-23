@@ -3378,6 +3378,7 @@ void Viewer::cycleMode()
     _currentMode = NAVIGATION;
     break;
   default:
+    _currentMode = NAVIGATION;
     break;
   }
   this->updateCursor();

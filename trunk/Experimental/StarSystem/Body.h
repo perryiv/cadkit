@@ -80,7 +80,7 @@ public:
   RasterLayer::RefPtr       elevationData();
 
   // Append elevation data.
-  void                      elevationAppend ( RasterLayer * );
+  void                      elevationAppend ( Usul::Interfaces::IRasterLayer * );
 
   // Set/get the job manager for this body.
   void                      jobManager ( Usul::Jobs::Manager * );
@@ -149,6 +149,8 @@ protected:
 
   // Use reference counting.
   virtual ~Body();
+  
+  Extents                   _buildExtents ( Usul::Interfaces::IUnknown* unknown );
 
 private:
 

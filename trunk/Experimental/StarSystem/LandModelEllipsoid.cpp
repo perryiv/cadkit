@@ -16,6 +16,11 @@
 #include "Usul/Trace/Trace.h"
 
 #include "ossim/base/ossimEllipsoid.h"
+#include "ossim/base/ossimGpt.h"
+#include "ossim/base/ossimLsrSpace.h"
+#include "ossim/base/ossimMatrix4x4.h"
+
+#include "osg/Matrixd"
 
 using namespace StarSystem;
 
@@ -200,4 +205,26 @@ void LandModelEllipsoid::deserialize ( const XmlTree::Node &node )
 
   // Set members from locals.
   _ellipsoid->setAB ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrixd LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
+{
+  osg::Vec3f p;
+  this->latLonHeightToXYZ ( lat, lon, elevation, p );
+  ossimLsrSpace lsrSpace (ossimGpt( lat, lon, elevation ), heading );
+  
+  ossimMatrix4x4 lsrMatrix( lsrSpace.lsrToEcefRotMatrix() );
+  NEWMAT::Matrix m ( lsrMatrix.getData() );
+
+  return osg::Matrixd( m[0][0], m[1][0], m[2][0], 0.0,
+                       m[0][1], m[1][1], m[2][1], 0.0,
+                       m[0][2], m[1][2], m[2][2], 0.0,
+                       p[0], p[1], p[2], 1.0);
 }

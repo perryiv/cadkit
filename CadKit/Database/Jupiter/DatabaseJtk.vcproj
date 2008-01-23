@@ -46,7 +46,7 @@
 				OutputFile="../../bin/CkDbJtd.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/win_32"
+				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/win_$(JTTK_DEV_PLATFORM)"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/CkDbJtd.pdb"
 				GenerateMapFile="FALSE"
@@ -116,7 +116,7 @@
 				OutputFile="../../bin/CkDbJt.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/win_32"
+				AdditionalLibraryDirectories="$(JTTK_DEV_PATH)/lib/win_$(JTTK_DEV_PLATFORM)"
 				ProgramDatabaseFile=".\Release/CkDbJt.pdb"
 				ImportLibrary=".\Release/CkDbJt.lib"
 				TargetMachine="1"/>

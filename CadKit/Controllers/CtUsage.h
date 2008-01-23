@@ -109,6 +109,11 @@ std::string getLong()
       Scale the geometry such that it fits inside the bounding box defined\n\
       by (xmin,ymin,zmin) and (xmax,ymax,zmax).\n\
   \n\
+  --output-units <units>, -ou\n\
+  \n\
+      Scale the geometry from its current system of units into the\n\
+      specified units.\n\
+  \n\
   --help, -h\n\
   \n\
       Print this extended help message.\n\

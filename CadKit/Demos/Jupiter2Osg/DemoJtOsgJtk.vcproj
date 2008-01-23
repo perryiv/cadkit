@@ -43,7 +43,7 @@
 				OutputFile="../../bin/jt2osg.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\Controllers\Release,..\..\Database\Jupiter\Release,..\..\Database\OpenSceneGraph\Release"
+				AdditionalLibraryDirectories="..\..\Controllers\Release;..\..\Database\Jupiter\Release;..\..\Database\OpenSceneGraph\Release;..\..\bin"
 				ProgramDatabaseFile=".\Release/jt2osg.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>

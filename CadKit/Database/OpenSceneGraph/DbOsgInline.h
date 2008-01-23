@@ -35,7 +35,7 @@ namespace CadKit
 ///////////////////////////////////////////////////////////////////////////////
 
 template <class HandleType, class InterfaceType, class GroupType> 
-inline SlRefPtr<osg::Group> createGroup ( HandleType entity, InterfaceType *query, GroupType *cloneMe )
+inline SlRefPtr<osg::Group> createGroup ( HandleType entity, InterfaceType *query, GroupType *cloneMe, float scaleFactor = 1.0f )
 {
   SL_ASSERT ( entity );
   SL_ASSERT ( query );
@@ -55,7 +55,11 @@ inline SlRefPtr<osg::Group> createGroup ( HandleType entity, InterfaceType *quer
   // Set the matrix if there is one.
   SlMatrix44f matrix;
   if ( true == query->getTransform ( entity, matrix, false ) )
+  {
+    if( scaleFactor != 1.0f)
+      matrix.scale( SlMatrix44f::Vec3( scaleFactor, scaleFactor, scaleFactor ) );
     group->setMatrix ( osg::Matrix ( matrix.getValue() ) );
+  }
 
   // Return the new group.
   return SlRefPtr<osg::Group> ( group );

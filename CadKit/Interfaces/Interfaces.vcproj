@@ -127,7 +127,8 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="Handles.h">
+			RelativePath="Handles.h"
+			FileType="2">
 			<FileConfiguration
 				Name="Debug|Win32"
 				ExcludedFromBuild="TRUE">
@@ -325,6 +326,9 @@
 			</FileConfiguration>
 		</File>
 		<File
+			RelativePath=".\IOutputUnits.h">
+		</File>
+		<File
 			RelativePath="IQueryArray.h">
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -404,6 +408,9 @@
 				<Tool
 					Name="VCCustomBuildTool"/>
 			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\IUnits.h">
 		</File>
 		<File
 			RelativePath="IUnknown.h">

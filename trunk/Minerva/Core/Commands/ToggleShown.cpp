@@ -72,11 +72,13 @@ void ToggleShown::_execute ()
   
   // Toggle shown.
   if ( _layer.valid () )
+  {
     _layer->showLayer ( !_layer->showLayer ()  );
 
-  // Dirty the scene.
-  if ( dirty.valid () )
-    dirty->dirtyScene ();
+    // Dirty the scene.
+    if ( dirty.valid () )
+      dirty->dirtyScene ( Usul::Interfaces::IUnknown::QueryPtr ( _layer ) );
+  }
 }
 
 

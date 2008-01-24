@@ -74,6 +74,7 @@ MinervaDocument::MinervaDocument() :
   BaseClass( "Minerva Document" ),
   _dirty ( false ),
   _layers(),
+  _layersMenu ( new MenuKit::Menu ( "Layers" ) ),
   _sceneManager ( new Minerva::Core::Scene::SceneManager ),
   _root ( new osg::Group ),
   _camera ( new osg::Camera ),
@@ -118,6 +119,8 @@ MinervaDocument::MinervaDocument() :
   _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
   _camera->setClearMask( GL_DEPTH_BUFFER_BIT );
   _camera->setViewMatrix( osg::Matrix::identity() );
+  _camera->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+  _camera->setCullingMode ( osg::CullSettings::NO_CULLING );
   
   osg::ref_ptr<osg::StateSet> ss ( _camera->getOrCreateStateSet() );
   
@@ -147,15 +150,14 @@ MinervaDocument::MinervaDocument() :
 #ifndef __APPLE__
 
   this->showLegend ( false );
-
     
   if( Usul::System::Host::name() == "viz4" )
   {
     this->showLegend ( true );
-    this->sceneManager()->legendWidth ( 0.75 );
-    this->sceneManager()->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
-    this->sceneManager()->legendHeightPerItem ( 60 );
-    this->sceneManager()->legendPosition( Minerva::Core::Scene::SceneManager::LEGEND_TOP_LEFT );
+    this->legendWidth ( 0.75 );
+    this->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
+    this->legendHeightPerItem ( 60 );
+    this->legendPosition( LEGEND_TOP_LEFT );
   }
 #endif
 #endif
@@ -511,6 +513,13 @@ void MinervaDocument::_connectToDistributedSession()
 
 void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 {
+  USUL_TRACE_SCOPE;
+
+  if ( 0x0 == layer )
+    return;
+
+  Guard guard ( this->mutex() );
+
   _planet->removeLayer ( layer );
   
   Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
@@ -528,7 +537,6 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
   if ( temporal.valid () )
   {
-    Guard guard ( this->mutex() );
     _datesDirty = true;
   }
 
@@ -547,48 +555,36 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 {
   USUL_TRACE_SCOPE;
 
-  this->_addLayer ( layer );
-
-  {
-    Guard guard ( this->mutex() );
-
-    // Add the layer to our list.
-    _layers.push_back( layer );
-  }
-
-  // If it's temporal, we need to find the min and max dates again.
-  Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
-  if ( temporal.valid () )
-  {
-    Guard guard ( this->mutex() );
-    _datesDirty = true;
-  }
-
-  // We are modified.
-  this->modified ( true );
-  this->dirty( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
-{
-  USUL_TRACE_SCOPE;
+  // Return now if the layer isn't valid.
+  if ( 0x0 == layer )
+    return;
 
   try
   {
+    Guard guard ( this->mutex() );
+
+    // Add the layer to the planet.
     _planet->addLayer ( layer );
-    
-    if ( _sceneManager.valid () && 0x0 != layer )
+
+    if ( _sceneManager.valid () )
     {
       _sceneManager->addLayer( layer );
       _sceneManager->dirty ( true );
     }
+
+    // Add the layer to our list.
+    _layers.push_back( layer );
+
+    // If it's temporal, we need to find the min and max dates again.
+    Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
+    if ( temporal.valid () )
+    {
+      _datesDirty = true;
+    }
+
+    // We are modified.
+    this->modified ( true );
+    this->dirty( true );  
   }
   catch ( const std::exception& e )
   {
@@ -598,6 +594,7 @@ void MinervaDocument::_addLayer ( Usul::Interfaces::ILayer * layer )
   {
     std::cout << "Error 4156147184: Unknown exception caught while trying to add a layer." << std::endl;
   }
+
 }
 
 
@@ -900,6 +897,8 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   {
     Minerva::Core::Visitors::StackPoints::RefPtr visitor ( new Minerva::Core::Visitors::StackPoints );
     this->accept ( *visitor );
+
+    this->_buildLayerMenu();
   }
 
   // Build the scene.
@@ -928,11 +927,12 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::dirtyScene ()
+void MinervaDocument::dirtyScene ( Usul::Interfaces::IUnknown* caller )
 {
   Guard guard ( this );
   _dirty = true;
   _sceneManager->dirty ( true );
+  _planet->dirty ( caller );
 }
 
 
@@ -1219,12 +1219,8 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::YEAR,  me ) ) );
   m->append ( type );
 
-  {
-    MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( "Layers", MenuKit::Menu::VERTICAL ) );
-    for ( Layers::iterator iter = _layers.begin(); iter != _layers.end (); ++ iter )
-      layerMenu->append ( new ToggleButton ( new Minerva::Core::Commands::ToggleShown ( *iter ) ) );
-    m->append ( layerMenu.get() );
-  }
+  this->_buildLayerMenu();
+  m->append ( _layersMenu.get() );
 
   // Time spans.
   this->_buildTimeSpanMenu();
@@ -1409,8 +1405,8 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     _camera->setViewport ( 0, 0, _width, _height );
     _camera->setProjectionMatrixAsOrtho ( 0, _width, 0, _height, -40.0, 40.0 );
     
-    // Build the legend.
-    this->_buildLegend( caller );
+    // Set the build legend flag.
+    buildLegend = true;
   }
   
   // Rebuild the scene if it's dirty.
@@ -1424,7 +1420,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     
   }
 
-  if ( buildLegend )
+  if ( buildLegend || this->dirty() )
   {
     _camera->removeChild ( 0, _camera->getNumChildren() );
     
@@ -1667,10 +1663,10 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
     
     // Must be called after rows are added to the legend.
     this->_setLegendPosition( legendWidth );
-    
-    // Build the legend.
-    _camera->addChild( _legend->buildScene() );
   }
+
+  // Build the legend.
+  _camera->addChild( _legend->buildScene() );
 }
 
 
@@ -1747,4 +1743,23 @@ void MinervaDocument::dirty( bool b )
 {
   Guard guard ( this );
   _dirty = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the layer menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_buildLayerMenu()
+{
+  Guard guard ( this );
+  _layersMenu->clear();
+
+  for ( Layers::iterator iter = _layers.begin(); iter != _layers.end (); ++ iter )
+  {
+    if ( 0x0 != (*iter).get() )
+      _layersMenu->append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( *iter ) ) );
+  }
 }

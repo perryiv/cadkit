@@ -24,7 +24,7 @@ using namespace Minerva::Core::Visitors;
 ///////////////////////////////////////////////////////////////////////////////
 
 StackPoints::StackPoints() : BaseClass(),
-  _counts()
+  _counts( LessVector ( EqualPredicate() ) )
 {
 }
 
@@ -54,7 +54,13 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
   
   if( geometryCenter.valid () )
   {
-    osg::Vec3 center ( geometryCenter->geometryCenter( srid ) );
+    osg::Vec3 p ( geometryCenter->geometryCenter( srid ) );
+
+    const unsigned int multiplier ( 100000 );
+    Usul::Math::Vec3ui center ( static_cast<unsigned int> ( p[0] * multiplier ),
+                                static_cast<unsigned int> ( p[1] * multiplier ),
+                                static_cast<unsigned int> ( p[2] * multiplier ) );
+
     Counts::iterator iter = _counts.find ( center );
     if ( _counts.end() == iter )
     {

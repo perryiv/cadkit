@@ -332,7 +332,7 @@ void RasterPolygonLayer::_initGeometries()
     _burnValues.push_back ( color[0] * 255 );
     _burnValues.push_back ( color[1] * 255 );
     _burnValues.push_back ( color[2] * 255 );
-    _burnValues.push_back ( 200 );
+    _burnValues.push_back ( 255 );
     
     // Add the geometry.
     //OGRGeometry *geometry ( feature->StealGeometry() );
@@ -374,7 +374,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extent
   // Make the directory and base file name.
   const std::string baseDir ( this->_directory ( width, height, level ) );
   Usul::File::make ( baseDir );
-  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), ".png" ) );  
+  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), ".jpg" ) );  
   
   // Initialize.
   ImagePtr image ( 0x0 );
@@ -431,10 +431,11 @@ namespace Detail
               std::vector<unsigned char> bytes ( width * height, 0 );
               if ( CE_None == band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, 0, 0 ) )
               {
-                if ( width == image->s() && height == image->t() )
+                unsigned char* data ( image->data() );
+                const int size ( width * height );
+
+                if ( width == image->s() && height == image->t() && 0x0 != data && size == bytes.size() )
                 {
-                  unsigned char* data ( image->data() );
-                  const int size ( width * height );
                   const int offset ( i - 1 );
                   for ( int i = 0; i < size; ++i )
                   {
@@ -454,20 +455,50 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Scoped close.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct ScopedDataset
+  {
+    ScopedDataset ( GDALDataset * data ) : _data ( data )
+    {
+    }
+    ~ScopedDataset ()
+    {
+      if ( 0x0 != _data )
+        ::GDALClose ( _data );
+    }
+    
+  private:
+    GDALDataset *_data;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Rasterize.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
 {
+  // How many channels do we want.
+  const unsigned int channels ( 4 );
+
+  std::vector<char> bytes ( width * height * channels, 0 );
+    
   // Typedefs.
   typedef std::vector<int> Bands;
   
-  ImagePtr image ( this->_createBlankImage( width, height ) );
+  ImagePtr image ( 0x0 );
+
+  std::cout << "Burning " << filename << std::endl << std::endl;
   
-  // How many channels do we want.
-  const unsigned int channels ( 4 );
-  
+#if 1  
   Guard guard ( this );
   
   // Make a geotiff.
@@ -481,21 +512,25 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
     return 0x0;
   
 #if 1
-  std::string file ( Usul::Strings::format ( Usul::File::directory ( filename, true ), Usul::File::base ( filename ), ".tif" ) );
+  Usul::File::Temp temp;
+  std::string file ( Usul::Strings::format ( Usul::File::directory ( temp.name(), true ), Usul::File::base ( temp.name() ), ".tif" ) );
   Usul::Scope::RemoveFile remove ( file );
 #else
   std::string file ( filename );
 #endif
+
+  // Make sure.
+  Usul::File::remove ( file );
   
   // Create the file.
   GDALDataset *data ( driver->Create( file.c_str(), width, height, channels, GDT_Byte, 0x0 ) );
   
   if ( 0x0 == data )
     return 0x0;
-  
-  std::vector<char> bytes ( width * height * channels, 0 );
-  data->RasterIO ( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 );
-  
+
+  // Make sure the dataset is closed.
+  Detail::ScopedDataset scoped ( data );
+
   // Get the extents lower left and upper right.
   Extents::Vertex ll ( extents.minimum() );
   Extents::Vertex ur ( extents.maximum() );
@@ -528,9 +563,11 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   geoTransform[4] = 0;              // rotation, 0 if image is "north up"
   geoTransform[5] = -yResolution;   // n-s pixel resolution
   
-  data->SetGeoTransform ( &geoTransform[0] );
+  if ( CE_None != data->SetGeoTransform( &geoTransform[0] ) )
+    return 0x0;
   
-  data->SetProjection ( Usul::Threads::Safe::get ( this->mutex(), _projectionText ).c_str() );
+  if ( CE_None != data->SetProjection( Usul::Threads::Safe::get ( this->mutex(), _projectionText ).c_str() ) )
+    return 0x0;
   
   // Bands to burn.
   Bands bands;
@@ -541,19 +578,32 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
     // GDAL band index starts at 1.
     bands.push_back ( i + 1 );
   }
+
+  if ( CE_None != data->RasterIO( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 ) )
+    return 0x0;
     
   // Set an error handler.
   Detail::PushPopErrorHandler handler;
-  
+
+  std::cout << "Burning raster..." << std::endl;
+
   // Burn the raster.
   if ( CE_None == ::GDALRasterizeGeometries ( 
     data, bands.size(), &bands[0], _geometries.size(), (void**) &_geometries[0], 
     0x0, 0x0, &_burnValues[0], 0x0, GDALTermProgress, 0x0 ) )
   {
+    std::cout << "Converting to osg." << std::endl;
+    image = this->_createBlankImage( width, height );
     Detail::convert ( image.get(), data );
+    std::cout << "Done converting to osg." << std::endl;
   }
-  
-  GDALClose ( data ); data = 0x0;
+
+  std::cout << "Done burning raster." << std::endl;
+
+  data = 0x0;
+
+  std::cout << "File: " << file << " closed." << std::endl;
+#endif
 
   return image;
 }

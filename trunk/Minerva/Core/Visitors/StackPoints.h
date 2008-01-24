@@ -14,6 +14,9 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "Usul/Math/Vector3.h"
+#include "Usul/Predicates/LessVector.h"
+
 #include <map>
 
 namespace Minerva {
@@ -37,7 +40,9 @@ namespace Minerva {
         virtual ~StackPoints ();
         
       private:
-        typedef std::map< osg::Vec3, unsigned int > Counts;
+        typedef std::equal_to<unsigned int> EqualPredicate;
+        typedef Usul::Predicates::LessVector < EqualPredicate, 3 > LessVector;
+        typedef std::map< Usul::Math::Vec3ui, unsigned int, LessVector > Counts;
         Counts _counts;
       };
       

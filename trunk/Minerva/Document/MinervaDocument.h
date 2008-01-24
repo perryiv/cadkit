@@ -223,9 +223,6 @@ protected:
   /// Distributed functions.
   void                                     _connectToDistributedSession();
 
-  /// Add a layer.
-  void                                     _addLayer ( Usul::Interfaces::ILayer * layer );
-
   /// Execute a command.
   void                                     _executeCommand ( Usul::Interfaces::ICommand* command );
 
@@ -238,8 +235,9 @@ protected:
   
   void                                     _setLegendPosition ( unsigned int legendWidth );
 
-  /// Build time span menu.
+  /// Build menus.
   void                                     _buildTimeSpanMenu();
+  void                                     _buildLayerMenu();
 
   /// Find first and last date.
   void                                     _findFirstLastDate();
@@ -254,7 +252,7 @@ protected:
   virtual void                             removeLayer ( Usul::Interfaces::ILayer * layer );
 
   /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
-  virtual void                             dirtyScene ();
+  virtual void                             dirtyScene ( Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Get the number of layers ( Usul::Interfaces::ILayerList ).
   virtual unsigned int                     numberLayers () const;
@@ -280,6 +278,8 @@ private:
   bool _dirty;
 
   Layers _layers;
+  MenuKit::Menu::RefPtr _layersMenu;
+
   Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
   
   osg::ref_ptr < osg::Group >      _root;

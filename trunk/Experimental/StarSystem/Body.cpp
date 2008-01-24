@@ -224,9 +224,7 @@ void Body::rasterAppend ( Usul::Interfaces::IRasterLayer * layer )
     Extents e ( this->_buildExtents( layer ) );
 
     // Dirty the tiles.
-    DirtyTiles dirty ( true, Tile::TEXTURE, e );
-    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-    _transform->accept ( *visitor );
+    this->dirtyTextures ( e );
   }
 }
 
@@ -251,10 +249,42 @@ void Body::rasterRemove ( Usul::Interfaces::IRasterLayer *layer )
     Extents e ( this->_buildExtents( layer ) );
     
     // Dirty the tiles.
-    DirtyTiles dirty ( true, Tile::TEXTURE, e );
-    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-    _transform->accept ( *visitor );
+    this->dirtyTextures ( e );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Raster has chagned.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::rasterChanged (  Usul::Interfaces::IRasterLayer *layer )
+{
+  if ( 0x0 != layer )
+  {
+    // Get the extents.
+    Extents e ( this->_buildExtents( layer ) );
+    
+    // Dirty the tiles.
+    this->dirtyTextures ( e );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  irty textures.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::dirtyTextures ( const Extents& e )
+{
+  // Dirty the tiles.
+  DirtyTiles dirty ( true, Tile::TEXTURE /*, e*/ );
+  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+  _transform->accept ( *visitor );
 }
 
 

@@ -55,6 +55,9 @@ public:
   /// Convert to planet coordinates.
   virtual void                                    convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
   virtual void                                    convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
+
+  /// Dirty.
+  virtual void                                    dirty ( Usul::Interfaces::IUnknown *caller );
   
   // Get the elevation at a lat, lon (IElevationDatabase).
   virtual double                                  elevationAtLatLong ( double lat, double lon ) const;

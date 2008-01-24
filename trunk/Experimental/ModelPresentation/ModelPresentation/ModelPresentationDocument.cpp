@@ -63,6 +63,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
 
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationDocument, ModelPresentationDocument::BaseClass );
@@ -774,17 +775,35 @@ void ModelPresentationDocument::displayViewMatrix()
 
   if( true == view.valid() )
   {
-    //Usul::Math::Matrix44f m;
-    //OsgTools::Convert::matrix ( view->getViewMatrix(), m );
     
     osg::Matrixf matrix = view->getViewMatrix();
 
     std::ostringstream out;
-    //out << Usul::System::Host::name() << "_home_position.txt";
-    //std::ofstream file ( out.str().c_str() );
+    
     std::cout << "Current view matrix: " << std::endl;
     Usul::Print::matrix ( "", matrix.ptr(), out, 20 );
     std::cout << out.str().c_str() << std::endl;
+    
+    std::ostringstream csvMatrix;
+    Usul::Math::Matrix44f m;
+    OsgTools::Convert::matrix ( matrix, m );
+    csvMatrix << std::setprecision ( 4 ) << std::fixed << m[0] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[4] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[8]  << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[12] << ","
+              << std::setprecision ( 4 ) << std::fixed << m[1] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[5] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[9]  << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[13] << ","
+              << std::setprecision ( 4 ) << std::fixed << m[2] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[6] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[10] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[14] << ","
+              << std::setprecision ( 4 ) << std::fixed << m[3] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[7] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[11] << "," 
+              << std::setprecision ( 4 ) << std::fixed << m[15] << std::endl;
+    std::cout << "\n" << csvMatrix.str().c_str() << std::endl; 
   }
 }
 

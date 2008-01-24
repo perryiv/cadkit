@@ -7,10 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ClipPlane.h"
+#include "OsgTools/Widgets/ClipPlane.h"
 
-#include "OsgTools/Draggers/Translate1.h"
-#include "OsgTools/Draggers/Translate2.h"
 #include "OsgTools/Utilities/Intersect.h"
 
 #include "osg/Geode"

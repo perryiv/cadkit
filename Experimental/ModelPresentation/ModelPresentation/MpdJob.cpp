@@ -34,19 +34,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MpdJob::MpdJob ( Usul::Documents::Document* document, 
-                 Usul::Interfaces::IUnknown *caller, 
-                 unsigned int index,
-                 const std::string &lockfile,
+MpdJob::MpdJob ( Usul::Interfaces::IUnknown *caller,
                  const std::string &workingDir,
-                 MpdDefinitions::MpdDynamicSets &dynamicSets ) :
+                 const std::string &searchDir, 
+                 const std::string &prefix, 
+                 const std::string &extension,
+                 Files current ) :
   BaseClass ( caller ),
-  _document ( document ),
-  _caller( caller ),
-  _index ( index ),
-  _lockfile( lockfile ),
+  _root( 0 ),
   _workingDir( workingDir ),
-  _dynamicSets( dynamicSets )
+  _searchDir( searchDir ),
+  _prefix( prefix ),
+  _extension( extension ),
+  _currentFiles( current ),
+  _foundNewData( false )
 {
   USUL_TRACE_SCOPE;
 }
@@ -63,8 +64,6 @@ MpdJob::~MpdJob()
   USUL_TRACE_SCOPE;
 
   // clean up circular references
-  _document = 0x0;
-  _caller = 0x0;
 }
 
 
@@ -111,9 +110,9 @@ void MpdJob::_started ()
   nav->findFiles( _index, _caller );
   //nav->validateDynamicSets();
 #else
-  this->_findFiles( _index, _caller );
+  this->_findFiles();
 #endif
-  dataSync->resetData( hostname, _lockfile );
+//  dataSync->resetData( hostname, _lockfile );
 
 }
 
@@ -124,18 +123,16 @@ void MpdJob::_started ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MpdJob::_findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller )
+void MpdJob::_findFiles()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );  
-   // Get all the files in the directory "dir"
-  //std::cout << "Checking " << dir << " for files with extension " << ext << std::endl;
-  std::string dir = _dynamicSets.at( index ).directory;
-  std::string ext = _dynamicSets.at( index ).extension;
-  std::string prefix = _dynamicSets.at( index ).prefix;
+  //Guard guard ( this ); 
+
+  MpdDefinitions::MpdDynamicSetHeader header = this->getHeader();
+
   Files files;
 
-  Usul::File::find( dir, ext, files );
+  Usul::File::find( header.directory, header.extension, files );
   //std::cout << files.size() << " file(s) found" << std::endl;
   // If we don't find any files matching our search criteria ...
   if( 0 == files.size() )
@@ -143,12 +140,11 @@ void MpdJob::_findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller 
     return;
   }
   
-
   // Make sure we have some files and that they are different from our last look
   // at the directory.
   unsigned int numFilesInDirectory = 0;
 
-  if( files.size() > 0 && files.size() != _dynamicSets.at( index ).groups.size() )
+  if( files.size() > 0 && files.size() != header.modelNames.size() )
   {
     // get the number of files in the directory
     numFilesInDirectory = files.size();
@@ -157,13 +153,13 @@ void MpdJob::_findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller 
     std::string slash ( Usul::File::slash() );
 
     #ifdef _MSC_VER
-      std::string search ( dir + slash + prefix );
+    std::string search ( header.directory + slash + header.prefix );
     #else
-      std::string search ( prefix );
+      std::string search ( header.prefix );
     #endif
 
     // Get all files with the prefix name.
-    std::cout << "Checking directory: " << dir + slash << " for files with prefix: " << prefix << std::endl;
+    //std::cout << "Checking directory: " << header.directory + slash << " for files with prefix: " << header.prefix << std::endl;
 
     Files::iterator end ( std::remove_if 
                                  ( files.begin(), files.end(),  
@@ -177,18 +173,17 @@ void MpdJob::_findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller 
     std::sort ( files.begin(), files.end() );
     if ( false == files.empty() )
     {
-      
 
-       this->_parseNewFiles( files, index, caller );
-       if( files.size() > _dynamicSets.at( index ).modelNames.size() )
+       this->_parseNewFiles( files, 0x0, 0x0 );
+       if( files.size() > header.modelNames.size() )
        {
-        _dynamicSets.at( index ).modelNames = files;
+         header.modelNames = files;
        }
 
-       std::cout << _dynamicSets.at( index ).groups.size() << " files loaded for dynamic set: " << _dynamicSets.at( index ).name << std::endl;
+       //std::cout << _currentFiles.size() << " files loaded for dynamic set: " << _prefix << std::endl;
     }
     
-
+    this->setHeader( header );
   }
 }
 
@@ -199,13 +194,14 @@ void MpdJob::_findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MpdJob::_parseNewFiles( Files files, unsigned int index, Usul::Interfaces::IUnknown *caller )
+void MpdJob::_parseNewFiles( Files files, Usul::Interfaces::IUnknown *caller, IUnknown *progress )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this ); 
+ // Guard guard ( this ); 
 
+  MpdDefinitions::MpdDynamicSetHeader header = this->getHeader();
   // Find all the files that are new
-  Files b = _dynamicSets.at( index ).modelNames;
+  Files b = header.modelNames;
   std::sort ( files.begin(), files.end() );
   std::sort ( b.begin(), b.end() );
   Files c;
@@ -217,10 +213,10 @@ void MpdJob::_parseNewFiles( Files files, unsigned int index, Usul::Interfaces::
   std::cout << Usul::Strings::format( "Found ", c.size(), " new files.  Loading new files." ) << std::endl;
   for( Files::const_iterator iter = c.begin(); iter < c.end(); ++iter )
   {
-    this->_loadNewDynamicFiles( *iter, index, caller );
+    this->_loadNewDynamicFiles( *iter, caller, progress );
   }
-  std::cout << "All new files loaded!" << std::endl;
-
+  //std::cout << "All new files loaded!" << std::endl;
+  this->foundNewData( true );
 }
 
 
@@ -230,14 +226,10 @@ void MpdJob::_parseNewFiles( Files files, unsigned int index, Usul::Interfaces::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MpdJob::_loadNewDynamicFiles( std::string filename, unsigned int index, Usul::Interfaces::IUnknown *caller )
+void MpdJob::_loadNewDynamicFiles( std::string filename, Usul::Interfaces::IUnknown *caller, IUnknown *progress )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this ); 
-
-  MpdDefinitions::MpdDynamicGroup group;
-  group.filename = filename;
-  group.valid = false;
+ // Guard guard ( this ); 
   osg::ref_ptr< osg::Group > node = new osg::Group;
 
   // Get needed interfaces.
@@ -252,28 +244,17 @@ void MpdJob::_loadNewDynamicFiles( std::string filename, unsigned int index, Usu
   dataSync->setDataFlag( hostname, lockfile );
   
   // load the new model
-  node->addChild( this->_loadFile( filename, caller, 0x0 ) );
-  _dynamicSets.at( index ).groups.push_back( group );
-  _dynamicSets.at( index ).models->addChild( node.get(), false );
-  _dynamicSets.at( index ).endTime = _dynamicSets.at( index ).groups.size() - 1;
-//  _globalTimelineEnd = Usul::Math::maximum( _globalTimelineEnd, _dynamicSets.at( index ).endTime - 1 );
+  node->addChild( this->_loadFile( filename, caller, progress ) );
 
+  // guard and add to the root
+  {
+    Guard guard ( this ); 
+    _root.push_back( node );
+  }
+ 
   // unlock here
   dataSync->resetData( hostname, lockfile );
 
-  //build the scene
-  Usul::Interfaces::IBuildScene::QueryPtr build ( _document );
-  if( true == build.valid() )
-  {
-    Usul::Interfaces::IBuildScene::Options opt;
-    build->buildScene( opt, _caller );
-  }
-
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( _document );
-  if( true == nav.valid() )
-  {
-    nav->updateGlobalEndtime();
-  }
   
 
 }
@@ -288,9 +269,9 @@ void MpdJob::_loadNewDynamicFiles( std::string filename, unsigned int index, Usu
 osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUnknown *progress )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  //Guard guard ( this->mutex() );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
-  std::cout << filename << " single file loading..." << std::endl;
+  //std::cout << filename << " single file loading..." << std::endl;
 
   try
   {
@@ -371,11 +352,91 @@ void MpdJob::_openDocument ( const std::string &file, Usul::Documents::Document 
 #else
     document->open ( file, caller );
 #endif
-  std::cout << "Done" << std::endl;
+    std::cout << "Done loading file: " << file << std::endl;
   
 	
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the stored data for this job
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MpdDefinitions::Groups MpdJob::getData()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _root;
+}
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the header information for this job
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MpdDefinitions::MpdDynamicSetHeader MpdJob::getHeader()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  MpdDefinitions::MpdDynamicSetHeader header;
+  header.directory = _searchDir;
+  header.extension = _extension;
+  header.prefix = _prefix;
+  header.modelNames = _currentFiles;
+
+  return header;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the header information for this job
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MpdJob::setHeader( MpdDefinitions::MpdDynamicSetHeader h )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _searchDir = h.directory;
+  _extension = h.extension;
+  _prefix = h.prefix;
+  _currentFiles = h.modelNames;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the state of new data discovery
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MpdJob::foundNewData()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return _foundNewData;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state of new data discovery
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MpdJob::foundNewData( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _foundNewData = state;
+}

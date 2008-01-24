@@ -17,7 +17,8 @@
 #ifndef _MODEL_PRESENTATION_DOCUMENT_H_
 #define _MODEL_PRESENTATION_DOCUMENT_H_
 
-#include "MpdDefinitions.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdJob.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdDefinitions.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IAnimatePath.h"
@@ -75,6 +76,8 @@ public:
   typedef std::vector< std::string > LocationNames;
   typedef std::vector< MpdDefinitions::MpdTimeSet > MpdTimeSets;
   typedef MpdDefinitions::MpdDynamicSets MpdDynamicSets;
+
+  typedef std::vector< MpdJob::RefPtr > MpdJobs;
   
 
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
@@ -136,10 +139,7 @@ public:
   void              validateDynamicSets();
   void              updateGlobalEndtime();
 
-  void              findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller );
-
-
-
+ 
 protected:
 
   /// Do not copy.
@@ -161,9 +161,11 @@ protected:
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress );
   MatrixVec                   _getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const;
-  void                        _loadNewDynamicFiles( std::string filename, unsigned int index, Usul::Interfaces::IUnknown *caller );
-  void                        _parseNewFiles( Files files, unsigned int index, Usul::Interfaces::IUnknown *caller );
   bool                        _dynamic();
+
+  std::string                 _getWorkingDir();
+  void                        _processJobData( unsigned int index );
+  MpdJob*                     _getJobAtIndex( unsigned int index );
   
 
 
@@ -209,7 +211,8 @@ private:
   std::string                 _workingDir;
   unsigned int                _globalTimelineEnd;
 
-  JobManager                  _jobManager;
+  
+  MpdJobs                     _jobs;
   
 };
 

@@ -41,37 +41,42 @@ class MpdJob : public Usul::Jobs::Job
       typedef Usul::Interfaces::IUnknown IUnknown;
       typedef Usul::Documents::Manager DocManager;
       typedef DocManager::DocumentInfo Info;
+      
       typedef MpdDefinitions::MpdDynamicSets MpdDynamicSets;
 
       typedef std::vector< MpdDefinitions::MpdDynamicSet > MpdDynamicSets;
 
-      MpdJob ( Usul::Documents::Document* document, 
-               Usul::Interfaces::IUnknown *caller, 
-               unsigned int index,
-               const std::string &lockfile,
+      MpdJob ( Usul::Interfaces::IUnknown *caller,
                const std::string &workingDir,
-               MpdDefinitions::MpdDynamicSets &dynamicSets );
-      
-      unsigned int                        index(){ return _index; };
+               const std::string &searchDir, 
+               const std::string &prefix, 
+               const std::string &extension,
+               Files current );
+
+      MpdDefinitions::Groups              getData();
+      MpdDefinitions::MpdDynamicSetHeader getHeader();
+      void                                setHeader( MpdDefinitions::MpdDynamicSetHeader h );
+      bool                                foundNewData();
+      void                                foundNewData( bool state );
 
     protected:
       ~MpdJob();
       virtual void                        _started ();
-      void                                _findFiles( unsigned int index, Usul::Interfaces::IUnknown *caller );
-      void                                _loadNewDynamicFiles( std::string filename, unsigned int index, IUnknown *caller );
-      void                                _parseNewFiles( Files files, unsigned int index, IUnknown *caller );
+      void                                _findFiles();
+      void                                _loadNewDynamicFiles( std::string filename, IUnknown *caller, IUnknown *progress );
+      void                                _parseNewFiles( Files files, IUnknown *caller, IUnknown *progress );
       osg::Node*                          _loadFile( const std::string& filename, IUnknown *caller, IUnknown *progress );
 
       void                                _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, IUnknown *progress );
         
     private:
-      DocumentPtr                         _document;
-      IUnknown::RefPtr                    _caller;
-      unsigned int                        _index;
-      std::string                         _lockfile;   
-
-      MpdDynamicSets&                     _dynamicSets;
+      MpdDefinitions::Groups              _root;
       std::string                         _workingDir;
+      std::string                         _searchDir;
+      std::string                         _prefix;
+      std::string                         _extension;
+      Files                               _currentFiles;
+      bool                                _foundNewData;
   };
 
 

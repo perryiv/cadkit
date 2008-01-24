@@ -270,6 +270,9 @@ protected:
   virtual void                             convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
   virtual void                             convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
 
+  // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+  virtual osg::Matrixd                     planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
+  
   // Get the elevation at a lat, lon (IElevationDatabase).
   virtual double                           elevationAtLatLong ( double lat, double lon ) const;
   

@@ -349,6 +349,21 @@ void Body::xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrixd Body::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  return ( _landModel.valid() ? _landModel->planetRotationMatrix ( lat, lon, elevation, heading ) : osg::Matrixd() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the job manager for this body.
 //
 ///////////////////////////////////////////////////////////////////////////////

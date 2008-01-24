@@ -27,8 +27,7 @@
 
 class ProjectionManagerComponent : public Usul::Base::Referenced,
                                    public Usul::Interfaces::IPlugin,
-                                   public Usul::Interfaces::IProjectCoordinates,
-                                   public Usul::Interfaces::IPlanetCoordinates
+                                   public Usul::Interfaces::IProjectCoordinates
 {
 public:
 
@@ -52,9 +51,6 @@ protected:
 
   /// Project to lat/lon with elevation using given spatial reference id.
   virtual void                  projectToSpherical ( const Usul::Math::Vec3d& orginal, unsigned int srid, Usul::Math::Vec3d& latLonPoint ) const;
-
-  virtual void                  convertToPlanet   ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
-  virtual void                  convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
 
   // Do not copy.
   ProjectionManagerComponent ( const ProjectionManagerComponent & );

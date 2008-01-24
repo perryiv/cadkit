@@ -17,10 +17,16 @@
 #include "Helios/Qt/Core/Application.h"
 
 #include "Usul/Exceptions/Canceled.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/LastError.h"
 #include "Usul/Trace/Trace.h"
 
 #include <iostream>
-#include <sstream>
+
+#ifdef _MSC_VER
+#include "windows.h"
+#include "excpt.h"
+#endif
 
 using namespace CadKit::Helios::Core;
 
@@ -51,11 +57,64 @@ Application::~Application()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to handle Windows structured exception.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef _MSC_VER
+
+namespace Helper
+{
+  int handleStructuredException ( DWORD code )
+  {
+    const std::string message ( Usul::System::LastError::message ( code ) );
+    std::cout << Usul::Strings::format ( 
+      "Error 2917508413: structured exception ", code, " generated when processing event.", 
+      ( ( false == message.empty() ) ? message : "" ) ) << std::endl;
+    return EXCEPTION_EXECUTE_HANDLER;
+  }
+}
+
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Notification of every event.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool Application::notify ( QObject *object, QEvent *event )
+{
+  USUL_TRACE_SCOPE;
+
+  #ifdef _MSC_VER
+
+    __try 
+    {
+      return this->_notify ( object, event );
+    }
+
+    __except ( Helper::handleStructuredException ( ::GetExceptionCode() ) )
+    {
+      return false;
+    }
+
+  #else
+
+    return this->_notify ( object, event );
+
+  #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notification of every event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::_notify ( QObject *object, QEvent *event )
 {
   USUL_TRACE_SCOPE;
   try
@@ -70,15 +129,11 @@ bool Application::notify ( QObject *object, QEvent *event )
   }
   catch ( const std::exception &e )
   {
-    std::ostringstream out;
-    out << "Error 8033290760: " << e.what() << '\n';
-    std::cout << out.str() << std::flush;
+    std::cout << Usul::Strings::format ( "Error 8033290760: ", e.what() ) << std::endl;
   }
   catch ( ... )
   {
-    std::ostringstream out;
-    out << "Error 9522173940: exception generated when processing event\n";
-    std::cout << out.str() << std::flush;
+    std::cout << Usul::Strings::format ( "Error 9522173940: exception generated when processing event" ) << std::endl;
   }
   return false;
 }

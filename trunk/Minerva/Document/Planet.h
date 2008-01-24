@@ -59,6 +59,9 @@ public:
   /// Dirty.
   virtual void                                    dirty ( Usul::Interfaces::IUnknown *caller );
   
+  // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+  virtual osg::Matrixd                            planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
+  
   // Get the elevation at a lat, lon (IElevationDatabase).
   virtual double                                  elevationAtLatLong ( double lat, double lon ) const;
 

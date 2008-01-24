@@ -15,6 +15,8 @@
 
 #include "Usul/Math/Vector3.h"
 
+namespace osg { class Matrixd; }
+
 namespace Usul {
 namespace Interfaces {
 
@@ -29,6 +31,9 @@ struct IPlanetCoordinates : public Usul::Interfaces::IUnknown
 
   virtual void convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const = 0;
   virtual void convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const = 0;
+  
+  // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+  virtual osg::Matrixd planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const = 0;
 
 }; // struct IPlanetCoordinates
 

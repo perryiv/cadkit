@@ -67,8 +67,6 @@ Usul::Interfaces::IUnknown *ProjectionManagerComponent::queryInterface ( unsigne
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   case Usul::Interfaces::IProjectCoordinates::IID:
     return static_cast < Usul::Interfaces::IProjectCoordinates* > ( this );
-  case Usul::Interfaces::IPlanetCoordinates::IID:
-    return static_cast < Usul::Interfaces::IPlanetCoordinates* > ( this );
   default:
     return 0x0;
   }
@@ -142,49 +140,4 @@ void ProjectionManagerComponent::projectToSpherical ( const Usul::Math::Vec3d& o
 
   /// Add any height offset.
   latLonPoint[2] += orginal[2];
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Project to planet coordinates.  Values are normalized.
-//  Note: Longitude is x and latidute is y.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ProjectionManagerComponent::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
-{
-  ossimEcefPoint ecef;
-  ossimGpt dummy;
-  ecef = dummy;
-
-  ossimGpt gpt ( orginal[1], orginal[0], orginal[2] );
-
-  // Transform to ossimPlanet coordinates
-  ecef = gpt;
-  planetPoint[0] = ecef.x();
-  planetPoint[1] = ecef.y();
-  planetPoint[2] = ecef.z();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert from planet coordinats to lat/long.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ProjectionManagerComponent::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
-{
-  ossimEcefPoint ecef;
-  ossimGpt dummy;
-  ecef = dummy;
-
-  ecef = ossimEcefPoint( planetPoint [ 0 ], planetPoint [ 1 ], planetPoint [ 2 ] );
-
-  ossimGpt gpt ( ecef );
-
-  latLonPoint [ 0 ] = gpt.lon;
-  latLonPoint [ 1 ] = gpt.lat;
-  latLonPoint [ 2 ] = gpt.hgt;
 }

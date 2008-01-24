@@ -93,6 +93,9 @@ public:
   void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
   void                      xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon, double& elevation ) const;
 
+  // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+  osg::Matrixd              planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
+  
   // Set/get the maximum level.
   void                      maxLevel ( unsigned int level );
   unsigned int              maxLevel() const;

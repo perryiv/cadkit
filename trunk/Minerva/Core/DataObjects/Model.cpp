@@ -79,9 +79,9 @@ osg::Node* Model::_preBuildScene( Usul::Interfaces::IUnknown* caller )
   osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], location[2], heading ) : osg::Matrixd() );
   osg::Matrix S ( osg::Matrix::scale ( this->scale() * 0.0254 ) );
   
-  mt->setMatrix (  S * R * 
+  mt->setMatrix ( S * 
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
-                  osg::Matrix::rotate (osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) );
+                  osg::Matrix::rotate (osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
   
   mt->addChild ( this->model() );
   return mt.release();

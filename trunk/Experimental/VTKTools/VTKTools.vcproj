@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: VTKTools"
+	Name="lib: CadKit VTKTools"
 	ProjectGUID="{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}"
 	RootNamespace="VTKTools"
 	>
@@ -85,7 +85,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/VTKToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(VTK_LIB_DIR_DEBUG);$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/VTKToolsd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/VTKToolsd.lib"
@@ -184,7 +184,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/VTKTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(VTK_LIB_DIR);$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(VTK_LIB_DIR_RELEASE);$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/VTKTools.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/VTKTools.lib"
 			/>

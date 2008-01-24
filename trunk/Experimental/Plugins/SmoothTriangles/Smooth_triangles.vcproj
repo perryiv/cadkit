@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
-	Name="plug: SmoothTriangles"
-	ProjectGUID="{2600335C-46F5-4500-A916-4C15F907D5E1}"
-	SccProjectName=""
-	SccLocalPath="">
+	Version="8.00"
+	Name="plug: Smooth Triangles"
+	ProjectGUID="{39E1B7A6-6FD9-4999-9198-647CB5781300}"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
@@ -17,20 +19,40 @@
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/SmoothTriangles.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR);$(CADKIT_INC_DIR)/Experimental"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/Experimental&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_SMOOTH_TRIANGLES"
-				ExceptionHandling="TRUE"
+				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				DisableLanguageExtensions="FALSE"
-				ForceConformanceInForLoopScope="TRUE"
-				RuntimeTypeInfo="TRUE"
+				DisableLanguageExtensions="false"
+				ForceConformanceInForLoopScope="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
@@ -38,50 +60,59 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
+				WarnAsError="true"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib  vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
-				OutputFile="../../../bin/SmoothTriangles.plugd"
-				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR)"
-				ModuleDefinitionFile="Export.def"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug\SmoothTrianglesd.pdb"
-				ImportLibrary=".\Debug\SmoothTrianglesd.lib"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/SmoothTriangles.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="osgd.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/SmoothTriangles.plugd"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR_DEBUG)"
+				ModuleDefinitionFile="Export.def"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile=".\Debug\SmoothTrianglesd.pdb"
+				ImportLibrary=".\Debug\SmoothTrianglesd.lib"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -89,19 +120,39 @@
 			IntermediateDirectory=".\Release"
 			ConfigurationType="2"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/SmoothTriangles.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(VTK_INC_DIR);$(CADKIT_INC_DIR)/Experimental"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/Experimental&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VTK_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SMOOTH_TRIANGLES"
-				StringPooling="TRUE"
-				ExceptionHandling="TRUE"
+				StringPooling="true"
+				ExceptionHandling="1"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
@@ -109,48 +160,57 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				WarnAsError="TRUE"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				WarnAsError="true"
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib  vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
-				OutputFile="../../../bin/SmoothTriangles.plug"
-				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR)"
-				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\SmoothTriangles.pdb"
-				ImportLibrary=".\Release\SmoothTriangles.lib"/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/SmoothTriangles.tlb"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Culture="1033"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="osg.lib vtkFiltering.lib vtkCommon.lib vtkGraphics.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/SmoothTriangles.plug"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(VTK_LIB_DIR_RELEASE)"
+				ModuleDefinitionFile="Export.def"
+				ProgramDatabaseFile=".\Release\SmoothTriangles.pdb"
+				ImportLibrary=".\Release\SmoothTriangles.lib"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -158,31 +218,37 @@
 	<Files>
 		<Filter
 			Name="Source"
-			Filter="">
+			>
 			<Filter
 				Name="Implementation"
-				Filter="">
+				>
 				<File
-					RelativePath=".\CompileGuard.h">
+					RelativePath=".\CompileGuard.h"
+					>
 				</File>
 				<File
-					RelativePath=".\SmoothTrianglesComponent.cpp">
+					RelativePath=".\SmoothTrianglesComponent.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\SmoothTrianglesComponent.h">
+					RelativePath=".\SmoothTrianglesComponent.h"
+					>
 				</File>
 				<File
-					RelativePath=".\SmoothTrianglesFactory.cpp">
+					RelativePath=".\SmoothTrianglesFactory.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\SmoothTrianglesFactory.h">
+					RelativePath=".\SmoothTrianglesFactory.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="DLL"
-				Filter="">
+				>
 				<File
-					RelativePath="Export.def">
+					RelativePath="Export.def"
+					>
 				</File>
 			</Filter>
 		</Filter>

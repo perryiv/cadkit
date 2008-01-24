@@ -41,7 +41,7 @@ public:
 
 protected:    
   ///Destructor
-  ~SubdivideTrianglesComponent();
+  virtual ~SubdivideTrianglesComponent();
 
   ///Usul/Interfaces/IPlugin.h implementation
   virtual std::string getPluginName() const;

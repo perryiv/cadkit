@@ -41,7 +41,7 @@ public:
 
 protected:    
   ///Destructor
-  ~SmoothTrianglesComponent();
+  virtual ~SmoothTrianglesComponent();
 
   ///Usul/Interfaces/IPlugin.h implementation
   virtual std::string getPluginName() const;
@@ -50,7 +50,7 @@ protected:
   virtual void smoothTriangles ( osg::Array *vertices, osg::DrawElementsUInt *indices,
                                  osg::Array *normalsT, osg::Array *normalsV, unsigned int numIterations );
 
-  virtual void smoothTriangles ( OsgTools::Triangles::TriangleSet* );
+  virtual void smoothTriangles ( OsgTools::Triangles::TriangleSet*, unsigned int numIteration );
 };
 
 #endif /* __SMOOTH_TRIANGLES_COMPONENT_H__  */		

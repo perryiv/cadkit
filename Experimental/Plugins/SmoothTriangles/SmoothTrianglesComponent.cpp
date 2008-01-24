@@ -47,6 +47,7 @@ SmoothTrianglesComponent::SmoothTrianglesComponent()
 {
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Destructor
@@ -97,8 +98,11 @@ std::string SmoothTrianglesComponent::getPluginName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SmoothTrianglesComponent::smoothTriangles ( OsgTools::Triangles::TriangleSet *triangleSet )
+void SmoothTrianglesComponent::smoothTriangles ( OsgTools::Triangles::TriangleSet *triangleSet, unsigned int numIteration )
 {
+  if ( 0x0 == triangleSet )
+    return;
+
   vtkPolyData *data ( vtkPolyData::New() );
 
   double start ( Usul::System::Clock::milliseconds() );
@@ -132,19 +136,19 @@ void  SmoothTrianglesComponent::smoothTriangles ( osg::Array *v, osg::DrawElemen
                                                   osg::Array *nT, osg::Array *nV, unsigned int numIterations )
 {
   osg::ref_ptr < osg::Vec3Array > vertices ( dynamic_cast < osg::Vec3Array * > ( v ) );
+  osg::ref_ptr < osg::Vec3Array > normalsT ( dynamic_cast < osg::Vec3Array * > ( nT ) );
+  osg::ref_ptr < osg::Vec3Array > normalsV ( dynamic_cast < osg::Vec3Array * > ( nV ) );
+  if ( ( 0x0 == indices ) || ( false == vertices.valid() ) || ( false == normalsT.valid() ) || ( false == normalsV.valid() ) )
+    return;
 
   vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
-
-  VTKTools::Convert::PolyData::verticesToPolyData( vertices.get(), indices, data );
+  VTKTools::Convert::PolyData::verticesToPolyData ( vertices.get(), indices, data );
 
   vtkSmartPointer < vtkWindowedSincPolyDataFilter > smooth ( vtkWindowedSincPolyDataFilter::New() );
   smooth->SetInput ( data );
-  smooth->SetNumberOfIterations( numIterations );
+  smooth->SetNumberOfIterations ( numIterations );
   smooth->Update();
   vtkSmartPointer < vtkPolyData > nData ( smooth->GetOutput() );
-  
-  osg::ref_ptr < osg::Vec3Array > normalsT ( dynamic_cast < osg::Vec3Array * > ( nT ) );
-  osg::ref_ptr < osg::Vec3Array > normalsV ( dynamic_cast < osg::Vec3Array * > ( nV ) );
 
   VTKTools::Convert::PolyData::polyDataToVertices ( nData, *vertices, *indices, *normalsT, *normalsV );
 }

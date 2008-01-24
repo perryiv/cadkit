@@ -768,23 +768,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IAnimate.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IAnimatePath.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\IArcGenReaderWriter.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IAssembly.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IAssemblyManager.h"
 					>
 				</File>
 				<File
@@ -904,10 +892,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ICommandList.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ICommandQueueAdd.h"
 					>
 				</File>
@@ -957,10 +941,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IDisplaylists.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IDistributedVR.h"
 					>
 				</File>
 				<File
@@ -1148,15 +1128,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IHandleActivatingDocument.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IHandleMessage.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IHeliosView.h"
 					>
 				</File>
 				<File
@@ -1272,10 +1244,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IMode.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IModifiedObserver.h"
 					>
 				</File>
@@ -1345,14 +1313,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IPlanetCoordinates.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IPlanetNode.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IPlayMovie.h"
 					>
 				</File>
 				<File
@@ -2545,10 +2505,6 @@
 				</File>
 				<File
 					RelativePath=".\Functions\SafeCall.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Functions\ToString.h"
 					>
 				</File>
 			</Filter>

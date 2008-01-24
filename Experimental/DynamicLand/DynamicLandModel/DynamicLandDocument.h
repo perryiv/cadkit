@@ -28,7 +28,6 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
-#include "Usul/Interfaces/ICommandList.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
 

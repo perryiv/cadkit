@@ -10,13 +10,14 @@
 #include "Minerva/Document/Planet.h"
 
 #include "Usul/Bits/Bits.h"
-#include "Usul/Interfaces/ILayer.h"
-#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IUpdateSceneVisitor.h"
+#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osgDB/Registry"
@@ -264,9 +265,15 @@ void Planet::_init()
 void Planet::addLayer( Usul::Interfaces::ILayer *layer  )
 {
 #if USE_STAR_SYSTEM
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( layer );
   Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
   if ( rl.valid() )
-    _system->body()->rasterAppend ( rl.get() );
+  {
+    if ( elevation.valid() )
+      _system->body()->elevationAppend ( rl.get() );
+    else
+      _system->body()->rasterAppend ( rl.get() );
+  }
 #else
   Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
   if( ossim.valid() )

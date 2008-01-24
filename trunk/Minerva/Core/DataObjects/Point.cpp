@@ -21,7 +21,6 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPointData.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
-#include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Trace/Trace.h"
 

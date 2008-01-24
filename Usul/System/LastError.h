@@ -43,6 +43,9 @@ struct USUL_EXPORT LastError
   // Get the last error message.
   static std::string      message();
 
+  // Get the last error message.
+  static std::string      message ( Number );
+
   // Get the number of the last error.
   static Number           number();
 

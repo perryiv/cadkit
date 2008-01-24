@@ -98,6 +98,18 @@ LastError::Number LastError::number()
 
 std::string LastError::message()
 {
+  return LastError::message ( LastError::number() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the last error message.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string LastError::message ( Number number )
+{
 #ifdef _WIN32
 
   // The buffer to write to. It will be allocated.
@@ -109,7 +121,7 @@ std::string LastError::message()
     FORMAT_MESSAGE_FROM_SYSTEM | 
     FORMAT_MESSAGE_IGNORE_INSERTS,
     NULL,
-    LastError::number(),
+    number,
     MAKELANGID ( LANG_NEUTRAL, SUBLANG_DEFAULT ), // Default language.
     (LPTSTR) &buffer,
     0,
@@ -140,7 +152,7 @@ std::string LastError::message()
     return std::string ( buf );
 
   // Otherwise, get the message associated with the current error number.
-  buf = ::strerror ( LastError::number() );
+  buf = ::strerror ( number );
 
   // Return the error message. Handle the null case.
   return std::string ( ( buf ) ? buf : "" );

@@ -2066,8 +2066,8 @@ void TriangleSet::findAllConnected ( Usul::Interfaces::IUnknown* caller, Connect
   // If we should...
   if ( clearVisitedFlag )
   {
-      // Make sure everything is not visited
-      this->setAllUnvisited();
+    // Make sure everything is not visited
+    this->setAllUnvisited();
   }
 
   // Turn off stats updating on the status bar.
@@ -2076,19 +2076,19 @@ void TriangleSet::findAllConnected ( Usul::Interfaces::IUnknown* caller, Connect
   // Reserve enough room
   connected.reserve ( this->numTriangles() );
 
-//  Usul::Scope::Timer timer ( "Time to find all connected" );
+  //  Usul::Scope::Timer timer ( "Time to find all connected" );
   if ( showProgress )
   {
-      // Declare functor.
-      Detail::Update update ( this );
-      
-      // Run algorithm.
-      Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::Update > ( _triangles, connected, seed, update, showProgress );
+    // Declare functor.
+    Detail::Update update ( this );
+    
+    // Run algorithm.
+    Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::Update > ( _triangles, connected, seed, update, showProgress );
   }
   else
   {
-      Detail::NoUpdate update;
-      Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::NoUpdate > ( _triangles, connected, seed, update, showProgress );
+    Detail::NoUpdate update;
+    Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::NoUpdate > ( _triangles, connected, seed, update, showProgress );
   }
 }
 

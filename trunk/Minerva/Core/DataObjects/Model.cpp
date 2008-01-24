@@ -81,7 +81,7 @@ osg::Node* Model::_preBuildScene( Usul::Interfaces::IUnknown* caller )
   
   mt->setMatrix ( S * 
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
-                  osg::Matrix::rotate (osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
+                  osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
   
   mt->addChild ( this->model() );
   return mt.release();

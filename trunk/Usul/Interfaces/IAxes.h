@@ -9,7 +9,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Interface for toggling axes
+//  Interface for setting axes state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -30,10 +30,14 @@ struct IAxes : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2335136600u };
 
-  virtual void               setAxes ( bool ) = 0;
-  virtual bool               hasAxes ( ) const = 0;
+  /// Hide/Show the axes.
+  virtual void               axesShown ( bool ) = 0;
+  virtual bool               isAxesShown() const = 0;
 
-}; // class IAxes
+  /// Set the axes label.
+  virtual void               axesLabels ( const std::string& x, const std::string& y, const std::string& z ) = 0;
+
+}; // class IAxes.
 
 
 } // namespace Interfaces

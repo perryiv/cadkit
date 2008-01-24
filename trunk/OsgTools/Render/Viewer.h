@@ -20,6 +20,7 @@
 #include "OsgTools/Export.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/ICamera.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -99,6 +100,7 @@ namespace Render {
 
 
 class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
+                                public Usul::Interfaces::IAxes,
                                 public Usul::Interfaces::IViewMatrix,
                                 public Usul::Interfaces::IShadeModel,
                                 public Usul::Interfaces::IPolygonMode,
@@ -193,9 +195,12 @@ public:
   // Edit the background color.
   void                  setBackground ( const osg::Vec4 & );
 
-  // Get/Set show axes state.
+  // Get/Set show axes state (IAxes).
   void                  axesShown ( bool );
   bool                  isAxesShown() const;
+
+  /// Set the axes label (IAxes).
+  virtual void          axesLabels ( const std::string& x, const std::string& y, const std::string& z );
 
   // Set/get the background color. Throws if getting color from a null viewer.
   void                  backgroundColor ( const osg::Vec4 &color, unsigned int corners );

@@ -61,6 +61,7 @@ private:
 
 };
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Axes Sort.  This happens every frame, so trying to optimize for speed.
@@ -100,7 +101,10 @@ void Axes::AxesSort::operator () ( osg::Node* node, osg::NodeVisitor* nv )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Axes::Axes() : BaseClass()
+Axes::Axes() : BaseClass(),
+  _xText ( 0x0 ),
+  _yText ( 0x0 ),
+  _zText ( 0x0 )
 {
   // Length of the arrow.
   const double length ( 40.0 );
@@ -154,52 +158,16 @@ Axes::Axes() : BaseClass()
   osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
 
   //Text for X
-  {
-    osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-    text->setFont( font.get() );
-    text->setColor( colorX );
-    text->setCharacterSize( size );
-    text->setPosition ( osg::Vec3 ( length + height + 1, 0.0, 0.0 ) );
-    text->setText( "X" );
-    text->setAutoRotateToScreen(true);
-    text->setFontResolution(40,40);
-    text->update();
-
-    text->setUseDisplayList( false );
-    texts->addDrawable( text.get() );
-  }
+  _xText = this->_buildText ( colorX, osg::Vec3 ( length + height + 1, 0.0, 0.0 ), "X", size );
+  texts->addDrawable( _xText.get() );
 
   //Text for Y
-  {
-    osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-    text->setFont( font.get() );
-    text->setColor( colorY );
-    text->setCharacterSize( size );
-    text->setPosition ( osg::Vec3 ( 0.0, length + height + 1, 0.0 ) );
-    text->setText( "Y" );
-    text->setAutoRotateToScreen(true);
-    text->setFontResolution(40,40);
-    text->update();
-
-    text->setUseDisplayList( false );
-    texts->addDrawable( text.get() );
-  }
+  _yText = this->_buildText ( colorY, osg::Vec3 ( 0.0, length + height + 1, 0.0 ), "Y", size );
+  texts->addDrawable( _yText.get() );
 
   //Text for Z
-  {
-    osg::ref_ptr< osgText::Text > text ( new osgText::Text );
-    text->setFont( font.get() );
-    text->setColor( colorZ );
-    text->setCharacterSize( size );
-    text->setPosition ( osg::Vec3 ( 0.0, 0.0, length + height + 1 ) );
-    text->setText( "Z" );
-    text->setAutoRotateToScreen(true);
-    text->setFontResolution(40,40);
-    text->update();
-
-    text->setUseDisplayList( false );
-    texts->addDrawable( text.get() );
-  }
+  _zText = this->_buildText ( colorZ, osg::Vec3 ( 0.0, 0.0, length + height + 1 ), "Z", size );
+  texts->addDrawable( _zText.get() );
 
   // Set the proper states.
   osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
@@ -240,4 +208,134 @@ Axes::Axes() : BaseClass()
 
 Axes::~Axes()
 {
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text for the x label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Axes::xText ( const std::string& label )
+{
+  if ( _xText.valid() )
+  {
+    _xText->setText ( label );
+    _xText->update();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text for the x label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Axes::xText() const
+{
+  std::string text ( "" );
+
+  // Copy the text.
+  if ( _xText.valid() )
+    text.assign ( _xText->getText().begin(), _xText->getText().end() );
+
+  return text;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text for the y label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Axes::yText ( const std::string& label )
+{
+  if ( _yText.valid() )
+  {
+    _yText->setText ( label );
+    _yText->update();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text for the y label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Axes::yText() const
+{
+  std::string text ( "" );
+
+  // Copy the text.
+  if ( _yText.valid() )
+    text.assign ( _yText->getText().begin(), _yText->getText().end() );
+
+  return text;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text for the z label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Axes::zText ( const std::string& label )
+{
+  if ( _zText.valid() )
+  {
+    _zText->setText ( label );
+    _zText->update();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text for the z label.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Axes::zText() const
+{
+  std::string text ( "" );
+
+  // Copy the text.
+  if ( _zText.valid() )
+    text.assign ( _zText->getText().begin(), _zText->getText().end() );
+
+  return text;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build an osgText::Text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgText::Text* Axes::_buildText( const osg::Vec4& color, const osg::Vec3& position, const std::string& label, double size ) const
+{
+  // Get the default font.
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+
+  // Make the text.
+  osg::ref_ptr< osgText::Text > text ( new osgText::Text );
+  text->setFont( font.get() );
+  text->setColor( color );
+  text->setCharacterSize( size );
+  text->setPosition ( position );
+  text->setText( label );
+  text->setAutoRotateToScreen( true );
+  text->setFontResolution( 40,40 );
+  text->update();
+
+  text->setUseDisplayList( false );
+  return text.release();
 }

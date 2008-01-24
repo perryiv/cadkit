@@ -185,6 +185,16 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _pointerInfo         (),
   _clipPlaneWidgets    ()
 {
+  // Initialize the clock.
+  Usul::System::Clock::milliseconds();
+
+  // Add the manipulator
+  this->navManip ( new Trackball );
+
+  // Add axes to the scene.  
+  // Make sure that this is called after the manipulator has been created.
+  this->_addAxes();
+
   // Add the document
   this->document ( doc );
 
@@ -199,16 +209,6 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   osg::ref_ptr< osg::StateSet > ss ( _sceneManager->projection()->getOrCreateStateSet() );
   ss->setAttribute ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 #endif
-
-  // Initialize the clock.
-  Usul::System::Clock::milliseconds();
-
-  // Add the manipulator
-  this->navManip ( new Trackball );
-
-  // Add axes to the scene.  
-  // Make sure that this is called after the manipulator has been created.
-  this->_addAxes();
 
   // Set the default fov
   Usul::Shared::Preferences::instance().setDouble( Keys::FOV, OsgTools::Render::Defaults::CAMERA_FOV_Y );
@@ -2323,6 +2323,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
   case Usul::Interfaces::IRenderingPasses::IID:
     return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
+  case Usul::Interfaces::IAxes::IID:
+    return static_cast < Usul::Interfaces::IAxes * > ( this );
   default:
     return 0x0;
   } 
@@ -2507,6 +2509,26 @@ void Viewer::axesShown( bool b )
 bool Viewer::isAxesShown() const
 {
   return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _SHOW_AXES );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the axes label (IAxes).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::axesLabels ( const std::string& x, const std::string& y, const std::string& z )
+{
+  osg::ref_ptr< osg::Group > group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::AXES ) );
+
+  // See if it's an Axes (it should be).
+  if( OsgTools::Widgets::Axes *axes = dynamic_cast < OsgTools::Widgets::Axes* > ( group->getChild( 0 ) ) )
+  {
+    axes->xText ( x );
+    axes->yText ( y );
+    axes->zText ( z );
+  }
 }
 
 

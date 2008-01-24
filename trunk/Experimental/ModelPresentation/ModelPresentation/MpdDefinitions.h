@@ -65,22 +65,29 @@ class MpdDefinitions
     std::string filename;
     bool valid;
   };
+  struct MpdDynamicSetHeader
+  {
+    std::string directory;
+    std::string extension;
+    std::string prefix;
+    std::vector< std::string > modelNames;
+  };
   struct MpdDynamicSet
   {
+    MpdDynamicSetHeader header;
     osg::ref_ptr< osg::Switch > models;
     std::vector< MpdDynamicGroup > groups;
-    std::vector< std::string > modelNames;
     unsigned int currentTime;
     unsigned int endTime;
     std::string menuName;
     std::string name;
-    std::string directory;
-    std::string extension;
-    std::string prefix;
     bool visible;    
   };
+  
 
   typedef std::vector< MpdDefinitions::MpdDynamicSet > MpdDynamicSets;
+  typedef osg::ref_ptr< osg::Group > Group;
+  typedef std::vector< Group > Groups;
   
   };
 

@@ -648,7 +648,7 @@ void DynamicLandDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       this->incrementFilePosition();
       this->loadCurrentFile( true );
       this->_updateAnimationFrame( false );
-   }
+  }
   
   // update the animation frame
   if( true == this->isValid( this->currentFilePosition() ) &&
@@ -755,7 +755,7 @@ void DynamicLandDocument::_loadJobs( Usul::Interfaces::IUnknown *caller )
       // Get needed interfaces.
       IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
       
-      dataSync->setDataFlag( Usul::System::Host::name(), filename, true );
+      dataSync->setDataFlag( Usul::System::Host::name(), filename );
       
 
       // strip the extension from the map file name

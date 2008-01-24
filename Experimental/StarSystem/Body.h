@@ -76,6 +76,9 @@ public:
   // Deserialize this instance.
   virtual void              deserialize ( const XmlTree::Node &node );
 
+  // Dirty textures.
+  void                      dirtyTextures ( const Extents& e );
+
   // Get the elevation data.
   RasterLayer::RefPtr       elevationData();
 
@@ -106,6 +109,9 @@ public:
   
   // Remove raster layer
   void                      rasterRemove ( Usul::Interfaces::IRasterLayer * );
+
+  // Raster has chagned.
+  void                      rasterChanged (  Usul::Interfaces::IRasterLayer * );
   
   // Get the raster data.
   RasterLayer::RefPtr       rasterData();

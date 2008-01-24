@@ -47,6 +47,7 @@ SET (SOURCES
 ./Layers/VectorGroup.cpp
 ./DataObjects/DataObject.cpp
 ./DataObjects/Line.cpp
+./DataObjects/Model.cpp
 ./DataObjects/Polygon.cpp
 ./DataObjects/Point.cpp
 ./Functors/SingleColorFunctor.cpp

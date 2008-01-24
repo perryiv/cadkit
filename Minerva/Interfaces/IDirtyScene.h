@@ -25,7 +25,7 @@ struct IDirtyScene : public Usul::Interfaces::IUnknown
   enum { IID = 1789897599u };
 
   /// Dirty the scene.
-  virtual void            dirtyScene () = 0;
+  virtual void            dirtyScene ( Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
 
 }; // struct IDirtyScene
 

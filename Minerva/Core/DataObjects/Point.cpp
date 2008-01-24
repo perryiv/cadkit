@@ -168,7 +168,7 @@ void Point::primitiveId ( unsigned int primitiveId )
 
 namespace Detail
 {
-  osg::AutoTransform*   createAutoTransform( const osg::Vec3& center )
+  osg::AutoTransform*   createAutoTransform( const osg::Vec3d& center )
   {
     osg::ref_ptr< osg::AutoTransform > autoTransform ( new osg::AutoTransform );
 
@@ -604,7 +604,7 @@ bool Point::autotransform () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 Point::center () const
+osg::Vec3d Point::center () const
 {
   return _center;
 }

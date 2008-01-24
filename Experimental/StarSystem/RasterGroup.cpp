@@ -337,9 +337,11 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
       dst[0] = static_cast < unsigned char > ( dst[0] * ( 1 - a ) + ( r * a ) );
       dst[1] = static_cast < unsigned char > ( dst[1] * ( 1 - a ) + ( g * a ) );
       dst[2] = static_cast < unsigned char > ( dst[2] * ( 1 - a ) + ( b * a ) );
-    }
 
-    dst[3] = 255;
+      // Since the alpha has been accounted for above, make the pixel completely opaque.
+      if ( a > 0.0 )
+        dst[3] = 255;
+    }
 
     dst += 4;
     src += offset;

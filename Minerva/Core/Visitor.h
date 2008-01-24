@@ -28,6 +28,7 @@ namespace Minerva
       class Line;
       class Point;
       class Polygon;
+      class Model;
     }
 
     namespace Layers 
@@ -73,6 +74,11 @@ namespace Minerva
       virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon )
       {
         this->visit ( USUL_UNSAFE_CAST ( DataObject&, polygon ) );
+      }
+      
+      virtual void visit ( Minerva::Core::DataObjects::Model &model )
+      {
+        this->visit ( USUL_UNSAFE_CAST ( DataObject&, model ) );
       }
 
       virtual void visit ( Minerva::Core::Layers::Vector& vector )

@@ -217,7 +217,8 @@ osg::Node * Vector::buildScene ( const Options &options, Usul::Interfaces::IUnkn
   osg::ref_ptr < osg::Group > group ( new osg::Group );
   for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
   {
-    group->addChild( (*iter)->buildScene( caller ) );
+    if ( (*iter).valid() )
+      group->addChild( (*iter)->buildScene( caller ) );
   }
   return group.release();
 }

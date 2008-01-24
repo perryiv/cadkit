@@ -49,16 +49,6 @@ SET (SOURCES
   Circle.cpp
   ColorSetter.cpp
   DisplayLists.cpp
-  Draggers/Callback.cpp
-  Draggers/Dragger.cpp
-  Draggers/Plane.cpp
-  Draggers/Rotate1.cpp
-  Draggers/Trackball.cpp
-  Draggers/Translate.cpp
-  Draggers/Translate1.cpp
-  Draggers/Translate2.cpp
-  Draggers/Translate3.cpp
-  Draggers/TranslateScreen.cpp
   Font.cpp
   GlassBoundingBox.cpp
   Grid.cpp
@@ -97,7 +87,6 @@ SET (SOURCES
   Render/EventAdapter.cpp
   Render/FBOScreenCapture.cpp
   Render/FrameDump.cpp
-  Render/LightCallback.cpp
   Render/Renderer.cpp
   Render/SceneManager.cpp
   Render/TiledScreenCapture.cpp

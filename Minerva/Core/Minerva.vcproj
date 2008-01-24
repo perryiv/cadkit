@@ -257,6 +257,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\DataObjects\Model.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\DataObjects\Model.h"
+						>
+					</File>
+					<File
 						RelativePath=".\DataObjects\Point.cpp"
 						>
 					</File>

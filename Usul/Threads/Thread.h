@@ -110,7 +110,7 @@ protected:
   virtual ~Thread();
 
   // Call this from the system thread's "start" function.
-  void                    _execute() throw();
+  void                    _execute();
 
   // Overload this function to start the thread.
   virtual void            _start() = 0;
@@ -122,6 +122,8 @@ private:
   Thread &operator = ( const Thread & );
 
   void                    _destroy();
+
+  void                    _executeThread() throw();
 
   unsigned long           _getCreationThread() const;
 

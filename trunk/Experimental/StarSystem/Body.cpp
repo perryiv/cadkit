@@ -308,7 +308,7 @@ RasterLayer::RefPtr Body::rasterData()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
+void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -329,7 +329,7 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon, double& elevation ) const
+void Body::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -337,7 +337,7 @@ void Body::xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon,
   if ( true == _landModel.valid() )
   {
     // Make a copy.
-    osg::Vec3f p ( point );
+    osg::Vec3d p ( point );
 
     // Restore scale
     p /= _scale;

@@ -482,7 +482,7 @@ double Planet::splitMetric () const
 void Planet::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
 #if USE_STAR_SYSTEM
-  osg::Vec3f out;
+  osg::Vec3d out;
   _system->body()->latLonHeightToXYZ ( orginal[1], orginal[0], orginal[2], out );
 #else
   const osg::Vec3d in ( orginal[1], orginal[0], orginal[2] );

@@ -20,7 +20,7 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "osg/Vec3f"
+#include "osg/Vec3d"
 #include "osg/Vec2d"
 
 namespace osg { class Matrixd; }
@@ -50,8 +50,8 @@ public:
   virtual double      elevation ( double lat, double lon ) const = 0;
 
   // Convert lat, lon, height to x,y,z.
-  virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const = 0;
-  virtual void        xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const = 0;
+  virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const = 0;
+  virtual void        xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const = 0;
 
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
   virtual osg::Matrixd planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const = 0;

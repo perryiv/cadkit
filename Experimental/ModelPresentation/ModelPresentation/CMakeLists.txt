@@ -29,6 +29,7 @@ set (SOURCES
 ./MpdFirstTimestep.cpp
 ./MpdAnimation.cpp
 ./MpdTimelineModel.cpp
+./MpdJob.cpp
 ./ModelPresentationComponent.cpp
 ./ModelPresentationDocument.cpp
 ./ModelPresentationFactory.cpp

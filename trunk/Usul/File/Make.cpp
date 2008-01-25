@@ -210,7 +210,7 @@ void Usul::File::make ( const std::string &p )
     parts.erase ( parts.begin() );
   }
   
-  // On *NIX platorms, prepend a / to the beginning of the path.∫
+  // On *NIX platorms, prepend a / to the beginning of the path.
   #ifndef _MSC_VER
   temp.insert ( temp.begin(), '/' );
   #endif

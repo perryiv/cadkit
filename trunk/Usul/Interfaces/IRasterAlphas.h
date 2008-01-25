@@ -34,9 +34,11 @@ struct IRasterAlphas : public Usul::Interfaces::IUnknown
   typedef std::map < Color, unsigned short > Alphas; // Unsigned short will serialize better.
 
   // Add an alpha value.
+  virtual void                  alpha ( float ) = 0;
   virtual void                  alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha ) = 0;
 
   // Get the alpha values.
+  virtual float                 alpha() const = 0;
   virtual Alphas                alphas() const = 0;
 };
     

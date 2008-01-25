@@ -20,6 +20,7 @@
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/LastError.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/ThreadId.h"
@@ -298,11 +299,64 @@ void Thread::start()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to handle Windows structured exception.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef _MSC_VER
+
+namespace Helper
+{
+  int handleStructuredException ( DWORD code )
+  {
+    const std::string message ( Usul::System::LastError::message ( code ) );
+    std::cout << Usul::Strings::format ( 
+      "Error 2944787243: structured exception ", code, " generated when running thread.", 
+      ( ( false == message.empty() ) ? message : "" ) ) << std::endl;
+    return EXCEPTION_EXECUTE_HANDLER;
+  }
+}
+
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Execute the thread.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Thread::_execute() throw()
+void Thread::_execute()
+{
+  USUL_TRACE_SCOPE;
+
+  #ifdef _MSC_VER
+
+    __try 
+    {
+      this->_executeThread();
+    }
+
+    __except ( Helper::handleStructuredException ( ::GetExceptionCode() ) )
+    {
+      return;
+    }
+
+  #else
+
+    this->_executeThread();
+
+  #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute the thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Thread::_executeThread() throw()
 {
   USUL_TRACE_SCOPE;
 

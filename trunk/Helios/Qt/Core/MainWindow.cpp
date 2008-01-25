@@ -1528,7 +1528,10 @@ void MainWindow::_notifyFinishedLoading ( Usul::Documents::Document *document )
     return;
 
   // The filename.
-  const std::string name ( document->fileName() );
+  std::string name ( document->fileName() );
+
+  // Replace back-slashes. Otherwise, on Windows we can get the same file twice.
+  std::replace ( name.begin(), name.end(), '\\', '/' );
 
   // Add the document to the recent file list if it isn't already in there.
   if ( _recentFiles.end() == std::find ( _recentFiles.begin(), _recentFiles.end(), name ) )

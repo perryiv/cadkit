@@ -20,6 +20,7 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/Extents.h"
 #include "StarSystem/CutImageJob.h"
+#include "StarSystem/Mesh.h"
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Math/Vector4.h"
@@ -32,11 +33,11 @@
 #include "osg/Image"
 #include "osg/Texture2D"
 #include "osg/observer_ptr"
+#include "osg/Vec3d"
 
 #include <typeinfo>
 
 namespace StarSystem { class RasterLayer; class Body; }
-namespace OsgTools { class Mesh; }
 namespace osgUtil { class CullVisitor; }
 class ossimEllipsoid;
 
@@ -87,6 +88,7 @@ public:
   typedef osg::BoundingSphere BSphere;
   typedef osg::observer_ptr < Tile > WeakPtr;
   typedef osg::ref_ptr<osg::Node> NodePtr;
+  typedef StarSystem::Mesh<osg::Vec3d> Mesh;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
@@ -175,8 +177,8 @@ protected:
   void                      _clearChildren();
 
   // Build skirts.
-  osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset );
-  osg::Node*                _buildLatSkirt ( double lat, double v, unsigned int j, double offset );
+  osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll );
+  osg::Node*                _buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll );
 
   // Load the image.
   void                      _launchImageRequest();
@@ -198,7 +200,7 @@ private:
   Body *_body;
   Extents _extents;
   double _splitDistance;
-  OsgTools::Mesh *_mesh;
+  Mesh *_mesh;
   unsigned int _level;
   unsigned int _flags;
   Children _children;

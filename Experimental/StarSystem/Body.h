@@ -90,8 +90,8 @@ public:
   Usul::Jobs::Manager *     jobManager();
 
   // Convert lat, lon, height to x,y,z.
-  void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
-  void                      xyzToLatLonHeight ( const osg::Vec3& point, double& lat, double& lon, double& elevation ) const;
+  void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;
+  void                      xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const;
 
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
   osg::Matrixd              planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;

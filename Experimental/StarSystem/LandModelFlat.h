@@ -16,7 +16,7 @@
 
 #include "StarSystem/LandModel.h"
 
-#include "osg/Vec3f"
+#include "osg/Vec3d"
 
 class ossimProjection;
 
@@ -44,8 +44,8 @@ public:
   virtual double      elevation ( double lat, double lon ) const;
 
   // Convert lat, lon, height to x,y,z.
-  virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const;
-  virtual void        xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const;
+  virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;
+  virtual void        xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const;
 
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
   virtual osg::Matrixd planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;

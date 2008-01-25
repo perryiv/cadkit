@@ -26,7 +26,6 @@
 #include "StarSystem/BuildTiles.h"
 
 #include "OsgTools/Group.h"
-#include "OsgTools/Mesh.h"
 #include "OsgTools/State/StateSet.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -67,7 +66,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _body ( body ),
   _extents ( extents ),
   _splitDistance ( splitDistance ),
-  _mesh ( new OsgTools::Mesh ( meshSize[0], meshSize[1] ) ),
+  _mesh ( new Mesh ( meshSize[0], meshSize[1] ) ),
   _level ( level ),
   _flags ( Tile::ALL ),
   _children(),
@@ -113,7 +112,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _body ( tile._body ),
   _extents ( tile._extents ),
   _splitDistance ( tile._splitDistance ),
-  _mesh ( new OsgTools::Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
+  _mesh ( new Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
   _level ( tile._level ),
   _flags ( Tile::ALL ),
   _children ( tile._children ),
@@ -195,7 +194,7 @@ void Tile::updateMesh()
   const Extents::Vertex &mx ( _extents.maximum() );
   const double deltaU ( _texCoords[1] - _texCoords[0] );
   const double deltaV ( _texCoords[3] - _texCoords[2] );
-  OsgTools::Mesh &mesh ( *_mesh );
+  Mesh &mesh ( *_mesh );
 
   // Clear the bounding sphere.
   _boundingSphere.init();
@@ -214,7 +213,7 @@ void Tile::updateMesh()
       if ( this->verticesDirty() )
       {
         // Convert lat-lon coordinates to xyz.
-        osg::Vec3f &p ( mesh.point ( i, j ) );
+        Mesh::Vector &p ( mesh.point ( i, j ) );
         
         const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
@@ -223,7 +222,7 @@ void Tile::updateMesh()
         _boundingSphere.expandBy ( p );
 
         // Assign normal vectors.
-        osg::Vec3f &n ( mesh.normal ( i, j ) );
+        Mesh::Vector &n ( mesh.normal ( i, j ) );
         n = p; // Minus the center, which is (0,0,0).
         n.normalize();
       }
@@ -238,13 +237,24 @@ void Tile::updateMesh()
       }
     }
   }
+  
+  Mesh::Vector ll ( mesh.point ( 0, 0 ) );
+  for ( int i = mesh.rows() - 1; i >= 0; --i )
+  {
+    for ( unsigned int j = 0; j < mesh.columns(); ++j )
+    {
+      Mesh::Vector &p ( mesh.point ( i, j ) );
+      p = p - ll;
+    }
+  }
 
   // Unset these dirty flags.
   this->dirty ( false, Tile::VERTICES, false );
   this->dirty ( false, Tile::TEX_COORDS, false );
 
   // Make group to hold the meshes.
-  osg::ref_ptr < osg::Group > group ( new osg::Group );
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrix::translate ( ll ) );
 
   // Build skirts if we're supposed to.
   if ( true == _body->useSkirts() )
@@ -253,20 +263,20 @@ void Tile::updateMesh()
     const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
     // Add skirts to group.
-    group->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset ) ); // Left skirt.
-    group->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset ) ); // Right skirt.
-    group->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset ) ); // Bottom skirt.
-    group->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset ) ); // Top skirt.
+    mt->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll ) ); // Left skirt.
+    mt->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll ) ); // Right skirt.
+    mt->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll ) ); // Bottom skirt.
+    mt->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll ) ); // Top skirt.
   }
 
   // Make the ground.
-  group->addChild ( mesh() );
+  mt->addChild ( mesh() );
 
   // Add the place-holder for the border.
-  group->addChild ( _borders.get() );
+  mt->addChild ( _borders.get() );
 
   // Add the group to us.
-  this->addChild ( group.get() );
+  this->addChild ( mt.get() );
   
   this->dirtyBound();
 }
@@ -396,7 +406,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   }
 
   // Four corners and center of the tile.
-  OsgTools::Mesh &mesh ( *_mesh );
+  Mesh &mesh ( *_mesh );
   const osg::Vec3f &eye ( cv.getViewPointLocal() );
   
   const osg::Vec3f &p00 ( mesh.point ( 0, 0 ) );
@@ -682,7 +692,7 @@ Tile::NodePtr Tile::_buildBorderLine()
   if ( 0x0 != _mesh )
   {
     // Shortcut.
-    OsgTools::Mesh &mesh ( *_mesh );
+    Mesh &mesh ( *_mesh );
 
     // Make the colors.
     osg::Vec4f color ( 1.0f, 0.0f, 0.0f, 1.0f );
@@ -941,12 +951,12 @@ bool Tile::textureDirty() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset )
+osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll )
 {
   const unsigned int columns ( _mesh->columns() );
 
   // Make the mesh
-  OsgTools::Mesh mesh ( 2, columns );
+  Mesh mesh ( 2, columns );
 
   // Left skirt.
   for ( unsigned int j = 0; j < columns; ++j )
@@ -956,9 +966,15 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
 
     const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
 
+    Mesh::Vector&  p0 ( mesh.point ( 0, j ) );
+    Mesh::Vector&  p1 ( mesh.point ( 1, j ) );
+    
     // Convert lat-lon coordinates to xyz.
-    _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( 0, j ) );
-    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, mesh.point ( 1, j ) );
+    _body->latLonHeightToXYZ ( lat, lon, elevation,          p0 );
+    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p1 );
+    
+    p0 = p0 - ll;
+    p1 = p1 - ll;
 
     // Assign texture coordinate.
     mesh.texCoord ( 0, j ).set ( _texCoords[0] + u, _texCoords[2] + v );
@@ -975,12 +991,12 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double offset )
+osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll )
 {
   const unsigned int rows ( _mesh->rows() );
 
   // Make the mesh
-  OsgTools::Mesh mesh ( rows, 2 );
+  Mesh mesh ( rows, 2 );
 
   // Left skirt.
   for ( int i = rows - 1; i >= 0; --i )
@@ -990,9 +1006,15 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double o
 
     const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
 
+    Mesh::Vector&  p0 ( mesh.point ( i, 0 ) );
+    Mesh::Vector&  p1 ( mesh.point ( i, 1 ) );
+    
     // Convert lat-lon coordinates to xyz.
-    _body->latLonHeightToXYZ ( lat, lon, elevation,          mesh.point ( i, 0 ) );
-    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, mesh.point ( i, 1 ) );
+    _body->latLonHeightToXYZ ( lat, lon, elevation,          p0 );
+    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p1 );
+    
+    p0 = p0 - ll;
+    p1 = p1 - ll;
 
     // Assign texture coordinate.
     mesh.texCoord ( i, 0 ).set ( _texCoords[0] + u, _texCoords[2] + v );
@@ -1302,7 +1324,8 @@ osg::BoundingSphere Tile::computeBound() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _boundingSphere;
+  return BaseClass::computeBound();
+  //return _boundingSphere;
 }
 
 

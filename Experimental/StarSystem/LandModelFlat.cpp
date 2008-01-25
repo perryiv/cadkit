@@ -98,7 +98,7 @@ double LandModelFlat::size () const
 {
   USUL_TRACE_SCOPE;
 
-  osg::Vec3f v0, v1;
+  osg::Vec3d v0, v1;
   this->latLonHeightToXYZ ( 0, 0, 0, v0 );
   this->latLonHeightToXYZ ( -90, -180, 0, v1 );
 
@@ -125,12 +125,12 @@ double LandModelFlat::elevation ( double lat, double lon ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
+void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  typedef osg::Vec3f::value_type ValueType;
+  typedef osg::Vec3d::value_type ValueType;
 
   if ( 0x0 != _projection )
   {
@@ -152,7 +152,7 @@ void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelFlat::xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const
+void LandModelFlat::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -231,7 +231,7 @@ void LandModelFlat::deserialize ( const XmlTree::Node &node )
 
 osg::Matrixd LandModelFlat::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
 {
-  osg::Vec3f p;
+  osg::Vec3d p;
   this->latLonHeightToXYZ ( lat, lon, elevation, p );
 
   return osg::Matrixd::rotate ( osg::DegreesToRadians ( heading ), osg::Vec3f ( 0.0, 0.0, 1.0 ) ) * osg::Matrixd::translate ( p );

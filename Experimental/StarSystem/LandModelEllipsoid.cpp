@@ -91,12 +91,12 @@ double LandModelEllipsoid::elevation ( double lat, double lon ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3f& point ) const
+void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  typedef osg::Vec3f::value_type ValueType;
+  typedef osg::Vec3d::value_type ValueType;
 
   double x ( 0 ), y ( 0 ), z ( 0 );
   _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, x, y, z );
@@ -110,7 +110,7 @@ void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elev
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelEllipsoid::xyzToLatLonHeight ( const osg::Vec3f& point, double& lat, double& lon, double& elevation ) const
+void LandModelEllipsoid::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -216,7 +216,7 @@ void LandModelEllipsoid::deserialize ( const XmlTree::Node &node )
 
 osg::Matrixd LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
 {
-  osg::Vec3f p;
+  osg::Vec3d p;
   this->latLonHeightToXYZ ( lat, lon, elevation, p );
   ossimLsrSpace lsrSpace (ossimGpt( lat, lon, elevation ), heading );
   

@@ -67,6 +67,8 @@ private:
 
   std::string           _directory ( unsigned int width, unsigned int height, unsigned int level ) const;
 
+  std::string           _getAllOptions() const;
+
   std::string _url;
   Options _options;
   std::string _dir;

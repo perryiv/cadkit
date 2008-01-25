@@ -474,13 +474,13 @@ void Body::textureRequestCancel ( unsigned long id )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Texture2D* Body::texture ( unsigned long id )
+Body::TexturePtr Body::texture ( unsigned long id )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
   TextureJobs::iterator iter = _textureJobs.find ( id );
-  osg::ref_ptr < osg::Texture2D > texture ( 0x0 );
+  TexturePtr texture ( 0x0 );
 
   if ( iter != _textureJobs.end() )
   {
@@ -492,7 +492,7 @@ osg::Texture2D* Body::texture ( unsigned long id )
     }
   }
 
-  return texture.release();
+  return texture;
 }
 
 

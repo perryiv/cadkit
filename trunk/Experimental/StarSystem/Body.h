@@ -33,9 +33,9 @@
 
 #include "osg/Vec2d"
 #include "osg/MatrixTransform"
+#include "osg/Texture"
 
 namespace StarSystem { class Tile; }
-namespace osg { class Vec3f; class Texture; }
 
 
 namespace StarSystem {
@@ -55,6 +55,7 @@ public:
   typedef StarSystem::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
+  typedef osg::ref_ptr < osg::Texture2D > TexturePtr;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
@@ -148,7 +149,7 @@ public:
   void                      textureRequestCancel ( unsigned long id );
 
   // Get the texture.
-  osg::Texture2D*           texture ( unsigned long id );
+  TexturePtr                texture ( unsigned long id );
 
   // Set/get the flag that says to use skirts.
   void                      useSkirts ( bool );

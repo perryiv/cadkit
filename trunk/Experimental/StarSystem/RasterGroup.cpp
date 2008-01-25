@@ -240,17 +240,23 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
           if ( false == result.valid() )
           {
             // We always make an image and composite to handle formats other than GL_RGBA.
-            result = this->_createBlankImage( width, height );
+            result = this->_createBlankImage ( width, height );
           }
           
           // See if it has raster alpha data.
           Usul::Interfaces::IRasterAlphas::QueryPtr ra ( layer );
 
           // Copy the alphas.
-          Alphas alphas ( ( true == ra.valid() ) ? ra->alphas() : Alphas() );
-          
+          Alphas alphas;
+          float alpha ( 1.0f );
+          if ( true == ra.valid() )
+          {
+            alphas = ra->alphas();
+            alpha = ra->alpha();
+          }
+
           // Composite the images.
-          this->_compositeImages ( *result, *image, alphas, job );
+          this->_compositeImages ( *result, *image, alphas, alpha, job );
 
           // Cache the result.
           this->_cacheAdd ( extents, width, height, result.get() );
@@ -270,7 +276,7 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job *job )
+void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job *job )
 {
   USUL_TRACE_SCOPE;
 
@@ -306,10 +312,11 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
         job->cancel();
     }
 
-    // Copy the color channels.
-    unsigned char r ( src[0] );
-    unsigned char g ( src[1] );
-    unsigned char b ( src[2] );
+    // Copy the color channels. Multiply by the overall (normalized) alpha.
+    // The order of the variables is important; the float has to come first.
+    unsigned char r ( alpha * src[0] );
+    unsigned char g ( alpha * src[1] );
+    unsigned char b ( alpha * src[2] );
 
     // Is the color in the alpha table?
     if ( false == alphaMapEmpty )

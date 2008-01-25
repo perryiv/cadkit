@@ -40,12 +40,12 @@ namespace StarSystem {
 
 
 class STAR_SYSTEM_EXPORT RasterLayer : public Usul::Base::Object,
-  public Usul::Interfaces::IClonable,
-  public Usul::Interfaces::ILayer,
-  public Usul::Interfaces::ILayerExtents,
-  public Usul::Interfaces::IRasterAlphas,
-  public Usul::Interfaces::IRasterLayer,
-  public Usul::Interfaces::ISerialize
+                                       public Usul::Interfaces::IClonable,
+                                       public Usul::Interfaces::ILayer,
+                                       public Usul::Interfaces::ILayerExtents,
+                                       public Usul::Interfaces::IRasterAlphas,
+                                       public Usul::Interfaces::IRasterLayer,
+                                       public Usul::Interfaces::ISerialize
 {
 public:
 
@@ -64,11 +64,13 @@ public:
   // Clone this layer.
   virtual IUnknown*     clone() const = 0;
 
-  // Add an alpha value.
-  void                  alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha );
+  // Add an alpha value for the color, or an overall alpha.
+  virtual void          alpha ( float );
+  virtual void          alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha );
 
   // Get the alpha values.
-  Alphas                alphas() const;
+  virtual float         alpha() const;
+  virtual Alphas        alphas() const;
 
   /// Get/Set the extents.
   void                  extents ( const Extents& extents );
@@ -111,6 +113,7 @@ private:
   Alphas _alphas;
   std::string _guid;
   bool _shown;
+  float _alpha;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayer );

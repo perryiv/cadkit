@@ -42,6 +42,7 @@ RasterLayer::RasterLayer() :
   _alphas(),
   _guid ( Usul::Functions::GUID::generate() ),
   _shown ( true ),
+  _alpha ( 1.0f ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
@@ -50,6 +51,7 @@ RasterLayer::RasterLayer() :
   this->_addMember ( "name", this->_getName() );
   this->_addMember ( "shown", _shown );
   this->_addMember ( new Serialize::XML::ValueMapMember<Alphas> ( "alphas", _alphas ) );
+  this->_addMember ( "alpha", _alpha );
 }
 
 
@@ -60,11 +62,12 @@ RasterLayer::RasterLayer() :
 ///////////////////////////////////////////////////////////////////////////////
 
 RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
-_extents ( rhs._extents ),
-_alphas ( rhs._alphas ),
-_guid ( rhs._guid ),
-_shown ( rhs._shown ),
-_dataMemberMap( rhs._dataMemberMap )
+  _extents ( rhs._extents ),
+  _alphas ( rhs._alphas ),
+  _guid ( rhs._guid ),
+  _shown ( rhs._shown ),
+  _alpha ( rhs._alpha ),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
 }
 
@@ -81,6 +84,7 @@ RasterLayer& RasterLayer::operator= ( const RasterLayer& rhs )
   _alphas = rhs._alphas;
   _guid = rhs._guid;
   _shown = rhs._shown;
+  _alpha = rhs._alpha;
   
   return *this;
 }
@@ -120,6 +124,32 @@ RasterLayer::Extents RasterLayer::extents() const
 {
   Guard guard ( this );
   return _extents;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get overall alpha value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float RasterLayer::alpha() const
+{
+  Guard guard ( this );
+  return _alpha;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set overall alpha value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::alpha ( float a )
+{
+  Guard guard ( this );
+  _alpha = a;
 }
 
 

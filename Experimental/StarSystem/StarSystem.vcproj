@@ -338,6 +338,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Mesh.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Node.cpp"
 				>
 			</File>

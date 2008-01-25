@@ -44,6 +44,7 @@
 
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string/replace.hpp"
+#include "boost/functional/hash.hpp"
 
 #include <iomanip>
 #include <algorithm>
@@ -300,12 +301,16 @@ std::string RasterLayerWms::_directory ( unsigned int width, unsigned int height
   std::replace ( urlProxy.begin(), urlProxy.end(), '?', '_' );
   std::replace ( urlProxy.begin(), urlProxy.end(), '.', '_' );
 
+  boost::hash<std::string> stringHash;
+  std::size_t hashValue ( stringHash ( this->_getAllOptions() ) );
+
   const std::string resolution ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
   const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );
 
   std::string dir ( Usul::Strings::format ( Usul::Threads::Safe::get ( this->mutex(), _dir ), '/', 
                                             Usul::App::Application::instance().program(), '/',
-                                            urlProxy, '/', resolution, '/', levelString, '/' ) );
+                                            urlProxy, '/', hashValue, '/', 
+                                            resolution, '/', levelString, '/' ) );
   std::replace ( dir.begin(), dir.end(), '\\', '/' );
   return dir;
 }
@@ -365,9 +370,33 @@ void RasterLayerWms::cacheDirectory ( const std::string& dir, bool makeDefault )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RasterLayerWms::cacheDirectory () const
+std::string RasterLayerWms::cacheDirectory() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return a string containing all the options.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerWms::_getAllOptions() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  std::ostringstream out;
+  for ( Options::const_iterator i = _options.begin(); i != _options.end(); ++i )
+  {
+    const std::string key ( i->first );
+    const std::string value ( i->second );
+    out << key << '=' << value << '&';
+  }
+
+  const std::string result ( out.str() );
+  return ( ( result.empty() ) ? "default" : result );
 }

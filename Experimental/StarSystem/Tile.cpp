@@ -1074,12 +1074,15 @@ void Tile::texture ( osg::Texture2D* texture )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
+#if 1
   if ( 0x0 != texture )
   {
     _texture = texture;
     this->dirty ( true, Tile::TEXTURE, false );
   }
+#else
+  _texture = texture;
+#endif
 }
 
 

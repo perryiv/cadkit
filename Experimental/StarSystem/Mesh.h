@@ -16,18 +16,21 @@
 #ifndef _STAR_SYSTEM_SURFACE_MESH_BUILDER_H_
 #define _STAR_SYSTEM_SURFACE_MESH_BUILDER_H_
 
+#include "Usul/Errors/Checker.h"
+
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Vec2d"
 
 #include <vector>
-#include <stdexcept>
 
+namespace osg { class Node; }
 
 namespace StarSystem {
 
 
-template <class VertexType> class Mesh
+template <class VertexType>
+class Mesh
 {
 public:
 
@@ -41,35 +44,14 @@ public:
   typedef osg::Vec2d TexCoord;
   typedef std::vector < TexCoord > TexCoords;
 
-  Mesh();
   Mesh ( unsigned int rows, unsigned int columns );
-  Mesh ( const Mesh & );
-  Mesh &operator = ( const Mesh & );
-
-  // Allocate the mesh.
-  void                allocatePoints();
-  void                allocateNormals();
-  void                allocateTexCoords();
 
   // The number of columns.
   unsigned int        columns() const { return _columns; }
 
-  // Normalize all the normal vectors (make them have a length of one).
-  void                normalize();
-
-  // Access to the normals.
-  void                normals ( const Vectors &n ) { _normals = n; }
-  Vectors &           normals()       { return _normals; }
-  const Vectors &     normals() const { return _normals; }
-
   // Access to a single normal.
   reference           normal ( size_type row, size_type column );
   const_reference     normal ( size_type row, size_type column ) const;
-
-  // Access to the points.
-  void                points ( const Vectors &p ) { _points = p; }
-  Vectors &           points()       { return _points; }
-  const Vectors &     points() const { return _points; }
 
   // Access to a single point.
   reference           point ( size_type row, size_type column );
@@ -81,11 +63,6 @@ public:
   // Set the size.
   void                size ( unsigned int rows, unsigned int columns );
 
-  // Access to the texture coordinates.
-  void                texCoords ( const TexCoords &p ) { _texCoords = p; }
-  TexCoords &         texCoords()       { return _texCoords; }
-  const TexCoords &   texCoords() const { return _texCoords; }
-
   // Access to a single texture coordinate.
   TexCoord&           texCoord ( size_type row, size_type column );
   const TexCoord&     texCoord ( size_type row, size_type column ) const;
@@ -94,7 +71,11 @@ public:
   osg::Node *         operator()() const;
 
 private:
-
+  
+  Mesh();
+  Mesh ( const Mesh & );
+  Mesh &operator = ( const Mesh & );
+  
   Vectors _points;
   Vectors _normals;
   TexCoords _texCoords;
@@ -103,13 +84,16 @@ private:
 };
 
   
+typedef Usul::Errors::Checker ErrorChecker;
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline Mesh<VertexType>::Mesh() :
+template<class VertexType>
+Mesh<VertexType>::Mesh() :
 _points(),
 _normals(),
 _texCoords(),
@@ -125,7 +109,8 @@ _columns()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline Mesh<VertexType>::Mesh ( unsigned int rows, unsigned int columns ) :
+template<class VertexType>
+Mesh<VertexType>::Mesh ( unsigned int rows, unsigned int columns ) :
 _points    ( rows * columns ),
 _normals   ( rows * columns ),
 _texCoords ( rows * columns ),
@@ -141,7 +126,8 @@ _columns   ( columns )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline Mesh<VertexType>::Mesh ( const Mesh &m ) :
+template<class VertexType>
+Mesh<VertexType>::Mesh ( const Mesh &m ) :
 _points    ( m._points    ),
 _normals   ( m._normals   ),
 _texCoords ( m._texCoords ),
@@ -157,7 +143,8 @@ _columns   ( m._columns   )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline Mesh<VertexType> &Mesh<VertexType>::operator = ( const Mesh &m )
+template<class VertexType>
+Mesh<VertexType> &Mesh<VertexType>::operator = ( const Mesh &m )
 {
   _points    = m._points;
   _normals   = m._normals;
@@ -174,7 +161,8 @@ template<class VertexType> inline Mesh<VertexType> &Mesh<VertexType>::operator =
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline void Mesh<VertexType>::size ( unsigned int rows, unsigned int columns )
+template<class VertexType>
+void Mesh<VertexType>::size ( unsigned int rows, unsigned int columns )
 {
   _columns = columns;
   _rows    = rows;
@@ -183,60 +171,12 @@ template<class VertexType> inline void Mesh<VertexType>::size ( unsigned int row
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Allocate the points.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class VertexType> inline void Mesh<VertexType>::allocatePoints()
-{
-  _points.resize ( _columns * _rows );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Allocate the normals.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class VertexType> inline void Mesh<VertexType>::allocateNormals()
-{
-  _normals.resize ( _columns * _rows );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Allocate the texture coordinates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class VertexType> inline void Mesh<VertexType>::allocateTexCoords()
-{
-  _texCoords.resize ( _columns * _rows );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Normalize all the normals.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template<class VertexType> inline void Mesh<VertexType>::normalize()
-{
-  for ( typename Vectors::iterator i = _normals.begin(); i != _normals.end(); ++i )
-    i->normalize();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Access to a single point.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline typename Mesh<VertexType>::reference Mesh<VertexType>::point ( size_type r, size_type c )
+template<class VertexType> 
+typename Mesh<VertexType>::reference Mesh<VertexType>::point ( size_type r, size_type c )
 {
   return _points.at ( r * _columns + c );
 }
@@ -248,7 +188,8 @@ template<class VertexType> inline typename Mesh<VertexType>::reference Mesh<Vert
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline typename Mesh<VertexType>::const_reference Mesh<VertexType>::point ( size_type r, size_type c ) const
+template<class VertexType>
+typename Mesh<VertexType>::const_reference Mesh<VertexType>::point ( size_type r, size_type c ) const
 {
   return _points.at ( r * _columns + c );
 }
@@ -260,7 +201,8 @@ template<class VertexType> inline typename Mesh<VertexType>::const_reference Mes
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline typename Mesh<VertexType>::reference Mesh<VertexType>::normal ( size_type r, size_type c )
+template<class VertexType>
+typename Mesh<VertexType>::reference Mesh<VertexType>::normal ( size_type r, size_type c )
 {
   return _normals.at ( r * _columns + c );
 }
@@ -272,7 +214,8 @@ template<class VertexType> inline typename Mesh<VertexType>::reference Mesh<Vert
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline typename Mesh<VertexType>::const_reference Mesh<VertexType>::normal ( size_type r, size_type c ) const
+template<class VertexType>
+typename Mesh<VertexType>::const_reference Mesh<VertexType>::normal ( size_type r, size_type c ) const
 {
   return _normals.at ( r * _columns + c );
 }
@@ -284,7 +227,8 @@ template<class VertexType> inline typename Mesh<VertexType>::const_reference Mes
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline typename Mesh<VertexType>::TexCoord& Mesh<VertexType>::texCoord ( size_type r, size_type c )
+template<class VertexType>
+typename Mesh<VertexType>::TexCoord& Mesh<VertexType>::texCoord ( size_type r, size_type c )
 {
   return _texCoords.at ( r * _columns + c );
 }
@@ -296,39 +240,11 @@ template<class VertexType> inline typename Mesh<VertexType>::TexCoord& Mesh<Vert
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline const typename Mesh<VertexType>::TexCoord& Mesh<VertexType>::texCoord ( size_type r, size_type c ) const
+template<class VertexType>
+const typename Mesh<VertexType>::TexCoord& Mesh<VertexType>::texCoord ( size_type r, size_type c ) const
 {
   return _texCoords.at ( r * _columns + c );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Figure out the normal binding.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  template < class Sequence > inline osg::Geometry::AttributeBinding normalBinding ( const Sequence &points, const Sequence &normals )
-  {
-    // Initialize.
-    osg::Geometry::AttributeBinding binding ( osg::Geometry::BIND_OFF );
-    
-    // Check the respective numbers.
-    if ( points.size() == normals.size() )
-      binding = osg::Geometry::BIND_PER_VERTEX;
-    else if ( 1 == normals.size() )
-      binding = osg::Geometry::BIND_OVERALL;
-    else if ( 0 == normals.size() )
-      binding = osg::Geometry::BIND_OFF;
-    else
-      throw std::runtime_error ( "Error 1826625791: Unsupported normal binding" );
-    
-    // Return the binding flag.
-    return binding;
-  }
-};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -337,37 +253,24 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class VertexType> inline osg::Node* Mesh<VertexType>::operator()() const
+template<class VertexType>
+osg::Node* Mesh<VertexType>::operator()() const
 {
   // Check state.
-  if ( ( _rows * _columns ) != _points.size() )
-    throw std::runtime_error ( "Error 4066213134: number of points != rows * columns" );
-  
-  // Figure out the normal binding.
-  typedef osg::Geometry::AttributeBinding Binding;
-  Binding binding ( Detail::normalBinding ( _points, _normals ) );
-  
+  ErrorChecker ( 4066213134u, _rows * _columns == _points.size() );
+
   // Declare nodes.
   osg::ref_ptr<osg::Geode>    geode ( new osg::Geode );
   osg::ref_ptr<osg::Geometry> geom  ( new osg::Geometry );
   
+#if 0
   // Allocate the points.
-  unsigned int numVertices ( ( 2 * _rows - 2 ) * _columns );
+  const unsigned int numVertices ( ( 2 * _rows - 2 ) * _columns );
   osg::ref_ptr<osg::Vec3Array> points  ( new osg::Vec3Array ( numVertices ) );
   
-  // Figure out how many normals we need.
-  unsigned int numNormals ( 0 );
-  if ( osg::Geometry::BIND_PER_VERTEX == binding )
-    numNormals = numVertices;
-  else if ( osg::Geometry::BIND_OVERALL == binding )
-    numNormals = 1;
-  
   // Allocate the normals.
+  const unsigned int numNormals ( numVertices );
   osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array ( numNormals  ) );
-  
-  // If the binding is overall, take care of it now.
-  if ( osg::Geometry::BIND_OVERALL == binding )
-    normals->at ( 0 ) = this->normal ( 0, 0 );
   
   // Allocation texture coordinates.
   osg::ref_ptr<osg::Vec2Array> texCoords ( new osg::Vec2Array ( numVertices ) );
@@ -397,12 +300,9 @@ template<class VertexType> inline osg::Node* Mesh<VertexType>::operator()() cons
       texCoords->at ( index - 2 ) = this->texCoord ( i + 1, j );
       texCoords->at ( index - 1 ) = this->texCoord ( i,     j );
       
-      // Set the normal if we should.
-      if ( osg::Geometry::BIND_PER_VERTEX == binding )
-      {
-        normals->at ( index - 2 ) = this->normal ( i + 1, j );
-        normals->at ( index - 1 ) = this->normal ( i,     j );
-      }
+      // Set the normal.
+      normals->at ( index - 2 ) = this->normal ( i + 1, j );
+      normals->at ( index - 1 ) = this->normal ( i,     j );
     }
     
     // Define the primitive.
@@ -413,30 +313,50 @@ template<class VertexType> inline osg::Node* Mesh<VertexType>::operator()() cons
   // Should be true.
   USUL_ASSERT ( points->size() == index );
   USUL_ASSERT ( index == start );
+#else
+
+  // Allocate the points.
+  osg::ref_ptr<osg::Vec3Array> points  ( new osg::Vec3Array (  _points.begin(), _points.end() ) );
+  
+  // Allocate the normals.
+  osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array ( _normals.begin(), _normals.end()  ) );
+  
+  // Allocation texture coordinates.
+  osg::ref_ptr<osg::Vec2Array> texCoords ( new osg::Vec2Array ( _texCoords.begin(), _texCoords.end() ) );
+  
+  // There is one tri-strip for each adjacent pair of rows.
+  osg::Geometry::PrimitiveSetList primSetList ( _rows - 1 );
+  
+  // Loop through all the rows.
+  for ( unsigned int i = 0; i < primSetList.size(); ++i )
+  {
+    osg::ref_ptr<osg::DrawElementsUShort> drawElements ( new osg::DrawElementsUShort ( osg::PrimitiveSet::TRIANGLE_STRIP ) );
+    
+    // Loop through all the columns.
+    for ( unsigned int j = 0; j < _columns; ++j )
+    {
+      drawElements->push_back ( ( ( i + 1 ) * _columns ) + j );
+      drawElements->push_back ( ( ( i     ) * _columns ) + j );
+    }
+    
+    // Define the primitive.
+    primSetList[i] = drawElements.get();
+  }
+#endif
   
   // Set the points.
   geom->setVertexArray ( points.get() );
   
   // Set the normals.
   geom->setNormalArray ( normals.get() );
-  geom->setNormalBinding ( binding );
+  geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
   
   // Set the texture coordinates.
   geom->setTexCoordArray ( 0, texCoords.get() );
   
   // Set the primitive-set list.
   geom->setPrimitiveSetList ( primSetList );
-  
-  // Tell it to use color instead of materials.
-#if 0
-  osg::ref_ptr<osg::StateSet> ss ( geode->getOrCreateStateSet() );
-  ss->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
-  osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array ( 1 ) );
-  colors->at ( 0 ).set ( 1, 0, 0, 1 );
-  geom->setColorArray ( colors.get() );
-  geom->setColorBinding ( osg::Geometry::BIND_OVERALL );
-#endif
-  
+
   // Add the drawable.
   geode->addDrawable ( geom.get() );
   
@@ -449,9 +369,8 @@ template<class VertexType> inline osg::Node* Mesh<VertexType>::operator()() cons
   // Release the geode and return it.
   return geode.release();
 }
-  
 
-}; // namespace OsgTools
+}; // namespace StarSystem
 
 
 #endif // _STAR_SYSTEM_SURFACE_MESH_BUILDER_H_

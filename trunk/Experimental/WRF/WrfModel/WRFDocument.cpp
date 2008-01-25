@@ -1365,7 +1365,7 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
     const Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) * 0.5  );
     //center /= 2.0;
 
-    osg::Vec3f translate;
+    osg::Vec3d translate;
 
     double height ( (_z * _cellSize [ 2 ] ) / 2.0 );
 
@@ -1385,7 +1385,7 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
     bbUp.normalize();
 
     // Calculate the north vector.
-    osg::Vec3 v1;
+    osg::Vec3d v1;
     _system->body()->latLonHeightToXYZ ( center [ 0 ] + 0.1, center [ 1 ], height, v1 );
     osg::Vec3 diff ( v1 - translate );
     diff.normalize();

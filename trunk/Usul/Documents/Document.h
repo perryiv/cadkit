@@ -36,6 +36,7 @@
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRedraw.h"
+#include "Usul/Interfaces/IHandleMessage.h"
 
 #include <string>
 #include <list>

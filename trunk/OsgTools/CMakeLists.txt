@@ -83,7 +83,6 @@ SET (SOURCES
   ReadModel.cpp
   Render/ActionAdapter.cpp
   Render/Animation.cpp
-  Render/ClipPlaneCallback.cpp
   Render/EventAdapter.cpp
   Render/FBOScreenCapture.cpp
   Render/FrameDump.cpp

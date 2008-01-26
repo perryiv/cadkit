@@ -188,7 +188,7 @@ void Planet::_init()
   //StarSystem::LandModel::RefPtr land ( new StarSystem::LandModelFlat ( 26912 ) ); // UTM 12 NAD 83
   
   // Make a good split distance.
-  const double splitDistance ( land->size() * 3 );
+  const double splitDistance ( land->size() * 2.5 );
   
   // Size of the mesh.
   Body::MeshSize meshSize ( 17, 17 );
@@ -536,7 +536,7 @@ osg::Matrixd Planet::planetRotationMatrix ( double lat, double lon, double eleva
 double Planet::elevationAtLatLong ( double lat, double lon ) const
 {
 #if USE_STAR_SYSTEM
-  return 0.0;
+  return _system->body()->elevation ( lat, lon );
 #else
   ossimGpt point ( lat, lon );
   double height (  ossimElevManager::instance()->getHeightAboveMSL( point ) );

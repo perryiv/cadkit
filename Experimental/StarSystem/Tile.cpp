@@ -431,11 +431,14 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Check for nan in eye values (it's happened).
   const bool eyeIsNan ( Usul::Math::nan ( eye[0] ) || Usul::Math::nan ( eye[1] ) || Usul::Math::nan ( eye[2] ) );
 
+  // Check to see if eye is zero.
+  const bool eyeIsZero ( 0.0 == eye[0] || 0.0 == eye[1] || 0.0 == eye[2] );
+
   // Check if we've gone too deep.
   const bool tooDeep ( this->level() >= _body->maxLevel() );
 
   // Should we traverse the low lod?
-  bool low ( farAway || eyeIsNan || tooDeep );
+  bool low ( farAway || eyeIsNan || eyeIsZero || tooDeep );
 
   // Finally, ask the callback.
   low = !( _body->shouldSplit ( !low, this ) );
@@ -1327,8 +1330,8 @@ osg::BoundingSphere Tile::computeBound() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return BaseClass::computeBound();
-  //return _boundingSphere;
+  //return BaseClass::computeBound();
+  return _boundingSphere;
 }
 
 

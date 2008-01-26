@@ -11,6 +11,7 @@
 #include "Minerva/Core/DataObjects/Model.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
 #include "osg/MatrixTransform"
@@ -69,14 +70,18 @@ osg::Node* Model::_preBuildScene( Usul::Interfaces::IUnknown* caller )
 {
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   
+  // Query for needed interfaces.
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
   Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
   
   osg::Vec3 location ( this->location() );
 
+  const double height ( elevation.valid() ? elevation->elevationAtLatLong ( location[1], location[0] ) : 0.0 );
+
   double heading ( 0.0 ), tilt ( 0.0 ), roll ( 0.0 );
   this->orientation( heading, tilt, roll );
   
-  osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], location[2], heading ) : osg::Matrixd() );
+  osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
   osg::Matrix S ( osg::Matrix::scale ( this->scale() * 0.0254 ) );
   
   mt->setMatrix ( S * 

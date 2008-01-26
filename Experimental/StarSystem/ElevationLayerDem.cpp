@@ -32,7 +32,7 @@
 using namespace StarSystem;
 
 USUL_FACTORY_REGISTER_CREATOR ( ElevationLayerDem );
-
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ElevationLayerDem, ElevationLayerDem::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -327,13 +327,13 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   Usul::Predicates::Tolerance<double,double> tolerance ( 5 );
   
   if ( tolerance ( nullValue, a ) )
-    a = header.getMinimumElev();
+    a = 0.0;
   if ( tolerance ( nullValue, b ) )
-    b = header.getMinimumElev();
+    b = 0.0;
   if ( tolerance ( nullValue, c ) )
-    c = header.getMinimumElev();
+    c = 0.0;
   if ( tolerance ( nullValue, d ) )
-    d = header.getMinimumElev();
+    d = 0.0;
 
   const double u ( x - static_cast < double > ( i ) );
   const double v ( y - static_cast < double > ( j ) );
@@ -357,4 +357,34 @@ void ElevationLayerDem::deserialize ( const XmlTree::Node &node )
       
   // Open ourselfs.
   this->open ( _filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get elevation at lat long.
+//
+///////////////////////////////////////////////////////////////////////////////
+   
+double ElevationLayerDem::elevationAtLatLong ( double lat, double lon ) const
+{
+  return this->value ( lon, lat );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface id..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* ElevationLayerDem::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IElevationDatabase::IID:
+    return static_cast < Usul::Interfaces::IElevationDatabase* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }

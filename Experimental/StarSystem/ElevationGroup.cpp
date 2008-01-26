@@ -104,7 +104,7 @@ ElevationGroup::ImagePtr ElevationGroup::_createBlankImage ( unsigned int width,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ElevationGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, Usul::Jobs::Job * )
+void ElevationGroup::_compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * )
 {
   USUL_TRACE_SCOPE;
 

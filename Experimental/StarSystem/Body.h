@@ -83,6 +83,9 @@ public:
   // Get the elevation data.
   RasterLayer::RefPtr       elevationData();
 
+  // Get the elevation at a lat, lon.
+  double                    elevation ( double lat, double lon ) const;
+
   // Append elevation data.
   void                      elevationAppend ( Usul::Interfaces::IRasterLayer * );
 

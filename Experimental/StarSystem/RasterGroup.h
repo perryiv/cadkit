@@ -48,6 +48,10 @@ public:
   void                            append ( IRasterLayer* layer );
   void                            remove ( IRasterLayer* layer );
 
+  IRasterLayer*                   layer ( unsigned int i );
+
+  unsigned int                    size() const;
+
   virtual ImagePtr                texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 
 protected:
@@ -65,7 +69,7 @@ protected:
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * );
 
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
-
+  
 private:
 
   Layers _layers;

@@ -300,6 +300,8 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
   bool hasExtraAlpha ( false );
   Alphas::const_iterator iter ( alphas.end() );
 
+  const bool hasOverallAlpha ( alpha < 1.0f );
+
   const bool hasAlpha ( GL_RGBA == format );
   const unsigned int offset ( ( hasAlpha ) ? 4 : 3 );
 
@@ -314,9 +316,9 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
 
     // Copy the color channels. Multiply by the overall (normalized) alpha.
     // The order of the variables is important; the float has to come first.
-    unsigned char r ( alpha * src[0] );
-    unsigned char g ( alpha * src[1] );
-    unsigned char b ( alpha * src[2] );
+    unsigned char r (/* alpha **/ src[0] );
+    unsigned char g (/* alpha **/ src[1] );
+    unsigned char b (/* alpha **/ src[2] );
 
     // Is the color in the alpha table?
     if ( false == alphaMapEmpty )
@@ -326,7 +328,7 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
     }
 
     // If the image is competely opaque then set the values.
-    if ( ( false == hasAlpha ) && ( false == hasExtraAlpha ) )
+    if ( ( false == hasAlpha ) && ( false == hasExtraAlpha ) && ( false == hasOverallAlpha ) )
     {
       dst[0] = r;
       dst[1] = g;
@@ -335,7 +337,8 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
     else
     {
       // Get correct alpha.
-      const unsigned char useThisAlpha ( ( hasExtraAlpha ) ? ( static_cast < unsigned char > ( iter->second ) ) : ( src[3] ) );
+      const unsigned char useThisAlpha ( ( hasExtraAlpha )   ? ( static_cast < unsigned char > ( iter->second ) ) : 
+                                       ( ( hasOverallAlpha ) ? ( static_cast < unsigned char > ( alpha * 255 ) ) : ( src[3] ) ) );
 
       // Normalize between zero and one.
       const float a ( static_cast < float > ( useThisAlpha ) / 255.5f );
@@ -408,4 +411,32 @@ RasterGroup::ImageKey RasterGroup::_makeKey ( const Extents& extents, unsigned i
   ImageKey key ( size, bounds );
 
   return key;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the raster layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterGroup::IRasterLayer* RasterGroup::layer ( unsigned int i )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( i < _layers.size() ) ? _layers.at ( i ).get() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of raster layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int RasterGroup::size() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _layers.size();
 }

@@ -75,7 +75,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _elevation ( elevation ),
   _texture ( new osg::Texture2D ),
   _texCoords ( texCoords ),
-  _jobId ( false, 0 ),
+  _imageJob ( 0x0 ),
   _elevationJob ( 0x0 ),
   _tileJob ( 0x0 ),
   _boundingSphere(),
@@ -120,9 +120,9 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _image ( tile._image ),
   _elevation ( tile._elevation ),
   _texCoords ( tile._texCoords ),
-  _jobId ( false, 0 ),
-  _elevationJob ( tile._elevationJob ),
-  _tileJob ( tile._tileJob ),
+  _imageJob ( 0x0 ),
+  _elevationJob ( 0x0 ),
+  _tileJob ( 0x0 ),
   _boundingSphere ( tile._boundingSphere ),
   _borders ( new osg::Group )
 {
@@ -294,8 +294,11 @@ void Tile::updateTexture()
   Guard guard ( this );
   
   // Get the image.
-  if ( ( true == _texture.valid() ) && ( 0x0 != _texture->getImage() ) && ( true == this->textureDirty() ) )
+  if ( ( true == _texture.valid() ) && ( 0x0 != _image.get() ) && ( true == this->textureDirty() ) )
   {
+    // Set the image.
+    _texture->setImage ( _image.get() );
+    
     // Get the state set.
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
     ss->setTextureAttributeAndModes ( _textureUnit, _texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
@@ -321,7 +324,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   Guard guard ( this );
 
   // Launch the image request if one is needed.
-  if ( ( true == this->textureDirty() ) && ( false == _jobId.first ) )
+  if ( ( Usul::Bits::has ( _flags, Tile::IMAGE ) ) && ( false == _imageJob.valid() ) )
   {
     this->_launchImageRequest();
   }
@@ -339,13 +342,13 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
   {
     // See if our job is done loading image.
-    if ( ( 0x0 != _body ) && ( true == _jobId.first ) )
+    if ( _imageJob.valid() && _imageJob->isDone() )
     {
-      osg::ref_ptr < osg::Texture2D > texture ( _body->texture ( _jobId.second ) );
-      if ( texture.valid() )
+      osg::ref_ptr < osg::Image > image ( _imageJob->image() );
+      if ( image.valid() )
       {
-        this->textureData ( texture.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
-        _jobId.first = false;
+        this->textureData ( image.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+        _imageJob = 0x0;
       }
     }
     
@@ -1038,20 +1041,12 @@ void Tile::clear()
 {
   USUL_TRACE_SCOPE;
 
-  // Get copy of job id and set the member to default.
-  JobID job ( false, 0 );
-  {
-    Guard guard ( this );
-    job = _jobId;
-    _jobId.first = false;
-  }
-
   // Cancel job if it's valid.
-  if ( true == job.first )
+  if ( true == _imageJob.valid() )
   {
     Guard guard ( this );
-    if ( 0x0 != _body )
-      _body->textureRequestCancel ( job.second );
+    _imageJob->cancel();
+    _imageJob = 0x0;
   }
 
   {
@@ -1064,42 +1059,6 @@ void Tile::clear()
   }
 
   this->dirty ( false, Tile::ALL, false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the texture.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Tile::texture ( osg::Texture2D* texture )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-#if 1
-  if ( 0x0 != texture )
-  {
-    _texture = texture;
-    this->dirty ( true, Tile::TEXTURE, false );
-  }
-#else
-  _texture = texture;
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the texture.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Texture2D* Tile::texture()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _texture.get();
 }
 
 
@@ -1161,14 +1120,13 @@ void Tile::_launchImageRequest()
   // Start the request to pull in texture.
   if ( 0x0 != _body )
   {
-    if ( true == _jobId.first )
+    if ( true == _imageJob.valid() )
     {
-      _body->textureRequestCancel ( _jobId.second );
-      _jobId.first = false;
+      _imageJob->cancel();
+      _imageJob = 0x0;
     }
 
-    _jobId.second = _body->textureRequest ( this->extents(), this->level() );
-    _jobId.first = true;
+    _imageJob = _body->textureRequest ( this->extents(), this->level() );
   }
 }
 
@@ -1206,6 +1164,12 @@ void Tile::image ( osg::Image* image )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _image = image;
+  
+  // Our image is no longer dirty.
+  this->dirty ( false, Tile::IMAGE, false );
+  
+  // Our texture needs to be updated.
+  this->dirty ( true, Tile::TEXTURE, false );
 }
 
 
@@ -1257,12 +1221,9 @@ void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coords )
+void Tile::textureData ( osg::Image* image, const Usul::Math::Vec4d& coords )
 {
   USUL_TRACE_SCOPE;
-
-  // Set the texture.
-  this->texture ( texture );
 
   // Set the texture coordinates.
   this->texCoords ( coords );
@@ -1273,14 +1234,14 @@ void Tile::textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coord
 
     Usul::Math::Vec4d ll, lr, ul, ur;
     this->_quarterTextureCoordinates ( ll, lr, ul, ur );
-    if ( _children[LOWER_LEFT].valid()  && this->image() == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->textureData  ( texture, ll );
-    if ( _children[LOWER_RIGHT].valid() && this->image() == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->textureData ( texture, lr );
-    if ( _children[UPPER_LEFT].valid()  && this->image() == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->textureData  ( texture, ul );
-    if ( _children[UPPER_RIGHT].valid() && this->image() == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->textureData ( texture, ur );
+    if ( _children[LOWER_LEFT].valid()  && image == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->textureData  ( image, ll );
+    if ( _children[LOWER_RIGHT].valid() && image == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->textureData ( image, lr );
+    if ( _children[UPPER_LEFT].valid()  && image == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->textureData  ( image, ul );
+    if ( _children[UPPER_RIGHT].valid() && image == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->textureData ( image, ur );
   }
 
   // Set our image.
-  this->image ( texture->getImage() );
+  this->image ( image );
 }
 
 

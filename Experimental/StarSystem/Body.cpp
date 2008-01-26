@@ -64,7 +64,6 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _rasters ( new RasterGroup ),
   _elevation ( new ElevationGroup ),
   _manager ( manager ),
-  _textureJobs (),
   _maxLevel ( 50 ),
   _cacheTiles ( false ),
   _splitDistance ( splitDistance ),
@@ -276,14 +275,14 @@ void Body::rasterChanged (  Usul::Interfaces::IRasterLayer *layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  irty textures.
+//  dirty textures.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Body::dirtyTextures ( const Extents& e )
 {
   // Dirty the tiles.
-  DirtyTiles dirty ( true, Tile::TEXTURE /*, e*/ );
+  DirtyTiles dirty ( true, Tile::IMAGE /*, e*/ );
   osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
   _transform->accept ( *visitor );
 }
@@ -423,7 +422,7 @@ void Body::postRender ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned long Body::textureRequest ( const Extents &extents, unsigned int level )
+CutImageJob::RefPtr Body::textureRequest ( const Extents &extents, unsigned int level )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -437,63 +436,8 @@ unsigned long Body::textureRequest ( const Extents &extents, unsigned int level 
   Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
   CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters.get(), caller ) );
   _manager->addJob ( job );
-  _textureJobs.insert ( TextureJobs::value_type ( job->id(), job ) );
 
-  return job->id();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Cancel request.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Body::textureRequestCancel ( unsigned long id )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  // Handle no job manager.
-  if ( 0x0 == _manager )
-    return;
-
-  TextureJobs::iterator iter = _textureJobs.find ( id );
-
-  if ( iter != _textureJobs.end() )
-  {
-    CutImageJob::RefPtr job ( iter->second );
-    _manager->cancel ( job );
-    _textureJobs.erase ( iter );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the texture.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Body::TexturePtr Body::texture ( unsigned long id )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  TextureJobs::iterator iter = _textureJobs.find ( id );
-  TexturePtr texture ( 0x0 );
-
-  if ( iter != _textureJobs.end() )
-  {
-    CutImageJob::RefPtr job ( iter->second );
-    if ( job->isDone() && false == job->canceled() )
-    {
-      texture = job->texture();
-      _textureJobs.erase ( iter );
-    }
-  }
-
-  return texture;
+  return job;
 }
 
 
@@ -858,7 +802,6 @@ double Body::elevation ( double lat, double lon ) const
 {
   USUL_TRACE_SCOPE;
 
-#if 1
   Guard guard ( this );
 
   RasterGroup::RefPtr elevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation.get() ) );
@@ -878,6 +821,6 @@ double Body::elevation ( double lat, double lon ) const
         return h;
     }
   }
-#endif
+
   return 0.0;
 }

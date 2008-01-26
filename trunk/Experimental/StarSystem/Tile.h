@@ -72,6 +72,7 @@ public:
     TEX_COORDS = 0x02,
     TEXTURE    = 0x04,
     CHILDREN   = 0x08,
+    IMAGE      = 0x10,
     ALL        = VERTICES | TEX_COORDS | TEXTURE
   };
 
@@ -142,12 +143,8 @@ public:
   Usul::Math::Vec4d         texCoords() const;
   void                      texCoords ( const Usul::Math::Vec4d& );
 
-  // Get/Set the texture.
-  void                      texture ( osg::Texture2D* );
-  osg::Texture2D*           texture ();
-
   // Set the texture data.
-  void                      textureData ( osg::Texture2D* texture, const Usul::Math::Vec4d& coords );
+  void                      textureData ( osg::Image* image, const Usul::Math::Vec4d& coords );
 
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
@@ -209,7 +206,7 @@ private:
   osg::ref_ptr < osg::Image > _elevation;
   osg::ref_ptr < osg::Texture2D > _texture;
   Usul::Math::Vec4d _texCoords;
-  JobID _jobId;
+  CutImageJob::RefPtr _imageJob;
   CutImageJob::RefPtr _elevationJob;
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;

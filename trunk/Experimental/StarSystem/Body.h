@@ -146,13 +146,7 @@ public:
   double                    splitDistance() const;
 
   // Request texture.
-  unsigned long             textureRequest ( const Extents &extents, unsigned int level );
-
-  // Cancel request.
-  void                      textureRequestCancel ( unsigned long id );
-
-  // Get the texture.
-  TexturePtr                texture ( unsigned long id );
+  CutImageJob::RefPtr       textureRequest ( const Extents &extents, unsigned int level );
 
   // Set/get the flag that says to use skirts.
   void                      useSkirts ( bool );

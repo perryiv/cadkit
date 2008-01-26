@@ -21,6 +21,12 @@
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/System/Directory.h"
+#include "Usul/System/Host.h"
+
+#include "OsgTools/Visitor.h"
+#include "OsgTools/State/StateSet.h"
+
+#include "osg/Material"
 
 #include "osgDB/ReadFile"
 
@@ -253,6 +259,50 @@ KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Turn off non-power of two resizing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct ModelPostProcess
+  {
+    void operator () ( osg::Node * node )
+    {
+      if ( 0x0 != node )
+      {
+        osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+
+        OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
+
+        if ( ss.valid() )
+        {
+          if ( osg::Texture* texture = dynamic_cast<osg::Texture*> ( ss->getTextureAttribute ( 0, osg::StateAttribute::TEXTURE ) ) )
+          {
+            texture->setResizeNonPowerOfTwoHint ( false );
+            texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
+            texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+          }
+          else
+          {
+#if 0
+            std::cout << "Changing material" << std::endl;
+            osg::ref_ptr<osg::Material> mat ( new osg::Material );
+            mat->setAmbient ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+            mat->setDiffuse ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+            mat->setEmission (  osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+            ss->setAttributeAndModes ( mat.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+#endif
+          }
+        }
+      }
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Parse a placemark.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -288,7 +338,18 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
   {
     osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _filename, true ) + filename ) );
     if ( node.valid() )
+    {
+      osg::NotifySeverity level ( osg::getNotifyLevel() );
+      osg::setNotifyLevel ( osg::ALWAYS );
+
       model->model ( node.get() );
+
+      osg::setNotifyLevel ( level );
+ 
+      Detail::ModelPostProcess nv;
+      osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Node>::make ( nv ) );
+      node->accept ( *visitor );
+    }
   }
   
   model->location ( location );

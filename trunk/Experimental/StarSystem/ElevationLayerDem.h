@@ -14,6 +14,7 @@
 #include "StarSystem/Export.h"
 #include "StarSystem/RasterLayerOssim.h"
 
+#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Math/Vector2.h"
 
 class ossimProjection; class ossimDemGrid;
@@ -21,12 +22,15 @@ class ossimProjection; class ossimDemGrid;
 namespace StarSystem {
 
 
-class STAR_SYSTEM_EXPORT ElevationLayerDem : public RasterLayer
+  class STAR_SYSTEM_EXPORT ElevationLayerDem : public RasterLayer,
+    public Usul::Interfaces::IElevationDatabase
 {
 public:
   typedef RasterLayer BaseClass;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
-  USUL_DECLARE_REF_POINTERS ( ElevationLayerDem );
+  USUL_DECLARE_QUERY_POINTERS ( ElevationLayerDem );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   ElevationLayerDem();
   
@@ -44,6 +48,8 @@ public:
   
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node &node );
+
+  virtual double        elevationAtLatLong ( double lat, double lon ) const;
 protected:
   virtual ~ElevationLayerDem();
   

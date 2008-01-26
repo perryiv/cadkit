@@ -26,6 +26,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Threads/Safe.h"
@@ -844,4 +845,39 @@ Body::Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
   const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
   
   return Extents ( minLon, minLat, maxLon, maxLat );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation at a lat, lon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Body::elevation ( double lat, double lon ) const
+{
+  USUL_TRACE_SCOPE;
+
+#if 1
+  Guard guard ( this );
+
+  RasterGroup::RefPtr elevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation.get() ) );
+
+  // Get the number of layers.
+  const int number ( elevation->size() );
+
+  // Loop through the elevation data sets from last to first.
+  for ( int i = number - 1; i >= 0; --i )
+  {
+    Usul::Interfaces::IElevationDatabase::QueryPtr data ( elevation->layer ( i ) );
+    if ( data.valid() )
+    {
+      // Get the height for this layer.
+      const double h ( data->elevationAtLatLong ( lat, lon ) );
+      if ( h > 0.0 )
+        return h;
+    }
+  }
+#endif
+  return 0.0;
 }

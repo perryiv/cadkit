@@ -1,7 +1,7 @@
 
-PROJECT(MinervaDocument)
+PROJECT(MinervaLayersKml)
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
@@ -15,8 +15,6 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 SET ( Boost_USE_DATE_TIME TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
-# ------------ Find PQXX Library ----------------------
-FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
@@ -26,37 +24,26 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
-         "${CADKIT_INC_DIR}/Experimental"
+		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${WMS_INC_DIR}
 		     ${OSSIM_INC_DIR}
-		     ${OSG_EPHEMERIS_INC_DIR}
-		     $ENV{PQXX_INC_DIR}
 		     )
 
 
 #List the Sources
 SET (SOURCES
-./CommandSender.cpp
-./MinervaDocument.cpp
-./KmlWriter.cpp
-./MinervaWriter.cpp
-./MinervaReader.cpp
-./CommandReceiver.cpp
-./Planet.cpp
+./KmlLayer.cpp
 )
 
 # Create a Shared Library
-ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
+ADD_LIBRARY(MinervaLayersKml SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaDocument Usul OsgTools StarSystem SerializeXML XmlTree Minerva )
-TARGET_LINK_LIBRARIES( MinervaDocument
+LINK_CADKIT( MinervaLayersKml Usul OsgTools SerializeXML XmlTree StarSystem )
+TARGET_LINK_LIBRARIES( MinervaLayersKml
 	${Boost_LIBRARIES}
-	${PQXX_LIB}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
-	${OSG_DB_LIB}
 	${OSSIM_LIB}
 )

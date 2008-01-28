@@ -47,6 +47,11 @@ typedef IQueryColors<1033359992,ShapeHandle,SlVec3d> IQueryShapeColorsVec3d;
 typedef IQueryColors<1033359993,ShapeHandle,SlVec4f> IQueryShapeColorsVec4f;
 typedef IQueryColors<1033359994,ShapeHandle,SlVec4d> IQueryShapeColorsVec4d;
 
+typedef IQueryColors<1033359995,PrimHandle,SlVec3f> IQueryPrimColorsVec3f;
+typedef IQueryColors<1033359996,PrimHandle,SlVec3d> IQueryPrimColorsVec3d;
+typedef IQueryColors<1033359997,PrimHandle,SlVec4f> IQueryPrimColorsVec4f;
+typedef IQueryColors<1033359998,PrimHandle,SlVec4d> IQueryPrimColorsVec4d;
+
 
 }; // namespace CadKit
 

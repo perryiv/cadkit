@@ -70,6 +70,17 @@ enum LodProcessOption
   PROCESS_LOW_LOD,
 };
 
+// Possible primitives.
+enum PrimitiveType
+{
+  BOX,
+  CYLINDER,
+  PYRAMID,
+  SPHERE,
+  TRIPRISM,
+  UNKNOWN_PRIM
+};
+
 
 }; // namespace CadKit
 

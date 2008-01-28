@@ -26,6 +26,9 @@
 #include "Interfaces/IQueryTexCoords.h"
 #include "Interfaces/IClientData.h"
 #include "Interfaces/IUnits.h"
+#include "Interfaces/IPrimQuery.h"
+#include "Interfaces/IQueryPrimOrigins.h"
+#include "Interfaces/IQueryPrimParams.h"
 
 #include "Standard/SlPrint.h"
 #include "Standard/SlAssert.h"
@@ -38,6 +41,8 @@
 #include "osg/LOD"             // Keep these in here because they bring in 
 #include "osg/Geode"           // <cmath> which fauls up <math.h> in 
 #include "osg/Geometry"        // "Standard/SlTemplateSupport.h"
+#include "osg/Shape"
+#include "osg/ShapeDrawable"
 #include "osgDB/WriteFile"
 #include "osgUtil/Optimizer"
 
@@ -193,6 +198,8 @@ IUnknown *DbOsgDatabase::queryInterface ( unsigned long iid )
     return static_cast<IOutputAttribute *>(this);
   case IOutputUnits::IID:
     return static_cast<IOutputUnits *>(this);
+  case IPrimNotify::IID:
+    return static_cast<IPrimNotify *>(this);
   default:
     return DbBaseTarget::queryInterface ( iid );
   }
@@ -913,6 +920,250 @@ bool DbOsgDatabase::_hasColorAttribute ( IUnknown *caller, ShapeHandle shape ) c
 bool DbOsgDatabase::endEntity ( ShapeHandle shape, IUnknown *caller )
 {
   SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, shape = %d, caller = %X\n", this, shape, caller );
+  SL_ASSERT ( caller );
+
+  // Nothing to do.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::startEntity ( PrimHandle prim, IUnknown *caller )
+{
+  SL_PRINT4 ( "In DbOsgDatabase::startEntity(), this = %X, prim = %d, caller = %X\n", this, prim, caller );
+  SL_ASSERT ( caller );
+
+  // Get the interface we need from the caller.
+  SlQueryPtr<IPrimQueryFloat> query ( caller );
+  if ( query.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  // Get the osg::Geode we need.
+  SlRefPtr<osg::Object> object ( (osg::Object *) ( this->getClientData ( query->getParent ( prim ) ) ) );
+  SlRefPtr<osg::Geode> geode ( dynamic_cast<osg::Geode *> ( object.getValue() ) );
+  if ( geode.isNull() )
+    return ERROR ( "Failed to find geode to add primitive geometry to.", CadKit::FAILED );
+
+  // Create a Geometry drawable.
+  SlRefPtr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable );
+  if ( drawable.isNull() )
+    return ERROR ( "Failed to create osg::ShapeDrawable for given primitive handle.", CadKit::FAILED );
+
+  // Create a StateSet.
+  SlRefPtr<osg::StateSet> state ( new osg::StateSet );
+  if ( state.isNull() )
+    return ERROR ( "Failed to create osg::StateSet for given primitive handle.", CadKit::FAILED );
+
+  // Add the osg::Shape node to represent this primitive. We have to call this before we add the 
+  // attributes (like material) because in OSG, materials take precedence.
+  if ( false == this->_addPrimitive ( caller, prim, drawable ) )
+    return ERROR ( "Failed to add osg shape for given primitive.", CadKit::FAILED );
+  
+  // add color to the primitive
+  _addColors( caller, prim, drawable );
+
+  // Add the material, texture, etc.
+  if ( false == this->_addAttributes ( caller, prim, state ) )
+    return ERROR ( "Failed to add attributes for given primitive.", CadKit::FAILED );
+
+  // Set the state of the geometry.
+  drawable->setStateSet ( state );
+
+  // Add the Geometry to the Geode.
+  geode->addDrawable ( drawable );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the primitive to the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::_addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable )
+{
+  SL_PRINT5 ( "In DbOsgDatabase::_addPrimitive(), this = %X, caller = %X, primitive = %d, geometry = %X\n", this, caller, prim, geometry );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( drawable );
+
+  // Get the interfaces we need from the caller.
+  SlQueryPtr<IQueryPrimOriginsVec3f> originQuery ( caller );
+  if ( originQuery.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  SlQueryPtr<IQueryPrimParamsFloat> paramQuery ( caller );
+  if ( paramQuery.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  // Get the primitive type.
+  PrimitiveType type;
+  if ( false == originQuery->getPrimType ( prim, type ) )
+    return ERROR ( "Failed to obtain primitive type.", CadKit::FAILED );
+
+  // Should be true.
+  SL_ASSERT ( CadKit::UNKNOWN_PRIM != type );
+
+  // Get the origins.
+  DbOsgPrimOriginSetter originSetter( type );
+  if ( !originQuery->getPrimOrigins ( prim, originSetter ) )
+    return ERROR ( "Failed to obtain primitive origins.", CadKit::FAILED );
+  
+  // Get the parameters
+  DbOsgPrimParamSetter paramSetter( type );
+  if ( !paramQuery->getPrimParams ( prim, paramSetter ) )
+    return ERROR ( "Failed to obtain primitive parameters.", CadKit::FAILED );
+  
+  if ( type == CadKit::BOX )
+  {
+    return WARNING ( FORMAT ( "Box primitive not supported." ), CadKit::FAILED );
+  }
+  else if ( type == CadKit::CYLINDER )
+  {
+    osg::Vec3f orientationVec(paramSetter.getPrimParams()->at(0), 
+                              paramSetter.getPrimParams()->at(1), 
+                              paramSetter.getPrimParams()->at(2));
+    osg::Vec3f startVec(0.0f, 0.0f, 1.0f);
+    osg::Quat cylRot;
+    cylRot.makeRotate(startVec, orientationVec);
+    float cylLength = orientationVec.length();
+    osg::Vec3f cylCenter(originSetter.getPrimOrigins()->at(0));
+    cylCenter[1] += cylLength * 0.5f;
+   
+    osg::ref_ptr<osg::Cylinder> cyl = new osg::Cylinder;
+    cyl->setCenter(cylCenter);
+    cyl->setHeight(cylLength);
+    cyl->setRotation(cylRot);
+    cyl->setRadius(paramSetter.getPrimParams()->at(3)); // NOTE: source supports two radii for creating cones
+
+    drawable->setShape(cyl.get());
+    return true;
+  }
+  else if ( type == CadKit::PYRAMID )
+  {
+    return WARNING ( FORMAT ( "Pyramid primitive not supported." ), CadKit::FAILED );
+  }
+  else if ( type == CadKit::SPHERE )
+  {
+    return WARNING ( FORMAT ( "Sphere primitive not supported." ), CadKit::FAILED );
+  }
+  else if ( type == CadKit::TRIPRISM )
+  {
+    return WARNING ( FORMAT ( "TriPrism primitive not supported." ), CadKit::FAILED );
+  }
+
+  // It didn't work.
+  return WARNING ( FORMAT ( "Failed to get data for primitive %X.", prim ), CadKit::FAILED );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the primitive's color(s).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::_addColors ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable )
+{
+  SL_PRINT5 ( "In DbOsgDatabase::_addColors(), this = %X, caller = %X, primitive = %d, drawable = %X\n", this, caller, prim, drawable );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( drawable );
+
+  // Get the interface we need from the caller.
+  SlQueryPtr<IQueryPrimColorsVec4f> query ( caller );
+  if ( query.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  // Get the colors.
+  DbOsgPrimColorSetter setter;
+  if ( query->getColors ( prim, setter ) )
+  {
+    // Set the color.
+    drawable->setColor( setter.getColors()->at(0) );
+
+    // It worked.
+    return true;
+  }
+
+  // It didn't work. Don't report an error, there may not be any.
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the primitive's attributes to the given state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::_addAttributes ( IUnknown *caller, PrimHandle prim, osg::StateSet *state )
+{
+  SL_PRINT5 ( "In DbOsgDatabase::_addAttributes(), this = %X, caller = %X, shape = %d, primitive = %X\n", this, caller, prim, state );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( state );
+  
+  // Get the interface we need from the caller.
+  SlQueryPtr<IPrimQueryFloat> query ( caller );
+  if ( query.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  // If there are no color attributes then look for a material. We do this 
+  // because OSG will use the material first.
+  if ( false == this->_hasColorAttribute ( caller, prim ) )
+  {
+    // Get the material from the shape, part, or assembly.
+    SlMaterialf material;
+    if ( true == query->getMaterial ( prim, material, true ) )
+      CadKit::setMaterial ( material, state );
+  }
+
+  // TODO, texture.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given primitive has any color attributes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::_hasColorAttribute ( IUnknown *caller, PrimHandle prim ) const
+{
+  SL_PRINT4 ( "In DbOsgDatabase::_hasColorAttribute(), this = %X, primitive = %d, caller = %X\n", this, prim, caller );
+  SL_ASSERT ( caller );
+
+  // Get the interface we need from the caller.
+  SlQueryPtr<IQueryPrimColorsVec4f> query ( caller );
+  if ( query.isNull() )
+    return false;
+
+  // Get the color binding.
+  VertexBinding binding;
+  if ( false == query->getColorBinding ( prim, binding ) )
+    return false;
+
+  // Does it have colors?
+  return BINDING_OFF != binding;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End the primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::endEntity ( PrimHandle prim, IUnknown *caller )
+{
+  SL_PRINT4 ( "In DbOsgDatabase::endEntity(), this = %X, prim = %d, caller = %X\n", this, prim, caller );
   SL_ASSERT ( caller );
 
   // Nothing to do.

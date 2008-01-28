@@ -40,6 +40,7 @@ namespace osg
   class LOD;
   class Geometry;
   class StateSet;
+  class ShapeDrawable;
 };
 
 
@@ -51,6 +52,7 @@ class DB_OSG_API DbOsgDatabase : public DbBaseTarget,
                                  public IInstanceNotify,
                                  public ILodNotify,
                                  public IShapeNotify,
+                                 public IPrimNotify,
                                  public ISetNotify,
                                  public IFileExtension,
                                  public IDataWrite,
@@ -147,6 +149,18 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  IPrimNotify interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // End the shape.
+  virtual bool            endEntity ( PrimHandle prim, IUnknown *caller );
+
+  // Start the shape.
+  virtual bool            startEntity ( PrimHandle prim, IUnknown *caller );
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  ISetNotify interface.
   //
   /////////////////////////////////////////////////////////////////////////////
@@ -210,6 +224,10 @@ protected:
   bool                    _addNormals    ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
   bool                    _addColors     ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
   bool                    _addTexCoords  ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
+  
+  bool                    _addAttributes ( IUnknown *caller, PrimHandle prim, osg::StateSet *state );
+  bool                    _addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable );
+  bool                    _addColors     ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable );
 
   void                    _clearGroupStack();
 
@@ -218,6 +236,7 @@ protected:
   osg::Group *            _getRoot() const;
 
   bool                    _hasColorAttribute ( IUnknown *caller, ShapeHandle shape ) const;
+  bool                    _hasColorAttribute ( IUnknown *caller, PrimHandle prim ) const;
 
   void                    _pushGroup ( osg::Group *group );
   void                    _popGroup();

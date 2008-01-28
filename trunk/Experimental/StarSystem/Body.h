@@ -28,6 +28,7 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Threads/Variable.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -55,7 +56,8 @@ public:
   typedef StarSystem::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
-  typedef osg::ref_ptr < osg::Texture2D > TexturePtr;
+  typedef RasterGroup::Rasters Rasters;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
@@ -110,6 +112,9 @@ public:
   // Pre- and post-render notifications.
   virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
   virtual void              postRender ( Usul::Interfaces::IUnknown *caller );
+  
+  // Get the rasters.
+  void                      rasters ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller );
 
   // Append raster data.
   void                      rasterAppend ( Usul::Interfaces::IRasterLayer * );
@@ -162,6 +167,7 @@ protected:
 private:
 
   typedef std::map < unsigned long, CutImageJob::RefPtr > TextureJobs;
+  typedef Usul::Threads::Variable<Usul::Jobs::Manager*> JobManager;
 
   // No copying or assignment.
   Body ( const Body & );
@@ -173,7 +179,7 @@ private:
   LandModel::RefPtr _landModel;
   RasterGroup::RefPtr _rasters;
   ElevationGroup::RefPtr _elevation;
-  Usul::Jobs::Manager *_manager;
+  JobManager _manager;
   TextureJobs _textureJobs;
   unsigned int _maxLevel;
   bool _cacheTiles;

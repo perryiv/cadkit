@@ -83,6 +83,7 @@ public:
   typedef Usul::Math::Vector4 < Tile::RefPtr > Children;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
+  typedef MeshSize ImageSize;
   typedef std::vector < Tile::RefPtr > Tiles;
   typedef std::pair < bool, unsigned long > JobID;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
@@ -90,16 +91,20 @@ public:
   typedef osg::observer_ptr < Tile > WeakPtr;
   typedef osg::ref_ptr<osg::Node> NodePtr;
   typedef StarSystem::Mesh<osg::Vec3d> Mesh;
+  typedef std::pair<ImagePtr, Usul::Math::Vec4d> TextureData;
+  typedef std::vector<TextureData> Textures;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
          const Extents &extents = Extents ( Extents::Vertex ( 0, 0 ), Extents::Vertex ( 1, 1 ) ), 
          const MeshSize &meshSize = MeshSize ( 10, 10 ),
+         const ImageSize& imageSize = ImageSize ( 512, 512 ),
          const Usul::Math::Vec4d& texCoords = Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ),
          double splitDistance = 1,
          Body *body = 0x0,
          osg::Image * image = 0x0,
-         osg::Image * elevation = 0x0 );
+         osg::Image * elevation = 0x0,
+         const Textures& textures = Textures() );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
   // Clear the scene.
@@ -211,6 +216,8 @@ private:
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;
   osg::ref_ptr<osg::Group> _borders;
+  Textures _textures;
+  ImageSize _imageSize;
 };
 
 

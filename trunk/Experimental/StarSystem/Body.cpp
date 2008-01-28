@@ -140,7 +140,10 @@ void Body::addTile ( const Extents &extents )
   // Make the tile.
   const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
   const MeshSize meshSize ( this->meshSize ( extents ) );
-  osg::ref_ptr<Tile> tile ( new Tile ( level, extents, meshSize, textureCoords, _splitDistance, this, image.get() ) );
+  const Tile::ImageSize imageSize ( width, height );
+  Tile::Textures textures;
+  textures.push_back ( Tile::TextureData ( image.get(), textureCoords ) );
+  osg::ref_ptr<Tile> tile ( new Tile ( level, extents, meshSize, imageSize, textureCoords, _splitDistance, this, image.get(), 0x0, textures ) );
 
   // Add tile to the trnsform.
   _transform->addChild ( tile.get() );
@@ -371,8 +374,8 @@ osg::Matrixd Body::planetRotationMatrix ( double lat, double lon, double elevati
 Usul::Jobs::Manager *Body::jobManager()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _manager;
+  JobManager::GuardType guard ( _manager.mutex() );
+  return _manager.value();
 }
 
 
@@ -385,7 +388,7 @@ Usul::Jobs::Manager *Body::jobManager()
 void Body::jobManager ( Usul::Jobs::Manager *manager )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  JobManager::GuardType guard ( _manager.mutex() );
   _manager = manager;
 }
 
@@ -427,7 +430,7 @@ CutImageJob::RefPtr Body::textureRequest ( const Extents &extents, unsigned int 
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( 0x0 == _manager )
+  if ( 0x0 == this->jobManager() )
   {
     // Have to throw because there's no value we can return.
     throw std::runtime_error ( "Error 3925869673: Job manager is null" );
@@ -435,7 +438,7 @@ CutImageJob::RefPtr Body::textureRequest ( const Extents &extents, unsigned int 
 
   Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
   CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters.get(), caller ) );
-  _manager->addJob ( job );
+  this->jobManager()->addJob ( job );
 
   return job;
 }
@@ -823,4 +826,23 @@ double Body::elevation ( double lat, double lon ) const
   }
 
   return 0.0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the rasters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::rasters ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
+{
+  RasterGroup::RefPtr group ( 0x0 );
+  
+  {
+    Guard guard ( this );
+    group = _rasters;
+  }
+  
+  if ( group.valid() ) group->textures ( rasters, extents, width, height, level, job, caller );
 }

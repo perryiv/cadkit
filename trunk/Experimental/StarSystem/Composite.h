@@ -124,7 +124,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
     inline osg::Image* subRegion ( const osg::Image& image, const Usul::Math::Vec4d& region )
     {
       osg::ref_ptr < osg::Image > result ( new osg::Image );
-      result->allocateImage ( image.s(), image.t(), 1, image.getPixelFormat(), GL_RGBA );
+      result->allocateImage ( image.s(), image.t(), 1, GL_RGBA, GL_UNSIGNED_BYTE );
       ::memset ( result->data(), 0, result->getImageSizeInBytes() );
       
       const bool hasAlpha ( GL_RGBA == image.getPixelFormat() );
@@ -149,6 +149,8 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
           
           const int sp ( Usul::Math::minimum ( width, static_cast<int> ( up * width + 0.5 ) ) );
           const int tp ( Usul::Math::minimum ( height, static_cast<int> ( vp * height + 0.5 ) ) );
+
+          //std::cout << "Accessing " << s << " " << t << " of destination.  Accessing " << sp << " " << tp << " of source." << std::endl;
           
           unsigned char *dst (  result->data ( s, t ) );
           const unsigned char* src ( image.data ( sp, tp ) );

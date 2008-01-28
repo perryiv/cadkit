@@ -23,6 +23,7 @@
 #include "StarSystem/Mesh.h"
 
 #include "Usul/Base/Typed.h"
+#include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
@@ -49,6 +50,8 @@ class RasterLayer;
 class STAR_SYSTEM_EXPORT Tile : public osg::Group
 {
 public:
+  // OSG Plumbing.
+  META_Node ( StarSystem, Tile );
 
   // Declare smart pointers.
   USUL_DECLARE_REF_POINTERS ( Tile );
@@ -59,10 +62,11 @@ public:
   // Indices for children
   enum Indices
   {
-    LOWER_LEFT,
-    LOWER_RIGHT,
-    UPPER_LEFT,
-    UPPER_RIGHT
+    NONE = -1,
+    LOWER_LEFT = 0,
+    LOWER_RIGHT = 1,
+    UPPER_LEFT = 2,
+    UPPER_RIGHT = 3
   };
 
   // Dirty flags.
@@ -80,11 +84,11 @@ public:
   typedef osg::Group BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
-  typedef Usul::Math::Vector4 < Tile::RefPtr > Children;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
   typedef MeshSize ImageSize;
   typedef std::vector < Tile::RefPtr > Tiles;
+  typedef Tiles Children;
   typedef std::pair < bool, unsigned long > JobID;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   typedef osg::BoundingSphere BSphere;
@@ -93,25 +97,33 @@ public:
   typedef StarSystem::Mesh<osg::Vec3d> Mesh;
   typedef std::pair<ImagePtr, Usul::Math::Vec4d> TextureData;
   typedef std::vector<TextureData> Textures;
+  typedef Usul::Interfaces::IRasterLayer IRasterLayer;
+  typedef std::map <IRasterLayer::RefPtr, TextureData> TextureMap;
 
   // Constructors.
   Tile ( unsigned int level = 0, 
          const Extents &extents = Extents ( Extents::Vertex ( 0, 0 ), Extents::Vertex ( 1, 1 ) ), 
          const MeshSize &meshSize = MeshSize ( 10, 10 ),
          const ImageSize& imageSize = ImageSize ( 512, 512 ),
-         const Usul::Math::Vec4d& texCoords = Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ),
          double splitDistance = 1,
          Body *body = 0x0,
          osg::Image * image = 0x0,
-         osg::Image * elevation = 0x0,
-         const Textures& textures = Textures() );
+         osg::Image * elevation = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
   // Clear the scene.
   void                      clear();
+
+  // Get the index of the child.
+  Indices                   child ( Tile* ) const;
   
   // Build raster.
   static ImagePtr           buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer* raster, Usul::Jobs::Job::RefPtr );
+
+  // Build raster.
+  void                      buildRaster ( const Usul::Math::Vec4d& region,
+                                          Tile::RefPtr parent, 
+                                          Usul::Jobs::Job::RefPtr );
 
   // Compute the bounding sphere.
   virtual BSphere           computeBound() const;
@@ -147,6 +159,9 @@ public:
   // Get/Set the starting texture coordinates.
   Usul::Math::Vec4d         texCoords() const;
   void                      texCoords ( const Usul::Math::Vec4d& );
+
+  // Get the image from the given RasterLayer.  May return null.
+  TextureData               texture ( IRasterLayer * ) const;
 
   // Set the texture data.
   void                      textureData ( osg::Image* image, const Usul::Math::Vec4d& coords );
@@ -188,9 +203,15 @@ protected:
 
   // Quarter the texture coordinates.
   void                      _quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const;
+  static Usul::Math::Vec4d  _textureCoordinatesSubRegion ( const Usul::Math::Vec4d& region, Indices index );
 
   // Build a tile.
-  Tile::RefPtr              _buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job::RefPtr job ) const;
+  Tile::RefPtr              _buildTile ( unsigned int level, 
+                                         const Extents& extents, 
+                                         const MeshSize& size, 
+                                         const Usul::Math::Vec4d& region, 
+                                         double splitDistance, 
+                                         Usul::Jobs::Job::RefPtr job ) const;
 private:
 
   // No assignment.
@@ -216,7 +237,7 @@ private:
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;
   osg::ref_ptr<osg::Group> _borders;
-  Textures _textures;
+  TextureMap _textureMap;
   ImageSize _imageSize;
 };
 

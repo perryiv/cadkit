@@ -429,10 +429,10 @@ void RasterGroup::textures ( Rasters& rasters, const Extents& extents, unsigned 
       {
         // Get the image for the layer.
         image = raster->texture ( extents, width, height, level, job, caller );
+
+        // Add the image and the raster layer.
+        rasters.push_back ( RasterData ( image, raster ) );
       }
     }
-    
-    // Add the image and the raster layer.
-    rasters.push_back ( RasterData ( image, raster ) );
   }
 }

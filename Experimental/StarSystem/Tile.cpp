@@ -69,6 +69,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _extents ( extents ),
   _splitDistance ( splitDistance ),
   _mesh ( new Mesh ( meshSize[0], meshSize[1] ) ),
+  _lowerLeft(),
   _level ( level ),
   _flags ( Tile::ALL ),
   _children( 4 ),
@@ -118,6 +119,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _extents ( tile._extents ),
   _splitDistance ( tile._splitDistance ),
   _mesh ( new Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
+  _lowerLeft ( tile._lowerLeft ),
   _level ( tile._level ),
   _flags ( Tile::ALL ),
   _children ( tile._children ),
@@ -254,6 +256,7 @@ void Tile::updateMesh()
       p = p - ll;
     }
   }
+  _lowerLeft = ll;
 
   // Unset these dirty flags.
   this->dirty ( false, Tile::VERTICES, false );
@@ -415,10 +418,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   Mesh &mesh ( *_mesh );
   const osg::Vec3f &eye ( cv.getViewPointLocal() );
   
-  const osg::Vec3f &p00 ( mesh.point ( 0, 0 ) );
-  const osg::Vec3f &p0N ( mesh.point ( 0, mesh.columns() - 1 ) );
-  const osg::Vec3f &pN0 ( mesh.point ( mesh.rows() - 1, 0 ) );
-  const osg::Vec3f &pNN ( mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
+  const osg::Vec3f &p00 ( _lowerLeft + mesh.point ( 0, 0 ) );
+  const osg::Vec3f &p0N ( _lowerLeft + mesh.point ( 0, mesh.columns() - 1 ) );
+  const osg::Vec3f &pN0 ( _lowerLeft + mesh.point ( mesh.rows() - 1, 0 ) );
+  const osg::Vec3f &pNN ( _lowerLeft + mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
   const osg::Vec3f &pBC ( this->getBound().center() );
   
   // Squared distances from the eye to the points.

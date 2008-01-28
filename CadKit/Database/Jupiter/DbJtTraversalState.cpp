@@ -38,6 +38,7 @@ DbJtTraversalState::DbJtTraversalState() :
   _instance ( NULL ),
   _lod      ( UNSET_INDEX ),
   _shape    ( UNSET_INDEX ),
+  _prim     ( UNSET_INDEX ),
   _set      ( UNSET_INDEX )
 {
   SL_PRINT2 ( "In DbJtTraversalState::DbJtTraversalState(), this = %X\n", this );
@@ -56,6 +57,7 @@ DbJtTraversalState::DbJtTraversalState ( const DbJtTraversalState &state ) :
   _instance ( state._instance ),
   _lod      ( state._lod ),
   _shape    ( state._shape ),
+  _prim     ( state._prim ),
   _set      ( state._set )
 {
   SL_PRINT2 ( "In DbJtTraversalState::DbJtTraversalState(), this = %X\n", this );
@@ -90,6 +92,7 @@ bool DbJtTraversalState::isEqual ( const DbJtTraversalState &state ) const
     _instance == state._instance &&
     _lod      == state._lod      &&
     _shape    == state._shape    &&
+    _prim     == state._prim     &&
     _set      == state._set
     );
 }
@@ -110,5 +113,6 @@ void DbJtTraversalState::setValue ( const DbJtTraversalState &state )
   _instance = state._instance;
   _lod      = state._lod;
   _shape    = state._shape;
+  _prim     = state._prim;
   _set      = state._set;
 }

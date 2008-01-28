@@ -70,6 +70,11 @@
 #define eaiLINESTRIPSET JtkLINESTRIPSET
 #define eaiPOINTSET JtkPOINTSET
 #define eaiTRISTRIPSET JtkTRISTRIPSET
+#define eaiBOXSET JtkBOXSET
+#define eaiCYLINDERSET JtkCYLINDERSET
+#define eaiPYRAMIDSET JtkPYRAMIDSET
+#define eaiSPHERESET JtkSPHERESET
+#define eaiTRIPRISMSET JtkTRIPRISMSET
 
 // class redefinitions
 #define eaiEntity JtkEntity

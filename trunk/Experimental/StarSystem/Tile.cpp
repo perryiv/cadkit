@@ -61,8 +61,9 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 ///////////////////////////////////////////////////////////////////////////////
 
 Tile::Tile ( unsigned int level, const Extents &extents, 
-             const MeshSize &meshSize, const ImageSize& imageSize, const Usul::Math::Vec4d& texCoords, double splitDistance, 
-             Body *body, osg::Image* image, osg::Image * elevation, const Textures& textures ) : BaseClass(),
+             const MeshSize &meshSize, const ImageSize& imageSize, double splitDistance, 
+             Body *body, osg::Image* image, osg::Image * elevation ) : 
+  BaseClass(),
   _mutex ( new Tile::Mutex ),
   _body ( body ),
   _extents ( extents ),
@@ -70,18 +71,18 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _mesh ( new Mesh ( meshSize[0], meshSize[1] ) ),
   _level ( level ),
   _flags ( Tile::ALL ),
-  _children(),
+  _children( 4 ),
   _textureUnit ( 0 ),
   _image ( image ),
   _elevation ( elevation ),
   _texture ( new osg::Texture2D ),
-  _texCoords ( texCoords ),
+  _texCoords ( 0.0, 1.0, 0.0, 1.0 ),
   _imageJob ( 0x0 ),
   _elevationJob ( 0x0 ),
   _tileJob ( 0x0 ),
   _boundingSphere(),
   _borders ( new osg::Group ),
-  _textures ( textures ),
+  _textureMap (),
   _imageSize ( imageSize )
 {
   USUL_TRACE_SCOPE;
@@ -110,7 +111,8 @@ Tile::Tile ( unsigned int level, const Extents &extents,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, option ),
+Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : 
+  BaseClass ( tile, option ),
   _mutex ( new Tile::Mutex ),
   _body ( tile._body ),
   _extents ( tile._extents ),
@@ -128,7 +130,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _tileJob ( 0x0 ),
   _boundingSphere ( tile._boundingSphere ),
   _borders ( new osg::Group ),
-  _textures ( tile._textures ),
+  _textureMap ( tile._textureMap ),
   _imageSize ( tile._imageSize )
 {
   USUL_TRACE_SCOPE;
@@ -378,12 +380,8 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // This will ensure proper splitting.
     if ( this->verticesDirty() )
       this->updateMesh();
-    
-    //cv->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
-    
+        
     this->_cull ( *cv );
-    
-    //cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
   }
   else
   {
@@ -518,20 +516,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Traverse low level of detail.
   if ( low || _tileJob.valid() )
   {
-#if 0
-    osg::BoundingBox bb;
-    osg::BoundingSphere bs ( this->getBound() );
-    bb.expandBy ( osg::BoundingSphere ( bs.center(), bs.radius() * 0.5 ) );
-    cv.updateCalculatedNearFar ( *cv.getModelViewMatrix(), bb );
-#endif
-    
-#if 0
-    cv.updateCalculatedNearFar ( p00 );
-    cv.updateCalculatedNearFar ( p0N );
-    cv.updateCalculatedNearFar ( pN0 );
-    cv.updateCalculatedNearFar ( pNN );
-#endif
-    
     this->getChild ( 0 )->accept ( cv );
   }
 
@@ -609,115 +593,22 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, const MeshSize& size, const Usul::Math::Vec4d& texCoords, double splitDistance, Usul::Jobs::Job::RefPtr job ) const
+Tile::RefPtr Tile::_buildTile ( unsigned int level, 
+                                const Extents& extents, 
+                                const MeshSize& size, 
+                                const Usul::Math::Vec4d& region, 
+                                double splitDistance, 
+                                Usul::Jobs::Job::RefPtr job ) const
 {
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
   // Handle no body.
   if ( false == body.valid() )
     return 0x0;
-  
-  // The texture coordinates to use.
-  Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
-  
+
   // Width and height for the image.
   const ImageSize imageSize ( Usul::Threads::Safe::get ( this->mutex(), _imageSize ) );
-  const unsigned int width ( imageSize[0] );
-  const unsigned int height ( imageSize[1] );
-  
-  // Get the rasters.
-  typedef Body::Rasters Rasters;
-  Rasters rasters;
-  body->rasters ( rasters, extents, width, height, level, job, 0x0 );
-  
-  // Texture data.
-  Textures textures;
-  textures.reserve ( rasters.size() );
-  
-  // Build the list of images to be composited.
-  for ( Rasters::iterator iter = rasters.begin(); iter != rasters.end(); ++iter )
-  {
-    // Get the image.
-    osg::ref_ptr<osg::Image> image ( iter->first );
-    
-    if ( image.valid() )
-    {
-      // Add the image to the list of textures.
-      textures.push_back ( TextureData ( image, tCoords ) );
-    }
-    else
-    {
-#if 0
-      const long num ( std::distance<Rasters::const_iterator> ( rasters.begin(), iter ) );
-      
-      Guard guard ( this );
-      if ( num > 0 && num < static_cast<long> ( _textures.size() ) )
-      {
-        // Use the suggested texture coordinates.
-        textures.push_back ( TextureData ( _textures.at ( num ).first, texCoords ) );
-      }
-#endif
-    }
-  }
-  
-  // Image.
-  osg::ref_ptr<osg::Image> result ( 0x0 );
-  
-  // Loop through the images to be composited.
-  for ( Textures::const_iterator iter = textures.begin(); iter != textures.end(); ++iter )
-  {
-    // Get the image.
-    osg::ref_ptr<osg::Image> image ( iter->first );
-    
-    if ( image.valid() )
-    {
-      // Is this the first image?
-      if ( false == result.valid() )
-      {
-        // We always make an image and composite to handle formats other than GL_RGBA.
-        result = new osg::Image;
-        result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
-        ::memset ( result->data(), 0, result->getImageSizeInBytes() );
-      }
-      
-      // Get the layer.
-      const long num ( std::distance<Textures::const_iterator> ( textures.begin(), iter ) );
-      Usul::Interfaces::IRasterLayer::QueryPtr layer ( ( num > 0 && num < static_cast<long> ( rasters.size() ) ) ? rasters.at ( num ).second.get() : 0x0 );
-      
-      // See if it has raster alpha data.
-      Usul::Interfaces::IRasterAlphas::QueryPtr ra ( layer );
-      
-      // Copy the alphas.
-      typedef Usul::Interfaces::IRasterAlphas::Alphas Alphas;
-      Alphas alphas;
-      float alpha ( 1.0f );
-      if ( true == ra.valid() )
-      {
-        alphas = ra->alphas();
-        alpha = ra->alpha();
-      }
-      
-      // Composite.
-      StarSystem::Composite::raster ( *result, *image, iter->second, alphas, alpha, 1.0f, job );
-    }
-  }
-  
-  // Raster data.
-  //RasterLayer::RefPtr raster ( body->rasterData() );
-  
-  // Build the texture for the tile.
-  //osg::ref_ptr < osg::Image > image ( Tile::buildRaster ( extents, width, height, level, raster.get(), job ) );
-  osg::ref_ptr<osg::Image> image ( result );
-  
-  // If we didn't get an image, use our image.
-  if ( false == image.valid() )
-  {
-    image = Usul::Threads::Safe::get ( this->mutex(), _image.get() );
-    
-    // Use the suggested texture coordinates.
-    tCoords.set ( texCoords[0], texCoords[1], texCoords[2], texCoords[3] );
-  }
-  
+
   // Elevation data.
   RasterLayer::RefPtr elevationData ( body->elevationData() );
   
@@ -729,7 +620,11 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, cons
     job->cancel();
   
   // Make the tile.
-  Tile::RefPtr tile ( new Tile ( level, extents, size, imageSize, tCoords, splitDistance, body.get(), image.get(), elevation.get(), textures ) );
+  Tile::RefPtr tile ( new Tile ( level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
+
+  // Build the raster.  Make sure this is done before mesh is built and texture updated.
+  tile->buildRaster ( region, /*Tile::RefPtr ( const_cast<Tile*> ( this ) )*/ 0x0, job );
+
   tile->updateMesh();
   tile->updateTexture();
   
@@ -764,6 +659,136 @@ Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, u
     job->cancel();
   
   return image;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build raster.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::buildRaster ( const Usul::Math::Vec4d& region, 
+                         Tile::RefPtr parent, 
+                         Usul::Jobs::Job::RefPtr job )
+{
+  // Figure out what index I am.
+  Indices index ( parent.valid() ? parent->child ( this ) : NONE );
+
+  // Get the body.
+  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
+  
+  // Handle no body.
+  if ( false == body.valid() )
+    return;
+    
+  // Width and height for the image.
+  const ImageSize imageSize ( Usul::Threads::Safe::get ( this->mutex(), _imageSize ) );
+  const unsigned int width ( imageSize[0] );
+  const unsigned int height ( imageSize[1] );
+  
+  // Get the rasters.
+  typedef Body::Rasters Rasters;
+  Rasters rasters;
+  body->rasters ( rasters, this->extents(), width, height, this->level(), job, 0x0 );
+
+  // Image.
+  osg::ref_ptr<osg::Image> result ( 0x0 );
+  
+  // Build the list of images to be composited.
+  for ( Rasters::iterator iter = rasters.begin(); iter != rasters.end(); ++iter )
+  {
+    // Get the image and corresponding raster layer.
+    osg::ref_ptr<osg::Image> image ( iter->first );
+    IRasterLayer::RefPtr raster ( iter->second );
+    
+    // The texture coordinates to use.
+    Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
+#if 0
+    // Use our parents image if we don't have a valid one.
+    if ( false == image.valid() )
+    {
+      // Query for needed interfaces.
+      Usul::Interfaces::ILayer::QueryPtr layer ( raster );
+      Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+      
+      // Get the extents.
+      const double minLon ( le.valid() ? le->minLon() : -180.0 );
+      const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+      const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+      const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+      
+      Extents e ( minLon, minLat, maxLon, maxLat );
+      
+      // Should the layer be shown?
+      const bool shown ( layer.valid() ? layer->showLayer() : true );
+      
+      if ( shown && this->extents().intersects ( e ) )
+      {
+        TextureData data ( parent.valid() ? parent->texture ( raster.get() ) : TextureData ( 0x0, tCoords ) );
+        image = data.first;
+      
+        // Set the new texture coordinates.
+        tCoords = Tile::_textureCoordinatesSubRegion ( data.second, index );
+      }
+    }
+#endif
+    // Check again...
+    if ( true == image.valid() )
+    {
+#if 0
+      // Save this mapping...
+      {
+        Guard guard ( this );
+        _textureMap[raster] = TextureData ( image, tCoords );
+      }
+#endif
+      // Is this the first image?
+      if ( false == result.valid() )
+      {
+        // We always make an image and composite to handle formats other than GL_RGBA.
+        result = new osg::Image;
+        result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
+        ::memset ( result->data(), 0, result->getImageSizeInBytes() );
+      }
+
+      // See if it has raster alpha data.
+      Usul::Interfaces::IRasterAlphas::QueryPtr ra ( raster );
+      
+      // Copy the alphas.
+      typedef Usul::Interfaces::IRasterAlphas::Alphas Alphas;
+      Alphas alphas;
+      float alpha ( 1.0f );
+      if ( true == ra.valid() )
+      {
+        alphas = ra->alphas();
+        alpha = ra->alpha();
+      }
+      
+      // Composite.
+      StarSystem::Composite::raster ( *result, *image,/* tCoords,*/ alphas, alpha, 1.0f, job );
+    }
+  }
+
+  // Set our image if we have a valid result.
+  if ( result.valid() )
+    this->textureData ( result.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the image from the given RasterLayer.  May return null.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::TextureData Tile::texture ( IRasterLayer * layer ) const
+{
+  Guard guard ( this );
+  TextureMap::const_iterator iter ( _textureMap.find ( IRasterLayer::RefPtr ( layer ) ) );
+  if ( iter != _textureMap.end() )
+    return iter->second;
+  return TextureData ( 0x0, Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
 }
 
 
@@ -1301,6 +1326,43 @@ void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the proper sub region of texture coordinates..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4d Tile::_textureCoordinatesSubRegion ( const Usul::Math::Vec4d& region, Indices index )
+{
+  USUL_TRACE_SCOPE;
+
+  const double deltaU ( region[1] - region[0] );
+  const double deltaV ( region[3] - region[2] );
+
+  const double startU ( region[0] );
+  const double halfU  ( region[0] + ( deltaU / 2.0 ) );
+  const double endU   ( startU + deltaU );
+
+  const double startV ( region[2] );
+  const double halfV  ( region[2] + ( deltaV / 2.0 ) );
+  const double endV   ( startV + deltaV );
+
+  switch ( index )
+  {
+  case LOWER_LEFT:
+    return Usul::Math::Vec4d ( startU, halfU, startV, halfV );
+  case LOWER_RIGHT:
+    return Usul::Math::Vec4d ( halfU,  endU,  startV, halfV );
+  case UPPER_LEFT:
+    return Usul::Math::Vec4d ( startU, halfU, halfV,  endV );
+  case UPPER_RIGHT:
+    return Usul::Math::Vec4d ( halfU,  endU,  halfV,  endV );
+  }
+
+  return Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the texture data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1407,7 +1469,21 @@ void Tile::_clearChildren()
   // Clear the tile job.
   if ( _tileJob.valid() )
   {
-    _tileJob->cancel();
+    //_tileJob->cancel();
     _tileJob = 0x0;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the index of the child.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::Indices Tile::child ( Tile* tile ) const
+{
+  Guard guard ( this );
+  Tiles::const_iterator iter ( std::find_if ( _children.begin(), _children.end(), Tile::RefPtr::IsEqual ( tile ) ) );
+  return static_cast<Indices> ( std::distance<Tiles::const_iterator> ( _children.begin(), iter ) );
 }

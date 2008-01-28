@@ -70,9 +70,9 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
     
     // Copy the color channels. Multiply by the overall (normalized) brightness.
     // The order of the variables is important; the float has to come first.
-    unsigned char r ( brightness * src[0] );
-    unsigned char g ( brightness * src[1] );
-    unsigned char b ( brightness * src[2] );
+    unsigned char r ( static_cast<unsigned char> ( brightness * src[0] ) );
+    unsigned char g ( static_cast<unsigned char> ( brightness * src[1] ) );
+    unsigned char b ( static_cast<unsigned char> ( brightness * src[2] ) );
     
     // Is the color in the alpha table?
     if ( false == alphaMapEmpty )
@@ -153,7 +153,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
           //std::cout << "Accessing " << s << " " << t << " of destination.  Accessing " << sp << " " << tp << " of source." << std::endl;
           
           unsigned char *dst (  result->data ( s, t ) );
-          const unsigned char* src ( image.data ( sp, tp ) );
+          const unsigned char* src ( image.data ( sp, tp  ) );
           
           dst[0] = src[0];
           dst[1] = src[1];

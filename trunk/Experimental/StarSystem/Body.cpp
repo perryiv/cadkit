@@ -133,17 +133,16 @@ void Body::addTile ( const Extents &extents )
   const unsigned int level  ( 0 );
   const unsigned int width  ( 512 );
   const unsigned int height ( 512 );
-
-  // Make the image for the tile.
-  osg::ref_ptr< osg::Image > image ( Tile::buildRaster ( extents, width, height, level, this->rasterData(), 0x0 ) );
   
   // Make the tile.
   const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
   const MeshSize meshSize ( this->meshSize ( extents ) );
   const Tile::ImageSize imageSize ( width, height );
-  Tile::Textures textures;
-  textures.push_back ( Tile::TextureData ( image.get(), textureCoords ) );
-  osg::ref_ptr<Tile> tile ( new Tile ( level, extents, meshSize, imageSize, textureCoords, _splitDistance, this, image.get(), 0x0, textures ) );
+  
+  osg::ref_ptr<Tile> tile ( new Tile ( level, extents, meshSize, imageSize, _splitDistance, this ) );
+
+  // Build the raster.
+  tile->buildRaster ( textureCoords, 0x0, 0x0 );
 
   // Add tile to the trnsform.
   _transform->addChild ( tile.get() );

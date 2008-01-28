@@ -92,6 +92,7 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   _assemblies ( new Assemblies ),
   _current ( new DbJtTraversalState ),
   _shapeData ( new ShapeData ( NULL ) ),
+  _primData  ( new PrimData ( NULL ) ) ,
   _progressPriorityLevel ( 0 ), // Send everything.
   _result ( true ),
   _lodOption ( CadKit::PROCESS_ALL_LODS ),
@@ -101,6 +102,7 @@ DbJtDatabase::DbJtDatabase ( const unsigned int &customerId ) : DbBaseSource(),
   SL_ASSERT ( NULL != _assemblies.get() );
   SL_ASSERT ( NULL != _current.get() );
   SL_ASSERT ( NULL != _shapeData.get() );
+  SL_ASSERT ( NULL != _primData.get() );
 
   // Set the VisApi's customer id.
   _globalVisApi.setCustomerId ( customerId );
@@ -119,6 +121,7 @@ DbJtDatabase::~DbJtDatabase()
   SL_ASSERT ( UNSET_INDEX == _current->getLevel() );
   SL_ASSERT ( UNSET_INDEX == _current->getLod() );
   SL_ASSERT ( UNSET_INDEX == _current->getShape() );
+  SL_ASSERT ( UNSET_INDEX == _current->getPrim() );
   SL_ASSERT ( UNSET_INDEX == _current->getSet() );
   SL_ASSERT ( NULL == _current->getPart() );
   SL_ASSERT ( NULL == _current->getInstance() );
@@ -151,6 +154,8 @@ IUnknown *DbJtDatabase::queryInterface ( unsigned long iid )
     return static_cast<ILodQuery *>(this);
   case IShapeQueryFloatUchar::IID:
     return static_cast<IShapeQueryFloatUchar *>(this);
+  case IPrimQueryFloat::IID:
+    return static_cast<IPrimQueryFloat *>(this);
   case ISetQuery::IID:
     return static_cast<ISetQuery *>(this);
   case IQueryShapeVerticesVec3f::IID:
@@ -173,6 +178,14 @@ IUnknown *DbJtDatabase::queryInterface ( unsigned long iid )
     return static_cast<IDataRead *>(this);
   case IUnits::IID:
     return static_cast<IUnits *>(this);
+  case IQueryPrimOriginsVec3f::IID:
+    return static_cast<IQueryPrimOriginsVec3f *>(this);
+  case IQueryPrimParamsFloat::IID:
+    return static_cast<IQueryPrimParamsFloat *>(this);
+  case IQueryPrimColorsVec3f::IID:
+    return static_cast<IQueryPrimColorsVec3f *>(this);
+  case IQueryPrimColorsVec4f::IID:
+    return static_cast<IQueryPrimColorsVec4f *>(this);
   default:
     return DbBaseSource::queryInterface ( iid );
   }
@@ -508,6 +521,7 @@ bool DbJtDatabase::_preActionTraversalNotify ( eaiHierarchy *hierarchy, int leve
   _result = false;
   this->_resetStateIndices();
   _shapeData->init ( NULL );
+  _primData->init ( NULL );
 
   // Determine the type.
   switch ( hierarchy->typeID() )
@@ -622,6 +636,7 @@ bool DbJtDatabase::_postActionTraversalNotify ( eaiHierarchy *hierarchy, int lev
   _result = false;
   this->_resetStateIndices();
   _shapeData->init ( NULL );
+  _primData->init ( NULL );
 
   // Determine the type.
   switch ( hierarchy->typeID() )
@@ -952,18 +967,28 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
   SL_ASSERT ( part );
   SL_ASSERT ( UNSET_INDEX == _current->getLod() );
   SL_ASSERT ( UNSET_INDEX == _current->getShape() );
+  SL_ASSERT ( UNSET_INDEX == _current->getPrim() );
   SL_ASSERT ( UNSET_INDEX == _current->getSet() );
 
   // Initialize.
   this->_resetStateIndices();
 
   // Get the number of LODs.
+  bool ( DbJtDatabase::*processLod ) ( eaiPart *, int ) = &DbJtDatabase::_processShapeLod;
   int numLods = part->numPolyLODs();
 
-  // If there are no LODs then return, otherwise the logic below gets more 
+  // If there are no Poly LODs, then check for Primitive LODs.
+  // If neither exists, then return, otherwise the logic below gets more 
   // complicated. It is not an error to have zero LODs.
   if ( numLods <= 0 )
-    return true;
+  {
+    // Get number of primitive LODs.
+    numLods = part->numPrimLODs();
+    if ( numLods <= 0 )
+      return true;
+    else
+      processLod = &DbJtDatabase::_processPrimLod;
+  }
 
   // We start the loop at zero unless we only want the lowest LOD, 
   // in which case we start at the last LOD.
@@ -981,10 +1006,11 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
     // Set the current indices.
     _current->setLod ( i );
     _current->setShape ( UNSET_INDEX );
+    _current->setPrim ( UNSET_INDEX );
     _current->setSet ( UNSET_INDEX );
 
     // Process the shapes.
-    if ( false == this->_processLod ( part, i ) )
+    if ( false == (*this.*processLod) ( part, i ) )
       if ( false == ERROR ( FORMAT ( "Failed to process LOD %d in part '%s'", i, part->name() ), CadKit::FAILED ) )
         return false;
   }
@@ -1000,9 +1026,9 @@ bool DbJtDatabase::_processLods ( eaiPart *part )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbJtDatabase::_processLod ( eaiPart *part, int whichLod )
+bool DbJtDatabase::_processShapeLod ( eaiPart *part, int whichLod )
 {
-  SL_PRINT4 ( "In DbJtDatabase::_processLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
+  SL_PRINT4 ( "In DbJtDatabase::_processShapeLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
   SL_ASSERT ( part );
   SL_ASSERT ( whichLod >= 0 && whichLod < part->numPolyLODs() );
   SL_ASSERT ( whichLod == _current->getLod() );
@@ -1033,6 +1059,60 @@ bool DbJtDatabase::_processLod ( eaiPart *part, int whichLod )
 
     // Process the shape.
     if ( false == this->_processShape ( part, whichLod, i ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process shape %d, LOD %d, part '%s'", i, whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+  }
+
+  // Try this interface.
+  if ( notify.isValid() )
+    if ( false == notify->endEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+
+  // If we get to here then it worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process all the primitives of the given LOD.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processPrimLod ( eaiPart *part, int whichLod )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_processPrimLod(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
+  SL_ASSERT ( part );
+  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPrimLODs() );
+  SL_ASSERT ( whichLod == _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX == _current->getPrim() );
+  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
+
+  // We have to initialize the primitive data each time we process a new LOD.
+  _primData->init ( NULL );
+
+  // Try this interface.
+  SlQueryPtr<ILodNotify> notify ( _target );
+  if ( notify.isValid() )
+    if ( false == notify->startEntity ( CadKit::makeLodHandle ( whichLod ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start LOD %d in part '%s'", whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+
+  // Get the number of shapes for this LOD.
+  int numPrims = part->numPrimShapes ( whichLod );
+
+  PROGRESS_LEVEL ( 3 ) ( FORMAT ( "\t\tPrimitives: %d", numPrims ) );
+
+  // Loop through the shapes.
+  for ( int i = 0; i < numPrims; ++i )
+  {
+    // Set the current indices.
+    _current->setPrim ( i );
+    _current->setSet ( UNSET_INDEX );
+
+    // Process the primitive.
+    if ( false == this->_processPrim ( part, whichLod, i ) )
       if ( false == ERROR ( FORMAT ( "Failed to process shape %d, LOD %d, part '%s'", i, whichLod, part->name() ), CadKit::FAILED ) )
         return false;
   }
@@ -1104,6 +1184,60 @@ bool DbJtDatabase::_processShape ( eaiPart *part, int whichLod, int whichShape )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Process all the sets of the given primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processPrim ( eaiPart *part, int whichLod, int whichPrim )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_processPrim(), this = %X, part = %X, whichLod = %d\n", this, part, whichLod );
+  SL_ASSERT ( part );
+  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPrimLODs() );
+  SL_ASSERT ( whichPrim >= 0 && whichPrim < part->numPrimShapes ( whichLod ) );
+  SL_ASSERT ( whichLod == _current->getLod() );
+  SL_ASSERT ( whichPrim == _current->getPrim() );
+  SL_ASSERT ( UNSET_INDEX == _current->getSet() );
+
+  // Try this interface.
+  SlQueryPtr<IPrimNotify> notify ( _target );
+  if ( notify.isValid() )
+    if ( false == notify->startEntity ( CadKit::makePrimHandle ( whichPrim ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to start primitive %d, LOD %d, part '%s'", whichPrim, whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+  
+  // Get the shape.
+  SlRefPtr<eaiPrim> prim = this->_getPrim ( part, whichLod, whichPrim );
+  if ( prim.isNull() )
+    return ERROR ( FORMAT ( "Failed to get primitive %d, LOD %d, part '%s'", whichPrim, whichLod, part->name() ), CadKit::FAILED );
+
+  // Get the number of sets for this shape.
+  int numSets = prim->numOfSets();
+
+  // Loop through the sets.
+  for ( int i = 0; i < numSets; ++i )
+  {
+    // Set the current index.
+    _current->setSet ( i );
+
+    // Process the set.
+    if ( false == this->_processSet ( prim, whichPrim, i ) )
+      if ( false == ERROR ( FORMAT ( "Failed to process vertices for set %d, primitive %d, LOD %d, part '%s'", i, whichPrim, whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+  }
+
+  // Try this interface.
+  if ( notify.isValid() )
+    if ( false == notify->endEntity ( CadKit::makePrimHandle ( whichPrim ), THIS_UNKNOWN ) )
+      if ( false == ERROR ( FORMAT ( "Failed to end primitive %d, LOD %d, part '%s'", whichPrim, whichLod, part->name() ), CadKit::FAILED ) )
+        return false;
+
+  // If we get to here then it worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Process all the vertices of the given set.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1154,6 +1288,47 @@ bool DbJtDatabase::_processSet ( eaiShape *shape, int whichShape, int whichSet )
     if ( false == set->endEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
     {
       if ( false == ERROR ( FORMAT ( "Failed to end set %d, shape %d, LOD %d, part '%s'", whichSet, _current->getShape(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
+        return false;
+    }
+  }
+
+  // If we get to here then it worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Process all the primitives of the given set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_processSet ( eaiPrim *prim, int whichPrim, int whichSet )
+{
+  SL_PRINT4 ( "In DbJtDatabase::_processSet(), this = %X, shape = %X, whichSet = %d\n", this, prim, whichSet );
+  SL_ASSERT ( prim );
+  SL_ASSERT ( whichSet >= 0 && whichSet < prim->numOfSets() );
+  SL_ASSERT ( UNSET_INDEX != _current->getLod() );
+  SL_ASSERT ( UNSET_INDEX != _current->getPrim() );
+  SL_ASSERT ( whichSet == _current->getSet() );
+
+  // Try this interface.
+  SlQueryPtr<ISetNotify> set ( _target );
+  if ( set.isValid() )
+  {
+    if ( false == set->startEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
+    {
+      if ( false == ERROR ( FORMAT ( "Failed to start set %d, primitive %d, LOD %d, part '%s'", whichSet, _current->getPrim(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
+        return false;
+    }
+  }
+
+  // Try this interface.
+  if ( set.isValid() )
+  {
+    if ( false == set->endEntity ( CadKit::makeSetHandle ( whichSet ), THIS_UNKNOWN ) )
+    {
+      if ( false == ERROR ( FORMAT ( "Failed to end set %d, primitive %d, LOD %d, part '%s'", whichSet, _current->getPrim(), _current->getLod(), _current->getPart()->name() ), CadKit::FAILED ) )
         return false;
     }
   }
@@ -1585,6 +1760,37 @@ bool DbJtDatabase::getMaterial ( ShapeHandle shape, SlMaterialf &material, bool 
   return this->getMaterial ( part, material, tryParents );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive's material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getMaterial ( PrimHandle prim, SlMaterialf &material, bool tryParents ) const
+{
+  // Get the shape.
+  SlRefPtr<eaiPrim> temp = this->_getPrim ( prim );
+  if ( temp.isNull() )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Try the given entity.
+  if ( true == CadKit::getMaterial ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) temp.getValue(), material ) )
+    return true;
+
+  // Bail now if we aren't supposed to try the parents.
+  if ( false == tryParents )
+    return false;
+
+  // If we get to here then try the parent part.
+  LodHandle lod = this->getParent ( prim );
+  SL_ASSERT ( lod );
+  PartHandle part = this->getParent ( lod );
+  return this->getMaterial ( part, material, tryParents );
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1814,7 +2020,8 @@ PartHandle DbJtDatabase::getParent ( LodHandle lod ) const
   // Handle bad cases.
   if ( UNSET_INDEX == whichLod || 
        whichLod < 0 || 
-       whichLod >= _current->getPart()->numPolyLODs() )
+       ( whichLod >= _current->getPart()->numPolyLODs() &&
+         whichLod >= _current->getPart()->numPrimLODs() ) )
   {
     SL_ASSERT ( 0 ); // Heads up.
     return NULL;
@@ -1847,6 +2054,37 @@ LodHandle DbJtDatabase::getParent ( ShapeHandle shape ) const
        UNSET_INDEX == whichShape || 
        whichShape < 0 || 
        whichShape >= _current->getPart()->numPolyShapes ( _current->getLod() ) )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return NULL;
+  }
+
+  // We assume that the parent is our current lod.
+  return CadKit::makeLodHandle ( _current->getLod() );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LodHandle DbJtDatabase::getParent ( PrimHandle prim ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getParent(), this = %X, prim = %d\n", this, prim );
+  SL_ASSERT ( _current->getPart() );
+  SL_ASSERT ( prim );
+
+  // Get the index from the handle.
+  int whichPrim = CadKit::makePrimIndex ( prim );
+
+  // Handle bad cases.
+  if ( UNSET_INDEX == _current->getLod() ||
+       _current->getLod() < 0 || 
+       _current->getLod() >= _current->getPart()->numPrimLODs() ||
+       UNSET_INDEX == whichPrim || 
+       whichPrim < 0 || 
+       whichPrim >= _current->getPart()->numPrimShapes ( _current->getLod() ) )
   {
     SL_ASSERT ( 0 ); // Heads up.
     return NULL;
@@ -1967,6 +2205,7 @@ void DbJtDatabase::_resetStateIndices()
   // Reset.
   _current->setLod   ( UNSET_INDEX );
   _current->setShape ( UNSET_INDEX );
+  _current->setPrim  ( UNSET_INDEX );
   _current->setSet   ( UNSET_INDEX );
 }
 
@@ -2027,6 +2266,65 @@ eaiShape *DbJtDatabase::_getShape ( ShapeHandle shape ) const
 
   // Return the shape.
   return this->_getShape ( (eaiPart *) part, CadKit::makeLodIndex ( lod ), CadKit::makeShapeIndex ( shape ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive. The returned pointer will have a reference count of zero. 
+//  The caller has to reference it (and ultimately dereference it).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiPrim *DbJtDatabase::_getPrim ( eaiPart *part, int whichLod, int whichPrim ) const
+{
+  SL_PRINT5 ( "In DbJtDatabase::_getPrim(), this = %X, part = %X, whichLod = %d, whichPrim = %d\n", this, part, whichLod, whichPrim );
+  SL_ASSERT ( part );
+  SL_ASSERT ( whichLod >= 0 && whichLod < part->numPrimLODs() );
+  SL_ASSERT ( whichPrim >= 0 && whichPrim < part->numPrimShapes ( whichLod ) );
+
+  // Ask for the primitive (there may not be one).
+  eaiPrim *prim = NULL;
+  part->getPrimShape ( prim, whichLod, whichPrim );
+
+  // Return the shape (which may still be null).
+  return prim;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+eaiPrim *DbJtDatabase::_getPrim ( PrimHandle prim ) const
+{
+  // Handle trivial case.
+  if ( NULL == prim )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return false;
+  }
+
+  // Get the parent LOD.
+  LodHandle lod = this->getParent ( prim );
+  if ( NULL == lod )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Get the LOD's parent part.
+  PartHandle part = this->getParent ( lod );
+  if ( NULL == part )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Return the primitive.
+  return this->_getPrim ( (eaiPart *) part, CadKit::makeLodIndex ( lod ), CadKit::makePrimIndex ( prim ) );
 }
 
 
@@ -2205,6 +2503,167 @@ bool DbJtDatabase::_setShapeData ( eaiShape *shape )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the primtive data if needed. The primitive data is mutable, which is why 
+//  this functions can be const. It is called from other "get" functions 
+//  which are also const.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_setPrimData ( PrimHandle ph )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_setPrimData(), this = %X, prim = %X\n", this, ph );
+
+  // If the given shape is the one saved with the data then we're already set.
+  if ( ph == _primData->getToken() )
+    return true;
+
+  // Initialize the primitive data.
+  _primData->init ( NULL );
+
+  // Get the primitive.
+  SlRefPtr<eaiPrim> prim = this->_getPrim ( ph );
+  if ( prim.isNull() )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Call the other one.
+  if ( false == this->_setPrimData ( prim ) )
+    return false;
+
+  // Set the new token.
+  _primData->setToken ( ph );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the primtive data if needed. The primtive data is mutable, which is why 
+//  this functions can be const. It is called from other "get" functions 
+//  which are also const.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::_setPrimData ( eaiPrim *prim )
+{
+  SL_PRINT3 ( "In DbJtDatabase::_setPrimData(), this = %X, prim = %X\n", this, prim );
+  SL_ASSERT ( NULL != _current.get() );
+  SL_ASSERT ( NULL != _current->getPart() );
+
+  // Handle trivial case.
+  if ( NULL == prim )
+  {
+    SL_ASSERT ( 0 ); // Heads up.
+    return false;
+  }
+
+  // Initialize the shape data.
+  _primData->init ( NULL );
+
+  // For convenience.
+  std::vector<SlVec3f> &origins   = _primData->getOrigins().getData();
+  std::vector<SlVec3f> &colors    = _primData->getColors().getData();
+  std::vector<float>   &params    = _primData->getParameters();
+
+  std::vector<unsigned int> &numOrigins  = _primData->getOrigins().getSizes();
+  std::vector<unsigned int> &numColors   = _primData->getColors().getSizes();
+
+  std::vector<unsigned int> &startOfOrigins  = _primData->getOrigins().getStarts();
+  std::vector<unsigned int> &startOfColors   = _primData->getColors().getStarts();
+
+  // Used in the loop.
+  int originCount ( -1 ), paramCount ( -1 ), colorCount ( -1 );
+  bool gotOrigins ( false );
+
+  // Get the number of sets.
+  int numSets ( prim->numOfSets() );
+
+  PROGRESS_LEVEL ( 4 ) ( FORMAT ( "\t\t\tSets: %d", numSets ) );
+
+  // Loop through all the sets.
+  for ( int i = 0; i < numSets; ++i )
+  {
+    // Initialize.
+    originCount = paramCount = colorCount = 0;
+    gotOrigins = false;
+
+    // Keep this in the loop. The destructor will delete the internal array.
+    DbJtVisApiArray<float> o, p, c;
+
+    // Get the arrays for this set of the shape. This function is the reason 
+    // we jump through all these hoops (storing shape data and associating it 
+    // with the handle). If we could ask for just the vertices, or just the 
+    // normals (etc.) then this methodology could be eliminated and the code 
+    // greatly simplified. Perhaps version DMDTk 5.1...
+    if ( eai_OK == prim->getInternal ( o.getReference(), originCount, 
+                                       p.getReference(), paramCount, 
+                                       c.getReference(), colorCount, 
+                                       i ) )
+    {
+      // Should be true.
+      SL_ASSERT ( originCount > 0 );
+      SL_ASSERT ( NULL != o.getReference() );
+
+      // If we have origins...
+      if ( originCount > 0 && NULL != o.getReference() )
+      {
+        originCount /= 3;
+        colorCount /= 3;
+        
+        // Save the starting places. Have to do this first.
+        startOfOrigins.push_back  ( origins.size() );
+        startOfColors.push_back   ( colors.size() );
+
+        // Append the arrays to the std::vectors. If they are empty then the 
+        // append function will just return.  Adjust counts for differences in prim
+        // internal data versus shape.
+        CadKit::append3D ( originCount,  o.getReference(), origins );
+        CadKit::append3D ( colorCount,   c.getReference(), colors );
+        CadKit::append   ( paramCount,   p.getReference(), params );
+
+        // Save the number of elements found (which may be zero).
+        numOrigins.push_back  ( originCount );
+        numColors.push_back   ( colorCount );
+
+        // This iteration worked.
+        gotOrigins = true;
+      }
+
+      PROGRESS_LEVEL ( 5 ) ( FORMAT ( "\t\t\t\t%4d:   Origins: %4d, Parameters: %4d, Colors: %4d", i + 1, originCount, paramCount, colorCount ) );
+    }
+
+    // If we didn't get any vertices...
+    if ( false == gotOrigins )
+    {
+      SL_ASSERT ( 0 ); // Why did this happen?
+      if ( false == ERROR ( FORMAT ( "Failed to get internal data for prim %X, set %s.", prim, i ), CadKit::FAILED ) )
+        return false;
+    }
+  }
+
+  // Should be true, but isn't detrimental.
+  SL_ASSERT ( (unsigned int) numSets == numOrigins.size() );
+
+  // If don't have any vertices then we failed.
+  if ( origins.empty() )
+    return false;
+
+  // Truncate the numbers close to zero.
+  std::for_each ( origins.begin(),  origins.end(),  _truncate );
+  std::for_each ( params.begin(),   params.end(),   _truncate );
+  std::for_each ( colors.begin(),    colors.end(),  _truncate );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the vertices.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2368,6 +2827,79 @@ bool DbJtDatabase::getColors ( ShapeHandle shape, IQueryShapeColorsVec4f::ColorS
   return true;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the colors for a primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getColors ( PrimHandle prim, IQueryPrimColorsVec3f::ColorSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getColors(), this = %X, prim = %X\n", this, prim );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setPrimData ( prim ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec3f> &colors = _primData->getColors().getData();
+
+  // Get the number of colors.
+  unsigned int totalNumColors = colors.size();
+  if ( 0 == totalNumColors )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumColors ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumColors; ++i )
+    if ( false == setter.setData ( i, colors[i] ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the colors for a primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getColors ( PrimHandle prim, IQueryPrimColorsVec4f::ColorSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getColors(), this = %X, prim = %X\n", this, prim );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setPrimData ( prim ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec3f> &colors = _primData->getColors().getData();
+
+  // Get the number of colors.
+  unsigned int totalNumColors = colors.size();
+  if ( 0 == totalNumColors )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumColors ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumColors; ++i )
+    if ( false == setter.setData ( i, SlVec4f ( colors[i][0], colors[i][1], colors[i][2], 1.0f ) ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2505,6 +3037,28 @@ bool DbJtDatabase::getColorBinding ( ShapeHandle shape, VertexBinding &binding )
   return true;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color binding for a primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getColorBinding ( PrimHandle prim, VertexBinding &binding ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getColorBinding(), this = %X, prim = %X\n", this, prim );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setPrimData ( prim ) )
+    return false;
+
+  // Set the binding, one color per primitive.
+  binding = BINDING_OVERALL;
+
+  // It worked.
+  return true;
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -2569,3 +3123,127 @@ void DbJtDatabase::_replaceProperties ( eaiInstance *instance, eaiPart *part )
   if ( transform.isValid() )
     SL_VERIFY ( eai_OK == part->setTransform ( transform ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive type.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getPrimType ( PrimHandle ph, PrimitiveType &type ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getPrimitiveType(), this = %X, prim = %X\n", this, ph );
+
+  // Get the shape.
+  SlRefPtr<eaiPrim> prim = this->_getPrim ( ph );
+  if ( prim.isNull() )
+  {
+    SL_ASSERT ( 0 ); // Why did this happen?
+    return false;
+  }
+
+  // Determine the type of shape.
+  switch ( prim->typeID() )
+  {
+  case eaiEntity::eaiBOXSET:
+    type = CadKit::BOX;
+    break;
+  case eaiEntity::eaiCYLINDERSET:
+    type = CadKit::CYLINDER;
+    break;
+  case eaiEntity::eaiPYRAMIDSET:
+    type = CadKit::PYRAMID;
+    break;
+  case eaiEntity::eaiSPHERESET:
+    type = CadKit::SPHERE;
+    break;
+  case eaiEntity::eaiTRIPRISMSET:
+    type = CadKit::TRIPRISM;
+    break;
+  default:
+    type = CadKit::UNKNOWN_PRIM;
+    SL_ASSERT ( 0 ); // Heads up.
+    return false;
+  }
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive origin(s).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getPrimOrigins ( PrimHandle prim, IQueryPrimOriginsVec3f::OriginSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getPrimOrigins(), this = %X, prim = %X\n", this, prim );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setPrimData ( prim ) )
+    return false;
+
+  // For convenience.
+  std::vector<SlVec3f> &origins          = _primData->getOrigins().getData();
+  std::vector<unsigned int> &numOrigins  = _primData->getOrigins().getSizes();
+
+  // Get the number of vertices.
+  unsigned int totalNumOrigins = origins.size();
+  if ( 0 == totalNumOrigins )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumOrigins ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumOrigins; ++i )
+    if ( false == setter.setData ( i, origins[i] ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the primitive parameters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbJtDatabase::getPrimParams ( PrimHandle prim, IQueryPrimParamsFloat::ParamSetter &setter ) const
+{
+  SL_PRINT3 ( "In DbJtDatabase::getPrimParams(), this = %X, prim = %X\n", this, prim );
+
+  // Make sure the data is set.
+  if ( false == ((DbJtDatabase *) this)->_setPrimData ( prim ) )
+    return false;
+
+  // For convenience.
+  std::vector<float> &params = _primData->getParameters();
+
+  // Get the number of vertices.
+  unsigned int totalNumParams = params.size();
+  if ( 0 == totalNumParams )
+    return false;
+
+  // Tell the setter the size.
+  if ( false == setter.setSize ( totalNumParams ) )
+    return false;
+
+  // Loop through and call the setter's function.
+  unsigned int i;
+  for ( i = 0; i < totalNumParams; ++i )
+    if ( false == setter.setData ( i, params[i] ) )
+      return false;
+
+  // It worked.
+  return true;
+}
+
+

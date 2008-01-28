@@ -46,6 +46,7 @@ public:
   int                     getLevel() const    { return _level; }
   int                     getLod() const      { return _lod; }
   int                     getShape() const    { return _shape; }
+  int                     getPrim() const     { return _prim; }
   int                     getSet() const      { return _set; }
  
   // Equality.
@@ -65,6 +66,7 @@ public:
   void                    setLevel    ( const int &level )      { _level = level; }
   void                    setLod      ( const int &lod )        { _lod   = lod; }
   void                    setShape    ( const int &shape )      { _shape = shape; }
+  void                    setPrim     ( const int &prim )       { _prim = prim; }
   void                    setSet      ( const int &set )        { _set   = set; }
   void                    setValue    ( const DbJtTraversalState &state );
 
@@ -75,6 +77,7 @@ protected:
   SlRefPtr<eaiInstance> _instance;
   int _lod;
   int _shape;
+  int _prim;
   int _set;
 };
 

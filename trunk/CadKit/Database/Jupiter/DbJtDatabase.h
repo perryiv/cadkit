@@ -20,6 +20,7 @@
 
 #include "Database/Base/DbBaseSource.h"
 #include "Database/Base/DbBaseShapeData.h"
+#include "Database/Base/DbBasePrimitiveData.h"
 
 #include "Standard/SlRefPtr.h"
 #include "Standard/SlBitmask.h"
@@ -31,6 +32,7 @@
 #include "Interfaces/ILoadOptions.h"
 #include "Interfaces/IEntityQuery.h"
 #include "Interfaces/IShapeQuery.h"
+#include "Interfaces/IPrimQuery.h"
 #include "Interfaces/IInstanceQuery.h"
 #include "Interfaces/IQueryVertices.h"
 #include "Interfaces/IQueryNormals.h"
@@ -41,6 +43,8 @@
 #include "Interfaces/IFileExtension.h"
 #include "Interfaces/IDataRead.h"
 #include "Interfaces/IUnits.h"
+#include "Interfaces/IQueryPrimOrigins.h"
+#include "Interfaces/IQueryPrimParams.h"
 
 #ifndef _CADKIT_USE_PRECOMPILED_HEADERS
 # include <list>
@@ -52,11 +56,13 @@ class JtkHierarchy;
 class JtkInstance;
 class JtkPart;
 class JtkShape;
+class JtkPrim;
 class JtkClientData;
 #define eaiAssembly JtkAssembly
 #define eaiPart JtkPart
 #define eaiInstance JtkInstance
 #define eaiShape JtkShape
+#define eaiPrim JtkPrim
 #define eaiHierarchy JtkHierarchy
 #define eaiClientData JtkClientData
 #else // _CADKIT_USE_JTOPEN
@@ -65,6 +71,7 @@ class eaiHierarchy;
 class eaiInstance;
 class eaiPart;
 class eaiShape;
+class eaiPrim;
 class eaiClientData;
 #endif // _CADKIT_USE_JTOPEN
 
@@ -80,6 +87,7 @@ class DB_JT_API DbJtDatabase : public DbBaseSource,
                                public IInstanceQueryFloat,
                                public ILodQuery,
                                public IShapeQueryFloatUchar,
+                               public IPrimQueryFloat,
                                public ISetQuery,
                                public IQueryShapeVerticesVec3f,
                                public IQueryShapeNormalsVec3f,
@@ -90,7 +98,11 @@ class DB_JT_API DbJtDatabase : public DbBaseSource,
                                public ILodOption,
                                public IFileExtension,
                                public IDataRead,
-                               public IUnits
+                               public IUnits,
+                               public IQueryPrimOriginsVec3f,
+                               public IQueryPrimParamsFloat,
+                               public IQueryPrimColorsVec4f,
+                               public IQueryPrimColorsVec3f
 {
 
 public:
@@ -221,6 +233,18 @@ public:
 
   // Get the texture.
   virtual bool            getTexture ( ShapeHandle shape, std::vector<unsigned char> &texture, bool tryParents ) const;
+  
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IPrimQueryFloat interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the material.
+  virtual bool            getMaterial ( PrimHandle prim, SlMaterialf &material, bool tryParents ) const;
+
+  // Get the parent of the entity.
+  virtual LodHandle       getParent ( PrimHandle prim ) const;
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -272,6 +296,21 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  IQueryPrimColorsVec3f and IQueryPrimColorsVec4f interfaces.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the color binding.
+  virtual bool            getColorBinding ( PrimHandle prim, VertexBinding &binding ) const;
+
+  // Get the normals.
+  virtual bool            getColors ( PrimHandle prim, IQueryPrimColorsVec3f::ColorSetter &setter ) const;
+
+  // Get the normals.
+  virtual bool            getColors ( PrimHandle prim, IQueryPrimColorsVec4f::ColorSetter &setter ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  IQueryShapeTexCoordsVec2f interface.
   //
   /////////////////////////////////////////////////////////////////////////////
@@ -315,10 +354,32 @@ public:
   // Read the data.
   virtual bool            readData ( const std::string &filename );
 
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IQueryPrimOriginsVec3f interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the primitive type.
+  virtual bool            getPrimType ( PrimHandle prim, PrimitiveType &type ) const;
+
+  // Get the origin(s).
+  virtual bool            getPrimOrigins ( PrimHandle prim, IQueryPrimOriginsVec3f::OriginSetter &setter ) const;
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  IQueryPrimParamsFloat interface.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Get the parameters.
+  virtual bool            getPrimParams ( PrimHandle prim, IQueryPrimParamsFloat::ParamSetter &setter ) const;
+
 protected:
 
   typedef std::list<eaiAssembly *> Assemblies;
   typedef DbBaseShapeData<SlVec3f,SlVec3f,SlVec3f,SlVec2f,ShapeHandle> ShapeData;
+  typedef DbBasePrimitiveData<SlVec3f,SlVec3f,float,PrimHandle> PrimData;
 
   bool _initialized;
   AssemblyLoadOption _assemblyLoadOption;
@@ -328,6 +389,7 @@ protected:
   std::auto_ptr<Assemblies> _assemblies;
   std::auto_ptr<DbJtTraversalState> _current;
   std::auto_ptr<ShapeData> _shapeData;
+  std::auto_ptr<PrimData>  _primData;
   unsigned int _progressPriorityLevel;
   bool _result;
   LodProcessOption _lodOption;
@@ -347,6 +409,8 @@ protected:
   eaiPart *               _getCurrentPart() const;
   eaiShape *              _getShape ( ShapeHandle shape ) const;
   eaiShape *              _getShape ( eaiPart *part, int whichLod, int whichShape ) const;
+  eaiPrim *               _getPrim ( PrimHandle shape ) const;
+  eaiPrim *               _getPrim  ( eaiPart *part, int whichLod, int whichPrim ) const;
   eaiAssembly *           _getTopAssembly() const;
 
   static int              _preActionTraversalCallback  ( eaiHierarchy *hierarchy, int level, eaiClientData *data ); // DMDTk >= 5.2
@@ -357,9 +421,12 @@ protected:
   bool                    _postActionTraversalNotify   ( eaiHierarchy *hierarchy, int level );
 
   bool                    _processLods  ( eaiPart *part );
-  bool                    _processLod   ( eaiPart *part,   int whichLod );
+  bool                    _processShapeLod   ( eaiPart *part,   int whichLod );
+  bool                    _processPrimLod   ( eaiPart *part,   int whichLod );
   bool                    _processShape ( eaiPart *part,   int whichLod, int whichShape );
+  bool                    _processPrim ( eaiPart *part,   int whichLod, int whichPrim );
   bool                    _processSet   ( eaiShape *shape, int whichShape, int whichSet );
+  bool                    _processSet   ( eaiPrim *prim, int whichPrim, int whichSet );
 
   void                    _pushAssembly ( eaiAssembly *assembly );
   void                    _popAssembly();
@@ -374,6 +441,9 @@ protected:
   void                    _setCurrentInstance ( eaiInstance *instance );
   bool                    _setShapeData ( ShapeHandle shapeHandle );
   bool                    _setShapeData ( eaiShape *shape );
+  bool                    _setPrimData ( PrimHandle primHandle );
+  bool                    _setPrimData ( eaiPrim *prim );
+
 
   bool                    _startAssembly ( eaiAssembly *assembly );
   bool                    _startInstance ( eaiInstance *instance );

@@ -18,7 +18,7 @@
 #define _USUL_THREADS_VARIABLE_WITH_MUTEX_CLASS_H_
 
 #include "Usul/Threads/Mutex.h"
-
+#include "Usul/Threads/Guard.h"
 
 namespace Usul {
 namespace Threads {
@@ -34,6 +34,7 @@ template < class ValueType > struct Variable
 
   typedef ValueType value_type;
   typedef Usul::Threads::Mutex MutexType;
+  typedef Usul::Threads::Guard<MutexType> GuardType;
 
 
   /////////////////////////////////////////////////////////////////////////////

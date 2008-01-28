@@ -24,6 +24,7 @@
 #include "StarSystem/Body.h"
 #include "StarSystem/RasterLayer.h"
 #include "StarSystem/BuildTiles.h"
+#include "StarSystem/Composite.h"
 
 #include "OsgTools/Group.h"
 #include "OsgTools/State/StateSet.h"
@@ -60,8 +61,8 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 ///////////////////////////////////////////////////////////////////////////////
 
 Tile::Tile ( unsigned int level, const Extents &extents, 
-             const MeshSize &meshSize, const Usul::Math::Vec4d& texCoords, double splitDistance, 
-             Body *body, osg::Image* image, osg::Image * elevation ) : BaseClass(),
+             const MeshSize &meshSize, const ImageSize& imageSize, const Usul::Math::Vec4d& texCoords, double splitDistance, 
+             Body *body, osg::Image* image, osg::Image * elevation, const Textures& textures ) : BaseClass(),
   _mutex ( new Tile::Mutex ),
   _body ( body ),
   _extents ( extents ),
@@ -79,7 +80,9 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _elevationJob ( 0x0 ),
   _tileJob ( 0x0 ),
   _boundingSphere(),
-  _borders ( new osg::Group )
+  _borders ( new osg::Group ),
+  _textures ( textures ),
+  _imageSize ( imageSize )
 {
   USUL_TRACE_SCOPE;
 
@@ -124,7 +127,9 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) : BaseClass ( tile, o
   _elevationJob ( 0x0 ),
   _tileJob ( 0x0 ),
   _boundingSphere ( tile._boundingSphere ),
-  _borders ( new osg::Group )
+  _borders ( new osg::Group ),
+  _textures ( tile._textures ),
+  _imageSize ( tile._imageSize )
 {
   USUL_TRACE_SCOPE;
 
@@ -616,14 +621,93 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, cons
   Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
   
   // Width and height for the image.
-  const unsigned int width ( 512 );
-  const unsigned int height ( 512 );
+  const ImageSize imageSize ( Usul::Threads::Safe::get ( this->mutex(), _imageSize ) );
+  const unsigned int width ( imageSize[0] );
+  const unsigned int height ( imageSize[1] );
+  
+  // Get the rasters.
+  typedef Body::Rasters Rasters;
+  Rasters rasters;
+  body->rasters ( rasters, extents, width, height, level, job, 0x0 );
+  
+  // Texture data.
+  Textures textures;
+  textures.reserve ( rasters.size() );
+  
+  // Build the list of images to be composited.
+  for ( Rasters::iterator iter = rasters.begin(); iter != rasters.end(); ++iter )
+  {
+    // Get the image.
+    osg::ref_ptr<osg::Image> image ( iter->first );
+    
+    if ( image.valid() )
+    {
+      // Add the image to the list of textures.
+      textures.push_back ( TextureData ( image, tCoords ) );
+    }
+    else
+    {
+#if 0
+      const long num ( std::distance<Rasters::const_iterator> ( rasters.begin(), iter ) );
+      
+      Guard guard ( this );
+      if ( num > 0 && num < static_cast<long> ( _textures.size() ) )
+      {
+        // Use the suggested texture coordinates.
+        textures.push_back ( TextureData ( _textures.at ( num ).first, texCoords ) );
+      }
+#endif
+    }
+  }
+  
+  // Image.
+  osg::ref_ptr<osg::Image> result ( 0x0 );
+  
+  // Loop through the images to be composited.
+  for ( Textures::const_iterator iter = textures.begin(); iter != textures.end(); ++iter )
+  {
+    // Get the image.
+    osg::ref_ptr<osg::Image> image ( iter->first );
+    
+    if ( image.valid() )
+    {
+      // Is this the first image?
+      if ( false == result.valid() )
+      {
+        // We always make an image and composite to handle formats other than GL_RGBA.
+        result = new osg::Image;
+        result->allocateImage ( width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE );
+        ::memset ( result->data(), 0, result->getImageSizeInBytes() );
+      }
+      
+      // Get the layer.
+      const long num ( std::distance<Textures::const_iterator> ( textures.begin(), iter ) );
+      Usul::Interfaces::IRasterLayer::QueryPtr layer ( ( num > 0 && num < static_cast<long> ( rasters.size() ) ) ? rasters.at ( num ).second.get() : 0x0 );
+      
+      // See if it has raster alpha data.
+      Usul::Interfaces::IRasterAlphas::QueryPtr ra ( layer );
+      
+      // Copy the alphas.
+      typedef Usul::Interfaces::IRasterAlphas::Alphas Alphas;
+      Alphas alphas;
+      float alpha ( 1.0f );
+      if ( true == ra.valid() )
+      {
+        alphas = ra->alphas();
+        alpha = ra->alpha();
+      }
+      
+      // Composite.
+      StarSystem::Composite::raster ( *result, *image, iter->second, alphas, alpha, 1.0f, job );
+    }
+  }
   
   // Raster data.
-  RasterLayer::RefPtr raster ( body->rasterData() );
+  //RasterLayer::RefPtr raster ( body->rasterData() );
   
   // Build the texture for the tile.
-  osg::ref_ptr < osg::Image > image ( Tile::buildRaster ( extents, width, height, level, raster.get(), job ) );
+  //osg::ref_ptr < osg::Image > image ( Tile::buildRaster ( extents, width, height, level, raster.get(), job ) );
+  osg::ref_ptr<osg::Image> image ( result );
   
   // If we didn't get an image, use our image.
   if ( false == image.valid() )
@@ -645,7 +729,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level, const Extents& extents, cons
     job->cancel();
   
   // Make the tile.
-  Tile::RefPtr tile ( new Tile ( level, extents, size, tCoords, splitDistance, body.get(), image.get(), elevation.get() ) );
+  Tile::RefPtr tile ( new Tile ( level, extents, size, imageSize, tCoords, splitDistance, body.get(), image.get(), elevation.get(), textures ) );
   tile->updateMesh();
   tile->updateTexture();
   

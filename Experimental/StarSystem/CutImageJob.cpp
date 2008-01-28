@@ -39,7 +39,6 @@ CutImageJob::CutImageJob ( const Extents &extents, unsigned int width, unsigned 
   _level   ( level ),
   _raster  ( raster ),
   _image   ( 0x0 ),
-  _texture ( 0x0 ),
   _caller  ( caller )
 {
   USUL_TRACE_SCOPE;
@@ -96,25 +95,10 @@ void CutImageJob::_started()
   if ( false == image.valid() )
     return;
 
-  // Create the texture.
-  osg::ref_ptr<osg::Texture2D> texture ( new osg::Texture2D );
-
-  // Set the texture's state.
-  texture->setImage ( image.get() );
-  texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
-  texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-  texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
-  texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
-
-  // Have we been cancelled?
-  if ( true == this->canceled() )
-    this->cancel();
-
   // Set our data members.
   {
     Guard guard ( this );
     _image = image;
-    _texture = texture;
   }
 }
 
@@ -130,17 +114,4 @@ CutImageJob::ImagePtr CutImageJob::image()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _image;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the texture.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-CutImageJob::TexturePtr CutImageJob::texture()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _texture;
 }

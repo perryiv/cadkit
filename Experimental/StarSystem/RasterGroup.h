@@ -37,6 +37,8 @@ public:
   typedef std::pair < KeyRange, KeyRange > KeyBounds;
   typedef std::pair < KeySize, KeyBounds > ImageKey;
   typedef std::map < ImageKey, ImagePtr > ImageCache;
+  typedef std::pair < ImagePtr, IRasterLayer::QueryPtr > RasterData;
+  typedef std::vector < RasterData > Rasters;
 
   USUL_DECLARE_REF_POINTERS ( RasterGroup );
 
@@ -49,11 +51,14 @@ public:
   void                            remove ( IRasterLayer* layer );
 
   IRasterLayer*                   layer ( unsigned int i );
+ 
+  /// Get a copy of the layers.
+  void                            layers ( Layers& layers ) const;
 
   unsigned int                    size() const;
 
   virtual ImagePtr                texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
-
+  void                            textures ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 protected:
 
   virtual ~RasterGroup();

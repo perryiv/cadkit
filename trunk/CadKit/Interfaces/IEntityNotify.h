@@ -44,6 +44,7 @@ typedef IEntityNotify<1032976199,InstanceHandle>      IInstanceNotify;
 typedef IEntityNotify<1032980126,GroupHandle>         IGroupNotify;
 typedef IEntityNotify<1033138075,LodHandle>           ILodNotify;
 typedef IEntityNotify<1033270378,ShapeHandle>         IShapeNotify;
+typedef IEntityNotify<1033270379,PrimHandle>          IPrimNotify;
 typedef IEntityNotify<1033272557,SetHandle>           ISetNotify;
 
 

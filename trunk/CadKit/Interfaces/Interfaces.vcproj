@@ -127,8 +127,7 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="Handles.h"
-			FileType="2">
+			RelativePath="Handles.h">
 			<FileConfiguration
 				Name="Debug|Win32"
 				ExcludedFromBuild="TRUE">
@@ -329,6 +328,9 @@
 			RelativePath=".\IOutputUnits.h">
 		</File>
 		<File
+			RelativePath=".\IPrimQuery.h">
+		</File>
+		<File
 			RelativePath="IQueryArray.h">
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -354,6 +356,12 @@
 				<Tool
 					Name="VCCustomBuildTool"/>
 			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\IQueryPrimOrigins.h">
+		</File>
+		<File
+			RelativePath=".\IQueryPrimParams.h">
 		</File>
 		<File
 			RelativePath="IQueryTexCoords.h">

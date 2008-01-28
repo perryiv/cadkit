@@ -104,6 +104,69 @@ bool DbOsgTextureCoordSetter::setData ( const unsigned int &index, const SlVec2f
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgPrimOriginSetter::setData ( const unsigned int &index, const SlVec3f &vec )
+{
+  // If we're out of range then resize.
+  if ( index >= _origins->size() )
+    if ( false == this->setSize ( index + 1 ) )
+      return false;
+
+  // Set the vertex.
+  (*_origins)[index].set ( vec[0], vec[1], vec[2] );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgPrimParamSetter::setData ( const unsigned int &index, const float &val )
+{
+  // If we're out of range then resize.
+  if ( index >= _params->size() )
+    if ( false == this->setSize ( index + 1 ) )
+      return false;
+
+  // Set the vertex.
+  (*_params)[index] = val;
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgPrimColorSetter::setData ( const unsigned int &index, const SlVec4f &vec )
+{
+  // If we're out of range then resize.
+  if ( index >= _colors->size() )
+    if ( false == this->setSize ( index + 1 ) )
+      return false;
+
+  // Set the vertex.
+  (*_colors)[index].set ( vec[0], vec[1], vec[2], vec[3] );
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the primitive length.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -221,3 +284,48 @@ bool DbOsgTextureCoordSetter::setSize ( const unsigned int &size )
   _texCoords->resize ( size );
   return size == _texCoords->size();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgPrimOriginSetter::setSize ( const unsigned int &size )
+{
+  SL_ASSERT ( size > 0 );
+  _origins->resize ( size );
+  return size == _origins->size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgPrimParamSetter::setSize ( const unsigned int &size )
+{
+  SL_ASSERT ( size > 0 );
+  _params->resize( size );
+  return size == _params->size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgPrimColorSetter::setSize ( const unsigned int &size )
+{
+  SL_ASSERT ( size > 0 );
+  _colors->resize ( size );
+  return size == _colors->size();
+}
+
+
+

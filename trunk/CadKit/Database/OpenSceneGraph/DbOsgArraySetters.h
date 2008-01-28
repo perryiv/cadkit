@@ -26,6 +26,8 @@
 #include "Interfaces/IQueryNormals.h"
 #include "Interfaces/IQueryColors.h"
 #include "Interfaces/IQueryTexCoords.h"
+#include "Interfaces/IQueryPrimOrigins.h"
+#include "Interfaces/IQueryPrimParams.h"
 
 #include "Standard/SlVec2.h"
 #include "Standard/SlVec3.h"
@@ -147,6 +149,80 @@ protected:
 
   Binding _binding;
   osg::ref_ptr<osg::Vec2Array> _texCoords;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  DbOsgOriginSetter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class DbOsgPrimOriginSetter : public IQueryPrimOriginsVec3f::OriginSetter
+{
+public:
+
+  DbOsgPrimOriginSetter ( const PrimitiveType &type ) : _type ( type ), _origins ( new osg::Vec3Array ){}
+
+  osg::Vec3Array *      getPrimOrigins()   { return _origins.get(); }
+  PrimitiveType         getPrimType()      { return _type; }
+
+  virtual bool          setData ( const unsigned int &index, const SlVec3f &vec );
+  virtual bool          setSize ( const unsigned int &size );
+
+protected:
+
+  PrimitiveType _type;
+  osg::ref_ptr<osg::Vec3Array> _origins;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  DbOsgPrimParamSetter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class DbOsgPrimParamSetter : public IQueryPrimParamsFloat::ParamSetter
+{
+public:
+
+  DbOsgPrimParamSetter ( const PrimitiveType &type ) : _type ( type ), _params ( new osg::FloatArray ) {}
+
+  osg::FloatArray*     getPrimParams()   { return _params.get(); }
+  PrimitiveType   getPrimType()     { return _type; }
+
+  virtual bool          setData ( const unsigned int &index, const float &val );
+  virtual bool          setSize ( const unsigned int &size );
+
+protected:
+
+  PrimitiveType _type;
+  osg::ref_ptr<osg::FloatArray> _params;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  DbOsgPrimColorSetter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class DbOsgPrimColorSetter : public IQueryPrimColorsVec4f::ColorSetter
+{
+public:
+  
+  typedef osg::Geometry::AttributeBinding Binding;
+
+  DbOsgPrimColorSetter () :  _colors ( new osg::Vec4Array ){}
+
+  osg::Vec4Array *      getColors()  { return _colors.get(); }
+  Binding               getBinding() { return osg::Geometry::AttributeBinding::BIND_OVERALL; }
+
+  virtual bool          setData ( const unsigned int &index, const SlVec4f &vec );
+  virtual bool          setSize ( const unsigned int &size );
+
+protected:
+
+  osg::ref_ptr<osg::Vec4Array> _colors;
 };
 
 

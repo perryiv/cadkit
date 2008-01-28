@@ -250,6 +250,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Composite.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CutImageJob.cpp"
 				>
 			</File>

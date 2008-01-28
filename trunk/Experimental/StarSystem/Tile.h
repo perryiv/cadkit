@@ -224,6 +224,7 @@ private:
   Extents _extents;
   double _splitDistance;
   Mesh *_mesh;
+  osg::Vec3d _lowerLeft;
   unsigned int _level;
   unsigned int _flags;
   Children _children;

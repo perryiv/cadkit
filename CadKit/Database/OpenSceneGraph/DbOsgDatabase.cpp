@@ -1036,14 +1036,33 @@ bool DbOsgDatabase::_addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::Sha
     float cylLength = orientationVec.length();
     osg::Vec3f cylCenter(originSetter.getPrimOrigins()->at(0));
     cylCenter[1] += cylLength * 0.5f;
-   
-    osg::ref_ptr<osg::Cylinder> cyl = new osg::Cylinder;
-    cyl->setCenter(cylCenter);
-    cyl->setHeight(cylLength);
-    cyl->setRotation(cylRot);
-    cyl->setRadius(paramSetter.getPrimParams()->at(3)); // NOTE: source supports two radii for creating cones
+    float bottomRadius = paramSetter.getPrimParams()->at(3);
+    float topRadius = paramSetter.getPrimParams()->at(4);
 
-    drawable->setShape(cyl.get());
+    if(topRadius == 0.0f) // cone
+    {      
+      osg::ref_ptr<osg::Cone> cone = new osg::Cone;
+      cone->setCenter(cylCenter);
+      cone->setHeight(cylLength);
+      cone->setRotation(cylRot);
+      cone->setRadius(bottomRadius);
+
+      drawable->setShape(cone.get());
+    }
+    else 
+    {
+      if ( topRadius != bottomRadius ) // truncated cone, warn & replace with cylinder
+        WARNING ( FORMAT ( "Irregular cylinder not supported for primitive %X.", prim ), CadKit::FAILED );
+
+      osg::ref_ptr<osg::Cylinder> cyl = new osg::Cylinder;
+      cyl->setCenter(cylCenter);
+      cyl->setHeight(cylLength);
+      cyl->setRotation(cylRot);
+      cyl->setRadius(bottomRadius);
+
+      drawable->setShape(cyl.get());
+    }
+    
     return true;
   }
   else if ( type == CadKit::PYRAMID )
@@ -1052,7 +1071,11 @@ bool DbOsgDatabase::_addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::Sha
   }
   else if ( type == CadKit::SPHERE )
   {
-    return WARNING ( FORMAT ( "Sphere primitive not supported." ), CadKit::FAILED );
+    osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere;
+    sphere->setCenter(osg::Vec3f(originSetter.getPrimOrigins()->at(0)));
+    sphere->setRadius(paramSetter.getPrimParams()->at(0));
+    drawable->setShape(sphere.get());
+    return true;
   }
   else if ( type == CadKit::TRIPRISM )
   {

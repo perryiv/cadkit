@@ -11,6 +11,7 @@
 
 #include "OsgTools/Font.h"
 #include "OsgTools/Render/Constants.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "osg/MatrixTransform"
 #include "osg/Geode"
@@ -315,6 +316,9 @@ osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
     mt->addChild( geode.get() );
     osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL ) );
     mt->getOrCreateStateSet()->setAttributeAndModes ( mode.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    
+    // Turn off lighting.
+    OsgTools::State::StateSet::setLighting ( mt.get(), false );
 
     group->addChild ( mt.get() );
 

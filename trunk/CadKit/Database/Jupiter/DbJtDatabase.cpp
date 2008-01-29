@@ -1800,28 +1800,19 @@ bool DbJtDatabase::getMaterial ( PrimHandle prim, SlMaterialf &material, bool tr
 
 bool DbJtDatabase::getTransform ( AssemblyHandle assembly, SlMatrix44f &matrix, bool tryParents ) const
 {
-
   // TODO. Handle "tryParents".
   bool result = CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) assembly, matrix );
 
-
-
-  // The first time we scale, even if the above didn't work.
-
+  // The first time we scale & rotate, even if the above didn't work.
   if ( this->_doWeNeedToScale() )
-
   {
-
     this->_applyScaleOnce ( matrix );
-
+    if( this->_doWeNeedToRotate() )
+      this->_applyRotateOnce( matrix );
     return true;
-
   }
 
-
-
   // Return the result.
-
   return result;
 }
 
@@ -1837,25 +1828,17 @@ bool DbJtDatabase::getTransform ( PartHandle part, SlMatrix44f &matrix, bool try
   // TODO. Handle "tryParents".
   bool result = CadKit::getTransform ( _truncate.getLow(), _truncate.getHigh(), (eaiEntity *) part, matrix );
 
-
   // The first time we scale, even if the above didn't work.
-
   if ( this->_doWeNeedToScale() )
-
   {
-
     this->_applyScaleOnce ( matrix );
-
+    if( this->_doWeNeedToRotate() )
+      this->_applyRotateOnce ( matrix );
     return true;
-
   }
 
-
-
   // Return the result.
-
   return result;
-
 }
 
 

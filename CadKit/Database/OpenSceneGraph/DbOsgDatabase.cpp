@@ -319,9 +319,11 @@ bool DbOsgDatabase::startEntity ( AssemblyHandle assembly, IUnknown *caller )
   SL_ASSERT ( caller );
   SL_ASSERT ( false == _groupStack->empty() );
   
-  // Get the units interface from the caller
   float scaleFactor = 1.0f;
-  if(!_scaled)
+
+  // If output units are specified, get the units interface from the caller
+  // and attempt to get a scale factor.
+  if( !_scaled && !_outputUnits.empty() )
   {
     SlQueryPtr<IUnits> units ( caller );
     if( !units.isNull() )

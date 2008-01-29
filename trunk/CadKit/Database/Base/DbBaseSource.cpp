@@ -36,7 +36,9 @@ SL_IMPLEMENT_CLASS ( DbBaseSource, DbBaseObject );
 DbBaseSource::DbBaseSource() : DbBaseObject(),
   _target ( NULL ),
   _scale ( true ),
-  _needToScale ( true )
+  _needToScale ( true ),
+  _rotate ( true ),
+  _needToRotate ( true )
 {
   SL_PRINT2 ( "In DbBaseSource::DbBaseSource(), this = %X\n", this );
 }
@@ -72,6 +74,10 @@ IUnknown *DbBaseSource::queryInterface ( unsigned long iid )
     return static_cast<IScaleDouble *>(this);
   case IScaleFloat::IID:
     return static_cast<IScaleFloat *>(this);
+  case IRotateDouble::IID:
+    return static_cast<IRotateDouble *>(this);
+  case IRotateFloat::IID:
+    return static_cast<IRotateFloat *>(this);
   default:
     return DbBaseObject::queryInterface ( iid );
   }
@@ -165,3 +171,79 @@ void DbBaseSource::_applyScaleOnce ( SlMatrix44f &s ) const
       static_cast<float>(t(3,0)), static_cast<float>(t(3,1)), static_cast<float>(t(3,2)), static_cast<float>(t(3,3)) );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify the current rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::rotate ( double x, double y, double z, double deg )
+{
+  SL_PRINT6 ( "In DbBaseSource::rotate(), this = %X, x = %f, y = %f, z = %f, deg = %f\n", this, x, y, z, deg );
+
+  // Multiply the rotation.
+  SlMatrix44d rot;
+  rot.setRotation( SL_DEG_TO_RAD_D * deg, SlVec3d( x, y, z ) );
+  _rotate *= rot;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Modify the current rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::rotate ( float x, float y, float z, float deg )
+{
+  SL_PRINT6 ( "In DbBaseSource::rotate(), this = %X, x = %f, y = %f, z = %f, deg = %f\n", this, x, y, z, deg );
+
+  // Call the other one.
+  this->rotate ( static_cast < double > ( x ), static_cast < double > ( y ), static_cast < double > ( z ), static_cast < double > ( deg ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Apply the rotation one time until the flag gets reset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::_applyRotateOnce ( SlMatrix44d &rot ) const
+{
+  if ( this->_doWeNeedToRotate() )
+  {
+    rot *= _rotate;
+    _needToRotate = false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Apply the scale one time until the flag gets reset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DbBaseSource::_applyRotateOnce ( SlMatrix44f &r ) const
+{
+  if ( this->_doWeNeedToRotate() )
+  {
+    // Probably not the most efficient way...
+    SlMatrix44d t ( 
+      r(0,0), r(0,1), r(0,2), r(0,3),
+      r(1,0), r(1,1), r(1,2), r(1,3),
+      r(2,0), r(2,1), r(2,2), r(2,3),
+      r(3,0), r(3,1), r(3,2), r(3,3) );
+    this->_applyRotateOnce ( t );
+    r.setValue ( 
+      static_cast<float>(t(0,0)), static_cast<float>(t(0,1)), static_cast<float>(t(0,2)), static_cast<float>(t(0,3)),
+      static_cast<float>(t(1,0)), static_cast<float>(t(1,1)), static_cast<float>(t(1,2)), static_cast<float>(t(1,3)),
+      static_cast<float>(t(2,0)), static_cast<float>(t(2,1)), static_cast<float>(t(2,2)), static_cast<float>(t(2,3)),
+      static_cast<float>(t(3,0)), static_cast<float>(t(3,1)), static_cast<float>(t(3,2)), static_cast<float>(t(3,3)) );
+  }
+}
+
+

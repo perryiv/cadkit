@@ -86,28 +86,14 @@ std::string getLong()
   \n\
       For ASCII output formats, specify the number of decimals.\n\
   \n\
-  --center, -c\n\
-  \n\
-      Translate the geometry such that the center of its bounding box is\n\
-      at the origin.\n\
-  \n\
   --scale <x y z>, -s\n\
   \n\
       Scale the geometry. See note below.\n\
-  \n\
-  --translate <x y z>, -t\n\
-  \n\
-      Translate the geometry. See note below.\n\
   \n\
   --rotate <x y z deg>, -r\n\
   \n\
       Rotate the geometry 'deg' degrees about the axis (x,y,z).\n\
       See note below.\n\
-  \n\
-  --scale-to-fit <xmin ymin zmin xmax ymax zmax>, -stf\n\
-  \n\
-      Scale the geometry such that it fits inside the bounding box defined\n\
-      by (xmin,ymin,zmin) and (xmax,ymax,zmax).\n\
   \n\
   --output-units <units>, -ou\n\
   \n\

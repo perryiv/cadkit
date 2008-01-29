@@ -42,6 +42,7 @@
 #include "Interfaces/IOutputAttribute.h"
 #include "Interfaces/IOutputPrecision.h"
 #include "Interfaces/IScale.h"
+#include "Interfaces/IRotate.h"
 #include "Interfaces/IOutputUnits.h"
 
 #include <time.h>
@@ -336,7 +337,26 @@ bool CtTranslation::_parseArguments ( int argc, char **argv, std::list<std::stri
 
     else if ( arg == "-r" || arg == "--rotate" )
     {
+      // Get the next four arguments, if there are any.
+      std::string x ( ( i + 1 == argc ) ? "" : argv[i+1] );
+      std::string y ( ( i + 2 == argc ) ? "" : argv[i+2] );
+      std::string z ( ( i + 3 == argc ) ? "" : argv[i+3] );
+      std::string d ( ( i + 4 == argc ) ? "" : argv[i+4] );
 
+      // See if the strings are a numbers.
+      if ( true == CadKit::isNumber ( x ) && 
+           true == CadKit::isNumber ( y ) && 
+           true == CadKit::isNumber ( z ) &&
+           true == CadKit::isNumber ( d ) )
+      {
+        // Set the scale and increment the loop index.
+        this->_setRotation ( ::atof ( x.c_str() ), ::atof ( y.c_str() ), ::atof ( z.c_str() ), ::atof ( d.c_str() ) );
+        i += 4;
+      }
+
+      // Otherwise return false.
+      else
+        return false;    
     }
 
     else if ( arg == "-stf" || arg == "--scale-to-fit" )
@@ -803,6 +823,32 @@ void CtTranslation::_setScale ( double x, double y, double z )
   if ( sf.isValid() )
     sf->scale ( static_cast<float> ( x ), static_cast<float> ( y ), static_cast<float> ( z ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CtTranslation::_setRotation ( double x, double y, double z, double deg )
+{
+  SL_PRINT3 ( "In CtTranslation::_setRotation(), this = %X, numDecimals = %d\n", this, numDecimals );
+
+  // Set the scale if the interface is available. 
+  SlQueryPtr<IRotateDouble> rd ( _source );
+  if ( rd.isValid() )
+  {
+    rd->rotate ( x, y, z, deg );
+    return;
+  }
+
+  // Try this interface too. 
+  SlQueryPtr<IRotateFloat> rf ( _source );
+  if ( rf.isValid() )
+    rf->rotate ( static_cast<float> ( x ), static_cast<float> ( y ), static_cast<float> ( z ), static_cast<float> ( deg ) );
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////

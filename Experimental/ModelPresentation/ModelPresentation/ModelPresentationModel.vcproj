@@ -291,6 +291,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MpdFirstSequence.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdFirstSequence.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MpdFirstTimestep.cpp"
 					>
 				</File>
@@ -320,6 +328,22 @@
 				</File>
 				<File
 					RelativePath=".\MpdNextCommand.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdNextSequence.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdNextSequence.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdPrevSequence.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdPrevSequence.h"
 					>
 				</File>
 				<File

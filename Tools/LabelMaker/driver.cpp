@@ -17,7 +17,7 @@
 #include <osg/Texture2D>
 #include <osg/Image>
 #include <osgViewer/Viewer>
-#include <osgViewer/StatsHandler> 
+//#include <osgViewer/StatsHandler> 
 #include <osgViewer/ViewerEventHandlers> 
 #include <osgGA/StateSetManipulator> 
 

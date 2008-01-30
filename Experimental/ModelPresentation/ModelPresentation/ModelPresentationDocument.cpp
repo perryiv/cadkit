@@ -18,6 +18,9 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdTools.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdTimelineModel.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdDynamicModel.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdNextSequence.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdPrevSequence.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdFirstSequence.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -84,6 +87,8 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _checkFileSystem( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
   _useTimeLine( false ),
   _useModels( false ),
+  _useDynamic( false ),
+  _useSequence( false ),
   _isAnimating( false ),
   _showTools ( false ),
   _userSpecifiedEndTime( false ),
@@ -342,20 +347,31 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   Guard guard ( this->mutex() );
 
   _root->removeChild( 0, _root->getNumChildren() );
+
+  // Add sets to the scene tree
   for( unsigned int i = 0; i < _sceneTree.size(); ++i )
   {
     _root->addChild( _sceneTree.at( i ).get() );
   }
+  
+  // Add static to the scene tree
   _root->addChild( _static.get() );
 
+  // Add time sets to the scene tree
   for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
     _root->addChild( _timeSets.at( i ).timeline.get() );
   }
+
+  // Add dynamic sets to the scene tree
   for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
   {
     _root->addChild( _dynamicSets.at( i ).models.get() );
   }
+
+  // add the sequence to the scene tree
+  _root->addChild( _sequence.groups.get() );
+
   return _root.get();
 }
 
@@ -881,12 +897,19 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
     if ( "location" == node->name() )
     {
       //std::cout << "Parsing location entries..." << std::endl;
-      this->_parseLocation( *node, caller, progress );
+      MpdDefinitions::Location location;
+      this->_parseLocation( *node, caller, progress, location, _locationNames );
+      _locations[ location.first ] = location.second;
     } 
     if ( "dynamic" == node->name() )
     {
       //std::cout << "Parsing dynamic entries..." << std::endl;
       this->_parseDynamic( *node, caller, progress );
+    }
+    if ( "sequence" == node->name() )
+    {
+      //std::cout << "Parsing dynamic entries..." << std::endl;
+      this->_parseSequence( *node, caller, progress );
     }
   }
   
@@ -938,7 +961,7 @@ void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *call
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -957,7 +980,7 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
     }  
   }
   // TODO: create destination matrix here --
-  _locationNames.push_back( name );
+  names.push_back( name );
   
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
@@ -967,7 +990,7 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
       
       std::cout << "Found matrix" << std::endl;
      
-      this->_parseMatrix( *node, caller, progress, name);
+      this->_parseMatrix( *node, caller, progress, name, location, names );
     }
   }
   
@@ -980,7 +1003,7 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name )
+void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names )
 {
    USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1014,8 +1037,9 @@ void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *call
   else
     std::cout << "Incorrect Matrix format!" << std::endl;
 
-  
-  _locations[ name ] = matrix;
+  location.first = name;
+  location.second = matrix;
+  //_locations[ name ] = matrix;
 }
 
 
@@ -1375,7 +1399,121 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   _dynamicSets.push_back( dset );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a sequence.
+//
+///////////////////////////////////////////////////////////////////////////////
 
+void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+{ 
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+   // Ok to update the status bar with time related information
+  _useSequence = true;
+
+  Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  //MpdDefinitions::MpdSequence sequence;
+  _sequence.name = "Unknown";
+  _sequence.menuName = "Sequence";
+  _sequence.groups = new osg::Switch;
+
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    if ( "name" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, _sequence.name );
+    }
+
+    if ( "menu_name" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, _sequence.menuName );
+    }   
+  }
+  // TODO: create a step here --
+  //osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "step" == node->name() )
+    {
+      MpdDefinitions::MpdSequenceStep step;
+      _sequence.groups->addChild( this->_parseSequenceStep( *node, caller, progress, step ), false );
+
+      _sequence.steps.push_back( step );
+    }
+  }
+#if 0
+  // Turn off display lists
+  OsgTools::DisplayLists dl( false );
+  dl( switchNode.get() );
+#endif
+  if( _sequence.groups->getNumChildren() > 0 )
+  {
+    _sequence.groups->setValue( 0, true ); 
+  }
+  //_sequence = sequence;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a sequence step
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step )
+{ 
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+   Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  step.changeLocation = true;
+  step.overwriteGroup = true;
+  step.name = "Unknown";
+  step.location.first = "";
+  
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    if ( "name" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, step.name );
+    }
+    if ( "overwriteGroup" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, step.overwriteGroup );
+    }
+    if ( "changeLocation" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, step.changeLocation );
+    }
+
+  }
+  
+  GroupPtr group ( new osg::Group );
+  MpdDefinitions::MpdSet set;
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "group" == node->name() )
+    {
+      group->addChild( this->_parseGroup( *node, caller, progress, set ) );
+      
+    }  
+    if ( "location" == node->name() )
+    {
+      MpdDefinitions::LocationNames names;
+      this->_parseLocation( *node, caller, progress, step.location, names );
+    } 
+  }
+  
+  return group.release();
+
+}
+  
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Parse a model.
@@ -1507,21 +1645,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
         filename =  dir + files.at(i).c_str() ;
       #endif
     std::cout << "Loading file: " << filename << std::endl;
-    /*
-    if( Usul::File::extension( filename.c_str() ) == "ive" ||
-        Usul::File::extension( filename.c_str() ) == "IVE" ||
-        Usul::File::extension( filename.c_str() ) == "OSG" ||
-        Usul::File::extension( filename.c_str() ) == "osg" )
-    {
-      #ifdef _MSC_VER
-        osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( files.at(i).c_str() );
-      #else
-        osg::ref_ptr< osg::Node > loadedModel = osgDB::readNodeFile( dir + files.at(i).c_str() );
-      #endif
-      group->addChild( loadedModel.release() );
-    }
-    else
-    */
+
     try
     {
        // This will create a new document.
@@ -1686,13 +1810,28 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   typedef IAnimatePath::PackedMatrices PackedMatrices;
   typedef IAnimatePath::PackedMatrix PackedMatrix;
 
-  // Check number of locations.
-  if ( _locations.size() <= 0 )
-    return;
+  bool useSequence = false;
 
-  // Make sure we have this location.
-  if ( _locations.end() == _locations.find ( name ) )
+  // Check number of locations or use a sequence.
+  if ( _locations.size() <= 0 )
+  {
+#if 0
     return;
+#else
+    useSequence = true;
+#endif
+  }
+
+
+  // Make sure we have this location or use a sequence.
+  if ( _locations.end() == _locations.find ( name ) )
+  {
+#if 0
+    return;
+#else
+    useSequence = true;
+#endif
+  }
 
   // Get needed interfaces.
   IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
@@ -1708,25 +1847,30 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   matrices.push_back ( PackedMatrix ( m0.ptr(), m0.ptr() + 16 ) );
 
   // Get final matrix but don't append yet.
-  const osg::Matrixd m1 ( this->_locations[name] );
+  osg::Matrixd m1;
 
-#if 0
-  // Append middle matrices.
-  const MatrixVec mvec ( this->_getInterpolationMatrices ( m0, m1 ) );
-  for ( MatrixVec::const_iterator i = mvec.begin(); i != mvec.end(); ++i )
+  // using a location
+  if( false == useSequence )
   {
-    const osg::Matrixd &temp ( *i );
-    matrices.push_back ( PackedMatrix ( temp.ptr(), temp.ptr() + 16 ) );
+    m1 = this->_locations[name];
   }
-#endif
+  // using a sequence
+  else
+  {
+    bool foundMatrix = false;
+    for( unsigned int i = 0; i < _sequence.steps.size(); ++i )
+    {
+      if( _sequence.steps.at( i ).location.first == name )
+      {
+        foundMatrix = true;
+        m1 = _sequence.steps.at( i ).location.second;
+        break;
+      }
+    }
+    if( false == foundMatrix )
+      return;
+  }
 
-#if 0
-  Matrix mhalf = ( m0 );
-  osg::Vec3d trans = mhalf.getTrans();
-  mhalf.setTrans ( osg::Vec3d( trans[0], trans[1] + 1, trans[2] ) );
-  mhalf.setRotate(  m1.getRotate() );
-  matrices.push_back ( mhalf );
-#endif
 
   // Append final matrix.
   matrices.push_back ( PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
@@ -1821,6 +1965,25 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
 
     menu.append ( TimelineMenu );
   }
+
+  if( true == _useSequence )
+  {
+    const std::string menuName ( _sequence.menuName );
+    const std::string name ( _sequence.name );
+    MenuKit::Menu::RefPtr SequenceMenu ( menu.find ( menuName, true ) );
+
+    SequenceMenu->append( new Button ( new MpdNextSequence( me.get() ) ) );
+    SequenceMenu->append( new Button ( new MpdPrevSequence( me.get() ) ) );
+    SequenceMenu->append( new Button ( new MpdFirstSequence( me.get() ) ) );
+     
+    //MenuKit::Menu::RefPtr SequenceSubMenu ( new MenuKit::Menu ( "Goto", MenuKit::Menu::VERTICAL ) );
+    //for( unsigned int j = 0; j < _sets.at( i ).groupNames.size(); ++j )
+    //{
+    //   ModelSubMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at( i ).groupNames.at( j ), i, j ) ) );
+    //}
+    //ModelMenu->append( ModelSubMenu.get() );
+  }
+
   if( _locationNames.size() > 0 )
   {
     MenuKit::Menu::RefPtr locationMenu ( new MenuKit::Menu ( "Locations", MenuKit::Menu::VERTICAL ) );
@@ -2132,4 +2295,99 @@ MpdJob* ModelPresentationDocument::_getJobAtIndex( unsigned int index )
     return 0x0;
 
   return _jobs.at( index ).get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the sequence to the first step
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::firstSequenceStep()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _sequence.current = 0;
+  this->_handleSequenceEvent();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the sequence to the next step
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::nextSequenceStep()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  if( _sequence.current < _sequence.steps.size() - 1 )
+  {
+    _sequence.current ++;
+  }
+  else
+  {
+    _sequence.current = 0;
+  }
+  this->_handleSequenceEvent();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the sequence to the previous step
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::prevSequenceStep()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  if( _sequence.current > 0  )
+  {
+    _sequence.current --;
+  }
+  else
+  {
+    _sequence.current = _sequence.steps.size() - 1;
+  }
+  this->_handleSequenceEvent();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Handle sequence events
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_handleSequenceEvent()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  unsigned int index = _sequence.current;
+  MpdDefinitions::MpdSequenceStep step = _sequence.steps.at( index );
+
+  // Change location to the current step if we should do so
+  if( true == step.changeLocation )
+  {
+    this->setAnimationPath( step.location.first );
+  }
+
+  // Hide all groups then show the current step if we should do so
+  if( true == step.overwriteGroup )
+  {
+    for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
+    {
+      _sequence.groups->setValue( i, false );
+    }
+    _sequence.groups->setValue( index, true );
+  }
+
 }

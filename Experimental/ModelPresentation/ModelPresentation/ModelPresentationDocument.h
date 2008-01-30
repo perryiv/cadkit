@@ -72,8 +72,8 @@ public:
   typedef std::vector< MpdDefinitions::MpdGroup > MpdGroups;
   typedef std::vector< MpdDefinitions::MpdModel > MpdModels;
   typedef std::vector< MpdDefinitions::MpdSet > MpdSets;
-  typedef std::map< std::string, osg::Matrixd > Locations;
-  typedef std::vector< std::string > LocationNames;
+  
+  
   typedef std::vector< MpdDefinitions::MpdTimeSet > MpdTimeSets;
   typedef MpdDefinitions::MpdDynamicSets MpdDynamicSets;
 
@@ -85,6 +85,7 @@ public:
 
   typedef std::vector< std::string > modelMenuList;
   typedef std::vector< std::string > timelineMenuList;
+  //typedef std::vector< MpdDefinitions::MpdSequence > MpdSequences;
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModelPresentationDocument );
@@ -138,6 +139,9 @@ public:
   bool              dynamicModelState( unsigned int i );
   void              validateDynamicSets();
   void              updateGlobalEndtime();
+  void              firstSequenceStep();
+  void              nextSequenceStep();
+  void              prevSequenceStep();
 
  
 protected:
@@ -152,10 +156,12 @@ protected:
   void                        _parseStatic( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseSet( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int setnum );
   void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller, Unknown *progress );
-  void                        _parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress );
-  void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name );
+  void                        _parseSequence( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  void                        _parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names );
+  void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdDefinitions::MpdTimeSet &timeset );
+  osg::Node*                  _parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseDynamic( XmlTree::Node &node, Unknown *caller, Unknown *progress ); 
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
@@ -166,6 +172,8 @@ protected:
   std::string                 _getWorkingDir();
   void                        _processJobData( unsigned int index );
   MpdJob*                     _getJobAtIndex( unsigned int index );
+
+  void                        _handleSequenceEvent();
   
 
 
@@ -188,31 +196,34 @@ protected:
   virtual ~ModelPresentationDocument();
 
 private:
-  GroupPtr                    _root;
-  GroupPtr                    _static;
-  MpdScene                    _sceneTree;
-  MpdGroups                   _groups;
-  MpdModels                   _models;
-  MpdSets                     _sets;
-  MpdTimeSets                 _timeSets;
-  MpdDynamicSets              _dynamicSets;
-  UpdatePolicyPtr             _update;
-  UpdatePolicyPtr             _checkFileSystem;
-  bool                        _useTimeLine;
-  bool                        _useModels;
-  bool                        _useDynamic;
-  bool                        _isAnimating;
-  bool                        _showTools;
-  bool                        _userSpecifiedEndTime;
+  GroupPtr                      _root;
+  GroupPtr                      _static;
+  MpdScene                      _sceneTree;
+  MpdGroups                     _groups;
+  MpdModels                     _models;
+  MpdSets                       _sets;
+  MpdTimeSets                   _timeSets;
+  MpdDynamicSets                _dynamicSets;
+  UpdatePolicyPtr               _update;
+  UpdatePolicyPtr               _checkFileSystem;
+  bool                          _useTimeLine;
+  bool                          _useModels;
+  bool                          _useDynamic;
+  bool                          _useSequence;
+  bool                          _isAnimating;
+  bool                          _showTools;
+  bool                          _userSpecifiedEndTime;
 
-  Locations                   _locations;
-  LocationNames               _locationNames;
+  MpdDefinitions::Locations     _locations;
+  MpdDefinitions::LocationNames _locationNames;
+  MpdDefinitions::MpdSequence   _sequence;
+   
 
-  std::string                 _workingDir;
-  unsigned int                _globalTimelineEnd;
+  std::string                   _workingDir;
+  unsigned int                  _globalTimelineEnd;
 
   
-  MpdJobs                     _jobs;
+  MpdJobs                       _jobs;
   
 };
 

@@ -75,10 +75,7 @@ RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &u
 
   this->extents ( maxExtents );
 
-  // Serialization glue.
-  this->_addMember ( "url", _url );
-  this->_addMember ( "options", _options );
-  this->_addMember ( "use_network", _useNetwork );
+  this->_registerMembers();
 }
 
 
@@ -95,25 +92,7 @@ RasterLayerWms::RasterLayerWms ( const RasterLayerWms& rhs ) :
   _dir ( rhs._dir ),
   _useNetwork ( rhs._useNetwork )
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Assignment.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-RasterLayerWms& RasterLayerWms::operator= ( const RasterLayerWms& rhs )
-{
-  BaseClass::operator= ( rhs );
-  
-  _url = rhs._url;
-  _options = rhs._options;
-  _dir = rhs._dir;
-  _useNetwork = rhs._useNetwork;
-  
-  return *this;
+  this->_registerMembers();
 }
 
 
@@ -127,6 +106,21 @@ RasterLayerWms::~RasterLayerWms()
 {
   USUL_TRACE_SCOPE;
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &RasterLayerWms::_destroy ), "8458296530" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members for serialization.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerWms::_registerMembers()
+{
+  // Serialization glue.
+  this->_addMember ( "url", _url );
+  this->_addMember ( "options", _options );
+  this->_addMember ( "use_network", _useNetwork );
 }
 
 

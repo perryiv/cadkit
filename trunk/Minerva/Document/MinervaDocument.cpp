@@ -1760,6 +1760,42 @@ void MinervaDocument::dirty( bool b )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build a layer menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void buildLayerMenu ( MenuKit::Menu& menu, Usul::Interfaces::ILayer* layer )
+  {
+    // Return now if layer is null.
+    if ( 0x0 == layer )
+      return;
+    
+    // Add the toggle.
+    menu.append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( layer ) ) );
+    
+    // See if it's a layer list also.
+    Usul::Interfaces::ILayerList::QueryPtr list ( layer );
+    if ( list.valid() )
+    {
+      MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( layer->name() ) );
+      
+      const unsigned int number ( list->numberLayers() );
+      for ( unsigned int i = 0; i < number; ++i  )
+      {
+        Usul::Interfaces::ILayer::QueryPtr child ( list->layer ( i ) );
+        if ( child.valid() )
+          Detail::buildLayerMenu ( *layerMenu, child.get() );
+      }
+      menu.append ( layerMenu.get() );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the layer menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1771,7 +1807,6 @@ void MinervaDocument::_buildLayerMenu()
 
   for ( Layers::iterator iter = _layers.begin(); iter != _layers.end (); ++ iter )
   {
-    if ( 0x0 != (*iter).get() )
-      _layersMenu->append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( *iter ) ) );
+    Detail::buildLayerMenu ( *_layersMenu, (*iter).get() );
   }
 }

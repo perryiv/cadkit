@@ -57,9 +57,10 @@ protected:
   virtual ~RasterLayerWms();
   
   RasterLayerWms ( const RasterLayerWms& );
-  RasterLayerWms& operator= ( const RasterLayerWms& );
 
 private:
+  // Do not use.
+  RasterLayerWms& operator= ( const RasterLayerWms& );
 
   std::string           _baseFileName ( Extents extents ) const;
 
@@ -68,6 +69,9 @@ private:
   std::string           _directory ( unsigned int width, unsigned int height, unsigned int level ) const;
 
   std::string           _getAllOptions() const;
+  
+  // Register members for serialization.
+  void                  _registerMembers();
 
   std::string _url;
   Options _options;

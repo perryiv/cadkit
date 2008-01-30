@@ -54,11 +54,12 @@ protected:
   virtual ~ElevationLayerDem();
   
   ElevationLayerDem ( const ElevationLayerDem& );
-  ElevationLayerDem& operator= ( const ElevationLayerDem& );
 
   virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
   
 private:
+  ElevationLayerDem& operator= ( const ElevationLayerDem& );
+  
   std::string _filename;
   bool _loaded;
   ossimDemGrid *_grid;

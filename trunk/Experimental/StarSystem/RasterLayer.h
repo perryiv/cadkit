@@ -95,7 +95,6 @@ protected:
   virtual ~RasterLayer();
   
   RasterLayer ( const RasterLayer& );
-  RasterLayer& operator= ( const RasterLayer& );
 
   virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
 
@@ -108,6 +107,11 @@ protected:
   virtual double        maxLat() const;
   
 private:
+  // Do not use.
+  RasterLayer& operator= ( const RasterLayer& );
+  
+  // Register members for serialization.
+  void                  _registerMembers();
 
   Extents _extents;
   Alphas _alphas;

@@ -49,7 +49,7 @@ RasterLayerOssim::RasterLayerOssim() :
 {
   USUL_TRACE_SCOPE;
 
-  this->_addMember( "filename", _filename );
+  this->_registerMembers();
 }
 
 
@@ -66,22 +66,10 @@ _renderer ( 0x0 ),
 _viewInterface ( 0x0 ),
 _projection ( 0x0 )
 {
-  this->open ( rhs._filename );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Assignment.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-RasterLayerOssim& RasterLayerOssim::operator= ( const RasterLayerOssim& rhs )
-{
-  BaseClass::operator= ( rhs );
-  this->open ( rhs._filename );
+  USUL_TRACE_SCOPE;
+  this->_registerMembers();
   
-  return *this;
+  this->open ( rhs._filename );
 }
 
 
@@ -100,12 +88,26 @@ RasterLayerOssim::~RasterLayerOssim()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Register members for serialization.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerOssim::_registerMembers()
+{
+  USUL_TRACE_SCOPE;
+  this->_addMember( "filename", _filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Clone.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Usul::Interfaces::IUnknown* RasterLayerOssim::clone() const
 {
+  USUL_TRACE_SCOPE;
   Usul::Interfaces::IUnknown::QueryPtr clone ( new RasterLayerOssim ( *this ) );
   return clone.release();
 }

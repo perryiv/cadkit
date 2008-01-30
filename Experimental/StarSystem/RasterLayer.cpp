@@ -64,7 +64,7 @@ RasterLayer::RasterLayer() :
 RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
   _extents ( rhs._extents ),
   _alphas ( rhs._alphas ),
-  _guid ( rhs._guid ),
+  _guid ( Usul::Functions::GUID::generate() ),
   _shown ( rhs._shown ),
   _alpha ( rhs._alpha ),
   SERIALIZE_XML_INITIALIZER_LIST

@@ -573,6 +573,6 @@ void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
     os << ( ( requests > 0 ) ? Usul::Strings::format ( "Requests: ", requests ) : "" );
 #endif
     std::string text ( os.str() );
-    tm->setText ( 15, 15, text, osg::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
+    tm->setText ( 15, 15, text, osg::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
   }
 }

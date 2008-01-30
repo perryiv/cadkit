@@ -56,21 +56,21 @@ OsgTools::ShapeFactory* DataObject::shapeFactory()
 ///////////////////////////////////////////////////////////////////////////////
 
 DataObject::DataObject() :
-BaseClass(),
-_dirty ( true ),
-_renderBin ( osg::StateSet::DEFAULT_BIN ),
-_color ( 0.0, 0.0, 0.0, 1.0 ),
-_objectId ( "" ),
-_label(),
-_labelPosition(),
-_labelColor( 1.0, 1.0, 1.0, 1.0 ),
-_labelSize( 25.0f ),
-_showLabel ( false ),
-_geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
-_dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
-_firstDate( boost::date_time::min_date_time ),
-_lastDate( boost::date_time::max_date_time ),
-_altitudeMode ( CLAMP_TO_GROUND )
+  BaseClass(),
+  _dirty ( true ),
+  _renderBin ( osg::StateSet::DEFAULT_BIN ),
+  _color ( 0.0, 0.0, 0.0, 1.0 ),
+  _objectId ( "" ),
+  _label(),
+  _labelPosition(),
+  _labelColor( 1.0, 1.0, 1.0, 1.0 ),
+  _labelSize( 25.0f ),
+  _showLabel ( false ),
+  _geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
+  _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
+  _firstDate( boost::date_time::min_date_time ),
+  _lastDate( boost::date_time::max_date_time ),
+  _altitudeMode ( CLAMP_TO_GROUND )
 {
 }
 

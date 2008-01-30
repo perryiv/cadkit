@@ -64,7 +64,6 @@ protected:
   virtual ~RasterGroup();
   
   RasterGroup ( const RasterGroup& );
-  RasterGroup& operator= ( const RasterGroup& );
 
   void                            _updateExtents ( IRasterLayer* layer );
 
@@ -76,6 +75,7 @@ protected:
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
   
 private:
+  RasterGroup& operator= ( const RasterGroup& );
 
   Layers _layers;
   ImageCache _cache;

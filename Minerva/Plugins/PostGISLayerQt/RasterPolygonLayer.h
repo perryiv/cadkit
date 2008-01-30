@@ -50,7 +50,6 @@ protected:
   virtual ~RasterPolygonLayer();
   
   RasterPolygonLayer ( const RasterPolygonLayer& );
-  RasterPolygonLayer& operator= ( const RasterPolygonLayer& );
   
   void _init();
   void _initGeometries();
@@ -63,6 +62,8 @@ protected:
   std::string           _directory ( unsigned int width, unsigned int height, unsigned int level ) const;
   
 private:
+  RasterPolygonLayer& operator= ( const RasterPolygonLayer& );
+  
   friend class Usul::Factory::TypeCreator<RasterPolygonLayer>;
 
   typedef std::vector<OGRGeometry*> Geometries;

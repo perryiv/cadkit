@@ -36,11 +36,13 @@ protected:
   virtual ~ElevationGroup();
 
   ElevationGroup ( const ElevationGroup& );
-  ElevationGroup& operator= ( const ElevationGroup& );
   
   virtual ImagePtr                _createBlankImage ( unsigned int width, unsigned int height ) const;
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * );
 
+private:
+  ElevationGroup& operator= ( const ElevationGroup& );
+  
   SERIALIZE_XML_DEFINE_MEMBERS ( ElevationGroup );
 };
 

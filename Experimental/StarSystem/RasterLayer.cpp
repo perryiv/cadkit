@@ -45,13 +45,7 @@ RasterLayer::RasterLayer() :
   _alpha ( 1.0f ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
-  // Serialization glue.
-  this->_addMember ( "extents", _extents );
-  this->_addMember ( "guid", _guid );
-  this->_addMember ( "name", this->_getName() );
-  this->_addMember ( "shown", _shown );
-  this->_addMember ( new Serialize::XML::ValueMapMember<Alphas> ( "alphas", _alphas ) );
-  this->_addMember ( "alpha", _alpha );
+  this->_registerMembers();
 }
 
 
@@ -69,24 +63,7 @@ RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
   _alpha ( rhs._alpha ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Assignment.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-RasterLayer& RasterLayer::operator= ( const RasterLayer& rhs )
-{
-  _extents = rhs._extents;
-  _alphas = rhs._alphas;
-  _guid = rhs._guid;
-  _shown = rhs._shown;
-  _alpha = rhs._alpha;
-  
-  return *this;
+  this->_registerMembers();
 }
 
 
@@ -98,6 +75,24 @@ RasterLayer& RasterLayer::operator= ( const RasterLayer& rhs )
 
 RasterLayer::~RasterLayer()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members for serialization.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::_registerMembers()
+{
+  // Serialization glue.
+  this->_addMember ( "extents", _extents );
+  this->_addMember ( "guid", _guid );
+  this->_addMember ( "name", this->_getName() );
+  this->_addMember ( "shown", _shown );
+  this->_addMember ( new Serialize::XML::ValueMapMember<Alphas> ( "alphas", _alphas ) );
+  this->_addMember ( "alpha", _alpha );
 }
 
 

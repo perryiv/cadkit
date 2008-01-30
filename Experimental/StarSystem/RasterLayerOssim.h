@@ -49,13 +49,18 @@ protected:
   virtual ~RasterLayerOssim();
 
   RasterLayerOssim ( const RasterLayerOssim& );
-  RasterLayerOssim& operator= ( const RasterLayerOssim& );
   
   virtual void          _convert ( const ossimImageData& data, osg::Image& image );
   void                  _updateExtents();
 
 private:
+  // Do not use.
+  RasterLayerOssim& operator= ( const RasterLayerOssim& );
+  
   void                  _destroy();
+  
+  // Register members for serialization.
+  void                  _registerMembers();
 
   std::string        _filename;
   ossimImageHandler *_handler;

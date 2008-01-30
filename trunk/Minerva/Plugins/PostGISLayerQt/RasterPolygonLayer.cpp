@@ -416,7 +416,7 @@ namespace Detail
                 unsigned char* data ( image->data() );
                 const int size ( width * height );
 
-                if ( width == image->s() && height == image->t() && 0x0 != data && size == bytes.size() )
+                if ( width == image->s() && height == image->t() && 0x0 != data && size == static_cast<int> ( bytes.size() ) )
                 {
                   const int offset ( i - 1 );
                   for ( int i = 0; i < size; ++i )

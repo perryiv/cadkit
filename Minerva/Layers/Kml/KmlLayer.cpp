@@ -9,6 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/KmlLayer.h"
+#include "Minerva/Layers/Kml/NetworkLink.h"
+#include "Minerva/Layers/Kml/Link.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/DataObjects/Model.h"
 
@@ -18,6 +20,8 @@
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Temp.h"
+#include "Usul/Network/Curl.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/System/Directory.h"
@@ -31,6 +35,22 @@
 #include "osgDB/ReadFile"
 
 using namespace Minerva::Layers::Kml;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef XmlTree::Node::Children    Children;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register readers with the factory.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 namespace
 {
@@ -52,6 +72,7 @@ USUL_FACTORY_REGISTER_CREATOR ( KmlLayer );
 KmlLayer::KmlLayer() :
   BaseClass(),
   _filename(),
+  _currentFilename(),
   _currentLayer ( 0x0 )
 {
   this->_addMember ( "filename", _filename );
@@ -83,7 +104,7 @@ Usul::Interfaces::IUnknown* KmlLayer::queryInterface ( unsigned long iid )
       return static_cast < Usul::Interfaces::IRead* > ( this );
     default:
       return BaseClass::queryInterface ( iid );
-  };
+  }
 }
 
 
@@ -102,19 +123,36 @@ void KmlLayer::read ( const std::string &filename, Usul::Interfaces::IUnknown *c
     _filename = filename;
   }
   
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+  // Read.
+  this->_read ( filename, caller, progress );
+  
+  // Make sure.
+  _currentLayer = 0x0;
+}
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
+{
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+  
   if ( "kmz" == ext )
   {
-      // TODO: unzip.
+    std::string dir ( Usul::File::directory ( filename, true ) + Usul::File::base ( filename ) );
+    std::string command ( "/usr/bin/unzip " + filename + " -d " + dir );
+    ::system ( command.c_str() );
+    this->_parseKml( dir + "/doc.kml", caller, progress );
+    // TODO: unzip.
   }
   else if ( "kml" == ext )
   {
     this->_parseKml ( filename, caller, progress );
   }
-  
-  // Make sure.
-  _currentLayer = 0x0;
 }
 
 
@@ -128,25 +166,35 @@ void KmlLayer::_parseKml ( const std::string& filename, Usul::Interfaces::IUnkno
 {
   Guard guard ( this );
   
-  XmlTree::XercesLife life;
-  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
-  document->load ( filename );
-  
-  typedef XmlTree::Node::Children    Children;
-  
-  Children children ( document->children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  try
   {
-    // Scope the current layer.
-    Minerva::Core::Layers::VectorGroup::RefPtr currentLayer ( _currentLayer );
-    Usul::Scope::Reset<Minerva::Core::Layers::VectorGroup::RefPtr> reset ( _currentLayer, this, currentLayer );
+    // Scope the current filename.
+    Usul::Scope::Reset<std::string> resetFilename ( _currentFilename, filename, _currentFilename );
     
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::XercesLife life;
+    XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+    document->load ( filename );
+    
+    // Loop over the children.
+    Children children ( document->children() );
+    for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+    {
+      // Scope the current layer.
+      Minerva::Core::Layers::VectorGroup::RefPtr currentLayer ( _currentLayer );
+      Usul::Scope::Reset<Minerva::Core::Layers::VectorGroup::RefPtr> reset ( _currentLayer, this, currentLayer );
       
-    if ( node.valid() )
-      this->_parseNode( *node );
+      XmlTree::Node::RefPtr node ( *iter );
+        
+      if ( node.valid() )
+        this->_parseNode( *node );
+    }
   }
-  //Children analogs    ( document->find ( "analog",    true ) );
+  catch ( const std::exception& e )
+  {
+  }
+  catch ( ... )
+  {
+  }
 }
 
 
@@ -168,6 +216,44 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   else if ( "Folder" == name || "Document" == name )
   {
     this->_parseFolder( node );
+  }
+  else if ( "NetworkLink" == name )
+  {
+    NetworkLink::RefPtr networkLink ( this->_parseNetworkLink( node ) );
+    if ( networkLink.valid() )
+    {
+      Link::RefPtr link ( networkLink->link() );
+      if ( link.valid() )
+      {
+        std::string href ( link->href() );
+        
+        std::string::size_type pos ( href.rfind ( '/' ) );
+        
+        if ( pos != std::string::npos )
+        {
+          std::string filename ( href.begin() + pos + 1, href.end() );
+          filename = Usul::File::Temp::directory ( true ) + filename;
+          
+          Usul::Network::Curl curl ( href, filename );
+          
+          try
+          {
+            curl.download();
+            this->_read ( filename, 0x0, 0x0 );
+          }
+          catch ( const std::exception& e )
+          {
+            std::cout << "Error 1638679894: Standard exception caught while trying to retrive file: " << filename << "." << std::endl
+                      << "Message: " << e.what() << std::endl;
+          }
+          catch ( ... )
+          {
+            std::cout << "Error 2094380149: Unknown exception caught while trying to retrive file: " << filename << "." << std::endl;
+          }
+        }
+        
+      }
+    }
   }
   else if ( "Placemark" == name )
   {
@@ -198,9 +284,7 @@ void KmlLayer::_parseStyle ( const XmlTree::Node& node )
 ///////////////////////////////////////////////////////////////////////////////
 
 void KmlLayer::_parseFolder ( const XmlTree::Node& node )
-{
-  typedef XmlTree::Node::Children    Children;
-  
+{  
   // Make a new layer.
   Minerva::Core::Layers::VectorGroup::RefPtr layer ( new Minerva::Core::Layers::VectorGroup );
   Minerva::Core::Layers::VectorGroup::RefPtr currentLayer ( _currentLayer );
@@ -238,9 +322,7 @@ void KmlLayer::_parseFolder ( const XmlTree::Node& node )
 ///////////////////////////////////////////////////////////////////////////////
 
 KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
-{
-  typedef XmlTree::Node::Children    Children;
-  
+{ 
   Children polygon ( node.find ( "Polygon", false ) );
   Children point   ( node.find ( "Point", false ) );
   Children linestring ( node.find ( "LineString", false ) );
@@ -311,7 +393,6 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
 {
   Minerva::Core::DataObjects::Model::RefPtr model ( new Minerva::Core::DataObjects::Model );
   
-  typedef XmlTree::Node::Children    Children;
   Children children ( node.children() );
   
   osg::Vec3 location, orientation, scale;
@@ -330,13 +411,17 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
       scale = this->_buildVec3 ( *node );
   }
   
-  Children href ( node.find ( "href", true ) );
-  if ( false == href.empty() )
-    filename = href.front()->value();
+  Children link ( node.find ( "Link", true ) );
+  if ( false == link.empty() )
+  {
+    Link::RefPtr l ( this->_parseLink ( *link.front() ) );
+    filename = ( l.valid() ? l->href() : "" );
+  }
   
   if ( false == filename.empty() )
   {
-    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _filename, true ) + filename ) );
+    //osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _filename, true ) + filename ) );
+    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _currentFilename, true ) + filename ) );
     if ( node.valid() )
     {
       osg::NotifySeverity level ( osg::getNotifyLevel() );
@@ -371,7 +456,6 @@ osg::Vec3 KmlLayer::_buildVec3 ( const XmlTree::Node& node )
   osg::Vec3 v;
   
   typedef Usul::Convert::Type<std::string,double> ToDouble;
-  typedef XmlTree::Node::Children    Children;
   Children children ( node.children() );
   
   if ( 3 == children.size() )
@@ -395,4 +479,56 @@ void KmlLayer::deserialize( const XmlTree::Node &node )
 {
   BaseClass::deserialize ( node );
   this->read ( _filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse network link.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+NetworkLink* KmlLayer::_parseNetworkLink ( const XmlTree::Node& node )
+{
+  NetworkLink::RefPtr network ( new NetworkLink );
+  
+  // Loop over the children.
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "Link" == name )
+    {
+      network->link ( this->_parseLink ( *node ) );
+    }
+  }
+  
+  return network.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse link.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Link* KmlLayer::_parseLink ( const XmlTree::Node& node )
+{
+  Link::RefPtr link ( new Link );
+  
+  // Get the children.
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "href" == name )
+      link->href ( node->value() );
+  }
+  
+  return link.release();
 }

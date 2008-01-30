@@ -22,6 +22,9 @@ namespace XmlTree { class Node; }
 namespace Minerva {
 namespace Layers {
 namespace Kml {
+  
+  class NetworkLink;
+  class Link;
 
 class KmlLayer : public Minerva::Core::Layers::VectorGroup,
                  public Usul::Interfaces::IRead
@@ -44,6 +47,9 @@ public:
 protected:
   virtual ~KmlLayer();
   
+  // Read.
+  void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
+  
   // Load a kml file.
   void                        _parseKml ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
   
@@ -53,10 +59,13 @@ protected:
   void                        _parseFolder    ( const XmlTree::Node& node );
   DataObject*                 _parsePlacemark ( const XmlTree::Node& node );
   DataObject*                 _parseModel     ( const XmlTree::Node& node );
+  NetworkLink*                _parseNetworkLink ( const XmlTree::Node& node );
+  Link*                       _parseLink        ( const XmlTree::Node& node );
 
   osg::Vec3                   _buildVec3      ( const XmlTree::Node& node );
 private:
   std::string _filename;
+  std::string _currentFilename;
   Minerva::Core::Layers::VectorGroup::RefPtr _currentLayer;
   
   SERIALIZE_XML_CLASS_NAME ( KmlLayer );

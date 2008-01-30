@@ -13,6 +13,7 @@
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
+#include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/ILayerList.h"
@@ -205,6 +206,9 @@ void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
         Minerva::Core::Commands::HideLayer::RefPtr hide ( new Minerva::Core::Commands::HideLayer ( layer ) );
         hide->execute ( _document );
       }
+      Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
+      if ( dirty.valid() )
+        dirty->dirtyScene ( layer );
     }
   }
 }

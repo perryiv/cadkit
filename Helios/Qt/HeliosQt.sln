@@ -527,16 +527,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Smooth Triangles", ".
 		{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0} = {55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Multi Process Data Synchronization", "..\..\Experimental\DataSync\DataSync\DataSyncModel.vcproj", "{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -743,10 +733,6 @@ Global
 		{39E1B7A6-6FD9-4999-9198-647CB5781300}.Debug|Win32.Build.0 = Debug|Win32
 		{39E1B7A6-6FD9-4999-9198-647CB5781300}.Release|Win32.ActiveCfg = Release|Win32
 		{39E1B7A6-6FD9-4999-9198-647CB5781300}.Release|Win32.Build.0 = Release|Win32
-		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Debug|Win32.Build.0 = Debug|Win32
-		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Release|Win32.ActiveCfg = Release|Win32
-		{B0D6CA13-5860-4C0E-8E7A-68D8DBE61C21}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

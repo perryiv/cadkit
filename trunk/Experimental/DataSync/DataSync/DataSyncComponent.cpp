@@ -124,7 +124,7 @@ void DataSyncComponent::setDataFlag( const std::string &machine, const std::stri
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DataSyncComponent::queryDataState( const std::string &filename )
+bool DataSyncComponent::queryDataState ( const std::string &filename )
 {
   //USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -160,11 +160,11 @@ bool DataSyncComponent::queryDataState( const std::string &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataSyncComponent::resetData(  const std::string &machine, const std::string &filename )
+void DataSyncComponent::resetData ( const std::string &machine, const std::string &filename )
 {
   //USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
- // std::string fn = Usul::File::base( filename );
+  // std::string fn = Usul::File::base( filename );
   
   //std::cout << "Machine: " << Usul::System::Host::name() <<
   //             " is calling resetData for machine " << machine <<
@@ -188,24 +188,24 @@ void DataSyncComponent::resetData(  const std::string &machine, const std::strin
 }
 
 
-void DataSyncComponent::initialize( Usul::Interfaces::IUnknown *caller )
+void DataSyncComponent::initialize ( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this->mutex() );
 #if 1
   // Read config file.
-   XmlTree::Document::RefPtr document ( new XmlTree::Document );
-   
-   std::string file = Usul::App::Application::instance().configFile( "machines" );
-   document->load ( file );
+  XmlTree::Document::RefPtr document ( new XmlTree::Document );
 
-   this->_readConfigFile( *document, caller, 0x0 );
+  std::string file = Usul::App::Application::instance().configFile( "machines" );
+  document->load ( file );
 
-   Files files;
-   Usul::File::find( Usul::File::Temp::directory( true ), "*.lock", files );
-   for ( Files::const_iterator iter = files.begin(); iter != files.end(); ++iter )
-   {
-     Usul::File::remove( *iter );
-   }
+  this->_readConfigFile( *document, caller, 0x0 );
+
+  Files files;
+  Usul::File::find( Usul::File::Temp::directory( true ), "*.lock", files );
+  for ( Files::const_iterator iter = files.begin(); iter != files.end(); ++iter )
+  {
+    Usul::File::remove( *iter );
+  }
 #else
 #endif
 }

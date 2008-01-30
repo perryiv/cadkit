@@ -211,7 +211,7 @@ protected:
                                          const MeshSize& size, 
                                          const Usul::Math::Vec4d& region, 
                                          double splitDistance, 
-                                         Usul::Jobs::Job::RefPtr job ) const;
+                                         Usul::Jobs::Job::RefPtr job );
 private:
 
   // No assignment.

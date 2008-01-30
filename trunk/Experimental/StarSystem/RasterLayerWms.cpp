@@ -302,7 +302,7 @@ std::string RasterLayerWms::_directory ( unsigned int width, unsigned int height
   std::replace ( urlProxy.begin(), urlProxy.end(), '.', '_' );
 
   boost::hash<std::string> stringHash;
-  std::size_t hashValue ( stringHash ( this->_getAllOptions() ) );
+  const std::size_t hashValue ( stringHash ( this->_getAllOptions() ) );
 
   const std::string resolution ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
   const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );

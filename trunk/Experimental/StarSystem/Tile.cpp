@@ -598,8 +598,11 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
                                 const MeshSize& size, 
                                 const Usul::Math::Vec4d& region, 
                                 double splitDistance, 
-                                Usul::Jobs::Job::RefPtr job ) const
+                                Usul::Jobs::Job::RefPtr job )
 {
+  // If our logic is correct, this should be true.
+  USUL_ASSERT ( this->referenceCount() > 1 );
+
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
   // Handle no body.

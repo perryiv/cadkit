@@ -66,13 +66,18 @@ void BuildTiles::_started()
 {
   USUL_TRACE_SCOPE;
   
+  // Make sure this guy isn't deleted while it's cooking.
+  // This may happen if the tile is removed from the scene.
+  Tile::RefPtr tile ( _tile.get() );
+
   // Make sure we have valid data.
-  if ( false == _tile.valid() )
+  if ( false == tile.valid() )
     return;
   
   // Have we been cancelled?
   if ( true == this->canceled() )
     this->cancel();
-  
+
+  // Ask the tile to split.
   _tile->split ( Usul::Jobs::Job::RefPtr ( this ) );
 }

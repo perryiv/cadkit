@@ -147,12 +147,6 @@ Usul::Interfaces::IUnknown *TriangleDocument::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::ITriangle* > ( this );
   case Usul::Interfaces::ITriangleSV::IID:
     return static_cast < Usul::Interfaces::ITriangleSV* > ( this );
-  case Usul::Interfaces::ISmoothModel::IID:
-    return static_cast < Usul::Interfaces::ISmoothModel* > ( this );
-  case Usul::Interfaces::IDecimateModel::IID:
-    return static_cast < Usul::Interfaces::IDecimateModel* > ( this );
-  case Usul::Interfaces::ISubdivideModel::IID:
-    return static_cast < Usul::Interfaces::ISubdivideModel* > ( this );
   case Usul::Interfaces::IShowNewPrimitives::IID:
     return static_cast < Usul::Interfaces::IShowNewPrimitives* > ( this );
   case Usul::Interfaces::IVertices::IID:

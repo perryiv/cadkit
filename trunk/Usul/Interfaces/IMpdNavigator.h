@@ -66,6 +66,11 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   // Update the global animation end time
   virtual void              updateGlobalEndtime() = 0;
 
+  // Sequence controls
+  virtual void              firstSequenceStep() = 0;
+  virtual void              nextSequenceStep() = 0;
+  virtual void              prevSequenceStep() = 0;
+
   
 }; //struct IVertices
 

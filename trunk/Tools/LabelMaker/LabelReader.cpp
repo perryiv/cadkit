@@ -276,7 +276,7 @@ osg::Node * LabelReader::_createText( unsigned int index )
   stateset->setTextureMode( 0, osg::StateAttribute::TEXTURE, osg::StateAttribute::PROTECTED );
 
   text->setFont( font.get() );
-  text->setColor( osg::Vec4f( 0, 0, 0, 1 ) );
+  text->setColor( osg::Vec4f( 0.841, 0.763, 0.371, 1 ) );
   text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   text->setUseDisplayList( false );
   

@@ -35,6 +35,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
+#include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IFrameStamp.h"
@@ -829,6 +830,11 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 
   // Call the base classes on first.
   BaseClass::addView ( view );
+  
+  // Hide the axes.
+  Usul::Interfaces::IAxes::QueryPtr axes ( view );
+  if ( axes.valid() )
+    axes->axesShown ( false );
 
 #if 0
   Usul::Interfaces::IClippingDistance::QueryPtr cd ( view );

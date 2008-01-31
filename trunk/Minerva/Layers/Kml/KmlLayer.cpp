@@ -409,6 +409,8 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
       orientation = this->_buildVec3 ( *node );
     else if ( "Scale" == name )
       scale = this->_buildVec3 ( *node );
+    else if ( "altitudeMode" == name )
+      model->altitudeMode ( this->_parseAltitudeMode ( *node ) );
   }
   
   Children link ( node.find ( "Link", true ) );
@@ -442,6 +444,24 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
   model->scale ( scale );
   
   return model.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a Vec3.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::DataObject::AltitudeMode KmlLayer::_parseAltitudeMode ( const XmlTree::Node& node )
+{
+  DataObject::AltitudeMode mode ( DataObject::CLAMP_TO_GROUND );
+  if ( "relativeToGround" == node.value() )
+    mode = DataObject::RELATIVE_TO_GROUND;
+  if ( "absolute" == node.value() )
+    mode = DataObject::ABSOLUTE;
+  
+  return mode;
 }
 
 

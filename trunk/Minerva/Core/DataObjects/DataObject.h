@@ -23,6 +23,7 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
 
 #include "OsgTools/ShapeFactory.h"
 
@@ -141,6 +142,21 @@ protected:
   osg::Node*            _buildLabel();
 
   virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
+  
+  template<class Vertex>
+  double                _elevation ( const Vertex& point, Usul::Interfaces::IElevationDatabase* elevation )
+  {
+    switch ( this->altitudeMode() )
+    {
+      case CLAMP_TO_GROUND:
+        return ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 );
+      case RELATIVE_TO_GROUND:
+        return ( point[2] + ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 ) );
+      case ABSOLUTE:
+        return point[2];
+    }
+    return 0.0;
+  }
 
 private:
 

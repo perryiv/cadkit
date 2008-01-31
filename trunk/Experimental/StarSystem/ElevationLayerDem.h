@@ -65,9 +65,7 @@ private:
   ossimDemGrid *_grid;
   ossimProjection *_projection;
 
-  SERIALIZE_XML_CLASS_NAME( RasterLayerOssim ) 
-  SERIALIZE_XML_SERIALIZE_FUNCTION 
-  SERIALIZE_XML_ADD_MEMBER_FUNCTION
+  SERIALIZE_XML_CLASS_NAME( ElevationLayerDem ) 
 };
 
 

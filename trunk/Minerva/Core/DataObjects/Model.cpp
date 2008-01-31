@@ -76,7 +76,8 @@ osg::Node* Model::_preBuildScene( Usul::Interfaces::IUnknown* caller )
   
   osg::Vec3 location ( this->location() );
 
-  const double height ( elevation.valid() ? elevation->elevationAtLatLong ( location[1], location[0] ) : 0.0 );
+  // Get the height.
+  const double height ( this->_elevation ( location, elevation.get() ) );
 
   double heading ( 0.0 ), tilt ( 0.0 ), roll ( 0.0 );
   this->orientation( heading, tilt, roll );
@@ -84,7 +85,7 @@ osg::Node* Model::_preBuildScene( Usul::Interfaces::IUnknown* caller )
   osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
   osg::Matrix S ( osg::Matrix::scale ( this->scale() * 0.0254 ) );
   
-  mt->setMatrix ( S * 
+  mt->setMatrix ( S *
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
                   osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
   

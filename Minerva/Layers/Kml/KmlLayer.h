@@ -59,6 +59,7 @@ protected:
   void                        _parseFolder    ( const XmlTree::Node& node );
   DataObject*                 _parsePlacemark ( const XmlTree::Node& node );
   DataObject*                 _parseModel     ( const XmlTree::Node& node );
+  DataObject::AltitudeMode    _parseAltitudeMode ( const XmlTree::Node& node );
   NetworkLink*                _parseNetworkLink ( const XmlTree::Node& node );
   Link*                       _parseLink        ( const XmlTree::Node& node );
 

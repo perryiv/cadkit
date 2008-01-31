@@ -2564,7 +2564,6 @@
 		43D724CF094DE500009181E3 /* osgGA.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgGA.framework; path = ../../../Library/Frameworks/osgGA.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		43D724D0094DE500009181E3 /* osgText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgText.framework; path = ../../../Library/Frameworks/osgText.framework; sourceTree = SOURCE_ROOT; };
 		43D724D1094DE500009181E3 /* osgUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgUtil.framework; path = ../../../Library/Frameworks/osgUtil.framework; sourceTree = SOURCE_ROOT; };
-		43E9AF6E09F6B98D00444335 /* IAddFrame.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IAddFrame.h; path = ../Usul/Interfaces/IAddFrame.h; sourceTree = SOURCE_ROOT; };
 		43E9AF6F09F6B98D00444335 /* IAddSharedVertex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IAddSharedVertex.h; path = ../Usul/Interfaces/IAddSharedVertex.h; sourceTree = SOURCE_ROOT; };
 		43E9AF7009F6B98D00444335 /* IAddTriangle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IAddTriangle.h; path = ../Usul/Interfaces/IAddTriangle.h; sourceTree = SOURCE_ROOT; };
 		43E9AF7209F6B98D00444335 /* IAxes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IAxes.h; path = ../Usul/Interfaces/IAxes.h; sourceTree = SOURCE_ROOT; };
@@ -2580,7 +2579,6 @@
 		43E9AF7F09F6B98D00444335 /* ICleanUp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ICleanUp.h; path = ../Usul/Interfaces/ICleanUp.h; sourceTree = SOURCE_ROOT; };
 		43E9AF8009F6B98D00444335 /* IClippingPlanes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IClippingPlanes.h; path = ../Usul/Interfaces/IClippingPlanes.h; sourceTree = SOURCE_ROOT; };
 		43E9AF8109F6B98D00444335 /* ICommand.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ICommand.h; path = ../Usul/Interfaces/ICommand.h; sourceTree = SOURCE_ROOT; };
-		43E9AF8309F6B98D00444335 /* IDecimateModel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IDecimateModel.h; path = ../Usul/Interfaces/IDecimateModel.h; sourceTree = SOURCE_ROOT; };
 		43E9AF8409F6B98D00444335 /* IDecimateTriangles.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IDecimateTriangles.h; path = ../Usul/Interfaces/IDecimateTriangles.h; sourceTree = SOURCE_ROOT; };
 		43E9AF8509F6B98D00444335 /* IDeleteAllConnected.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IDeleteAllConnected.h; path = ../Usul/Interfaces/IDeleteAllConnected.h; sourceTree = SOURCE_ROOT; };
 		43E9AF8609F6B98D00444335 /* IDeletePrimitive.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IDeletePrimitive.h; path = ../Usul/Interfaces/IDeletePrimitive.h; sourceTree = SOURCE_ROOT; };
@@ -2628,10 +2626,8 @@
 		43E9AFB809F6B98D00444335 /* ISendMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ISendMessage.h; path = ../Usul/Interfaces/ISendMessage.h; sourceTree = SOURCE_ROOT; };
 		43E9AFBA09F6B98D00444335 /* IShadeModel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IShadeModel.h; path = ../Usul/Interfaces/IShadeModel.h; sourceTree = SOURCE_ROOT; };
 		43E9AFBB09F6B98D00444335 /* IShowNewPrimitives.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IShowNewPrimitives.h; path = ../Usul/Interfaces/IShowNewPrimitives.h; sourceTree = SOURCE_ROOT; };
-		43E9AFBC09F6B98D00444335 /* ISmoothModel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ISmoothModel.h; path = ../Usul/Interfaces/ISmoothModel.h; sourceTree = SOURCE_ROOT; };
 		43E9AFBD09F6B98D00444335 /* ISmoothTriangles.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ISmoothTriangles.h; path = ../Usul/Interfaces/ISmoothTriangles.h; sourceTree = SOURCE_ROOT; };
 		43E9AFBE09F6B98D00444335 /* ISpin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ISpin.h; path = ../Usul/Interfaces/ISpin.h; sourceTree = SOURCE_ROOT; };
-		43E9AFC009F6B98D00444335 /* ISubdivideModel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ISubdivideModel.h; path = ../Usul/Interfaces/ISubdivideModel.h; sourceTree = SOURCE_ROOT; };
 		43E9AFC109F6B98D00444335 /* ISubdivideTriangles.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ISubdivideTriangles.h; path = ../Usul/Interfaces/ISubdivideTriangles.h; sourceTree = SOURCE_ROOT; };
 		43E9AFC209F6B98D00444335 /* ITextMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ITextMatrix.h; path = ../Usul/Interfaces/ITextMatrix.h; sourceTree = SOURCE_ROOT; };
 		43E9AFC309F6B98D00444335 /* ITimeoutAnimate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ITimeoutAnimate.h; path = ../Usul/Interfaces/ITimeoutAnimate.h; sourceTree = SOURCE_ROOT; };
@@ -5012,7 +5008,6 @@
 				6699A0680D1EFC7200A9AE47 /* GUI */,
 				6699A07F0D1EFC7200A9AE47 /* IActiveDocumentListener.h */,
 				6699A0800D1EFC7200A9AE47 /* IActiveViewListener.h */,
-				43E9AF6E09F6B98D00444335 /* IAddFrame.h */,
 				6699A0810D1EFC7200A9AE47 /* IAddRowLegend.h */,
 				43E9AF6F09F6B98D00444335 /* IAddSharedVertex.h */,
 				43E9AF7009F6B98D00444335 /* IAddTriangle.h */,
@@ -5051,7 +5046,6 @@
 				6699A0970D1EFC7300A9AE47 /* IDatabaseConnection.h */,
 				6699A0980D1EFC7300A9AE47 /* IDatabasePager.h */,
 				6699A0990D1EFC7300A9AE47 /* IDataSync.h */,
-				43E9AF8309F6B98D00444335 /* IDecimateModel.h */,
 				43E9AF8409F6B98D00444335 /* IDecimateTriangles.h */,
 				43E9AF8509F6B98D00444335 /* IDeleteAllConnected.h */,
 				43E9AF8609F6B98D00444335 /* IDeletePrimitive.h */,
@@ -5158,14 +5152,12 @@
 				6699A0D50D1EFC7300A9AE47 /* ISerialize.h */,
 				43E9AFBA09F6B98D00444335 /* IShadeModel.h */,
 				43E9AFBB09F6B98D00444335 /* IShowNewPrimitives.h */,
-				43E9AFBC09F6B98D00444335 /* ISmoothModel.h */,
 				43E9AFBD09F6B98D00444335 /* ISmoothTriangles.h */,
 				6699A0D60D1EFC7300A9AE47 /* ISnapShot.h */,
 				43E9AFBE09F6B98D00444335 /* ISpin.h */,
 				6699A0D70D1EFC7300A9AE47 /* IStreamListener.h */,
 				6699A0D80D1EFC7300A9AE47 /* IStringGridGet.h */,
 				6699A0D90D1EFC7300A9AE47 /* IStringGridSet.h */,
-				43E9AFC009F6B98D00444335 /* ISubdivideModel.h */,
 				43E9AFC109F6B98D00444335 /* ISubdivideTriangles.h */,
 				6699A0DA0D1EFC7300A9AE47 /* ITemporalData.h */,
 				43E9AFC209F6B98D00444335 /* ITextMatrix.h */,

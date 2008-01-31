@@ -18,6 +18,7 @@
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IUpdateSceneVisitor.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IViewport.h" 
 #include "Usul/Trace/Trace.h"
 
 #include "osgDB/Registry"
@@ -105,7 +106,8 @@ Planet::Planet() :
   BaseClass(),
 #if USE_STAR_SYSTEM
   _system ( 0x0 ),
-  _manager ( new Usul::Jobs::Manager ( 5, true ) )
+  _manager ( new Usul::Jobs::Manager ( 5, true ) ),
+  _hud()
 #else
   _planet            ( 0x0 ),
   _databasePager     ( new osgDB::DatabasePager() )
@@ -200,28 +202,7 @@ void Planet::_init()
   // Add tiles to the body.
   body->addTile ( Extents ( -180, -90,    0,   90 ) );
   body->addTile ( Extents (    0, -90,  180,   90 ) );
-  
-#if 0
-  {
-    const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
-    
-    typedef StarSystem::RasterLayerWms::Options Options;
-    Options options;
-    options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
-    options[Usul::Network::Names::STYLES]  = "Jul,visual";
-    options[Usul::Network::Names::SRS]     = "EPSG:4326";
-    options[Usul::Network::Names::REQUEST] = "GetMap";
-    options[Usul::Network::Names::FORMAT]  = "image/jpeg";
-    
-    typedef StarSystem::Body::Extents Extents;
-    typedef Extents::Vertex Vertex;
-    const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
-    
-    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
-    body->rasterAppend ( layer.get() );
-  }
-#endif
-  
+
   _system->body ( body.get() );
   
 #else
@@ -343,6 +324,7 @@ osg::Group* Planet::buildScene()
     StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene );
     _system->accept ( *builder );
     group->addChild ( builder->scene() );
+    group->addChild ( _hud.buildScene() );
   }
   return group.release();
 #else
@@ -556,23 +538,41 @@ double Planet::elevationAtLatLong ( double lat, double lon ) const
 
 void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
 {
+#if USE_STAR_SYSTEM
+    const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
+    const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
+    
+    _hud.requests ( queued );
+    _hud.running ( executing );
+    
+    Usul::Interfaces::IViewport::QueryPtr vp ( caller );
+    if ( vp.valid() )
+      _hud.updateScene( static_cast<unsigned int> ( vp->width() ), static_cast<unsigned int> ( vp->height() ) );
+#else
   Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
   if ( tm.valid() )
   {
     std::ostringstream os;
-#if USE_STAR_SYSTEM
-    const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
-    const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
-    const unsigned int total     ( queued + executing );
-    
-    const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
-    os << out;
-#else
     const unsigned int requests  ( _databasePager->getFileRequestListSize()   );
     
     os << ( ( requests > 0 ) ? Usul::Strings::format ( "Requests: ", requests ) : "" );
-#endif
     std::string text ( os.str() );
     tm->setText ( 15, 15, text, osg::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
   }
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pointer position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::pointer ( const osg::Vec3& position )
+{
+  Usul::Math::Vec3d point ( position[0], position[1], position[2] );
+  Usul::Math::Vec3d latLonPoint;
+  this->convertFromPlanet( point, latLonPoint );
+  _hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
 }

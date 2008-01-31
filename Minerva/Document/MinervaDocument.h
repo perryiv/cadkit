@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
+#include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
@@ -68,7 +69,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IMenuAdd,
                                                 public Usul::Interfaces::ICommandExecuteListener,
                                                 public Usul::Interfaces::IPlanetCoordinates,
-                                                public Usul::Interfaces::IElevationDatabase
+                                                public Usul::Interfaces::IElevationDatabase,
+                                                public Usul::Interfaces::IIntersectListener
 {
 public:
   /// Useful typedefs.
@@ -276,6 +278,8 @@ protected:
   // Get the elevation at a lat, lon (IElevationDatabase).
   virtual double                           elevationAtLatLong ( double lat, double lon ) const;
   
+  // Notify the observer of the intersection (IIntersectListener).
+  virtual void                             intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
 private:
   
   bool _dirty;

@@ -56,6 +56,8 @@
 #include "osg/Geode"
 #include "osg/Light"
 
+#include "osgUtil/IntersectVisitor"
+
 #include <sstream>
 
 using namespace Minerva::Document;
@@ -217,6 +219,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IPlanetCoordinates* > ( this );
   case Usul::Interfaces::IElevationDatabase::IID:
     return static_cast < Usul::Interfaces::IElevationDatabase * > ( this );
+  case Usul::Interfaces::IIntersectListener::IID:
+    return static_cast < Usul::Interfaces::IIntersectListener * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1815,4 +1819,16 @@ void MinervaDocument::_buildLayerMenu()
   {
     Detail::buildLayerMenu ( *_layersMenu, (*iter).get() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the observer of the intersection (IIntersectListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
+{
+  _planet->pointer ( hit.getWorldIntersectPoint() );
 }

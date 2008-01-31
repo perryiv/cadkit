@@ -23,8 +23,6 @@
 #include "osg/Geode"
 #include "osg/Geometry"
 
-#include "osgText/Text"
-
 using namespace StarSystem;
 
 
@@ -36,6 +34,9 @@ using namespace StarSystem;
 
 Hud::Hud() :
 _camera ( new osg::Camera ),
+_feedback ( new osgText::Text ),
+_position ( new osgText::Text ),
+_latLonHeight(),
 _requests ( 0 ),
 _running ( 0 )
 {
@@ -43,6 +44,21 @@ _running ( 0 )
   _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
   _camera->setClearMask( GL_DEPTH_BUFFER_BIT );
   _camera->setViewMatrix( osg::Matrix::identity() );
+  
+#ifndef _MSC_VER
+  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+  _feedback->setFont ( font.get() );
+  _position->setFont ( font.get() );
+#endif
+  _position->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
+  _position->setCharacterSize( 15 );
+  _position->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  _position->setPosition ( osg::Vec3 ( 5.0, 7.5, 0.0 ) );
+  
+  _feedback->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
+  _feedback->setCharacterSize( 15 );
+  _feedback->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
 }
 
 
@@ -96,20 +112,14 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   
   const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
   
-  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-  text->setText ( out );
-  text->setPosition ( osg::Vec3 ( 5.0, 7.5, 0.0 ) );
-
-#ifndef _MSC_VER
-  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
-  text->setFont ( font.get() );
-#endif
-
-  text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  text->setCharacterSize( 15 );
-  text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  _feedback->setText ( out );
+  _feedback->update();
   
-  geode->addDrawable ( text.get() );
+  _position->setText ( Usul::Strings::format ( "Lat: ", _latLonHeight[1], " Lon: ", _latLonHeight[0], " E: ", _latLonHeight[2] ) );
+  _position->update();
+  
+  geode->addDrawable ( _feedback.get() );
+  geode->addDrawable ( _position.get() );
   
   // Turn off lighting.
   geode->getOrCreateStateSet()->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
@@ -164,4 +174,18 @@ void Hud::running ( unsigned int running )
 unsigned int Hud::running() const
 {
   return _running;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pointer position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::position ( double lat, double lon, double height )
+{
+  _latLonHeight[0] = lon;
+  _latLonHeight[1] = lat;
+  _latLonHeight[2] = height;
 }

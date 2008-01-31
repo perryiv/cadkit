@@ -20,7 +20,9 @@
 #if USE_STAR_SYSTEM
 
 #include "Usul/Jobs/Manager.h"
+
 #include "StarSystem/System.h"
+#include "StarSystem/Hud.h"
 
 #else // OssimPlanet
 
@@ -78,6 +80,9 @@ public:
 
   // Update the scene.
   void                                            updateScene ( Usul::Interfaces::IUnknown *caller );
+  
+  // Set the pointer position.
+  void                                            pointer ( const osg::Vec3& position );
 protected:
 
   virtual ~Planet();
@@ -88,6 +93,7 @@ private:
 #if USE_STAR_SYSTEM
   StarSystem::System::RefPtr _system;
   Usul::Jobs::Manager *      _manager;
+  StarSystem::Hud            _hud;
 #else
   ossimPlanet *                                   _planet;
   osg::ref_ptr< osgDB::DatabasePager >            _databasePager;

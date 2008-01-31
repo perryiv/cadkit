@@ -20,6 +20,7 @@
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Remove.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Scope/Reset.h"
@@ -143,7 +144,8 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
   
   if ( "kmz" == ext )
   {
-    std::string dir ( Usul::File::directory ( filename, true ) + Usul::File::base ( filename ) );
+    std::string dir ( Usul::File::directory ( filename, true ) + Usul::File::base ( filename ) + "/" );
+    Usul::File::remove ( dir );
     std::string command ( "/usr/bin/unzip " + filename + " -d " + dir );
     ::system ( command.c_str() );
     this->_parseKml( dir + "/doc.kml", caller, progress );

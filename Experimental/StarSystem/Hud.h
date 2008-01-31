@@ -21,6 +21,8 @@
 
 #include "osg/ref_ptr"
 #include "osg/Camera"
+#include "osg/Vec3d"
+#include "osgText/Text"
 
 namespace StarSystem {
 
@@ -44,8 +46,14 @@ public:
   void          running ( unsigned int );
   unsigned int  running() const;
   
+  // Set the pointer position.
+  void          position ( double lat, double lon, double height );
+  
 private:
   osg::ref_ptr < osg::Camera > _camera;
+  osg::ref_ptr < osgText::Text > _feedback;
+  osg::ref_ptr < osgText::Text > _position;
+  osg::Vec3d _latLonHeight;
   unsigned int _requests;
   unsigned int _running;
 };

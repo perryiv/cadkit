@@ -57,7 +57,7 @@
 
 #endif
 
-#include "ossimPlanet/mkUtils.h"
+//#include "ossimPlanet/mkUtils.h"
 
 
 using namespace Minerva::Document;
@@ -546,7 +546,7 @@ double Planet::elevationAtLatLong ( double lat, double lon ) const
 void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
 {
 #if USE_STAR_SYSTEM
-  
+  #if 0
   Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
   
   if ( _callback.valid() && vm.valid() )
@@ -564,7 +564,7 @@ void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
     _hud.showCompass ( true );
     _hud.hpr( hpr[0], hpr[1], hpr[2] );
   }
-  
+  #endif
   const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
   const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
     
@@ -600,5 +600,6 @@ void Planet::pointer ( const osg::Vec3& position )
   Usul::Math::Vec3d point ( position[0], position[1], position[2] );
   Usul::Math::Vec3d latLonPoint;
   this->convertFromPlanet( point, latLonPoint );
-  _hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+  //_hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+  _hud.position( position[1], position[1], position[2] );
 }

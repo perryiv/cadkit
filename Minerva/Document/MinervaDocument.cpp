@@ -27,6 +27,7 @@
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 #include "Minerva/Core/Visitors/StackPoints.h"
+#include "Minerva/Core/Visitors/ResizePoints.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -157,7 +158,7 @@ MinervaDocument::MinervaDocument() :
   if( Usul::System::Host::name() == "viz4" )
   {
     this->showLegend ( true );
-    this->legendWidth ( 0.75 );
+    this->legendWidth ( 0.85 );
     this->legendPadding ( osg::Vec2 ( 20.0, 40.0 ) );
     this->legendHeightPerItem ( 60 );
     this->legendPosition( LEGEND_TOP_LEFT );
@@ -1232,6 +1233,12 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   this->_buildLayerMenu();
   m->append ( _layersMenu.get() );
 
+  // Points sub menu.
+  MenuKit::Menu::RefPtr points ( new MenuKit::Menu ( "Points" ) );
+  points->append ( new Button ( Usul::Commands::genericCommand ( "Size * 2", Usul::Adaptors::bind1<void> ( 2.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), Usul::Commands::TrueFunctor() ) ) );
+  points->append ( new Button ( Usul::Commands::genericCommand ( "Size / 2", Usul::Adaptors::bind1<void> ( 0.5, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), Usul::Commands::TrueFunctor() ) ) ); 
+  m->append ( points.get() );
+
   // Time spans.
   this->_buildTimeSpanMenu();
   m->append ( _timeSpanMenu.get() );
@@ -1396,7 +1403,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     const unsigned int width  ( static_cast < unsigned int > ( vp->width () ) );
     const unsigned int height ( static_cast < unsigned int > ( vp->height () ) );
     
-    if ( width != _width || height != _height )
+    if ( width > 0 && height > 0 && ( width != _width || height != _height ) )
     {
       _width = width;
       _height = height;
@@ -1819,6 +1826,21 @@ void MinervaDocument::_buildLayerMenu()
   {
     Detail::buildLayerMenu ( *_layersMenu, (*iter).get() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Resize all points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_resizePoints ( double factor )
+{
+  Minerva::Core::Visitors::ResizePoints::RefPtr visitor ( new Minerva::Core::Visitors::ResizePoints ( factor ) );
+  this->accept ( *visitor );
+  //this->dirty ( true );
+  _sceneManager->dirty ( true );
 }
 
 

@@ -1,6 +1,3 @@
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Copyright (c) 2008, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
@@ -8,14 +5,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_VISITORS_STACK_POINTS_H__
-#define __MINERVA_VISITORS_STACK_POINTS_H__
+#ifndef __MINERVA_VISITORS_RESIZE_POINTS_H__
+#define __MINERVA_VISITORS_RESIZE_POINTS_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Visitor.h"
-
-#include "Usul/Math/Vector3.h"
-#include "Usul/Predicates/LessVector.h"
 
 #include <map>
 
@@ -23,28 +17,24 @@ namespace Minerva {
 namespace Core {
 namespace Visitors {
       
-class MINERVA_EXPORT StackPoints : public Minerva::Core::Visitor
+class MINERVA_EXPORT ResizePoints : public Minerva::Core::Visitor
 {
 public:
   typedef Minerva::Core::Visitor BaseClass;
-  typedef Minerva::Core::Animate::Date Date;
         
-  USUL_DECLARE_REF_POINTERS ( StackPoints );
+  USUL_DECLARE_REF_POINTERS ( ResizePoints );
         
-  StackPoints ( double mutliplier = 1.0 );
+  ResizePoints ( double factor );
         
   virtual void visit ( Minerva::Core::DataObjects::Point &object );
   virtual void visit ( Minerva::Core::Layers::PointLayer &layer );
+
 protected:
   /// Use reference counting.
-  virtual ~StackPoints ();
-        
+  virtual ~ResizePoints();
+  
 private:
-  typedef std::equal_to<unsigned int> EqualPredicate;
-  typedef Usul::Predicates::LessVector < EqualPredicate, 3 > LessVector;
-  typedef std::map< Usul::Math::Vec3ui, unsigned int, LessVector > Counts;
-  Counts _counts;
-  double _multiplier;
+  double _factor;
 };
       
       

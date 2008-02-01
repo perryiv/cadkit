@@ -72,6 +72,7 @@ SET (SOURCES
 ./Commands/ChangeTimestepType.cpp
 ./Visitors/TemporalAnimation.cpp
 ./Visitors/FindMinMaxDates.cpp
+./Visitors/ResizePoints.cpp
 ./Visitors/StackPoints.cpp
 ./Animate/Settings.cpp
 ./Animate/Date.cpp

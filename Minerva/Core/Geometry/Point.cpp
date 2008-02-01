@@ -54,7 +54,7 @@ Usul::Math::Vec3d Point::pointData( )
 
   if( project.valid() )
   {
-    point.set( _point[0] + _offset[0], _point[1] + _offset[1], _offset[2] );
+    point.set( _point[0] + _offset[0], _point[1] + _offset[1], _point[2] + _offset[2] );
 
     Usul::Math::Vec3d latLongPoint;
     project->projectToSpherical( point, _srid, latLongPoint );

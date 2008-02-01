@@ -14,6 +14,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Vector.h"
 
+#include "Usul/Interfaces/ILayerList.h"
+
 #include <vector>
 
 namespace Minerva {
@@ -23,17 +25,18 @@ class Visitor;
     
 namespace Layers {
       
-class MINERVA_EXPORT VectorGroup : public Minerva::Core::Layers::Vector
+class MINERVA_EXPORT VectorGroup : public Minerva::Core::Layers::Vector,
+                                   public Usul::Interfaces::ILayerList
 {
 public:
   // Typedefs.
   typedef Minerva::Core::Layers::Vector     BaseClass;
-  typedef std::vector<VectorGroup::RefPtr>  Layers;
+  typedef std::vector<Vector::RefPtr>       Layers;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( VectorGroup );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
-
+  
   VectorGroup();
   
   /// Accept the visitor.
@@ -50,6 +53,12 @@ public:
   
   /// Clear layers.
   void                        clearLayers();
+  
+  /// Get the number of layers (ILayer).
+  virtual unsigned int                  numberLayers() const;
+  
+  /// Get the layer at position i (ILayer).
+  virtual Usul::Interfaces::ILayer*     layer ( unsigned int i );
 protected:
   virtual ~VectorGroup();
   

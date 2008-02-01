@@ -24,7 +24,7 @@
 #include "StarSystem/System.h"
 #include "StarSystem/Hud.h"
 
-#else // OssimPlanet
+#else // OssimPlanet"
 
 #include "osgDB/DatabasePager"
 
@@ -34,6 +34,9 @@ class ossimPlanetTextureLayer;
 class ossimPlanetExtents;
 
 #endif
+
+#include "osg/NodeCallback"
+#include "osgUtil/CullVisitor"
 
 namespace Usul { namespace Interfaces { struct ILayer; } }
 
@@ -86,6 +89,37 @@ public:
 protected:
 
   virtual ~Planet();
+  
+  // Callback to get the eye position.
+  class Callback : public osg::NodeCallback
+  {
+  public:
+    typedef osg::NodeCallback BaseClass;
+    
+    Callback () : BaseClass()
+    {
+    }
+    
+    virtual void operator()( osg::Node* node, osg::NodeVisitor* nv )
+    { 
+      switch( nv->getVisitorType() )
+      {
+        case osg::NodeVisitor::CULL_VISITOR:
+        {
+          osgUtil::CullVisitor* cullVisitor = dynamic_cast<osgUtil::CullVisitor*>( nv );
+          if( cullVisitor )
+          {
+            _eye = cullVisitor->getEyePoint();
+          }
+          break;
+        }
+      }
+          
+      this->traverse( node, nv );
+    }
+      
+      osg::Vec3d _eye;
+  };
 
 private:
   void                                            _init();
@@ -94,6 +128,7 @@ private:
   StarSystem::System::RefPtr _system;
   Usul::Jobs::Manager *      _manager;
   StarSystem::Hud            _hud;
+  osg::ref_ptr < Callback >  _callback;
 #else
   ossimPlanet *                                   _planet;
   osg::ref_ptr< osgDB::DatabasePager >            _databasePager;

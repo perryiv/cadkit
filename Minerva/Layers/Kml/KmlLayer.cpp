@@ -13,6 +13,8 @@
 #include "Minerva/Layers/Kml/Link.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/DataObjects/Model.h"
+#include "Minerva/Core/DataObjects/Point.h"
+#include "Minerva/Core/Geometry/Point.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -23,8 +25,10 @@
 #include "Usul/File/Remove.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Network/Curl.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Strings/Split.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Host.h"
 
@@ -34,6 +38,8 @@
 #include "osg/Material"
 
 #include "osgDB/ReadFile"
+
+#include <sstream>
 
 using namespace Minerva::Layers::Kml;
 
@@ -145,11 +151,11 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
   if ( "kmz" == ext )
   {
     std::string dir ( Usul::File::directory ( filename, true ) + Usul::File::base ( filename ) + "/" );
-    Usul::File::remove ( dir );
-    std::string command ( "/usr/bin/unzip " + filename + " -d " + dir );
+    
+    std::string command ( "/usr/bin/unzip -o " + filename + " -d " + dir );
     ::system ( command.c_str() );
+    
     this->_parseKml( dir + "/doc.kml", caller, progress );
-    // TODO: unzip.
   }
   else if ( "kml" == ext )
   {
@@ -336,8 +342,112 @@ KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   // Pick which function to redirect to.
   if ( false == model.empty() )
     object = this->_parseModel ( *model.front() );
+  else if ( false == point.empty() )
+    object = this->_parsePoint( *point.front() );
   
   return object.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node )
+{
+  Minerva::Core::DataObjects::Point::RefPtr point ( new Minerva::Core::DataObjects::Point );
+  point->autotransform ( true );
+  point->size ( 5 );
+  point->primitiveId ( 2 );
+  point->color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "altitudeMode" == name )
+      point->altitudeMode ( this->_parseAltitudeMode ( *node ) );
+    else if ( "coordinates" == name )
+    {
+      Vertices vertices;
+      this->_parseCoordinates( *node, vertices );
+      if ( false == vertices.empty() )
+      {
+        Minerva::Core::Geometry::Point::RefPtr data ( new Minerva::Core::Geometry::Point );
+        data->srid ( 4326 );
+        data->point ( vertices.front() );
+        point->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
+      }
+    }
+  }
+  
+  return point.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a polygon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::DataObject* KmlLayer::_parsePolygon      ( const XmlTree::Node& node )
+{
+  return 0x0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a line string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::DataObject* KmlLayer::_parseLineString   ( const XmlTree::Node& node )
+{
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a line ring.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::DataObject* KmlLayer::_parseLineRing     ( const XmlTree::Node& node )
+{
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices )
+{
+  std::istringstream in ( node.value() );
+  std::string vertex;
+  
+  while ( in >> vertex )
+  {
+    Vertex v;
+
+    std::vector<std::string> strings;
+    Usul::Strings::split ( vertex, ",", false, strings );
+    
+    typedef Usul::Convert::Type<std::string,double> ToDouble;
+    for ( unsigned int i = 0; i < strings.size(); ++i )
+      v[i] = ToDouble::convert ( strings[i] );
+    
+    vertices.push_back ( v );
+  }
 }
 
 
@@ -424,16 +534,15 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
   
   if ( false == filename.empty() )
   {
-    //osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _filename, true ) + filename ) );
     osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _currentFilename, true ) + filename ) );
     if ( node.valid() )
     {
-      osg::NotifySeverity level ( osg::getNotifyLevel() );
-      osg::setNotifyLevel ( osg::ALWAYS );
+      //osg::NotifySeverity level ( osg::getNotifyLevel() );
+      //osg::setNotifyLevel ( osg::ALWAYS );
 
       model->model ( node.get() );
 
-      osg::setNotifyLevel ( level );
+      //osg::setNotifyLevel ( level );
  
       Detail::ModelPostProcess nv;
       osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Node>::make ( nv ) );

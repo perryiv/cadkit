@@ -132,10 +132,7 @@ void PropertyPage::_tabChanged ( int index )
 {
   if ( index > 0 && _tabWidget->widget ( index ) == _queryTab )
   {
-    if ( _layer.valid() && false == _layer->customQuery () )
-    {
-      _queryEdit->setText ( _layer->defaultQuery().c_str() );
-    }
+    this->_updateQueryEdit();
   }
 }
 
@@ -148,12 +145,12 @@ void PropertyPage::_tabChanged ( int index )
 
 void PropertyPage::_customQueryChanged ( int state )
 {
-  bool customQuery ( 0 == state );
+  bool customQuery ( Qt::Checked == state );
 
   if ( _layer.valid () )
     _layer->customQuery ( customQuery );
 
-  _queryEdit->setReadOnly ( customQuery );
+  _queryEdit->setReadOnly ( !customQuery );
 }
 
 
@@ -172,6 +169,22 @@ void PropertyPage::_customQueryTextChanged ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update query edit.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PropertyPage::_updateQueryEdit()
+{
+  if ( _layer.valid() )
+  {
+    std::string query ( _layer->customQuery() ? _layer->query() : _layer->defaultQuery() );
+    _queryEdit->setText ( query.c_str() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Primary Key has changed.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -180,6 +193,7 @@ void PropertyPage::_primaryKeyChanged ()
 {
   if ( _layer.valid() )
     _layer->primaryKeyColumn ( _primaryKeyText->text().toStdString() );
+  this->_updateQueryEdit();
 }
 
 

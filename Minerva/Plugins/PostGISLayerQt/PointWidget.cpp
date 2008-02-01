@@ -52,8 +52,8 @@ _layer ( layer )
   // Connect slots and signals.
   connect ( _stackPoints,   SIGNAL ( stateChanged ( int ) ),    this, SLOT ( _stackPointsChanged ( int ) ) );
   connect ( _autoTransform, SIGNAL ( stateChanged ( int ) ),    this, SLOT ( _autoTransformChanged ( int ) ) );
-  connect ( _primitiveType, SIGNAL ( currentIndexChanged ( ) ), this, SLOT ( _primitiveTypeChanged ( int ) ) );
-  connect ( _sizeColumn,    SIGNAL ( currentIndexChanged ( ) ), this, SLOT ( _sizeColumnChanged ( int ) ) );
+  connect ( _primitiveType, SIGNAL ( currentIndexChanged ( int) ), this, SLOT ( _primitiveTypeChanged ( int ) ) );
+  connect ( _sizeColumn,    SIGNAL ( currentIndexChanged ( int ) ), this, SLOT ( _sizeColumnChanged ( int ) ) );
   connect ( _size,          SIGNAL ( valueChanged ( double ) ), this, SLOT ( _sizeChanged ( double ) ) );
   connect ( _secondarySize, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _secondarySizeChanged ( double ) ) );
   connect ( _quality,       SIGNAL ( valueChanged ( int ) ),    this, SLOT ( _qualityChanged ( int ) ) );

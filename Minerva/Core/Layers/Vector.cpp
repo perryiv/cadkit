@@ -34,9 +34,25 @@ Vector::Vector() :
   _shown ( true ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
-  SERIALIZE_XML_ADD_MEMBER ( _name );
-  SERIALIZE_XML_ADD_MEMBER ( _guid );
-  SERIALIZE_XML_ADD_MEMBER ( _shown );
+  this->_registerMembers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Vector::Vector( const Vector& rhs ) : 
+  BaseClass ( rhs ),
+  _dataObjects( rhs._dataObjects ),
+  _name( rhs._name ),
+  _guid( Usul::Functions::GUID::generate() ),
+  _shown ( rhs._shown ),
+  SERIALIZE_XML_INITIALIZER_LIST
+{
+  this->_registerMembers();
 }
 
 
@@ -48,6 +64,20 @@ SERIALIZE_XML_INITIALIZER_LIST
 
 Vector::~Vector()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register members for serialization.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Vector::_registerMembers()
+{
+  SERIALIZE_XML_ADD_MEMBER ( _name );
+  SERIALIZE_XML_ADD_MEMBER ( _guid );
+  SERIALIZE_XML_ADD_MEMBER ( _shown );
 }
 
 

@@ -47,6 +47,8 @@ protected:
 
   void _initLabelProperties();
   void _initLegendProperties();
+  
+  void _updateQueryEdit();
 
 protected slots:
   void _tabChanged ( int index );

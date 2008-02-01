@@ -247,6 +247,9 @@ protected:
   /// Make the planet.
   void                                     _makePlanet();
 
+  /// Resize all points.
+  void                                     _resizePoints ( double factor );
+
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
 

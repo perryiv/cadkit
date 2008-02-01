@@ -23,8 +23,10 @@ using namespace Minerva::Core::Visitors;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-StackPoints::StackPoints() : BaseClass(),
-  _counts( LessVector ( EqualPredicate() ) )
+StackPoints::StackPoints( double multiplier ) : 
+  BaseClass(),
+  _counts( LessVector ( EqualPredicate() ) ),
+  _multiplier ( multiplier )
 {
 }
 
@@ -59,7 +61,7 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
     const unsigned int multiplier ( 100000 );
     Usul::Math::Vec3ui center ( static_cast<unsigned int> ( p[0] * multiplier ),
                                 static_cast<unsigned int> ( p[1] * multiplier ),
-                                static_cast<unsigned int> ( p[2] * multiplier ) );
+                                /*static_cast<unsigned int> ( p[2] * multiplier )*/ 0 );
 
     Counts::iterator iter = _counts.find ( center );
     if ( _counts.end() == iter )
@@ -68,6 +70,8 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
     }
     else
     {
+      // Make sure it's using the right altitude mode.
+      point.altitudeMode ( Minerva::Core::DataObjects::DataObject::RELATIVE_TO_GROUND );
       unsigned int count ( iter->second );
       
       Usul::Interfaces::IOffset::QueryPtr offset ( point.geometry() );
@@ -75,7 +79,8 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
       if( offset.valid () )
       {
         const osg::Vec3& o ( offset->spatialOffset() );
-        offset->spatialOffset ( osg::Vec3f ( o.x(), o.y(), /*o.z() +*/ ( count * 20 ) ) );
+        const double distance ( count * _multiplier * ( point.autotransform() ? 20 : point.size() ) );
+        offset->spatialOffset ( osg::Vec3f ( o.x(), o.y(), /*o.z() +*/ ( distance ) ) );
         point.dirty( true );
       }
       

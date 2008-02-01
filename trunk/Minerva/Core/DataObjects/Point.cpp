@@ -19,6 +19,7 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPointData.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
@@ -354,6 +355,8 @@ osg::Node* Point::_buildPoint()
 
   geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
 
+  geode->addDrawable ( geometry.get() );
+
   return geode.release();
 }
 
@@ -374,12 +377,22 @@ osg::Node* Point::_buildSphere()
   OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 
-  geode->addDrawable( BaseClass::shapeFactory()->sphere ( _size, meshSize, latRange, longRange  ) );
+  osg::ref_ptr < osg::Geometry> geometry ( BaseClass::shapeFactory()->sphere ( _size, meshSize, latRange, longRange ) );
+  geometry->setUseDisplayList ( false );
+  geometry->setUseVertexBufferObjects ( true );
+  geode->addDrawable( geometry.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
-  autoTransform->addChild ( geode.get() );
-
-  return autoTransform.release();
+  if ( this->autotransform() )
+  {
+    osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
+    autoTransform->addChild ( geode.get() );
+    return autoTransform.release();
+  }
+  
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrix::translate ( _centerEarth ) );
+  mt->addChild ( geode.get() );
+  return mt.release();
 }
 
 

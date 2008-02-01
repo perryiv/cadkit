@@ -33,6 +33,8 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
+./Link.cpp
+./NetworkLink.cpp
 ./KmlLayer.cpp
 )
 

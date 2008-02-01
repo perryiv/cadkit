@@ -39,6 +39,9 @@
 
 #include "osgDB/ReadFile"
 
+#include "boost/filesystem/operations.hpp"
+#include "Usul/File/Boost.h"
+
 #include <sstream>
 
 using namespace Minerva::Layers::Kml;
@@ -150,12 +153,17 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
   
   if ( "kmz" == ext )
   {
-    std::string dir ( Usul::File::directory ( filename, true ) + Usul::File::base ( filename ) + "/" );
+    std::string dir ( Usul::File::Temp::directory( true ) + Usul::File::base ( filename ) + "/" );
     
     std::string command ( "/usr/bin/unzip -o " + filename + " -d " + dir );
     ::system ( command.c_str() );
     
-    this->_parseKml( dir + "/doc.kml", caller, progress );
+    // The filenames to load.
+    std::vector<std::string> filenames;
+    Usul::File::findFiles ( dir, "kml", filenames );
+    for ( std::vector<std::string>::const_iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
+      this->_parseKml( *iter, caller, progress );
+    //this->_parseKml( dir + "/doc.kml", caller, progress );
   }
   else if ( "kml" == ext )
   {

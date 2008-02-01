@@ -57,6 +57,9 @@
 
 #endif
 
+#include "ossimPlanet/mkUtils.h"
+
+
 using namespace Minerva::Document;
 
 
@@ -107,7 +110,8 @@ Planet::Planet() :
 #if USE_STAR_SYSTEM
   _system ( 0x0 ),
   _manager ( new Usul::Jobs::Manager ( 5, true ) ),
-  _hud()
+  _hud(),
+  _callback ( 0x0 )
 #else
   _planet            ( 0x0 ),
   _databasePager     ( new osgDB::DatabasePager() )
@@ -325,6 +329,9 @@ osg::Group* Planet::buildScene()
     _system->accept ( *builder );
     group->addChild ( builder->scene() );
     group->addChild ( _hud.buildScene() );
+    
+    _callback = new Callback;
+    group->setCullCallback ( _callback.get() );
   }
   return group.release();
 #else
@@ -539,15 +546,34 @@ double Planet::elevationAtLatLong ( double lat, double lon ) const
 void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
 {
 #if USE_STAR_SYSTEM
-    const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
-    const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
+  
+  Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
+  
+  if ( _callback.valid() && vm.valid() )
+  {
+    osg::Vec3d eye ( _callback->_eye );
+    Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
+    Usul::Math::Vec3d latLonPoint;
+    this->convertFromPlanet( point, latLonPoint );
     
-    _hud.requests ( queued );
-    _hud.running ( executing );
+    osg::Matrixd viewMatrix = vm->getViewMatrix(); //osg::Matrixd::inverse(*(cullVisitor->getModelViewMatrix()));
+    osg::Matrixd localLsr ( this->planetRotationMatrix( latLonPoint[1], latLonPoint[0], latLonPoint[2], 0.0 ) ); 
+    osg::Vec3d hpr;
+    mkUtils::matrixToHpr(hpr, localLsr, viewMatrix);
     
-    Usul::Interfaces::IViewport::QueryPtr vp ( caller );
-    if ( vp.valid() )
-      _hud.updateScene( static_cast<unsigned int> ( vp->width() ), static_cast<unsigned int> ( vp->height() ) );
+    _hud.showCompass ( true );
+    _hud.hpr( hpr[0], hpr[1], hpr[2] );
+  }
+  
+  const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
+  const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
+    
+  _hud.requests ( queued );
+  _hud.running ( executing );
+    
+  Usul::Interfaces::IViewport::QueryPtr vp ( caller );
+  if ( vp.valid() )
+    _hud.updateScene( static_cast<unsigned int> ( vp->width() ), static_cast<unsigned int> ( vp->height() ) );
 #else
   Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
   if ( tm.valid() )

@@ -29,17 +29,33 @@ public:
   // Declare pointers.
   USUL_DECLARE_REF_POINTERS ( Link );
   
+  // Refresh mode.
+  enum RefreshMode
+  {
+    ON_CHANGE,
+    ON_INTERVAL,
+    ON_EXPIRE
+  };
+  
   Link();
   
   /// Get/Set the href.
   void                href( const std::string& );
   const std::string&  href() const;
+  
+  /// Get/Set refresh interval.
+  void                refreshInterval ( double );
+  double              refreshInterval() const;
+  
+  /// Get/Set refresh mode.
 
 protected:
   virtual ~Link();
   
 private:
   std::string _href;
+  double _refreshInterval;
+  RefreshMode _refreshMode;
 };
       
       

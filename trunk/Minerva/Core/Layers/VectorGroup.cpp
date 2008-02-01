@@ -51,7 +51,13 @@ VectorGroup::~VectorGroup()
 
 Usul::Interfaces::IUnknown* VectorGroup::queryInterface ( unsigned long iid )
 {
-  return BaseClass::queryInterface ( iid );
+  switch ( iid )
+  {
+  case Usul::Interfaces::ILayerList::IID:
+    return static_cast<Usul::Interfaces::ILayerList*> ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }
 
 
@@ -100,7 +106,11 @@ osg::Node * VectorGroup::buildScene ( const Options &options, Usul::Interfaces::
   group->addChild ( BaseClass::buildScene ( options, caller ) );
   
   for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
-    group->addChild ( (*iter)->buildScene ( options, caller ) );
+  {
+    Vector::RefPtr layer ( *iter );
+    if ( layer.valid() && layer->showLayer() )
+      group->addChild ( layer->buildScene ( options, caller ) );
+  }
   return group.release();
 }
 
@@ -132,4 +142,30 @@ void VectorGroup::clearLayers()
 {
   Guard guard ( this );
   _layers.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of layers (ILayer).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int VectorGroup::numberLayers() const
+{
+  Guard guard ( this );
+  return _layers.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer at position i (ILayer).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ILayer* VectorGroup::layer ( unsigned int i )
+{
+  Guard guard ( this );
+  return _layers.at ( i ).get();
 }

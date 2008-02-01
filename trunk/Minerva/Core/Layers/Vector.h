@@ -78,7 +78,15 @@ public:
 protected:
   virtual ~Vector();
   
+  Vector ( const Vector& rhs );
+  
 private:
+  // Do not use.
+  Vector& operator= ( const Vector& rhs );
+  
+  // Register members for serialization.
+  void                        _registerMembers();
+  
   DataObjects _dataObjects;
   std::string _name;
   std::string _guid;

@@ -21,6 +21,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPointData.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Trace/Trace.h"
 
@@ -226,6 +227,10 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
 
   // Save the center in lat/lon coordinates.
   _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
+  
+  // Set the height.
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+  _center[2] = this->_elevation( _center, elevation.get() );
   
   // Convert to planet coordinates.
   Detail::convertToPlanet ( center, caller );

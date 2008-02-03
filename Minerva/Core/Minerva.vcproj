@@ -533,6 +533,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Visitors\ResizePoints.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\ResizePoints.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Visitors\StackPoints.cpp"
 						>
 					</File>

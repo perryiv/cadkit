@@ -22,7 +22,7 @@
 namespace VRV {
 namespace Core {
 
-  typedef ShardData<bool> SharedBoolean;
+  typedef SharedData<bool> SharedBoolean;
 }
 }
 

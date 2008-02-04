@@ -52,6 +52,7 @@ public:
   /// Destructor.
   virtual ~SharedData()
   {
+    delete _mutex; _mutex = 0x0;
   }
 
   /// Read.

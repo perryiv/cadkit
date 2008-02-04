@@ -254,10 +254,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\SharedBoolean.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\SharedBoolean.h"
 					>
 				</File>
@@ -271,14 +267,6 @@
 				</File>
 				<File
 					RelativePath=".\SharedMap.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SharedMatrix.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\SharedMatrix.h"
 					>
 				</File>
 				<File

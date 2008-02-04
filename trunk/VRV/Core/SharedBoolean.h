@@ -17,34 +17,12 @@
 #ifndef __SHARED_BOOLEAN_H__
 #define __SHARED_BOOLEAN_H__
 
-#include "VRV/Export.h"
-
-#include "vpr/IO/SerializableObject.h"
-
-namespace vpr { class ObjectReader; class ObjectWriter; }
-
-#if __VPR_version < 1001005
-#define RETURN_TYPE vpr::ReturnStatus
-#else
-#define RETURN_TYPE void
-#endif
+#include "VRV/Core/SharedData.h"
 
 namespace VRV {
 namespace Core {
 
-class VRV_EXPORT SharedBoolean : public vpr::SerializableObject
-{
-public:
-  typedef vpr::SerializableObject BaseClass;
-
-  SharedBoolean();
-
-  virtual RETURN_TYPE readObject ( vpr::ObjectReader *reader );
-  virtual RETURN_TYPE writeObject ( vpr::ObjectWriter *writer );
-
-  bool data;
-};
-
+  typedef ShardData<bool> SharedBoolean;
 }
 }
 

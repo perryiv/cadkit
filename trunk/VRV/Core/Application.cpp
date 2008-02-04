@@ -693,13 +693,13 @@ void Application::draw()
   Renderer* renderer ( *(_renderer) );
 
   // Drawing is about to happen.
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction ( this, &Application::_preDraw ), renderer, "3501390015" );
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_preDraw ), renderer, "3501390015" );
 
   // Draw.
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction ( this, &Application::_draw ), renderer, "1173048910" );
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_draw ), renderer, "1173048910" );
 
   // Drawing has finished.
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction ( this, &Application::_postDraw ), renderer, "2286306551" );
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_postDraw ), renderer, "2286306551" );
 }
 
 
@@ -723,8 +723,8 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   // Scope the number of rendering passes.
   Usul::Scope::Caller::RefPtr scopedRenderPasses ( Usul::Scope::makeCaller ( 
-      Usul::Adaptors::bind1 ( passesForFrame, Usul::Adaptors::memberFunction ( renderer, &Renderer::setNumRenderPasses ) ), 
-      Usul::Adaptors::bind1 ( currentPasses, Usul::Adaptors::memberFunction ( renderer, &Renderer::setNumRenderPasses ) ) ) );
+      Usul::Adaptors::bind1 ( passesForFrame, Usul::Adaptors::memberFunction<void> ( renderer, &Renderer::setNumRenderPasses ) ), 
+      Usul::Adaptors::bind1 ( currentPasses, Usul::Adaptors::memberFunction<void> ( renderer, &Renderer::setNumRenderPasses ) ) ) );
 
   vrj::GlDrawManager* mgr ( vrj::GlDrawManager::instance() );
   USUL_ASSERT ( 0x0 != mgr );
@@ -756,8 +756,8 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   // Notify the listeners.
   Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
-      Usul::Adaptors::memberFunction ( this, &Application::_preRenderNotify ), 
-      Usul::Adaptors::memberFunction ( this, &Application::_postRenderNotify ) ) );
+      Usul::Adaptors::memberFunction<void> ( this, &Application::_preRenderNotify ), 
+      Usul::Adaptors::memberFunction<void> ( this, &Application::_postRenderNotify ) ) );
 
   // Do the drawing.
   renderer->render();
@@ -3580,13 +3580,13 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
   nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "On", 
                         Usul::Adaptors::bind1<void> ( true, 
                                                       Usul::Adaptors::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
-                        Usul::Adaptors::bind1<bool> ( true,
+                        Usul::Adaptors::bind1<bool> ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES,
                                                       Usul::Adaptors::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
 
   nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Off", 
                         Usul::Adaptors::bind1<void> ( false, 
                                                       Usul::Adaptors::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
-                        Usul::Adaptors::bind1<bool> ( false, 
+                                                      Usul::Adaptors::bind1<bool> ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR, 
                                                       Usul::Adaptors::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
 
 
@@ -4056,10 +4056,15 @@ bool Application::getComputeNearFar () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::isComputeNearFar ( bool b ) const
+bool Application::isComputeNearFar ( osg::CullSettings::ComputeNearFarMode mode ) const
 {
   USUL_TRACE_SCOPE;
-  return b == this->getComputeNearFar();
+  Guard guard ( this->mutex() );
+
+  if ( false == _renderers.empty () )
+    return mode ==_renderers.front()->viewer()->getComputeNearFarMode();
+
+  return false;
 }
 
 

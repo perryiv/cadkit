@@ -322,7 +322,7 @@ public:
   /// Get/Set near far mode.
   void                    setComputeNearFar ( bool b );
   bool                    getComputeNearFar () const;
-  bool                    isComputeNearFar ( bool b ) const;
+  bool                    isComputeNearFar ( osg::CullSettings::ComputeNearFarMode ) const;
 
   /// Reread the preference files and reinitialiaze.
   void                    reinitialize();

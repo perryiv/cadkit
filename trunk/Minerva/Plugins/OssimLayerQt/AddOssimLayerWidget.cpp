@@ -15,6 +15,7 @@
 
 #if USE_STAR_SYSTEM
 #include "StarSystem/RasterLayerOssim.h"
+#include "StarSystem/ElevationLayerDem.h"
 #else
 #include "Minerva/Plugins/OssimLayerQt/ImageTextureLayer.h"
 #include "Minerva/Plugins/OssimLayerQt/KwlLayer.h"
@@ -131,16 +132,26 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
     if( 0x0 != item )
     {
       std::string filename ( item->text ().toStdString () );
+      std::string ext ( Usul::File::extension ( filename ) );
       
 #if USE_STAR_SYSTEM
-      StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
-      layer->open ( filename );
-      layer->name ( filename );
+      if ( "dem" == ext )
+      {
+        StarSystem::ElevationLayerDem::RefPtr layer ( new StarSystem::ElevationLayerDem );
+        layer->open ( filename );
+        layer->name ( filename );
+        
+        al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
+      }
+      else
+      {
+        StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
+        layer->open ( filename );
+        layer->name ( filename );
       
-      al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
+        al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
+      }
 #else
-      std::string ext ( Usul::File::extension ( filename ) );
-
       if ( "kwl" == ext )
       {
         Usul::Interfaces::ILayer::RefPtr layer ( new KwlLayer ( filename ) );

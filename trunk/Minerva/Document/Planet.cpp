@@ -600,6 +600,6 @@ void Planet::pointer ( const osg::Vec3& position )
   Usul::Math::Vec3d point ( position[0], position[1], position[2] );
   Usul::Math::Vec3d latLonPoint;
   this->convertFromPlanet( point, latLonPoint );
-  //_hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
-  _hud.position( position[1], position[1], position[2] );
+  _hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+  //_hud.position( position[1], position[1], position[2] );
 }

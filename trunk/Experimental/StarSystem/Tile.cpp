@@ -628,6 +628,13 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   // Build the raster.  Make sure this is done before mesh is built and texture updated.
   tile->buildRaster ( region, /*Tile::RefPtr ( const_cast<Tile*> ( this ) )*/ 0x0, job );
 
+  // Check to see if the tile has a valid image.
+  if ( false == tile->image().valid() )
+  {
+    // Use the specified region of our image.
+    tile->textureData ( this->image().get(), region );
+  }
+
   tile->updateMesh();
   tile->updateTexture();
   

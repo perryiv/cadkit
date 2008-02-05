@@ -159,7 +159,7 @@ void NewDocument::_initNewDocument ( IUnknown *document, IUnknown *caller )
       if ( true == initializer->handlesDocumentType ( document ) )
       {
         // Initialize the document.
-        initializer->initNewDocument ( caller, document );
+        initializer->initNewDocument ( document, caller );
 
         // Return now!
         return;

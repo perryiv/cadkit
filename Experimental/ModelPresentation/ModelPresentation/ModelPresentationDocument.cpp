@@ -23,7 +23,6 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdFirstSequence.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
-#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
@@ -94,7 +93,10 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _isAnimating( false ),
   _showTools ( false ),
   _userSpecifiedEndTime( false ),
-  _globalTimelineEnd( 0 )
+  _globalTimelineEnd( 0 ),
+  _globalCurrentTime ( 0 ),
+  _textXPos( 0 ),
+  _textYPos( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -385,8 +387,15 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_checkTimeSteps()
+void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Set the status bar to reflect the current time
+  std::string message = Usul::Strings::format( "Current Step: ", _globalCurrentTime + 1 );
+  this->_setStatusText( message, caller );
+  
   // Check Time Sets
   if( true == _useTimeLine )
   {
@@ -533,7 +542,15 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
     if( true == (*_update)() )
     {
       this->_incrementTimeStep();
-      this->_checkTimeSteps();
+    }
+  }
+
+  // If we have a timeline or a dynamic set check the steps
+  {
+    Guard guard ( this );
+    if( true == this->_useDynamic || true == this->_useTimeLine )
+    {
+      this->_checkTimeSteps( caller );
     }
   }
 }
@@ -689,7 +706,7 @@ void ModelPresentationDocument::nextStep ()
           _timeSets.at( i ).currentTime = 0;
         else
           _timeSets.at( i ).currentTime ++;
-        this->_checkTimeSteps();
+        //this->_checkTimeSteps();
       }
      
 
@@ -703,7 +720,7 @@ void ModelPresentationDocument::nextStep ()
         _dynamicSets.at( i ).currentTime = 0;
       else
         _dynamicSets.at( i ).currentTime ++;
-      this->_checkTimeSteps();
+      //this->_checkTimeSteps();
     }
   }
   
@@ -730,7 +747,7 @@ void ModelPresentationDocument::prevStep ()
           _timeSets.at( i ).currentTime = _timeSets.at( i ).endTime;
         else
           _timeSets.at( i ).currentTime --;
-        this->_checkTimeSteps();
+        //this->_checkTimeSteps();
       }
      
     }
@@ -743,7 +760,7 @@ void ModelPresentationDocument::prevStep ()
         _dynamicSets.at( i ).currentTime = _dynamicSets.at( i ).endTime;
       else
         _dynamicSets.at( i ).currentTime --;
-      this->_checkTimeSteps();
+      //this->_checkTimeSteps();
     }
   }
 }
@@ -767,7 +784,7 @@ void ModelPresentationDocument::firstStep ()
       for( unsigned int i = 0; i < _timeSets.size(); ++i )
       {
         _timeSets.at( i ).currentTime = 0;
-        this->_checkTimeSteps();
+        //this->_checkTimeSteps();
       }
     }
     if( true == _useDynamic )
@@ -775,7 +792,7 @@ void ModelPresentationDocument::firstStep ()
       for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
       {
         _dynamicSets.at( i ).currentTime = 0;
-        this->_checkTimeSteps();
+        //this->_checkTimeSteps();
       }
     }
   }
@@ -2074,7 +2091,7 @@ void ModelPresentationDocument::timelineModelState( unsigned int i, bool state )
   Guard guard ( this );
 
   _timeSets.at( i ).visible = state;
-  this->_checkTimeSteps();
+  //this->_checkTimeSteps();
 }
 
 
@@ -2103,6 +2120,10 @@ void ModelPresentationDocument::_incrementTimeStep()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );  
+  if( _globalCurrentTime >= _globalTimelineEnd )
+    _globalCurrentTime = 0;
+  else
+    _globalCurrentTime += 1;
 
   if( true == this->_useTimeLine )
   {
@@ -2182,7 +2203,7 @@ void ModelPresentationDocument::dynamicModelState  ( unsigned int index, bool st
   {
     _dynamicSets.at( index ).models->setValue( _dynamicSets.at( index ).currentTime, true );
   }
-  this->_checkTimeSteps();
+  //this->_checkTimeSteps();
 
 }
 
@@ -2446,8 +2467,17 @@ void ModelPresentationDocument::_handleSequenceEvent()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create a proxy geometry to display when no dynamic steps are loaded
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &message )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
   GroupPtr group ( new osg::Group );
   osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
   osg::ref_ptr< osgText::Text  > text ( new osgText::Text() );
@@ -2483,5 +2513,45 @@ osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &m
   group->addChild( mt.get() );
 
   return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the status text
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_setStatusText( const std::string message, Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  ITextMatrix::QueryPtr textMatrix ( caller );
+  if( false == textMatrix.valid() )
+    throw std::runtime_error ( "Error 3793514250: Failed to find a valid interface to Usul::Interfaces::ITextMatrix " );
+
+  IViewport::QueryPtr viewPort( caller );
+  if( false == viewPort.valid() )
+    throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
+
+  double xpos = 0, ypos = 0;
+  textMatrix->removeText( static_cast< unsigned int > ( _textXPos ),
+                          static_cast< unsigned int > ( _textYPos ) );
+
+  xpos = floor( viewPort->width() * 0.80 );
+  ypos = floor( viewPort->height() * 0.05 );
+  
+  osg::Vec4f color (  0.841, 0.763, 0.371, 1 );
+  
+
+  textMatrix->setText( static_cast< unsigned int > ( xpos ), 
+                       static_cast< unsigned int > ( ypos ), 
+                       message, 
+                       color );
+  _textXPos = xpos;
+  _textYPos = ypos;
+  
+
 }
 

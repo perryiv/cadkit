@@ -2306,6 +2306,7 @@ void ModelPresentationDocument::_processJobData( unsigned int index )
 
         _dynamicSets.at( index ).header = header;
         _dynamicSets.at( index ).nextIndexToLoad ++;
+        std::cout << Usul::Strings::format( "Loaded ", _dynamicSets.at( index ).nextIndexToLoad, " of ", _dynamicSets.at( index ).header.max, " steps." ) << std::endl;
 
       }
     }

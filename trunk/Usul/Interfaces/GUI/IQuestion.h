@@ -30,7 +30,7 @@ struct IQuestion : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3434193828u };
 
-  virtual std::string      question ( const std::string &buttons,  const std::string &title, const std::string &text ) = 0;
+  virtual std::string      question ( const std::string &buttons, const std::string &title, const std::string &text ) = 0;
 
 };
 

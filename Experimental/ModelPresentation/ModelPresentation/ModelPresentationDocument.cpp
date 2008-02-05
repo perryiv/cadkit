@@ -2307,6 +2307,18 @@ void ModelPresentationDocument::_processJobData( unsigned int index )
         _dynamicSets.at( index ).header = header;
         _dynamicSets.at( index ).nextIndexToLoad ++;
         std::cout << Usul::Strings::format( "Loaded ", _dynamicSets.at( index ).nextIndexToLoad, " of ", _dynamicSets.at( index ).maxFilesToLoad, " steps." ) << std::endl;
+       
+        
+      }
+      
+      // Set the rest of the steps to be this last loaded step and the "not loaded" text
+      for( unsigned int i = _dynamicSets.at( index ).nextIndexToLoad; i < _dynamicSets.at( index ).models->getNumChildren(); ++i )
+      {
+        std::string text = Usul::Strings::format( "Step ", i + 1, " of ",_dynamicSets.at( index ).maxFilesToLoad, " is not loaded..." );
+        GroupPtr grpPtr ( new osg::Group );
+        grpPtr->addChild( this->_createProxyGeometry( text ) );
+        grpPtr->addChild( _dynamicSets.at( index ).models->getChild( _dynamicSets.at( index ).nextIndexToLoad - 1 ) );
+        _dynamicSets.at( index ).models->setChild( i, grpPtr.get() );
 
       }
     }

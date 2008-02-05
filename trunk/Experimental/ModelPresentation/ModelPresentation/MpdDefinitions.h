@@ -77,7 +77,7 @@ class MpdDefinitions
         std::string extension;
         std::string prefix;
         std::vector< std::string > modelNames;
-        unsigned int max;
+        
       };
       struct MpdDynamicSet
       {
@@ -89,7 +89,8 @@ class MpdDefinitions
         unsigned int nextIndexToLoad;
         std::string menuName;
         std::string name;
-        bool visible;    
+        bool visible;  
+        unsigned int maxFilesToLoad;
       };
       struct MpdSequenceStep
       {

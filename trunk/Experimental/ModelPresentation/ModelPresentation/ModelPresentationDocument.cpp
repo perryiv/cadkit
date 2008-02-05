@@ -496,7 +496,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
       }
     
       // make sure we haven't loaded all our alloted steps
-      if( set.nextIndexToLoad < set.header.max )
+      if( set.nextIndexToLoad < set.maxFilesToLoad )
       {
         if( false == this->_getJobAtIndex( index ) )
         {
@@ -1367,7 +1367,7 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   dset.currentTime = 0;
   dset.header.directory = ".";
   dset.endTime = 0;
-  dset.header.max = 1;
+  dset.maxFilesToLoad = 1;
   dset.nextIndexToLoad = 0;
   dset.header.extension = "*";
   dset.menuName = "DynamicSets";
@@ -1403,21 +1403,21 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
     }      
     if ( "max" == iter->first )
     {
-      Usul::Strings::fromString ( iter->second, dset.header.max );
+      Usul::Strings::fromString ( iter->second, dset.maxFilesToLoad );
     }      
   }
-  for( unsigned int i = 0; i < dset.header.max; ++i )
+  for( unsigned int i = 0; i < dset.maxFilesToLoad; ++i )
   {
     MpdDefinitions::MpdDynamicGroup grp;
     grp.filename = "";
     grp.loading = false;
     grp.valid = false;
-    std::string text = Usul::Strings::format( "Step ", i + 1, " of ",dset.header.max, " is not loaded..." );
+    std::string text = Usul::Strings::format( "Step ", i + 1, " of ",dset.maxFilesToLoad, " is not loaded..." );
     dset.models->addChild( this->_createProxyGeometry( text ), false );
     dset.groups.push_back( grp );
   }
   dset.models->setValue( 0, true );
-  dset.endTime = dset.header.max;
+  dset.endTime = dset.maxFilesToLoad;
   MpdJob::RefPtr job;
   _jobs.push_back( job );
   _dynamicSets.push_back( dset );
@@ -2299,14 +2299,14 @@ void ModelPresentationDocument::_processJobData( unsigned int index )
         // Sanity Check to see if the group at position nextIndexToLoad exists
         if( _dynamicSets.at( index ).groups.size() > _dynamicSets.at( index ).nextIndexToLoad )
         {
-          _dynamicSets.at( index ).groups.at( _dynamicSets.at( index ).nextIndexToLoad ) =  grp;
+          _dynamicSets.at( index ).groups.at( _dynamicSets.at( index ).nextIndexToLoad ) = grp;
         }
         else
           return;
 
         _dynamicSets.at( index ).header = header;
         _dynamicSets.at( index ).nextIndexToLoad ++;
-        std::cout << Usul::Strings::format( "Loaded ", _dynamicSets.at( index ).nextIndexToLoad, " of ", _dynamicSets.at( index ).header.max, " steps." ) << std::endl;
+        std::cout << Usul::Strings::format( "Loaded ", _dynamicSets.at( index ).nextIndexToLoad, " of ", _dynamicSets.at( index ).maxFilesToLoad, " steps." ) << std::endl;
 
       }
     }

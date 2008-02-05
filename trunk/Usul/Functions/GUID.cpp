@@ -22,41 +22,29 @@
 
 std::string Usul::Functions::GUID::generate()
 {
-  std::string guid;
-  
   std::vector < char > b ( 256, 0x0 );
+  const char *ptr ( 0x0 );
+
 #ifdef _MSC_VER
+
   UUID uuid;
   UuidCreateSequential( &uuid );
   unsigned char *p = reinterpret_cast<unsigned char *> ( &b[0] );
   ::UuidToString ( &uuid, &p );
+  ptr = reinterpret_cast<const char *> ( p );
+
 #else
-  
-#if 0
-  // TODO: I think there is a better way to get a guid on a unix box.  Maybe look for uuidgen and execute it externaly?
-  // Create a guid.
-  char buf [ 256 ];
-  unsigned int t1 ( ::time ( 0x0 ) );
 
-  ::srand ( ::time ( 0x0 ) );
-
-  unsigned int r1 ( ::rand () );
-  unsigned int r2 ( ::rand () );
-  unsigned int r3 ( ::rand () );
-  
-  unsigned int t2 ( ::time ( 0x0 ) );
-  ::sprintf ( buf, "%08x-%04x-%04x-%04x-%012x", t1, r1, r2, r3, t2 );
-
-  guid = buf;
-#endif
   uuid_t uuid;
   ::uuid_generate ( uuid );
   ::uuid_unparse ( uuid, &b[0] );
+  ptr = &b[0];
+
 #endif
   
-  const unsigned int len ( ::strlen ( (char* ) &b[0] ) );
-  const char *ptr ( &b[0] );
-  guid.insert ( guid.end(), ptr, ptr + len );
+  // Make the std::string.
+  const unsigned int len ( ::strlen ( ptr ) );
+  std::string guid ( ptr, len );
 
   return guid;
 }

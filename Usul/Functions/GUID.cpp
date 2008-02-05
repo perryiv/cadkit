@@ -10,25 +10,28 @@
 
 #include "Usul/Functions/GUID.h"
 
-#ifdef _MSC_VER
 # include <vector>
+
+#ifdef _MSC_VER
 # define NOMINMAX
 # include <windows.h>
+#else
+#include "uuid/uuid.h"
 #endif
 
 std::string Usul::Functions::GUID::generate()
 {
   std::string guid;
+  
+  std::vector < char > b ( 256, 0x0 );
 #ifdef _MSC_VER
-  std::vector < unsigned char > b ( 256, 0x0 );
   UUID uuid;
   UuidCreateSequential( &uuid );
-  unsigned char *p = &b.front();
+  char *p = &b.front();
   ::UuidToString ( &uuid, &p );
-
-  unsigned int len ( ::strlen ( (char* ) p ) );
-  guid.insert ( guid.end(), p, p + len );
 #else
+  
+#if 0
   // TODO: I think there is a better way to get a guid on a unix box.  Maybe look for uuidgen and execute it externaly?
   // Create a guid.
   char buf [ 256 ];
@@ -45,6 +48,14 @@ std::string Usul::Functions::GUID::generate()
 
   guid = buf;
 #endif
+  uuid_t uuid;
+  ::uuid_generate ( uuid );
+  ::uuid_unparse ( uuid, &b[0] );
+#endif
+  
+  const unsigned int len ( ::strlen ( (char* ) &b[0] ) );
+  const char *ptr ( &b[0] );
+  guid.insert ( guid.end(), ptr, ptr + len );
 
   return guid;
 }

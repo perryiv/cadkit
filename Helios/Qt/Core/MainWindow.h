@@ -22,17 +22,18 @@
 #include "Helios/Qt/Core/DocumentProxy.h"
 #include "Helios/Qt/Core/ProgressBarDock.h"
 
+#include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/IActiveViewListener.h"
 #include "Usul/Interfaces/IStreamListener.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/GUI/IUpdateTextWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
-#include "Usul/Interfaces/IActiveDocumentListener.h"
-#include "Usul/Interfaces/IActiveViewListener.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
@@ -77,7 +78,8 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
   public Usul::Interfaces::IProgressBarFactory,
   public Usul::Interfaces::IQtDockWidgetMenu,
   public Usul::Interfaces::IActiveDocumentListener,
-  public Usul::Interfaces::IActiveViewListener
+  public Usul::Interfaces::IActiveViewListener,
+  public Usul::Interfaces::IQuestion
 {
   Q_OBJECT
 
@@ -221,6 +223,8 @@ protected:
   /// The active document has changed.
   virtual void                      activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView );
 
+  /// Prompt the user (IQuestion).
+  virtual std::string               question ( const std::string &buttons,  const std::string &title, const std::string &text );
 private slots:
 
   void                              _idleProcess();

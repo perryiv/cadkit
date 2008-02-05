@@ -50,6 +50,7 @@ class RasterLayer;
 class STAR_SYSTEM_EXPORT Tile : public osg::Group
 {
 public:
+
   // OSG Plumbing.
   META_Node ( StarSystem, Tile );
 
@@ -72,11 +73,11 @@ public:
   // Dirty flags.
   enum Flags
   {
-    VERTICES   = 0x01,
-    TEX_COORDS = 0x02,
-    TEXTURE    = 0x04,
-    CHILDREN   = 0x08,
-    IMAGE      = 0x10,
+    VERTICES   = 0x00000001,
+    TEX_COORDS = 0x00000002,
+    TEXTURE    = 0x00000004,
+    CHILDREN   = 0x00000008,
+    IMAGE      = 0x00000010,
     ALL        = VERTICES | TEX_COORDS | TEXTURE
   };
 
@@ -128,11 +129,10 @@ public:
   // Compute the bounding sphere.
   virtual BSphere           computeBound() const;
 
-  // Set/get the flag that says we're dirty.
-  bool                      dirty() const;
+  // Set the flag that says we're dirty.
   void                      dirty ( bool state, unsigned int flags, bool dirtyChildren );
 
-  // Mark the dirty state, only if we cross this extents.
+  // Mark the dirty state if we cross this extents.
   void                      dirty ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents);
 
   // Get the individual dirty states.
@@ -188,14 +188,16 @@ protected:
 
   NodePtr                   _buildBorderLine();
 
+  // Build skirts.
+  osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll );
+  osg::Node*                _buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll );
+
   void                      _cull ( osgUtil::CullVisitor &cv );
 
   /// Clear children.
   void                      _clearChildren();
 
-  // Build skirts.
-  osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll );
-  osg::Node*                _buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll );
+  void                      _deleteMe();
 
   // Load the image.
   void                      _launchImageRequest();
@@ -212,6 +214,11 @@ protected:
                                          const Usul::Math::Vec4d& region, 
                                          double splitDistance, 
                                          Usul::Jobs::Job::RefPtr job );
+
+
+  void                      _setDirtyAlways ( bool state, unsigned int flags, bool dirtyChildren );
+  void                      _setDirtyIfIntersect ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents );
+
 private:
 
   // No assignment.

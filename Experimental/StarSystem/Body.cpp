@@ -29,6 +29,7 @@
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
@@ -70,7 +71,9 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _meshSize ( ms ),
   _useSkirts ( true ),
   _splitCallback ( new StarSystem::Callbacks::PassThrough ),
-  _scale ( 1 )
+  _scale ( 1 ),
+  _deleteTiles(),
+  _topTiles()
 {
   USUL_TRACE_SCOPE;
 
@@ -115,6 +118,8 @@ void Body::_destroy()
   _transform = 0x0;
   _rasters = 0x0;
   _elevation = 0x0;
+  _deleteTiles.clear();
+  _topTiles.clear();
 }
 
 
@@ -138,14 +143,34 @@ void Body::addTile ( const Extents &extents )
   const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
   const MeshSize meshSize ( this->meshSize ( extents ) );
   const Tile::ImageSize imageSize ( width, height );
-  
-  osg::ref_ptr<Tile> tile ( new Tile ( level, extents, meshSize, imageSize, _splitDistance, this ) );
+  Tile::RefPtr tile ( new Tile ( level, extents, meshSize, imageSize, _splitDistance, this ) );
 
   // Build the raster.
   tile->buildRaster ( textureCoords, 0x0, 0x0 );
 
-  // Add tile to the trnsform.
+  // Add tile to the transform.
   _transform->addChild ( tile.get() );
+
+  // Add tile to top-level tiles.
+  _topTiles.push_back ( tile );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called by the tile when it's no longer needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::_addTileToBeDeleted ( Tile *tile )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( 0x0 != tile )
+  {
+    _deleteTiles.push_back ( Tile::RefPtr ( tile ) );
+  }
 }
 
 
@@ -401,6 +426,7 @@ void Body::jobManager ( Usul::Jobs::Manager *manager )
 void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1696017450" );
   BaseClass::preRender ( caller );
 }
 
@@ -414,6 +440,12 @@ void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 void Body::postRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4364162680" );
+
+  // Remove all tiles that are ready.
+  this->purgeTiles();
+
+  // Pass along to base class.
   BaseClass::postRender ( caller );
 }
 
@@ -803,7 +835,6 @@ Body::Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
 double Body::elevation ( double lat, double lon ) const
 {
   USUL_TRACE_SCOPE;
-
   Guard guard ( this );
 
   RasterGroup::RefPtr elevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation.get() ) );
@@ -836,6 +867,8 @@ double Body::elevation ( double lat, double lon ) const
 
 void Body::rasters ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+
   RasterGroup::RefPtr group ( 0x0 );
   
   {
@@ -843,5 +876,29 @@ void Body::rasters ( Rasters& rasters, const Extents& extents, unsigned int widt
     group = _rasters;
   }
   
-  if ( group.valid() ) group->textures ( rasters, extents, width, height, level, job, caller );
+  if ( true == group.valid() )
+  {
+    group->textures ( rasters, extents, width, height, level, job, caller );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Purge all tiles that are ready.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::purgeTiles()
+{
+  USUL_TRACE_SCOPE;
+
+  // The list to delete.
+  Tiles deleteMe ( Usul::Threads::Safe::get ( this->mutex(), _deleteTiles ) );
+
+  // Clear the original list.
+  _deleteTiles.clear();
+
+  // Clear the list of tiles to be deleted.
+  deleteMe.clear();
 }

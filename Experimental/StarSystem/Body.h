@@ -24,6 +24,7 @@
 #include "StarSystem/LandModel.h"
 #include "StarSystem/RasterGroup.h"
 #include "StarSystem/SplitCallbacks.h"
+#include "StarSystem/Tile.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -36,7 +37,7 @@
 #include "osg/MatrixTransform"
 #include "osg/Texture"
 
-namespace StarSystem { class Tile; }
+#include <list>
 
 
 namespace StarSystem {
@@ -58,6 +59,7 @@ public:
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
   typedef RasterGroup::Rasters Rasters;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef std::list<Tile::RefPtr> Tiles;
 
   // Helper macro for repeated code.
   STAR_SYSTEM_DEFINE_NODE_CLASS ( Body );
@@ -112,7 +114,10 @@ public:
   // Pre- and post-render notifications.
   virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
   virtual void              postRender ( Usul::Interfaces::IUnknown *caller );
-  
+
+  // Purge tiles that are ready.
+  void                      purgeTiles();
+
   // Get the rasters.
   void                      rasters ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller );
 
@@ -161,10 +166,14 @@ protected:
 
   // Use reference counting.
   virtual ~Body();
-  
+
+  void                      _addTileToBeDeleted ( Tile *tile );
+
   Extents                   _buildExtents ( Usul::Interfaces::IUnknown* unknown );
 
 private:
+
+  friend class Tile;
 
   typedef std::map < unsigned long, CutImageJob::RefPtr > TextureJobs;
   typedef Usul::Threads::Variable<Usul::Jobs::Manager*> JobManager;
@@ -188,6 +197,8 @@ private:
   bool _useSkirts;
   SplitCallback::RefPtr _splitCallback;
   double _scale;
+  Tiles _deleteTiles;
+  Tiles _topTiles;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

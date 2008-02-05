@@ -318,7 +318,7 @@ std::string RasterLayerWms::_cacheDirectory() const
   boost::hash<std::string> stringHash;
   const std::size_t hashValue ( stringHash ( this->_getAllOptions() ) );
 
-  std::string dir ( Usul::Strings::format ( Usul::Threads::Safe::get ( this->mutex(), _dir ), '/', 
+  std::string dir ( Usul::Strings::format ( this->cacheDirectory(), '/', 
                                             Usul::App::Application::instance().program(), '/',
                                             urlProxy, '/', hashValue, '/' ) );
   std::replace ( dir.begin(), dir.end(), '\\', '/' );
@@ -363,7 +363,7 @@ void RasterLayerWms::defaultCacheDirectory ( const std::string& dir )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RasterLayerWms::defaultCacheDirectory ()
+std::string RasterLayerWms::defaultCacheDirectory()
 {
   return Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR].get<std::string> ( Usul::File::Temp::directory ( false ) );
 }
@@ -371,7 +371,7 @@ std::string RasterLayerWms::defaultCacheDirectory ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the cache directory.
+//  Set the base cache directory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -395,7 +395,7 @@ void RasterLayerWms::cacheDirectory ( const std::string& dir, bool makeDefault )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the cache directory.
+//  Get the base cache directory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

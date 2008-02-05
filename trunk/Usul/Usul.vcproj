@@ -2478,6 +2478,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Functions\Execute.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Functions\Guid.cpp"
 					>
 					<FileConfiguration

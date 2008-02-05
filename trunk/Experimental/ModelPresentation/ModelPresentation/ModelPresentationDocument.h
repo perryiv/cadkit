@@ -27,6 +27,9 @@
 #include "Usul/Interfaces/IMpdNavigator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IDataSync.h"
+#include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -59,6 +62,9 @@ public:
   typedef DocManager::DocumentInfo Info;
   typedef Usul::Jobs::Manager JobManager;
   typedef Usul::Interfaces::IDataSync IDataSync;
+  typedef Usul::Interfaces::ITextMatrix ITextMatrix;
+  typedef Usul::Interfaces::IViewMatrix IViewMatrix;
+  typedef Usul::Interfaces::IViewport IViewport;
   typedef Usul::Policies::NumberBased UpdatePolicy;
   typedef std::auto_ptr< UpdatePolicy > UpdatePolicyPtr;
   typedef osg::Matrixf Matrixf;
@@ -183,7 +189,7 @@ protected:
 
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, Unknown *progress );
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
-  void                        _checkTimeSteps();
+  void                        _checkTimeSteps( Usul::Interfaces::IUnknown *caller );
   void                        _incrementTimeStep();
   
   void                        _setMatrix( osg::Matrix * matrix, const std::string& values, const std::string& type );
@@ -192,6 +198,8 @@ protected:
 
   //Usul::Interfaces::IMenuAdd
   void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+
+  void                        _setStatusText( const std::string message, Usul::Interfaces::IUnknown *caller );
 
   /// Use reference counting.
   virtual ~ModelPresentationDocument();
@@ -222,9 +230,14 @@ private:
 
   std::string                   _workingDir;
   unsigned int                  _globalTimelineEnd;
+  unsigned int                  _globalCurrentTime;
 
   
   MpdJobs                       _jobs;
+
+  //Text variables for status
+  unsigned int                  _textXPos;
+  unsigned int                  _textYPos;
   
 };
 

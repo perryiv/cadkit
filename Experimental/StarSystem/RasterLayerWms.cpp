@@ -208,8 +208,11 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   options[Usul::Network::Names::WIDTH] = Usul::Strings::format ( width );
   options[Usul::Network::Names::HEIGHT] = Usul::Strings::format ( height );
 
+  // Get the cache directory.
+  const std::string cachDir ( this->_cacheDirectory() );
+
   // Make the directory.
-  const std::string baseDir ( this->_directory ( width, height, level ) );
+  const std::string baseDir ( this->_baseDirectory ( cachDir, width, height, level ) );
   Usul::File::make ( baseDir );
 
   // Make the base file name.
@@ -223,7 +226,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   const std::string fullUrl ( wms.fullUrl() );
 
   // Since the directory name was hashed from the url, make sure there is a "read me" file.
-  const std::string readMe ( Usul::Strings::format ( this->_directory(), "ReadMe.txt" ) );
+  const std::string readMe ( Usul::Strings::format ( cachDir, "ReadMe.txt" ) );
   if ( false == Usul::Predicates::FileExists::test ( readMe ) )
   {
     std::ofstream readMeFile ( readMe.c_str() );
@@ -298,7 +301,7 @@ std::string RasterLayerWms::_baseFileName ( Extents extents ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RasterLayerWms::_directory() const
+std::string RasterLayerWms::_cacheDirectory() const
 {
   USUL_TRACE_SCOPE;
 
@@ -329,14 +332,14 @@ std::string RasterLayerWms::_directory() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RasterLayerWms::_directory ( unsigned int width, unsigned int height, unsigned int level ) const
+std::string RasterLayerWms::_baseDirectory ( const std::string &cacheDir, unsigned int width, unsigned int height, unsigned int level ) const
 {
   USUL_TRACE_SCOPE;
 
   const std::string resolution  ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
   const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );
 
-  std::string dir ( Usul::Strings::format ( this->_directory(), resolution, '/', levelString, '/' ) );
+  std::string dir ( Usul::Strings::format ( cacheDir, resolution, '/', levelString, '/' ) );
   std::replace ( dir.begin(), dir.end(), '\\', '/' );
   return dir;
 }

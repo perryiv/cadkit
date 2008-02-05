@@ -40,7 +40,7 @@ MpdJob::MpdJob ( Usul::Interfaces::IUnknown *caller,
                  const std::string &prefix, 
                  const std::string &extension,
                  Files current ) :
-  BaseClass ( caller ),
+  BaseClass ( caller, false ),
   _root( 0 ),
   _workingDir( workingDir ),
   _searchDir( searchDir ),

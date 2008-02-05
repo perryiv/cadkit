@@ -30,8 +30,10 @@
 #include "OsgTools/State/StateSet.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Functions/Execute.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/NaN.h"
@@ -47,6 +49,9 @@
 #include "osg/Material"
 #include "osg/Texture2D"
 
+#include "boost/bind.hpp"
+
+#include <algorithm>
 #include <limits>
 
 using namespace StarSystem;
@@ -72,7 +77,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _lowerLeft(),
   _level ( level ),
   _flags ( Tile::ALL ),
-  _children( 4 ),
+  _children ( 4 ),
   _textureUnit ( 0 ),
   _image ( image ),
   _elevation ( elevation ),
@@ -971,18 +976,7 @@ Tile::Mutex &Tile::mutex() const
 
 void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren )
 {
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  _flags = Usul::Bits::set ( _flags, flags, state );
-
-  if ( dirtyChildren )
-  {
-    if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, flags, dirtyChildren );
-    if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, flags, dirtyChildren );
-    if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, flags, dirtyChildren );
-    if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren );
-  }
+  this->_setDirtyAlways ( state, flags, dirtyChildren );
 }
 
 
@@ -993,6 +987,57 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren )
 ///////////////////////////////////////////////////////////////////////////////
 
 void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents )
+{
+  this->_setDirtyIfIntersect ( state, flags, dirtyChildren, extents );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tell the body it can delete us.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_deleteMe()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Add this tile to the body.
+  if ( 0x0 != _body )
+  {
+    _body->_addTileToBeDeleted ( this );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag that says we're dirty.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_setDirtyAlways ( bool state, unsigned int flags, bool dirtyChildren )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  _flags = Usul::Bits::set ( _flags, flags, state );
+
+  if ( dirtyChildren )
+  {
+    Usul::Functions::executeMemberFunctions ( _children, &Tile::_setDirtyAlways, state, flags, dirtyChildren );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Mark the dirty state, only if we cross this extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_setDirtyIfIntersect ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1005,26 +1050,9 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Ext
     // Visit our children.
     if ( dirtyChildren )
     {
-      if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->dirty  ( state, flags, dirtyChildren, extents );
-      if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
-      if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->dirty  ( state, flags, dirtyChildren, extents );
-      if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->dirty ( state, flags, dirtyChildren, extents );
+      Usul::Functions::executeMemberFunctions ( _children, &Tile::_setDirtyIfIntersect, state, flags, dirtyChildren, extents );
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the flag that says we're dirty.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Tile::dirty() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return 0 != _flags;
 }
 
 
@@ -1466,15 +1494,13 @@ void Tile::_clearChildren()
   this->removeChild ( 1, this->getNumChildren() - 1 );
 
   // Clear all the children.
-  if ( _children[LOWER_LEFT].valid()  ) _children[LOWER_LEFT]->clear();
-  if ( _children[LOWER_RIGHT].valid() ) _children[LOWER_RIGHT]->clear();
-  if ( _children[UPPER_LEFT].valid()  ) _children[UPPER_LEFT]->clear();
-  if ( _children[UPPER_RIGHT].valid() ) _children[UPPER_RIGHT]->clear();
+  Usul::Functions::executeMemberFunctions ( _children, &Tile::clear );
 
-  _children[LOWER_LEFT]  = 0x0;
-  _children[LOWER_RIGHT] = 0x0;
-  _children[UPPER_LEFT]  = 0x0;
-  _children[UPPER_RIGHT] = 0x0;
+  // Mark the children as ready to be deleted.
+  Usul::Functions::executeMemberFunctions ( _children, &Tile::_deleteMe );
+
+  // Assign children to null.
+  _children.assign ( _children.size(), 0x0 );
 
   // Clear the tile job.
   if ( _tileJob.valid() )

@@ -37,20 +37,20 @@ public:
   USUL_DECLARE_REF_POINTERS ( RasterLayerWms );
 
   RasterLayerWms ( const Extents &maxExtents = Extents ( -180, -90, 180, 90 ), const std::string &url = std::string(), const Options &options = Options() );
-
-  /// Clone.
-  virtual IUnknown*     clone() const;
-  
-  /// Get the texture
-  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
-
-  /// Get/Set the default cache directory.
-  static void           defaultCacheDirectory ( const std::string& );
-  static std::string    defaultCacheDirectory ();
   
   /// Get/Set the cache directory.
   void                  cacheDirectory ( const std::string& dir, bool makeDefault = false );
-  std::string           cacheDirectory () const;
+  std::string           cacheDirectory() const;
+
+  /// Clone.
+  virtual IUnknown*     clone() const;
+
+  /// Get/Set the default cache directory.
+  static void           defaultCacheDirectory ( const std::string& );
+  static std::string    defaultCacheDirectory();
+  
+  /// Get the texture
+  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
   
 protected:
 

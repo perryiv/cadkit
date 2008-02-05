@@ -233,15 +233,15 @@ void MpdJob::_loadNewDynamicFiles( std::string filename, Usul::Interfaces::IUnkn
   osg::ref_ptr< osg::Group > node = new osg::Group;
 
   // Get needed interfaces.
-  IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
-  if( false == dataSync.valid() )
-    throw std::runtime_error ( "Error 3960013514: Failed to find a valid interface to Usul::Interfaces::IDataSync " );
+  //IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
+  //if( false == dataSync.valid() )
+  //  throw std::runtime_error ( "Error 3960013514: Failed to find a valid interface to Usul::Interfaces::IDataSync " );
 
-  std::string hostname = Usul::System::Host::name();
-  std::string lockfile = Usul::File::base( filename );
+  //std::string hostname = Usul::System::Host::name();
+  //std::string lockfile = Usul::File::base( filename );
 
   // lock here
-  dataSync->setDataFlag( hostname, lockfile );
+  //dataSync->setDataFlag( hostname, lockfile );
   
   // load the new model
   node->addChild( this->_loadFile( filename, caller, progress ) );
@@ -253,7 +253,7 @@ void MpdJob::_loadNewDynamicFiles( std::string filename, Usul::Interfaces::IUnkn
   }
  
   // unlock here
-  dataSync->resetData( hostname, lockfile );
+  //dataSync->resetData( hostname, lockfile );
 
   
 
@@ -285,7 +285,7 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
       // Ask the document to open the file.
       try
       {
-        Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+        //Usul::System::Directory::ScopedCwd cwd ( _workingDir );
         
         this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
 
@@ -341,7 +341,7 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
 void MpdJob::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, IUnknown *progress )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  //Guard guard ( this->mutex() );
   if ( 0x0 == document )
     return;
 #if 1

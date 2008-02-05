@@ -59,6 +59,8 @@
 #include "osg/Group"
 #include "osg/Switch"
 #include "osg/MatrixTransform"
+#include "osgText/Font"
+#include "osgText/Text"
 
 
 #include <iterator>
@@ -273,6 +275,7 @@ void ModelPresentationDocument::read ( const std::string &name, Unknown *caller,
   if ( "mpd" == document->name() )
   {
     this->_readParameterFile( *document, caller, progress );
+    this->updateGlobalEndtime();
   }
 
 }
@@ -423,22 +426,22 @@ void ModelPresentationDocument::_checkTimeSteps()
       if( true == _dynamicSets.at( i ).visible )
       {
         //Set the next dynamic set to be show
-        if( _dynamicSets.at( i ).currentTime >= 0 && _dynamicSets.at( i ).currentTime <= _dynamicSets.at( i ).endTime )
+        if( _dynamicSets.at( i ).currentTime >= 0 && _dynamicSets.at( i ).currentTime < _dynamicSets.at( i ).endTime )
         {
           // If the model at current position is valid then set the visibility mask
           if( _dynamicSets.at( i ).groups.size() > 0 )
           {
-            if( true == _dynamicSets.at( i ).groups.at( _dynamicSets.at( i ).currentTime ).valid )
+            //if( true == _dynamicSets.at( i ).groups.at( _dynamicSets.at( i ).currentTime ).valid )
             {      
               if( _dynamicSets.at( i ).currentTime == 0 )
               {
-                _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime, false );
+                _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime - 1, false );
                 _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).currentTime, true );
               }
-              else if( _dynamicSets.at( i ).currentTime == _dynamicSets.at( i ).endTime )
+              else if( _dynamicSets.at( i ).currentTime == _dynamicSets.at( i ).endTime - 1 )
               {
-                _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime - 1, false );
-                _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime, true );
+                _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime - 2, false );
+                _dynamicSets.at( i ).models->setValue( _dynamicSets.at( i ).endTime - 1, true );
               }
               else
               {
@@ -492,33 +495,36 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
         set = _dynamicSets.at( index );
       }
     
-      
-      if( false == this->_getJobAtIndex( index ) )
+      // make sure we haven't loaded all our alloted steps
+      if( set.nextIndexToLoad < set.header.max )
       {
-        Guard guard ( this );
-        _jobs.at( index ) = new MpdJob( caller, _workingDir, set.header.directory, set.header.prefix, set.header.extension, set.header.modelNames );
-        Usul::Jobs::Manager::instance().addJob ( _jobs.at( index ).get() );
-      }
-      else
-      {
-        if ( this->_getJobAtIndex( index )->isDone() )
+        if( false == this->_getJobAtIndex( index ) )
         {
-         
-          // process the data from the completed job
-          this->_processJobData( index );
+          Guard guard ( this );
+          _jobs.at( index ) = new MpdJob( caller, _workingDir, set.header.directory, set.header.prefix, set.header.extension, set.header.modelNames );
+          Usul::Jobs::Manager::instance().addJob ( _jobs.at( index ).get() );
+        }
+        else
+        {
+          if ( this->_getJobAtIndex( index )->isDone() )
+          {
+           
+            // process the data from the completed job
+            this->_processJobData( index );
 
-          //update the global end time
-          this->updateGlobalEndtime();
+            //update the global end time
+            //this->updateGlobalEndtime();
 
-          // check the timesteps to see if anything needs to be hidden/shown
-          //this->_checkTimeSteps();
-          
+            // check the timesteps to see if anything needs to be hidden/shown
+            //this->_checkTimeSteps();
+            
+          }
         }
       }
 
     }
     
-    this->validateDynamicSets();
+    //this->validateDynamicSets();
   }
 
   // If we are animating handle this time step
@@ -1361,6 +1367,8 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   dset.currentTime = 0;
   dset.header.directory = ".";
   dset.endTime = 0;
+  dset.header.max = 1;
+  dset.nextIndexToLoad = 0;
   dset.header.extension = "*";
   dset.menuName = "DynamicSets";
   dset.name = "Unknown";
@@ -1393,10 +1401,27 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
     {
       Usul::Strings::fromString ( iter->second, dset.name );
     }      
+    if ( "max" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, dset.header.max );
+    }      
   }
+  for( unsigned int i = 0; i < dset.header.max; ++i )
+  {
+    MpdDefinitions::MpdDynamicGroup grp;
+    grp.filename = "";
+    grp.loading = false;
+    grp.valid = false;
+    std::string text = Usul::Strings::format( "Step ", i + 1, " of ",dset.header.max, " is not loaded..." );
+    dset.models->addChild( this->_createProxyGeometry( text ), false );
+    dset.groups.push_back( grp );
+  }
+  dset.models->setValue( 0, true );
+  dset.endTime = dset.header.max;
   MpdJob::RefPtr job;
   _jobs.push_back( job );
   _dynamicSets.push_back( dset );
+  
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2208,7 +2233,7 @@ void ModelPresentationDocument::updateGlobalEndtime()
   {
     for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
     {
-      _globalTimelineEnd = Usul::Math::maximum( _dynamicSets.at( i ).endTime, _globalTimelineEnd );
+      _globalTimelineEnd = Usul::Math::maximum( _dynamicSets.at( i ).endTime - 1, _globalTimelineEnd );
     }
   }
 
@@ -2262,10 +2287,24 @@ void ModelPresentationDocument::_processJobData( unsigned int index )
         MpdDefinitions::MpdDynamicSetHeader header = _jobs.at( index )->getHeader();
         grp.valid = false;
 
-        _dynamicSets.at( index ).models->addChild( groups.at( i ).get(), false );
-        _dynamicSets.at( index ).endTime = _dynamicSets.at( index ).models->getNumChildren() - 1;
-        _dynamicSets.at( index ).groups.push_back( grp );
+        // Sanity Check to see if the child at position nextIndexToLoad exists
+        if( _dynamicSets.at( index ).models->getNumChildren() > _dynamicSets.at( index ).nextIndexToLoad )
+        {
+          _dynamicSets.at( index ).models->setChild( _dynamicSets.at( index ).nextIndexToLoad, groups.at( i ).get() );
+        }
+        else
+          return;
+
+        // Sanity Check to see if the group at position nextIndexToLoad exists
+        if( _dynamicSets.at( index ).groups.size() > _dynamicSets.at( index ).nextIndexToLoad )
+        {
+          _dynamicSets.at( index ).groups.at( _dynamicSets.at( index ).nextIndexToLoad ) =  grp;
+        }
+        else
+          return;
+
         _dynamicSets.at( index ).header = header;
+        _dynamicSets.at( index ).nextIndexToLoad ++;
 
       }
     }
@@ -2391,3 +2430,44 @@ void ModelPresentationDocument::_handleSequenceEvent()
   }
 
 }
+
+
+osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &message )
+{
+  GroupPtr group ( new osg::Group );
+  osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
+  osg::ref_ptr< osgText::Text  > text ( new osgText::Text() );
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+  osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+
+  osg::ref_ptr< osg::StateSet > stateset ( geode->getOrCreateStateSet() );
+ 
+  stateset->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );  
+  //stateset->setTextureMode( 0, osg::StateAttribute::TEXTURE, osg::StateAttribute::PROTECTED );
+
+  text->setFont( font.get() );
+  text->setColor( osg::Vec4f( 0.841, 0.763, 0.371, 1 ) );
+  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  text->setUseDisplayList( false );
+  
+  text->setCharacterSize( 30 );
+  text->setPosition( osg::Vec3d( 0.0, 0.0, -1.0 ) );
+  text->setLayout( osgText::Text::LEFT_TO_RIGHT );
+  text->setFontResolution ( 32, 32 );
+  text->setMaximumHeight( 50 );
+  
+  text->setText( message );
+  text->setAutoRotateToScreen( true );
+
+  mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+
+
+  geode->setStateSet( stateset.get() );
+  geode->addDrawable( text.get() );
+  mt->addChild( geode.get() );
+  group->addChild( mt.get() );
+
+  return group.release();
+}
+

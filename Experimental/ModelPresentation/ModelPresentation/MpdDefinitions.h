@@ -69,6 +69,7 @@ class MpdDefinitions
       {
         std::string filename;
         bool valid;
+        bool loading;
       };
       struct MpdDynamicSetHeader
       {
@@ -76,6 +77,7 @@ class MpdDefinitions
         std::string extension;
         std::string prefix;
         std::vector< std::string > modelNames;
+        unsigned int max;
       };
       struct MpdDynamicSet
       {
@@ -84,6 +86,7 @@ class MpdDefinitions
         std::vector< MpdDynamicGroup > groups;
         unsigned int currentTime;
         unsigned int endTime;
+        unsigned int nextIndexToLoad;
         std::string menuName;
         std::string name;
         bool visible;    

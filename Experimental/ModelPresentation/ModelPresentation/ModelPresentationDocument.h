@@ -174,6 +174,7 @@ protected:
   MpdJob*                     _getJobAtIndex( unsigned int index );
 
   void                        _handleSequenceEvent();
+  osg::Node*                  _createProxyGeometry( const std::string &message );
   
 
 

@@ -208,14 +208,30 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   options[Usul::Network::Names::WIDTH] = Usul::Strings::format ( width );
   options[Usul::Network::Names::HEIGHT] = Usul::Strings::format ( height );
 
-  // Make the directory and base file name.
+  // Make the directory.
   const std::string baseDir ( this->_directory ( width, height, level ) );
   Usul::File::make ( baseDir );
+
+  // Make the base file name.
   std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ) ) );
 
   // Make wms object and ask it for file extension.
   Usul::Network::WMS wms ( url, file, options.begin(), options.end() );
   file = Usul::Strings::format ( file, '.', wms.extension() );
+
+  // Needed below a couple of times.
+  const std::string fullUrl ( wms.fullUrl() );
+
+  // Since the directory name was hashed from the url, make sure there is a "read me" file.
+  const std::string readMe ( Usul::Strings::format ( this->_directory(), "ReadMe.txt" ) );
+  if ( false == Usul::Predicates::FileExists::test ( readMe ) )
+  {
+    std::ofstream readMeFile ( readMe.c_str() );
+    if ( true == readMeFile.is_open() )
+    {
+      readMeFile << Usul::Strings::format ( "Width: ", width, "\nHeight: ", height, "\nLevel: ", level, "\nURL: ", fullUrl ) << std::endl;
+    }
+  }
 
   // Get the use-network flag.
   const bool useNetwork ( Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) );
@@ -240,6 +256,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   // If it failed to load then delete the file.
   if ( false == image.valid() )
   {
+    std::cout << Usul::Strings::format ( "Error 2720181403: Failed to load file: ", file, ", so removing it. URL = ", fullUrl ) << std::endl;
     Usul::File::remove ( file, false );
   }
 
@@ -281,7 +298,7 @@ std::string RasterLayerWms::_baseFileName ( Extents extents ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RasterLayerWms::_directory ( unsigned int width, unsigned int height, unsigned int level ) const
+std::string RasterLayerWms::_directory() const
 {
   USUL_TRACE_SCOPE;
 
@@ -298,13 +315,28 @@ std::string RasterLayerWms::_directory ( unsigned int width, unsigned int height
   boost::hash<std::string> stringHash;
   const std::size_t hashValue ( stringHash ( this->_getAllOptions() ) );
 
-  const std::string resolution ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
-  const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );
-
   std::string dir ( Usul::Strings::format ( Usul::Threads::Safe::get ( this->mutex(), _dir ), '/', 
                                             Usul::App::Application::instance().program(), '/',
-                                            urlProxy, '/', hashValue, '/', 
-                                            resolution, '/', levelString, '/' ) );
+                                            urlProxy, '/', hashValue, '/' ) );
+  std::replace ( dir.begin(), dir.end(), '\\', '/' );
+  return dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerWms::_directory ( unsigned int width, unsigned int height, unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+
+  const std::string resolution  ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
+  const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );
+
+  std::string dir ( Usul::Strings::format ( this->_directory(), resolution, '/', levelString, '/' ) );
   std::replace ( dir.begin(), dir.end(), '\\', '/' );
   return dir;
 }

@@ -66,6 +66,7 @@ private:
 
   void                  _destroy();
 
+  std::string           _directory() const;
   std::string           _directory ( unsigned int width, unsigned int height, unsigned int level ) const;
 
   std::string           _getAllOptions() const;

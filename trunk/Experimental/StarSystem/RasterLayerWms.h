@@ -62,12 +62,12 @@ private:
   // Do not use.
   RasterLayerWms& operator= ( const RasterLayerWms& );
 
+  std::string           _baseDirectory ( const std::string &cacheDir, unsigned int width, unsigned int height, unsigned int level ) const;
   std::string           _baseFileName ( Extents extents ) const;
 
-  void                  _destroy();
+  std::string           _cacheDirectory() const;
 
-  std::string           _directory() const;
-  std::string           _directory ( unsigned int width, unsigned int height, unsigned int level ) const;
+  void                  _destroy();
 
   std::string           _getAllOptions() const;
   

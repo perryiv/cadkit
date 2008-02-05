@@ -19,6 +19,7 @@
 #include "uuid/uuid.h"
 #endif
 
+
 std::string Usul::Functions::GUID::generate()
 {
   std::string guid;
@@ -27,7 +28,7 @@ std::string Usul::Functions::GUID::generate()
 #ifdef _MSC_VER
   UUID uuid;
   UuidCreateSequential( &uuid );
-  char *p = &b.front();
+  unsigned char *p = reinterpret_cast<unsigned char *> ( &b[0] );
   ::UuidToString ( &uuid, &p );
 #else
   

@@ -226,12 +226,12 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
   if( pointData.valid () )
     center = pointData->pointData( );
 
-  // Save the center in lat/lon coordinates.
-  _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
-  
   // Set the height.
   Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
-  _center[2] = this->_elevation( _center, elevation.get() );
+  center[2] = this->_elevation( center, elevation.get() );
+  
+  // Save the center in lat/lon coordinates.
+  _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
   
   // Convert to planet coordinates.
   Detail::convertToPlanet ( center, caller );

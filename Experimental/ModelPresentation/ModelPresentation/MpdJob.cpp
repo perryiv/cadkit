@@ -210,7 +210,7 @@ void MpdJob::_parseNewFiles( Files files, Usul::Interfaces::IUnknown *caller, IU
   std::set_difference ( files.begin(), files.end(), b.begin(), b.end(), answer );
 
   // load each new file into model presentation
-  std::cout << Usul::Strings::format( "Found ", c.size(), " new files.  Loading new files." ) << std::endl;
+  //std::cout << Usul::Strings::format( "Found ", c.size(), " new files.  Loading new files." ) << std::endl;
   for( Files::const_iterator iter = c.begin(); iter < c.end(); ++iter )
   {
     this->_loadNewDynamicFiles( *iter, caller, progress );
@@ -314,9 +314,9 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
           
          }
       }
-      catch( ... )
+      catch( const std::exception &e )
       {
-        std::cout << "\tUnable to open file: " << filename << std::endl;
+        std::cout << "Error 1219987866: Standard exception caught while trying to open file: " << filename << ". Exception: " << e.what() << std::endl;
       }
     }
     else

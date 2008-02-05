@@ -1626,9 +1626,10 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
           
          }
       }
-      catch( ... )
+      catch( const std::exception &e )
       {
-        std::cout << "\tUnable to open file: " << filename << std::endl;
+        std::cout << "Error 2680794098: Standard exception caught while trying to open file: " << filename << ". Exception: " << e.what() << std::endl;
+
       }
     }
     else
@@ -1706,9 +1707,9 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
             
            }
         }
-        catch( ... )
+        catch( const std::exception &e )
         {
-          std::cout << "\tUnable to open file: " << filename << std::endl;
+          std::cout << "Error 1994767425: Standard exception caught while trying to open file: " << filename << ". Exception: " << e.what() << std::endl;
         }
       }
       else

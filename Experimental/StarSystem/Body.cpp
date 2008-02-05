@@ -893,12 +893,19 @@ void Body::purgeTiles()
 {
   USUL_TRACE_SCOPE;
 
-  // The list to delete.
-  Tiles deleteMe ( Usul::Threads::Safe::get ( this->mutex(), _deleteTiles ) );
-
-  // Clear the original list.
-  _deleteTiles.clear();
+  // Swap with the list to delete.
+  Tiles deleteMe;
+  {
+    Guard guard ( this );
+    if ( false == _deleteTiles.empty() )
+    {
+      _deleteTiles.swap ( deleteMe );
+    }
+  }
 
   // Clear the list of tiles to be deleted.
-  deleteMe.clear();
+  if ( false == deleteMe.empty() )
+  {
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &deleteMe, &Tiles::clear ), "4101333810" );
+  }
 }

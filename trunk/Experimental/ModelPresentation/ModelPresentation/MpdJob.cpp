@@ -285,7 +285,7 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
       // Ask the document to open the file.
       try
       {
-        //Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+        Usul::System::Directory::ScopedCwd cwd ( _workingDir );
         
         this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
 

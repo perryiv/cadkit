@@ -2337,8 +2337,8 @@ void ModelPresentationDocument::_processJobData( unsigned int index )
       {
         std::string text = Usul::Strings::format( "Step ", i + 1, " of ",_dynamicSets.at( index ).maxFilesToLoad, " is not loaded..." );
         GroupPtr grpPtr ( new osg::Group );
-        grpPtr->addChild( this->_createProxyGeometry( text ) );
         grpPtr->addChild( _dynamicSets.at( index ).models->getChild( _dynamicSets.at( index ).nextIndexToLoad - 1 ) );
+        grpPtr->addChild( this->_createProxyGeometry( text ) );
         _dynamicSets.at( index ).models->setChild( i, grpPtr.get() );
 
       }
@@ -2485,6 +2485,12 @@ osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &m
   osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
 
   osg::ref_ptr< osg::StateSet > stateset ( geode->getOrCreateStateSet() );
+  
+  // set a high render bin number and disable depth testing
+  // to be sure text is always drawn in front of everything else
+  stateset->setRenderBinDetails ( 1000, "RenderBin" );
+  stateset->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+  stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::INHERIT );
  
   stateset->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );  
@@ -2506,6 +2512,7 @@ osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &m
 
   mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
 
+  
 
   geode->setStateSet( stateset.get() );
   geode->addDrawable( text.get() );

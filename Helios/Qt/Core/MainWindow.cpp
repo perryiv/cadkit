@@ -34,6 +34,7 @@
 #include "MenuKit/Button.h"
 
 #include "QtTools/Image.h"
+#include "QtTools/Question.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
@@ -61,7 +62,6 @@
 #include "Usul/Registry/Qt.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Format.h"
-#include "Usul/Strings/Split.h"
 #include "Usul/Strings/Qt.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Manager.h"
@@ -86,7 +86,6 @@
 #include "QtGui/QWorkspace"
 #include "QtGui/QDragEnterEvent"
 #include "QtGui/QDropEvent"
-#include "QtGui/QMessageBox"
 #include "QtCore/QMetaType"
 #include "QtCore/QUrl"
 
@@ -1369,7 +1368,6 @@ void MainWindow::_idleProcess()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  //Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Jobs::Manager::instance()),    &Usul::Jobs::Manager::purge    ) );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
 }
 
@@ -1623,14 +1621,16 @@ void MainWindow::initPlugins()
 {
   USUL_TRACE_SCOPE;
 
+  // Typedefs to shorten lines below...
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
+  typedef Usul::Interfaces::IPluginInitialize  IPluginInitialize;
+
   // Query point to this.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Have the plugins build any dock widgets.
   this->_buildPluginDockWidgets();
-
-  typedef Usul::Components::Manager PluginManager;
-  typedef PluginManager::UnknownSet Unknowns;
 
   // Look for plugins that create documents.
   Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IDocumentCreate::IID ) );
@@ -1648,20 +1648,16 @@ void MainWindow::initPlugins()
 
     CadKit::Helios::Commands::NewDocument::RefPtr command ( new CadKit::Helios::Commands::NewDocument ( me, (*iter).get(), name ) );
     _newDocumentMenu->append ( new MenuKit::Button ( command.get() ) );
-
-
   }
-         // Initialize plugins that need to.
-#if 1
-  typedef Usul::Interfaces::IPluginInitialize  IPluginInitialize;
-  // Get needed interfaces.
+  
+  // Initialize plugins that need to.
   unknowns = PluginManager::instance().getInterfaces ( IPluginInitialize::IID );
   for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
   {
     try
     {
       IPluginInitialize::ValidQueryPtr pluginInit ( (*iter).get() );
-      pluginInit->initialize ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+      pluginInit->initialize ( me.get() );
     }
     catch ( const std::exception &e )
     {
@@ -1672,13 +1668,9 @@ void MainWindow::initPlugins()
       std::cout << "Error 1505504842: Unknown exception caught while trying to initialize plugin.";
     }
   }
-#endif
 
 }
   
-
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1714,9 +1706,6 @@ void MainWindow::_buildPluginDockWidgets()
 //  has open. Calling in the destructor is too late because the event loop 
 //  has exited.
 //
-//  TODO: Ask the documents if they need to save before calling the 
-//  BaseClass' function.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 void MainWindow::closeEvent ( QCloseEvent* event )
@@ -1740,9 +1729,10 @@ void MainWindow::_closeEvent ( QCloseEvent* event )
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   typedef Usul::Documents::Manager::Documents Documents;
+  typedef Usul::Documents::Document Document;
   
-  // Get any remaining documents.  These documents aren't associated with any window.
-  Documents &documents ( Usul::Documents::Manager::instance().documents() );
+  // Get any remaining documents.
+  Documents documents ( Usul::Documents::Manager::instance().documents() );
 
   // See if any documents need to be saved.
   for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
@@ -1753,6 +1743,18 @@ void MainWindow::_closeEvent ( QCloseEvent* event )
       return;
     }
   }
+
+  // Tell the remaining open documents that the application is about to close.
+  // This allows the document to clean up any circular references.
+  for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
+  {
+    // Grab the document in a smart pointer so it doesn't get deleted out from under us.
+    Document::RefPtr doc ( *i );
+    doc->applicationClosing( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  }
+
+  // Clear our copy.
+  documents.clear();
 
   // Close child windows first.
   _workSpace->closeAllWindows();
@@ -1980,45 +1982,5 @@ std::string MainWindow::_registryFileName() const
 
 std::string MainWindow::question ( const std::string &buttons, const std::string &title, const std::string &text )
 {
-  // The message box.
-  QMessageBox message ( QMessageBox::Question, title.c_str(), text.c_str(), 0, this );
-
-  // Typedefs.
-  typedef std::map<QAbstractButton*, std::string> ButtonMap;
-  typedef std::vector<std::string> Strings;
-  
-  // Get the requested buttons.
-  Strings strings;
-  Usul::Strings::split ( buttons, "|", false, strings );
-
-  // Save button to text mapping.
-  ButtonMap buttonMap;
-
-  // Add buttons to dialog.
-  for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
-  {
-    QAbstractButton *button ( 0x0 );
-
-    std::string value ( *iter );
-    std::transform ( value.begin(), value.end(), value.begin(), ::tolower );
-
-    // See what button is requested.
-    if ( "yes" == value )
-      button = message.addButton ( QMessageBox::Yes );
-    else if ( "no" == value )
-      button = message.addButton ( QMessageBox::No );
-    else if ( "cancel" == value )
-      button = message.addButton ( QMessageBox::Cancel );
-
-    // Save the button to text mapping.
-    if ( 0x0 != button )
-      buttonMap[button] = *iter;
-  }
-
-  // Show the message box.
-  message.exec();
-
-  // Get the button that was pressed.
-  QAbstractButton *button ( message.clickedButton() );
-  return buttonMap[button];
+  return QtTools::question ( this, buttons, title, text );
 }

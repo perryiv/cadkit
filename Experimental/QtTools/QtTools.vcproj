@@ -394,6 +394,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\Question.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Question.h"
+					>
+				</File>
+				<File
 					RelativePath=".\TreeControl.cpp"
 					>
 				</File>

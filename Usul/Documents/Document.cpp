@@ -108,10 +108,11 @@ void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
   // Loop through the windows.
   for ( Temp::iterator i = temp.begin(); i != temp.end(); ++i )
   {
-    Usul::Interfaces::IHandleMessage::QueryPtr message ( *i );
+    Window::RefPtr window ( *i );
 
-    if( message.valid() )
-      message->handleMessage ( Document::ID_CLOSE );
+    // Force close.
+    if ( window.valid() )
+      window->forceClose();
   }
 
   // Let anyone else who may be open that the document is closing

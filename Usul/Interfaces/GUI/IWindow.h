@@ -36,6 +36,9 @@ struct IWindow : public Usul::Interfaces::IUnknown
   /// Set the title of the window.
   virtual void                     setTitle ( const std::string& title ) = 0;
 
+  /// Force close.
+  virtual void                     forceClose() = 0;
+
 };
 
 

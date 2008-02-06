@@ -21,6 +21,7 @@
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
@@ -38,6 +39,7 @@
 
 #include "QtTools/Color.h"
 #include "QtTools/Menu.h"
+#include "QtTools/Question.h"
 
 #include "QtCore/QUrl"
 #include "QtCore/QTimer"
@@ -64,8 +66,9 @@ typedef Usul::Registry::Database Reg;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent ) :
+Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller ) :
   BaseClass ( format, parent ),
+  _caller ( caller ),
   _document ( doc ),
   _viewer ( 0x0 ),
   _refCount ( 0 ),
@@ -170,25 +173,6 @@ Viewer::~Viewer()
   _viewer->clear();
   _viewer = 0x0;
 
-  // Get the document.
-  Viewer::Document::RefPtr document ( this->document() );
-  if ( true == document.valid() )
-  {
-    // Remove this window from the document's sets.
-    document->removeWindow ( this );
-
-    // Tell the document this is closing.  
-    // Make sure function is called after removeWindow is called.
-    document->closing ( this );
-  }
-
-  // Remove ourselves as a modified listener.
-  Usul::Interfaces::IModifiedSubject::QueryPtr subject ( this->document() );
-  if ( true == subject.valid() )
-  {
-    subject->removeModifiedObserver ( this );
-  }
-
   // Clear the keys.
   _keys.clear();
 
@@ -285,6 +269,10 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IRedraw * > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+  case Usul::Interfaces::IQuestion::IID:
+    return static_cast < Usul::Interfaces::IQuestion * > ( this );
+  case Usul::Interfaces::ISaveFileDialog::IID:
+    return static_cast < Usul::Interfaces::ISaveFileDialog * > ( this );
   default:
     return 0x0;
   }
@@ -1416,4 +1404,152 @@ void Viewer::_onContextMenuShow ( const QPoint& pos )
   qMenu.menu ( menu.get() );
   qMenu.exec ( this->mapToGlobal ( pos ) );
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Close event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::closeEvent ( QCloseEvent *event )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &Viewer::_closeEvent ), event, "2663774419" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make sure we can close.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_closeEvent ( QCloseEvent* event )
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Get the document.
+  Document::RefPtr doc ( this->document() );
+
+  // Ask the document if we can close.
+  if ( true == doc.valid() && false == doc->canClose ( this, Usul::Interfaces::IUnknown::QueryPtr ( this ) ) )
+  {
+    event->ignore();
+    return;
+  }
+
+  // Close.  Removing this from the document's windows.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Viewer::_close ), "1749695082" );
+
+  // Pass along to the base class.
+  BaseClass::closeEvent ( event );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Prompt the user (IQuestion).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Viewer::question ( const std::string &buttons, const std::string &title, const std::string &text )
+{
+  return QtTools::question ( this, buttons, title, text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tell the document that we are closing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_close()
+{
+  // Get the document.
+  Viewer::Document::RefPtr document ( this->document() );
+  if ( true == document.valid() )
+  {
+    // Remove this window from the document's sets.
+    document->removeWindow ( this );
+
+    // Tell the document this is closing.  
+    // Make sure function is called after removeWindow is called.
+    document->closing ( this );
+  }
+
+  // Remove ourselves as a modified listener.
+  Usul::Interfaces::IModifiedSubject::QueryPtr subject ( this->document() );
+  if ( true == subject.valid() )
+  {
+    subject->removeModifiedObserver ( this );
+  }
+
+  // Clear the document.
+  {
+    Guard guard ( this );
+    _document = 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::IUnknown * Viewer::caller()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _caller.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Viewer::IUnknown * Viewer::caller() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _caller.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name of the file to save to (ISaveFileDialog).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::FileResult Viewer::getSaveFileName  ( const std::string &title, const Filters &filters )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::ISaveFileDialog::QueryPtr dialog ( this->caller() );
+  return ( dialog.valid() ? dialog->getSaveFileName( title, filters ) : FileResult () );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Force the window closed.  Will not prompt.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::forceClose()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Close.  Removing this from the document's windows.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Viewer::_close ), "3614568329" );
+  this->close();
 }

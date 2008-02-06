@@ -89,7 +89,7 @@ void Delegate::createDefaultGUI ( Usul::Documents::Document *document, Usul::Int
   if ( workspace.valid() )
   {
     QWorkspace *parent ( workspace->workspace() );
-    QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent ) );
+    QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller ) );
     parent->addWindow ( viewer.get() );
 
     // We want mouse-move events even when there are no mouse buttons pressed.

@@ -104,7 +104,7 @@ void ModelPresentationDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
   if( workspace.valid() )
   {
     QWorkspace *parent ( workspace->workspace() );
-    QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent ) );
+    QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller ) );
     parent->addWindow ( viewer.get() );
 
     // Build the scene.

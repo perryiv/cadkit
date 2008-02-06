@@ -437,7 +437,6 @@ void Body::jobManager ( Usul::Jobs::Manager *manager )
 void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1696017450" );
   BaseClass::preRender ( caller );
 }
 
@@ -451,7 +450,6 @@ void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 void Body::postRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4364162680" );
 
   // Remove all tiles that are ready.
   this->purgeTiles();

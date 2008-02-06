@@ -31,7 +31,6 @@ class STAR_SYSTEM_EXPORT BuildTiles : public Usul::Jobs::Job
 public:
 
   typedef Usul::Jobs::Job BaseClass;
-  typedef Usul::Pointers::WeakPointer < BuildTiles > WeakPtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( BuildTiles );
@@ -49,7 +48,7 @@ protected:
   
 private:
 
-  Tile::WeakPtr _tile;
+  Tile::RefPtr _tile;
 };
 
   

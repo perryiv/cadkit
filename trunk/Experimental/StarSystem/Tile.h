@@ -33,7 +33,6 @@
 #include "osg/Group"
 #include "osg/Image"
 #include "osg/Texture2D"
-#include "osg/observer_ptr"
 #include "osg/Vec3d"
 
 #include <typeinfo>
@@ -93,7 +92,6 @@ public:
   typedef std::pair < bool, unsigned long > JobID;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   typedef osg::BoundingSphere BSphere;
-  typedef osg::observer_ptr < Tile > WeakPtr;
   typedef osg::ref_ptr<osg::Node> NodePtr;
   typedef StarSystem::Mesh<osg::Vec3d> Mesh;
   typedef std::pair<ImagePtr, Usul::Math::Vec4d> TextureData;
@@ -112,8 +110,8 @@ public:
          osg::Image * elevation = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
-  // Clear the scene.
-  void                      clear();
+  // Clear the tile.
+  void                      clear ( bool children );
 
   // Get the index of the child.
   Indices                   child ( Tile* ) const;
@@ -195,7 +193,7 @@ protected:
   void                      _cull ( osgUtil::CullVisitor &cv );
 
   /// Clear children.
-  void                      _clearChildren();
+  void                      _clearChildren ( bool traverse );
 
   void                      _deleteMe();
 

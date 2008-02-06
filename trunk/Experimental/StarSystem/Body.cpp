@@ -25,6 +25,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Functions/Execute.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
@@ -118,8 +119,18 @@ void Body::_destroy()
   _transform = 0x0;
   _rasters = 0x0;
   _elevation = 0x0;
-  _deleteTiles.clear();
+
+  // Clear all the tiles.
+  Usul::Functions::executeMemberFunctions ( _topTiles, &Tile::clear, true );
+
+  // Done with the list of top-level tiles.
   _topTiles.clear();
+
+  // Purge all tiles.
+  this->purgeTiles();
+
+  // Should be ok now.
+  _deleteTiles.clear();
 }
 
 

@@ -38,6 +38,8 @@
 
 #include "OsgTools/Triangles/TriangleSet.h"
 
+#include "osg/Camera"
+
 #include "XmlTree/Document.h"
 
 #include <string>
@@ -176,16 +178,17 @@ protected:
   bool                        _dynamic();
 
   std::string                 _getWorkingDir();
-  void                        _processJobData( unsigned int index );
+  void                        _processJobData( unsigned int index, Usul::Interfaces::IUnknown *caller );
   MpdJob*                     _getJobAtIndex( unsigned int index );
 
   void                        _handleSequenceEvent();
-  osg::Node*                  _createProxyGeometry( const std::string &message );
+  osg::Node*                  _createProxyGeometry( const std::string &message, Usul::Interfaces::IUnknown *caller );
   
 
 
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+  void                        _updateCamera( Usul::Interfaces::IUnknown *caller );
 
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, Unknown *progress );
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
@@ -200,6 +203,8 @@ protected:
   void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
   void                        _setStatusText( const std::string message, Usul::Interfaces::IUnknown *caller );
+
+  
 
   /// Use reference counting.
   virtual ~ModelPresentationDocument();
@@ -238,6 +243,8 @@ private:
   //Text variables for status
   unsigned int                  _textXPos;
   unsigned int                  _textYPos;
+
+  osg::ref_ptr< osg::Camera >   _camera;
   
 };
 

@@ -298,15 +298,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Trianglulate", "..\Pl
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Decimate Model", "..\..\Experimental\Plugins\DecimateModel\DecimateModel_vs8.vcproj", "{9DABC11E-5FF9-40D8-8D73-F9341205179A}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Decimate Triangles", "..\..\Experimental\Plugins\DecimateTriangles\DecimateTriangles_vs8.vcproj", "{29FA7286-B9EB-4BEB-A4FF-B73EB92E12FD}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -317,15 +308,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Decimate Triangles", 
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Smoothing", "..\..\Experimental\Plugins\Smoothing\Smoothing_vs8.vcproj", "{9A768579-3D06-4CF2-2E96-A9C3575C6D47}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: SmoothTriangles", "..\..\Experimental\Plugins\SmoothTriangles\Smooth_triangles_vs8.vcproj", "{39E1B7A6-6FD9-4999-9198-647CB5781300}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -333,15 +315,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: SmoothTriangles", "..
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
 		{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0} = {55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Subdivide Model", "..\..\Experimental\Plugins\SubdivideModel\SubdivideModel_vs8.vcproj", "{34200180-7D74-11DA-9FA9-000F1F20363B}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
@@ -428,7 +401,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlDom", "..\..\XmlDom
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VTKTools", "..\..\Experimental\VTKTools\VTKTools.vcproj", "{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit VTKTools", "..\..\Experimental\VTKTools\VTKTools.vcproj", "{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -556,21 +529,12 @@ Global
 		{1B1C652A-6441-4365-8D8D-965030DB21E4}.Debug|Win32.Build.0 = Debug|Win32
 		{1B1C652A-6441-4365-8D8D-965030DB21E4}.Release|Win32.ActiveCfg = Release|Win32
 		{1B1C652A-6441-4365-8D8D-965030DB21E4}.Release|Win32.Build.0 = Release|Win32
-		{9DABC11E-5FF9-40D8-8D73-F9341205179A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{9DABC11E-5FF9-40D8-8D73-F9341205179A}.Release|Win32.ActiveCfg = Release|Win32
-		{9DABC11E-5FF9-40D8-8D73-F9341205179A}.Release|Win32.Build.0 = Release|Win32
 		{29FA7286-B9EB-4BEB-A4FF-B73EB92E12FD}.Debug|Win32.ActiveCfg = Debug|Win32
 		{29FA7286-B9EB-4BEB-A4FF-B73EB92E12FD}.Release|Win32.ActiveCfg = Release|Win32
 		{29FA7286-B9EB-4BEB-A4FF-B73EB92E12FD}.Release|Win32.Build.0 = Release|Win32
-		{9A768579-3D06-4CF2-2E96-A9C3575C6D47}.Debug|Win32.ActiveCfg = Debug|Win32
-		{9A768579-3D06-4CF2-2E96-A9C3575C6D47}.Release|Win32.ActiveCfg = Release|Win32
-		{9A768579-3D06-4CF2-2E96-A9C3575C6D47}.Release|Win32.Build.0 = Release|Win32
 		{39E1B7A6-6FD9-4999-9198-647CB5781300}.Debug|Win32.ActiveCfg = Debug|Win32
 		{39E1B7A6-6FD9-4999-9198-647CB5781300}.Release|Win32.ActiveCfg = Release|Win32
 		{39E1B7A6-6FD9-4999-9198-647CB5781300}.Release|Win32.Build.0 = Release|Win32
-		{34200180-7D74-11DA-9FA9-000F1F20363B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{34200180-7D74-11DA-9FA9-000F1F20363B}.Release|Win32.ActiveCfg = Release|Win32
-		{34200180-7D74-11DA-9FA9-000F1F20363B}.Release|Win32.Build.0 = Release|Win32
 		{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}.Release|Win32.ActiveCfg = Release|Win32
 		{B3DA0AA0-7D76-11DA-9FA9-000F1F20363B}.Release|Win32.Build.0 = Release|Win32

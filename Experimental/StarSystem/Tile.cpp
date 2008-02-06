@@ -171,8 +171,8 @@ void Tile::_destroy()
 {
   USUL_TRACE_SCOPE;
 
-  // Cancel the job.
-  this->clear();
+  // Clear this tile and all it's children.
+  this->clear ( true );
 
   _body = 0x0; // Don't delete!
   delete _mesh; _mesh = 0x0;
@@ -347,7 +347,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   if ( Usul::Bits::has ( _flags, Tile::CHILDREN ) )
   {
     // Clear all the children.
-    this->_clearChildren();
+    this->_clearChildren ( false );
     this->dirty ( false, Tile::CHILDREN, false );
 
     this->dirtyBound();
@@ -467,7 +467,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       if ( false == _body->cacheTiles() )
       {
         // Clear all the children.
-        this->_clearChildren();
+        this->_clearChildren ( false );
       }
     }
   }
@@ -631,7 +631,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   Tile::RefPtr tile ( new Tile ( level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
 
   // Build the raster.  Make sure this is done before mesh is built and texture updated.
-  tile->buildRaster ( region, /*Tile::RefPtr ( const_cast<Tile*> ( this ) )*/ 0x0, job );
+  tile->buildRaster ( region, this, job );
 
   // Check to see if the tile has a valid image.
   if ( false == tile->image().valid() )
@@ -1184,27 +1184,41 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double o
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::clear()
+void Tile::clear ( bool children )
 {
   USUL_TRACE_SCOPE;
 
-  // Cancel job if it's valid.
-  if ( true == _imageJob.valid() )
+  // Clear children first if we should.
+  if ( true == children )
   {
-    Guard guard ( this );
-    _imageJob->cancel();
-    _imageJob = 0x0;
+    this->_clearChildren ( children );
   }
 
+  // Cancel job if it's valid.
   {
     Guard guard ( this );
-    if ( _tileJob.valid() )
+    if ( true == _imageJob.valid() )
+    {
+      _imageJob->cancel();
+      _imageJob = 0x0;
+    }
+  }
+
+  // Cancel job if it's valid.
+  {
+    Guard guard ( this );
+    if ( true == _tileJob.valid() )
     {
       _tileJob->cancel();
       _tileJob = 0x0;
     }
   }
 
+  // Set the body to null. We have to do this because the tiles 
+  // in jobs may live longer than the body.
+  _body = 0x0;
+
+  // Set dirty flags.
   this->dirty ( false, Tile::ALL, false );
 }
 
@@ -1486,7 +1500,7 @@ osg::BoundingSphere Tile::computeBound() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::_clearChildren()
+void Tile::_clearChildren ( bool traverse )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1494,7 +1508,7 @@ void Tile::_clearChildren()
   this->removeChild ( 1, this->getNumChildren() - 1 );
 
   // Clear all the children.
-  Usul::Functions::executeMemberFunctions ( _children, &Tile::clear );
+  Usul::Functions::executeMemberFunctions ( _children, &Tile::clear, traverse );
 
   // Mark the children as ready to be deleted.
   Usul::Functions::executeMemberFunctions ( _children, &Tile::_deleteMe );

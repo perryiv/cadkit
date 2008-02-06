@@ -14,6 +14,8 @@
 #include "Helios/Qt/Views/OSG/Export.h"
 
 #include "Usul/Documents/Document.h"
+#include "Usul/Interfaces/GUI/IQuestion.h"
+#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
@@ -48,7 +50,9 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::IModifiedObserver,
                                           public Usul::Interfaces::IRenderLoop,
                                           public Usul::Interfaces::IRedraw,
-                                          public Usul::Interfaces::IMenuAdd
+                                          public Usul::Interfaces::IMenuAdd,
+                                          public Usul::Interfaces::IQuestion,
+                                          public Usul::Interfaces::ISaveFileDialog
 {
   Q_OBJECT
 
@@ -61,16 +65,21 @@ public:
   typedef OsgTools::Render::Viewer::ViewMode ViewMode;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Constructor.
-  Viewer ( Document *doc, const QGLFormat& format, QWidget* parent );
+  Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown *caller );
   virtual ~Viewer ();
 
   /// Get the document.
   Document *                              document();
   const Document *                        document() const;
+
+  /// Get the caller.
+  IUnknown *                              caller();
+  const IUnknown *                        caller() const;
 
   /// Edit the background.
   void                                    editBackground();
@@ -90,6 +99,7 @@ public:
   /// Usul::Interfaces::IWindow
   virtual void                            setFocus();
   virtual void                            setTitle ( const std::string& title );
+  virtual void                            forceClose();
 
   /// Usul::Interfaces::ITimeoutAnimate
   virtual void                            startAnimation ( double timeout );
@@ -122,9 +132,17 @@ protected:
   void                                    _resize ( unsigned int w, unsigned int h );
   bool                                    _isSize ( unsigned int w, unsigned int h ) const;
   void                                    _customSize();
+  void                                    _closeEvent ( QCloseEvent* event );
+  void                                    _close();
 
   /// Add to the menu.
   virtual void                            _menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+
+  /// Prompt the user (IQuestion).
+  virtual std::string                     question ( const std::string &buttons, const std::string &title, const std::string &text );
+
+  // Get the name of the file to save to (ISaveFileDialog).
+  virtual FileResult                      getSaveFileName  ( const std::string &title = "Save", const Filters &filters = Filters() );
 
   // Override these events.
   virtual void                            paintEvent  ( QPaintEvent * event );
@@ -138,6 +156,7 @@ protected:
   virtual void                            keyReleaseEvent ( QKeyEvent * event );
   virtual void                            dragEnterEvent ( QDragEnterEvent *event );
   virtual void                            dropEvent      ( QDropEvent      *event );
+  virtual void                            closeEvent ( QCloseEvent *event );
 
 private slots:
 
@@ -148,6 +167,7 @@ private slots:
 
 private:
 
+  IUnknown::QueryPtr _caller;
   Document::RefPtr _document;
   OsgTools::Render::Viewer::RefPtr _viewer;
   unsigned int _refCount;

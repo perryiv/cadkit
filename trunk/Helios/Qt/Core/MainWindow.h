@@ -224,7 +224,7 @@ protected:
   virtual void                      activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView );
 
   /// Prompt the user (IQuestion).
-  virtual std::string               question ( const std::string &buttons,  const std::string &title, const std::string &text );
+  virtual std::string               question ( const std::string &buttons, const std::string &title, const std::string &text );
 private slots:
 
   void                              _idleProcess();

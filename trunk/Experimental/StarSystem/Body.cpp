@@ -157,7 +157,7 @@ void Body::addTile ( const Extents &extents )
   Tile::RefPtr tile ( new Tile ( level, extents, meshSize, imageSize, _splitDistance, this ) );
 
   // Build the raster.
-  tile->buildRaster ( textureCoords, 0x0, 0x0 );
+  tile->buildRaster ( textureCoords, 0x0, 0x0, Tile::NONE );
 
   // Add tile to the transform.
   _transform->addChild ( tile.get() );

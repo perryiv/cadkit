@@ -122,7 +122,8 @@ public:
   // Build raster.
   void                      buildRaster ( const Usul::Math::Vec4d& region,
                                           Tile::RefPtr parent, 
-                                          Usul::Jobs::Job::RefPtr );
+                                          Usul::Jobs::Job::RefPtr,
+                                          Indices index );
 
   // Compute the bounding sphere.
   virtual BSphere           computeBound() const;
@@ -211,7 +212,8 @@ protected:
                                          const MeshSize& size, 
                                          const Usul::Math::Vec4d& region, 
                                          double splitDistance, 
-                                         Usul::Jobs::Job::RefPtr job );
+                                         Usul::Jobs::Job::RefPtr job,
+                                         Indices index );
 
 
   void                      _setDirtyAlways ( bool state, unsigned int flags, bool dirtyChildren );

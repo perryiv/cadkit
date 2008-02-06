@@ -43,8 +43,10 @@
 
 #include "osgUtil/CullVisitor"
 
+#include "osg/Depth"
 #include "osg/Geode"
 #include "osg/Geometry"
+#include "osg/Hint"
 #include "osg/PolygonOffset"
 #include "osg/Material"
 #include "osg/Texture2D"
@@ -573,10 +575,10 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   Usul::Math::Vec4d tll, tlr, tul, tur;
   this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
 
-  Tile::RefPtr t0 ( this->_buildTile ( level, ll, mll, tll, half, job ) ); // lower left  tile
-  Tile::RefPtr t1 ( this->_buildTile ( level, lr, mlr, tlr, half, job ) ); // lower right tile
-  Tile::RefPtr t2 ( this->_buildTile ( level, ul, mul, tul, half, job ) ); // upper left  tile
-  Tile::RefPtr t3 ( this->_buildTile ( level, ur, mur, tur, half, job ) ); // upper right tile
+  Tile::RefPtr t0 ( this->_buildTile ( level, ll, mll, tll, half, job, LOWER_LEFT ) ); // lower left  tile
+  Tile::RefPtr t1 ( this->_buildTile ( level, lr, mlr, tlr, half, job, LOWER_RIGHT ) ); // lower right tile
+  Tile::RefPtr t2 ( this->_buildTile ( level, ul, mul, tul, half, job, UPPER_LEFT ) ); // upper left  tile
+  Tile::RefPtr t3 ( this->_buildTile ( level, ur, mur, tur, half, job, UPPER_RIGHT ) ); // upper right tile
   
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -603,7 +605,8 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
                                 const MeshSize& size, 
                                 const Usul::Math::Vec4d& region, 
                                 double splitDistance, 
-                                Usul::Jobs::Job::RefPtr job )
+                                Usul::Jobs::Job::RefPtr job,
+                                Indices index )
 {
   // If our logic is correct, this should be true.
   USUL_ASSERT ( this->referenceCount() > 1 );
@@ -631,7 +634,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   Tile::RefPtr tile ( new Tile ( level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
 
   // Build the raster.  Make sure this is done before mesh is built and texture updated.
-  tile->buildRaster ( region, this, job );
+  tile->buildRaster ( region, this, job, index );
 
   // Check to see if the tile has a valid image.
   if ( false == tile->image().valid() )
@@ -685,11 +688,9 @@ Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, u
 
 void Tile::buildRaster ( const Usul::Math::Vec4d& region, 
                          Tile::RefPtr parent, 
-                         Usul::Jobs::Job::RefPtr job )
+                         Usul::Jobs::Job::RefPtr job,
+                         Indices index )
 {
-  // Figure out what index I am.
-  Indices index ( parent.valid() ? parent->child ( this ) : NONE );
-
   // Get the body.
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
@@ -719,7 +720,7 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
     
     // The texture coordinates to use.
     Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
-#if 0
+#if 1
     // Use our parents image if we don't have a valid one.
     if ( false == image.valid() )
     {
@@ -751,7 +752,7 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
     // Check again...
     if ( true == image.valid() )
     {
-#if 0
+#if 1
       // Save this mapping...
       {
         Guard guard ( this );
@@ -781,7 +782,7 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
       }
       
       // Composite.
-      StarSystem::Composite::raster ( *result, *image,/* tCoords,*/ alphas, alpha, 1.0f, job );
+      StarSystem::Composite::raster ( *result, *image, tCoords, alphas, alpha, 1.0f, job );
     }
   }
 
@@ -929,12 +930,31 @@ Tile::NodePtr Tile::_buildBorderLine()
   // Set properties.
   OsgTools::State::StateSet::setLineWidth ( geode.get(), 3.0f );
   OsgTools::State::StateSet::setPolygonsTextures ( geode->getOrCreateStateSet(), false );
+  OsgTools::State::StateSet::setLighting ( geode.get(), false );
+  
+  // Get the state set.
+  osg::ref_ptr<osg::StateSet > ss ( geode->getOrCreateStateSet() );
 
   // Need an offset.
   osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
   offset->setFactor ( -1.0f );
   offset->setUnits  ( -1.0f );
-  geode->getOrCreateStateSet()->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Set depth parameters.
+  osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
+  ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Set the line parameters.
+  ss->setMode ( GL_LINE_SMOOTH, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+ 
+  // Set the hint.
+  osg::ref_ptr<osg::Hint> hint ( new osg::Hint ( GL_LINE_SMOOTH_HINT, GL_NICEST ) );
+  ss->setAttributeAndModes ( hint.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
+  // Draw after the tile.
+  ss->setRenderBinDetails ( 2, "RenderBin" );
 
   // Return new geode.
   return NodePtr ( geode.get() );

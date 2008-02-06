@@ -32,7 +32,7 @@ namespace Functions {
 template < class F > 
 inline void executeFunction ( F f )
 {
-  f ( ptr );
+  f ();
 }
 
 
@@ -45,7 +45,7 @@ inline void executeFunction ( F f )
 template < class F, class A1 >
 inline void executeFunction ( F f, A1 a1 )
 {
-  f ( ptr, a1 );
+  f ( a1 );
 }
 
 
@@ -58,7 +58,7 @@ inline void executeFunction ( F f, A1 a1 )
 template < class F, class A1, class A2 >
 inline void executeFunction ( F f, A1 a1, A2 a2 )
 {
-  f ( ptr, a1, a2 );
+  f ( a1, a2 );
 }
 
 
@@ -71,7 +71,7 @@ inline void executeFunction ( F f, A1 a1, A2 a2 )
 template < class F, class A1, class A2, class A3 >
 inline void executeFunction ( F f, A1 a1, A2 a2, A3 a3 )
 {
-  f ( ptr, a1, a2, a3 );
+  f ( a1, a2, a3 );
 }
 
 
@@ -164,7 +164,7 @@ inline void executeMemberFunction ( P *ptr, F f, A1 a1, A2 a2, A3 a3, A4 a4 )
 template < class C, class F > 
 inline void executeFunctions ( C &c, F f )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeFunction ( i->get(), f );
   }
@@ -180,7 +180,7 @@ inline void executeFunctions ( C &c, F f )
 template < class C, class F, class A1 > 
 inline void executeFunctions ( C &c, F f, A1 a1 )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeFunction ( i->get(), f, a1 );
   }
@@ -196,7 +196,7 @@ inline void executeFunctions ( C &c, F f, A1 a1 )
 template < class C, class F, class A1, class A2 > 
 inline void executeFunctions ( C &c, F f, A1 a1, A2 a2 )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeFunction ( i->get(), f, a1, a2 );
   }
@@ -212,7 +212,7 @@ inline void executeFunctions ( C &c, F f, A1 a1, A2 a2 )
 template < class C, class F, class A1, class A2, class A3 > 
 inline void executeFunctions ( C &c, F f, A1 a1, A2 a2, A3 a3 )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeFunction ( i->get(), f, a1, a2, a3 );
   }
@@ -228,7 +228,7 @@ inline void executeFunctions ( C &c, F f, A1 a1, A2 a2, A3 a3 )
 template < class C, class F > 
 inline void executeMemberFunctions ( C &c, F f )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeMemberFunction ( i->get(), f );
   }
@@ -244,7 +244,7 @@ inline void executeMemberFunctions ( C &c, F f )
 template < class C, class F, class A1 > 
 inline void executeMemberFunctions ( C &c, F f, A1 a1 )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeMemberFunction ( i->get(), f, a1 );
   }
@@ -260,7 +260,7 @@ inline void executeMemberFunctions ( C &c, F f, A1 a1 )
 template < class C, class F, class A1, class A2 > 
 inline void executeMemberFunctions ( C &c, F f, A1 a1, A2 a2 )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeMemberFunction ( i->get(), f, a1, a2 );
   }
@@ -276,7 +276,7 @@ inline void executeMemberFunctions ( C &c, F f, A1 a1, A2 a2 )
 template < class C, class F, class A1, class A2, class A3 > 
 inline void executeMemberFunctions ( C &c, F f, A1 a1, A2 a2, A3 a3 )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeMemberFunction ( i->get(), f, a1, a2, a3 );
   }
@@ -292,7 +292,7 @@ inline void executeMemberFunctions ( C &c, F f, A1 a1, A2 a2, A3 a3 )
 template < class C, class F, class A1, class A2, class A3, class A4 > 
 inline void executeMemberFunctions ( C &c, F f, A1 a1, A2 a2, A3 a3, A4 a4 )
 {
-  for ( C::iterator i = c.begin(); i != c.end(); ++i )
+  for ( typename C::iterator i = c.begin(); i != c.end(); ++i )
   {
     Usul::Functions::executeMemberFunction ( i->get(), f, a1, a2, a3, a4 );
   }

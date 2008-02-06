@@ -136,22 +136,23 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
       const double du ( region[1] - region[0] );
       const double dv ( region[3] - region[2] );
       
+      const int sMin ( region[0] * width );
+      const int tMin ( region[2] * height );
+      
       for ( int s = 0; s < width; ++s )
       {
-        const double u ( static_cast<double> ( s ) / ( width - 1 ) );
+        const double u ( static_cast<double> ( s ) / ( width ) );
         
         for ( int t = 0; t < height; ++t )
         {
-          const double v ( static_cast<double> ( t ) / ( height - 1 ) );
+          const double v ( static_cast<double> ( t ) / ( height ) );
           
           const double up ( ( region[0] + ( u * du ) ) );
           const double vp ( ( region[2] + ( v * dv ) ) );
           
-          const int sp ( Usul::Math::minimum ( width, static_cast<int> ( up * width + 0.5 ) ) );
-          const int tp ( Usul::Math::minimum ( height, static_cast<int> ( vp * height + 0.5 ) ) );
+          const int sp ( Usul::Math::maximum ( sMin, Usul::Math::minimum ( width,  static_cast<int> ( static_cast<int> ( up * width  ) + 0.5 ) ) ) );
+          const int tp ( Usul::Math::maximum ( tMin, Usul::Math::minimum ( height, static_cast<int> ( static_cast<int> ( vp * height ) + 0.5 ) ) ) );
 
-          //std::cout << "Accessing " << s << " " << t << " of destination.  Accessing " << sp << " " << tp << " of source." << std::endl;
-          
           unsigned char *dst (  result->data ( s, t ) );
           const unsigned char* src ( image.data ( sp, tp  ) );
           

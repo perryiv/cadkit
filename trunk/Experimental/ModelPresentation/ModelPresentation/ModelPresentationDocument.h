@@ -202,7 +202,7 @@ protected:
   //Usul::Interfaces::IMenuAdd
   void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
-  void                        _setStatusText( const std::string message, Usul::Interfaces::IUnknown *caller );
+  void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
 
   
 
@@ -243,6 +243,8 @@ private:
   //Text variables for status
   unsigned int                  _textXPos;
   unsigned int                  _textYPos;
+  unsigned int                  _dynamicNotLoadedTextXPos;
+  unsigned int                  _dynamicNotLoadedTextYPos;
 
   osg::ref_ptr< osg::Camera >   _camera;
   

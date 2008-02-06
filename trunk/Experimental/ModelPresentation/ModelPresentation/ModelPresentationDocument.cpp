@@ -98,6 +98,8 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _globalCurrentTime ( 0 ),
   _textXPos( 0 ),
   _textYPos( 0 ),
+  _dynamicNotLoadedTextXPos( 0 ),
+  _dynamicNotLoadedTextYPos( 0 ),
   _camera( new osg::Camera )
 {
   USUL_TRACE_SCOPE;
@@ -396,7 +398,9 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
 
   // Set the status bar to reflect the current time
   std::string message = Usul::Strings::format( "Current Step: ", _globalCurrentTime + 1 );
-  this->_setStatusText( message, caller );
+  this->_setStatusText( message, _textXPos, _textYPos, 0.80, 0.05, caller );
+
+  
   
   // Check Time Sets
   if( true == _useTimeLine )
@@ -432,6 +436,7 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
   // Check dynamic sets
   if( true == _useDynamic )
   {
+
     for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
     {   
       if( true == _dynamicSets.at( i ).visible )
@@ -439,6 +444,17 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
         //Set the next dynamic set to be show
         if( _dynamicSets.at( i ).currentTime >= 0 && _dynamicSets.at( i ).currentTime < _dynamicSets.at( i ).endTime )
         {
+          // Display a message if the current dynamic set isn't loaded
+          if( _dynamicSets.at( i ).groups.at( _dynamicSets.at( i ).currentTime ).loading == false )
+          {
+            std::string message = Usul::Strings::format( "Step ", _dynamicSets.at( i ).currentTime + 1, " of ",_dynamicSets.at( i ).maxFilesToLoad, " is not loaded..." );
+            this->_setStatusText( message, _dynamicNotLoadedTextXPos, _dynamicNotLoadedTextYPos, 0.5, 0.5, caller );
+          }
+          else
+          {
+            std::string message ( "" );
+            this->_setStatusText( message, _dynamicNotLoadedTextXPos, _dynamicNotLoadedTextYPos, 0.5, 0.5, caller );
+          }
           // If the model at current position is valid then set the visibility mask
           if( _dynamicSets.at( i ).groups.size() > 0 )
           {
@@ -509,6 +525,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
       // make sure we haven't loaded all our alloted steps
       if( set.nextIndexToLoad < set.maxFilesToLoad )
       {
+        
         if( false == this->_getJobAtIndex( index ) )
         {
           Guard guard ( this );
@@ -557,84 +574,12 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
   }
 }
 
-//void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
-//{
-//  USUL_TRACE_SCOPE;
-//  Guard guard ( this );
-//
-//  foreach ( MpdJobs::iterator i = _jobs.begin(); i != _jobs.end() )
-//  {
-//    const std::string dir ( i->first );
-//    MpdJob::RefPtr &job ( i->second );
-//
-//    // If there is no job then make one.
-//    if ( false == job.valid() )
-//    {
-//      job = new MpdJob ( dir, ... );
-//      Usul::Jobs::Manager::instance().addJob ( job.get() );
-//    }
-//
-//    else
-//    {
-//      if ( job->isDone() )
-//      {
-//        // Ask job for it's stuff and rebuild scene, etc.
-//
-//        // Assign to null.
-//        job = 0x0;
-//      }
-//    }
-//  }
-//}
-//
 
-
-
-//void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
-//{
-//  USUL_TRACE_SCOPE;
+///////////////////////////////////////////////////////////////////////////////
 //
-//  // If we have a dynamic structure loaded check the file system for new files
-//  if( true == this->_dynamic() && (*_checkFileSystem)() )
-//  {
-//    // Get needed interfaces.
-//    //IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
-//    //std::string hostname = Usul::System::Host::name();
-//    for( unsigned int index = 0; index < _dynamicSets.size(); ++index )
-//    {
-//      //std::string lockfile = Usul::Strings::format( "MpdJobLoadingLock", index );
-//      if( true == dataSync->queryDataState( lockfile ) )
-//      {
-//        // make sure no other threads are spawned to search this directory while we are searching/loading
-//        dataSync->setDataFlag( hostname, lockfile );
+// Get the current group at index <index> in the set
 //
-//        //MpdJob::RefPtr job ( new MpdJob ( this, caller, index, lockfile, _workingDir, _dynamicSets ) );
-//        {
-//         // _jobManager.addJob( job.get() );
-//        }
-//      }
-//    }
-//    
-//    this->validateDynamicSets();
-//  }
-//
-//  // If we are animating handle this time step
-//  if( true == this->isAnimating() )
-//  {
-//    if( true == (*_update)() )
-//    {
-//      this->_incrementTimeStep();
-//      this->_checkTimeSteps();
-//    }
-//  }
-//}
-//
-//
-
-//
-
-
-
+///////////////////////////////////////////////////////////////////////////////
 
 unsigned int ModelPresentationDocument::getCurrentGroupFromSet( unsigned int index ) const
 {
@@ -2337,10 +2282,10 @@ void ModelPresentationDocument::_processJobData( unsigned int index, Usul::Inter
       // Set the rest of the steps to be this last loaded step and the "not loaded" text
       for( unsigned int i = _dynamicSets.at( index ).nextIndexToLoad; i < _dynamicSets.at( index ).models->getNumChildren(); ++i )
       {
-        std::string text = Usul::Strings::format( "Step ", i + 1, " of ",_dynamicSets.at( index ).maxFilesToLoad, " is not loaded..." );
+        //std::string text = Usul::Strings::format( "Step ", i + 1, " of ",_dynamicSets.at( index ).maxFilesToLoad, " is not loaded..." );
         GroupPtr grpPtr ( new osg::Group );
         grpPtr->addChild( _dynamicSets.at( index ).models->getChild( _dynamicSets.at( index ).nextIndexToLoad - 1 ) );
-        grpPtr->addChild( this->_createProxyGeometry( text, caller ) );
+        //grpPtr->addChild( this->_createProxyGeometry( text, caller ) );
         _dynamicSets.at( index ).models->setChild( i, grpPtr.get() );
 
       }
@@ -2497,6 +2442,7 @@ osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &m
   camera->setViewport ( 0, 0, width, height );
   camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -10.0, 10.0 );
 #endif
+#if 0
   osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
   osg::ref_ptr< osgText::Text  > text ( new osgText::Text() );
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
@@ -2535,8 +2481,9 @@ osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &m
   geode->setStateSet( stateset.get() );
   geode->addDrawable( text.get() );
   mt->addChild( geode.get() );
+#endif
 #if 1
-  group->addChild( mt.get() );
+  //group->addChild( mt.get() );
   return group.release();
 #else
   camera->addChild( mt.get() );
@@ -2551,7 +2498,7 @@ osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &m
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::_setStatusText( const std::string message, Usul::Interfaces::IUnknown *caller )
+void ModelPresentationDocument::_setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
@@ -2565,11 +2512,12 @@ void ModelPresentationDocument::_setStatusText( const std::string message, Usul:
     throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
 
   double xpos = 0, ypos = 0;
-  textMatrix->removeText( static_cast< unsigned int > ( _textXPos ),
-                          static_cast< unsigned int > ( _textYPos ) );
+  textMatrix->removeText( static_cast< unsigned int > ( textXPos ),
+                          static_cast< unsigned int > ( textYPos ) );
+   
 
-  xpos = floor( viewPort->width() * 0.80 );
-  ypos = floor( viewPort->height() * 0.05 );
+  xpos = floor( viewPort->width() * xmult );
+  ypos = floor( viewPort->height() * ymult );
   
   osg::Vec4f color (  0.841, 0.763, 0.371, 1 );
   
@@ -2578,8 +2526,8 @@ void ModelPresentationDocument::_setStatusText( const std::string message, Usul:
                        static_cast< unsigned int > ( ypos ), 
                        message, 
                        color );
-  _textXPos = xpos;
-  _textYPos = ypos;
+  textXPos = xpos;
+  textYPos = ypos;
   
 
 }

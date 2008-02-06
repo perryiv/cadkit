@@ -484,8 +484,16 @@ bool Document::canClose ( Unknown *caller )
   if ( "Cancel" == result )
     return false;
 
-  // Save document.
-  this->save ( caller );
+  // Save document. Catch cancelled exception for when the user 
+  // dismisses the file dialog.
+  try
+  {
+    this->save ( caller );
+  }
+  catch ( const Usul::Exceptions::Canceled & )
+  {
+    return false;
+  }
 
   // If we get down here then the window can close.
   return true;

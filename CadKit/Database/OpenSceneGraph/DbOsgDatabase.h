@@ -41,6 +41,7 @@ namespace osg
   class Geometry;
   class StateSet;
   class ShapeDrawable;
+  class Geode;
 };
 
 
@@ -225,9 +226,10 @@ protected:
   bool                    _addColors     ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
   bool                    _addTexCoords  ( IUnknown *caller, ShapeHandle shape, osg::Geometry *geometry );
   
-  bool                    _addAttributes ( IUnknown *caller, PrimHandle prim, osg::StateSet *state );
-  bool                    _addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable );
-  bool                    _addColors     ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable );
+  bool                    _addAttributes    ( IUnknown *caller, PrimHandle prim, osg::StateSet *state );
+  bool                    _addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::Geode *geode, osg::StateSet *state, PrimitiveType type, int set );
+  bool                    _addColor         ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable, int set );
+  bool                    _addColor         ( IUnknown *caller, PrimHandle prim, osg::Geometry *geometry, int set );
 
   void                    _clearGroupStack();
 

@@ -13,6 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+
 #include "DbOsgPrecompiled.h"
 #include "DbOsgDatabase.h"
 #include "DbOsgFunctions.h"
@@ -950,59 +951,12 @@ bool DbOsgDatabase::startEntity ( PrimHandle prim, IUnknown *caller )
   SlRefPtr<osg::Geode> geode ( dynamic_cast<osg::Geode *> ( object.getValue() ) );
   if ( geode.isNull() )
     return ERROR ( "Failed to find geode to add primitive geometry to.", CadKit::FAILED );
-
-  // Create a Geometry drawable.
-  SlRefPtr<osg::ShapeDrawable> drawable ( new osg::ShapeDrawable );
-  if ( drawable.isNull() )
-    return ERROR ( "Failed to create osg::ShapeDrawable for given primitive handle.", CadKit::FAILED );
-
-  // Create a StateSet.
-  SlRefPtr<osg::StateSet> state ( new osg::StateSet );
-  if ( state.isNull() )
-    return ERROR ( "Failed to create osg::StateSet for given primitive handle.", CadKit::FAILED );
-
-  // Add the osg::Shape node to represent this primitive. We have to call this before we add the 
-  // attributes (like material) because in OSG, materials take precedence.
-  if ( false == this->_addPrimitive ( caller, prim, drawable ) )
-    return ERROR ( "Failed to add osg shape for given primitive.", CadKit::FAILED );
   
-  // add color to the primitive
-  _addColors( caller, prim, drawable );
+  // Determine the number of sets from the number of origins.
 
-  // Add the material, texture, etc.
-  if ( false == this->_addAttributes ( caller, prim, state ) )
-    return ERROR ( "Failed to add attributes for given primitive.", CadKit::FAILED );
-
-  // Set the state of the geometry.
-  drawable->setStateSet ( state );
-
-  // Add the Geometry to the Geode.
-  geode->addDrawable ( drawable );
-
-  // It worked.
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the primitive to the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DbOsgDatabase::_addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable )
-{
-  SL_PRINT5 ( "In DbOsgDatabase::_addPrimitive(), this = %X, caller = %X, primitive = %d, geometry = %X\n", this, caller, prim, geometry );
-  SL_ASSERT ( caller );
-  SL_ASSERT ( drawable );
-
-  // Get the interfaces we need from the caller.
+  // Get the origin interface from the caller.
   SlQueryPtr<IQueryPrimOriginsVec3f> originQuery ( caller );
   if ( originQuery.isNull() )
-    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
-
-  SlQueryPtr<IQueryPrimParamsFloat> paramQuery ( caller );
-  if ( paramQuery.isNull() )
     return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
 
   // Get the primitive type.
@@ -1017,75 +971,412 @@ bool DbOsgDatabase::_addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::Sha
   DbOsgPrimOriginSetter originSetter( type );
   if ( !originQuery->getPrimOrigins ( prim, originSetter ) )
     return ERROR ( "Failed to obtain primitive origins.", CadKit::FAILED );
+
+  int numSets = originSetter.getPrimOrigins()->getNumElements();
+
+  for(int i = 0; i < numSets; i++)
+  {
+    // Create a StateSet.
+    SlRefPtr<osg::StateSet> state ( new osg::StateSet );
+    if ( state.isNull() )
+      return ERROR ( "Failed to create osg::StateSet for given primitive handle.", CadKit::FAILED );
+
+    // Add the material, texture, etc.
+    if ( false == this->_addAttributes ( caller, prim, state ) )
+      return ERROR ( "Failed to add attributes for given primitive.", CadKit::FAILED );
+    
+    // Add the osg::Shape node to represent this primitive. We have to call this before we add the 
+    // attributes (like material) because in OSG, materials take precedence.
+    if ( false == this->_addPrimitiveSet ( caller, prim, geode, state, type, i ) )
+      return ERROR ( "Failed to add osg shape for given primitive.", CadKit::FAILED );
+  }
+
+  // It worked.
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the primitive to the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::Geode *geode, osg::StateSet *state, PrimitiveType type, int set )
+{
+  SL_PRINT7 ( "In DbOsgDatabase::_addPrimitive(), this = %X, caller = %X, primitive = %d, drawable = %X, type = %d, set = %d\n", this, caller, prim, drawable, type, set );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( drawable );
+
+  // Get the interfaces we need from the caller.
+  SlQueryPtr<IQueryPrimOriginsVec3f> originQuery ( caller );
+  if ( originQuery.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  SlQueryPtr<IQueryPrimParamsFloat> paramQuery ( caller );
+  if ( paramQuery.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  // Get the origins.
+  DbOsgPrimOriginSetter originSetter( type );
+  if ( !originQuery->getPrimOrigins ( prim, originSetter ) )
+    return ERROR ( "Failed to obtain primitive origins.", CadKit::FAILED );
   
   // Get the parameters
   DbOsgPrimParamSetter paramSetter( type );
   if ( !paramQuery->getPrimParams ( prim, paramSetter ) )
     return ERROR ( "Failed to obtain primitive parameters.", CadKit::FAILED );
   
+  int tmp;
+
   if ( type == CadKit::BOX )
   {
-    return WARNING ( FORMAT ( "Box primitive not supported." ), CadKit::FAILED );
+    // Create a shape drawable.
+    SlRefPtr<osg::ShapeDrawable> boxDrawable ( new osg::ShapeDrawable );
+    if ( boxDrawable.isNull() )
+      return ERROR ( "Failed to create osg::ShapeDrawable for box.", CadKit::FAILED );
+    
+    // 9 params define x, y, and z vectors
+    tmp = set * 9;
+    float xBox = osg::Vec3f(paramSetter.getPrimParams()->at(tmp), 
+                             paramSetter.getPrimParams()->at(tmp+1), 
+                             paramSetter.getPrimParams()->at(tmp+2)).length();
+    float yBox = osg::Vec3f(paramSetter.getPrimParams()->at(tmp+3), 
+                             paramSetter.getPrimParams()->at(tmp+4), 
+                             paramSetter.getPrimParams()->at(tmp+5)).length();
+    float zBox = osg::Vec3f(paramSetter.getPrimParams()->at(tmp+6), 
+                             paramSetter.getPrimParams()->at(tmp+7), 
+                             paramSetter.getPrimParams()->at(tmp+8)).length();
+    
+    // Origin is box lower-left corner, so offset to get the center for OSG
+    osg::Vec3f boxCenter(originSetter.getPrimOrigins()->at(set));
+    boxCenter[0] += xBox * 0.5;
+    boxCenter[1] += yBox * 0.5;
+    boxCenter[2] += zBox * 0.5;
+
+    SlRefPtr<osg::Box> box = new osg::Box(boxCenter, xBox, yBox, zBox);
+    boxDrawable->setShape(box);
+
+    // add color to the primitive
+    _addColor( caller, prim, boxDrawable, set );
+
+    // Set the state of the geometry.
+    boxDrawable->setStateSet ( state );
+
+    // Add the Geometry to the Geode.
+    geode->addDrawable ( boxDrawable );
+
+    return true;
   }
   else if ( type == CadKit::CYLINDER )
-  {
-    osg::Vec3f orientationVec(paramSetter.getPrimParams()->at(0), 
-                              paramSetter.getPrimParams()->at(1), 
-                              paramSetter.getPrimParams()->at(2));
+  {    
+    // 5 params define a cylinder
+    tmp = set * 5;
+    osg::Vec3f orientationVec(paramSetter.getPrimParams()->at(tmp), 
+                              paramSetter.getPrimParams()->at(tmp+1), 
+                              paramSetter.getPrimParams()->at(tmp+2));
     osg::Vec3f startVec(0.0f, 0.0f, 1.0f);
     osg::Quat cylRot;
     cylRot.makeRotate(startVec, orientationVec);
     float cylLength = orientationVec.length();
-    osg::Vec3f cylCenter(originSetter.getPrimOrigins()->at(0));
-    cylCenter[1] += cylLength * 0.5f;
-    float bottomRadius = paramSetter.getPrimParams()->at(3);
-    float topRadius = paramSetter.getPrimParams()->at(4);
+    osg::Vec3f cylCenter(originSetter.getPrimOrigins()->at(set));
+    float bottomRadius = paramSetter.getPrimParams()->at(tmp+3);
+    float topRadius = paramSetter.getPrimParams()->at(tmp+4);
 
     if(topRadius == 0.0f) // cone
     {      
-      osg::ref_ptr<osg::Cone> cone = new osg::Cone;
+      cylCenter[1] += cylLength * 0.5f;
+      
+      // Create a shape drawable.
+      SlRefPtr<osg::ShapeDrawable> coneDrawable ( new osg::ShapeDrawable );
+      if ( coneDrawable.isNull() )
+        return ERROR ( "Failed to create osg::ShapeDrawable for cone.", CadKit::FAILED );
+
+      SlRefPtr<osg::Cone> cone = new osg::Cone;
       cone->setCenter(cylCenter);
       cone->setHeight(cylLength);
       cone->setRotation(cylRot);
       cone->setRadius(bottomRadius);
 
-      drawable->setShape(cone.get());
-    }
-    else 
-    {
-      if ( topRadius != bottomRadius ) // truncated cone, warn & replace with cylinder
-        WARNING ( FORMAT ( "Irregular cylinder not supported for primitive %X.", prim ), CadKit::FAILED );
+      coneDrawable->setShape(cone);
 
-      osg::ref_ptr<osg::Cylinder> cyl = new osg::Cylinder;
+      // add color to the primitive
+      _addColor( caller, prim, coneDrawable, set );
+
+      // Set the state of the geometry.
+      coneDrawable->setStateSet ( state );
+
+      // Add the Geometry to the Geode.
+      geode->addDrawable ( coneDrawable );
+    }
+    else if ( topRadius == bottomRadius ) // regular cylinder
+    {
+      cylCenter[1] += cylLength * 0.5f;
+      
+      // Create a shape drawable.
+      SlRefPtr<osg::ShapeDrawable> cylDrawable ( new osg::ShapeDrawable );
+      if ( cylDrawable.isNull() )
+        return ERROR ( "Failed to create osg::ShapeDrawable for cone.", CadKit::FAILED );
+
+      SlRefPtr<osg::Cylinder> cyl = new osg::Cylinder;
       cyl->setCenter(cylCenter);
       cyl->setHeight(cylLength);
       cyl->setRotation(cylRot);
       cyl->setRadius(bottomRadius);
 
-      drawable->setShape(cyl.get());
+      cylDrawable->setShape(cyl);
+
+      // add color to the primitive
+      _addColor( caller, prim, cylDrawable, set );
+
+      // Set the state of the geometry.
+      cylDrawable->setStateSet ( state );
+
+      // Add the Geometry to the Geode.
+      geode->addDrawable ( cylDrawable );
+
     }
-    
+    else // truncated cone -- not in OSG, so we make our own
+    {
+      // Create a geometry drawable.
+      SlRefPtr<osg::Geometry> truncDrawable ( new osg::Geometry );
+      if ( truncDrawable.isNull() )
+        return ERROR ( "Failed to create osg::Geometry for truncated cone.", CadKit::FAILED );
+      
+      int numFacets = 20;  // TODO, make this configurable
+
+      // create vertices for top & bottom circles
+      SlRefPtr<osg::Vec3Array> tuncVertices = new osg::Vec3Array;
+      tuncVertices.resize( numFacets * 2 + 2);
+
+      (*tuncVertices)[0].set( cylCenter ); // bottom center
+      for( int i = 0; i < numFacets; i++ )
+      {
+        // TODO, create vertices for 2 circles
+        // Triangle strip for the sides & two triangle fans for the top & bottom
+      }
+
+      return true;
+    }
+
     return true;
   }
   else if ( type == CadKit::PYRAMID )
   {
-    return WARNING ( FORMAT ( "Pyramid primitive not supported." ), CadKit::FAILED );
+    // Create a geometry drawable.
+    SlRefPtr<osg::Geometry> pyrDrawable ( new osg::Geometry );
+    if ( pyrDrawable.isNull() )
+      return ERROR ( "Failed to create osg::Geometry for pyramid.", CadKit::FAILED );
+    
+    tmp = set * 9;
+    osg::Vec3f pyrAxisX(paramSetter.getPrimParams()->at(tmp), 
+                        paramSetter.getPrimParams()->at(tmp+1), 
+                        paramSetter.getPrimParams()->at(tmp+2));
+    osg::Vec3f pyrAxisY(paramSetter.getPrimParams()->at(tmp+3), 
+                        paramSetter.getPrimParams()->at(tmp+4), 
+                        paramSetter.getPrimParams()->at(tmp+5));
+    osg::Vec3f pyrAxisZ(paramSetter.getPrimParams()->at(tmp+6), 
+                        paramSetter.getPrimParams()->at(tmp+7), 
+                        paramSetter.getPrimParams()->at(tmp+8));
+    
+    osg::Vec3f pyrCenter(originSetter.getPrimOrigins()->at(set));
+
+    osg::Vec3f pyrTop = pyrCenter;
+    pyrTop[2] += pyrAxisZ.length();
+
+    osg::Vec3f pyrOrigin(pyrCenter[0] - pyrAxisX.length() * 0.5, pyrCenter[1] - pyrAxisY.length() * 0.5, pyrCenter[2]);
+
+    // Create a vertices for this shape
+    SlRefPtr<osg::Vec3Array> pyrVertices = new osg::Vec3Array;
+    pyrVertices->resize(5);
+    
+    (*pyrVertices)[0].set( pyrTop ); // top
+    (*pyrVertices)[1].set( pyrOrigin );  // lower left corner
+    (*pyrVertices)[2].set( pyrOrigin + pyrAxisX ); // lower right corner
+    (*pyrVertices)[3].set( pyrOrigin + pyrAxisX + pyrAxisY ); // far right corner
+    (*pyrVertices)[4].set( pyrOrigin + pyrAxisY ); // far left corner
+    
+    pyrDrawable->setVertexArray(pyrVertices);
+
+    SlRefPtr<osg::UByteArray> pyrIndices = new osg::UByteArray(16, GL_INT);
+    (*pyrIndices)[0] = 0; (*pyrIndices)[1] = 1; (*pyrIndices)[2] = 4;  // side 1
+    (*pyrIndices)[3] = 0; (*pyrIndices)[4] = 4; (*pyrIndices)[5] = 3;  // side 2
+    (*pyrIndices)[6] = 0; (*pyrIndices)[7] = 3; (*pyrIndices)[8] = 2;  // side 3
+    (*pyrIndices)[9] = 0; (*pyrIndices)[10] = 2; (*pyrIndices)[11] = 1; // side 4
+    (*pyrIndices)[12] = 4; (*pyrIndices)[13] = 3; (*pyrIndices)[14] = 2; (*pyrIndices)[15] = 1; // bottom quad
+    
+    pyrDrawable->setVertexIndices (pyrIndices);
+
+    osg::Geometry::PrimitiveSetList primitives;
+    primitives.resize(2);
+    primitives[0] = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, 12);
+    primitives[1] = new osg::DrawArrays(osg::PrimitiveSet::QUADS, 12, 4);
+    pyrDrawable->setPrimitiveSetList( primitives );
+
+    // calculate normals
+    SlRefPtr<osg::Vec3Array> pyrNormals = new osg::Vec3Array;
+    pyrNormals->resize(16);
+
+    osg::Vec3f tempVec = ( (*pyrVertices)[4] - (*pyrVertices)[0] ) ^ ( (*pyrVertices)[1] - (*pyrVertices)[0] );
+    tempVec.normalize();
+    (*pyrNormals)[0].set( tempVec );
+    (*pyrNormals)[1].set( (*pyrNormals)[0] );
+    (*pyrNormals)[2].set( (*pyrNormals)[0] );
+    
+    tempVec = ( (*pyrVertices)[3] - (*pyrVertices)[0] ) ^ ( (*pyrVertices)[4] - (*pyrVertices)[0] );
+    tempVec.normalize();
+    (*pyrNormals)[3].set( tempVec );
+    (*pyrNormals)[4].set( (*pyrNormals)[3] );
+    (*pyrNormals)[5].set( (*pyrNormals)[3] );
+    
+    tempVec = ( (*pyrVertices)[2] - (*pyrVertices)[0] ) ^ ( (*pyrVertices)[3] - (*pyrVertices)[0] );
+    tempVec.normalize();
+    (*pyrNormals)[6].set( tempVec );
+    (*pyrNormals)[7].set( (*pyrNormals)[6] );
+    (*pyrNormals)[8].set( (*pyrNormals)[6] );
+    
+    tempVec = ( (*pyrVertices)[1] - (*pyrVertices)[0] ) ^ ( (*pyrVertices)[2] - (*pyrVertices)[0] );
+    tempVec.normalize();
+    (*pyrNormals)[9].set( tempVec );
+    (*pyrNormals)[10].set( (*pyrNormals)[9] );
+    (*pyrNormals)[11].set( (*pyrNormals)[9] );
+
+    (*pyrNormals)[12].set( 0.0f, 0.0f, -1.0f );
+    (*pyrNormals)[13].set( (*pyrNormals)[12] );
+    (*pyrNormals)[14].set( (*pyrNormals)[12] );
+    (*pyrNormals)[15].set( (*pyrNormals)[12] );
+      
+    pyrDrawable->setNormalArray( pyrNormals );
+    pyrDrawable->setNormalBinding( osg::Geometry::AttributeBinding::BIND_PER_VERTEX );
+
+    // assign a color
+    _addColor( caller, prim, pyrDrawable, set );
+
+    // Set the state of the geometry.
+    pyrDrawable->setStateSet ( state );
+
+    // Add the Geometry to the Geode.
+    geode->addDrawable ( pyrDrawable );
+
+    return true;
   }
   else if ( type == CadKit::SPHERE )
   {
-    osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere;
-    sphere->setCenter(osg::Vec3f(originSetter.getPrimOrigins()->at(0)));
-    sphere->setRadius(paramSetter.getPrimParams()->at(0));
-    drawable->setShape(sphere.get());
+    SlRefPtr<osg::ShapeDrawable> sphereDrawable ( new osg::ShapeDrawable );
+    if ( sphereDrawable.isNull() )
+      return ERROR ( "Failed to create osg::ShapeDrawable for sphere.", CadKit::FAILED );
+    
+    // 1 param (radius) defines a sphere
+    SlRefPtr<osg::Sphere> sphere = new osg::Sphere;
+    sphere->setCenter(osg::Vec3f(originSetter.getPrimOrigins()->at(set)));
+    sphere->setRadius(paramSetter.getPrimParams()->at(set));
+    sphereDrawable->setShape(sphere);
+
+    // add color to the primitive
+    _addColor( caller, prim, sphereDrawable, set );
+
+    // Set the state of the geometry.
+    sphereDrawable->setStateSet ( state );
+
+    // Add the Geometry to the Geode.
+    geode->addDrawable ( sphereDrawable );
+
     return true;
   }
   else if ( type == CadKit::TRIPRISM )
   {
-    return WARNING ( FORMAT ( "TriPrism primitive not supported." ), CadKit::FAILED );
+    // Create a geometry drawable.
+    SlRefPtr<osg::Geometry> prismDrawable ( new osg::Geometry );
+    if ( prismDrawable.isNull() )
+      return ERROR ( "Failed to create osg::Geometry for triprism.", CadKit::FAILED );
+    
+    tmp = set * 9;
+    osg::Vec3f prismAxisX(paramSetter.getPrimParams()->at(tmp), 
+                          paramSetter.getPrimParams()->at(tmp+1), 
+                          paramSetter.getPrimParams()->at(tmp+2));
+    osg::Vec3f prismAxisY(paramSetter.getPrimParams()->at(tmp+3), 
+                          paramSetter.getPrimParams()->at(tmp+4), 
+                          paramSetter.getPrimParams()->at(tmp+5));
+    osg::Vec3f prismAxisZ(paramSetter.getPrimParams()->at(tmp+6), 
+                          paramSetter.getPrimParams()->at(tmp+7), 
+                          paramSetter.getPrimParams()->at(tmp+8));
+    
+    osg::Vec3f prismOrigin(originSetter.getPrimOrigins()->at(set));
+
+    // Create a vertices for this shape
+    SlRefPtr<osg::Vec3Array> prismVertices = new osg::Vec3Array;
+    prismVertices->resize(6);
+    
+    (*prismVertices)[0].set( prismOrigin );
+    (*prismVertices)[1].set( prismOrigin + prismAxisX );
+    (*prismVertices)[2].set( prismOrigin + prismAxisY );
+    (*prismVertices)[3].set( prismOrigin + prismAxisZ );
+    (*prismVertices)[4].set( (*prismVertices)[1] + prismAxisZ );
+    (*prismVertices)[5].set( (*prismVertices)[2] + prismAxisZ );
+    
+    prismDrawable->setVertexArray(prismVertices);
+
+    SlRefPtr<osg::UByteArray> prismIndices = new osg::UByteArray(18, GL_INT);
+    (*prismIndices)[0] = 0; (*prismIndices)[1] = 1; (*prismIndices)[2] = 2;  // back triangle
+    (*prismIndices)[3] = 3; (*prismIndices)[4] = 5; (*prismIndices)[5] = 4;  // front triangle
+    (*prismIndices)[6] = 0; (*prismIndices)[7] = 3; (*prismIndices)[8] = 4; (*prismIndices)[9] = 1; // bottom quad
+    (*prismIndices)[10] = 0; (*prismIndices)[11] = 3; (*prismIndices)[12] = 5; (*prismIndices)[13] = 2;  // left quad
+    (*prismIndices)[14] = 2; (*prismIndices)[15] = 5; (*prismIndices)[16] = 4; (*prismIndices)[17] = 1;  // top quad
+    
+    prismDrawable->setVertexIndices (prismIndices);
+
+    osg::Geometry::PrimitiveSetList primitives;
+    primitives.resize(2);
+    primitives[0] = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, 6);
+    primitives[1] = new osg::DrawArrays(osg::PrimitiveSet::QUADS, 6, 12);
+    prismDrawable->setPrimitiveSetList( primitives );
+
+    // calculate normals
+    SlRefPtr<osg::Vec3Array> prismNormals = new osg::Vec3Array;
+    prismNormals->resize(18);
+
+    (*prismNormals)[0].set( 0.0f, 0.0f, -1.0f );
+    (*prismNormals)[1].set( (*prismNormals)[0] );
+    (*prismNormals)[2].set( (*prismNormals)[0] );
+
+    (*prismNormals)[3].set( 0.0f, 0.0f, 1.0f );
+    (*prismNormals)[4].set( (*prismNormals)[3] );
+    (*prismNormals)[5].set( (*prismNormals)[3] );
+
+    (*prismNormals)[6].set( 0.0, -1.0, 0.0 );
+    (*prismNormals)[7].set( (*prismNormals)[6] );
+    (*prismNormals)[8].set( (*prismNormals)[6] );
+    (*prismNormals)[9].set( (*prismNormals)[6] );
+
+    (*prismNormals)[10].set( -1.0, 0.0, 0.0 );
+    (*prismNormals)[11].set( (*prismNormals)[10] );
+    (*prismNormals)[12].set( (*prismNormals)[10] );
+    (*prismNormals)[13].set( (*prismNormals)[10] );
+    
+     osg::Vec3f tempVec = ( prismAxisY - prismAxisX ) ^ prismAxisZ;
+     tempVec.normalize();
+    (*prismNormals)[14].set( tempVec );
+    (*prismNormals)[15].set( (*prismNormals)[14] );
+    (*prismNormals)[16].set( (*prismNormals)[14] );
+    (*prismNormals)[17].set( (*prismNormals)[14] );
+    
+    prismDrawable->setNormalArray( prismNormals );
+    prismDrawable->setNormalBinding( osg::Geometry::AttributeBinding::BIND_PER_VERTEX );
+
+    // assign a color
+    _addColor( caller, prim, prismDrawable, set );
+
+    // Set the state of the geometry.
+    prismDrawable->setStateSet ( state );
+
+    // Add the Geometry to the Geode.
+    geode->addDrawable ( prismDrawable );
+
+    return true;
   }
 
   // It didn't work.
-  return WARNING ( FORMAT ( "Failed to get data for primitive %X.", prim ), CadKit::FAILED );
+  return WARNING ( FORMAT ( "Failed to add primitive %X.", prim ), CadKit::FAILED );
 }
 
 
@@ -1095,9 +1386,9 @@ bool DbOsgDatabase::_addPrimitive  ( IUnknown *caller, PrimHandle prim, osg::Sha
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DbOsgDatabase::_addColors ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable )
+bool DbOsgDatabase::_addColor ( IUnknown *caller, PrimHandle prim, osg::ShapeDrawable *drawable, int set )
 {
-  SL_PRINT5 ( "In DbOsgDatabase::_addColors(), this = %X, caller = %X, primitive = %d, drawable = %X\n", this, caller, prim, drawable );
+  SL_PRINT6 ( "In DbOsgDatabase::_addColor(), this = %X, caller = %X, primitive = %d, drawable = %X, set = %d\n", this, caller, prim, drawable, set );
   SL_ASSERT ( caller );
   SL_ASSERT ( drawable );
 
@@ -1111,11 +1402,51 @@ bool DbOsgDatabase::_addColors ( IUnknown *caller, PrimHandle prim, osg::ShapeDr
   if ( query->getColors ( prim, setter ) )
   {
     // Set the color.
-    drawable->setColor( setter.getColors()->at(0) );
+    drawable->setColor( setter.getColors()->at(set) );
 
     // It worked.
     return true;
   }
+
+  // It didn't work. Don't report an error, there may not be any.
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the primitive's colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DbOsgDatabase::_addColor ( IUnknown *caller, PrimHandle prim, osg::Geometry *geometry, int set )
+{
+  SL_PRINT5 ( "In DbOsgDatabase::_addColor(), this = %X, caller = %X, primitive = %d, geometry = %X\n", this, caller, prim, geometry );
+  SL_ASSERT ( caller );
+  SL_ASSERT ( geometry );
+
+  // Get the interface we need from the caller.
+  SlQueryPtr<IQueryPrimColorsVec4f> query ( caller );
+  if ( query.isNull() )
+    return ERROR ( "Failed to obtain needed interface from caller.", CadKit::NO_INTERFACE );
+
+  // Get the colors.
+  DbOsgPrimColorSetter setter;
+  if ( query->getColors ( prim, setter ) )
+  {
+    // Set the color.
+    SlRefPtr<osg::Vec4Array> colors = new osg::Vec4Array;
+    colors->resize(1);
+    (*colors)[0].set( setter.getColors()->at(set)[0], setter.getColors()->at(set)[1], 
+                      setter.getColors()->at(set)[2], setter.getColors()->at(set)[3] );
+
+    geometry->setColorArray( colors );
+    geometry->setColorBinding( osg::Geometry::AttributeBinding::BIND_OVERALL );
+
+    // It worked.
+    return true;
+  }
+
 
   // It didn't work. Don't report an error, there may not be any.
   return false;

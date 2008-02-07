@@ -4200,9 +4200,9 @@ osgText::Text* Application::getText ( unsigned int x, unsigned int y )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::setText ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color )
+void Application::setText ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color, const osg::Vec4f& backDropColor )
 {
-  _sceneManager->setText ( x, y, text, color );
+  _sceneManager->setText ( x, y, text, color, backDropColor );
 }
 
 

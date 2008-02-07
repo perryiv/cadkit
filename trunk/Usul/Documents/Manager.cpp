@@ -349,33 +349,6 @@ void Manager::add ( Document *document )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Send a message to all documents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Manager::sendMessage ( unsigned short message, const Document *skip )
-{
-  // Make a copy of the documents;
-  Documents documents;
-  {
-    Guard guard ( this );
-    documents = _documents;
-  }
-
-  // Send the message.
-  for ( Documents::iterator i = documents.begin(); i != documents.end(); ++i )
-  {
-    Document::RefPtr doc ( *i );
-    if ( doc.valid() && ( skip != doc.get() ) )
-    {
-      doc->notify ( message );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Find a delegate for the given document.
 //
 ///////////////////////////////////////////////////////////////////////////////

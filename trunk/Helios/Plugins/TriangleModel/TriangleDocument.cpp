@@ -697,7 +697,7 @@ void TriangleDocument::keepAllConnected ( Usul::Interfaces::IUnknown *caller, co
   Connected connected;
   this->_findAllConnected ( caller, connected, _triangles->index ( hit ), true, true );
   _triangles->keepTriangles ( connected, caller );
-  this->sendMessage ( BaseClass::ID_BUILD_SCENE );
+  //this->sendMessage ( BaseClass::ID_BUILD_SCENE );
 }
 
 
@@ -712,7 +712,7 @@ void TriangleDocument::deleteAllConnected ( Usul::Interfaces::IUnknown *caller, 
   Connected connected;
   this->_findAllConnected ( caller, connected,  _triangles->index ( hit ), true, true );
   _triangles->removeTriangles ( connected, caller );
-  this->sendMessage ( BaseClass::ID_BUILD_SCENE );
+  //this->sendMessage ( BaseClass::ID_BUILD_SCENE );
 }
 
 
@@ -743,18 +743,6 @@ void TriangleDocument::createDefaultGUI ( Unknown *caller )
     options["colors"]  = "per-vertex";
     this->delegate()->createDefaultGUI ( this, caller );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notify this document of the message.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TriangleDocument::notify ( unsigned short message )
-{
-  BaseClass::notify ( message );
 }
 
 

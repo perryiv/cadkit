@@ -106,9 +106,6 @@ public:
   // Deletes current instance. Clears cached data.
   static void           reset();
 
-  // Send the message to all documents.
-  void                  sendMessage ( unsigned short message, const Document *skip = 0x0 );
-
   /// Add/Remove IActiveDocumentListeners.
   void                  addActiveDocumentListener    ( ActiveDocumentListener* listener );
   void                  removeActiveDocumentListener ( ActiveDocumentListener* listener );

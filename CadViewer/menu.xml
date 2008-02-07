@@ -466,6 +466,14 @@
         </radio>
       </menu>
       <menu>
+        <text>Hide Scene</text>
+        <toggle>
+          <text>When Menu Visible</text>
+          <info>Hide the scene when the menu is visible</info>
+          <id>menu_hide_scene</id>
+        </toggle>
+      </menu>
+      <menu>
         <text>Menu</text>
         <radio>
           <text>Front Wall</text>

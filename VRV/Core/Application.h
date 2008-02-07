@@ -578,7 +578,7 @@ protected:
   virtual osgText::Text*        getText    ( unsigned int x, unsigned int y );
 
   /// Set text value (ITextMatrix).
-  virtual void                  setText    ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color );
+  virtual void                  setText    ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color, const osg::Vec4f& backDropColor = osg::Vec4f ( 0, 0, 0, 0 ) );
 
   /// Remove text (ITextMatrix)
   virtual void                  removeText ( unsigned int x, unsigned int y );

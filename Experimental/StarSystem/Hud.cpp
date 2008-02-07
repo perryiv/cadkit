@@ -38,12 +38,16 @@ _feedback ( new osgText::Text ),
 _position ( new osgText::Text ),
 _latLonHeight(),
 _requests ( 0 ),
-_running ( 0 )
+_running ( 0 ),
+_compass ( new Compass ),
+_showCompass ( false )
 {
   _camera->setRenderOrder ( osg::Camera::POST_RENDER );
   _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
   _camera->setClearMask( GL_DEPTH_BUFFER_BIT );
   _camera->setViewMatrix( osg::Matrix::identity() );
+  _camera->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+  _camera->setCullingMode ( osg::CullSettings::NO_CULLING );
   
 #ifndef _MSC_VER
   osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
@@ -59,6 +63,8 @@ _running ( 0 )
   _feedback->setCharacterSize( 15 );
   _feedback->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
+  
+  //_compass->buildCompass();
 }
 
 
@@ -82,10 +88,16 @@ osg::Node* Hud::buildScene()
 
 void Hud::updateScene ( unsigned int width, unsigned int height )
 {
+  // Set the viewport and projection matrix.
   _camera->setViewport ( 0, 0, width, height );
-  _camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -10.0, 10.0 );
-  _camera->removeChild ( 0, _camera->getNumChildren() );
+  _camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -1000.0, 1000.0 );
   
+  // Clear all children.
+  _camera->removeChild ( 0, _camera->getNumChildren() );
+
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  
+#if 0
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
   vertices->push_back ( osg::Vec3 ( 0.0,   0.0,  -1.0 ) );
   vertices->push_back ( osg::Vec3 ( width, 0.0,  -1.0 ) );
@@ -102,9 +114,9 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
   
   geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, vertices->size() ) );
-  
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  //geode->addDrawable ( geometry.get() );
+
+  geode->addDrawable ( geometry.get() );
+#endif
   
   const unsigned int queued    ( this->requests() );
   const unsigned int executing ( this->running() );
@@ -126,6 +138,15 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   geode->getOrCreateStateSet()->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   
   _camera->addChild ( geode.get() );
+  
+#if 1
+  if ( this->showCompass() )
+  {
+    _compass->position ( osg::Vec3 ( width * 0.9, height * 0.9, 0.0 ) );
+    _compass->updateCompass();
+    _camera->addChild ( _compass.get() );
+  }
+#endif
 }
 
 
@@ -188,4 +209,44 @@ void Hud::position ( double lat, double lon, double height )
   _latLonHeight[0] = lon;
   _latLonHeight[1] = lat;
   _latLonHeight[2] = height;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the compass shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::showCompass ( bool b )
+{
+  _showCompass = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the compass shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Hud::showCompass() const
+{
+  return _showCompass;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set heading, pitch, roll.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::hpr ( double heading, double pitch, double roll )
+{
+#if 1
+  _compass->heading ( heading );
+  _compass->pitch( pitch );
+  _compass->roll ( roll );
+#endif
 }

@@ -18,6 +18,7 @@
 #define __STAR_SYSTEM_HUD_H__
 
 #include "StarSystem/Export.h"
+#include "StarSystem/Compass.h"
 
 #include "osg/ref_ptr"
 #include "osg/Camera"
@@ -49,6 +50,13 @@ public:
   // Set the pointer position.
   void          position ( double lat, double lon, double height );
   
+  // Show the compass be shown?
+  void          showCompass ( bool b );
+  bool          showCompass() const;
+  
+  // Set heading, pitch, roll.
+  void          hpr ( double heading, double pitch, double roll );
+  
 private:
   osg::ref_ptr < osg::Camera > _camera;
   osg::ref_ptr < osgText::Text > _feedback;
@@ -56,6 +64,8 @@ private:
   osg::Vec3d _latLonHeight;
   unsigned int _requests;
   unsigned int _running;
+  osg::ref_ptr < Compass > _compass;
+  bool _showCompass;
 };
 
   

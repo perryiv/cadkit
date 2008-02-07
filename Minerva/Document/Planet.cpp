@@ -18,7 +18,8 @@
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IUpdateSceneVisitor.h"
 #include "Usul/Interfaces/IViewMatrix.h"
-#include "Usul/Interfaces/IViewport.h" 
+#include "Usul/Interfaces/IViewport.h"
+#include "Usul/Math/Functions.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osgDB/Registry"
@@ -29,6 +30,7 @@
 
 #if USE_STAR_SYSTEM
 #include "Usul/Network/Names.h"
+#include "Usul/Math/Constants.h"
 
 #include "StarSystem/BuildScene.h"
 #include "StarSystem/Extents.h"
@@ -539,6 +541,93 @@ double Planet::elevationAtLatLong ( double lat, double lon ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Convert matrix to heading, pitch, roll.
+//  See:
+//  http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToEuler/
+//  http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToMatrix/index.htm
+//
+//  Implementation adapted from ossimPlanet (www.ossim.org).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void matrixToHpr( osg::Vec3d& hpr, const osg::Matrixd& rotation )
+  {
+    // Initialize answer.
+    hpr.set ( 0.0, 0.0, 0.0 );
+    
+    osg::Matrixd mat;
+    
+    // I'm not really sure what the following code inside {} is about.
+    {
+      osg::Vec3d col1 ( rotation( 0, 0 ), rotation( 0, 1 ), rotation( 0, 2 ) );
+      const double s ( col1.length() );
+      
+      if ( s <= 0.00001 )
+      {
+        hpr.set(0.0f, 0.0f, 0.0f);
+        return;
+      }
+      
+      const double oneOverS ( 1.0f / s );
+      for( int i = 0; i < 3; i++ )
+        for( int j = 0; j < 3; j++ )
+          mat(i, j) = rotation(i, j) * oneOverS;
+    }
+    
+    // Set the pitch
+    hpr[1] = ::asin ( Usul::Math::clamp ( mat ( 1, 2 ), -1.0, 1.0 ) );
+    
+    double cp ( ::cos( hpr[1] ) );
+    
+    // See if the cosine of the pitch is close to zero.
+    // This is for singularities at the north and south poles.
+    if ( cp > -0.00001 && cp < 0.00001 )
+    {
+      const double cr ( Usul::Math::clamp (  mat( 0, 1 ), -1.0, 1.0 ) );
+      const double sr ( Usul::Math::clamp ( -mat( 2, 1 ), -1.0, 1.0 ) );
+      
+      hpr[0] = 0.0f;
+      hpr[2] = ::atan2 ( sr, cr );
+    }
+    else
+    {
+      // Remove the cosine of pitch from these elements.
+      cp = 1.0 / cp ;
+      double sr ( Usul::Math::clamp ( ( -mat( 0, 2 ) * cp ), -1.0, 1.0 ) );
+      double cr ( Usul::Math::clamp ( (  mat( 2, 2 ) * cp ), -1.0, 1.0 ) );
+      double sh ( Usul::Math::clamp ( ( -mat( 1, 0 ) * cp ), -1.0, 1.0 ) );
+      double ch ( Usul::Math::clamp ( (  mat( 1, 1 ) * cp ), -1.0, 1.0 ) );
+      
+      if ( ( sh == 0.0f && ch == 0.0f ) || ( sr == 0.0f && cr == 0.0f ) )
+      {
+        cr = Usul::Math::clamp (  mat( 0, 1 ), -1.0, 1.0 );
+        sr = Usul::Math::clamp ( -mat( 2, 1 ), -1.0, 1.0 );
+        
+        hpr[0] = 0.0f;
+      }
+      else
+      {
+        hpr[0] = ::atan2 ( sh, ch );
+      }
+      
+      hpr[2] = ::atan2 ( sr, cr );
+    }
+    
+    // Convert to degress.
+    hpr[0] *= Usul::Math::RAD_TO_DEG;
+    hpr[1] *= Usul::Math::RAD_TO_DEG;
+    hpr[2] *= Usul::Math::RAD_TO_DEG;
+    
+    // Sign flip.
+    hpr[0] *= -1.0;
+  }
+  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -546,25 +635,38 @@ double Planet::elevationAtLatLong ( double lat, double lon ) const
 void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
 {
 #if USE_STAR_SYSTEM
-  #if 0
+
   Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
   
   if ( _callback.valid() && vm.valid() )
   {
     osg::Vec3d eye ( _callback->_eye );
+    
+    // Convert the eye to lat,lon, height.
     Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
     Usul::Math::Vec3d latLonPoint;
     this->convertFromPlanet( point, latLonPoint );
+
+    // Get the inverse of the view matrix.
+    osg::Matrixd viewMatrix ( osg::Matrixd::inverse ( vm->getViewMatrix() ) );
     
-    osg::Matrixd viewMatrix = vm->getViewMatrix(); //osg::Matrixd::inverse(*(cullVisitor->getModelViewMatrix()));
+    // Get the matrix to point north at the eye position.
     osg::Matrixd localLsr ( this->planetRotationMatrix( latLonPoint[1], latLonPoint[0], latLonPoint[2], 0.0 ) ); 
-    osg::Vec3d hpr;
-    mkUtils::matrixToHpr(hpr, localLsr, viewMatrix);
     
-    _hud.showCompass ( true );
-    _hud.hpr( hpr[0], hpr[1], hpr[2] );
+    osg::Matrixd invert;
+    if ( invert.invert ( localLsr ) )
+    {
+      osg::Matrixf m ( viewMatrix * invert );
+      osg::Vec3d hpr;
+      Detail::matrixToHpr( hpr, m );
+      _hud.hpr( hpr[0], hpr[1], hpr[2] );
+
+      _hud.showCompass ( true );      
+    }
+    else
+      _hud.showCompass ( false );
   }
-  #endif
+
   const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
   const unsigned int executing ( ( 0x0 == _manager ) ? 0 : _manager->numJobsExecuting() );
     

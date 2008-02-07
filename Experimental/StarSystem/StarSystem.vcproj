@@ -112,6 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(ProjectDir)\Images $(CADKIT_BIN_DIR)\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 		<Configuration
@@ -212,6 +213,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy $(ProjectDir)\Images $(CADKIT_BIN_DIR)\icons /f /i /k /y /c"
 			/>
 		</Configuration>
 	</Configurations>
@@ -247,6 +249,14 @@
 			</File>
 			<File
 				RelativePath=".\ClampNearFar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Compass.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Compass.h"
 				>
 			</File>
 			<File

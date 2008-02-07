@@ -22,6 +22,7 @@
 
 #include "osg/Geode"
 #include "osg/Geometry"
+#include "osg/MatrixTransform"
 
 using namespace StarSystem;
 

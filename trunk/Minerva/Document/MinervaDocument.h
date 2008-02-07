@@ -81,6 +81,8 @@ public:
   typedef Minerva::Core::Animate::TimeSpan TimeSpan;
   typedef std::vector < TimeSpan::RefPtr > TimeSpans;
   typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
+  typedef Usul::Interfaces::IUpdateListener IUpdateListener;
+  typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -213,6 +215,8 @@ public:
   void                                     dirty( bool );
   bool                                     dirty() const;
   
+  virtual void                             addUpdateListener ( IUnknown *caller );
+  virtual void                             removeUpdateListener ( IUnknown *caller );
 protected:
   virtual ~MinervaDocument();
 
@@ -330,6 +334,8 @@ private:
   /// Screen size members.
   unsigned int _width;
   unsigned int _height;
+  
+  UpdateListeners _updateListeners;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

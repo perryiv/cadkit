@@ -109,6 +109,7 @@ MinervaDocument::MinervaDocument() :
   _legendPosition ( LEGEND_BOTTOM_RIGHT ),
   _width( 0 ),
   _height( 0 ),
+  _updateListeners(),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _layers );
@@ -526,6 +527,7 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 
   Guard guard ( this->mutex() );
 
+  this->removeUpdateListener( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
   _planet->removeLayer ( layer );
   
   Usul::Interfaces::IVectorLayer::QueryPtr vector ( layer );
@@ -587,6 +589,8 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
     {
       _datesDirty = true;
     }
+    
+    this->addUpdateListener( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
 
     // We are modified.
     this->modified ( true );
@@ -903,6 +907,7 @@ namespace Detail
 void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
   
   if ( this->dirty() )
   {
@@ -911,6 +916,10 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
     this->_buildLayerMenu();
   }
+  
+  // Update.
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
 
   // Build the scene.
   this->_buildScene ( caller );
@@ -1852,5 +1861,53 @@ void MinervaDocument::_resizePoints ( double factor )
 
 void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
 {
+  osg::Vec3 world ( hit.getWorldIntersectPoint() );
+  //osg::Vec3 local ( hit.getLocalIntersectPoint() );
+  //if ( 0x0 != hit.getInverseMatrix() )
+  //  local = local * ( *hit.getInverseMatrix() );
+  
   _planet->pointer ( hit.getWorldIntersectPoint() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the update listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::addUpdateListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Don't add twice.
+  this->removeUpdateListener ( caller );
+  
+  IUpdateListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _updateListeners.push_back ( IUpdateListener::RefPtr ( listener.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::removeUpdateListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  IUpdateListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    IUpdateListener::RefPtr value ( listener.get() );
+    UpdateListeners::iterator end ( std::remove ( _updateListeners.begin(), _updateListeners.end(), value ) );
+    _updateListeners.erase ( end, _updateListeners.end() );
+  }
 }

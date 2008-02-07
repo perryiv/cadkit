@@ -43,6 +43,7 @@
 
 #include "osgUtil/CullVisitor"
 
+#include "osg/BlendFunc"
 #include "osg/Depth"
 #include "osg/Geode"
 #include "osg/Geometry"
@@ -948,6 +949,10 @@ Tile::NodePtr Tile::_buildBorderLine()
   // Set the line parameters.
   ss->setMode ( GL_LINE_SMOOTH, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
   ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Add a blend function.
+  osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+  ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
  
   // Set the hint.
   osg::ref_ptr<osg::Hint> hint ( new osg::Hint ( GL_LINE_SMOOTH_HINT, GL_NICEST ) );

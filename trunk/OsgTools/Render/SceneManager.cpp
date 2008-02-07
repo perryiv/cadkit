@@ -335,10 +335,15 @@ osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneManager::setText( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4& color )
+void SceneManager::setText( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4& color, const osg::Vec4f& backDropColor )
 {
   osg::ref_ptr < osgText::Text > t ( this->getText( x, y ) );
   t->setColor ( color );
+  if ( 0 != backDropColor[3] )
+  {
+    t->setBackdropColor ( backDropColor );
+    t->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
+  }
   t->setText ( text );
 }
 

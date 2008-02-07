@@ -445,7 +445,7 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
         if( _dynamicSets.at( i ).currentTime >= 0 && _dynamicSets.at( i ).currentTime < _dynamicSets.at( i ).endTime )
         {
           // Display a message if the current dynamic set isn't loaded
-          if( _dynamicSets.at( i ).groups.at( _dynamicSets.at( i ).currentTime ).loading == false )
+          if( _dynamicSets.at( i ).groups.at( _dynamicSets.at( i ).currentTime ).loaded == false )
           {
             std::string message = Usul::Strings::format( "Step ", _dynamicSets.at( i ).currentTime + 1, " of ",_dynamicSets.at( i ).maxFilesToLoad, " is not loaded..." );
             this->_setStatusText( message, _dynamicNotLoadedTextXPos, _dynamicNotLoadedTextYPos, 0.5, 0.5, caller );
@@ -1374,7 +1374,7 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   {
     MpdDefinitions::MpdDynamicGroup grp;
     grp.filename = "";
-    grp.loading = false;
+    grp.loaded = false;
     grp.valid = false;
     std::string text = Usul::Strings::format( "Step ", i + 1, " of ",dset.maxFilesToLoad, " is not loaded..." );
     dset.models->addChild( this->_createProxyGeometry( text, caller ), false );
@@ -2255,6 +2255,8 @@ void ModelPresentationDocument::_processJobData( unsigned int index, Usul::Inter
         MpdDefinitions::MpdDynamicGroup grp;
         MpdDefinitions::MpdDynamicSetHeader header = _jobs.at( index )->getHeader();
         grp.valid = false;
+        grp.loaded = true;
+        grp.filename="";
 
         // Sanity Check to see if the child at position nextIndexToLoad exists
         if( _dynamicSets.at( index ).models->getNumChildren() > _dynamicSets.at( index ).nextIndexToLoad )
@@ -2518,14 +2520,19 @@ void ModelPresentationDocument::_setStatusText( const std::string message, unsig
 
   xpos = floor( viewPort->width() * xmult );
   ypos = floor( viewPort->height() * ymult );
-  
-  osg::Vec4f color (  0.841, 0.763, 0.371, 1 );
-  
+
+#if 0
+  osg::Vec4f fcolor (  0.841, 0.763, 0.371, 1 );
+  osg::Vec4f bcolor (  0.841, 0.763, 0.371, 1 );
+#else
+  osg::Vec4f fcolor (  1.0, 1.0, 1.0, 1 );
+  osg::Vec4f bcolor (  0.0, 0.0, 0.0, 1 );
+#endif
 
   textMatrix->setText( static_cast< unsigned int > ( xpos ), 
                        static_cast< unsigned int > ( ypos ), 
                        message, 
-                       color );
+                       fcolor, bcolor );
   textXPos = xpos;
   textYPos = ypos;
   

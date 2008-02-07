@@ -4314,9 +4314,9 @@ osgText::Text* Viewer::getText ( unsigned int x, unsigned int y )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setText ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color )
+void Viewer::setText ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color, const osg::Vec4f& backDropColor )
 {
-  _sceneManager->setText( x, y, text, color );
+  _sceneManager->setText( x, y, text, color, backDropColor );
 }
 
 

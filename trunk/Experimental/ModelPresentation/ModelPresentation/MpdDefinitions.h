@@ -69,7 +69,7 @@ class MpdDefinitions
       {
         std::string filename;
         bool valid;
-        bool loading;
+        bool loaded;
       };
       struct MpdDynamicSetHeader
       {

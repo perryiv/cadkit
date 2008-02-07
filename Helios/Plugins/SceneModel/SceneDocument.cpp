@@ -427,16 +427,3 @@ void SceneDocument::flipNormalVectors()
   // We modified the document.
   this->modified ( true );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notify this document of the message.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SceneDocument::notify ( unsigned short message )
-{
-  BaseClass::notify ( message );
-}
-

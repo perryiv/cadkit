@@ -24,7 +24,6 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IDocument.h"
-#include "Usul/Interfaces/ISendMessage.h"
 #include "Usul/Interfaces/IRead.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICanClose.h"
@@ -36,7 +35,6 @@
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/IHandleMessage.h"
 
 #include <string>
 #include <list>
@@ -52,7 +50,6 @@ namespace Documents {
 
 class USUL_EXPORT Document : public Usul::Base::Object,
                              public Usul::Interfaces::IDocument,
-                             public Usul::Interfaces::ISendMessage,
                              public Usul::Interfaces::IRead,
                              public Usul::Interfaces::ICanClose,
                              public Usul::Interfaces::ICanInsert,
@@ -84,8 +81,6 @@ public:
 
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
-
-  // Messages moved to the Usul::Interfaces::ISendMessage
 
   /// Construction.
   Document ( const std::string &type );
@@ -169,9 +164,6 @@ public:
   virtual bool                modified() const { return _file.modified(); }
   virtual void                modified ( bool m );
 
-  /// Notify this document of the message.
-  virtual void                notify ( unsigned short message );
-
   /// Return the number of windows.
   unsigned int                numWindows()   const { return ( static_cast<unsigned int> ( _windows.size() ) );   }
   unsigned int                numViews()     const { return ( static_cast<unsigned int> ( _views.size() ) );     }
@@ -209,10 +201,6 @@ public:
   /// Convenience function to set status bar and flush events.
   void                        setStatusBar ( const std::string &text, Unknown *caller = 0x0 );
 
-  /// Usul::Interfaces::ISendMessage
-  /// Send the message to all listeners except for one specified
-  virtual void                sendMessage ( unsigned short message, const Unknown *skip = 0x0 );
-
   /// Return the name of this type of document.
   virtual std::string         typeName() const;
 
@@ -243,14 +231,6 @@ protected:
 
   void                        _save ( const std::string &filename, Unknown *caller, Unknown *progress, const Options &options = Options(), std::ostream *out = 0x0 );
 
-  ///  Send the message to all windows except for one specified.
-  template < class Listeners, class Skip >
-  void                        _sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip = 0x0 );
-
-  ///  Send the message to all windows.
-  template < class Listeners >
-  void                        _sendMessage ( Listeners &listeners, unsigned short message );
-
   // Build the title for given window.
   virtual std::string         _buildTitle ( Window* );
 
@@ -280,61 +260,6 @@ private:
   ModifiedObservers _modifiedObservers;
 };
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send the message to all windows except for one specified.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class Listeners, class Skip >
-void Document::_sendMessage ( Listeners &listeners, unsigned short message, const Skip *skip )
-{
-  typedef typename Listeners::value_type Listener;
-
-  // Loop through the windows.
-  for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
-  {
-    // Get the current window.
-    Listener listener ( *i );
-
-    // Skip the given one.
-    if ( skip != listener.get() )
-    {
-      // We can't return if the handle function returns zero because an object
-      // that does not handle the message id will also return zero.
-      Usul::Interfaces::IHandleMessage::QueryPtr handle ( listener );
-      if ( handle.valid( ) )
-        handle->handleMessage ( message );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send the message to all windows except for one specified.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class Listeners >
-void Document::_sendMessage ( Listeners &listeners, unsigned short message )
-{
-  typedef typename Listeners::value_type Listener;
-
-  // Loop through the windows.
-  for ( typename Listeners::iterator i = listeners.begin(); i != listeners.end(); ++i )
-  {
-    // Get the current window.
-    Listener listener ( *i );
-
-    // We can't return if the handle function returns zero because an object
-    // that does not handle the message id will also return zero.
-    Usul::Interfaces::IHandleMessage::QueryPtr handle ( listener );
-    if ( handle.valid( ) )
-      handle->handleMessage ( message );
-  }
-}
 
 } // namespace Documents
 } // namespace Usul

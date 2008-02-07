@@ -114,9 +114,6 @@ void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
     if ( window.valid() )
       window->forceClose();
   }
-
-  // Let anyone else who may be open that the document is closing
-  this->sendMessage( Document::ID_CLOSE );
 }
 
 
@@ -194,8 +191,6 @@ Usul::Interfaces::IUnknown *Document::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IDocument::IID:
     return static_cast< Usul::Interfaces::IDocument*> ( this );
-  case Usul::Interfaces::ISendMessage::IID:
-    return static_cast< Usul::Interfaces::ISendMessage* > ( this );
   case Usul::Interfaces::IRead::IID:
     return static_cast< Usul::Interfaces::IRead* > ( this );
   case Usul::Interfaces::ICanInsert::IID:
@@ -393,10 +388,6 @@ void Document::insert ( Unknown *caller )
     // Flush events. This lets the user cancel.
     this->flushEvents();
   }
-
-  // Tell everyone to rebuild scene and render.  Scene needs to be rebuilt
-  this->sendMessage ( Document::ID_BUILD_SCENE );
-  this->sendMessage ( Document::ID_RENDER_SCENE );
 }
 
 
@@ -516,29 +507,16 @@ bool Document::closeWindows ( Usul::Interfaces::IUnknown *caller, const Window* 
   Windows copy ( _windows );
 
   // Tell the windows to close
-  this->_sendMessage ( copy, Document::ID_CLOSE, skip );
-
-  // Let anyone else who may be open that the document is closing
-  this->sendMessage( Document::ID_CLOSE );
+  for ( Windows::iterator iter = copy.begin(); iter != copy.end(); ++iter )
+  {
+    Window::RefPtr window ( *iter );
+    if ( skip != window.get() )
+      window->forceClose();
+  }
 
   // If we get here the windows have closed
   return true;
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send the message to all listeners except for one specified.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Document::sendMessage ( unsigned short message, const Unknown *skip )
-{
-  // Send message to both windows and views
-  this->_sendMessage ( _windows, message, skip );
-  this->_sendMessage ( _views,   message, skip );
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -699,19 +677,6 @@ void Document::closing ( Window *window )
     this->clear ( Usul::Resources::progressBar() );
     std::cout << "done" << Usul::Resources::TextWindow::endl;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notify this document of the message.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Document::notify ( unsigned short message )
-{
-  // Default implementation passes the message along to the windows.
-  this->sendMessage ( message );
 }
 
 

@@ -173,9 +173,6 @@ public:
   virtual const osg::Vec3f&   getTriangleNormal ( unsigned int index ) const;
   virtual const osg::Vec3f&   getVertexNormal   ( unsigned int index ) const;
 
-  // Notify this document of the message.
-  virtual void                notify ( unsigned short message );
-
   // Access the containers of normals. Use with caution.
   const osg::Vec3Array *      normalsT() const { return _triangles->normalsT(); }
   osg::Vec3Array *            normalsT()       { return _triangles->normalsT(); }

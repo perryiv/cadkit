@@ -66,9 +66,6 @@ public:
   /// Flip the normals.
   virtual void                flipNormalVectors();
 
-  /// Notify this document of the message.
-  virtual void                notify ( unsigned short message );
-
   /// Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 

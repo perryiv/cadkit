@@ -50,6 +50,7 @@ SET (SOURCES
 ./SetJobManager.cpp
 ./Scale.cpp
 ./Hud.cpp
+./Compass.cpp
 )
 
 # Create a Shared Library

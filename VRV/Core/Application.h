@@ -343,6 +343,10 @@ public:
   void                          saveState() const;
   void                          restoreState();
 
+  /// Get/Set show memory state.
+  void                          setShowMemory( bool b );
+  bool                          getShowMemory() const;
+
 protected:
 
   /// VR Juggler methods.
@@ -666,7 +670,8 @@ private:
   enum Flags
   {
     SEEK_MODE           = 0x00000001,
-    ASSIGN_NEXT_COMMAND = 0x00000002
+    ASSIGN_NEXT_COMMAND = 0x00000002,
+    SHOW_MEMORY         = 0x00000004,
   };
 
   // Data members.

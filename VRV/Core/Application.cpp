@@ -65,6 +65,7 @@
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
+#include "Usul/System/Memory.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -144,7 +145,7 @@ Application::Application() :
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _joystick          ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogTrim        ( 0, 0 ),
-  _wandOffset        ( 0, -1.6, -0.67 ), // feet (used to be z=-4)
+  _wandOffset        ( 0, -1.6, -0.67 ), // feet (used to be z=-4).  Need to add this to preference file.
   _databasePager     ( 0x0 ),
   _commandQueue      ( ),
   _frameDump         (),
@@ -570,6 +571,7 @@ void Application::contextInit()
   GLint vp[4];
   ::glGetIntegerv ( GL_VIEWPORT, vp );
 
+  // Set the viewport.
   _viewport->setViewport ( vp[0], vp[1], vp[2], vp[3] );
 
   // Set the projection.
@@ -1028,7 +1030,6 @@ void Application::_init()
   }
 
   // Initialize plugins that need to.
-#if 1
   typedef Usul::Interfaces::IPluginInitialize  IPluginInitialize;
   typedef Usul::Components::Manager PluginManager;
   typedef PluginManager::UnknownSet Unknowns;
@@ -1051,8 +1052,6 @@ void Application::_init()
       std::cout << "Error 2915155888: Unknown exception caught while trying to initialize plugin.";
     }
   }
-
-#endif
 
   // Add the progress bars to the scene.
 #if 1
@@ -1162,6 +1161,54 @@ void Application::_preFrame()
 
   // Intersect.
   this->_intersect();
+
+  // Show memory if we should.
+  {
+    const std::string name ( "MEMORY_USAGE" );
+
+    this->projectionGroupRemove ( name );
+
+    if ( this->getShowMemory() )
+    {
+      osg::ref_ptr<osg::Group> group ( this->projectionGroupGet ( name ) );
+      group->removeChild ( 0, group->getNumChildren() );
+
+      const double width ( this->width() );
+      const double height ( this->height() );
+
+      const Usul::Types::Uint64 totalMemory ( Usul::System::Memory::totalPhysical() );
+      const Usul::Types::Uint64 usedMemory  ( Usul::System::Memory::usedPhysical() );
+      const double percent ( static_cast<double> ( usedMemory ) / static_cast<double> ( totalMemory ) );
+
+      osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+      vertices->push_back ( osg::Vec3 ( width - 4,   0.0,  -1.0 ) );
+      vertices->push_back ( osg::Vec3 ( width,       0.0,  -1.0 ) );
+      vertices->push_back ( osg::Vec3 ( width,       percent * height, -1.0 ) );
+      vertices->push_back ( osg::Vec3 ( width - 4,   percent * height, -1.0 ) );
+  
+      osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
+      colors->push_back ( osg::Vec4 ( 0.0, 0.0, 0.6, 0.4 ) );
+      colors->push_back ( osg::Vec4 ( 0.0, 0.0, 0.6, 0.4 ) );
+      colors->push_back ( osg::Vec4 ( 0.6, 0.0, 0.0, 1.0 ) );
+      colors->push_back ( osg::Vec4 ( 0.6, 0.0, 0.0, 1.0 ) );
+  
+      osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+      geometry->setVertexArray ( vertices.get() );
+  
+      geometry->setColorArray ( colors.get() );
+      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+  
+      geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, vertices->size() ) );
+
+      osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+      geode->addDrawable ( geometry.get() );
+
+      // Turn off lighting 
+      OsgTools::State::StateSet::setLighting ( geode.get(), false );
+
+      group->addChild ( geode.get() );
+    }
+  }
 }
 
 
@@ -2417,13 +2464,18 @@ void Application::translationSpeed ( float speed )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  _translationSpeed = speed;
 
-  // Get the section for the document.
-  Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+  // TODO: Need to set a minimum translate speed in preferences.
+  if ( speed > 0.000001f )
+  {
+    _translationSpeed = speed;
 
-  // Set the translation speed.
-  node[ VRV::Constants::Keys::TRANSLATION_SPEED ].set < float > ( _translationSpeed );
+    // Get the section for the document.
+    Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
+
+    // Set the translation speed.
+    node[ VRV::Constants::Keys::TRANSLATION_SPEED ].set < float > ( _translationSpeed );
+  }
 }
 
 
@@ -3778,6 +3830,8 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
   menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Intersect", Usul::Adaptors::memberFunction<void> ( this, &Application::allowIntersections ), Usul::Adaptors::memberFunction<bool> ( this, &Application::isAllowIntersections ) ) ) );
 
+  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Memory Usage", Usul::Adaptors::memberFunction<void> ( this, &Application::setShowMemory ), Usul::Adaptors::memberFunction<bool> ( this, &Application::getShowMemory ) ) ) );
+
   menu->append ( new MenuKit::Separator );
 
   menu->append ( new Button ( new BasicCommand ( "Reinitialize", Usul::Adaptors::memberFunction<void> ( this, &Application::reinitialize ) ) ) );
@@ -4116,7 +4170,7 @@ double Application::height () const
 double Application::width () const
 {
   osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
-  return vp.valid() ? vp->height () : 0;
+  return vp.valid() ? vp->width () : 0;
 }
 
 
@@ -5157,4 +5211,34 @@ void Application::restoreState()
 
   //Usul::Math::Vec4f color ( node[VRV::Constants::Keys::BACKGROUND_COLOR].get<Usul::Math::Vec4f> ( this->backgroundColor() ) );
   //this->backgroundColor ( color );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show memory state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::setShowMemory( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _flags = Usul::Bits::set<unsigned int,unsigned int> ( _flags, Application::SHOW_MEMORY, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show memory state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::getShowMemory() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  return Usul::Bits::has<unsigned int,unsigned int> ( _flags, Application::SHOW_MEMORY );
 }

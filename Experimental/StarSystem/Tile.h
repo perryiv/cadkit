@@ -168,8 +168,9 @@ public:
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
   
-  // Get the split distance.
+  // Get/Set the split distance.
   double                    splitDistance() const;
+  void                      splitDistance( double distance, bool children );
   
   // Split the tile.
   void                      split ( Usul::Jobs::Job::RefPtr );

@@ -71,8 +71,8 @@ public:
   virtual double                                  elevationAtLatLong ( double lat, double lon ) const;
 
   /// Get/Set the split metric.
-  void                                            splitMetric ( double );
-  double                                          splitMetric () const;
+  void                                            splitDistance ( double );
+  double                                          splitDistance () const;
  
   // Pre- and post-render notifications.
   void                                            preRender  ( Usul::Interfaces::IUnknown *caller );

@@ -1558,7 +1558,32 @@ void Tile::_clearChildren ( bool traverse )
 
 Tile::Indices Tile::child ( Tile* tile ) const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   Tiles::const_iterator iter ( std::find_if ( _children.begin(), _children.end(), Tile::RefPtr::IsEqual ( tile ) ) );
   return static_cast<Indices> ( std::distance<Tiles::const_iterator> ( _children.begin(), iter ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the split distance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::splitDistance ( double distance, bool children )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _splitDistance = distance;
+  
+  // Set the children's split distance if we should
+  if ( children )
+  {
+    const double childDistance ( distance / 2.0 );
+    if ( _children[0].valid() ) _children[0]->splitDistance ( childDistance, children );
+    if ( _children[1].valid() ) _children[1]->splitDistance ( childDistance, children );
+    if ( _children[2].valid() ) _children[2]->splitDistance ( childDistance, children );
+    if ( _children[3].valid() ) _children[3]->splitDistance ( childDistance, children );
+  }
 }

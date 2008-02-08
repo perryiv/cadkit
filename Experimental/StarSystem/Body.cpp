@@ -786,18 +786,17 @@ void Body::deserialize ( const XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::splitDistance ( double d, bool dirty )
+void Body::splitDistance ( double d, bool children )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _splitDistance = d;
 
-  if ( dirty )
+  for ( Tiles::iterator iter = _topTiles.begin(); iter != _topTiles.end(); ++iter )
   {
-    // Dirty the tiles.
-    DirtyTiles dirty ( true, Tile::VERTICES | Tile::CHILDREN, Extents( -180, -90, 180, 90 ) );
-    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-    _transform->accept ( *visitor );
+    // Set new split distance.
+    Tiles::value_type tile ( *iter );
+    tile->splitDistance ( d, children );
   }
 }
 

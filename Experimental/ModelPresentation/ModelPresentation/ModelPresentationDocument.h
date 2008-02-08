@@ -169,7 +169,9 @@ protected:
   void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names );
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdDefinitions::MpdTimeSet &timeset );
-  osg::Node*                  _parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step );
+  void                        _parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step );
+  void                        _parseSequenceGroups( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseDynamic( XmlTree::Node &node, Unknown *caller, Unknown *progress ); 
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );

@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_SYSTEM_LOCAL_HOST_MACHINE_CLASS_H_
-#define _USUL_SYSTEM_LOCAL_HOST_MACHINE_CLASS_H_
+#ifndef _USUL_SYSTEM_MEMORY_CLASS_H_
+#define _USUL_SYSTEM_MEMORY_CLASS_H_
 
 #include "Usul/Export/Export.h"
 #include "Usul/Types/Types.h"
@@ -59,4 +59,4 @@ struct USUL_EXPORT Memory
 } // namespace Usul
 
 
-#endif // _USUL_SYSTEM_LOCAL_HOST_MACHINE_CLASS_H_
+#endif // _USUL_SYSTEM_MEMORY_CLASS_H_

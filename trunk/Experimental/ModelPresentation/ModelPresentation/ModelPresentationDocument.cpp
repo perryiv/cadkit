@@ -44,6 +44,7 @@
 #include "Usul/System/Directory.h"
 #include "Usul/System/Host.h"
 #include "Usul/Adaptors/Bind.h"
+#include "Usul/Convert/Convert.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -1427,10 +1428,14 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
   {
     
     XmlTree::Node::RefPtr node ( *iter );
+    if ( "groups" == node->name() )
+    {
+      this->_parseSequenceGroups( *node, caller, progress );
+    }
     if ( "step" == node->name() )
     {
       MpdDefinitions::MpdSequenceStep step;
-      _sequence.groups->addChild( this->_parseSequenceStep( *node, caller, progress, step ), false );
+      this->_parseSequenceStep( *node, caller, progress, step );
 
       _sequence.steps.push_back( step );
     }
@@ -1450,20 +1455,50 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Parse a sequence set of groups
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_parseSequenceGroups( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+  }
+
+  MpdDefinitions::MpdSet set;
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "group" == node->name() )
+    {
+      _sequence.groups->addChild( this->_parseGroup( *node, caller, progress, set ) );
+    }  
+    
+  }
+  
+}
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Parse a sequence step
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step )
+void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-   Attributes& attributes ( node.attributes() );
+  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   step.changeLocation = true;
   step.overwriteGroup = true;
   step.name = "Unknown";
   step.location.first = "";
+  
   
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
@@ -1482,24 +1517,40 @@ osg::Node* ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, U
 
   }
   
-  GroupPtr group ( new osg::Group );
-  MpdDefinitions::MpdSet set;
+ 
+  // initialize all the visible groups in this step to false
+  for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
+  {
+    step.visibleGroups.push_back( false );
+  }
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
-    if ( "group" == node->name() )
-    {
-      group->addChild( this->_parseGroup( *node, caller, progress, set ) );
-      
-    }  
     if ( "location" == node->name() )
     {
       MpdDefinitions::LocationNames names;
       this->_parseLocation( *node, caller, progress, step.location, names );
     } 
+    if( "show" == node->name() )
+    {
+      Attributes& att ( node->attributes() );
+      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      {
+        if ( "index" == att_iter->first )
+        {
+          unsigned int index = 0;
+          Usul::Strings::fromString ( att_iter->second, index );
+          if( step.visibleGroups.size() > index)
+          {
+            step.visibleGroups.at( index ) = true;
+          }
+        }
+      }
+     
+    }
+    
   }
   
-  return group.release();
 
 }
   
@@ -2404,6 +2455,7 @@ void ModelPresentationDocument::_handleSequenceEvent()
   }
 
   // Hide all groups then show the current step if we should do so
+#if 0
   if( true == step.overwriteGroup )
   {
     for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
@@ -2412,6 +2464,14 @@ void ModelPresentationDocument::_handleSequenceEvent()
     }
     _sequence.groups->setValue( index, true );
   }
+#else
+  for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
+  {
+    bool value = step.visibleGroups.at( i );
+    _sequence.groups->setValue( i, value );
+  }
+  
+#endif
 
 }
 

@@ -98,6 +98,7 @@ class MpdDefinitions
         std::string name;
         bool overwriteGroup;
         bool changeLocation;
+        std::vector< bool > visibleGroups;
       };
       struct MpdSequence
       {

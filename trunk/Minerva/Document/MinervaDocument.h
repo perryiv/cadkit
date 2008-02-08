@@ -132,12 +132,6 @@ public:
   void                                     timestepType( IAnimationControl::TimestepType type );
   IAnimationControl::TimestepType          timestepType( ) const;
 
-#if USE_STAR_SYSTEM == 0
-  /// Get/Set the split metric.
-  void                                     splitMetric ( double );
-  bool                                     isSplitMetric ( double ) const;
-#endif
-
   Layers&                                  layers();
   const Layers&                            layers() const;
 
@@ -253,6 +247,10 @@ protected:
 
   /// Resize all points.
   void                                     _resizePoints ( double factor );
+  
+  /// Increase/Decrease split distance.
+  void                                     _increaseSplitDistance();
+  void                                     _decreaseSplitDistance();
 
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );

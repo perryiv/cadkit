@@ -300,13 +300,16 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   const double x ( ( point.x - northWestX ) / header.getSpatialResX() );
   const double y ( ( northWestY - point.y ) / header.getSpatialResY() );
   
-  const long i ( static_cast <long> ( x ) );
-  const long j ( static_cast <long> ( y ) );
+  const long i ( static_cast <long> ( ::floor ( x ) ) );
+  const long j ( static_cast <long> ( ::floor ( y ) ) );
   
-  double a ( _grid->getElevation( i,     j     ) );
-  double b ( _grid->getElevation( i + 1, j     ) );
-  double c ( _grid->getElevation( i,     j + 1 ) );
-  double d ( _grid->getElevation( i + 1, j + 1 ) );
+  const long ip ( static_cast <long> ( x + 1 ) );
+  const long jp ( static_cast <long> ( y + 1 ) );
+  
+  double a ( _grid->getElevation( i,  j  ) );
+  double b ( _grid->getElevation( ip, j  ) );
+  double c ( _grid->getElevation( i,  jp ) );
+  double d ( _grid->getElevation( ip, jp ) );
 
   Usul::Predicates::Tolerance<double,double> tolerance ( 5 );
   
@@ -322,7 +325,10 @@ double ElevationLayerDem::value ( double lon, double lat ) const
   const double u ( x - static_cast < double > ( i ) );
   const double v ( y - static_cast < double > ( j ) );
   
-  return Usul::Math::Interpolate<double>::bilinear ( u, v, a, b, c, d );
+  const double t0 ( Usul::Math::Interpolate<double>::linear ( u, a, b ) );
+  const double t1 ( Usul::Math::Interpolate<double>::linear ( u, c, d ) );
+  return Usul::Math::Interpolate<double>::linear ( v, t0, t1 );
+  //return Usul::Math::Interpolate<double>::bilinear ( u, v, a, b, c, d );
 }
 
 

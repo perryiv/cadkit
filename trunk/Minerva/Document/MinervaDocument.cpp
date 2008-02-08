@@ -1252,26 +1252,11 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   this->_buildTimeSpanMenu();
   m->append ( _timeSpanMenu.get() );
 
-#if USE_STAR_SYSTEM == 0
-  MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split Metric" ) );
-  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "1", 
-                                                                          Usul::Adaptors::bind1<void> ( 1.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
-                                                                          Usul::Adaptors::bind1<bool> ( 1.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
-  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "2", 
-                                                                          Usul::Adaptors::bind1<void> ( 2.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
-                                                                          Usul::Adaptors::bind1<bool> ( 2.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
-  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "3", 
-                                                                          Usul::Adaptors::bind1<void> ( 3.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
-                                                                          Usul::Adaptors::bind1<bool> ( 3.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
-  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "6", 
-                                                                          Usul::Adaptors::bind1<void> ( 6.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
-                                                                          Usul::Adaptors::bind1<bool> ( 6.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
-  split->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "9", 
-                                                                          Usul::Adaptors::bind1<void> ( 9.0, Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::splitMetric ) ), 
-                                                                          Usul::Adaptors::bind1<bool> ( 9.0, Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isSplitMetric ) ) ) ) );
+  MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split" ) );
+  split->append ( new Button ( Usul::Commands::genericCommand ( "Increase Split", Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::_increaseSplitDistance ), Usul::Commands::TrueFunctor() ) ) );
+  split->append ( new Button ( Usul::Commands::genericCommand ( "Decrease Split", Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::_decreaseSplitDistance ), Usul::Commands::TrueFunctor() ) ) );
 
   m->append ( split.get() );
-#endif
   
   m->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Legend", 
                                                                           Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::showLegend ), 
@@ -1364,30 +1349,28 @@ void MinervaDocument::_findFirstLastDate()
 }
 
 
-#if USE_STAR_SYSTEM == 0
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the split metric.
+//  Increase split distance.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::splitMetric ( double value )
+void MinervaDocument::_increaseSplitDistance()
 {
-  _planet->splitMetric ( value );
+  _planet->splitDistance ( _planet->splitDistance() * 1.1 );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is the given number the current split metric?
+//  Decrease split distance.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MinervaDocument::isSplitMetric ( double value ) const
+void MinervaDocument::_decreaseSplitDistance()
 {
-  return value == _planet->splitMetric();
+  _planet->splitDistance ( _planet->splitDistance() * 0.9 );
 }
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

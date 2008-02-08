@@ -439,12 +439,9 @@ void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Planet::splitMetric ( double value )
+void Planet::splitDistance ( double value )
 {
-#if USE_STAR_SYSTEM == 0
-  _planet->land()->setSplitMetricRatio ( value );
-  _planet->land()->resetGraph();
-#endif
+  _system->body()->splitDistance ( value, true );
 }
 
 
@@ -454,13 +451,9 @@ void Planet::splitMetric ( double value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Planet::splitMetric () const
+double Planet::splitDistance () const
 {
-#if USE_STAR_SYSTEM
-  return 0.0;
-#else
-  return _planet->land()->getSplitMetricRatio();
-#endif
+  return _system->body()->splitDistance();
 }
 
 

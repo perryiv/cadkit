@@ -152,7 +152,7 @@ public:
   void                      splitCallback ( SplitCallback * );
 
   /// Get/Set the split distance.
-  void                      splitDistance ( double distance, bool dirty = true );
+  void                      splitDistance ( double distance, bool children = true );
   double                    splitDistance() const;
 
   // Request texture.

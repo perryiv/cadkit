@@ -192,6 +192,10 @@ public:
   /// Toggle the legend on and off.
   bool                                     isShowLegend() const;
   void                                     showLegend( bool b );
+
+  /// Get/Set show compass state.
+  void                                     showCompass( bool b );
+  bool                                     showCompass() const;
   
   /// Legend width in percentage of screen width.
   void                                     legendWidth( float p );
@@ -334,6 +338,8 @@ private:
   unsigned int _height;
   
   UpdateListeners _updateListeners;
+
+  bool _showCompass;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

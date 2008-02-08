@@ -86,39 +86,30 @@ public:
   
   // Set the pointer position.
   void                                            pointer ( const osg::Vec3& position );
+
+  /// Get/Set show compass state.
+  void                                            showCompass( bool b );
+  bool                                            showCompass() const;
+
 protected:
 
   virtual ~Planet();
   
-  // Callback to get the eye position.
+  // Callback to get the eye position.  This is a bit of a hack and needs to be improved.
   class Callback : public osg::NodeCallback
   {
   public:
     typedef osg::NodeCallback BaseClass;
     
-    Callback () : BaseClass()
+    Callback () : BaseClass(), _hpr(), _eye(), _planet ( 0x0 )
     {
     }
     
-    virtual void operator()( osg::Node* node, osg::NodeVisitor* nv )
-    { 
-      switch( nv->getVisitorType() )
-      {
-        case osg::NodeVisitor::CULL_VISITOR:
-        {
-          osgUtil::CullVisitor* cullVisitor = dynamic_cast<osgUtil::CullVisitor*>( nv );
-          if( cullVisitor )
-          {
-            _eye = cullVisitor->getEyePoint();
-          }
-          break;
-        }
-      }
-          
-      this->traverse( node, nv );
-    }
+    virtual void operator()( osg::Node* node, osg::NodeVisitor* nv );
       
-      osg::Vec3d _eye;
+    osg::Vec3d _hpr;
+    osg::Vec3d _eye;
+    Planet *_planet;
   };
 
 private:

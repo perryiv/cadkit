@@ -13,8 +13,11 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-#include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
+
+#include <vector>
+#include <map>
+#include <string>
 
 namespace Usul {
 namespace Interfaces {
@@ -28,8 +31,24 @@ struct IProjectCoordinates : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1081536333u };
 
+  struct ProjectionInfo
+  {
+    ProjectionInfo ( const std::string& name_, int code_ ) : name ( name_ ), code ( code_ )
+    {
+    }
+
+    std::string name;
+    int code;
+  };
+
+  typedef std::vector<ProjectionInfo> ProjectionInfos;
+  typedef std::map<std::string, ProjectionInfos> Projections;
+
+  /// Get a list of projection names.
+  virtual Projections        projectionList() const = 0;
+
   /// Project to lat/lon with elevation using given spatial reference id.
-  virtual void projectToSpherical ( const Usul::Math::Vec3d& orginal, unsigned int srid, Usul::Math::Vec3d& latLonPoint ) const = 0;
+  virtual void               projectToSpherical ( const Usul::Math::Vec3d& orginal, unsigned int srid, Usul::Math::Vec3d& latLonPoint ) const = 0;
 
 }; // struct IProjectCoordinates
 

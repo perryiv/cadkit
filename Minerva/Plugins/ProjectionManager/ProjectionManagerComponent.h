@@ -22,7 +22,6 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
-#include "Usul/Interfaces/IPlanetCoordinates.h"
 
 
 class ProjectionManagerComponent : public Usul::Base::Referenced,
@@ -49,7 +48,10 @@ protected:
   /// Return name of plugin.
   virtual std::string           getPluginName() const;
 
-  /// Project to lat/lon with elevation using given spatial reference id.
+  /// Get a list of projection names.
+  virtual Projections           projectionList() const;
+
+  /// Project to lat/lon ( no elevation ) using given spatial reference id.
   virtual void                  projectToSpherical ( const Usul::Math::Vec3d& orginal, unsigned int srid, Usul::Math::Vec3d& latLonPoint ) const;
 
   // Do not copy.

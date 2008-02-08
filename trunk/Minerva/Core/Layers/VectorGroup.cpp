@@ -30,6 +30,7 @@ VectorGroup::VectorGroup() :
   BaseClass(),
   _layers()
 {
+  this->_addMember ( "layers", _layers );
 }
 
 

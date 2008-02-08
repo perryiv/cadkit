@@ -59,8 +59,6 @@
 
 #endif
 
-//#include "ossimPlanet/mkUtils.h"
-
 
 using namespace Minerva::Document;
 
@@ -127,6 +125,8 @@ Planet::Planet() :
   _planet                       = new ossimPlanet();
   Usul::Pointers::reference ( _planet );
 #endif
+  
+  _hud.showCompass ( true );
   
   this->_init();
 }
@@ -333,6 +333,7 @@ osg::Group* Planet::buildScene()
     group->addChild ( _hud.buildScene() );
     
     _callback = new Callback;
+    _callback->_planet = this;
     group->setCullCallback ( _callback.get() );
   }
   return group.release();
@@ -629,35 +630,10 @@ void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
 {
 #if USE_STAR_SYSTEM
 
-  Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
-  
-  if ( _callback.valid() && vm.valid() )
+  if ( _callback.valid() )
   {
-    osg::Vec3d eye ( _callback->_eye );
-    
-    // Convert the eye to lat,lon, height.
-    Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
-    Usul::Math::Vec3d latLonPoint;
-    this->convertFromPlanet( point, latLonPoint );
-
-    // Get the inverse of the view matrix.
-    osg::Matrixd viewMatrix ( osg::Matrixd::inverse ( vm->getViewMatrix() ) );
-    
-    // Get the matrix to point north at the eye position.
-    osg::Matrixd localLsr ( this->planetRotationMatrix( latLonPoint[1], latLonPoint[0], latLonPoint[2], 0.0 ) ); 
-    
-    osg::Matrixd invert;
-    if ( invert.invert ( localLsr ) )
-    {
-      osg::Matrixf m ( viewMatrix * invert );
-      osg::Vec3d hpr;
-      Detail::matrixToHpr( hpr, m );
-      _hud.hpr( hpr[0], hpr[1], hpr[2] );
-
-      _hud.showCompass ( true );      
-    }
-    else
-      _hud.showCompass ( false );
+    osg::Vec3d hpr ( _callback->_hpr );
+    _hud.hpr (  hpr[0], hpr[1], hpr[2] );
   }
 
   const unsigned int queued    ( ( 0x0 == _manager ) ? 0 : _manager->numJobsQueued() );
@@ -697,4 +673,74 @@ void Planet::pointer ( const osg::Vec3& position )
   this->convertFromPlanet( point, latLonPoint );
   _hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
   //_hud.position( position[1], position[1], position[2] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get data from cull visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::Callback::operator()( osg::Node* node, osg::NodeVisitor* nv )
+{ 
+  if ( osg::NodeVisitor::CULL_VISITOR ==  nv->getVisitorType() )
+  {
+    osgUtil::CullVisitor* cullVisitor = dynamic_cast<osgUtil::CullVisitor*>( nv );
+    if( cullVisitor )
+    {
+      // Set the eye position.
+      _eye = cullVisitor->getEyePoint();
+
+      if ( 0x0 != _planet )
+      {
+         // Convert the eye to lat,lon, height.
+        Usul::Math::Vec3d point ( _eye[0], _eye[1], _eye[2] );
+        Usul::Math::Vec3d latLonPoint;
+        _planet->convertFromPlanet( point, latLonPoint );
+
+        // Get the model view matrix from the cull visitor.
+        osg::ref_ptr<osg::RefMatrix> m ( cullVisitor->getModelViewMatrix() );
+
+        // Get the inverse of the view matrix.
+        osg::Matrixd viewMatrix ( 0x0 != m.get() ? osg::Matrixd::inverse ( *m ) : osg::Matrixd() );
+    
+        // Get the matrix to point north at the eye position.
+        osg::Matrixd localLsr ( _planet->planetRotationMatrix( latLonPoint[1], latLonPoint[0], latLonPoint[2], 0.0 ) ); 
+    
+        osg::Matrixd invert;
+        if ( invert.invert ( localLsr ) )
+        {
+          osg::Matrixf matrix ( viewMatrix * invert );
+          Detail::matrixToHpr( _hpr, matrix );
+        }
+      }
+    }
+  }
+  
+  this->traverse( node, nv );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show compass state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Planet::showCompass( bool b )
+{
+  _hud.showCompass ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show compass state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Planet::showCompass() const
+{
+  return _hud.showCompass();
 }

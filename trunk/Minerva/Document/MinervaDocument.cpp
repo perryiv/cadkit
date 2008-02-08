@@ -110,6 +110,7 @@ MinervaDocument::MinervaDocument() :
   _width( 0 ),
   _height( 0 ),
   _updateListeners(),
+  _showCompass ( true ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _layers );
@@ -155,6 +156,7 @@ MinervaDocument::MinervaDocument() :
 #ifndef __APPLE__
 
   this->showLegend ( false );
+  this->showCompass ( false );
     
   if( Usul::System::Host::name() == "viz4" )
   {
@@ -164,6 +166,10 @@ MinervaDocument::MinervaDocument() :
     this->legendHeightPerItem ( 60 );
     this->legendPosition( LEGEND_TOP_LEFT );
   }
+
+  if ( Usul::System::Host::name() == "viz0" )
+    this->showCompass ( true );
+    
 #endif
 #endif
 
@@ -1171,7 +1177,7 @@ void MinervaDocument::accept ( Minerva::Core::Visitor& visitor )
 {
   for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {
-    if ( Minerva::Core::Layers::Layer *layer = dynamic_cast < Minerva::Core::Layers::Layer * > ( (*iter).get() ) )
+    if ( Minerva::Core::Layers::Vector *layer = dynamic_cast < Minerva::Core::Layers::Vector * > ( (*iter).get() ) )
       layer->accept ( visitor );
   }
 }
@@ -1392,8 +1398,8 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
   Usul::Interfaces::IViewport::QueryPtr vp ( caller );
   if ( vp.valid () )
   {
-    const unsigned int width  ( static_cast < unsigned int > ( vp->width () ) );
-    const unsigned int height ( static_cast < unsigned int > ( vp->height () ) );
+    const unsigned int width  ( static_cast < unsigned int > ( vp->width() ) );
+    const unsigned int height ( static_cast < unsigned int > ( vp->height() ) );
     
     if ( width > 0 && height > 0 && ( width != _width || height != _height ) )
     {
@@ -1510,6 +1516,7 @@ void MinervaDocument::_makePlanet()
     return;
   
   _planet = new Planet;
+  _planet->showCompass ( this->showCompass() );
 }
 
 
@@ -1661,7 +1668,7 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
   if( this->isShowLegend() )
   {
     // Set the legend size.
-    unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
+    unsigned int legendWidth  ( static_cast < unsigned int > ( /*_width * _legendWidth */ 1200 ) );
     unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
     
     _legend->maximiumSize( legendWidth, legendHeight );
@@ -1893,4 +1900,32 @@ void MinervaDocument::removeUpdateListener ( IUnknown *caller )
     UpdateListeners::iterator end ( std::remove ( _updateListeners.begin(), _updateListeners.end(), value ) );
     _updateListeners.erase ( end, _updateListeners.end() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show compass state.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showCompass( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _showCompass = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show compass state.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::showCompass() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _showCompass;
 }

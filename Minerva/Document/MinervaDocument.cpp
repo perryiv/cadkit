@@ -1668,7 +1668,7 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
   if( this->isShowLegend() )
   {
     // Set the legend size.
-    unsigned int legendWidth  ( static_cast < unsigned int > ( /*_width * _legendWidth */ 1200 ) );
+    unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
     unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
     
     _legend->maximiumSize( legendWidth, legendHeight );

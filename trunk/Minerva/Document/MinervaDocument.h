@@ -215,6 +215,11 @@ public:
   
   virtual void                             addUpdateListener ( IUnknown *caller );
   virtual void                             removeUpdateListener ( IUnknown *caller );
+  
+  /// Toggle the skirts on and off.
+  bool                                     isUseSkirts() const;
+  void                                     useSkirts( bool b );
+  
 protected:
   virtual ~MinervaDocument();
 

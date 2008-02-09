@@ -18,9 +18,9 @@
 
 using namespace Minerva::Core::Functors;
 
-USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
-USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4 );
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4d );
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4d );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4d );
 USUL_FACTORY_REGISTER_CREATOR ( GradientColorFunctor );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ BaseColorFunctor* GradientColorFunctor::clone() const
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void GradientColorFunctor::minColor( const osg::Vec4& color )
+void GradientColorFunctor::minColor( const osg::Vec4d& color )
 {
   _minColor = color;
 }
@@ -90,7 +90,7 @@ void GradientColorFunctor::minColor( const osg::Vec4& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& GradientColorFunctor::minColor () const
+const osg::Vec4d& GradientColorFunctor::minColor () const
 {
   return _minColor;
 }
@@ -102,7 +102,7 @@ const osg::Vec4& GradientColorFunctor::minColor () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GradientColorFunctor::maxColor( const osg::Vec4& color )
+void GradientColorFunctor::maxColor( const osg::Vec4d& color )
 {
   _maxColor = color;
 }
@@ -114,7 +114,7 @@ void GradientColorFunctor::maxColor( const osg::Vec4& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& GradientColorFunctor::maxColor () const
+const osg::Vec4d& GradientColorFunctor::maxColor () const
 {
   return _maxColor;
 }

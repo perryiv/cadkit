@@ -12,10 +12,11 @@
 #define __GRADIENT_COLOR_FUNCTOR_H__
 
 #include "Minerva/Core/Export.h"
-
-#include "BaseColorFunctor.h"
+#include "Minerva/Core/Functors/BaseColorFunctor.h"
 
 #include "Serialize/XML/Macros.h"
+
+#include "osg/Vec4d"
 
 namespace Minerva {
 namespace Core {
@@ -36,12 +37,12 @@ struct MINERVA_EXPORT GradientColorFunctor : public Minerva::Core::Functors::Bas
   virtual BaseColorFunctor*    clone() const;
 
   /// Get/Set the min color.
-  void               minColor( const osg::Vec4& );
-  const osg::Vec4&   minColor () const;
+  void               minColor( const osg::Vec4d& );
+  const osg::Vec4d&  minColor () const;
 
   /// Get/Set the max color.
-  void               maxColor( const osg::Vec4& );
-  const osg::Vec4&   maxColor () const;
+  void               maxColor( const osg::Vec4d& );
+  const osg::Vec4d&  maxColor () const;
 
   /// Get/Set min value
   void               minValue ( double minValue );
@@ -58,8 +59,8 @@ struct MINERVA_EXPORT GradientColorFunctor : public Minerva::Core::Functors::Bas
 
 private:
 
-  osg::Vec4 _minColor;
-  osg::Vec4 _maxColor;
+  osg::Vec4d _minColor;
+  osg::Vec4d _maxColor;
   double _minValue;
   double _maxValue;
 

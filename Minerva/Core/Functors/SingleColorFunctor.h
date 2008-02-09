@@ -12,10 +12,11 @@
 #define __SINGLE_COLOR_FUNCTOR_H__
 
 #include "Minerva/Core/Export.h"
-
-#include "BaseColorFunctor.h"
+#include "Minerva/Core/Functors/BaseColorFunctor.h"
 
 #include "Serialize/XML/Macros.h"
+
+#include "osg/Vec4d"
 
 namespace Minerva {
 namespace Core {
@@ -36,8 +37,8 @@ struct MINERVA_EXPORT SingleColorFunctor : public Minerva::Core::Functors::BaseC
   virtual BaseColorFunctor* clone() const;
 
   /// Get/Set the color.
-  void               color( const osg::Vec4& );
-  const osg::Vec4&   color () const;
+  void                color( const osg::Vec4d& );
+  const osg::Vec4d&   color () const;
 
   /// Get the color.
   virtual osg::Vec4  operator() ( double value ) const;
@@ -46,7 +47,7 @@ struct MINERVA_EXPORT SingleColorFunctor : public Minerva::Core::Functors::BaseC
 
 private:
 
-  osg::Vec4 _color;
+  osg::Vec4d _color;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( SingleColorFunctor );
 };

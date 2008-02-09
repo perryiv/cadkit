@@ -126,7 +126,12 @@ void Vector::traverse ( Minerva::Core::Visitor& visitor )
 {
   Guard guard ( this );
   for ( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
-    (*iter)->accept ( visitor );
+  {
+    DataObjectPtr dataObject ( *iter );
+
+    if ( dataObject.valid() )
+      dataObject->accept ( visitor );
+  }
 }
 
 
@@ -204,7 +209,9 @@ bool Vector::showLayer() const
 void Vector::addDataObject ( DataObject *dataObject )
 {
   Guard guard ( this->mutex() );
-  _dataObjects.push_back ( dataObject );
+
+  if ( 0x0 != dataObject )
+    _dataObjects.push_back ( dataObject );
 }
 
 

@@ -1267,6 +1267,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   m->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Legend", 
                                                                           Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::showLegend ), 
                                                                           Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isShowLegend ) ) ) );
+  
+  m->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Use Skirts", 
+                                                                       Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::useSkirts ), 
+                                                                       Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isUseSkirts ) ) ) );
 
   menu.append ( m );
 }
@@ -1928,4 +1932,33 @@ bool MinervaDocument::showCompass() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _showCompass;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set use skirts state.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isUseSkirts() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( _planet.valid() ? _planet->useSkirts() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle the skirts on and off.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::useSkirts( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  if ( _planet.valid() )
+    _planet->useSkirts ( b );
 }

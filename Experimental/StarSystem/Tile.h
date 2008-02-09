@@ -89,7 +89,6 @@ public:
   typedef MeshSize ImageSize;
   typedef std::vector < Tile::RefPtr > Tiles;
   typedef Tiles Children;
-  typedef std::pair < bool, unsigned long > JobID;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   typedef osg::BoundingSphere BSphere;
   typedef osg::ref_ptr<osg::Node> NodePtr;
@@ -246,6 +245,7 @@ private:
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;
   osg::ref_ptr<osg::Group> _borders;
+  osg::ref_ptr<osg::Group> _skirts;
   TextureMap _textureMap;
   ImageSize _imageSize;
 };

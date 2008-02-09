@@ -73,6 +73,10 @@ public:
   /// Get/Set the split metric.
   void                                            splitDistance ( double );
   double                                          splitDistance () const;
+  
+  /// Get/Set use skirts.
+  void                                            useSkirts( bool b );
+  bool                                            useSkirts() const;
  
   // Pre- and post-render notifications.
   void                                            preRender  ( Usul::Interfaces::IUnknown *caller );

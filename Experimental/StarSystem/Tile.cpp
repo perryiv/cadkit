@@ -91,6 +91,7 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _tileJob ( 0x0 ),
   _boundingSphere(),
   _borders ( new osg::Group ),
+  _skirts ( new osg::Group ),
   _textureMap (),
   _imageSize ( imageSize )
 {
@@ -140,6 +141,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _tileJob ( 0x0 ),
   _boundingSphere ( tile._boundingSphere ),
   _borders ( new osg::Group ),
+  _skirts ( new osg::Group ),
   _textureMap ( tile._textureMap ),
   _imageSize ( tile._imageSize )
 {
@@ -181,6 +183,7 @@ void Tile::_destroy()
   delete _mesh; _mesh = 0x0;
   delete _mutex; _mutex = 0x0;
   _borders = 0x0;
+  _skirts = 0x0;
 }
 
 
@@ -274,18 +277,21 @@ void Tile::updateMesh()
   osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( ll ) );
 
-  // Build skirts if we're supposed to.
-  if ( true == _body->useSkirts() )
-  {
-    // Depth of skirt.  TODO: This function needs to be tweeked.
-    const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+  // Build skirts.
+  // Depth of skirt.  TODO: This function needs to be tweeked.
+  const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+    
+  // Remove old skirts.
+  OsgTools::Group::removeAllChildren ( _skirts.get() );
 
-    // Add skirts to group.
-    mt->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll ) ); // Left skirt.
-    mt->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll ) ); // Right skirt.
-    mt->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll ) ); // Bottom skirt.
-    mt->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll ) ); // Top skirt.
-  }
+  // Add skirts to group.
+  _skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll ) ); // Left skirt.
+  _skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll ) ); // Right skirt.
+  _skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll ) ); // Bottom skirt.
+  _skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll ) ); // Top skirt.
+    
+  // Add to the matrix transform.
+  mt->addChild ( _skirts.get() );
 
   // Make the ground.
   mt->addChild ( mesh() );
@@ -460,6 +466,16 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   if ( low )
   {    
     this->updateTexture();
+    
+    // See if we should draw skirts.
+    if ( true == _body->useSkirts() )
+    {
+      _skirts->setNodeMask ( 0xff );
+    }
+    else
+    {
+      _skirts->setNodeMask ( 0x0 );
+    }
 
     // Turn off the borders.
     OsgTools::Group::removeAllChildren ( _borders.get() );
@@ -744,7 +760,7 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
       {
         TextureData data ( parent.valid() ? parent->texture ( raster.get() ) : TextureData ( 0x0, tCoords ) );
         image = data.first;
-      
+
         // Set the new texture coordinates.
         tCoords = Tile::_textureCoordinatesSubRegion ( data.second, index );
       }
@@ -1514,7 +1530,6 @@ osg::BoundingSphere Tile::computeBound() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  //return BaseClass::computeBound();
   return _boundingSphere;
 }
 

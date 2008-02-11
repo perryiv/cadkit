@@ -626,7 +626,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
                                 Indices index )
 {
   // If our logic is correct, this should be true.
-  USUL_ASSERT ( this->referenceCount() > 1 );
+  USUL_ASSERT ( this->referenceCount() >= 1 );
 
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   

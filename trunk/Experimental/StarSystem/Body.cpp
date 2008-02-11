@@ -567,11 +567,6 @@ void Body::useSkirts ( bool use )
 
   // Set the flag.
   _useSkirts = use;
-
-  // Dirty the tiles.
-  /*DirtyTiles dirty ( true, Tile::VERTICES );
-  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-  _transform->accept ( *visitor );*/
 }
 
 

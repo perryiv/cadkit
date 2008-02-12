@@ -85,6 +85,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _root ( new osg::Group ),
   _static ( new osg::Group ),
   _sceneTree ( 0x0 ),
+  _models( new osg::Switch ),
   _sets ( 0x0 ),
   _update( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
   _checkFileSystem( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
@@ -117,19 +118,6 @@ ModelPresentationDocument::ModelPresentationDocument() :
 ModelPresentationDocument::~ModelPresentationDocument()
 {
   USUL_TRACE_SCOPE;
-
-  // Cancel all jobs.
-  //foreach ( MpdJobs::iterator i = _jobs.begin(); i != _jobs.end() )
-  //{
-  //  MpdJob::RefPtr job ( i->second );
-  //  if ( ( true == job.valid() ) && ( false == job->isDone() ) )
-  //  {
-  //    job->cancel();
-  //  }
-  //}
-  //_jobs.clear();
-
-
 }
 
 
@@ -143,8 +131,6 @@ void ModelPresentationDocument::clear ( Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
-
 }
 
 
@@ -359,6 +345,7 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   _root->removeChild( 0, _root->getNumChildren() );
 
   // Add sets to the scene tree
+#if 0
   for( unsigned int i = 0; i < _sceneTree.size(); ++i )
   {
     _root->addChild( _sceneTree.at( i ).get() );
@@ -366,7 +353,9 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   
   // Add static to the scene tree
   _root->addChild( _static.get() );
-
+#else
+  _root->addChild( _models.get() );
+#endif
   // Add time sets to the scene tree
   for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
@@ -623,6 +612,7 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+#if 0
   for( unsigned int i = 0; i < _sceneTree.at( set )->getNumChildren(); ++i )
   {
     this->_sceneTree.at( set )->setValue( i, false );
@@ -630,6 +620,16 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
     _sets.at( set ).index = group;
   
   this->_sceneTree.at( set )->setValue( group, true );
+#else
+  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
+  {
+    bool value = false;
+    if( _sets.at( set ).groups.at( group ).visibleModels.size() > i )
+      value = _sets.at( set ).groups.at( group ).visibleModels.at( i );
+    _models->setValue( i, value );
+  }
+  _sets.at( set ).index = group;
+#endif
   
 }
 
@@ -882,11 +882,51 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
       //std::cout << "Parsing dynamic entries..." << std::endl;
       this->_parseSequence( *node, caller, progress );
     }
+    if ( "models" == node->name() )
+    {
+      //std::cout << "Parsing dynamic entries..." << std::endl;
+      this->_parseModels( *node, caller, progress );
+    }
   }
   
   return true;
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a set of models for the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+{ 
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  
+  Attributes& attributes ( node.attributes() );
+  Children& children ( node.children() );
+  
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+           
+  }
+  // TODO: create a set here --
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "model" == node->name() )
+    {
+      _models->addChild( this->_parseModel( *node, caller, progress ) );
+    }  
+  }
+#if 0
+  // Turn off display lists
+  OsgTools::DisplayLists dl( false );
+  dl( _models.get() );
+#endif
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1100,10 +1140,12 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
     if ( "group" == node->name() )
     {
       //std::cout << "Found group..." << std::endl;
-      switchNode->addChild( this->_parseGroup( *node, caller, progress, set ), false );
+      MpdDefinitions::MpdGroup grp;
+      this->_parseGroup( *node, caller, progress, set, grp );
+      set.groups.push_back( grp );
     }
   }
-  switchNode->setValue( 0, true );
+  
 
 #if 1
   // Turn off display lists
@@ -1112,7 +1154,6 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
 #endif
 
   this->_sets.push_back( set );
-  this->_sceneTree.push_back( switchNode.release() );
 }
 
 
@@ -1122,7 +1163,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set )
+osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set, MpdDefinitions::MpdGroup & grp )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1131,6 +1172,13 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   std::string groupName = "group";
+  
+  grp.name = "Unknown";
+  grp.visibleModels.resize( 0 );
+  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
+  {
+    grp.visibleModels.push_back( false );
+  }
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "name" == iter->first )
@@ -1138,6 +1186,7 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
       
       Usul::Strings::fromString ( iter->second, groupName );
       set.groupNames.push_back( groupName );
+      grp.name = groupName;
     }
     if ( "numitems" == iter->first )
     {
@@ -1157,6 +1206,22 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
       //std::cout << "Found group model: " << std::flush;
       group->addChild( this->_parseModel( *node, caller, progress ) );
     }  
+    if ( "show" == node->name() )
+    {
+      Attributes& att ( node->attributes() );
+      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      {
+        if ( "index" == att_iter->first )
+        {
+          unsigned int index = 0;
+          Usul::Strings::fromString ( att_iter->second, index );
+          if( grp.visibleModels.size() > index)
+          {
+            grp.visibleModels.at( index ) = true;
+          }
+        }
+      }
+    } 
   }
   return group.release();
 }
@@ -1476,7 +1541,8 @@ void ModelPresentationDocument::_parseSequenceGroups( XmlTree::Node &node, Unkno
     XmlTree::Node::RefPtr node ( *iter );
     if ( "group" == node->name() )
     {
-      _sequence.groups->addChild( this->_parseGroup( *node, caller, progress, set ) );
+      MpdDefinitions::MpdGroup grp;
+      _sequence.groups->addChild( this->_parseGroup( *node, caller, progress, set, grp ) );
     }  
     
   }
@@ -1949,6 +2015,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   // Add the model menu
   if( _useModels )
   {
+#if 0
     for( unsigned int i = 0; i < _sets.size(); ++i )
     {
       const std::string menuName ( _sets.at(i).menuName );
@@ -1961,6 +2028,20 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
       }
       ModelMenu->append( ModelSubMenu.get() );
     }
+#else
+    for( unsigned int i = 0; i < _sets.size(); ++i )
+    {
+      const std::string menuName ( _sets.at( i ).menuName );
+      MenuKit::Menu::RefPtr ModelMenu ( menu.find ( menuName, true ) );
+      MenuKit::Menu::RefPtr ModelSubMenu ( new MenuKit::Menu ( _sets.at(i).name, MenuKit::Menu::VERTICAL ) );
+     
+      for( unsigned int j = 0; j < _sets.at( i ).groups.size(); ++j )
+      {
+         ModelSubMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at( i ).groups.at( j ).name, i, j ) ) );
+      }
+      ModelMenu->append( ModelSubMenu.get() );
+    }
+#endif
     
     //menu.append ( ModelMenu );
   }

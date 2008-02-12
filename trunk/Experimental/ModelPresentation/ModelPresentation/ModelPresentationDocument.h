@@ -167,13 +167,14 @@ protected:
   void                        _parseSequence( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseLocation( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names );
   void                        _parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names );
-  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set );
+  osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set, MpdDefinitions::MpdGroup & grp );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdDefinitions::MpdTimeSet &timeset );
   void                        _parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step );
   void                        _parseSequenceGroups( XmlTree::Node &node, Unknown *caller, Unknown *progress );
-
+  void                        _parseModels( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseDynamic( XmlTree::Node &node, Unknown *caller, Unknown *progress ); 
+ 
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress );
   MatrixVec                   _getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const;
@@ -216,7 +217,7 @@ private:
   GroupPtr                      _static;
   MpdScene                      _sceneTree;
   MpdGroups                     _groups;
-  MpdModels                     _models;
+  osg::ref_ptr< osg::Switch >   _models;
   MpdSets                       _sets;
   MpdTimeSets                   _timeSets;
   MpdDynamicSets                _dynamicSets;
@@ -249,6 +250,7 @@ private:
   unsigned int                  _dynamicNotLoadedTextYPos;
 
   osg::ref_ptr< osg::Camera >   _camera;
+
   
 };
 

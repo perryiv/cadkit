@@ -783,7 +783,7 @@ void StateSet::setMaterialDefault ( osg::Node *node )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set a the material.
+//  Set the material.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -795,4 +795,26 @@ void StateSet::setMaterial ( osg::Node *node, osg::Material *mat )
 
   node->getOrCreateStateSet()->setAttributeAndModes 
     ( mat, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const osg::Vec4f &diffuse )
+{
+  // Handle bad input.
+  if ( 0x0 == node )
+    return;
+
+  osg::ref_ptr<osg::Material> mat ( OsgTools::State::StateSet::getMaterialDefault() );
+  if ( true == mat.valid() )
+  {
+    mat->setAmbient ( osg::Material::FRONT_AND_BACK, ambient );
+    mat->setDiffuse ( osg::Material::FRONT_AND_BACK, diffuse );
+    OsgTools::State::StateSet::setMaterial ( node, mat.get() );
+  }
 }

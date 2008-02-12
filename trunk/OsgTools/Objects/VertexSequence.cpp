@@ -1,0 +1,309 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Perry L Miller IV
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Base class for objects that are represented by a sequence of vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "OsgTools/Objects/VertexSequence.h"
+
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Functions/Execute.h"
+#include "Usul/Functions/SafeCall.h"
+#include "Usul/Trace/Trace.h"
+
+#include <stdexcept>
+
+using namespace OsgTools::Objects;
+
+OSG_TOOLS_OBJECTS_IMPLEMENT_CLASS ( VertexSequence );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::VertexSequence() : BaseClass(),
+  _geometry ( new osg::Geometry )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::VertexSequence ( const VertexSequence &copyMe ) : BaseClass ( copyMe ),
+  _geometry ( 0x0 )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( copyMe.mutex() );
+  _geometry = new osg::Geometry ( *(copyMe._geometry), osg::CopyOp::DEEP_COPY_ALL );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::~VertexSequence()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &VertexSequence::_destroy ), "1917476907" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VertexSequence::_destroy()
+{
+  USUL_TRACE_SCOPE;
+
+  // Don't clear the shared vectors because we may not own them.
+  _geometry = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VertexSequence::update ( Usul::Interfaces::IUnknown *unknown )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::update ( unknown );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int VertexSequence::numVertices() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( 0x0 == _geometry->getVertexArray() ) ? 0 : _geometry->getVertexArray()->getNumElements() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int VertexSequence::numNormals() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( 0x0 == _geometry->getNormalArray() ) ? 0 : _geometry->getNormalArray()->getNumElements() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int VertexSequence::numColors() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( 0x0 == _geometry->getColorArray() ) ? 0 : _geometry->getColorArray()->getNumElements() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int VertexSequence::numTexCoords() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( 0x0 == _geometry->getTexCoordArray ( 0 ) ) ? 0 : _geometry->getTexCoordArray ( 0 )->getNumElements() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::GeometryPtr VertexSequence::geometry()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( false == _geometry.valid() )
+  {
+    _geometry = new osg::Geometry;
+  }
+
+  return _geometry;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::VerticesPtr VertexSequence::_getVertices ( bool makeIfNeeded )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( ( 0x0 == _geometry->getVertexArray() ) && ( true == makeIfNeeded ) )
+  {
+    _geometry->setVertexArray ( new Vertices );
+  }
+
+  return VerticesPtr ( dynamic_cast < Vertices * > ( _geometry->getVertexArray() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the normals.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::NormalsPtr VertexSequence::_getNormals ( bool makeIfNeeded )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( ( 0x0 == _geometry->getNormalArray() ) && ( true == makeIfNeeded ) )
+  {
+    _geometry->setNormalArray ( new Normals );
+  }
+
+  return NormalsPtr ( dynamic_cast < Normals * > ( _geometry->getNormalArray() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::ColorsPtr VertexSequence::_getColors ( bool makeIfNeeded )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( ( 0x0 == _geometry->getColorArray() ) && ( true == makeIfNeeded ) )
+  {
+    _geometry->setColorArray ( new Colors );
+  }
+
+  return ColorsPtr ( dynamic_cast < Colors * > ( _geometry->getColorArray() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VertexSequence::TexCoordsPtr VertexSequence::_getTexCoords ( bool makeIfNeeded )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( ( 0x0 == _geometry->getTexCoordArray ( 0 ) ) && ( true == makeIfNeeded ) )
+  {
+    _geometry->setTexCoordArray ( 0, new TexCoords );
+  }
+
+  return TexCoordsPtr ( dynamic_cast < TexCoords * > ( _geometry->getTexCoordArray ( 0 ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VertexSequence::_setVertices ( VerticesPtr v )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _geometry->setVertexArray ( v.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the normals.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VertexSequence::_setNormals ( NormalsPtr n )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _geometry->setNormalArray ( n.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the colors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VertexSequence::_setColors ( ColorsPtr c )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _geometry->setColorArray ( c.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VertexSequence::_setTexCoords ( TexCoordsPtr t )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _geometry->setTexCoordArray ( 0, t.get() );
+}

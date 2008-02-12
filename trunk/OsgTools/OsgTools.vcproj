@@ -1118,6 +1118,46 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Objects"
+				>
+				<File
+					RelativePath=".\Objects\Cylinder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\Cylinder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\Macros.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\Object.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\Object.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\RegularGrid.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\RegularGrid.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\VertexSequence.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Objects\VertexSequence.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

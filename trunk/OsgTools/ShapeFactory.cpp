@@ -78,6 +78,8 @@ void ShapeFactory::clear()
 {
   _latLongSpheres.clear();
   _cubes.clear();
+  _cylinders.clear();
+  _cylindersTriangles.clear();
 }
 
 

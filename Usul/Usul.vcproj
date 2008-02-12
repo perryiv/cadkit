@@ -2942,6 +2942,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Preprocess"
+				>
+				<File
+					RelativePath=".\Preprocess\UniqueName.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

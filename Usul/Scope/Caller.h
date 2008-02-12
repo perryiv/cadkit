@@ -54,17 +54,44 @@ struct Caller : public Usul::Base::Referenced
 
 namespace Detail
 {
-  template < class F1, class F2 > struct CallerImpl : public Usul::Scope::Caller
+  template < class F > struct Call1 : public Usul::Scope::Caller
   {
     typedef Usul::Scope::Caller BaseClass;
-    CallerImpl ( F1 f1, F2 f2 ) : _f2 ( f2 )
+    Call1 ( F f ) : _f ( f )
+    {
+    }
+    Call1 ( const Call1 &c ) : _f ( c._f )
+    {
+    }
+    virtual ~Call1()
+    {
+      _f();
+    }
+  private:
+    F _f;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Implementation class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class F1, class F2 > struct Call2 : public Usul::Scope::Caller
+  {
+    typedef Usul::Scope::Caller BaseClass;
+    Call2 ( F1 f1, F2 f2 ) : _f2 ( f2 )
     {
       f1();
     }
-    CallerImpl ( const CallerImpl &c ) : _f2 ( c._f2 )
+    Call2 ( const Call2 &c ) : _f2 ( c._f2 )
     {
     }
-    virtual ~CallerImpl()
+    virtual ~Call2()
     {
       _f2();
     }
@@ -76,15 +103,20 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function. Example usage: 
+//  Helper functions. Example usage: 
 //  Usul::Scope::Caller::RefPtr be ( Usul::Scope::makeCaller 
 //    ( Usul::Adaptors::bind1 ( GL_TRIANGLES, ::glBegin ), ::glEnd ) ); 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+template < class F > inline Caller *makeCaller ( F f )
+{
+  return new Usul::Scope::Detail::Call1 < F > ( f );
+}
+
 template < class F1, class F2 > inline Caller *makeCaller ( F1 f1, F2 f2 )
 {
-  return new Usul::Scope::Detail::CallerImpl < F1, F2 > ( f1, f2 );
+  return new Usul::Scope::Detail::Call2 < F1, F2 > ( f1, f2 );
 }
 
 

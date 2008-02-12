@@ -19,7 +19,7 @@
 #include "OsgTools/Export.h"
 #include "OsgTools/Declarations.h"
 
-namespace osg { class Vec4d; }
+namespace osg { class Vec4f; }
 
 
 namespace OsgTools {
@@ -88,6 +88,7 @@ struct OSG_TOOLS_EXPORT StateSet
 
   // Materials.
   static void               setMaterial ( osg::Node *node, osg::Material *mat );
+  static void               setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const osg::Vec4f &diffuse );
   static void               setMaterialRandom ( osg::Node *node );
   static void               setMaterialDefault ( osg::Node *node );
   static osg::Material *    getMaterialDefault();

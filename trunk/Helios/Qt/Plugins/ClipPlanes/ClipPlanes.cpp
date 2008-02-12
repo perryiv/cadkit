@@ -554,6 +554,14 @@ void ClipPlanes::on_clearButton_clicked()
   if ( false == cp.valid () )
     return;
 
+  // Make sure checks are all unchecked.
+  posXAxis->setChecked ( false );
+  posYAxis->setChecked ( false );
+  posZAxis->setChecked ( false );
+  negXAxis->setChecked ( false );
+  negYAxis->setChecked ( false );
+  negZAxis->setChecked ( false );
+
   cp->removeClippingPlanes();
   _clipPlaneList->clear();
   this->_render();

@@ -2126,8 +2126,7 @@ void Viewer::setHiddenLines()
 osg::ClipPlane* Viewer::addPlane()
 {
   // Get the bounding box
-  osg::BoundingBox bb; 
-  bb.expandBy ( _sceneManager->clipNode()->getBound() );
+  osg::BoundingBox bb ( this->getBoundingBox() );
 
   // Initial points for the plane.
   osg::Vec3 top_left     ( bb.corner( 1 ) );
@@ -2154,8 +2153,7 @@ osg::ClipPlane* Viewer::addPlane ( const osg::Plane& plane, bool widget )
   if( widget )
   {
     // Get the bounding box
-    osg::BoundingBox bb; 
-    bb.expandBy ( this->model()->getBound() );
+    osg::BoundingBox bb ( this->getBoundingBox() );
 
     osg::ref_ptr < OsgTools::Widgets::ClipPlane > widget ( new OsgTools::Widgets::ClipPlane ( bb, clipPlane.get() ) );
 
@@ -2922,10 +2920,15 @@ bool Viewer::hasGroup ( const std::string& key )
 
 osg::BoundingBox Viewer::getBoundingBox() const
 {
-  // Return the scene's bounding box.
+  // See if the document returns a bounding box.
+  Usul::Interfaces::IGetBoundingBox::QueryPtr getBB ( const_cast<Document*> ( this->document() ) );
+
+  // Get the scene's bounding box.
   osg::BoundingBox bb;
   bb.expandBy ( this->model()->getBound() );
-  return bb;
+
+  // Return the right one.
+  return getBB.valid() ? getBB->getBoundingBox() : bb;
 }
 
 

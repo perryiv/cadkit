@@ -32,17 +32,20 @@ class MpdDefinitions
       typedef std::map< std::string, osg::Matrixd > Locations;
       typedef std::vector< std::string > LocationNames;
 
+
+      struct MpdGroup
+      {
+        unsigned int setIndex;
+        std::string name;
+        std::vector< bool > visibleModels;
+      };
       struct MpdSet
       {
         unsigned int index;
         std::string name;
         std::string menuName;
+        std::vector < MpdGroup > groups;
         std::vector< std::string > groupNames;
-      };
-      struct MpdGroup
-      {
-        unsigned int setIndex;
-        osg::ref_ptr< osg::Group > group;
       };
       struct MpdModel
       {
@@ -50,10 +53,12 @@ class MpdDefinitions
          unsigned int groupIndex;
          osg::ref_ptr< osg::Group > model;
       };
+
       struct MpdTimeGroup
       {
         unsigned int startTime;
         unsigned int endTime;
+        std::vector< bool > visibleModels;
       };
       struct MpdTimeSet
       {

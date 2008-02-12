@@ -34,6 +34,11 @@ _caller ()
 {
   this->setupUi ( this );
 
+  // Hide advanced button in release.  Still has kinks to work out.
+#ifdef NDEBUG
+  _advancedButton->setVisible ( false );
+#endif
+
   // Set the inital state
   _advancedOptions->setVisible ( Qt::Checked == _advancedButton->checkState() );
 

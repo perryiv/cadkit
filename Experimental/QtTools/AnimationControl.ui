@@ -13,38 +13,26 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" >
-   <property name="leftMargin" >
+   <property name="margin" >
     <number>1</number>
    </property>
-   <property name="topMargin" >
-    <number>1</number>
-   </property>
-   <property name="rightMargin" >
-    <number>1</number>
-   </property>
-   <property name="bottomMargin" >
-    <number>1</number>
+   <property name="spacing" >
+    <number>6</number>
    </property>
    <item>
-    <widget class="QFrame" name="frame" >
+    <widget class="QFrame" name="_outerFrame" >
      <property name="frameShape" >
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Panel</enum>
      </property>
      <property name="frameShadow" >
       <enum>QFrame::Sunken</enum>
      </property>
      <layout class="QVBoxLayout" >
-      <property name="leftMargin" >
-       <number>1</number>
+      <property name="margin" >
+       <number>9</number>
       </property>
-      <property name="topMargin" >
-       <number>1</number>
-      </property>
-      <property name="rightMargin" >
-       <number>1</number>
-      </property>
-      <property name="bottomMargin" >
-       <number>1</number>
+      <property name="spacing" >
+       <number>6</number>
       </property>
       <item>
        <spacer>
@@ -68,24 +56,26 @@
       </item>
       <item>
        <layout class="QHBoxLayout" >
+        <property name="margin" >
+         <number>0</number>
+        </property>
+        <property name="spacing" >
+         <number>6</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" >
-          <property name="leftMargin" >
-           <number>5</number>
+          <property name="margin" >
+           <number>0</number>
           </property>
-          <property name="topMargin" >
-           <number>5</number>
-          </property>
-          <property name="rightMargin" >
-           <number>5</number>
-          </property>
-          <property name="bottomMargin" >
-           <number>5</number>
+          <property name="spacing" >
+           <number>6</number>
           </property>
           <item>
            <widget class="QCheckBox" name="_loopCheckBox" >
             <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <sizepolicy>
+              <hsizetype>0</hsizetype>
+              <vsizetype>0</vsizetype>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -123,7 +113,9 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QPushButton" name="_stepBackwardButton" >
             <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <sizepolicy>
+              <hsizetype>0</hsizetype>
+              <vsizetype>0</vsizetype>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -169,7 +161,9 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QPushButton" name="_playBackwardButton" >
             <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <sizepolicy>
+              <hsizetype>0</hsizetype>
+              <vsizetype>0</vsizetype>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -203,7 +197,9 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QPushButton" name="_stopButton" >
             <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <sizepolicy>
+              <hsizetype>0</hsizetype>
+              <vsizetype>0</vsizetype>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -237,7 +233,9 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QPushButton" name="_playForwardButton" >
             <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <sizepolicy>
+              <hsizetype>0</hsizetype>
+              <vsizetype>0</vsizetype>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -271,7 +269,9 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QPushButton" name="_stepForwardButton" >
             <property name="sizePolicy" >
-             <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+             <sizepolicy>
+              <hsizetype>0</hsizetype>
+              <vsizetype>0</vsizetype>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -325,17 +325,11 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <layout class="QHBoxLayout" >
-          <property name="leftMargin" >
-           <number>5</number>
+          <property name="margin" >
+           <number>0</number>
           </property>
-          <property name="topMargin" >
-           <number>5</number>
-          </property>
-          <property name="rightMargin" >
-           <number>5</number>
-          </property>
-          <property name="bottomMargin" >
-           <number>5</number>
+          <property name="spacing" >
+           <number>6</number>
           </property>
           <item>
            <widget class="QLabel" name="label" >
@@ -358,11 +352,11 @@ p, li { white-space: pre-wrap; }
             <property name="decimals" >
              <number>1</number>
             </property>
-            <property name="minimum" >
-             <double>0.100000000000000</double>
-            </property>
             <property name="maximum" >
              <double>100.000000000000000</double>
+            </property>
+            <property name="minimum" >
+             <double>0.100000000000000</double>
             </property>
             <property name="singleStep" >
              <double>0.100000000000000</double>

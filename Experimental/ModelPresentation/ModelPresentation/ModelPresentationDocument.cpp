@@ -397,10 +397,12 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
   {
     for( unsigned int j = 0; j < _timeSets.size(); ++j )
     {
+      #if 0
       for( unsigned int i = 0; i < _timeSets.at( j ).groups.size(); ++i )
       { 
         if( true == _timeSets.at( j ).visible )
         {
+
           // turn on groups that should be shown at this time step
           if( _timeSets.at( j ).currentTime >=_timeSets.at( j ).groups.at( i ).startTime  &&
               _timeSets.at( j ).currentTime < _timeSets.at( j ).groups.at( i ).endTime  )
@@ -413,13 +415,22 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
           {
             _timeSets.at( j ).timeline->setValue( i, false );
           }
-          
-        }
+        } 
         else
         {
           _timeSets.at( j ).timeline->setValue( i, false );
         }
       }
+
+#else
+      for( unsigned int modelIndex = 0; modelIndex < _models->getNumChildren(); ++modelIndex )
+      {
+        unsigned int currentIndex = _timeSets.at( j ).currentTime;
+        bool value = _timeSets.at( j ).groups.at( currentIndex ).visibleModels.at( modelIndex );
+        _models->setValue( modelIndex, value );
+      }
+#endif
+          
     }
   }
 
@@ -1330,8 +1341,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  
-  
+   
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   
@@ -1357,9 +1367,14 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
     _globalTimelineEnd = Usul::Math::maximum( currentTime, _globalTimelineEnd );
     
   }
-  timeset.groups.push_back( timeGroup );
   
   GroupPtr group ( new osg::Group );
+
+  // Initialize visible models to false
+  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
+  {
+    timeGroup.visibleModels.push_back( false );
+  }
 
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
@@ -1369,8 +1384,26 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
       //std::cout << "Found timeline group model: " << std::flush;
       group->addChild( this->_parseModel( *node, caller, progress ) );
     }  
+    
+    if ( "show" == node->name() )
+    {
+      Attributes& att ( node->attributes() );
+      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      {
+        if ( "index" == att_iter->first )
+        {
+          unsigned int index = 0;
+          Usul::Strings::fromString ( att_iter->second, index );
+          if( timeGroup.visibleModels.size() > index)
+          {
+            timeGroup.visibleModels.at( index ) = true;
+          }
+        }
+      }
+    }  
+
   }
-  
+  timeset.groups.push_back( timeGroup );
   return group.release();
 }
 

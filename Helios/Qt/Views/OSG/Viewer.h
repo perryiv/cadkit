@@ -122,6 +122,10 @@ public:
   /// Add to the menu (IMenuAdd).
   virtual void                            menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
+  /// Update the cursor.
+  void                                    updateCursor();
+  void                                    updateCursor( bool left, bool middle, bool right );
+
 protected:
 
   void                                    _frameDump ( bool b );

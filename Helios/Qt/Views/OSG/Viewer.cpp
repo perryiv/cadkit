@@ -137,6 +137,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnkno
 
   // Enable drag 'n drop.
   this->setAcceptDrops ( true );
+
+  // Update the cursor.
+  this->updateCursor();
 }
 
 
@@ -485,6 +488,7 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   EventAdapter::EventType type ( ( mouse ) ? EventAdapter::DRAG : EventAdapter::MOVE );
   EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, type) );
   viewer->mouseMove ( ea.get() );
+  this->updateCursor ( left, middle, right );
 }
 
 
@@ -512,6 +516,7 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
   typedef OsgTools::Render::EventAdapter EventAdapter;
   EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::PUSH ) );
   viewer->buttonPress ( ea.get() );
+  this->updateCursor ( left, middle, right );
 }
 
 
@@ -538,6 +543,7 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
   typedef OsgTools::Render::EventAdapter EventAdapter;
   EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::RELEASE ) );
   viewer->buttonRelease ( ea.get() );
+  this->updateCursor ( left, middle, right );
 }
 
 
@@ -663,6 +669,9 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
     viewer->cycleMode();
     break;
   }
+
+  // Update the cursor.
+  this->updateCursor();
 }
 
 
@@ -689,6 +698,9 @@ void Viewer::keyReleaseEvent ( QKeyEvent * event )
   {
     viewer->setMode ( _lastMode );
   }
+
+  // Update the cursor.
+  this->updateCursor();
 }
 
 
@@ -1552,4 +1564,63 @@ void Viewer::forceClose()
   // Close.  Removing this from the document's windows.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Viewer::_close ), "3614568329" );
   this->close();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the cursor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::updateCursor()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+
+  // Make sure it's valid.
+  if ( false == viewer.valid() )
+    return;
+
+  const ViewMode mode ( viewer->getMode() );
+
+  if ( OsgTools::Render::Viewer::NAVIGATION == mode )
+    this->setCursor ( Qt::OpenHandCursor );
+  else if ( OsgTools::Render::Viewer::PICK == mode )
+    this->setCursor ( Qt::ArrowCursor );
+  else if ( OsgTools::Render::Viewer::SEEK == mode )
+    this->setCursor ( Qt::CrossCursor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the cursor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::updateCursor( bool left, bool middle, bool right )
+{
+  const bool buttons ( left || middle || right );
+
+  // Call the other one if no buttons pressed.
+  if ( false == buttons )
+    this->updateCursor();
+  else
+  {
+    // Get the viewer.
+    OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+
+    // Make sure it's valid.
+    if ( false == viewer.valid() )
+      return;
+
+    const ViewMode mode ( viewer->getMode() );
+
+    if ( OsgTools::Render::Viewer::NAVIGATION == mode )
+      this->setCursor ( Qt::ClosedHandCursor );
+  }
 }

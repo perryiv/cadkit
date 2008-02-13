@@ -165,7 +165,6 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _context             ( context ),
   _renderer            ( new Renderer ),
   _sceneManager        ( new SceneManager ),
-  _setCursor           ( caller ),
   _timeoutSpin         ( caller ),
   _caller              ( caller ),
   _lods                (),
@@ -303,7 +302,6 @@ void Viewer::clear()
   _renderer->clear();
 
   _context = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
-  _setCursor = static_cast < Usul::Interfaces::ISetCursorType* > ( 0x0 );
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
   _caller = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
 
@@ -3370,7 +3368,6 @@ void Viewer::_findDragger ( const osgUtil::Hit &hit )
 void Viewer::setMode ( ViewMode mode ) 
 { 
   _currentMode = mode;
-  this->updateCursor(); 
 }
 
 
@@ -3406,49 +3403,6 @@ void Viewer::cycleMode()
     _currentMode = NAVIGATION;
     break;
   }
-  this->updateCursor();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the cursor. This matches the behavior of
-//  osgGA::TrackballManipulator::calcMovement().
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::_setNavCursor ( bool left, bool middle, bool right, EventAdapter::EventType type )
-{
-  if ( !_setCursor.valid() )
-    return;
-
-  if ( EventAdapter::PUSH == type || EventAdapter::DRAG == type )
-  {
-    if( left && right || middle )
-      _setCursor->setCursorTrans();
-    else if ( left )
-      _setCursor->setCursorRot();
-    else if ( right )
-      _setCursor->setCursorScale();
-  }
-
-  else if ( EventAdapter::RELEASE == type )
-  {
-    _setCursor->setCursorNav();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the cursor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::updateCursor()
-{
-  if ( _setCursor.valid() )
-    _setCursor->updateCursor();
 }
 
 
@@ -3572,9 +3526,6 @@ void Viewer::_handleNavigation ( EventAdapter *ea )
   // Ask the manipulator to handle the event.
   if ( this->navManip()->handle ( *ea, aa ) )
   {
-    // Set the navigation cursor.
-    //this->_setNavCursor ( left, middle, right, type );
-
     // Set the scene's matrix.
     this->viewer()->setViewMatrix ( this->navManip()->getInverseMatrix() );
 

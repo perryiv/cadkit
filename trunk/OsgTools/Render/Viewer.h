@@ -43,7 +43,6 @@
 #include "Usul/Interfaces/ISpin.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
-#include "Usul/Interfaces/GUI/ISetCursorType.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
@@ -164,7 +163,6 @@ public:
   typedef osg::ref_ptr < Dragger > DraggerPtr;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::IOpenGLContext IContext;
-  typedef Usul::Interfaces::ISetCursorType ISetCursorType;
   typedef Usul::Interfaces::ITimeoutSpin ITimeoutSpin;
   typedef FrameDump::Names Filenames;
   typedef BaseClass::Mutex Mutex;
@@ -438,9 +436,6 @@ public:
   //Get/Set the eye distance
   void                  stereoEyeDistance ( float );
   float                 stereoEyeDistance() const;
-
-  // Update the cursor based on the internal mode.
-  void                  updateCursor();
 
   // Update the scene.
   void                  update();
@@ -758,7 +753,6 @@ private:
   IContext::QueryPtr _context;
   Renderer::ValidRefPtr _renderer;
   SceneManager::ValidRefPtr _sceneManager;
-  ISetCursorType::QueryPtr _setCursor;
   ITimeoutSpin::QueryPtr _timeoutSpin;
   IUnknown::QueryPtr _caller;
   Lods _lods;

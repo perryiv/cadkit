@@ -59,6 +59,11 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   // Initialize code from Designer.
   this->setupUi ( this );
 
+  // Hide the slider until it works.
+  #ifndef _DEBUG
+  _sliderSlider->hide();
+  #endif
+
   // Set icon buttons.
   QtTools::Image::icon ( "animation_control_play_forward.png",  _playForwardButton );
   QtTools::Image::icon ( "animation_control_play_backward.png", _playBackwardButton );

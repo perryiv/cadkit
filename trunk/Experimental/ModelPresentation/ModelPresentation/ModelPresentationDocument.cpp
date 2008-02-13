@@ -96,6 +96,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _isAnimating( false ),
   _showTools ( false ),
   _userSpecifiedEndTime( false ),
+  _checkTimeStatus( false ),
   _globalTimelineEnd( 0 ),
   _globalCurrentTime ( 0 ),
   _textXPos( 0 ),
@@ -105,6 +106,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _camera( new osg::Camera )
 {
   USUL_TRACE_SCOPE;
+  _mpdModels.models = new osg::Switch();
 
 }
 
@@ -354,7 +356,11 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   // Add static to the scene tree
   _root->addChild( _static.get() );
 #else
+#if 0
   _root->addChild( _models.get() );
+#else
+  _root->addChild( _mpdModels.models.get() );
+#endif
 #endif
   // Add time sets to the scene tree
   for( unsigned int i = 0; i < _timeSets.size(); ++i )
@@ -390,8 +396,6 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
   std::string message = Usul::Strings::format( "Current Step: ", _globalCurrentTime + 1 );
   this->_setStatusText( message, _textXPos, _textYPos, 0.80, 0.05, caller );
 
-  
-  
   // Check Time Sets
   if( true == _useTimeLine )
   {
@@ -423,12 +427,30 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
       }
 
 #else
+#if 0
       for( unsigned int modelIndex = 0; modelIndex < _models->getNumChildren(); ++modelIndex )
       {
         unsigned int currentIndex = _timeSets.at( j ).currentTime;
         bool value = _timeSets.at( j ).groups.at( currentIndex ).visibleModels.at( modelIndex );
         _models->setValue( modelIndex, value );
       }
+#else
+      for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
+      {
+        unsigned int currentIndex = _timeSets.at( j ).currentTime;
+        _mpdModels.models->setValue( modelIndex, false );
+      }
+      unsigned int currentIndex = _timeSets.at( j ).currentTime;
+      for( std::map< std::string, bool >::iterator iter =  _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.begin();
+                                                   iter != _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.end();
+                                                   ++iter )
+      {
+        std::string modelName = (*iter).first;
+        bool value            = (*iter).second;
+        unsigned int mIndex   = _mpdModels.modelMap[modelName];
+        _mpdModels.models->setValue( mIndex, value );
+      }
+#endif
 #endif
           
     }
@@ -562,17 +584,21 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
     if( true == (*_update)() )
     {
       this->_incrementTimeStep();
+      this->_checkTime( true );
     }
+   
   }
-
   // If we have a timeline or a dynamic set check the steps
+  if( true == this->_checkTime() )
   {
     Guard guard ( this );
     if( true == this->_useDynamic || true == this->_useTimeLine )
     {
       this->_checkTimeSteps( caller );
+      this->_checkTime( false );
     }
   }
+  
 }
 
 
@@ -632,6 +658,7 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
   
   this->_sceneTree.at( set )->setValue( group, true );
 #else
+#if 0
   for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
   {
     bool value = false;
@@ -640,6 +667,27 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
     _models->setValue( i, value );
   }
   _sets.at( set ).index = group;
+#else
+  for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
+  {
+    _mpdModels.models->setValue( modelIndex, false );
+  }
+  
+  for( std::map< std::string, bool >::iterator iter =  _sets.at( set ).groups.at( group ).visibleModelsMap.begin();
+                                               iter != _sets.at( set ).groups.at( group ).visibleModelsMap.end();
+                                               ++iter )
+  {
+    std::string modelName = (*iter).first;
+    bool value            = (*iter).second;
+    unsigned int mIndex   = _mpdModels.modelMap[modelName];
+    _mpdModels.models->setValue( mIndex, value );
+  }
+
+  _sets.at( set ).index = group;
+
+  
+#endif
+
 #endif
   
 }
@@ -655,6 +703,16 @@ void ModelPresentationDocument::nextStep ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+  // Update the global time
+  if( _globalCurrentTime == _globalTimelineEnd )
+  {
+    _globalCurrentTime = 0;
+  }
+  else
+  {
+    _globalCurrentTime ++;
+  }
+
   for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
     if( false == this->isAnimating() )
@@ -665,10 +723,7 @@ void ModelPresentationDocument::nextStep ()
           _timeSets.at( i ).currentTime = 0;
         else
           _timeSets.at( i ).currentTime ++;
-        //this->_checkTimeSteps();
       }
-     
-
     }
   }
   for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
@@ -679,10 +734,9 @@ void ModelPresentationDocument::nextStep ()
         _dynamicSets.at( i ).currentTime = 0;
       else
         _dynamicSets.at( i ).currentTime ++;
-      //this->_checkTimeSteps();
     }
   }
-  
+  this->_checkTime( true );  
 }
 
 
@@ -696,6 +750,17 @@ void ModelPresentationDocument::prevStep ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Update the global time
+  if( _globalCurrentTime == 0 )
+  {
+    _globalCurrentTime = _globalTimelineEnd;
+  }
+  else
+  {
+    _globalCurrentTime --;
+  }
+
   for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
     if( false == this->isAnimating() )
@@ -706,9 +771,7 @@ void ModelPresentationDocument::prevStep ()
           _timeSets.at( i ).currentTime = _timeSets.at( i ).endTime;
         else
           _timeSets.at( i ).currentTime --;
-        //this->_checkTimeSteps();
       }
-     
     }
   }
   for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
@@ -719,9 +782,9 @@ void ModelPresentationDocument::prevStep ()
         _dynamicSets.at( i ).currentTime = _dynamicSets.at( i ).endTime;
       else
         _dynamicSets.at( i ).currentTime --;
-      //this->_checkTimeSteps();
     }
   }
+  this->_checkTime( true );
 }
 
 
@@ -736,6 +799,10 @@ void ModelPresentationDocument::firstStep ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Set the global time to 0 for text updating
+  _globalCurrentTime = 0;
+
   if( false == this->isAnimating() )
   {
     if( true == _useTimeLine )
@@ -743,16 +810,19 @@ void ModelPresentationDocument::firstStep ()
       for( unsigned int i = 0; i < _timeSets.size(); ++i )
       {
         _timeSets.at( i ).currentTime = 0;
-        //this->_checkTimeSteps();
+        
+        
       }
+      this->_checkTime( true );
     }
     if( true == _useDynamic )
     {
       for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
       {
         _dynamicSets.at( i ).currentTime = 0;
-        //this->_checkTimeSteps();
+        
       }
+      this->_checkTime( true );
     }
   }
 }
@@ -924,19 +994,27 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
            
   }
   // TODO: create a set here --
+  MpdDefinitions::MpdModels models;
+  models.models = new osg::Switch();
+  unsigned int count = 0;
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
     if ( "model" == node->name() )
     {
-      _models->addChild( this->_parseModel( *node, caller, progress ) );
+      std::string &name = Usul::Strings::format( "Unknown",count );
+      models.models->addChild( this->_parseModel( *node, caller, progress, name ) );
+      models.modelMap[name] = count;
+      //_models->addChild( this->_parseModel( *node, caller, progress, name ) );
     }  
+    count ++;
   }
 #if 0
   // Turn off display lists
   OsgTools::DisplayLists dl( false );
   dl( _models.get() );
 #endif
+  _mpdModels = models;
 }
 
 
@@ -965,7 +1043,8 @@ void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *call
     if ( "model" == node->name() )
     {
       std::cout << "Found static model: " << std::flush;
-      _static->addChild( this->_parseModel( *node, caller, progress ) );
+      std::string name;
+      _static->addChild( this->_parseModel( *node, caller, progress, name ) );
     }  
   }
 #if 1
@@ -1215,7 +1294,7 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
     if ( "model" == node->name() )
     {
       //std::cout << "Found group model: " << std::flush;
-      group->addChild( this->_parseModel( *node, caller, progress ) );
+//      group->addChild( this->_parseModel( *node, caller, progress ) );
     }  
     if ( "show" == node->name() )
     {
@@ -1230,6 +1309,12 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
           {
             grp.visibleModels.at( index ) = true;
           }
+        }
+        if ( "name" == att_iter->first )
+        {
+          std::string name;
+          Usul::Strings::fromString ( att_iter->second, name );
+          grp.visibleModelsMap[name] = true;
         }
       }
     } 
@@ -1318,6 +1403,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
   }
   currentTime --;
   _globalTimelineEnd = Usul::Math::maximum( this->_globalTimelineEnd, currentTime );
+  timeset.endTime = currentTime;
 #if 1
   // Turn off display lists
   OsgTools::DisplayLists dl( false );
@@ -1382,7 +1468,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
     if ( "model" == node->name() )
     {
       //std::cout << "Found timeline group model: " << std::flush;
-      group->addChild( this->_parseModel( *node, caller, progress ) );
+//      group->addChild( this->_parseModel( *node, caller, progress ) );
     }  
     
     if ( "show" == node->name() )
@@ -1399,6 +1485,13 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
             timeGroup.visibleModels.at( index ) = true;
           }
         }
+        if ( "name" == att_iter->first )
+        {
+          std::string name;
+          Usul::Strings::fromString ( att_iter->second, name );
+          timeGroup.visibleModelsMap[name] = true;
+        }
+
       }
     }  
 
@@ -1652,6 +1745,12 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
             step.visibleGroups.at( index ) = true;
           }
         }
+        if ( "name" == att_iter->first )
+        {
+          std::string name;
+          Usul::Strings::fromString ( att_iter->second, name );
+          step.visibleModelsMap[name] = true;
+        }
       }
      
     }
@@ -1667,13 +1766,14 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress, std::string &name )
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   Attributes& attributes ( node.attributes() );
   std::string path;
   osg::ref_ptr< osg::Group > group ( new osg::Group );
+
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
 
@@ -1687,6 +1787,11 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
       Usul::Strings::fromString ( iter->second, path );
       group->addChild( this->_loadDirectory( path, caller, progress ) );
     }
+    if ( "name" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, name );
+    }
+
            
   }
   
@@ -2594,11 +2699,29 @@ void ModelPresentationDocument::_handleSequenceEvent()
     _sequence.groups->setValue( i, value );
   }
 #else
+#if 0
   for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
   {
     bool value = step.visibleGroups.at( i );
     _models->setValue( i, value );
   }
+#else
+  for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
+  {
+    _mpdModels.models->setValue( modelIndex, false );
+  }
+  unsigned int sIndex = _sequence.current;
+  for( std::map< std::string, bool >::iterator iter =  _sequence.steps.at( sIndex ).visibleModelsMap.begin();
+                                               iter != _sequence.steps.at( sIndex ).visibleModelsMap.end();
+                                               ++iter )
+  {
+    std::string modelName = (*iter).first;
+    bool value            = (*iter).second;
+    unsigned int mIndex   = _mpdModels.modelMap[modelName];
+    _mpdModels.models->setValue( mIndex, value );
+  }
+
+#endif
 #endif
 
   
@@ -2731,6 +2854,12 @@ void ModelPresentationDocument::_setStatusText( const std::string message, unsig
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Not used...
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void ModelPresentationDocument::_updateCamera( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
@@ -2752,3 +2881,34 @@ void ModelPresentationDocument::_updateCamera( Usul::Interfaces::IUnknown *calle
 
 
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Check timesteps?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModelPresentationDocument::_checkTime()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  return _checkTimeStatus;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set to check time steps
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_checkTime( bool value )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _checkTimeStatus = value;
+}
+

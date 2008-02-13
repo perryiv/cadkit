@@ -17,11 +17,13 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Interfaces/IDataSync.h"
 
+#include "osg/Group"
+#include "osg/Matrixd"
+
+#include <map>
 #include <string>
 #include <memory>
 
-#include "osg/Group"
-#include "osg/Matrixd"
 
 //namespace osg { class Node; }
 
@@ -38,6 +40,7 @@ class MpdDefinitions
         unsigned int setIndex;
         std::string name;
         std::vector< bool > visibleModels;
+        std::map< std::string, bool > visibleModelsMap;
       };
       struct MpdSet
       {
@@ -47,11 +50,10 @@ class MpdDefinitions
         std::vector < MpdGroup > groups;
         std::vector< std::string > groupNames;
       };
-      struct MpdModel
+      struct MpdModels
       {
-         unsigned int setIndex;
-         unsigned int groupIndex;
-         osg::ref_ptr< osg::Group > model;
+        std::map< std::string, unsigned int > modelMap;
+        osg::ref_ptr< osg::Switch > models;
       };
 
       struct MpdTimeGroup
@@ -59,6 +61,7 @@ class MpdDefinitions
         unsigned int startTime;
         unsigned int endTime;
         std::vector< bool > visibleModels;
+        std::map< std::string, bool > visibleModelsMap;
       };
       struct MpdTimeSet
       {
@@ -104,6 +107,7 @@ class MpdDefinitions
         bool overwriteGroup;
         bool changeLocation;
         std::vector< bool > visibleGroups;
+        std::map< std::string, bool > visibleModelsMap;
       };
       struct MpdSequence
       {

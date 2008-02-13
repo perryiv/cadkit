@@ -78,7 +78,6 @@ public:
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef std::vector < std::string > Files;
   typedef std::vector< MpdDefinitions::MpdGroup > MpdGroups;
-  typedef std::vector< MpdDefinitions::MpdModel > MpdModels;
   typedef std::vector< MpdDefinitions::MpdSet > MpdSets;
   
   
@@ -172,13 +171,16 @@ protected:
   void                        _parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step );
   void                        _parseSequenceGroups( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseModels( XmlTree::Node &node, Unknown *caller, Unknown *progress );
-  osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress );
+  osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress, std::string &name );
   void                        _parseDynamic( XmlTree::Node &node, Unknown *caller, Unknown *progress ); 
  
   osg::Node*                  _loadFile( const std::string& filename, Unknown *caller, Unknown *progress );
   osg::Node*                  _loadDirectory( const std::string& dir, Unknown *caller, Unknown *progress );
   MatrixVec                   _getInterpolationMatrices ( const osg::Matrixd &m1, const osg::Matrixd &m2 ) const;
   bool                        _dynamic();
+
+  bool                        _checkTime();
+  void                        _checkTime( bool value );
 
   std::string                 _getWorkingDir();
   void                        _processJobData( unsigned int index, Usul::Interfaces::IUnknown *caller );
@@ -218,6 +220,7 @@ private:
   MpdScene                      _sceneTree;
   MpdGroups                     _groups;
   osg::ref_ptr< osg::Switch >   _models;
+  MpdDefinitions::MpdModels     _mpdModels;
   MpdSets                       _sets;
   MpdTimeSets                   _timeSets;
   MpdDynamicSets                _dynamicSets;
@@ -230,6 +233,7 @@ private:
   bool                          _isAnimating;
   bool                          _showTools;
   bool                          _userSpecifiedEndTime;
+  bool                          _checkTimeStatus;
 
   MpdDefinitions::Locations     _locations;
   MpdDefinitions::LocationNames _locationNames;

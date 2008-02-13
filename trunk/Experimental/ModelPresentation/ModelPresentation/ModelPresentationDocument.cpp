@@ -1493,10 +1493,10 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
   {
     
     XmlTree::Node::RefPtr node ( *iter );
-    if ( "groups" == node->name() )
-    {
-      this->_parseSequenceGroups( *node, caller, progress );
-    }
+    //if ( "groups" == node->name() )
+    //{
+    //  this->_parseSequenceGroups( *node, caller, progress );
+    //}
     if ( "step" == node->name() )
     {
       MpdDefinitions::MpdSequenceStep step;
@@ -1585,10 +1585,18 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
   
  
   // initialize all the visible groups in this step to false
+#if 0
   for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
   {
     step.visibleGroups.push_back( false );
   }
+#else
+  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
+  {
+    step.visibleGroups.push_back( false );
+  }
+#endif
+
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -2546,11 +2554,20 @@ void ModelPresentationDocument::_handleSequenceEvent()
     _sequence.groups->setValue( index, true );
   }
 #else
+#if 0
   for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
   {
     bool value = step.visibleGroups.at( i );
     _sequence.groups->setValue( i, value );
   }
+#else
+  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
+  {
+    bool value = step.visibleGroups.at( i );
+    _models->setValue( i, value );
+  }
+#endif
+
   
 #endif
 

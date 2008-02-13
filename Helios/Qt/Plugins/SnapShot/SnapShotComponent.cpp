@@ -106,7 +106,7 @@ void SnapShotComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
 
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
 
-  if( mainWindow.valid() )
+  if ( true == mainWindow.valid() )
   {
     QMainWindow * main  ( mainWindow->mainWindow() );
 

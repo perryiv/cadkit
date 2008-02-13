@@ -111,7 +111,7 @@ void SnapShotComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     QMainWindow * main  ( mainWindow->mainWindow() );
 
     // Build the docking window.
-    _dock = new QDockWidget ( QObject::tr ( "Snap Shot" ), main );
+    _dock = new QDockWidget ( QObject::tr ( "Screenshot" ), main );
     _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
     SnapShotWidget *widget = new SnapShotWidget ( _dock, _caller );

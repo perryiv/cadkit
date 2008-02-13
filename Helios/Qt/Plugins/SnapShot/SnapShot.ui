@@ -10,9 +10,15 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>SnapShot</string>
+   <string>Screenshot</string>
   </property>
   <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
    <item>
     <spacer>
      <property name="orientation" >
@@ -28,6 +34,12 @@
    </item>
    <item>
     <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
      <item>
       <widget class="QLabel" name="label" >
        <property name="text" >
@@ -49,6 +61,12 @@
    </item>
    <item>
     <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
      <item>
       <widget class="QLabel" name="label_2" >
        <property name="text" >
@@ -73,6 +91,12 @@
    </item>
    <item>
     <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
      <item>
       <spacer>
        <property name="orientation" >
@@ -89,7 +113,7 @@
      <item>
       <widget class="QPushButton" name="_snapShotButton" >
        <property name="text" >
-        <string>Snap Shot</string>
+        <string>Screenshot</string>
        </property>
       </widget>
      </item>

@@ -840,7 +840,9 @@ void Viewer::subjectModified ( Usul::Interfaces::IUnknown * )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Queue a repaint.
+  // Queue a repaint. Do not change this behavior unless you also change the 
+  // fact that IDocument's requestRedraw() uses the modified-observers to 
+  // implement the request, which results in this function being called.
   this->update();
 }
 

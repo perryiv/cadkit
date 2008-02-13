@@ -83,9 +83,6 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationDocument, ModelPresentationDo
 ModelPresentationDocument::ModelPresentationDocument() : 
   BaseClass ( "Model Presentation Document" ),
   _root ( new osg::Group ),
-  _static ( new osg::Group ),
-  _sceneTree ( 0x0 ),
-  _models( new osg::Switch ),
   _sets ( 0x0 ),
   _update( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
   _checkFileSystem( UpdatePolicyPtr( new UpdatePolicy( 10 ) ) ),
@@ -135,28 +132,6 @@ void ModelPresentationDocument::clear ( Unknown *caller )
   Guard guard ( this->mutex() );
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Returns true if a string starts with the string passed in
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct StartsWith : std::unary_function<std::string,bool>
-{
-  StartsWith ( const std::string &s ) : _s ( s ){} 
-  bool operator () ( const std::string &s ) const
-  {
-    
-    if ( s.size() < _s.size() )
-      return false;
-    const std::string temp ( s.begin(), s.begin() + _s.size() );
-    return ( temp == _s );
-  }
-private:
-  std::string _s;
-
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -346,27 +321,14 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
 
   _root->removeChild( 0, _root->getNumChildren() );
 
-  // Add sets to the scene tree
-#if 0
-  for( unsigned int i = 0; i < _sceneTree.size(); ++i )
-  {
-    _root->addChild( _sceneTree.at( i ).get() );
-  }
-  
-  // Add static to the scene tree
-  _root->addChild( _static.get() );
-#else
-#if 0
-  _root->addChild( _models.get() );
-#else
+  // Add the models
   _root->addChild( _mpdModels.models.get() );
-#endif
-#endif
+
   // Add time sets to the scene tree
-  for( unsigned int i = 0; i < _timeSets.size(); ++i )
-  {
-    _root->addChild( _timeSets.at( i ).timeline.get() );
-  }
+  //for( unsigned int i = 0; i < _timeSets.size(); ++i )
+  //{
+  //  _root->addChild( _timeSets.at( i ).timeline.get() );
+  //}
 
   // Add dynamic sets to the scene tree
   for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
@@ -375,7 +337,7 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   }
 
   // add the sequence to the scene tree
-  _root->addChild( _sequence.groups.get() );
+  //_root->addChild( _sequence.groups.get() );
 
   return _root.get();
 }
@@ -401,58 +363,25 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
   {
     for( unsigned int j = 0; j < _timeSets.size(); ++j )
     {
-      #if 0
-      for( unsigned int i = 0; i < _timeSets.at( j ).groups.size(); ++i )
-      { 
-        if( true == _timeSets.at( j ).visible )
-        {
-
-          // turn on groups that should be shown at this time step
-          if( _timeSets.at( j ).currentTime >=_timeSets.at( j ).groups.at( i ).startTime  &&
-              _timeSets.at( j ).currentTime < _timeSets.at( j ).groups.at( i ).endTime  )
-          {      
-            _timeSets.at( j ).timeline->setValue( i, true );
-          }
-          // turn off groups that should be hidden at this time step
-          if( _timeSets.at( j ).currentTime < _timeSets.at( j ).groups.at( i ).startTime   ||
-              _timeSets.at( j ).currentTime >= _timeSets.at( j ).groups.at( i ).endTime )
-          {
-            _timeSets.at( j ).timeline->setValue( i, false );
-          }
-        } 
-        else
-        {
-          _timeSets.at( j ).timeline->setValue( i, false );
-        }
-      }
-
-#else
-#if 0
-      for( unsigned int modelIndex = 0; modelIndex < _models->getNumChildren(); ++modelIndex )
-      {
-        unsigned int currentIndex = _timeSets.at( j ).currentTime;
-        bool value = _timeSets.at( j ).groups.at( currentIndex ).visibleModels.at( modelIndex );
-        _models->setValue( modelIndex, value );
-      }
-#else
+     
       for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
       {
         unsigned int currentIndex = _timeSets.at( j ).currentTime;
         _mpdModels.models->setValue( modelIndex, false );
       }
-      unsigned int currentIndex = _timeSets.at( j ).currentTime;
-      for( std::map< std::string, bool >::iterator iter =  _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.begin();
-                                                   iter != _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.end();
-                                                   ++iter )
+      if( true == _timeSets.at( j ).visible )
       {
-        std::string modelName = (*iter).first;
-        bool value            = (*iter).second;
-        unsigned int mIndex   = _mpdModels.modelMap[modelName];
-        _mpdModels.models->setValue( mIndex, value );
+        unsigned int currentIndex = _timeSets.at( j ).currentTime;
+        for( std::map< std::string, bool >::iterator iter =  _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.begin();
+                                                     iter != _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.end();
+                                                     ++iter )
+        {
+          std::string modelName = (*iter).first;
+          bool value            = (*iter).second;
+          unsigned int mIndex   = _mpdModels.modelMap[modelName];
+          _mpdModels.models->setValue( mIndex, value );
+        }    
       }
-#endif
-#endif
-          
     }
   }
 
@@ -562,12 +491,6 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
            
             // process the data from the completed job
             this->_processJobData( index, caller );
-
-            //update the global end time
-            //this->updateGlobalEndtime();
-
-            // check the timesteps to see if anything needs to be hidden/shown
-            //this->_checkTimeSteps();
             
           }
         }
@@ -575,7 +498,6 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 
     }
     
-    //this->validateDynamicSets();
   }
 
   // If we are animating handle this time step
@@ -619,28 +541,6 @@ unsigned int ModelPresentationDocument::getCurrentGroupFromSet( unsigned int ind
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Go to the next group in the set
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModelPresentationDocument::nextGroup ( unsigned int index )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  this->_sceneTree.at( index )->setValue( _sets.at( index ).index, false );
-  if( _sets.at( index ).index < this->_sceneTree.at( index )->getNumChildren() - 1 )
-    _sets.at( index ).index ++;
-  else
-    _sets.at( index ).index = 0;
-
-  this->_sceneTree.at( index )->setValue( _sets.at( index ).index, true );
-  
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Show the group in the specified set and hide all others.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -649,25 +549,7 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-#if 0
-  for( unsigned int i = 0; i < _sceneTree.at( set )->getNumChildren(); ++i )
-  {
-    this->_sceneTree.at( set )->setValue( i, false );
-  }
-    _sets.at( set ).index = group;
-  
-  this->_sceneTree.at( set )->setValue( group, true );
-#else
-#if 0
-  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
-  {
-    bool value = false;
-    if( _sets.at( set ).groups.at( group ).visibleModels.size() > i )
-      value = _sets.at( set ).groups.at( group ).visibleModels.at( i );
-    _models->setValue( i, value );
-  }
-  _sets.at( set ).index = group;
-#else
+
   for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
   {
     _mpdModels.models->setValue( modelIndex, false );
@@ -683,13 +565,7 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
     _mpdModels.models->setValue( mIndex, value );
   }
 
-  _sets.at( set ).index = group;
-
-  
-#endif
-
-#endif
-  
+  _sets.at( set ).index = group;  
 }
 
 
@@ -810,8 +686,6 @@ void ModelPresentationDocument::firstStep ()
       for( unsigned int i = 0; i < _timeSets.size(); ++i )
       {
         _timeSets.at( i ).currentTime = 0;
-        
-        
       }
       this->_checkTime( true );
     }
@@ -820,7 +694,6 @@ void ModelPresentationDocument::firstStep ()
       for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
       {
         _dynamicSets.at( i ).currentTime = 0;
-        
       }
       this->_checkTime( true );
     }
@@ -941,11 +814,11 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
     {
       this->_parseTimeSet( *node, caller, progress );
     }
-    if ( "static" == node->name() )
-    {
-      //std::cout << "Parsing static entries..." << std::endl;
-      this->_parseStatic( *node, caller, progress );
-    } 
+    //if ( "static" == node->name() )
+    //{
+    //  //std::cout << "Parsing static entries..." << std::endl;
+    //  this->_parseStatic( *node, caller, progress );
+    //} 
     if ( "location" == node->name() )
     {
       //std::cout << "Parsing location entries..." << std::endl;
@@ -1003,9 +876,8 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
     if ( "model" == node->name() )
     {
       std::string &name = Usul::Strings::format( "Unknown",count );
-      models.models->addChild( this->_parseModel( *node, caller, progress, name ) );
+      models.models->addChild( this->_parseModel( *node, caller, progress, name ), false );
       models.modelMap[name] = count;
-      //_models->addChild( this->_parseModel( *node, caller, progress, name ) );
     }  
     count ++;
   }
@@ -1023,36 +895,36 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
 //  Parse a static set of models (shown in every scene).
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *caller, Unknown *progress )
-{ 
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  
-  Attributes& attributes ( node.attributes() );
-  Children& children ( node.children() );
-  
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-           
-  }
-  // TODO: create a set here --
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    if ( "model" == node->name() )
-    {
-      std::cout << "Found static model: " << std::flush;
-      std::string name;
-      _static->addChild( this->_parseModel( *node, caller, progress, name ) );
-    }  
-  }
-#if 1
-  // Turn off display lists
-  OsgTools::DisplayLists dl( false );
-  dl( _static.get() );
-#endif
-}
+//
+//void ModelPresentationDocument::_parseStatic( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+//{ 
+//  USUL_TRACE_SCOPE;
+//  Guard guard ( this->mutex() );
+//  
+//  Attributes& attributes ( node.attributes() );
+//  Children& children ( node.children() );
+//  
+//  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+//  {
+//           
+//  }
+//  // TODO: create a set here --
+//  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+//  {
+//    XmlTree::Node::RefPtr node ( *iter );
+//    if ( "model" == node->name() )
+//    {
+//      std::cout << "Found static model: " << std::flush;
+//      std::string name;
+//      _static->addChild( this->_parseModel( *node, caller, progress, name ) );
+//    }  
+//  }
+//#if 1
+//  // Turn off display lists
+//  OsgTools::DisplayLists dl( false );
+//  dl( _static.get() );
+//#endif
+//}
 
 
 
@@ -1088,9 +960,6 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
     XmlTree::Node::RefPtr node ( *iter );
     if ( "matrix" == node->name() )
     {
-      
-      std::cout << "Found matrix" << std::endl;
-     
       this->_parseMatrix( *node, caller, progress, name, location, names );
     }
   }
@@ -1109,11 +978,6 @@ void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *call
    USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  // Ok to update the status bar with time related information
-  //_useTimeLine = true;
-
-  
-  
   Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   std::string type;
@@ -1140,7 +1004,6 @@ void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *call
 
   location.first = name;
   location.second = matrix;
-  //_locations[ name ] = matrix;
 }
 
 
@@ -1157,7 +1020,7 @@ void ModelPresentationDocument::_setMatrix( osg::Matrix * matrix, const std::str
   osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
   if( "xyzpry" == type )
   {
-    std::cout << "Found XYZ, Pitch, Roll, Yaw designation location" << std::endl;
+    //std::cout << "Found XYZ, Pitch, Roll, Yaw designation location" << std::endl;
 
     float x ( 0 ), y( 0 ), z( 0 ), pitch( 0 ), roll( 0 ), yaw( 0 );
     is >> x >> y >> z >> pitch >> roll >> yaw;
@@ -1173,7 +1036,7 @@ void ModelPresentationDocument::_setMatrix( osg::Matrix * matrix, const std::str
   }
   if( "matrix" == type )
   {
-    std::cout << "Found matrix designation location" << std::endl;
+    //std::cout << "Found matrix designation location" << std::endl;
     char temp;
     osg::Matrixf::value_type m[16];
       is >> m[0] >> temp >> m[4] >> temp >> m[8] >> temp  >> m[12] >> temp;
@@ -1265,10 +1128,7 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
   
   grp.name = "Unknown";
   grp.visibleModels.resize( 0 );
-  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
-  {
-    grp.visibleModels.push_back( false );
-  }
+
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "name" == iter->first )
@@ -1291,11 +1151,7 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
-    if ( "model" == node->name() )
-    {
-      //std::cout << "Found group model: " << std::flush;
-//      group->addChild( this->_parseModel( *node, caller, progress ) );
-    }  
+
     if ( "show" == node->name() )
     {
       Attributes& att ( node->attributes() );
@@ -1396,8 +1252,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     XmlTree::Node::RefPtr node ( *iter );
     if ( "group" == node->name() )
     {
-      //std::cout << "Found group..." << std::endl;
-      switchNode->addChild( this->_parseTimeGroup( *node, caller, progress, currentTime, timeset ), false );
+      this->_parseTimeGroup( *node, caller, progress, currentTime, timeset );
     }
     currentTime ++;
   }
@@ -1409,7 +1264,7 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
   OsgTools::DisplayLists dl( false );
   dl( switchNode.get() );
 #endif
-  timeset.timeline = switchNode.release();
+  //timeset.timeline = switchNode.release();
   
   timeset.visible = true;
 
@@ -1456,35 +1311,16 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
   
   GroupPtr group ( new osg::Group );
 
-  // Initialize visible models to false
-  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
-  {
-    timeGroup.visibleModels.push_back( false );
-  }
 
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
-    if ( "model" == node->name() )
-    {
-      //std::cout << "Found timeline group model: " << std::flush;
-//      group->addChild( this->_parseModel( *node, caller, progress ) );
-    }  
-    
+   
     if ( "show" == node->name() )
     {
       Attributes& att ( node->attributes() );
       for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
       {
-        if ( "index" == att_iter->first )
-        {
-          unsigned int index = 0;
-          Usul::Strings::fromString ( att_iter->second, index );
-          if( timeGroup.visibleModels.size() > index)
-          {
-            timeGroup.visibleModels.at( index ) = true;
-          }
-        }
         if ( "name" == att_iter->first )
         {
           std::string name;
@@ -1636,11 +1472,7 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
   OsgTools::DisplayLists dl( false );
   dl( switchNode.get() );
 #endif
-  if( _sequence.groups->getNumChildren() > 0 )
-  {
-    _sequence.groups->setValue( 0, true ); 
-  }
-  //_sequence = sequence;
+
 }
 
 
@@ -1668,7 +1500,7 @@ void ModelPresentationDocument::_parseSequenceGroups( XmlTree::Node &node, Unkno
     if ( "group" == node->name() )
     {
       MpdDefinitions::MpdGroup grp;
-      _sequence.groups->addChild( this->_parseGroup( *node, caller, progress, set, grp ) );
+      this->_parseGroup( *node, caller, progress, set, grp );
     }  
     
   }
@@ -1708,21 +1540,8 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
     }
 
   }
-  
  
   // initialize all the visible groups in this step to false
-#if 0
-  for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
-  {
-    step.visibleGroups.push_back( false );
-  }
-#else
-  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
-  {
-    step.visibleGroups.push_back( false );
-  }
-#endif
-
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -1736,15 +1555,6 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
       Attributes& att ( node->attributes() );
       for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
       {
-        if ( "index" == att_iter->first )
-        {
-          unsigned int index = 0;
-          Usul::Strings::fromString ( att_iter->second, index );
-          if( step.visibleGroups.size() > index)
-          {
-            step.visibleGroups.at( index ) = true;
-          }
-        }
         if ( "name" == att_iter->first )
         {
           std::string name;
@@ -1791,8 +1601,7 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
     {
       Usul::Strings::fromString ( iter->second, name );
     }
-
-           
+   
   }
   
   return group.release();  
@@ -2128,19 +1937,9 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   // Append final matrix.
   matrices.push_back ( PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
 
-
-#if 1
   // Animate through these matrices.
   path->animatePath ( matrices );
-#else
-  // Jump directly to the location matrix
-  view->setViewMatrix( m1 );
-#endif
-#if 0
-  std::ostringstream out;
-  Usul::Print::matrix ( "", matrices.at( 1 ).ptr(), out, 20 );
-  std::cout << out.str().c_str() << std::endl;
-#endif
+
 }
 
 
@@ -2161,20 +1960,6 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
   // Add the model menu
   if( _useModels )
   {
-#if 0
-    for( unsigned int i = 0; i < _sets.size(); ++i )
-    {
-      const std::string menuName ( _sets.at(i).menuName );
-      MenuKit::Menu::RefPtr ModelMenu ( menu.find ( menuName, true ) );
-      MenuKit::Menu::RefPtr ModelSubMenu ( new MenuKit::Menu ( _sets.at(i).name, MenuKit::Menu::VERTICAL ) );
-     
-      for( unsigned int j = 0; j < _sets.at( i ).groupNames.size(); ++j )
-      {
-         ModelSubMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at( i ).groupNames.at( j ), i, j ) ) );
-      }
-      ModelMenu->append( ModelSubMenu.get() );
-    }
-#else
     for( unsigned int i = 0; i < _sets.size(); ++i )
     {
       const std::string menuName ( _sets.at( i ).menuName );
@@ -2187,9 +1972,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
       }
       ModelMenu->append( ModelSubMenu.get() );
     }
-#endif
     
-    //menu.append ( ModelMenu );
   }
 
   // Add the Timeline menu if needed
@@ -2244,12 +2027,6 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     SequenceMenu->append( new Button ( new MpdPrevSequence( me.get() ) ) );
     SequenceMenu->append( new Button ( new MpdFirstSequence( me.get() ) ) );
      
-    //MenuKit::Menu::RefPtr SequenceSubMenu ( new MenuKit::Menu ( "Goto", MenuKit::Menu::VERTICAL ) );
-    //for( unsigned int j = 0; j < _sets.at( i ).groupNames.size(); ++j )
-    //{
-    //   ModelSubMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at( i ).groupNames.at( j ), i, j ) ) );
-    //}
-    //ModelMenu->append( ModelSubMenu.get() );
   }
 
   if( _locationNames.size() > 0 )
@@ -2316,7 +2093,6 @@ void ModelPresentationDocument::timelineModelState( unsigned int i, bool state )
   Guard guard ( this );
 
   _timeSets.at( i ).visible = state;
-  //this->_checkTimeSteps();
 }
 
 
@@ -2415,8 +2191,6 @@ void ModelPresentationDocument::dynamicModelState  ( unsigned int index, bool st
   Guard guard ( this ); 
 
   _dynamicSets.at( index ).visible = state;
- // unsigned int currentPosition = _dynamicSets.at( index ).currentTime;
- // _dynamicSets.at( index ).models->setValue( currentPosition, state );
   if( false == state )
   {
     for( unsigned int i = 0; i < _dynamicSets.at( index ).models->getNumChildren(); ++i )
@@ -2428,7 +2202,6 @@ void ModelPresentationDocument::dynamicModelState  ( unsigned int index, bool st
   {
     _dynamicSets.at( index ).models->setValue( _dynamicSets.at( index ).currentTime, true );
   }
-  //this->_checkTimeSteps();
 
 }
 
@@ -2562,10 +2335,8 @@ void ModelPresentationDocument::_processJobData( unsigned int index, Usul::Inter
       // Set the rest of the steps to be this last loaded step and the "not loaded" text
       for( unsigned int i = _dynamicSets.at( index ).nextIndexToLoad; i < _dynamicSets.at( index ).models->getNumChildren(); ++i )
       {
-        //std::string text = Usul::Strings::format( "Step ", i + 1, " of ",_dynamicSets.at( index ).maxFilesToLoad, " is not loaded..." );
         GroupPtr grpPtr ( new osg::Group );
-        grpPtr->addChild( _dynamicSets.at( index ).models->getChild( _dynamicSets.at( index ).nextIndexToLoad - 1 ) );
-        //grpPtr->addChild( this->_createProxyGeometry( text, caller ) );
+        grpPtr->addChild( _dynamicSets.at( index ).models->getChild( _dynamicSets.at( index ).nextIndexToLoad - 1 ) );        
         _dynamicSets.at( index ).models->setChild( i, grpPtr.get() );
 
       }
@@ -2682,30 +2453,7 @@ void ModelPresentationDocument::_handleSequenceEvent()
   }
 
   // Hide all groups then show the current step if we should do so
-#if 0
-  if( true == step.overwriteGroup )
-  {
-    for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
-    {
-      _sequence.groups->setValue( i, false );
-    }
-    _sequence.groups->setValue( index, true );
-  }
-#else
-#if 0
-  for( unsigned int i = 0; i < _sequence.groups->getNumChildren(); ++i )
-  {
-    bool value = step.visibleGroups.at( i );
-    _sequence.groups->setValue( i, value );
-  }
-#else
-#if 0
-  for( unsigned int i = 0; i < _models->getNumChildren(); ++i )
-  {
-    bool value = step.visibleGroups.at( i );
-    _models->setValue( i, value );
-  }
-#else
+
   for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
   {
     _mpdModels.models->setValue( modelIndex, false );
@@ -2721,12 +2469,6 @@ void ModelPresentationDocument::_handleSequenceEvent()
     _mpdModels.models->setValue( mIndex, value );
   }
 
-#endif
-#endif
-
-  
-#endif
-
 }
 
 
@@ -2740,71 +2482,13 @@ osg::Node* ModelPresentationDocument::_createProxyGeometry( const std::string &m
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
-#if 1
+
   GroupPtr group ( new osg::Group );
-#else
-  osg::ref_ptr< osg::Camera > camera ( new osg::Camera );
-  ITextMatrix::QueryPtr textMatrix ( caller );
-  if( false == textMatrix.valid() )
-    throw std::runtime_error ( "Error 3568296222: Failed to find a valid interface to Usul::Interfaces::ITextMatrix " );
 
-  IViewport::QueryPtr viewPort( caller );
-  if( false == viewPort.valid() )
-    throw std::runtime_error ( "Error 3362325500: Failed to find a valid interface to Usul::Interfaces::IViewport " );
 
-  int width = static_cast< int > ( viewPort->width() );
-  int height = static_cast< int > ( viewPort->height() );
-
-  camera->setViewport ( 0, 0, width, height );
-  camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -10.0, 10.0 );
-#endif
-#if 0
-  osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
-  osg::ref_ptr< osgText::Text  > text ( new osgText::Text() );
-  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
-
-  osg::ref_ptr< osg::StateSet > stateset ( geode->getOrCreateStateSet() );
-  osg::ref_ptr< osg::Depth > depth ( new osg::Depth( osg::Depth::ALWAYS ) );
-
-  // set a high render bin number and disable depth testing
-  // to be sure text is always drawn in front of everything else
-  stateset->setRenderBinDetails ( 1000, "RenderBin" );
-  stateset->setAttributeAndModes( depth.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-  //stateset->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED ); 
-  stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );  
-  //stateset->setTextureMode( 0, osg::StateAttribute::TEXTURE, osg::StateAttribute::PROTECTED );
-  //stateset->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-  
-  
-
-  text->setFont( font.get() );
-  text->setColor( osg::Vec4f( 0.841, 0.763, 0.371, 1 ) );
-  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-  text->setUseDisplayList( false );
-  
-  text->setCharacterSize( 30 );
-  text->setPosition( osg::Vec3d( 0.0, 0.0, -0.1 ) );
-  text->setLayout( osgText::Text::LEFT_TO_RIGHT );
-  text->setFontResolution ( 32, 32 );
-  text->setMaximumHeight( 50 );
-  
-  text->setText( message );
-  text->setAutoRotateToScreen( true );
-
-  mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-
-  geode->setStateSet( stateset.get() );
-  geode->addDrawable( text.get() );
-  mt->addChild( geode.get() );
-#endif
-#if 1
   //group->addChild( mt.get() );
   return group.release();
-#else
-  camera->addChild( mt.get() );
-  return camera.get();
-#endif
+
 }
 
 
@@ -2850,35 +2534,6 @@ void ModelPresentationDocument::_setStatusText( const std::string message, unsig
   textXPos = xpos;
   textYPos = ypos;
   
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Not used...
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModelPresentationDocument::_updateCamera( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this ); 
-
-  ITextMatrix::QueryPtr textMatrix ( caller );
-  if( false == textMatrix.valid() )
-    throw std::runtime_error ( "Error 2192949997: Failed to find a valid interface to Usul::Interfaces::ITextMatrix " );
-
-  IViewport::QueryPtr viewPort( caller );
-  if( false == viewPort.valid() )
-    throw std::runtime_error ( "Error 1694210543: Failed to find a valid interface to Usul::Interfaces::IViewport " );
-
-  int width = static_cast< int > ( viewPort->width() );
-  int height = static_cast< int > ( viewPort->height() );
-
-  _camera->setViewport ( 0, 0, width, height );
-  _camera->setProjectionMatrixAsOrtho ( 0, width, 0, height, -10.0, 10.0 );
-
 
 }
 

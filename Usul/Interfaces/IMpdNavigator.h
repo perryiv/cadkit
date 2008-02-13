@@ -23,9 +23,6 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2186138810u };
 
-  // go to the next group in the set
-  virtual void              nextGroup ( unsigned int index ) = 0;
-
   // Go to the next time step
   virtual void              nextStep() = 0;
 

@@ -1604,6 +1604,9 @@ void Viewer::updateCursor()
 
 void Viewer::updateCursor( bool left, bool middle, bool right )
 {
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
   const bool buttons ( left || middle || right );
 
   // Call the other one if no buttons pressed.

@@ -7,7 +7,7 @@
 namespace Usul {
 namespace Interfaces {
 
-  struct IModifiedObserver;
+struct IModifiedObserver;
 
 struct IModifiedSubject : public Usul::Interfaces::IUnknown
 {

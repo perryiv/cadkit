@@ -161,7 +161,7 @@ public:
   void                        insert ( Unknown *caller = 0x0 );
 
   /// Set/get the modified flag.
-  virtual bool                modified() const { return _file.modified(); }
+  virtual bool                modified() const;
   virtual void                modified ( bool m );
 
   /// Return the number of windows.
@@ -178,12 +178,15 @@ public:
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 ) = 0;
 
-  // Returns appropriate tag name for registry.
+  /// Returns appropriate tag name for registry.
   virtual std::string         registryTagName() const;
 
   /// Remove a window from the proper set.
   virtual void                removeWindow   ( Window *window );
   virtual void                removeView     ( View   *view   );
+
+  /// Ask the views to redraw.
+  virtual void                requestRedraw();
 
   /// Save the document to existing file name.
   void                        save ( Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 );
@@ -208,7 +211,7 @@ public:
   virtual void                updateGUI();
   
   /// Update the window titles.
-  void                        updateWindowTitles ();
+  void                        updateWindowTitles();
 
   /// Bring the windows forward
   void                        windowsForward();
@@ -227,12 +230,15 @@ protected:
 
   void                        _addOptions ( const Options & );
 
+  // Build the title for given window.
+  virtual std::string         _buildTitle ( Window* );
+
   std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 );
 
   void                        _save ( const std::string &filename, Unknown *caller, Unknown *progress, const Options &options = Options(), std::ostream *out = 0x0 );
 
-  // Build the title for given window.
-  virtual std::string         _buildTitle ( Window* );
+  // Notify the observers.
+  void                        _notifyModifiedObservers();
 
   /// Usul::Interfaces::IModifiedSubject
   virtual void                addModifiedObserver    ( Usul::Interfaces::IModifiedObserver* observer );

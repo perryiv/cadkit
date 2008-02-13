@@ -727,7 +727,7 @@ void Document::updateGUI  (  )
 {
   Usul::Interfaces::IUpdateGUI::QueryPtr update  ( this->delegate( ) );
 
-  if( update.valid() )
+  if ( update.valid() )
     update->updateGUI();
 }
 
@@ -780,7 +780,7 @@ void Document::addModifiedObserver ( Usul::Interfaces::IModifiedObserver* observ
   if ( 0x0 == observer )
     return;
 
-  _modifiedObservers.insert( observer );
+  _modifiedObservers.insert ( observer );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -798,24 +798,75 @@ void Document::removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* obs
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the modified flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Document::modified() const
+{
+  Guard guard ( this );
+  return _file.modified();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the modified flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Document::modified ( bool m )
 {
-  Guard guard ( this );
-  _file.modified ( m );
+  // Get current state.
+  const bool current ( this->modified() );
 
-  for ( ModifiedObservers::iterator iter = _modifiedObservers.begin(); iter != _modifiedObservers.end(); ++iter )
+  // If the state is different.
+  if ( current != m )
+  {
+    // Guard while setting the flag.
+    Guard guard ( this );
+    _file.modified ( m );
+  }
+
+  // If the state is different.
+  if ( current != m )
+  {
+    // Do not guard this function call.
+    this->_notifyModifiedObservers();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the observers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::_notifyModifiedObservers()
+{
+  ModifiedObservers observers ( Usul::Threads::Safe::get ( this->mutex(), _modifiedObservers ) );
+  for ( ModifiedObservers::iterator iter = observers.begin(); iter != observers.end(); ++iter )
   {
     // Need to make gcc happy.
     Usul::Interfaces::IModifiedObserver::RefPtr temp ( iter->get() );
     if ( true == temp.valid() )
     {
-      temp->subjectModified ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
+      temp->subjectModified ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Ask the views to redraw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::requestRedraw()
+{
+  this->_notifyModifiedObservers();
 }
 
 

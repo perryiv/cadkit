@@ -72,27 +72,17 @@ public:
   typedef osg::Matrixf Matrixf;
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
-  typedef std::vector < std::string > Files;
-
-  typedef std::vector< osg::ref_ptr< osg::Switch > > MpdScene;
+ 
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef std::vector < std::string > Files;
-  typedef std::vector< MpdDefinitions::MpdGroup > MpdGroups;
   typedef std::vector< MpdDefinitions::MpdSet > MpdSets;
-  
-  
   typedef std::vector< MpdDefinitions::MpdTimeSet > MpdTimeSets;
   typedef MpdDefinitions::MpdDynamicSets MpdDynamicSets;
-
   typedef std::vector< MpdJob::RefPtr > MpdJobs;
-  
-
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   typedef std::vector < osg::Matrixd > MatrixVec;
-
   typedef std::vector< std::string > modelMenuList;
   typedef std::vector< std::string > timelineMenuList;
-  //typedef std::vector< MpdDefinitions::MpdSequence > MpdSequences;
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ModelPresentationDocument );
@@ -128,7 +118,6 @@ public:
   virtual void     write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
   
   /// Usul::Interfaces::IMpdNavigator
-  void              nextGroup( unsigned int index );
   void              nextStep();
   void              prevStep();
   void              firstStep();
@@ -160,7 +149,6 @@ protected:
   void                        _buildScene();
   bool                        _readParameterFile( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseHeader( XmlTree::Node &node, Unknown *caller, Unknown *progress );
-  void                        _parseStatic( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseSet( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int setnum );
   void                        _parseTimeSet( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseSequence( XmlTree::Node &node, Unknown *caller, Unknown *progress );
@@ -188,12 +176,9 @@ protected:
 
   void                        _handleSequenceEvent();
   osg::Node*                  _createProxyGeometry( const std::string &message, Usul::Interfaces::IUnknown *caller );
-  
-
 
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
-  void                        _updateCamera( Usul::Interfaces::IUnknown *caller );
 
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, Unknown *progress );
   void                        _setStatusBar ( const std::string &text, Usul::Interfaces::IUnknown *caller );
@@ -216,10 +201,6 @@ protected:
 
 private:
   GroupPtr                      _root;
-  GroupPtr                      _static;
-  MpdScene                      _sceneTree;
-  MpdGroups                     _groups;
-  osg::ref_ptr< osg::Switch >   _models;
   MpdDefinitions::MpdModels     _mpdModels;
   MpdSets                       _sets;
   MpdTimeSets                   _timeSets;
@@ -244,7 +225,6 @@ private:
   unsigned int                  _globalTimelineEnd;
   unsigned int                  _globalCurrentTime;
 
-  
   MpdJobs                       _jobs;
 
   //Text variables for status

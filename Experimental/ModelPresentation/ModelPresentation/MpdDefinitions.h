@@ -102,7 +102,7 @@ class MpdDefinitions
       };
       struct MpdSequenceStep
       {
-        Location location;
+        std::string locationName;
         std::string name;
         bool overwriteGroup;
         bool changeLocation;

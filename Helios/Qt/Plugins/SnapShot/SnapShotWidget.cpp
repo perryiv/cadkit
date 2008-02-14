@@ -74,7 +74,7 @@ void SnapShotWidget::on__snapShotButton_clicked()
   {
     Usul::Interfaces::ISnapShot::QueryPtr snapShot ( Usul::Documents::Manager::instance().activeView() );
 
-    if( snapShot.valid () )
+    if ( snapShot.valid () )
     {
       // Get the parameters for the snap shot.
       double frameScale ( _frameScale->value() );
@@ -98,23 +98,18 @@ void SnapShotWidget::on__snapShotButton_clicked()
         std::string filename ( result.first );
         if ( false == filename.empty() )
         {
-          // Create a temp file.
-          //std::string filename ( Usul::File::Temp::file() );
-
-          // Make it a bitmap.
-          //boost::algorithm::replace_last ( filename, ".tmp", ".bmp" );
-
-          // Save it to our list.
-          //_files.push_back ( filename );
+          // Force a redraw now to make sure the dialog's pixels are gone.
+          Usul::Interfaces::IRedraw::QueryPtr redraw ( snapShot );
+          if ( true == redraw.valid() )
+          {
+            redraw->redraw();
+          }
 
           // Some feedback...
           std::cout << "Creating image: " << filename << std::endl;
 
           // Take the picture.
           snapShot->takePicture ( filename, frameScale, numSamples );
-
-          // Open it up.
-          //QProcess::startDetached ( filename.c_str() );
         }
       }
     }

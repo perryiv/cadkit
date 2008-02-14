@@ -211,6 +211,7 @@ std::string Database::convertToTag ( const std::string &s ) const
   std::replace ( tag.begin(), tag.end(), '\\', '_' );
   std::replace ( tag.begin(), tag.end(), ':',  '_' );
   std::replace ( tag.begin(), tag.end(), '.',  '_' );
+  std::replace ( tag.begin(), tag.end(), '-',  '_' );
 
   return tag;
 }

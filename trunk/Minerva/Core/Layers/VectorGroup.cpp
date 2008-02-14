@@ -12,6 +12,7 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osg/Group"
 
@@ -30,6 +31,7 @@ VectorGroup::VectorGroup() :
   BaseClass(),
   _layers()
 {
+  USUL_TRACE_SCOPE;
   this->_addMember ( "layers", _layers );
 }
 
@@ -42,6 +44,7 @@ VectorGroup::VectorGroup() :
 
 VectorGroup::~VectorGroup()
 {
+  USUL_TRACE_SCOPE;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -52,6 +55,8 @@ VectorGroup::~VectorGroup()
 
 Usul::Interfaces::IUnknown* VectorGroup::queryInterface ( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
+  
   switch ( iid )
   {
   case Usul::Interfaces::ILayerList::IID:
@@ -70,6 +75,7 @@ Usul::Interfaces::IUnknown* VectorGroup::queryInterface ( unsigned long iid )
 
 void VectorGroup::accept ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
   visitor.visit ( *this );
 }
 
@@ -82,6 +88,8 @@ void VectorGroup::accept ( Minerva::Core::Visitor& visitor )
 
 void VectorGroup::traverse ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
+  
   // Call the base class
   BaseClass::traverse ( visitor );
   
@@ -100,6 +108,7 @@ void VectorGroup::traverse ( Minerva::Core::Visitor& visitor )
 
 osg::Node * VectorGroup::buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   osg::ref_ptr < osg::Group > group ( new osg::Group );
   
@@ -124,6 +133,7 @@ osg::Node * VectorGroup::buildScene ( const Options &options, Usul::Interfaces::
 
 void VectorGroup::addLayer ( Vector* layer )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   
   if ( 0x0 != layer )
@@ -141,6 +151,7 @@ void VectorGroup::addLayer ( Vector* layer )
 
 void VectorGroup::clearLayers()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _layers.clear();
 }
@@ -154,6 +165,7 @@ void VectorGroup::clearLayers()
 
 unsigned int VectorGroup::numberLayers() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _layers.size();
 }
@@ -167,6 +179,26 @@ unsigned int VectorGroup::numberLayers() const
 
 Usul::Interfaces::ILayer* VectorGroup::layer ( unsigned int i )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _layers.at ( i ).get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a copy of the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VectorGroup::layers ( Layers& container ) const
+{
+  USUL_TRACE_SCOPE;
+  
+  // Clear what may be in the container.
+  container.clear();
+  
+  // Copy.
+  Guard guard ( this );
+  container.assign ( _layers.begin(), _layers.end() );
 }

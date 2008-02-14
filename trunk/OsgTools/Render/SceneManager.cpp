@@ -288,11 +288,11 @@ const osg::ClipNode* SceneManager::clipNode() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
+osgText::Text* SceneManager::getText ( unsigned int x, unsigned int y )
 {
   // Find the xy pair if it exists
   TextMap::iterator i = _textMap.find( TextMap::key_type ( x, y ) );
-  if( i == _textMap.end() )
+  if ( _textMap.end() == i )
   {
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
     text->setPosition( osg::Vec3 ( x, y, 0 ) );
@@ -300,20 +300,20 @@ osgText::Text* SceneManager::getText( unsigned int x, unsigned int y )
     osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
     text->setFont ( font.get() );
 
-    text->setColor( osg::Vec4 ( 0.0f,0.0f,0.0f,1.0f ) );
-    text->setCharacterSize( 24.0f );
+    text->setColor ( osg::Vec4 ( 0.0f, 0.0f, 0.0f, 1.0f ) );
+    text->setCharacterSize ( 12.0f );
 
-    _textMap.insert( TextMap::value_type( TextMap::key_type ( x, y ), text ) );
+    _textMap.insert ( TextMap::value_type( TextMap::key_type ( x, y ), text ) );
 
     osg::ref_ptr<osg::Group> group ( this->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX ) );
     
     osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    mt->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+    mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
     osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable( text.get() );
+    geode->addDrawable ( text.get() );
 
-    mt->addChild( geode.get() );
+    mt->addChild ( geode.get() );
     osg::ref_ptr<osg::PolygonMode> mode ( new osg::PolygonMode ( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL ) );
     mt->getOrCreateStateSet()->setAttributeAndModes ( mode.get(), osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
     

@@ -97,7 +97,7 @@ void Document::load ( const std::istream &stream )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::write ( const std::string &file )
+void Document::write ( const std::string &file ) const
 {
   Writer writer;
   writer.write ( this, file );
@@ -110,7 +110,7 @@ void Document::write ( const std::string &file )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::write ( std::ostream &out )
+void Document::write ( std::ostream &out ) const
 {
   Writer writer;
   writer.write ( this, out );

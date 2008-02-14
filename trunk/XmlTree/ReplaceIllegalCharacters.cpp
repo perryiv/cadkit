@@ -19,6 +19,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+std::string XmlTree::translateToLegalCharacters ( const std::string& s )
+{
+  std::string temp ( s );
+  XmlTree::replaceIllegalCharacters ( temp );
+  return temp;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Replace illegal xml characters
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void XmlTree::replaceIllegalCharacters ( std::string& string )
 {
   boost::algorithm::replace_all ( string, "<", "&lt;" );

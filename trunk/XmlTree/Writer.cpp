@@ -15,6 +15,7 @@
 
 #include "XmlTree/Writer.h"
 #include "XmlTree/Document.h"
+#include "XmlTree/ReplaceIllegalCharacters.h"
 
 #include "Usul/Errors/Assert.h"
 
@@ -92,7 +93,7 @@ namespace Helper
       for ( Node::Attributes::const_iterator a = doc->attributes().begin(); a != doc->attributes().end(); ++a )
       {
         if ( false == a->first.empty() && false == a->second.empty() )
-          out << ' ' << a->first << "=\"" << a->second << "\"";
+          out << ' ' << a->first << "=\"" << XmlTree::translateToLegalCharacters ( a->second ) << "\"";
       }
 
       // Finish leading tag.
@@ -101,7 +102,7 @@ namespace Helper
       // Write value if there is one.
       const std::string &value ( doc->value() );
       if ( false == value.empty() )
-        out << value;
+        out << XmlTree::translateToLegalCharacters ( value );
 
       // Need local scope.
       {

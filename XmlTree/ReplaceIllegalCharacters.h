@@ -18,6 +18,7 @@
 namespace XmlTree
 {
   XML_TREE_EXPORT void replaceIllegalCharacters ( std::string& string );
+  XML_TREE_EXPORT std::string translateToLegalCharacters ( const std::string& string );
 
   XML_TREE_EXPORT void restoreIllegalCharacters ( std::string& string );
 }

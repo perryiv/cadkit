@@ -31,6 +31,7 @@ class MINERVA_EXPORT VectorGroup : public Minerva::Core::Layers::Vector,
 public:
   // Typedefs.
   typedef Minerva::Core::Layers::Vector     BaseClass;
+  typedef Usul::Interfaces::ILayer          ILayer;
   typedef std::vector<Vector::RefPtr>       Layers;
   
   /// Smart-pointer definitions.
@@ -55,10 +56,13 @@ public:
   void                        clearLayers();
   
   /// Get the number of layers (ILayer).
-  virtual unsigned int                  numberLayers() const;
+  virtual unsigned int        numberLayers() const;
   
   /// Get the layer at position i (ILayer).
-  virtual Usul::Interfaces::ILayer*     layer ( unsigned int i );
+  virtual ILayer*             layer ( unsigned int i );
+  
+  /// Get a copy of the layers.
+  void                        layers ( Layers& ) const;
 protected:
   virtual ~VectorGroup();
   

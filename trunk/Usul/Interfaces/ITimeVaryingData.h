@@ -31,9 +31,9 @@ struct ITimeVaryingData : public Usul::Interfaces::IUnknown
   enum { IID = 1282837521u };
 
   virtual void             setCurrentTimeStep ( unsigned int current ) = 0;
-  virtual unsigned int     getCurrentTimeStep () const = 0;
+  virtual unsigned int     getCurrentTimeStep() const = 0;
 
-  virtual unsigned int     getNumberOfTimeSteps () const = 0;
+  virtual unsigned int     getNumberOfTimeSteps() const = 0;
 }; //struct ITimeVaryingData
 
 

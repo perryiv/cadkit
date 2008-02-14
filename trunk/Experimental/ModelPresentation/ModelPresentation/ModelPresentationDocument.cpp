@@ -1521,7 +1521,7 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
   step.changeLocation = true;
   step.overwriteGroup = true;
   step.name = "Unknown";
-  step.location.first = "";
+  step.locationName = "";
   
   
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
@@ -1547,8 +1547,16 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
     XmlTree::Node::RefPtr node ( *iter );
     if ( "location" == node->name() )
     {
-      MpdDefinitions::LocationNames names;
-      this->_parseLocation( *node, caller, progress, step.location, names );
+      Attributes& att ( node->attributes() );
+      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      {
+        if ( "name" == att_iter->first )
+        {
+          std::string name;
+          Usul::Strings::fromString ( att_iter->second, name );
+          step.locationName = name;
+        }
+      }
     } 
     if( "show" == node->name() )
     {
@@ -1874,27 +1882,6 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
 
   bool useSequence = false;
 
-  // Check number of locations or use a sequence.
-  if ( _locations.size() <= 0 )
-  {
-#if 0
-    return;
-#else
-    useSequence = true;
-#endif
-  }
-
-
-  // Make sure we have this location or use a sequence.
-  if ( _locations.end() == _locations.find ( name ) )
-  {
-#if 0
-    return;
-#else
-    useSequence = true;
-#endif
-  }
-
   // Get needed interfaces.
   IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
   Usul::Interfaces::IViewMatrix::QueryPtr view ( Usul::Documents::Manager::instance().activeView() );
@@ -1911,28 +1898,7 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   // Get final matrix but don't append yet.
   osg::Matrixd m1;
 
-  // using a location
-  if( false == useSequence )
-  {
-    m1 = this->_locations[name];
-  }
-  // using a sequence
-  else
-  {
-    bool foundMatrix = false;
-    for( unsigned int i = 0; i < _sequence.steps.size(); ++i )
-    {
-      if( _sequence.steps.at( i ).location.first == name )
-      {
-        foundMatrix = true;
-        m1 = _sequence.steps.at( i ).location.second;
-        break;
-      }
-    }
-    if( false == foundMatrix )
-      return;
-  }
-
+  m1 = this->_locations[name];
 
   // Append final matrix.
   matrices.push_back ( PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
@@ -2449,7 +2415,7 @@ void ModelPresentationDocument::_handleSequenceEvent()
   // Change location to the current step if we should do so
   if( true == step.changeLocation )
   {
-    this->setAnimationPath( step.location.first );
+    this->setAnimationPath( step.locationName );
   }
 
   // Hide all groups then show the current step if we should do so

@@ -49,8 +49,8 @@ public:
   void                    load ( const std::istream& in );
 
   // Write document to file or stream.
-  void                    write ( const std::string &file );
-  void                    write ( std::ostream &out );
+  void                    write ( const std::string &file ) const;
+  void                    write ( std::ostream &out ) const;
 
 protected:
 

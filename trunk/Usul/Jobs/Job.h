@@ -144,6 +144,55 @@ private:
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Template job class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class F > class GenericJob : public Job
+  {
+  public:
+
+    typedef Job BaseClass;
+
+    GenericJob ( F f, Usul::Interfaces::IUnknown *caller = 0x0, bool showProgress = true ) : 
+      BaseClass ( caller, showProgress ),
+      _f ( f )
+    {
+    }
+  protected:
+
+    virtual ~GenericJob()
+    {
+    }
+
+  private:
+
+    virtual void _started()
+    {
+      _f();
+    }
+
+    F _f;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to make template job class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class F > Job *create ( F f, Usul::Interfaces::IUnknown *caller = 0x0, bool showProgress = true )
+{
+  return new Detail::GenericJob<F> ( f, caller, showProgress );
+}
+
+
 } // namespace Jobs
 } // namespace Usul
 

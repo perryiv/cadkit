@@ -76,5 +76,5 @@ bool InsertDocument::updateEnable () const
 {
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
-  return document.valid();
+  return document.valid() && false == document->filtersInsert().empty();
 }

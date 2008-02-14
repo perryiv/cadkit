@@ -23,6 +23,8 @@
 #include "osg/BoundingBox"
 #include "osg/Plane"
 
+#include <algorithm>
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -555,12 +557,11 @@ void ClipPlanes::on_clearButton_clicked()
     return;
 
   // Make sure checks are all unchecked.
-  posXAxis->setChecked ( false );
-  posYAxis->setChecked ( false );
-  posZAxis->setChecked ( false );
-  negXAxis->setChecked ( false );
-  negYAxis->setChecked ( false );
-  negZAxis->setChecked ( false );
+  QRadioButton *buttons[] = { posXAxis, posYAxis, posZAxis, negXAxis, negYAxis, negZAxis };
+  const unsigned int numButtons ( sizeof ( buttons ) / sizeof ( *buttons ) );
+  std::for_each ( buttons, buttons + numButtons, std::bind2nd ( std::mem_fun ( &QRadioButton::setAutoExclusive ), false ) );
+  std::for_each ( buttons, buttons + numButtons, std::bind2nd ( std::mem_fun ( &QRadioButton::setChecked ), false ) );
+  std::for_each ( buttons, buttons + numButtons, std::bind2nd ( std::mem_fun ( &QRadioButton::setAutoExclusive ), true ) );
 
   cp->removeClippingPlanes();
   _clipPlaneList->clear();

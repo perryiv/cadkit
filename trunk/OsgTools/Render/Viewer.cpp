@@ -1656,10 +1656,21 @@ void Viewer::takePicture ( const std::string& filename, float frameSizeScale, un
   if ( _context.valid() )
     _context->makeCurrent();
 
-  osg::ref_ptr < osg::Image > image ( _renderer->screenCapture ( frameSizeScale, numSamples ) );
+  // Is the size of the image the same as the window?
+  if ( 1.0f != frameSizeScale )
+  {
+    osg::ref_ptr < osg::Image > image ( _renderer->screenCapture ( frameSizeScale, numSamples ) );
 
-  // Write the image to file.
-  osgDB::writeImageFile ( *image, filename );
+    // Write the image to file.
+    osgDB::writeImageFile ( *image, filename );
+  }
+
+  // Otherwise...
+  else
+  {
+    // Write the image to file.
+    this->_writeImageFile ( filename );
+  }
 }
 
 

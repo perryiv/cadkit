@@ -324,7 +324,7 @@ void MainWindow::_loadSettings()
 
   // Set the window's properties.
   Usul::Registry::Node &mw ( Reg::instance()[Sections::MAIN_WINDOW] );
-  this->setGeometry ( mw[Keys::GEOMETRY].get<QRect> ( Defaults::GEOMETRY ) );
+  this->restoreGeometry ( mw[Keys::GEOMETRY].get<QByteArray> ( QByteArray() ) );
 
   // Get recent-files list and remove files that do not exist.
   _recentFiles = mw[Keys::RECENT_FILES]["files"].get<StringList> ( StringList() );
@@ -345,7 +345,7 @@ void MainWindow::_saveSettings()
 
   // Set the window's properties.
   Usul::Registry::Node &mw ( Reg::instance()[Sections::MAIN_WINDOW] );
-  mw[Keys::GEOMETRY] = this->geometry();
+  mw[Keys::GEOMETRY] = this->saveGeometry();
 
   // Save dock window positions.
   mw[Keys::DOCK_WINDOW_POSITIONS] = this->saveState ( Helios::Core::Constants::VERSION );

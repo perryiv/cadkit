@@ -804,17 +804,25 @@ void StateSet::setMaterial ( osg::Node *node, osg::Material *mat )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StateSet::setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const osg::Vec4f &diffuse )
+void StateSet::setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const osg::Vec4f &diffuse, float alpha )
 {
   // Handle bad input.
   if ( 0x0 == node )
     return;
 
   osg::ref_ptr<osg::Material> mat ( OsgTools::State::StateSet::getMaterialDefault() );
-  if ( true == mat.valid() )
+  if ( false == mat.valid() )
+    return;
+
+  mat->setAmbient ( osg::Material::FRONT_AND_BACK, ambient );
+  mat->setDiffuse ( osg::Material::FRONT_AND_BACK, diffuse );
+
+  if ( alpha < 1 )
   {
-    mat->setAmbient ( osg::Material::FRONT_AND_BACK, ambient );
-    mat->setDiffuse ( osg::Material::FRONT_AND_BACK, diffuse );
-    OsgTools::State::StateSet::setMaterial ( node, mat.get() );
+    node->getOrCreateStateSet()->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    node->getOrCreateStateSet()->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    mat->setAlpha ( osg::Material::FRONT_AND_BACK, alpha );
   }
+
+  OsgTools::State::StateSet::setMaterial ( node, mat.get() );
 }

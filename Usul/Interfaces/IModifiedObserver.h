@@ -1,4 +1,11 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2005, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #ifndef __USUL_INTERFACES_IMODIFIEDOBSERVER_H__
 #define __USUL_INTERFACES_IMODIFIEDOBSERVER_H__
@@ -15,7 +22,7 @@ struct IModifiedObserver : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IModifiedObserver );
 
   /// Id for this interface.
-  enum { IID = 12562500u };
+  enum { IID = 1864009502u };
 
   virtual void subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 

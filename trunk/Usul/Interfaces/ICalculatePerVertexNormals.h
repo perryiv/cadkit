@@ -19,6 +19,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace osg { class Array; class DrawElementsUInt; }
+namespace OsgTools { namespace Triangles { class TriangleSet; } }
 
 namespace Usul {
 namespace Interfaces {
@@ -33,6 +34,8 @@ struct ICalculatePerVertexNormals : public Usul::Interfaces::IUnknown
   enum { IID = 1708593750 };
 
   virtual void    calculatePerVertexNormals ( osg::Array *vertices, osg::DrawElementsUInt *elements, osg::Array *normalsT, osg::Array *normalsV ) = 0;
+  virtual void    calculatePerVertexNormals ( OsgTools::Triangles::TriangleSet *triangleSet ) = 0;
+
 }; // struct ICalculatePerVertexNormals
 
 

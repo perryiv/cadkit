@@ -50,6 +50,7 @@ protected:
   /** Insert your Plugin specific code here **/
 
   virtual void    calculatePerVertexNormals ( osg::Array *vertices, osg::DrawElementsUInt *elements, osg::Array *normalsT, osg::Array *normalsV );
+  virtual void    calculatePerVertexNormals ( OsgTools::Triangles::TriangleSet *triangleSet );
 };
 
 #endif /* __CALCPERVERTEXNORMALSCOMPONENT_H__  */		

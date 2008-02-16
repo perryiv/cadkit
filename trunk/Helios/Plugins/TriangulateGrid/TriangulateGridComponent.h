@@ -44,7 +44,11 @@ public:
   TriangulateGridComponent();
   
   // Build a triangle set from a grid of data.  GridResolution is the size of a grid cell in the x and y directions.
-  virtual TriangleSet*  triangulateGrid ( const Grid &grid, const GridResolution& resolution, ValueType noDataValue );
+  virtual TriangleSet*  triangulateGrid ( const Grid &grid, 
+                                          const GridResolution& resolution, 
+                                          const Usul::Math::Vec3d& offset, 
+                                          ValueType noDataValue,
+                                          Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;

@@ -17,6 +17,7 @@
 #include "Helios/Plugins/TriangulateGrid/TriangulateGridComponent.h"
 
 #include "Usul/Components/Factory.h"
+#include "Usul/Interfaces/ICoordinateTransform.h"
 #include "Usul/Predicates/CloseFloat.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
@@ -74,8 +75,15 @@ Usul::Interfaces::IUnknown *TriangulateGridComponent::queryInterface ( unsigned 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Triangles::TriangleSet* TriangulateGridComponent::triangulateGrid ( const Grid &grid, const GridResolution& resolution, ValueType noDataValue )
+OsgTools::Triangles::TriangleSet* TriangulateGridComponent::triangulateGrid ( const Grid &grid, 
+                                                                              const GridResolution& resolution, 
+                                                                              const Usul::Math::Vec3d& o, 
+                                                                              ValueType noDataValue,
+                                                                              Usul::Interfaces::IUnknown* caller )
 {
+  // Query for needed interface.
+  Usul::Interfaces::ICoordinateTransformOSG::QueryPtr transform ( caller );
+
   // Make the triangle set.
   unsigned int unitsInLastPlace ( 10 );
   OsgTools::Triangles::TriangleSet::RefPtr triangleSet ( new OsgTools::Triangles::TriangleSet ( unitsInLastPlace ) );
@@ -91,6 +99,9 @@ OsgTools::Triangles::TriangleSet* TriangulateGridComponent::triangulateGrid ( co
 
   const unsigned int rows    ( grid.rows() );
   const unsigned int columns ( grid.columns() );
+
+  // Offset for each vertex.
+  const osg::Vec3f offset ( o[0], o[1], o[2] );
 
   // Walk the grid.
   for ( unsigned int i = 0; i < rows - 1; ++i )
@@ -118,10 +129,18 @@ OsgTools::Triangles::TriangleSet* TriangulateGridComponent::triangulateGrid ( co
       const osg::Vec3::value_type startX ( j * resolution[0] );
       const osg::Vec3::value_type startY ( i * resolution[1] );
 
-      const osg::Vec3 v0 ( startX,                 startY,                 a ); // Point a.
-      const osg::Vec3 v1 ( startX + resolution[0], startY,                 b ); // Point b.
-      const osg::Vec3 v2 ( startX,                 startY + resolution[1], c ); // Point c.
-      const osg::Vec3 v3 ( startX + resolution[0], startY + resolution[1], d ); // Point d.
+      osg::Vec3f v0 ( offset + osg::Vec3f ( startX,                 startY,                 a  ) ); // Point a.
+      osg::Vec3f v1 ( offset + osg::Vec3f ( startX + resolution[0], startY,                 b  ) ); // Point b.
+      osg::Vec3f v2 ( offset + osg::Vec3f ( startX,                 startY + resolution[1], c ) ); // Point c.
+      osg::Vec3f v3 ( offset + osg::Vec3f ( startX + resolution[0], startY + resolution[1], d ) ); // Point d.
+
+      if ( transform.valid() )
+      {
+        transform->transformCoordinate ( v0 );
+        transform->transformCoordinate ( v1 );
+        transform->transformCoordinate ( v2 );
+        transform->transformCoordinate ( v3 );
+      }
 
       // See if we should add a triangle for these 3 corners.
       if ( aIsValid && bIsValid && cIsValid )

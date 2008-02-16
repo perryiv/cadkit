@@ -18,6 +18,8 @@
 
 #include "VTKTools/Convert/PolyData.h"
 
+#include "OsgTools/Triangles/TriangleSet.h"
+
 #include "osg/Array"
 #include "osg/PrimitiveSet"
 
@@ -134,4 +136,29 @@ void CalcPerVertexNormalsComponent::calculatePerVertexNormals ( osg::Array *v, o
   osg::ref_ptr< osg::Vec3Array > normalsT ( dynamic_cast < osg::Vec3Array * > ( nT ) );
 
   VTKTools::Convert::PolyData::polyDataToVertices( data.GetPointer(), *vertices, *elements, *normalsT, *normalsV );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create per vertex normals.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CalcPerVertexNormalsComponent::calculatePerVertexNormals ( OsgTools::Triangles::TriangleSet *triangleSet )
+{
+  vtkSmartPointer < vtkPolyData > data ( vtkPolyData::New() );
+  VTKTools::Convert::PolyData::triangleSetToPolyData ( triangleSet, data );
+
+  vtkSmartPointer < vtkPolyDataNormals > calcNormals ( vtkPolyDataNormals::New() );
+  calcNormals->SetInput ( data.GetPointer() );
+
+  calcNormals->Update();
+
+  vtkSmartPointer < vtkPolyData > nData ( calcNormals->GetOutput() );
+  calcNormals->ComputePointNormalsOn ();
+  //calcNormals->SplittingOff ();
+  //calcNormals->ConsistencyOff ();
+
+  VTKTools::Convert::PolyData::polyDataToTriangleSet ( nData.GetPointer(), triangleSet );
 }

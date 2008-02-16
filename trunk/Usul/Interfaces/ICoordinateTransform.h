@@ -52,7 +52,7 @@ struct ICoordinateTransform : public Usul::Interfaces::IUnknown
 }; // ICoordinateTransform
 
 typedef ICoordinateTransform<1238102520u,osg::Vec3,osg::Vec3Array>  ICoordinateTransformOSG;
-typedef ICoordinateTransform<3318846281u,Usul::Math::Vec3d,std::vector<Usul::Math::Vec3d>>  ICoordinateTransformUsul;
+typedef ICoordinateTransform<3318846281u,Usul::Math::Vec3d,std::vector<Usul::Math::Vec3d> >  ICoordinateTransformUsul;
 
 }
 }

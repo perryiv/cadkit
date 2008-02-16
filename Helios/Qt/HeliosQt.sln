@@ -528,7 +528,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Smooth Triangles", ".
 		{55FA4DF3-4F81-4942-ACF2-A9150C79CCE0} = {55FA4DF3-4F81-4942-ACF2-A9150C79CCE0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Modflow Helios Qt App", "..\..\..\modflow\Application\ModflowApp.vcproj", "{960F9465-A3CB-43FE-8DBE-562365F6F89C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Nimue Qt App", "..\..\..\modflow\Application\ModflowApp.vcproj", "{960F9465-A3CB-43FE-8DBE-562365F6F89C}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

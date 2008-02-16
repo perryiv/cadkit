@@ -20,6 +20,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Containers/Array2D.h"
 #include "Usul/Math/Vector2.h"
+#include "Usul/Math/Vector3.h"
 
 namespace OsgTools { namespace Triangles { class TriangleSet; } }
 
@@ -42,7 +43,11 @@ struct ITriangulateGrid : public Usul::Interfaces::IUnknown
   enum { IID = 3976379223u };
 
   // Build a triangle set from a grid of data.  GridResolution is the size of a grid cell in the x and y directions.
-  virtual TriangleSet*  triangulateGrid ( const Grid &grid, const GridResolution& resolution, ValueType noDataValue ) = 0;
+  virtual TriangleSet*  triangulateGrid ( const Grid &grid, 
+                                          const GridResolution& resolution, 
+                                          const Usul::Math::Vec3d& offset, 
+                                          ValueType noDataValue,
+                                          Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
 
 }; // ITriangulateGrid
 

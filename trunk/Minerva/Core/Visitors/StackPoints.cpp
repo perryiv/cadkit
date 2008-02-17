@@ -99,5 +99,8 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
 void StackPoints::visit ( Minerva::Core::Layers::PointLayer &layer )
 {
   if ( layer.stackPoints() && layer.showLayer() )
+  {
     layer.traverse ( *this );
+    layer.dirtyScene ( true );
+  }
 }

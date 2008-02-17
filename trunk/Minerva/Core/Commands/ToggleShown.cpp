@@ -77,7 +77,7 @@ void ToggleShown::_execute ()
 
     // Dirty the scene.
     if ( dirty.valid () )
-      dirty->dirtyScene ( Usul::Interfaces::IUnknown::QueryPtr ( _layer ) );
+      dirty->dirtyScene ( true, Usul::Interfaces::IUnknown::QueryPtr ( _layer ) );
   }
 }
 

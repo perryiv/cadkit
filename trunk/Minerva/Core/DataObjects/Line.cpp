@@ -19,6 +19,7 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILineData.h"
 #include "Usul/Interfaces/IFitLineTerrain.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
@@ -42,9 +43,9 @@ using namespace Minerva::Core::DataObjects;
 ///////////////////////////////////////////////////////////////////////////////
 
 Line::Line() :
-BaseClass(),
-_width ( 1.0 ),
-_node ( new osg::Group )
+  BaseClass(),
+  _width ( 1.0 ),
+  _node ( new osg::Group )
 {
 }
 
@@ -97,34 +98,6 @@ void Line::width ( float width )
 }
 
 
-namespace Detail
-{
-  template < class Vertices >
-  osg::Vec3Array* convert ( const Vertices& in, Usul::Interfaces::IUnknown *caller )
-  {
-    osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-    vertices->reserve ( in.size() );
-
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-    if ( planet.valid() )
-    {
-      for ( typename Vertices::const_iterator iter = in.begin(); iter != in.end(); ++iter )
-      {
-#if 1
-        Usul::Math::Vec3d point;
-        planet->convertToPlanet ( *iter, point );
-        vertices->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
-#else
-        vertices->push_back ( osg::Vec3 ( (*iter)[0], (*iter)[1], (*iter)[2] ) );
-#endif
-      }
-    }
-
-    return vertices.release();
-  }
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Build the scene branch for the data object.
@@ -156,20 +129,36 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
       // Get the line data.
       Vertices data ( line->lineData() );
 
-#if 1
       Usul::Interfaces::IFitLineTerrain::QueryPtr fit ( PluginManager::instance().getInterface ( Usul::Interfaces::IFitLineTerrain::IID ) );
 
       Vertices sampledPoints;
-      if ( fit.valid() )
+      if ( fit.valid() && DataObject::ABSOLUTE != this->altitudeMode() )
         fit->resample( data, sampledPoints, 5 );
       else
         sampledPoints = data;
 
-      osg::ref_ptr< osg::Vec3Array > vertices ( Detail::convert ( sampledPoints, caller ) );
-#else
-      osg::ref_ptr< osg::Vec3Array > vertices ( Detail::convert ( data, caller ) );
-#endif
+      // Make the osg::Vec3Array.
+      osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+      vertices->reserve ( sampledPoints.size() );
       
+      // Query for needed interfaces.
+      Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+      Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
+      
+      if ( planet.valid() )
+      {
+        for ( Vertices::const_iterator iter = sampledPoints.begin(); iter != sampledPoints.end(); ++iter )
+        {
+          Vertices::value_type v ( *iter );
+          
+          // Get the height.
+          v[2] = this->_elevation ( v, elevation.get() );
+          
+          Usul::Math::Vec3d point;
+          planet->convertToPlanet ( v, point );
+          vertices->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
+        }
+      }
 
       // Create the geometry
       osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );

@@ -63,11 +63,22 @@ public:
   
   /// Get a copy of the layers.
   void                        layers ( Layers& ) const;
+  
+  // Update.
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+  
+  /// Set dirty scene flag.
+  virtual void                dirtyScene( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
+  
 protected:
   virtual ~VectorGroup();
   
+  /// Build the scene.
+  void                        _buildScene( Usul::Interfaces::IUnknown *caller );
+                                          
 private:
   Layers _layers;
+  osg::ref_ptr<osg::Group> _root;
   
   SERIALIZE_XML_DEFINE_MEMBERS ( VectorGroup );
 

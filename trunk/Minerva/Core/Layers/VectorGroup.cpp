@@ -12,7 +12,10 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Functions/Execute.h"
 #include "Usul/Trace/Trace.h"
+
+#include "OsgTools/Group.h"
 
 #include "osg/Group"
 
@@ -29,7 +32,8 @@ USUL_FACTORY_REGISTER_CREATOR ( VectorGroup );
 
 VectorGroup::VectorGroup() :
   BaseClass(),
-  _layers()
+  _layers(),
+  _root ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
   this->_addMember ( "layers", _layers );
@@ -110,18 +114,39 @@ osg::Node * VectorGroup::buildScene ( const Options &options, Usul::Interfaces::
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  osg::ref_ptr < osg::Group > group ( new osg::Group );
-  
-  // Call the base class
-  group->addChild ( BaseClass::buildScene ( options, caller ) );
-  
-  for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VectorGroup::_buildScene ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( true == _root.valid() || true == BaseClass::dirtyScene() )
   {
-    Vector::RefPtr layer ( *iter );
-    if ( layer.valid() && layer->showLayer() )
-      group->addChild ( layer->buildScene ( options, caller ) );
+    // Remove what we have.
+    OsgTools::Group::removeAllChildren ( _root.get() );
+    
+    // Call the base class
+    _root->addChild ( BaseClass::buildScene ( Usul::Interfaces::IBuildScene::Options(), caller ) );
+
+    for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+    {
+      Vector::RefPtr layer ( *iter );
+      if ( layer.valid() && layer->showLayer() )
+        _root->addChild ( layer->buildScene ( Usul::Interfaces::IBuildScene::Options(), caller ) );
+    }
+
+    // Our scene is no longer dirty.
+    this->dirtyScene ( false );
   }
-  return group.release();
 }
 
 
@@ -201,4 +226,65 @@ void VectorGroup::layers ( Layers& container ) const
   // Copy.
   Guard guard ( this );
   container.assign ( _layers.begin(), _layers.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VectorGroup::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Capture the dirty scene state before calling the base class' update.
+  const bool dirtyScene ( BaseClass::dirtyScene() );
+  
+  // Call the base class first.
+  BaseClass::updateNotify ( caller );
+  
+  // Restore state.
+  BaseClass::dirtyScene ( dirtyScene );
+  
+  if ( dirtyScene )
+    this->_buildScene( caller );
+  
+  // Get all the layers.
+  Layers layers;
+  this->layers ( layers );
+  
+  // Ask each one to update.
+  std::for_each ( layers.begin(), layers.end(), std::bind2nd ( std::mem_fun ( &Vector::updateNotify ), caller ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set dirty scene flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VectorGroup::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Call the base class first.
+  BaseClass::dirtyScene ( b, caller );
+  
+  // Get all the layers.
+  Layers layers;
+  this->layers ( layers );
+
+  // Ask each one to dirty scene.
+  for ( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
+  {
+    Vector::RefPtr layer ( *iter );
+    if ( layer.valid() )
+      layer->dirtyScene ( b, caller );
+  }
+  
+  // This won't compile using gcc. I'm not sure why not...
+  //Usul::Functions::executeMemberFunctions ( layers, &Vector::dirtyScene, b, caller );
 }

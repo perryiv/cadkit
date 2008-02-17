@@ -48,6 +48,8 @@ public:
   double              refreshInterval() const;
   
   /// Get/Set refresh mode.
+  void                refreshMode ( RefreshMode mode );
+  RefreshMode         refreshMode() const;
 
 protected:
   virtual ~Link();

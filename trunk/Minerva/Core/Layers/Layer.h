@@ -180,9 +180,6 @@ public:
   void                        alpha ( float a );
   float                       alpha () const;
   
-  /// Get the extents.
-  void                        extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const;
-  
   /// Get the Spatial Reference id (srid).
   int                         srid() const;
   
@@ -197,6 +194,9 @@ protected:
 
   /// Copy constructor.
   Layer( const Layer& layer );
+  
+  /// Get the extents.
+  virtual void                _calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const;
 
   template < class T >
   osg::Vec4                   _color( const T& iter );

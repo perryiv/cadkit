@@ -10,7 +10,6 @@
 
 #include "Minerva/Core/Commands/AddLayer.h"
 #include "Minerva/Interfaces/IAddLayer.h"
-#include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -202,11 +201,6 @@ void AddLayer::AddLayerJob::_started()
   // Build the vector data.
   if ( vector.valid () )
     vector->buildVectorData ( _caller, this->progress() );
-
-  // Dirty the scene.
-  Minerva::Interfaces::IDirtyScene::QueryPtr ds ( _caller );
-  if ( ds.valid ( ) )
-    ds->dirtyScene ();
 }
 
 

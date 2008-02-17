@@ -208,7 +208,7 @@ void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
       }
       Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
       if ( dirty.valid() )
-        dirty->dirtyScene ( layer );
+        dirty->dirtyScene ( true, layer );
     }
   }
 }

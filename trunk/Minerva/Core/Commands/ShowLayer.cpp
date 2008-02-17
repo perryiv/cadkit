@@ -75,7 +75,7 @@ void ShowLayer::_execute ()
 
   // Dirty the scene.
   if ( dirty.valid () )
-    dirty->dirtyScene ();
+    dirty->dirtyScene ( true );
 }
 
 

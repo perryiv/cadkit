@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
+#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ILayerList.h"
@@ -70,7 +71,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::ICommandExecuteListener,
                                                 public Usul::Interfaces::IPlanetCoordinates,
                                                 public Usul::Interfaces::IElevationDatabase,
-                                                public Usul::Interfaces::IIntersectListener
+                                                public Usul::Interfaces::IIntersectListener,
+                                                public Usul::Interfaces::IFrameStamp
 {
 public:
   /// Useful typedefs.
@@ -268,7 +270,8 @@ protected:
   virtual void                             removeLayer ( Usul::Interfaces::ILayer * layer );
 
   /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
-  virtual void                             dirtyScene ( Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual bool                             dirtyScene() const;
+  virtual void                             dirtyScene( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Get the number of layers ( Usul::Interfaces::ILayerList ).
   virtual unsigned int                     numberLayers () const;
@@ -294,6 +297,11 @@ protected:
   
   // Notify the observer of the intersection (IIntersectListener).
   virtual void                             intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
+  
+  // Get the frame stamp (IFrameStamp).
+  virtual osg::FrameStamp *                frameStamp();
+  virtual const osg::FrameStamp *          frameStamp() const;
+  
 private:
   
   bool _dirty;

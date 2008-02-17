@@ -36,9 +36,6 @@
 #include "StarSystem/Extents.h"
 #include "StarSystem/LandModelEllipsoid.h"
 #include "StarSystem/LandModelFlat.h"
-#include "StarSystem/RasterLayerOssim.h"
-#include "StarSystem/RasterLayerWms.h"
-#include "StarSystem/ElevationLayerDem.h"
 #include "StarSystem/SplitCallbacks.h"
 #include "StarSystem/ClampNearFar.h"
 

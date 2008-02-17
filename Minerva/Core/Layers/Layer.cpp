@@ -862,6 +862,12 @@ void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfa
 
   // Build the data objects.
   this->buildDataObjects( caller, progress );
+  
+  // Our data is no longer dirty.
+  this->dirtyData ( false );
+  
+  // Our scene needs rebuilt.
+  this->dirtyScene ( true );
 }
 
 
@@ -874,6 +880,12 @@ void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfa
 void Layer::modifyVectorData ( Usul::Interfaces::IUnknown *caller )
 {
   this->modify ( caller );
+  
+  // Our data is no longer dirty.
+  this->dirtyData ( false );
+  
+  // Our scene needs rebuilt.
+  this->dirtyScene ( true );
 }
 
 
@@ -1044,7 +1056,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
+void Layer::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
 {
   // Get the connection.
   Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );

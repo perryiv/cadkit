@@ -60,4 +60,5 @@ void ResizePoints::visit ( Minerva::Core::Layers::PointLayer &layer )
 {
   layer.size ( layer.size() * _factor );
   layer.traverse ( *this );
+  layer.dirtyScene ( true );
 }

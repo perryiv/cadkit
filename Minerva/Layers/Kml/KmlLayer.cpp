@@ -10,27 +10,38 @@
 
 #include "Minerva/Layers/Kml/KmlLayer.h"
 #include "Minerva/Layers/Kml/NetworkLink.h"
-#include "Minerva/Layers/Kml/Link.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/DataObjects/Model.h"
 #include "Minerva/Core/DataObjects/Point.h"
+#include "Minerva/Core/DataObjects/Line.h"
+#include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Geometry/Line.h"
+#include "Minerva/Core/Geometry/Polygon.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Remove.h"
 #include "Usul/File/Temp.h"
+#include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Predicates/FileExists.h"
-#include "Usul/Scope/Reset.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Host.h"
+#include "Usul/Threads/Safe.h"
 
 #include "OsgTools/Visitor.h"
 #include "OsgTools/State/StateSet.h"
@@ -46,7 +57,6 @@
 
 using namespace Minerva::Layers::Kml;
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Typedefs.
@@ -54,6 +64,7 @@ using namespace Minerva::Layers::Kml;
 ///////////////////////////////////////////////////////////////////////////////
 
 typedef XmlTree::Node::Children    Children;
+typedef Usul::Convert::Type<std::string,double> ToDouble;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,10 +93,49 @@ USUL_FACTORY_REGISTER_CREATOR ( KmlLayer );
 KmlLayer::KmlLayer() :
   BaseClass(),
   _filename(),
-  _currentFilename(),
-  _currentLayer ( 0x0 )
+  _link ( 0x0 ),
+  _lastUpdate( 0.0 ),
+  _flags ( 0 )
 {
   this->_addMember ( "filename", _filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename ) :
+  BaseClass(),
+  _filename( filename ),
+  _link ( 0x0 ),
+  _lastUpdate( 0.0 ),
+  _flags ( 0 )
+{
+  this->_addMember ( "filename", _filename );
+  this->_parseFolder ( node );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::KmlLayer( Link* link ) :
+  BaseClass(),
+  _filename(),
+  _link ( link ),
+  _lastUpdate ( 0.0 ),
+  _flags ( 0 )
+{
+  this->_addMember ( "filename", _filename );
+
+  // Update the link.
+  this->_updateLink();
 }
 
 
@@ -110,11 +160,26 @@ Usul::Interfaces::IUnknown* KmlLayer::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-    case Usul::Interfaces::IRead::IID:
-      return static_cast < Usul::Interfaces::IRead* > ( this );
-    default:
-      return BaseClass::queryInterface ( iid );
+  case Usul::Interfaces::IRead::IID:
+    return static_cast < Usul::Interfaces::IRead* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::read ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
+{
+  std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
+  
+  // Read.
+  this->_read ( filename, caller, progress );
 }
 
 
@@ -128,16 +193,11 @@ void KmlLayer::read ( const std::string &filename, Usul::Interfaces::IUnknown *c
 {
   this->name ( filename );
   
-  {
-    Guard guard ( this );
-    _filename = filename;
-  }
+  // Set our filename.
+  Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
   
   // Read.
-  this->_read ( filename, caller, progress );
-  
-  // Make sure.
-  _currentLayer = 0x0;
+  this->read ( caller, progress );
 }
 
 
@@ -149,8 +209,20 @@ void KmlLayer::read ( const std::string &filename, Usul::Interfaces::IUnknown *c
 
 void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
+  // Help shorten lines.
+  using namespace Usul::Adaptors;
+  
+  // Scope the reading flag.
+  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( bind1 ( true,  memberFunction ( this, &KmlLayer::reading ) ), 
+                                                                bind1 ( false, memberFunction ( this, &KmlLayer::reading ) ) ) );
+  
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
   
+  // Clear what we have.
+  this->clearLayers();
+  this->clearDataObjects();
+  
+  // See if we need to unzip...
   if ( "kmz" == ext )
   {
     std::string dir ( Usul::File::Temp::directory( true ) + Usul::File::base ( filename ) + "/" );
@@ -162,13 +234,18 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
     std::vector<std::string> filenames;
     Usul::File::findFiles ( dir, "kml", filenames );
     for ( std::vector<std::string>::const_iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
-      this->_parseKml( *iter, caller, progress );
-    //this->_parseKml( dir + "/doc.kml", caller, progress );
+      Usul::Functions::safeCallR1R2R3 ( Usul::Adaptors::memberFunction ( this, &KmlLayer::_parseKml ), *iter, caller, progress, "3815332372" );
   }
   else if ( "kml" == ext )
   {
-    this->_parseKml ( filename, caller, progress );
+    Usul::Functions::safeCallR1R2R3 ( Usul::Adaptors::memberFunction ( this, &KmlLayer::_parseKml ), filename, caller, progress, "3910186017" );
   }
+  
+  // Our data is no longer dirty.
+  this->dirtyData ( false );
+  
+  // Our scene needs rebuit.
+  this->dirtyScene ( true );
 }
 
 
@@ -180,36 +257,27 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
 
 void KmlLayer::_parseKml ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
-  Guard guard ( this );
+  XmlTree::XercesLife life;
   
-  try
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( filename );
+  
+  // Loop over the children.
+  Children children ( document->children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    // Scope the current filename.
-    Usul::Scope::Reset<std::string> resetFilename ( _currentFilename, filename, _currentFilename );
-    
-    XmlTree::XercesLife life;
-    XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
-    document->load ( filename );
-    
-    // Loop over the children.
-    Children children ( document->children() );
-    for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+    XmlTree::Node::RefPtr node ( *iter );
+
+    if ( node.valid() )
     {
-      // Scope the current layer.
-      Minerva::Core::Layers::VectorGroup::RefPtr currentLayer ( _currentLayer );
-      Usul::Scope::Reset<Minerva::Core::Layers::VectorGroup::RefPtr> reset ( _currentLayer, this, currentLayer );
+      std::string name ( node->name() );
       
-      XmlTree::Node::RefPtr node ( *iter );
-        
-      if ( node.valid() )
+      // Handle folders or documents at the top level.
+      if ( "Folder" == name || "Document" == name )
+        this->_parseFolder( *node );
+      else
         this->_parseNode( *node );
     }
-  }
-  catch ( const std::exception& e )
-  {
-  }
-  catch ( ... )
-  {
   }
 }
 
@@ -231,7 +299,14 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   // For now treat documents as folders.
   else if ( "Folder" == name || "Document" == name )
   {
-    this->_parseFolder( node );
+    // Make a new layer.
+    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( new Minerva::Layers::Kml::KmlLayer ( node, Usul::Threads::Safe::get ( this->mutex(), _filename ) ) );
+    
+    // Make sure the scene gets built.
+    layer->dirtyScene ( true );
+    
+    // Add the layer to the parent.
+    this->addLayer ( layer.get() );
   }
   else if ( "NetworkLink" == name )
   {
@@ -241,33 +316,9 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
       Link::RefPtr link ( networkLink->link() );
       if ( link.valid() )
       {
-        std::string href ( link->href() );
-        
-        std::string::size_type pos ( href.rfind ( '/' ) );
-        
-        if ( pos != std::string::npos )
-        {
-          std::string filename ( href.begin() + pos + 1, href.end() );
-          filename = Usul::File::Temp::directory ( true ) + filename;
-          
-          Usul::Network::Curl curl ( href, filename );
-          
-          try
-          {
-            curl.download();
-            this->_read ( filename, 0x0, 0x0 );
-          }
-          catch ( const std::exception& e )
-          {
-            std::cout << "Error 1638679894: Standard exception caught while trying to retrive file: " << filename << "." << std::endl
-                      << "Message: " << e.what() << std::endl;
-          }
-          catch ( ... )
-          {
-            std::cout << "Error 2094380149: Unknown exception caught while trying to retrive file: " << filename << "." << std::endl;
-          }
-        }
-        
+        KmlLayer::RefPtr layer ( new KmlLayer ( link.get() ) );
+        layer->read ( 0x0, 0x0 );
+        this->addLayer ( layer.get() );
       }
     }
   }
@@ -275,9 +326,8 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   {
     DataObject::RefPtr object ( this->_parsePlacemark( node ) );
     
-    // Add the data object to the current layer.
-    if ( _currentLayer.valid() )
-      _currentLayer->addDataObject ( object );
+    // Add the data object.
+    this->addDataObject ( object );
   }
 }
 
@@ -300,12 +350,7 @@ void KmlLayer::_parseStyle ( const XmlTree::Node& node )
 ///////////////////////////////////////////////////////////////////////////////
 
 void KmlLayer::_parseFolder ( const XmlTree::Node& node )
-{  
-  // Make a new layer.
-  Minerva::Core::Layers::VectorGroup::RefPtr layer ( new Minerva::Core::Layers::VectorGroup );
-  Minerva::Core::Layers::VectorGroup::RefPtr currentLayer ( _currentLayer );
-  Usul::Scope::Reset<Minerva::Core::Layers::VectorGroup::RefPtr> reset ( _currentLayer, layer, currentLayer );
-  
+{
   // Get the children.
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -315,19 +360,16 @@ void KmlLayer::_parseFolder ( const XmlTree::Node& node )
     if ( child.valid() )
     {
       if ( "name" == child->name() )
-        layer->name ( child->value() );
+        this->name ( child->value() );
       else if ( "visibility" == child->name() )
       {
         bool visible ( "0" != child->value() );
-        layer->showLayer ( visible );
+        this->showLayer ( visible );
       }
       else
         this->_parseNode( *child );
     }
   }
-  
-  // Add the layer to the parent.
-  currentLayer->addLayer ( layer.get() );
 }
 
 
@@ -352,6 +394,12 @@ KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
     object = this->_parseModel ( *model.front() );
   else if ( false == point.empty() )
     object = this->_parsePoint( *point.front() );
+  else if ( false == polygon.empty() )
+    object = this->_parsePolygon( *polygon.front() );
+  else if ( false == linestring.empty() )
+    object = this->_parseLineString( *linestring.front() );
+  else if ( false == linering.empty() )
+    object = this->_parseLineRing( *linering.front() );
   
   return object.release();
 }
@@ -403,9 +451,47 @@ KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parsePolygon      ( const XmlTree::Node& node )
+KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node )
 {
-  return 0x0;
+  Minerva::Core::DataObjects::Polygon::RefPtr polygon ( new Minerva::Core::DataObjects::Polygon );
+  polygon->color ( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
+  
+  Minerva::Core::Geometry::Polygon::RefPtr data ( new Minerva::Core::Geometry::Polygon );
+  polygon->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "altitudeMode" == name )
+      polygon->altitudeMode ( this->_parseAltitudeMode ( *node ) );
+    else if ( "outerBoundaryIs" == name )
+    {
+      XmlTree::Node::RefPtr linearRing ( node->children().front() );
+      XmlTree::Node::RefPtr coordinates ( linearRing.valid() ? linearRing->children().front() : 0x0 );
+      if ( coordinates.valid() )
+      {
+        Vertices vertices;
+        this->_parseCoordinates( *coordinates, vertices );
+        data->outerBoundary ( vertices );
+      }
+    }
+    else if ( "innerBoundaryIs" == name )
+    {
+      XmlTree::Node::RefPtr linearRing ( node->children().front() );
+      XmlTree::Node::RefPtr coordinates ( linearRing.valid() ? linearRing->children().front() : 0x0 );
+      if ( coordinates.valid() )
+      {
+        Vertices vertices;
+        this->_parseCoordinates( *coordinates, vertices );
+        data->addInnerBoundary ( vertices );
+      }
+    }
+  }
+  
+  return polygon.release();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -414,9 +500,35 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon      ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parseLineString   ( const XmlTree::Node& node )
+KmlLayer::DataObject* KmlLayer::_parseLineString ( const XmlTree::Node& node )
 {
-  return 0x0;
+  Minerva::Core::DataObjects::Line::RefPtr line ( new Minerva::Core::DataObjects::Line );
+  line->width ( 2.0f );
+  line->color ( osg::Vec4 ( 1.0, 0.0, 1.0, 1.0 ) );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "altitudeMode" == name )
+      line->altitudeMode ( this->_parseAltitudeMode ( *node ) );
+    else if ( "coordinates" == name )
+    {
+      Vertices vertices;
+      this->_parseCoordinates( *node, vertices );
+      if ( false == vertices.empty() )
+      {
+        Minerva::Core::Geometry::Line::RefPtr data ( new Minerva::Core::Geometry::Line );
+        data->srid ( 4326 );
+        data->line ( vertices );
+        line->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
+      }
+    }
+  }
+  
+  return line.release();
 }
 
 
@@ -426,9 +538,9 @@ KmlLayer::DataObject* KmlLayer::_parseLineString   ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parseLineRing     ( const XmlTree::Node& node )
+KmlLayer::DataObject* KmlLayer::_parseLineRing ( const XmlTree::Node& node )
 {
-  return 0x0;
+  return this->_parseLineString( node );
 }
 
 
@@ -438,7 +550,7 @@ KmlLayer::DataObject* KmlLayer::_parseLineRing     ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlLayer::_parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices )
+void KmlLayer::_parseCoordinates ( const XmlTree::Node& node, Vertices& vertices )
 {
   std::istringstream in ( node.value() );
   std::string vertex;
@@ -450,7 +562,7 @@ void KmlLayer::_parseCoordinates  ( const XmlTree::Node& node, Vertices& vertice
     std::vector<std::string> strings;
     Usul::Strings::split ( vertex, ",", false, strings );
     
-    typedef Usul::Convert::Type<std::string,double> ToDouble;
+    // Convert vertex.
     for ( unsigned int i = 0; i < strings.size(); ++i )
       v[i] = ToDouble::convert ( strings[i] );
     
@@ -485,17 +597,6 @@ namespace Detail
             texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
             texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
           }
-          else
-          {
-#if 0
-            std::cout << "Changing material" << std::endl;
-            osg::ref_ptr<osg::Material> mat ( new osg::Material );
-            mat->setAmbient ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
-            mat->setDiffuse ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
-            mat->setEmission (  osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
-            ss->setAttributeAndModes ( mat.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
-#endif
-          }
         }
       }
     }
@@ -505,7 +606,7 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse a placemark.
+//  Parse a model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -542,16 +643,12 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
   
   if ( false == filename.empty() )
   {
-    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _currentFilename, true ) + filename ) );
+    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _filename, true ) + filename ) );
     if ( node.valid() )
     {
-      //osg::NotifySeverity level ( osg::getNotifyLevel() );
-      //osg::setNotifyLevel ( osg::ALWAYS );
-
       model->model ( node.get() );
 
-      //osg::setNotifyLevel ( level );
- 
+      // Post-process.
       Detail::ModelPostProcess nv;
       osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Node>::make ( nv ) );
       node->accept ( *visitor );
@@ -594,7 +691,6 @@ osg::Vec3 KmlLayer::_buildVec3 ( const XmlTree::Node& node )
 {
   osg::Vec3 v;
   
-  typedef Usul::Convert::Type<std::string,double> ToDouble;
   Children children ( node.children() );
   
   if ( 3 == children.size() )
@@ -638,7 +734,7 @@ NetworkLink* KmlLayer::_parseNetworkLink ( const XmlTree::Node& node )
     XmlTree::Node::RefPtr node ( *iter );
     std::string name ( node->name() );
     
-    if ( "Link" == name )
+    if ( "Link" == name || "Url" == name ) // Url is an older name, but many elements are the same.
     {
       network->link ( this->_parseLink ( *node ) );
     }
@@ -667,7 +763,197 @@ Link* KmlLayer::_parseLink ( const XmlTree::Node& node )
     
     if ( "href" == name )
       link->href ( node->value() );
+    else if ( "refreshInterval" == name )
+      link->refreshInterval ( ToDouble::convert ( node->value() ) );
+    else if ( "refreshMode" == name )
+    {
+      std::string mode ( node->value() );
+      if ( "onChange" == mode )
+        link->refreshMode ( Link::ON_CHANGE );
+      else if ( "onInterval" == mode )
+        link->refreshMode ( Link::ON_INTERVAL );
+      else if ( "onExpire" == mode )
+        link->refreshMode ( Link::ON_EXPIRE );
+    }
   }
   
   return link.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  // Call the base class first.
+  BaseClass::updateNotify ( caller );
+  
+  // Return now if we are already downloading or reading.
+  if ( true == this->isDownloading() || this->isReading() )
+    return;
+  
+  // Guard rest of function.
+  Guard guard ( this->mutex() );
+  
+  // Check the link to see if we need to update.
+  if ( _link.valid() )
+  {
+    // See if it's the right kind of refresh mode.
+    if ( Link::ON_INTERVAL == _link->refreshMode() )
+    {
+      Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
+      const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
+      
+      // Set the last time if it hasn't been set.
+      if ( 0.0 == _lastUpdate )
+        _lastUpdate = time;
+      
+      // Duration between last time the date was incremented.
+      const double duration ( time - _lastUpdate );
+      
+      // If we are suppose to update...
+      if ( duration > _link->refreshInterval() )
+      {
+        // Create a job to update the file.
+        Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( caller, 
+                                                                                    Usul::Adaptors::memberFunction ( this, &KmlLayer::_updateLink ) ) ) );
+        
+        if ( true == job.valid() )
+        {
+          // Set the downloading flag now so we don't launch another job before this one starts.
+          this->downloading ( true );
+          
+          // Add job to manager.
+          Usul::Jobs::Manager::instance().addJob ( job.get() );
+        }
+      }
+    }
+  }
+  
+  // See if our data is dirty.
+  if ( this->dirtyData() )
+  {
+    // Get our filename.
+    std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
+                          
+    // Create a job to read the file.
+    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ),
+                                                                               Usul::Adaptors::memberFunction ( this, &KmlLayer::_read ) ) ) );
+    
+    if ( true == job.valid() )
+    {
+      // Set the reading flag now so we don't launch another job before this one starts.
+      this->reading ( true );
+      
+      // Add job to manager.
+      Usul::Jobs::Manager::instance().addJob ( job.get() );
+    }
+  }  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update link.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
+{
+  // Help shorten lines.
+  using namespace Usul::Adaptors;
+  
+  // Scope the downloading flag.
+  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( bind1 ( true,  memberFunction ( this, &KmlLayer::downloading ) ), 
+                                                                bind1 ( false, memberFunction ( this, &KmlLayer::downloading ) ) ) );
+  
+  // Get the link.
+  Link::RefPtr link ( Usul::Threads::Safe::get ( this->mutex(), _link ) );
+  
+  if ( link.valid() )
+  {
+    std::string href ( link->href() );
+    
+    std::string::size_type pos ( href.rfind ( '/' ) );
+    
+    if ( pos != std::string::npos )
+    {
+      // Build the filename.
+      std::string filename ( href.begin() + pos + 1, href.end() );
+      filename = Usul::File::Temp::directory ( true ) + filename;
+      
+      // Set the filename.
+      Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
+      
+      // Download.
+      Usul::Network::Curl curl ( href, filename );
+      Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), "1638679894" );
+      
+      // Get the current time.
+      Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
+      const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
+      
+      // Set the last update time.
+      Usul::Threads::Safe::set ( this->mutex(), time, _lastUpdate );
+      
+      // Our data is dirty.
+      this->dirtyData ( true );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get downloading flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool KmlLayer::isDownloading() const
+{
+  Guard guard ( this );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, KmlLayer::DOWNLOADING );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set downloading flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::downloading( bool b )
+{
+  Guard guard ( this );
+  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, KmlLayer::DOWNLOADING, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get reading flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool KmlLayer::isReading() const
+{
+  Guard guard ( this );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, KmlLayer::READING );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set reading flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::reading( bool b )
+{
+  Guard guard ( this );
+  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, KmlLayer::READING, b );
 }

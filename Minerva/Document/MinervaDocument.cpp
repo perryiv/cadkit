@@ -32,6 +32,7 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
@@ -39,7 +40,6 @@
 #include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IVectorLayer.h"
@@ -229,6 +229,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IElevationDatabase * > ( this );
   case Usul::Interfaces::IIntersectListener::IID:
     return static_cast < Usul::Interfaces::IIntersectListener * > ( this );
+  case Usul::Interfaces::IFrameStamp::IID:
+    return static_cast < Usul::Interfaces::IFrameStamp* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -949,15 +951,31 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the dirty scene flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::dirtyScene() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _dirty;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Dirty the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::dirtyScene ( Usul::Interfaces::IUnknown* caller )
+void MinervaDocument::dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _dirty = true;
-  _sceneManager->dirty ( true );
+  
+  _dirty = b;
+  _sceneManager->dirty ( b );
   _planet->dirty ( caller );
 }
 
@@ -1112,14 +1130,14 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
     if ( false == _animateSettings->pause () && _current.valid() )
     {
       Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-      double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
+      const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
 
       // Set the last time if it hasn't been set.
       if ( -1.0 == _lastTime )
         _lastTime = time;
 
       // Duration between last time the date was incremented.
-      double duration ( time - _lastTime );
+      const double duration ( time - _lastTime );
 
       Minerva::Core::Animate::Date lastDate ( _lastDate );
 
@@ -1961,4 +1979,33 @@ void MinervaDocument::useSkirts( bool b )
   Guard guard ( this );
   if ( _planet.valid() )
     _planet->useSkirts ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+osg::FrameStamp * MinervaDocument::frameStamp()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
+  return ( fs.valid() ? fs->frameStamp() : 0x0 );
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::FrameStamp * MinervaDocument::frameStamp() const
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
+  return ( fs.valid() ? fs->frameStamp() : 0x0 );
 }

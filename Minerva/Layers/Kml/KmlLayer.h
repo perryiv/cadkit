@@ -11,6 +11,8 @@
 #ifndef __MINERVA_LAYERS_KML_H__
 #define __MINERVA_LAYERS_KML_H__
 
+#include "Minerva/Layers/Kml/Link.h"
+
 #include "Minerva/Core/Layers/VectorGroup.h"
 
 #include "Usul/Base/Object.h"
@@ -27,10 +29,10 @@ namespace Layers {
 namespace Kml {
   
   class NetworkLink;
-  class Link;
 
 class KmlLayer : public Minerva::Core::Layers::VectorGroup,
                  public Usul::Interfaces::IRead
+                 
 {
 public:
   /// Typedefs.
@@ -44,11 +46,27 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   KmlLayer();
+  KmlLayer( const XmlTree::Node& node, const std::string& filename );
+  KmlLayer( Link* link );
   
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
+  void                        read ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
   
+  // Update.
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+  
+  // Deserialize.
   virtual void                deserialize( const XmlTree::Node &node );
+  
+  // Get/Set downloading flag.
+  bool                        isDownloading() const;
+  void                        downloading( bool b );
+  
+  // Get/Set reading flag.
+  bool                        isReading() const;
+  void                        reading( bool b );
+  
 protected:
   virtual ~KmlLayer();
   
@@ -57,6 +75,9 @@ protected:
   
   // Load a kml file.
   void                        _parseKml ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
+  
+  // Update link.
+  void                        _updateLink( Usul::Interfaces::IUnknown* caller = 0x0 );
   
   // Parse xml nodes.
   void                        _parseNode         ( const XmlTree::Node& node );
@@ -75,9 +96,17 @@ protected:
 
   osg::Vec3                   _buildVec3         ( const XmlTree::Node& node );
 private:
+  
+  enum STATUS_FLAGS
+  {
+    DOWNLOADING = 0x00000001,
+    READING     = 0x00000002
+  };
+  
   std::string _filename;
-  std::string _currentFilename;
-  Minerva::Core::Layers::VectorGroup::RefPtr _currentLayer;
+  Link::RefPtr _link;
+  double _lastUpdate;
+  unsigned int _flags;
   
   SERIALIZE_XML_CLASS_NAME ( KmlLayer );
 };

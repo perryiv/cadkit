@@ -31,7 +31,7 @@ using namespace Usul::System;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Directory::cwd ( const std::string& directory )
+void Directory::cwd ( const std::string& directory, bool allowThrow )
 {
   // Initialize last error.
   Usul::System::LastError::init();
@@ -44,7 +44,7 @@ void Directory::cwd ( const std::string& directory )
 #endif
 
   // Check result.
-  if ( -1 == result )
+  if ( ( -1 == result ) && ( true == allowThrow ) )
   {
     throw std::runtime_error ( Usul::Strings::format ( "Error: 2118168350, Failed to set current working directory to '", directory, "', System error: ", Usul::System::LastError::message() ) );
   }

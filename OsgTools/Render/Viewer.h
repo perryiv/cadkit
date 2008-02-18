@@ -223,8 +223,8 @@ public:
   void                  buttonRelease    ( EventAdapter *ea );
 
   /// Get the caller.
-  IUnknown*             caller ();
-  const IUnknown *      caller () const;
+  IUnknown*             caller();
+  const IUnknown *      caller() const;
 
   // Set the camera.
   virtual void          camera ( CameraOption option );
@@ -393,15 +393,14 @@ public:
   // Start/stop the spin.
   void                  spin ( bool );
 
-  ///  Usul::Interfaces::ITextMatrix
-  /// Get text at the (x,y) on the screen.
+  /// Usul::Interfaces::ITextMatrix
   osgText::Text*        getText     ( unsigned int x, unsigned int y );
-
-  /// Set text value.
   void                  setText     ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color, const osg::Vec4f& backDropColor = osg::Vec4f ( 0, 0, 0, 0 ) );
-
-  /// Remove text
   void                  removeText  ( unsigned int x, unsigned int y );
+
+  // Get/set show-text state.
+  void                  textShown ( bool );
+  bool                  isTextShown() const;
 
   // Get the time.
   double                timeAverage ( const std::string &name ) const;
@@ -726,7 +725,8 @@ private:
     _SORT_BACK_TO_FRONT = 0x00000008,
     _SHOW_AXES          = 0x00000010,
     _SHOW_LIGHTS        = 0x00000020,
-    _SHOW_COR           = 0x00000080
+    _SHOW_COR           = 0x00000080,
+    _SHOW_TEXT          = 0x00000100
   };
 
   // Local integer constants.

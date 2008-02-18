@@ -267,7 +267,7 @@ void SceneDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* SceneDocument::_loadModel( const std::string& filename, Unknown* caller, Unknown *progress )
+osg::Node* SceneDocument::_loadModel ( const std::string& filename, Unknown* caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
 

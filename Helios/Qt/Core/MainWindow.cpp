@@ -320,7 +320,8 @@ void MainWindow::_loadSettings()
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2863006339" );
 
   // Read the file and populate the registry. Not a big deal if this fails.
-  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::read, this->_registryFileName(), "1123442106" );
+  const std::string settingsFile ( this->settingsFileName() );
+  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::read, settingsFile, "1123442106" );
 
   // Set the window's properties.
   Usul::Registry::Node &mw ( Reg::instance()[Sections::MAIN_WINDOW] );
@@ -354,7 +355,8 @@ void MainWindow::_saveSettings()
   mw[Keys::RECENT_FILES]["files"] = _recentFiles;
 
   // Write to disk.
-  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::write, this->_registryFileName(), "4136994389" );
+  const std::string settingsFile ( this->settingsFileName() );
+  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::write, settingsFile, "4136994389" );
 }
 
 
@@ -1956,7 +1958,7 @@ void MainWindow::loadFile ( const std::string &file )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string MainWindow::_registryFileName() const
+std::string MainWindow::settingsFileName() const
 {
   USUL_TRACE_SCOPE;
 
@@ -1967,7 +1969,7 @@ std::string MainWindow::_registryFileName() const
   Usul::File::make ( dir );
 
   // Make the file name.
-  std::string name ( dir + this->programName() + ".registry" );
+  std::string name ( dir + this->programName() + ".settings" );
 
   // Return file name.
   return name;

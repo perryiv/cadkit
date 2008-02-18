@@ -17,6 +17,7 @@
 
 using namespace Usul::App;
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Initialize static data members.
@@ -34,8 +35,10 @@ Application * Application::_instance ( 0x0 );
 
 Application& Application::instance()
 {
-  if( 0x0 == _instance )
+  if ( 0x0 == _instance )
+  {
     _instance = new Application;
+  }
 
   return *_instance;
 }
@@ -48,9 +51,9 @@ Application& Application::instance()
 ///////////////////////////////////////////////////////////////////////////////
 
 Application::Application() :
-	_splashImage (),
-  _vendor (),
-  _program ()
+	_splashImage(),
+  _vendor(),
+  _program()
 {
 }
 
@@ -140,7 +143,7 @@ void Application::vendor ( const std::string& vendor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Application::vendor () const
+const std::string& Application::vendor() const
 {
   return _vendor;
 }
@@ -164,32 +167,7 @@ void Application::program ( const std::string& program )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Application::program () const
+const std::string& Application::program() const
 {
   return _program;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a full path for a config file.  Will have the extention .xml
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Application::configFile ( const std::string& name )
-{
-  {
-    std::string filename ( Usul::CommandLine::Arguments::instance().directory() + "/" + name + ".xml" );
-    if( Usul::Predicates::FileExists::test ( filename ) )
-      return filename;
-  }
-
-  std::string home ( Usul::User::Directory::home( true ) );
-
-  std::string programName ( this->program() );
-  std::transform ( programName.begin(), programName.end(), programName.begin(), ::tolower );
-
-  std::string filename ( home + "/." + programName + "/" + name + ".xml" );
-
-  return filename;
 }

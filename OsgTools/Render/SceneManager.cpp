@@ -291,7 +291,7 @@ const osg::ClipNode* SceneManager::clipNode() const
 osgText::Text* SceneManager::getText ( unsigned int x, unsigned int y )
 {
   // Find the xy pair if it exists
-  TextMap::iterator i = _textMap.find( TextMap::key_type ( x, y ) );
+  TextMap::iterator i = _textMap.find ( TextMap::key_type ( x, y ) );
   if ( _textMap.end() == i )
   {
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
@@ -337,7 +337,7 @@ osgText::Text* SceneManager::getText ( unsigned int x, unsigned int y )
 
 void SceneManager::setText( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4& color, const osg::Vec4f& backDropColor )
 {
-  osg::ref_ptr < osgText::Text > t ( this->getText( x, y ) );
+  osg::ref_ptr < osgText::Text > t ( this->getText ( x, y ) );
   t->setColor ( color );
   if ( 0 != backDropColor[3] )
   {

@@ -23,24 +23,26 @@ class USUL_EXPORT Directory
 public:
 
   /// Get/Set the current working directory.
-  static void          cwd ( const std::string& directory );
+  static void          cwd ( const std::string& directory, bool allowThrow = true );
   static std::string   cwd ();
 
   /// Helper struct the change and restore current working directory.
   struct ScopedCwd
   {
-    ScopedCwd ( const std::string& directory ) :
-      _oldCwd ( Directory::cwd() )
+    ScopedCwd ( const std::string& directory, bool allowThrow = true ) :
+      _oldCwd ( Directory::cwd() ),
+      _allowThrow ( allowThrow )
     {
-      Directory::cwd ( directory );
+      Directory::cwd ( directory, _allowThrow );
     }
-    ~ScopedCwd ()
+    ~ScopedCwd()
     {
-      Directory::cwd ( _oldCwd );
+      Directory::cwd ( _oldCwd, _allowThrow );
     }
 
   private:
     std::string _oldCwd;
+    bool _allowThrow;
   };
 };
 

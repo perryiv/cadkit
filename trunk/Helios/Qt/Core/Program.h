@@ -33,6 +33,7 @@ struct HELIOS_QT_CORE_EXPORT Program
                     Usul::Threads::Mutex::CreateFunction *mutexFactory, 
                     Usul::Threads::Manager::FactoryFunction *threadFactory,
                     const std::string &program, 
+                    const std::string &version,
                     const std::string &vendor, 
                     const std::string &url, 
                     const std::string &icon, 

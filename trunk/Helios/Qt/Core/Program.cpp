@@ -155,6 +155,7 @@ void Program::run ( int argc, char **argv,
                     Usul::Threads::Mutex::CreateFunction *mutexFactory, 
                     Usul::Threads::Manager::FactoryFunction *threadFactory,
                     const std::string &program, 
+                    const std::string &version, 
                     const std::string &vendor, 
                     const std::string &url, 
                     const std::string &icon, 
@@ -191,7 +192,7 @@ void Program::run ( int argc, char **argv,
 
   // Print welcome message.
   std::ostringstream out;
-  out << "Welcome to " << program << std::endl;
+  out << "Welcome to " << program << ' ' << version << std::endl;
   out << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
   // Send trace output here.

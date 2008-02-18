@@ -49,10 +49,6 @@ public:
   void                                 program ( const std::string& );
   const std::string&                   program () const;
 
-  /// Build a full path for a config file.  Will have the extention .xml
-  /// This function will look in the directory the application lives in first.
-  std::string                          configFile ( const std::string& name );
-
 private:
 	Application();
 	~Application();

@@ -200,5 +200,5 @@ OsgTools::Triangles::TriangleSet* TriangulateGridComponent::triangulateGrid ( co
 
 std::string TriangulateGridComponent::getPluginName() const 
 {
-  return "Triangulate Grid  ";
+  return "Triangulate Grid";
 }

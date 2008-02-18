@@ -58,7 +58,7 @@ namespace Usul
       {
         std::string copy ( from );
         std::transform ( copy.begin(), copy.end(), copy.begin(), ::tolower );
-        to = ( ( "true" == copy ) ? true : false );
+        to = ( ( ( "true" == copy ) || ( "1" == copy ) ) ? true : false );
       }
       static bool convert ( const std::string &from )
       {

@@ -74,7 +74,7 @@ KwlLayer::~KwlLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KwlLayer::open ( )
+void KwlLayer::open()
 {
   // Get the directory the file lives in.
   std::string directory ( Usul::File::directory( _filename, false ) );

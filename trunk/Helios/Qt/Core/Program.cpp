@@ -18,6 +18,7 @@
 #include "Helios/Qt/Core/MainWindow.h"
 
 #include "Usul/App/Application.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Errors/AssertPolicy.h"
@@ -34,7 +35,9 @@
 #include "Usul/IO/Redirect.h"
 #include "Usul/IO/StreamSink.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/Environment.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
@@ -224,6 +227,16 @@ void Program::run ( int argc, char **argv,
         // If some other code printed to stdout or stderr before the sink's 
         // listener was set, it will go to the file but not the text window.
         std::cout << out.str() << std::flush;
+
+        // Print additional info if we are supposed to.
+        const std::string printDebugEnvName ( Usul::Strings::upperCase ( program ) + "_PRINT_DEBUG_INFO" );
+        const std::string printDebugEnvValue ( Usul::System::Environment::get ( printDebugEnvName ) );
+        if ( true == Usul::Convert::Type<std::string,bool>::convert ( printDebugEnvValue ) ) 
+        {
+          std::cout << "Text output: " << output << std::endl;
+          std::cout << "Debug trace: " << traceFile << std::endl;
+          std::cout << "Settings file: " << mw.settingsFileName() << std::flush;
+        }
 
         // Load the plugins.
         mw.addPluginFile ( Helper::getPluginFileName ( persistantDir, plugins, mw.defautPluginFile() ) );

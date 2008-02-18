@@ -170,7 +170,7 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _lods                (),
   _document            ( doc ),
   _frameDump           (),
-  _flags               ( _UPDATE_TIMES | _SHOW_AXES ),
+  _flags               ( _UPDATE_TIMES | _SHOW_AXES | _SHOW_TEXT ),
   _animation           (),
   _navManip            ( 0x0 ),
   _currentMode         ( NAVIGATION ),
@@ -2492,7 +2492,7 @@ void Viewer::_setAxes()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::axesShown( bool b )
+void Viewer::axesShown ( bool b )
 {
   if ( b )
   {
@@ -2509,6 +2509,27 @@ void Viewer::axesShown( bool b )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the state of showing text
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::textShown ( bool b )
+{
+  if ( b )
+  {
+    _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _SHOW_TEXT );
+    _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX )->setNodeMask ( 0xFFFFFFFF );
+  }
+  else
+  {
+    _flags = Usul::Bits::remove < unsigned int, unsigned int > ( _flags, _SHOW_TEXT );
+    _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::TEXT_MATRIX )->setNodeMask ( 0 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the show axes state.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2516,6 +2537,18 @@ void Viewer::axesShown( bool b )
 bool Viewer::isAxesShown() const
 {
   return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _SHOW_AXES );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show text state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::isTextShown() const
+{
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _SHOW_TEXT );
 }
 
 
@@ -4024,6 +4057,7 @@ Viewer::Filters Viewer::filtersWriteImage() const
   filters.push_back ( Filter ( "PNG Image (*.png)", "*.png"    ) );
   filters.push_back ( Filter ( "BMP Image (*.bmp)", "*.bmp"    ) );
   filters.push_back ( Filter ( "RGBA Image (*.rgba)", "*.rgba" ) );
+  //filters.push_back ( Filter ( "Encapsulated PostScript (*.eps)", "*.eps" ) );
   return filters;
 }
 
@@ -4036,12 +4070,7 @@ Viewer::Filters Viewer::filtersWriteImage() const
 
 Viewer::Filters Viewer::filtersWriteScene() const
 {
-  Filters filters ( this->filtersWriteImage() );
-  filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
-  filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
-  //filters.push_back ( Filter ( "OpenFlight (*.flt)",  "*.flt" ) );
-  filters.push_back ( Filter ( "Encapsulated PostScript (*.eps)", "*.eps" ) );
-  return filters;
+  return this->filtersWriteModel();
 }
 
 
@@ -4053,11 +4082,9 @@ Viewer::Filters Viewer::filtersWriteScene() const
 
 Viewer::Filters Viewer::filtersWriteModel() const
 {
-  Filters filters ( this->filtersWriteImage() );
+  Filters filters;
   filters.push_back ( Filter ( "OpenSceneGraph Binary (*.ive)", "*.ive" ) );
   filters.push_back ( Filter ( "OpenSceneGraph ASCII (*.osg)",  "*.osg" ) );
-  //filters.push_back ( Filter ( "OpenFlight (*.flt)",  "*.flt" ) );
-  filters.push_back ( Filter ( "Encapsulated PostScript (*.eps)", "*.eps" ) );
   return filters;
 }
 
@@ -4257,7 +4284,7 @@ void Viewer::viewMatrix ( const osg::Matrixd& mat )
 
 const osg::Matrixd& Viewer::viewMatrix ( ) const
 {
-  return this->viewer()->getViewMatrix ( );
+  return this->viewer()->getViewMatrix();
 }
 
 
@@ -4269,7 +4296,7 @@ const osg::Matrixd& Viewer::viewMatrix ( ) const
 
 osgText::Text* Viewer::getText ( unsigned int x, unsigned int y )
 {
-  return _sceneManager->getText( x, y );
+  return _sceneManager->getText ( x, y );
 }
 
 
@@ -4281,7 +4308,7 @@ osgText::Text* Viewer::getText ( unsigned int x, unsigned int y )
 
 void Viewer::setText ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color, const osg::Vec4f& backDropColor )
 {
-  _sceneManager->setText( x, y, text, color, backDropColor );
+  _sceneManager->setText ( x, y, text, color, backDropColor );
 }
 
 
@@ -4291,9 +4318,9 @@ void Viewer::setText ( unsigned int x, unsigned int y, const std::string& text, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::removeText  ( unsigned int x, unsigned int y )
+void Viewer::removeText ( unsigned int x, unsigned int y )
 {
-  _sceneManager->removeText( x, y );
+  _sceneManager->removeText ( x, y );
 }
 
 

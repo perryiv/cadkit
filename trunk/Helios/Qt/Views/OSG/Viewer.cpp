@@ -29,6 +29,7 @@
 #include "Usul/System/DateTime.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/User/Directory.h"
 
 #include "OsgTools/Render/Defaults.h"
 
@@ -1063,6 +1064,9 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
 
   // Axes button.
   menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Axes", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) ) );
+
+  // On-screen text button.
+  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Text", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::textShown ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isTextShown ) ) ) );
 }
 
 
@@ -1327,6 +1331,7 @@ bool Viewer::_isFrameDump() const
 bool Viewer::_frameDumpProperties()
 {
   // Get the directory from the registry.
+  const std::string defaultFrameDumpDir ( Usul::User::Directory::home ( true, false ) );
   std::string directory ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY].get<std::string> ( "" ) );
 
   // Confirm that this is the correct directory.

@@ -158,6 +158,9 @@ public:
   void                              hideSplashScreen();
   void                              showSplashScreen();
 
+  // Get the name of the settings file.
+  std::string                       settingsFileName() const;
+
   // Restore dock window positions.
   void                              restoreDockWindows();
 
@@ -249,8 +252,6 @@ private:
   void                              _destroy();
 
   void                              _notifyFinishedLoading ( Usul::Documents::Document * );
-
-  std::string                       _registryFileName() const;
 
   mutable Mutex *_mutex;
   Actions _actions;

@@ -165,7 +165,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
     Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IWriteMovieFile::IID ) );
     
     // Only add button if we have plugins to create movie file.
-    if ( true == unknowns.empty() )
+    if ( false == unknowns.empty() )
       menu->append ( new Button ( Usul::Commands::genericCommand ( "Export Movie...", Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &PathAnimationComponent::_exportMovie ) ), Usul::Adaptors::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
   }
   

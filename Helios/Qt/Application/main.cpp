@@ -38,6 +38,7 @@ int main ( int argc, char **argv )
 
   // Branding.
   const std::string program ( "Helios" );
+  const std::string version ( "" );
   const std::string vendor  ( "CadKit" );
   const std::string url     ( "cadkit.sf.net" );
   const std::string icon    ( "helios_sun.png" );
@@ -60,7 +61,7 @@ int main ( int argc, char **argv )
       argc, argv, 
       &Threads::OT::newOpenThreadsMutex, 
       &Threads::OT::newOpenThreadsThread, 
-      program, vendor, url, icon, splash, plugins,
+      program, version, vendor, url, icon, splash, plugins,
       jobManagerThreadPoolSize,
       result );
   }

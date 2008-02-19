@@ -110,6 +110,7 @@ public:
   MainWindow ( const std::string &vendor, 
                const std::string &url, 
                const std::string &program, 
+               const std::string &manual, 
                const std::string &icon,
                const std::string &output,
                bool showSplash = true );
@@ -261,6 +262,7 @@ private:
   std::string _vendor;
   std::string _url;
   std::string _program;
+  std::string _manual;
   std::string _icon;
   std::string _output;
   SplashScreen::RefPtr _splash;

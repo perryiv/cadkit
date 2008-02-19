@@ -44,6 +44,7 @@ int main ( int argc, char **argv )
   const std::string icon    ( "helios_sun.png" );
   const std::string splash  ( "splash_screen.png" );
   const std::string plugins ( program + ".plugins" );
+  const std::string manual  ( "" );
 
   // Other configurations.
   const unsigned int jobManagerThreadPoolSize ( 4 );
@@ -61,7 +62,7 @@ int main ( int argc, char **argv )
       argc, argv, 
       &Threads::OT::newOpenThreadsMutex, 
       &Threads::OT::newOpenThreadsThread, 
-      program, version, vendor, url, icon, splash, plugins,
+      program, version, vendor, url, icon, splash, plugins, manual,
       jobManagerThreadPoolSize,
       result );
   }

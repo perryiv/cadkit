@@ -32,7 +32,8 @@ USUL_IMPLEMENT_COMMAND ( OpenManual );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenManual::OpenManual ( IUnknown *caller ) : BaseClass ( caller )
+OpenManual::OpenManual ( IUnknown *caller, const std::string &manual ) : BaseClass ( caller ),
+  _manual ( manual )
 {
   USUL_TRACE_SCOPE;
   this->text ( "&Manual" );
@@ -49,7 +50,7 @@ OpenManual::OpenManual ( IUnknown *caller ) : BaseClass ( caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenManual::~OpenManual ()
+OpenManual::~OpenManual()
 {
   USUL_TRACE_SCOPE;
 }
@@ -61,15 +62,17 @@ OpenManual::~OpenManual ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenManual::_execute ()
+void OpenManual::_execute()
 {
   USUL_TRACE_SCOPE;
 
 #if _MSC_VER
+
   std::string file ( this->_manualFile() );
   std::replace ( file.begin(), file.end(), '\\', '/' );
 
   ::ShellExecuteA ( 0x0, "open", file.c_str(), 0x0, 0x0, 0 );
+
 #endif
 }
 
@@ -80,7 +83,7 @@ void OpenManual::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool OpenManual::updateEnable () const
+bool OpenManual::updateEnable() const
 {
   return Usul::Predicates::FileExists::test ( this->_manualFile() );
 }
@@ -94,5 +97,5 @@ bool OpenManual::updateEnable () const
 
 std::string OpenManual::_manualFile() const
 {
-  return Usul::CommandLine::Arguments::instance().directory() + "/../docs/index.html";
+  return Usul::Strings::format ( Usul::CommandLine::Arguments::instance().directory(), "/../docs/", _manual );
 }

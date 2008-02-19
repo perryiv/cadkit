@@ -39,9 +39,10 @@ public:
   USUL_DECLARE_COMMAND ( OpenManual );
 
   // Constructor.
-  OpenManual ( IUnknown *caller );
+  OpenManual ( IUnknown *caller, const std::string &manual );
 
 protected:
+
   // Use reference counting.
   virtual ~OpenManual();
 
@@ -52,7 +53,11 @@ protected:
   virtual void              _execute();
 
   // Update the enabled flag.
-  virtual bool              updateEnable () const;
+  virtual bool              updateEnable() const;
+
+private:
+
+  std::string _manual;
 };
 
 }

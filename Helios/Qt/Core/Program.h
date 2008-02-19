@@ -39,6 +39,7 @@ struct HELIOS_QT_CORE_EXPORT Program
                     const std::string &icon, 
                     const std::string &splash,
                     const std::string &plugins,
+                    const std::string &manual,
                     unsigned int poolSize,
                     int &result );
 };

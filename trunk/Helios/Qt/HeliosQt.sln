@@ -539,6 +539,27 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Nimue Qt App", "..\..\
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Field View Reader", "..\..\Experimental\FieldViewReader\FieldViewReader\FieldViewReaderModel.vcproj", "{A600AEE3-E0CF-40EB-BADB-935AC2820FC1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Field View Reader Delegate Qt", "..\..\Experimental\FieldViewReader\FieldViewReaderDelegate\FieldViewReaderDelegate.vcproj", "{F703C423-C614-4E13-9DC4-FF9A78929D0B}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -749,6 +770,14 @@ Global
 		{960F9465-A3CB-43FE-8DBE-562365F6F89C}.Debug|Win32.Build.0 = Debug|Win32
 		{960F9465-A3CB-43FE-8DBE-562365F6F89C}.Release|Win32.ActiveCfg = Release|Win32
 		{960F9465-A3CB-43FE-8DBE-562365F6F89C}.Release|Win32.Build.0 = Release|Win32
+		{A600AEE3-E0CF-40EB-BADB-935AC2820FC1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A600AEE3-E0CF-40EB-BADB-935AC2820FC1}.Debug|Win32.Build.0 = Debug|Win32
+		{A600AEE3-E0CF-40EB-BADB-935AC2820FC1}.Release|Win32.ActiveCfg = Release|Win32
+		{A600AEE3-E0CF-40EB-BADB-935AC2820FC1}.Release|Win32.Build.0 = Release|Win32
+		{F703C423-C614-4E13-9DC4-FF9A78929D0B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F703C423-C614-4E13-9DC4-FF9A78929D0B}.Debug|Win32.Build.0 = Debug|Win32
+		{F703C423-C614-4E13-9DC4-FF9A78929D0B}.Release|Win32.ActiveCfg = Release|Win32
+		{F703C423-C614-4E13-9DC4-FF9A78929D0B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

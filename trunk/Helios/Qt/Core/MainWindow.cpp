@@ -111,6 +111,7 @@ Q_DECLARE_METATYPE( DocumentProxy );
 MainWindow::MainWindow ( const std::string &vendor, 
                          const std::string &url, 
                          const std::string &program,
+                         const std::string &manual,
                          const std::string &icon,
                          const std::string &output,
                          bool showSplash ) : BaseClass(),
@@ -122,6 +123,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   _vendor       ( vendor ),
   _url          ( url ),
   _program      ( program ),
+  _manual       ( manual ),
   _icon         ( icon ),
   _output       ( output ),
   _splash       ( 0x0 ),
@@ -454,7 +456,7 @@ void MainWindow::_buildMenuKitMenu()
   {
     {
       MenuKit::Menu::RefPtr help ( new MenuKit::Menu ( "&Help" ) );
-      help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenManual ( me ) ) );
+      help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenManual ( me, _manual ) ) );
       _menu->append ( help );
     }
   }

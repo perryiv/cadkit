@@ -161,6 +161,7 @@ void Program::run ( int argc, char **argv,
                     const std::string &icon, 
                     const std::string &splash,
                     const std::string &plugins,
+                    const std::string &manual,
                     unsigned int poolSize,
                     int &result )
 {
@@ -217,7 +218,7 @@ void Program::run ( int argc, char **argv,
     // We want the application to live longer than the main window.
     {
       // Declare the main window.
-      CadKit::Helios::Core::MainWindow mw ( vendor, url, program, icon, output, true );
+      CadKit::Helios::Core::MainWindow mw ( vendor, url, program, manual, icon, output, true );
 
       // Main window needs to live longer than the stream listener.
       {

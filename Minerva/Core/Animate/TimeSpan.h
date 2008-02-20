@@ -43,6 +43,7 @@ public:
 
   /// Get the name of the span.
   std::string      name () const;
+  
 protected:
   virtual ~TimeSpan();
 

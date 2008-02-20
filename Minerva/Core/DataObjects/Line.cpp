@@ -111,11 +111,14 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
     // Remove the drawables we have.
     _node->removeChild( 0, _node->getNumChildren() );
 
-    //_node->setUserData( new UserData( this ) );
+    _node->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
     osg::ref_ptr < osg::StateSet > ss ( _node->getOrCreateStateSet() );
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
+    // Query for needed interfaces.
+    Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
     Usul::Interfaces::ILineData::QueryPtr line ( this->geometry() );
 
     osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
@@ -140,10 +143,6 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
       // Make the osg::Vec3Array.
       osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
       vertices->reserve ( sampledPoints.size() );
-      
-      // Query for needed interfaces.
-      Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
-      Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
       
       if ( planet.valid() )
       {
@@ -186,7 +185,15 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 
     // Do we have a label?
     if( this->showLabel() && !this->label().empty() )
-      _node->addChild( this->_buildLabel() );
+    {
+      osg::Vec3 position ( this->labelPosition() );
+      Usul::Math::Vec3d p ( position[0], position[1], position[2] );
+      
+      if ( planet.valid() )
+        planet->convertToPlanet ( Usul::Math::Vec3d ( p ), p );
+      
+      _node->addChild( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] )  ) );
+    }
 
     this->dirty( false );
   }

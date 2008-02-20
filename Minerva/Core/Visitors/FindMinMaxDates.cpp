@@ -47,15 +47,30 @@ FindMinMaxDates::~FindMinMaxDates()
 
 void FindMinMaxDates::visit ( Minerva::Core::DataObjects::DataObject &object )
 {
-  Date first ( object.firstDate () );
-  Date last ( object.lastDate () );
+  const Date first ( object.firstDate () );
+  const Date last ( object.lastDate () );
 
   const Date min ( boost::date_time::min_date_time );
   const Date max ( boost::date_time::max_date_time );
+  
+  // These are human readable in the debugger...
+#if _DEBUG
+  const std::string sFirst ( first.toString() );
+  const std::string sLast ( last.toString() );
+  
+  const std::string sMin ( min.toString() );
+  const std::string sMax ( max.toString() );
+#endif
+  
+  const bool valid ( min != first && max != last );
+  
+  // If the dates are valid.
+  if ( true == valid )
+  {
+    if ( min == _first || first < _first )
+      _first = first;
 
-  if ( min == _first || first < _first )
-    _first = first;
-
-  if ( max == _last || last > _last )
-    _last = last;
+    if ( max == _last || last > _last )
+      _last = last;
+  }
 }

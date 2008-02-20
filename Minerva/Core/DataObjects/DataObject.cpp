@@ -68,8 +68,8 @@ DataObject::DataObject() :
   _showLabel ( false ),
   _geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
-  _firstDate( boost::date_time::min_date_time ),
-  _lastDate( boost::date_time::max_date_time ),
+  _firstDate ( boost::date_time::min_date_time ),
+  _lastDate ( boost::date_time::max_date_time ),
   _altitudeMode ( CLAMP_TO_GROUND )
 {
 }
@@ -381,7 +381,7 @@ const DataObject::Unknown* DataObject::dataSource() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* DataObject::_buildLabel()
+osg::Node* DataObject::_buildLabel( const osg::Vec3& position )
 {
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
 
@@ -393,7 +393,7 @@ osg::Node* DataObject::_buildLabel()
     text->setFont( font.get() );
 
     text->setColor( this->labelColor() );
-    text->setPosition ( this->labelPosition() );
+    text->setPosition ( position );
     text->setAutoRotateToScreen( true );
     text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
     text->setCharacterSize( this->labelSize() );

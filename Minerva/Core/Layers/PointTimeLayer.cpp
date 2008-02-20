@@ -200,7 +200,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
           {
             Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
             data->firstDate ( DataObject::Date ( firstDate ) );
-            data->firstDate ( DataObject::Date ( lastDate ) );
+            data->lastDate  ( DataObject::Date ( lastDate ) );
             data->geometry( unknown.get () );
             data->color ( this->_color ( i ) );
             data->size ( size );

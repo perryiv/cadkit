@@ -16,6 +16,7 @@
 
 #include "StarSystem/Hud.h"
 
+#include "Usul/Bits/Bits.h"
 #include "Usul/Strings/Format.h"
 
 #include "OsgTools/Font.h"
@@ -34,14 +35,14 @@ using namespace StarSystem;
 ///////////////////////////////////////////////////////////////////////////////
 
 Hud::Hud() :
-_camera ( new osg::Camera ),
-_feedback ( new osgText::Text ),
-_position ( new osgText::Text ),
-_latLonHeight(),
-_requests ( 0 ),
-_running ( 0 ),
-_compass ( new Compass ),
-_showCompass ( false )
+  _camera ( new osg::Camera ),
+  _feedback ( new osgText::Text ),
+  _position ( new osgText::Text ),
+  _latLonHeight(),
+  _requests ( 0 ),
+  _running ( 0 ),
+  _compass ( new Compass ),
+  _flags ( Hud::_ALL )
 {
   _camera->setRenderOrder ( osg::Camera::POST_RENDER );
   _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
@@ -64,8 +65,6 @@ _showCompass ( false )
   _feedback->setCharacterSize( 15 );
   _feedback->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
-  
-  //_compass->buildCompass();
 }
 
 
@@ -131,8 +130,11 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   _position->setText ( Usul::Strings::format ( "Lat: ", _latLonHeight[1], " Lon: ", _latLonHeight[0], " E: ", _latLonHeight[2] ) );
   _position->update();
   
-  geode->addDrawable ( _feedback.get() );
-  geode->addDrawable ( _position.get() );
+  if ( this->showJobFeedback() )
+    geode->addDrawable ( _feedback.get() );
+  
+  if ( this->showPointerPosition() )
+    geode->addDrawable ( _position.get() );
   
   // Turn off lighting.
   geode->getOrCreateStateSet()->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
@@ -140,14 +142,12 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   
   _camera->addChild ( geode.get() );
   
-#if 1
   if ( this->showCompass() )
   {
     _compass->position ( osg::Vec3 ( width * 0.9, height * 0.9, 0.0 ) );
     _compass->updateCompass();
     _camera->addChild ( _compass.get() );
   }
-#endif
 }
 
 
@@ -221,7 +221,7 @@ void Hud::position ( double lat, double lon, double height )
 
 void Hud::showCompass ( bool b )
 {
-  _showCompass = b;
+  _flags = Usul::Bits::set ( _flags, _SHOW_COMPASS, b );
 }
 
 
@@ -233,7 +233,55 @@ void Hud::showCompass ( bool b )
 
 bool Hud::showCompass() const
 {
-  return _showCompass;
+  return Usul::Bits::has ( _flags, _SHOW_COMPASS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pointer position shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::showPointerPosition ( bool b )
+{
+  _flags = Usul::Bits::set ( _flags, _SHOW_POINTER_POSITION, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the pointer position shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Hud::showPointerPosition() const
+{
+  return Usul::Bits::has ( _flags, _SHOW_POINTER_POSITION );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the queued jobs shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::showJobFeedback ( bool b )
+{
+  _flags = Usul::Bits::set ( _flags, _SHOW_JOB_FEEDBACK, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the queued jobs shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Hud::showJobFeedback() const
+{
+  return Usul::Bits::has ( _flags, _SHOW_JOB_FEEDBACK );
 }
 
 

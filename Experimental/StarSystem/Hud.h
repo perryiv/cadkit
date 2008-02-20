@@ -54,10 +54,27 @@ public:
   void          showCompass ( bool b );
   bool          showCompass() const;
   
+  // Show the pointer position.
+  void          showPointerPosition ( bool b );
+  bool          showPointerPosition() const;
+  
+  // Show the job feedback.
+  void          showJobFeedback ( bool b );
+  bool          showJobFeedback() const;
+  
   // Set heading, pitch, roll.
   void          hpr ( double heading, double pitch, double roll );
   
 private:
+  
+  enum Flags
+  {
+    _SHOW_COMPASS          = 0x00000001,
+    _SHOW_POINTER_POSITION = 0x00000002,
+    _SHOW_JOB_FEEDBACK     = 0x00000004,
+    _ALL                   = _SHOW_COMPASS | _SHOW_POINTER_POSITION | _SHOW_JOB_FEEDBACK
+  };
+  
   osg::ref_ptr < osg::Camera > _camera;
   osg::ref_ptr < osgText::Text > _feedback;
   osg::ref_ptr < osgText::Text > _position;
@@ -65,7 +82,7 @@ private:
   unsigned int _requests;
   unsigned int _running;
   osg::ref_ptr < Compass > _compass;
-  bool _showCompass;
+  unsigned int _flags;
 };
 
   

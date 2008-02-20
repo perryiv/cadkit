@@ -92,6 +92,10 @@ struct OSG_TOOLS_EXPORT StateSet
   static void               setMaterialRandom ( osg::Node *node );
   static void               setMaterialDefault ( osg::Node *node );
   static osg::Material *    getMaterialDefault();
+  
+  // Back face culling.
+  static void               setBackFaceCulling ( osg::StateSet* ss, bool b );
+  static bool               getBackFaceCulling ( const osg::StateSet* ss );
 };
 
 

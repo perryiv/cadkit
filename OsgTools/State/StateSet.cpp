@@ -826,3 +826,37 @@ void StateSet::setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const o
 
   OsgTools::State::StateSet::setMaterial ( node, mat.get() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the back face culling state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool StateSet::getBackFaceCulling ( const osg::StateSet *ss )
+{
+  // Handle bad input
+  if ( 0x0 == ss )
+    return false;
+  
+  // Query the mode.
+  return Usul::Bits::has ( ss->getMode ( GL_CULL_FACE ), osg::StateAttribute::ON );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the back face culling state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setBackFaceCulling ( osg::StateSet *ss, bool state )
+{
+  // Handle bad input
+  if ( 0x0 == ss )
+    return;
+  
+  // Apply the mode settings
+  ss->setMode ( GL_CULL_FACE, ( ( state ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED );
+}

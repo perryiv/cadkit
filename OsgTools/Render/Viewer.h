@@ -199,6 +199,10 @@ public:
 
   /// Set the axes label (IAxes).
   virtual void          axesLabels ( const std::string& x, const std::string& y, const std::string& z );
+  
+  /// Set/get back face culling.
+  void                  backFaceCulling ( bool b );
+  bool                  isBackFaceCulling() const;
 
   // Set/get the background color. Throws if getting color from a null viewer.
   void                  backgroundColor ( const osg::Vec4 &color, unsigned int corners );

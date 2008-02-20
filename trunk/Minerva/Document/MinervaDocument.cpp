@@ -1286,6 +1286,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
                                                                           Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::showLegend ), 
                                                                           Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isShowLegend ) ) ) );
   
+  m->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Compass", 
+                                                                       Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::showCompass ), 
+                                                                       Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isShowCompass ) ) ) );
+  
   m->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Use Skirts", 
                                                                        Usul::Adaptors::memberFunction<void> ( this, &MinervaDocument::useSkirts ), 
                                                                        Usul::Adaptors::memberFunction<bool> ( this, &MinervaDocument::isUseSkirts ) ) ) );
@@ -1538,7 +1542,7 @@ void MinervaDocument::_makePlanet()
     return;
   
   _planet = new Planet;
-  _planet->showCompass ( this->showCompass() );
+  _planet->showCompass ( this->isShowCompass() );
 }
 
 
@@ -1936,6 +1940,10 @@ void MinervaDocument::showCompass( bool b )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _showCompass = b;
+  
+  // Need to fix having to set this in tow places.
+  if ( _planet.valid () )
+    _planet->showCompass ( b );
 }
 
 
@@ -1945,7 +1953,7 @@ void MinervaDocument::showCompass( bool b )
 //  
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MinervaDocument::showCompass() const
+bool MinervaDocument::isShowCompass() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

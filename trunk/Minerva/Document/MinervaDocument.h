@@ -196,8 +196,8 @@ public:
   void                                     showLegend( bool b );
 
   /// Get/Set show compass state.
+  bool                                     isShowCompass() const;
   void                                     showCompass( bool b );
-  bool                                     showCompass() const;
   
   /// Legend width in percentage of screen width.
   void                                     legendWidth( float p );

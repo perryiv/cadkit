@@ -71,14 +71,14 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get user's home directory.
+//  Get user's document directory.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Usul::User::Directory::home ( bool wantSlash, bool throwIfFail )
+std::string Usul::User::Directory::documents ( bool wantSlash, bool throwIfFail )
 {
-  // Look for environment variable on non-windows systems.
-  std::string dir ( ( false == Helper::isWindows() ) ? Usul::System::Environment::get ( "HOME" ) : "" );
+  // Always look for environment variable.
+  std::string dir ( Usul::System::Environment::get ( "HOME" ) );
 
 #ifdef _MSC_VER
 
@@ -95,7 +95,7 @@ std::string Usul::User::Directory::home ( bool wantSlash, bool throwIfFail )
 
   // Punt if the string is empty.
   if ( ( true == dir.empty() ) && ( true == throwIfFail ) )
-    throw std::runtime_error ( "Error 2322383190: Failed to find home directory" );
+    throw std::runtime_error ( "Error 2322383190: Failed to find user's document directory" );
 
   // Fix the slash.
   Helper::fixSlash ( dir, wantSlash );
@@ -131,7 +131,7 @@ std::string Usul::User::Directory::appData ( bool wantSlash, bool throwIfFail )
 
   // Punt if the string is empty.
   if ( ( true == dir.empty() ) && ( true == throwIfFail ) )
-    throw std::runtime_error ( "Error 3888703160: Failed to find home directory" );
+    throw std::runtime_error ( "Error 3888703160: Failed to find user's application-data directory" );
 
   // Fix the slash.
   Helper::fixSlash ( dir, wantSlash );
@@ -154,14 +154,14 @@ std::string Usul::User::Directory::vendor ( const std::string &vendor, bool want
     throw std::runtime_error ( "Error 2017220875: Empty vendor name given." );
 
   // Get the application-data directory with the slash.
-  const std::string home ( Usul::User::Directory::appData ( true ) );
+  const std::string data ( Usul::User::Directory::appData ( true ) );
 
-  // Append this string to home path.
+  // Append this string to path.
   const std::string append ( ( wantSlash ) ? ( vendor + '/' ) : ( vendor ) );
 
   // Make the path. Note: if this is not Windows then we follow the unix 
   // convention of making a "dot" directory.
-  const std::string path ( ( false == Helper::isWindows() ) ? ( home + '.' + append ) : ( home + append ) );
+  const std::string path ( ( false == Helper::isWindows() ) ? ( data + '.' + append ) : ( data + append ) );
 
   // Return string.
   return path;

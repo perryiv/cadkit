@@ -143,20 +143,32 @@ FrameDump &FrameDump::operator = ( const FrameDump &f )
 
 std::string FrameDump::file() const
 {
-  // Make the file name.
-  std::ostringstream fn;
-  fn << _dir << '/' << std::setw ( _digits ) << _current << _base << _ext;
-  std::string name ( fn.str() );
-  std::replace ( name.begin(), name.end(), ' ', '0' );
+  // Make the zero-padded number.
+  std::string number;
+  {
+    std::ostringstream out;
+    out << std::setw ( _digits ) << _current;
+    number = out.str();
+    std::replace ( number.begin(), number.end(), ' ', '0' );
+  }
+
+  // Make the full path.
+  std::string path;
+  {
+    std::ostringstream out;
+    out << _dir << '/' << number << _base << _ext;
+    path = out.str();
+  }
 
   // Increment the counter.
   ++_current;
 
+  // Store file names (e.g., for movies) if we are supposed to.
   if ( _names.valid() )
-    _names->value().push_back ( name );
+    _names->value().push_back ( path );
 
   // Return the file name.
-  return name;
+  return path;
 }
 
 

@@ -1331,8 +1331,8 @@ bool Viewer::_isFrameDump() const
 bool Viewer::_frameDumpProperties()
 {
   // Get the directory from the registry.
-  const std::string defaultFrameDumpDir ( Usul::User::Directory::home ( true, false ) );
-  std::string directory ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY].get<std::string> ( "" ) );
+  const std::string defaultFrameDumpDir ( Usul::User::Directory::documents ( true, false ) );
+  std::string directory ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_DUMP_DIRECTORY].get<std::string> ( defaultFrameDumpDir ) );
 
   // Confirm that this is the correct directory.
   QString dir ( QFileDialog::getExistingDirectory ( this, "Select a directory", directory.c_str() ) );

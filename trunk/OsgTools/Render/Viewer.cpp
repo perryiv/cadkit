@@ -5000,3 +5000,37 @@ void Viewer::stateLoad()
     this->renderLoop ( reg["state"].get<bool> ( this->renderLoop() ) );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the back face culling state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::backFaceCulling ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Handle no viewer.
+  if ( !this->viewer() )
+    return;
+  
+  // Set the state.
+  OsgTools::State::StateSet::setBackFaceCulling ( this->viewer()->getGlobalStateSet(), b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the back face culling state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::isBackFaceCulling() const
+{
+  USUL_TRACE_SCOPE;
+  
+  // Return the state.
+  return ( ( 0x0 == this->viewer() ) ? false : OsgTools::State::StateSet::getBackFaceCulling ( this->viewer()->getGlobalStateSet() ) );
+}

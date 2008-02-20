@@ -16,7 +16,6 @@
 #include "Usul/Functions/GUID.h"
 #include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
-#include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Math/NaN.h"
@@ -600,7 +599,6 @@ void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* data
     }
     
     Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr  planet  ( caller );
     
     if( project.valid() )
     {
@@ -611,11 +609,7 @@ void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* data
       Usul::Math::Vec3d point;
       project->projectToSpherical( orginal, srid, point );
       
-      if( planet.valid() )
-      {
-        planet->convertToPlanet( point, point );
-        center.set ( point[0], point[1], point[2] );
-      }
+      center.set ( point[0], point[1], point[2] );
     }
     
     dataObject->labelPosition( center );
@@ -681,6 +675,7 @@ std::string Layer::defaultQuery() const
 
 void Layer::primaryKeyColumn( const std::string& value )
 {
+  Guard guard ( this->mutex() );
   _primaryKeyColumn = value;
 }
 
@@ -693,6 +688,7 @@ void Layer::primaryKeyColumn( const std::string& value )
 
 const std::string& Layer::primaryKeyColumn() const
 {
+  Guard guard ( this->mutex() );
   return _primaryKeyColumn;
 }
 
@@ -743,10 +739,8 @@ bool Layer::customQuery() const
 
 void Layer::showCountLegend( bool b )
 {
-  if ( b )
-    _legendFlags = Usul::Bits::add( _legendFlags, COUNT );
-  else
-    _legendFlags = Usul::Bits::remove( _legendFlags, COUNT );
+  Guard guard ( this->mutex() );
+  _legendFlags = Usul::Bits::set( _legendFlags, COUNT, b );
 }
 
 
@@ -758,6 +752,7 @@ void Layer::showCountLegend( bool b )
 
 bool Layer::showCountLegend() const
 {
+  Guard guard ( this->mutex() );
   return Usul::Bits::has( _legendFlags, COUNT );
 }
 
@@ -770,10 +765,8 @@ bool Layer::showCountLegend() const
 
 void Layer::showMinLegend( bool b )
 {
-  if ( b )
-    _legendFlags = Usul::Bits::add( _legendFlags, MIN );
-  else
-    _legendFlags = Usul::Bits::remove( _legendFlags, MIN );
+  Guard guard ( this->mutex() );
+  _legendFlags = Usul::Bits::set ( _legendFlags, MIN, b );
 }
 
 
@@ -785,6 +778,7 @@ void Layer::showMinLegend( bool b )
 
 bool Layer::showMinLegend() const
 {
+  Guard guard ( this->mutex() );
   return Usul::Bits::has( _legendFlags, MIN );
 }
 
@@ -797,10 +791,8 @@ bool Layer::showMinLegend() const
 
 void Layer::showMaxLegend( bool b )
 {
-  if ( b )
-    _legendFlags = Usul::Bits::add( _legendFlags, MAX );
-  else
-    _legendFlags = Usul::Bits::remove( _legendFlags, MAX );
+  Guard guard ( this->mutex() );
+  _legendFlags = Usul::Bits::set ( _legendFlags, MAX, b );
 }
 
 
@@ -812,6 +804,7 @@ void Layer::showMaxLegend( bool b )
 
 bool Layer::showMaxLegend() const
 {
+  Guard guard ( this->mutex() );
   return Usul::Bits::has( _legendFlags, MAX );
 }
 

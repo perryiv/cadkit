@@ -139,7 +139,7 @@ protected:
   /// Use reference counting.
   virtual ~DataObject ();
 
-  osg::Node*            _buildLabel();
+  osg::Node*            _buildLabel( const osg::Vec3& position );
 
   virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
   

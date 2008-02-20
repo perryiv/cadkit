@@ -145,9 +145,9 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
     progress->setTotalProgressBar( geometryResult.size() );
 
   // Data needed below.
-  std::string dataTable ( this->tablename() );
-  osg::Vec3f offset ( 0.0, 0.0, this->zOffset() );
-  float lineWidth ( this->lineWidth() );
+  const std::string dataTable ( this->tablename() );
+  const osg::Vec3f offset ( 0.0, 0.0, this->zOffset() );
+  const float lineWidth ( this->lineWidth() );
 
   // Loop through the results.
   for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )

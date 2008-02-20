@@ -48,15 +48,15 @@ using namespace Minerva::Core::DataObjects;
 ///////////////////////////////////////////////////////////////////////////////
 
 Point::Point() :
-BaseClass(),
-_size ( 1.0 ),
-_secondarySize ( 1.0 ),
-_primitiveId ( 1 ),
-_quality ( 0.80f ),
-_center (),
-_centerEarth(),
-_autotransform ( true ),
-_material ( new osg::Material )
+  BaseClass(),
+  _size ( 1.0 ),
+  _secondarySize ( 1.0 ),
+  _primitiveId ( 1 ),
+  _quality ( 0.80f ),
+  _center (),
+  _centerEarth(),
+  _autotransform ( true ),
+  _material ( new osg::Material )
 {
   _material->setSpecular ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.4, 0.4, 0.4, 1.0 ) );
   _material->setAmbient ( osg::Material::FRONT_AND_BACK, osg::Vec4( 0.2, 0.2, 0.2, 1.0 ) );
@@ -243,6 +243,9 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
 
   // Get the state set
   osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
+  
+  // Set the render bin.
+  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
   // Set the material's diffuse color
   _material->setDiffuse ( osg::Material::FRONT_AND_BACK, this->color() );
@@ -252,33 +255,34 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
   if( 1.0f == this->color().w() )
   {
     ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-    //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
   }
   else
   {
-    _material->setTransparency( osg::Material::FRONT_AND_BACK, 1.0f - this->color().w() );
+    _material->setAlpha( osg::Material::FRONT_AND_BACK, this->color().w() );
     ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
 
     // If we don't have a render bin assigned, use the transparent bin.
     if( 0 == this->renderBin() )
       ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-    //ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
   }
 
   // Set the material.
   ss->setAttribute ( _material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
-  // Set the render bin.
-  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
   // Add the geometry to our group.
   group->addChild( geometry.get () );
 
   // Do we have a label?
   if( this->showLabel() && !this->label().empty() )
-    group->addChild ( this->_buildLabel() );
-
-    // Need to track down the reason for the difference on windows and linux...
+  {
+    osg::Vec3 position ( this->labelPosition() );
+    Usul::Math::Vec3d p ( position[0], position[1], position[2] );
+    Detail::convertToPlanet ( p, caller );
+    
+    group->addChild ( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] ) ) );
+  }
+  
+  // Need to track down the reason for the difference on windows and linux...
 #ifndef _MSC_VER
   ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
   OsgTools::State::StateSet::setTwoSidedLighting ( group.get(), true );

@@ -30,10 +30,10 @@ struct USUL_EXPORT Directory
   // Get the application-data directory.
   static std::string      appData ( bool wantSlash = false, bool throwIfFail = true );
 
-  // Get home directory. If environment variable 'HOME' is set, then that is 
+  // Get user's documents directory. If environment variable 'HOME' is set, then that is 
   // returned. On Windows, if there is no 'HOME' environment variable, then 
   // the 'My Documents' directory in the user's profile is returned. 
-  static std::string      home ( bool wantSlash = false, bool throwIfFail = true );
+  static std::string      documents ( bool wantSlash = false, bool throwIfFail = true );
 
   // Get the directory in which the vendor can store persistent data. Throws if it fails.
   static std::string      vendor ( const std::string &vendorName, bool wantSlash = false );

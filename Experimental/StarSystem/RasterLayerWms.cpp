@@ -365,7 +365,7 @@ void RasterLayerWms::defaultCacheDirectory ( const std::string& dir )
 
 std::string RasterLayerWms::defaultCacheDirectory()
 {
-  return Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR].get<std::string> ( Usul::File::Temp::directory ( false ) );
+  return Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR].get ( Usul::File::Temp::directory ( false ) );
 }
 
 

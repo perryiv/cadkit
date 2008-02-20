@@ -24,6 +24,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/User/Directory.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
@@ -87,7 +88,8 @@ void AddOssimLayerWidget::_browseClicked()
     std::string filters ( "All Files (*.*);;JPEG (*.jpg);;TIFF (*.tiff *.tif);;PNG (*.png);;Digital Elevation Model (*.dem);;OSSIM Key Word List (*kwl)" );
 
     // Get the last directory.
-    std::string directory ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get < std::string > ( "" ) );
+    const std::string defaultDir ( Usul::User::Directory::documents ( true, false ) );
+    const std::string directory ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get ( defaultDir ) );
 
     // Need to use this static function to get native file dialog.
     QStringList answer ( QFileDialog::getOpenFileNames ( this, "Open Image", directory.c_str(), filters.c_str(), 0x0 ) );

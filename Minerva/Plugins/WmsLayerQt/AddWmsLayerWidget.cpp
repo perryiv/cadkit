@@ -57,7 +57,7 @@ _options()
   _optionsWidget->setLayout ( new QVBoxLayout );
   
 #if USE_STAR_SYSTEM
-  _cacheDirectory->setText( StarSystem::RasterLayerWms::defaultCacheDirectory().c_str() );
+  _cacheDirectory->setText ( StarSystem::RasterLayerWms::defaultCacheDirectory().c_str() );
 #endif
 }
 

@@ -932,7 +932,8 @@ std::string MainWindow::_lastFileDialogDir ( const std::string &title ) const
   std::replace ( key.begin(), key.end(), ' ', '_' );
 
   // Get the value and return it.
-  const std::string dir ( Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_DIRECTORY][key].get ( "" ) );
+  const std::string defaultDir ( Usul::User::Directory::documents ( true, false ) );
+  const std::string dir ( Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_DIRECTORY][key].get ( defaultDir ) );
   return dir;
 }
 

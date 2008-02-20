@@ -1067,6 +1067,9 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
 
   // On-screen text button.
   menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Text", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::textShown ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isTextShown ) ) ) );
+  
+  // Back face culling.
+  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Back Face Culling", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::backFaceCulling ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isBackFaceCulling ) ) ) );
 }
 
 

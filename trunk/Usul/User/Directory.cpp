@@ -54,6 +54,10 @@ namespace Helper
 {
   inline void fixSlash ( std::string &s, bool wantSlash )
   {
+    // Skip empty strings.
+    if ( true == s.empty() )
+      return;
+
     // See if there is a slash.
     const unsigned int last ( s.size() - 1 );
     const bool hasSlash ( '\\' == s.at ( last ) || '/' == s.at ( last ) );
@@ -78,15 +82,15 @@ namespace Helper
 std::string Usul::User::Directory::documents ( bool wantSlash, bool throwIfFail )
 {
   // Always look for environment variable.
-  std::string dir ( Usul::System::Environment::get ( "HOME" ) );
+  std::string dir; ( Usul::System::Environment::get ( "HOME" ) );
 
 #ifdef _MSC_VER
 
-  // Try window's directory next.
+  // Try 'My Documents' directory. Note: CSIDL_MYDOCUMENTS returns an empty string.
   if ( true == dir.empty() )
   {
     char path [ MAX_PATH * 2 ];
-    if ( ( FALSE == SHGetSpecialFolderPath ( 0x0, path, CSIDL_MYDOCUMENTS, TRUE ) ) && ( true == throwIfFail ) )
+    if ( ( FALSE == SHGetSpecialFolderPath ( 0x0, path, CSIDL_PERSONAL, TRUE ) ) && ( true == throwIfFail ) )
       throw std::runtime_error ( "Error 2904267615: Failed to find 'My Documents' directory" );
     dir = path;
   }

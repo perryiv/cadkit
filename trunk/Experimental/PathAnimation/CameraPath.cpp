@@ -20,6 +20,7 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 USUL_FACTORY_REGISTER_CREATOR ( CameraPath );
@@ -102,6 +103,108 @@ void CameraPath::cameraPrepend ( const Usul::Math::Vec3d &eye, const Usul::Math:
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _values.insert ( _values.begin(), Triplet ( eye, center, up ) );
+  this->modified ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the closest camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int CameraPath::_closest ( const Usul::Math::Vec3d &eye ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Copy the values.
+  Values values ( Usul::Threads::Safe::get ( this->mutex(), _values ) );
+
+  // Initialize.
+  unsigned int nearest ( values.size() );
+  double minDist ( std::numeric_limits<double>::max() );
+
+  // Loop through the cameras.
+  for ( unsigned int i = 0; i < values.size(); ++i )
+  {
+    const double currentDist ( eye.distanceSquared ( values.at(i)[0] ) );
+    if ( currentDist < minDist )
+    {
+      minDist = currentDist;
+      nearest = i;
+    }
+  }
+
+  // Return nearest, which could be the end.
+  return nearest;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert the camera between the two nearest.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CameraPath::cameraInsert ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // If the path does not have at least two then append.
+  if ( _values.size() < 2 )
+  {
+    this->cameraAppend ( eye, center, up );
+    return;
+  }
+
+  // The value to insert.
+  const Triplet camera ( eye, center, up );
+
+  // If there are two camers then it's trivial.
+  if ( 2 == _values.size() )
+  {
+    _values.insert ( _values.begin() + 1, camera );
+    return;
+  }
+
+  // Find the nearest camera.
+  const unsigned int nearest ( this->_closest ( eye ) );
+  if ( nearest >= _values.size() )
+    throw std::runtime_error ( "Error 2921860230: Failed to find nearest camera" );
+
+  // Is the nearest camera the first one?
+  if ( 0 == nearest )
+  {
+    _values.insert ( _values.begin() + 1, camera );
+    return;
+  }
+
+  // Is the nearest camera the last one?
+  if ( ( _values.size() - 1 ) == nearest )
+  {
+    _values.insert ( _values.begin() + _values.size() - 1, camera );
+    return;
+  }
+
+  // When we get here we know that there are at least 3 cameras, and that the 
+  // nearest camera is not either end. See which neighboring camera is closer.
+  const double distBefore ( eye.distanceSquared ( _values.at ( nearest - 1 )[0] ) );
+  const double distAfter  ( eye.distanceSquared ( _values.at ( nearest + 1 )[0] ) );
+
+  // Insert between nearest and the one before it.
+  if ( distBefore < distAfter )
+  {
+    _values.insert ( _values.begin() + nearest, camera );
+  }
+
+  // Insert between nearest and the one after it.
+  else
+  {
+    _values.insert ( _values.begin() + nearest + 1, camera );
+  }
+
+  // The path is modified.
   this->modified ( true );
 }
 

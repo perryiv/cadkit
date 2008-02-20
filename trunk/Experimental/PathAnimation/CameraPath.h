@@ -48,6 +48,7 @@ public:
 
   // Insert the camera information.
   void                          cameraAppend  ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
+  void                          cameraInsert  ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
   void                          cameraPrepend ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
 
   // Can we close the path?
@@ -101,6 +102,8 @@ protected:
 
   // Use reference counting.
   virtual ~CameraPath();
+
+  unsigned int                  _closest ( const Usul::Math::Vec3d &eye ) const;
 
 private:
 

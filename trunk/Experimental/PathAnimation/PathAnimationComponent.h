@@ -86,6 +86,7 @@ protected:
   bool                          _canSavePath ( Usul::Interfaces::IUnknown * caller ) const;
   void                          _closeCameraPath();
   void                          _currentCameraAppend();
+  void                          _currentCameraInsert();
   void                          _currentCameraPrepend();
 
   void                          _exportMovie ( Usul::Interfaces::IUnknown::QueryPtr );

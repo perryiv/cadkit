@@ -178,8 +178,9 @@ ProgressBarDock::ProgressBar::~ProgressBar ()
 {
   this->hideProgressBar ();
 
-  if ( 0x0 != _parentLayout )
-    _parentLayout->removeItem ( _layout );
+  // This function is not thread safe.  Just hide for now.
+  //if ( 0x0 != _parentLayout )
+  //  _parentLayout->removeItem ( _layout );
 
   // Defer this delete for the main thread to take care of.
   if ( 0x0 != _progressBar )
@@ -258,6 +259,11 @@ void ProgressBarDock::ProgressBar::hideProgressBar()
   if ( 0x0 != _progressBar )
   {
     QMetaObject::invokeMethod ( _progressBar, "hide", Qt::AutoConnection );
+  }
+
+  if ( 0x0 != _label )
+  {
+    QMetaObject::invokeMethod ( _label, "hide", Qt::AutoConnection );
   }
 }
 

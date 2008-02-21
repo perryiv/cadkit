@@ -264,6 +264,9 @@ void MainWindow::_destroy()
   _recentFilesMenu = 0x0;
   _newDocumentMenu = 0x0;
 
+  // Clear the progress bars.
+  _progressBars = 0x0;
+
   // Release all the plugins.
   this->releasePlugins();
 

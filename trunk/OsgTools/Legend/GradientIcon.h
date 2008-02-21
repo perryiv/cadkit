@@ -39,7 +39,7 @@ public:
   void                    maxColor( const osg::Vec4& max );
   const osg::Vec4 &       maxColor() const;
 
-  virtual osg::Node*      buildScene();
+  virtual osg::Node*      buildScene( unsigned int width, unsigned int height );
 
 protected:
   virtual ~GradientIcon();

@@ -146,31 +146,33 @@ osg::Node* Legend::buildScene()
 
     for( LegendObjects::iterator iter = _legendObjects.begin(); iter != _legendObjects.end(); ++iter )
     {
-      (*iter)->size( _width - ( padding * 2 ), heightPerObject );
-      unsigned int num ( iter - _legendObjects.begin() );
+      // Transform for the row.
       osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+      
+      // Width and height of the row.
+      const unsigned int width ( _width - ( padding * 2 ) );
+      const unsigned int height ( heightPerObject );
+      
+      const unsigned int num ( iter - _legendObjects.begin() );
 
-      /// Needs to be signed.
+      /// Y position (Needs to be signed).
       int yTranslate ( heightPerObject * num + padding );
 
       // Invert the y translation if we are growing down.
       if( this->growDirection() == DOWN )
         yTranslate *= -1;
 
-      // WHY?
-      //#ifdef _MSC_VER
-      osg::Matrix m ( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
-      //#else
-      //osg::Matrix m ( osg::Matrix::translate ( padding, yTranslate, 1.0 ) );
-      //#endif
+      // Position the row.
+      mt->setMatrix( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
 
-      mt->setMatrix( m );
-      mt->addChild( (*iter)->buildScene() );
+      // Build the row.
+      mt->addChild( (*iter)->buildScene( width, height ) );
 
       // Turn off depth testing.
       osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
       ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 
+      // Add to the scene.
       group->addChild( mt.get() );
     }
   }

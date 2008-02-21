@@ -23,11 +23,9 @@ using namespace OsgTools::Legend;
 ///////////////////////////////////////////////////////////////////////////////
 
 LegendObject::LegendObject() : BaseClass(),
-_icon ( 0x0 ),
-_texts(),
-_percentages(),
-_width ( 0 ),
-_height ( 0 )
+  _icon ( 0x0 ),
+  _texts(),
+  _percentages()
 {
 }
 
@@ -177,54 +175,46 @@ unsigned int LegendObject::columns() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* LegendObject::buildScene()
+osg::Node* LegendObject::buildScene( unsigned int width, unsigned int height )
 {
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
-  unsigned int padding ( 5 );
-  unsigned int iconWidth ( static_cast < unsigned int > ( _width * 0.10 ) );
-  unsigned int textWidth ( static_cast < unsigned int > ( _width * 0.85 ) );
-
+  const unsigned int padding ( 5 );
+  
+  // Width and height for icon.
+  const unsigned int iconWidth  ( static_cast < unsigned int > ( width * 0.10 ) );
+  const unsigned int iconHeight ( height - ( padding * 2 ) );
+  
+  // Width and height for text.
+  const unsigned int textWidth  ( static_cast < unsigned int > ( width * 0.85 ) );
+  const unsigned int textHeight ( height - padding );
+  
+  // Current x position of text item.
+  unsigned int currentTextPosition ( 0 );
+  
   if( _icon.valid() )
   {
-    _icon->width( iconWidth );
-    _icon->height( _height - ( padding * 2 ) );
-    group->addChild( _icon->buildScene() );
+    group->addChild( _icon->buildScene( iconWidth, iconHeight ) );
+    
+    currentTextPosition = iconWidth + padding;
   }
 
-  const unsigned int textHeight ( _height - padding );
-  unsigned int currentTextPosition ( iconWidth + padding );
-
+  // Loop over each item.
   for( unsigned int i = 0; i < _texts.size(); ++i )
   {
     const unsigned int columnWidth ( static_cast < unsigned int > ( textWidth * _percentages.at( i ) ) );
     Text::RefPtr text ( _texts.at ( i ) );
-    text->width( columnWidth );
-    text->height( textHeight );
 
     osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
     osg::Matrix m ( osg::Matrix::translate ( currentTextPosition, 0.0, 0.0 ) );
     mt->setMatrix( m );
-    mt->addChild ( text->buildScene() );
+    mt->addChild ( text->buildScene ( columnWidth, textHeight ) );
     group->addChild( mt.get() );
 
     currentTextPosition += ( columnWidth + padding );
   }
 
   return group.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LegendObject::size( unsigned int width, unsigned int height )
-{
-  _width = width;
-  _height = height;
 }
 
 

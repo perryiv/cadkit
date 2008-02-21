@@ -49,24 +49,14 @@ public:
   void                    text( const std::string& text );
   const std::string &     text () const;
 
-  /// Get/Set the width.
-  void                    width( unsigned int w );
-  unsigned int            width() const;
-
-  /// Get/Set the height
-  void                    height( unsigned int h );
-  unsigned int            height() const;
-
   /// Build the scene.
-  osg::Node*              buildScene();
+  osg::Node*              buildScene( unsigned int width, unsigned int height );
 
 protected:
   virtual ~Text();
 
 private:
   std::string _text;
-  unsigned int _width;
-  unsigned int _height;
   Alignment _alignment;
 };
 

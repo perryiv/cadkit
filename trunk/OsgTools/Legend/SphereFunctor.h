@@ -31,6 +31,8 @@ struct SphereFunctor
 
     osg::ref_ptr < osg::Geometry > geom ( OsgTools::ShapeFactorySingleton::instance().sphere ( osg::Vec3( width / 2, height/2, 0.0 ), height / 2, meshSize, latRange, longRange  ) );
 
+    // I don't think this is needed any more.
+#if 0
 #ifdef _MSC_VER
     osg::Vec3Array *normals = dynamic_cast < osg::Vec3Array * > ( geom->getNormalArray() );
     if ( normals )
@@ -39,7 +41,8 @@ struct SphereFunctor
       std::transform ( normals->begin(), normals->end(), normals->begin(), std::negate<osg::Vec3>() );
     }
 #endif
-
+#endif
+    
     // Make sure lighting is on.
     OsgTools::State::StateSet::setLighting ( geom->getOrCreateStateSet(), true );
 

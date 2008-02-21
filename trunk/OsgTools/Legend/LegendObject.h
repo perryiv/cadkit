@@ -52,10 +52,8 @@ public:
   /// Get the percentage at given column.
   float&                 percentage( unsigned int i );
 
-  osg::Node*             buildScene();
-
-  /// Set the size.
-  void                   size( unsigned int width, unsigned int height );
+  /// Build the scene.
+  osg::Node*             buildScene ( unsigned int width, unsigned int height );
 
 protected:
   virtual ~LegendObject();
@@ -67,9 +65,6 @@ private:
   TextVector _texts;
 
   std::vector< float > _percentages;
-
-  unsigned int _width;
-  unsigned int _height;
 };
 
 }

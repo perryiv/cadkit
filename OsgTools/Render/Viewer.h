@@ -201,8 +201,8 @@ public:
   virtual void          axesLabels ( const std::string& x, const std::string& y, const std::string& z );
   
   /// Set/get back face culling.
-  void                  backFaceCulling ( bool b );
-  bool                  isBackFaceCulling() const;
+  void                  showBackFaces ( bool b );
+  bool                  isBackFacesShowing() const;
 
   // Set/get the background color. Throws if getting color from a null viewer.
   void                  backgroundColor ( const osg::Vec4 &color, unsigned int corners );

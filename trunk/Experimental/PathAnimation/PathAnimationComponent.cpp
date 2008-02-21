@@ -174,10 +174,12 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   }
   
   menu->addSeparator();
-  menu->append ( new Button ( UC::genericCommand ( "Append",  UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Prepend", UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraPrepend ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Insert",  UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraInsert  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Close",   UA::memberFunction<void> ( this, &PathAnimationComponent::_closeCameraPath      ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canClosePath   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Append Path",            UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Prepend Path",           UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraPrepend ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Insert Between Closest", UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraInsert  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Remove Closest",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraRemove  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Replace Closest",        UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraReplace  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Close Path",             UA::memberFunction<void> ( this, &PathAnimationComponent::_closeCameraPath      ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canClosePath   ) ) ) );
 
   menu->addSeparator();
   menu->append ( new Button ( UC::genericCommand ( "Play Forward",  UA::memberFunction<void> ( this, &PathAnimationComponent::_playForward  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
@@ -291,13 +293,13 @@ void PathAnimationComponent::_buildPathsMenu()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function to insert the camera.
+//  Helper function to call the camera's function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Helper
 {
-  template < class F > void insertCamera ( F f, const osg::Matrixd &m )
+  template < class F > void callCameraFunction ( F f, const osg::Matrixd &m )
   {
     USUL_TRACE_SCOPE_STATIC;
 
@@ -313,7 +315,7 @@ namespace Helper
       // Make sure up-vector is normalized.
       u.normalize();
 
-      // Append the data.
+      // Call the function.
       f ( Vec3 ( e[0], e[1], e[2] ), Vec3 ( c[0], c[1], c[2] ), Vec3 ( u[0], u[1], u[2] ) );
     }
     USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "3485778525" );
@@ -323,13 +325,13 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function to insert the camera.
+//  Helper function to call the camera's function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Helper
 {
-  template < class F > void insertCamera ( F f )
+  template < class F > void callCameraFunction ( F f )
   {
     USUL_TRACE_SCOPE_STATIC;
 
@@ -339,7 +341,7 @@ namespace Helper
       return;
 
     // Call the other one.
-    Helper::insertCamera ( f, vm->getViewMatrix() );
+    Helper::callCameraFunction ( f, vm->getViewMatrix() );
   }
 }
 
@@ -360,7 +362,7 @@ void PathAnimationComponent::_currentCameraAppend()
     return;
 
   // Use helper function.
-  Helper::insertCamera ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::cameraAppend ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::append ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -383,7 +385,7 @@ void PathAnimationComponent::_currentCameraPrepend()
     return;
 
   // Use helper function.
-  Helper::insertCamera ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::cameraPrepend ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::prepend ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -406,7 +408,53 @@ void PathAnimationComponent::_currentCameraInsert()
     return;
 
   // Use helper function.
-  Helper::insertCamera ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::cameraInsert ) );
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::insertBetweenNearest ) );
+
+  // Build the camera menu.
+  this->_buildCameraMenu();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the nearest camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_currentCameraRemove()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Handle no path.
+  if ( false == _currentPath.valid() )
+    return;
+
+  // Use helper function.
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::removeNearest ) );
+
+  // Build the camera menu.
+  this->_buildCameraMenu();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Replace the nearest camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_currentCameraReplace()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Handle no path.
+  if ( false == _currentPath.valid() )
+    return;
+
+  // Use helper function.
+  Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( _currentPath.get(), &CameraPath::replaceNearest ) );
 
   // Build the camera menu.
   this->_buildCameraMenu();
@@ -805,7 +853,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
       const osg::Matrixd m ( &value[0] );
 
       // Append the camera.
-      Helper::insertCamera ( Usul::Adaptors::memberFunction ( path.get(), &CameraPath::cameraAppend ), m );
+      Helper::callCameraFunction ( Usul::Adaptors::memberFunction ( path.get(), &CameraPath::append ), m );
     }
   }
 

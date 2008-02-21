@@ -88,6 +88,8 @@ protected:
   void                          _currentCameraAppend();
   void                          _currentCameraInsert();
   void                          _currentCameraPrepend();
+  void                          _currentCameraRemove();
+  void                          _currentCameraReplace();
 
   void                          _exportMovie ( Usul::Interfaces::IUnknown::QueryPtr );
 

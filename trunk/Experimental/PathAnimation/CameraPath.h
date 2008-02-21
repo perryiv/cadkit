@@ -43,13 +43,11 @@ public:
   // Constructor.
   CameraPath();
 
+  // Append the path.
+  void                          append  ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
+
   /// Get the camera info.
   void                          camera ( Usul::Math::Vec3d &eye, Usul::Math::Vec3d &center, Usul::Math::Vec3d &up, unsigned int num ) const;
-
-  // Insert the camera information.
-  void                          cameraAppend  ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
-  void                          cameraInsert  ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
-  void                          cameraPrepend ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
 
   // Can we close the path?
   bool                          canClose() const;
@@ -75,8 +73,20 @@ public:
   virtual Filters               filtersOpen()   const;
   virtual Filters               filtersSave()   const;
 
+  // Insert the new camera between the closest camera and it's closest neighbor.
+  void                          insertBetweenNearest  ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
+
+  // Prepend the path.
+  void                          prepend ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
+
   // Read.
   virtual void                  read ( const std::string &file, IUnknown *caller = 0x0, IUnknown *progress = 0x0 );
+
+  // Remove the camera closest to the given eye position.
+  void                          removeNearest ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
+
+  // Replace the nearest camera.
+  void                          replaceNearest ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up );
 
   // Get number of cameras.
   unsigned int                  size() const;

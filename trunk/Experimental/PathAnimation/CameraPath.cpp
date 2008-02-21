@@ -83,7 +83,7 @@ void CameraPath::camera ( Usul::Math::Vec3d &eye, Usul::Math::Vec3d &center, Usu
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CameraPath::cameraAppend ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
+void CameraPath::append ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -98,7 +98,7 @@ void CameraPath::cameraAppend ( const Usul::Math::Vec3d &eye, const Usul::Math::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CameraPath::cameraPrepend ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
+void CameraPath::prepend ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -109,44 +109,11 @@ void CameraPath::cameraPrepend ( const Usul::Math::Vec3d &eye, const Usul::Math:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Find the closest camera.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int CameraPath::_closest ( const Usul::Math::Vec3d &eye ) const
-{
-  USUL_TRACE_SCOPE;
-
-  // Copy the values.
-  Values values ( Usul::Threads::Safe::get ( this->mutex(), _values ) );
-
-  // Initialize.
-  unsigned int nearest ( values.size() );
-  double minDist ( std::numeric_limits<double>::max() );
-
-  // Loop through the cameras.
-  for ( unsigned int i = 0; i < values.size(); ++i )
-  {
-    const double currentDist ( eye.distanceSquared ( values.at(i)[0] ) );
-    if ( currentDist < minDist )
-    {
-      minDist = currentDist;
-      nearest = i;
-    }
-  }
-
-  // Return nearest, which could be the end.
-  return nearest;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Insert the camera between the two nearest.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CameraPath::cameraInsert ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
+void CameraPath::insertBetweenNearest ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -154,7 +121,7 @@ void CameraPath::cameraInsert ( const Usul::Math::Vec3d &eye, const Usul::Math::
   // If the path does not have at least two then append.
   if ( _values.size() < 2 )
   {
-    this->cameraAppend ( eye, center, up );
+    this->append ( eye, center, up );
     return;
   }
 
@@ -203,6 +170,62 @@ void CameraPath::cameraInsert ( const Usul::Math::Vec3d &eye, const Usul::Math::
   {
     _values.insert ( _values.begin() + nearest + 1, camera );
   }
+
+  // The path is modified.
+  this->modified ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the camera closest to the given eye position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CameraPath::removeNearest ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &, const Usul::Math::Vec3d & )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Handle empty path.
+  if ( true == _values.empty() )
+    return;
+
+  // Find the nearest camera.
+  const unsigned int nearest ( this->_closest ( eye ) );
+  if ( nearest >= _values.size() )
+    throw std::runtime_error ( "Error 4726092730: Failed to find nearest camera" );
+
+  // Remove the nearest camera.
+  _values.erase ( _values.begin() + nearest );
+
+  // The path is modified.
+  this->modified ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Replace the camera closest to the given eye position with the new values.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CameraPath::replaceNearest ( const Usul::Math::Vec3d &eye, const Usul::Math::Vec3d &center, const Usul::Math::Vec3d &up )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Handle empty path.
+  if ( true == _values.empty() )
+    return;
+
+  // Find the nearest camera.
+  const unsigned int nearest ( this->_closest ( eye ) );
+  if ( nearest >= _values.size() )
+    throw std::runtime_error ( "Error 4274807095: Failed to find nearest camera" );
+
+  // Update the nearest camera.
+  _values.at ( nearest ) = Triplet ( eye, center, up );
 
   // The path is modified.
   this->modified ( true );
@@ -430,4 +453,37 @@ void CameraPath::values ( Values &v, bool reverseOrder ) const
   {
     v.assign ( _values.begin(), _values.end() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the closest camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int CameraPath::_closest ( const Usul::Math::Vec3d &eye ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Copy the values.
+  Values values ( Usul::Threads::Safe::get ( this->mutex(), _values ) );
+
+  // Initialize.
+  unsigned int nearest ( values.size() );
+  double minDist ( std::numeric_limits<double>::max() );
+
+  // Loop through the cameras.
+  for ( unsigned int i = 0; i < values.size(); ++i )
+  {
+    const double currentDist ( eye.distanceSquared ( values.at(i)[0] ) );
+    if ( currentDist < minDist )
+    {
+      minDist = currentDist;
+      nearest = i;
+    }
+  }
+
+  // Return nearest, which could be the end.
+  return nearest;
 }

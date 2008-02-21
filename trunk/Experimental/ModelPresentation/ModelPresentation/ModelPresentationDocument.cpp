@@ -875,7 +875,9 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
     XmlTree::Node::RefPtr node ( *iter );
     if ( "model" == node->name() )
     {
-      std::string &name = Usul::Strings::format( "Unknown",count );
+      // Format returns a copy, not a reference.
+      std::string name = Usul::Strings::format( "Unknown",count );
+
       models.models->addChild( this->_parseModel( *node, caller, progress, name ), false );
       models.modelMap[name] = count;
     }  

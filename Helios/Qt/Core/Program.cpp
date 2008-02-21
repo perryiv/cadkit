@@ -133,7 +133,14 @@ namespace Helper
     }
 
     // Try pre-pending persistant directory.
-    const std::string pluginFile ( persistantDir + userFile );
+    std::string pluginFile ( persistantDir + userFile );
+    if ( true == Usul::Predicates::FileExists::test ( pluginFile ) )
+    {
+      return pluginFile;
+    }
+
+    // Try same directory as default file.
+    pluginFile = Usul::File::directory ( defaultFile, true ) + userFile;
     if ( true == Usul::Predicates::FileExists::test ( pluginFile ) )
     {
       return pluginFile;

@@ -82,6 +82,7 @@ protected:
 
   void                          _buildPathsMenu();
   void                          _buildCameraMenu();
+  osg::Node *                   _buildCurve() const;
 
   bool                          _canClosePath() const;
   bool                          _canPlay() const;
@@ -105,7 +106,7 @@ protected:
   bool                          _isPlaying() const;
   bool                          _isPaused() const;
   bool                          _isStepSize ( double step ) const;
-  bool                          _isShowPath() const;
+  bool                          _isShowingPath() const;
 
   void                          _newPath();
   void                          _openPath ( Usul::Interfaces::IUnknown::QueryPtr );
@@ -125,6 +126,8 @@ protected:
   void                          _setShowPath ( bool );
   void                          _setStepSize ( double step );
   void                          _stopPlaying();
+
+  void                          _updateScene();
 
   void                          _writeMovieFile( Usul::Interfaces::IUnknown *caller );
 
@@ -149,6 +152,7 @@ private:
   osg::ref_ptr<osg::Group> _root;
   bool _showPath;
   bool _looping;
+  bool _dirtyScene;
 };
 
 

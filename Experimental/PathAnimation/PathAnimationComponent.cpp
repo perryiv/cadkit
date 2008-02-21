@@ -75,7 +75,8 @@ PathAnimationComponent::PathAnimationComponent() :
   _stepSize ( Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE ),
   _root ( 0x0 ),
   _showPath ( false ),
-  _looping ( false )
+  _looping ( false ),
+  _dirtyScene ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -229,7 +230,8 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   menu->append ( steps );
 
   menu->addSeparator();
-  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "&Loop", UA::memberFunction<void> ( this, &PathAnimationComponent::_setLooping ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isLooping ) ) ) );
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "&Loop",      UA::memberFunction<void> ( this, &PathAnimationComponent::_setLooping  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isLooping     ) ) ) );
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "S&how Path", UA::memberFunction<void> ( this, &PathAnimationComponent::_setShowPath ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isShowingPath ) ) ) );
 }
 
 
@@ -261,6 +263,9 @@ void PathAnimationComponent::_newPath()
 
   // Rebuild the menu.
   this->_buildPathsMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -377,6 +382,9 @@ void PathAnimationComponent::_currentCameraAppend()
 
   // Build the camera menu.
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -400,6 +408,9 @@ void PathAnimationComponent::_currentCameraPrepend()
 
   // Build the camera menu.
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -423,6 +434,9 @@ void PathAnimationComponent::_currentCameraInsert()
 
   // Build the camera menu.
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -446,6 +460,9 @@ void PathAnimationComponent::_currentCameraRemove()
 
   // Build the camera menu.
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -469,6 +486,9 @@ void PathAnimationComponent::_currentCameraReplace()
 
   // Build the camera menu.
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -492,6 +512,9 @@ void PathAnimationComponent::_closeCameraPath()
 
   // Build the camera menu.
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -505,8 +528,12 @@ void PathAnimationComponent::_setCurrentPath ( CameraPath::RefPtr path )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
   _currentPath = path;
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -770,12 +797,15 @@ void PathAnimationComponent::activeViewChanged ( Usul::Interfaces::IUnknown *old
     }
 
     // Add our root node.
-    Usul::Interfaces::IGroup::QueryPtr group ( oldView );
+    Usul::Interfaces::IGroup::QueryPtr group ( newView );
     if ( true == group.valid() )
     {
       _root = group->getGroup ( this->getPluginName() );
     }
   }
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -789,6 +819,9 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
+  // Always update the scene.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_updateScene ) );
 
   // Should we update?
   if ( ( false == _player.valid() ) || ( false == this->_isPlaying() ) )
@@ -861,7 +894,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
   USUL_TRACE_SCOPE;
 
   // Redirect with our current step size.
-  this->animatePath ( matrices, Usul::Threads::Safe::get( this->mutex(), _stepSize ) );
+  this->animatePath ( matrices, Usul::Threads::Safe::get ( this->mutex(), _stepSize ) );
 }
 
 
@@ -916,7 +949,11 @@ void PathAnimationComponent::_setDegree ( unsigned int degree )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
   _degree = degree;
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -985,6 +1022,9 @@ void PathAnimationComponent::_openPath ( Usul::Interfaces::IUnknown::QueryPtr ca
   
   // Rebuild the camera menu.
   this->_buildCameraMenu();
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 
@@ -1321,4 +1361,91 @@ bool PathAnimationComponent::_isLooping() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _looping;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag to show the path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_setShowPath ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  _showPath = state;
+
+  // The scene is dirty.
+  _dirtyScene = true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we showing the path?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PathAnimationComponent::_isShowingPath() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _showPath;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we showing the path?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_updateScene()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Are we dirty?
+  if ( false == _dirtyScene )
+    return;
+
+  // We are no longer dirty.
+  _dirtyScene = false;
+
+  // Check state.
+  if ( false == _root.valid() )
+    return;
+
+  // Remove what we have.
+  _root->removeChildren ( 0, _root->getNumChildren() );
+
+  // Are we showing the path?
+  if ( true == this->_isShowingPath() )
+  {
+    // Add the curve.
+    _root->addChild ( this->_buildCurve() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the curve.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *PathAnimationComponent::_buildCurve() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Make a temporary player.
+  CurvePlayer::RefPtr player ( new CurvePlayer );
+  if ( false == player.valid() )
+    return new osg::Group;
+
+  // Ask the player to build a curve.
+  return player->buildCurve ( _currentPath.get(), _degree, Usul::Documents::Manager::instance().activeView() );
 }

@@ -66,6 +66,7 @@
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
 #include "Usul/System/Memory.h"
+#include "Usul/User/Directory.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -154,8 +155,8 @@ Application::Application() :
   _menuSceneShowHide ( true ),
   _menu              ( new Menu ),
   _statusBar         ( new Menu ),
-  _functorFilename   ( Usul::App::Application::instance ().configFile ( "functors" ) ),
-  _preferencesFilename ( Usul::App::Application::instance().configFile ( "preferences" ) ),
+  _functorFilename   (),
+  _preferencesFilename (),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  (),
@@ -178,6 +179,13 @@ Application::Application() :
   _buttonToAssign     ( 0 )
 {
   USUL_TRACE_SCOPE;
+
+  const std::string vendor  ( Usul::App::Application::instance().vendor()  );
+  const std::string program ( Usul::App::Application::instance().program() );
+
+  // Set default file paths.
+  _functorFilename     = Usul::User::Directory::program ( vendor, program ) + "/functors.xml";
+  _preferencesFilename = Usul::User::Directory::program ( vendor, program ) + "/preferences.xml";
 
   // We want thread safe ref and unrefing.
   osg::Referenced::setThreadSafeReferenceCounting ( true );

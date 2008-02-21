@@ -901,7 +901,6 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
       row->columns ( 1 );
       row->at ( 0 )->text ( this->legendText() );
       
-
       if( this->showCountLegend() )
       {
         unsigned int index ( row->addText ( new OsgTools::Legend::Text ( Usul::Strings::format( this->number() ) ) ) );

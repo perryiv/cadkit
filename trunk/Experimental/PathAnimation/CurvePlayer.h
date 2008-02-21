@@ -60,6 +60,10 @@ public:
   // Go to the current parameter.
   void                          go ( Parameter u, IUnknown *caller );
 
+  // Set/get the flag that says to loop.
+  void                          looping ( bool );
+  bool                          looping() const;
+
   // Play the path from the current paramater.
   void                          playBackward ( const CameraPath *, unsigned int degree, IUnknown *caller );
   void                          playForward  ( const CameraPath *, unsigned int degree, IUnknown *caller );
@@ -90,6 +94,7 @@ private:
   Parameter _current;
   Parameter _step;
   bool _renderLoop;
+  bool _looping;
 };
 
 

@@ -74,7 +74,8 @@ PathAnimationComponent::PathAnimationComponent() :
   _caller(),
   _stepSize ( Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE ),
   _root ( 0x0 ),
-  _showPath ( false )
+  _showPath ( false ),
+  _looping ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -189,7 +190,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   menu->append ( new Button ( UC::genericCommand ( "&Prepend Camera",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraPrepend ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
   menu->append ( new Button ( UC::genericCommand ( "&Insert Between Closest", UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraInsert  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
   menu->append ( new Button ( UC::genericCommand ( "Remove Closest",          UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraRemove  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Replace Closest",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraReplace  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Replace Closest",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraReplace ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
   menu->append ( new Button ( UC::genericCommand ( "&Close Path",             UA::memberFunction<void> ( this, &PathAnimationComponent::_closeCameraPath      ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canClosePath   ) ) ) );
 
   menu->addSeparator();
@@ -200,6 +201,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   menu->addSeparator();
   
   menu->append ( _cameraMenu.get() );
+  menu->append ( _pathsMenu.get() );
 
   menu->addSeparator();
   MenuKit::Menu::RefPtr sub ( new MenuKit::Menu ( "&Degree" ) );
@@ -221,15 +223,13 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   MenuKit::Menu::RefPtr steps ( new MenuKit::Menu ( "Step Size" ) );
   for ( Doubles::const_iterator iter = stepSizes.begin(); iter != stepSizes.end(); ++iter )
   {
-    double s ( *iter );
+    const double s ( *iter );
     steps->append ( new RadioButton ( UC::genericCheckCommand ( Usul::Strings::format ( s ), UA::bind1<void> ( s, UA::memberFunction<void> ( this, &PathAnimationComponent::_setStepSize ) ), UA::bind1<bool> ( s, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isStepSize ) ) ) ) );
   }
-
   menu->append ( steps );
 
-  // Add menu for existing paths.
   menu->addSeparator();
-  menu->append ( _pathsMenu.get() );
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "&Loop", UA::memberFunction<void> ( this, &PathAnimationComponent::_setLooping ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isLooping ) ) ) );
 }
 
 
@@ -558,7 +558,7 @@ bool PathAnimationComponent::_canClosePath() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathForward ( const CameraPath *path, double step )
+void PathAnimationComponent::_playPathForward ( const CameraPath *path, double step, bool loop )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -574,8 +574,9 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, double s
   if ( false == _player.valid() )
     _player = new CurvePlayer;
 
-  // Set the step size.
+  // Set properties.
   _player->stepSize ( step );
+  _player->looping ( loop );
 
   // Play the animation forward.
   _player->playForward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
@@ -588,7 +589,7 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, double s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathBackward ( const CameraPath *path, double step )
+void PathAnimationComponent::_playPathBackward ( const CameraPath *path, double step, bool loop )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -604,8 +605,9 @@ void PathAnimationComponent::_playPathBackward ( const CameraPath *path, double 
   if ( false == _player.valid() )
     _player = new CurvePlayer;
 
-  // Set the step size.
+  // Set properties.
   _player->stepSize ( step );
+  _player->looping ( loop );
 
   // Play the animation forward.
   _player->playBackward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
@@ -622,7 +624,7 @@ void PathAnimationComponent::_playForward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathForward ( _currentPath.get(), _stepSize );
+  this->_playPathForward ( _currentPath.get(), _stepSize, this->_isLooping() );
 }
 
 
@@ -636,7 +638,7 @@ void PathAnimationComponent::_playBackward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathBackward ( _currentPath.get(), _stepSize );
+  this->_playPathBackward ( _currentPath.get(), _stepSize, this->_isLooping() );
 }
 
 
@@ -900,7 +902,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
   }
 
   // Play this path forward.
-  this->_playPathForward ( path.get(), step );
+  this->_playPathForward ( path.get(), step, false );
 }
 
 
@@ -938,7 +940,7 @@ bool PathAnimationComponent::_isDegree ( unsigned int degree ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_openPath( Usul::Interfaces::IUnknown::QueryPtr caller )
+void PathAnimationComponent::_openPath ( Usul::Interfaces::IUnknown::QueryPtr caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -1272,7 +1274,7 @@ void PathAnimationComponent::_setCameraPosition ( unsigned int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PathAnimationComponent::_isStepSize( double step ) const
+bool PathAnimationComponent::_isStepSize ( double step ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1291,4 +1293,32 @@ void PathAnimationComponent::_setStepSize ( double step )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _stepSize = step;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the looping flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_setLooping ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _looping = state;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we looping?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PathAnimationComponent::_isLooping() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _looping;
 }

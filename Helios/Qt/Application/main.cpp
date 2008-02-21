@@ -43,7 +43,7 @@ int main ( int argc, char **argv )
   const std::string url     ( "cadkit.sf.net" );
   const std::string icon    ( "helios_sun.png" );
   const std::string splash  ( "splash_screen.png" );
-  const std::string plugins ( program + ".plugins" );
+  const std::string plugins ( "../configs/Helios.plugins" );
   const std::string manual  ( "" );
 
   // Other configurations.

@@ -20,6 +20,9 @@
 #include "GN/Algorithms/Parameterize.h"
 #include "GN/Evaluate/Point.h"
 #include "GN/Interpolate/Global.h"
+#include "GN/Tessellate/Bisect.h"
+
+#include "OsgTools/State/StateSet.h"
 
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -27,8 +30,11 @@
 #include "Usul/Math/Transpose.h"
 #include "Usul/Trace/Trace.h"
 
-#include "osg/Vec3d"
+#include "osg/Geode"
+#include "osg/Geometry"
 #include "osg/Matrixd"
+#include "osg/ref_ptr"
+#include "osg/Vec3d"
 
 #include <algorithm>
 
@@ -107,7 +113,7 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
   _current = 0;
 
   // Try to make the curve.
-  this->_interpolate ( path, degree, reverseOrder );
+  CurvePlayer::interpolate ( path, degree, reverseOrder, _curve );
 
   // Did it work?
   if ( false == _curve.valid() )
@@ -227,10 +233,9 @@ void CurvePlayer::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::_interpolate ( const CameraPath *path, unsigned int degree, bool reverseOrder )
+void CurvePlayer::interpolate ( const CameraPath *path, unsigned int degree, bool reverseOrder, Curve &curve )
 {
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  USUL_TRACE_SCOPE_STATIC;
 
   // Handle bad input.
   if ( 0x0 == path )
@@ -244,7 +249,7 @@ void CurvePlayer::_interpolate ( const CameraPath *path, unsigned int degree, bo
   typedef GN::Algorithms::Parameterize < IndependentSequence, DependentContainer, Curve::Power, ErrorCheckerType > Parameterize;
 
   // Clear what we have.
-  _curve.clear();
+  curve.clear();
 
   // Get a copy of the values.
   CameraPath::Values values;
@@ -311,7 +316,7 @@ void CurvePlayer::_interpolate ( const CameraPath *path, unsigned int degree, bo
   KnotVectorBuilder::build ( params, order, knots );
 
   // Interpolate the points.
-  GN::Interpolate::global ( order, params, knots, points, _curve );
+  GN::Interpolate::global ( order, params, knots, points, curve );
 }
 
 
@@ -439,4 +444,68 @@ void CurvePlayer::looping ( bool state )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _looping = state;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the curve.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree, Usul::Interfaces::IUnknown * )
+{
+  USUL_TRACE_SCOPE;
+
+  // Make new group to hold everything.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+
+  // Is there a valid path?
+  if ( ( 0x0 == path ) || ( path->size() < 2 ) )
+    return geode.release();
+
+  // Try to make the curve.
+  Curve curve;
+  CurvePlayer::interpolate ( path, degree, false, curve );
+
+  // Did it work?
+  if ( ( false == curve.valid() ) || ( curve.dimension() < 3 ) )
+    return geode.release();
+
+  // Bisect the curve.
+  Curve::IndependentSequence u;
+  const Curve::DependentArgument chordHeight ( 0.01 );
+  GN::Tessellate::bisect ( curve, chordHeight, u );
+
+  // Make vertices.
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+  vertices->reserve ( u.size() );
+
+  // Loop through the parameters.
+  for ( Curve::IndependentSequence::const_iterator i = u.begin(); i != u.end(); ++i )
+  {
+    Curve::Vector point ( curve.dimension() );
+    GN::Evaluate::point ( curve, *i, point );
+    if ( point.size() >= 3 )
+    {
+      vertices->push_back ( osg::Vec3Array::value_type ( point.at(0), point.at(1), point.at(2) ) );
+    }
+  }
+
+  // Make geometry.
+  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
+  geom->setVertexArray ( vertices.get() );
+
+  // It's a line-set.
+  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
+
+  // Add to geode.
+  geode->addDrawable ( geom.get() );
+
+  // Set state.
+  OsgTools::State::StateSet::setLighting ( geode.get(), false );
+  OsgTools::State::StateSet::setLineWidth ( geode.get(), 2.0f );
+
+  // Return group.
+  return geode.release();
 }

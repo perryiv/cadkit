@@ -43,7 +43,7 @@ int main ( int argc, char **argv )
   const std::string url     ( "www.minerva-gis.org" );
   const std::string icon    ( "minerva_icon.png" );
   const std::string splash  ( "minerva_splash.png" );
-  const std::string plugins ( "../configs/Minerva.plugins" );
+  const std::string plugins ( "Minerva.plugins" );
   const std::string manual  ( "../docs/minerva.html" );
 
   // Other configurations.

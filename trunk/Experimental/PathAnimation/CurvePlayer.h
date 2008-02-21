@@ -26,6 +26,8 @@
 
 #include <stdexcept>
 
+namespace osg { class Node; }
+
 class CameraPath;
 
 
@@ -50,15 +52,17 @@ public:
   // Constructor.
   CurvePlayer();
 
-  // Get/Set flag.
-  void                          playing ( bool );
-  bool                          playing() const;
+  // Build a curve.
+  static osg::Node *            buildCurve ( const CameraPath *, unsigned int degree, IUnknown *caller );
 
   // Clear the player.
   void                          clear();
 
   // Go to the current parameter.
   void                          go ( Parameter u, IUnknown *caller );
+
+  // Interpolate the path.
+  static void                   interpolate ( const CameraPath *, unsigned int degree, bool reverse, Curve &curve );
 
   // Set/get the flag that says to loop.
   void                          looping ( bool );
@@ -67,6 +71,10 @@ public:
   // Play the path from the current paramater.
   void                          playBackward ( const CameraPath *, unsigned int degree, IUnknown *caller );
   void                          playForward  ( const CameraPath *, unsigned int degree, IUnknown *caller );
+
+  // Get/Set flag.
+  void                          playing ( bool );
+  bool                          playing() const;
 
   // Stop the animation.
   void                          stopPlaying ( IUnknown *caller );
@@ -82,8 +90,6 @@ protected:
 
   // Use reference counting.
   virtual ~CurvePlayer();
-
-  void                          _interpolate ( const CameraPath *, unsigned int degree, bool reverse );
 
   void                          _play ( const CameraPath *, unsigned int degree, IUnknown *caller, bool reverse );
 

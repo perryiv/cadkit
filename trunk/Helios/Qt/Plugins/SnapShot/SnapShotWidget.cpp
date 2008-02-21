@@ -16,8 +16,6 @@
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/ISnapShot.h"
 
-#include "boost/algorithm/string/replace.hpp"
-
 #include "QtCore/QProcess"
 
 ///////////////////////////////////////////////////////////////////////////////

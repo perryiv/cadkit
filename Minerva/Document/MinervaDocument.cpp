@@ -134,7 +134,8 @@ MinervaDocument::MinervaDocument() :
     osg::ref_ptr< osg::Light > light ( new osg::Light );
     light->setLightNum ( 1 );
     light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-    light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
+    //light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
+    light->setPosition ( osg::Vec4 ( 0.0, 0.0, -1.0f, 0.0 ) );
     
     ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   }

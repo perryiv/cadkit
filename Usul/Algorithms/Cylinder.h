@@ -40,9 +40,9 @@ inline void cylinder ( double radius, unsigned int sides, Points& points, Normal
     const double x ( radius * Usul::Math::sin ( theta ) );
     const double z ( radius * Usul::Math::cos ( theta ) );
 
-    Point v0 ( static_cast < Point::value_type > ( x ), 
-               static_cast < Point::value_type > ( 0 ), 
-               static_cast < Point::value_type > ( z ) );
+    Point v0 ( static_cast < typename Point::value_type > ( x ), 
+               static_cast < typename Point::value_type > ( 0 ), 
+               static_cast < typename Point::value_type > ( z ) );
 
     // Store points now.
     points.push_back  ( v0 + p );

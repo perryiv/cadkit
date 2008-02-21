@@ -19,9 +19,6 @@
 # pragma warning ( disable : 4561 )
 #endif
 
-#include "boost/algorithm/string/trim.hpp"
-#include "boost/algorithm/string/replace.hpp"
-
 #include "pqxx/pqxx"
 
 #include <iostream>

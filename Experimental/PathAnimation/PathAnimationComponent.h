@@ -101,6 +101,7 @@ protected:
   bool                          _isCurrentPath ( CameraPath::RefPtr ) const;
   bool                          _isCurrentPathModified() const;
   bool                          _isDegree ( unsigned int ) const;
+  bool                          _isLooping() const;
   bool                          _isPlaying() const;
   bool                          _isPaused() const;
   bool                          _isStepSize ( double step ) const;
@@ -112,14 +113,15 @@ protected:
   void                          _pause ( bool );
   void                          _playBackward();
   void                          _playForward();
-  void                          _playPathBackward ( const CameraPath *path, double step );
-  void                          _playPathForward ( const CameraPath *path, double step );
+  void                          _playPathBackward ( const CameraPath *path, double step, bool loop );
+  void                          _playPathForward ( const CameraPath *path, double step, bool loop );
 
   void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _setCameraPosition ( unsigned int );
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
+  void                          _setLooping ( bool );
   void                          _setShowPath ( bool );
   void                          _setStepSize ( double step );
   void                          _stopPlaying();
@@ -146,6 +148,7 @@ private:
   double _stepSize;
   osg::ref_ptr<osg::Group> _root;
   bool _showPath;
+  bool _looping;
 };
 
 

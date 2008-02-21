@@ -44,7 +44,8 @@ CurvePlayer::CurvePlayer() : BaseClass(),
   _curve(),
   _current ( 0 ),
   _step ( 0.01 ),
-  _renderLoop ( false )
+  _renderLoop ( false ),
+  _looping ( false )
 {
   USUL_TRACE_SCOPE;
 }
@@ -386,7 +387,7 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
   }
 
   // Increment the current parameter.
-  _current += this->stepSize() / ( _curve.numControlPoints() - 1 );
+  _current += ( this->stepSize() / ( _curve.numControlPoints() - 1 ) );
 
   // Check to see if we're off the end.
   if ( _current > _curve.lastKnot() )
@@ -400,4 +401,42 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
 
   // Go to the parametric position.
   this->go ( _current, caller );
+
+  // Are we supposed to loop?
+  if ( ( _curve.lastKnot() == _current ) && ( true == this->looping() ) )
+  {
+    // Set the parameter back to the beginning.
+    _current = _curve.firstKnot();
+
+    // We are still playing.
+    this->playing ( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we looping?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CurvePlayer::looping() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _looping;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we looping?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CurvePlayer::looping ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _looping = state;
 }

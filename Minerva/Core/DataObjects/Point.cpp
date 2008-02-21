@@ -283,7 +283,7 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
   }
   
   // Need to track down the reason for the difference on windows and linux...
-#ifndef _MSC_VER
+#ifdef __linux
   ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
   OsgTools::State::StateSet::setTwoSidedLighting ( group.get(), true );
 #endif

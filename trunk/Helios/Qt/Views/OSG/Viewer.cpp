@@ -975,26 +975,29 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   typedef Usul::Interfaces::IShadeModel IShadeModel;
   typedef OsgTools::Render::Viewer OsgViewer;
 
+  namespace UC = Usul::Commands;
+  namespace UA = Usul::Adaptors;
+
   // Background menu.
   {
     MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "Background" ) );
-    background->append ( new Button ( Usul::Commands::genericCommand ( "Edit...", Usul::Adaptors::memberFunction<void> ( this, &Viewer::editBackground ), Usul::Commands::TrueFunctor() ) ) );
-    background->append ( new Button ( Usul::Commands::genericCommand ( "Default", Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), Usul::Commands::TrueFunctor() ) ) );
+    background->append ( new Button ( UC::genericCommand ( "Edit...", UA::memberFunction<void> ( this, &Viewer::editBackground ), UC::TrueFunctor() ) ) );
+    background->append ( new Button ( UC::genericCommand ( "Default", UA::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), UC::TrueFunctor() ) ) );
     menu.append ( background.get() );
   }
 
   // Mode menu.
   {
     MenuKit::Menu::RefPtr modes ( new MenuKit::Menu ( "Modes" ) );
-    modes->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Navigate", 
-                                                                           Usul::Adaptors::bind1<void> ( OsgViewer::NAVIGATION, Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
-                                                                           Usul::Adaptors::bind1<bool> ( OsgViewer::NAVIGATION, Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
-    modes->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Pick", 
-                                                                           Usul::Adaptors::bind1<void> ( OsgViewer::PICK, Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
-                                                                           Usul::Adaptors::bind1<bool> ( OsgViewer::PICK, Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
-    modes->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Seek", 
-                                                                           Usul::Adaptors::bind1<void> ( OsgViewer::SEEK, Usul::Adaptors::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
-                                                                           Usul::Adaptors::bind1<bool> ( OsgViewer::SEEK, Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+    modes->append ( new RadioButton ( UC::genericCheckCommand ( "Navigate", 
+                                                                           UA::bind1<void> ( OsgViewer::NAVIGATION, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
+                                                                           UA::bind1<bool> ( OsgViewer::NAVIGATION, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+    modes->append ( new RadioButton ( UC::genericCheckCommand ( "Pick", 
+                                                                           UA::bind1<void> ( OsgViewer::PICK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
+                                                                           UA::bind1<bool> ( OsgViewer::PICK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+    modes->append ( new RadioButton ( UC::genericCheckCommand ( "Seek", 
+                                                                           UA::bind1<void> ( OsgViewer::SEEK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
+                                                                           UA::bind1<bool> ( OsgViewer::SEEK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
     menu.append ( modes.get() );
   }
   
@@ -1009,7 +1012,7 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, unknown.get() ) ) );
   }
 
-  MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new Usul::Commands::RenderLoop ( "Render Loop", unknown.get() ) ) );
+  MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new UC::RenderLoop ( "Render Loop", unknown.get() ) ) );
   menu.append ( rl );
 
   // Polygons menu.
@@ -1049,27 +1052,27 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   for ( Sizes::const_iterator iter = sizes.begin(); iter != sizes.end(); ++iter )
   {
     Size s ( *iter );
-    size->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( Usul::Strings::format ( s[0], " x ", s[1] ), 
-      Usul::Adaptors::bind2<void> ( s[0], s[1], Usul::Adaptors::memberFunction<void> ( this, &Viewer::_resize ) ), 
-      Usul::Adaptors::bind2<bool> ( s[0], s[1], Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isSize ) ) ) ) );
+    size->append ( new RadioButton ( UC::genericCheckCommand ( Usul::Strings::format ( s[0], " x ", s[1] ), 
+      UA::bind2<void> ( s[0], s[1], UA::memberFunction<void> ( this, &Viewer::_resize ) ), 
+      UA::bind2<bool> ( s[0], s[1], UA::memberFunction<bool> ( this, &Viewer::_isSize ) ) ) ) );
   }
-  size->append ( new Button ( Usul::Commands::genericCommand ( "Custom...", 
-      Usul::Adaptors::memberFunction<void> ( this, &Viewer::_customSize ), 
-      Usul::Commands::TrueFunctor() ) ) );
+  size->append ( new Button ( UC::genericCommand ( "Custom...", 
+      UA::memberFunction<void> ( this, &Viewer::_customSize ), 
+      UC::TrueFunctor() ) ) );
 
   menu.append ( size );
 
   // Frame dump button.
-  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Frame Dump", Usul::Adaptors::memberFunction<void> ( this, &Viewer::_frameDump ), Usul::Adaptors::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Frame Dump", UA::memberFunction<void> ( this, &Viewer::_frameDump ), UA::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
 
   // Axes button.
-  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Axes", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Axes", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) ) );
 
   // On-screen text button.
-  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Show Text", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::textShown ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isTextShown ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Text", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::textShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isTextShown ) ) ) );
   
   // Back face culling.
-  menu.append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Back Face Culling", Usul::Adaptors::memberFunction<void> ( _viewer.get(), &OsgViewer::backFaceCulling ), Usul::Adaptors::memberFunction<bool> ( viewer.get(), &OsgViewer::isBackFaceCulling ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Back Faces", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::showBackFaces ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isBackFacesShowing ) ) ) );
 }
 
 

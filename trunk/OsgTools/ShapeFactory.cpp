@@ -264,26 +264,51 @@ osg::Geometry* ShapeFactory::sphere ( const osg::Vec3 &trans,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Functor to multiply by a matrix.
+//  Functor to transform points.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Detail
 {
-  struct MatrixFunctor
+  struct TransformPoints
   {
-    MatrixFunctor ( const osg::Matrix& m ) : _m ( m ) { }
+    TransformPoints ( const osg::Matrix& m ) : _m ( m ) { }
 
     template < class T >
     void operator () ( T& t ) const
     {
-      t = t * _m;
+      t = _m.preMult ( t );
     }
 
   private:
     osg::Matrix _m;
   };
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functor to transform normal vectors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct TransformNormals
+  {
+    TransformNormals ( const osg::Matrix& m ) : _m ( m ) { }
+
+    template < class T >
+    void operator () ( T& t ) const
+    {
+      t = osg::Matrix::transform3x3 ( t, _m );
+    }
+
+  private:
+    osg::Matrix _m;
+  };
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -347,12 +372,8 @@ osg::Geometry * ShapeFactory::_cylinderTriStrips ( float radius, unsigned int si
   vertices->reserve ( sides * 4 + 2 );
   normals->reserve  ( sides * 4 + 2 );
 
-  Usul::Algorithms::Cylinder cylinder;
-  cylinder.sides ( sides );
-  cylinder.radius ( radius );
-
   // Make the body.
-  cylinder ( *vertices, *normals );
+  Usul::Algorithms::cylinder ( radius, sides, *vertices, *normals, false );
 
   // Get distance.
   osg::Vec3 dist ( pointTwo - pointOne );
@@ -371,29 +392,29 @@ osg::Geometry * ShapeFactory::_cylinderTriStrips ( float radius, unsigned int si
   osg::Matrix matrix ( scale * rotate * translate );
 
   // Move the vertices into the right location.
-  std::for_each ( vertices->begin(), vertices->end(), Detail::MatrixFunctor ( matrix ) );
+  std::for_each ( vertices->begin(), vertices->end(), Detail::TransformPoints ( matrix ) );
 
   // Calculate the normals for the tri-strips.
   std::for_each ( normals->begin(), normals->end(), Detail::NormalizeFunctor () );
-  std::for_each ( normals->begin(), normals->end(), Detail::MatrixFunctor ( rotate ) );
+  std::for_each ( normals->begin(), normals->end(), Detail::TransformNormals ( rotate ) );
 
   // Save the size.
   unsigned int size    ( vertices->size() );
   unsigned int fanSize ( sides + 1 );
 
   // Add the top fan
-  vertices->push_back ( pointTwo );
+  vertices->push_back ( pointOne );
   for ( unsigned int i = 1; i < size; i += 2 )
     vertices->push_back ( vertices->at ( i ) );
 
   // Add the bottom fan.
-  vertices->push_back ( pointOne );
+  vertices->push_back ( pointTwo );
   for ( unsigned int i = 0; i < size; i += 2 )
     vertices->push_back ( vertices->at ( i ) );
 
   // Insert the normals for the fans.
-  normals->insert ( normals->end(), fanSize, osg::Vec3 ( 0.0, 1.0, 0.0 )  * rotate );
   normals->insert ( normals->end(), fanSize, osg::Vec3 ( 0.0, -1.0, 0.0 ) * rotate );
+  normals->insert ( normals->end(), fanSize, osg::Vec3 ( 0.0,  1.0, 0.0 ) * rotate );
 
   // Set the vertices and normals.
   geometry->setVertexArray ( vertices.get() );
@@ -432,12 +453,8 @@ osg::Geometry * ShapeFactory::_cylinderTriangles ( float radius, unsigned int si
   vertices->reserve ( sides * 4 + 2 );
   normals->reserve  ( sides * 4 + 2 );
 
-  Usul::Algorithms::Cylinder cylinder;
-  cylinder.sides ( sides );
-  cylinder.radius ( radius );
-
   // Make the body.
-  cylinder ( *vertices, *normals );
+  Usul::Algorithms::cylinder ( radius, sides, *vertices, *normals, false );
 
   // Get distance.
   osg::Vec3 dist ( pointTwo - pointOne );
@@ -456,11 +473,11 @@ osg::Geometry * ShapeFactory::_cylinderTriangles ( float radius, unsigned int si
   osg::Matrix matrix ( scale * rotate * translate );
 
   // Move the vertices into the right location.
-  std::for_each ( vertices->begin(), vertices->end(), Detail::MatrixFunctor ( matrix ) );
+  std::for_each ( vertices->begin(), vertices->end(), Detail::TransformPoints ( matrix ) );
 
   // Calculate the normals for the tri-strips
   std::for_each ( normals->begin(), normals->end(), Detail::NormalizeFunctor () );
-  std::for_each ( normals->begin(), normals->end(), Detail::MatrixFunctor ( rotate ) );
+  std::for_each ( normals->begin(), normals->end(), Detail::TransformNormals ( rotate ) );
 
   osg::ref_ptr< osg::Vec3Array > triangleVertices ( new osg::Vec3Array );
   osg::ref_ptr< osg::Vec3Array > triangleNormals  ( new osg::Vec3Array );
@@ -495,13 +512,13 @@ osg::Geometry * ShapeFactory::_cylinderTriangles ( float radius, unsigned int si
     triangleNormals->push_back ( normals->at ( i2 ) );
   }
 
-  osg::Vec3 topNormal    ( osg::Vec3 ( 0.0, 1.0, 0.0 )  * rotate );
-  osg::Vec3 bottomNormal ( osg::Vec3 ( 0.0, -1.0, 0.0 ) * rotate );
+  osg::Vec3 topNormal    ( osg::Vec3 ( 0.0, -1.0, 0.0 ) * rotate );
+  osg::Vec3 bottomNormal ( osg::Vec3 ( 0.0,  1.0, 0.0 ) * rotate );
 
   // Add the top fan
   for ( unsigned int i = 1; i < size - 2; i += 2 )
   {
-    triangleVertices->push_back ( pointTwo );
+    triangleVertices->push_back ( pointOne );
     triangleVertices->push_back ( vertices->at ( i ) );
     triangleVertices->push_back ( vertices->at ( i + 2 ) );
 
@@ -513,7 +530,7 @@ osg::Geometry * ShapeFactory::_cylinderTriangles ( float radius, unsigned int si
   // Add the bottom fan.
   for ( unsigned int i = 0; i < size - 2; i += 2 )
   {
-    triangleVertices->push_back ( pointOne );
+    triangleVertices->push_back ( pointTwo );
     triangleVertices->push_back ( vertices->at ( i ) );
     triangleVertices->push_back ( vertices->at ( i + 2 ) );
 

@@ -5008,7 +5008,7 @@ void Viewer::stateLoad()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::backFaceCulling ( bool b )
+void Viewer::showBackFaces ( bool b )
 {
   USUL_TRACE_SCOPE;
   
@@ -5017,20 +5017,20 @@ void Viewer::backFaceCulling ( bool b )
     return;
   
   // Set the state.
-  OsgTools::State::StateSet::setBackFaceCulling ( this->viewer()->getGlobalStateSet(), b );
+  OsgTools::State::StateSet::setBackFaceCulling ( this->viewer()->getGlobalStateSet(), !b );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the back face culling state.
+//  Get the back face culling state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::isBackFaceCulling() const
+bool Viewer::isBackFacesShowing() const
 {
   USUL_TRACE_SCOPE;
   
   // Return the state.
-  return ( ( 0x0 == this->viewer() ) ? false : OsgTools::State::StateSet::getBackFaceCulling ( this->viewer()->getGlobalStateSet() ) );
+  return ( ( 0x0 == this->viewer() ) ? false : !OsgTools::State::StateSet::getBackFaceCulling ( this->viewer()->getGlobalStateSet() ) );
 }

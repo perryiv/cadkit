@@ -30,10 +30,12 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/File/Path.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/System/Host.h"
+#include "Usul/User/Directory.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
@@ -113,9 +115,6 @@ public:
     // should have been destroyed.
     Usul::Components::Manager::instance().clear ( &std::cout );
 
-    // Save the registry.
-    XmlTree::RegistryIO::write ( Usul::App::Application::instance().configFile ( "settings" ) );
-
     // Clear the registry.
     Usul::Registry::Database::destroy();
 
@@ -188,7 +187,7 @@ protected:
     app.run();
 
     // Save the registry.
-    XmlTree::RegistryIO::write ( Usul::App::Application::instance().configFile ( "settings" ) );
+    XmlTree::RegistryIO::write ( this->_registryFileName() );
 
     // Clean up.
     app.cleanup();
@@ -205,7 +204,7 @@ protected:
 
     // Load the plugins.
     Usul::Components::Loader < XmlTree::Document > loader;
-    loader.parse ( Usul::App::Application::instance().configFile ( "registry" ) );
+    loader.parse ( this->_pluginFileName() );
     loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
 
@@ -240,8 +239,34 @@ protected:
   // Read the registry.
   void _readRegistryFile ()
   {
-    // Need to revisit file name and location..
-    XmlTree::RegistryIO::read ( Usul::App::Application::instance().configFile ( "settings" ) );
+    // Need to revisit file name and location.
+    XmlTree::RegistryIO::read ( this->_registryFileName() );
+  }
+
+  // Return the registry file.
+  std::string _registryFileName() const
+  {
+    const std::string vendor  ( Usul::App::Application::instance().vendor()  );
+    const std::string program ( Usul::App::Application::instance().program() );
+
+    return Usul::User::Directory::program ( vendor, program ) + "/settings.xml";
+  }
+
+  // Return the plugin file name.
+  std::string _pluginFileName() const
+  {
+    std::string name ( "registry" );
+    {
+      std::string filename ( Usul::CommandLine::Arguments::instance().directory() + "/" + name + ".xml" );
+      if( Usul::Predicates::FileExists::test ( filename ) )
+        return filename;
+    }
+
+    const std::string vendor  ( Usul::App::Application::instance().vendor()  );
+    const std::string program ( Usul::App::Application::instance().program() );
+  
+    return Usul::User::Directory::program ( vendor, program ) + "/" + name + ".xml";
+
   }
 
 private:

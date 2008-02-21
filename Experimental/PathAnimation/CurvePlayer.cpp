@@ -477,9 +477,16 @@ osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree
   const Curve::DependentArgument chordHeight ( 0.01 );
   GN::Tessellate::bisect ( curve, chordHeight, u );
 
-  // Make vertices.
+  // Make vertices and colors.
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
   vertices->reserve ( u.size() );
+  colors->reserve ( u.size() );
+
+  // Used in the loop.
+  bool toggle ( true );
+  const osg::Vec4Array::value_type color1 ( 0, 0, 0, 1 );
+  const osg::Vec4Array::value_type color2 ( 1, 1, 1, 1 );
 
   // Loop through the parameters.
   for ( Curve::IndependentSequence::const_iterator i = u.begin(); i != u.end(); ++i )
@@ -488,13 +495,20 @@ osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree
     GN::Evaluate::point ( curve, *i, point );
     if ( point.size() >= 3 )
     {
+      // Add vertex.
       vertices->push_back ( osg::Vec3Array::value_type ( point.at(0), point.at(1), point.at(2) ) );
+
+      // Every other color switches.
+      colors->push_back ( ( toggle ) ? color1 : color2 );
+      toggle = !toggle;
     }
   }
 
   // Make geometry.
   osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
   geom->setVertexArray ( vertices.get() );
+  geom->setColorArray ( colors.get() );
+  geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
 
   // It's a line-set.
   geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );

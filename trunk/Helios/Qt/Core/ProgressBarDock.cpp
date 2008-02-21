@@ -43,6 +43,9 @@ ProgressBarDock::ProgressBarDock () : BaseClass (),
 
 ProgressBarDock::~ProgressBarDock ()
 {
+  if ( 0x0 != _scrollArea )
+    delete _scrollArea;
+  _scrollArea = 0x0;
 }
 
 
@@ -55,10 +58,16 @@ ProgressBarDock::~ProgressBarDock ()
 QWidget* ProgressBarDock::operator () ( QDockWidget* parent )
 {
   _scrollArea = new QScrollArea ( parent );
-  _layout = new QVBoxLayout ( _scrollArea );
+  
+  QWidget *widget ( new QWidget );
+  
+  _layout = new QVBoxLayout;
 
-  _scrollArea->setLayout ( _layout );
+  widget->setLayout ( _layout );
 
+  _scrollArea->setWidget ( widget );
+  _scrollArea->setWidgetResizable ( true );
+  
   return _scrollArea;
 }
 
@@ -188,7 +197,6 @@ ProgressBarDock::ProgressBar::~ProgressBar ()
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Show the progress bar.
@@ -278,13 +286,14 @@ void ProgressBarDock::ProgressBar::setStatusBarText ( const std::string &text, b
 
 Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ()
 {
+  Guard guard ( this->mutex () );
+  
   ProgressBar::RefPtr progress ( new ProgressBar );
 
   // Progress bars can only be created in the gui thread.
   if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
   {
     {
-      Guard guard ( this->mutex () );
       _progressBars.push_back ( progress.get() );
     }
 
@@ -313,9 +322,10 @@ Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ()
 
 void ProgressBarDock::_updateProgressBars()
 {
+  Guard guard ( this->mutex () );
+  
   ProgressBar::RefPtr first ( 0x0 );
   {
-    Guard guard ( this->mutex () );
     if ( false == _progressBars.empty () );
     {
       first = _progressBars.front();

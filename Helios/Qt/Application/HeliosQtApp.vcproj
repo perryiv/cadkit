@@ -182,34 +182,6 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Misc Files"
-			>
-			<File
-				RelativePath="..\..\..\..\..\.CadKit\Helios\Helios.csv"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\.CadKit\Helios\Helios.out"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Config Files"
-			>
-			<File
-				RelativePath="..\..\..\..\..\.CadKit\Helios\Helios.registry"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\configs\HeliosPlugins.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\plugins.xml"
-				>
-			</File>
-		</Filter>
 	</Files>
 	<Globals>
 		<Global

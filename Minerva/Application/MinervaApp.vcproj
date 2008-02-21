@@ -184,14 +184,6 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Misc Files"
-			>
-		</Filter>
-		<Filter
-			Name="Config Files"
-			>
-		</Filter>
 	</Files>
 	<Globals>
 		<Global

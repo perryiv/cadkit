@@ -274,7 +274,7 @@ void OpenDocument::Job::_started()
       notify->notifyDocumentFinishedLoading ( _document );
 
     // Add the document to the manager.
-    Usul::Documents::Manager::instance().add( _document );
+    Usul::Documents::Manager::instance().add ( _document );
   }
 }
 

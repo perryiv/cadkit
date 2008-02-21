@@ -28,6 +28,9 @@
 
 #include "MenuKit/Menu.h"
 
+#include "osg/Group"
+#include "osg/ref_ptr"
+
 #include <vector>
 
 
@@ -100,7 +103,8 @@ protected:
   bool                          _isDegree ( unsigned int ) const;
   bool                          _isPlaying() const;
   bool                          _isPaused() const;
-  bool                          _isStepSize( double step ) const;
+  bool                          _isStepSize ( double step ) const;
+  bool                          _isShowPath() const;
 
   void                          _newPath();
   void                          _openPath ( Usul::Interfaces::IUnknown::QueryPtr );
@@ -116,8 +120,11 @@ protected:
   void                          _setCameraPosition ( unsigned int );
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
+  void                          _setShowPath ( bool );
   void                          _setStepSize ( double step );
   void                          _stopPlaying();
+
+  void                          _writeMovieFile( Usul::Interfaces::IUnknown *caller );
 
 private:
 
@@ -137,6 +144,8 @@ private:
   Usul::Interfaces::IUnknown::QueryPtr _movieWriter;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   double _stepSize;
+  osg::ref_ptr<osg::Group> _root;
+  bool _showPath;
 };
 
 

@@ -1241,7 +1241,7 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   typedef MenuKit::Button       Button;
   typedef MenuKit::RadioButton  RadioButton;
 
-  MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "Minerva" ) );
+  MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "&Minerva" ) );
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 

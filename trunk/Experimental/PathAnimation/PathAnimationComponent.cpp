@@ -20,6 +20,7 @@
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Factory.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Temp.h"
@@ -27,9 +28,10 @@
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
-#include "Usul/Interfaces/IWriteMovieFile.h"
+#include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IWriteMovieFile.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Strings/Format.h"
@@ -59,24 +61,29 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PathAnimationComponent, PathAnimationComponent
 
 PathAnimationComponent::PathAnimationComponent() : 
   BaseClass(),
-  _pathsMenu ( new MenuKit::Menu ( "Camera Paths" ) ),
-  _cameraMenu ( new MenuKit::Menu ( "Cameras" ) ),
+  _pathsMenu ( new MenuKit::Menu ( "Camera &Paths" ) ),
+  _cameraMenu ( new MenuKit::Menu ( "&Cameras" ) ),
   _currentPath ( 0x0 ),
   _paths(),
   _player ( 0x0 ),
   _paused ( false ),
   _degree ( Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"].get<unsigned int> ( 3 ) ),
   _writeMovie ( false ),
-  _movieFilename (),
-  _movieWriter (),
-  _caller (),
-  _stepSize ( Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE )
+  _movieFilename(),
+  _movieWriter(),
+  _caller(),
+  _stepSize ( Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE ),
+  _root ( 0x0 ),
+  _showPath ( false )
 {
   USUL_TRACE_SCOPE;
 
   // Add ourself as a listener. Do not use smart pointer on "this" 
   // inside constructor, the dereference will delete this object!
   Usul::Documents::Manager::instance().addActiveViewListener ( this );
+
+  // Start with a new path.
+  this->_newPath();
 }
 
 
@@ -93,7 +100,11 @@ PathAnimationComponent::~PathAnimationComponent()
   // Remove ourself as a listener. Do not use smart pointer!
   Usul::Documents::Manager::instance().removeActiveViewListener ( this );
 
+  // Save properties in registry.
   Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"] = _degree;
+
+  // Remove scene.
+  _root = 0x0;
 }
 
 
@@ -150,7 +161,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
     return;
 
   // Build the menu.
-  MenuKit::Menu::RefPtr menu ( m.find ( "Cameras", true ) );
+  MenuKit::Menu::RefPtr menu ( m.find ( "&Cameras", true ) );
   menu->append ( new Button ( UC::genericCommand ( "New Path", UA::memberFunction<void> ( this, &PathAnimationComponent::_newPath ), UC::TrueFunctor() ) ) );
 
   // Only add the open button if the interface is implemented.
@@ -174,28 +185,28 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   }
   
   menu->addSeparator();
-  menu->append ( new Button ( UC::genericCommand ( "Append Path",            UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Prepend Path",           UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraPrepend ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Insert Between Closest", UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraInsert  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Remove Closest",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraRemove  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Replace Closest",        UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraReplace  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Close Path",             UA::memberFunction<void> ( this, &PathAnimationComponent::_closeCameraPath      ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canClosePath   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Append Camera",          UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraAppend  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Prepend Camera",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraPrepend ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Insert Between Closest", UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraInsert  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Remove Closest",          UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraRemove  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Replace Closest",         UA::memberFunction<void> ( this, &PathAnimationComponent::_currentCameraReplace  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Close Path",             UA::memberFunction<void> ( this, &PathAnimationComponent::_closeCameraPath      ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canClosePath   ) ) ) );
 
   menu->addSeparator();
-  menu->append ( new Button ( UC::genericCommand ( "Play Forward",  UA::memberFunction<void> ( this, &PathAnimationComponent::_playForward  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Play Backward", UA::memberFunction<void> ( this, &PathAnimationComponent::_playBackward ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Stop",          UA::memberFunction<void> ( this, &PathAnimationComponent::_stopPlaying  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isPlaying ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Play &Forward",  UA::memberFunction<void> ( this, &PathAnimationComponent::_playForward  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Play &Backward", UA::memberFunction<void> ( this, &PathAnimationComponent::_playBackward ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Stop",          UA::memberFunction<void> ( this, &PathAnimationComponent::_stopPlaying  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isPlaying ) ) ) );
 
   menu->addSeparator();
   
   menu->append ( _cameraMenu.get() );
 
   menu->addSeparator();
-  MenuKit::Menu::RefPtr sub ( new MenuKit::Menu ( "Degree" ) );
-  sub->append ( new RadioButton ( UC::genericCheckCommand ( "1", UA::bind1<void> ( 1, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 1, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
-  sub->append ( new RadioButton ( UC::genericCheckCommand ( "2", UA::bind1<void> ( 2, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 2, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
-  sub->append ( new RadioButton ( UC::genericCheckCommand ( "3", UA::bind1<void> ( 3, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 3, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
-  sub->append ( new RadioButton ( UC::genericCheckCommand ( "4", UA::bind1<void> ( 4, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 4, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
+  MenuKit::Menu::RefPtr sub ( new MenuKit::Menu ( "&Degree" ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&1", UA::bind1<void> ( 1, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 1, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&2", UA::bind1<void> ( 2, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 2, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&3", UA::bind1<void> ( 3, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 3, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
+  sub->append ( new RadioButton ( UC::genericCheckCommand ( "&4", UA::bind1<void> ( 4, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 4, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
   menu->append ( sub.get() );
 
   typedef std::vector<double> Doubles;
@@ -731,21 +742,36 @@ void PathAnimationComponent::activeViewChanged ( Usul::Interfaces::IUnknown *old
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Remove us from the old view.
   {
+    // Remove us from the old view.
     Usul::Interfaces::IUpdateSubject::QueryPtr subject ( oldView );
     if ( true == subject.valid() )
     {
       subject->removeUpdateListener ( this->queryInterface ( Usul::Interfaces::IUpdateListener::IID ) );
     }
+
+    // Remove our root node.
+    Usul::Interfaces::IGroup::QueryPtr group ( oldView );
+    if ( true == group.valid() )
+    {
+      group->removeGroup ( this->getPluginName() );
+      _root = 0x0;
+    }
   }
 
-  // Add us to the new view.
   {
+    // Add us to the new view.
     Usul::Interfaces::IUpdateSubject::QueryPtr subject ( newView );
     if ( true == subject.valid() )
     {
       subject->addUpdateListener ( this->queryInterface ( Usul::Interfaces::IUpdateListener::IID ) );
+    }
+
+    // Add our root node.
+    Usul::Interfaces::IGroup::QueryPtr group ( oldView );
+    if ( true == group.valid() )
+    {
+      _root = group->getGroup ( this->getPluginName() );
     }
   }
 }
@@ -776,33 +802,49 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
     this->_stopPlaying();
 
     // If we are suppose to write a movie.
-    if ( _writeMovie )
-    {
-      // Look for the frame dump interface.
-      Usul::Interfaces::IFrameDump::QueryPtr fd ( caller );
-
-      if ( fd.valid() )
-      {
-        // Get the filenames for the movie.
-        Usul::Interfaces::IFrameDump::Filenames filenames ( fd->filenames() );
-
-        // Write move interface.
-        Usul::Interfaces::IWriteMovieFile::QueryPtr wm ( _movieWriter );
-        if ( wm.valid() && false == _movieFilename.empty() )
-          wm->writeMovie ( _movieFilename, filenames, _caller );
-        
-        // Turn off frame dumping.
-        fd->dumpFrames ( false );
-        fd->saveNames ( false );
-      }
-
-      // We wrote the move, clear all data members.
-      _writeMovie = false;
-      _caller = static_cast < IUnknown * > ( 0x0 );
-      _movieWriter = static_cast < IUnknown * > ( 0x0 );
-      _movieFilename.clear();
-    }
+    this->_writeMovieFile ( caller );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write a movie if we're supposed to.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_writeMovieFile ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Check state.
+  if ( false == _writeMovie )
+    return;
+
+  // Look for the frame dump interface.
+  Usul::Interfaces::IFrameDump::QueryPtr fd ( caller );
+
+  if ( fd.valid() )
+  {
+    // Get the filenames for the movie.
+    Usul::Interfaces::IFrameDump::Filenames filenames ( fd->filenames() );
+
+    // Write move interface.
+    Usul::Interfaces::IWriteMovieFile::QueryPtr wm ( _movieWriter );
+    if ( wm.valid() && false == _movieFilename.empty() )
+      wm->writeMovie ( _movieFilename, filenames, _caller );
+    
+    // Turn off frame dumping.
+    fd->dumpFrames ( false );
+    fd->saveNames ( false );
+  }
+
+  // We wrote the move, clear all data members.
+  _writeMovie = false;
+  _caller = static_cast < IUnknown * > ( 0x0 );
+  _movieWriter = static_cast < IUnknown * > ( 0x0 );
+  _movieFilename.clear();
 }
 
 
@@ -1164,16 +1206,17 @@ void PathAnimationComponent::_buildCameraMenu()
   // Number of frames.
   const unsigned int numFrames ( _currentPath->size() );
 
+  namespace UC = Usul::Commands;
+  namespace UA = Usul::Adaptors;
+
   // Build the buttons.
   for ( unsigned int i = 0; i < numFrames; ++ i )
   {
-    std::ostringstream name;
-    name << "Camera " << i;
-    _cameraMenu->append ( new MenuKit::Button ( 
-      Usul::Commands::genericCommand ( name.str(),  
-                                       Usul::Adaptors::bind1<void> ( i, 
-                                       Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_setCameraPosition ) ), 
-                                       Usul::Commands::TrueFunctor() ) ) );
+    std::string label ( Usul::Convert::Type<unsigned int,std::string>::convert ( i + 1 ) );
+    label.insert ( ( 1 == label.size() ) ? 0 : label.size() - 1, "&" );
+    label = Usul::Strings::format ( "Camera ", label );
+    _cameraMenu->append ( new MenuKit::Button ( UC::genericCommand ( label, UA::bind1<void> 
+      ( i, UA::memberFunction ( this, &PathAnimationComponent::_setCameraPosition ) ), UC::TrueFunctor() ) ) );
   }
 }
 

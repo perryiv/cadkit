@@ -26,7 +26,7 @@
 #include <list>
 
 class QVBoxLayout;
-class QWidget;
+class QScrollArea;
 class QDockWidget;
 class QProgressBar;
 class QLabel;
@@ -105,7 +105,7 @@ private:
 
   typedef std::list < ProgressBar::RefPtr > ProgressBars;
 
-  QWidget      *_widget;
+  QScrollArea  *_scrollArea;
   QVBoxLayout  *_layout;
   ProgressBars  _progressBars;
 };

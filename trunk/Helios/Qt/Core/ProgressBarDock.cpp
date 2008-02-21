@@ -28,9 +28,9 @@ using namespace CadKit::Helios::Core;
 ///////////////////////////////////////////////////////////////////////////////
 
 ProgressBarDock::ProgressBarDock () : BaseClass (),
-_widget ( 0x0 ),
-_layout ( 0x0 ),
-_progressBars ()
+  _scrollArea ( 0x0 ),
+  _layout ( 0x0 ),
+  _progressBars ()
 {
 }
 
@@ -54,11 +54,12 @@ ProgressBarDock::~ProgressBarDock ()
 
 QWidget* ProgressBarDock::operator () ( QDockWidget* parent )
 {
-  _widget = new QScrollArea ( parent );
-  _layout = new QVBoxLayout ( _widget );
-  _widget->setLayout ( _layout );
+  _scrollArea = new QScrollArea ( parent );
+  _layout = new QVBoxLayout ( _scrollArea );
 
-  return _widget;
+  _scrollArea->setLayout ( _layout );
+
+  return _scrollArea;
 }
 
 
@@ -310,7 +311,7 @@ Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarDock::_updateProgressBars ()
+void ProgressBarDock::_updateProgressBars()
 {
   ProgressBar::RefPtr first ( 0x0 );
   {
@@ -324,12 +325,11 @@ void ProgressBarDock::_updateProgressBars ()
 
   if ( first.valid () )
   {
-    //QProgressBar *bar ( new QProgressBar ( _widget ) );
-    //first->progressBar ( bar );
-  
     if ( 0x0 != _layout )
+    {
       (*first) ( _layout );
-    _widget->update();
+    }
+    _scrollArea->update();
   }
 }
 

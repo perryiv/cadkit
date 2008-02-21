@@ -23,6 +23,7 @@
 #include "GN/Tessellate/Bisect.h"
 
 #include "OsgTools/State/StateSet.h"
+#include "OsgTools/ShapeFactory.h"
 
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -30,9 +31,11 @@
 #include "Usul/Math/Transpose.h"
 #include "Usul/Trace/Trace.h"
 
+#include "osg/AutoTransform"
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Matrixd"
+#include "osg/MatrixTransform"
 #include "osg/ref_ptr"
 #include "osg/Vec3d"
 
@@ -113,7 +116,8 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
   _current = 0;
 
   // Try to make the curve.
-  CurvePlayer::interpolate ( path, degree, reverseOrder, _curve );
+  IndependentSequence params;
+  CurvePlayer::interpolate ( path, degree, reverseOrder, _curve, params );
 
   // Did it work?
   if ( false == _curve.valid() )
@@ -233,7 +237,7 @@ void CurvePlayer::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::interpolate ( const CameraPath *path, unsigned int degree, bool reverseOrder, Curve &curve )
+void CurvePlayer::interpolate ( const CameraPath *path, unsigned int degree, bool reverseOrder, Curve &curve, IndependentSequence &params )
 {
   USUL_TRACE_SCOPE_STATIC;
 
@@ -305,7 +309,7 @@ void CurvePlayer::interpolate ( const CameraPath *path, unsigned int degree, boo
   Usul::Math::transpose ( points );
 
   // Fit parameters to the eye positions.
-  IndependentSequence params;
+  params.clear();
   params.reserve ( values.size() );
   Parameterize::fit ( eyes, GN::Algorithms::Constants::CENTRIPETAL_FIT, params );
 
@@ -449,6 +453,78 @@ void CurvePlayer::looping ( bool state )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to make axes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Point > osg::Node *makeAxes ( const Point &point )
+  {
+    osg::ref_ptr<osg::AutoTransform> transform ( new osg::AutoTransform );
+    transform->setAutoRotateMode ( osg::AutoTransform::NO_ROTATION );
+    transform->setAutoScaleToScreen ( true );
+
+    if ( point.size() < 9 )
+      return transform.release();
+
+    osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+    transform->addChild ( geode.get() );
+
+    osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
+    geode->addDrawable ( geom.get() );
+
+    const osg::Vec3Array::value_type origin ( 0, 0, 0 );
+    const osg::Vec3Array::value_type eye    ( point.at(0), point.at(1), point.at(2) );
+    const osg::Vec3Array::value_type center ( point.at(3), point.at(4), point.at(5) );
+    osg::Vec3Array::value_type up           ( point.at(6), point.at(7), point.at(8) );
+    up.normalize();
+
+    osg::Vec3Array::value_type lookat  ( center - eye );
+    osg::Vec3Array::value_type tangent ( lookat ^ up );
+
+    lookat.normalize();
+    tangent.normalize();
+
+    transform->setPosition ( eye );
+
+    const osg::Vec3Array::value_type::value_type scale ( 50.0f );
+    lookat *= scale;
+    up *= scale;
+    tangent *= scale;
+
+    osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+    vertices->reserve ( 6 );
+    vertices->push_back ( origin );
+    vertices->push_back ( origin + lookat );
+    vertices->push_back ( origin );
+    vertices->push_back ( origin + up );
+    vertices->push_back ( origin );
+    vertices->push_back ( origin + tangent );
+    geom->setVertexArray ( vertices.get() );
+
+    osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
+    colors->reserve ( 6 );
+    colors->push_back ( osg::Vec4Array::value_type ( 1, 0, 0, 1 ) );
+    colors->push_back ( osg::Vec4Array::value_type ( 1, 0, 0, 1 ) );
+    colors->push_back ( osg::Vec4Array::value_type ( 0, 1, 0, 1 ) );
+    colors->push_back ( osg::Vec4Array::value_type ( 0, 1, 0, 1 ) );
+    colors->push_back ( osg::Vec4Array::value_type ( 0, 0, 1, 1 ) );
+    colors->push_back ( osg::Vec4Array::value_type ( 0, 0, 1, 1 ) );
+    geom->setColorArray ( colors.get() );
+    geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+
+    geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, vertices->size() ) );
+
+    OsgTools::State::StateSet::setLighting ( transform.get(), false );
+
+    return transform.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the curve.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -458,68 +534,106 @@ osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree
   USUL_TRACE_SCOPE;
 
   // Make new group to hold everything.
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
 
   // Is there a valid path?
   if ( ( 0x0 == path ) || ( path->size() < 2 ) )
-    return geode.release();
+    return group.release();
 
   // Try to make the curve.
   Curve curve;
-  CurvePlayer::interpolate ( path, degree, false, curve );
+  IndependentSequence params;
+  CurvePlayer::interpolate ( path, degree, false, curve, params );
 
   // Did it work?
   if ( ( false == curve.valid() ) || ( curve.dimension() < 3 ) )
-    return geode.release();
+    return group.release();
 
-  // Bisect the curve.
-  Curve::IndependentSequence u;
-  const Curve::DependentArgument chordHeight ( 0.01 );
-  GN::Tessellate::bisect ( curve, chordHeight, u );
-
-  // Make vertices and colors.
-  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
-  osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
-  vertices->reserve ( u.size() );
-  colors->reserve ( u.size() );
-
-  // Used in the loop.
-  bool toggle ( true );
-  const osg::Vec4Array::value_type color1 ( 0, 0, 0, 1 );
-  const osg::Vec4Array::value_type color2 ( 1, 1, 1, 1 );
-
-  // Loop through the parameters.
-  for ( Curve::IndependentSequence::const_iterator i = u.begin(); i != u.end(); ++i )
+  // Make the curve.
   {
-    Curve::Vector point ( curve.dimension() );
-    GN::Evaluate::point ( curve, *i, point );
-    if ( point.size() >= 3 )
-    {
-      // Add vertex.
-      vertices->push_back ( osg::Vec3Array::value_type ( point.at(0), point.at(1), point.at(2) ) );
+    // Bisect the curve.
+    Curve::IndependentSequence u;
+    const Curve::DependentArgument chordHeight ( 0.01 );
+    GN::Tessellate::bisect ( curve, chordHeight, u );
 
-      // Every other color switches.
-      colors->push_back ( ( toggle ) ? color1 : color2 );
-      toggle = !toggle;
+    // Make vertices and colors.
+    osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+    osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
+    vertices->reserve ( u.size() );
+    colors->reserve ( u.size() );
+
+    // Used in the loop.
+    bool toggle ( true );
+    const osg::Vec4Array::value_type color1 ( 0, 0, 0, 1 );
+    const osg::Vec4Array::value_type color2 ( 1, 1, 1, 1 );
+
+    // Loop through the parameters.
+    for ( IndependentSequence::const_iterator i = u.begin(); i != u.end(); ++i )
+    {
+      Curve::Vector point ( curve.dimension() );
+      GN::Evaluate::point ( curve, *i, point );
+      if ( point.size() >= 3 )
+      {
+        // Add vertex.
+        vertices->push_back ( osg::Vec3Array::value_type ( point.at(0), point.at(1), point.at(2) ) );
+
+        // Every other color switches.
+        colors->push_back ( ( toggle ) ? color1 : color2 );
+        toggle = !toggle;
+      }
+    }
+
+    // Make geometry.
+    osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
+    geom->setVertexArray ( vertices.get() );
+    geom->setColorArray ( colors.get() );
+    geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+
+    // It's a line-set.
+    geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
+
+    // Add to geode.
+    osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+    geode->addDrawable ( geom.get() );
+    group->addChild ( geode.get() );
+
+    // Set state.
+    OsgTools::State::StateSet::setLighting ( geode.get(), false );
+  }
+
+  // Make the axes at each position.
+  {
+    // Loop through the parameters.
+    for ( IndependentSequence::const_iterator i = params.begin(); i != params.end(); ++i )
+    {
+      Curve::Vector point ( curve.dimension() );
+      GN::Evaluate::point ( curve, *i, point );
+      if ( point.size() >= 9 )
+      {
+        // Add axes.
+        group->addChild ( Helper::makeAxes ( point ) );
+
+        // Add cube at the center.
+        osg::ref_ptr<osg::Geode> cube ( new osg::Geode );
+        const float size ( 10.0f );
+        cube->addDrawable ( OsgTools::ShapeFactorySingleton::instance().cube ( osg::Vec3 ( size, size, size ) ) );
+        osg::ref_ptr<osg::AutoTransform> mat ( new osg::AutoTransform );
+        mat->setAutoRotateMode ( osg::AutoTransform::NO_ROTATION );
+        mat->setAutoScaleToScreen ( true );
+        mat->setPosition ( osg::Vec3 ( point.at(0), point.at(1), point.at(2) ) );
+        mat->addChild ( cube.get() );
+        group->addChild ( mat.get() );
+        OsgTools::State::StateSet::setBackFaceCulling ( cube->getOrCreateStateSet(), true );
+        OsgTools::State::StateSet::setMaterialDefault ( cube.get() );
+        OsgTools::State::StateSet::setLighting ( cube.get(), true );
+        OsgTools::State::StateSet::setNormalize ( cube.get(), true );
+      }
     }
   }
 
-  // Make geometry.
-  osg::ref_ptr<osg::Geometry> geom ( new osg::Geometry );
-  geom->setVertexArray ( vertices.get() );
-  geom->setColorArray ( colors.get() );
-  geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-
-  // It's a line-set.
-  geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
-
-  // Add to geode.
-  geode->addDrawable ( geom.get() );
-
   // Set state.
-  OsgTools::State::StateSet::setLighting ( geode.get(), false );
-  OsgTools::State::StateSet::setLineWidth ( geode.get(), 2.0f );
+  OsgTools::State::StateSet::setLineWidth ( group.get(), 2.0f );
 
   // Return group.
-  return geode.release();
+  return group.release();
 }

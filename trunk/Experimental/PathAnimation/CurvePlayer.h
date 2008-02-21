@@ -62,7 +62,7 @@ public:
   void                          go ( Parameter u, IUnknown *caller );
 
   // Interpolate the path.
-  static void                   interpolate ( const CameraPath *, unsigned int degree, bool reverse, Curve &curve );
+  static void                   interpolate ( const CameraPath *, unsigned int degree, bool reverse, Curve &curve, IndependentSequence &params );
 
   // Set/get the flag that says to loop.
   void                          looping ( bool );

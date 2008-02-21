@@ -63,6 +63,7 @@ public:
   /// Get/Set the grow direction
   void                 growDirection( GrowDirectionMode mode );
   GrowDirectionMode    growDirection() const;
+  
 protected:
   virtual ~Legend();
 

@@ -13,6 +13,7 @@
 #include "OsgTools/Export.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
 
 namespace osg { class Node; }
@@ -24,28 +25,24 @@ class OSG_TOOLS_EXPORT Icon : public Usul::Base::Referenced
 {
 public:
   typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Math::Vec2ui Size;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Icon );
 
   Icon();
 
-  /// Get/Set the width.
-  void                    width( unsigned int w );
-  unsigned int            width() const;
+  /// Get/Set the suggested size.
+  void                    sizeHint ( const Size& s );
+  Size                    sizeHint () const;
 
-  /// Get/Set the height
-  void                    height( unsigned int h );
-  unsigned int            height() const;
-
-  virtual osg::Node*      buildScene() = 0;
+  virtual osg::Node*      buildScene ( unsigned int width, unsigned int height ) = 0;
 
 protected:
   virtual ~Icon();
 
 private:
-  unsigned int _width;
-  unsigned int _height;
+  Size _size;
 };
 
 }

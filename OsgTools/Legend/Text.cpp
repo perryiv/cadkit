@@ -27,8 +27,6 @@ using namespace OsgTools::Legend;
 Text::Text() : 
   BaseClass(), 
   _text(),
-  _width( 0 ),
-  _height( 0 ),
   _alignment ( LEFT )
 {
 }
@@ -43,8 +41,6 @@ Text::Text() :
 Text::Text( const std::string& text ) : 
   BaseClass(), 
   _text( text ),
-  _width( 0 ),
-  _height( 0 ),
   _alignment ( LEFT )
 {
 }
@@ -87,59 +83,11 @@ const std::string& Text::text() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the width.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Text::width( unsigned int w )
-{
-  _width = w;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the width.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Text::width() const
-{
-  return _width;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the height.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Text::height( unsigned int h )
-{
-  _height = h;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the height.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Text::height() const
-{
-  return _height;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Text::buildScene()
+osg::Node* Text::buildScene( unsigned int width, unsigned int height )
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
 
@@ -149,23 +97,23 @@ osg::Node* Text::buildScene()
   text->setFont( font.get() );
 
   if ( LEFT == _alignment )
-    text->setPosition ( osg::Vec3( 0.0, _height / 4, 0.0 ) );
+    text->setPosition ( osg::Vec3( 0.0, height / 4, 0.0 ) );
   else if ( RIGHT == _alignment )
   {
-    text->setPosition ( osg::Vec3( _width, _height / 4, 0.0 ) );
+    text->setPosition ( osg::Vec3 ( width, height / 4, 0.0 ) );
     text->setAlignment ( osgText::Text::RIGHT_BASE_LINE );
   }
 
   text->setAutoRotateToScreen( true );
   text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   //text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  text->setCharacterSize( _height );
+  text->setCharacterSize( height );
   text->setText ( this->text() );
 
-  while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > _width )
+  while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > width )
   {
-    _height -= 2;
-    text->setCharacterSize ( _height );
+    height -= 2;
+    text->setCharacterSize ( height );
   }
 
   geode->addDrawable( text.get() );

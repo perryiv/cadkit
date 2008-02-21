@@ -3632,31 +3632,31 @@ void Viewer::_handlePicking ( EventAdapter *ea )
   {
     // If we didn't intersect with the scene, try intersecting with the screen projection matrix
     // using just the screen coordniates.
-    osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
+    osg::ref_ptr < osg::MatrixTransform > root ( new osg::MatrixTransform );
     root->setMatrix ( osg::Matrix::identity() );
-    root->addChild( _sceneManager->camera() );
+    root->addChild ( _sceneManager->camera() );
 
     // List of transforms that had the reference frame changed from absolute to relative.
-    typedef std::vector< osg::ref_ptr< osg::Transform > > TList;
+    typedef std::vector < osg::ref_ptr < osg::Transform > > TList;
     TList tList;
 
     // Change all matrix transforms from absolute reference frame to relative.
-    OsgTools::Utilities::setReferenceFrame( root.get(), osg::Transform::ABSOLUTE_RF, osg::Transform::RELATIVE_RF, tList );
+    OsgTools::Utilities::setReferenceFrame ( root.get(), osg::Transform::ABSOLUTE_RF, osg::Transform::RELATIVE_RF, tList );
 
     // Change all dirty bounds flags to true.
-    OsgTools::Utilities::setDirtyBounds( root.get() );
+    OsgTools::Utilities::setDirtyBounds ( root.get() );
 
     this->_intersect ( x, y, root.get(), hit, true );
 
     // Change all matrix transforms that were changed before back to absolute.
-    for( TList::iterator iter = tList.begin(); iter != tList.end(); ++iter )
-      (*iter)->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+    for ( TList::iterator iter = tList.begin(); iter != tList.end(); ++iter )
+      (*iter)->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
     // Clear the list
     tList.clear();
 
     // Change all dirty bounds flags to true.
-    OsgTools::Utilities::setDirtyBounds( root.get() );
+    OsgTools::Utilities::setDirtyBounds ( root.get() );
 
     // Left mouse button was pressed...
     if ( left )
@@ -3726,8 +3726,13 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     return;
 
   // Return if the click didn't intersect the scene
+  // Note: switched to use scene so that could seek to camera path points -- 2008-02-21, Perry.
   osgUtil::Hit hit;
+#if 0
   if ( !this->intersect ( ea->getX(), ea->getY(), hit ) )
+#else
+  if ( !this->_intersect ( ea->getX(), ea->getY(), this->scene(), hit, false ) )
+#endif
     return;
 
   // Make copy of trackball's current rotation

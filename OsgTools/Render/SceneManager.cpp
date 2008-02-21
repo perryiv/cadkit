@@ -146,10 +146,10 @@ osg::Group* SceneManager::groupGet ( const std::string &key )
     group = new osg::Group;
 
     // Set the name
-    group->setName( key );
+    group->setName ( key );
 
     // Add the group to the scene
-    _scene->addChild( group.get() );
+    _scene->addChild ( group.get() );
   }
 
   return group.get();

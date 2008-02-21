@@ -82,7 +82,7 @@ namespace Helper
 std::string Usul::User::Directory::documents ( bool wantSlash, bool throwIfFail )
 {
   // Always look for environment variable.
-  std::string dir; ( Usul::System::Environment::get ( "HOME" ) );
+  std::string dir ( Usul::System::Environment::get ( "HOME" ) );
 
 #ifdef _MSC_VER
 

@@ -42,6 +42,7 @@
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Loader.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Factory/ObjectFactory.h"
@@ -535,12 +536,13 @@ void MainWindow::_initRecentFilesMenu()
   _recentFilesMenu->clear();
 
   // Set the name.
-  _recentFilesMenu->text ( "Recent Files" );
+  _recentFilesMenu->text ( "&Recent Files" );
 
   // For convienence.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Add to the recent file menu if the file exists.
+  unsigned int count ( 0 );
   for ( StringList::const_iterator iter = _recentFiles.begin(); iter != _recentFiles.end(); ++iter )
   {
     const std::string file ( *iter );
@@ -548,6 +550,9 @@ void MainWindow::_initRecentFilesMenu()
     {
       CadKit::Helios::Commands::OpenDocument::RefPtr openDocument ( new CadKit::Helios::Commands::OpenDocument ( me ) );
       openDocument->filename ( file );
+      std::string label ( Usul::Convert::Type<unsigned int,std::string>::convert ( ++count ) );
+      label.insert ( ( 1 == label.size() ) ? 0 : label.size() - 1, "&" );
+      openDocument->text ( Usul::Strings::format ( label, ' ', file ) );
       _recentFilesMenu->append ( new MenuKit::Button ( openDocument ) );
     }
   }

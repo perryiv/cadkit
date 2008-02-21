@@ -365,7 +365,7 @@ protected:
       points.push_back ( Point ( _centerX + _radius * bnx, _centerX + _radius * bny, _centerX + _radius * bnz ) );
 
       // Set the normal.
-#ifndef _MSC_VER // Need to figure out why the negation is needed.
+#ifdef __linux // Is the negation still needed?
       normals.push_back ( Normal ( _normalLength * tnx, _normalLength * tny, _normalLength * tnz ) * -1 );
       normals.push_back ( Normal ( _normalLength * bnx, _normalLength * bny, _normalLength * bnz ) * -1 ); 
 #else

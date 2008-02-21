@@ -38,13 +38,10 @@ class MpdJob : public Usul::Jobs::Job
       typedef Usul::Interfaces::IDataSync IDataSync;
       typedef Usul::Interfaces::IUnknown IUnknown;
       typedef std::vector < std::string > Files;
-      typedef Usul::Interfaces::IUnknown IUnknown;
       typedef Usul::Documents::Manager DocManager;
       typedef DocManager::DocumentInfo Info;
       
       typedef MpdDefinitions::MpdDynamicSets MpdDynamicSets;
-
-      typedef std::vector< MpdDefinitions::MpdDynamicSet > MpdDynamicSets;
 
       MpdJob ( Usul::Interfaces::IUnknown *caller,
                const std::string &workingDir,

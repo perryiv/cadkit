@@ -132,4 +132,4 @@ ADD_LIBRARY(${LIBNAME} SHARED ${SOURCES} )
 
 
 # Link the Library	
-TARGET_LINK_LIBRARIES( Usul dl )
+TARGET_LINK_LIBRARIES( Usul dl uuid )

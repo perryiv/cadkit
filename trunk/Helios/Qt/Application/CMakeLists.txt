@@ -10,10 +10,10 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( 
-		     ${CADKIT_INC_DIR}
-         "${CADKIT_INC_DIR}/Experimental"
-		     )
+INCLUDE_DIRECTORIES(
+        ${CADKIT_INC_DIR}
+       "${CADKIT_INC_DIR}/Experimental"
+        )
 
 #List the Sources
 SET (SOURCES

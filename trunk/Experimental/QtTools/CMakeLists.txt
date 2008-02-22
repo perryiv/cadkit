@@ -23,7 +23,9 @@ SET (SOURCES
   Image.cpp
   Menu.cpp
   PropertyBrowser.cpp
+  Question.cpp
   TreeControl.cpp
+
 )
 
 # These need to be moc'd.

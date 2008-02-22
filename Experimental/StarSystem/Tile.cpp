@@ -390,8 +390,8 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
     
     // Return if we are culled.
-    //if ( 0x0 == cv || cv->isCulled ( *this ) )
-      //return;
+    if ( 0x0 == cv || cv->isCulled ( *this ) )
+      return;
     
     // Only update here if the vertices are invalid.
     // This will ensure proper splitting.
@@ -467,16 +467,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   {    
     this->updateTexture();
     
-    // See if we should draw skirts.
-    if ( true == _body->useSkirts() )
-    {
-      _skirts->setNodeMask ( 0xff );
-    }
-    else
-    {
-      _skirts->setNodeMask ( 0x0 );
-    }
-
     // Turn off the borders.
     OsgTools::Group::removeAllChildren ( _borders.get() );
 
@@ -540,6 +530,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Traverse low level of detail.
   if ( low || _tileJob.valid() )
   {
+    // See if we should draw skirts.
+    const unsigned int mask ( _body->useSkirts() ? 0xffffffff : 0x0 );
+    _skirts->setNodeMask ( mask );
+    
     this->getChild ( 0 )->accept ( cv );
   }
 
@@ -723,7 +717,7 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
   // Get the rasters.
   typedef Body::Rasters Rasters;
   Rasters rasters;
-  body->rasters ( rasters, this->extents(), width, height, this->level(), job, 0x0 );
+  body->rasters ( rasters );
 
   // Image.
   osg::ref_ptr<osg::Image> result ( 0x0 );
@@ -731,15 +725,21 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
   // Build the list of images to be composited.
   for ( Rasters::iterator iter = rasters.begin(); iter != rasters.end(); ++iter )
   {
-    // Get the image and corresponding raster layer.
-    osg::ref_ptr<osg::Image> image ( iter->first );
-    IRasterLayer::RefPtr raster ( iter->second );
+    // Have we been cancelled?
+    if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+      job->cancel();
+    
+    // The layer.
+    IRasterLayer::RefPtr raster ( *iter );
+    
+    // Image for the layer.
+    osg::ref_ptr<osg::Image> image ( 0x0 );
     
     // The texture coordinates to use.
     Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
-#if 1
+
     // Use our parents image if we don't have a valid one.
-    if ( false == image.valid() )
+    if ( true == raster.valid() )
     {
       // Query for needed interfaces.
       Usul::Interfaces::ILayer::QueryPtr layer ( raster );
@@ -758,24 +758,31 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
       
       if ( shown && this->extents().intersects ( e ) )
       {
-        TextureData data ( parent.valid() ? parent->texture ( raster.get() ) : TextureData ( 0x0, tCoords ) );
-        image = data.first;
+        // Get the image for the layer.
+        image = raster->texture ( this->extents(), width, height, this->level(), job.get(), static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) );
+        
+        // If we didn't get an image, use our parents image.
+        if ( false == image.valid() )
+        {
+          TextureData data ( parent.valid() ? parent->texture ( raster.get() ) : TextureData ( 0x0, tCoords ) );
+          image = data.first;
 
-        // Set the new texture coordinates.
-        tCoords = Tile::_textureCoordinatesSubRegion ( data.second, index );
+          // Set the new texture coordinates.
+          tCoords = Tile::_textureCoordinatesSubRegion ( data.second, index );
+        }
       }
     }
-#endif
+
     // Check again...
     if ( true == image.valid() )
     {
-#if 1
+
       // Save this mapping...
       {
         Guard guard ( this );
         _textureMap[raster] = TextureData ( image, tCoords );
       }
-#endif
+
       // Is this the first image?
       if ( false == result.valid() )
       {

@@ -868,20 +868,15 @@ double Body::elevation ( double lat, double lon ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::rasters ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
+void Body::rasters ( Rasters& rasters ) const
 {
   USUL_TRACE_SCOPE;
 
-  RasterGroup::RefPtr group ( 0x0 );
-  
-  {
-    Guard guard ( this );
-    group = _rasters;
-  }
+  RasterGroup::RefPtr group ( Usul::Threads::Safe::get ( this->mutex(), _rasters ) );
   
   if ( true == group.valid() )
   {
-    group->textures ( rasters, extents, width, height, level, job, caller );
+    group->layers ( rasters );
   }
 }
 

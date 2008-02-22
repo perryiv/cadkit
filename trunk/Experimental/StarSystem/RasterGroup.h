@@ -58,7 +58,7 @@ public:
   unsigned int                    size() const;
 
   virtual ImagePtr                texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
-  void                            textures ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
+
 protected:
 
   virtual ~RasterGroup();

@@ -57,7 +57,7 @@ public:
   typedef StarSystem::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
-  typedef RasterGroup::Rasters Rasters;
+  typedef RasterGroup::Layers Rasters;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::list<Tile::RefPtr> Tiles;
 
@@ -119,7 +119,7 @@ public:
   void                      purgeTiles();
 
   // Get the rasters.
-  void                      rasters ( Rasters& rasters, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller );
+  void                      rasters ( Rasters& rasters ) const;
 
   // Append raster data.
   void                      rasterAppend ( Usul::Interfaces::IRasterLayer * );

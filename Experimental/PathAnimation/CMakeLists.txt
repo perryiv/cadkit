@@ -1,5 +1,3 @@
-
-
 PROJECT (PathAnimation)
 
 SET(PLUGIN_NAME "PathAnimation")
@@ -12,8 +10,9 @@ ADD_DEFINITIONS ("-D_COMPILING_PATH_ANIMATION")
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
-	"${PROJECT_SOURCE_DIR}/../" 
+	"${CADKIT_INC_DIR}/" 
   "${CADKIT_INC_DIR}/GenericNurbs"
+  "${CADKIT_INC_DIR}/Experimental"
   ${OSG_INC_DIR}
 )
 

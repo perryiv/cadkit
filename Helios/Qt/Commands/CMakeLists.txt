@@ -20,11 +20,14 @@ SET (SOURCES
     Command.cpp
     ExitApplication.cpp
     ExportImage.cpp
+    ExportModel.cpp
+    ExportScene.cpp
     InsertDocument.cpp
     NewDocument.cpp
     OpenDocument.cpp
-    SaveDocument.cpp
+    OpenManual.cpp
     SaveAsDocument.cpp
+    SaveDocument.cpp
     ToggleView.cpp
 )
 

@@ -132,6 +132,7 @@ Usul::Interfaces::IUnknown *Factory < Component >::createInstance ( unsigned lon
 #define USUL_DEBUG_MODE false
 #endif
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Macro for functions needed in Cadkit plugins.
@@ -147,7 +148,7 @@ extern "C" Usul::Interfaces::IClassFactory *usul_get_class_factory() \
 { \
   Usul::Interfaces::IClassFactory::ValidRefPtr factory ( new Usul::Components::Factory<component_name>() ); \
   return factory.release(); \
-} \
+}
 
 
 #endif // _USUL_COMPONENTS_FACTORY_CLASS_H_

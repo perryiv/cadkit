@@ -35,24 +35,12 @@ ${PROJECT_SOURCE_DIR}/../Usul
 ${PROJECT_SOURCE_DIR}/../Threads/OpenThreads
 ${PROJECT_SOURCE_DIR}/../OsgTools 
 ${PROJECT_SOURCE_DIR}/../XmlTree 
+${PROJECT_SOURCE_DIR}/../Serialize/XML
 ${PROJECT_SOURCE_DIR}/../MenuKit
 ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
 ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
-#
-#${PROJECT_SOURCE_DIR}/Plugins/SceneStatsOSG
-#${PROJECT_SOURCE_DIR}/Animate
-#${PROJECT_SOURCE_DIR}/Plugins/About
-#${CADKIT_INC_DIR}/Magrathea/
-#${CADKIT_INC_DIR}/Minerva/Core
-#${CADKIT_INC_DIR}/Minerva/Document
-#
-# ---- Minerva Plug-ins -------
-#
-#${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
-#${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals
-#${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
-#${CADKIT_INC_DIR}/Minerva/Plugins/Document
+${PROJECT_SOURCE_DIR}/../Experimental/PathAnimation
 )
 
 

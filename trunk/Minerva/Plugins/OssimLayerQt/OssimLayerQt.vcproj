@@ -257,22 +257,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ImageTextureLayer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ImageTextureLayer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\KwlLayer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\KwlLayer.h"
-					>
-				</File>
-				<File
 					RelativePath=".\OssimLayerQtComponent.cpp"
 					>
 				</File>

@@ -52,6 +52,9 @@
 #include "osg/Material"
 #include "osg/Texture2D"
 
+#include "osgDB/ReadFile"
+#include "osgDB/WriteFile"
+
 #include "boost/bind.hpp"
 
 #include <algorithm>
@@ -784,10 +787,7 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
     {
 
       // Save this mapping...
-      {
-        Guard guard ( this );
-        _textureMap[raster] = TextureData ( image, tCoords );
-      }
+      this->_cacheImage ( raster, image.get(), tCoords );
 
       // Is this the first image?
       if ( false == result.valid() )
@@ -831,9 +831,12 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
 Tile::TextureData Tile::texture ( IRasterLayer * layer ) const
 {
   Guard guard ( this );
-  TextureMap::const_iterator iter ( _textureMap.find ( IRasterLayer::RefPtr ( layer ) ) );
+  ImageCache::const_iterator iter ( _textureMap.find ( IRasterLayer::RefPtr ( layer ) ) );
   if ( iter != _textureMap.end() )
-    return iter->second;
+  {
+    std::string filename ( iter->second.first );
+    return TextureData ( osgDB::readImageFile ( filename ), iter->second.second );
+  }
   return TextureData ( 0x0, Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
 }
 
@@ -1613,5 +1616,25 @@ void Tile::splitDistance ( double distance, bool children )
     if ( _children[1].valid() ) _children[1]->splitDistance ( childDistance, children );
     if ( _children[2].valid() ) _children[2]->splitDistance ( childDistance, children );
     if ( _children[3].valid() ) _children[3]->splitDistance ( childDistance, children );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cache the image used for the raster layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords )
+{
+  Guard guard ( this );
+  
+  if ( 0x0 != image )
+  {
+    std::string filename ( image->getFileName() );
+    
+    if ( false == filename.empty() )
+      _textureMap[raster] = ImageCacheData ( filename, tCoords );
   }
 }

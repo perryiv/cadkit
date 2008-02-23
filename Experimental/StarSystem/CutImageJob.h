@@ -17,17 +17,9 @@
 #ifndef _STAR_SYSTEM_CUT_IMAGE_JOB_CLASS_H_
 #define _STAR_SYSTEM_CUT_IMAGE_JOB_CLASS_H_
 
-#include "StarSystem/Extents.h"
+#include "StarSystem/Tile.h"
 
 #include "Usul/Jobs/Job.h"
-#include "Usul/Interfaces/IUnknown.h"
-
-#include "osg/Image"
-#include "osg/ref_ptr"
-#include "osg/Vec2d"
-
-namespace StarSystem { class RasterLayer; }
-
 
 namespace StarSystem {
 
@@ -37,9 +29,6 @@ class CutImageJob : public Usul::Jobs::Job
 public:
 
   typedef Usul::Jobs::Job BaseClass;
-  typedef osg::ref_ptr < osg::Image > ImagePtr;
-  typedef StarSystem::Extents < osg::Vec2d > Extents;
-  typedef Usul::Interfaces::IUnknown Unknown;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( CutImageJob );
@@ -47,9 +36,7 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( CutImageJob );
 
-  CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *layer, Unknown *caller );
-
-  ImagePtr          image();
+  CutImageJob ( Tile::RefPtr tile );
 
 protected:
 
@@ -59,13 +46,7 @@ protected:
 
 private:
 
-  Extents _extents;
-  unsigned int _width;
-  unsigned int _height;
-  unsigned int _level;
-  RasterLayer *_raster;
-  ImagePtr _image;
-  Unknown::QueryPtr _caller;
+  Tile::RefPtr _tile;
 };
 
 

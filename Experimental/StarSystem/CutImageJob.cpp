@@ -15,7 +15,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "StarSystem/CutImageJob.h"
-#include "StarSystem/RasterLayer.h"
 
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -31,20 +30,20 @@ USUL_IMPLEMENT_TYPE_ID ( CutImageJob );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CutImageJob::CutImageJob ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer *raster, Usul::Interfaces::IUnknown *caller ) : 
+CutImageJob::CutImageJob ( Tile::RefPtr tile ) : 
   BaseClass ( 0x0, false ),
-  _extents ( extents ),
-  _width   ( width ),
-  _height  ( height ),
-  _level   ( level ),
-  _raster  ( raster ),
-  _image   ( 0x0 ),
-  _caller  ( caller )
+  _tile ( tile )
 {
   USUL_TRACE_SCOPE;
-  this->priority ( -1 * static_cast<int> ( level ) );
-  Usul::Pointers::reference ( _raster );
-  this->name ( Usul::Strings::format ( "Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
+  
+  if ( _tile.valid() )
+  {
+    const unsigned int level ( _tile->level() );
+    this->priority ( -1 * static_cast<int> ( level ) );
+  
+    Tile::Extents extents ( _tile->extents() );
+    this->name ( Usul::Strings::format ( "Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
+  }
 }
 
 
@@ -57,7 +56,6 @@ CutImageJob::CutImageJob ( const Extents &extents, unsigned int width, unsigned 
 CutImageJob::~CutImageJob()
 {
   USUL_TRACE_SCOPE;
-  Usul::Pointers::unreference ( _raster );
 }
 
 
@@ -71,47 +69,14 @@ void CutImageJob::_started()
 {
   USUL_TRACE_SCOPE;
 
+  // Make sure we have valid data.
+  if ( false == _tile.valid() )
+    return;
+  
   // Have we been cancelled?
   if ( true == this->canceled() )
     this->cancel();
-
-  // Handle no raster layer.
-  RasterLayer::RefPtr raster ( Usul::Threads::Safe::get ( this->mutex(), _raster ) );
-  if ( false == raster.valid() )
-    return;
-
-  // Get the image.
-  const unsigned int width  ( Usul::Threads::Safe::get ( this->mutex(), _width ) );
-  const unsigned int height ( Usul::Threads::Safe::get ( this->mutex(), _height ) );
-
-  // Request the image.
-  osg::ref_ptr<osg::Image> image ( raster->texture ( _extents, width, height, _level, this, _caller ) );
-
-  // Have we been cancelled?
-  if ( true == this->canceled() )
-    this->cancel();
-
-  // See if there is an image.
-  if ( false == image.valid() )
-    return;
-
-  // Set our data members.
-  {
-    Guard guard ( this );
-    _image = image;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the texture.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-CutImageJob::ImagePtr CutImageJob::image()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _image;
+  
+  // Ask the tile to split.
+  _tile->buildRaster ( Usul::Jobs::Job::RefPtr ( this ) );
 }

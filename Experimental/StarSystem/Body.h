@@ -156,7 +156,7 @@ public:
   double                    splitDistance() const;
 
   // Request texture.
-  CutImageJob::RefPtr       textureRequest ( const Extents &extents, unsigned int level );
+  CutImageJob::RefPtr       textureRequest ( Tile* );
 
   // Set/get the flag that says to use skirts.
   void                      useSkirts ( bool );

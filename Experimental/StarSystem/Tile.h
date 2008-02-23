@@ -98,7 +98,8 @@ public:
   typedef std::pair<ImagePtr, Usul::Math::Vec4d> TextureData;
   typedef std::vector<TextureData> Textures;
   typedef Usul::Interfaces::IRasterLayer IRasterLayer;
-  typedef std::map <IRasterLayer::RefPtr, TextureData> TextureMap;
+  typedef std::pair<std::string, Usul::Math::Vec4d> ImageCacheData;
+  typedef std::map <IRasterLayer::RefPtr, ImageCacheData> ImageCache;
 
   // Constructors.
   Tile ( Tile* parent = 0x0,
@@ -191,6 +192,9 @@ protected:
   // Build skirts.
   osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll );
   osg::Node*                _buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll );
+  
+  // Cache the image used for the raster layer.
+  void                      _cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords );
 
   void                      _cull ( osgUtil::CullVisitor &cv );
 
@@ -247,7 +251,7 @@ private:
   osg::BoundingSphere _boundingSphere;
   osg::ref_ptr<osg::Group> _borders;
   osg::ref_ptr<osg::Group> _skirts;
-  TextureMap _textureMap;
+  ImageCache _textureMap;
   ImageSize _imageSize;
   WeakPtr _parent;
   Indices _index;

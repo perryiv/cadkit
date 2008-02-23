@@ -154,10 +154,10 @@ void Body::addTile ( const Extents &extents )
   const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
   const MeshSize meshSize ( this->meshSize ( extents ) );
   const Tile::ImageSize imageSize ( width, height );
-  Tile::RefPtr tile ( new Tile ( level, extents, meshSize, imageSize, _splitDistance, this ) );
+  Tile::RefPtr tile ( new Tile ( 0x0, Tile::NONE, level, extents, meshSize, imageSize, _splitDistance, this ) );
 
   // Build the raster.
-  tile->buildRaster ( textureCoords, 0x0, 0x0, Tile::NONE );
+  tile->buildRaster ( 0x0 );
 
   // Add tile to the transform.
   _transform->addChild ( tile.get() );
@@ -465,7 +465,7 @@ void Body::postRender ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CutImageJob::RefPtr Body::textureRequest ( const Extents &extents, unsigned int level )
+CutImageJob::RefPtr Body::textureRequest ( Tile* tile )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -476,8 +476,7 @@ CutImageJob::RefPtr Body::textureRequest ( const Extents &extents, unsigned int 
     throw std::runtime_error ( "Error 3925869673: Job manager is null" );
   }
 
-  Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
-  CutImageJob::RefPtr job ( new CutImageJob ( extents, 512, 512, level, _rasters.get(), caller ) );
+  CutImageJob::RefPtr job ( new CutImageJob ( Tile::RefPtr ( tile ) ) );
   this->jobManager()->addJob ( job );
 
   return job;

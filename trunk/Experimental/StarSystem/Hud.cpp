@@ -17,6 +17,7 @@
 #include "StarSystem/Hud.h"
 
 #include "Usul/Bits/Bits.h"
+#include "Usul/Math/NaN.h"
 #include "Usul/Strings/Format.h"
 
 #include "OsgTools/Font.h"
@@ -130,10 +131,14 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   _position->setText ( Usul::Strings::format ( "Lat: ", _latLonHeight[1], " Lon: ", _latLonHeight[0], " E: ", _latLonHeight[2] ) );
   _position->update();
   
+  const bool positionValid ( false == Usul::Math::nan ( _latLonHeight[0] ) && 
+                             false == Usul::Math::nan ( _latLonHeight[1] ) && 
+                             false == Usul::Math::nan ( _latLonHeight[2] ) );
+  
   if ( this->showJobFeedback() )
     geode->addDrawable ( _feedback.get() );
   
-  if ( this->showPointerPosition() )
+  if ( this->showPointerPosition() && positionValid )
     geode->addDrawable ( _position.get() );
   
   // Turn off lighting.

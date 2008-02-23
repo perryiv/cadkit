@@ -68,7 +68,7 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::Tile ( unsigned int level, const Extents &extents, 
+Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &extents, 
              const MeshSize &meshSize, const ImageSize& imageSize, double splitDistance, 
              Body *body, osg::Image* image, osg::Image * elevation ) : 
   BaseClass(),
@@ -93,17 +93,24 @@ Tile::Tile ( unsigned int level, const Extents &extents,
   _borders ( new osg::Group ),
   _skirts ( new osg::Group ),
   _textureMap (),
-  _imageSize ( imageSize )
+  _imageSize ( imageSize ),
+  _parent ( parent ),
+  _index ( index )
 {
   USUL_TRACE_SCOPE;
 
   // We want thread safe ref and unref.
   this->setThreadSafeRefUnref ( true );
 
-  // Create the texture.
-  _texture->setImage ( _image.get() );
+  // Set the image.
+  if ( true == _image.valid() )
+    _texture->setImage ( _image.get() );
+  
+  // Set filter parameters.
   _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
   _texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+  
+  // Set texture coordinate wrapping parameters.
   _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 
@@ -143,7 +150,9 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _borders ( new osg::Group ),
   _skirts ( new osg::Group ),
   _textureMap ( tile._textureMap ),
-  _imageSize ( tile._imageSize )
+  _imageSize ( tile._imageSize ),
+  _parent ( tile._parent ),
+  _index ( tile._index )
 {
   USUL_TRACE_SCOPE;
 
@@ -289,7 +298,7 @@ void Tile::updateMesh()
   _skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll ) ); // Right skirt.
   _skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll ) ); // Bottom skirt.
   _skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll ) ); // Top skirt.
-    
+
   // Add to the matrix transform.
   mt->addChild ( _skirts.get() );
 
@@ -368,14 +377,11 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // See if our job is done loading image.
     if ( _imageJob.valid() && _imageJob->isDone() )
     {
-      osg::ref_ptr < osg::Image > image ( _imageJob->image() );
-      if ( image.valid() )
-      {
-        this->textureData ( image.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
         _imageJob = 0x0;
-      }
     }
     
+    // Not currently using this...
+#if 0
     // Check for new elevation data.
     if ( _elevationJob.valid() && _elevationJob->isDone() )
     {
@@ -385,6 +391,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       // Force vertices to be rebuilt.
       _flags = Usul::Bits::set ( _flags, Tile::VERTICES, true );
     }
+#endif
     
     // Get cull visitor.
     osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
@@ -393,10 +400,11 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     if ( 0x0 == cv || cv->isCulled ( *this ) )
       return;
     
-    // Only update here if the vertices are invalid.
-    // This will ensure proper splitting.
-    if ( this->verticesDirty() )
-      this->updateMesh();
+    // Make sure the mesh is updated.
+    this->updateMesh();
+    
+    // Make sure our texture is updated.
+    this->updateTexture();
         
     this->_cull ( *cv );
   }
@@ -464,9 +472,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   low = !( _body->shouldSplit ( !low, this ) );
 
   if ( low )
-  {    
-    this->updateTexture();
-    
+  {
     // Turn off the borders.
     OsgTools::Group::removeAllChildren ( _borders.get() );
 
@@ -597,9 +603,9 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   
   {
     Guard guard ( this->mutex() );
-    _children[LOWER_LEFT]  = t0.get(); 
+    _children[LOWER_LEFT]  = t0.get();
     _children[LOWER_RIGHT] = t1.get();
-    _children[UPPER_LEFT]  = t2.get();  
+    _children[UPPER_LEFT]  = t2.get();
     _children[UPPER_RIGHT] = t3.get();
   }
 }
@@ -642,13 +648,13 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     job->cancel();
   
   // Make the tile.
-  Tile::RefPtr tile ( new Tile ( level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
+  Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
 
   // Build the raster.  Make sure this is done before mesh is built and texture updated.
-  tile->buildRaster ( region, this, job, index );
+  tile->buildRaster ( job );
 
   // Check to see if the tile has a valid image.
-  if ( false == tile->image().valid() )
+  if ( false == tile->image().valid() && 0x0 != this->image() )
   {
     // Use the specified region of our image.
     tile->textureData ( this->image().get(), region );
@@ -671,7 +677,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer* raster, Usul::Jobs::Job::RefPtr job )
+Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr job )
 {
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -697,11 +703,14 @@ Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, u
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::buildRaster ( const Usul::Math::Vec4d& region, 
-                         Tile::RefPtr parent, 
-                         Usul::Jobs::Job::RefPtr job,
-                         Indices index )
+void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
 {
+  // Get the parent.
+  Tile::RefPtr parent ( Usul::Threads::Safe::get ( this->mutex(), _parent.get() ) );
+  
+  // Get my index.
+  Indices index ( Usul::Threads::Safe::get ( this->mutex(), _index ) );
+  
   // Get the body.
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
@@ -738,42 +747,39 @@ void Tile::buildRaster ( const Usul::Math::Vec4d& region,
     // The texture coordinates to use.
     Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
 
-    // Use our parents image if we don't have a valid one.
-    if ( true == raster.valid() )
+    // Query for needed interfaces.
+    Usul::Interfaces::ILayer::QueryPtr layer ( raster );
+    Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+    
+    // Get the extents.
+    const double minLon ( le.valid() ? le->minLon() : -180.0 );
+    const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+    const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+    const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+    
+    Extents e ( minLon, minLat, maxLon, maxLat );
+    
+    // Should the layer be shown?
+    const bool shown ( layer.valid() ? layer->showLayer() : true );
+    
+    // Only use this layer if it's shown and intersects our extents.
+    if ( shown && this->extents().intersects ( e ) )
     {
-      // Query for needed interfaces.
-      Usul::Interfaces::ILayer::QueryPtr layer ( raster );
-      Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+      // Get the image for the layer.
+      image = Tile::buildRaster ( this->extents(), width, height, this->level(), raster.get(), job.get() );
       
-      // Get the extents.
-      const double minLon ( le.valid() ? le->minLon() : -180.0 );
-      const double minLat ( le.valid() ? le->minLat() :  -90.0 );
-      const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
-      const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
-      
-      Extents e ( minLon, minLat, maxLon, maxLat );
-      
-      // Should the layer be shown?
-      const bool shown ( layer.valid() ? layer->showLayer() : true );
-      
-      if ( shown && this->extents().intersects ( e ) )
+      // If we didn't get an image, use our parents image.
+      if ( false == image.valid() )
       {
-        // Get the image for the layer.
-        image = raster->texture ( this->extents(), width, height, this->level(), job.get(), static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) );
-        
-        // If we didn't get an image, use our parents image.
-        if ( false == image.valid() )
-        {
-          TextureData data ( parent.valid() ? parent->texture ( raster.get() ) : TextureData ( 0x0, tCoords ) );
-          image = data.first;
+        TextureData data ( parent.valid() ? parent->texture ( raster.get() ) : TextureData ( 0x0, tCoords ) );
+        image = data.first;
 
-          // Set the new texture coordinates.
-          tCoords = Tile::_textureCoordinatesSubRegion ( data.second, index );
-        }
+        // Set the new texture coordinates.
+        tCoords = Tile::_textureCoordinatesSubRegion ( data.second, index );
       }
     }
 
-    // Check again...
+    // Composite if it's valid...
     if ( true == image.valid() )
     {
 
@@ -1326,16 +1332,17 @@ void Tile::_launchImageRequest()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // Cancel the one we have, if any.
+  if ( true == _imageJob.valid() )
+  {
+    _imageJob->cancel();
+    _imageJob = 0x0;
+  }
+  
   // Start the request to pull in texture.
   if ( 0x0 != _body )
   {
-    if ( true == _imageJob.valid() )
-    {
-      _imageJob->cancel();
-      _imageJob = 0x0;
-    }
-
-    _imageJob = _body->textureRequest ( this->extents(), this->level() );
+    _imageJob = _body->textureRequest ( this );
   }
 }
 
@@ -1351,6 +1358,8 @@ void Tile::_launchElevationRequest()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // Need to revisit this...
+#if 0
   // Start the request to pull in texture.
   if ( ( 0x0 != _body ) && ( 0x0 != _body->jobManager() ) )
   {
@@ -1359,6 +1368,7 @@ void Tile::_launchElevationRequest()
     _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData(), caller );
     _body->jobManager()->addJob ( _elevationJob.get() );
   }
+#endif
 }
 
 
@@ -1447,14 +1457,10 @@ Usul::Math::Vec4d Tile::_textureCoordinatesSubRegion ( const Usul::Math::Vec4d& 
 
   switch ( index )
   {
-  case LOWER_LEFT:
-    return Usul::Math::Vec4d ( startU, halfU, startV, halfV );
-  case LOWER_RIGHT:
-    return Usul::Math::Vec4d ( halfU,  endU,  startV, halfV );
-  case UPPER_LEFT:
-    return Usul::Math::Vec4d ( startU, halfU, halfV,  endV );
-  case UPPER_RIGHT:
-    return Usul::Math::Vec4d ( halfU,  endU,  halfV,  endV );
+  case LOWER_LEFT:  return Usul::Math::Vec4d ( startU, halfU, startV, halfV );
+  case LOWER_RIGHT: return Usul::Math::Vec4d ( halfU,  endU,  startV, halfV );
+  case UPPER_LEFT:  return Usul::Math::Vec4d ( startU, halfU, halfV,  endV );
+  case UPPER_RIGHT: return Usul::Math::Vec4d ( halfU,  endU,  halfV,  endV );
   }
 
   return Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 );

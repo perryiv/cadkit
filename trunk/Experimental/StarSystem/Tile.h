@@ -19,11 +19,11 @@
 
 #include "StarSystem/Export.h"
 #include "StarSystem/Extents.h"
-#include "StarSystem/CutImageJob.h"
 #include "StarSystem/Mesh.h"
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Interfaces/IRasterLayer.h"
+#include "Usul/Jobs/Job.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
@@ -32,14 +32,15 @@
 
 #include "osg/Group"
 #include "osg/Image"
+#include "osg/observer_ptr"
 #include "osg/Texture2D"
 #include "osg/Vec3d"
 
 #include <typeinfo>
 
-namespace StarSystem { class RasterLayer; class Body; }
+namespace Usul { namespace Interfaces { struct IRasterLayer; } }
+namespace StarSystem { class Body; }
 namespace osgUtil { class CullVisitor; }
-class ossimEllipsoid;
 
 
 namespace StarSystem {
@@ -82,6 +83,7 @@ public:
 
   // Useful typedefs.
   typedef osg::Group BaseClass;
+  typedef osg::observer_ptr<Tile> WeakPtr;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef StarSystem::Extents < osg::Vec2d > Extents;
@@ -99,7 +101,9 @@ public:
   typedef std::map <IRasterLayer::RefPtr, TextureData> TextureMap;
 
   // Constructors.
-  Tile ( unsigned int level = 0, 
+  Tile ( Tile* parent = 0x0,
+         Indices index = Tile::NONE,
+         unsigned int level = 0, 
          const Extents &extents = Extents ( Extents::Vertex ( 0, 0 ), Extents::Vertex ( 1, 1 ) ), 
          const MeshSize &meshSize = MeshSize ( 10, 10 ),
          const ImageSize& imageSize = ImageSize ( 512, 512 ),
@@ -116,13 +120,10 @@ public:
   Indices                   child ( Tile* ) const;
   
   // Build raster.
-  static ImagePtr           buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, RasterLayer* raster, Usul::Jobs::Job::RefPtr );
+  static ImagePtr           buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr );
 
   // Build raster.
-  void                      buildRaster ( const Usul::Math::Vec4d& region,
-                                          Tile::RefPtr parent, 
-                                          Usul::Jobs::Job::RefPtr,
-                                          Indices index );
+  void                      buildRaster ( Usul::Jobs::Job::RefPtr );
 
   // Compute the bounding sphere.
   virtual BSphere           computeBound() const;
@@ -240,14 +241,16 @@ private:
   osg::ref_ptr < osg::Image > _elevation;
   osg::ref_ptr < osg::Texture2D > _texture;
   Usul::Math::Vec4d _texCoords;
-  CutImageJob::RefPtr _imageJob;
-  CutImageJob::RefPtr _elevationJob;
+  Usul::Jobs::Job::RefPtr _imageJob;
+  Usul::Jobs::Job::RefPtr _elevationJob;
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;
   osg::ref_ptr<osg::Group> _borders;
   osg::ref_ptr<osg::Group> _skirts;
   TextureMap _textureMap;
   ImageSize _imageSize;
+  WeakPtr _parent;
+  Indices _index;
 };
 
 

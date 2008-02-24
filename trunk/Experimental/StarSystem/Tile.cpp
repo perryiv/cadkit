@@ -53,7 +53,6 @@
 #include "osg/Texture2D"
 
 #include "osgDB/ReadFile"
-#include "osgDB/WriteFile"
 
 #include "boost/bind.hpp"
 
@@ -399,16 +398,17 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // Get cull visitor.
     osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
     
-    // Return if we are culled.
-    if ( 0x0 == cv || cv->isCulled ( *this ) )
-      return;
-    
     // Make sure the mesh is updated.
     this->updateMesh();
     
     // Make sure our texture is updated.
     this->updateTexture();
-        
+    
+    // Return if we are culled.
+    if ( 0x0 == cv || cv->isCulled ( *this ) )
+      return;
+    
+    // Spilt.
     this->_cull ( *cv );
   }
   else

@@ -23,6 +23,7 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Mutex.h"
 
+#include "vpr/vprParam.h"
 #include "vpr/IO/SerializableObject.h"
 
 namespace vpr { class ObjectReader; class ObjectWriter; }

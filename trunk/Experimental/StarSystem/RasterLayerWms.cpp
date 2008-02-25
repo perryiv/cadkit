@@ -26,6 +26,7 @@
 #include "Usul/App/Application.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
+#include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
@@ -46,8 +47,9 @@
 #include "boost/algorithm/string/replace.hpp"
 #include "boost/functional/hash.hpp"
 
-#include <iomanip>
 #include <algorithm>
+#include <iomanip>
+#include <fstream>
 
 using namespace StarSystem;
 
@@ -66,10 +68,12 @@ namespace Detail
 
 RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &url, const Options &options ) : 
   BaseClass(),
-  _url     ( url ),
-  _options ( options ),
-  _dir     ( RasterLayerWms::defaultCacheDirectory() ),
-  _useNetwork ( true )
+  _url              ( url ),
+  _options          ( options ),
+  _dir              ( RasterLayerWms::defaultCacheDirectory() ),
+  _useNetwork       ( true ),
+  _writeFailedFlags ( false ),
+  _readFailedFlags  ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -90,7 +94,9 @@ RasterLayerWms::RasterLayerWms ( const RasterLayerWms& rhs ) :
   _url ( rhs._url ),
   _options ( rhs._options ),
   _dir ( rhs._dir ),
-  _useNetwork ( rhs._useNetwork )
+  _useNetwork ( rhs._useNetwork ),
+  _writeFailedFlags ( rhs._writeFailedFlags ),
+  _readFailedFlags ( rhs._readFailedFlags )
 {
   this->_registerMembers();
 }
@@ -121,6 +127,8 @@ void RasterLayerWms::_registerMembers()
   this->_addMember ( "url", _url );
   this->_addMember ( "options", _options );
   this->_addMember ( "use_network", _useNetwork );
+  this->_addMember ( "write_failed_flags", _writeFailedFlags );
+  this->_addMember ( "read_failed_flags", _readFailedFlags );
 }
 
 
@@ -187,6 +195,21 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  The name of the "failed" file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline std::string getFailedFileName ( const std::string &file )
+  {
+    return Usul::Strings::format ( Usul::File::directory ( file, true ), Usul::File::base ( file ), ".failed" );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the texture.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -213,7 +236,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
 
   // Make the directory.
   const std::string baseDir ( this->_baseDirectory ( cachDir, width, height, level ) );
-  Usul::File::make ( baseDir );
+  Usul::Functions::safeCallR1 ( Usul::File::make, baseDir, "1061955244" );
 
   // Make the base file name.
   std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ) ) );
@@ -236,11 +259,30 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
     }
   }
 
-  // Get the use-network flag.
-  const bool useNetwork ( Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) );
+  // Get the flags.
+  bool useNetwork    ( false );
+  bool writeFailed   ( false );
+  bool lookForFailed ( false );
+  {
+    Guard guard ( this );
+    useNetwork    = _useNetwork;
+    writeFailed   = _writeFailedFlags;
+    lookForFailed = _readFailedFlags;
+  }
 
-  // Pull it down if it does not exist...
-  if ( false == Usul::Predicates::FileExists::test ( file ) && useNetwork )
+  // Are we supposed to look for a "failed" file?
+  if ( true == lookForFailed )
+  {
+    const std::string failedFile ( Helper::getFailedFileName ( file ) );
+    if ( true == Usul::Predicates::FileExists::test ( failedFile ) )
+    {
+      // The "failed" file exists, so return null.
+      return 0x0;
+    }
+  }
+
+  // Pull it down if we should...
+  if ( ( false == Usul::Predicates::FileExists::test ( file ) ) && ( true == useNetwork ) )
   {
     std::ostream *stream ( 0x0 );
     Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
@@ -261,6 +303,14 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   {
     std::cout << Usul::Strings::format ( "Error 2720181403: Failed to load file: ", file, ", so removing it. URL = ", fullUrl ) << std::endl;
     Usul::File::remove ( file, false );
+
+    // Write a "failed" file if we're supposed to.
+    if ( true == writeFailed )
+    {
+      const std::string failedFile ( Helper::getFailedFileName ( file ) );
+      std::ofstream out ( failedFile.c_str() );
+      out << "Failed to download file: \n" << file << std::endl;
+    }
   }
 
   // Set the file name.

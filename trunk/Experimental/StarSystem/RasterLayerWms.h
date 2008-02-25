@@ -78,6 +78,8 @@ private:
   Options _options;
   std::string _dir;
   bool _useNetwork;
+  bool _writeFailedFlags;
+  bool _readFailedFlags;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayerWms );
 };

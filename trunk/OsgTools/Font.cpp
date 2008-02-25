@@ -15,6 +15,8 @@
 
 #include "Font.h"
 
+#include "osg/Version"
+
 #include "osgText/Font"
 #include "osgText/Text"
 
@@ -102,11 +104,41 @@ Font::FontPtr Font::defaultFont()
 
 unsigned int Font::estimateTextWidth( osgText::Text* text )
 {
+  if ( 0x0 == text )
+    return 0;
+
   osg::ref_ptr < osgText::Font > font ( const_cast < osgText::Font *> ( text->getFont() ) );
 
   if( false == font.valid() )
     return 0;
 
+#if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
+  
+  typedef osgText::Text::TextureGlyphQuadMap TextureGlyphQuadMap;
+  typedef osgText::Text::GlyphQuads GlyphQuads;
+  const TextureGlyphQuadMap &map ( text->getTextureGlyphQuadMap() );
+
+  double width ( 0 );
+  unsigned int number ( 0 );
+  
+  for( TextureGlyphQuadMap::const_iterator iter = map.begin(); iter != map.end(); ++iter )
+    {
+        const GlyphQuads& glyphquad ( iter->second );
+        const GlyphQuads::Coords2& coords2 = glyphquad._coords;
+
+        for( unsigned int i = 0; i < coords2.size(); i += 4 )
+        {
+          width += coords2[i+2].x() - coords2[i].x();
+          ++number;
+        }
+    }
+
+  if ( number > 0 )
+    return static_cast<unsigned int> ( ( width / static_cast<double> ( number ) ) * text->getText().size() );
+  
+  return 0;
+
+#else
   float characterHeight       ( text->getCharacterHeight() );
   float characterAspectRatio  ( text->getCharacterAspectRatio() );
 
@@ -169,4 +201,5 @@ unsigned int Font::estimateTextWidth( osgText::Text* text )
   }
 
   return static_cast < unsigned int > ( width );
+#endif
 }

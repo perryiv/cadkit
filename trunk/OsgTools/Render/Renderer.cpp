@@ -35,6 +35,7 @@
 #include "osg/Geometry"
 #include "osg/Geode"
 #include "osg/GLU"
+#include "osg/Version"
 
 #include "osgUtil/UpdateVisitor"
 
@@ -218,7 +219,9 @@ void Renderer::render()
   }
 
   // Set the clear node.
+#if OPENSCENEGRAPH_MAJOR_VERSION <= 2 && OPENSCENEGRAPH_MINOR_VERSION <= 2
   this->viewer()->getCullVisitor()->setClearNode ( _clearNode.get() );
+#endif
 
   // See if we are supposed to use multiple passes.
   if ( this->getNumRenderPasses() > 1 )

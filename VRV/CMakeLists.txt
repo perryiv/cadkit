@@ -22,7 +22,8 @@ INCLUDE_DIRECTORIES(
          "${CADKIT_INC_DIR}/GenericNurbs"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${VRJ_INC_DIR}
+		     ${VR_JUGGLER_INCLUDES}
+         ${CPPDOM_INC_DIR}
 		     "$ENV{VJ_DEPS_DIR}/include"
 		     )
 

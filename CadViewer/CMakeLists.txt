@@ -2,15 +2,18 @@
 PROJECT(CadViewer)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.cmake)
+
+# Path to look for .cmake files.
+SET(CMAKE_MODULE_PATH "$ENV{CADKIT_INC_DIR}/CMakeModules" )
+
+INCLUDE ( ${CMakeModules}/Cadkit.cmake )
 
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
-INCLUDE(${CMakeModules}/FindOSG.cmake)
-INCLUDE(${CMakeModules}/FindBoost.cmake)
-INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
+INCLUDE( FindOSG )
+INCLUDE( FindBoost )
+INCLUDE( FindOSSIM )
 
 SUBDIRS(
 ${CADKIT_INC_DIR}/Usul 
@@ -60,6 +63,9 @@ IF ("$ENV{MODFLOW_INC_DIR}")
    SUBDIRS(  $ENV{MODFLOW_INC_DIR}/ModflowModel )
 ENDIF ( "$ENV{MODFLOW_INC_DIR}")
 
+# Find VR Juggler
+INCLUDE( FindVRJuggler )
+
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
@@ -67,17 +73,11 @@ INCLUDE_DIRECTORIES(
          "${CADKIT_INC_DIR}/GenericNurbs"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${VRJ_INC_DIR}
+		     ${VR_JUGGLER_INCLUDES}
 		     "${VRJ_INC_DIR}/tweek/CORBA"
 		     "${VRJ_INC_DIR}/tweek/idl"
 		     "$ENV{VJ_DEPS_DIR}/include"
-         #/usr/include/glib-2.0
-         #/usr/lib64/glib/include/
 		     )
-
-#ADD_DEFINITIONS("-DHAVE_GLIB")
-
-#LINK_DIRECTORIES( /usr/lib64/ )
 
 #List the Sources
 SET (SOURCES
@@ -114,5 +114,4 @@ TARGET_LINK_LIBRARIES( ${TARGET}
   ${OSG_UTIL_LIB}
   ${OSG_FX_LIB}
   ${OPENGL_LIBRARIES}
-  #glib-2.0
 )

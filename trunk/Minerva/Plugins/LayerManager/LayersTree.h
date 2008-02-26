@@ -37,6 +37,9 @@ signals:
   void enableWidgets ( bool );
   void addLayerFavorites ( Usul::Interfaces::IUnknown * layer );
 
+public slots:
+  void addLayer ( Usul::Interfaces::IUnknown * layer );
+  
 protected:
   void     _connectTreeViewSlots ();
 

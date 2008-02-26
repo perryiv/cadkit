@@ -1,20 +1,19 @@
 # This file should be at CadKit/Helios/CMakeLists.txt
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
+
+# Path to look for .cmake files.
+SET(CMAKE_MODULE_PATH ${CMakeModules} )
+
 INCLUDE ( ${CMakeModules}/Cadkit.cmake )
 
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
-INCLUDE(${CMakeModules}/FindOSG.cmake)
+INCLUDE( FindOSG )
 
 INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 # Note that the Boost Include path will automatically get added
-
-
-# Options for different versions of Helios.
-OPTION(BUILD_HELIOS_QT "Build QT version of Helios" ON)
-OPTION(BUILD_HELIOS_FOX "Build Fox Toolkit version of Helios" OFF )
 
 
 SET (HELIOS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../ )
@@ -41,19 +40,15 @@ ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
 ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 ${PROJECT_SOURCE_DIR}/../Experimental/PathAnimation
+
+${CADKIT_INC_DIR}/Experimental/StarSystem
+${CADKIT_INC_DIR}/Minerva/Core
+${CADKIT_INC_DIR}/Minerva/Plugins/Document
 )
 
 
-#Check to see if we are building QT version of Helios
-IF( BUILD_HELIOS_QT )
-	SUBDIRS (	${PROJECT_SOURCE_DIR}/Qt )
-ENDIF ( BUILD_HELIOS_QT )
-
-#Check to see if we are building the Fox Toolkit version of Helios
-IF( BUILD_HELIOS_FOX )
- SUBDIRS ( ${PROJECT_SOURCE_DIR}/Fox )
-ENDIF ( BUILD_HELIOS_FOX )
-
+# Include the QT Cmake files.
+SUBDIRS (	${PROJECT_SOURCE_DIR}/Qt )
 
 
 

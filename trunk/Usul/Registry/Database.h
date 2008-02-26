@@ -32,6 +32,10 @@ public:
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Node::Path Path;
 
+    // Constructor and destructor.
+  Database();
+  ~Database();
+
   // Accept the visitor.
   void                            accept ( Visitor * );
 
@@ -66,10 +70,6 @@ public:
   };
 
 private:
-
-  // Constructor and destructor.
-  Database();
-  ~Database();
 
   // No copying or assignment.
   Database &operator = ( const Database & );

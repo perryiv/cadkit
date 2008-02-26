@@ -82,7 +82,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegistryBuilder::build ( const XmlTree::Document *doc )
+void RegistryBuilder::build ( const XmlTree::Document *doc, Usul::Registry::Database& db )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -91,8 +91,8 @@ void RegistryBuilder::build ( const XmlTree::Document *doc )
     return;
 
   // Set registry's name.
-  Usul::Registry::Database::instance().root()->name ( doc->name() );
+  db.root()->name ( doc->name() );
 
   // Traverse the tree.
-  Helper::traverse ( doc, Usul::Registry::Database::instance().root() );
+  Helper::traverse ( doc, db.root() );
 }

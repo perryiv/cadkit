@@ -36,6 +36,21 @@ void RegistryIO::read ( const std::string &file )
 {
   USUL_TRACE_SCOPE_STATIC;
 
+  // Call the other one.
+  RegistryIO::read ( file, Usul::Registry::Database::instance() );
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Read the registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RegistryIO::read ( const std::string &file, Usul::Registry::Database& db )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
   // Read xml tree.
   XmlTree::Loader loader;
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
@@ -43,7 +58,7 @@ void RegistryIO::read ( const std::string &file )
 
   // Build registry.
   XmlTree::RegistryBuilder::RefPtr builder ( new XmlTree::RegistryBuilder );
-  builder->build ( document.get() );
+  builder->build ( document.get(), db );
 }
 
 
@@ -57,9 +72,24 @@ void RegistryIO::write ( const std::string &file )
 {
   USUL_TRACE_SCOPE_STATIC;
 
+  // Call the other one.
+  RegistryIO::write ( file, Usul::Registry::Database::instance() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RegistryIO::write ( const std::string &file, Usul::Registry::Database& db )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
   // Build xml tree.
   XmlTree::RegistryVisitor::RefPtr visitor ( new XmlTree::RegistryVisitor );
-  Usul::Registry::Database::instance().accept ( visitor.get() );
+  db.accept ( visitor.get() );
 
   // Write it to disk.
   XmlTree::Writer writer;

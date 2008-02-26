@@ -20,6 +20,7 @@
 
 #include <string>
 
+namespace Usul { namespace Registry { class Database; } }
 
 namespace XmlTree {
 
@@ -28,7 +29,9 @@ struct XML_TREE_EXPORT RegistryIO
 {
   // Read/write the registry.
   static void    read  ( const std::string &file );
+  static void    read  ( const std::string &file, Usul::Registry::Database& );
   static void    write ( const std::string &file );
+  static void    write ( const std::string &file, Usul::Registry::Database& );
 };
 
 

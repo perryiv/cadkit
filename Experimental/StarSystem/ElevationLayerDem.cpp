@@ -241,43 +241,6 @@ ElevationLayerDem::ImagePtr ElevationLayerDem::_createBlankImage ( unsigned int 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  template < class SrcType, class DstType >
-  void convert ( const ossimImageData& data, osg::Image& image )
-  {
-    const unsigned int width ( data.getWidth() );
-    const unsigned int height ( data.getHeight() );
-    const unsigned int size ( width * height );
-
-    DstType *buffer ( reinterpret_cast < DstType* > ( image.data() ) );
-
-    const SrcType* b1 ( static_cast < const SrcType* > ( data.getBuf( 0 ) ) );
-    SrcType np1 ( static_cast < SrcType > ( data.getNullPix( 0 ) ) );
-
-    Usul::Predicates::Tolerance<SrcType,SrcType> tolerance ( 5 );
-
-    // Copy the pixels into the osg image.
-    for ( unsigned int i = 0; i < size; ++i )
-    {
-      DstType value ( tolerance ( *b1, np1 ) ? 0.0 : static_cast < DstType > ( *b1 ) );
-      *buffer = value;
-
-      ++buffer;
-      ++b1;
-    }
-
-    image.flipVertical();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the value at the lat, lon location.  May return null pixel value.
 //
 ///////////////////////////////////////////////////////////////////////////////

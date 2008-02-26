@@ -255,6 +255,40 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Convert.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class SrcType, class DstType >
+  void convert ( const osg::Image& data, osg::Image& image )
+  {
+    const unsigned int width ( data.s() );
+    const unsigned int height ( data.t() );
+    const unsigned int size ( width * height );
+    
+    const SrcType sMax ( std::numeric_limits<SrcType>::max() );
+    const DstType dMax ( std::numeric_limits<DstType>::max() );
+    
+    DstType *dst ( reinterpret_cast < DstType* > ( image.data() ) );
+    
+    const SrcType* src ( static_cast < const SrcType* > ( data.data() ) );
+    
+    // Copy the pixels into the osg image.
+    for ( unsigned int i = 0; i < size; ++i )
+    {
+      *dst = ( *src / sMax ) * dMax;
+      
+      ++dst;
+      ++src;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Composite the two images.
 //
 ///////////////////////////////////////////////////////////////////////////////

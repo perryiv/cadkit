@@ -60,7 +60,7 @@ _document ()
 
   QPushButton *refresh ( new QPushButton ( "Refresh" ) );
   buttonLayout->addWidget ( refresh );
-
+  
   _tree = new QTreeWidget;
   _tree->header()->setHidden ( 1 );
   _tree->setContextMenuPolicy ( Qt::CustomContextMenu );
@@ -82,6 +82,11 @@ _document ()
 
   // Disable by default.
   emit enableWidgets( false );
+  
+  // Hide in release.
+#ifdef NDEBUG
+  refersh->setVisible ( false );
+#endif
 }
 
 
@@ -129,21 +134,7 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
   for ( unsigned int i = 0; i < numLayers; ++i )
   {
-    Usul::Interfaces::ILayer::QueryPtr layer ( layers->layer ( i ) );
-
-    if ( layer.valid () )
-    {
-      // Make the item.
-      QTreeWidgetItem *item ( new QTreeWidgetItem ( _tree ) );
-      item->setText ( 0, layer->name ().c_str () );
-      item->setStatusTip ( 0, layer->name().c_str() );
-
-      Qt::CheckState state ( layer->showLayer() ? Qt::Checked : Qt::Unchecked );
-      item->setCheckState ( 0, state );
-      _tree->addTopLevelItem ( item );
-
-      _layerMap.insert ( LayerMap::value_type ( item, layer.get() ) );
-    }
+    this->addLayer ( layers->layer ( i ) );
   }
 }
 
@@ -368,4 +359,33 @@ void LayersTree::_onAddLayerFavorites()
     
     emit addLayerFavorites ( unknown.get() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add layer to the tree.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::addLayer ( Usul::Interfaces::IUnknown * unknown )
+{
+  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
+  
+  if ( layer.valid () )
+  {
+    // Block signals while adding to tree.
+    QtTools::ScopedSignals blockSignals ( *_tree );
+    
+    // Make the item.
+    QTreeWidgetItem *item ( new QTreeWidgetItem ( _tree ) );
+    item->setText ( 0, layer->name ().c_str () );
+    item->setStatusTip ( 0, layer->name().c_str() );
+    
+    Qt::CheckState state ( layer->showLayer() ? Qt::Checked : Qt::Unchecked );
+    item->setCheckState ( 0, state );
+    _tree->addTopLevelItem ( item );
+    
+    _layerMap.insert ( LayerMap::value_type ( item, layer.get() ) );
+  }  
 }

@@ -14,6 +14,7 @@
 
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
+#include "Usul/Interfaces/IModifiedSubject.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Components/Factory.h"
@@ -102,6 +103,8 @@ Usul::Interfaces::IUnknown *LayerManagerComponent::queryInterface ( unsigned lon
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   case Usul::Interfaces::IAddDockWindow::IID:
     return static_cast < Usul::Interfaces::IAddDockWindow * > ( this );
+  case Usul::Interfaces::IModifiedObserver::IID:
+    return static_cast < Usul::Interfaces::IModifiedObserver* > ( this );
   default:
     return 0x0;
   }
@@ -128,8 +131,33 @@ std::string LayerManagerComponent::getPluginName() const
 
 void LayerManagerComponent::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
+  {
+    Usul::Interfaces::IModifiedSubject::QueryPtr ms ( oldDoc );
+    if ( ms.valid() )
+      ms->removeModifiedObserver ( Usul::Interfaces::IModifiedObserver::QueryPtr ( this ) );
+  }
+  
+  {
+    Usul::Interfaces::IModifiedSubject::QueryPtr ms ( newDoc );
+    if ( ms.valid() )
+      ms->addModifiedObserver ( Usul::Interfaces::IModifiedObserver::QueryPtr ( this ) );
+  }
+  
   if ( 0x0 != _layers )
     _layers->buildTree ( newDoc );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The document is modified.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayerManagerComponent::subjectModified ( Usul::Interfaces::IUnknown *caller )
+{
+  if ( 0x0 != _layers )
+    _layers->buildTree ( caller );
 }
 
 
@@ -214,5 +242,6 @@ void LayerManagerComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     _docks.push_back ( dock.release() );
   }
   
-  QObject::connect ( _layers, SIGNAL ( addLayerFavorites ( Usul::Interfaces::IUnknown * ) ), _favorites, SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
+  QObject::connect ( _layers,    SIGNAL ( addLayerFavorites ( Usul::Interfaces::IUnknown * ) ), _favorites, SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
+  QObject::connect ( _favorites, SIGNAL ( layerAdded ( Usul::Interfaces::IUnknown * ) ),        _layers,    SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
 }

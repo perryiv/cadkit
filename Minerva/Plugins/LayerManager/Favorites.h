@@ -32,6 +32,9 @@ public:
   /// Construction/Destruction.
   Favorites( Usul::Interfaces::IUnknown* caller, QWidget* parent = 0x0 );
   virtual ~Favorites();
+
+signals:
+  void             layerAdded ( Usul::Interfaces::IUnknown* layer );
   
 public slots:
   void             addLayer( Usul::Interfaces::IUnknown* layer );

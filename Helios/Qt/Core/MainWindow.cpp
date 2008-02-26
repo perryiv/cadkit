@@ -327,7 +327,7 @@ void MainWindow::_loadSettings()
 
   // Read the file and populate the registry. Not a big deal if this fails.
   const std::string settingsFile ( this->settingsFileName() );
-  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::read, settingsFile, "1123442106" );
+  Usul::Functions::safeCallR1R2 ( XmlTree::RegistryIO::read, settingsFile, Usul::Registry::Database::instance(), "1123442106" );
 
   // Set the window's properties.
   Usul::Registry::Node &mw ( Reg::instance()[Sections::MAIN_WINDOW] );
@@ -362,7 +362,7 @@ void MainWindow::_saveSettings()
 
   // Write to disk.
   const std::string settingsFile ( this->settingsFileName() );
-  Usul::Functions::safeCallV1 ( XmlTree::RegistryIO::write, settingsFile, "4136994389" );
+  Usul::Functions::safeCallR1R2 ( XmlTree::RegistryIO::write, settingsFile, Usul::Registry::Database::instance(), "4136994389" );
 }
 
 

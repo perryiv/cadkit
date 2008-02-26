@@ -85,7 +85,7 @@ _document ()
   
   // Hide in release.
 #ifdef NDEBUG
-  refersh->setVisible ( false );
+  refresh->setVisible ( false );
 #endif
 }
 

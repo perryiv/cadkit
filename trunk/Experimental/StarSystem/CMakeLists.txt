@@ -67,6 +67,7 @@ TARGET_LINK_LIBRARIES(StarSystem
 	${OSG_TEXT_LIB}
 	${OSG_UTIL_LIB}
   ${OSSIM_LIB}
+  curl
 )
 
     

@@ -26,21 +26,6 @@
 using namespace XmlTree;
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the registry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RegistryIO::read ( const std::string &file )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  // Call the other one.
-  RegistryIO::read ( file, Usul::Registry::Database::instance() );
-}
-
-
 //////////////////////////////////////////////////////////////////////////////
 //
 //  Read the registry.
@@ -59,21 +44,6 @@ void RegistryIO::read ( const std::string &file, Usul::Registry::Database& db )
   // Build registry.
   XmlTree::RegistryBuilder::RefPtr builder ( new XmlTree::RegistryBuilder );
   builder->build ( document.get(), db );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the registry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RegistryIO::write ( const std::string &file )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  // Call the other one.
-  RegistryIO::write ( file, Usul::Registry::Database::instance() );
 }
 
 

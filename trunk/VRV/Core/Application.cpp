@@ -3625,29 +3625,32 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::RadioButton  RadioButton;
 
+  // Namespace aliases to help shorten lines.
+  namespace UA = Usul::Adaptors;
+
   menu->append ( new ToggleButton ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Reset Clipping", Usul::Adaptors::memberFunction<void> ( this, &Application::_setNearAndFarClippingPlanes ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Set Home", Usul::Adaptors::memberFunction<void> ( this, &Application::_setHome ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "View All", Usul::Adaptors::memberFunction<void> ( this, &Application::viewScene ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Reset Clipping", UA::memberFunction<void> ( this, &Application::_setNearAndFarClippingPlanes ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Set Home", UA::memberFunction<void> ( this, &Application::_setHome ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "View All", UA::memberFunction<void> ( this, &Application::viewScene ) ) ) );
   menu->append ( new ToggleButton ( 
                                    Usul::Commands::genericToggleCommand ( "Seek", 
-                                   Usul::Adaptors::memberFunction<void> ( this, &Application::seekMode ), 
-                                   Usul::Adaptors::memberFunction<bool> ( this, &Application::isSeekMode ) ) ) );
+                                   UA::memberFunction<void> ( this, &Application::seekMode ), 
+                                   UA::memberFunction<bool> ( this, &Application::isSeekMode ) ) ) );
 
   MenuKit::Menu::RefPtr nearFar ( new MenuKit::Menu ( "Compute Near Far" ) );
   menu->append ( nearFar );
 
   nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "On", 
                         Usul::Adaptors::bind1<void> ( true, 
-                                                      Usul::Adaptors::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
+                                                      UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
                         Usul::Adaptors::bind1<bool> ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES,
-                                                      Usul::Adaptors::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
+                                                      UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
 
   nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Off", 
                         Usul::Adaptors::bind1<void> ( false, 
-                                                      Usul::Adaptors::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
-                                                      Usul::Adaptors::bind1<bool> ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR, 
-                                                      Usul::Adaptors::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
+                                                      UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
+                                                      UA::bind1<bool> ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR, 
+                                                      UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
 
 
   menu->addSeparator();
@@ -3726,6 +3729,9 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::RadioButton  RadioButton;
 
+  // Namespace aliases to help shorten lines.
+  namespace UA = Usul::Adaptors;
+
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   
   // Favorites menu
@@ -3746,10 +3752,10 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   
   menu->append ( new ToggleButton ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
 
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed x 10", Usul::Adaptors::memberFunction<void> ( this, &Application::_increaseSpeedTen ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed x 2", Usul::Adaptors::memberFunction<void> ( this, &Application::_increaseSpeed ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 2", Usul::Adaptors::memberFunction<void> ( this, &Application::_decreaseSpeed ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Translate Speed / 10", Usul::Adaptors::memberFunction<void> ( this, &Application::_decreaseSpeedTen ) ) ) );
+  menu->append ( new Button ( new BasicCommand ( "Translate Speed x 10", UA::memberFunction<void> ( this, &Application::_increaseSpeedTen ) ) ) );
+  menu->append ( new Button ( new BasicCommand ( "Translate Speed x 2", UA::memberFunction<void> ( this, &Application::_increaseSpeed ) ) ) );
+  menu->append ( new Button ( new BasicCommand ( "Translate Speed / 2", UA::memberFunction<void> ( this, &Application::_decreaseSpeed ) ) ) );
+  menu->append ( new Button ( new BasicCommand ( "Translate Speed / 10", UA::memberFunction<void> ( this, &Application::_decreaseSpeedTen ) ) ) );
 }
 
 
@@ -3766,6 +3772,9 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   typedef MenuKit::Button       Button;
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::RadioButton  RadioButton;
+
+  // Namespace aliases to help shorten lines.
+  namespace UA = Usul::Adaptors;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -3785,22 +3794,22 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   typedef OsgTools::Render::Renderer::Corners Corners;
   corners->append ( new RadioButton ( 
                     Usul::Commands::genericCheckCommand ( "All", 
-                                    Usul::Adaptors::bind1<void> ( static_cast<unsigned int> ( Corners::ALL ), 
-                                                          Usul::Adaptors::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
-                                    Usul::Adaptors::bind1<bool> ( static_cast<unsigned int> ( Corners::ALL ), 
-                                                          Usul::Adaptors::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
+                                    UA::bind1<void> ( static_cast<unsigned int> ( Corners::ALL ), 
+                                                      UA::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
+                                    UA::bind1<bool> ( static_cast<unsigned int> ( Corners::ALL ), 
+                                                      UA::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
   corners->append ( new RadioButton ( 
                     Usul::Commands::genericCheckCommand ( "Top", 
-                                    Usul::Adaptors::bind1<void> ( static_cast<unsigned int> ( Corners::TOP ), 
-                                                          Usul::Adaptors::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
-                                    Usul::Adaptors::bind1<bool> ( static_cast<unsigned int> (Corners::TOP ), 
-                                                          Usul::Adaptors::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
+                                    UA::bind1<void> ( static_cast<unsigned int> ( Corners::TOP ), 
+                                                      UA::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
+                                    UA::bind1<bool> ( static_cast<unsigned int> (Corners::TOP ), 
+                                                      UA::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
   corners->append ( new RadioButton ( 
                     Usul::Commands::genericCheckCommand ( "Bottom", 
-                                    Usul::Adaptors::bind1<void> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
-                                                          Usul::Adaptors::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
-                                    Usul::Adaptors::bind1<bool> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
-                                                          Usul::Adaptors::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
+                                    UA::bind1<void> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
+                                                      UA::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
+                                    UA::bind1<bool> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
+                                                      UA::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
 
   background->append ( corners.get() );
 
@@ -3810,22 +3819,22 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
     MenuKit::Menu::RefPtr assign ( new MenuKit::Menu ( "Assign" ) );
     assign->append ( new Button ( Usul::Commands::genericCommand ( "Red Button", 
-                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_RED, 
-                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+                     UA::bind1<void> ( VRV::BUTTON_RED, 
+                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
     assign->append ( new Button ( Usul::Commands::genericCommand ( "Yellow Button", 
-                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_YELLOW, 
-                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+                     UA::bind1<void> ( VRV::BUTTON_YELLOW, 
+                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
     assign->append ( new Button ( Usul::Commands::genericCommand ( "Green Button", 
-                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_GREEN, 
-                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+                     UA::bind1<void> ( VRV::BUTTON_GREEN, 
+                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
     assign->append ( new Button ( Usul::Commands::genericCommand ( "Blue Button", 
-                     Usul::Adaptors::bind1<void> ( VRV::BUTTON_BLUE, 
-                     Usul::Adaptors::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );;
+                     UA::bind1<void> ( VRV::BUTTON_BLUE, 
+                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );;
     
     
     buttons->append ( assign );
 
-    buttons->append ( new Button ( new BasicCommand ( "Clear button assignments", Usul::Adaptors::memberFunction<void> ( this, &Application::_clearAssignedButtonCommands ) ) ) );
+    buttons->append ( new Button ( new BasicCommand ( "Clear button assignments", UA::memberFunction<void> ( this, &Application::_clearAssignedButtonCommands ) ) ) );
 
 
     menu->append ( buttons );
@@ -3834,15 +3843,15 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 
-  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Update", Usul::Adaptors::memberFunction<void> ( this, &Application::_setAllowUpdate ), Usul::Adaptors::memberFunction<bool> ( this, &Application::_isUpdateOn ) ) ) );
+  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Update", UA::memberFunction<void> ( this, &Application::_setAllowUpdate ), UA::memberFunction<bool> ( this, &Application::_isUpdateOn ) ) ) );
 
-  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Intersect", Usul::Adaptors::memberFunction<void> ( this, &Application::allowIntersections ), Usul::Adaptors::memberFunction<bool> ( this, &Application::isAllowIntersections ) ) ) );
+  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Intersect", UA::memberFunction<void> ( this, &Application::allowIntersections ), UA::memberFunction<bool> ( this, &Application::isAllowIntersections ) ) ) );
 
-  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Memory Usage", Usul::Adaptors::memberFunction<void> ( this, &Application::setShowMemory ), Usul::Adaptors::memberFunction<bool> ( this, &Application::getShowMemory ) ) ) );
+  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Memory Usage", UA::memberFunction<void> ( this, &Application::setShowMemory ), UA::memberFunction<bool> ( this, &Application::getShowMemory ) ) ) );
 
   menu->append ( new MenuKit::Separator );
 
-  menu->append ( new Button ( new BasicCommand ( "Reinitialize", Usul::Adaptors::memberFunction<void> ( this, &Application::reinitialize ) ) ) );
+  menu->append ( new Button ( new BasicCommand ( "Reinitialize", UA::memberFunction<void> ( this, &Application::reinitialize ) ) ) );
 }
 
 

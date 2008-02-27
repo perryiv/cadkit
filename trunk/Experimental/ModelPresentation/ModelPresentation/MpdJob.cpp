@@ -184,7 +184,7 @@ void MpdJob::_findFiles()
        //std::cout << _currentFiles.size() << " files loaded for dynamic set: " << _prefix << std::endl;
     }
     
-    this->setHeader( header );
+    //this->setHeader( header );
   }
 }
 
@@ -222,6 +222,7 @@ void MpdJob::_parseNewFiles( Files files, Usul::Interfaces::IUnknown *caller, IU
   {
     this->_loadNewDynamicFiles( c.at( 0 ), caller, progress );
     header.modelNames.push_back( c.at( 0 ) );
+    this->setHeader( header );
   }
 #endif
   //std::cout << "All new files loaded!" << std::endl;

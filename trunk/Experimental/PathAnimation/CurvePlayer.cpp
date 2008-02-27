@@ -39,7 +39,6 @@
 #include "osg/MatrixTransform"
 #include "osg/ref_ptr"
 #include "osg/Vec3d"
-
 #include <algorithm>
 
 
@@ -52,8 +51,9 @@
 CurvePlayer::CurvePlayer() : BaseClass(),
   _playing ( false ),
   _curve(),
-  _current ( 0 ),
-  _steps ( 100 ),
+  _pathParams(),
+  _currentStep ( 0 ),
+  _stepsPerSpan ( 100 ),
   _renderLoop ( false ),
   _looping ( false )
 {
@@ -83,7 +83,7 @@ void CurvePlayer::numStepsPerSpan ( unsigned int num )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _steps = num;
+  _stepsPerSpan = num;
 }
 
 
@@ -97,42 +97,13 @@ unsigned int CurvePlayer::numStepsPerSpan() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _steps;
+  return _stepsPerSpan;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the total number of steps.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int CurvePlayer::numStepsTotal ( const Curve &curve, unsigned int stepsPerSpan )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  // Note: totalNumControlPoints() should not throw but return 0 if the curve is empty.
-  return ( ( 0 == curve.totalNumControlPoints() ) ? 0 : ( stepsPerSpan * ( curve.totalNumControlPoints() - 1 ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the total number of steps.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int CurvePlayer::numStepsTotal() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return CurvePlayer::numStepsTotal ( _curve, this->numStepsPerSpan() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Play the animation from the current paramater.
+//  Play the animation from the current parameter.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -142,17 +113,19 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
   Guard guard ( this );
 
   // Set current step.
-  _current = 0;
+  _currentStep = 0;
 
   // Initialize.
   this->playing ( false );
 
   // Try to make the curve.
-  IndependentSequence params;
-  CurvePlayer::interpolate ( path, degree, reverseOrder, _curve, params );
+  CurvePlayer::interpolate ( path, degree, reverseOrder, _curve.first, _curve.second );
+  if ( false == _curve.first.valid() )
+    return;
 
-  // Did it work?
-  if ( false == _curve.valid() )
+  // Make the path's parameters.
+  this->_makePathParams();
+  if ( true == _pathParams.empty() )
     return;
 
   // We are now playing.
@@ -171,7 +144,7 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Play the animation forward from the current paramater.
+//  Play the animation forward from the current parameter.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -185,7 +158,7 @@ void CurvePlayer::playForward ( const CameraPath *path, unsigned int degree, Usu
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Play the animation backward from the current paramater.
+//  Play the animation backward from the current parameter.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -256,7 +229,8 @@ void CurvePlayer::clear()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _curve.clear();
+  _curve.first.clear();
+  _curve.second.clear();
 }
 
 
@@ -370,20 +344,20 @@ void CurvePlayer::go ( Parameter u, Usul::Interfaces::IUnknown *caller )
     return;
 
   // Make sure we have a valid curve.
-  if ( false == _curve.valid() )
+  if ( false == _curve.first.valid() )
     return;
 
   // Make sure the parameter is in range.
-  if ( ( u < _curve.firstKnot() ) || ( u > _curve.lastKnot() ) )
+  if ( ( u < _curve.first.firstKnot() ) || ( u > _curve.first.lastKnot() ) )
     return;
 
   // Check number of dependent variables.
-  if ( 9 != _curve.numDepVars() )
+  if ( 9 != _curve.first.numDepVars() )
     return;
 
   // Evaluate the dependent variables. Have to size the point!
-  Curve::Vector point ( _curve.numDepVars() );
-  GN::Evaluate::point ( _curve, u, point );
+  Curve::Vector point ( _curve.first.numDepVars() );
+  GN::Evaluate::point ( _curve.first, u, point );
 
   // Get the point's components.
   osg::Vec3d eye    ( point[0], point[1], point[2] );
@@ -414,40 +388,107 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
   Guard guard ( this );
 
   // Return now if we're not playing.
-  if ( false == this->playing() )
+  if ( ( false == this->playing() ) || ( true == _pathParams.empty() ) )
     return;
 
   // If the curve is bad, stop playing and return.
-  if ( false == _curve.valid() )
+  if ( false == _curve.first.valid() )
   {
     this->stopPlaying ( caller );
     return;
   }
 
-  // Determine total number of steps.
-  const unsigned int totalSteps ( this->numStepsTotal() );
-
   // Check to see if we're off the end.
-  if ( _current >= totalSteps )
+  if ( _currentStep >= _pathParams.size() )
   {
     // Are we supposed to loop?
     if ( false == this->looping() )
     {
       // No longer playing.
-      this->playing ( false );
+      this->stopPlaying ( caller );
       return;
     }
 
     // We're looping so reset the step.
-    _current = 0;
+    _currentStep = 0;
   }
 
+  // Determine parameter.
+  const Parameter u ( _pathParams.at ( _currentStep ) );
+
   // Go to the parametric position.
-  const Parameter u ( static_cast<Parameter> ( _current ) / static_cast<Parameter> ( totalSteps - 1 ) );
   this->go ( u, caller );
 
   // Increment the current step.
-  ++_current;
+  ++_currentStep;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the path's parameters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CurvePlayer::_makePathParams()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  CurvePlayer::_makePathParams ( _curve, this->numStepsPerSpan(), _pathParams );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the path's parameters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CurvePlayer::_makePathParams ( const CurveData &curve, unsigned int stepsPerSpan, IndependentSequence &pathParams )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  // Initialize.
+  pathParams.clear();
+
+  // Check input.
+  if ( 0 == stepsPerSpan )
+    return;
+
+  // Note: totalNumControlPoints() should not throw but return 0 if the curve is empty.
+  const unsigned int numControlPoints ( curve.first.totalNumControlPoints() );
+  if ( numControlPoints < 2 )
+    return;
+
+  // Reserve space.
+  pathParams.reserve ( stepsPerSpan * numControlPoints );
+
+  // Loop through the spans.
+  const unsigned int numSpans ( numControlPoints - 1 );
+  for ( unsigned int s = 0; s < numSpans; ++s )
+  {
+    // The parameters to stay between.
+    const Parameter u0 ( curve.second.at ( s ) );
+    const Parameter u1 ( curve.second.at ( s + 1 ) );
+
+    // Loop through the steps.
+    for ( unsigned int i = 0; i < stepsPerSpan; ++i )
+    {
+      // Determine parameter.
+      Parameter u ( static_cast<Parameter> ( i ) / static_cast<Parameter> ( stepsPerSpan - 1 ) );
+      u = u0 + ( u * ( u1 - u0 ) );
+
+      // Ensure last parameter is exactly u1.
+      u = ( ( i + 1 == stepsPerSpan ) ? u1 : u );
+
+      // Add the parameter.
+      pathParams.push_back ( u );
+    }
+  }
+
+  // Have to remove non-unique parameters.
+  std::sort ( pathParams.begin(), pathParams.end() );
+  pathParams.erase ( std::unique ( pathParams.begin(), pathParams.end() ), pathParams.end() );
 }
 
 
@@ -592,13 +633,18 @@ osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree
   // Make new group to hold everything.
   osg::ref_ptr<osg::Group> group ( new osg::Group );
 
+  // Check input.
+  if ( ( steps < 2 ) || ( degree < 1 ) )
+    return group.release();
+
   // Is there a valid path?
   if ( ( 0x0 == path ) || ( path->size() < 2 ) )
     return group.release();
 
   // Try to make the curve.
-  Curve curve;
-  IndependentSequence params;
+  CurveData data;
+  Curve &curve ( data.first );
+  IndependentSequence &params ( data.second );
   CurvePlayer::interpolate ( path, degree, false, curve, params );
 
   // Did it work?
@@ -677,18 +723,16 @@ osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree
 
   // Make smaller axes at each evaluated position.
   {
-    // Determine total number of steps.
-    const unsigned int totalSteps ( CurvePlayer::numStepsTotal ( curve, steps ) );
+    // Make the parameters.
+    IndependentSequence pathParams;
+    CurvePlayer::_makePathParams ( data, steps, pathParams );
 
-    // Loop through the all steps.
-    for ( unsigned int i = 0; i < totalSteps; ++i )
+    // Loop through the parameters.
+    for ( IndependentSequence::const_iterator i = pathParams.begin(); i != pathParams.end(); ++i )
     {
-      // Determine parameter.
-      const Parameter u ( static_cast<Parameter> ( i ) / static_cast<Parameter> ( totalSteps - 1 ) );
-
       // Evaluate the curve.
       Curve::Vector point ( curve.dimension() );
-      GN::Evaluate::point ( curve, u, point );
+      GN::Evaluate::point ( curve, *i, point );
       if ( point.size() >= 3 )
       {
         // Add axes.

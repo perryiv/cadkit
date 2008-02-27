@@ -102,10 +102,6 @@ PathAnimationComponent::~PathAnimationComponent()
   // Remove ourself as a listener. Do not use smart pointer!
   Usul::Documents::Manager::instance().removeActiveViewListener ( this );
 
-  // Save properties in registry.
-  Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"]    = _degree;
-  Reg::instance()[Sections::PATH_ANIMATION]["curve"]["num_steps"] = _numSteps;
-
   // Remove scene.
   _root = 0x0;
 }
@@ -949,6 +945,7 @@ void PathAnimationComponent::_setDegree ( unsigned int degree )
   Guard guard ( this );
 
   _degree = degree;
+  Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"] = _degree;
 
   // The scene is dirty.
   _dirtyScene = true;
@@ -1330,7 +1327,12 @@ void PathAnimationComponent::_setNumSteps ( unsigned int steps )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
   _numSteps = steps;
+  Reg::instance()[Sections::PATH_ANIMATION]["curve"]["num_steps"] = _numSteps;
+
+  // The scene is dirty.
+  _dirtyScene = true;
 }
 
 

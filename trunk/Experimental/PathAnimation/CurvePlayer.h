@@ -48,6 +48,7 @@ public:
   typedef Curve::DependentContainer DependentContainer;
   typedef Curve::DependentSequence DependentSequence;
   typedef Curve::IndependentType Parameter;
+  typedef std::pair < Curve, IndependentSequence > CurveData;
 
   // Constructor.
   CurvePlayer();
@@ -83,10 +84,6 @@ public:
   void                          numStepsPerSpan ( unsigned int num );
   unsigned int                  numStepsPerSpan() const;
 
-  // Get the total number of steps.
-  static unsigned int           numStepsTotal ( const Curve &, unsigned int stepsPerSpan );
-  unsigned int                  numStepsTotal() const;
-
   // Update the player.
   void                          update ( IUnknown *caller );
 
@@ -95,14 +92,18 @@ protected:
   // Use reference counting.
   virtual ~CurvePlayer();
 
+  static void                   _makePathParams ( const CurveData &, unsigned int stepsPerSpan, IndependentSequence & );
+  void                          _makePathParams();
+
   void                          _play ( const CameraPath *, unsigned int degree, IUnknown *caller, bool reverse );
 
 private:
 
   bool _playing;
-  Curve _curve;
-  unsigned int _current;
-  unsigned int _steps;
+  CurveData _curve;
+  IndependentSequence _pathParams;
+  unsigned int _currentStep;
+  unsigned int _stepsPerSpan;
   bool _renderLoop;
   bool _looping;
 };

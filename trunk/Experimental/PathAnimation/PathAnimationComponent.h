@@ -64,7 +64,7 @@ public:
 
   // Usul::Interfaces::IAnimatePath.
   virtual void                  animatePath ( const IAnimatePath::PackedMatrices & );
-  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, double step );
+  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, unsigned int steps );
 
   // Usul::Interfaces::IPlugin
   virtual std::string           getPluginName() const { return "Path Animation"; }
@@ -103,9 +103,9 @@ protected:
   bool                          _isCurrentPathModified() const;
   bool                          _isDegree ( unsigned int ) const;
   bool                          _isLooping() const;
+  bool                          _isNumSteps ( unsigned int steps ) const;
   bool                          _isPlaying() const;
   bool                          _isPaused() const;
-  bool                          _isStepSize ( double step ) const;
   bool                          _isShowingPath() const;
 
   void                          _newPath();
@@ -114,8 +114,8 @@ protected:
   void                          _pause ( bool );
   void                          _playBackward();
   void                          _playForward();
-  void                          _playPathBackward ( const CameraPath *path, double step, bool loop );
-  void                          _playPathForward ( const CameraPath *path, double step, bool loop );
+  void                          _playPathBackward ( const CameraPath *path, unsigned int steps, bool loop );
+  void                          _playPathForward ( const CameraPath *path, unsigned int steps, bool loop );
 
   void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
@@ -123,8 +123,8 @@ protected:
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
   void                          _setLooping ( bool );
+  void                          _setNumSteps ( unsigned int steps );
   void                          _setShowPath ( bool );
-  void                          _setStepSize ( double step );
   void                          _stopPlaying();
 
   void                          _updateScene();
@@ -148,7 +148,7 @@ private:
   std::string _movieFilename;
   Usul::Interfaces::IUnknown::QueryPtr _movieWriter;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
-  double _stepSize;
+  unsigned int _numSteps;
   osg::ref_ptr<osg::Group> _root;
   bool _showPath;
   bool _looping;

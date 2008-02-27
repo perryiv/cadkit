@@ -3765,10 +3765,10 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
 
     // Get step size.
-    const double step ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_STEP_SIZE].get<double> ( 0.05, true ) );
+    const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 50, true ) );
 
     // Animate through the path.
-    animate->animatePath ( matrices, step );
+    animate->animatePath ( matrices, steps );
 
     // We do this also so that the trackball behaves well.
     this->setTrackball ( c2, d2, rot, true, true );

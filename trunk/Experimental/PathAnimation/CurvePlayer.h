@@ -53,7 +53,7 @@ public:
   CurvePlayer();
 
   // Build a curve.
-  static osg::Node *            buildCurve ( const CameraPath *, unsigned int degree, IUnknown *caller );
+  static osg::Node *            buildCurve ( const CameraPath *, unsigned int degree, unsigned int steps, IUnknown *caller );
 
   // Clear the player.
   void                          clear();
@@ -79,9 +79,13 @@ public:
   // Stop the animation.
   void                          stopPlaying ( IUnknown *caller );
 
-  // Set/get the step size.
-  void                          stepSize ( Parameter delta );
-  Parameter                     stepSize() const;
+  // Set/get the number of steps per knot span.
+  void                          numStepsPerSpan ( unsigned int num );
+  unsigned int                  numStepsPerSpan() const;
+
+  // Get the total number of steps.
+  static unsigned int           numStepsTotal ( const Curve &, unsigned int stepsPerSpan );
+  unsigned int                  numStepsTotal() const;
 
   // Update the player.
   void                          update ( IUnknown *caller );
@@ -97,8 +101,8 @@ private:
 
   bool _playing;
   Curve _curve;
-  Parameter _current;
-  Parameter _step;
+  unsigned int _current;
+  unsigned int _steps;
   bool _renderLoop;
   bool _looping;
 };

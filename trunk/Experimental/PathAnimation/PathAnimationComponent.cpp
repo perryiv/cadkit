@@ -72,7 +72,7 @@ PathAnimationComponent::PathAnimationComponent() :
   _movieFilename(),
   _movieWriter(),
   _caller(),
-  _stepSize ( Usul::Interfaces::AnimatePath::DEFAULT_STEP_SIZE ),
+  _numSteps ( Reg::instance()[Sections::PATH_ANIMATION]["curve"]["num_steps"].get<unsigned int> ( 100 ) ),
   _root ( 0x0 ),
   _showPath ( false ),
   _looping ( false ),
@@ -103,7 +103,8 @@ PathAnimationComponent::~PathAnimationComponent()
   Usul::Documents::Manager::instance().removeActiveViewListener ( this );
 
   // Save properties in registry.
-  Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"] = _degree;
+  Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"]    = _degree;
+  Reg::instance()[Sections::PATH_ANIMATION]["curve"]["num_steps"] = _numSteps;
 
   // Remove scene.
   _root = 0x0;
@@ -173,7 +174,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   // Only add the save buttons if hte interface is implemented.
   if ( this->_canSavePath ( caller ) )
   {
-    menu->append ( new Button ( UC::genericCommand ( "Save Path...", UA::bind1<void> ( caller, UA::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isCurrentPathModified ) ) ) );
+    menu->append ( new Button ( UC::genericCommand ( "Save Path",       UA::bind1<void> ( caller, UA::memberFunction<void> ( this, &PathAnimationComponent::_saveCurrentPath ) ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isCurrentPathModified ) ) ) );
     menu->append ( new Button ( UC::genericCommand ( "Save Path As...", UA::bind1<void> ( caller, UA::memberFunction<void> ( this, &PathAnimationComponent::_saveAsCurrentPath ) ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_hasCurrentPath ) ) ) );
     
     // Look to see if we have any plugins to export movie.
@@ -212,20 +213,17 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   sub->append ( new RadioButton ( UC::genericCheckCommand ( "&4", UA::bind1<void> ( 4, UA::memberFunction<void> ( this, &PathAnimationComponent::_setDegree ) ), UA::bind1<bool> ( 4, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isDegree ) ) ) ) );
   menu->append ( sub.get() );
 
-  typedef std::vector<double> Doubles;
-  Doubles stepSizes;
-  stepSizes.push_back ( 0.001 );
-  stepSizes.push_back ( 0.005 );
-  stepSizes.push_back ( 0.01 );
-  stepSizes.push_back ( 0.05 );
-  stepSizes.push_back ( 0.10 );
-  stepSizes.push_back ( 0.20 );
+  typedef std::vector<unsigned int> NumSteps;
+  NumSteps numStep;
+  numStep.push_back (   10 ); numStep.push_back (   20 ); numStep.push_back (   30 ); numStep.push_back (   40 ); numStep.push_back (   50 );
+  numStep.push_back (  100 ); numStep.push_back (  200 ); numStep.push_back (  300 ); numStep.push_back (  400 ); numStep.push_back (  500 );
+  numStep.push_back ( 1000 ); numStep.push_back ( 2000 ); numStep.push_back ( 3000 ); numStep.push_back ( 4000 ); numStep.push_back ( 5000 );
 
-  MenuKit::Menu::RefPtr steps ( new MenuKit::Menu ( "Step Size" ) );
-  for ( Doubles::const_iterator iter = stepSizes.begin(); iter != stepSizes.end(); ++iter )
+  MenuKit::Menu::RefPtr steps ( new MenuKit::Menu ( "Steps" ) );
+  for ( NumSteps::const_iterator iter = numStep.begin(); iter != numStep.end(); ++iter )
   {
-    const double s ( *iter );
-    steps->append ( new RadioButton ( UC::genericCheckCommand ( Usul::Strings::format ( s ), UA::bind1<void> ( s, UA::memberFunction<void> ( this, &PathAnimationComponent::_setStepSize ) ), UA::bind1<bool> ( s, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isStepSize ) ) ) ) );
+    const unsigned int num ( *iter );
+    steps->append ( new RadioButton ( UC::genericCheckCommand ( Usul::Strings::format ( num ), UA::bind1<void> ( num, UA::memberFunction<void> ( this, &PathAnimationComponent::_setNumSteps ) ), UA::bind1<bool> ( num, UA::memberFunction<bool> ( this, &PathAnimationComponent::_isNumSteps ) ) ) ) );
   }
   menu->append ( steps );
 
@@ -585,7 +583,7 @@ bool PathAnimationComponent::_canClosePath() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathForward ( const CameraPath *path, double step, bool loop )
+void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned int steps, bool loop )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -602,7 +600,7 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, double s
     _player = new CurvePlayer;
 
   // Set properties.
-  _player->stepSize ( step );
+  _player->numStepsPerSpan ( steps );
   _player->looping ( loop );
 
   // Play the animation forward.
@@ -616,7 +614,7 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, double s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathBackward ( const CameraPath *path, double step, bool loop )
+void PathAnimationComponent::_playPathBackward ( const CameraPath *path, unsigned int steps, bool loop )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -633,7 +631,7 @@ void PathAnimationComponent::_playPathBackward ( const CameraPath *path, double 
     _player = new CurvePlayer;
 
   // Set properties.
-  _player->stepSize ( step );
+  _player->numStepsPerSpan ( steps );
   _player->looping ( loop );
 
   // Play the animation forward.
@@ -651,7 +649,7 @@ void PathAnimationComponent::_playForward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathForward ( _currentPath.get(), _stepSize, this->_isLooping() );
+  this->_playPathForward ( _currentPath.get(), _numSteps, this->_isLooping() );
 }
 
 
@@ -665,7 +663,7 @@ void PathAnimationComponent::_playBackward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathBackward ( _currentPath.get(), _stepSize, this->_isLooping() );
+  this->_playPathBackward ( _currentPath.get(), _numSteps, this->_isLooping() );
 }
 
 
@@ -893,8 +891,8 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
 {
   USUL_TRACE_SCOPE;
 
-  // Redirect with our current step size.
-  this->animatePath ( matrices, Usul::Threads::Safe::get ( this->mutex(), _stepSize ) );
+  // Redirect with our current number of steps.
+  this->animatePath ( matrices, Usul::Threads::Safe::get ( this->mutex(), _numSteps ) );
 }
 
 
@@ -904,7 +902,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices, double step )
+void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices, unsigned int steps )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -935,7 +933,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
   }
 
   // Play this path forward.
-  this->_playPathForward ( path.get(), step, false );
+  this->_playPathForward ( path.get(), steps, false );
 }
 
 
@@ -1314,11 +1312,11 @@ void PathAnimationComponent::_setCameraPosition ( unsigned int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PathAnimationComponent::_isStepSize ( double step ) const
+bool PathAnimationComponent::_isNumSteps ( unsigned int steps ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return step == _stepSize;
+  return ( steps == _numSteps );
 }
 
 
@@ -1328,11 +1326,11 @@ bool PathAnimationComponent::_isStepSize ( double step ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_setStepSize ( double step )
+void PathAnimationComponent::_setNumSteps ( unsigned int steps )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _stepSize = step;
+  _numSteps = steps;
 }
 
 
@@ -1447,5 +1445,5 @@ osg::Node *PathAnimationComponent::_buildCurve() const
     return new osg::Group;
 
   // Ask the player to build a curve.
-  return player->buildCurve ( _currentPath.get(), _degree, Usul::Documents::Manager::instance().activeView() );
+  return player->buildCurve ( _currentPath.get(), _degree, _numSteps, Usul::Documents::Manager::instance().activeView() );
 }

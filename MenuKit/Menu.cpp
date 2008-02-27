@@ -19,6 +19,8 @@
 #include "MenuKit/Errors.h"
 #include "MenuKit/Separator.h"
 
+#include "Usul/Threads/Safe.h"
+
 #include <algorithm>
 
 using namespace MenuKit;
@@ -44,9 +46,9 @@ Menu::Menu(): BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Menu::Menu ( const std::string &name, Layout layout ) :
-  BaseClass ( ),
-  _text   ( name ),
+Menu::Menu ( const std::string &text, Layout layout ) :
+  BaseClass(),
+  _text   ( text ),
   _items  (), 
   _layout ( layout )
 {
@@ -60,10 +62,14 @@ Menu::Menu ( const std::string &name, Layout layout ) :
 ///////////////////////////////////////////////////////////////////////////////
 
 Menu::Menu ( const Menu &m ): BaseClass ( m ),
-  _text   ( m._text ),
-  _items  ( m._items ), 
-  _layout ( m._layout )
+  _text   (),
+  _items  (), 
+  _layout ( VERTICAL )
 {
+  Guard guard ( &m );
+  _text   = m._text;
+  _items  = m._items;
+  _layout = m._layout;
 }
 
 
@@ -87,6 +93,10 @@ Menu::~Menu()
 Menu& Menu::operator = ( const Menu &m )
 {
   BaseClass::operator = ( m );
+
+  Guard guard1 ( this );
+  Guard guard2 ( &m );
+
   _text   = m._text;
   _items  = m._items;
   _layout = m._layout;
@@ -101,10 +111,10 @@ Menu& Menu::operator = ( const Menu &m )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Menu::clear ()
+void Menu::clear()
 {
-  Guard guard ( this->mutex () );
-  _items.clear ();
+  Guard guard ( this );
+  _items.clear();
 }
 
 
@@ -119,7 +129,10 @@ void Menu::append ( Item *item )
   if ( 0x0 != item )
   {
     item->_setParent ( this );
-    _items.push_back ( item );
+    {
+      Guard guard ( this );
+      _items.push_back ( item );
+    }
   }
 }
 
@@ -135,7 +148,10 @@ void Menu::prepend ( Item *item )
   if ( 0x0 != item )
   {
     item->_setParent ( this );
-    _items.insert ( _items.begin(), item );
+    {
+      Guard guard ( this );
+      _items.insert ( _items.begin(), item );
+    }
   }
 }
 
@@ -151,7 +167,10 @@ void Menu::insert ( iterator iter, Item *item )
   if ( 0x0 != item )
   {
     item->_setParent ( this );
-    _items.insert ( iter, item );
+    {
+      Guard guard ( this );
+      _items.insert ( iter, item );
+    }
   }
 }
 
@@ -176,23 +195,34 @@ void Menu::accept ( Visitor &v )
 
 void Menu::traverse ( Visitor &v )
 {
-  switch( v.mode() )
+  switch ( v.mode() )
   {
-  case Visitor::NONE: {} break;
-  case Visitor::ALL:
+    case Visitor::NONE:
     {
-      for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
-        (*iter)->accept ( v );
-    } break;
-  case Visitor::EXPANDED:
-  default:
+      break;
+    }
+    case Visitor::ALL:
     {
-      if( this->expanded() )
+      Menu::Items items ( Usul::Threads::Safe::get ( this->mutex(), _items ) );
+      for ( Menu::iterator iter = items.begin(); iter != items.end(); ++iter )
       {
-        for ( Menu::iterator iter = _items.begin(); iter != _items.end(); ++iter )
-          (*iter)->accept ( v );
+        (*iter)->accept ( v );
       }
-    } break;
+      break;
+    }
+    case Visitor::EXPANDED:
+    default:
+    {
+      if ( this->expanded() )
+      {
+        Menu::Items items ( Usul::Threads::Safe::get ( this->mutex(), _items ) );
+        for ( Menu::iterator iter = items.begin(); iter != items.end(); ++iter )
+        {
+          (*iter)->accept ( v );
+        }
+      }
+      break;
+    }
   }
 }
 
@@ -203,7 +233,7 @@ void Menu::traverse ( Visitor &v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Menu::addSeparator ()
+void Menu::addSeparator()
 {
   this->append ( new MenuKit::Separator );
 }
@@ -224,10 +254,10 @@ namespace Detail
     }
 
     template < class T >
-    bool operator () ( const T& t ) const
+    bool operator() ( const T& t ) const
     {
       if ( Menu* m = dynamic_cast < Menu* > ( t.get() ) )
-        return ( _name == m->text () );
+        return ( _name == m->text() );
       return false;
     }
 
@@ -245,11 +275,10 @@ namespace Detail
 
 Menu* Menu::find ( const std::string& name, bool create )
 {
-  Guard guard ( this->mutex () );
-
-  // Try and find a item with the name.
-  iterator iter = std::find_if ( _items.begin (), _items.end(), Detail::FindMenu ( name ) );
-  if ( _items.end() != iter )
+  // Try to find the item with the name.
+  Menu::Items items ( Usul::Threads::Safe::get ( this->mutex(), _items ) );
+  iterator iter = std::find_if ( items.begin(), items.end(), Detail::FindMenu ( name ) );
+  if ( items.end() != iter )
   {
     return dynamic_cast < Menu* > ( iter->get() );
   }
@@ -267,4 +296,56 @@ Menu* Menu::find ( const std::string& name, bool create )
 
   // Return menu (which may be null).
   return menu.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the text string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Menu::text ( const std::string &t )
+{
+  Guard guard ( this );
+  _text = t;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Menu::text ( char strip ) const
+{
+  Guard guard ( this );
+  return _text;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the menu empty?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Menu::empty() const
+{
+  Guard guard ( this );
+  return _items.empty();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of items.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Menu::size_type Menu::numItems() const
+{
+  Guard guard ( this );
+  return _items.size();
 }

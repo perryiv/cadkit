@@ -69,10 +69,10 @@ public:
   const_reverse_iterator    rend()   const { return ( _items.rend() ); }
 
   // Is the menu empty?
-  bool                      empty() const { return _items.empty(); }
+  bool                      empty() const;
 
   // Get the number of items.
-  size_type                 numItems() const { return _items.size(); }
+  size_type                 numItems() const;
 
   // Add the items.
   void                      append ( Item * );
@@ -93,11 +93,11 @@ public:
   virtual void              traverse ( Visitor & );
 
   // Add a separator to the end.
-  void                      addSeparator ();
+  void                      addSeparator();
 
   // Set/get the text string.
-  void                      text ( const std::string &t ) { _text = t; }
-  const std::string &       text() const { return _text; }
+  void                      text ( const std::string &t );
+  std::string               text ( char strip = '\0' ) const;
 
 protected:
 

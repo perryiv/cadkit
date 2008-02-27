@@ -187,7 +187,7 @@ protected:
     app.run();
 
     // Save the registry.
-    XmlTree::RegistryIO::write ( this->_registryFileName() );
+    XmlTree::RegistryIO::write ( this->_registryFileName(), Usul::Registry::Database::instance() );
 
     // Clean up.
     app.cleanup();
@@ -240,7 +240,7 @@ protected:
   void _readRegistryFile ()
   {
     // Need to revisit file name and location.
-    XmlTree::RegistryIO::read ( this->_registryFileName() );
+    XmlTree::RegistryIO::read ( this->_registryFileName(), Usul::Registry::Database::instance() );
   }
 
   // Return the registry file.

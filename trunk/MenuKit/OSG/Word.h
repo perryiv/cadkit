@@ -12,8 +12,11 @@
 
 #include "DrawableFunctor.h"
 
-#include <string>
 #include "osgText/Text"
+
+#include <algorithm>
+#include <string>
+
 
 namespace MenuKit
 {
@@ -69,7 +72,15 @@ namespace MenuKit
       osgText::Text* text = new osgText::Text();
       text->setDrawMode( _dm );
       text->setAlignment( osgText::Text::LEFT_BASE_LINE );
-      text->setText( _text );
+
+      #if 1
+      std::string s ( _text );
+      s = std::string ( s.begin(), std::remove ( s.begin(), s.end(), '&' ) );
+      text->setText ( s );
+      #else
+      text->setText ( _text );
+      #endif
+
       text->setFont( _font.get() );
       text->setColor( color() );
       text->setCharacterSize( height(),_ar );

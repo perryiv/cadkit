@@ -26,6 +26,8 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/Absolute.h"
+#include "Usul/Registry/Database.h"
+#include "Usul/Strings/Split.h"
 
 #include <string>
 #include <vector>
@@ -87,123 +89,121 @@ public:
   void                  offsetGrid( bool b ) { _grids[_grids.size()-1]._offsetGrid = b; }
   
   // Clipping plane distances.
-  float                 nearClippingDistance() const { return _zNear; }
-  void                  nearClippingDistance ( float zNear ) { _zNear = zNear; }
+  float                 nearClippingDistance() const;
+  void                  nearClippingDistance ( float zNear );
 
   /// Far plane multiplier.
-  float                 farClippingPlaneMultiplier () const { return _zFarPlaneMultiplier; }
-  void                  farClippingPlaneMultiplier ( float value ) { _zFarPlaneMultiplier = value; }
+  float                 farClippingPlaneMultiplier () const;
+  void                  farClippingPlaneMultiplier ( float value );
 
   // The scale factor that is multiplied by the bounding-sphere radius. 
   // The resulting number is the distance in the z-direction the node 
   // is moved in order to make it visible.
-  float                 viewAllScaleZ() const { return _zScale; }
-  void                  viewAllScaleZ ( float zScale ) { _zScale = zScale; }
+  float                 viewAllScaleZ() const;
+  void                  viewAllScaleZ ( float zScale );
 
   // Get/set the lighting properties.
-  const Vec4f &         lightPosition() const         { return _lightPos; }
-  void                  lightPosition(const Vec4f& p) { _lightPos = p; }
-  const Color &         ambientLightColor() const { return _ambientLight; }
-  void                  ambientLightColor ( const Vec4f &c ) { _ambientLight = c; }
-  const Color &         diffuseLightColor() const { return _diffuseLight; }
-  void                  diffuseLightColor ( const Vec4f &c ) { _diffuseLight = c; }
-  const Color &         specularLightColor() const { return _specularLight; }
-  void                  specularLightColor ( const Vec4f &c ) { _specularLight = c; }
-  const Vec3f &         lightDirection() const { return _lightDir; }
-  void                  lightDirection ( const Vec3f &c ) { _lightDir = c; }
+  Vec4f                 lightPosition() const;
+  void                  lightPosition(const Vec4f& p);
+  Color                 ambientLightColor() const;
+  void                  ambientLightColor ( const Vec4f &c );
+  Color                 diffuseLightColor() const;
+  void                  diffuseLightColor ( const Vec4f &c );
+  Color                 specularLightColor() const;
+  void                  specularLightColor ( const Vec4f &c );
+  Vec3f                 lightDirection() const;
+  void                  lightDirection ( const Vec3f &c );
 
   // Set/get the background color.
-  const Color &         backgroundColor() const { return _background; }
-  void                  backgroundColor ( const Color &c ) { _background = c; }
-  void                  backgroundColor ( float r, float g, float b, float a ) { _background.set ( r, g, b, a ); }
+  Color                 backgroundColor() const;
+  void                  backgroundColor ( const Color &c );
 
   // Set/get the machine that will write files.
-  const std::string &   fileWriterMachineName() const { return _writer; }
-  void                  fileWriterMachineName ( const std::string &writer ) { _writer = writer; }
+  std::string           fileWriterMachineName() const;
+  void                  fileWriterMachineName ( const std::string &writer );
 
   // Set/get the machine that is the head node.
-  const std::string &   headNodeMachineName() const { return _headNode; }
-  void                  headNodeMachineName ( const std::string &head ) { _headNode = head; }
+  std::string           headNodeMachineName() const;
+  void                  headNodeMachineName ( const std::string &head );
   
 
   // Set/get the global-normalization flag.
-  bool                  normalizeVertexNormalsGlobal() const { return _normGlobal; }
-  void                  normalizeVertexNormalsGlobal ( bool state ) { _normGlobal = state; }
+  bool                  normalizeVertexNormalsGlobal() const;
+  void                  normalizeVertexNormalsGlobal ( bool state );
 
   // Set/get the model-normalization flag.
-  bool                  normalizeVertexNormalsModels() const { return _normModels; }
-  void                  normalizeVertexNormalsModels ( bool state ) { _normModels = state; }
+  bool                  normalizeVertexNormalsModels() const;
+  void                  normalizeVertexNormalsModels ( bool state );
 
   // Set/get the menu matrix.
-  const Matrix &        menuMatrix() const { return _menuMatrix; }
-  Matrix &              menuMatrix()       { return _menuMatrix; }
-  void                  menuMatrix ( const Matrix &m ) { _menuMatrix = m; }
+  const Matrix          menuMatrix() const;
+  Matrix                menuMatrix();
+  void                  menuMatrix ( const Matrix &m );
 
   // Set/get the menu colors
-  const Color&          menuBgColorNorm  () const { return _menuBgColorNorm; }               // background normal
-  void                  menuBgColorNorm  ( const Color &c ) { _menuBgColorNorm = c; }
-  void                  menuBgColorNorm  ( float r, float g, float b, float a ) { _menuBgColorNorm.set ( r, g, b, a ); }
-  const Color&          menuBgColorHLght () const { return _menuBgColorHLght; }              // background highlighted
-  void                  menuBgColorHLght ( const Color &c ) { _menuBgColorHLght = c; }
-  void                  menuBgColorHLght ( float r, float g, float b, float a ) { _menuBgColorHLght.set ( r, g, b, a ); }
-  const Color&          menuBgColorDsabl () const { return _menuBgColorDsabl; }              // background disabled
-  void                  menuBgColorDsabl ( const Color &c ) { _menuBgColorDsabl = c; }
-  void                  menuBgColorDsabl ( float r, float g, float b, float a ) { _menuBgColorDsabl.set ( r, g, b, a ); }
-  const Color&          menuTxtColorNorm  () const { return _menuTxtColorNorm; }             // background normal
-  void                  menuTxtColorNorm  ( const Color &c ) { _menuTxtColorNorm = c; }
-  void                  menuTxtColorNorm  ( float r, float g, float b, float a ) { _menuTxtColorNorm.set ( r, g, b, a ); }
-  const Color&          menuTxtColorHLght () const { return _menuTxtColorHLght; }            // background highlighted
-  void                  menuTxtColorHLght ( const Color &c ) { _menuTxtColorHLght = c; }
-  void                  menuTxtColorHLght ( float r, float g, float b, float a ) { _menuTxtColorHLght.set ( r, g, b, a ); }
-  const Color&          menuTxtColorDsabl () const { return _menuTxtColorDsabl; }            // background disabled
-  void                  menuTxtColorDsabl ( const Color &c ) { _menuTxtColorDsabl = c; }
-  void                  menuTxtColorDsabl ( float r, float g, float b, float a ) { _menuTxtColorDsabl.set ( r, g, b, a ); }
+  Color                 menuBgColorNorm  () const;
+  void                  menuBgColorNorm  ( const Color &c );
+
+  Color                 menuBgColorHLght () const;
+  void                  menuBgColorHLght ( const Color &c );
+
+  Color                 menuBgColorDsabl () const;
+  void                  menuBgColorDsabl ( const Color &c );
+
+  Color                 menuTxtColorNorm  () const;
+  void                  menuTxtColorNorm  ( const Color &c );
+
+  Color                 menuTxtColorHLght () const;
+  void                  menuTxtColorHLght ( const Color &c );
+
+  Color                 menuTxtColorDsabl () const;
+  void                  menuTxtColorDsabl ( const Color &c );
 
   // Set/get the status-bar matrix.
-  const Matrix &        statusBarMatrix() const { return _statusMatrix; }
-  Matrix &              statusBarMatrix()       { return _statusMatrix; }
-  void                  statusBarMatrix ( const Matrix &m ) { _statusMatrix = m; }
-
-  // Set/get the flag that says whether or not the menu hides the scene.
-  bool                  menuHidesScene() const { return _menuHidesScene; }
-  void                  menuHidesScene ( bool state ) { _menuHidesScene = state; }
+  const Matrix          statusBarMatrix() const;
+  Matrix                statusBarMatrix();
+  void                  statusBarMatrix ( const Matrix &m );
 
   // Set/get the flag that says whether or not the status-bar is visible at startup.
-  bool                  statusBarVisibleAtStartup() const { return _statusVisible; }
-  void                  statusBarVisibleAtStartup ( bool state ) { _statusVisible = state; }
+  bool                  statusBarVisibleAtStartup() const;
+  void                  statusBarVisibleAtStartup ( bool state );
 
   // Set/get the status bar colors
-  const Color&          statusBgColor () const { return _statusBgColor; }
-  void                  statusBgColor ( const Color &c ) { _statusBgColor = c; }
-  void                  statusBgColor ( float r, float g, float b, float a ) { _statusBgColor.set ( r, g, b, a ); }
-  const Color&          statusTxtColor () const {return _statusTxtColor; }
-  void                  statusTxtColor ( const Color &c ) { _statusTxtColor = c; }
-  void                  statusTxtColor ( float r, float g, float b, float a ) { _statusTxtColor.set ( r, g, b, a ); }
+  Color                 statusBgColor () const;
+  void                  statusBgColor ( const Color &c );
+
+  Color                 statusTxtColor () const;
+  void                  statusTxtColor ( const Color &c );
 
   // Set/get the relative translation speed.
-  float                 translationSpeed() const { return _transSpeed; }
-  void                  translationSpeed ( float s ) { _transSpeed = s; }
+  float                 translationSpeed() const;
+  void                  translationSpeed ( float s );
 
   // Set/get the rotation speed.
-  float                 rotationSpeed() const { return _rotSpeed; }
-  void                  rotationSpeed ( float s ) { _rotSpeed = s; }
+  float                 rotationSpeed() const;
+  void                  rotationSpeed ( float s );
 
   // Set/get the scale-speed.
-  float                 scaleSpeed() const { return _scaleSpeed; }
-  void                  scaleSpeed ( float s ) { _scaleSpeed = s; }
+  float                 scaleSpeed() const;
+  void                  scaleSpeed ( float s );
 
   // Set/get the selection color.
-  const Color &         selectionColor() const { return _selectColor; }
-  void                  selectionColor ( const Color &c ) { _selectColor = c; }
-  void                  selectionColor ( float r, float g, float b, float a ) { _selectColor.set ( r, g, b, a ); }  
+  Color                 selectionColor() const;
+  void                  selectionColor ( const Color &c );
   
   /// Get/Set the frame scale multiplier.
-  void                  frameScale ( float f ) { _frameScale = f; }
-  float                 frameScale () const { return _frameScale; }
+  void                  frameScale ( float f );
+  float                 frameScale () const;
 
   /// Get/Set the image export extension.
-  void                  imageExportExtension ( const std::string& ext ) { _imageExportExtension = ext; }
-  const std::string&    imageExportExtension ( ) const { return _imageExportExtension; }
+  void                  imageExportExtension ( const std::string& ext );
+  std::string           imageExportExtension ( ) const;
+
+  template<class T>
+  T                     value ( const std::string& path, const T& defaultValue ) const;
+
+  template<class T>
+  void                  value ( const std::string& path, const T& value );
 
 protected:
 
@@ -212,47 +212,51 @@ protected:
 
 private:
 
+  void                  _read ( const std::string& filename );
+
   // No copying or assigning.
   Settings ( const Settings & );
   Settings &operator = ( const Settings & );
 
+  Usul::Registry::Database _database;
   std::vector<Grids> _grids;
-  float _zNear;
-  float _zFarPlaneMultiplier;
-  float _zScale;
-  Color _ambientLight;
-  Color _diffuseLight;
-  Color _specularLight;
-  Vec3f _lightDir;
-  Vec4f _lightPos;
-  Color _background;
-  std::string _writer;
-  std::string _headNode;
-  bool _normGlobal;
-  bool _normModels;
-  Matrix _menuMatrix;
-  Color _menuBgColorNorm;
-  Color _menuBgColorHLght;
-  Color _menuBgColorDsabl;
-  Color _menuTxtColorNorm;
-  Color _menuTxtColorHLght;
-  Color _menuTxtColorDsabl;
-  Matrix _statusMatrix;
-  bool _menuHidesScene;
-  bool _statusVisible;
-  Color _statusBgColor;
-  Color _statusTxtColor;
-  float _transSpeed;
-  float _rotSpeed;
-  float _scaleSpeed;
   Color _selectColor;
-  float _frameScale;
-  std::string _imageExportExtension;
 };
 
+template<class T>
+T Settings::value ( const std::string& path, const T& defaultValue ) const
+{
+  typedef Usul::Registry::Node Node;
+  typedef Node::Path Path;
 
-}; // namespace Prefs
-}; // namespace VRV
+  Path p;
+  Usul::Strings::split ( path, "/", false, p );
+
+  const Node* child ( _database.root() );
+
+  for ( Path::const_iterator iter = p.begin(); iter != p.end(); ++iter )
+  {
+    if ( 0x0 != child )
+      child = child->find( *iter );
+  }
+
+  return ( 0x0 != child ? child->get<T> ( defaultValue ) : defaultValue );
+}
+
+template<class T>
+void Settings::value ( const std::string& path, const T& value )
+{
+  typedef Usul::Registry::Node Node;
+  typedef Node::Path Path;
+
+  Path p;
+  Usul::Strings::split ( path, "/", false, p );
+  
+  _database[p] = value;
+}
+
+} // namespace Prefs
+} // namespace VRV
 
 
 #endif // _VRV_SETTINGS_CLASS_H_

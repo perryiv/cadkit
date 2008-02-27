@@ -23,7 +23,6 @@ INCLUDE_DIRECTORIES(
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${VR_JUGGLER_INCLUDES}
-         ${CPPDOM_INC_DIR}
 		     "$ENV{VJ_DEPS_DIR}/include"
 		     )
 
@@ -42,7 +41,6 @@ SET (SOURCES
   ./Devices/ButtonDevice.cpp
   ./Devices/TrackerDevice.cpp
   ./Devices/Callback.cpp
-  ./Prefs/Parser.cpp
   ./Prefs/Settings.cpp
 )
 
@@ -55,6 +53,4 @@ TARGET_LINK_LIBRARIES( VRV
 	${OSG_LIB}
 	${VR_JUGGLER_LIBS}
 	${Boost_FILESYSTEM_LIBRARY}
-	${CPPDOM_LIB}
 )
-

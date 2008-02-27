@@ -2283,15 +2283,20 @@ void ModelPresentationDocument::_processJobData( unsigned int index, Usul::Inter
           _dynamicSets.at( index ).models->setChild( _dynamicSets.at( index ).nextIndexToLoad, groups.at( i ).get() );
         }
         else
+        {
+          std::cout << Usul::Strings::format( "When trying to setChild: The group at position ", _dynamicSets.at( index ).nextIndexToLoad, " does not exist!" ) << std::endl;
           return;
-
+        }
         // Sanity Check to see if the group at position nextIndexToLoad exists
         if( _dynamicSets.at( index ).groups.size() > _dynamicSets.at( index ).nextIndexToLoad )
         {
           _dynamicSets.at( index ).groups.at( _dynamicSets.at( index ).nextIndexToLoad ) = grp;
         }
         else
+        {
+          std::cout << Usul::Strings::format( "When trying to set the group: The group at position ", _dynamicSets.at( index ).nextIndexToLoad, " does not exist!" ) << std::endl;
           return;
+        }
 
         _dynamicSets.at( index ).header = header;
         _dynamicSets.at( index ).nextIndexToLoad ++;

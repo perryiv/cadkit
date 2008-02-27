@@ -27,6 +27,7 @@
 
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Scope/Reset.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/Transpose.h"
 #include "Usul/Trace/Trace.h"
@@ -52,7 +53,7 @@ CurvePlayer::CurvePlayer() : BaseClass(),
   _playing ( false ),
   _curve(),
   _current ( 0 ),
-  _step ( 0.01 ),
+  _steps ( 100 ),
   _renderLoop ( false ),
   _looping ( false )
 {
@@ -74,29 +75,58 @@ CurvePlayer::~CurvePlayer()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the step size.
+//  Set the step size for each knot span.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::stepSize ( Parameter delta )
+void CurvePlayer::numStepsPerSpan ( unsigned int num )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _step = delta;
+  _steps = num;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the step size.
+//  Set the step size for each knot span.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CurvePlayer::Parameter CurvePlayer::stepSize() const
+unsigned int CurvePlayer::numStepsPerSpan() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _step;
+  return _steps;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the total number of steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int CurvePlayer::numStepsTotal ( const Curve &curve, unsigned int stepsPerSpan )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  // Note: totalNumControlPoints() should not throw but return 0 if the curve is empty.
+  return ( ( 0 == curve.totalNumControlPoints() ) ? 0 : ( stepsPerSpan * ( curve.totalNumControlPoints() - 1 ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the total number of steps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int CurvePlayer::numStepsTotal() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return CurvePlayer::numStepsTotal ( _curve, this->numStepsPerSpan() );
 }
 
 
@@ -111,9 +141,11 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // Set current step.
+  _current = 0;
+
   // Initialize.
   this->playing ( false );
-  _current = 0;
 
   // Try to make the curve.
   IndependentSequence params;
@@ -122,9 +154,6 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
   // Did it work?
   if ( false == _curve.valid() )
     return;
-
-  // Set current parameter.
-  _current = _curve.firstKnot();
 
   // We are now playing.
   this->playing ( true );
@@ -395,31 +424,30 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
     return;
   }
 
-  // Increment the current parameter.
-  _current += ( this->stepSize() / ( _curve.numControlPoints() - 1 ) );
+  // Determine total number of steps.
+  const unsigned int totalSteps ( this->numStepsTotal() );
 
   // Check to see if we're off the end.
-  if ( _current > _curve.lastKnot() )
+  if ( _current >= totalSteps )
   {
-    // Set current parameter to the end.
-    _current = _curve.lastKnot();
+    // Are we supposed to loop?
+    if ( false == this->looping() )
+    {
+      // No longer playing.
+      this->playing ( false );
+      return;
+    }
 
-    // Make sure we don't continue.
-    this->playing ( false );
+    // We're looping so reset the step.
+    _current = 0;
   }
 
   // Go to the parametric position.
-  this->go ( _current, caller );
+  const Parameter u ( static_cast<Parameter> ( _current ) / static_cast<Parameter> ( totalSteps - 1 ) );
+  this->go ( u, caller );
 
-  // Are we supposed to loop?
-  if ( ( _curve.lastKnot() == _current ) && ( true == this->looping() ) )
-  {
-    // Set the parameter back to the beginning.
-    _current = _curve.firstKnot();
-
-    // We are still playing.
-    this->playing ( true );
-  }
+  // Increment the current step.
+  ++_current;
 }
 
 
@@ -453,13 +481,42 @@ void CurvePlayer::looping ( bool state )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to make a cube.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Point > osg::Node *makeCube ( const Point &point, float size )
+  {
+    osg::ref_ptr<osg::Geode> cube ( new osg::Geode );
+    cube->addDrawable ( OsgTools::ShapeFactorySingleton::instance().cube ( osg::Vec3 ( size, size, size ) ) );
+
+    osg::ref_ptr<osg::AutoTransform> mat ( new osg::AutoTransform );
+    mat->setAutoRotateMode ( osg::AutoTransform::NO_ROTATION );
+    mat->setAutoScaleToScreen ( true );
+    mat->setPosition ( osg::Vec3 ( point.at(0), point.at(1), point.at(2) ) );
+    mat->addChild ( cube.get() );
+
+    OsgTools::State::StateSet::setBackFaceCulling ( cube->getOrCreateStateSet(), true );
+    OsgTools::State::StateSet::setMaterialDefault ( cube.get() );
+    OsgTools::State::StateSet::setLighting ( cube.get(), true );
+    OsgTools::State::StateSet::setNormalize ( cube.get(), true );
+
+    return mat.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Helper function to make axes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Helper
 {
-  template < class Point > osg::Node *makeAxes ( const Point &point )
+  template < class Point > osg::Node *makeAxes ( const Point &point, float length )
   {
     osg::ref_ptr<osg::AutoTransform> transform ( new osg::AutoTransform );
     transform->setAutoRotateMode ( osg::AutoTransform::NO_ROTATION );
@@ -488,10 +545,9 @@ namespace Helper
 
     transform->setPosition ( eye );
 
-    const osg::Vec3Array::value_type::value_type scale ( 50.0f );
-    lookat *= scale;
-    up *= scale;
-    tangent *= scale;
+    lookat *= length;
+    up *= length;
+    tangent *= length;
 
     osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
     vertices->reserve ( 6 );
@@ -529,7 +585,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree, Usul::Interfaces::IUnknown * )
+osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree, unsigned int steps, Usul::Interfaces::IUnknown * )
 {
   USUL_TRACE_SCOPE;
 
@@ -611,22 +667,32 @@ osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree
       if ( point.size() >= 9 )
       {
         // Add axes.
-        group->addChild ( Helper::makeAxes ( point ) );
+        group->addChild ( Helper::makeAxes ( point, 50.0f ) );
 
         // Add cube at the center.
-        osg::ref_ptr<osg::Geode> cube ( new osg::Geode );
-        const float size ( 10.0f );
-        cube->addDrawable ( OsgTools::ShapeFactorySingleton::instance().cube ( osg::Vec3 ( size, size, size ) ) );
-        osg::ref_ptr<osg::AutoTransform> mat ( new osg::AutoTransform );
-        mat->setAutoRotateMode ( osg::AutoTransform::NO_ROTATION );
-        mat->setAutoScaleToScreen ( true );
-        mat->setPosition ( osg::Vec3 ( point.at(0), point.at(1), point.at(2) ) );
-        mat->addChild ( cube.get() );
-        group->addChild ( mat.get() );
-        OsgTools::State::StateSet::setBackFaceCulling ( cube->getOrCreateStateSet(), true );
-        OsgTools::State::StateSet::setMaterialDefault ( cube.get() );
-        OsgTools::State::StateSet::setLighting ( cube.get(), true );
-        OsgTools::State::StateSet::setNormalize ( cube.get(), true );
+        group->addChild ( Helper::makeCube ( point, 10.0f ) );
+      }
+    }
+  }
+
+  // Make smaller axes at each evaluated position.
+  {
+    // Determine total number of steps.
+    const unsigned int totalSteps ( CurvePlayer::numStepsTotal ( curve, steps ) );
+
+    // Loop through the all steps.
+    for ( unsigned int i = 0; i < totalSteps; ++i )
+    {
+      // Determine parameter.
+      const Parameter u ( static_cast<Parameter> ( i ) / static_cast<Parameter> ( totalSteps - 1 ) );
+
+      // Evaluate the curve.
+      Curve::Vector point ( curve.dimension() );
+      GN::Evaluate::point ( curve, u, point );
+      if ( point.size() >= 3 )
+      {
+        // Add axes.
+        group->addChild ( Helper::makeAxes ( point, 25.0f ) );
       }
     }
   }

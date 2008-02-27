@@ -14,8 +14,6 @@
 
 #include <vector>
 
-namespace Usul { namespace Interfaces { namespace AnimatePath { const double DEFAULT_STEP_SIZE ( 0.01 ); } } }
-
 
 namespace Usul {
 namespace Interfaces {
@@ -35,7 +33,7 @@ struct IAnimatePath : public Usul::Interfaces::IUnknown
 
   // Set an animation path from a vector of matrices.
   virtual void                animatePath ( const PackedMatrices & ) = 0;
-  virtual void                animatePath ( const PackedMatrices &, double step ) = 0;
+  virtual void                animatePath ( const PackedMatrices &, unsigned int stepsPerSpan ) = 0;
 };
 
 

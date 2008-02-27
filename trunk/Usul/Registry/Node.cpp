@@ -234,3 +234,17 @@ Node::ConstIterator Node::end() const
   Guard guard ( this );
   return _kids.end();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the child with the name. No new nodes are created.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node::RefPtr Node::find ( const std::string &name ) const
+{
+  Kids::const_iterator i ( _kids.find ( name ) );
+  Node::RefPtr child ( ( _kids.end() == i ) ? 0x0 : i->second );
+  return child;
+}

@@ -69,6 +69,9 @@ public:
   Iterator                        end();
   ConstIterator                   end() const;
 
+  // Find node with given path.  No new nodes are created.
+  Node::RefPtr                    find ( const std::string & ) const;
+
   // Get the value.
   std::string                     get ( const std::string &defaultValue, bool setValueIfEmpty );
   std::string                     get ( const std::string &defaultValue ) const;

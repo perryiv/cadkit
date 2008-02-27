@@ -175,11 +175,12 @@ void MpdJob::_findFiles()
     {
 
        this->_parseNewFiles( files, 0x0, 0x0 );
+#if 0
        if( files.size() > header.modelNames.size() )
        {
          header.modelNames = files;
        }
-
+#endif
        //std::cout << _currentFiles.size() << " files loaded for dynamic set: " << _prefix << std::endl;
     }
     
@@ -211,10 +212,18 @@ void MpdJob::_parseNewFiles( Files files, Usul::Interfaces::IUnknown *caller, IU
 
   // load each new file into model presentation
   //std::cout << Usul::Strings::format( "Found ", c.size(), " new files.  Loading new files." ) << std::endl;
+#if 0
   for( Files::const_iterator iter = c.begin(); iter < c.end(); ++iter )
   {
     this->_loadNewDynamicFiles( *iter, caller, progress );
   }
+#else
+  if( c.size() > 0 )
+  {
+    this->_loadNewDynamicFiles( c.at( 0 ), caller, progress );
+    header.modelNames.push_back( c.at( 0 ) );
+  }
+#endif
   //std::cout << "All new files loaded!" << std::endl;
   this->foundNewData( true );
 }

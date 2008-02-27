@@ -390,14 +390,6 @@
 				Name="Prefs"
 				>
 				<File
-					RelativePath="..\Prefs\Parser.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Prefs\Parser.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Prefs\Settings.cpp"
 					>
 				</File>

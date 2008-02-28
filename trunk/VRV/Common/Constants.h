@@ -73,6 +73,7 @@ namespace VRV
       const std::string IMAGE              ( "image" );
       const std::string FRAME_SCALE        ( "frame_scale" );
       const std::string EXTENSION          ( "ext" );
+      const std::string DIRECTORY          ( "directory" );
     }
 
     namespace Defaults

@@ -20,6 +20,7 @@
 #include "Usul/Convert/Matrix44.h"
 #include "Usul/Convert/Vector4.h"
 #include "Usul/Convert/Vector3.h"
+#include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Host.h"
@@ -916,4 +917,29 @@ std::string Settings::imageExportExtension ( ) const
 {
   std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", Keys::IMAGE, "/", Keys::EXTENSION ) );
   return this->value<std::string> ( path, ".jpg" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the image directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Settings::imageDirectory ( const std::string& s )
+{
+  _database[Sections::PREFERENCES][Keys::IMAGE][Keys::DIRECTORY] = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the image directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Settings::imageDirectory() const
+{
+  std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", Keys::IMAGE, "/", Keys::DIRECTORY ) );
+  return this->value<std::string> ( path, Usul::File::Temp::directory ( true ) );
 }

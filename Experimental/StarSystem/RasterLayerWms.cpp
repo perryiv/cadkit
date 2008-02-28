@@ -30,6 +30,7 @@
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Jobs/Job.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Network/WMS.h"
 #include "Usul/Registry/Database.h"
@@ -214,7 +215,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller )
+RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown * )
 {
   USUL_TRACE_SCOPE;
 
@@ -259,67 +260,68 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
     }
   }
 
-  // Get the flags.
-  bool useNetwork    ( false );
-  bool writeFailed   ( false );
-  bool lookForFailed ( false );
-  {
-    Guard guard ( this );
-    useNetwork    = _useNetwork;
-    writeFailed   = _writeFailedFlags;
-    lookForFailed = _readFailedFlags;
-  }
-
   // Are we supposed to look for a "failed" file?
-  if ( true == lookForFailed )
+  if ( true == Usul::Threads::Safe::get ( this->mutex(), _readFailedFlags ) )
   {
     const std::string failedFile ( Helper::getFailedFileName ( file ) );
     if ( true == Usul::Predicates::FileExists::test ( failedFile ) )
     {
       // The "failed" file exists, so return null.
-      return 0x0;
+      return ImagePtr ( 0x0 );
     }
   }
 
+  // See if the job has been cancelled.
+  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+    job->cancel();
+
   // Pull it down if we should...
-  if ( ( false == Usul::Predicates::FileExists::test ( file ) ) && ( true == useNetwork ) )
+  if ( ( false == Usul::Predicates::FileExists::test ( file ) ) && ( true == Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) ) )
   {
     std::ostream *stream ( 0x0 );
-    Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
+    Usul::Interfaces::IUnknown::QueryPtr caller ( job );
     Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction ( &wms, &Usul::Network::WMS::download ), 5, stream, caller.get(), "2052060829" );
   }
 
-  // Initialize.
-  ImagePtr image ( 0x0 );
+  // See if the job has been cancelled.
+  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+    job->cancel();
 
-  // Load the file iff it exists and it's non-zero size.
-  if ( ( true == Usul::Predicates::FileExists::test ( file ) ) && ( Usul::File::size ( file ) > 0 ) )
+  // If the file does not exist then return.
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
   {
-    image = osgDB::readImageFile ( file );
+    std::cout << Usul::Strings::format ( "Error 1276423772: Failed to download. File: ", file, ", URL: ", fullUrl ) << std::endl;
+    this->_downloadFailed ( file, fullUrl );
+    return ImagePtr ( 0x0 );
   }
 
-  // If it failed to load then delete the file.
+  // If the file is empty then remove it and return.
+  if ( 0 == Usul::File::size ( file ) )
+  {
+    std::cout << Usul::Strings::format ( "Error 3244363936: Download file is empty. File: ", file, ", URL: ", fullUrl, ". Removing file." ) << std::endl;
+    Usul::File::remove ( file, false, 0x0 );
+    this->_downloadFailed ( file, fullUrl );
+    return ImagePtr ( 0x0 );
+  }
+
+  // Load the file.
+  ImagePtr image ( osgDB::readImageFile ( file ) );
+
+  // See if the job has been cancelled.
+  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+    job->cancel();
+
+  // If it failed to load...
   if ( false == image.valid() )
   {
-    std::cout << Usul::Strings::format ( "Error 2720181403: Failed to load file: ", file, ", so removing it. URL = ", fullUrl ) << std::endl;
-    Usul::File::remove ( file, false );
-
-    // Write a "failed" file if we're supposed to.
-    if ( true == writeFailed )
-    {
-      const std::string failedFile ( Helper::getFailedFileName ( file ) );
-      std::ofstream out ( failedFile.c_str() );
-      out << "Failed to download file: \n" << file << std::endl;
-    }
+    std::cout << Usul::Strings::format ( "Error 2720181403: Failed to load file: ", file, ", downloaded from URL: ", fullUrl, ". Removing file." ) << std::endl;
+    Usul::File::remove ( file, false, 0x0 );
+    this->_downloadFailed ( file, fullUrl );
+    return ImagePtr ( 0x0 );
   }
 
-  // Set the file name.
-  else
-  {
-    image->setFileName ( file );
-  }
-
-  // Return image, which may be null.
+  // Set the file name and return.
+  image->setFileName ( file );
   return image;
 }
 
@@ -478,4 +480,24 @@ std::string RasterLayerWms::_getAllOptions() const
 
   const std::string result ( out.str() );
   return ( ( result.empty() ) ? "default" : result );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when a download fails.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerWms::_downloadFailed ( const std::string &file, const std::string &url )
+{
+  USUL_TRACE_SCOPE;
+
+  bool writeFailed ( Usul::Threads::Safe::get ( this->mutex(), _writeFailedFlags ) );
+  if ( true == writeFailed )
+  {
+    const std::string failedFile ( Helper::getFailedFileName ( file ) );
+    std::ofstream out ( failedFile.c_str() );
+    out << "Failed to download\nFile: " << file << "\nURL: " << url << std::endl;
+  }
 }

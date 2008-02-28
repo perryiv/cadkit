@@ -22,8 +22,8 @@ class ossimProjection; class ossimDemGrid;
 namespace StarSystem {
 
 
-  class STAR_SYSTEM_EXPORT ElevationLayerDem : public RasterLayer,
-    public Usul::Interfaces::IElevationDatabase
+class STAR_SYSTEM_EXPORT ElevationLayerDem : public RasterLayer,
+                                             public Usul::Interfaces::IElevationDatabase
 {
 public:
   typedef RasterLayer BaseClass;

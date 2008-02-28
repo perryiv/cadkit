@@ -595,9 +595,9 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   Usul::Math::Vec4d tll, tlr, tul, tur;
   this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
 
-  Tile::RefPtr t0 ( this->_buildTile ( level, ll, mll, tll, half, job, LOWER_LEFT ) ); // lower left  tile
+  Tile::RefPtr t0 ( this->_buildTile ( level, ll, mll, tll, half, job, LOWER_LEFT  ) ); // lower left  tile
   Tile::RefPtr t1 ( this->_buildTile ( level, lr, mlr, tlr, half, job, LOWER_RIGHT ) ); // lower right tile
-  Tile::RefPtr t2 ( this->_buildTile ( level, ul, mul, tul, half, job, UPPER_LEFT ) ); // upper left  tile
+  Tile::RefPtr t2 ( this->_buildTile ( level, ul, mul, tul, half, job, UPPER_LEFT  ) ); // upper left  tile
   Tile::RefPtr t3 ( this->_buildTile ( level, ur, mur, tur, half, job, UPPER_RIGHT ) ); // upper right tile
   
   // Have we been cancelled?
@@ -1575,7 +1575,10 @@ void Tile::_clearChildren ( bool traverse )
   // Clear the tile job.
   if ( _tileJob.valid() )
   {
-    //_tileJob->cancel();
+    // Without this call to cancel we always have to wait for the job to 
+    // finish, even if we've already chosen to go down the low path, which 
+    // happens when we are zoomed in and then "view all".
+    _tileJob->cancel();
     _tileJob = 0x0;
   }
 }

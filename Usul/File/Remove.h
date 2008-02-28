@@ -16,10 +16,10 @@
 #ifndef _USUL_FILE_REMOVE_H_
 #define _USUL_FILE_REMOVE_H_
 
-#include "Usul/Predicates/FileExists.h"
+#include "Usul/Export/Export.h"
 
-#include <cstdio>
-#include <stdexcept>
+#include <functional>
+#include <iosfwd>
 #include <string>
 
 
@@ -27,49 +27,29 @@ namespace Usul {
 namespace File {
 
 
-#if 0
-void Usul::File::remove ( const std::string &file, bool allowThrow = false )
-#else
-inline void remove ( const std::string &file, bool allowThrow = false )
-{
-  try
-  {
-    if ( false == file.empty() )
-    {
-      if ( Usul::Predicates::FileExists::test ( file ) )
-      {
-        const int result ( ::remove ( file.c_str() ) );
-        if ( result != 0 && true == allowThrow )
-        {
-          throw std::runtime_error ( "Error 2210803015: Failed to remove file: " + file );
-        }
-      }
-    }
-  }
-  catch ( const std::exception &e )
-  {
-    if ( true == allowThrow )
-      throw e;
-    else
-      std::cout << "Error 1331448352: Failed to remove file: " << file << std::endl;
-  }
-  catch ( ... )
-  {
-    if ( true == allowThrow )
-      throw;
-    else
-      std::cout << "Error 5249566150: Failed to remove file: " << file << std::endl;
-  }
-}
-#endif
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function to remove a file.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-struct Remove : public std::unary_function < std::string, void >
+USUL_EXPORT void remove ( const std::string &file, bool allowThrow = false, std::ostream *out = 0x0 );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functor to remove a file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct USUL_EXPORT Remove : public std::unary_function < std::string, void >
 {
   void operator () ( const std::string& file ) const
   {
-    remove ( file, false );
+    Usul::File::remove ( file, false, false );
   }
 };
+
 
 } // namespace File
 } // namespace Usul

@@ -23,6 +23,7 @@
 using namespace Usul::Jobs;
 
 USUL_IMPLEMENT_TYPE_ID ( Job );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Job, Job::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,6 +97,27 @@ void Job::_destroy()
 
   if ( _progress.valid() )
     _progress->hideProgressBar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *Job::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::ICancel::IID:
+    return static_cast < Usul::Interfaces::ICancel * > ( this );
+  case Usul::Interfaces::ICanceledStateGet::IID:
+    return static_cast < Usul::Interfaces::ICanceledStateGet * > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -291,7 +313,7 @@ void Job::_started()
 void Job::_setThread ( Thread *thread )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _thread = thread;
 }
 
@@ -305,7 +327,7 @@ void Job::_setThread ( Thread *thread )
 void Job::_setDone ( bool done )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _done = done;
 }
 
@@ -319,7 +341,7 @@ void Job::_setDone ( bool done )
 void Job::cancel()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
 
   _canceled = true;
 
@@ -339,7 +361,7 @@ void Job::cancel()
 bool Job::canceled() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _canceled;
 }
 
@@ -353,7 +375,7 @@ bool Job::canceled() const
 unsigned long Job::id() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _id;
 }
 
@@ -367,7 +389,7 @@ unsigned long Job::id() const
 void Job::_setId ( unsigned int value )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _id = value;
 }
 
@@ -381,7 +403,7 @@ void Job::_setId ( unsigned int value )
 const Usul::Threads::Thread *Job::thread() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _thread.get();
 }
 
@@ -395,7 +417,7 @@ const Usul::Threads::Thread *Job::thread() const
 bool Job::isDone() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _done;
 }
 
@@ -409,7 +431,7 @@ bool Job::isDone() const
 void Job::progress ( IUnknown* progress )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _progress = progress;
 }
 
@@ -423,7 +445,7 @@ void Job::progress ( IUnknown* progress )
 Job::IUnknown* Job::progress()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _progress.get();
 }
 
@@ -437,7 +459,7 @@ Job::IUnknown* Job::progress()
 void Job::label ( IUnknown* label )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _label = label;
 }
 
@@ -487,7 +509,7 @@ void Job::_setLabel ( const std::string& text )
 void Job::priority ( int value )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   _priority = value;
 }
 
@@ -501,6 +523,6 @@ void Job::priority ( int value )
 int Job::priority() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
   return _priority;
 }

@@ -62,7 +62,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
   for ( unsigned int i = 0; i < size; ++i )
   {
     // Have we been cancelled?
-    if ( 0 == ( i % 100 ) )
+    if ( 0 == ( i % 10 ) )
     {
       if ( ( 0x0 != job ) && ( true == job->canceled() ) )
         job->cancel();
@@ -92,7 +92,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
     {
       // Get correct alpha.
       const unsigned char useThisAlpha ( ( hasExtraAlpha )   ? ( static_cast < unsigned char > ( iter->second ) ) : 
-                                        ( ( hasOverallAlpha ) ? ( static_cast < unsigned char > ( alpha * 255 ) ) : ( src[3] ) ) );
+                                       ( ( hasOverallAlpha ) ? ( static_cast < unsigned char > ( alpha * 255 ) ) : ( src[3] ) ) );
       
       // Normalize between zero and one.
       const float a ( static_cast < float > ( useThisAlpha ) / 255.5f );

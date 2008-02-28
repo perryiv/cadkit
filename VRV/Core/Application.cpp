@@ -994,27 +994,29 @@ void Application::_init()
   // Set the initial time.
   _initialTime = _timer.tick();
 
+  const std::string head ( this->preferences()->headNodeMachineName() );
+
   // Initialize the shared frame time data.
   {
     vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
-    _sharedFrameTime.init ( guid, "viz0" );
+    _sharedFrameTime.init ( guid, head );
   }
 
   // Initialize the shared frame start data.
   {
     vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
-    _sharedReferenceTime.init ( guid, "viz0" );
+    _sharedReferenceTime.init ( guid, head );
   }
 
   // Initialize the shared navigation matrix.
   {
     vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
-    _sharedMatrix.init ( guid, "viz0" );
+    _sharedMatrix.init ( guid, head );
   }
 
   {
     vpr::GUID guid ( "edfcdb08-eece-45f5-b9d7-174bba164a41" );
-    _sharedScreenShotDirectory.init ( guid, "viz0" );
+    _sharedScreenShotDirectory.init ( guid, head );
   }
   
 
@@ -1029,7 +1031,7 @@ void Application::_init()
     ::memset ( buffer, '\0', size );
     ::strftime ( buffer, size - 1, "%Y_%m_%d_%H_%M_%S", &time );
 
-    std::string directory ( Usul::Strings::format ( "/array/cluster/data/screen_shots", "/", std::string ( buffer ), "/" ) );
+    std::string directory ( Usul::Strings::format ( this->preferences()->imageDirectory(), "/", std::string ( buffer ), "/" ) );
 
     _sharedScreenShotDirectory->data ( directory );
 

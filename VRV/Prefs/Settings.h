@@ -199,6 +199,10 @@ public:
   void                  imageExportExtension ( const std::string& ext );
   std::string           imageExportExtension ( ) const;
 
+  /// Get/set the image directory.
+  void                  imageDirectory ( const std::string& s );
+  std::string           imageDirectory() const;
+
   template<class T>
   T                     value ( const std::string& path, const T& defaultValue ) const;
 

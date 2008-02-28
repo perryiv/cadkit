@@ -20,31 +20,52 @@
 #include <stdexcept>
 #include <sstream>
 
-#if 0
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Remove the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Usul::File::remove ( const std::string &name, bool allowThrow )
+void Usul::File::remove ( const std::string &name, bool allowThrow, std::ostream *stream )
 {
-  // Make sure there is no file with the given name.
-  if ( Usul::Predicates::FileExists() ( name ) )
+  try
   {
-    if ( 0 != ::remove ( name.c_str() ) )
+    // Make sure there is a file with the given name.
+    if ( true == Usul::Predicates::FileExists::test ( name ) )
     {
-      // Format the error message.
-      std::ostringstream out;
-      out << "Error 1607791450: Failed to remove existing file: " << name;
+      // Remove the file.
+      if ( 0 != ::remove ( name.c_str() ) )
+      {
+        // Format the error message.
+        std::ostringstream out;
+        out << "Error 1607791450: Failed to remove file: " << name;
 
-      // Append any system error...
-      if ( Usul::System::LastError::number() )
-        out << "\n  Reason: " << Usul::System::LastError::message();
+        // Append any system error...
+        if ( Usul::System::LastError::number() )
+        {
+          out << ", Reason: " << Usul::System::LastError::message();
+        }
 
-      // Throw the error.
-      throw std::runtime_error ( out.str() );
+        // Are we supposed to print?
+        if ( 0x0 != stream )
+        {
+          (*stream) << out.str() << std::endl;
+        }
+
+        // Are we supposed to throw?
+        if ( true == allowThrow )
+        {
+          throw std::runtime_error ( out.str() );
+        }
+      }
+    }
+  }
+  catch ( ... )
+  {
+    if ( true == allowThrow )
+    {
+      throw;
     }
   }
 }
-#endif

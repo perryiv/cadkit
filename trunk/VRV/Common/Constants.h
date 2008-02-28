@@ -42,7 +42,7 @@ namespace VRV
 
       // Keys for settings.
       const std::string CLIPPING_PLANE     ( "clipping_plane" );
-      const std::string NEAR               ( "near" );
+      const std::string NEAR_PLANE         ( "near" );
       const std::string FAR_MULTIPLIER     ( "far_multiplier" );
       const std::string VIEW_ALL           ( "view_all" );
       const std::string SCALE              ( "scale" );
@@ -63,7 +63,7 @@ namespace VRV
       const std::string GLOBAL             ( "global" );
       const std::string MODELS             ( "models" );
       const std::string MENU               ( "menu" );
-      const std::string TEXT               ( "text" );
+      const std::string TEXT_KEY           ( "text" );
       const std::string NORMAL             ( "normal" );
       const std::string HIGHLIGHT          ( "hightlight" );
       const std::string DISABLED           ( "disabled" );

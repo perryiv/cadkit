@@ -17,10 +17,12 @@
 #define _USUL_JOBS_JOB_CLASS_H_
 
 #include "Usul/Base/Observed.h"
-#include "Usul/Threads/Callback.h"
-#include "Usul/Threads/Thread.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/ICancel.h"
+#include "Usul/Interfaces/ICanceledStateGet.h"
+#include "Usul/Threads/Callback.h"
+#include "Usul/Threads/Thread.h"
 
 namespace Usul { namespace Jobs { class Manager; } }
 namespace Usul { namespace Jobs { namespace Detail { class Task; } } }
@@ -31,7 +33,9 @@ namespace Usul {
 namespace Jobs {
 
 
-class USUL_EXPORT Job : public Usul::Base::Observed
+class USUL_EXPORT Job : public Usul::Base::Observed,
+                        public Usul::Interfaces::ICancel,
+                        public Usul::Interfaces::ICanceledStateGet
 {
 public:
 
@@ -50,11 +54,14 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Job );
 
+  // Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+
   // Cancel the job.
   virtual void              cancel();
 
   // Was the job canceled?
-  bool                      canceled() const;
+  virtual bool              canceled() const;
 
   // Return this job's id.
   unsigned long             id() const;

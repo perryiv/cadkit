@@ -43,13 +43,17 @@ protected:
     File ( const std::string &filename ) : _fp ( 0x0 )
     {
       if ( false == filename.empty() )
+      {
         _fp = ::fopen ( filename.c_str(), "r" );
+      }
     }
 
     ~File()
     {
       if ( _fp )
+      {
         ::fclose ( _fp );
+      }
     }
 
     bool exists() const

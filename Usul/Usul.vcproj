@@ -832,7 +832,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ICancel.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\GUI\ICancelButton.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ICanceledStateGet.h"
 					>
 				</File>
 				<File

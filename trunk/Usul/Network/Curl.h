@@ -18,9 +18,13 @@
 #ifndef _USUL_NETWORK_CURL_H_
 #define _USUL_NETWORK_CURL_H_
 
+#include "Usul/Exceptions/Canceled.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Interfaces/ICanceledStateGet.h"
+#include "Usul/Interfaces/ICancel.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Scope/Reset.h"
+#include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"
 
 #include "curl/curl.h"
@@ -159,6 +163,9 @@ public:
     // Make sure this is set and unset.
     Usul::Scope::Reset<File::second_type> scopedFileHandle ( _file.second, &stream, 0x0 );
 
+    // This will remove the file is there's an exception.
+    Usul::Scope::RemoveFile removeFile ( _file.first );
+
     // Set properties.
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_ERRORBUFFER, &_error[0] ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_URL, _url.c_str() ) );
@@ -171,9 +178,44 @@ public:
 
     // Get the data.
     this->_check ( ::curl_easy_perform ( handle.handle() ) );
+
+    // Keep the file.
+    removeFile.remove ( false );
   }
 
 private:
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the canceled state.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  bool _isCanceled()
+  {
+    Usul::Interfaces::ICanceledStateGet::QueryPtr canceledState ( _caller );
+    return ( ( true == canceledState.valid() ) ? canceledState->canceled() : false );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Check the canceled state and cancel (throw) if we should.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void _checkCanceledState()
+  {
+    if ( true == this->_isCanceled() )
+    {
+      Usul::Interfaces::ICancel::QueryPtr cancelJob ( _caller );
+      if ( true == cancelJob.valid() )
+      {
+        cancelJob->cancel();
+      }
+    }
+  }
 
 
   /////////////////////////////////////////////////////////////////////////////
@@ -250,6 +292,13 @@ private:
 
       // Offset the buffer.
       bytes += writeSize;
+
+      // Check to see if we've been canceled.
+      if ( true == this->_isCanceled() )
+      {
+        // Return zero size to stop downloading. Results in CURLE_WRITE_ERROR.
+        return 0;
+      }
     }
 
     // If we get to here then we should have written the entire buffer.
@@ -300,6 +349,12 @@ private:
       }
     }
 
+    // Check to see if we've been canceled.
+    if ( true == this->_isCanceled() )
+    {
+      return CURLE_ABORTED_BY_CALLBACK;
+    }
+
     // Keeps things going. Non-zero return results in CURLE_ABORTED_BY_CALLBACK.
     return 0;
   }
@@ -313,15 +368,20 @@ private:
 
   void _check ( CURLcode code )
   {
-    if ( 0 != code )
-    {
-      const std::string error ( &_error[0] );
-      const std::string message ( Usul::Strings::format ( 
-        "Error 1884185898: ", 
-        ( ( error.empty() ) ? Usul::Strings::format ( "curl error code = ", code ) : error ), 
-        ", URL = ", _url ) );
-      throw std::runtime_error ( message );
-    }
+    // Check canceled state and throw if we should.
+    this->_checkCanceledState();
+
+    // No error.
+    if ( 0 == code )
+      return;
+
+    // Report curl error.
+    const std::string error ( &_error[0] );
+    const std::string message ( Usul::Strings::format ( 
+      "Error 1884185898: ", 
+      ( ( error.empty() ) ? Usul::Strings::format ( "curl error code = ", code ) : error ), 
+      ", URL = ", _url ) );
+    throw std::runtime_error ( message );
   }
 
 

@@ -95,7 +95,7 @@ void Settings::_read ( const std::string& filename )
 
 float Settings::nearClippingDistance() const
 {
-  std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", Keys::CLIPPING_PLANE, "/", Keys::NEAR ) );
+  std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", Keys::CLIPPING_PLANE, "/", Keys::NEAR_PLANE ) );
 
   return this->value<float> ( path, Defaults::NEAR_CLIPPING_PLANE );
 
@@ -112,7 +112,7 @@ float Settings::nearClippingDistance() const
 
 void Settings::nearClippingDistance ( float zNear )
 {
-  _database[Sections::PREFERENCES][Keys::CLIPPING_PLANE][Keys::NEAR] = zNear;
+  _database[Sections::PREFERENCES][Keys::CLIPPING_PLANE][Keys::NEAR_PLANE] = zNear;
 }
 
 
@@ -565,7 +565,7 @@ Settings::Color Settings::menuTxtColorNorm  () const
   std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", 
                                              Keys::MENU, "/", 
                                              Keys::COLOR, "/",
-                                             Keys::TEXT, "/",
+                                             Keys::TEXT_KEY, "/",
                                              Keys::NORMAL ) );
   return this->value<Color> ( path, Color ( 0.0f, 0.0f, 0.0f, 1.0f ) );
 }
@@ -579,7 +579,7 @@ Settings::Color Settings::menuTxtColorNorm  () const
 
 void Settings::menuTxtColorNorm  ( const Color &c )
 {
-  _database[Sections::PREFERENCES][Keys::MENU][Keys::COLOR][Keys::TEXT][Keys::NORMAL] = c;
+  _database[Sections::PREFERENCES][Keys::MENU][Keys::COLOR][Keys::TEXT_KEY][Keys::NORMAL] = c;
 }
 
 
@@ -594,7 +594,7 @@ Settings::Color Settings::menuTxtColorHLght () const
   std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", 
                                              Keys::MENU, "/", 
                                              Keys::COLOR, "/",
-                                             Keys::TEXT, "/",
+                                             Keys::TEXT_KEY, "/",
                                              Keys::HIGHLIGHT ) );
   return this->value<Color> ( path, Color ( 0.0f, 0.0f, 0.0f, 1.0f ) );
 }
@@ -608,7 +608,7 @@ Settings::Color Settings::menuTxtColorHLght () const
 
 void Settings::menuTxtColorHLght ( const Color &c )
 {
-  _database[Sections::PREFERENCES][Keys::MENU][Keys::COLOR][Keys::TEXT][Keys::HIGHLIGHT] = c;
+  _database[Sections::PREFERENCES][Keys::MENU][Keys::COLOR][Keys::TEXT_KEY][Keys::HIGHLIGHT] = c;
 }
 
 
@@ -623,7 +623,7 @@ Settings::Color Settings::menuTxtColorDsabl () const
   std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", 
                                              Keys::MENU, "/", 
                                              Keys::COLOR, "/",
-                                             Keys::TEXT, "/",
+                                             Keys::TEXT_KEY, "/",
                                              Keys::DISABLED ) );
   return this->value<Color> ( path, Color ( 0.3f, 0.3f, 0.3f, 1.0f ) );
 }
@@ -637,7 +637,7 @@ Settings::Color Settings::menuTxtColorDsabl () const
 
 void Settings::menuTxtColorDsabl ( const Color &c )
 {
-  _database[Sections::PREFERENCES][Keys::MENU][Keys::COLOR][Keys::TEXT][Keys::DISABLED] = c;
+  _database[Sections::PREFERENCES][Keys::MENU][Keys::COLOR][Keys::TEXT_KEY][Keys::DISABLED] = c;
 }
 
 
@@ -754,7 +754,7 @@ Settings::Color Settings::statusTxtColor () const
   std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", 
                                              Keys::STATUS_BAR, "/", 
                                              Keys::COLOR, "/",
-                                             Keys::TEXT ) );
+                                             Keys::TEXT_KEY ) );
   return this->value<Color> ( path, Color ( 0.0f, 0.0f, 0.0f, 1.0f ) );
 }
 
@@ -767,7 +767,7 @@ Settings::Color Settings::statusTxtColor () const
 
 void Settings::statusTxtColor ( const Color &c )
 {
-  _database[Sections::PREFERENCES][Keys::STATUS_BAR][Keys::COLOR][Keys::TEXT] = c;
+  _database[Sections::PREFERENCES][Keys::STATUS_BAR][Keys::COLOR][Keys::TEXT_KEY] = c;
 }
 
 

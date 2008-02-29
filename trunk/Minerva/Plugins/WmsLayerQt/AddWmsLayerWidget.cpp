@@ -16,7 +16,7 @@
 #include "Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h"
 #include "Minerva/Plugins/WmsLayerQt/OptionWidget.h"
 
-#include "StarSystem/RasterLayerWms.h"
+#include "Minerva/Core/Layers/RasterLayerWms.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
@@ -61,7 +61,7 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   
   _optionsWidget->setLayout ( new QVBoxLayout );
   
-  _cacheDirectory->setText ( StarSystem::RasterLayerWms::defaultCacheDirectory().c_str() );
+  _cacheDirectory->setText ( Minerva::Core::Layers::RasterLayerWms::defaultCacheDirectory().c_str() );
   
   QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
 
@@ -109,9 +109,9 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
   // Make sure we have a server and cache directory.
   if ( false == server.empty () && false == cacheDirectory.empty() )
   {
-    StarSystem::RasterLayerWms::Extents extents ( -180, -90, 180, 90 );
+    Minerva::Core::Layers::RasterLayerWms::Extents extents ( -180, -90, 180, 90 );
     
-    StarSystem::RasterLayerWms::Options options;
+    Minerva::Core::Layers::RasterLayerWms::Options options;
     
     for ( Options::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
     {
@@ -127,7 +127,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
     options[Usul::Network::Names::FORMAT] = format;
     
     // Make the layer
-    StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( extents, server, options ) );
+    Minerva::Core::Layers::RasterLayerWms::RefPtr layer ( new Minerva::Core::Layers::RasterLayerWms ( extents, server, options ) );
 
     // Set the cache directory.
     layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );

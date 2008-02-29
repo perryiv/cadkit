@@ -57,11 +57,11 @@
 
 #include "OsgTools/Font.h"
 
-#include "StarSystem/ClampNearFar.h"
-#include "StarSystem/SetJobManager.h"
-#include "StarSystem/Extents.h"
-#include "StarSystem/LandModelEllipsoid.h"
-#include "StarSystem/SplitCallbacks.h"
+#include "Minerva/Core/Utilities/ClampNearFar.h"
+#include "Minerva/Core/Visitors/SetJobManager.h"
+#include "Minerva/Core/Extents.h"
+#include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
+#include "Minerva/Core/TileEngine/SplitCallbacks.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
@@ -405,12 +405,12 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
     this->deserialize ( *document );
     
     // Set the job manager.
-    StarSystem::SetJobManager::RefPtr setter ( new StarSystem::SetJobManager ( this->_getJobManager() ) );
+    Minerva::Core::Visitors::SetJobManager::RefPtr setter ( new Minerva::Core::Visitors::SetJobManager ( this->_getJobManager() ) );
     
     // Set the job manager for each body.
     for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
     {
-      StarSystem::Body::RefPtr body ( *iter );
+      Body::RefPtr body ( *iter );
       if ( body.valid() )
         body->accept ( *setter );
     }
@@ -484,7 +484,7 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
   osg::ref_ptr<osg::Group> group ( new osg::Group );
   for ( Bodies::const_iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
-    StarSystem::Body::RefPtr body ( *iter );
+    Body::RefPtr body ( *iter );
     
     if ( body.valid () )
       group->addChild ( body->scene() );
@@ -598,7 +598,7 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   this->removeUpdateListener( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
   
   // Get the active body.
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   
   if ( body.valid () )
   {
@@ -644,7 +644,7 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
     Guard guard ( this->mutex() );
 
     // Get the active body.
-    StarSystem::Body::RefPtr body ( this->activeBody() );
+    Body::RefPtr body ( this->activeBody() );
     
     if ( body.valid() )
     {
@@ -874,7 +874,7 @@ void MinervaDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
-    StarSystem::Body::RefPtr body ( *iter );
+    Body::RefPtr body ( *iter );
     if ( body.valid() )
       body->preRender ( caller );
   }
@@ -896,7 +896,7 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
-    StarSystem::Body::RefPtr body ( *iter );
+    Body::RefPtr body ( *iter );
     if ( body.valid() )
       body->postRender ( caller );
   }
@@ -927,7 +927,7 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
   if ( csv.valid() )
   {
     osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
-    cv->setClampProjectionMatrixCallback ( new StarSystem::ClampNearFar ( *cv ) );
+    cv->setClampProjectionMatrixCallback ( new Minerva::Core::Utilities::ClampNearFar ( *cv ) );
     cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
   }
 }
@@ -1046,7 +1046,7 @@ void MinervaDocument::dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller )
   _dirty = b;
   
   // Get the active body.
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   Usul::Interfaces::IRasterLayer::QueryPtr rl ( caller );
   
   if ( body.valid() && rl.valid() )
@@ -1429,7 +1429,7 @@ void MinervaDocument::_increaseSplitDistance()
   
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
-    StarSystem::Body::RefPtr body ( *iter );
+    Body::RefPtr body ( *iter );
     if ( body.valid() )
       body->splitDistance ( body->splitDistance() * 1.1 );
   }
@@ -1449,7 +1449,7 @@ void MinervaDocument::_decreaseSplitDistance()
   
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
-    StarSystem::Body::RefPtr body ( *iter );
+    Body::RefPtr body ( *iter );
     if ( body.valid() )
       body->splitDistance ( body->splitDistance() / 1.1 );
   }
@@ -1631,7 +1631,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
 
 void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   
   if ( body.valid() )
     body->convertToPlanet ( orginal, planetPoint );
@@ -1646,7 +1646,7 @@ void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::
 
 void MinervaDocument::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
 {
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   
   if ( body.valid() )
     body->convertFromPlanet ( planetPoint, latLonPoint );
@@ -1661,7 +1661,7 @@ void MinervaDocument::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, 
 
 osg::Matrixd MinervaDocument::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
 {
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   return ( body.valid() ? body->planetRotationMatrix ( lat, lon, elevation, heading ) : osg::Matrixd() );
 }
 
@@ -1674,7 +1674,7 @@ osg::Matrixd MinervaDocument::planetRotationMatrix ( double lat, double lon, dou
 
 double MinervaDocument::elevationAtLatLong ( double lat, double lon ) const
 {
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   return ( body.valid() ? body->elevation( lat, lon ) : 0.0 );
 }
 
@@ -1692,11 +1692,10 @@ void MinervaDocument::_makePlanet()
     return;
   
   // Local typedefs to shorten the lines.
-  typedef StarSystem::Body Body;
   typedef Body::Extents Extents;
   
   // Make the land model.
-  typedef StarSystem::LandModelEllipsoid Land;
+  typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
   Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
   Land::RefPtr land ( new Land ( radii ) );
   
@@ -2026,7 +2025,7 @@ void MinervaDocument::_buildLayerMenu()
   Guard guard ( this );
   _layersMenu->clear();
   
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   
   if ( body.valid() )
   {
@@ -2059,7 +2058,7 @@ void MinervaDocument::_resizePoints ( double factor )
 
 void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
 {
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   
   if ( body.valid() )
   {
@@ -2154,7 +2153,7 @@ bool MinervaDocument::isUseSkirts() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   return ( body.valid() ? body->useSkirts() : false );
 }
 
@@ -2169,7 +2168,7 @@ void MinervaDocument::useSkirts( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   if ( body.valid() )
     body->useSkirts ( b );
 }
@@ -2210,7 +2209,7 @@ const osg::FrameStamp * MinervaDocument::frameStamp() const
 //  
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::activeBody ( StarSystem::Body* body )
+void MinervaDocument::activeBody ( Body* body )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -2231,7 +2230,7 @@ void MinervaDocument::activeBody ( StarSystem::Body* body )
 //  
 ///////////////////////////////////////////////////////////////////////////////
 
-StarSystem::Body* MinervaDocument::activeBody() const
+MinervaDocument::Body* MinervaDocument::activeBody() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -2330,7 +2329,7 @@ Usul::Interfaces::ITreeNode * MinervaDocument::getChildNode ( unsigned int which
   USUL_TRACE_SCOPE;
   
   // Get the active body.
-  StarSystem::Body::RefPtr body ( this->activeBody() );
+  Body::RefPtr body ( this->activeBody() );
   
   if ( body.valid() && 0 == which )
     return Usul::Interfaces::ITreeNode::QueryPtr ( body->elevationData().get() );

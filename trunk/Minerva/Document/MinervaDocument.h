@@ -46,8 +46,8 @@
 
 #include "Serialize/XML/Macros.h"
 
-#include "StarSystem/Body.h"
-#include "StarSystem/Hud.h"
+#include "Minerva/Core/TileEngine/Body.h"
+#include "Minerva/Core/Utilities/Hud.h"
 
 #include "osg/Camera"
 #include "osgText/Text"
@@ -84,7 +84,8 @@ public:
   typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
   typedef Usul::Interfaces::IUpdateListener IUpdateListener;
   typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
-  typedef std::vector<StarSystem::Body::RefPtr> Bodies;
+  typedef Minerva::Core::TileEngine::Body Body;
+  typedef std::vector<Body::RefPtr> Bodies;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -216,8 +217,8 @@ public:
   void                                     useSkirts( bool b );
   
   /// Get/Set the active body.
-  void                                     activeBody ( StarSystem::Body* );
-  StarSystem::Body*                        activeBody() const;
+  void                                     activeBody ( Body* );
+  Body*                                    activeBody() const;
   
 protected:
   virtual ~MinervaDocument();
@@ -322,7 +323,7 @@ private:
     
     osg::Vec3d _hpr;
     osg::Vec3d _eye;
-    StarSystem::Body *_body;
+    MinervaDocument::Body *_body;
   };
   
   bool _dirty;
@@ -335,9 +336,9 @@ private:
   osg::ref_ptr < osgText::Text >   _dateText;
 
   Bodies                     _bodies;
-  StarSystem::Body::RefPtr   _activeBody;
+  Body::RefPtr               _activeBody;
   Usul::Jobs::Manager *      _manager;
-  StarSystem::Hud            _hud;
+  Minerva::Core::Utilities::Hud            _hud;
   osg::ref_ptr < Callback >  _callback;
 
   /// Command members.

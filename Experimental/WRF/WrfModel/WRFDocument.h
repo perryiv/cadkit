@@ -32,8 +32,8 @@
 
 #include "Serialize/XML/Macros.h"
 
-#include "StarSystem/System.h"
-#include "StarSystem/Body.h"
+#include "Minerva/Core/TileEngine/System.h"
+#include "Minerva/Core/TileEngine/Body.h"
 
 #include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/Volume/TransferFunction.h"
@@ -236,7 +236,7 @@ private:
   Usul::Math::Vec2d _upperRight;
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
-  StarSystem::System::RefPtr _system;
+  Minerva::Core::TileEngine::System::RefPtr _system;
   Usul::Jobs::Manager *      _manager;
   
   SERIALIZE_XML_DEFINE_MAP;

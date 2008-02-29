@@ -12,11 +12,10 @@
 #define __MINERVA_CORE_VISITOR_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/Macros.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
-#include "Usul/Cast/Cast.h"
 
 namespace Minerva
 {
@@ -31,64 +30,60 @@ namespace Minerva
       class Model;
     }
 
-    namespace Layers 
+    namespace Layers
     {
+      class Vector;
       class VectorGroup;
     }
+    
+    namespace TileEngine
+    {
+      class Node;
+      class Group;
+      class Body;
+      class System;
+    }
 
-    class MINERVA_EXPORT Visitor : public Usul::Base::Referenced
+    class MINERVA_EXPORT Visitor : public Usul::Base::Object
     {
     public:
 
       // Typedefs.
-      typedef Usul::Base::Referenced                  BaseClass;
+      typedef Usul::Base::Object                      BaseClass;
       typedef Minerva::Core::DataObjects::DataObject  DataObject;
       typedef Minerva::Core::Layers::Vector           Vector;
 
-      USUL_DECLARE_REF_POINTERS ( Visitor );
+      MINERVA_DEFINE_VISITOR_CLASS ( Visitor );
 
-      Visitor() : BaseClass()
-      {
-      }
+      virtual void visit ( Minerva::Core::DataObjects::DataObject &dataObject );
+      virtual void visit ( Minerva::Core::DataObjects::Line &line );
+      virtual void visit ( Minerva::Core::DataObjects::Point &point );
+      virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon );
+      virtual void visit ( Minerva::Core::DataObjects::Model &model );
 
-      virtual void visit ( Minerva::Core::DataObjects::DataObject &dataObject )
-      {
-      }
-
-      virtual void visit ( Minerva::Core::DataObjects::Line &line )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( DataObject&, line ) );
-      }
-
-      virtual void visit ( Minerva::Core::DataObjects::Point &point )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( DataObject&, point ) );
-      }
-
-      virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( DataObject&, polygon ) );
-      }
+      virtual void visit ( Minerva::Core::Layers::Vector& vector );
+      virtual void visit ( Minerva::Core::Layers::VectorGroup& group );
       
-      virtual void visit ( Minerva::Core::DataObjects::Model &model )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( DataObject&, model ) );
-      }
-
-      virtual void visit ( Minerva::Core::Layers::Vector& vector )
-      {
-        vector.traverse ( *this );
-      }
-      
-      virtual void visit ( Minerva::Core::Layers::VectorGroup& group )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( Vector&, group ) );
-      }
+      virtual void visit ( Minerva::Core::TileEngine::System & );
+      virtual void visit ( Minerva::Core::TileEngine::Group & );
+      virtual void visit ( Minerva::Core::TileEngine::Body & );
+      virtual void visit ( Minerva::Core::TileEngine::Node & );
 
     protected:
-      virtual ~Visitor()
-      {
-      }
+      
+      // Constructor
+      Visitor();
+      
+      // Use reference counting.
+      virtual ~Visitor();
+      
+    private:
+      
+      // No copying or assignment.
+      Visitor ( const Visitor & );
+      Visitor &operator = ( const Visitor & );
+      
+      void                      _destroy();
     };
   }
 }

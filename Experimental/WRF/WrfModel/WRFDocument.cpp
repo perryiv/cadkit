@@ -51,13 +51,13 @@
 #include "MenuKit/RadioButton.h"
 #include "MenuKit/ToggleButton.h"
 
-#include "StarSystem/BuildScene.h"
-#include "StarSystem/Extents.h"
-#include "StarSystem/LandModelEllipsoid.h"
-#include "StarSystem/LandModelFlat.h"
-#include "StarSystem/RasterLayerWms.h"
-#include "StarSystem/SetJobManager.h"
-#include "StarSystem/SplitCallbacks.h"
+#include "Minerva/Core/Visitors/BuildScene.h"
+#include "Minerva/Core/Extents.h"
+#include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
+#include "Minerva/Core/TileEngine/LandModelFlat.h"
+#include "Minerva/Core/Layers/RasterLayerWms.h"
+#include "Minerva/Core/Visitors/SetJobManager.h"
+#include "Minerva/Core/TileEngine/SplitCallbacks.h"
 
 #include "osgText/Text"
 #include "osg/Geode"
@@ -126,7 +126,7 @@ WRFDocument::WRFDocument() :
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Make the system.
-  _system = new StarSystem::System ( _manager );
+  _system = new Minerva::Core::TileEngine::System ( _manager );
   
   this->_addMember ( "filename", _filename );
   this->_addMember ( "num_timesteps", _timesteps );
@@ -1303,11 +1303,11 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
     std::cout << "Adding body..." << std::endl;
 
     // Local typedefs to shorten the lines.
-    typedef StarSystem::Body Body;
+    typedef Minerva::Core::TileEngine::Body Body;
     typedef Body::Extents Extents;
   
     // Make the land model.
-    typedef StarSystem::LandModelEllipsoid Land;
+    typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
     Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
     Land::RefPtr land ( new Land ( radii ) );
   
@@ -1328,7 +1328,7 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
     {
       const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
     
-      typedef StarSystem::RasterLayerWms::Options Options;
+      typedef Minerva::Core::Layers::RasterLayerWms::Options Options;
       Options options;
       options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
       options[Usul::Network::Names::STYLES]  = "Jul,visual";
@@ -1336,11 +1336,11 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
       options[Usul::Network::Names::REQUEST] = "GetMap";
       options[Usul::Network::Names::FORMAT]  = "image/jpeg";
     
-      typedef StarSystem::Body::Extents Extents;
+      typedef Body::Extents Extents;
       typedef Extents::Vertex Vertex;
       const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
     
-      StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( maxExtents, url, options ) );
+      Minerva::Core::Layers::RasterLayerWms::RefPtr layer ( new Minerva::Core::Layers::RasterLayerWms ( maxExtents, url, options ) );
       body->rasterAppend ( layer.get() );
     }
   
@@ -1348,10 +1348,10 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
   }
 
   // Set the job manager.
-  StarSystem::SetJobManager::RefPtr setter ( new StarSystem::SetJobManager ( _manager ) );
+  Minerva::Core::Visitors::SetJobManager::RefPtr setter ( new Minerva::Core::Visitors::SetJobManager ( _manager ) );
   _system->accept ( *setter );
 
-  StarSystem::BuildScene::RefPtr builder ( new StarSystem::BuildScene );
+  Minerva::Core::Visitors::BuildScene::RefPtr builder ( new Minerva::Core::Visitors::BuildScene );
   _system->accept ( *builder );
 
 #if 1

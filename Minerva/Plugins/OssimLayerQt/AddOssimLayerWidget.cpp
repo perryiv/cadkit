@@ -8,18 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Config.h"
-
 #include "Minerva/Plugins/OssimLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h"
 
-#if USE_STAR_SYSTEM
-#include "StarSystem/RasterLayerOssim.h"
-#include "StarSystem/ElevationLayerDem.h"
-#else
-#include "Minerva/Plugins/OssimLayerQt/ImageTextureLayer.h"
-#include "Minerva/Plugins/OssimLayerQt/KwlLayer.h"
-#endif
+#include "Minerva/Core/Layers/RasterLayerOssim.h"
+#include "Minerva/Core/Layers/ElevationLayerDem.h"
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
@@ -136,10 +129,9 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
       std::string filename ( item->text ().toStdString () );
       std::string ext ( Usul::File::extension ( filename ) );
       
-#if USE_STAR_SYSTEM
       if ( "dem" == ext )
       {
-        StarSystem::ElevationLayerDem::RefPtr layer ( new StarSystem::ElevationLayerDem );
+        Minerva::Core::Layers::ElevationLayerDem::RefPtr layer ( new Minerva::Core::Layers::ElevationLayerDem );
         layer->open ( filename );
         layer->name ( filename );
         
@@ -147,24 +139,12 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
       }
       else
       {
-        StarSystem::RasterLayerOssim::RefPtr layer ( new StarSystem::RasterLayerOssim );
+        Minerva::Core::Layers::RasterLayerOssim::RefPtr layer ( new Minerva::Core::Layers::RasterLayerOssim );
         layer->open ( filename );
         layer->name ( filename );
       
         al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
       }
-#else
-      if ( "kwl" == ext )
-      {
-        Usul::Interfaces::ILayer::RefPtr layer ( new KwlLayer ( filename ) );
-        al->addLayer ( layer );
-      }
-      else
-      {
-        Usul::Interfaces::ILayer::RefPtr layer ( new ImageTextureLayer ( filename ) );
-        al->addLayer ( layer );
-      }
-#endif
     }
   }
 }

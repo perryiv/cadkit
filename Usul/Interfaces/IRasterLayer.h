@@ -20,7 +20,7 @@
 
 
 namespace Usul { namespace Jobs { class Job; } }
-namespace StarSystem { template < class VertexType> class Extents; }
+namespace Minerva { namespace Core { template < class VertexType> class Extents; } }
 
 namespace Usul {
 namespace Interfaces {
@@ -34,7 +34,7 @@ struct IRasterLayer : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3791329730u };
   
-  typedef StarSystem::Extents < osg::Vec2d > Extents;
+  typedef Minerva::Core::Extents < osg::Vec2d > Extents;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   
   /// Get the texture.

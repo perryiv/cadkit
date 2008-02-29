@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Math/Vector3.h"
 #include "Usul/Predicates/LessVector.h"

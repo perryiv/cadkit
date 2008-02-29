@@ -11,7 +11,7 @@
 #ifndef __MINERVA_RASTER_POLYGON_LAYER_H__
 #define __MINERVA_RASTER_POLYGON_LAYER_H__
 
-#include "StarSystem/RasterLayerOssim.h"
+#include "Minerva/Core/Layers/RasterLayerOssim.h"
 
 #include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Layers/PostGIS/PolygonLayer.h"
@@ -27,10 +27,10 @@ namespace Usul {
   }
 }
 
-class RasterPolygonLayer : public StarSystem::RasterLayer
+class RasterPolygonLayer : public Minerva::Core::Layers::RasterLayer
 {
 public:
-  typedef StarSystem::RasterLayer BaseClass;
+  typedef Minerva::Core::Layers::RasterLayer BaseClass;
   typedef Minerva::Layers::PostGIS::Layer Layer;
   typedef Minerva::Layers::PostGIS::PolygonLayer PolygonLayer;
   

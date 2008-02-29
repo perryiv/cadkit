@@ -1,1 +1,0 @@
--Images used from ossimPlanet (www.ossim.org).

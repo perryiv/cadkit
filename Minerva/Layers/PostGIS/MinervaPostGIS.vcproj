@@ -223,51 +223,51 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\Layer.cpp"
+				RelativePath=".\Layer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\Layer.h"
+				RelativePath=".\Layer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\LineLayer.cpp"
+				RelativePath=".\LineLayer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\LineLayer.h"
+				RelativePath=".\LineLayer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\PointLayer.cpp"
+				RelativePath=".\PointLayer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\PointLayer.h"
+				RelativePath=".\PointLayer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\PointTimeLayer.cpp"
+				RelativePath=".\PointTimeLayer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\PointTimeLayer.h"
+				RelativePath=".\PointTimeLayer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\PolygonLayer.cpp"
+				RelativePath=".\PolygonLayer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Layers\PolygonLayer.h"
+				RelativePath=".\PolygonLayer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\postGIS\BinaryParser.cpp"
+				RelativePath=".\BinaryParser.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\postGIS\BinaryParser.h"
+				RelativePath=".\BinaryParser.h"
 				>
 			</File>
 		</Filter>

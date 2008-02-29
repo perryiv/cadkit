@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(CURL_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib ossimd.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib ossimd.lib curld.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minervad.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;$(CURL_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Minervad.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Minervad.lib"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(CURL_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib ossim.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib ossim.lib curl.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minerva.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;$(CURL_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/Minerva.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Minerva.lib"
 			/>
@@ -226,11 +226,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces.h"
+					RelativePath=".\Extents.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Macros.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Serialize.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Visitor.cpp"
 					>
 				</File>
 				<File
@@ -288,6 +296,62 @@
 				<Filter
 					Name="Layers"
 					>
+					<File
+						RelativePath=".\Layers\ElevationGroup.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\ElevationGroup.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\ElevationLayerArcAscii.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\ElevationLayerArcAscii.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\ElevationLayerDem.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\ElevationLayerDem.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterGroup.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterGroup.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayer.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayer.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayerOssim.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayerOssim.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayerWms.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayerWms.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Layers\Vector.cpp"
 						>
@@ -425,6 +489,14 @@
 					Name="Visitors"
 					>
 					<File
+						RelativePath=".\Visitors\BuildScene.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\BuildScene.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Visitors\FindMinMaxDates.cpp"
 						>
 					</File>
@@ -438,6 +510,22 @@
 					</File>
 					<File
 						RelativePath=".\Visitors\ResizePoints.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\Scale.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\Scale.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\SetJobManager.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\SetJobManager.h"
 						>
 					</File>
 					<File
@@ -602,6 +690,138 @@
 					</File>
 					<File
 						RelativePath=".\Factory\Readers.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Jobs"
+					>
+					<File
+						RelativePath=".\Jobs\BuildRaster.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Jobs\BuildRaster.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Jobs\BuildTiles.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Jobs\BuildTiles.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="TileEngine"
+					>
+					<File
+						RelativePath=".\TileEngine\Body.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Body.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Group.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Group.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\LandModel.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\LandModelEllipsoid.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\LandModelEllipsoid.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\LandModelFlat.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\LandModelFlat.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Mesh.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Node.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Node.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\SplitCallbacks.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\SplitCallbacks.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\System.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\System.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Tile.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Tile.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Utilities"
+					>
+					<File
+						RelativePath=".\Utilities\ClampNearFar.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Compass.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Compass.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Composite.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\DirtyTiles.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\DirtyTiles.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Hud.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Hud.h"
 						>
 					</File>
 				</Filter>

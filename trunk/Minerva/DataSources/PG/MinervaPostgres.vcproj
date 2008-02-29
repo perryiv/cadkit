@@ -219,19 +219,19 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\DB\Connection.cpp"
+				RelativePath=".\Connection.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\DB\Connection.h"
+				RelativePath=".\Connection.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DB\Info.cpp"
+				RelativePath=".\Info.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\DB\Info.h"
+				RelativePath=".\Info.h"
 				>
 			</File>
 		</Filter>

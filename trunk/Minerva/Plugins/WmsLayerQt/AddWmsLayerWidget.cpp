@@ -8,6 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _MSC_VER
+#define NOMINMAX
+#endif
+
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h"
 #include "Minerva/Plugins/WmsLayerQt/OptionWidget.h"
@@ -192,7 +196,7 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
   
   // Download.
   Usul::Network::Curl curl ( request, temp.name() );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), "3034499311" );
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "3034499311" );
   
   // File contents.
   std::string contents;

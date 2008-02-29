@@ -270,14 +270,6 @@
 				RelativePath=".\MinervaWriter.h"
 				>
 			</File>
-			<File
-				RelativePath=".\Planet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Planet.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -17,6 +17,7 @@
 #include "Usul/Endian/Endian.h"
 
 #include <algorithm>
+#include <functional>
 
 using namespace Minerva::Layers::PostGIS;
 

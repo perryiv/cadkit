@@ -10,8 +10,6 @@
 
 #include "Minerva/Core/Geometry/Geometry.h"
 
-#include "pqxx/pqxx"
-
 using namespace Minerva::Core::Geometry;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );

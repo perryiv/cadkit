@@ -25,9 +25,14 @@
 #include "Minerva/Core/Jobs/BuildRaster.h"
 #include "Minerva/Core/Layers/ElevationGroup.h"
 #include "Minerva/Core/Layers/RasterGroup.h"
+#include "Minerva/Core/Layers/VectorGroup.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Interfaces/IElevationDatabase.h"
+#include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Variable.h"
 
@@ -45,7 +50,12 @@ namespace Core {
 namespace TileEngine {
 
 
-class MINERVA_EXPORT Body : public Node
+class MINERVA_EXPORT Body : public Node,
+                            public Usul::Interfaces::IUpdateListener,
+                            public Usul::Interfaces::IPlanetCoordinates,
+                            public Usul::Interfaces::IElevationDatabase,
+                            public Usul::Interfaces::IFrameStamp,
+                            public Usul::Interfaces::ITreeNode
 {
 public:
 
@@ -59,6 +69,7 @@ public:
   typedef Minerva::Core::TileEngine::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
+  typedef Minerva::Core::Layers::VectorGroup VectorGroup;
   typedef Minerva::Core::Layers::ElevationGroup ElevationGroup;
   typedef Minerva::Core::Layers::RasterGroup RasterGroup;
   typedef Minerva::Core::Layers::RasterLayer RasterLayer;
@@ -70,6 +81,9 @@ public:
   // Helper macro for repeated code.
   MINERVA_DEFINE_NODE_CLASS ( Body );
 
+  /// Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+  
   // Constructors
   Body ( LandModel *land = 0x0, Usul::Jobs::Manager *manager = 0x0, const MeshSize &ms = MeshSize ( 17, 17 ), double splitDistance = 1 );
 
@@ -96,6 +110,9 @@ public:
   // Get the elevation at a lat, lon.
   double                    elevation ( double lat, double lon ) const;
 
+  // Get the elevation at a lat, lon (IElevationDatabase).
+  virtual double            elevationAtLatLong ( double lat, double lon ) const;
+  
   // Append elevation data.
   void                      elevationAppend ( Usul::Interfaces::IRasterLayer * );
 
@@ -172,6 +189,15 @@ public:
   void                      useSkirts ( bool );
   bool                      useSkirts() const;
 
+  /// Update (Usul::Interfaces::IUpdateListener).
+  virtual void              updateNotify ( Usul::Interfaces::IUnknown *caller );
+  
+  /// Add vector data.
+  void                      vectorAppend ( Usul::Interfaces::IUnknown *unknown );
+  
+  /// Remove vector data.
+  void                      vectorRemove ( Usul::Interfaces::IUnknown *unknown );
+  
 protected:
 
   // Use reference counting.
@@ -181,12 +207,31 @@ protected:
 
   Extents                   _buildExtents ( Usul::Interfaces::IUnknown* unknown );
 
+  void                      _addUpdateListener ( IUnknown *caller );
+  void                      _removeUpdateListener ( IUnknown *caller );
+  
+  // Get the frame stamp (IFrameStamp). (This is a hack for layers that need to update every n seconds.)
+  virtual osg::FrameStamp *                frameStamp();
+  virtual const osg::FrameStamp *          frameStamp() const;
+  
+  // Get the number of children (ITreeNode).
+  virtual unsigned int                     getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *                      getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                             setTreeNodeName ( const std::string & );
+  virtual std::string                      getTreeNodeName() const;
+  
 private:
 
   friend class Tile;
 
   typedef std::map < unsigned long, BuildRaster::RefPtr > TextureJobs;
   typedef Usul::Threads::Variable<Usul::Jobs::Manager*> JobManager;
+  typedef Usul::Interfaces::IUpdateListener IUpdateListener;
+  typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
 
   // No copying or assignment.
   Body ( const Body & );
@@ -198,6 +243,7 @@ private:
   LandModel::RefPtr _landModel;
   RasterGroup::RefPtr _rasters;
   ElevationGroup::RefPtr _elevation;
+  VectorGroup::RefPtr _vectorData;
   JobManager _manager;
   TextureJobs _textureJobs;
   unsigned int _maxLevel;
@@ -209,6 +255,7 @@ private:
   double _scale;
   Tiles _deleteTiles;
   Tiles _topTiles;
+  UpdateListeners _updateListeners;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

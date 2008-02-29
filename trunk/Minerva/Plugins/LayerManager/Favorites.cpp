@@ -109,14 +109,14 @@ void Favorites::on_addLayer_clicked()
       {
         // Make sure that the favorite is shown.
         layer->showLayer( true );
-        
-        // Emit the layer added signal.
-        Usul::Interfaces::IUnknown::QueryPtr unknown ( layer );
-        emit layerAdded ( unknown.get() );
       
         // Add the layer.
         Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( _caller, layer.get() ) );
         addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
+        
+        // Emit the layer added signal.
+        Usul::Interfaces::IUnknown::QueryPtr unknown ( layer );
+        emit layerAdded ( unknown.get() );
       }
     }
   }

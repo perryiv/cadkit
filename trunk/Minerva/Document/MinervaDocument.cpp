@@ -91,7 +91,6 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 MinervaDocument::MinervaDocument() : 
   BaseClass( "Minerva Document" ),
   _dirty ( false ),
-  _layers ( new Minerva::Core::Layers::VectorGroup ),
   _layersMenu ( new MenuKit::Menu ( "Layers" ) ),
   _root ( new osg::Group ),
   _camera ( new osg::Camera ),
@@ -126,12 +125,10 @@ MinervaDocument::MinervaDocument() :
   _legendPosition ( LEGEND_BOTTOM_RIGHT ),
   _width( 0 ),
   _height( 0 ),
-  _updateListeners(),
   _showCompass ( true ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
-  this->_addMember ( "layers", _layers );
   this->_addMember ( "commands_send", _commandsSend );
   this->_addMember ( "commands_receive", _commandsReceive );
   this->_addMember ( "session_name", _sessionName );
@@ -192,8 +189,6 @@ MinervaDocument::MinervaDocument() :
     
 #endif
 #endif
-
-  _layers->name ( "Vector" );
 }
 
 
@@ -254,14 +249,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   case Usul::Interfaces::ICommandExecuteListener::IID:
     return static_cast < Usul::Interfaces::ICommandExecuteListener * > ( this );
-  case Usul::Interfaces::IPlanetCoordinates::IID:
-    return static_cast < Usul::Interfaces::IPlanetCoordinates* > ( this );
-  case Usul::Interfaces::IElevationDatabase::IID:
-    return static_cast < Usul::Interfaces::IElevationDatabase * > ( this );
   case Usul::Interfaces::IIntersectListener::IID:
     return static_cast < Usul::Interfaces::IIntersectListener * > ( this );
-  case Usul::Interfaces::IFrameStamp::IID:
-    return static_cast < Usul::Interfaces::IFrameStamp* > ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   default:
@@ -490,8 +479,6 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
       group->addChild ( body->scene() );
   }
   
-  group->addChild ( _layers->buildScene ( options, caller ) );
-  
   group->addChild ( _root.get() );
   group->addChild ( _hud.buildScene() );
   
@@ -595,8 +582,6 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 
   Guard guard ( this->mutex() );
 
-  this->removeUpdateListener( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
-  
   // Get the active body.
   Body::RefPtr body ( this->activeBody() );
   
@@ -604,15 +589,9 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   {
     Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
     body->rasterRemove ( rl.get() );
+    body->vectorRemove ( layer );
   }
   
-  // Remove the layer.
-  if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( layer ) )
-  {
-    if ( _layers.valid() )
-      _layers->removeLayer ( vector );
-  }
-
   // If it's temporal, we need to find the min and max dates again.
   Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
   if ( temporal.valid () )
@@ -657,24 +636,16 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
         else
           body->rasterAppend ( rl.get() );
       }
+      
+      body->vectorAppend ( layer );
     }
     
-    // Add the layer to our group.
-    if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( layer ) )
-    {
-      if ( _layers.valid() )
-        _layers->addLayer ( vector );
-    }
-
     // If it's temporal, we need to find the min and max dates again.
     Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
     if ( temporal.valid () )
     {
       _datesDirty = true;
     }
-    
-    // Add to the update listeners.
-    this->addUpdateListener( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
 
     // We are modified.
     this->modified ( true );
@@ -996,7 +967,7 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   
   // Update.
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-  std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
+  std::for_each ( _bodies.begin(), _bodies.end(), std::bind2nd ( std::mem_fun ( &Body::updateNotify ), unknown.get() ) );
 
   // Build the scene.
   this->_buildScene ( caller );
@@ -1243,8 +1214,12 @@ void MinervaDocument::accept ( Minerva::Core::Visitor& visitor )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  if ( _layers.valid() )
-    _layers->accept ( visitor );
+  for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
+  {
+    Body::RefPtr body ( *iter );
+    if ( body.valid() )
+      body->accept ( visitor );
+  }
 }
 
 
@@ -1625,62 +1600,6 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert to planet coordinates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
-{
-  Body::RefPtr body ( this->activeBody() );
-  
-  if ( body.valid() )
-    body->convertToPlanet ( orginal, planetPoint );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert from planet coordinates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
-{
-  Body::RefPtr body ( this->activeBody() );
-  
-  if ( body.valid() )
-    body->convertFromPlanet ( planetPoint, latLonPoint );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Matrix to place items on the planet (i.e. local coordinates to world coordinates).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Matrixd MinervaDocument::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
-{
-  Body::RefPtr body ( this->activeBody() );
-  return ( body.valid() ? body->planetRotationMatrix ( lat, lon, elevation, heading ) : osg::Matrixd() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the elevation at a lat, lon (IElevationDatabase).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double MinervaDocument::elevationAtLatLong ( double lat, double lon ) const
-{
-  Body::RefPtr body ( this->activeBody() );
-  return ( body.valid() ? body->elevation( lat, lon ) : 0.0 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Make the planet.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1862,7 +1781,7 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
 {
   // Always clear.
   _legend->clear();
-  
+#if 0
   if( this->isShowLegend() && _layers.valid() )
   {
     // Set the legend size.
@@ -1896,6 +1815,7 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
     // Must be called after rows are added to the legend.
     this->_setLegendPosition( legendWidth );
   }
+#endif
 
   // Build the legend.
   _camera->addChild( _legend->buildScene() );
@@ -1986,25 +1906,25 @@ void MinervaDocument::dirty( bool b )
 
 namespace Detail
 {
-  void buildLayerMenu ( MenuKit::Menu& menu, Usul::Interfaces::ILayer* layer )
+  void buildLayerMenu ( MenuKit::Menu& menu, Usul::Interfaces::ITreeNode* node )
   {
     // Return now if layer is null.
-    if ( 0x0 == layer )
+    if ( 0x0 == node )
       return;
     
-    // Add the toggle.
-    menu.append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( layer ) ) );
+    Usul::Interfaces::ILayer::QueryPtr layer ( node );
     
-    // See if it's a layer list also.
-    Usul::Interfaces::ITreeNode::QueryPtr node ( layer );
-    if ( node.valid() )
+    // Add the toggle.
+    if ( layer.valid() )
+      menu.append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( layer ) ) );
+    
     {
-      MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( layer->name() ) );
+      MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( node->getTreeNodeName() ) );
       
       const unsigned int number ( node->getNumChildNodes() );
       for ( unsigned int i = 0; i < number; ++i  )
       {
-        Usul::Interfaces::ILayer::QueryPtr child ( node->getChildNode ( i ) );
+        Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ) );
         if ( child.valid() )
           Detail::buildLayerMenu ( *layerMenu, child.get() );
       }
@@ -2025,14 +1945,12 @@ void MinervaDocument::_buildLayerMenu()
   Guard guard ( this );
   _layersMenu->clear();
   
-  Body::RefPtr body ( this->activeBody() );
-  
-  if ( body.valid() )
+  for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
-    Detail::buildLayerMenu ( *_layersMenu, body->elevationData() );
-    Detail::buildLayerMenu ( *_layersMenu, body->rasterData() );
+    Body::RefPtr body ( *iter );
+    if ( body.valid() )
+      Detail::buildLayerMenu ( *_layersMenu, Usul::Interfaces::ITreeNode::QueryPtr ( body ) );
   }
-  Detail::buildLayerMenu ( *_layersMenu, Usul::Interfaces::ILayer::QueryPtr ( _layers ) );
 }
 
 
@@ -2068,49 +1986,6 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
     Usul::Math::Vec3d latLonPoint;
     body->convertFromPlanet( point, latLonPoint );
     _hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the update listener.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::addUpdateListener ( IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  
-  // Don't add twice.
-  this->removeUpdateListener ( caller );
-  
-  IUpdateListener::QueryPtr listener ( caller );
-  if ( true == listener.valid() )
-  {
-    Guard guard ( this->mutex() );
-    _updateListeners.push_back ( IUpdateListener::RefPtr ( listener.get() ) );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the listener.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::removeUpdateListener ( IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  
-  IUpdateListener::QueryPtr listener ( caller );
-  if ( true == listener.valid() )
-  {
-    Guard guard ( this->mutex() );
-    IUpdateListener::RefPtr value ( listener.get() );
-    UpdateListeners::iterator end ( std::remove ( _updateListeners.begin(), _updateListeners.end(), value ) );
-    _updateListeners.erase ( end, _updateListeners.end() );
   }
 }
 
@@ -2171,35 +2046,6 @@ void MinervaDocument::useSkirts( bool b )
   Body::RefPtr body ( this->activeBody() );
   if ( body.valid() )
     body->useSkirts ( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame stamp.
-//  
-///////////////////////////////////////////////////////////////////////////////
-
-osg::FrameStamp * MinervaDocument::frameStamp()
-{
-  USUL_TRACE_SCOPE;
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
-  return ( fs.valid() ? fs->frameStamp() : 0x0 );
-  
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame stamp.
-//  
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::FrameStamp * MinervaDocument::frameStamp() const
-{
-  USUL_TRACE_SCOPE;
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
-  return ( fs.valid() ? fs->frameStamp() : 0x0 );
 }
 
 
@@ -2314,7 +2160,7 @@ void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* n
 unsigned int MinervaDocument::getNumChildNodes() const
 {
   USUL_TRACE_SCOPE;
-  return 3;
+  return _bodies.size();
 }
 
 
@@ -2327,16 +2173,8 @@ unsigned int MinervaDocument::getNumChildNodes() const
 Usul::Interfaces::ITreeNode * MinervaDocument::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
-  
-  // Get the active body.
-  Body::RefPtr body ( this->activeBody() );
-  
-  if ( body.valid() && 0 == which )
-    return Usul::Interfaces::ITreeNode::QueryPtr ( body->elevationData().get() );
-  else if ( body.valid() && 1 == which )
-    return Usul::Interfaces::ITreeNode::QueryPtr ( body->rasterData().get() );
-  
-  return Usul::Interfaces::ITreeNode::QueryPtr ( _layers );
+  Guard guard ( this );
+  return Usul::Interfaces::ITreeNode::QueryPtr ( _bodies.at ( which ) );
 }
 
 

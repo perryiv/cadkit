@@ -23,6 +23,7 @@
 #include "OsgTools/Visitor.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/Execute.h"
 #include "Usul/Functions/SafeCall.h"
@@ -44,6 +45,8 @@ USUL_FACTORY_REGISTER_CREATOR ( Body );
 MINERVA_IMPLEMENT_NODE_CLASS ( Body );
 
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Body, Body::BaseClass );
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Serialization glue for osg::ref_ptr<osg::MatrixTransform>
@@ -64,6 +67,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _landModel ( land ),
   _rasters ( new RasterGroup ),
   _elevation ( new ElevationGroup ),
+  _vectorData ( new VectorGroup ),
   _manager ( manager ),
   _maxLevel ( 50 ),
   _cacheTiles ( false ),
@@ -73,13 +77,15 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _splitCallback ( new Minerva::Core::TileEngine::Callbacks::PassThrough ),
   _scale ( 1 ),
   _deleteTiles(),
-  _topTiles()
+  _topTiles(),
+  _updateListeners()
 {
   USUL_TRACE_SCOPE;
 
   // Serialization setup.
   this->_addMember ( "transformation", _transform );
   this->_addMember ( "land_model", _landModel );
+  this->_addMember ( "vector_group", _vectorData );
   this->_addMember ( "raster_group", _rasters );
   this->_addMember ( "elevation_group", _elevation );
   this->_addMember ( "max_level", _maxLevel );
@@ -93,6 +99,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   // Set the names.
   _elevation->name ( "Elevation" );
   _rasters->name ( "Rasters" );
+  _vectorData->name ( "Vector" );
 }
 
 
@@ -134,6 +141,33 @@ void Body::_destroy()
 
   // Should be ok now.
   _deleteTiles.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query the interfaces
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *Body::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+  case Usul::Interfaces::IPlanetCoordinates::IID:
+    return static_cast < Usul::Interfaces::IPlanetCoordinates* > ( this );
+  case Usul::Interfaces::IElevationDatabase::IID:
+    return static_cast < Usul::Interfaces::IElevationDatabase * > ( this );
+  case Usul::Interfaces::IFrameStamp::IID:
+    return static_cast < Usul::Interfaces::IFrameStamp* > ( this );
+  case Usul::Interfaces::ITreeNode::IID:
+    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -947,4 +981,210 @@ void Body::purgeTiles()
   {
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &deleteMe, &Tiles::clear ), "4101333810" );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the update listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::_addUpdateListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Don't add twice.
+  this->_removeUpdateListener ( caller );
+  
+  IUpdateListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _updateListeners.push_back ( IUpdateListener::RefPtr ( listener.get() ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  //  group->addChild ( _layers->buildScene ( options, caller ) );
+  
+  // Update.
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::_removeUpdateListener ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  IUpdateListener::QueryPtr listener ( caller );
+  if ( true == listener.valid() )
+  {
+    Guard guard ( this->mutex() );
+    IUpdateListener::RefPtr value ( listener.get() );
+    UpdateListeners::iterator end ( std::remove ( _updateListeners.begin(), _updateListeners.end(), value ) );
+    _updateListeners.erase ( end, _updateListeners.end() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+osg::FrameStamp * Body::frameStamp()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
+  return ( fs.valid() ? fs->frameStamp() : 0x0 );
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the frame stamp.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::FrameStamp * Body::frameStamp() const
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
+  return ( fs.valid() ? fs->frameStamp() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Body::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  return 3;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * Body::getChildNode ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  if ( 0 == which )
+    return Usul::Interfaces::ITreeNode::QueryPtr ( _elevation.get() );
+  else if ( 1 == which )
+    return Usul::Interfaces::ITreeNode::QueryPtr ( _rasters.get() );
+  
+  return Usul::Interfaces::ITreeNode::QueryPtr ( _vectorData.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::setTreeNodeName ( const std::string & )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Body::getTreeNodeName() const
+{
+  USUL_TRACE_SCOPE;
+  return "Body";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::vectorAppend ( Usul::Interfaces::IUnknown *unknown )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  // Add the layer to our group.
+  if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( unknown ) )
+  {
+    _vectorData->addLayer ( vector );
+    
+    // Add to the update listeners.
+    this->_addUpdateListener( unknown );
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::vectorRemove ( Usul::Interfaces::IUnknown *unknown )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  // Add the layer to our group.
+  if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( unknown ) )
+  {
+    _vectorData->removeLayer ( vector );
+    
+    // Add to the update listeners.
+    this->_removeUpdateListener( unknown );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation at a lat, lon (IElevationDatabase).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Body::elevationAtLatLong ( double lat, double lon ) const
+{
+  USUL_TRACE_SCOPE;
+  return this->elevation ( lat, lon );
 }

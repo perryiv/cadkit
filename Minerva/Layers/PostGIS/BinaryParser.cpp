@@ -8,7 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/postGIS/BinaryParser.h"
+#include "Minerva/Layers/PostGIS/BinaryParser.h"
+
 #include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Geometry/Polygon.h"
@@ -17,7 +18,7 @@
 
 #include <algorithm>
 
-using namespace Minerva::Core::postGIS;
+using namespace Minerva::Layers::PostGIS;
 
 
 ///////////////////////////////////////////////////////////////////////////////

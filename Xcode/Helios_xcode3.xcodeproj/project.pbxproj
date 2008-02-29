@@ -383,6 +383,8 @@
 		43FED996092452F800EBB610 /* Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED859092452F700EBB610 /* Types.cpp */; };
 		43FEDAF5092454D500EBB610 /* Mutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FEDAEE092454D500EBB610 /* Mutex.cpp */; };
 		43FEDAF6092454D500EBB610 /* Mutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 43FEDAEF092454D500EBB610 /* Mutex.h */; };
+		660C4D9B0D53DD3A0072942F /* ResizePoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 660C4D990D53DD3A0072942F /* ResizePoints.cpp */; };
+		660C4D9C0D53DD3A0072942F /* ResizePoints.h in Headers */ = {isa = PBXBuildFile; fileRef = 660C4D9A0D53DD3A0072942F /* ResizePoints.h */; };
 		660D05D00D1B2CE600420497 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		660D06390D1B381800420497 /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAE70D120596003F6A58 /* QtOpenGL.framework */; };
 		660D06470D1B383B00420497 /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAE70D120596003F6A58 /* QtOpenGL.framework */; };
@@ -452,6 +454,10 @@
 		66430C3E0D10C23800984C94 /* TriangleReaderGrassRaster.h in Headers */ = {isa = PBXBuildFile; fileRef = 66430C360D10C23800984C94 /* TriangleReaderGrassRaster.h */; };
 		66430C3F0D10C23800984C94 /* TriangleReaderOFF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430C370D10C23800984C94 /* TriangleReaderOFF.cpp */; };
 		66430C400D10C23800984C94 /* TriangleReaderOFF.h in Headers */ = {isa = PBXBuildFile; fileRef = 66430C380D10C23800984C94 /* TriangleReaderOFF.h */; };
+		664B43510D54EE8C0080DF60 /* IAddLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B434D0D54EE8C0080DF60 /* IAddLayer.h */; };
+		664B43520D54EE8C0080DF60 /* IAnimationControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B434E0D54EE8C0080DF60 /* IAnimationControl.h */; };
+		664B43530D54EE8C0080DF60 /* IDirtyScene.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B434F0D54EE8C0080DF60 /* IDirtyScene.h */; };
+		664B43540D54EE8C0080DF60 /* IRemoveLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B43500D54EE8C0080DF60 /* IRemoveLayer.h */; };
 		664C34DA0D497BCE006FC860 /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 664C34D80D497BCE006FC860 /* Mesh.h */; };
 		666723E40D11B36000453D37 /* Boost.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
 		666734CE0D11B36A00453D37 /* Xerces.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 66FF45540D11012C003A0AC1 /* Xerces.framework */; };
@@ -582,8 +588,6 @@
 		6673DDA10BC60B7800C0131F /* SceneComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 6673DDA00BC60B7800C0131F /* SceneComponent.m */; };
 		667461F50D4F8E7C005D2596 /* Recharge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667461F30D4F8E7C005D2596 /* Recharge.cpp */; };
 		667461F60D4F8E7C005D2596 /* Recharge.h in Headers */ = {isa = PBXBuildFile; fileRef = 667461F40D4F8E7C005D2596 /* Recharge.h */; };
-		667461FA0D4F8EE2005D2596 /* Recharge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667461F80D4F8EE2005D2596 /* Recharge.cpp */; };
-		667461FB0D4F8EE2005D2596 /* Recharge.h in Headers */ = {isa = PBXBuildFile; fileRef = 667461F90D4F8EE2005D2596 /* Recharge.h */; };
 		667462160D4F9EB8005D2596 /* DiscretizationInputForm.h in Headers */ = {isa = PBXBuildFile; fileRef = 667462140D4F9EB8005D2596 /* DiscretizationInputForm.h */; };
 		667462170D4F9EB8005D2596 /* DiscretizationInputForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667462150D4F9EB8005D2596 /* DiscretizationInputForm.cpp */; };
 		6674627F0D4FA41C005D2596 /* moc_DiscretizationInputForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6674627E0D4FA41C005D2596 /* moc_DiscretizationInputForm.cpp */; };
@@ -621,7 +625,6 @@
 		668931760D2841D5005CB399 /* moc_LayersTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668931740D2841D5005CB399 /* moc_LayersTree.cpp */; };
 		668931770D2841D5005CB399 /* moc_PropertiesAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668931750D2841D5005CB399 /* moc_PropertiesAction.cpp */; };
 		6689317A0D28510D005CB399 /* LayerManager.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66892DD00D283D61005CB399 /* LayerManager.plugd */; };
-		6689318D0D2851D1005CB399 /* PointTimeLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17B10D15193000B4B1AA /* PointTimeLayer.cpp */; };
 		668931940D285DCD005CB399 /* Favorites.h in Headers */ = {isa = PBXBuildFile; fileRef = 668931920D285DCD005CB399 /* Favorites.h */; };
 		668931950D285DCD005CB399 /* Favorites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668931930D285DCD005CB399 /* Favorites.cpp */; };
 		668BE83C0D24CDD800109210 /* CameraPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668BE8340D24CDD800109210 /* CameraPath.cpp */; };
@@ -674,6 +677,9 @@
 		668D4CCC0D372F9E00CE039D /* OptionWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 668D4CCA0D372F9E00CE039D /* OptionWidget.h */; };
 		668D4CCF0D372FD900CE039D /* moc_OptionWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668D4CCE0D372FD900CE039D /* moc_OptionWidget.cpp */; };
 		668D4CF50D3741FB00CE039D /* libStarSystem.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A1B0D16438E00B4B1AA /* libStarSystem.dylib */; };
+		668DB5070D788D3A00EA4DCD /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		668DB5080D788D3D00EA4DCD /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		668DB5190D7891BD00EA4DCD /* libMinervaPostgres.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */; };
 		668DC8540D18D18D003AB569 /* ExportModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668DC8520D18D18D003AB569 /* ExportModel.cpp */; };
 		668DC8550D18D18D003AB569 /* ExportModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 668DC8530D18D18D003AB569 /* ExportModel.h */; };
 		668E0A4F0D3EB23A0030649B /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668E0A4D0D3EB23A0030649B /* Timer.cpp */; };
@@ -711,6 +717,13 @@
 		668E0DA70D4022F70030649B /* TransferFunction1D.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E0D9D0D4022F70030649B /* TransferFunction1D.h */; };
 		668E0DE80D406F400030649B /* KmlLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668E0DE60D406F400030649B /* KmlLayer.cpp */; };
 		668E0DE90D406F400030649B /* KmlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E0DE70D406F400030649B /* KmlLayer.h */; };
+		669151480D52518700C2BF8D /* Compass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669151460D52518700C2BF8D /* Compass.cpp */; };
+		669151490D52518700C2BF8D /* Compass.h in Headers */ = {isa = PBXBuildFile; fileRef = 669151470D52518700C2BF8D /* Compass.h */; };
+		6691517E0D52642A00C2BF8D /* big_compass_1.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
+		6691517F0D52642A00C2BF8D /* big_compass_mask.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517D0D52642A00C2BF8D /* big_compass_mask.tga */; };
+		669151800D52643F00C2BF8D /* big_compass_1.tga in Copy Icons */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
+		669151810D52643F00C2BF8D /* big_compass_mask.tga in Copy Icons */ = {isa = PBXBuildFile; fileRef = 6691517D0D52642A00C2BF8D /* big_compass_mask.tga */; };
+		669151B20D52650A00C2BF8D /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
 		669243E50D35765800C41A28 /* ImageTextureLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669243E10D35765800C41A28 /* ImageTextureLayer.cpp */; };
 		669243E60D35765800C41A28 /* ImageTextureLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 669243E20D35765800C41A28 /* ImageTextureLayer.h */; };
 		669243E70D35765800C41A28 /* KwlLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669243E30D35765800C41A28 /* KwlLayer.cpp */; };
@@ -719,6 +732,33 @@
 		669243F00D35778E00C41A28 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		669243F10D35779800C41A28 /* ossimPlanet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A50D15177F00B4B1AA /* ossimPlanet.framework */; };
 		669244680D3577F500C41A28 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66942DC40D77D6A200633017 /* Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DBA0D77D6A200633017 /* Layer.cpp */; };
+		66942DC50D77D6A200633017 /* Layer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942DBB0D77D6A200633017 /* Layer.h */; };
+		66942DC60D77D6A200633017 /* LineLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DBC0D77D6A200633017 /* LineLayer.cpp */; };
+		66942DC70D77D6A200633017 /* LineLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942DBD0D77D6A200633017 /* LineLayer.h */; };
+		66942DC80D77D6A200633017 /* PointLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DBE0D77D6A200633017 /* PointLayer.cpp */; };
+		66942DC90D77D6A200633017 /* PointLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942DBF0D77D6A200633017 /* PointLayer.h */; };
+		66942DCA0D77D6A200633017 /* PointTimeLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DC00D77D6A200633017 /* PointTimeLayer.cpp */; };
+		66942DCB0D77D6A200633017 /* PointTimeLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942DC10D77D6A200633017 /* PointTimeLayer.h */; };
+		66942DCC0D77D6A200633017 /* PolygonLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DC20D77D6A200633017 /* PolygonLayer.cpp */; };
+		66942DCD0D77D6A200633017 /* PolygonLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942DC30D77D6A200633017 /* PolygonLayer.h */; };
+		66942DD40D77D6D500633017 /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
+		66942DD50D77D6DC00633017 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66942DD60D77D6DE00633017 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		66942DD70D77D6E100633017 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66942E120D77D8E400633017 /* libMinervaPostGISLayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */; };
+		66942E320D77D93500633017 /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942E310D77D93500633017 /* Export.h */; };
+		66942E670D77E0E100633017 /* BinaryParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942E650D77E0E100633017 /* BinaryParser.cpp */; };
+		66942E680D77E0E100633017 /* BinaryParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942E660D77E0E100633017 /* BinaryParser.h */; };
+		6694321E0D77EA7800633017 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669432180D77EA7800633017 /* Connection.cpp */; };
+		6694321F0D77EA7800633017 /* Connection.h in Headers */ = {isa = PBXBuildFile; fileRef = 669432190D77EA7800633017 /* Connection.h */; };
+		669432200D77EA7800633017 /* ConnectionPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6694321A0D77EA7800633017 /* ConnectionPool.cpp */; };
+		669432210D77EA7800633017 /* ConnectionPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 6694321B0D77EA7800633017 /* ConnectionPool.h */; };
+		669432220D77EA7800633017 /* Info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6694321C0D77EA7800633017 /* Info.cpp */; };
+		669432230D77EA7800633017 /* Info.h in Headers */ = {isa = PBXBuildFile; fileRef = 6694321D0D77EA7800633017 /* Info.h */; };
+		669432270D77EA9900633017 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		6694322C0D77EAB100633017 /* libMinervaPostgres.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */; };
+		6694322E0D77EAEA00633017 /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 6694322D0D77EAEA00633017 /* Export.h */; };
 		66953AB80D34052B006EF4DC /* BaseFunctor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66953A8E0D34052B006EF4DC /* BaseFunctor.cpp */; };
 		66953AB90D34052B006EF4DC /* Sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66953A900D34052B006EF4DC /* Sequence.cpp */; };
 		66953ABA0D34052B006EF4DC /* AnalogInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66953A930D34052B006EF4DC /* AnalogInput.cpp */; };
@@ -740,6 +780,7 @@
 		66953ACA0D34052B006EF4DC /* WandRotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66953AB60D34052B006EF4DC /* WandRotation.cpp */; };
 		6695C7750D19F8C600E78878 /* ExportScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6695C7730D19F8C600E78878 /* ExportScene.cpp */; };
 		6695C7760D19F8C600E78878 /* ExportScene.h in Headers */ = {isa = PBXBuildFile; fileRef = 6695C7740D19F8C600E78878 /* ExportScene.h */; };
+		6696B7A40D6CE9AB00EA3810 /* libStarSystem.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 66EF1A1B0D16438E00B4B1AA /* libStarSystem.dylib */; };
 		66999EF50D1CBE4300A9AE47 /* OpenManual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66999EF30D1CBE4300A9AE47 /* OpenManual.cpp */; };
 		66999EF60D1CBE4300A9AE47 /* OpenManual.h in Headers */ = {isa = PBXBuildFile; fileRef = 66999EF40D1CBE4300A9AE47 /* OpenManual.h */; };
 		6699A1280D1EFE9E00A9AE47 /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
@@ -747,6 +788,24 @@
 		6699A1810D21E76400A9AE47 /* Scale.h in Headers */ = {isa = PBXBuildFile; fileRef = 6699A17D0D21E76400A9AE47 /* Scale.h */; };
 		6699A1820D21E76400A9AE47 /* SetJobManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6699A17E0D21E76400A9AE47 /* SetJobManager.cpp */; };
 		6699A1830D21E76400A9AE47 /* SetJobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6699A17F0D21E76400A9AE47 /* SetJobManager.h */; };
+		669A1C0A0D61F9A800195DCC /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
+		669A1C310D61F9AE00195DCC /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
+		669C28DA0D57E51900A5D1D3 /* GradientIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */; };
+		669C28DB0D57E51900A5D1D3 /* GradientIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28CC0D57E51900A5D1D3 /* GradientIcon.h */; };
+		669C28DC0D57E51900A5D1D3 /* Icon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CD0D57E51900A5D1D3 /* Icon.cpp */; };
+		669C28DD0D57E51900A5D1D3 /* Icon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28CE0D57E51900A5D1D3 /* Icon.h */; };
+		669C28DE0D57E51900A5D1D3 /* Legend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CF0D57E51900A5D1D3 /* Legend.cpp */; };
+		669C28DF0D57E51900A5D1D3 /* Legend.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D00D57E51900A5D1D3 /* Legend.h */; };
+		669C28E00D57E51900A5D1D3 /* LegendObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28D10D57E51900A5D1D3 /* LegendObject.cpp */; };
+		669C28E10D57E51900A5D1D3 /* LegendObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D20D57E51900A5D1D3 /* LegendObject.h */; };
+		669C28E20D57E51900A5D1D3 /* LineFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D30D57E51900A5D1D3 /* LineFunctor.h */; };
+		669C28E30D57E51900A5D1D3 /* QuadFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D40D57E51900A5D1D3 /* QuadFunctor.h */; };
+		669C28E40D57E51900A5D1D3 /* SolidIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28D50D57E51900A5D1D3 /* SolidIcon.cpp */; };
+		669C28E50D57E51900A5D1D3 /* SolidIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D60D57E51900A5D1D3 /* SolidIcon.h */; };
+		669C28E60D57E51900A5D1D3 /* SphereFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D70D57E51900A5D1D3 /* SphereFunctor.h */; };
+		669C28E70D57E51900A5D1D3 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28D80D57E51900A5D1D3 /* Text.cpp */; };
+		669C28E80D57E51900A5D1D3 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D90D57E51900A5D1D3 /* Text.h */; };
+		669C28EA0D57E52400A5D1D3 /* ConeFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28E90D57E52400A5D1D3 /* ConeFunctor.h */; };
 		66A112D00D2EBC59009B29ED /* AddOssimLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112CA0D2EBC59009B29ED /* AddOssimLayerWidget.cpp */; };
 		66A112D10D2EBC59009B29ED /* AddOssimLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CB0D2EBC59009B29ED /* AddOssimLayerWidget.h */; };
 		66A112D20D2EBC59009B29ED /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CC0D2EBC59009B29ED /* CompileGuard.h */; };
@@ -810,25 +869,49 @@
 		66A119D30D2EC6EA009B29ED /* OssimLayerQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */; };
 		66A119D40D2EC6EA009B29ED /* PostGISLayerQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */; };
 		66A119D50D2EC6EA009B29ED /* WmsLayerQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */; };
-		66A9E5800D34A22000FD67B6 /* WmsLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A9E57E0D34A22000FD67B6 /* WmsLayer.cpp */; };
-		66A9E5810D34A22000FD67B6 /* WmsLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A9E57F0D34A22000FD67B6 /* WmsLayer.h */; };
+		66A161680D60E019000C988A /* ProjectionDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A161660D60E019000C988A /* ProjectionDialog.cpp */; };
+		66A161690D60E019000C988A /* ProjectionDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A161670D60E019000C988A /* ProjectionDialog.h */; };
+		66A161710D60E079000C988A /* moc_ProjectionDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A161700D60E079000C988A /* moc_ProjectionDialog.cpp */; };
+		66A161960D60EB86000C988A /* RechargeForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A161940D60EB86000C988A /* RechargeForm.cpp */; };
+		66A161970D60EB86000C988A /* RechargeForm.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A161950D60EB86000C988A /* RechargeForm.h */; };
+		66A6D66C0D66689F007176D4 /* CylinderForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A6D66A0D66689F007176D4 /* CylinderForm.cpp */; };
+		66A6D66D0D66689F007176D4 /* CylinderForm.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A6D66B0D66689F007176D4 /* CylinderForm.h */; };
+		66A6D6970D666B36007176D4 /* moc_CylinderForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A6D6960D666B36007176D4 /* moc_CylinderForm.cpp */; };
 		66A9E5B30D34A2D600FD67B6 /* ossim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A40D15177F00B4B1AA /* ossim.framework */; };
 		66A9E5B40D34A2D600FD67B6 /* ossimPlanet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A50D15177F00B4B1AA /* ossimPlanet.framework */; };
 		66A9E91F0D34A2F400FD67B6 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		66A9E9200D34A2F400FD67B6 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		66A9E9220D34A31A00FD67B6 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66AA982A0D596CCE0046045C /* Question.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66AA98280D596CCE0046045C /* Question.cpp */; };
+		66AA982B0D596CCE0046045C /* Question.h in Headers */ = {isa = PBXBuildFile; fileRef = 66AA98290D596CCE0046045C /* Question.h */; };
+		66AA98310D596EA30046045C /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		66AC89F30D2B3C9400762CC7 /* ScopedSignals.h in Headers */ = {isa = PBXBuildFile; fileRef = 66AC89F20D2B3C9400762CC7 /* ScopedSignals.h */; };
 		66AC8A340D2B4F0100762CC7 /* moc_Favorites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66AC8A330D2B4F0100762CC7 /* moc_Favorites.cpp */; };
 		66AC8A670D2B58B400762CC7 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		66AC8A680D2B58B900762CC7 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66AE84C00D623FAF004B5BCD /* AuxiliaryDataForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66AE84BE0D623FAF004B5BCD /* AuxiliaryDataForm.cpp */; };
+		66AE84C10D623FAF004B5BCD /* AuxiliaryDataForm.h in Headers */ = {isa = PBXBuildFile; fileRef = 66AE84BF0D623FAF004B5BCD /* AuxiliaryDataForm.h */; };
+		66AE85240D626A98004B5BCD /* moc_AuxiliaryDataForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66AE85230D626A98004B5BCD /* moc_AuxiliaryDataForm.cpp */; };
 		66AFD8C70D1B73BA001481DD /* Hud.h in Headers */ = {isa = PBXBuildFile; fileRef = 66AFD8C50D1B73BA001481DD /* Hud.h */; };
 		66AFD8C80D1B73BA001481DD /* Hud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66AFD8C60D1B73BA001481DD /* Hud.cpp */; };
+		66AFF2D60D6E200C0062CDB9 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66AFF3060D6E90D50062CDB9 /* Feature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CA7A390D552790004909C6 /* Feature.cpp */; };
+		66AFF3120D6E96200062CDB9 /* LookAt.h in Headers */ = {isa = PBXBuildFile; fileRef = 66AFF3100D6E96200062CDB9 /* LookAt.h */; };
+		66AFF3130D6E96200062CDB9 /* LookAt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66AFF3110D6E96200062CDB9 /* LookAt.cpp */; };
 		66B0F3190D4C51510045BC40 /* Link.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B0F3170D4C51510045BC40 /* Link.h */; };
 		66B0F31A0D4C51510045BC40 /* Link.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B0F3180D4C51510045BC40 /* Link.cpp */; };
 		66B0F31D0D4C515F0045BC40 /* NetworkLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B0F31B0D4C515F0045BC40 /* NetworkLink.h */; };
 		66B0F31E0D4C515F0045BC40 /* NetworkLink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B0F31C0D4C515F0045BC40 /* NetworkLink.cpp */; };
 		66B0F3700D4D4AB80045BC40 /* curl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
 		66B0F3EB0D4D81B30045BC40 /* Composite.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B0F3EA0D4D81B30045BC40 /* Composite.h */; };
+		66B923140D653C3600087AB4 /* Pumping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B923120D653C3600087AB4 /* Pumping.cpp */; };
+		66B923150D653C3600087AB4 /* Pumping.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B923130D653C3600087AB4 /* Pumping.h */; };
+		66B923180D653C4200087AB4 /* Cylinders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B923160D653C4200087AB4 /* Cylinders.cpp */; };
+		66B923190D653C4200087AB4 /* Cylinders.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B923170D653C4200087AB4 /* Cylinders.h */; };
+		66B9231C0D653C5100087AB4 /* PumpingForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B9231A0D653C5100087AB4 /* PumpingForm.cpp */; };
+		66B9231D0D653C5100087AB4 /* PumpingForm.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B9231B0D653C5100087AB4 /* PumpingForm.h */; };
+		66C024FD0D7797BC00371AB4 /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
+		66C025010D7797D700371AB4 /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAE70D120596003F6A58 /* QtOpenGL.framework */; };
 		66C8FA8C0D11FF13003F6A58 /* BuiltInType.h in Headers */ = {isa = PBXBuildFile; fileRef = 66C8FA7B0D11FF13003F6A58 /* BuiltInType.h */; };
 		66C8FA8D0D11FF13003F6A58 /* DataMemberMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FA7C0D11FF13003F6A58 /* DataMemberMap.cpp */; };
 		66C8FA8E0D11FF13003F6A58 /* DataMemberMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 66C8FA7D0D11FF13003F6A58 /* DataMemberMap.h */; };
@@ -910,14 +993,13 @@
 		66C8FEF80D120C3E003F6A58 /* moc_PropertyBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEF20D120C3E003F6A58 /* moc_PropertyBrowser.cpp */; };
 		66C8FEF90D120C3E003F6A58 /* moc_TreeControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEF30D120C3E003F6A58 /* moc_TreeControl.cpp */; };
 		66C8FEFF0D120C64003F6A58 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEFD0D120C64003F6A58 /* Application.cpp */; };
+		66CA7A3A0D552790004909C6 /* Feature.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CA7A380D552790004909C6 /* Feature.h */; };
 		66CCE5880D2F53D60084E49D /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CCE5850D2F53D60084E49D /* CompileGuard.h */; };
 		66CCE5890D2F53D60084E49D /* ResampleLineComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CCE5860D2F53D60084E49D /* ResampleLineComponent.cpp */; };
 		66CCE58A0D2F53D60084E49D /* ResampleLineComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CCE5870D2F53D60084E49D /* ResampleLineComponent.h */; };
 		66CCE8850D2F540B0084E49D /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66CCE88A0D2F548C0084E49D /* ResampleLine.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66CCE5800D2F536D0084E49D /* ResampleLine.plugd */; };
 		66CCE89A0D304A090084E49D /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CCE8990D304A080084E49D /* Resample.h */; };
-		66CCE97A0D30A4490084E49D /* Planet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CCE9780D30A4490084E49D /* Planet.cpp */; };
-		66CCE97B0D30A4490084E49D /* Planet.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CCE9790D30A4490084E49D /* Planet.h */; };
 		66CCE9810D30A6690084E49D /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
 		66CCE9970D30A66F0084E49D /* wms.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A60D15177F00B4B1AA /* wms.framework */; };
 		66CCE9C90D3186630084E49D /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CCE9C80D3186630084E49D /* Config.h */; };
@@ -940,18 +1022,8 @@
 		66E7B0C00B17617300E3D682 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BC0B17617300E3D682 /* Renderer.h */; };
 		66E7B0C10B17617300E3D682 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BD0B17617300E3D682 /* SceneManager.cpp */; };
 		66E7B0C20B17617300E3D682 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BE0B17617300E3D682 /* SceneManager.h */; };
-		66E7B0D60B1761B600E3D682 /* GradientIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0CA0B1761B500E3D682 /* GradientIcon.cpp */; };
-		66E7B0D70B1761B600E3D682 /* GradientIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0CB0B1761B500E3D682 /* GradientIcon.h */; };
-		66E7B0D80B1761B600E3D682 /* Icon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0CC0B1761B500E3D682 /* Icon.cpp */; };
-		66E7B0D90B1761B600E3D682 /* Icon.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0CD0B1761B500E3D682 /* Icon.h */; };
-		66E7B0DA0B1761B600E3D682 /* Legend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0CE0B1761B500E3D682 /* Legend.cpp */; };
-		66E7B0DB0B1761B600E3D682 /* Legend.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0CF0B1761B500E3D682 /* Legend.h */; };
-		66E7B0DC0B1761B600E3D682 /* LegendObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0D00B1761B500E3D682 /* LegendObject.cpp */; };
-		66E7B0DD0B1761B600E3D682 /* LegendObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0D10B1761B500E3D682 /* LegendObject.h */; };
-		66E7B0DE0B1761B600E3D682 /* SolidIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0D20B1761B500E3D682 /* SolidIcon.cpp */; };
-		66E7B0DF0B1761B600E3D682 /* SolidIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0D30B1761B500E3D682 /* SolidIcon.h */; };
-		66E7B0E00B1761B600E3D682 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0D40B1761B500E3D682 /* Text.cpp */; };
-		66E7B0E10B1761B600E3D682 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0D50B1761B500E3D682 /* Text.h */; };
+		66ED9FB00D5AB77A004D93C2 /* compassring.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66ED9FAE0D5AB76D004D93C2 /* compassring.png */; };
+		66ED9FB10D5AB77A004D93C2 /* compassrose.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66ED9FAF0D5AB76D004D93C2 /* compassrose.png */; };
 		66EF05BC0D143F0000B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B50D143F0000B4B1AA /* CompileGuard.h */; };
 		66EF05BD0D143F0000B4B1AA /* SnapShotComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05B70D143F0000B4B1AA /* SnapShotComponent.cpp */; };
 		66EF05BE0D143F0000B4B1AA /* SnapShotComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B80D143F0000B4B1AA /* SnapShotComponent.h */; };
@@ -1067,35 +1139,12 @@
 		66EF17F60D15193000B4B1AA /* Polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17960D15193000B4B1AA /* Polygon.cpp */; };
 		66EF17F70D15193000B4B1AA /* Polygon.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17970D15193000B4B1AA /* Polygon.h */; };
 		66EF17F80D15193000B4B1AA /* UserData.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17980D15193000B4B1AA /* UserData.h */; };
-		66EF17F90D15193000B4B1AA /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF179A0D15193000B4B1AA /* Connection.cpp */; };
-		66EF17FA0D15193000B4B1AA /* Connection.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF179B0D15193000B4B1AA /* Connection.h */; };
-		66EF17FB0D15193000B4B1AA /* ConnectionPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF179C0D15193000B4B1AA /* ConnectionPool.cpp */; };
-		66EF17FC0D15193000B4B1AA /* ConnectionPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF179D0D15193000B4B1AA /* ConnectionPool.h */; };
-		66EF17FD0D15193000B4B1AA /* Info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF179E0D15193000B4B1AA /* Info.cpp */; };
-		66EF17FE0D15193000B4B1AA /* Info.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF179F0D15193000B4B1AA /* Info.h */; };
 		66EF17FF0D15193000B4B1AA /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17A00D15193000B4B1AA /* Export.h */; };
 		66EF18000D15193000B4B1AA /* BaseColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17A20D15193000B4B1AA /* BaseColorFunctor.h */; };
 		66EF18010D15193000B4B1AA /* GradientColorFunctor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17A30D15193000B4B1AA /* GradientColorFunctor.cpp */; };
 		66EF18020D15193000B4B1AA /* GradientColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17A40D15193000B4B1AA /* GradientColorFunctor.h */; };
 		66EF18030D15193000B4B1AA /* SingleColorFunctor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17A50D15193000B4B1AA /* SingleColorFunctor.cpp */; };
 		66EF18040D15193000B4B1AA /* SingleColorFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17A60D15193000B4B1AA /* SingleColorFunctor.h */; };
-		66EF18060D15193000B4B1AA /* Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17A90D15193000B4B1AA /* Layer.cpp */; };
-		66EF18070D15193000B4B1AA /* Layer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17AA0D15193000B4B1AA /* Layer.h */; };
-		66EF18080D15193000B4B1AA /* LineLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17AB0D15193000B4B1AA /* LineLayer.cpp */; };
-		66EF18090D15193000B4B1AA /* LineLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17AC0D15193000B4B1AA /* LineLayer.h */; };
-		66EF180C0D15193000B4B1AA /* PointLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17AF0D15193000B4B1AA /* PointLayer.cpp */; };
-		66EF180D0D15193000B4B1AA /* PointLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17B00D15193000B4B1AA /* PointLayer.h */; };
-		66EF180F0D15193000B4B1AA /* PointTimeLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17B20D15193000B4B1AA /* PointTimeLayer.h */; };
-		66EF18100D15193000B4B1AA /* PolygonLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17B30D15193000B4B1AA /* PolygonLayer.cpp */; };
-		66EF18110D15193000B4B1AA /* PolygonLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17B40D15193000B4B1AA /* PolygonLayer.h */; };
-		66EF18160D15193000B4B1AA /* BinaryParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17BA0D15193000B4B1AA /* BinaryParser.cpp */; };
-		66EF18170D15193000B4B1AA /* BinaryParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17BB0D15193000B4B1AA /* BinaryParser.h */; };
-		66EF18180D15193000B4B1AA /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17BC0D15193000B4B1AA /* Factory.cpp */; };
-		66EF18190D15193000B4B1AA /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17BD0D15193000B4B1AA /* Factory.h */; };
-		66EF18220D15193000B4B1AA /* TextParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17C60D15193000B4B1AA /* TextParser.cpp */; };
-		66EF18230D15193000B4B1AA /* TextParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17C70D15193000B4B1AA /* TextParser.h */; };
-		66EF18240D15193000B4B1AA /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17C90D15193000B4B1AA /* SceneManager.cpp */; };
-		66EF18250D15193000B4B1AA /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17CA0D15193000B4B1AA /* SceneManager.h */; };
 		66EF18260D15193000B4B1AA /* Serialize.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17CB0D15193000B4B1AA /* Serialize.h */; };
 		66EF18270D15193000B4B1AA /* Visitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF17CC0D15193000B4B1AA /* Visitor.h */; };
 		66EF18280D15193000B4B1AA /* FindMinMaxDates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF17CE0D15193000B4B1AA /* FindMinMaxDates.cpp */; };
@@ -1269,6 +1318,8 @@
 		66EFF3C40D13A19A00B4B1AA /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66EFF3C70D13A1AB00B4B1AA /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66EFF3CD0D13A1D400B4B1AA /* moc_ClipPlanes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EFF3CC0D13A1D400B4B1AA /* moc_ClipPlanes.cpp */; };
+		66F56CA40D566346007EEFA1 /* Object.h in Headers */ = {isa = PBXBuildFile; fileRef = 66F56CA20D566346007EEFA1 /* Object.h */; };
+		66F56CA50D566346007EEFA1 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66F56CA30D566346007EEFA1 /* Object.cpp */; };
 		66FF45360D10FF57003A0AC1 /* RootImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66FF451C0D10FF57003A0AC1 /* RootImpl.cpp */; };
 		66FF45370D10FF57003A0AC1 /* RootImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FF451D0D10FF57003A0AC1 /* RootImpl.h */; };
 		66FF45380D10FF57003A0AC1 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66FF451E0D10FF57003A0AC1 /* Document.cpp */; };
@@ -1705,6 +1756,20 @@
 			remoteGlobalIDString = 43FED6F1092452E100EBB610;
 			remoteInfo = Usul;
 		};
+		668DB5020D788D3200EA4DCD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			remoteInfo = XmlTree;
+		};
+		668DB5040D788D3400EA4DCD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
+			remoteInfo = SerializeXML;
+		};
 		668DC8E30D18E0D9003AB569 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1761,6 +1826,62 @@
 			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
 			remoteInfo = SerializeXML;
 		};
+		66942DCF0D77D6AD00633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA;
+			remoteInfo = Minerva;
+		};
+		66942DD10D77D6C300633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		66942DD80D77D6E500633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
+			remoteInfo = XmlTree;
+		};
+		66942DDA0D77D6EC00633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
+			remoteInfo = SerializeXML;
+		};
+		66942E100D77D8D700633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66942DB50D77D66900633017;
+			remoteInfo = MinervaPostGISLayer;
+		};
+		669432250D77EA8C00633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		669432280D77EAA000633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66942EB80D77EA4F00633017;
+			remoteInfo = MinervaPostgres;
+		};
+		6694322A0D77EAA800633017 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66942EB80D77EA4F00633017;
+			remoteInfo = MinervaPostgres;
+		};
 		66A113120D2EBCF2009B29ED /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1796,6 +1917,13 @@
 			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
 			remoteInfo = SerializeXML;
 		};
+		66AFF2D70D6E20130062CDB9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 431BAD5B09245A4600ED2131;
+			remoteInfo = OsgTools;
+		};
 		66B286160D37EDC0003BDAF3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -1830,6 +1958,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 43FED6F1092452E100EBB610;
 			remoteInfo = Usul;
+		};
+		66C024FA0D7797AE00371AB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FAB00D1204D8003F6A58;
+			remoteInfo = QtTools;
 		};
 		66C8FAA10D11FF60003F6A58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2251,6 +2386,10 @@
 			dstPath = icons;
 			dstSubfolderSpec = 7;
 			files = (
+				66ED9FB00D5AB77A004D93C2 /* compassring.png in Copy Icons */,
+				66ED9FB10D5AB77A004D93C2 /* compassrose.png in Copy Icons */,
+				669151800D52643F00C2BF8D /* big_compass_1.tga in Copy Icons */,
+				669151810D52643F00C2BF8D /* big_compass_mask.tga in Copy Icons */,
 				666B9B260D16F344001C1F7C /* animation_control_play_backward.png in Copy Icons */,
 				666B9B270D16F344001C1F7C /* animation_control_play_forward.png in Copy Icons */,
 				666B9B280D16F344001C1F7C /* animation_control_step_backward.png in Copy Icons */,
@@ -2323,6 +2462,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				6696B7A40D6CE9AB00EA3810 /* libStarSystem.dylib in Copy Cadkit Libraries */,
 				66EF19610D16142200B4B1AA /* libHeliosQtCommands.dylib in Copy Cadkit Libraries */,
 				66EF19620D16142200B4B1AA /* libHeliosQtCore.dylib in Copy Cadkit Libraries */,
 				66EF19630D16142200B4B1AA /* libHeliosQtTools.dylib in Copy Cadkit Libraries */,
@@ -2770,7 +2910,6 @@
 		43FED7EB092452F700EBB610 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = ../Usul/Math/Constants.h; sourceTree = SOURCE_ROOT; };
 		43FED7EC092452F700EBB610 /* Equality.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Equality.h; path = ../Usul/Math/Equality.h; sourceTree = SOURCE_ROOT; };
 		43FED7ED092452F700EBB610 /* Finite.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Finite.h; path = ../Usul/Math/Finite.h; sourceTree = SOURCE_ROOT; };
-		43FED7EE092452F700EBB610 /* UMath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = UMath.h; sourceTree = "<group>"; };
 		43FED7EF092452F700EBB610 /* Matrix44.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Matrix44.h; path = ../Usul/Math/Matrix44.h; sourceTree = SOURCE_ROOT; };
 		43FED7F0092452F700EBB610 /* MinMax.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MinMax.h; path = ../Usul/Math/MinMax.h; sourceTree = SOURCE_ROOT; };
 		43FED7F1092452F700EBB610 /* NaN.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NaN.h; path = ../Usul/Math/NaN.h; sourceTree = SOURCE_ROOT; };
@@ -2865,6 +3004,8 @@
 		43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOpenThreadsEx.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		43FEDAEE092454D500EBB610 /* Mutex.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Mutex.cpp; path = ../Threads/OpenThreads/Mutex.cpp; sourceTree = SOURCE_ROOT; };
 		43FEDAEF092454D500EBB610 /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Mutex.h; path = ../Threads/OpenThreads/Mutex.h; sourceTree = SOURCE_ROOT; };
+		660C4D990D53DD3A0072942F /* ResizePoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResizePoints.cpp; sourceTree = "<group>"; };
+		660C4D9A0D53DD3A0072942F /* ResizePoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResizePoints.h; sourceTree = "<group>"; };
 		661350E60D50473D002CF6A9 /* moc_BasicPackageForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_BasicPackageForm.cpp; sourceTree = "<group>"; };
 		661350E70D50473D002CF6A9 /* moc_HeadLevelOutputForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_HeadLevelOutputForm.cpp; sourceTree = "<group>"; };
 		663C4EC80D110AFE00949515 /* Boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Boost.framework; path = ../../../Library/Frameworks/Boost.framework; sourceTree = SOURCE_ROOT; };
@@ -2937,6 +3078,10 @@
 		66430C360D10C23800984C94 /* TriangleReaderGrassRaster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriangleReaderGrassRaster.h; sourceTree = "<group>"; };
 		66430C370D10C23800984C94 /* TriangleReaderOFF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriangleReaderOFF.cpp; sourceTree = "<group>"; };
 		66430C380D10C23800984C94 /* TriangleReaderOFF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriangleReaderOFF.h; sourceTree = "<group>"; };
+		664B434D0D54EE8C0080DF60 /* IAddLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAddLayer.h; sourceTree = "<group>"; };
+		664B434E0D54EE8C0080DF60 /* IAnimationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAnimationControl.h; sourceTree = "<group>"; };
+		664B434F0D54EE8C0080DF60 /* IDirtyScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDirtyScene.h; sourceTree = "<group>"; };
+		664B43500D54EE8C0080DF60 /* IRemoveLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRemoveLayer.h; sourceTree = "<group>"; };
 		664C34D80D497BCE006FC860 /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mesh.h; sourceTree = "<group>"; };
 		6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libHeliosQtCommands.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		666760BA0D122AE0002F40C6 /* libHeliosQtTools.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libHeliosQtTools.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3043,9 +3188,6 @@
 		6673DDA00BC60B7800C0131F /* SceneComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneComponent.m; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneComponent.m; sourceTree = SOURCE_ROOT; };
 		667461F30D4F8E7C005D2596 /* Recharge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Recharge.cpp; sourceTree = "<group>"; };
 		667461F40D4F8E7C005D2596 /* Recharge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recharge.h; sourceTree = "<group>"; };
-		667461F80D4F8EE2005D2596 /* Recharge.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Recharge.cpp; sourceTree = "<group>"; };
-		667461F90D4F8EE2005D2596 /* Recharge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recharge.h; sourceTree = "<group>"; };
-		667462130D4F9EA1005D2596 /* DiscretizationInputForm.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DiscretizationInputForm.ui; sourceTree = "<group>"; };
 		667462140D4F9EB8005D2596 /* DiscretizationInputForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscretizationInputForm.h; sourceTree = "<group>"; };
 		667462150D4F9EB8005D2596 /* DiscretizationInputForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiscretizationInputForm.cpp; sourceTree = "<group>"; };
 		6674627E0D4FA41C005D2596 /* moc_DiscretizationInputForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_DiscretizationInputForm.cpp; sourceTree = "<group>"; };
@@ -3096,7 +3238,6 @@
 		668BE8380D24CDD800109210 /* CurvePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CurvePlayer.h; path = ../Experimental/PathAnimation/CurvePlayer.h; sourceTree = SOURCE_ROOT; };
 		668BE8390D24CDD800109210 /* PathAnimationComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathAnimationComponent.cpp; path = ../Experimental/PathAnimation/PathAnimationComponent.cpp; sourceTree = SOURCE_ROOT; };
 		668BE83A0D24CDD800109210 /* PathAnimationComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathAnimationComponent.h; path = ../Experimental/PathAnimation/PathAnimationComponent.h; sourceTree = SOURCE_ROOT; };
-		668BE83B0D24CDD800109210 /* PathAnimationFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathAnimationFactory.cpp; path = ../Experimental/PathAnimation/PathAnimationFactory.cpp; sourceTree = SOURCE_ROOT; };
 		668C93C70D41B2690007D7F4 /* HeadSurface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeadSurface.h; sourceTree = "<group>"; };
 		668C93C80D41B2690007D7F4 /* HeadSurface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeadSurface.cpp; sourceTree = "<group>"; };
 		668C94180D41C29D0007D7F4 /* Readers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Readers.h; sourceTree = "<group>"; };
@@ -3162,6 +3303,10 @@
 		668E0DDC0D4063AB0030649B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		668E0DE60D406F400030649B /* KmlLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KmlLayer.cpp; sourceTree = "<group>"; };
 		668E0DE70D406F400030649B /* KmlLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KmlLayer.h; sourceTree = "<group>"; };
+		669151460D52518700C2BF8D /* Compass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Compass.cpp; sourceTree = "<group>"; };
+		669151470D52518700C2BF8D /* Compass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Compass.h; sourceTree = "<group>"; };
+		6691517C0D52642A00C2BF8D /* big_compass_1.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = big_compass_1.tga; sourceTree = "<group>"; };
+		6691517D0D52642A00C2BF8D /* big_compass_mask.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = big_compass_mask.tga; sourceTree = "<group>"; };
 		669243E10D35765800C41A28 /* ImageTextureLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageTextureLayer.cpp; path = OssimLayerQt/ImageTextureLayer.cpp; sourceTree = "<group>"; };
 		669243E20D35765800C41A28 /* ImageTextureLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageTextureLayer.h; path = OssimLayerQt/ImageTextureLayer.h; sourceTree = "<group>"; };
 		669243E30D35765800C41A28 /* KwlLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KwlLayer.cpp; path = OssimLayerQt/KwlLayer.cpp; sourceTree = "<group>"; };
@@ -3175,6 +3320,28 @@
 		669245D80D35A32000C41A28 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector2.h; sourceTree = "<group>"; };
 		669245D90D35A32000C41A28 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector3.h; sourceTree = "<group>"; };
 		669245DA0D35A32000C41A28 /* Vector4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector4.h; sourceTree = "<group>"; };
+		66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaPostGISLayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		66942DBA0D77D6A200633017 /* Layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Layer.cpp; sourceTree = "<group>"; };
+		66942DBB0D77D6A200633017 /* Layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Layer.h; sourceTree = "<group>"; };
+		66942DBC0D77D6A200633017 /* LineLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineLayer.cpp; sourceTree = "<group>"; };
+		66942DBD0D77D6A200633017 /* LineLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineLayer.h; sourceTree = "<group>"; };
+		66942DBE0D77D6A200633017 /* PointLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointLayer.cpp; sourceTree = "<group>"; };
+		66942DBF0D77D6A200633017 /* PointLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointLayer.h; sourceTree = "<group>"; };
+		66942DC00D77D6A200633017 /* PointTimeLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointTimeLayer.cpp; sourceTree = "<group>"; };
+		66942DC10D77D6A200633017 /* PointTimeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointTimeLayer.h; sourceTree = "<group>"; };
+		66942DC20D77D6A200633017 /* PolygonLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonLayer.cpp; sourceTree = "<group>"; };
+		66942DC30D77D6A200633017 /* PolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolygonLayer.h; sourceTree = "<group>"; };
+		66942E310D77D93500633017 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
+		66942E650D77E0E100633017 /* BinaryParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryParser.cpp; sourceTree = "<group>"; };
+		66942E660D77E0E100633017 /* BinaryParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryParser.h; sourceTree = "<group>"; };
+		66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaPostgres.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		669432180D77EA7800633017 /* Connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
+		669432190D77EA7800633017 /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
+		6694321A0D77EA7800633017 /* ConnectionPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionPool.cpp; sourceTree = "<group>"; };
+		6694321B0D77EA7800633017 /* ConnectionPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionPool.h; sourceTree = "<group>"; };
+		6694321C0D77EA7800633017 /* Info.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Info.cpp; sourceTree = "<group>"; };
+		6694321D0D77EA7800633017 /* Info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Info.h; sourceTree = "<group>"; };
+		6694322D0D77EAEA00633017 /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
 		66953A8E0D34052B006EF4DC /* BaseFunctor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseFunctor.cpp; sourceTree = "<group>"; };
 		66953A8F0D34052B006EF4DC /* BaseFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseFunctor.h; sourceTree = "<group>"; };
 		66953A900D34052B006EF4DC /* Sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sequence.cpp; sourceTree = "<group>"; };
@@ -3247,8 +3414,6 @@
 		6699A06F0D1EFC7200A9AE47 /* IGUIServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGUIServer.h; sourceTree = "<group>"; };
 		6699A0700D1EFC7200A9AE47 /* ILoadFileDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILoadFileDialog.h; sourceTree = "<group>"; };
 		6699A0710D1EFC7200A9AE47 /* IMaterialEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMaterialEditor.h; sourceTree = "<group>"; };
-		6699A0720D1EFC7200A9AE47 /* IMenuEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMenuEntry.h; sourceTree = "<group>"; };
-		6699A0730D1EFC7200A9AE47 /* IPreferencesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPreferencesManager.h; sourceTree = "<group>"; };
 		6699A0740D1EFC7200A9AE47 /* IProgressBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IProgressBar.h; sourceTree = "<group>"; };
 		6699A0750D1EFC7200A9AE47 /* IProgressBarFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IProgressBarFactory.h; sourceTree = "<group>"; };
 		6699A0760D1EFC7200A9AE47 /* IQuestion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQuestion.h; sourceTree = "<group>"; };
@@ -3302,7 +3467,6 @@
 		6699A0AA0D1EFC7300A9AE47 /* ILayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayer.h; sourceTree = "<group>"; };
 		6699A0AB0D1EFC7300A9AE47 /* ILayerAddGUIQt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayerAddGUIQt.h; sourceTree = "<group>"; };
 		6699A0AC0D1EFC7300A9AE47 /* ILayerExtents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayerExtents.h; sourceTree = "<group>"; };
-		6699A0AD0D1EFC7300A9AE47 /* ILayerList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayerList.h; sourceTree = "<group>"; };
 		6699A0AE0D1EFC7300A9AE47 /* ILayerModifyGUIQt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayerModifyGUIQt.h; sourceTree = "<group>"; };
 		6699A0AF0D1EFC7300A9AE47 /* ILineData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILineData.h; sourceTree = "<group>"; };
 		6699A0B00D1EFC7300A9AE47 /* ILineLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILineLayer.h; sourceTree = "<group>"; };
@@ -3367,6 +3531,24 @@
 		6699A17D0D21E76400A9AE47 /* Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scale.h; sourceTree = "<group>"; };
 		6699A17E0D21E76400A9AE47 /* SetJobManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SetJobManager.cpp; sourceTree = "<group>"; };
 		6699A17F0D21E76400A9AE47 /* SetJobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetJobManager.h; sourceTree = "<group>"; };
+		669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GradientIcon.cpp; sourceTree = "<group>"; };
+		669C28CC0D57E51900A5D1D3 /* GradientIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientIcon.h; sourceTree = "<group>"; };
+		669C28CD0D57E51900A5D1D3 /* Icon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Icon.cpp; sourceTree = "<group>"; };
+		669C28CE0D57E51900A5D1D3 /* Icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Icon.h; sourceTree = "<group>"; };
+		669C28CF0D57E51900A5D1D3 /* Legend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Legend.cpp; sourceTree = "<group>"; };
+		669C28D00D57E51900A5D1D3 /* Legend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Legend.h; sourceTree = "<group>"; };
+		669C28D10D57E51900A5D1D3 /* LegendObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LegendObject.cpp; sourceTree = "<group>"; };
+		669C28D20D57E51900A5D1D3 /* LegendObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegendObject.h; sourceTree = "<group>"; };
+		669C28D30D57E51900A5D1D3 /* LineFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineFunctor.h; sourceTree = "<group>"; };
+		669C28D40D57E51900A5D1D3 /* QuadFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadFunctor.h; sourceTree = "<group>"; };
+		669C28D50D57E51900A5D1D3 /* SolidIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SolidIcon.cpp; sourceTree = "<group>"; };
+		669C28D60D57E51900A5D1D3 /* SolidIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SolidIcon.h; sourceTree = "<group>"; };
+		669C28D70D57E51900A5D1D3 /* SphereFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SphereFunctor.h; sourceTree = "<group>"; };
+		669C28D80D57E51900A5D1D3 /* Text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Text.cpp; sourceTree = "<group>"; };
+		669C28D90D57E51900A5D1D3 /* Text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Text.h; sourceTree = "<group>"; };
+		669C28E90D57E52400A5D1D3 /* ConeFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConeFunctor.h; sourceTree = "<group>"; };
+		669F45D20D5B87BB00BFA6C6 /* Functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Functions.h; sourceTree = "<group>"; };
+		669F46350D5BD9CD00BFA6C6 /* Execute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Execute.h; sourceTree = "<group>"; };
 		66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = OssimLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = WmsLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PostGISLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3417,20 +3599,39 @@
 		66A119CB0D2EC68E009B29ED /* moc_AddPostGISLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_AddPostGISLayerWidget.cpp; path = PostGISLayerQt/moc_AddPostGISLayerWidget.cpp; sourceTree = "<group>"; };
 		66A119CC0D2EC68E009B29ED /* moc_ConnectToDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_ConnectToDatabase.cpp; path = PostGISLayerQt/moc_ConnectToDatabase.cpp; sourceTree = "<group>"; };
 		66A119CD0D2EC68E009B29ED /* moc_UniqueColorWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_UniqueColorWidget.cpp; path = PostGISLayerQt/moc_UniqueColorWidget.cpp; sourceTree = "<group>"; };
+		66A161660D60E019000C988A /* ProjectionDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProjectionDialog.cpp; sourceTree = "<group>"; };
+		66A161670D60E019000C988A /* ProjectionDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProjectionDialog.h; sourceTree = "<group>"; };
+		66A161700D60E079000C988A /* moc_ProjectionDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_ProjectionDialog.cpp; sourceTree = "<group>"; };
+		66A161940D60EB86000C988A /* RechargeForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RechargeForm.cpp; sourceTree = "<group>"; };
+		66A161950D60EB86000C988A /* RechargeForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RechargeForm.h; sourceTree = "<group>"; };
 		66A1E4590D4E9582002DA987 /* BoostSerialize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoostSerialize.h; sourceTree = "<group>"; };
 		66A1E45A0D4E9582002DA987 /* DoNothingPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoNothingPolicy.h; sourceTree = "<group>"; };
 		66A1E45B0D4E9582002DA987 /* WeakPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeakPointer.h; sourceTree = "<group>"; };
-		66A9E57E0D34A22000FD67B6 /* WmsLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WmsLayer.cpp; path = WmsLayerQt/WmsLayer.cpp; sourceTree = "<group>"; };
-		66A9E57F0D34A22000FD67B6 /* WmsLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WmsLayer.h; path = WmsLayerQt/WmsLayer.h; sourceTree = "<group>"; };
+		66A6D66A0D66689F007176D4 /* CylinderForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CylinderForm.cpp; sourceTree = "<group>"; };
+		66A6D66B0D66689F007176D4 /* CylinderForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CylinderForm.h; sourceTree = "<group>"; };
+		66A6D6960D666B36007176D4 /* moc_CylinderForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_CylinderForm.cpp; sourceTree = "<group>"; };
+		66AA98280D596CCE0046045C /* Question.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Question.cpp; sourceTree = "<group>"; };
+		66AA98290D596CCE0046045C /* Question.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Question.h; sourceTree = "<group>"; };
 		66AC89F20D2B3C9400762CC7 /* ScopedSignals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScopedSignals.h; sourceTree = "<group>"; };
 		66AC8A330D2B4F0100762CC7 /* moc_Favorites.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_Favorites.cpp; sourceTree = "<group>"; };
+		66AE84BE0D623FAF004B5BCD /* AuxiliaryDataForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AuxiliaryDataForm.cpp; sourceTree = "<group>"; };
+		66AE84BF0D623FAF004B5BCD /* AuxiliaryDataForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuxiliaryDataForm.h; sourceTree = "<group>"; };
+		66AE85230D626A98004B5BCD /* moc_AuxiliaryDataForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_AuxiliaryDataForm.cpp; sourceTree = "<group>"; };
 		66AFD8C50D1B73BA001481DD /* Hud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hud.h; sourceTree = "<group>"; };
 		66AFD8C60D1B73BA001481DD /* Hud.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hud.cpp; sourceTree = "<group>"; };
+		66AFF3100D6E96200062CDB9 /* LookAt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LookAt.h; sourceTree = "<group>"; };
+		66AFF3110D6E96200062CDB9 /* LookAt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LookAt.cpp; sourceTree = "<group>"; };
 		66B0F3170D4C51510045BC40 /* Link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Link.h; sourceTree = "<group>"; };
 		66B0F3180D4C51510045BC40 /* Link.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Link.cpp; sourceTree = "<group>"; };
 		66B0F31B0D4C515F0045BC40 /* NetworkLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkLink.h; sourceTree = "<group>"; };
 		66B0F31C0D4C515F0045BC40 /* NetworkLink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkLink.cpp; sourceTree = "<group>"; };
 		66B0F3EA0D4D81B30045BC40 /* Composite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Composite.h; sourceTree = "<group>"; };
+		66B923120D653C3600087AB4 /* Pumping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pumping.cpp; sourceTree = "<group>"; };
+		66B923130D653C3600087AB4 /* Pumping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pumping.h; sourceTree = "<group>"; };
+		66B923160D653C4200087AB4 /* Cylinders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cylinders.cpp; sourceTree = "<group>"; };
+		66B923170D653C4200087AB4 /* Cylinders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cylinders.h; sourceTree = "<group>"; };
+		66B9231A0D653C5100087AB4 /* PumpingForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PumpingForm.cpp; sourceTree = "<group>"; };
+		66B9231B0D653C5100087AB4 /* PumpingForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PumpingForm.h; sourceTree = "<group>"; };
 		66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libSerializeXML.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C8FA7B0D11FF13003F6A58 /* BuiltInType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BuiltInType.h; path = ../Serialize/XML/BuiltInType.h; sourceTree = SOURCE_ROOT; };
 		66C8FA7C0D11FF13003F6A58 /* DataMemberMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DataMemberMap.cpp; path = ../Serialize/XML/DataMemberMap.cpp; sourceTree = SOURCE_ROOT; };
@@ -3466,7 +3667,7 @@
 		66C8FACD0D12056B003F6A58 /* Menu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Menu.h; path = ../Experimental/QtTools/Menu.h; sourceTree = SOURCE_ROOT; };
 		66C8FACE0D12056B003F6A58 /* PropertyBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyBrowser.cpp; path = ../Experimental/QtTools/PropertyBrowser.cpp; sourceTree = SOURCE_ROOT; };
 		66C8FACF0D12056B003F6A58 /* PropertyBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertyBrowser.h; path = ../Experimental/QtTools/PropertyBrowser.h; sourceTree = SOURCE_ROOT; };
-		66C8FAD00D12056B003F6A58 /* TreeControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TreeControl.cpp; path = ../Experimental/QtTools/TreeControl.cpp; sourceTree = SOURCE_ROOT; };
+		66C8FAD00D12056B003F6A58 /* TreeControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeControl.cpp; sourceTree = "<group>"; };
 		66C8FAD10D12056B003F6A58 /* TreeControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TreeControl.h; path = ../Experimental/QtTools/TreeControl.h; sourceTree = SOURCE_ROOT; };
 		66C8FAE50D120596003F6A58 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../Library/Frameworks/QtCore.framework; sourceTree = SOURCE_ROOT; };
 		66C8FAE60D120596003F6A58 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ../../../Library/Frameworks/QtGui.framework; sourceTree = SOURCE_ROOT; };
@@ -3520,14 +3721,14 @@
 		66C8FEF30D120C3E003F6A58 /* moc_TreeControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_TreeControl.cpp; path = ../Experimental/QtTools/moc_TreeControl.cpp; sourceTree = SOURCE_ROOT; };
 		66C8FEFD0D120C64003F6A58 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
 		66C8FEFE0D120C64003F6A58 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
+		66CA7A380D552790004909C6 /* Feature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Feature.h; sourceTree = "<group>"; };
+		66CA7A390D552790004909C6 /* Feature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Feature.cpp; sourceTree = "<group>"; };
 		66CCE5800D2F536D0084E49D /* ResampleLine.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ResampleLine.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66CCE5850D2F53D60084E49D /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ResampleLine/CompileGuard.h; sourceTree = "<group>"; };
 		66CCE5860D2F53D60084E49D /* ResampleLineComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResampleLineComponent.cpp; path = ResampleLine/ResampleLineComponent.cpp; sourceTree = "<group>"; };
 		66CCE5870D2F53D60084E49D /* ResampleLineComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResampleLineComponent.h; path = ResampleLine/ResampleLineComponent.h; sourceTree = "<group>"; };
 		66CCE88D0D2F60600084E49D /* IElevationDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IElevationDatabase.h; sourceTree = "<group>"; };
 		66CCE8990D304A080084E49D /* Resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Resample.h; path = ResampleLine/Resample.h; sourceTree = "<group>"; };
-		66CCE9780D30A4490084E49D /* Planet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Planet.cpp; path = Document/Planet.cpp; sourceTree = "<group>"; };
-		66CCE9790D30A4490084E49D /* Planet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Planet.h; path = Document/Planet.h; sourceTree = "<group>"; };
 		66CCE9C80D3186630084E49D /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		66CFB2200D135A2000F93E67 /* libSceneDelegateQt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSceneDelegateQt.dylib; path = ../../bin/Debug/libSceneDelegateQt.dylib; sourceTree = SOURCE_ROOT; };
 		66CFF0E00D3899EF00ED0216 /* RasterPolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RasterPolygonLayer.h; path = PostGISLayerQt/RasterPolygonLayer.h; sourceTree = "<group>"; };
@@ -3547,18 +3748,8 @@
 		66E7B0BC0B17617300E3D682 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
 		66E7B0BD0B17617300E3D682 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
 		66E7B0BE0B17617300E3D682 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
-		66E7B0CA0B1761B500E3D682 /* GradientIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GradientIcon.cpp; path = Legend/GradientIcon.cpp; sourceTree = "<group>"; };
-		66E7B0CB0B1761B500E3D682 /* GradientIcon.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GradientIcon.h; path = Legend/GradientIcon.h; sourceTree = "<group>"; };
-		66E7B0CC0B1761B500E3D682 /* Icon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Icon.cpp; path = Legend/Icon.cpp; sourceTree = "<group>"; };
-		66E7B0CD0B1761B500E3D682 /* Icon.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Icon.h; path = Legend/Icon.h; sourceTree = "<group>"; };
-		66E7B0CE0B1761B500E3D682 /* Legend.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Legend.cpp; path = Legend/Legend.cpp; sourceTree = "<group>"; };
-		66E7B0CF0B1761B500E3D682 /* Legend.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Legend.h; path = Legend/Legend.h; sourceTree = "<group>"; };
-		66E7B0D00B1761B500E3D682 /* LegendObject.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = LegendObject.cpp; path = Legend/LegendObject.cpp; sourceTree = "<group>"; };
-		66E7B0D10B1761B500E3D682 /* LegendObject.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = LegendObject.h; path = Legend/LegendObject.h; sourceTree = "<group>"; };
-		66E7B0D20B1761B500E3D682 /* SolidIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = SolidIcon.cpp; path = Legend/SolidIcon.cpp; sourceTree = "<group>"; };
-		66E7B0D30B1761B500E3D682 /* SolidIcon.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SolidIcon.h; path = Legend/SolidIcon.h; sourceTree = "<group>"; };
-		66E7B0D40B1761B500E3D682 /* Text.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Text.cpp; path = Legend/Text.cpp; sourceTree = "<group>"; };
-		66E7B0D50B1761B500E3D682 /* Text.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Text.h; path = Legend/Text.h; sourceTree = "<group>"; };
+		66ED9FAE0D5AB76D004D93C2 /* compassring.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compassring.png; sourceTree = "<group>"; };
+		66ED9FAF0D5AB76D004D93C2 /* compassrose.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compassrose.png; sourceTree = "<group>"; };
 		66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3dc.so; sourceTree = "<group>"; };
 		66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3ds.so; sourceTree = "<group>"; };
 		66EF05740D143B2B00B4B1AA /* osgdb_ac.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_ac.so; sourceTree = "<group>"; };
@@ -3649,15 +3840,12 @@
 		66EF06680D14620700B4B1AA /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../../modflow/ModflowDelegate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
 		66EF06690D14620700B4B1AA /* FileInputDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileInputDialog.cpp; path = ../../modflow/ModflowDelegate/FileInputDialog.cpp; sourceTree = SOURCE_ROOT; };
 		66EF066A0D14620700B4B1AA /* FileInputDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileInputDialog.h; path = ../../modflow/ModflowDelegate/FileInputDialog.h; sourceTree = SOURCE_ROOT; };
-		66EF066B0D14620700B4B1AA /* FileInputDialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FileInputDialog.ui; path = ../../modflow/ModflowDelegate/FileInputDialog.ui; sourceTree = SOURCE_ROOT; };
 		66EF066C0D14620700B4B1AA /* FileInputForm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileInputForm.cpp; path = ../../modflow/ModflowDelegate/FileInputForm.cpp; sourceTree = SOURCE_ROOT; };
 		66EF066D0D14620700B4B1AA /* FileInputForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileInputForm.h; path = ../../modflow/ModflowDelegate/FileInputForm.h; sourceTree = SOURCE_ROOT; };
-		66EF066E0D14620700B4B1AA /* FileInputForm.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FileInputForm.ui; path = ../../modflow/ModflowDelegate/FileInputForm.ui; sourceTree = SOURCE_ROOT; };
 		66EF066F0D14620700B4B1AA /* ModflowDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModflowDelegateComponent.cpp; path = ../../modflow/ModflowDelegate/ModflowDelegateComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66EF06700D14620700B4B1AA /* ModflowDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModflowDelegateComponent.h; path = ../../modflow/ModflowDelegate/ModflowDelegateComponent.h; sourceTree = SOURCE_ROOT; };
 		66EF06710D14620700B4B1AA /* Properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Properties.cpp; path = ../../modflow/ModflowDelegate/Properties.cpp; sourceTree = SOURCE_ROOT; };
 		66EF06720D14620700B4B1AA /* Properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Properties.h; path = ../../modflow/ModflowDelegate/Properties.h; sourceTree = SOURCE_ROOT; };
-		66EF06730D14620700B4B1AA /* Properties.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Properties.ui; path = ../../modflow/ModflowDelegate/Properties.ui; sourceTree = SOURCE_ROOT; };
 		66EF069A0D14648700B4B1AA /* moc_FileInputDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_FileInputDialog.cpp; path = ../../modflow/ModflowDelegate/moc_FileInputDialog.cpp; sourceTree = SOURCE_ROOT; };
 		66EF069C0D14648700B4B1AA /* moc_Properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_Properties.cpp; path = ../../modflow/ModflowDelegate/moc_Properties.cpp; sourceTree = SOURCE_ROOT; };
 		66EF13A40D15177F00B4B1AA /* ossim.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ossim.framework; path = ../../../Library/Frameworks/ossim.framework; sourceTree = SOURCE_ROOT; };
@@ -3704,36 +3892,12 @@
 		66EF17960D15193000B4B1AA /* Polygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Polygon.cpp; sourceTree = "<group>"; };
 		66EF17970D15193000B4B1AA /* Polygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Polygon.h; sourceTree = "<group>"; };
 		66EF17980D15193000B4B1AA /* UserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserData.h; sourceTree = "<group>"; };
-		66EF179A0D15193000B4B1AA /* Connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
-		66EF179B0D15193000B4B1AA /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
-		66EF179C0D15193000B4B1AA /* ConnectionPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionPool.cpp; sourceTree = "<group>"; };
-		66EF179D0D15193000B4B1AA /* ConnectionPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionPool.h; sourceTree = "<group>"; };
-		66EF179E0D15193000B4B1AA /* Info.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Info.cpp; sourceTree = "<group>"; };
-		66EF179F0D15193000B4B1AA /* Info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Info.h; sourceTree = "<group>"; };
 		66EF17A00D15193000B4B1AA /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
 		66EF17A20D15193000B4B1AA /* BaseColorFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseColorFunctor.h; sourceTree = "<group>"; };
 		66EF17A30D15193000B4B1AA /* GradientColorFunctor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GradientColorFunctor.cpp; sourceTree = "<group>"; };
 		66EF17A40D15193000B4B1AA /* GradientColorFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientColorFunctor.h; sourceTree = "<group>"; };
 		66EF17A50D15193000B4B1AA /* SingleColorFunctor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SingleColorFunctor.cpp; sourceTree = "<group>"; };
 		66EF17A60D15193000B4B1AA /* SingleColorFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleColorFunctor.h; sourceTree = "<group>"; };
-		66EF17A90D15193000B4B1AA /* Layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Layer.cpp; sourceTree = "<group>"; };
-		66EF17AA0D15193000B4B1AA /* Layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Layer.h; sourceTree = "<group>"; };
-		66EF17AB0D15193000B4B1AA /* LineLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineLayer.cpp; sourceTree = "<group>"; };
-		66EF17AC0D15193000B4B1AA /* LineLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineLayer.h; sourceTree = "<group>"; };
-		66EF17AF0D15193000B4B1AA /* PointLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointLayer.cpp; sourceTree = "<group>"; };
-		66EF17B00D15193000B4B1AA /* PointLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointLayer.h; sourceTree = "<group>"; };
-		66EF17B10D15193000B4B1AA /* PointTimeLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointTimeLayer.cpp; sourceTree = "<group>"; };
-		66EF17B20D15193000B4B1AA /* PointTimeLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointTimeLayer.h; sourceTree = "<group>"; };
-		66EF17B30D15193000B4B1AA /* PolygonLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonLayer.cpp; sourceTree = "<group>"; };
-		66EF17B40D15193000B4B1AA /* PolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolygonLayer.h; sourceTree = "<group>"; };
-		66EF17BA0D15193000B4B1AA /* BinaryParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryParser.cpp; sourceTree = "<group>"; };
-		66EF17BB0D15193000B4B1AA /* BinaryParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryParser.h; sourceTree = "<group>"; };
-		66EF17BC0D15193000B4B1AA /* Factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Factory.cpp; sourceTree = "<group>"; };
-		66EF17BD0D15193000B4B1AA /* Factory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Factory.h; sourceTree = "<group>"; };
-		66EF17C60D15193000B4B1AA /* TextParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextParser.cpp; sourceTree = "<group>"; };
-		66EF17C70D15193000B4B1AA /* TextParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextParser.h; sourceTree = "<group>"; };
-		66EF17C90D15193000B4B1AA /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
-		66EF17CA0D15193000B4B1AA /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
 		66EF17CB0D15193000B4B1AA /* Serialize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serialize.h; sourceTree = "<group>"; };
 		66EF17CC0D15193000B4B1AA /* Visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Visitor.h; sourceTree = "<group>"; };
 		66EF17CE0D15193000B4B1AA /* FindMinMaxDates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FindMinMaxDates.cpp; sourceTree = "<group>"; };
@@ -3826,6 +3990,8 @@
 		66EFF39F0D139FE400B4B1AA /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = Qt/Plugins/ClipPlanes/CompileGuard.h; sourceTree = "<group>"; };
 		66EFF3CC0D13A1D400B4B1AA /* moc_ClipPlanes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_ClipPlanes.cpp; path = Qt/Plugins/ClipPlanes/moc_ClipPlanes.cpp; sourceTree = "<group>"; };
 		66EFF3DB0D13A32E00B4B1AA /* ClipPlanes.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClipPlanes.ui; path = Qt/Plugins/ClipPlanes/ClipPlanes.ui; sourceTree = "<group>"; };
+		66F56CA20D566346007EEFA1 /* Object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Object.h; sourceTree = "<group>"; };
+		66F56CA30D566346007EEFA1 /* Object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
 		66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libXmlTree.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66FF451C0D10FF57003A0AC1 /* RootImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RootImpl.cpp; sourceTree = "<group>"; };
 		66FF451D0D10FF57003A0AC1 /* RootImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootImpl.h; sourceTree = "<group>"; };
@@ -4100,6 +4266,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66C025010D7797D700371AB4 /* QtOpenGL.framework in Frameworks */,
+				66C024FD0D7797BC00371AB4 /* libQtTools.dylib in Frameworks */,
 				66AC8A680D2B58B900762CC7 /* libXmlTree.dylib in Frameworks */,
 				66AC8A670D2B58B400762CC7 /* libSerializeXML.dylib in Frameworks */,
 				668931690D2840F0005CB399 /* libMinerva.dylib in Frameworks */,
@@ -4113,6 +4281,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66AFF2D60D6E200C0062CDB9 /* libOsgTools.dylib in Frameworks */,
 				668BE85D0D24CE9900109210 /* osg.framework in Frameworks */,
 				668BE8570D24CE8300109210 /* libSerializeXML.dylib in Frameworks */,
 				668BE8560D24CE7B00109210 /* libXmlTree.dylib in Frameworks */,
@@ -4165,6 +4334,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66942DB40D77D66900633017 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				668DB5190D7891BD00EA4DCD /* libMinervaPostgres.dylib in Frameworks */,
+				66942DD70D77D6E100633017 /* libXmlTree.dylib in Frameworks */,
+				66942DD60D77D6DE00633017 /* libSerializeXML.dylib in Frameworks */,
+				66942DD50D77D6DC00633017 /* libUsul.dylib in Frameworks */,
+				66942DD40D77D6D500633017 /* libMinerva.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66942EB70D77EA4F00633017 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				668DB5080D788D3D00EA4DCD /* libSerializeXML.dylib in Frameworks */,
+				668DB5070D788D3A00EA4DCD /* libXmlTree.dylib in Frameworks */,
+				669432270D77EA9900633017 /* libUsul.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66A112AF0D2EBADC009B29ED /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4201,6 +4392,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66942E120D77D8E400633017 /* libMinervaPostGISLayer.dylib in Frameworks */,
 				66CFF0EF0D389C0D00ED0216 /* libStarSystem.dylib in Frameworks */,
 				66A119A80D2EC523009B29ED /* QtCore.framework in Frameworks */,
 				66A119A90D2EC523009B29ED /* QtGui.framework in Frameworks */,
@@ -4263,6 +4455,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				669A1C310D61F9AE00195DCC /* GDAL.framework in Frameworks */,
 				66CCE9DE0D3194750084E49D /* osgDB.framework in Frameworks */,
 				66EF06AD0D14654600B4B1AA /* libOsgTools.dylib in Frameworks */,
 				66EF06610D1461CD00B4B1AA /* osg.framework in Frameworks */,
@@ -4275,6 +4468,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				669A1C0A0D61F9A800195DCC /* GDAL.framework in Frameworks */,
+				66AA98310D596EA30046045C /* libXmlTree.dylib in Frameworks */,
 				66EF06AB0D14652200B4B1AA /* QtOpenGL.framework in Frameworks */,
 				66EF06A90D14650E00B4B1AA /* libHeliosQtViewOSG.dylib in Frameworks */,
 				66EF06A20D14649000B4B1AA /* libQtTools.dylib in Frameworks */,
@@ -4303,6 +4498,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6694322C0D77EAB100633017 /* libMinervaPostgres.dylib in Frameworks */,
+				669151B20D52650A00C2BF8D /* osgUtil.framework in Frameworks */,
 				66CCE9970D30A66F0084E49D /* wms.framework in Frameworks */,
 				66CCE9810D30A6690084E49D /* osgDB.framework in Frameworks */,
 				66892D290D283352005CB399 /* ossimPlanet.framework in Frameworks */,
@@ -4457,7 +4654,6 @@
 		431BAD8709245AB600ED2131 /* OsgTools */ = {
 			isa = PBXGroup;
 			children = (
-				668E0D930D4022F70030649B /* Volume */,
 				431BAD8809245AB600ED2131 /* Axes.cpp */,
 				431BAD8909245AB600ED2131 /* Axes.h */,
 				431BAD8A09245AB600ED2131 /* Box.h */,
@@ -4527,6 +4723,7 @@
 				431BADFD09245AB700ED2131 /* Triangles */,
 				437A27B609447D920024AFBC /* Utilities */,
 				431BAE1109245AB700ED2131 /* Visitor.h */,
+				668E0D930D4022F70030649B /* Volume */,
 				43442F870960A303000A1AB5 /* Widgets */,
 			);
 			name = OsgTools;
@@ -4966,6 +5163,7 @@
 		43A192F9094F20210029ED97 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
+				6691517B0D52642A00C2BF8D /* Images */,
 				6673DD280BC5F2F800C0131F /* GradientBackground.cpp */,
 				6673DD290BC5F2F800C0131F /* GradientBackground.h */,
 				43A192FA094F20210029ED97 /* Arrow.cpp */,
@@ -5094,7 +5292,6 @@
 				6699A0AA0D1EFC7300A9AE47 /* ILayer.h */,
 				6699A0AB0D1EFC7300A9AE47 /* ILayerAddGUIQt.h */,
 				6699A0AC0D1EFC7300A9AE47 /* ILayerExtents.h */,
-				6699A0AD0D1EFC7300A9AE47 /* ILayerList.h */,
 				6699A0AE0D1EFC7300A9AE47 /* ILayerModifyGUIQt.h */,
 				43E9AFA509F6B98D00444335 /* ILights.h */,
 				6699A0AF0D1EFC7300A9AE47 /* ILineData.h */,
@@ -5299,6 +5496,8 @@
 				66EF1A1B0D16438E00B4B1AA /* libStarSystem.dylib */,
 				668E0C920D4021F50030649B /* WRFModel.plugd */,
 				668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */,
+				66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */,
+				66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */,
 			);
 			name = "Cadkit Libraries";
 			sourceTree = "<group>";
@@ -5580,6 +5779,7 @@
 		43FED752092452F700EBB610 /* Functions */ = {
 			isa = PBXGroup;
 			children = (
+				669F46350D5BD9CD00BFA6C6 /* Execute.h */,
 				66EF17550D15188B00B4B1AA /* GUID.cpp */,
 				66EF17560D15188B00B4B1AA /* GUID.h */,
 				66EF17570D15188B00B4B1AA /* SafeCall.h */,
@@ -5652,13 +5852,13 @@
 		43FED7E8092452F700EBB610 /* Math */ = {
 			isa = PBXGroup;
 			children = (
+				669F45D20D5B87BB00BFA6C6 /* Functions.h */,
 				6695C6240D19AACE00E78878 /* Interpolate.h */,
 				43FED7E9092452F700EBB610 /* Absolute.h */,
 				43FED7EA092452F700EBB610 /* Angle.h */,
 				43FED7EB092452F700EBB610 /* Constants.h */,
 				43FED7EC092452F700EBB610 /* Equality.h */,
 				43FED7ED092452F700EBB610 /* Finite.h */,
-				43FED7EE092452F700EBB610 /* UMath.h */,
 				43FED7EF092452F700EBB610 /* Matrix44.h */,
 				43FED7F0092452F700EBB610 /* MinMax.h */,
 				43FED7F1092452F700EBB610 /* NaN.h */,
@@ -5981,6 +6181,17 @@
 			path = Helper;
 			sourceTree = "<group>";
 		};
+		664B434C0D54EE8C0080DF60 /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				664B434D0D54EE8C0080DF60 /* IAddLayer.h */,
+				664B434E0D54EE8C0080DF60 /* IAnimationControl.h */,
+				664B434F0D54EE8C0080DF60 /* IDirtyScene.h */,
+				664B43500D54EE8C0080DF60 /* IRemoveLayer.h */,
+			);
+			path = Interfaces;
+			sourceTree = "<group>";
+		};
 		6667618F0D122D84002F40C6 /* Qt */ = {
 			isa = PBXGroup;
 			children = (
@@ -6251,7 +6462,6 @@
 				668BE8380D24CDD800109210 /* CurvePlayer.h */,
 				668BE8390D24CDD800109210 /* PathAnimationComponent.cpp */,
 				668BE83A0D24CDD800109210 /* PathAnimationComponent.h */,
-				668BE83B0D24CDD800109210 /* PathAnimationFactory.cpp */,
 			);
 			name = PathAnimation;
 			sourceTree = "<group>";
@@ -6358,6 +6568,7 @@
 		668E0DDA0D4063AB0030649B /* Layers */ = {
 			isa = PBXGroup;
 			children = (
+				66942DB90D77D6A200633017 /* PostGIS */,
 				668E0DDB0D4063AB0030649B /* GDAL */,
 				668E0DDD0D4063AB0030649B /* Kml */,
 			);
@@ -6375,14 +6586,71 @@
 		668E0DDD0D4063AB0030649B /* Kml */ = {
 			isa = PBXGroup;
 			children = (
+				66CA7A390D552790004909C6 /* Feature.cpp */,
+				66CA7A380D552790004909C6 /* Feature.h */,
 				668E0DE60D406F400030649B /* KmlLayer.cpp */,
 				668E0DE70D406F400030649B /* KmlLayer.h */,
-				66B0F3170D4C51510045BC40 /* Link.h */,
 				66B0F3180D4C51510045BC40 /* Link.cpp */,
-				66B0F31B0D4C515F0045BC40 /* NetworkLink.h */,
+				66B0F3170D4C51510045BC40 /* Link.h */,
 				66B0F31C0D4C515F0045BC40 /* NetworkLink.cpp */,
+				66B0F31B0D4C515F0045BC40 /* NetworkLink.h */,
+				66F56CA30D566346007EEFA1 /* Object.cpp */,
+				66F56CA20D566346007EEFA1 /* Object.h */,
+				66AFF3100D6E96200062CDB9 /* LookAt.h */,
+				66AFF3110D6E96200062CDB9 /* LookAt.cpp */,
 			);
 			path = Kml;
+			sourceTree = "<group>";
+		};
+		6691517B0D52642A00C2BF8D /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				6691517C0D52642A00C2BF8D /* big_compass_1.tga */,
+				6691517D0D52642A00C2BF8D /* big_compass_mask.tga */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
+		66942DB90D77D6A200633017 /* PostGIS */ = {
+			isa = PBXGroup;
+			children = (
+				66942E650D77E0E100633017 /* BinaryParser.cpp */,
+				66942E660D77E0E100633017 /* BinaryParser.h */,
+				66942E310D77D93500633017 /* Export.h */,
+				66942DBA0D77D6A200633017 /* Layer.cpp */,
+				66942DBB0D77D6A200633017 /* Layer.h */,
+				66942DBC0D77D6A200633017 /* LineLayer.cpp */,
+				66942DBD0D77D6A200633017 /* LineLayer.h */,
+				66942DBE0D77D6A200633017 /* PointLayer.cpp */,
+				66942DBF0D77D6A200633017 /* PointLayer.h */,
+				66942DC00D77D6A200633017 /* PointTimeLayer.cpp */,
+				66942DC10D77D6A200633017 /* PointTimeLayer.h */,
+				66942DC20D77D6A200633017 /* PolygonLayer.cpp */,
+				66942DC30D77D6A200633017 /* PolygonLayer.h */,
+			);
+			path = PostGIS;
+			sourceTree = "<group>";
+		};
+		669432160D77EA7800633017 /* DataSources */ = {
+			isa = PBXGroup;
+			children = (
+				669432170D77EA7800633017 /* PG */,
+			);
+			path = DataSources;
+			sourceTree = "<group>";
+		};
+		669432170D77EA7800633017 /* PG */ = {
+			isa = PBXGroup;
+			children = (
+				6694322D0D77EAEA00633017 /* Export.h */,
+				669432180D77EA7800633017 /* Connection.cpp */,
+				669432190D77EA7800633017 /* Connection.h */,
+				6694321A0D77EA7800633017 /* ConnectionPool.cpp */,
+				6694321B0D77EA7800633017 /* ConnectionPool.h */,
+				6694321C0D77EA7800633017 /* Info.cpp */,
+				6694321D0D77EA7800633017 /* Info.h */,
+			);
+			path = PG;
 			sourceTree = "<group>";
 		};
 		66953A870D3404F9006EF4DC /* General */ = {
@@ -6484,20 +6752,24 @@
 		66999EF90D1CD18E00A9AE47 /* Legend */ = {
 			isa = PBXGroup;
 			children = (
-				66E7B0CA0B1761B500E3D682 /* GradientIcon.cpp */,
-				66E7B0CB0B1761B500E3D682 /* GradientIcon.h */,
-				66E7B0CC0B1761B500E3D682 /* Icon.cpp */,
-				66E7B0CD0B1761B500E3D682 /* Icon.h */,
-				66E7B0CE0B1761B500E3D682 /* Legend.cpp */,
-				66E7B0CF0B1761B500E3D682 /* Legend.h */,
-				66E7B0D00B1761B500E3D682 /* LegendObject.cpp */,
-				66E7B0D10B1761B500E3D682 /* LegendObject.h */,
-				66E7B0D20B1761B500E3D682 /* SolidIcon.cpp */,
-				66E7B0D30B1761B500E3D682 /* SolidIcon.h */,
-				66E7B0D40B1761B500E3D682 /* Text.cpp */,
-				66E7B0D50B1761B500E3D682 /* Text.h */,
+				669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */,
+				669C28CC0D57E51900A5D1D3 /* GradientIcon.h */,
+				669C28CD0D57E51900A5D1D3 /* Icon.cpp */,
+				669C28CE0D57E51900A5D1D3 /* Icon.h */,
+				669C28CF0D57E51900A5D1D3 /* Legend.cpp */,
+				669C28D00D57E51900A5D1D3 /* Legend.h */,
+				669C28D10D57E51900A5D1D3 /* LegendObject.cpp */,
+				669C28D20D57E51900A5D1D3 /* LegendObject.h */,
+				669C28D30D57E51900A5D1D3 /* LineFunctor.h */,
+				669C28D40D57E51900A5D1D3 /* QuadFunctor.h */,
+				669C28D50D57E51900A5D1D3 /* SolidIcon.cpp */,
+				669C28D60D57E51900A5D1D3 /* SolidIcon.h */,
+				669C28D70D57E51900A5D1D3 /* SphereFunctor.h */,
+				669C28D80D57E51900A5D1D3 /* Text.cpp */,
+				669C28D90D57E51900A5D1D3 /* Text.h */,
+				669C28E90D57E52400A5D1D3 /* ConeFunctor.h */,
 			);
-			name = Legend;
+			path = Legend;
 			sourceTree = "<group>";
 		};
 		6699A0580D1EFC7200A9AE47 /* Fox */ = {
@@ -6534,8 +6806,6 @@
 				6699A06F0D1EFC7200A9AE47 /* IGUIServer.h */,
 				6699A0700D1EFC7200A9AE47 /* ILoadFileDialog.h */,
 				6699A0710D1EFC7200A9AE47 /* IMaterialEditor.h */,
-				6699A0720D1EFC7200A9AE47 /* IMenuEntry.h */,
-				6699A0730D1EFC7200A9AE47 /* IPreferencesManager.h */,
 				6699A0740D1EFC7200A9AE47 /* IProgressBar.h */,
 				6699A0750D1EFC7200A9AE47 /* IProgressBarFactory.h */,
 				6699A0760D1EFC7200A9AE47 /* IQuestion.h */,
@@ -6584,8 +6854,6 @@
 				668D4CCE0D372FD900CE039D /* moc_OptionWidget.cpp */,
 				668D4CC90D372F9E00CE039D /* OptionWidget.cpp */,
 				668D4CCA0D372F9E00CE039D /* OptionWidget.h */,
-				66A9E57E0D34A22000FD67B6 /* WmsLayer.cpp */,
-				66A9E57F0D34A22000FD67B6 /* WmsLayer.h */,
 				66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */,
 				66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */,
 				66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */,
@@ -6674,13 +6942,8 @@
 		66C8FABD0D120542003F6A58 /* QtTools */ = {
 			isa = PBXGroup;
 			children = (
-				666B9B200D16F321001C1F7C /* icons */,
-				66C8FEEE0D120C3E003F6A58 /* moc_Action.cpp */,
-				66C8FEEF0D120C3E003F6A58 /* moc_AnimationControl.cpp */,
-				66C8FEF00D120C3E003F6A58 /* moc_ColorButton.cpp */,
-				66C8FEF10D120C3E003F6A58 /* moc_Menu.cpp */,
-				66C8FEF20D120C3E003F6A58 /* moc_PropertyBrowser.cpp */,
-				66C8FEF30D120C3E003F6A58 /* moc_TreeControl.cpp */,
+				66AA98280D596CCE0046045C /* Question.cpp */,
+				66AA98290D596CCE0046045C /* Question.h */,
 				66C8FAC00D12056B003F6A58 /* Action.cpp */,
 				66C8FAC10D12056B003F6A58 /* Action.h */,
 				66C8FAC20D12056B003F6A58 /* AnimationControl.cpp */,
@@ -6691,15 +6954,22 @@
 				66C8FAC70D12056B003F6A58 /* ColorButton.h */,
 				66C8FAC80D12056B003F6A58 /* ComboBox.h */,
 				66C8FAC90D12056B003F6A58 /* Export.h */,
+				666B9B200D16F321001C1F7C /* icons */,
 				66C8FACA0D12056B003F6A58 /* Image.cpp */,
 				66C8FACB0D12056B003F6A58 /* Image.h */,
 				66C8FACC0D12056B003F6A58 /* Menu.cpp */,
 				66C8FACD0D12056B003F6A58 /* Menu.h */,
+				66C8FEEE0D120C3E003F6A58 /* moc_Action.cpp */,
+				66C8FEEF0D120C3E003F6A58 /* moc_AnimationControl.cpp */,
+				66C8FEF00D120C3E003F6A58 /* moc_ColorButton.cpp */,
+				66C8FEF10D120C3E003F6A58 /* moc_Menu.cpp */,
+				66C8FEF20D120C3E003F6A58 /* moc_PropertyBrowser.cpp */,
+				66C8FEF30D120C3E003F6A58 /* moc_TreeControl.cpp */,
 				66C8FACE0D12056B003F6A58 /* PropertyBrowser.cpp */,
 				66C8FACF0D12056B003F6A58 /* PropertyBrowser.h */,
+				66AC89F20D2B3C9400762CC7 /* ScopedSignals.h */,
 				66C8FAD00D12056B003F6A58 /* TreeControl.cpp */,
 				66C8FAD10D12056B003F6A58 /* TreeControl.h */,
-				66AC89F20D2B3C9400762CC7 /* ScopedSignals.h */,
 			);
 			name = QtTools;
 			path = ../Experimental/QtTools;
@@ -6771,6 +7041,15 @@
 			name = ResampleLine;
 			sourceTree = "<group>";
 		};
+		66ED9FAD0D5AB76D004D93C2 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				66ED9FAE0D5AB76D004D93C2 /* compassring.png */,
+				66ED9FAF0D5AB76D004D93C2 /* compassrose.png */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 		66EF05B20D143ED400B4B1AA /* SnapShot */ = {
 			isa = PBXGroup;
 			children = (
@@ -6819,30 +7098,39 @@
 		66EF05F40D14605C00B4B1AA /* ModflowDelegate */ = {
 			isa = PBXGroup;
 			children = (
-				661350E60D50473D002CF6A9 /* moc_BasicPackageForm.cpp */,
-				661350E70D50473D002CF6A9 /* moc_HeadLevelOutputForm.cpp */,
-				6674627E0D4FA41C005D2596 /* moc_DiscretizationInputForm.cpp */,
-				667462130D4F9EA1005D2596 /* DiscretizationInputForm.ui */,
-				66EF069A0D14648700B4B1AA /* moc_FileInputDialog.cpp */,
-				66EF069C0D14648700B4B1AA /* moc_Properties.cpp */,
+				66AE84BE0D623FAF004B5BCD /* AuxiliaryDataForm.cpp */,
+				66AE84BF0D623FAF004B5BCD /* AuxiliaryDataForm.h */,
+				667462D00D4FA98F005D2596 /* BasicPackageForm.cpp */,
+				667462CF0D4FA98F005D2596 /* BasicPackageForm.h */,
 				66EF06680D14620700B4B1AA /* CompileGuard.h */,
+				66A6D66A0D66689F007176D4 /* CylinderForm.cpp */,
+				66A6D66B0D66689F007176D4 /* CylinderForm.h */,
+				667462150D4F9EB8005D2596 /* DiscretizationInputForm.cpp */,
+				667462140D4F9EB8005D2596 /* DiscretizationInputForm.h */,
 				66EF06690D14620700B4B1AA /* FileInputDialog.cpp */,
 				66EF066A0D14620700B4B1AA /* FileInputDialog.h */,
-				66EF066B0D14620700B4B1AA /* FileInputDialog.ui */,
 				66EF066C0D14620700B4B1AA /* FileInputForm.cpp */,
 				66EF066D0D14620700B4B1AA /* FileInputForm.h */,
-				66EF066E0D14620700B4B1AA /* FileInputForm.ui */,
+				667462D40D4FA9B0005D2596 /* HeadLevelOutputForm.cpp */,
+				667462D30D4FA9B0005D2596 /* HeadLevelOutputForm.h */,
+				66AE85230D626A98004B5BCD /* moc_AuxiliaryDataForm.cpp */,
+				661350E60D50473D002CF6A9 /* moc_BasicPackageForm.cpp */,
+				66A6D6960D666B36007176D4 /* moc_CylinderForm.cpp */,
+				6674627E0D4FA41C005D2596 /* moc_DiscretizationInputForm.cpp */,
+				66EF069A0D14648700B4B1AA /* moc_FileInputDialog.cpp */,
+				661350E70D50473D002CF6A9 /* moc_HeadLevelOutputForm.cpp */,
+				66A161700D60E079000C988A /* moc_ProjectionDialog.cpp */,
+				66EF069C0D14648700B4B1AA /* moc_Properties.cpp */,
 				66EF066F0D14620700B4B1AA /* ModflowDelegateComponent.cpp */,
 				66EF06700D14620700B4B1AA /* ModflowDelegateComponent.h */,
+				66A161660D60E019000C988A /* ProjectionDialog.cpp */,
+				66A161670D60E019000C988A /* ProjectionDialog.h */,
 				66EF06710D14620700B4B1AA /* Properties.cpp */,
 				66EF06720D14620700B4B1AA /* Properties.h */,
-				66EF06730D14620700B4B1AA /* Properties.ui */,
-				667462140D4F9EB8005D2596 /* DiscretizationInputForm.h */,
-				667462150D4F9EB8005D2596 /* DiscretizationInputForm.cpp */,
-				667462CF0D4FA98F005D2596 /* BasicPackageForm.h */,
-				667462D00D4FA98F005D2596 /* BasicPackageForm.cpp */,
-				667462D30D4FA9B0005D2596 /* HeadLevelOutputForm.h */,
-				667462D40D4FA9B0005D2596 /* HeadLevelOutputForm.cpp */,
+				66B9231A0D653C5100087AB4 /* PumpingForm.cpp */,
+				66B9231B0D653C5100087AB4 /* PumpingForm.h */,
+				66A161940D60EB86000C988A /* RechargeForm.cpp */,
+				66A161950D60EB86000C988A /* RechargeForm.h */,
 			);
 			path = ModflowDelegate;
 			sourceTree = "<group>";
@@ -6850,8 +7138,8 @@
 		66EF060F0D14617900B4B1AA /* Attributes */ = {
 			isa = PBXGroup;
 			children = (
-				667461F80D4F8EE2005D2596 /* Recharge.cpp */,
-				667461F90D4F8EE2005D2596 /* Recharge.h */,
+				66B923160D653C4200087AB4 /* Cylinders.cpp */,
+				66B923170D653C4200087AB4 /* Cylinders.h */,
 				66EF06100D14617900B4B1AA /* Attribute.cpp */,
 				66EF06110D14617900B4B1AA /* Attribute.h */,
 				666B9BA90D1741E0001C1F7C /* AuxiliaryData.cpp */,
@@ -6914,8 +7202,6 @@
 		66EF062C0D14617900B4B1AA /* Readers */ = {
 			isa = PBXGroup;
 			children = (
-				667461F30D4F8E7C005D2596 /* Recharge.cpp */,
-				667461F40D4F8E7C005D2596 /* Recharge.h */,
 				666B9BB00D17424F001C1F7C /* AuxiliaryData.cpp */,
 				666B9BB10D17424F001C1F7C /* AuxiliaryData.h */,
 				66EF062D0D14617900B4B1AA /* BaseReader.cpp */,
@@ -6928,6 +7214,10 @@
 				66EF06340D14617900B4B1AA /* Discretization.h */,
 				66EF06350D14617900B4B1AA /* HeadLevelOutput.cpp */,
 				66EF06360D14617900B4B1AA /* HeadLevelOutput.h */,
+				66B923120D653C3600087AB4 /* Pumping.cpp */,
+				66B923130D653C3600087AB4 /* Pumping.h */,
+				667461F30D4F8E7C005D2596 /* Recharge.cpp */,
+				667461F40D4F8E7C005D2596 /* Recharge.h */,
 			);
 			name = Readers;
 			path = ../../modflow/ModflowModel/Readers;
@@ -6947,7 +7237,9 @@
 			children = (
 				66CCE9C80D3186630084E49D /* Config.h */,
 				66EF175E0D1518C700B4B1AA /* Core */,
+				669432160D77EA7800633017 /* DataSources */,
 				66EF18B60D15C02500B4B1AA /* Document */,
+				664B434C0D54EE8C0080DF60 /* Interfaces */,
 				668E0DDA0D4063AB0030649B /* Layers */,
 				66EF18E80D15C13200B4B1AA /* Plugins */,
 			);
@@ -6961,14 +7253,11 @@
 				66EF176F0D15193000B4B1AA /* Animate */,
 				66EF17760D15193000B4B1AA /* Commands */,
 				66EF178D0D15193000B4B1AA /* DataObjects */,
-				66EF17990D15193000B4B1AA /* DB */,
 				66EF17A00D15193000B4B1AA /* Export.h */,
 				668C94170D41C27B0007D7F4 /* Factory */,
 				66EF17A10D15193000B4B1AA /* Functors */,
 				668C95E50D42AB060007D7F4 /* Geometry */,
 				66EF17A80D15193000B4B1AA /* Layers */,
-				66EF17B90D15193000B4B1AA /* postGIS */,
-				66EF17C80D15193000B4B1AA /* Scene */,
 				66EF17CB0D15193000B4B1AA /* Serialize.h */,
 				66EF17CC0D15193000B4B1AA /* Visitor.h */,
 				66EF17CD0D15193000B4B1AA /* Visitors */,
@@ -7037,19 +7326,6 @@
 			path = DataObjects;
 			sourceTree = "<group>";
 		};
-		66EF17990D15193000B4B1AA /* DB */ = {
-			isa = PBXGroup;
-			children = (
-				66EF179A0D15193000B4B1AA /* Connection.cpp */,
-				66EF179B0D15193000B4B1AA /* Connection.h */,
-				66EF179C0D15193000B4B1AA /* ConnectionPool.cpp */,
-				66EF179D0D15193000B4B1AA /* ConnectionPool.h */,
-				66EF179E0D15193000B4B1AA /* Info.cpp */,
-				66EF179F0D15193000B4B1AA /* Info.h */,
-			);
-			path = DB;
-			sourceTree = "<group>";
-		};
 		66EF17A10D15193000B4B1AA /* Functors */ = {
 			isa = PBXGroup;
 			children = (
@@ -7065,16 +7341,6 @@
 		66EF17A80D15193000B4B1AA /* Layers */ = {
 			isa = PBXGroup;
 			children = (
-				66EF17A90D15193000B4B1AA /* Layer.cpp */,
-				66EF17AA0D15193000B4B1AA /* Layer.h */,
-				66EF17AB0D15193000B4B1AA /* LineLayer.cpp */,
-				66EF17AC0D15193000B4B1AA /* LineLayer.h */,
-				66EF17AF0D15193000B4B1AA /* PointLayer.cpp */,
-				66EF17B00D15193000B4B1AA /* PointLayer.h */,
-				66EF17B10D15193000B4B1AA /* PointTimeLayer.cpp */,
-				66EF17B20D15193000B4B1AA /* PointTimeLayer.h */,
-				66EF17B30D15193000B4B1AA /* PolygonLayer.cpp */,
-				66EF17B40D15193000B4B1AA /* PolygonLayer.h */,
 				6685C2DD0D4525A000103700 /* Vector.cpp */,
 				6685C2DC0D4525A000103700 /* Vector.h */,
 				6685C2E20D4525F300103700 /* VectorGroup.cpp */,
@@ -7083,37 +7349,17 @@
 			path = Layers;
 			sourceTree = "<group>";
 		};
-		66EF17B90D15193000B4B1AA /* postGIS */ = {
-			isa = PBXGroup;
-			children = (
-				66EF17BA0D15193000B4B1AA /* BinaryParser.cpp */,
-				66EF17BB0D15193000B4B1AA /* BinaryParser.h */,
-				66EF17BC0D15193000B4B1AA /* Factory.cpp */,
-				66EF17BD0D15193000B4B1AA /* Factory.h */,
-				66EF17C60D15193000B4B1AA /* TextParser.cpp */,
-				66EF17C70D15193000B4B1AA /* TextParser.h */,
-			);
-			path = postGIS;
-			sourceTree = "<group>";
-		};
-		66EF17C80D15193000B4B1AA /* Scene */ = {
-			isa = PBXGroup;
-			children = (
-				66EF17C90D15193000B4B1AA /* SceneManager.cpp */,
-				66EF17CA0D15193000B4B1AA /* SceneManager.h */,
-			);
-			path = Scene;
-			sourceTree = "<group>";
-		};
 		66EF17CD0D15193000B4B1AA /* Visitors */ = {
 			isa = PBXGroup;
 			children = (
 				66EF17CE0D15193000B4B1AA /* FindMinMaxDates.cpp */,
 				66EF17CF0D15193000B4B1AA /* FindMinMaxDates.h */,
+				660C4D990D53DD3A0072942F /* ResizePoints.cpp */,
+				660C4D9A0D53DD3A0072942F /* ResizePoints.h */,
+				6685C3490D45390900103700 /* StackPoints.cpp */,
+				6685C3480D45390900103700 /* StackPoints.h */,
 				66EF17D00D15193000B4B1AA /* TemporalAnimation.cpp */,
 				66EF17D10D15193000B4B1AA /* TemporalAnimation.h */,
-				6685C3480D45390900103700 /* StackPoints.h */,
-				6685C3490D45390900103700 /* StackPoints.cpp */,
 			);
 			path = Visitors;
 			sourceTree = "<group>";
@@ -7121,8 +7367,6 @@
 		66EF18B60D15C02500B4B1AA /* Document */ = {
 			isa = PBXGroup;
 			children = (
-				66CCE9780D30A4490084E49D /* Planet.cpp */,
-				66CCE9790D30A4490084E49D /* Planet.h */,
 				66EF18B90D15C04C00B4B1AA /* CommandReceiver.cpp */,
 				66EF18BA0D15C04C00B4B1AA /* CommandReceiver.h */,
 				66EF18BB0D15C04C00B4B1AA /* CommandSender.cpp */,
@@ -7180,6 +7424,7 @@
 		66EF1A0E0D16434900B4B1AA /* StarSystem */ = {
 			isa = PBXGroup;
 			children = (
+				66ED9FAD0D5AB76D004D93C2 /* Images */,
 				66EF1A210D1643CA00B4B1AA /* Body.cpp */,
 				66EF1A220D1643CA00B4B1AA /* Body.h */,
 				66EF1A230D1643CA00B4B1AA /* BuildScene.cpp */,
@@ -7187,6 +7432,8 @@
 				6667FCD30D1A351300D3069C /* BuildTiles.cpp */,
 				6667FCD10D1A34F900D3069C /* BuildTiles.h */,
 				6685C4EA0D46700B00103700 /* ClampNearFar.h */,
+				669151460D52518700C2BF8D /* Compass.cpp */,
+				669151470D52518700C2BF8D /* Compass.h */,
 				66B0F3EA0D4D81B30045BC40 /* Composite.h */,
 				66EF1A250D1643CA00B4B1AA /* CutImageJob.cpp */,
 				66EF1A260D1643CA00B4B1AA /* CutImageJob.h */,
@@ -7419,12 +7666,6 @@
 				43F6DFDA0A1A526E00216A12 /* STLWriter.h in Headers */,
 				66E7B0C00B17617300E3D682 /* Renderer.h in Headers */,
 				66E7B0C20B17617300E3D682 /* SceneManager.h in Headers */,
-				66E7B0D70B1761B600E3D682 /* GradientIcon.h in Headers */,
-				66E7B0D90B1761B600E3D682 /* Icon.h in Headers */,
-				66E7B0DB0B1761B600E3D682 /* Legend.h in Headers */,
-				66E7B0DD0B1761B600E3D682 /* LegendObject.h in Headers */,
-				66E7B0DF0B1761B600E3D682 /* SolidIcon.h in Headers */,
-				66E7B0E10B1761B600E3D682 /* Text.h in Headers */,
 				6673DD2B0BC5F2F800C0131F /* GradientBackground.h in Headers */,
 				664308BF0D10AFDB00984C94 /* FBOScreenCapture.h in Headers */,
 				664308C10D10AFDB00984C94 /* TiledScreenCapture.h in Headers */,
@@ -7445,6 +7686,16 @@
 				668E0DA30D4022F70030649B /* Texture3DVolume.h in Headers */,
 				668E0DA50D4022F70030649B /* TransferFunction.h in Headers */,
 				668E0DA70D4022F70030649B /* TransferFunction1D.h in Headers */,
+				669C28DB0D57E51900A5D1D3 /* GradientIcon.h in Headers */,
+				669C28DD0D57E51900A5D1D3 /* Icon.h in Headers */,
+				669C28DF0D57E51900A5D1D3 /* Legend.h in Headers */,
+				669C28E10D57E51900A5D1D3 /* LegendObject.h in Headers */,
+				669C28E20D57E51900A5D1D3 /* LineFunctor.h in Headers */,
+				669C28E30D57E51900A5D1D3 /* QuadFunctor.h in Headers */,
+				669C28E50D57E51900A5D1D3 /* SolidIcon.h in Headers */,
+				669C28E60D57E51900A5D1D3 /* SphereFunctor.h in Headers */,
+				669C28E80D57E51900A5D1D3 /* Text.h in Headers */,
+				669C28EA0D57E52400A5D1D3 /* ConeFunctor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7663,6 +7914,33 @@
 				668E0DE90D406F400030649B /* KmlLayer.h in Headers */,
 				66B0F3190D4C51510045BC40 /* Link.h in Headers */,
 				66B0F31D0D4C515F0045BC40 /* NetworkLink.h in Headers */,
+				66F56CA40D566346007EEFA1 /* Object.h in Headers */,
+				66AFF3120D6E96200062CDB9 /* LookAt.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66942DB20D77D66900633017 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66942DC50D77D6A200633017 /* Layer.h in Headers */,
+				66942DC70D77D6A200633017 /* LineLayer.h in Headers */,
+				66942DC90D77D6A200633017 /* PointLayer.h in Headers */,
+				66942DCB0D77D6A200633017 /* PointTimeLayer.h in Headers */,
+				66942DCD0D77D6A200633017 /* PolygonLayer.h in Headers */,
+				66942E320D77D93500633017 /* Export.h in Headers */,
+				66942E680D77E0E100633017 /* BinaryParser.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66942EB50D77EA4F00633017 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6694321F0D77EA7800633017 /* Connection.h in Headers */,
+				669432210D77EA7800633017 /* ConnectionPool.h in Headers */,
+				669432230D77EA7800633017 /* Info.h in Headers */,
+				6694322E0D77EAEA00633017 /* Export.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7685,7 +7963,6 @@
 				66A112DD0D2EBC77009B29ED /* AddWmsLayerWidget.h in Headers */,
 				66A112DE0D2EBC77009B29ED /* CompileGuard.h in Headers */,
 				66A112E00D2EBC77009B29ED /* WmsLayerQtComponent.h in Headers */,
-				66A9E5810D34A22000FD67B6 /* WmsLayer.h in Headers */,
 				668D4CCC0D372F9E00CE039D /* OptionWidget.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -7747,6 +8024,7 @@
 				66C8FAE00D12056B003F6A58 /* PropertyBrowser.h in Headers */,
 				66C8FAE20D12056B003F6A58 /* TreeControl.h in Headers */,
 				66AC89F30D2B3C9400762CC7 /* ScopedSignals.h in Headers */,
+				66AA982B0D596CCE0046045C /* Question.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7824,7 +8102,8 @@
 				666B9BB30D17424F001C1F7C /* AuxiliaryData.h in Headers */,
 				668C93C90D41B2690007D7F4 /* HeadSurface.h in Headers */,
 				667461F60D4F8E7C005D2596 /* Recharge.h in Headers */,
-				667461FB0D4F8EE2005D2596 /* Recharge.h in Headers */,
+				66B923150D653C3600087AB4 /* Pumping.h in Headers */,
+				66B923190D653C4200087AB4 /* Cylinders.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7835,6 +8114,11 @@
 				667462160D4F9EB8005D2596 /* DiscretizationInputForm.h in Headers */,
 				667462D10D4FA98F005D2596 /* BasicPackageForm.h in Headers */,
 				667462D50D4FA9B0005D2596 /* HeadLevelOutputForm.h in Headers */,
+				66A161690D60E019000C988A /* ProjectionDialog.h in Headers */,
+				66A161970D60EB86000C988A /* RechargeForm.h in Headers */,
+				66AE84C10D623FAF004B5BCD /* AuxiliaryDataForm.h in Headers */,
+				66B9231D0D653C5100087AB4 /* PumpingForm.h in Headers */,
+				66A6D66D0D66689F007176D4 /* CylinderForm.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7861,22 +8145,10 @@
 				66EF17F30D15193000B4B1AA /* Point.h in Headers */,
 				66EF17F70D15193000B4B1AA /* Polygon.h in Headers */,
 				66EF17F80D15193000B4B1AA /* UserData.h in Headers */,
-				66EF17FA0D15193000B4B1AA /* Connection.h in Headers */,
-				66EF17FC0D15193000B4B1AA /* ConnectionPool.h in Headers */,
-				66EF17FE0D15193000B4B1AA /* Info.h in Headers */,
 				66EF17FF0D15193000B4B1AA /* Export.h in Headers */,
 				66EF18000D15193000B4B1AA /* BaseColorFunctor.h in Headers */,
 				66EF18020D15193000B4B1AA /* GradientColorFunctor.h in Headers */,
 				66EF18040D15193000B4B1AA /* SingleColorFunctor.h in Headers */,
-				66EF18070D15193000B4B1AA /* Layer.h in Headers */,
-				66EF18090D15193000B4B1AA /* LineLayer.h in Headers */,
-				66EF180D0D15193000B4B1AA /* PointLayer.h in Headers */,
-				66EF180F0D15193000B4B1AA /* PointTimeLayer.h in Headers */,
-				66EF18110D15193000B4B1AA /* PolygonLayer.h in Headers */,
-				66EF18170D15193000B4B1AA /* BinaryParser.h in Headers */,
-				66EF18190D15193000B4B1AA /* Factory.h in Headers */,
-				66EF18230D15193000B4B1AA /* TextParser.h in Headers */,
-				66EF18250D15193000B4B1AA /* SceneManager.h in Headers */,
 				66EF18260D15193000B4B1AA /* Serialize.h in Headers */,
 				66EF18270D15193000B4B1AA /* Visitor.h in Headers */,
 				66EF18290D15193000B4B1AA /* FindMinMaxDates.h in Headers */,
@@ -7891,6 +8163,12 @@
 				6685C2E30D4525F300103700 /* VectorGroup.h in Headers */,
 				6685C34A0D45390900103700 /* StackPoints.h in Headers */,
 				66DDED3C0D46E241005886AE /* Model.h in Headers */,
+				660C4D9C0D53DD3A0072942F /* ResizePoints.h in Headers */,
+				664B43510D54EE8C0080DF60 /* IAddLayer.h in Headers */,
+				664B43520D54EE8C0080DF60 /* IAnimationControl.h in Headers */,
+				664B43530D54EE8C0080DF60 /* IDirtyScene.h in Headers */,
+				664B43540D54EE8C0080DF60 /* IRemoveLayer.h in Headers */,
+				66CA7A3A0D552790004909C6 /* Feature.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7905,7 +8183,6 @@
 				66EF18CE0D15C04C00B4B1AA /* MinervaDocument.h in Headers */,
 				66EF18D00D15C04C00B4B1AA /* MinervaReader.h in Headers */,
 				66EF18D20D15C04C00B4B1AA /* MinervaWriter.h in Headers */,
-				66CCE97B0D30A4490084E49D /* Planet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7980,6 +8257,7 @@
 				6685C4EB0D46700B00103700 /* ClampNearFar.h in Headers */,
 				664C34DA0D497BCE006FC860 /* Mesh.h in Headers */,
 				66B0F3EB0D4D81B30045BC40 /* Composite.h in Headers */,
+				669151490D52518700C2BF8D /* Compass.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8376,6 +8654,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66C024FB0D7797AE00371AB4 /* PBXTargetDependency */,
 				66AC8A6C0D2B58C700762CC7 /* PBXTargetDependency */,
 				66AC8A6A0D2B58C300762CC7 /* PBXTargetDependency */,
 				6689316B0D2840F4005CB399 /* PBXTargetDependency */,
@@ -8397,6 +8676,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66AFF2D80D6E20130062CDB9 /* PBXTargetDependency */,
 				668BE85B0D24CE8900109210 /* PBXTargetDependency */,
 				668BE8590D24CE8600109210 /* PBXTargetDependency */,
 				668BE84C0D24CE2D00109210 /* PBXTargetDependency */,
@@ -8488,6 +8768,48 @@
 			productReference = 668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		66942DB50D77D66900633017 /* MinervaPostGISLayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66942DCE0D77D6A200633017 /* Build configuration list for PBXNativeTarget "MinervaPostGISLayer" */;
+			buildPhases = (
+				66942DB20D77D66900633017 /* Headers */,
+				66942DB30D77D66900633017 /* Sources */,
+				66942DB40D77D66900633017 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				669432290D77EAA000633017 /* PBXTargetDependency */,
+				66942DDB0D77D6EC00633017 /* PBXTargetDependency */,
+				66942DD90D77D6E500633017 /* PBXTargetDependency */,
+				66942DD20D77D6C300633017 /* PBXTargetDependency */,
+				66942DD00D77D6AD00633017 /* PBXTargetDependency */,
+			);
+			name = MinervaPostGISLayer;
+			productName = MinervaPostGISLayer;
+			productReference = 66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		66942EB80D77EA4F00633017 /* MinervaPostgres */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 669432150D77EA6F00633017 /* Build configuration list for PBXNativeTarget "MinervaPostgres" */;
+			buildPhases = (
+				66942EB50D77EA4F00633017 /* Headers */,
+				66942EB60D77EA4F00633017 /* Sources */,
+				66942EB70D77EA4F00633017 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				668DB5050D788D3400EA4DCD /* PBXTargetDependency */,
+				668DB5030D788D3200EA4DCD /* PBXTargetDependency */,
+				669432260D77EA8C00633017 /* PBXTargetDependency */,
+			);
+			name = MinervaPostgres;
+			productName = MinervaPostgres;
+			productReference = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		66A112B00D2EBADC009B29ED /* OssimLayerQt */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66A112B60D2EBAE0009B29ED /* Build configuration list for PBXNativeTarget "OssimLayerQt" */;
@@ -8541,6 +8863,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66942E110D77D8D700633017 /* PBXTargetDependency */,
 				66CFF0E60D389C0600ED0216 /* PBXTargetDependency */,
 				668C970B0D42CB120007D7F4 /* PBXTargetDependency */,
 				66CCE9D50D3192430084E49D /* PBXTargetDependency */,
@@ -8717,6 +9040,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				6694322B0D77EAA800633017 /* PBXTargetDependency */,
 				666A7CB50D178FF900665DEF /* PBXTargetDependency */,
 				66EF18B40D15C00500B4B1AA /* PBXTargetDependency */,
 				66EF18AB0D15BFE700B4B1AA /* PBXTargetDependency */,
@@ -8893,6 +9217,8 @@
 				66EF189B0D1581ED00B4B1AA /* MinervaDocument */,
 				668E0DD30D4062090030649B /* MinervaKmlLayer */,
 				66EF18E10D15C0E600B4B1AA /* MinervaModel */,
+				66942DB50D77D66900633017 /* MinervaPostGISLayer */,
+				66942EB80D77EA4F00633017 /* MinervaPostgres */,
 				66EF06080D14610700B4B1AA /* ModflowDelegateQt */,
 				66EF05FC0D14608800B4B1AA /* ModflowModel */,
 				431BAD5B09245A4600ED2131 /* OsgTools */,
@@ -8963,6 +9289,8 @@
 				668C98C80D444D130007D7F4 /* Helios.icns in Resources */,
 				668C98C50D444C950007D7F4 /* HeliosQtApp-Info.plist in Resources */,
 				66CFB2460D135FEF00F93E67 /* helios_sun.png in Resources */,
+				6691517E0D52642A00C2BF8D /* big_compass_1.tga in Resources */,
+				6691517F0D52642A00C2BF8D /* big_compass_mask.tga in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9079,7 +9407,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/python $SRCROOT/../Experimental/QtTools/PreBuild.py --dir=$SRCROOT/../Experimental/QtTools/\n\n#/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/Action.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_Action.cpp\n\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/uic /Users/adam/src/cadkit/Experimental/QtTools/AnimationControl.ui -o /Users/adam/src/cadkit/Experimental/QtTools/ui_AnimationControl.h\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/AnimationControl.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_AnimationControl.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/ColorButton.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_ColorButton.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/Menu.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_Menu.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/PropertyBrowser.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_PropertyBrowser.cpp\n\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/TreeControl.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_TreeControl.cpp\n";
+			shellScript = "#/usr/bin/python $SRCROOT/../Experimental/QtTools/PreBuild.py --dir=$SRCROOT/../Experimental/QtTools/\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/Action.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_Action.cpp\n\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/uic /Users/adam/src/cadkit/Experimental/QtTools/AnimationControl.ui -o /Users/adam/src/cadkit/Experimental/QtTools/ui_AnimationControl.h\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/AnimationControl.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_AnimationControl.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/ColorButton.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_ColorButton.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/Menu.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_Menu.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/PropertyBrowser.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_PropertyBrowser.cpp\n\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/Experimental/QtTools/TreeControl.h -o /Users/adam/src/cadkit/Experimental/QtTools/moc_TreeControl.cpp\n";
 		};
 		66EF05D10D143F8000B4B1AA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -9100,12 +9428,28 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/../../modflow/ModflowDelegate/FileInputDialog.h",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/FileInputDialog.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/DiscretizationInputForm.h",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/DiscretizationInputForm.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/BasicPackageForm.h",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/BasicPackageForm.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/HeadLevelOutputForm.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/Properties.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/Properties.h",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/HeadLevelOutputForm.h",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/ProjectionDialog.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/ProjectionDialog.h",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/AuxiliaryDataForm.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/AuxiliaryDataForm.h",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/CylinderForm.ui",
+				"$(SRCROOT)/../../modflow/ModflowDelegate/CylinderForm.h",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/FileInputDialog.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_FileInputDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/FileInputDialog.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_FileInputDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/DiscretizationInputForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_DiscretizationInputForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/DiscretizationInputForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_DiscretizationInputForm.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/BasicPackageForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_BasicPackageForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/BasicPackageForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_BasicPackageForm.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/HeadLevelOutputForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_HeadLevelOutputForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/HeadLevelOutputForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_HeadLevelOutputForm.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/Properties.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_Properties.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/Properties.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_Properties.h\n\n";
+			shellScript = "\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/FileInputDialog.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_FileInputDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/FileInputDialog.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_FileInputDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/DiscretizationInputForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_DiscretizationInputForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/DiscretizationInputForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_DiscretizationInputForm.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/BasicPackageForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_BasicPackageForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/BasicPackageForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_BasicPackageForm.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/HeadLevelOutputForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_HeadLevelOutputForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/HeadLevelOutputForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_HeadLevelOutputForm.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/Properties.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_Properties.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/Properties.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_Properties.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/ProjectionDialog.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_ProjectionDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/ProjectionDialog.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_ProjectionDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/CylinderForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_CylinderForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/CylinderForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_CylinderForm.h\n\n$QTDIR/bin/moc $SRCROOT/../../modflow/ModflowDelegate/AuxiliaryDataForm.h  -o $SRCROOT/../../modflow/ModflowDelegate/moc_AuxiliaryDataForm.cpp\n$QTDIR/bin/uic $SRCROOT/../../modflow/ModflowDelegate/AuxiliaryDataForm.ui -o $SRCROOT/../../modflow/ModflowDelegate/ui_AuxiliaryDataForm.h\n";
 		};
 		66EFF3B50D13A07600B4B1AA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -9186,12 +9530,6 @@
 				43F6DFD90A1A526E00216A12 /* STLWriter.cpp in Sources */,
 				66E7B0BF0B17617300E3D682 /* Renderer.cpp in Sources */,
 				66E7B0C10B17617300E3D682 /* SceneManager.cpp in Sources */,
-				66E7B0D60B1761B600E3D682 /* GradientIcon.cpp in Sources */,
-				66E7B0D80B1761B600E3D682 /* Icon.cpp in Sources */,
-				66E7B0DA0B1761B600E3D682 /* Legend.cpp in Sources */,
-				66E7B0DC0B1761B600E3D682 /* LegendObject.cpp in Sources */,
-				66E7B0DE0B1761B600E3D682 /* SolidIcon.cpp in Sources */,
-				66E7B0E00B1761B600E3D682 /* Text.cpp in Sources */,
 				6673DD2A0BC5F2F800C0131F /* GradientBackground.cpp in Sources */,
 				664308BE0D10AFDB00984C94 /* FBOScreenCapture.cpp in Sources */,
 				664308C00D10AFDB00984C94 /* TiledScreenCapture.cpp in Sources */,
@@ -9211,6 +9549,12 @@
 				668E0DA20D4022F70030649B /* Texture3DVolume.cpp in Sources */,
 				668E0DA40D4022F70030649B /* TransferFunction.cpp in Sources */,
 				668E0DA60D4022F70030649B /* TransferFunction1D.cpp in Sources */,
+				669C28DA0D57E51900A5D1D3 /* GradientIcon.cpp in Sources */,
+				669C28DC0D57E51900A5D1D3 /* Icon.cpp in Sources */,
+				669C28DE0D57E51900A5D1D3 /* Legend.cpp in Sources */,
+				669C28E00D57E51900A5D1D3 /* LegendObject.cpp in Sources */,
+				669C28E40D57E51900A5D1D3 /* SolidIcon.cpp in Sources */,
+				669C28E70D57E51900A5D1D3 /* Text.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9552,9 +9896,35 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66AFF3060D6E90D50062CDB9 /* Feature.cpp in Sources */,
 				668E0DE80D406F400030649B /* KmlLayer.cpp in Sources */,
 				66B0F31A0D4C51510045BC40 /* Link.cpp in Sources */,
 				66B0F31E0D4C515F0045BC40 /* NetworkLink.cpp in Sources */,
+				66F56CA50D566346007EEFA1 /* Object.cpp in Sources */,
+				66AFF3130D6E96200062CDB9 /* LookAt.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66942DB30D77D66900633017 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66942DC40D77D6A200633017 /* Layer.cpp in Sources */,
+				66942DC60D77D6A200633017 /* LineLayer.cpp in Sources */,
+				66942DC80D77D6A200633017 /* PointLayer.cpp in Sources */,
+				66942DCA0D77D6A200633017 /* PointTimeLayer.cpp in Sources */,
+				66942DCC0D77D6A200633017 /* PolygonLayer.cpp in Sources */,
+				66942E670D77E0E100633017 /* BinaryParser.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66942EB60D77EA4F00633017 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6694321E0D77EA7800633017 /* Connection.cpp in Sources */,
+				669432200D77EA7800633017 /* ConnectionPool.cpp in Sources */,
+				669432220D77EA7800633017 /* Info.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9579,7 +9949,6 @@
 				66A112DF0D2EBC77009B29ED /* WmsLayerQtComponent.cpp in Sources */,
 				66A112E10D2EBC77009B29ED /* WmsLayerQtFactory.cpp in Sources */,
 				66A119970D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp in Sources */,
-				66A9E5800D34A22000FD67B6 /* WmsLayer.cpp in Sources */,
 				668D4CCB0D372F9E00CE039D /* OptionWidget.cpp in Sources */,
 				668D4CCF0D372FD900CE039D /* moc_OptionWidget.cpp in Sources */,
 			);
@@ -9640,6 +10009,7 @@
 				66C8FEF70D120C3E003F6A58 /* moc_Menu.cpp in Sources */,
 				66C8FEF80D120C3E003F6A58 /* moc_PropertyBrowser.cpp in Sources */,
 				66C8FEF90D120C3E003F6A58 /* moc_TreeControl.cpp in Sources */,
+				66AA982A0D596CCE0046045C /* Question.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9703,7 +10073,8 @@
 				666B9BB20D17424F001C1F7C /* AuxiliaryData.cpp in Sources */,
 				668C93CA0D41B2690007D7F4 /* HeadSurface.cpp in Sources */,
 				667461F50D4F8E7C005D2596 /* Recharge.cpp in Sources */,
-				667461FA0D4F8EE2005D2596 /* Recharge.cpp in Sources */,
+				66B923140D653C3600087AB4 /* Pumping.cpp in Sources */,
+				66B923180D653C4200087AB4 /* Cylinders.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9723,6 +10094,14 @@
 				667462D60D4FA9B0005D2596 /* HeadLevelOutputForm.cpp in Sources */,
 				661350E80D50473D002CF6A9 /* moc_BasicPackageForm.cpp in Sources */,
 				661350E90D50473D002CF6A9 /* moc_HeadLevelOutputForm.cpp in Sources */,
+				66A161680D60E019000C988A /* ProjectionDialog.cpp in Sources */,
+				66A161710D60E079000C988A /* moc_ProjectionDialog.cpp in Sources */,
+				66A161960D60EB86000C988A /* RechargeForm.cpp in Sources */,
+				66AE84C00D623FAF004B5BCD /* AuxiliaryDataForm.cpp in Sources */,
+				66AE85240D626A98004B5BCD /* moc_AuxiliaryDataForm.cpp in Sources */,
+				66B9231C0D653C5100087AB4 /* PumpingForm.cpp in Sources */,
+				66A6D66C0D66689F007176D4 /* CylinderForm.cpp in Sources */,
+				66A6D6970D666B36007176D4 /* moc_CylinderForm.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9730,7 +10109,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6689318D0D2851D1005CB399 /* PointTimeLayer.cpp in Sources */,
 				66EF17D20D15193000B4B1AA /* Date.cpp in Sources */,
 				66EF17D40D15193000B4B1AA /* Settings.cpp in Sources */,
 				66EF17D60D15193000B4B1AA /* TimeSpan.cpp in Sources */,
@@ -9749,19 +10127,8 @@
 				66EF17F00D15193000B4B1AA /* Line.cpp in Sources */,
 				66EF17F20D15193000B4B1AA /* Point.cpp in Sources */,
 				66EF17F60D15193000B4B1AA /* Polygon.cpp in Sources */,
-				66EF17F90D15193000B4B1AA /* Connection.cpp in Sources */,
-				66EF17FB0D15193000B4B1AA /* ConnectionPool.cpp in Sources */,
-				66EF17FD0D15193000B4B1AA /* Info.cpp in Sources */,
 				66EF18010D15193000B4B1AA /* GradientColorFunctor.cpp in Sources */,
 				66EF18030D15193000B4B1AA /* SingleColorFunctor.cpp in Sources */,
-				66EF18060D15193000B4B1AA /* Layer.cpp in Sources */,
-				66EF18080D15193000B4B1AA /* LineLayer.cpp in Sources */,
-				66EF180C0D15193000B4B1AA /* PointLayer.cpp in Sources */,
-				66EF18100D15193000B4B1AA /* PolygonLayer.cpp in Sources */,
-				66EF18160D15193000B4B1AA /* BinaryParser.cpp in Sources */,
-				66EF18180D15193000B4B1AA /* Factory.cpp in Sources */,
-				66EF18220D15193000B4B1AA /* TextParser.cpp in Sources */,
-				66EF18240D15193000B4B1AA /* SceneManager.cpp in Sources */,
 				66EF18280D15193000B4B1AA /* FindMinMaxDates.cpp in Sources */,
 				66EF182A0D15193000B4B1AA /* TemporalAnimation.cpp in Sources */,
 				668C941B0D41C29D0007D7F4 /* Readers.cpp in Sources */,
@@ -9773,6 +10140,7 @@
 				6685C2E40D4525F300103700 /* VectorGroup.cpp in Sources */,
 				6685C34B0D45390900103700 /* StackPoints.cpp in Sources */,
 				66DDED3D0D46E241005886AE /* Model.cpp in Sources */,
+				660C4D9B0D53DD3A0072942F /* ResizePoints.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9786,7 +10154,6 @@
 				66EF18CD0D15C04C00B4B1AA /* MinervaDocument.cpp in Sources */,
 				66EF18CF0D15C04C00B4B1AA /* MinervaReader.cpp in Sources */,
 				66EF18D10D15C04C00B4B1AA /* MinervaWriter.cpp in Sources */,
-				66CCE97A0D30A4490084E49D /* Planet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9854,6 +10221,7 @@
 				6699A1800D21E76400A9AE47 /* Scale.cpp in Sources */,
 				6699A1820D21E76400A9AE47 /* SetJobManager.cpp in Sources */,
 				668E0A9F0D3EC60E0030649B /* ElevationLayerArcAscii.cpp in Sources */,
+				669151480D52518700C2BF8D /* Compass.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10178,6 +10546,16 @@
 			target = 43FED6F1092452E100EBB610 /* Usul */;
 			targetProxy = 668C98600D43E39B0007D7F4 /* PBXContainerItemProxy */;
 		};
+		668DB5030D788D3200EA4DCD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			targetProxy = 668DB5020D788D3200EA4DCD /* PBXContainerItemProxy */;
+		};
+		668DB5050D788D3400EA4DCD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
+			targetProxy = 668DB5040D788D3400EA4DCD /* PBXContainerItemProxy */;
+		};
 		668DC8E40D18E0D9003AB569 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 666766D20D12F282002F40C6 /* HeliosQtViewOSG */;
@@ -10218,6 +10596,46 @@
 			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
 			targetProxy = 668E0DB20D4023150030649B /* PBXContainerItemProxy */;
 		};
+		66942DD00D77D6AD00633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF17680D15190B00B4B1AA /* Minerva */;
+			targetProxy = 66942DCF0D77D6AD00633017 /* PBXContainerItemProxy */;
+		};
+		66942DD20D77D6C300633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66942DD10D77D6C300633017 /* PBXContainerItemProxy */;
+		};
+		66942DD90D77D6E500633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			targetProxy = 66942DD80D77D6E500633017 /* PBXContainerItemProxy */;
+		};
+		66942DDB0D77D6EC00633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
+			targetProxy = 66942DDA0D77D6EC00633017 /* PBXContainerItemProxy */;
+		};
+		66942E110D77D8D700633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66942DB50D77D66900633017 /* MinervaPostGISLayer */;
+			targetProxy = 66942E100D77D8D700633017 /* PBXContainerItemProxy */;
+		};
+		669432260D77EA8C00633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 669432250D77EA8C00633017 /* PBXContainerItemProxy */;
+		};
+		669432290D77EAA000633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66942EB80D77EA4F00633017 /* MinervaPostgres */;
+			targetProxy = 669432280D77EAA000633017 /* PBXContainerItemProxy */;
+		};
+		6694322B0D77EAA800633017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66942EB80D77EA4F00633017 /* MinervaPostgres */;
+			targetProxy = 6694322A0D77EAA800633017 /* PBXContainerItemProxy */;
+		};
 		66A113130D2EBCF2009B29ED /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 66A112C10D2EBB06009B29ED /* PostGISLayerQt */;
@@ -10243,6 +10661,11 @@
 			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
 			targetProxy = 66AC8A6B0D2B58C700762CC7 /* PBXContainerItemProxy */;
 		};
+		66AFF2D80D6E20130062CDB9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			targetProxy = 66AFF2D70D6E20130062CDB9 /* PBXContainerItemProxy */;
+		};
 		66B286170D37EDC0003BDAF3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 66EF1A1A0D16438E00B4B1AA /* StarSystem */;
@@ -10267,6 +10690,11 @@
 			isa = PBXTargetDependency;
 			target = 43FED6F1092452E100EBB610 /* Usul */;
 			targetProxy = 66B286730D382053003BDAF3 /* PBXContainerItemProxy */;
+		};
+		66C024FB0D7797AE00371AB4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FAB00D1204D8003F6A58 /* QtTools */;
+			targetProxy = 66C024FA0D7797AE00371AB4 /* PBXContainerItemProxy */;
 		};
 		66C8FAA20D11FF60003F6A58 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -11631,8 +12059,10 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -11663,7 +12093,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
@@ -11947,6 +12379,80 @@
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = MinervaKmlLayer;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		66942DB70D77D66A00633017 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaPostGISLayer;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66942DB80D77D66A00633017 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaPostGISLayer;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		669430DC0D77EA5100633017 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				OTHER_LDFLAGS = (
+					"-flat_namespace",
+					"-lpq",
+					"-lpqxx",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaPostgres;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		669430DD0D77EA5100633017 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				OTHER_LDFLAGS = (
+					"-flat_namespace",
+					"-lpq",
+					"-lpqxx",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaPostgres;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -12371,8 +12877,10 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -12384,6 +12892,7 @@
 				HEADER_SEARCH_PATHS = (
 					../../modflow,
 					../,
+					../../../Library/Frameworks/GDAL.framework/Headers,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				PREBINDING = NO;
@@ -12402,14 +12911,17 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_MODFLOW_MODEL;
 				HEADER_SEARCH_PATHS = (
 					../../modflow,
 					../,
+					../../../Library/Frameworks/GDAL.framework/Headers,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				PREBINDING = NO;
@@ -12427,8 +12939,10 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -12441,6 +12955,7 @@
 					../../modflow,
 					../,
 					../Experimental,
+					../../../Library/Frameworks/GDAL.framework/Headers,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				PREBINDING = NO;
@@ -12459,8 +12974,10 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_MODFLOW_DELEGATE;
@@ -12468,6 +12985,7 @@
 					../../modflow,
 					../,
 					../Experimental,
+					../../../Library/Frameworks/GDAL.framework/Headers,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				PREBINDING = NO;
@@ -12505,10 +13023,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				OTHER_LDFLAGS = (
-					"-lpq",
-					"-lpqxx",
-				);
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = Minerva;
 				ZERO_LINK = YES;
@@ -12543,10 +13058,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				OTHER_LDFLAGS = (
-					"-lpq",
-					"-lpqxx",
-				);
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = Minerva;
 				ZERO_LINK = NO;
@@ -12564,11 +13076,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -12599,8 +13113,10 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
@@ -13212,6 +13728,24 @@
 			buildConfigurations = (
 				668E0DD50D4062090030649B /* Debug */,
 				668E0DD60D4062090030649B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66942DCE0D77D6A200633017 /* Build configuration list for PBXNativeTarget "MinervaPostGISLayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66942DB70D77D66A00633017 /* Debug */,
+				66942DB80D77D66A00633017 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		669432150D77EA6F00633017 /* Build configuration list for PBXNativeTarget "MinervaPostgres" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				669430DC0D77EA5100633017 /* Debug */,
+				669430DD0D77EA5100633017 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

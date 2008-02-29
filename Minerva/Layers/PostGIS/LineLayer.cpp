@@ -8,9 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/LineLayer.h"
+#include "Minerva/Layers/PostGIS/LineLayer.h"
+#include "Minerva/Layers/PostGIS/BinaryParser.h"
+
 #include "Minerva/Core/DataObjects/Line.h"
-#include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Factory/RegisterCreator.h"
@@ -18,7 +19,7 @@
 
 #include "pqxx/pqxx"
 
-using namespace Minerva::Core::Layers;
+using namespace Minerva::Layers::PostGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( LineLayer, LineLayer::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( LineLayer );
@@ -132,7 +133,7 @@ float LineLayer::lineWidth() const
 
 void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
-  Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
+  Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   // Query for a progress bar.
   Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
@@ -156,14 +157,13 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
     int id ( iter["id"].as < int > () );
     int srid ( iter["srid"].as < int > () );
 
-    typedef Minerva::Core::postGIS::Factory Factory;
     pqxx::binarystring buffer ( iter["geom"] );
-    Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
+    BinaryParser parser;
+    BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
 
-    for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+    for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
     {
       (*geom)->srid( srid );
-      (*geom)->databaseInfo ( this->connection(), id, dataTable );
       Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
       Usul::Interfaces::IOffset::QueryPtr sp ( geom->get() );
 

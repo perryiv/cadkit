@@ -55,7 +55,7 @@ void MinervaReader::operator()()
 {
   Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
   Serialize::XML::deserialize ( _filename, *_document );
-
+#if 0
   // Make a copy.
   typedef Minerva::Document::MinervaDocument::Layers Layers;
   Layers layers ( _document->layers() );
@@ -74,4 +74,5 @@ void MinervaReader::operator()()
     Minerva::Core::Commands::AddLayer::RefPtr command ( new Minerva::Core::Commands::AddLayer ( 0x0, *iter, progress.get () ) );
     command->execute ( _document->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
+#endif
 }

@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/DB/Connection.h"
+#include "Minerva/DataSources/PG/Connection.h"
 
 #include "Usul/Functions/GUID.h"
 #include "Usul/System/Host.h"
@@ -26,7 +26,7 @@
 
 #include <iostream>
 
-using namespace Minerva::Core::DB;
+using namespace Minerva::DataSources::PG;
 
 USUL_FACTORY_REGISTER_CREATOR ( Connection );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Connection, Connection::BaseClass );

@@ -11,31 +11,31 @@
 #ifndef __MINERVA_CORE_DB_CONNECTION_POOL_H__
 #define __MINERVA_CORE_DB_CONNECTION_POOL_H__
 
-#include "Minerva/Core/Export.h"
-#include "Minerva/Core/DB/Connection.h"
+#include "Minerva/DataSources/PG/Export.h"
+#include "Minerva/DataSources/PG/Connection.h"
 
 #include <string>
 #include <map>
 
 namespace Minerva {
-namespace Core {
-namespace DB {
+namespace DataSources {
+namespace PG {
 
-class MINERVA_EXPORT ConnectionPool
+class MINERVA_POSTGRES_EXPORT ConnectionPool
 {
 public:
   static ConnectionPool& instance();
 
   bool                             hasConnection ( const std::string& name ) const;
-  Minerva::Core::DB::Connection*   getConnection ( const std::string& name );
-  void                             addConnection ( Minerva::Core::DB::Connection* connection );
+  Connection*                      getConnection ( const std::string& name );
+  void                             addConnection ( Connection* connection );
 
 protected:
   ConnectionPool();
   ~ConnectionPool();
 
 private:
-  typedef std::map< std::string, Minerva::Core::DB::Connection::RefPtr > Connections;
+  typedef std::map< std::string, Connection::RefPtr > Connections;
 
   Connections _connections;
 

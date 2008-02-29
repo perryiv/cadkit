@@ -11,12 +11,13 @@
 #ifndef __MINERVA_LAYERS_LAYER_H__
 #define __MINERVA_LAYERS_LAYER_H__
 
-#include "Minerva/Core/Export.h"
+#include "Minerva/Layers/PostGIS/Export.h"
+
+#include "Minerva/DataSources/PG/Connection.h"
 
 #include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/Functors/BaseColorFunctor.h"
 #include "Minerva/Core/DataObjects/DataObject.h"
-#include "Minerva/Core/DB/Connection.h"
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Base/Object.h"
@@ -39,25 +40,27 @@
 #include <vector>
 #include <iostream>
 
+namespace Minerva { namespace Core { class Visitor; } }
+  
 namespace Minerva {
-namespace Core {
-
-  class Visitor;
-
 namespace Layers {
+namespace PostGIS {
 
-class MINERVA_EXPORT Layer : public Minerva::Core::Layers::Vector,
-                             public Usul::Interfaces::IVectorLayer,
-                             public Usul::Interfaces::IAddRowLegend,
-                             public Usul::Interfaces::IClonable
+  
+class MINERVA_POSTGIS_EXPORT Layer : public Minerva::Core::Layers::Vector,
+                                     public Usul::Interfaces::IVectorLayer,
+                                     public Usul::Interfaces::IAddRowLegend,
+                                     public Usul::Interfaces::IClonable
 {
 public:
+  
   /// Typedefs.
   typedef Minerva::Core::Layers::Vector             BaseClass;
   typedef Minerva::Core::DataObjects::DataObject    DataObject;
   typedef DataObject::RefPtr                        DataObjectPtr;
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
   typedef Usul::Interfaces::IUnknown                IUnknown;
+  typedef Minerva::DataSources::PG::Connection      Connection;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Layer );
@@ -81,9 +84,9 @@ public:
   const ColorFunctor *        colorFunctor() const;
 
   /// Get/Set the connection.
-  void                        connection ( DB::Connection *connection );
-  DB::Connection*             connection ();
-  const DB::Connection*       connection () const;
+  void                        connection ( Connection *connection );
+  Connection*                 connection ();
+  const Connection*           connection () const;
   
   /// Get/Set the tablename.
   void                        tablename( const std::string& table );
@@ -226,8 +229,8 @@ private:
   float _xOffset;
   float _yOffset;
   float _zOffset;
-  DB::Connection::RefPtr _connection;
-  Functors::BaseColorFunctor::RefPtr _colorFunctor;
+  Connection::RefPtr _connection;
+  Minerva::Core::Functors::BaseColorFunctor::RefPtr _colorFunctor;
   std::string                  _legendText;
   bool                         _showInLegend;
   bool                         _showLabel;

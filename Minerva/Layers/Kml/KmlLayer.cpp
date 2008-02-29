@@ -210,11 +210,11 @@ void KmlLayer::read ( const std::string &filename, Usul::Interfaces::IUnknown *c
 void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
   // Help shorten lines.
-  using namespace Usul::Adaptors;
+  namespace UA = Usul::Adaptors;
   
   // Scope the reading flag.
-  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( bind1 ( true,  memberFunction ( this, &KmlLayer::reading ) ), 
-                                                                bind1 ( false, memberFunction ( this, &KmlLayer::reading ) ) ) );
+  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( UA::bind1 ( true,  UA::memberFunction ( this, &KmlLayer::reading ) ), 
+                                                                UA::bind1 ( false, UA::memberFunction ( this, &KmlLayer::reading ) ) ) );
   
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
   
@@ -401,6 +401,22 @@ KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   else if ( false == linering.empty() )
     object = this->_parseLineRing( *linering.front() );
   
+  if ( object.valid () )
+  {
+    Children children ( node.children() );
+    for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+    {
+      XmlTree::Node::RefPtr node ( *iter );
+      std::string name ( node->name() );
+      if ( "name" == name )
+      {
+        object->label ( node->value() );
+        object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+        object->showLabel ( true );
+      }
+    }
+  }
+  
   return object.release();
 }
 
@@ -437,7 +453,15 @@ KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node )
         data->srid ( 4326 );
         data->point ( vertices.front() );
         point->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
+        
+        Usul::Math::Vec3d p ( data->point() );
+        point->labelPosition ( osg::Vec3 ( p[0], p[1], p[2] + 100 ) );
       }
+    }
+    else if ( "extrude" == name )
+    {
+      bool extrude ( "1" == node->value() );
+      point->extrude ( extrude );
     }
   }
   
@@ -865,11 +889,11 @@ void KmlLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
 void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
 {
   // Help shorten lines.
-  using namespace Usul::Adaptors;
+  namespace UA = Usul::Adaptors;
   
   // Scope the downloading flag.
-  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( bind1 ( true,  memberFunction ( this, &KmlLayer::downloading ) ), 
-                                                                bind1 ( false, memberFunction ( this, &KmlLayer::downloading ) ) ) );
+  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( UA::bind1 ( true,  UA::memberFunction ( this, &KmlLayer::downloading ) ), 
+                                                                UA::bind1 ( false, UA::memberFunction ( this, &KmlLayer::downloading ) ) ) );
   
   // Get the link.
   Link::RefPtr link ( Usul::Threads::Safe::get ( this->mutex(), _link ) );

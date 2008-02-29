@@ -13,11 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Circle.h"
+#include "OsgTools/Circle.h"
 
 #include "osg/Math"
 #include "osg/Vec3"
-//#include "math.h"
 
 using namespace OsgTools;
 

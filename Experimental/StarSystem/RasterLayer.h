@@ -17,12 +17,14 @@
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Interfaces/ISerialize.h"
+#include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Math/Vector3.h"
 
 #include "osg/Vec2d"
@@ -45,7 +47,9 @@ class STAR_SYSTEM_EXPORT RasterLayer : public Usul::Base::Object,
                                        public Usul::Interfaces::ILayerExtents,
                                        public Usul::Interfaces::IRasterAlphas,
                                        public Usul::Interfaces::IRasterLayer,
-                                       public Usul::Interfaces::ISerialize
+                                       public Usul::Interfaces::ISerialize,
+                                       public Usul::Interfaces::ITreeNode,
+                                       public Usul::Interfaces::IBooleanState
 {
 public:
 
@@ -105,6 +109,20 @@ protected:
   /// Get the max latitude and max longitude (ILayerExtents).
   virtual double        maxLon() const;
   virtual double        maxLat() const;
+  
+  // Get the number of children (ITreeNode).
+  virtual unsigned int  getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *   getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void          setTreeNodeName ( const std::string & );
+  virtual std::string   getTreeNodeName() const;
+  
+  // Set/get the state (IBooleanState).
+  virtual void          setBooleanState ( bool );
+  virtual bool          getBooleanState() const;
   
 private:
   // Do not use.

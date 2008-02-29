@@ -16,7 +16,7 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/PostGISLayerQtComponent.h"
 #include "Minerva/Plugins/PostGISLayerQt/PropertyPage.h"
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Core/Commands/AddLayer.h"
 #include "Minerva/Core/Commands/RemoveLayer.h"
 
@@ -137,7 +137,7 @@ void PostGISLayerQtComponent::apply ( Usul::Interfaces::IUnknown* caller )
 
 bool PostGISLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
 {
-  return 0x0 != dynamic_cast < Minerva::Core::Layers::Layer * > ( layer );
+  return 0x0 != dynamic_cast < Minerva::Layers::PostGIS::Layer * > ( layer );
 }
 
 
@@ -149,7 +149,7 @@ bool PostGISLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
 
 void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* caller ) 
 {
-  Minerva::Core::Layers::Layer::RefPtr baseLayer ( dynamic_cast < Minerva::Core::Layers::Layer* > ( layer ) );
+  Minerva::Layers::PostGIS::Layer::RefPtr baseLayer ( dynamic_cast < Minerva::Layers::PostGIS::Layer* > ( layer ) );
 
   // Return now if no layer.
   if ( 0x0 == baseLayer )
@@ -158,7 +158,7 @@ void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, U
   // Make a copy.
   Usul::Interfaces::IUnknown::RefPtr clone ( baseLayer->clone() );
 
-  Minerva::Core::Layers::Layer::RefPtr clonedLayer ( dynamic_cast < Minerva::Core::Layers::Layer* > ( clone.get() ) );
+  Minerva::Layers::PostGIS::Layer::RefPtr clonedLayer ( dynamic_cast < Minerva::Layers::PostGIS::Layer* > ( clone.get() ) );
 
   PropertyPage *page ( new PropertyPage ( clonedLayer ) );
 

@@ -12,10 +12,8 @@
 #define __MINERVA_CORE_GEOMETRY_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/DB/Connection.h"
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IOffset.h"
 
 #include "osg/Vec3f"
@@ -28,12 +26,10 @@ namespace Core {
 namespace Geometry {
 
 class MINERVA_EXPORT Geometry : public Usul::Base::Referenced,
-                                public Usul::Interfaces::IGeometryCenter,
                                 public Usul::Interfaces::IOffset
 {
 public:
   typedef Usul::Base::Referenced        BaseClass;
-  typedef Minerva::Core::DB::Connection Connection;
 
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -41,32 +37,24 @@ public:
   Geometry();
 
   // Is it valid?
-  bool                    valid() const;
+  bool                        valid() const;
 
   /// Get/Set the dirty flag
-  void                    dirty ( bool b );
-  bool                    dirty () const;
+  void                        dirty ( bool b );
+  bool                        dirty () const;
 
   /// Get/Set the srid.
-  unsigned int            srid () const { return _srid; }
-  void                    srid ( unsigned int srid ) { _srid = srid; }
+  unsigned int                srid () const { return _srid; }
+  void                        srid ( unsigned int srid ) { _srid = srid; }
 
-  /// Set the database info.
-  void                    databaseInfo ( Connection* connection, int id, const std::string& table );
 protected:
   virtual ~Geometry();
-
-  /// Usul::Interfaces::IGeometryCenter
-  virtual osg::Vec3f geometryCenter ( unsigned int& srid );
-  virtual osg::Vec3f geometryCenter ( const osg::Vec3f& offset, unsigned int& srid );
 
   /// Usul::Interfaces::IOffset
   virtual const osg::Vec3f&   spatialOffset () const;
   virtual void                spatialOffset ( const osg::Vec3f& );
 
-  Minerva::Core::DB::Connection::RefPtr _connection;
-  std::string _tableName;
-  int _id;
+private:
   int _srid;
   osg::Vec3f _offset;
   bool _dirty;

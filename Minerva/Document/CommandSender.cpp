@@ -44,10 +44,10 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 CommandSender::CommandSender( ) :
-BaseClass (),
-_connection ( new Minerva::Core::DB::Connection ),
-_sessionID( 0 ),
-_connected ( false )
+  BaseClass (),
+  _connection ( 0x0 ),
+  _sessionID( 0 ),
+  _connected ( false )
 {
 }
 
@@ -158,6 +158,10 @@ CommandSender::Strings CommandSender::getAvailableSessions()
 void CommandSender::_clearTable( const std::string& tableName )
 {
   Guard guard ( this->mutex() );
+  
+  // Return now if no connection.
+  if ( false == _connection.valid() )
+    return;
 
   std::ostringstream query;
   query << "DELETE FROM " << tableName << " WHERE session_id = " << _sessionID;
@@ -184,7 +188,7 @@ void CommandSender::sendCommand ( Usul::Interfaces::ICommand *command )
     std::string xml ( Minerva::Core::serialize < Usul::Interfaces::ISerialize > ( serialize.get() ) );
     
     // Enter the data into the database.
-    typedef Minerva::Core::DB::Connection::Values Values;
+    typedef Minerva::DataSources::PG::Connection::Values Values;
     Values values;
     values.push_back( Values::value_type ( "session_id",  Detail::toString ( _sessionID ) ) );
     values.push_back( Values::value_type ( "xml_data",    xml ) );
@@ -200,7 +204,7 @@ void CommandSender::sendCommand ( Usul::Interfaces::ICommand *command )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CommandSender::connection ( Minerva::Core::DB::Connection * connection )
+void CommandSender::connection ( Minerva::DataSources::PG::Connection * connection )
 {
   Guard guard ( this->mutex () );
   _connection = connection;

@@ -23,13 +23,11 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Geometry::Geometry(  ) : BaseClass(),
-_connection ( 0x0 ),
-_tableName ( ),
-_id ( 4326 ),  // By default, use lat,lon.
-_srid ( 0 ) ,
-_offset( 0.0, 0.0, 0.0 ),
-_dirty ( false )
+Geometry::Geometry(  ) : 
+  BaseClass(),
+  _srid ( 4326 ) , // By default, use lat,lon.
+  _offset( 0.0, 0.0, 0.0 ),
+  _dirty ( false )
 {
 }
 
@@ -42,51 +40,6 @@ _dirty ( false )
 
 Geometry::~Geometry()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get center of geometry at given id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3f Geometry::geometryCenter ( unsigned int& srid )
-{
-  return this->geometryCenter ( _offset, srid );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get center of geometry at given id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3f  Geometry::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid )
-{
-  // Set the srid.
-  srid = _srid;
-
-  std::ostringstream os;
-  os << "SELECT x(centroid(" << _tableName << ".geom)) as x_c, y(centroid(" << _tableName << ".geom)) as y_c, srid(geom) as srid FROM " << _tableName << " WHERE id = " << _id;
-
-  osg::Vec3f center ( 0.0, 0.0, 0.0 );
-
-  if( 0x0 != _connection.get() )
-  {
-    pqxx::result r ( _connection->executeQuery( os.str() ) );
-
-    if( !r.empty() && !r[0][0].is_null() && !r[0][1].is_null() )
-    {
-      Usul::Types::Float64 x ( r[0][0].as< float > () );
-      Usul::Types::Float64 y ( r[0][1].as< float > () );
-
-      center.set( static_cast<osg::Vec3f::value_type> ( offset.x() + x ), static_cast<osg::Vec3f::value_type> ( offset.y() + y ), offset.z() );
-    }
-  }
-
-  return center;
 }
 
 
@@ -165,25 +118,9 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IGeometryCenter::IID:
-    return static_cast < Usul::Interfaces::IGeometryCenter* > ( this );
   case Usul::Interfaces::IOffset::IID:
     return static_cast < Usul::Interfaces::IOffset* > ( this );
   default:
     return 0x0;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the database info.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Geometry::databaseInfo ( Connection* connection, int id, const std::string& table )
-{
-  _connection = connection;
-  _id = id;
-  _tableName = table;
 }

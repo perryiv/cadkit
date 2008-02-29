@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Visitors/ResizePoints.h"
-#include "Minerva/Core/Layers/PointLayer.h"
 #include "Minerva/Core/DataObjects/Point.h"
 
 using namespace Minerva::Core::Visitors;
@@ -47,18 +46,4 @@ ResizePoints::~ResizePoints()
 void ResizePoints::visit ( Minerva::Core::DataObjects::Point &point )
 {
   point.size( point.size() * _factor );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Visit a point layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ResizePoints::visit ( Minerva::Core::Layers::PointLayer &layer )
-{
-  layer.size ( layer.size() * _factor );
-  layer.traverse ( *this );
-  layer.dirtyScene ( true );
 }

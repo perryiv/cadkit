@@ -17,7 +17,8 @@
 #ifndef __MINERVA_POSTGIS_BINARY_PARSER_H__
 #define __MINERVA_POSTGIS_BINARY_PARSER_H__
 
-#include "Minerva/Core/Export.h"
+#include "Minerva/Layers/PostGIS/Export.h"
+
 #include "Minerva/Core/Geometry/Geometry.h"
 
 #include "Usul/Math/Vector2.h"
@@ -28,10 +29,10 @@
 #include <vector>
 
 namespace Minerva {
-namespace Core {
-namespace postGIS {
+namespace Layers {
+namespace PostGIS {
 
-class MINERVA_EXPORT BinaryParser
+class MINERVA_POSTGIS_EXPORT BinaryParser
 {
 public:
   BinaryParser();

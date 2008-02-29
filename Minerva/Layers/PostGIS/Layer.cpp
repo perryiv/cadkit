@@ -8,13 +8,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
+
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Vector2.h"
 #include "Usul/Functions/GUID.h"
-#include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Bits/Bits.h"
@@ -40,7 +40,7 @@
 #include <iostream>
 #include <limits>
 
-using namespace Minerva::Core::Layers;
+using namespace Minerva::Layers::PostGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Layer, Layer::BaseClass );
 
@@ -171,7 +171,7 @@ Layer::~Layer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::connection ( Minerva::Core::DB::Connection *connection )
+void Layer::connection ( Connection *connection )
 {
   Guard guard ( this->mutex() );
   _connection = connection;
@@ -184,7 +184,7 @@ void Layer::connection ( Minerva::Core::DB::Connection *connection )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::DB::Connection* Layer::connection ()
+Layer::Connection* Layer::connection ()
 {
   Guard guard ( this->mutex() );
   return _connection;
@@ -197,7 +197,7 @@ Minerva::Core::DB::Connection* Layer::connection ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Minerva::Core::DB::Connection* Layer::connection () const
+const Layer::Connection* Layer::connection () const
 {
   Guard guard ( this->mutex() );
   return _connection.get();
@@ -581,6 +581,9 @@ void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* data
   dataObject->showLabel ( this->showLabel() );
   dataObject->labelColor( this->labelColor() );
   dataObject->labelSize( this->labelSize() );
+  
+  // Tablename.
+  std::string tablename ( this->tablename() );
 
   // If we have a column to use for a label.
   if( this->showLabel() && !this->labelColumn().empty() )
@@ -589,13 +592,27 @@ void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* data
     std::string value ( this->connection()->getColumnDataString( this->tablename(), id, this->labelColumn() ) );
 
     dataObject->label( value );
-  
-    osg::Vec3 center;
-    unsigned int srid ( 0 );
-    Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( dataObject->geometry() );
-    if( geometryCenter.valid() )
+
+    // Get the srid.
+    unsigned int srid ( this->srid() );
+    
+    // Build the query.
+    std::ostringstream os;
+    os << "SELECT x(centroid(" << tablename << ".geom)) as x_c, y(centroid(" << tablename << ".geom)) as y_c, srid(geom) as srid FROM " << tablename << " WHERE id = " << id;
+    
+    osg::Vec3f center ( 0.0, 0.0, 0.0 );
+    
+    if( 0x0 != _connection.get() )
     {
-      center = geometryCenter->geometryCenter( srid );
+      pqxx::result r ( _connection->executeQuery( os.str() ) );
+      
+      if( !r.empty() && !r[0][0].is_null() && !r[0][1].is_null() )
+      {
+        Usul::Types::Float64 x ( r[0][0].as< float > () );
+        Usul::Types::Float64 y ( r[0][1].as< float > () );
+        
+        center.set( static_cast<osg::Vec3f::value_type> ( this->xOffset() + x ), static_cast<osg::Vec3f::value_type> ( this->yOffset() + y ), this->zOffset() );
+      }
     }
     
     Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
@@ -1051,7 +1068,7 @@ namespace Detail
 void Layer::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
 {
   // Get the connection.
-  Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );
+  Connection::RefPtr connection ( const_cast <Connection*> ( this->connection() ) );
   
   if ( false == connection.valid() )
     return;
@@ -1137,13 +1154,13 @@ namespace Detail
 int Layer::srid() const
 {
   // Get the connection.
-  Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );
+  Connection::RefPtr connection ( const_cast <Connection*> ( this->connection() ) );
   
   if ( false == connection.valid() )
     return -1;
   
   // Scope the connection.
-  Minerva::Core::DB::Connection::ScopedConnection scoped ( *connection );
+  Connection::ScopedConnection scoped ( *connection );
   
   // Get the schema and table name.
   std::string schema ( "public" ), table ( this->tablename() );
@@ -1188,13 +1205,13 @@ std::string Layer::projectionWKT() const
 std::string Layer::projectionWKT( int srid ) const
 {
   // Get the connection.
-  Minerva::Core::DB::Connection::RefPtr connection ( const_cast <Minerva::Core::DB::Connection*> ( this->connection() ) );
+  Connection::RefPtr connection ( const_cast <Connection*> ( this->connection() ) );
   
   if ( false == connection.valid() )
     return std::string();
 
   // Scope the connection.
-  Minerva::Core::DB::Connection::ScopedConnection scoped ( *connection );
+  Connection::ScopedConnection scoped ( *connection );
   
   // Get the tablename.
   std::string tablename ( this->tablename() );

@@ -32,11 +32,12 @@ using namespace Minerva::Document;
 ///////////////////////////////////////////////////////////////////////////////
 
 CommandReceiver::CommandReceiver( ) :
-_connection ( 0x0 ),
-_sessionID( 0 ),
-_lastCommandID ( 0 ),
-_timeout ( 60 ),
-_connected ( false )
+  BaseClass (),
+  _connection ( 0x0 ),
+  _sessionID( 0 ),
+  _lastCommandID ( 0 ),
+  _timeout ( 60 ),
+  _connected ( false )
 {
 }
 
@@ -58,7 +59,7 @@ CommandReceiver::~CommandReceiver()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CommandReceiver::connection( Minerva::Core::DB::Connection *connection )
+void CommandReceiver::connection( Minerva::DataSources::PG::Connection *connection )
 {
   _connection = connection;
 }

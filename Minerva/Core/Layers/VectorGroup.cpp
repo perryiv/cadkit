@@ -21,7 +21,6 @@
 
 using namespace Minerva::Core::Layers;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS( VectorGroup, VectorGroup::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( VectorGroup );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,25 +48,6 @@ VectorGroup::VectorGroup() :
 VectorGroup::~VectorGroup()
 {
   USUL_TRACE_SCOPE;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query Interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* VectorGroup::queryInterface ( unsigned long iid )
-{
-  USUL_TRACE_SCOPE;
-  
-  switch ( iid )
-  {
-  case Usul::Interfaces::ILayerList::IID:
-    return static_cast<Usul::Interfaces::ILayerList*> ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
 }
 
 
@@ -165,6 +145,26 @@ void VectorGroup::addLayer ( Vector* layer )
   {
     _layers.push_back ( layer );
   }
+  
+  BaseClass::dirtyScene( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VectorGroup::removeLayer ( Vector* layer )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  Layers::iterator doomed ( std::find( _layers.begin(), _layers.end(), Usul::Interfaces::ILayer::QueryPtr ( layer ) ) );
+  if( doomed != _layers.end() )
+    _layers.erase( doomed );
+  
+  BaseClass::dirtyScene( true );
 }
 
 
@@ -179,6 +179,7 @@ void VectorGroup::clearLayers()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _layers.clear();
+  BaseClass::dirtyScene( true );
 }
 
 
@@ -287,4 +288,30 @@ void VectorGroup::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
   
   // This won't compile using gcc. I'm not sure why not...
   //Usul::Functions::executeMemberFunctions ( layers, &Vector::dirtyScene, b, caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int VectorGroup::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  return this->numberLayers();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * VectorGroup::getChildNode ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  return Usul::Interfaces::ITreeNode::QueryPtr ( this->layer ( which ) );
 }

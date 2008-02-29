@@ -8,9 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/PointTimeLayer.h"
+#include "Minerva/Layers/PostGIS/PointTimeLayer.h"
+#include "Minerva/Layers/PostGIS/BinaryParser.h"
+
 #include "Minerva/Core/DataObjects/Point.h"
-#include "Minerva/Core/postGIS/Factory.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -22,7 +23,7 @@
 
 #include "pqxx/pqxx"
 
-using namespace Minerva::Core::Layers;
+using namespace Minerva::Layers::PostGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointTimeLayer, PointTimeLayer::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( PointTimeLayer );
@@ -136,7 +137,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
   if ( 0x0 == this->connection () )
     throw std::runtime_error ( "Error 1770160824: A valid connection is needed to build data objects for point time layer." );
 
-  Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
+  Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
 
@@ -178,14 +179,11 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
         int id ( i["id"].as< int > () );
         int srid ( i["srid"].as< int> () );
 
-        typedef Minerva::Core::postGIS::Geometry Geometry;
-        typedef Minerva::Core::postGIS::Factory  GeometryFactory;
-
-        typedef Minerva::Core::postGIS::Factory Factory;
         pqxx::binarystring buffer ( i["geom"] );
-        Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
+        BinaryParser parser;
+        BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
 
-        for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+        for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
         {
           (*geom)->srid( srid );
           Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );

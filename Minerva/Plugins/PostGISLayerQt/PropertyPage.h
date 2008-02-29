@@ -13,8 +13,8 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/ui_LayerProperties.h"
 
-#include "Minerva/Core/DB/Connection.h"
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/DataSources/PG/Connection.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
 
 #include "QtTools/ColorButton.h"
 
@@ -31,8 +31,8 @@ class PropertyPage : public QWidget,
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::DB::Connection Connection;
-  typedef Minerva::Core::Layers::Layer  Layer;
+  typedef Minerva::DataSources::PG::Connection Connection;
+  typedef Minerva::Layers::PostGIS::Layer  Layer;
   typedef std::vector < std::string > Strings;
 
   PropertyPage ( Layer *layer, QWidget *parent = 0x0 );

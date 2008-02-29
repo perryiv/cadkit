@@ -12,7 +12,7 @@
 #define __POSTGIS_LINE_WIDGET_H__
 
 #include "Minerva/Plugins/PostGISLayerQt/ui_LineWidget.h"
-#include "Minerva/Core/Layers/LineLayer.h"
+#include "Minerva/Layers/PostGIS/LineLayer.h"
 
 #include "QtGui/QWidget"
 
@@ -22,7 +22,7 @@ class LineWidget : public QWidget,
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::Layers::LineLayer LineLayer;
+  typedef Minerva::Layers::PostGIS::LineLayer LineLayer;
 
   LineWidget ( LineLayer* layer, QWidget* parent = 0x0 );
 

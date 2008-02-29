@@ -101,8 +101,12 @@ public:
   void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;
   void                      xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const;
 
+  /// Convert to planet coordinates.
+  virtual void              convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
+  virtual void              convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
+  
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
-  osg::Matrixd              planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
+  virtual osg::Matrixd      planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
   
   // Set/get the maximum level.
   void                      maxLevel ( unsigned int level );

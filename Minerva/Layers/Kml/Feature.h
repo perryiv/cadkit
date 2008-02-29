@@ -12,6 +12,7 @@
 #define __MINERVA_LAYERS_KML_FEATURE_H__
 
 #include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Layers/Kml/LookAt.h"
 
 
 namespace Minerva {
@@ -27,9 +28,25 @@ public:
   USUL_DECLARE_REF_POINTERS ( Feature );
   
   Feature();
+  Feature ( const XmlTree::Node& node );
+  
+  /// Get/set the name.
+  const std::string&     name() const;
+  void                   name ( const std::string& );
+  
+  /// Get/set the visiblity.
+  bool                   visiblity() const;
+  void                   visiblity( bool b );
   
 protected:
+  
   virtual ~Feature();
+  
+private:
+  
+  std::string _name;
+  bool _visiblity;
+  LookAt::RefPtr _lookAt;
 };
 
 

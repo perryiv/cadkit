@@ -134,6 +134,10 @@ public:
   const Date&           lastDate() const;
   void                  lastDate( const Date& );
   
+  /// Get/Set extrude flag.
+  void                  extrude ( bool b );
+  bool                  extrude() const;
+  
 protected:
 
   /// Use reference counting.
@@ -176,6 +180,7 @@ private:
   Minerva::Core::Animate::Date _firstDate;
   Minerva::Core::Animate::Date _lastDate;
   AltitudeMode _altitudeMode;
+  bool _extrude;
 
   /// Shape Factory to share across all Data Objects.
   static OsgTools::ShapeFactory::Ptr _sf;

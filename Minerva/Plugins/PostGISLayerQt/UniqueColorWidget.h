@@ -11,7 +11,7 @@
 #ifndef __POSTGIS_UNIQUE_COLOR_WIDGET_H__
 #define __POSTGIS_UNIQUE_COLOR_WIDGET_H__
 
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
 
 #include "QtGui/QWidget"
 
@@ -22,7 +22,7 @@ class UniqueColorWidget : public QWidget
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::Layers::Layer  Layer;
+  typedef Minerva::Layers::PostGIS::Layer  Layer;
 
   UniqueColorWidget ( Layer *layer, QWidget *parent = 0x0 );
 

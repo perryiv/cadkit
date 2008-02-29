@@ -342,3 +342,29 @@ void TreeControl::_itemChanged ( QTreeWidgetItem *item, int column )
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the IUnknown that corresponds to the current item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* TreeControl::currentItem() const
+{
+  NodeMap::const_iterator iter ( _nodeMap.find ( _tree->currentItem() ) );
+  return ( Usul::Interfaces::IUnknown::QueryPtr ( iter != _nodeMap.end() ? iter->second.get() : 0x0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the IUnknown that corresponds to the position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* TreeControl::itemAt ( const QPoint& pos ) const
+{
+  NodeMap::const_iterator iter ( _nodeMap.find ( _tree->itemAt( pos ) ) );
+  return ( Usul::Interfaces::IUnknown::QueryPtr ( iter != _nodeMap.end() ? iter->second.get() : 0x0 ) );
+}

@@ -14,13 +14,15 @@
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
+#include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 
 #include "QtTools/ScopedSignals.h"
+#include "QtTools/TreeControl.h"
 
 #include "QtGui/QHeaderView"
 #include "QtGui/QTreeWidget"
@@ -40,11 +42,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) : 
-BaseClass ( parent ),
-_tree ( 0x0 ),
-_layerMap (),
-_caller ( caller ),
-_document ()
+  BaseClass ( parent ),
+  _tree ( 0x0 ),
+  _layerMap (),
+  _caller ( caller ),
+  _document ()
 {
   QVBoxLayout *topLayout ( new QVBoxLayout ( parent ) );
   this->setLayout ( topLayout );
@@ -61,8 +63,7 @@ _document ()
   QPushButton *refresh ( new QPushButton ( "Refresh" ) );
   buttonLayout->addWidget ( refresh );
   
-  _tree = new QTreeWidget;
-  _tree->header()->setHidden ( 1 );
+  _tree = new QtTools::TreeControl ( caller, parent );
   _tree->setContextMenuPolicy ( Qt::CustomContextMenu );
   treeLayout->addWidget ( _tree );
   
@@ -115,27 +116,13 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
   // Save the document;
   _document = document;
 
-  // Clear anything we may have.
-  _tree->clear();
-  _layerMap.clear();
-
+  _tree->buildTree( document );
+  
   // See if the correct interface is implemented.
-  Usul::Interfaces::ILayerList::QueryPtr layers ( document );
-
-  emit enableWidgets( layers.valid() );
-
-  if ( false == layers.valid() )
-    return;
-
-  unsigned int numLayers ( layers->numberLayers () );
-
-  // Block signals while adding to tree.
-  QtTools::ScopedSignals blockSignals ( *_tree );
-
-  for ( unsigned int i = 0; i < numLayers; ++i )
-  {
-    this->addLayer ( layers->layer ( i ) );
-  }
+  Minerva::Interfaces::IAddLayer::QueryPtr add ( document );
+  Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( document );
+  
+  emit enableWidgets( add.valid() && remove.valid() );
 }
 
 
@@ -147,14 +134,6 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
 void LayersTree::_connectTreeViewSlots ()
 {
-  // Notify us when an item is double clicked.
-  connect ( _tree, SIGNAL ( itemDoubleClicked ( QTreeWidgetItem *, int ) ),
-            this,  SLOT   ( _onDoubleClick    ( QTreeWidgetItem *, int ) ) );
-
-  // Notify us when an item is changed.
-  connect ( _tree, SIGNAL ( itemChanged       ( QTreeWidgetItem *, int ) ),
-            this,  SLOT   ( _onItemChanged    ( QTreeWidgetItem *, int ) ) );
-
   // Notify us when a context menu is requested.
   connect ( _tree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
             this,  SLOT   ( _onContextMenuShow ( const QPoint& ) ) );
@@ -277,19 +256,15 @@ void LayersTree::_onAddLayerClick ()
 
 void LayersTree::_onRemoveLayerClick ()
 {
-  QTreeWidgetItem * item ( _tree->currentItem() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentItem() );
+  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
 
-  if ( 0x0 != item )
+  if ( layer.valid () )
   {
-    Layer::RefPtr layer ( _layerMap [ item ] );
+    Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
+    command->execute ( _document );
 
-    if ( layer.valid () )
-    {
-      Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
-      command->execute ( _document );
-
-      this->buildTree ( _document );
-    }
+    this->buildTree ( _document );
   }
 }
 
@@ -316,28 +291,22 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   if ( 0x0 == _tree )
     return;
 
-  QTreeWidgetItem *item ( _tree->itemAt ( pos ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentItem() );
+  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
 
-  LayerMap::iterator iter ( _layerMap.find ( item ) );
-
-  if ( iter != _layerMap.end() )
+  if ( layer.valid () )
   {
-    Layer::RefPtr layer ( iter->second );
+    QAction favorites ( 0x0 );
+    favorites.setText( "Add to favorites" );
+    favorites.setToolTip( "Add layer to favorites" );
+    QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
     
-    if ( layer.valid () )
-    {
-      QAction favorites ( 0x0 );
-      favorites.setText( "Add to favorites" );
-      favorites.setToolTip( "Add layer to favorites" );
-      QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
-      
-      PropertiesAction action ( layer.get(), _caller.get() );
-      QMenu menu;
-      menu.addAction ( &favorites );
-      menu.addAction ( &action );
-      menu.exec ( _tree->mapToGlobal ( pos ) );
-      this->buildTree( _document );
-    }
+    PropertiesAction action ( layer.get(), _caller.get() );
+    QMenu menu;
+    menu.addAction ( &favorites );
+    menu.addAction ( &action );
+    menu.exec ( _tree->mapToGlobal ( pos ) );
+    this->buildTree( _document );
   }
 }
 
@@ -350,15 +319,8 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
 
 void LayersTree::_onAddLayerFavorites()
 {
-  QTreeWidgetItem * item ( _tree->currentItem() );
-  
-  if ( 0x0 != item )
-  {
-    // Get the layer as an unknown
-    Usul::Interfaces::IUnknown::QueryPtr unknown (  _layerMap [ item ] );
-    
-    emit addLayerFavorites ( unknown.get() );
-  }
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentItem() );
+  emit addLayerFavorites ( unknown.get() );
 }
 
 
@@ -370,22 +332,5 @@ void LayersTree::_onAddLayerFavorites()
 
 void LayersTree::addLayer ( Usul::Interfaces::IUnknown * unknown )
 {
-  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
-  
-  if ( layer.valid () )
-  {
-    // Block signals while adding to tree.
-    QtTools::ScopedSignals blockSignals ( *_tree );
-    
-    // Make the item.
-    QTreeWidgetItem *item ( new QTreeWidgetItem ( _tree ) );
-    item->setText ( 0, layer->name ().c_str () );
-    item->setStatusTip ( 0, layer->name().c_str() );
-    
-    Qt::CheckState state ( layer->showLayer() ? Qt::Checked : Qt::Unchecked );
-    item->setCheckState ( 0, state );
-    _tree->addTopLevelItem ( item );
-    
-    _layerMap.insert ( LayerMap::value_type ( item, layer.get() ) );
-  }  
+  this->buildTree( _document );
 }

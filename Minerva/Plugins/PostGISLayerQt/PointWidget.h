@@ -12,7 +12,7 @@
 #define __POSTGIS_POINT_WIDGET_H__
 
 #include "Minerva/Plugins/PostGISLayerQt/ui_PointWidget.h"
-#include "Minerva/Core/Layers/PointLayer.h"
+#include "Minerva/Layers/PostGIS/PointLayer.h"
 
 #include "QtGui/QWidget"
 
@@ -22,7 +22,7 @@ class PointWidget : public QWidget,
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::Layers::PointLayer PointLayer;
+  typedef Minerva::Layers::PostGIS::PointLayer PointLayer;
 
   PointWidget ( PointLayer* layer, QWidget* parent = 0x0 );
   virtual ~PointWidget();

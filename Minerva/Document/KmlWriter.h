@@ -45,7 +45,7 @@ protected:
     virtual void visit ( Minerva::Core::DataObjects::Point &point );
     virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon );
 
-    virtual void visit ( Minerva::Core::Layers::Layer& layer );
+    virtual void visit ( Minerva::Core::Layers::Vector& layer );
 
   protected:
     virtual ~Visitor ();

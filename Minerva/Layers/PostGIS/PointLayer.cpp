@@ -8,8 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/postGIS/Factory.h"
+#include "Minerva/Layers/PostGIS/PointLayer.h"
+#include "Minerva/Layers/PostGIS/BinaryParser.h"
+
 #include "Minerva/Core/DataObjects/Point.h"
 #include "Minerva/Core/Visitor.h"
 
@@ -21,7 +22,7 @@
 
 #include <map>
 
-using namespace Minerva::Core::Layers;
+using namespace Minerva::Layers::PostGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointLayer, PointLayer::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( PointLayer );
@@ -32,14 +33,15 @@ USUL_FACTORY_REGISTER_CREATOR ( PointLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointLayer::PointLayer() : BaseClass(),
-_primitiveID( 2 ),
-_size( 5 ),
-_secondarySize ( 0.00005 ),
-_stackPoints ( false ),
-_quality ( 0.80 ),
-_primitiveSizeColumn(),
-_autotransform ( true )
+PointLayer::PointLayer() : 
+  BaseClass(),
+  _primitiveID( 2 ),
+  _size( 5 ),
+  _secondarySize ( 0.00005 ),
+  _stackPoints ( false ),
+  _quality ( 0.80 ),
+  _primitiveSizeColumn(),
+  _autotransform ( true )
 {
   this->name( "PointLayer" );
 
@@ -53,14 +55,15 @@ _autotransform ( true )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointLayer::PointLayer ( const PointLayer& layer ) : BaseClass ( layer ),
-_primitiveID( layer._primitiveID ),
-_size( layer._size ),
-_secondarySize ( layer._secondarySize ),
-_stackPoints ( layer._stackPoints ),
-_quality( layer._quality ),
-_primitiveSizeColumn( layer._primitiveSizeColumn ),
-_autotransform ( layer._autotransform )
+PointLayer::PointLayer ( const PointLayer& layer ) : 
+  BaseClass ( layer ),
+  _primitiveID( layer._primitiveID ),
+  _size( layer._size ),
+  _secondarySize ( layer._secondarySize ),
+  _stackPoints ( layer._stackPoints ),
+  _quality( layer._quality ),
+  _primitiveSizeColumn( layer._primitiveSizeColumn ),
+  _autotransform ( layer._autotransform )
 {
   this->_registerMembers();
 }
@@ -128,7 +131,7 @@ PointLayer::~PointLayer()
 
 void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
-  Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
+  Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
 
@@ -150,17 +153,13 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Int
       int id ( iter["id"].as < int > () );
       int srid ( iter["srid"].as < int > () );
 
-      typedef Minerva::Core::postGIS::Geometry Geometry;
-      typedef Minerva::Core::postGIS::Factory  GeometryFactory;
-
-      typedef Minerva::Core::postGIS::Factory Factory;
       pqxx::binarystring buffer ( iter["geom"] );
-      Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
+      BinaryParser parser;
+      BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
 
-      for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+      for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
         (*geom)->srid( srid );
-        (*geom)->databaseInfo ( this->connection(), id, dataTable );
         Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
         Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
 

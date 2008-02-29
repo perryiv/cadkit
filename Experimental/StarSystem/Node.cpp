@@ -21,33 +21,9 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 
-#include "ossim/init/ossimInit.h"
-
 using namespace StarSystem;
 
 STAR_SYSTEM_IMPLEMENT_NODE_CLASS ( Node );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class to initialize and finalize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace
-{
-  struct Init
-  {
-    Init()
-    {
-      ossimInit::instance()->initialize();
-    }
-    ~Init()
-    {
-      ossimInit::instance()->finalize();
-    }
-  } _initializer;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////

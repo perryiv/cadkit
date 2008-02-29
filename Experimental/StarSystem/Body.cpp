@@ -90,6 +90,10 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "use_skirts", _useSkirts );
   this->_addMember ( "split_callback", _splitCallback );
   this->_addMember ( "scale", _scale );
+  
+  // Set the names.
+  _elevation->name ( "Elevation" );
+  _rasters->name ( "Rasters" );
 }
 
 
@@ -383,6 +387,35 @@ void Body::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon
     _landModel->xyzToLatLonHeight ( p, lat, lon, elevation );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert to planet coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
+{
+  USUL_TRACE_SCOPE;
+  osg::Vec3d out;
+  this->latLonHeightToXYZ ( orginal[1], orginal[0], orginal[2], out );
+  planetPoint.set ( out[0], out[1], out[2] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert from planet coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
+{
+  USUL_TRACE_SCOPE;
+  this->xyzToLatLonHeight ( osg::Vec3d ( planetPoint[0], planetPoint[1], planetPoint[2] ), latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -856,6 +889,16 @@ double Body::elevation ( double lat, double lon ) const
         return h;
     }
   }
+  
+  // Should we use a geoid here?  Keeping this for reference.
+#if 0
+  ossimGpt point ( lat, lon );
+  double height (  ossimElevManager::instance()->getHeightAboveMSL( point ) );
+  if( ossim::isnan ( height ) )
+    height = 0.0;
+  
+  return height + ossimGeoidManager::instance()->offsetFromEllipsoid( point );
+#endif
 
   return 0.0;
 }

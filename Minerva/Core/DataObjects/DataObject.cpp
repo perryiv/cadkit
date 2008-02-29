@@ -70,7 +70,8 @@ DataObject::DataObject() :
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _firstDate ( boost::date_time::min_date_time ),
   _lastDate ( boost::date_time::max_date_time ),
-  _altitudeMode ( CLAMP_TO_GROUND )
+  _altitudeMode ( CLAMP_TO_GROUND ),
+  _extrude ( false )
 {
 }
 
@@ -589,4 +590,29 @@ void DataObject::altitudeMode ( AltitudeMode mode )
 DataObject::AltitudeMode DataObject::altitudeMode () const
 {
   return _altitudeMode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set extrude flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::extrude ( bool b )
+{
+  _extrude = b;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get extrude flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::extrude() const
+{
+  return _extrude;
 }

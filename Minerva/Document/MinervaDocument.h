@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (c) 2007, Arizona State University
@@ -13,8 +14,6 @@
 #include "Minerva/Document/Export.h"
 #include "Minerva/Document/CommandSender.h"
 #include "Minerva/Document/CommandReceiver.h"
-#include "Minerva/Document/Planet.h"
-#include "Minerva/Config.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Policies/Update.h"
@@ -26,17 +25,16 @@
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/ILayer.h"
-#include "Usul/Interfaces/ILayerList.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Animate/TimeSpan.h"
-#include "Minerva/Core/Scene/SceneManager.h"
-#include "Minerva/Core/DB/Connection.h"
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/DataSources/PG/Connection.h"
+#include "Minerva/Core/Layers/VectorGroup.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
@@ -47,6 +45,9 @@
 #include "OsgTools/Legend/Legend.h"
 
 #include "Serialize/XML/Macros.h"
+
+#include "StarSystem/Body.h"
+#include "StarSystem/Hud.h"
 
 #include "osg/Camera"
 #include "osgText/Text"
@@ -66,25 +67,24 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Minerva::Interfaces::IAddLayer,
                                                 public Minerva::Interfaces::IRemoveLayer,
                                                 public Minerva::Interfaces::IDirtyScene,
-                                                public Usul::Interfaces::ILayerList,
                                                 public Usul::Interfaces::IMenuAdd,
                                                 public Usul::Interfaces::ICommandExecuteListener,
                                                 public Usul::Interfaces::IPlanetCoordinates,
                                                 public Usul::Interfaces::IElevationDatabase,
                                                 public Usul::Interfaces::IIntersectListener,
-                                                public Usul::Interfaces::IFrameStamp
+                                                public Usul::Interfaces::IFrameStamp,
+                                                public Usul::Interfaces::ITreeNode
 {
 public:
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
-  typedef std::vector < Usul::Interfaces::ILayer::QueryPtr > Layers;
-  typedef Minerva::Core::Scene::SceneManager SceneManager;
   typedef Minerva::Core::Animate::Settings Settings;
   typedef Minerva::Core::Animate::TimeSpan TimeSpan;
   typedef std::vector < TimeSpan::RefPtr > TimeSpans;
   typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
   typedef Usul::Interfaces::IUpdateListener IUpdateListener;
   typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
+  typedef std::vector<StarSystem::Body::RefPtr> Bodies;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -98,48 +98,45 @@ public:
   MinervaDocument();
 
   /// Add the view to the document.
-  virtual void                addView ( Usul::Interfaces::IView *view );
+  virtual void                             addView ( Usul::Interfaces::IView *view );
 
   /// Usul::Interfaces::IRenderListener inherited from base class.
-  virtual void                postRenderNotify ( Unknown *caller );
-  virtual void                preRenderNotify ( Unknown *caller );
+  virtual void                             postRenderNotify ( Unknown *caller );
+  virtual void                             preRenderNotify ( Unknown *caller );
 
   /// Build the scene.
-  virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
+  virtual osg::Node *                      buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 
   /// Return true if this document can do it.
-  virtual bool                canExport ( const std::string &ext ) const;
-  virtual bool                canInsert ( const std::string &ext ) const;
-  virtual bool                canOpen   ( const std::string &ext ) const;
-  virtual bool                canSave   ( const std::string &ext ) const;
+  virtual bool                             canExport ( const std::string &ext ) const;
+  virtual bool                             canInsert ( const std::string &ext ) const;
+  virtual bool                             canOpen   ( const std::string &ext ) const;
+  virtual bool                             canSave   ( const std::string &ext ) const;
 
   /// Get the filters that correspond to what this document can do.
-  virtual Filters             filtersExport() const;
-  virtual Filters             filtersInsert() const;
-  virtual Filters             filtersOpen()   const;
-  virtual Filters             filtersSave()   const;
+  virtual Filters                          filtersExport() const;
+  virtual Filters                          filtersInsert() const;
+  virtual Filters                          filtersOpen()   const;
+  virtual Filters                          filtersSave()   const;
 
   /// Read the file and add it to existing document's data.
-  virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  virtual void                             read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Write the document to given file name. Does not rename this document.
-  virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
+  virtual void                             write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
 
   /// Clear any existing data.
-  virtual void                clear ( Unknown *caller = 0x0 );
+  virtual void                             clear ( Unknown *caller = 0x0 );
 
-  void                        viewLayerExtents ( Usul::Interfaces::IUnknown * layer );
+  void                                     viewLayerExtents ( Usul::Interfaces::IUnknown * layer );
 
   /// Animation methods.
   void                                     timestepType( IAnimationControl::TimestepType type );
   IAnimationControl::TimestepType          timestepType( ) const;
 
-  Layers&                                  layers();
-  const Layers&                            layers() const;
-
   /// Get/Set the connection.
-  void                                     connection ( Minerva::Core::DB::Connection* connection );
-  Minerva::Core::DB::Connection*           connection ();
+  void                                     connection ( Minerva::DataSources::PG::Connection* connection );
+  Minerva::DataSources::PG::Connection*           connection ();
 
   /// Get/Set the session.
   void                                     session ( const std::string& session );
@@ -154,10 +151,6 @@ public:
   /// Get/Set the commands receive flag.
   void                                     commandsReceive ( bool b );
   bool                                     commandsReceive () const;
-
-  /// Get the scene manager.
-  SceneManager *                           sceneManager ();
-  const SceneManager *                     sceneManager () const;
 
   /// Start the animation (Minerva::Interfaces::IAnimationControl).
   virtual void                             startAnimation ();
@@ -222,6 +215,10 @@ public:
   bool                                     isUseSkirts() const;
   void                                     useSkirts( bool b );
   
+  /// Get/Set the active body.
+  void                                     activeBody ( StarSystem::Body* );
+  StarSystem::Body*                        activeBody() const;
+  
 protected:
   virtual ~MinervaDocument();
 
@@ -262,6 +259,9 @@ protected:
   /// Increase/Decrease split distance.
   void                                     _increaseSplitDistance();
   void                                     _decreaseSplitDistance();
+  
+  /// Get the job manager.
+  Usul::Jobs::Manager *                    _getJobManager();
 
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
@@ -272,12 +272,6 @@ protected:
   /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
   virtual bool                             dirtyScene() const;
   virtual void                             dirtyScene( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
-
-  /// Get the number of layers ( Usul::Interfaces::ILayerList ).
-  virtual unsigned int                     numberLayers () const;
-
-  /// Get the layer at position i ( Usul::Interfaces::ILayerList ).
-  virtual Usul::Interfaces::ILayer*        layer ( unsigned int i );
 
   /// Add to the menu.
   virtual void                             menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
@@ -302,20 +296,49 @@ protected:
   virtual osg::FrameStamp *                frameStamp();
   virtual const osg::FrameStamp *          frameStamp() const;
   
+  // Get the number of children (ITreeNode).
+  virtual unsigned int                     getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *                      getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                             setTreeNodeName ( const std::string & );
+  virtual std::string                      getTreeNodeName() const;
+  
 private:
+  
+  // Callback to get the eye position.  This is a bit of a hack and needs to be improved.
+  class Callback : public osg::NodeCallback
+  {
+  public:
+    typedef osg::NodeCallback BaseClass;
+    
+    Callback () : BaseClass(), _hpr(), _eye(), _body ( 0x0 )
+    {
+    }
+    
+    virtual void operator()( osg::Node* node, osg::NodeVisitor* nv );
+    
+    osg::Vec3d _hpr;
+    osg::Vec3d _eye;
+    StarSystem::Body *_body;
+  };
   
   bool _dirty;
 
-  Layers _layers;
+  Minerva::Core::Layers::VectorGroup::RefPtr _layers;
   MenuKit::Menu::RefPtr _layersMenu;
 
-  Minerva::Core::Scene::SceneManager::RefPtr _sceneManager;
-  
   osg::ref_ptr < osg::Group >      _root;
   osg::ref_ptr < osg::Camera >     _camera;
   osg::ref_ptr < osgText::Text >   _dateText;
 
-  Planet::RefPtr _planet;
+  Bodies                     _bodies;
+  StarSystem::Body::RefPtr   _activeBody;
+  Usul::Jobs::Manager *      _manager;
+  StarSystem::Hud            _hud;
+  osg::ref_ptr < Callback >  _callback;
 
   /// Command members.
   bool _commandsSend;
@@ -323,7 +346,7 @@ private:
   std::string _sessionName;
   CommandSender::RefPtr   _sender;
   CommandReceiver::RefPtr _receiver;
-  Minerva::Core::DB::Connection::RefPtr _connection;
+  Minerva::DataSources::PG::Connection::RefPtr _connection;
   Usul::Policies::TimeBased  _commandUpdate;
   Usul::Jobs::Job::RefPtr    _commandJob;
 

@@ -10,7 +10,7 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/PointWidget.h"
 
-#include "Minerva/Core/DB/Info.h"
+#include "Minerva/DataSources/PG/Info.h"
 
 #include "QtTools/ComboBox.h"
 
@@ -37,12 +37,12 @@ _layer ( layer )
     _quality->setValue ( _layer->quality() * 100 );
 
     // Get all columns.
-    Minerva::Core::DB::Connection::RefPtr connection ( _layer->connection() );
+    Minerva::DataSources::PG::Connection::RefPtr connection ( _layer->connection() );
     if ( connection.valid() )
     {
-      Minerva::Core::DB::Connection::ScopedConnection sc ( *connection );
-      Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
-      Minerva::Core::DB::Info::Strings columns ( info->getColumnNames ( _layer->tablename() ) );
+      Minerva::DataSources::PG::Connection::ScopedConnection sc ( *connection );
+      Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( connection ) );
+      Minerva::DataSources::PG::Info::Strings columns ( info->getColumnNames ( _layer->tablename() ) );
 
       // Populate the combo box.
       QtTools::ComboBox::populate ( *_sizeColumn, columns, _layer->primitiveSizeColumn() );

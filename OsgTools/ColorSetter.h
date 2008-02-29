@@ -22,6 +22,7 @@
 namespace osg
 {
   class ShapeDrawable;
+  class Drawable;
   class Geometry;
 };
 

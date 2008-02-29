@@ -44,6 +44,8 @@ public:
   // Build the tree.
   void                buildTree ( Usul::Interfaces::IUnknown *document );
 
+  Unknown*            currentItem() const;
+  Unknown*            itemAt ( const QPoint& pos ) const;
 protected slots:
 
   void                _onItemChanged ( QTreeWidgetItem *item, int columnNumber );

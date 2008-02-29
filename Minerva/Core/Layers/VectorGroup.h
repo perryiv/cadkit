@@ -14,8 +14,6 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/Vector.h"
 
-#include "Usul/Interfaces/ILayerList.h"
-
 #include <vector>
 
 namespace Minerva {
@@ -24,9 +22,8 @@ namespace Core {
 class Visitor;
     
 namespace Layers {
-      
-class MINERVA_EXPORT VectorGroup : public Minerva::Core::Layers::Vector,
-                                   public Usul::Interfaces::ILayerList
+
+class MINERVA_EXPORT VectorGroup : public Minerva::Core::Layers::Vector
 {
 public:
   // Typedefs.
@@ -36,7 +33,6 @@ public:
   
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( VectorGroup );
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   VectorGroup();
   
@@ -51,6 +47,9 @@ public:
   
   /// Add a layer.
   void                        addLayer ( Vector* layer );
+  
+  /// Remove a layer.
+  void                        removeLayer ( Vector* layer );
   
   /// Clear layers.
   void                        clearLayers();
@@ -75,7 +74,13 @@ protected:
   
   /// Build the scene.
   void                        _buildScene( Usul::Interfaces::IUnknown *caller );
-                                          
+
+  // Get the number of children (ITreeNode).
+  virtual unsigned int        getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *         getChildNode ( unsigned int which );
+  
 private:
   Layers _layers;
   osg::ref_ptr<osg::Group> _root;

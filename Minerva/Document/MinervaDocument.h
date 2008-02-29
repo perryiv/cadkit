@@ -21,13 +21,10 @@
 
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
-#include "Usul/Interfaces/IElevationDatabase.h"
-#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
-#include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
@@ -69,10 +66,7 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Minerva::Interfaces::IDirtyScene,
                                                 public Usul::Interfaces::IMenuAdd,
                                                 public Usul::Interfaces::ICommandExecuteListener,
-                                                public Usul::Interfaces::IPlanetCoordinates,
-                                                public Usul::Interfaces::IElevationDatabase,
                                                 public Usul::Interfaces::IIntersectListener,
-                                                public Usul::Interfaces::IFrameStamp,
                                                 public Usul::Interfaces::ITreeNode
 {
 public:
@@ -82,8 +76,6 @@ public:
   typedef Minerva::Core::Animate::TimeSpan TimeSpan;
   typedef std::vector < TimeSpan::RefPtr > TimeSpans;
   typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
-  typedef Usul::Interfaces::IUpdateListener IUpdateListener;
-  typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
   typedef Minerva::Core::TileEngine::Body Body;
   typedef std::vector<Body::RefPtr> Bodies;
 
@@ -137,7 +129,7 @@ public:
 
   /// Get/Set the connection.
   void                                     connection ( Minerva::DataSources::PG::Connection* connection );
-  Minerva::DataSources::PG::Connection*           connection ();
+  Minerva::DataSources::PG::Connection*    connection ();
 
   /// Get/Set the session.
   void                                     session ( const std::string& session );
@@ -209,9 +201,6 @@ public:
   void                                     dirty( bool );
   bool                                     dirty() const;
   
-  virtual void                             addUpdateListener ( IUnknown *caller );
-  virtual void                             removeUpdateListener ( IUnknown *caller );
-  
   /// Toggle the skirts on and off.
   bool                                     isUseSkirts() const;
   void                                     useSkirts( bool b );
@@ -279,23 +268,9 @@ protected:
 
   // Command is executed.
   virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );
-
-  /// Convert to planet coordinates.
-  virtual void                             convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
-  virtual void                             convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
-
-  // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
-  virtual osg::Matrixd                     planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
-  
-  // Get the elevation at a lat, lon (IElevationDatabase).
-  virtual double                           elevationAtLatLong ( double lat, double lon ) const;
   
   // Notify the observer of the intersection (IIntersectListener).
   virtual void                             intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
-  
-  // Get the frame stamp (IFrameStamp).
-  virtual osg::FrameStamp *                frameStamp();
-  virtual const osg::FrameStamp *          frameStamp() const;
   
   // Get the number of children (ITreeNode).
   virtual unsigned int                     getNumChildNodes() const;
@@ -328,7 +303,6 @@ private:
   
   bool _dirty;
 
-  Minerva::Core::Layers::VectorGroup::RefPtr _layers;
   MenuKit::Menu::RefPtr _layersMenu;
 
   osg::ref_ptr < osg::Group >      _root;
@@ -373,8 +347,6 @@ private:
   /// Screen size members.
   unsigned int _width;
   unsigned int _height;
-  
-  UpdateListeners _updateListeners;
 
   bool _showCompass;
 

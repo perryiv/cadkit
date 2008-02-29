@@ -44,7 +44,6 @@
 LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) : 
   BaseClass ( parent ),
   _tree ( 0x0 ),
-  _layerMap (),
   _caller ( caller ),
   _document ()
 {
@@ -99,7 +98,6 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
 
 LayersTree::~LayersTree()
 {
-  _layerMap.clear ( );
   _caller = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
   _document = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
 }
@@ -134,6 +132,8 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
 void LayersTree::_connectTreeViewSlots ()
 {
+  connect ( _tree, SIGNAL ( onItemChanged ( QTreeWidgetItem*, int ) ), this, SLOT ( _onItemChanged( QTreeWidgetItem*, int ) ) );
+  
   // Notify us when a context menu is requested.
   connect ( _tree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
             this,  SLOT   ( _onContextMenuShow ( const QPoint& ) ) );
@@ -159,28 +159,10 @@ void LayersTree::_onDoubleClick ( QTreeWidgetItem * item, int columnNumber )
 
 void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
 {
-  if ( 0x0 != item )
-  {
-    Qt::CheckState state ( item->checkState ( columnNumber ) );
-    Layer::RefPtr layer ( _layerMap [ item ] );
-
-    if ( layer.valid () )
-    {
-      if ( Qt::Checked == state )
-      {
-        Minerva::Core::Commands::ShowLayer::RefPtr show ( new Minerva::Core::Commands::ShowLayer ( layer ) );
-        show->execute ( _document );
-      }
-      else if ( Qt::Unchecked == state )
-      {
-        Minerva::Core::Commands::HideLayer::RefPtr hide ( new Minerva::Core::Commands::HideLayer ( layer ) );
-        hide->execute ( _document );
-      }
-      Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
-      if ( dirty.valid() )
-        dirty->dirtyScene ( true, layer );
-    }
-  }
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->item ( item ) );
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
+  if ( dirty.valid() )
+    dirty->dirtyScene ( true, unknown );
 }
 
 

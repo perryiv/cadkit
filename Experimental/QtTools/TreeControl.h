@@ -46,6 +46,11 @@ public:
 
   Unknown*            currentItem() const;
   Unknown*            itemAt ( const QPoint& pos ) const;
+  Unknown*            item ( QTreeWidgetItem *item ) const;
+  
+signals:
+  void                onItemChanged ( QTreeWidgetItem *item, int columnNumber );
+  
 protected slots:
 
   void                _onItemChanged ( QTreeWidgetItem *item, int columnNumber );

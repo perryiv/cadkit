@@ -31,7 +31,7 @@ struct IArcGenReaderWriter : public Usul::Interfaces::IUnknown
   typedef std::vector< osg::Vec3 > Positions;
 
   // set the positions vector
-  virtual void             positions( Positions p ) = 0;
+  virtual void             setPolyLineVertices ( Positions p ) = 0;
 
   // set the recorded measurement value
   virtual void             measurement( double m ) = 0;

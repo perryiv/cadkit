@@ -127,7 +127,7 @@ public:
   virtual void     write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
 
   // set the positions vector
-  virtual void             positions( Positions p );
+  virtual void             setPolyLineVertices ( Positions p );
 
   // set the recorded measurement value
   virtual void             measurement( double m );

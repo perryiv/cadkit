@@ -22,7 +22,7 @@
 //
 //  For the node class definition.
 //
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////s//////////////////////////////////////////
 
 #define MINERVA_DEFINE_NODE_CLASS(class_name)\
   USUL_DECLARE_REF_POINTERS ( class_name );\
@@ -38,7 +38,7 @@
 
 #define MINERVA_IMPLEMENT_NODE_CLASS(class_name)\
   USUL_IMPLEMENT_TYPE_ID ( class_name );\
-  void class_name::accept ( Visitor &v ) { v.visit ( *this ); }
+  void class_name::accept ( Minerva::Core::Visitor &v ) { v.visit ( *this ); }
 
 
 ///////////////////////////////////////////////////////////////////////////////

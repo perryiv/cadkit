@@ -36,10 +36,16 @@ public:
   virtual ~AddWmsLayerWidget();
 
   void apply ( Usul::Interfaces::IUnknown * caller );
+  
+signals:
+  void serverValid ( bool );
 
 protected slots:
   void on_browseDirectory_clicked();
   void on_addOptionButton_clicked();
+  void on_capabilitiesButton_clicked();
+  
+  void _onServerTextChanged ( const QString& text );
 
 private:
   typedef std::vector<OptionWidget*> Options;

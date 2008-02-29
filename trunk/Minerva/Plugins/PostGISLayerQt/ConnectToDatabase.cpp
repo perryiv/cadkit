@@ -181,15 +181,15 @@ _savedConnections ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::DB::Connection* ConnectToDatabase::exec ()
+Minerva::DataSources::PG::Connection* ConnectToDatabase::exec ()
 {
-  Minerva::Core::DB::Connection::RefPtr connection ( 0x0 );
+  Minerva::DataSources::PG::Connection::RefPtr connection ( 0x0 );
 
   this->_restoreConnections();
 
   if ( QDialog::Accepted == BaseClass::exec() )
   {
-    connection = new Minerva::Core::DB::Connection;
+    connection = new Minerva::DataSources::PG::Connection;
     connection->hostname ( _hostname->text().toStdString () );
     connection->database ( _database->text().toStdString () );
     connection->username ( _username->text().toStdString () );

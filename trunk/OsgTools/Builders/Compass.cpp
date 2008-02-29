@@ -9,13 +9,7 @@
 
 #include "OsgTools/Builders/Compass.h"
 
-
-
-
-
-#include "Usul/CommandLine/Arguments.h"
-
-#include "osgUtil/CullVisitor"
+#include "Usul/App/Application.h"
 
 #include "osgUtil/CullVisitor"
 #include "osgDB/ReadFile"
@@ -166,8 +160,8 @@ Compass::Compass():
   _animating ( false ),
   _rotateByView ( true )
 {
-	_topTexfn = Usul::CommandLine::Arguments::instance().directory() + "/icons/big_compass_1.tga";
-  _botTexfn = Usul::CommandLine::Arguments::instance().directory() + "/icons/big_compass_mask.tga";
+	_topTexfn = Usul::App::Application::instance().iconDirectory() + "/big_compass_1.tga";
+  _botTexfn = Usul::App::Application::instance().iconDirectory() + "/big_compass_mask.tga";
 	//_pos = (osg::Vec3(_scale * 4.0f, _scale * -3.0f, -1.0f));
   this->setPositionByPercentage( 1.0f, 0.0f );
 	_compassObject = this->_buildCompassObject();

@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Visitors/StackPoints.h"
-#include "Minerva/Core/Layers/PointLayer.h"
+#include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/DataObjects/Point.h"
 
 #include "Usul/Interfaces/IGeometryCenter.h"
@@ -96,9 +96,9 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StackPoints::visit ( Minerva::Core::Layers::PointLayer &layer )
+void StackPoints::visit ( Minerva::Core::Layers::Vector &layer )
 {
-  if ( layer.stackPoints() && layer.showLayer() )
+  if ( layer.showLayer() )
   {
     layer.traverse ( *this );
     layer.dirtyScene ( true );

@@ -9,8 +9,6 @@
 
 #include "Minerva/Document/Planet.h"
 
-#include "Usul/Bits/Bits.h"
-#include "Usul/Interfaces/ICullSceneVisitor.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ILayer.h"
@@ -19,81 +17,21 @@
 #include "Usul/Interfaces/IUpdateSceneVisitor.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewport.h"
+#include "Usul/Math/Constants.h"
 #include "Usul/Math/Functions.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osgDB/Registry"
-#include "osgUtil/CullVisitor"
-#include "osgUtil/UpdateVisitor"
-
-#include "ossim/init/ossimInit.h"
-
-#if USE_STAR_SYSTEM
-#include "Usul/Network/Names.h"
-#include "Usul/Math/Constants.h"
 
 #include "StarSystem/BuildScene.h"
 #include "StarSystem/Extents.h"
 #include "StarSystem/LandModelEllipsoid.h"
 #include "StarSystem/LandModelFlat.h"
 #include "StarSystem/SplitCallbacks.h"
-#include "StarSystem/ClampNearFar.h"
 
 #include "osg/CoordinateSystemNode"
 
-#else
-
-#include "Usul/Interfaces/IOssimPlanetLayer.h"
-
-#include "ossimPlanet/ossimPlanet.h"
-#include "ossimPlanet/ossimPlanetLand.h"
-#include "ossimPlanet/ossimPlanetLandModel.h"
-#include "ossimPlanet/ossimPlanetTextureLayerRegistry.h"
-
-#include "wms/wms.h"
-
-#include "osg/PolygonOffset"
-
-#endif
-
-
 using namespace Minerva::Document;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class to initialize and finalize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace
-{
-  struct OssimInit
-  {
-    OssimInit()
-    {
-      ossimInit::instance()->initialize();
-    }
-    ~OssimInit()
-    {
-      ossimInit::instance()->finalize();
-    }
-  } _ossimInitializer;
-  
-#if USE_STAR_SYSTEM == 0
-  struct WmsInit
-  {
-    WmsInit()
-    {
-      wmsInitialize();
-    }
-    ~WmsInit()
-    {
-      wmsFinalize();
-    }
-  } _wmsInitializer;
-#endif
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -104,24 +42,13 @@ namespace
 
 Planet::Planet() : 
   BaseClass(),
-#if USE_STAR_SYSTEM
   _system ( 0x0 ),
   _manager ( new Usul::Jobs::Manager ( 5, true ) ),
   _hud(),
   _callback ( 0x0 )
-#else
-  _planet            ( 0x0 ),
-  _databasePager     ( new osgDB::DatabasePager() )
-#endif
 {
-#if USE_STAR_SYSTEM
-
   // Make the system.
   _system = new StarSystem::System ( _manager );
-#else  
-  _planet                       = new ossimPlanet();
-  Usul::Pointers::reference ( _planet );
-#endif
   
   _hud.showCompass ( true );
   
@@ -137,7 +64,6 @@ Planet::Planet() :
 
 Planet::~Planet()
 {
-#if USE_STAR_SYSTEM
   // Delete the star-system.
   _system = 0x0;
   
@@ -153,19 +79,6 @@ Planet::~Planet()
     // Delete the manager.
     delete _manager; _manager = 0x0;
   }
-#else
-  // Remove all children.
-  _planet->removeChild ( 0, _planet->getNumChildren () );
-  
-  // Unreference the planet.
-  Usul::Pointers::unreference ( _planet ); _planet = 0x0;
-
-  // Cancel the database pager.
-  if ( _databasePager.valid () )
-    _databasePager->cancel();
-
-  _databasePager = 0x0;
-#endif
 }
 
 
@@ -177,7 +90,6 @@ Planet::~Planet()
 
 void Planet::_init()
 {
-#if USE_STAR_SYSTEM
   // Local typedefs to shorten the lines.
   typedef StarSystem::Body Body;
   typedef Body::Extents Extents;
@@ -208,35 +120,11 @@ void Planet::_init()
 
   _system->body ( body.get() );
   
-#else
   // Set the state.
-  osg::ref_ptr < osg::StateSet > ss ( _planet->getOrCreateStateSet () );
-  osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset( 1.0f, 1.0f ) );
-  ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
-  ss->setAttribute( offset.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
-  
-  // Defaults. 
-  //const ossimPlanetLandType landType ( ossimPlanetLandType_NORMALIZED_ELLIPSOID );
-  const ossimPlanetLandType landType ( ossimPlanetLandType_ELLIPSOID );
-
-  const bool  elevEnabled    ( true  );
-  const bool  hudEnabled     ( false );
-  const float elevExag       ( 1.0   );
-  const int   elevEstimate   ( 16    );
-  const int   levelDetail    ( 16    );
-
-  _planet->land()->setLandType( landType );
-  _planet->land()->setElevationEnabledFlag( elevEnabled );
-  _planet->land()->setHeightExag( elevExag );
-  _planet->land()->setElevationPatchSize( elevEstimate );
-  _planet->land()->setMaxLevelDetail( levelDetail );
-  _planet->setEnableHudFlag( hudEnabled );
-  _planet->land()->resetGraph();
-  
-  _databasePager->setExpiryDelay(0);
-  _databasePager->setAcceptNewDatabaseRequests( true );
-  _databasePager->setDatabasePagerThreadPause( false );
-#endif
+  //osg::ref_ptr < osg::StateSet > ss ( _planet->getOrCreateStateSet () );
+  //osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset( 1.0f, 1.0f ) );
+  //ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+  //ss->setAttribute( offset.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
 }
 
 
@@ -248,7 +136,6 @@ void Planet::_init()
 
 void Planet::addLayer( Usul::Interfaces::ILayer *layer  )
 {
-#if USE_STAR_SYSTEM
   Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( layer );
   Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
   if ( rl.valid() )
@@ -258,17 +145,6 @@ void Planet::addLayer( Usul::Interfaces::ILayer *layer  )
     else
       _system->body()->rasterAppend ( rl.get() );
   }
-#else
-  Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
-  if( ossim.valid() )
-  {
-    osg::ref_ptr<ossimPlanetTextureLayer> texture ( ossim->ossimPlanetLayer() );
-    _planet->land()->referenceLayer()->addTop ( texture );
-    
-    // Force planet to build new textures.
-    _planet->land()->resetGraph( texture->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
-  }
-#endif
 }
 
 
@@ -280,21 +156,9 @@ void Planet::addLayer( Usul::Interfaces::ILayer *layer  )
 
 void Planet::removeLayer( Usul::Interfaces::ILayer *layer )
 {
-#if USE_STAR_SYSTEM
   Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
   if ( rl.valid() )
     _system->body()->rasterRemove ( rl.get() );
-#else
-  Usul::Interfaces::IOssimPlanetLayer::QueryPtr ossim ( layer );
-  if( ossim.valid() )
-  {
-    osg::ref_ptr<ossimPlanetTextureLayer> texture ( ossim->ossimPlanetLayer() );
-    _planet->land()->referenceLayer()->removeLayer ( texture );
-    
-    // Force planet to build new textures.
-    _planet->land()->resetGraph( texture->getExtents().get(), ossimPlanetLandRefreshType_TEXTURE );
-  }
-#endif
 }
 
 
@@ -320,7 +184,6 @@ void Planet::dirty ( Usul::Interfaces::IUnknown *caller )
 
 osg::Group* Planet::buildScene()
 {
-#if USE_STAR_SYSTEM
   osg::ref_ptr<osg::Group> group ( new osg::Group );
   if ( _system.valid() )
   {
@@ -334,9 +197,6 @@ osg::Group* Planet::buildScene()
     group->setCullCallback ( _callback.get() );
   }
   return group.release();
-#else
-  return _planet;
-#endif
 }
 
 
@@ -349,17 +209,7 @@ osg::Group* Planet::buildScene()
 void Planet::preRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-
-#if USE_STAR_SYSTEM
   _system->preRender ( caller );
-#else
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-  if ( ( true == fs.valid() ) && ( 0x0 != fs->frameStamp() ) && _databasePager.valid() )
-  {
-    _databasePager->signalBeginFrame ( fs->frameStamp() );
-    _databasePager->updateSceneGraph ( fs->frameStamp()->getReferenceTime() );
-  }
-#endif
 }
 
 
@@ -372,62 +222,7 @@ void Planet::preRender ( Usul::Interfaces::IUnknown *caller )
 void Planet::postRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
- 
-#if USE_STAR_SYSTEM
   _system->postRender ( caller );
-#else
-  if ( _databasePager.valid() )
-    _databasePager->signalEndFrame();
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize the cull and update visitors of the caller.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Planet::initVisitors ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-
-#if USE_STAR_SYSTEM == 0
-  
-  // Set cull visitor's database pager.
-  {
-    Usul::Interfaces::ICullSceneVisitor::QueryPtr getVisitor ( caller );
-    if ( true == getVisitor.valid() )
-    {
-      osg::ref_ptr<osgUtil::CullVisitor> visitor ( getVisitor->getCullSceneVisitor ( 0x0 ) );
-      if ( true == visitor.valid() )
-      {
-        visitor->setDatabaseRequestHandler ( _databasePager.get() );
-      }
-    }
-  }
-
-  // Set update visitor's database pager.
-  {
-    Usul::Interfaces::IUpdateSceneVisitor::QueryPtr getVisitor ( caller );
-    if ( true == getVisitor.valid() )
-    {
-      osg::ref_ptr<osg::NodeVisitor> visitor ( getVisitor->getUpdateSceneVisitor ( 0x0 ) );
-      if ( true == visitor.valid() )
-      {
-        visitor->setDatabaseRequestHandler ( _databasePager.get() );
-      }
-    }
-  }
-#else
-  Usul::Interfaces::ICullSceneVisitor::QueryPtr csv ( caller );
-  if ( csv.valid() )
-  {
-    osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
-    cv->setClampProjectionMatrixCallback ( new StarSystem::ClampNearFar ( *cv ) );
-    cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
-  }
-#endif
 }
 
 
@@ -463,15 +258,8 @@ double Planet::splitDistance () const
 
 void Planet::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const
 {
-#if USE_STAR_SYSTEM
   osg::Vec3d out;
   _system->body()->latLonHeightToXYZ ( orginal[1], orginal[0], orginal[2], out );
-#else
-  const osg::Vec3d in ( orginal[1], orginal[0], orginal[2] );
-  osg::Vec3d out;
-  
-  _planet->land()->model()->forward( in, out );
-#endif
   planetPoint.set ( out[0], out[1], out[2] );
 }
 
@@ -484,16 +272,7 @@ void Planet::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec
 
 void Planet::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
 {
-#if USE_STAR_SYSTEM
   _system->body()->xyzToLatLonHeight ( osg::Vec3f ( planetPoint[0], planetPoint[1], planetPoint[2] ), latLonPoint[1], latLonPoint[0], latLonPoint[2] );
-#else
-  const osg::Vec3d in ( planetPoint[0], planetPoint[1], planetPoint[2] );
-  osg::Vec3d out;
-  
-  _planet->land()->model()->inverse( in, out );
-  
-  latLonPoint.set ( out[1], out[0], out[2] );
-#endif
 }
 
 
@@ -517,16 +296,7 @@ osg::Matrixd Planet::planetRotationMatrix ( double lat, double lon, double eleva
 
 double Planet::elevationAtLatLong ( double lat, double lon ) const
 {
-#if USE_STAR_SYSTEM
   return _system->body()->elevation ( lat, lon );
-#else
-  ossimGpt point ( lat, lon );
-  double height (  ossimElevManager::instance()->getHeightAboveMSL( point ) );
-  if( ossim::isnan ( height ) )
-    height = 0.0;
-  
-  return height + ossimGeoidManager::instance()->offsetFromEllipsoid( point );
-#endif  
 }
 
 
@@ -625,8 +395,6 @@ namespace Detail
 
 void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
 {
-#if USE_STAR_SYSTEM
-
   if ( _callback.valid() )
   {
     osg::Vec3d hpr ( _callback->_hpr );
@@ -642,18 +410,6 @@ void Planet::updateScene ( Usul::Interfaces::IUnknown *caller )
   Usul::Interfaces::IViewport::QueryPtr vp ( caller );
   if ( vp.valid() )
     _hud.updateScene( static_cast<unsigned int> ( vp->width() ), static_cast<unsigned int> ( vp->height() ) );
-#else
-  Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
-  if ( tm.valid() )
-  {
-    std::ostringstream os;
-    const unsigned int requests  ( _databasePager->getFileRequestListSize()   );
-    
-    os << ( ( requests > 0 ) ? Usul::Strings::format ( "Requests: ", requests ) : "" );
-    std::string text ( os.str() );
-    tm->setText ( 15, 15, text, osg::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
-  }
-#endif
 }
 
 
@@ -764,4 +520,15 @@ void Planet::useSkirts( bool b )
 bool Planet::useSkirts() const
 {
   return _system->body()->useSkirts();
+}
+
+
+Usul::Interfaces::ILayer* Planet::elevationData()
+{
+  return Usul::Interfaces::ILayer::QueryPtr ( _system->body()->elevationData().get() );
+}
+
+Usul::Interfaces::ILayer* Planet::rasterData()
+{
+  return Usul::Interfaces::ILayer::QueryPtr ( _system->body()->rasterData().get() );
 }

@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib libpqxxd.lib ossimd.lib"
+				AdditionalDependencies="osgd.lib osgTextd.lib ossimd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minervad.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIM_PLANET_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Minervad.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Minervad.lib"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib libpqxx.lib ossim.lib"
+				AdditionalDependencies="osg.lib osgText.lib ossim.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minerva.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;;&quot;$(OSSIM_PLANET_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(OSSIM_LIB_DIR)&quot;"
 				ProgramDatabaseFile=".\Release/Minerva.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Minerva.lib"
 			/>
@@ -286,68 +286,8 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="DB"
-					>
-					<File
-						RelativePath=".\DB\Connection.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DB\Connection.h"
-						>
-					</File>
-					<File
-						RelativePath=".\DB\Info.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DB\Info.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="Layers"
 					>
-					<File
-						RelativePath=".\Layers\Layer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\Layer.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\LineLayer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\LineLayer.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PointLayer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PointLayer.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PointTimeLayer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PointTimeLayer.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PolygonLayer.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\PolygonLayer.h"
-						>
-					</File>
 					<File
 						RelativePath=".\Layers\Vector.cpp"
 						>
@@ -362,18 +302,6 @@
 					</File>
 					<File
 						RelativePath=".\Layers\VectorGroup.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Scene"
-					>
-					<File
-						RelativePath=".\Scene\SceneManager.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Scene\SceneManager.h"
 						>
 					</File>
 				</Filter>
@@ -398,34 +326,6 @@
 					</File>
 					<File
 						RelativePath=".\Functors\SingleColorFunctor.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="postGIS"
-					>
-					<File
-						RelativePath=".\postGIS\BinaryParser.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\BinaryParser.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\Factory.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\Factory.h"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\TextParser.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\postGIS\TextParser.h"
 						>
 					</File>
 				</Filter>

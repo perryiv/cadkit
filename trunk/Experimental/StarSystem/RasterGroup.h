@@ -37,8 +37,9 @@ public:
   typedef std::pair < KeyRange, KeyRange > KeyBounds;
   typedef std::pair < KeySize, KeyBounds > ImageKey;
   typedef std::map < ImageKey, ImagePtr > ImageCache;
-  typedef std::pair < ImagePtr, IRasterLayer::QueryPtr > RasterData;
-  typedef std::vector < RasterData > Rasters;
+  typedef Usul::Interfaces::ILayer ILayer;
+  typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::ITreeNode ITreeNode;
 
   USUL_DECLARE_REF_POINTERS ( RasterGroup );
 
@@ -49,8 +50,9 @@ public:
 
   void                            append ( IRasterLayer* layer );
   void                            remove ( IRasterLayer* layer );
-
-  IRasterLayer*                   layer ( unsigned int i );
+  
+  /// Get the i'th layer.
+  virtual ILayer*                 layer ( unsigned int i );
  
   /// Get a copy of the layers.
   void                            layers ( Layers& layers ) const;
@@ -73,6 +75,16 @@ protected:
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * );
 
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
+  
+  // Get the number of children (ITreeNode).
+  virtual unsigned int            getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *             getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                    setTreeNodeName ( const std::string & );
+  virtual std::string             getTreeNodeName() const;
   
 private:
   RasterGroup& operator= ( const RasterGroup& );

@@ -11,20 +11,19 @@
 #ifndef __MINERVA_LAYERS_POINT_LAYER_H__
 #define __MINERVA_LAYERS_POINT_LAYER_H__
 
-#include "Minerva/Core/Export.h"
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
 
 #include "Usul/Interfaces/IPointLayer.h"
 
 namespace Minerva {
-namespace Core {
 namespace Layers {
+namespace PostGIS {
 
-class MINERVA_EXPORT PointLayer : public Minerva::Core::Layers::Layer,
-                                  public Usul::Interfaces::IPointLayer
+class MINERVA_POSTGIS_EXPORT PointLayer : public Minerva::Layers::PostGIS::Layer,
+                                          public Usul::Interfaces::IPointLayer
 {
 public:
-  typedef Minerva::Core::Layers::Layer BaseClass;
+  typedef Minerva::Layers::PostGIS::Layer BaseClass;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( PointLayer );

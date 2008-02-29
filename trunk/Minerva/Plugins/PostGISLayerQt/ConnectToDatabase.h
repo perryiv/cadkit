@@ -11,7 +11,7 @@
 #ifndef __CONNECT_TO_DATABASE_H__
 #define __CONNECT_TO_DATABASE_H__
 
-#include "Minerva/Core/DB/Connection.h"
+#include "Minerva/DataSources/PG/Connection.h"
 
 #include "QtGui/QDialog.h"
 
@@ -47,7 +47,7 @@ public:
   };
 
   typedef QDialog BaseClass;
-  typedef Minerva::Core::DB::Connection Connection;
+  typedef Minerva::DataSources::PG::Connection Connection;
   typedef std::vector < SavedConnection > SavedConnections;
 
   ConnectToDatabase ( QWidget *parent );

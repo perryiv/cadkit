@@ -13,6 +13,7 @@
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Functions/GUID.h"
+#include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Group.h"
 
@@ -112,7 +113,11 @@ Usul::Interfaces::IUnknown* Vector::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
   case Minerva::Interfaces::IDirtyScene::IID:
-      return static_cast < Minerva::Interfaces::IDirtyScene* > ( this );
+    return static_cast < Minerva::Interfaces::IDirtyScene* > ( this );
+  case Usul::Interfaces::ITreeNode::IID:
+    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
+  case Usul::Interfaces::IBooleanState::IID:
+    return static_cast < Usul::Interfaces::IBooleanState* > ( this );
   default:
     return 0x0;
   };
@@ -452,4 +457,82 @@ void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   if ( this->dirtyScene() )
     this->_buildScene( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Vector::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * Vector::getChildNode ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Vector::setTreeNodeName ( const std::string & s )
+{
+  USUL_TRACE_SCOPE;
+  this->name ( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Vector::getTreeNodeName() const
+{
+  USUL_TRACE_SCOPE;
+  return this->name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Vector::setBooleanState ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  this->showLayer ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Vector::getBooleanState() const
+{
+  USUL_TRACE_SCOPE;
+  return this->showLayer();
 }

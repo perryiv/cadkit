@@ -42,9 +42,6 @@ protected:
   /// Usul::Interfaces::IPointData
   virtual Usul::Math::Vec3d         pointData ( );
 
-  virtual osg::Vec3f                geometryCenter ( unsigned int& srid );
-  virtual osg::Vec3f                geometryCenter ( const osg::Vec3f& offset, unsigned int& srid );
-
 private:
   Usul::Math::Vec3d _point;
 };

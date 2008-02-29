@@ -10,8 +10,8 @@
 
 #include "Minerva/Plugins/PostGISLayerQt/GradientColorWidget.h"
 
-#include "Minerva/Core/DB/Info.h"
-#include "Minerva/Core/DB/Connection.h"
+#include "Minerva/DataSources/PG/Info.h"
+#include "Minerva/DataSources/PG/Connection.h"
 
 #include "Usul/Strings/Format.h"
 
@@ -65,13 +65,13 @@ _columns ( new QComboBox )
     }
     
     // Get all columns.
-    typedef Minerva::Core::DB::Connection Connection;
+    typedef Minerva::DataSources::PG::Connection Connection;
     Connection::RefPtr connection ( _layer->connection() );
     if ( connection.valid() )
     {
       Connection::ScopedConnection sc ( *connection );
-      Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
-      Minerva::Core::DB::Info::Strings columns ( info->getColumnNames ( _layer->tablename() ) );
+      Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( connection ) );
+      Minerva::DataSources::PG::Info::Strings columns ( info->getColumnNames ( _layer->tablename() ) );
       
       // Populate the combo box.
       QtTools::ComboBox::populate ( *_columns, columns, _layer->colorColumn() );
@@ -133,12 +133,12 @@ void GradientColorWidget::_columnChanged ( int )
   {
     _layer->colorColumn ( _columns->currentText().toStdString() );
     
-    typedef Minerva::Core::DB::Connection Connection;
+    typedef Minerva::DataSources::PG::Connection Connection;
     Connection::RefPtr connection ( _layer->connection() );
     if ( connection.valid() )
     {
       Connection::ScopedConnection sc ( *connection );
-      Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
+      Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( connection ) );
       
       double min ( 0.0 ), max ( 0.0 );
       info->getMinMaxValue ( Usul::Strings::format ( "SELECT * FROM ", _layer->tablename() ), _layer->colorColumn(), min, max );

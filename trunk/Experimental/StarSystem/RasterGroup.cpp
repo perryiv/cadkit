@@ -363,11 +363,11 @@ RasterGroup::ImageKey RasterGroup::_makeKey ( const Extents& extents, unsigned i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterGroup::IRasterLayer* RasterGroup::layer ( unsigned int i )
+RasterGroup::ILayer* RasterGroup::layer ( unsigned int i )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return ( ( i < _layers.size() ) ? _layers.at ( i ).get() : 0x0 );
+  return ( ( i < _layers.size() ) ? ILayer::QueryPtr ( _layers.at ( i ) ).get() : 0x0 );
 }
 
 
@@ -393,7 +393,60 @@ unsigned int RasterGroup::size() const
 
 void RasterGroup::layers ( Layers& layers ) const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   layers.resize ( _layers.size() );
   std::copy ( _layers.begin(), _layers.end(), layers.begin() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int RasterGroup::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  return this->size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * RasterGroup::getChildNode ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  return Usul::Interfaces::ITreeNode::QueryPtr ( this->layer ( which ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::setTreeNodeName ( const std::string & s )
+{
+  USUL_TRACE_SCOPE;
+  this->name( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterGroup::getTreeNodeName() const
+{
+  USUL_TRACE_SCOPE;
+  return this->name();
 }

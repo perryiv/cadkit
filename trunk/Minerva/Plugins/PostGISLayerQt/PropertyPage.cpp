@@ -17,7 +17,7 @@
 #include "Minerva/Plugins/PostGISLayerQt/LineWidget.h"
 #include "Minerva/Plugins/PostGISLayerQt/PolygonWidget.h"
 
-#include "Minerva/Core/DB/Info.h"
+#include "Minerva/DataSources/PG/Info.h"
 
 #include "Usul/Strings/Qt.h"
 
@@ -242,7 +242,7 @@ void PropertyPage::_initLabelProperties()
     if ( connection.valid() )
     {
       Connection::ScopedConnection sc ( *connection );
-      Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
+      Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( connection ) );
       Strings columns ( info->getColumnNames ( _layer->tablename() ) );
 
       // Populate the combo box.
@@ -303,9 +303,9 @@ void PropertyPage::_initDrawingTab()
   _colorTypeComboBox->addItem ( tr ( "Unique Color" ) );
 
   // Typedefs.
-  typedef Minerva::Core::Layers::PointLayer PointLayer;
-  typedef Minerva::Core::Layers::PolygonLayer PolygonLayer;
-  typedef Minerva::Core::Layers::LineLayer LineLayer;
+  typedef Minerva::Layers::PostGIS::PointLayer PointLayer;
+  typedef Minerva::Layers::PostGIS::PolygonLayer PolygonLayer;
+  typedef Minerva::Layers::PostGIS::LineLayer LineLayer;
 
   // Check to see if it's a point layer...
   if ( PointLayer *point = dynamic_cast < PointLayer * > ( _layer.get() ) )
@@ -346,7 +346,7 @@ void PropertyPage::_initTimeTab()
       if ( connection.valid() )
       {
         Connection::ScopedConnection sc ( *connection );
-        Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( connection ) );
+        Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( connection ) );
 
         // Get all date columns.
         Strings columns ( info->getColumnNames ( _layer->tablename(), "date" ) );

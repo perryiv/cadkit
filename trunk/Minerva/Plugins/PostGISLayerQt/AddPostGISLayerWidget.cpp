@@ -117,7 +117,7 @@ void AddPostGISLayerWidget::_editLayerProperties ()
     delete _propertyPage;
   }
 
-  Minerva::Core::Layers::Layer::RefPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
+  Minerva::Layers::PostGIS::Layer::RefPtr layer ( 0x0 != _databasePage ? _databasePage->layer() : 0x0 );
   if ( layer.valid() )
   {
     _propertyPage = new PropertyPage ( layer.get(), this );

@@ -39,7 +39,6 @@ using namespace Minerva::Core::DataObjects;
 
 Polygon::Polygon() :
 BaseClass(),
-_extrude ( false ),
 _showBorder( false ),
 _showInterior ( true )
 {
@@ -249,29 +248,4 @@ void Polygon::showInterior( bool b )
 bool Polygon::showInterior() const
 {
   return _showInterior;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set extrude flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Polygon::extrude ( bool b )
-{
-  _extrude = b;
-  this->dirty ( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get extrude flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Polygon::extrude() const
-{
-  return _extrude;
 }

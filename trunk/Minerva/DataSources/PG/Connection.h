@@ -11,7 +11,7 @@
 #ifndef __DB_CONNECTION_H__
 #define __DB_CONNECTION_H__
 
-#include "Minerva/Core/Export.h"
+#include "Minerva/DataSources/PG/Export.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IDatabaseConnection.h"
@@ -36,10 +36,10 @@ namespace pqxx
 #include <string>
 
 namespace Minerva {
-namespace Core {
-namespace DB {
+namespace DataSources {
+namespace PG {
 
-class MINERVA_EXPORT Connection : public Usul::Base::Referenced,
+class MINERVA_POSTGRES_EXPORT Connection : public Usul::Base::Referenced,
   public Usul::Interfaces::IDatabaseConnection
 {
 public:
@@ -108,7 +108,7 @@ public:
   // Get max and min values of the given field name.
   void                 getMinAndMax ( const std::string& tableName, const std::string& fieldName, double& min, double& max );
 
-  struct MINERVA_EXPORT ScopedConnection
+  struct MINERVA_POSTGRES_EXPORT ScopedConnection
   {
     ScopedConnection ( Connection &c );
     ~ScopedConnection();

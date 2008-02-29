@@ -156,7 +156,7 @@ void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Polygon &polygon )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlWriter::Visitor::visit ( Minerva::Core::Layers::Layer& layer )
+void KmlWriter::Visitor::visit ( Minerva::Core::Layers::Vector& layer )
 {
   // Start of the folder.
   _out << "\t<Folder id =\"" << layer.guid() << "\">" << std::endl;

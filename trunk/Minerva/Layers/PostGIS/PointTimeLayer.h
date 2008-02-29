@@ -11,8 +11,7 @@
 #ifndef __MINERVA_LAYERS_POINT_TIME_LAYER_H__
 #define __MINERVA_LAYERS_POINT_TIME_LAYER_H__
 
-#include "Minerva/Core/Export.h"
-#include "Minerva/Core/Layers/PointLayer.h"
+#include "Minerva/Layers/PostGIS/PointLayer.h"
 #include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Interfaces/IPointLayer.h"
@@ -21,14 +20,14 @@
 #include <map>
 
 namespace Minerva {
-namespace Core {
 namespace Layers {
+namespace PostGIS {
 
-class MINERVA_EXPORT PointTimeLayer : public Minerva::Core::Layers::PointLayer,
-                                      public Usul::Interfaces::ITemporalData
+class MINERVA_POSTGIS_EXPORT PointTimeLayer : public Minerva::Layers::PostGIS::PointLayer,
+                                              public Usul::Interfaces::ITemporalData
 {
 public:
-  typedef Minerva::Core::Layers::PointLayer BaseClass;
+  typedef Minerva::Layers::PostGIS::PointLayer BaseClass;
   typedef Minerva::Core::Animate::Date      Date;
 
   USUL_DECLARE_QUERY_POINTERS ( PointTimeLayer );

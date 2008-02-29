@@ -12,11 +12,11 @@
 #include "Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h"
 #include "Minerva/Plugins/PostGISLayerQt/ConnectToDatabase.h"
 
-#include "Minerva/Core/DB/Info.h"
-#include "Minerva/Core/Layers/PointLayer.h"
-#include "Minerva/Core/Layers/PointTimeLayer.h"
-#include "Minerva/Core/Layers/LineLayer.h"
-#include "Minerva/Core/Layers/PolygonLayer.h"
+#include "Minerva/DataSources/PG/Info.h"
+#include "Minerva/Layers/PostGIS/PointLayer.h"
+#include "Minerva/Layers/PostGIS/PointTimeLayer.h"
+#include "Minerva/Layers/PostGIS/LineLayer.h"
+#include "Minerva/Layers/PostGIS/PolygonLayer.h"
 
 
 #include "QtGui/QListWidget.h"
@@ -80,12 +80,12 @@ void DatabasePage::_listTables ()
     return;
 
   // Scope our connection.
-  Minerva::Core::DB::Connection::ScopedConnection scoped ( *_connection );
+  Minerva::DataSources::PG::Connection::ScopedConnection scoped ( *_connection );
 
-  typedef Minerva::Core::DB::Info::Strings Strings;
+  typedef Minerva::DataSources::PG::Info::Strings Strings;
 
   // Database info class.
-  Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( _connection.get () ) );
+  Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( _connection.get () ) );
 
   Strings tables ( info->geometryTables () );
   for ( Strings::const_iterator iter = tables.begin (); iter != tables.end (); ++iter )
@@ -122,24 +122,24 @@ void DatabasePage::_selectionChanged ()
     return;
 
   // Scope our connection.
-  Minerva::Core::DB::Connection::ScopedConnection scoped ( *_connection );
+  Minerva::DataSources::PG::Connection::ScopedConnection scoped ( *_connection );
 
   // Database info class.
-  Minerva::Core::DB::Info::RefPtr info ( new Minerva::Core::DB::Info ( _connection.get () ) );
+  Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( _connection.get () ) );
 
-  Minerva::Core::Layers::Layer::RefPtr layer ( 0x0 );
+  Minerva::Layers::PostGIS::Layer::RefPtr layer ( 0x0 );
 
   std::string table ( _listView->selectedItems().front()->text().toStdString () );
 
   // Check time classes first...
   if( info->isPointTimeTable ( table ) )
-    layer = new Minerva::Core::Layers::PointTimeLayer;
+    layer = new Minerva::Layers::PostGIS::PointTimeLayer;
   else if ( info->isPointTable ( table ) )
-    layer = new Minerva::Core::Layers::PointLayer;
+    layer = new Minerva::Layers::PostGIS::PointLayer;
   else if ( info->isLineTable ( table ) )
-    layer = new Minerva::Core::Layers::LineLayer;
+    layer = new Minerva::Layers::PostGIS::LineLayer;
   else if ( info->isPolygonTable ( table ) )
-    layer = new Minerva::Core::Layers::PolygonLayer;
+    layer = new Minerva::Layers::PostGIS::PolygonLayer;
 
   if ( layer.valid() )
   {
@@ -159,7 +159,7 @@ void DatabasePage::_selectionChanged ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Layers::Layer* DatabasePage::layer ()
+Minerva::Layers::PostGIS::Layer* DatabasePage::layer ()
 {
   return _layer.get();
 }

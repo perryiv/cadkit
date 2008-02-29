@@ -12,7 +12,7 @@
 #define __POSTGIS_POLYGON_WIDGET_H__
 
 #include "Minerva/Plugins/PostGISLayerQt/ui_PolygonWidget.h"
-#include "Minerva/Core/Layers/PolygonLayer.h"
+#include "Minerva/Layers/PostGIS/PolygonLayer.h"
 
 #include "QtGui/QWidget"
 
@@ -22,7 +22,7 @@ class PolygonWidget : public QWidget,
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::Layers::PolygonLayer PolygonLayer;
+  typedef Minerva::Layers::PostGIS::PolygonLayer PolygonLayer;
 
   PolygonWidget ( PolygonLayer* layer, QWidget* parent = 0x0 );
 

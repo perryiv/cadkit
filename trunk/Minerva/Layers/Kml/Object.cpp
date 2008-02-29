@@ -10,7 +10,10 @@
 
 #include "Minerva/Layers/Kml/Object.h"
 
+#include "XmlTree/Node.h"
+
 using namespace Minerva::Layers::Kml;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -20,8 +23,39 @@ using namespace Minerva::Layers::Kml;
 
 Object::Object() : 
   BaseClass(),
-  _id()
+  _id(),
+  _targetId()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Object::Object ( const XmlTree::Node& node ) : 
+  BaseClass(),
+  _id(),
+  _targetId()
+{
+  typedef XmlTree::Node::Attributes Attributes;
+  
+  // Get the attributes.
+  const Attributes& attributes ( node.attributes() );
+  
+  // Set the id.
+  {
+    Attributes::const_iterator iter ( attributes.find ( "id" ) );
+    _id = ( iter != attributes.end() ? iter->second : "" );
+  }
+  
+  // Set the target id.
+  {
+    Attributes::const_iterator iter ( attributes.find ( "targetId" ) );
+    _targetId = ( iter != attributes.end() ? iter->second : "" );
+  }
 }
 
 
@@ -33,4 +67,52 @@ Object::Object() :
 
 Object::~Object()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Object::objectId() const
+{
+  return _id;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Object::objectId( const std::string& s )
+{
+  _id = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the target id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Object::targetId() const
+{
+  return _targetId;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the target id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Object::targetId( const std::string& s )
+{
+  _targetId = s;
 }

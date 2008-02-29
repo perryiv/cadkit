@@ -8,9 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/DB/ConnectionPool.h"
+#include "Minerva/DataSources/PG/ConnectionPool.h"
 
-using namespace Minerva::Core::DB;
+using namespace Minerva::DataSources::PG;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ bool ConnectionPool::hasConnection ( const std::string& name ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::DB::Connection* ConnectionPool::getConnection ( const std::string& name )
+Connection* ConnectionPool::getConnection ( const std::string& name )
 {
   return _connections[name].get();
 }
@@ -75,7 +75,7 @@ Minerva::Core::DB::Connection* ConnectionPool::getConnection ( const std::string
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ConnectionPool::addConnection ( Minerva::Core::DB::Connection* connection )
+void ConnectionPool::addConnection ( Connection* connection )
 {
   _connections[ connection->name() ] = connection;
 }

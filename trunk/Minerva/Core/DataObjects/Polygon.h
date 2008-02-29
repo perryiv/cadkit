@@ -39,10 +39,6 @@ public:
 
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
-  
-  /// Get/Set extrude flag.
-  void                  extrude ( bool b );
-  bool                  extrude() const;
 
   /// Get/Set draw border flag.
   void                  showBorder( bool b );
@@ -63,7 +59,6 @@ protected:
 
 private:
 
-  bool _extrude;
   bool _showBorder;
   bool _showInterior;
 };

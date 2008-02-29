@@ -28,7 +28,7 @@ USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( RasterLayer::Extents );
 USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( RasterLayer::Extents );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( RasterLayer::Extents );
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS(RasterLayer, RasterLayer::BaseClass);
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( RasterLayer, RasterLayer::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -201,21 +201,25 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
 {
   switch (iid)
   {
-    case Usul::Interfaces::IUnknown::IID:
-    case Usul::Interfaces::IRasterLayer::IID:
-      return static_cast<Usul::Interfaces::IRasterLayer*> ( this );
-    case Usul::Interfaces::ILayer::IID:
-      return static_cast<Usul::Interfaces::ILayer*> ( this );
-    case Usul::Interfaces::ILayerExtents::IID:
-      return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
-    case Usul::Interfaces::ISerialize::IID:
-      return static_cast<Usul::Interfaces::ISerialize*> ( this );
-    case Usul::Interfaces::IRasterAlphas::IID:
-      return static_cast<Usul::Interfaces::IRasterAlphas*> ( this );
-    case Usul::Interfaces::IClonable::IID:
-      return static_cast<Usul::Interfaces::IClonable*> ( this );
-    default:
-      return 0x0;
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IRasterLayer::IID:
+    return static_cast<Usul::Interfaces::IRasterLayer*> ( this );
+  case Usul::Interfaces::ILayer::IID:
+    return static_cast<Usul::Interfaces::ILayer*> ( this );
+  case Usul::Interfaces::ILayerExtents::IID:
+    return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
+  case Usul::Interfaces::ISerialize::IID:
+    return static_cast<Usul::Interfaces::ISerialize*> ( this );
+  case Usul::Interfaces::IRasterAlphas::IID:
+    return static_cast<Usul::Interfaces::IRasterAlphas*> ( this );
+  case Usul::Interfaces::IClonable::IID:
+    return static_cast<Usul::Interfaces::IClonable*> ( this );
+  case Usul::Interfaces::ITreeNode::IID:
+    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
+  case Usul::Interfaces::IBooleanState::IID:
+    return static_cast < Usul::Interfaces::IBooleanState* > ( this );
+  default:
+    return 0x0;
   }
 }
 
@@ -332,4 +336,82 @@ double RasterLayer::maxLat() const
 {
   Guard guard ( this );
   return _extents.maxLat();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int RasterLayer::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * RasterLayer::getChildNode ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::setTreeNodeName ( const std::string & s )
+{
+  USUL_TRACE_SCOPE;
+  this->name( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayer::getTreeNodeName() const
+{
+  USUL_TRACE_SCOPE;
+  return this->name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::setBooleanState ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  this->showLayer ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool RasterLayer::getBooleanState() const
+{
+  USUL_TRACE_SCOPE;
+  return this->showLayer();
 }

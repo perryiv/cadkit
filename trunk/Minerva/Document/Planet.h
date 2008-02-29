@@ -10,30 +10,16 @@
 #ifndef __MINERVA_PLANET_WRAPPER_H__
 #define __MINERVA_PLANET_WRAPPER_H__
 
-#include "Minerva/Config.h"
-
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Pointers/Pointers.h"
-
-#if USE_STAR_SYSTEM
 
 #include "Usul/Jobs/Manager.h"
 
 #include "StarSystem/System.h"
 #include "StarSystem/Hud.h"
 
-#else // OssimPlanet"
-
-#include "osgDB/DatabasePager"
-
-class ossimPlanet;
-class ossimPlanetLandModel;
-class ossimPlanetTextureLayer;
-class ossimPlanetExtents;
-
-#endif
 
 #include "osg/NodeCallback"
 #include "osgUtil/CullVisitor"
@@ -51,6 +37,9 @@ public:
   USUL_DECLARE_REF_POINTERS ( Planet );
 
   Planet();
+  
+  Usul::Interfaces::ILayer*                       elevationData();
+  Usul::Interfaces::ILayer*                       rasterData();
 
   void                                            addLayer    ( Usul::Interfaces::ILayer *layer );  
   void                                            removeLayer ( Usul::Interfaces::ILayer *layer );
@@ -81,9 +70,6 @@ public:
   // Pre- and post-render notifications.
   void                                            preRender  ( Usul::Interfaces::IUnknown *caller );
   void                                            postRender ( Usul::Interfaces::IUnknown *caller );
-  
-  // Initialize the cull and update visitors of the caller.
-  void                                            initVisitors ( Usul::Interfaces::IUnknown *caller );
 
   // Update the scene.
   void                                            updateScene ( Usul::Interfaces::IUnknown *caller );
@@ -119,15 +105,10 @@ protected:
 private:
   void                                            _init();
 
-#if USE_STAR_SYSTEM
   StarSystem::System::RefPtr _system;
   Usul::Jobs::Manager *      _manager;
   StarSystem::Hud            _hud;
   osg::ref_ptr < Callback >  _callback;
-#else
-  ossimPlanet *                                   _planet;
-  osg::ref_ptr< osgDB::DatabasePager >            _databasePager;
-#endif
 };
 
 }

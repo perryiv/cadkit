@@ -256,7 +256,7 @@ void RasterPolygonLayer::_initGeometries()
     return;
 
   // Get the connection.
-  Minerva::Core::DB::Connection::RefPtr connection ( _layer->connection() );
+  Minerva::DataSources::PG::Connection::RefPtr connection ( _layer->connection() );
     
   // Return if no connection.
   if ( false == connection.valid() )

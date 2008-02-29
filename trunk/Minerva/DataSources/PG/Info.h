@@ -11,18 +11,17 @@
 #ifndef __MINERVA_DB_INFO_H__
 #define __MINERVA_DB_INFO_H__
 
-#include "Minerva/Core/Export.h"
-
-#include "Minerva/Core/DB/Connection.h"
+#include "Minerva/DataSources/PG/Export.h"
+#include "Minerva/DataSources/PG/Connection.h"
 
 #include <vector>
 #include <string>
 
 namespace Minerva {
-namespace Core {
-namespace DB {
+namespace DataSources {
+namespace PG {
 
-class MINERVA_EXPORT Info : public Usul::Base::Referenced
+class MINERVA_POSTGRES_EXPORT Info : public Usul::Base::Referenced
 {
 public:
   typedef Usul::Base::Referenced BaseClass;
@@ -73,7 +72,7 @@ protected:
 private:
   Info();
 
-  Minerva::Core::DB::Connection::RefPtr _connection;
+  Minerva::DataSources::PG::Connection::RefPtr _connection;
 };
 
 }

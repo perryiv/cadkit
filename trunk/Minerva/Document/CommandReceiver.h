@@ -11,7 +11,7 @@
 #ifndef __MINERVA_COMMAND_RECEIVER_H__
 #define __MINERVA_COMMAND_RECEIVER_H__
 
-#include "Minerva/Core/DB/Connection.h"
+#include "Minerva/DataSources/PG/Connection.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -34,7 +34,7 @@ public:
   CommandReceiver ( );
 
   // Set the application connection.
-  void connection ( Minerva::Core::DB::Connection * );
+  void connection ( Minerva::DataSources::PG::Connection * );
 
   /// Are we connected to the session?
   bool connected () const;
@@ -52,7 +52,7 @@ protected:
   void _processCommands( Usul::Interfaces::IUnknown *caller );
 
 private:
-  Minerva::Core::DB::Connection::RefPtr _connection;
+  Minerva::DataSources::PG::Connection::RefPtr _connection;
   unsigned int _sessionID;
   unsigned int _lastCommandID;
   unsigned int _timeout;

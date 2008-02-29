@@ -8,23 +8,23 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Config.h"
-
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h"
 #include "Minerva/Plugins/WmsLayerQt/OptionWidget.h"
 
-#if USE_STAR_SYSTEM
 #include "StarSystem/RasterLayerWms.h"
-#else
-#include "Minerva/Plugins/WmsLayerQt/WmsLayer.h"
-#endif
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/File/Contents.h"
+#include "Usul/File/Temp.h"
+#include "Usul/Functions/SafeCall.h"
+#include "Usul/Network/Curl.h"
 #include "Usul/Network/Names.h"
 
+#include "QtGui/QDialog"
 #include "QtGui/QLabel"
 #include "QtGui/QLineEdit"
 #include "QtGui/QHBoxLayout"
@@ -34,6 +34,7 @@
 #include "QtGui/QRadioButton"
 #include "QtGui/QButtonGroup"
 #include "QtGui/QFileDialog"
+#include "QtGui/QTextEdit"
 
 #include <iostream>
 
@@ -44,9 +45,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
-_imageTypes ( 0x0 ),
-_options()
-{  
+  _imageTypes ( 0x0 ),
+  _options()
+{
   this->setupUi ( this );
 
   _imageTypes = new QButtonGroup;
@@ -56,9 +57,16 @@ _options()
   
   _optionsWidget->setLayout ( new QVBoxLayout );
   
-#if USE_STAR_SYSTEM
   _cacheDirectory->setText ( StarSystem::RasterLayerWms::defaultCacheDirectory().c_str() );
-#endif
+  
+  QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
+
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), addOptionButton,    SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _jpegButton,        SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _pngButton,         SLOT ( setEnabled ( bool ) ) );
+  
+  emit serverValid ( false );
 }
 
 
@@ -97,7 +105,6 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
   // Make sure we have a server and cache directory.
   if ( false == server.empty () && false == cacheDirectory.empty() )
   {
-#if USE_STAR_SYSTEM
     StarSystem::RasterLayerWms::Extents extents ( -180, -90, 180, 90 );
     
     StarSystem::RasterLayerWms::Options options;
@@ -117,15 +124,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
     
     // Make the layer
     StarSystem::RasterLayerWms::RefPtr layer ( new StarSystem::RasterLayerWms ( extents, server, options ) );
-#else
-    WmsLayer::RefPtr layer ( new WmsLayer );
-    layer->server ( server );
-    
 
-    // Set the image type.
-    layer->imageType ( format );
-
-#endif
     // Set the cache directory.
     layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
     
@@ -174,4 +173,54 @@ void AddWmsLayerWidget::on_addOptionButton_clicked()
   _optionsWidget->layout()->addWidget( widget );
   
   _options.push_back ( widget );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the capabilites of the server.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddWmsLayerWidget::on_capabilitiesButton_clicked()
+{
+  // Url request.
+  std::string request ( _server->text().toStdString() + "?request=GetCapabilities" );
+  
+  // File to download to.
+  Usul::File::Temp temp;
+  
+  // Download.
+  Usul::Network::Curl curl ( request, temp.name() );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), "3034499311" );
+  
+  // File contents.
+  std::string contents;
+  Usul::File::contents ( temp.name(), contents );
+  
+  QDialog dialog;
+  
+  QVBoxLayout* layout ( new QVBoxLayout );
+  
+  QTextEdit *edit ( new QTextEdit );
+  edit->setPlainText ( contents.c_str() );
+  edit->setReadOnly( true );
+  
+  layout->addWidget ( edit );
+  
+  dialog.setLayout ( layout );
+
+  dialog.exec();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the server text has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddWmsLayerWidget::_onServerTextChanged ( const QString& text )
+{
+  emit serverValid ( false == text.isEmpty() );
 }

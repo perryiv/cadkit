@@ -11,8 +11,8 @@
 #ifndef __POSTGIS_DATABASE_PAGE_H__
 #define __POSTGIS_DATABASE_PAGE_H__
 
-#include "Minerva/Core/DB/Connection.h"
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/DataSources/PG/Connection.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
 
 #include "QtGui/QWidget"
 
@@ -23,7 +23,7 @@ class DatabasePage : public QWidget
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::Layers::Layer Layer;
+  typedef Minerva::Layers::PostGIS::Layer Layer;
 
   DatabasePage  ( QWidget * parent = 0x0 );
   virtual ~DatabasePage ();
@@ -44,7 +44,7 @@ protected slots:
 private:
   Layer::RefPtr   _layer;
   QListWidget    *_listView;
-  Minerva::Core::DB::Connection::RefPtr _connection;
+  Minerva::DataSources::PG::Connection::RefPtr _connection;
 };
 
 

@@ -54,40 +54,17 @@ Usul::Math::Vec3d Point::pointData( )
 
   if( project.valid() )
   {
-    point.set( _point[0] + _offset[0], _point[1] + _offset[1], _point[2] + _offset[2] );
+    osg::Vec3f offset ( this->spatialOffset() );
+    int srid ( this->srid() );
+    
+    point.set( _point[0] + offset[0], _point[1] + offset[1], _point[2] + offset[2] );
 
     Usul::Math::Vec3d latLongPoint;
-    project->projectToSpherical( point, _srid, latLongPoint );
+    project->projectToSpherical( point, srid, latLongPoint );
     return latLongPoint;
   }
 
   return _point;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the center of the geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3f Point::geometryCenter ( unsigned int& srid )
-{
-  return Point::geometryCenter( this->spatialOffset(), srid );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the center of the geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3f Point::geometryCenter ( const osg::Vec3f& offset, unsigned int& srid )
-{
-  srid = this->srid();
-  osg::Vec3f center ( static_cast<osg::Vec3f::value_type> ( _point[0] + _offset[0] ), static_cast<osg::Vec3f::value_type> ( _point[1] + _offset[1] ), static_cast<osg::Vec3f::value_type> ( _offset[2] ) );
-  return center;
 }
 
 

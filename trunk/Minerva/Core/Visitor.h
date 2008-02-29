@@ -34,11 +34,6 @@ namespace Minerva
     namespace Layers 
     {
       class VectorGroup;
-      class Layer;
-      class LineLayer;
-      class PointLayer;
-      class PointTimeLayer;
-      class PolygonLayer;
     }
 
     class MINERVA_EXPORT Visitor : public Usul::Base::Referenced
@@ -49,7 +44,6 @@ namespace Minerva
       typedef Usul::Base::Referenced                  BaseClass;
       typedef Minerva::Core::DataObjects::DataObject  DataObject;
       typedef Minerva::Core::Layers::Vector           Vector;
-      typedef Minerva::Core::Layers::Layer            Layer;
 
       USUL_DECLARE_REF_POINTERS ( Visitor );
 
@@ -89,31 +83,6 @@ namespace Minerva
       virtual void visit ( Minerva::Core::Layers::VectorGroup& group )
       {
         this->visit ( USUL_UNSAFE_CAST ( Vector&, group ) );
-      }
-      
-      virtual void visit ( Minerva::Core::Layers::Layer& layer )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( Vector&, layer ) );
-      }
-
-      virtual void visit ( Minerva::Core::Layers::LineLayer& lineLayer )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( Layer&, lineLayer ) );
-      }
-
-      virtual void visit ( Minerva::Core::Layers::PointLayer& pointLayer )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( Layer&, pointLayer ) );
-      }
-
-      virtual void visit ( Minerva::Core::Layers::PointTimeLayer& pointTimeLayer )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( Layer&, pointTimeLayer ) );
-      }
-
-      virtual void visit ( Minerva::Core::Layers::PolygonLayer& polygonLayer )
-      {
-        this->visit ( USUL_UNSAFE_CAST ( Layer&, polygonLayer ) );
       }
 
     protected:

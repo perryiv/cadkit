@@ -16,9 +16,11 @@
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ISerialize.h"
+#include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Math/Vector2.h"
 
@@ -40,7 +42,9 @@ class MINERVA_EXPORT Vector : public Usul::Base::Object,
                               public Usul::Interfaces::ILayer,
                               public Usul::Interfaces::ISerialize,
                               public Usul::Interfaces::IUpdateListener,
-                              public Minerva::Interfaces::IDirtyScene
+  public Minerva::Interfaces::IDirtyScene,
+  public Usul::Interfaces::ITreeNode,
+  public Usul::Interfaces::IBooleanState
 {
 public:
   /// Typedefs.
@@ -122,6 +126,21 @@ protected:
   
   /// Build the scene.
   void                        _buildScene( Usul::Interfaces::IUnknown *caller );
+  
+  // Get the number of children (ITreeNode).
+  virtual unsigned int        getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *         getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                setTreeNodeName ( const std::string & );
+  virtual std::string         getTreeNodeName() const;
+  
+  // Set/get the state (IBooleanState).
+  virtual void                setBooleanState ( bool );
+  virtual bool                getBooleanState() const;
+  
 private:
   // Do not use.
   Vector& operator= ( const Vector& rhs );

@@ -13,8 +13,8 @@
 
 #include "StarSystem/RasterLayerOssim.h"
 
-#include "Minerva/Core/Layers/Layer.h"
-#include "Minerva/Core/Layers/PolygonLayer.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
+#include "Minerva/Layers/PostGIS/PolygonLayer.h"
 
 #include "Usul/File/Temp.h"
 
@@ -31,8 +31,8 @@ class RasterPolygonLayer : public StarSystem::RasterLayer
 {
 public:
   typedef StarSystem::RasterLayer BaseClass;
-  typedef Minerva::Core::Layers::Layer Layer;
-  typedef Minerva::Core::Layers::PolygonLayer PolygonLayer;
+  typedef Minerva::Layers::PostGIS::Layer Layer;
+  typedef Minerva::Layers::PostGIS::PolygonLayer PolygonLayer;
   
   RasterPolygonLayer ( Layer* layer );
   

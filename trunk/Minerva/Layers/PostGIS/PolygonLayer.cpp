@@ -8,8 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/PolygonLayer.h"
-#include "Minerva/Core/postGIS/Factory.h"
+#include "Minerva/Layers/PostGIS/PolygonLayer.h"
+#include "Minerva/Layers/PostGIS/BinaryParser.h"
+
 #include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/Visitor.h"
 
@@ -26,7 +27,7 @@ USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
 USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4 );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
-using namespace Minerva::Core::Layers;
+using namespace Minerva::Layers::PostGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PolygonLayer, PolygonLayer::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( PolygonLayer );
@@ -124,7 +125,7 @@ PolygonLayer::~PolygonLayer()
 
 void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
-  Minerva::Core::DB::Connection::ScopedConnection scopedConnection ( *this->connection() );
+  Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
 
@@ -145,14 +146,13 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
       int srid ( iter["srid"].as < int > () );
 
       // Create the geometry.
-      typedef Minerva::Core::postGIS::Factory Factory;
       pqxx::binarystring buffer ( iter["geom"] );
-      Factory::Geometries geometries ( Factory::instance ().createFromBinary ( &buffer.front() ) );
+      BinaryParser parser;
+      BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
 
-      for ( Factory::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+      for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
         (*geom)->srid( srid );
-        (*geom)->databaseInfo ( this->connection(), id, dataTable );
         Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
         Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
 

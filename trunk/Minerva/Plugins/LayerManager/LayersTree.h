@@ -20,6 +20,8 @@
 class QTreeWidget;
 class QTreeWidgetItem;
 
+namespace QtTools { class TreeControl; }
+
 class LayersTree : public QWidget
 {
   Q_OBJECT;
@@ -53,7 +55,8 @@ protected slots:
   void _onAddLayerFavorites();
 
 private:
-  QTreeWidget *_tree;
+  QtTools::TreeControl *_tree;
+  //QTreeWidget *_tree;
   LayerMap _layerMap;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   Usul::Interfaces::IUnknown::QueryPtr _document;

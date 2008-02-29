@@ -11,7 +11,7 @@
 #ifndef __POSTGIS_SINGLE_COLOR_WIDGET_H__
 #define __POSTGIS_SINGLE_COLOR_WIDGET_H__
 
-#include "Minerva/Core/Layers/Layer.h"
+#include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Core/Functors/SingleColorFunctor.h"
 
 #include "QtGui/QWidget"
@@ -23,7 +23,7 @@ class SingleColorWidget : public QWidget
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::Layers::Layer  Layer;
+  typedef Minerva::Layers::PostGIS::Layer  Layer;
 
   SingleColorWidget ( Layer *layer, QWidget *parent = 0x0 );
   virtual ~SingleColorWidget();

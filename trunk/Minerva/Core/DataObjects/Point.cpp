@@ -21,7 +21,6 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPointData.h"
-#include "Usul/Interfaces/IGeometryCenter.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Trace/Trace.h"
@@ -29,6 +28,7 @@
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
+#include "OsgTools/Ray.h"
 
 #include "osg/Geometry"
 #include "osg/Point"
@@ -58,6 +58,7 @@ Point::Point() :
   _autotransform ( true ),
   _material ( new osg::Material )
 {
+  USUL_TRACE_SCOPE;
   _material->setSpecular ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.4, 0.4, 0.4, 1.0 ) );
   _material->setAmbient ( osg::Material::FRONT_AND_BACK, osg::Vec4( 0.2, 0.2, 0.2, 1.0 ) );
   _material->setShininess( osg::Material::FRONT_AND_BACK, 50 );
@@ -72,6 +73,7 @@ Point::Point() :
 
 Point::~Point()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -83,6 +85,7 @@ Point::~Point()
 
 void Point::accept ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
   visitor.visit ( *this );
 }
 
@@ -95,6 +98,7 @@ void Point::accept ( Minerva::Core::Visitor& visitor )
 
 float Point::size () const
 {
+  USUL_TRACE_SCOPE;
   return _size;
 }
 
@@ -107,6 +111,7 @@ float Point::size () const
 
 void Point::size ( float size )
 {
+  USUL_TRACE_SCOPE;
   _size = size;
   this->dirty( true );
 }
@@ -120,6 +125,7 @@ void Point::size ( float size )
 
 float Point::secondarySize () const
 {
+  USUL_TRACE_SCOPE;
   return _secondarySize;
 }
 
@@ -132,6 +138,7 @@ float Point::secondarySize () const
 
 void Point::secondarySize ( float size )
 {
+  USUL_TRACE_SCOPE;
   _secondarySize = size;
   this->dirty( true );
 }
@@ -145,6 +152,7 @@ void Point::secondarySize ( float size )
 
 unsigned int Point::primitiveId () const
 {
+  USUL_TRACE_SCOPE;
   return _primitiveId;
 }
 
@@ -157,6 +165,7 @@ unsigned int Point::primitiveId () const
 
 void Point::primitiveId ( unsigned int primitiveId )
 {
+  USUL_TRACE_SCOPE;
   _primitiveId = primitiveId;
   this->dirty( true );
 }
@@ -282,6 +291,21 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
     group->addChild ( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] ) ) );
   }
   
+  if ( this->extrude() )
+  {
+    double height ( elevation.valid() ? elevation->elevationAtLatLong ( _center[1], _center[0] ) : 0.0 );
+    Usul::Math::Vec3d p ( _center[0], _center[1], height );
+    Detail::convertToPlanet ( p, caller );
+    
+    OsgTools::Ray ray;
+    ray.thickness ( 1 );
+    ray.color ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+    ray.start ( osg::Vec3 ( p[0], p[1], p[2] ) );
+    ray.end ( _centerEarth );
+    
+    group->addChild ( ray() );
+  }
+  
   // Need to track down the reason for the difference on windows and linux...
 #ifdef __linux
   ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
@@ -327,8 +351,10 @@ osg::Node* Point::_buildGeometry( Usul::Interfaces::IUnknown* caller )
 
 osg::Node* Point::_buildPoint()
 {
+  USUL_TRACE_SCOPE;
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  //geode->setUserData( new UserData( this ) );
+  geode->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
   
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
 
@@ -373,6 +399,8 @@ osg::Node* Point::_buildPoint()
 
 osg::Node* Point::_buildSphere()
 {
+  USUL_TRACE_SCOPE;
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
@@ -408,8 +436,10 @@ osg::Node* Point::_buildSphere()
 
 osg::Node* Point::_buildCone( bool invert )
 {
+  USUL_TRACE_SCOPE;
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  //geode->setUserData( new UserData( this ) );
+  geode->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
   float height ( _size );
   float radius ( height * 0.25 );
@@ -471,8 +501,10 @@ osg::Node* Point::_buildCone( bool invert )
 
 osg::Node* Point::_buildDisk()
 {
+  USUL_TRACE_SCOPE;
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  //geode->setUserData( new UserData( this ) );
+  geode->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
   // For now use a short cylinder.  Ellipsoid would be better.
   osg::ref_ptr < osg::Cylinder > cylinder ( new osg::Cylinder( osg::Vec3( 0.0, 0.0, 0.0 ), _size, _size * 0.25 ) );
@@ -503,8 +535,10 @@ osg::Node* Point::_buildDisk()
 
 osg::Node* Point::_buildCube()
 {
+  USUL_TRACE_SCOPE;
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  //geode->setUserData( new UserData( this ) );
+  geode->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
   geode->addDrawable( BaseClass::shapeFactory()->cube ( osg::Vec3 ( _size, _size, _size )  ) );
 
@@ -537,7 +571,7 @@ osg::Node* Point::_buildCylinder( Usul::Interfaces::IUnknown * caller )
   USUL_TRACE_SCOPE;
 
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  //geode->setUserData( new UserData( this ) );
+  geode->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
   if( this->size() > 0 )
   {
@@ -580,6 +614,7 @@ osg::Node* Point::_buildCylinder( Usul::Interfaces::IUnknown * caller )
 
 void Point::quality( float value )
 {
+  USUL_TRACE_SCOPE;
   _quality = value;
 }
 
@@ -592,6 +627,7 @@ void Point::quality( float value )
 
 float Point::quality() const
 {
+  USUL_TRACE_SCOPE;
   return _quality;
 }
 
@@ -604,6 +640,7 @@ float Point::quality() const
 
 void Point::autotransform ( bool b )
 {
+  USUL_TRACE_SCOPE;
   _autotransform = b;
 }
 
@@ -616,6 +653,7 @@ void Point::autotransform ( bool b )
 
 bool Point::autotransform () const
 {
+  USUL_TRACE_SCOPE;
   return _autotransform;
 }
 
@@ -628,5 +666,6 @@ bool Point::autotransform () const
 
 osg::Vec3d Point::center () const
 {
+  USUL_TRACE_SCOPE;
   return _center;
 }

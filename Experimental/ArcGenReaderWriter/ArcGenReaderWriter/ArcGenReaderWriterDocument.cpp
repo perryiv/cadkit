@@ -17,17 +17,17 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Components/Manager.h"
 
+#include "Usul/Convert/Convert.h"
 #include "Usul/Strings/Convert.h"
-#include "Usul/Strings/Format.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Find.h"
 #include "Usul/File/Slash.h"
-#include "Usul/Print/Matrix.h"
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Print/Matrix.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -354,8 +354,8 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
   std::cout << "ID,Length" << std::endl;
 
   // write the id number and measurement value
-  outfile << Usul::Strings::format( "0,", _measurement ) << std::endl;
-  std::cout << Usul::Strings::format( "0,", _measurement ) << std::endl;
+  outfile << "0," << Usul::Convert::Type<double,std::string>::convert ( _measurement ) << std::endl;
+  std::cout << Usul::Strings::format ( "0,", _measurement ) << std::endl;
 
   for( Positions::const_iterator iter = _positions.begin(); iter < _positions.end(); ++iter )
   {
@@ -381,9 +381,9 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
     }
 
     // Write the coordinate to the gen file
-    outfile << Usul::Strings::format( latLon[0], ",", latLon[1] ) << std::endl;
+    typedef Usul::Convert::Type<Vec3d::value_type,std::string> Converter;
+    outfile << Converter::convert ( latLon[0] ) << "," << Converter::convert ( latLon[1] ) << std::endl;
     std::cout << Usul::Strings::format( latLon[0], ",", latLon[1] ) << std::endl;
-    
   }
 
   // End of the gen file notation
@@ -401,7 +401,7 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void ArcGenReaderWriterDocument::positions( Positions p )
+void ArcGenReaderWriterDocument::setPolyLineVertices ( Positions p )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

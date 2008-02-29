@@ -2410,11 +2410,11 @@ void Viewer::_addAxes()
   osg::ref_ptr< osg::Group > group ( _sceneManager->projectionGroupGet ( OsgTools::Render::Constants::AXES ) );
 
   // Axes Dragger
-  osg::ref_ptr< OsgTools::Widgets::Axes > axes ( new OsgTools::Widgets::Axes );
-  axes->setMatrix( osg::Matrix::translate ( osg::Vec3( 50, 50, -100 ) ) );
-  axes->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+  osg::ref_ptr < OsgTools::Widgets::Axes > axes ( new OsgTools::Widgets::Axes );
+  axes->setMatrix ( osg::Matrix::translate ( osg::Vec3 ( 50, 50, -100 ) ) );
+  axes->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
-  group->addChild( axes.get() );
+  group->addChild ( axes.get() );
   
   // The scene has changed.
   this->changedScene();
@@ -3765,7 +3765,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
 
     // Get step size.
-    const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 50, true ) );
+    const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 25, true ) );
 
     // Animate through the path.
     animate->animatePath ( matrices, steps );

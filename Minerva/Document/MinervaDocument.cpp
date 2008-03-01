@@ -404,7 +404,8 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
         body->accept ( *setter );
     }
     
-    this->activeBody ( _bodies.front() );
+    if ( false == _bodies.empty() )
+      this->activeBody ( _bodies.front() );
   }
   else
   {

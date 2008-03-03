@@ -489,6 +489,14 @@
 					Name="Visitors"
 					>
 					<File
+						RelativePath=".\Visitors\BuildLegend.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\BuildLegend.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Visitors\BuildScene.cpp"
 						>
 					</File>

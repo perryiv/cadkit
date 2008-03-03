@@ -237,6 +237,7 @@ void Tile::updateMesh()
     for ( unsigned int j = 0; j < mesh.columns(); ++j )
     {
       const double v ( static_cast<double> ( j ) / ( mesh.columns() - 1 ) );
+      
       const double lon ( mn[0] + u * ( mx[0] - mn[0] ) );
       const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
 

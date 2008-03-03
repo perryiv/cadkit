@@ -12,14 +12,19 @@
 
 #include "Minerva/Core/Visitor.h"
 
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Vector2.h"
 #include "Usul/Functions/GUID.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Bits/Bits.h"
+#include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Math/NaN.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Split.h"
 
@@ -76,11 +81,14 @@ Layer::Layer() : BaseClass(),
   _customQuery ( false ),
   _legendFlags ( 0 ),
   _minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
-  _alpha ( 1.0f )
+  _alpha ( 1.0f ),
+  _updating ( false )
 {
   USUL_TRACE_SCOPE;
 
   this->_registerMembers();
+  
+  this->dirtyData ( true );
 }
 
 
@@ -112,7 +120,8 @@ Layer::Layer( const Layer& layer )  :
   _customQuery( layer._customQuery ),
   _legendFlags ( layer._legendFlags ),
   _minMax( layer._minMax ),
-  _alpha ( layer._alpha )
+  _alpha ( layer._alpha ),
+  _updating ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -120,6 +129,8 @@ Layer::Layer( const Layer& layer )  :
     _colorFunctor = layer._colorFunctor->clone();
 
   this->_registerMembers();
+  
+  this->dirtyData ( true );
 }
 
 
@@ -291,7 +302,12 @@ Usul::Types::Uint32 Layer::renderBin( ) const
 void Layer::query ( const std::string& query )
 {
   Guard guard( this->mutex() );
-  _query = query;
+  
+  if ( query != _query )
+  {
+    _query = query;
+    this->dirtyData ( true );
+  }
 }
 
 
@@ -857,6 +873,13 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
 
 void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
+  // Help shorten lines.
+  namespace UA = Usul::Adaptors;
+  
+  // Scope the reading flag.
+  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( UA::bind1 ( true,  UA::memberFunction ( this, &Layer::updating ) ), 
+                                                                UA::bind1 ( false, UA::memberFunction ( this, &Layer::updating ) ) ) );
+  
   // Clear what we have.
   this->clearDataObjects();
 
@@ -896,6 +919,35 @@ void Layer::modifyVectorData ( Usul::Interfaces::IUnknown *caller )
   
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  // See if our data is dirty.
+  if ( true == this->dirtyData() && false == this->isUpdating() )
+  {
+    // Create a job to update the file.
+    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind2 ( caller, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ),
+                                                                               Usul::Adaptors::memberFunction ( this, &Layer::buildVectorData ) ) ) );
+    
+    if ( true == job.valid() )
+    {
+      // Set the updating flag now so we don't launch another job before this one starts.
+      this->updating ( true );
+      
+      // Add job to manager.
+      Usul::Jobs::Manager::instance().addJob ( job.get() );
+    }
+  }
+  
+  BaseClass::updateNotify ( caller );
 }
 
 
@@ -1228,4 +1280,32 @@ std::string Layer::projectionWKT( int srid ) const
   
   // Return the result.
   return result[0]["srtext"].as < std::string > ();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the updating state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::updating( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _updating = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the updating state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Layer::isUpdating() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _updating;
 }

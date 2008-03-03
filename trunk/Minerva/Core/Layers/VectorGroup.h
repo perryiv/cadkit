@@ -43,7 +43,7 @@ public:
   virtual void                traverse ( Minerva::Core::Visitor& visitor );
   
   /// Build the scene.
-  virtual osg::Node *         buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual osg::Node *         buildScene ( const Options &options = Options(), Usul::Interfaces::IUnknown *caller = 0x0 );
   
   /// Add a layer.
   void                        addLayer ( Vector* layer );

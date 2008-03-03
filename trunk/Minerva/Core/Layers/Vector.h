@@ -42,9 +42,9 @@ class MINERVA_EXPORT Vector : public Usul::Base::Object,
                               public Usul::Interfaces::ILayer,
                               public Usul::Interfaces::ISerialize,
                               public Usul::Interfaces::IUpdateListener,
-  public Minerva::Interfaces::IDirtyScene,
-  public Usul::Interfaces::ITreeNode,
-  public Usul::Interfaces::IBooleanState
+                              public Minerva::Interfaces::IDirtyScene,
+                              public Usul::Interfaces::ITreeNode,
+                              public Usul::Interfaces::IBooleanState
 {
 public:
   /// Typedefs.

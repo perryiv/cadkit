@@ -1733,21 +1733,21 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
 			remoteInfo = XmlTree;
 		};
 		668DB5040D788D3400EA4DCD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
+			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
 			remoteInfo = SerializeXML;
 		};
 		668DB7E70D78BD3C00EA4DCD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66EF17680D15190B00B4B1AA /* Minerva */;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA;
 			remoteInfo = Minerva;
 		};
 		668DC8E30D18E0D9003AB569 /* PBXContainerItemProxy */ = {

@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				669B697D0D7C9BE1001392F1 /* PBXTargetDependency */,
 				668C985F0D43E3940007D7F4 /* PBXTargetDependency */,
 				668C946D0D41D7290007D7F4 /* PBXTargetDependency */,
 				66CCE8870D2F54150084E49D /* PBXTargetDependency */,
@@ -833,6 +834,11 @@
 		669A1C310D61F9AE00195DCC /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
 		669B69160D7C9078001392F1 /* BuildLegend.h in Headers */ = {isa = PBXBuildFile; fileRef = 669B69140D7C9078001392F1 /* BuildLegend.h */; };
 		669B69170D7C9078001392F1 /* BuildLegend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669B69150D7C9078001392F1 /* BuildLegend.cpp */; };
+		669B69710D7C9822001392F1 /* GdalLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669B696F0D7C9822001392F1 /* GdalLayer.cpp */; };
+		669B69720D7C9822001392F1 /* GdalLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 669B69700D7C9822001392F1 /* GdalLayer.h */; };
+		669B69790D7C9BAE001392F1 /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
+		669B69AB0D7CA2D2001392F1 /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
+		669B69D20D7CA2D5001392F1 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		669C28DA0D57E51900A5D1D3 /* GradientIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */; };
 		669C28DB0D57E51900A5D1D3 /* GradientIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28CC0D57E51900A5D1D3 /* GradientIcon.h */; };
 		669C28DC0D57E51900A5D1D3 /* Icon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CD0D57E51900A5D1D3 /* Icon.cpp */; };
@@ -1856,6 +1862,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 66942EB80D77EA4F00633017;
 			remoteInfo = MinervaPostgres;
+		};
+		669B697A0D7C9BB2001392F1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA /* Minerva */;
+			remoteInfo = Minerva;
+		};
+		669B697C0D7C9BE1001392F1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 669B696A0D7C96E9001392F1 /* MinervaGdalLayer */;
+			remoteInfo = MinervaGdalLayer;
 		};
 		66A113120D2EBCF2009B29ED /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3467,6 +3487,9 @@
 		6699A0EE0D1EFC7300A9AE47 /* IWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWorkspace.h; sourceTree = "<group>"; };
 		669B69140D7C9078001392F1 /* BuildLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildLegend.h; sourceTree = "<group>"; };
 		669B69150D7C9078001392F1 /* BuildLegend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BuildLegend.cpp; sourceTree = "<group>"; };
+		669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaGdalLayerd.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		669B696F0D7C9822001392F1 /* GdalLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GdalLayer.cpp; sourceTree = "<group>"; };
+		669B69700D7C9822001392F1 /* GdalLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GdalLayer.h; sourceTree = "<group>"; };
 		669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GradientIcon.cpp; sourceTree = "<group>"; };
 		669C28CC0D57E51900A5D1D3 /* GradientIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientIcon.h; sourceTree = "<group>"; };
 		669C28CD0D57E51900A5D1D3 /* Icon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Icon.cpp; sourceTree = "<group>"; };
@@ -4242,6 +4265,16 @@
 				668DB5080D788D3D00EA4DCD /* libSerializeXML.dylib in Frameworks */,
 				668DB5070D788D3A00EA4DCD /* libXmlTree.dylib in Frameworks */,
 				669432270D77EA9900633017 /* libUsul.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		669B69690D7C96E9001392F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				669B69D20D7CA2D5001392F1 /* osg.framework in Frameworks */,
+				669B69AB0D7CA2D2001392F1 /* GDAL.framework in Frameworks */,
+				669B69790D7C9BAE001392F1 /* libMinerva.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5366,6 +5399,7 @@
 				668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */,
 				66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */,
 				66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */,
+				669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */,
 			);
 			name = "Cadkit Libraries";
 			sourceTree = "<group>";
@@ -6497,6 +6531,8 @@
 		668E0DDB0D4063AB0030649B /* GDAL */ = {
 			isa = PBXGroup;
 			children = (
+				669B696F0D7C9822001392F1 /* GdalLayer.cpp */,
+				669B69700D7C9822001392F1 /* GdalLayer.h */,
 				668E0DDC0D4063AB0030649B /* CMakeLists.txt */,
 			);
 			path = GDAL;
@@ -7282,22 +7318,22 @@
 		66EF17CD0D15193000B4B1AA /* Visitors */ = {
 			isa = PBXGroup;
 			children = (
+				669B69150D7C9078001392F1 /* BuildLegend.cpp */,
+				669B69140D7C9078001392F1 /* BuildLegend.h */,
 				668DB5F20D78A77100EA4DCD /* BuildScene.cpp */,
 				668DB5F30D78A77100EA4DCD /* BuildScene.h */,
-				668DB5F40D78A77100EA4DCD /* Scale.cpp */,
-				668DB5F50D78A77100EA4DCD /* Scale.h */,
-				668DB5F60D78A77100EA4DCD /* SetJobManager.cpp */,
-				668DB5F70D78A77100EA4DCD /* SetJobManager.h */,
 				66EF17CE0D15193000B4B1AA /* FindMinMaxDates.cpp */,
 				66EF17CF0D15193000B4B1AA /* FindMinMaxDates.h */,
 				660C4D990D53DD3A0072942F /* ResizePoints.cpp */,
 				660C4D9A0D53DD3A0072942F /* ResizePoints.h */,
+				668DB5F40D78A77100EA4DCD /* Scale.cpp */,
+				668DB5F50D78A77100EA4DCD /* Scale.h */,
+				668DB5F60D78A77100EA4DCD /* SetJobManager.cpp */,
+				668DB5F70D78A77100EA4DCD /* SetJobManager.h */,
 				6685C3490D45390900103700 /* StackPoints.cpp */,
 				6685C3480D45390900103700 /* StackPoints.h */,
 				66EF17D00D15193000B4B1AA /* TemporalAnimation.cpp */,
 				66EF17D10D15193000B4B1AA /* TemporalAnimation.h */,
-				669B69140D7C9078001392F1 /* BuildLegend.h */,
-				669B69150D7C9078001392F1 /* BuildLegend.cpp */,
 			);
 			path = Visitors;
 			sourceTree = "<group>";
@@ -7815,6 +7851,14 @@
 				669432210D77EA7800633017 /* ConnectionPool.h in Headers */,
 				669432230D77EA7800633017 /* Info.h in Headers */,
 				6694322E0D77EAEA00633017 /* Export.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		669B69670D7C96E9001392F1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				669B69720D7C9822001392F1 /* GdalLayer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8672,6 +8716,24 @@
 			productReference = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		669B696A0D7C96E9001392F1 /* MinervaGdalLayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 669B696E0D7C96FA001392F1 /* Build configuration list for PBXNativeTarget "MinervaGdalLayer" */;
+			buildPhases = (
+				669B69670D7C96E9001392F1 /* Headers */,
+				669B69680D7C96E9001392F1 /* Sources */,
+				669B69690D7C96E9001392F1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				669B697B0D7C9BB2001392F1 /* PBXTargetDependency */,
+			);
+			name = MinervaGdalLayer;
+			productName = MinervaGdalLayer;
+			productReference = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		66A112B00D2EBADC009B29ED /* OssimLayerQt */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66A112B60D2EBAE0009B29ED /* Build configuration list for PBXNativeTarget "OssimLayerQt" */;
@@ -9052,6 +9114,7 @@
 				66C8FE740D12084C003F6A58 /* MenuKit */,
 				66EF17680D15190B00B4B1AA /* Minerva */,
 				66EF189B0D1581ED00B4B1AA /* MinervaDocument */,
+				669B696A0D7C96E9001392F1 /* MinervaGdalLayer */,
 				668E0DD30D4062090030649B /* MinervaKmlLayer */,
 				66EF18E10D15C0E600B4B1AA /* MinervaModel */,
 				66942DB50D77D66900633017 /* MinervaPostGISLayer */,
@@ -9764,6 +9827,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		669B69680D7C96E9001392F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				669B69710D7C9822001392F1 /* GdalLayer.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66A112AE0D2EBADC009B29ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -10460,6 +10531,16 @@
 			isa = PBXTargetDependency;
 			target = 66942EB80D77EA4F00633017 /* MinervaPostgres */;
 			targetProxy = 6694322A0D77EAA800633017 /* PBXContainerItemProxy */;
+		};
+		669B697B0D7C9BB2001392F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF17680D15190B00B4B1AA /* Minerva */;
+			targetProxy = 669B697A0D7C9BB2001392F1 /* PBXContainerItemProxy */;
+		};
+		669B697D0D7C9BE1001392F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 669B696A0D7C96E9001392F1 /* MinervaGdalLayer */;
+			targetProxy = 669B697C0D7C9BE1001392F1 /* PBXContainerItemProxy */;
 		};
 		66A113130D2EBCF2009B29ED /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -12227,6 +12308,57 @@
 			};
 			name = Release;
 		};
+		669B696C0D7C96E9001392F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					../../../Library/Frameworks/GDAL.framework/Headers,
+					../../../sdk/3rdParty/include,
+					../,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaGdalLayerd;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		669B696D0D7C96E9001392F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../../../Library/Frameworks/GDAL.framework/Headers,
+					../../../sdk/3rdParty/include,
+					../,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaGdalLayer;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		66A112B20D2EBADD009B29ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -13479,6 +13611,15 @@
 			buildConfigurations = (
 				669430DC0D77EA5100633017 /* Debug */,
 				669430DD0D77EA5100633017 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		669B696E0D7C96FA001392F1 /* Build configuration list for PBXNativeTarget "MinervaGdalLayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				669B696C0D7C96E9001392F1 /* Debug */,
+				669B696D0D7C96E9001392F1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

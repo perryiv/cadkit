@@ -42,6 +42,7 @@ Vector::Vector() :
   _root ( new osg::Group ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
+  USUL_TRACE_SCOPE;
   this->_registerMembers();
 }
 
@@ -64,6 +65,7 @@ Vector::Vector( const Vector& rhs ) :
   _root ( new osg::Group ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
+  USUL_TRACE_SCOPE;
   this->_registerMembers();
 }
 
@@ -76,6 +78,7 @@ Vector::Vector( const Vector& rhs ) :
 
 Vector::~Vector()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -87,6 +90,7 @@ Vector::~Vector()
 
 void Vector::_registerMembers()
 {
+  USUL_TRACE_SCOPE;
   SERIALIZE_XML_ADD_MEMBER ( _name );
   SERIALIZE_XML_ADD_MEMBER ( _guid );
   SERIALIZE_XML_ADD_MEMBER ( _shown );
@@ -101,6 +105,7 @@ void Vector::_registerMembers()
 
 Usul::Interfaces::IUnknown* Vector::queryInterface ( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
@@ -132,6 +137,7 @@ Usul::Interfaces::IUnknown* Vector::queryInterface ( unsigned long iid )
 
 void Vector::accept ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
   visitor.visit ( *this );
 }
 
@@ -144,6 +150,7 @@ void Vector::accept ( Minerva::Core::Visitor& visitor )
 
 void Vector::traverse ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   for ( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
   {
@@ -163,7 +170,8 @@ void Vector::traverse ( Minerva::Core::Visitor& visitor )
 
 void Vector::name( const std::string& name )
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _name = name;
 }
 
@@ -176,6 +184,7 @@ void Vector::name( const std::string& name )
 
 std::string Vector::name() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _name;
 }
@@ -189,6 +198,7 @@ std::string Vector::name() const
 
 std::string Vector::guid() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _guid;
 }
@@ -202,8 +212,10 @@ std::string Vector::guid() const
 
 void Vector::showLayer( bool b )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _shown = b;
+  this->dirtyScene ( true );
 }
 
 
@@ -215,6 +227,7 @@ void Vector::showLayer( bool b )
 
 bool Vector::showLayer() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _shown;
 }
@@ -228,6 +241,7 @@ bool Vector::showLayer() const
 
 void Vector::addDataObject ( DataObject *dataObject )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   if ( 0x0 != dataObject )
@@ -243,6 +257,7 @@ void Vector::addDataObject ( DataObject *dataObject )
 
 void Vector::clearDataObjects ()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _dataObjects.clear();
 }
@@ -256,6 +271,7 @@ void Vector::clearDataObjects ()
 
 unsigned int Vector::number() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _dataObjects.size();
 }
@@ -269,7 +285,8 @@ unsigned int Vector::number() const
 
 osg::Node * Vector::buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller )
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _root.get();
 }
 
@@ -282,16 +299,24 @@ osg::Node * Vector::buildScene ( const Options &options, Usul::Interfaces::IUnkn
 
 void Vector::_buildScene( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   Guard guard( this->mutex() );
   
   if ( true == _root.valid() || this->dirtyScene() )
   {
+    // For debugging...
+    _root->setName ( this->name() );
+    
+    // Remove all children.
     OsgTools::Group::removeAllChildren ( _root.get() );
 
-    for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
+    if ( true == this->showLayer () )
     {
-      if ( (*iter).valid() )
-        _root->addChild( (*iter)->buildScene( caller ) );
+      for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
+      {
+        if ( (*iter).valid() )
+          _root->addChild( (*iter)->buildScene( caller ) );
+      }
     }
     
     // Our scene is no longer dirty.
@@ -308,6 +333,7 @@ void Vector::_buildScene( Usul::Interfaces::IUnknown *caller )
 
 unsigned int Vector::flags() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _flags;
 }
@@ -321,6 +347,7 @@ unsigned int Vector::flags() const
 
 void Vector::flags( unsigned int f )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _flags = f;
 }
@@ -334,7 +361,8 @@ void Vector::flags( unsigned int f )
 
 bool Vector::dirtyData() const
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Vector::DATA_DIRTY );
 }
 
@@ -347,7 +375,8 @@ bool Vector::dirtyData() const
 
 void Vector::dirtyData( bool b )
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Vector::DATA_DIRTY, b );
 }
 
@@ -360,7 +389,8 @@ void Vector::dirtyData( bool b )
 
 bool Vector::dirtyExtents() const
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Vector::EXTENTS_DIRTY );
 }
 
@@ -373,7 +403,8 @@ bool Vector::dirtyExtents() const
 
 void Vector::dirtyExtents( bool b )
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Vector::EXTENTS_DIRTY, b );
 }
 
@@ -386,7 +417,8 @@ void Vector::dirtyExtents( bool b )
 
 bool Vector::dirtyScene() const
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Vector::SCENE_DIRTY );
 }
 
@@ -399,7 +431,8 @@ bool Vector::dirtyScene() const
 
 void Vector::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
 {
-  Guard guard( this->mutex() );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Vector::SCENE_DIRTY, b );
 }
 
@@ -412,6 +445,7 @@ void Vector::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
 
 void Vector::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight )
 {
+  USUL_TRACE_SCOPE;
   if ( this->dirtyExtents() )
   {
     Usul::Math::Vec2d ll, ur;
@@ -442,6 +476,7 @@ void Vector::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRig
 
 void Vector::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
 {
+  USUL_TRACE_SCOPE;
   lowerLeft.set ( -180.0, -90.0 );
   upperRight.set ( 180.0, 90.0 );
 }
@@ -455,6 +490,7 @@ void Vector::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d
 
 void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
   if ( this->dirtyScene() )
     this->_buildScene( caller );
 }

@@ -190,6 +190,12 @@ public:
   std::string                 projectionWKT() const;
   std::string                 projectionWKT( int srid ) const;
 
+  // Update.
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+  
+  /// Set/get the updating state.
+  void                        updating( bool b );
+  bool                        isUpdating() const;
 protected:
 
   /// Use reference counting.
@@ -242,6 +248,7 @@ private:
   unsigned int                 _legendFlags;
   std::pair < double, double > _minMax;
   float                        _alpha;
+  bool                         _updating;
 
   SERIALIZE_XML_CLASS_NAME ( Layer );
 };

@@ -100,6 +100,9 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _elevation->name ( "Elevation" );
   _rasters->name ( "Rasters" );
   _vectorData->name ( "Vector" );
+  
+  // Add the vector data to the transform.
+  _transform->addChild ( _vectorData->buildScene () );
 }
 
 
@@ -837,6 +840,9 @@ void Body::deserialize ( const XmlTree::Node &node )
     const Tiles::value_type e ( *i );
     this->addTile ( Tile::Extents ( e[0], e[1], e[2], e[3] ) );
   }
+  
+  // Add the vector data to the transform.
+  _transform->addChild ( _vectorData->buildScene () );
 }
 
 
@@ -1017,10 +1023,13 @@ void Body::updateNotify ( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   
-  //  group->addChild ( _layers->buildScene ( options, caller ) );
-  
   // Update.
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  
+  // Update the vector group.
+  _vectorData->updateNotify ( unknown );
+  
+  // Update any other listeners.
   std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
 }
 

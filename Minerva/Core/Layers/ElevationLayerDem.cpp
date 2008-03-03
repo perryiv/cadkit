@@ -180,33 +180,32 @@ ElevationLayerDem::ImagePtr ElevationLayerDem::texture ( const Extents& extents,
     ossimGpt ul ( extents.maximum()[1], extents.minimum()[0] );
     ossimDpt point ( _projection->forward( ul ) );
 
+    // Shortcuts.
+    const Extents::Vertex &mn ( extents.minimum() );
+    const Extents::Vertex &mx ( extents.maximum() );
 #if 0
-    const double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
-    const double deltaY ( extents.maximum()[1] - extents.minimum()[1] );
-
     for ( unsigned int i = 0; i < height; ++i )
     {
-      const double v ( static_cast<double> ( i ) / ( height - 1 ) );
+      const double u ( static_cast<double> ( i ) / ( height - 1 ) );
       for ( unsigned int j = 0; j < width; ++j )
       {
-        const double u ( static_cast<double> ( j ) / ( width - 1 ) );
+        const double v ( static_cast<double> ( j ) / ( width - 1 ) );
         
         // Calculate current lat, lon.
-        const double longitude ( extents.minimum()[0] + ( u * deltaX ) );
-        const double latitude ( extents.maximum()[1] - ( v * deltaY ) );
+        const double longitude ( mn[0] + v * ( mx[0] - mn[0] ) );
+        const double latitude  ( mn[1] + u * ( mx[1] - mn[1] ) );        
 #else
-        // Shortcuts.
-        const Extents::Vertex &mn ( extents.minimum() );
-        const Extents::Vertex &mx ( extents.maximum() );
 
-        for ( int i = height - 1; i >= 0; --i )
-        {
-          const double u ( 1.0 - static_cast<double> ( i ) / ( height - 1 ) );
-          for ( unsigned int j = 0; j < width; ++j )
-          {
-            const double v ( static_cast<double> ( j ) / ( width - 1 ) );
-            const double longitude ( mn[0] + u * ( mx[0] - mn[0] ) );
-            const double latitude ( mn[1] + v * ( mx[1] - mn[1] ) );
+    for ( int i = height - 1; i >= 0; --i )
+    {
+      const double u ( 1.0 - static_cast<double> ( i ) / ( height - 1 ) );
+      for ( unsigned int j = 0; j < width; ++j )
+      {
+        const double v ( static_cast<double> ( j ) / ( width - 1 ) );
+        
+        // Calculate current lat, lon.
+        const double longitude ( mn[0] + u * ( mx[0] - mn[0] ) );
+        const double latitude  ( mn[1] + v * ( mx[1] - mn[1] ) );
 #endif
         // Get the elevation data.
         float elevation ( static_cast < float > ( this->value ( longitude, latitude ) ) );
@@ -218,7 +217,7 @@ ElevationLayerDem::ImagePtr ElevationLayerDem::texture ( const Extents& extents,
       }
     }
   }
-  
+      
   // Return our result.
   return result;
 }

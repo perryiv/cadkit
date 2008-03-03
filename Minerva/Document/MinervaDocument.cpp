@@ -472,6 +472,7 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
   this->_makePlanet();
   
   osg::ref_ptr<osg::Group> group ( new osg::Group );
+  group->setName ( "Minerva document" );
   for ( Bodies::const_iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );

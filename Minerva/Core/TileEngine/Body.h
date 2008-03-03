@@ -192,6 +192,9 @@ public:
   /// Update (Usul::Interfaces::IUpdateListener).
   virtual void              updateNotify ( Usul::Interfaces::IUnknown *caller );
   
+  /// Get the vector data.
+  VectorGroup::RefPtr       vectorData();
+  
   /// Add vector data.
   void                      vectorAppend ( Usul::Interfaces::IUnknown *unknown );
   

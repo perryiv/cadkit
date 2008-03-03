@@ -1141,6 +1141,7 @@ std::string Body::getTreeNodeName() const
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add vector data.
@@ -1160,7 +1161,20 @@ void Body::vectorAppend ( Usul::Interfaces::IUnknown *unknown )
     // Add to the update listeners.
     this->_addUpdateListener( unknown );
   }
-  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Body::VectorGroup::RefPtr Body::vectorData()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _vectorData.get();
 }
 
 

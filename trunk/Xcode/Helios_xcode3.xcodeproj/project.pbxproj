@@ -831,6 +831,8 @@
 		6699A1280D1EFE9E00A9AE47 /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
 		669A1C0A0D61F9A800195DCC /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
 		669A1C310D61F9AE00195DCC /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
+		669B69160D7C9078001392F1 /* BuildLegend.h in Headers */ = {isa = PBXBuildFile; fileRef = 669B69140D7C9078001392F1 /* BuildLegend.h */; };
+		669B69170D7C9078001392F1 /* BuildLegend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669B69150D7C9078001392F1 /* BuildLegend.cpp */; };
 		669C28DA0D57E51900A5D1D3 /* GradientIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */; };
 		669C28DB0D57E51900A5D1D3 /* GradientIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28CC0D57E51900A5D1D3 /* GradientIcon.h */; };
 		669C28DC0D57E51900A5D1D3 /* Icon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CD0D57E51900A5D1D3 /* Icon.cpp */; };
@@ -3463,6 +3465,8 @@
 		6699A0EB0D1EFC7300A9AE47 /* IWorldInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWorldInfo.h; sourceTree = "<group>"; };
 		6699A0ED0D1EFC7300A9AE47 /* IMainWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMainWindow.h; sourceTree = "<group>"; };
 		6699A0EE0D1EFC7300A9AE47 /* IWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWorkspace.h; sourceTree = "<group>"; };
+		669B69140D7C9078001392F1 /* BuildLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildLegend.h; sourceTree = "<group>"; };
+		669B69150D7C9078001392F1 /* BuildLegend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BuildLegend.cpp; sourceTree = "<group>"; };
 		669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GradientIcon.cpp; sourceTree = "<group>"; };
 		669C28CC0D57E51900A5D1D3 /* GradientIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientIcon.h; sourceTree = "<group>"; };
 		669C28CD0D57E51900A5D1D3 /* Icon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Icon.cpp; sourceTree = "<group>"; };
@@ -7292,6 +7296,8 @@
 				6685C3480D45390900103700 /* StackPoints.h */,
 				66EF17D00D15193000B4B1AA /* TemporalAnimation.cpp */,
 				66EF17D10D15193000B4B1AA /* TemporalAnimation.h */,
+				669B69140D7C9078001392F1 /* BuildLegend.h */,
+				669B69150D7C9078001392F1 /* BuildLegend.cpp */,
 			);
 			path = Visitors;
 			sourceTree = "<group>";
@@ -8066,6 +8072,7 @@
 				668DB5F90D78A77100EA4DCD /* BuildScene.h in Headers */,
 				668DB5FB0D78A77100EA4DCD /* Scale.h in Headers */,
 				668DB5FD0D78A77100EA4DCD /* SetJobManager.h in Headers */,
+				669B69160D7C9078001392F1 /* BuildLegend.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9994,6 +10001,7 @@
 				668DB5F80D78A77100EA4DCD /* BuildScene.cpp in Sources */,
 				668DB5FA0D78A77100EA4DCD /* Scale.cpp in Sources */,
 				668DB5FC0D78A77100EA4DCD /* SetJobManager.cpp in Sources */,
+				669B69170D7C9078001392F1 /* BuildLegend.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

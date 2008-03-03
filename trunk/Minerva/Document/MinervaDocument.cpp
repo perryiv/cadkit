@@ -28,6 +28,7 @@
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 #include "Minerva/Core/Visitors/StackPoints.h"
 #include "Minerva/Core/Visitors/ResizePoints.h"
+#include "Minerva/Core/Visitors/BuildLegend.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -1783,8 +1784,8 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
 {
   // Always clear.
   _legend->clear();
-#if 0
-  if( this->isShowLegend() && _layers.valid() )
+
+  if( this->isShowLegend() )
   {
     // Set the legend size.
     unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
@@ -1792,32 +1793,14 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
     
     _legend->maximiumSize( legendWidth, legendHeight );
     _legend->heightPerItem( _legendHeightPerItem );
-    
-    typedef Minerva::Core::Layers::VectorGroup VectorGroup;
-    typedef VectorGroup::Layers Layers;
-    
-    Layers layers;
-    _layers->layers ( layers );
-    
-    for ( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
-    {
-      Usul::Interfaces::ILayer::QueryPtr layer ( *iter );
-      if ( layer.valid() )
-      {
-        Usul::Interfaces::IAddRowLegend::QueryPtr addRow ( layer );
-        if( layer->showLayer() && addRow.valid() && addRow->showInLegend() )
-        {
-          OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
-          addRow->addLegendRow( row.get() );
-          _legend->addLegendObject( row.get() );
-        }
-      }
-    }
+
+    // Add items to the legend.
+    Minerva::Core::Visitors::BuildLegend::RefPtr visitor ( new Minerva::Core::Visitors::BuildLegend ( _legend.get() ) );
+    this->accept( *visitor );
     
     // Must be called after rows are added to the legend.
     this->_setLegendPosition( legendWidth );
   }
-#endif
 
   // Build the legend.
   _camera->addChild( _legend->buildScene() );

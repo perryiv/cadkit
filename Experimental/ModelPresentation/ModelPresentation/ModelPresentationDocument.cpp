@@ -549,7 +549,7 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
+#if 0
   for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
   {
     _mpdModels.models->setValue( modelIndex, false );
@@ -564,7 +564,37 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
     unsigned int mIndex   = _mpdModels.modelMap[modelName];
     _mpdModels.models->setValue( mIndex, value );
   }
+#else
+  for( unsigned int i = 0; i < _sets.at( set ).groups.size(); ++i )
+  {
+    for( std::map< std::string, bool >::iterator iter =  _sets.at( set ).groups.at( i ).visibleModelsMap.begin();
+                                               iter != _sets.at( set ).groups.at( i ).visibleModelsMap.end();
+                                               ++iter )
+    {
+      std::string modelName = (*iter).first;
+      bool value            = (*iter).second;
+      unsigned int mIndex   = _mpdModels.modelMap[modelName];
 
+      if( true == value )
+      {
+        _mpdModels.models->setValue( mIndex, false );
+      }
+      
+    }
+  }
+  for( std::map< std::string, bool >::iterator iter =  _sets.at( set ).groups.at( group ).visibleModelsMap.begin();
+                                               iter != _sets.at( set ).groups.at( group ).visibleModelsMap.end();
+                                               ++iter )
+  {
+    std::string modelName = (*iter).first;
+    bool value            = (*iter).second;
+    unsigned int mIndex   = _mpdModels.modelMap[modelName];
+    if( true == value )
+    {
+      _mpdModels.models->setValue( mIndex, value );
+    }
+  }
+#endif
   _sets.at( set ).index = group;  
 }
 
@@ -1131,6 +1161,7 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
   grp.name = "Unknown";
   grp.visibleModels.resize( 0 );
 
+
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "name" == iter->first )
@@ -1159,20 +1190,24 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
       Attributes& att ( node->attributes() );
       for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
       {
-        if ( "index" == att_iter->first )
-        {
-          unsigned int index = 0;
-          Usul::Strings::fromString ( att_iter->second, index );
-          if( grp.visibleModels.size() > index)
-          {
-            grp.visibleModels.at( index ) = true;
-          }
-        }
         if ( "name" == att_iter->first )
         {
           std::string name;
           Usul::Strings::fromString ( att_iter->second, name );
           grp.visibleModelsMap[name] = true;
+        }
+      }
+    } 
+    if ( "hide" == node->name() )
+    {
+      Attributes& att ( node->attributes() );
+      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      {
+        if ( "name" == att_iter->first )
+        {
+          std::string name;
+          Usul::Strings::fromString ( att_iter->second, name );
+          grp.visibleModelsMap[name] = false;
         }
       }
     } 

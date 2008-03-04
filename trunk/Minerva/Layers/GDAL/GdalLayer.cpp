@@ -187,7 +187,7 @@ namespace Detail
   osg::Image* makeImage ( unsigned int width, unsigned int height, int bands, GDALDataType type )
   {
     // Only handle 1, 3, and 4 bands.
-    if ( 1 != bands || 3 != bands || 4 != bands )
+    if ( 1 != bands && 3 != bands && 4 != bands )
       return 0x0;
     
     osg::ref_ptr<osg::Image> result ( new osg::Image );

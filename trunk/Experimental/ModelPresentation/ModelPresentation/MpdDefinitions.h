@@ -30,6 +30,12 @@
 class MpdDefinitions 
   {
     public:
+      enum Action
+      {
+        SHOW,
+        HIDE,
+        DO_NOTHING
+      };
       typedef std::pair< std::string, osg::Matrixd > Location;
       typedef std::map< std::string, osg::Matrixd > Locations;
       typedef std::vector< std::string > LocationNames;

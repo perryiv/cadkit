@@ -11,8 +11,10 @@
 #include "Minerva/Layers/GDAL/GdalLayer.h"
 #include "Minerva/Core/Factory/Readers.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Temp.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -332,6 +334,9 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   if ( 0x0 == data )
     return 0x0;
   
+  // Make sure data set is closed.
+  Usul::Scope::Caller::RefPtr closeDataSet ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( data, GDALClose ) ) );
+  
   // Get the extents lower left and upper right.
   Extents::Vertex ll ( extents.minimum() );
   Extents::Vertex ur ( extents.maximum() );
@@ -368,7 +373,13 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   if ( CE_None != data->SetProjection( wkt ) )
     return 0x0;
   
-  GDALWarpOptions *options = GDALCreateWarpOptions();
+  // Print info.
+  //this->_print( data );
+  
+  GDALWarpOptions *options ( GDALCreateWarpOptions() );
+  
+  // Make sure the options are destroyed.
+  Usul::Scope::Caller::RefPtr destroyOptions ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, GDALDestroyWarpOptions ) ) );
   
   options->hSrcDS = _data;
   options->hDstDS = data;
@@ -383,30 +394,30 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
     options->panDstBands[i] = i + 1;
   }
   
-  options->pfnProgress = GDALTermProgress;   
+  options->pfnProgress = GDALTermProgress;
   
   // Establish reprojection transformer. 
+  options->pTransformerArg = GDALCreateGenImgProjTransformer( _data, 
+                                                              GDALGetProjectionRef( _data ), 
+                                                              data, 
+                                                              GDALGetProjectionRef( data ), 
+                                                              FALSE, 0.0, 1 );
   
-  options->pTransformerArg = 
-  GDALCreateGenImgProjTransformer( _data, 
-                                  GDALGetProjectionRef( _data ), 
-                                  data,
-                                  GDALGetProjectionRef( data ), 
-                                  FALSE, 0.0, 1 );
+  // Make sure we got a transformer.
+  if ( 0x0 == options->pTransformerArg )
+    return 0x0;
+  
+  // Make sure the transformer is destroyed.
+  Usul::Scope::Caller::RefPtr destroyTransformer ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options->pTransformerArg, GDALDestroyGenImgProjTransformer ) ) );
+  
   options->pfnTransformer = GDALGenImgProjTransform;
   
-  // Initialize and execute the warp operation. 
-  
+  // Initialize and execute the warp operation.   
   GDALWarpOperation operation;
   
   operation.Initialize( options );
-  operation.ChunkAndWarpImage( 0, 0, 
-                               GDALGetRasterXSize( data ), 
-                               GDALGetRasterYSize( data ) );
-  
-  GDALDestroyGenImgProjTransformer( options->pTransformerArg );
-  GDALDestroyWarpOptions( options );
-  
+  operation.ChunkAndWarpImage( 0, 0, width, height );
+
   ImagePtr image ( Detail::makeImage ( width, height, bands, type ) );
   
   // Return if we couldn't create the proper image type.
@@ -439,8 +450,6 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
     default:
       return 0x0; // We don't handle this data type.
   }
-  
-  ::GDALClose ( data );
   
   return image;
 }
@@ -481,28 +490,15 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
   
   if ( 0x0 != _data )
   {
+    // Print info.
+    this->_print( _data );
+    
     std::vector<double> geoTransform ( 6 );
     
-    printf( "Driver: %s/%s\n",
-           _data->GetDriver()->GetDescription(), 
-           _data->GetDriver()->GetMetadataItem( GDAL_DMD_LONGNAME ) );
-    
-    printf( "Size is %dx%dx%d\n", 
-           _data->GetRasterXSize(), _data->GetRasterYSize(),
-           _data->GetRasterCount() );
-    
     const char* projection ( _data->GetProjectionRef() );
-    if( 0x0 != projection )
-      printf( "Projection is `%s'\n", projection );
-    
+
     if( CE_None == _data->GetGeoTransform( &geoTransform[0] ) )
     {
-      printf( "Origin = (%.6f,%.6f)\n",
-             geoTransform[0], geoTransform[3] );
-      
-      printf( "Pixel Size = (%.6f,%.6f)\n",
-             geoTransform[1], geoTransform[5] );
-      
       // Make the transform.
       OGRSpatialReference src ( projection );
       OGRSpatialReference dst;
@@ -525,11 +521,55 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
         transform->Transform ( 1, &ur[0], &ur[1] );
         Extents extents ( ll, ur );
         
-        std::cout << "Lower left: "  << ll[0] << " " << ll[1] << std::endl;
-        std::cout << "Upper right: " << ur[0] << " " << ur[1] << std::endl;
+        //std::cout << "Lower left: "  << ll[0] << " " << ll[1] << std::endl;
+        //std::cout << "Upper right: " << ur[0] << " " << ur[1] << std::endl;
         
         this->extents ( extents );
       }
     }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GdalLayer::_print ( GDALDataset * data )
+{
+  if ( 0x0 == data )
+    return;
+  
+  const unsigned int size ( 2024 );
+  
+  {
+    std::vector<char> buffer ( size, '\0' );
+    sprintf( &buffer[0], "Driver: %s/%s\n",
+           data->GetDriver()->GetDescription(), 
+           data->GetDriver()->GetMetadataItem( GDAL_DMD_LONGNAME ) );
+    std::cout << &buffer[0] << std::endl;
+  }
+  
+  {
+    std::vector<char> buffer ( size, '\0' );
+    sprintf( &buffer[0], "Size is %dx%dx%d\n", 
+           data->GetRasterXSize(), data->GetRasterYSize(),
+           data->GetRasterCount() );
+    std::cout << &buffer[0] << std::endl;
+  }
+  
+  const char* projection ( data->GetProjectionRef() );
+  if( 0x0 != projection )
+    std::cout << "Projection is: " << projection << std::endl;
+  
+  std::vector<double> geoTransform ( 6 );
+  if( CE_None == data->GetGeoTransform( &geoTransform[0] ) )
+  {
+    std::vector<char> buffer ( size, '\0' );
+    sprintf( &buffer[0], "Origin = (%.6f,%.6f)\nPixel Size = (%.6f,%.6f)\n",
+           geoTransform[0], geoTransform[3], geoTransform[1], geoTransform[5] );
+    std::cout << &buffer[0] << std::endl;
   }
 }

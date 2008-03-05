@@ -48,7 +48,8 @@ protected:
   virtual ~GdalLayer();
   
   GdalLayer ( const GdalLayer& );
-    
+  
+  void                  _print ( GDALDataset * data );
 private:
   
   // No assignment.

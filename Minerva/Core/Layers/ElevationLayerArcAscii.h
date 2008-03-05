@@ -16,7 +16,7 @@
 
 #include "Usul/Math/Vector2.h"
 
-class ossimProjection; class ossimDemGrid;
+class ossimProjection;
 
 namespace Minerva {
 namespace Core {
@@ -45,28 +45,31 @@ public:
   // Get the value at the lat, lon location.  May return null pixel value.
   double                value ( double lon, double lat ) const;
 
+  /// Deserialize.
+  virtual void          deserialize ( const XmlTree::Node &node );
   
 protected:
   virtual ~ElevationLayerArcAscii();
 
-  //virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
+  virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
 
   void                  _read( const std::string& filename );
   
 private:
+  std::string           _filename;
   bool                  _loaded;
   ArcGrid               _grid;
   ossimProjection*      _projection;
-  
-  
+    
   Usul::Math::Vec2ui    _gridResolution;
   Usul::Math::Vec2d     _lowerLeft;
   double                _cellSize;
   double                _noDataDouble;
   double                _minElevation;
 
-
-  SERIALIZE_XML_DEFINE_MEMBERS ( ElevationLayerArcAscii );
+  SERIALIZE_XML_CLASS_NAME( ElevationLayerArcAscii ) 
+  SERIALIZE_XML_SERIALIZE_FUNCTION 
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
 

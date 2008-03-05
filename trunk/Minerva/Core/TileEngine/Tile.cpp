@@ -247,7 +247,8 @@ void Tile::updateMesh()
         // Convert lat-lon coordinates to xyz.
         Mesh::Vector &p ( mesh.point ( i, j ) );
         
-        const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
+        // osg::Image::data is colomn, row.
+        const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( j, i ) ) ) : 0.0 ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
         
         // Expand the bounding sphere by the point.
@@ -1175,7 +1176,8 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
     const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
     const double lat ( _extents.minimum()[1] + v * ( _extents.maximum()[1] - _extents.minimum()[1] ) );
 
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
+    // osg::Image::data is colomn, row.
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( j, i ) ) ) : 0.0 ) );
 
     Mesh::Vector&  p0 ( mesh.point ( 0, j ) );
     Mesh::Vector&  p1 ( mesh.point ( 1, j ) );
@@ -1215,7 +1217,8 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double o
     const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
     const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
 
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( i, j ) ) ) : 0.0 ) );
+    // osg::Image::data is colomn, row.
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( j, i ) ) ) : 0.0 ) );
 
     Mesh::Vector&  p0 ( mesh.point ( i, 0 ) );
     Mesh::Vector&  p1 ( mesh.point ( i, 1 ) );

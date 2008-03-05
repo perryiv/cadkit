@@ -281,7 +281,7 @@ ElevationLayerArcAscii::ImagePtr ElevationLayerArcAscii::texture ( const Extents
         if ( static_cast<int> ( _noDataDouble ) == static_cast<int> ( elevation ) )
           elevation = 0.0;
 
-        *reinterpret_cast < float* > ( result->data ( i, j ) ) = elevation;
+        *reinterpret_cast < float* > ( result->data ( j, i ) ) = elevation;
       }
     }
   }
@@ -366,7 +366,11 @@ double ElevationLayerArcAscii::value ( double lon, double lat ) const
   const double u ( x - static_cast < double > ( j ) );
   const double v ( y - static_cast < double > ( i ) );
   
-  return Usul::Math::Interpolate<double>::bilinear ( u, v, a, b, c, d );
+  const double t0 ( Usul::Math::Interpolate<double>::linear ( v, a, b ) );
+  const double t1 ( Usul::Math::Interpolate<double>::linear ( v, c, d ) );
+  return Usul::Math::Interpolate<double>::linear ( u, t0, t1 );
+  
+  //return Usul::Math::Interpolate<double>::bilinear ( u, v, a, b, c, d );
 }
 
 

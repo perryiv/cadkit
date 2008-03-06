@@ -35,11 +35,10 @@ ${CADKIT_INC_DIR}/Helios/Plugins/TriangleModel
 ${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
 ${CADKIT_INC_DIR}/Experimental/ModelPresentation/ModelPresentation
 ${CADKIT_INC_DIR}/Experimental/DRTSim
-${CADKIT_INC_DIR}/Experimental/StarSystem
-${CADKIT_INC_DIR}/Helios/Plugins/StarSystemModel
 
 # ---- Minerva -------
 ${CADKIT_INC_DIR}/Minerva/Core
+${CADKIT_INC_DIR}/Minerva/DataSources/PG
 ${CADKIT_INC_DIR}/Minerva/Document
 
 ${CADKIT_INC_DIR}/Minerva/Layers/GDAL

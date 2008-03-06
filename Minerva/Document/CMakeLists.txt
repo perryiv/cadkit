@@ -44,14 +44,13 @@ SET (SOURCES
 ./MinervaWriter.cpp
 ./MinervaReader.cpp
 ./CommandReceiver.cpp
-./Planet.cpp
 )
 
 # Create a Shared Library
 ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaDocument Usul OsgTools StarSystem SerializeXML XmlTree Minerva )
+LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree Minerva MinervaPostgres )
 TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
 	${PQXX_LIB}

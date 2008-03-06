@@ -169,7 +169,9 @@ void ElevationGroup::_compositeImages ( osg::Image& result, const osg::Image& im
       Detail::convert<short, float> ( image, *convert );
       break;
     case GL_UNSIGNED_SHORT:
-      Detail::convert<unsigned short, float> ( image, *convert );
+      // Treat as shorts.  Any number greater than max short will be treated as a negative number.
+      // This is a work around for one earth's wms server.
+      Detail::convert<short, float> ( image, *convert );
       break;
     case GL_UNSIGNED_BYTE:
       Detail::convert<unsigned char, float> ( image, *convert );

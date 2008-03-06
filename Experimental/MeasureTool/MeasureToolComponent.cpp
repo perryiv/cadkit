@@ -466,7 +466,7 @@ void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
 
   // debugging. Remove when fixed
   std::cout << "Calling writer->positions " << std::endl;
-  writer->positions( _positions );
+  writer->setPolyLineVertices( _positions );
 
   // Tell the ArcGenRW to write the output file
   // debugging. Remove when fixed

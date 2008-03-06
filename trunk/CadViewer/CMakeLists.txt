@@ -41,6 +41,7 @@ ${CADKIT_INC_DIR}/Minerva/Core
 ${CADKIT_INC_DIR}/Minerva/DataSources/PG
 ${CADKIT_INC_DIR}/Minerva/Document
 
+${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
 ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
 ${CADKIT_INC_DIR}/Minerva/Layers/Kml
 

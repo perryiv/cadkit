@@ -78,7 +78,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _scale ( 1 ),
   _deleteTiles(),
   _topTiles(),
-  _updateListeners()
+  _updateListeners(),
+  _allowSplitting ( true )
 {
   USUL_TRACE_SCOPE;
 
@@ -1210,4 +1211,32 @@ double Body::elevationAtLatLong ( double lat, double lon ) const
 {
   USUL_TRACE_SCOPE;
   return this->elevation ( lat, lon );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag that says to allow spliting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::allowSplitting ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _allowSplitting = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flag that says to allow spliting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::allowSplitting() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _allowSplitting;
 }

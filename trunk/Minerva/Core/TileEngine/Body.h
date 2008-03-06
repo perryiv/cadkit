@@ -89,6 +89,10 @@ public:
 
   // Add a tile for the given extents.
   void                      addTile ( const Extents & );
+  
+  // Set/get the flag that says to allow spliting.
+  void                      allowSplitting ( bool );
+  bool                      allowSplitting() const;
 
   // Set/get the flag that says to cache the tiles.
   bool                      cacheTiles() const;
@@ -259,6 +263,7 @@ private:
   Tiles _deleteTiles;
   Tiles _topTiles;
   UpdateListeners _updateListeners;
+  bool _allowSplitting;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

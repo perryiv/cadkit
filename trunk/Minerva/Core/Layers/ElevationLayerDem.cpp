@@ -213,7 +213,7 @@ ElevationLayerDem::ImagePtr ElevationLayerDem::texture ( const Extents& extents,
         if ( _grid->getMissingDataValue() == elevation )
           elevation = 0.0;
         
-        *reinterpret_cast < float* > ( result->data ( j, i ) ) = elevation;
+        *reinterpret_cast < float* > ( result->data ( height - i - 1, j ) ) = elevation;
       }
     }
   }

@@ -9,6 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/GDAL/GdalLayer.h"
+#include "Minerva/Layers/GDAL/Convert.h"
+
 #include "Minerva/Core/Factory/Readers.h"
 
 #include "Usul/Adaptors/Bind.h"
@@ -239,58 +241,6 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert Gdal data to osg::image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  template < class PixelType >
-  void convert ( osg::Image* image, GDALDataset *data, GDALDataType type )
-  {
-    if ( 0x0 != image && 0x0 != data )
-    {
-      const int bands ( data->GetRasterCount() );
-      if ( bands >= 1 )
-      {
-        const int width ( data->GetRasterXSize() );
-        const int height ( data->GetRasterYSize() );
-        
-        if ( width > 0 && height > 0 )
-        {
-          // Loop through the bands.
-          for ( int i = 1; i <= bands; ++i )
-          {
-            GDALRasterBand* band ( data->GetRasterBand ( i ) );
-            if ( 0x0 != band )
-            {
-              std::vector<PixelType> bytes ( width * height, 0 );
-              if ( CE_None == band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, type, 0, 0 ) )
-              {
-                PixelType* data ( reinterpret_cast<PixelType*> ( image->data() ) );
-                const int size ( width * height );
-                
-                if ( width == image->s() && height == image->t() && 0x0 != data && size == static_cast<int> ( bytes.size() ) )
-                {
-                  const int offset ( i - 1 );
-                  for ( int i = 0; i < size; ++i )
-                  {
-                    *(data + offset) = bytes.at ( i );
-                    data += bands;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the texture.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -427,25 +377,25 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   switch ( type )
   {
     case GDT_Byte:
-      Detail::convert<unsigned char> ( image.get(), data, type );
+      Minerva::convert<unsigned char> ( image.get(), data, type );
       break;
     case GDT_UInt16:
-      Detail::convert<unsigned short> ( image.get(), data, type );
+      Minerva::convert<unsigned short> ( image.get(), data, type );
       break;
     case GDT_Int16:
-      Detail::convert<short> ( image.get(), data, type );
+      Minerva::convert<short> ( image.get(), data, type );
       break;
     case GDT_UInt32:
-      Detail::convert<unsigned int> ( image.get(), data, type );
+      Minerva::convert<unsigned int> ( image.get(), data, type );
       break;
     case GDT_Int32:
-      Detail::convert<int> ( image.get(), data, type );
+      Minerva::convert<int> ( image.get(), data, type );
       break;
     case GDT_Float32:
-      Detail::convert<float> ( image.get(), data, type );
+      Minerva::convert<float> ( image.get(), data, type );
       break;
     case GDT_Float64:
-      Detail::convert<double> ( image.get(), data, type );
+      Minerva::convert<double> ( image.get(), data, type );
       break;
     default:
       return 0x0; // We don't handle this data type.

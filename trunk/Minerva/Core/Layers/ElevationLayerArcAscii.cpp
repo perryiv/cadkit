@@ -281,7 +281,7 @@ ElevationLayerArcAscii::ImagePtr ElevationLayerArcAscii::texture ( const Extents
         if ( static_cast<int> ( _noDataDouble ) == static_cast<int> ( elevation ) )
           elevation = 0.0;
 
-        *reinterpret_cast < float* > ( result->data ( j, i ) ) = elevation;
+        *reinterpret_cast < float* > ( result->data ( height - i - 1, j ) ) = elevation;
       }
     }
   }

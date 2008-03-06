@@ -247,8 +247,8 @@ void Tile::updateMesh()
         // Convert lat-lon coordinates to xyz.
         Mesh::Vector &p ( mesh.point ( i, j ) );
         
-        // osg::Image::data is colomn, row.
-        const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( j, i ) ) ) : 0.0 ) );
+        // Get the elevation.
+        const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
         
         // Expand the bounding sphere by the point.
@@ -475,14 +475,17 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   // Finally, ask the callback.
   low = !( _body->shouldSplit ( !low, this ) );
-
+  
+  // Check if we can split.
+  const bool allowSplit ( _body->allowSplitting() );
+  
   if ( low )
   {
     // Turn off the borders.
     OsgTools::Group::removeAllChildren ( _borders.get() );
 
     // Remove high level of detail.
-    if ( numChildren > 1 )
+    if ( numChildren > 1 && true == allowSplit )
     {
       if ( false == _body->cacheTiles() )
       {
@@ -504,8 +507,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
            ( false == _children[UPPER_LEFT].valid()  ) ||
            ( false == _children[UPPER_RIGHT].valid() ) )
       {
-        // Use the low lod while we are waiting for the job.
-        if ( _tileJob.valid() )
+        // Check if we can split.
+        const bool allowSplit ( _body->allowSplitting() );
+        
+        // Use the low lod while we are waiting for the job, or if we can't split.
+        if ( _tileJob.valid() || false == allowSplit )
         {
           low = true;
         }
@@ -537,7 +543,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       }
     }
   }
-
+  
   // Traverse low level of detail.
   if ( low || _tileJob.valid() )
   {
@@ -1165,6 +1171,7 @@ bool Tile::textureDirty() const
 
 osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll )
 {
+  const unsigned int rows ( _mesh->rows() );
   const unsigned int columns ( _mesh->columns() );
 
   // Make the mesh
@@ -1176,8 +1183,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
     const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
     const double lat ( _extents.minimum()[1] + v * ( _extents.maximum()[1] - _extents.minimum()[1] ) );
 
-    // osg::Image::data is colomn, row.
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( j, i ) ) ) : 0.0 ) );
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
 
     Mesh::Vector&  p0 ( mesh.point ( 0, j ) );
     Mesh::Vector&  p1 ( mesh.point ( 1, j ) );
@@ -1217,8 +1223,7 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double o
     const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
     const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
 
-    // osg::Image::data is colomn, row.
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( j, i ) ) ) : 0.0 ) );
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
 
     Mesh::Vector&  p0 ( mesh.point ( i, 0 ) );
     Mesh::Vector&  p1 ( mesh.point ( i, 1 ) );

@@ -127,6 +127,7 @@ MinervaDocument::MinervaDocument() :
   _width( 0 ),
   _height( 0 ),
   _showCompass ( true ),
+  _freezeSpliting ( false ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
@@ -1297,6 +1298,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Use Skirts", 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::useSkirts ), 
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isUseSkirts ) ) ) );
+  
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Freeze Tiling", 
+                                                           UA::memberFunction<void> ( this, &MinervaDocument::freezeTiling ), 
+                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isFreezeTiling ) ) ) );
 
   menu.append ( m );
 }
@@ -2185,4 +2190,39 @@ std::string MinervaDocument::getTreeNodeName() const
 {
   USUL_TRACE_SCOPE;
   return this->fileName();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the freeze split flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isFreezeTiling() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _freezeSpliting;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the freeze split flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::freezeTiling( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _freezeSpliting = b;
+  
+  for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
+  {
+    Body::RefPtr body ( *iter );
+    if ( body.valid() )
+      body->allowSplitting ( !_freezeSpliting );
+  }
 }

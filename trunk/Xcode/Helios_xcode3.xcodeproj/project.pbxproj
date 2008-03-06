@@ -855,6 +855,7 @@
 		669C28E70D57E51900A5D1D3 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28D80D57E51900A5D1D3 /* Text.cpp */; };
 		669C28E80D57E51900A5D1D3 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D90D57E51900A5D1D3 /* Text.h */; };
 		669C28EA0D57E52400A5D1D3 /* ConeFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28E90D57E52400A5D1D3 /* ConeFunctor.h */; };
+		669FAF980D7F3E27007B5B8B /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = 669FAF970D7F3E27007B5B8B /* Convert.h */; };
 		66A112D00D2EBC59009B29ED /* AddOssimLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112CA0D2EBC59009B29ED /* AddOssimLayerWidget.cpp */; };
 		66A112D10D2EBC59009B29ED /* AddOssimLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CB0D2EBC59009B29ED /* AddOssimLayerWidget.h */; };
 		66A112D20D2EBC59009B29ED /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CC0D2EBC59009B29ED /* CompileGuard.h */; };
@@ -1867,14 +1868,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66EF17680D15190B00B4B1AA /* Minerva */;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA;
 			remoteInfo = Minerva;
 		};
 		669B697C0D7C9BE1001392F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 669B696A0D7C96E9001392F1 /* MinervaGdalLayer */;
+			remoteGlobalIDString = 669B696A0D7C96E9001392F1;
 			remoteInfo = MinervaGdalLayer;
 		};
 		66A113120D2EBCF2009B29ED /* PBXContainerItemProxy */ = {
@@ -3508,6 +3509,7 @@
 		669C28E90D57E52400A5D1D3 /* ConeFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConeFunctor.h; sourceTree = "<group>"; };
 		669F45D20D5B87BB00BFA6C6 /* Functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Functions.h; sourceTree = "<group>"; };
 		669F46350D5BD9CD00BFA6C6 /* Execute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Execute.h; sourceTree = "<group>"; };
+		669FAF970D7F3E27007B5B8B /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = OssimLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = WmsLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PostGISLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5916,17 +5918,17 @@
 		43FED831092452F700EBB610 /* Scope */ = {
 			isa = PBXGroup;
 			children = (
-				668E0A490D3EB23A0030649B /* PushPop.h */,
-				668E0A4A0D3EB23A0030649B /* RemoveFile.h */,
-				668E0A4B0D3EB23A0030649B /* StreamState.h */,
-				668E0A4C0D3EB23A0030649B /* StxxlConfig.h */,
-				668E0A4D0D3EB23A0030649B /* Timer.cpp */,
-				668E0A4E0D3EB23A0030649B /* Timer.h */,
 				43FED832092452F700EBB610 /* Caller.h */,
 				43FED833092452F700EBB610 /* GLBeginEnd.h */,
 				43FED834092452F700EBB610 /* GLPushPopAttrib.h */,
 				43FED835092452F700EBB610 /* GLPushPopMatrix.h */,
+				668E0A490D3EB23A0030649B /* PushPop.h */,
+				668E0A4A0D3EB23A0030649B /* RemoveFile.h */,
 				43FED836092452F700EBB610 /* Reset.h */,
+				668E0A4B0D3EB23A0030649B /* StreamState.h */,
+				668E0A4C0D3EB23A0030649B /* StxxlConfig.h */,
+				668E0A4D0D3EB23A0030649B /* Timer.cpp */,
+				668E0A4E0D3EB23A0030649B /* Timer.h */,
 			);
 			name = Scope;
 			path = ../Usul/Scope;
@@ -6534,6 +6536,7 @@
 				669B696F0D7C9822001392F1 /* GdalLayer.cpp */,
 				669B69700D7C9822001392F1 /* GdalLayer.h */,
 				668E0DDC0D4063AB0030649B /* CMakeLists.txt */,
+				669FAF970D7F3E27007B5B8B /* Convert.h */,
 			);
 			path = GDAL;
 			sourceTree = "<group>";
@@ -7859,6 +7862,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				669B69720D7C9822001392F1 /* GdalLayer.h in Headers */,
+				669FAF980D7F3E27007B5B8B /* Convert.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

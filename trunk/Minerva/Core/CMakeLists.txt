@@ -101,4 +101,5 @@ TARGET_LINK_LIBRARIES(Minerva
 	${OSG_LIB}
 	${OSG_DB_LIB}
 	${OSSIM_LIB}
+        curl
 )

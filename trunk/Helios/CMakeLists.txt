@@ -40,11 +40,23 @@ ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
 ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 ${PROJECT_SOURCE_DIR}/../Experimental/PathAnimation
-
-${CADKIT_INC_DIR}/Experimental/StarSystem
-${CADKIT_INC_DIR}/Minerva/Core
-${CADKIT_INC_DIR}/Minerva/Plugins/Document
+${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentation/ModelPresentation
 )
+
+#SET(BUILD_MINERVA ON)
+
+#IF(BUILD_MINERVA)
+SUBDIRS (
+${CADKIT_INC_DIR}/Minerva/Core
+${CADKIT_INC_DIR}/Minerva/DataSources/PG
+${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
+${CADKIT_INC_DIR}/Minerva/Document
+${CADKIT_INC_DIR}/Minerva/Plugins/Document
+${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
+${CADKIT_INC_DIR}/Minerva/Plugins/ResampleLine
+${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
+)
+#ENDIF(BUILD_MINERVA)
 
 
 # Include the QT Cmake files.

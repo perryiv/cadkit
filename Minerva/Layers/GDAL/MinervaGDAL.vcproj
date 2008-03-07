@@ -219,6 +219,10 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\Convert.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GDALLayer.cpp"
 				>
 			</File>

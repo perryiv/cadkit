@@ -15,6 +15,8 @@
 #include "gdal_priv.h"
 #include "cpl_error.h"
 
+#include <limits>
+
 namespace Minerva
 {
   namespace Detail
@@ -63,23 +65,27 @@ namespace Minerva
       static void convert ( osg::Image* image, GDALDataset *data, GDALDataType type, int width, int height )
       {       
         GDALRasterBand* band ( data->GetRasterBand ( 1 ) );
-        if ( 0x0 != band )
+        if ( 0x0 == band )
+          return;
+        
+        // The no data value.
+        const double noDataValue ( band->GetNoDataValue() );
+        
+        // Number of pixel.
+        const int size ( width * height );
+        
+        std::vector<PixelType> bytes ( size, 0 );
+        if ( CE_None == band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, type, 0, 0 ) )
         {
-          std::vector<PixelType> bytes ( width * height, 0 );
-          if ( CE_None == band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, type, 0, 0 ) )
+          PixelType* data ( reinterpret_cast<PixelType*> ( image->data() ) );
+          
+          for ( int i = 0; i < size; ++i )
           {
-            PixelType* data ( reinterpret_cast<PixelType*> ( image->data() ) );
-            const int size ( width * height );
+            PixelType value ( bytes.at ( i ) );
+            *data++ = value;
             
-            if ( size == static_cast<int> ( bytes.size() ) )
-            {
-              for ( int i = 0; i < size; ++i )
-              {
-                PixelType value ( bytes.at ( i ) );
-                *data = value;
-                ++data;
-              }
-            }
+            // Make transparent if value is equal to no data.
+            *data++ = ( value == static_cast<PixelType> ( noDataValue ) ? 0.0 : std::numeric_limits<PixelType>::max() );
           }
         }
       }
@@ -118,11 +124,10 @@ namespace Minerva
             PixelType g ( bytes1.at ( i ) );
             PixelType b ( bytes2.at ( i ) );
             
-            *(data    ) = r;
-            *(data + 1) = g;
-            *(data + 2) = b;
-            
-            data += 3;
+            *data++ = r;
+            *data++ = g;
+            *data++ = b;
+            *data++ = std::numeric_limits<PixelType>::max();
           }
         }
       }

@@ -196,12 +196,8 @@ namespace Detail
     
     osg::ref_ptr<osg::Image> result ( new osg::Image );
     
-    GLenum pixelFormat ( GL_LUMINANCE );
-    
-    if ( 3 == bands )
-      pixelFormat = GL_RGB;
-    else if ( 4 == bands )
-      pixelFormat = GL_RGBA;
+    // The pixel format.  Make sure the format always has an alpha.
+    GLenum pixelFormat ( ( 3 == bands || 4 == bands ) ? GL_RGBA : GL_LUMINANCE_ALPHA );
     
     GLenum dataType ( GL_UNSIGNED_BYTE );
     
@@ -323,6 +319,15 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   if ( CE_None != data->SetProjection( wkt ) )
     return 0x0;
   
+  for ( int i = 1; i <= bands; ++i )
+  {
+    GDALRasterBand* band0 ( _data->GetRasterBand ( i ) );
+    GDALRasterBand* band1 (  data->GetRasterBand ( i ) );
+    
+    const double noDataValue ( band0->GetNoDataValue() );
+    band1->SetNoDataValue( noDataValue );
+  }
+  
   // Print info.
   //this->_print( data );
   
@@ -441,7 +446,7 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
   if ( 0x0 != _data )
   {
     // Print info.
-    this->_print( _data );
+    //this->_print( _data );
     
     std::vector<double> geoTransform ( 6 );
     
@@ -471,8 +476,9 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
         transform->Transform ( 1, &ur[0], &ur[1] );
         Extents extents ( ll, ur );
         
-        //std::cout << "Lower left: "  << ll[0] << " " << ll[1] << std::endl;
-        //std::cout << "Upper right: " << ur[0] << " " << ur[1] << std::endl;
+        std::cout << "Location of " << filename << std::endl;
+        std::cout << "Lower left: "  << ll[0] << " " << ll[1] << std::endl;
+        std::cout << "Upper right: " << ur[0] << " " << ur[1] << std::endl;
         
         this->extents ( extents );
       }

@@ -17,6 +17,7 @@
 #include "Minerva/Core/Utilities/Hud.h"
 
 #include "Usul/Bits/Bits.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Math/NaN.h"
 #include "Usul/Strings/Format.h"
 
@@ -61,11 +62,15 @@ Hud::Hud() :
   _position->setCharacterSize( 15 );
   _position->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   _position->setPosition ( osg::Vec3 ( 5.0, 7.5, 0.0 ) );
+  _position->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+  _position->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
   
   _feedback->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
   _feedback->setCharacterSize( 15 );
   _feedback->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
+  _feedback->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+  _feedback->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
 }
 
 
@@ -128,7 +133,11 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   _feedback->setText ( out );
   _feedback->update();
   
-  _position->setText ( Usul::Strings::format ( "Lat: ", _latLonHeight[1], " Lon: ", _latLonHeight[0], " E: ", _latLonHeight[2] ) );
+  typedef Usul::Convert::Type<double,std::string> ToString;
+  
+  _position->setText ( Usul::Strings::format ( "Lat: ", ToString::convert ( _latLonHeight[1] ), 
+                                               " Lon: ", ToString::convert ( _latLonHeight[0] ), 
+                                               " E: ", ToString::convert (  _latLonHeight[2] ) ) );
   _position->update();
   
   const bool positionValid ( false == Usul::Math::nan ( _latLonHeight[0] ) && 

@@ -133,13 +133,22 @@ namespace Detail
     float *      dst ( reinterpret_cast < float* > ( result.data() ) );
     const float *src ( reinterpret_cast < const float* > ( image.data() ) );
     
+    const GLenum pixelFormat ( image.getPixelFormat() );
+    
+    const bool hasAlpha ( GL_RGBA == pixelFormat || GL_LUMINANCE_ALPHA == pixelFormat );
+    
+    const unsigned int offset ( hasAlpha ? 2 : 1 );
+    
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      *dst = *src;
+      float alpha ( hasAlpha ? src[1] / std::numeric_limits<float>::max() : 1.0 );
+        
+      *dst = ( *dst * ( 1.0f - alpha ) ) + ( *src * alpha );
       
       ++dst;
-      ++src;
+      
+      src += offset;
     }
   }
 }

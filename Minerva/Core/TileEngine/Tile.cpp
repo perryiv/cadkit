@@ -27,6 +27,7 @@
 #include "Minerva/Core/Utilities/Composite.h"
 
 #include "OsgTools/Group.h"
+#include "OsgTools/Utilities/FindNormals.h"
 #include "OsgTools/State/StateSet.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -270,7 +271,14 @@ void Tile::updateMesh()
       }
     }
   }
-  
+
+  // Make the skirt's normals.
+  Mesh::Vector leftNormal   ( mesh.point ( 0, 0 ) ^ mesh.point ( mesh.rows() - 1, 0 ) );    leftNormal.normalize();
+  Mesh::Vector rightNormal  ( mesh.point ( mesh.rows() - 1, 0 ) ^ mesh.point ( 0, 0 ) );    rightNormal.normalize();
+  Mesh::Vector topNormal    ( mesh.point ( 0, 0 ) ^ mesh.point ( 0, mesh.columns() - 1 ) ); topNormal.normalize();
+  Mesh::Vector bottomNormal ( topNormal );
+
+  // Move mesh vertices to local origin.
   Mesh::Vector ll ( mesh.point ( 0, 0 ) );
   for ( int i = mesh.rows() - 1; i >= 0; --i )
   {
@@ -298,10 +306,26 @@ void Tile::updateMesh()
   OsgTools::Group::removeAllChildren ( _skirts.get() );
 
   // Add skirts to group.
-  _skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll ) ); // Left skirt.
-  _skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll ) ); // Right skirt.
-  _skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll ) ); // Bottom skirt.
-  _skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll ) ); // Top skirt.
+  _skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
+  _skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
+  _skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
+  _skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
+
+#if 0
+
+  // Draw skirt's normals.
+  osg::ref_ptr<OsgTools::Utilities::FindNormals> visitor ( new OsgTools::Utilities::FindNormals );
+  osg::BoundingBox bbox;
+  bbox.expandBy ( this->getBound() );
+  visitor->boundingBox ( bbox );
+  _skirts->accept ( *visitor );
+  osg::ref_ptr<osg::Group> ng ( new osg::Group );
+  OsgTools::State::StateSet::setLineWidth ( ng.get(), 5 );
+  OsgTools::State::StateSet::setLighting ( ng.get(), false );
+  ng->addChild ( visitor->normals() );
+  _skirts->addChild ( ng.get() );
+
+#endif
 
   // Add to the matrix transform.
   mt->addChild ( _skirts.get() );
@@ -1169,7 +1193,7 @@ bool Tile::textureDirty() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll )
+osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
 {
   const unsigned int rows ( _mesh->rows() );
   const unsigned int columns ( _mesh->columns() );
@@ -1198,6 +1222,10 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
     // Assign texture coordinate.
     mesh.texCoord ( 0, j ).set ( _texCoords[0] + u, _texCoords[2] + v );
     mesh.texCoord ( 1, j ).set ( _texCoords[0] + u, _texCoords[2] + v );
+
+    // Assign normal vector.
+    mesh.normal ( 0, j ) = normal;
+    mesh.normal ( 1, j ) = normal;
   }
 
   return mesh();
@@ -1210,7 +1238,7 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll )
+osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
 {
   const unsigned int rows ( _mesh->rows() );
 
@@ -1238,6 +1266,10 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double o
     // Assign texture coordinate.
     mesh.texCoord ( i, 0 ).set ( _texCoords[0] + u, _texCoords[2] + v );
     mesh.texCoord ( i, 1 ).set ( _texCoords[0] + u, _texCoords[2] + v );
+
+    // Assign normal vector.
+    mesh.normal ( i, 0 ) = normal;
+    mesh.normal ( i, 1 ) = normal;
   }
 
   return mesh();

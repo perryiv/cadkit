@@ -55,6 +55,7 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/Document
 ${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
 ${CADKIT_INC_DIR}/Minerva/Plugins/ResampleLine
 ${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
+${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
 )
 #ENDIF(BUILD_MINERVA)
 

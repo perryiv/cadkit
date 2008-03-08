@@ -42,7 +42,7 @@ SET(UIS
     AnimationControl.ui
 )
 
-QT4_WRAP_UI(_UIS_HDRS ${UIS})
+QT4_WRAP_UI(UIS_HDRS ${UIS})
 
 # Create the moc files.
 QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )

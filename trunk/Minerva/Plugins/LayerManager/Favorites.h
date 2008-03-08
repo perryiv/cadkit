@@ -11,7 +11,10 @@
 #ifndef __MINERVA_FAVORITES_H__
 #define __MINERVA_FAVORITES_H__
 
-#include "Minerva/Plugins/LayerManager/ui_Favorites.h"
+// Just include the .h file here.  
+// I haven't figured out how to have cmake generate the .ui file in the local directory.
+// CMake places the file in it's build directory.
+#include "ui_Favorites.h"
 
 #include "Usul/Interfaces/ILayer.h"
 

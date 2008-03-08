@@ -910,14 +910,21 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
 
       models.models->addChild( this->_parseModel( *node, caller, progress, name ), false );
       models.modelMap[name] = count;
-    }  
-    count ++;
+    }
+
+    // Feedback.
+    this->setProgressBar ( true, count, children.size(), progress );
+
+    ++count;
   }
+
+
 #if 0
   // Turn off display lists
   OsgTools::DisplayLists dl( false );
   dl( _models.get() );
 #endif
+
   _mpdModels = models;
 }
 
@@ -1680,7 +1687,7 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
       {
         Usul::System::Directory::ScopedCwd cwd ( _workingDir );
         
-        this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
+        this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, 0x0 );
 
         // Disable Memory pools
         {

@@ -297,7 +297,8 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
       {
         Usul::System::Directory::ScopedCwd cwd ( _workingDir );
         
-        this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
+        //this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
+        this->_openDocument ( Usul::Strings::format ( _searchDir, '/', filename ), info.document.get(), caller, progress );
 
         // Disable Memory pools
         {

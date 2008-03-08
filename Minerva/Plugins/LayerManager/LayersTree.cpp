@@ -29,9 +29,9 @@
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"
-#include "QtGui/QTabWidget.h"
-#include "QtGui/QDialog.h"
-#include "QtGui/QMainWindow.h"
+#include "QtGui/QTabWidget"
+#include "QtGui/QDialog"
+#include "QtGui/QMainWindow"
 #include "QtGui/QMenu"
 #include "QtGui/QSlider"
 

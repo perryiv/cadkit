@@ -116,6 +116,7 @@ KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename ) :
 {
   this->_addMember ( "filename", _filename );
   this->_parseFolder ( node );
+  this->dirtyData ( false );
 }
 
 
@@ -611,8 +612,6 @@ namespace Detail
       {
         osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
 
-        OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
-
         if ( ss.valid() )
         {
           if ( osg::Texture* texture = dynamic_cast<osg::Texture*> ( ss->getTextureAttribute ( 0, osg::StateAttribute::TEXTURE ) ) )
@@ -620,6 +619,8 @@ namespace Detail
             texture->setResizeNonPowerOfTwoHint ( false );
             texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
             texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+            
+            OsgTools::State::StateSet::setLighting ( ss.get(), false );
           }
         }
       }
@@ -676,6 +677,11 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
       Detail::ModelPostProcess nv;
       osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Node>::make ( nv ) );
       node->accept ( *visitor );
+      
+      osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+      
+      //OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
+      OsgTools::State::StateSet::setNormalize ( ss.get(), true );
     }
   }
   
@@ -876,7 +882,7 @@ void KmlLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
       // Add job to manager.
       Usul::Jobs::Manager::instance().addJob ( job.get() );
     }
-  }  
+  }
 }
 
 

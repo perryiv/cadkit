@@ -31,7 +31,7 @@ public:
   AddOssimLayerWidget( QWidget *parent = 0x0 );
   virtual ~AddOssimLayerWidget();
 
-  void apply ( Usul::Interfaces::IUnknown * caller );
+  void apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
 
 protected:
 

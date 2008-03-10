@@ -122,10 +122,10 @@ std::string PostGISLayerQtComponent::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PostGISLayerQtComponent::apply ( Usul::Interfaces::IUnknown* caller )
+void PostGISLayerQtComponent::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller )
 {
   if ( 0x0 != _widget )
-    _widget->apply ( caller );
+    _widget->apply ( parent, caller );
 }
 
 

@@ -27,7 +27,7 @@ struct IAddLayer : public Usul::Interfaces::IUnknown
   enum { IID = 3428752783u };
 
   /// Add a layer.
-  virtual void                  addLayer ( Usul::Interfaces::ILayer* layer )= 0;
+  virtual void                  addLayer ( Usul::Interfaces::ILayer* layer ) = 0;
 
 }; // struct IAddLayer
 

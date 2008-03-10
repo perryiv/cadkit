@@ -113,9 +113,9 @@ void AddOssimLayerWidget::_browseClicked()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
+void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller )
 {
-  Minerva::Interfaces::IAddLayer::QueryPtr al ( Usul::Documents::Manager::instance().activeDocument() );
+  Minerva::Interfaces::IAddLayer::QueryPtr al ( parent );
 
   if ( false == al.valid () )
     return;
@@ -126,7 +126,7 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
 
     if( 0x0 != item )
     {
-      std::string filename ( item->text ().toStdString () );
+      std::string filename ( item->text().toStdString () );
       std::string ext ( Usul::File::extension ( filename ) );
       
       if ( "dem" == ext )

@@ -23,7 +23,7 @@
 using namespace Minerva::Core::Layers;
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterGroup );
-
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( RasterGroup, RasterGroup::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -69,6 +69,24 @@ RasterGroup::RasterGroup ( const RasterGroup& rhs ) :
 RasterGroup::~RasterGroup()
 {
   USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown * RasterGroup::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Minerva::Interfaces::IAddLayer::IID:
+    return static_cast<Minerva::Interfaces::IAddLayer* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  }
 }
 
 
@@ -415,4 +433,21 @@ std::string RasterGroup::getTreeNodeName() const
 {
   USUL_TRACE_SCOPE;
   return this->name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer (IAddLayer).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::addLayer ( Usul::Interfaces::ILayer *layer )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
+  if ( rl.valid() )
+  {
+    this->append ( rl.get() );
+  }
 }

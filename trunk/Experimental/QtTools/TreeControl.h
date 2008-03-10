@@ -17,6 +17,7 @@
 #include "Usul/Interfaces/ITreeNode.h"
 
 #include "QtGui/QWidget"
+#include "QtGui/QAbstractItemView"
 
 #include <map>
 
@@ -37,6 +38,7 @@ public:
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Interfaces::ITreeNode ITreeNode;
   typedef std::map < QTreeWidgetItem *, ITreeNode::RefPtr > NodeMap;
+  typedef QAbstractItemView::SelectionMode SelectionMode;
 
   TreeControl ( Unknown *caller, QWidget *parent = 0x0 );
   virtual ~TreeControl();
@@ -44,9 +46,20 @@ public:
   // Build the tree.
   void                buildTree ( Usul::Interfaces::IUnknown *document );
 
-  Unknown*            currentItem() const;
-  Unknown*            itemAt ( const QPoint& pos ) const;
-  Unknown*            item ( QTreeWidgetItem *item ) const;
+  // Get the item.
+  QTreeWidgetItem*    currentItem() const;
+  
+  // Get the unknown.
+  Unknown*            currentUnknown() const;
+  Unknown*            unknownAt ( const QPoint& pos ) const;
+  Unknown*            unknown ( QTreeWidgetItem *item ) const;
+  
+  // Remove the item.
+  void                removeItem ( QTreeWidgetItem *item );
+  
+  // Get/set the selection mode.
+  SelectionMode       selectionMode() const;
+  void                selectionMode( QAbstractItemView::SelectionMode );
   
 signals:
   void                onItemChanged ( QTreeWidgetItem *item, int columnNumber );

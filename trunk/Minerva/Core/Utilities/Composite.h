@@ -138,8 +138,8 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
       const double du ( region[1] - region[0] );
       const double dv ( region[3] - region[2] );
       
-      const int sMin ( region[0] * width );
-      const int tMin ( region[2] * height );
+      const int sMin ( static_cast<int> ( region[0] * width  ) );
+      const int tMin ( static_cast<int> ( region[2] * height ) );
       
       for ( int s = 0; s < width; ++s )
       {

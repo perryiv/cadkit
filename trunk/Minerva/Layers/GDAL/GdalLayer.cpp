@@ -265,7 +265,7 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   // Make an in memory raster.
   std::string format ( "MEM" );
   
-  // Find a drive for geotiff.
+  // Find a driver for in memory raster.
   GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName ( format.c_str() ) );
   
   // Return now if we didn't find a driver.
@@ -326,6 +326,9 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
     
     const double noDataValue ( band0->GetNoDataValue() );
     band1->SetNoDataValue( noDataValue );
+    
+    std::vector<double> buffer ( width * height, noDataValue );
+    band1->RasterIO( GF_Write, 0, 0, width, height, &buffer[0], 0, 0, type, 0, 0 );
   }
   
   // Print info.

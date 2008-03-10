@@ -24,15 +24,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: display_scene_stats",
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: scene_operations", "Plugins\scene_operations\scene_operations.vcproj", "{8577BD77-875B-43C7-88E4-FE33233B2577}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: XmlTools", "..\XmlTools\XmlTools.vcproj", "{204FF6B8-D09E-483F-A8DA-A1135FA2EA29}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -245,10 +236,6 @@ Global
 		{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}.Debug|Win32.Build.0 = Debug|Win32
 		{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}.Release|Win32.ActiveCfg = Release|Win32
 		{9A4E43F0-5FC9-4095-B613-DE8B299A1BFB}.Release|Win32.Build.0 = Release|Win32
-		{8577BD77-875B-43C7-88E4-FE33233B2577}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8577BD77-875B-43C7-88E4-FE33233B2577}.Debug|Win32.Build.0 = Debug|Win32
-		{8577BD77-875B-43C7-88E4-FE33233B2577}.Release|Win32.ActiveCfg = Release|Win32
-		{8577BD77-875B-43C7-88E4-FE33233B2577}.Release|Win32.Build.0 = Release|Win32
 		{204FF6B8-D09E-483F-A8DA-A1135FA2EA29}.Debug|Win32.ActiveCfg = Debug|Win32
 		{204FF6B8-D09E-483F-A8DA-A1135FA2EA29}.Debug|Win32.Build.0 = Debug|Win32
 		{204FF6B8-D09E-483F-A8DA-A1135FA2EA29}.Release|Win32.ActiveCfg = Release|Win32

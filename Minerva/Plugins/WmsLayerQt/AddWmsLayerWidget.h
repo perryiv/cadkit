@@ -35,7 +35,7 @@ public:
   AddWmsLayerWidget( QWidget *parent = 0x0 );
   virtual ~AddWmsLayerWidget();
 
-  void apply ( Usul::Interfaces::IUnknown * caller );
+  void apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
   
 signals:
   void serverValid ( bool );

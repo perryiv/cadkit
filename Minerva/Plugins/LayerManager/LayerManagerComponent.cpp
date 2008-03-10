@@ -131,7 +131,7 @@ std::string LayerManagerComponent::getPluginName() const
 
 void LayerManagerComponent::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
-  {
+  /*{
     Usul::Interfaces::IModifiedSubject::QueryPtr ms ( oldDoc );
     if ( ms.valid() )
       ms->removeModifiedObserver ( Usul::Interfaces::IModifiedObserver::QueryPtr ( this ) );
@@ -141,7 +141,7 @@ void LayerManagerComponent::activeDocumentChanged ( Usul::Interfaces::IUnknown *
     Usul::Interfaces::IModifiedSubject::QueryPtr ms ( newDoc );
     if ( ms.valid() )
       ms->addModifiedObserver ( Usul::Interfaces::IModifiedObserver::QueryPtr ( this ) );
-  }
+  }*/
   
   if ( 0x0 != _layers )
     _layers->buildTree ( newDoc );

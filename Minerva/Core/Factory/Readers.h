@@ -65,6 +65,9 @@ public:
 
   /// Add a creator.
   void                              add ( const std::string &filter, const std::string& extension, BaseCreator *creator );
+  
+  /// Remove a creator.
+  void                              remove ( const std::string &filter, const std::string& extension );
 
   /// Create.
   Usul::Interfaces::IUnknown *      create ( const std::string &extension );
@@ -122,10 +125,18 @@ private:
   
   template < class ReaderType > struct RegisterReader
   {
-    RegisterReader ( const std::string &filter, const std::string& extension )
+    RegisterReader ( const std::string &filter, const std::string& extension ) : _filter ( filter ), _extension ( extension )
     {
       Readers::instance().add ( filter, extension, new ReaderType );
     }
+    ~RegisterReader()
+    {
+      Readers::instance().remove ( _filter, _extension );
+    }
+    
+  private:
+    std::string _filter;
+    std::string _extension;
   };
   
 }

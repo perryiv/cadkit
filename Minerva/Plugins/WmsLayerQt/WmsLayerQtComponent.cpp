@@ -107,10 +107,10 @@ std::string WmsLayerQtComponent::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WmsLayerQtComponent::apply ( Usul::Interfaces::IUnknown* caller )
+void WmsLayerQtComponent::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller )
 {
   if ( 0x0 != _widget )
-    _widget->apply ( caller );
+    _widget->apply ( parent, caller );
 
   _widget = 0x0;
 }

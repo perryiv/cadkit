@@ -80,6 +80,28 @@ void Readers::add ( const std::string &filter, const std::string& extension, Bas
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Remove a creator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Readers::remove ( const std::string &filter, const std::string& extension )
+{
+  Guard guard ( *_mutex );
+  _creators.erase ( extension );
+  
+  // Remove the layer.
+#if 0
+  _filters.erase ( 
+                 std::remove_if ( _filters.begin(), 
+                                  _filters.end(), 
+                                  Filter ( filter, extension ) ),
+                 _filters.end() );
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create.
 //
 ///////////////////////////////////////////////////////////////////////////////

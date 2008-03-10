@@ -14,6 +14,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
 
+#include "Minerva/Interfaces/IAddLayer.h"
+
 #include "Usul/Base/Object.h"
 
 #include "osg/Image"
@@ -26,7 +28,8 @@ namespace Minerva {
 namespace Core {
 namespace Layers {
 
-class MINERVA_EXPORT RasterGroup : public RasterLayer
+class MINERVA_EXPORT RasterGroup : public RasterLayer,
+  public Minerva::Interfaces::IAddLayer
 {
 public:
 
@@ -43,7 +46,9 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::ITreeNode ITreeNode;
 
-  USUL_DECLARE_REF_POINTERS ( RasterGroup );
+  USUL_DECLARE_QUERY_POINTERS ( RasterGroup );
+  
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   RasterGroup();
   
@@ -87,6 +92,9 @@ protected:
   // Set/get the name (ITreeNode).
   virtual void                    setTreeNodeName ( const std::string & );
   virtual std::string             getTreeNodeName() const;
+  
+  // Add a layer (IAddLayer).
+  virtual void                    addLayer ( Usul::Interfaces::ILayer *layer );
   
 private:
   RasterGroup& operator= ( const RasterGroup& );

@@ -33,7 +33,7 @@ struct ILayerAddGUIQt : public Usul::Interfaces::IUnknown
 
   virtual std::string         name () const = 0;
 
-  virtual void                apply ( Usul::Interfaces::IUnknown* caller ) = 0;
+  virtual void                apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller ) = 0;
 
 }; // struct ILayerAddGUIQt
 

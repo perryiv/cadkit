@@ -44,6 +44,7 @@ public slots:
   
 protected:
   void     _connectTreeViewSlots ();
+  void     _addLayer ( Usul::Interfaces::IUnknown *parent );
 
 protected slots:
   void _onDoubleClick ( QTreeWidgetItem * item, int columnNumber );

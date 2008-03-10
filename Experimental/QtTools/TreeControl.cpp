@@ -349,11 +349,23 @@ void TreeControl::_itemChanged ( QTreeWidgetItem *item, int column )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the current item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QTreeWidgetItem* TreeControl::currentItem() const
+{
+  return _tree->currentItem();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the IUnknown that corresponds to the current item.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* TreeControl::currentItem() const
+Usul::Interfaces::IUnknown* TreeControl::currentUnknown() const
 {
   NodeMap::const_iterator iter ( _nodeMap.find ( _tree->currentItem() ) );
   return ( Usul::Interfaces::IUnknown::QueryPtr ( iter != _nodeMap.end() ? iter->second.get() : 0x0 ) );
@@ -366,7 +378,7 @@ Usul::Interfaces::IUnknown* TreeControl::currentItem() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* TreeControl::itemAt ( const QPoint& pos ) const
+Usul::Interfaces::IUnknown* TreeControl::unknownAt ( const QPoint& pos ) const
 {
   NodeMap::const_iterator iter ( _nodeMap.find ( _tree->itemAt( pos ) ) );
   return ( Usul::Interfaces::IUnknown::QueryPtr ( iter != _nodeMap.end() ? iter->second.get() : 0x0 ) );
@@ -379,8 +391,55 @@ Usul::Interfaces::IUnknown* TreeControl::itemAt ( const QPoint& pos ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* TreeControl::item ( QTreeWidgetItem *item ) const
+Usul::Interfaces::IUnknown* TreeControl::unknown ( QTreeWidgetItem *item ) const
 {
   NodeMap::const_iterator iter ( _nodeMap.find ( item ) );
   return ( Usul::Interfaces::IUnknown::QueryPtr ( iter != _nodeMap.end() ? iter->second.get() : 0x0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::removeItem ( QTreeWidgetItem *item )
+{
+  _nodeMap.erase ( item );
+  
+  QTreeWidgetItem *parent ( item->parent() );
+  
+  if ( 0x0 != parent )
+  {
+    // removeChild does not delete the item.
+    parent->removeChild ( item );
+    delete item;
+  }
+  else
+    _tree->removeItemWidget( item, 0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the selection mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QAbstractItemView::SelectionMode TreeControl::selectionMode() const
+{
+  return _tree->selectionMode();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the selection mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::selectionMode( QAbstractItemView::SelectionMode mode )
+{
+  _tree->setSelectionMode ( mode );
 }

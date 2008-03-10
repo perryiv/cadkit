@@ -52,7 +52,7 @@ protected:
   /// ILayerAddGUIQt.
   virtual QWidget*            layerAddGUI ( );
   virtual std::string         name () const;
-  virtual void                apply ( Usul::Interfaces::IUnknown* caller );
+  virtual void                apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller );
 
   /// Return name of plugin.
   virtual std::string           getPluginName() const;

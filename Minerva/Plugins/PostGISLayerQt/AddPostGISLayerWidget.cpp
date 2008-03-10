@@ -77,7 +77,7 @@ AddPostGISLayerWidget::~AddPostGISLayerWidget()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
+void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller )
 {
   bool rasterize ( false );
   
@@ -99,7 +99,7 @@ void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
   
   // Add the layer.
   Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, layer.get() ) );
-  addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
+  addLayer->execute ( parent );
 }
 
 

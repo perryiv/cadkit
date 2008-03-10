@@ -91,9 +91,9 @@ AddWmsLayerWidget::~AddWmsLayerWidget()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown * caller )
+void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller )
 {
-  Minerva::Interfaces::IAddLayer::QueryPtr al ( Usul::Documents::Manager::instance().activeDocument() );
+  Minerva::Interfaces::IAddLayer::QueryPtr al ( parent );
 
   if ( false == al.valid () )
     return;

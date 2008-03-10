@@ -36,7 +36,7 @@ public:
   AddPostGISLayerWidget( QWidget *parent = 0x0 );
   virtual ~AddPostGISLayerWidget();
 
-  void apply ( Usul::Interfaces::IUnknown * caller );
+  void apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
 
 protected slots:
   void _editLayerProperties ();

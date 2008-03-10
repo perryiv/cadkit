@@ -66,7 +66,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osgd.lib osgTextd.lib"
-				OutputFile="../../bin/MenuKitOsgd.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/MenuKitOsgd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
@@ -149,7 +149,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="osg.lib osgText.lib"
-				OutputFile="../../bin/MenuKitOsg.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/MenuKitOsg.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"

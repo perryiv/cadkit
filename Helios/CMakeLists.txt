@@ -39,7 +39,7 @@ ${PROJECT_SOURCE_DIR}/../MenuKit
 ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
 ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
-${PROJECT_SOURCE_DIR}/../Experimental/PathAnimation
+${PROJECT_SOURCE_DIR}/Plugins/PathAnimation
 ${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentation/ModelPresentation
 )
 

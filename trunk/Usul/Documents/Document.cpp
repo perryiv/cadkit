@@ -27,7 +27,6 @@
 #include "Usul/Interfaces/GUI/ISaveFileDialog.h"
 #include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/GUI/IUpdateGUI.h"
-#include "Usul/Interfaces/IHandleMessage.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/EventQueue.h"

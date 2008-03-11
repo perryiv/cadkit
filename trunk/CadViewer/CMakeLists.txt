@@ -27,7 +27,7 @@ ${CADKIT_INC_DIR}/VRV
 ${CADKIT_INC_DIR}/CadViewer/Plugins/scene_operations
 ${CADKIT_INC_DIR}/CadViewer/Plugins/display_scene_stats
 
-${CADKIT_INC_DIR}/Experimental/PathAnimation
+${CADKIT_INC_DIR}/Helios/Plugins/PathAnimation
 
 # ---- Document Plug-ins -------
 ${CADKIT_INC_DIR}/Helios/Plugins/SceneModel

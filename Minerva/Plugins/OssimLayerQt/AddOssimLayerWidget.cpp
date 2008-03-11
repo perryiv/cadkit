@@ -14,6 +14,8 @@
 #include "Minerva/Core/Layers/RasterLayerOssim.h"
 #include "Minerva/Core/Layers/ElevationLayerDem.h"
 
+#include "Minerva/Core/Factory/Readers.h"
+
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Registry/Database.h"
@@ -80,11 +82,9 @@ void AddOssimLayerWidget::_browseClicked()
   typedef FileDialog::Filters              Filters;
   typedef FileDialog::FileNames            FileNames;
   
-  Filters filters;
-  filters.push_back ( Filter ( "JPEG (*.jpg)", "*.jpg" ) );
-  filters.push_back ( Filter ( "TIFF (*.tiff *.tif)", "*.tiff,*tif" ) );
-  filters.push_back ( Filter ( "PNG (*.png)", "*.png" ) );
-  filters.push_back ( Filter ( "Digital Elevation Model (*.dem)", "*.dem" ) );
+  Filters f ( Minerva::Core::Factory::Readers::instance().filters() );
+  
+  Filters filters ( f.begin(), f.end() );
   filters.push_back ( Filter ( "All Files (*.*)", "*.*" ) );
   
   // Prompt the user.
@@ -121,22 +121,12 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Inte
       std::string filename ( item->text().toStdString () );
       std::string ext ( Usul::File::extension ( filename ) );
       
-      if ( "dem" == ext )
-      {
-        Minerva::Core::Layers::ElevationLayerDem::RefPtr layer ( new Minerva::Core::Layers::ElevationLayerDem );
-        layer->open ( filename );
-        layer->name ( filename );
-        
-        al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
-      }
-      else
-      {
-        Minerva::Core::Layers::RasterLayerOssim::RefPtr layer ( new Minerva::Core::Layers::RasterLayerOssim );
-        layer->open ( filename );
-        layer->name ( filename );
+      Usul::Interfaces::IRead::QueryPtr read ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
       
-        al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
-      }
+      if ( read.valid() )
+        read->read ( filename );
+      
+      al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( read ) );
     }
   }
 }

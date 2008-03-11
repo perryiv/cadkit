@@ -19,15 +19,20 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Strings/Split.h"
 #include "Usul/User/Directory.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
 #include "QtTools/FileDialog.h"
 
+#include "QtGui/QFileDialog"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QListWidget"
 #include "QtGui/QPushButton"
+
+#include "boost/filesystem/operations.hpp"
+#include "Usul/File/Boost.h"
 
 #include <iostream>
 
@@ -44,14 +49,17 @@ AddOssimLayerWidget::AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller, QW
 {
   _listView = new QListWidget ( this );
 
-  QPushButton *browse ( new QPushButton ( "Browse" ) );
+  QPushButton *browse ( new QPushButton ( "Browse..." ) );
+  QPushButton *search ( new QPushButton ( "Search Directory..." ) );
 
   connect ( browse, SIGNAL ( clicked () ), this, SLOT ( _browseClicked () ) );
+  connect ( search, SIGNAL ( clicked () ), this, SLOT ( _searchDirectoryClicked () ) );
 
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );
 
   topLayout->addWidget ( browse );
+  topLayout->addWidget ( search );
   topLayout->addWidget ( _listView );
 }
 
@@ -96,6 +104,46 @@ void AddOssimLayerWidget::_browseClicked()
   // Add the filenames to our list.
   for ( FileNames::iterator iter = filenames.begin(); iter != filenames.end (); ++iter )
     _listView->addItem ( iter->c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Search a directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddOssimLayerWidget::_searchDirectoryClicked()
+{
+  QString dir ( QFileDialog::getExistingDirectory ( this, tr ( "Search Directory" ),
+                                                  "",
+                                                  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks ) );
+  
+  if ( false == dir.isEmpty() )
+  {
+    typedef QtTools::FileDialog::Filters Filters;
+    typedef std::vector<std::string>     Strings;
+    Strings filenames;
+    
+    std::string directory ( dir.toStdString() );
+    Filters filters ( Minerva::Core::Factory::Readers::instance().filters() );
+    
+    for ( Filters::const_iterator iter = filters.begin(); iter != filters.end(); ++iter )
+    {
+      std::string extension ( iter->second );
+      
+      Strings strings;
+      Usul::Strings::split ( extension, ",", false, strings );
+      
+      // Find the files that we can load.
+      for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
+        Usul::File::findFiles ( directory, Usul::File::extension( *iter ), filenames );
+    }
+    
+    // Add the filenames to our list.
+    for ( Strings::iterator iter = filenames.begin(); iter != filenames.end (); ++iter )
+      _listView->addItem ( iter->c_str() );
+  }
 }
 
 

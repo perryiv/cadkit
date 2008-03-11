@@ -97,7 +97,7 @@ std::string PostGISLayerQtComponent::getPluginName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-QWidget* PostGISLayerQtComponent::layerAddGUI()
+QWidget* PostGISLayerQtComponent::layerAddGUI( Usul::Interfaces::IUnknown *caller )
 {
   _widget = new AddPostGISLayerWidget;
   return _widget;

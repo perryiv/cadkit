@@ -326,6 +326,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\FileDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FileDialog.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Image.cpp"
 					>
 				</File>

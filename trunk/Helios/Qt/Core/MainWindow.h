@@ -189,12 +189,6 @@ protected:
   virtual void                      dragEnterEvent ( QDragEnterEvent *event );
   virtual void                      dropEvent      ( QDropEvent      *event );
 
-  std::string                       _formatFilters ( const Filters &filters ) const;
-
-  std::string                       _lastFileDialogDir ( const std::string &title ) const;
-  void                              _lastFileDialogDir ( const std::string &title, const std::string &dir );
-  std::string                       _lastFileDialogFilter ( const std::string &title ) const;
-  void                              _lastFileDialogFilter ( const std::string &title, const std::string &filter ) const;
   void                              _loadSettings();
 
   void                              _parseCommandLine ( int argc, char **argv );

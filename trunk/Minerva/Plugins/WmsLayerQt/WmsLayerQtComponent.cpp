@@ -82,7 +82,7 @@ std::string WmsLayerQtComponent::getPluginName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-QWidget* WmsLayerQtComponent::layerAddGUI ( )
+QWidget* WmsLayerQtComponent::layerAddGUI ( Usul::Interfaces::IUnknown *caller )
 {
   _widget = new AddWmsLayerWidget;
   return _widget;

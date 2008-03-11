@@ -26,7 +26,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OssimLayerQtComponent, OssimLayerQtComponent::
 ///////////////////////////////////////////////////////////////////////////////
 
 OssimLayerQtComponent::OssimLayerQtComponent() : BaseClass(),
-_widget ( 0x0 )
+  _widget ( 0x0 )
 {
 }
 
@@ -82,9 +82,9 @@ std::string OssimLayerQtComponent::getPluginName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-QWidget* OssimLayerQtComponent::layerAddGUI ( )
+QWidget* OssimLayerQtComponent::layerAddGUI ( Usul::Interfaces::IUnknown* caller )
 {
-  _widget = new AddOssimLayerWidget;
+  _widget = new AddOssimLayerWidget ( caller );
   return _widget;
 }
 

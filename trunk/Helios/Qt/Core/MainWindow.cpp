@@ -33,6 +33,7 @@
 
 #include "MenuKit/Button.h"
 
+#include "QtTools/FileDialog.h"
 #include "QtTools/Image.h"
 #include "QtTools/Question.h"
 
@@ -75,7 +76,6 @@
 #include "QtCore/QTimer"
 #include "QtGui/QApplication"
 #include "QtGui/QDockWidget"
-#include "QtGui/QFileDialog"
 #include "QtGui/QLabel"
 #include "QtGui/QMenuBar"
 #include "QtGui/QProgressDialog"
@@ -791,8 +791,7 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
 MainWindow::FileResult MainWindow::getLoadFileName ( const std::string &title, const Filters &filters )
 {
   USUL_TRACE_SCOPE;
-  const FilesResult result ( this->getLoadFileNames ( title, filters ) );
-  return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
+  return QtTools::FileDialog::getLoadFileName ( this, title, filters );
 }
 
 
@@ -807,47 +806,7 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4159638088" );
 
-  // Initialize the answer.
-  FilesResult files;
-
-  // Set the filter string.
-  const std::string allFilters ( this->_formatFilters ( filters ) );
-
-  // Get the directory.
-  const std::string dir ( this->_lastFileDialogDir ( title ) );
-
-  // Get the current filter.
-  QString filter ( this->_lastFileDialogFilter( title ).c_str() );
-
-  // Need to use this static function to get native file dialog.
-  QStringList answer ( QFileDialog::getOpenFileNames ( this, title.c_str(), dir.c_str(), allFilters.c_str(), &filter ) );
-
-  // If we have at least one file.
-  if( false == answer.empty() )
-  {
-    std::string filename ( answer.first().toStdString() );
-    std::string directory ( Usul::File::directory ( filename, false ) );
-
-    // Save the directory and filter.
-    this->_lastFileDialogDir    ( title, directory );
-    this->_lastFileDialogFilter ( title, filter.toStdString() );
-
-    files.second.first = filter.toStdString();
-
-    // Fox and WinForms both use a string for the filter "label" and another 
-    // one for the actual file extensions. Qt does not, so the fact that 
-    // files.second is a pair is legacy.
-    files.second.second = files.second.first;
-  }
-
-  // Convert the answer.
-  for( QStringList::const_iterator iter = answer.begin(); iter != answer.end(); ++iter )
-  {
-    files.first.push_back ( iter->toStdString() );
-  }
-
-  // Return the result, which may be an empty list.
-  return files;
+  return QtTools::FileDialog::getLoadFileNames ( this, title, filters );
 }
 
 
@@ -862,146 +821,7 @@ MainWindow::FileResult MainWindow::getSaveFileName  ( const std::string &title, 
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1215213562" );
 
-  // Initialize the answer.
-  FileResult file;
-
-  // Set the filter string.
-  const std::string allFilters ( this->_formatFilters ( filters ) );
-
-  // Get the current filter.
-  QString filter ( this->_lastFileDialogFilter ( title ).c_str() );
-
-  // Get the directory.
-  const std::string dir ( this->_lastFileDialogDir ( title ) );
-
-  // Need to use this static function to get native file dialog.
-  QString answer ( QFileDialog::getSaveFileName ( this, title.c_str(), dir.c_str(), allFilters.c_str(), &filter ) );
-
-  if( 0 != answer.size() )
-  {
-    std::string filename ( answer.toStdString() );
-    std::string directory ( Usul::File::directory ( filename, false ) );
-
-    // Save the directory and filter.
-    this->_lastFileDialogDir    ( title, directory );
-    this->_lastFileDialogFilter ( title, filter.toStdString() );
-
-    file.first = filename;
-  }
-
-  return file;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Format the given filters into a single string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string MainWindow::_formatFilters ( const Filters &filters ) const
-{
-  USUL_TRACE_SCOPE;
-
-  // Initialize the answer.
-  QStringList allFilters;
-
-  // Loop through and append each filter.
-  for ( Filters::const_iterator i = filters.begin(); i != filters.end(); ++i )
-  {
-    const std::string filter ( i->first );
-    allFilters.push_back ( filter.c_str() );
-  }
-
-  // Sort the filters.
-  allFilters.sort();
-
-  // Put a semi-colon between each filter.
-  QString answer ( allFilters.join ( ";;" ) );
-
-  // Return the answer.
-  return answer.toStdString();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the last directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string MainWindow::_lastFileDialogDir ( const std::string &title ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  // Copy the title and replace any white space.
-  std::string key ( title );
-  std::replace ( key.begin(), key.end(), ' ', '_' );
-
-  // Get the value and return it.
-  const std::string defaultDir ( Usul::User::Directory::documents ( true, false ) );
-  const std::string dir ( Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_DIRECTORY][key].get ( defaultDir ) );
-  return dir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the last directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_lastFileDialogDir ( const std::string &title, const std::string &dir )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  // Copy the title and replace any white space.
-  std::string key ( title );
-  std::replace ( key.begin(), key.end(), ' ', '_' );
-
-  // Set the value and return it.
-  Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_DIRECTORY][key] = dir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the last file dialog filter.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string MainWindow::_lastFileDialogFilter ( const std::string &title ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  // Copy the title and replace any white space.
-  std::string key ( title );
-  std::replace ( key.begin(), key.end(), ' ', '_' );
-
-  const std::string filter ( Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_FILTER][key].get ( "" ) );
-  return filter;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the last file dialog filter.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_lastFileDialogFilter ( const std::string &title, const std::string &filter ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  
-  // Copy the title and replace any white space.
-  std::string key ( title );
-  std::replace ( key.begin(), key.end(), ' ', '_' );
-
-  Reg::instance()[Sections::FILE_DIALOG][Keys::LAST_FILTER][key] = filter;
+  return QtTools::FileDialog::getSaveFileName ( this, title, filters );
 }
 
 

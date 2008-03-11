@@ -21,18 +21,14 @@
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
-#include "QtGui/QFileDialog"
+#include "QtTools/FileDialog.h"
+
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QListWidget"
 #include "QtGui/QPushButton"
 
 #include <iostream>
 
-namespace Detail
-{
-  const std::string SECTION  ( "add_file_system_layer" );
-  const std::string KEY      ( "directory" );
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -40,8 +36,9 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddOssimLayerWidget::AddOssimLayerWidget( QWidget *parent ) : BaseClass ( parent ),
-_listView ( 0x0 )
+AddOssimLayerWidget::AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller, QWidget *parent ) : BaseClass ( parent ),
+  _caller ( caller ),
+  _listView ( 0x0 )
 {
   _listView = new QListWidget ( this );
 
@@ -76,34 +73,29 @@ AddOssimLayerWidget::~AddOssimLayerWidget()
 
 void AddOssimLayerWidget::_browseClicked()
 {
-  try
-  {
-    std::string filters ( "All Files (*.*);;JPEG (*.jpg);;TIFF (*.tiff *.tif);;PNG (*.png);;Digital Elevation Model (*.dem);;OSSIM Key Word List (*kwl)" );
-
-    // Get the last directory.
-    const std::string defaultDir ( Usul::User::Directory::documents ( true, false ) );
-    const std::string directory ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get ( defaultDir ) );
-
-    // Need to use this static function to get native file dialog.
-    QStringList answer ( QFileDialog::getOpenFileNames ( this, "Open Image", directory.c_str(), filters.c_str(), 0x0 ) );
-
-    if ( false == answer.empty() )
-    {
-      std::string directory ( Usul::File::directory ( answer.first().toStdString(), false ) );
-      Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = directory;
-    }
-
-    for ( QStringList::iterator iter = answer.begin(); iter != answer.end (); ++iter )
-      _listView->addItem ( *iter );
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 3063467427: Standard exception caught: " << e.what() << std::endl;
-  }
-  catch ( ... )
-  {
-    std::cout << "Error 2199256948: Unknown exception caught." << std::endl;
-  }
+  // Useful typedefs.
+  typedef QtTools::FileDialog              FileDialog;
+  typedef FileDialog::FilesResult          FilesResult;
+  typedef FileDialog::Filter               Filter;
+  typedef FileDialog::Filters              Filters;
+  typedef FileDialog::FileNames            FileNames;
+  
+  Filters filters;
+  filters.push_back ( Filter ( "JPEG (*.jpg)", "*.jpg" ) );
+  filters.push_back ( Filter ( "TIFF (*.tiff *.tif)", "*.tiff,*tif" ) );
+  filters.push_back ( Filter ( "PNG (*.png)", "*.png" ) );
+  filters.push_back ( Filter ( "Digital Elevation Model (*.dem)", "*.dem" ) );
+  filters.push_back ( Filter ( "All Files (*.*)", "*.*" ) );
+  
+  // Prompt the user.
+  FilesResult results ( FileDialog::getLoadFileNames ( this, "Open Geospatial Data", filters ) );
+  
+  // Get the filenames.
+  FileNames filenames ( results.first );
+  
+  // Add the filenames to our list.
+  for ( FileNames::iterator iter = filenames.begin(); iter != filenames.end (); ++iter )
+    _listView->addItem ( iter->c_str() );
 }
 
 

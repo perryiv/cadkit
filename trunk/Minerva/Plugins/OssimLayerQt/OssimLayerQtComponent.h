@@ -46,7 +46,7 @@ public:
   
 protected:
 
-  virtual QWidget*            layerAddGUI ( );
+  virtual QWidget*            layerAddGUI ( Usul::Interfaces::IUnknown* caller = 0x0 );
   virtual std::string         name () const;
   virtual void                apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller );
 

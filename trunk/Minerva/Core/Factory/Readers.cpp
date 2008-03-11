@@ -11,6 +11,7 @@
 #include "Minerva/Core/Factory/Readers.h"
 
 #include "Usul/File/Path.h"
+#include "Usul/Strings/Split.h"
 
 using namespace Minerva::Core::Factory;
 
@@ -74,7 +75,13 @@ void Readers::add ( const std::string &filter, const std::string& extension, Bas
 {
   Guard guard ( *_mutex );
   _filters.push_back ( Filter ( filter, extension ) );
-  _creators.insert ( Creators::value_type ( Usul::File::extension ( extension ), creator ) );
+  
+  typedef std::vector<std::string> Strings;
+  Strings strings;
+  Usul::Strings::split ( extension, ",", false, strings );
+  
+  for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
+    _creators.insert ( Creators::value_type ( Usul::File::extension ( (*iter) ), creator ) );
 }
 
 
@@ -87,9 +94,15 @@ void Readers::add ( const std::string &filter, const std::string& extension, Bas
 void Readers::remove ( const std::string &filter, const std::string& extension )
 {
   Guard guard ( *_mutex );
-  _creators.erase ( extension );
   
-  // Remove the layer.
+  typedef std::vector<std::string> Strings;
+  Strings strings;
+  Usul::Strings::split ( extension, ",", false, strings );
+  
+  for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
+    _creators.erase ( Usul::File::extension ( (*iter) ) );
+  
+  // Remove the filter.
 #if 0
   _filters.erase ( 
                  std::remove_if ( _filters.begin(), 

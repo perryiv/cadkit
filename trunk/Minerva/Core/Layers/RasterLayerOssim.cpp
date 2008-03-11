@@ -10,6 +10,8 @@
 
 #include "Minerva/Core/Layers/RasterLayerOssim.h"
 
+#include "Minerva/Core/Factory/Readers.h"
+
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/SafeCall.h"
@@ -30,8 +32,21 @@
 
 using namespace Minerva::Core::Layers;
 
-USUL_FACTORY_REGISTER_CREATOR ( RasterLayerOssim );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register readers with the factory.
+//
+///////////////////////////////////////////////////////////////////////////////
 
+namespace
+{
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator0 ( "JPEG (*.jpg)", "*.jpg" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator1 ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator2 ( "PNG (*.png)", "*.png" );
+}
+
+USUL_FACTORY_REGISTER_CREATOR ( RasterLayerOssim );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RasterLayerOssim, RasterLayerOssim::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -69,7 +84,7 @@ _projection ( 0x0 )
   USUL_TRACE_SCOPE;
   this->_registerMembers();
   
-  this->open ( rhs._filename );
+  this->_open ( rhs._filename );
 }
 
 
@@ -132,11 +147,46 @@ void RasterLayerOssim::_destroy()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Query for interface id..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* RasterLayerOssim::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+    case Usul::Interfaces::IRead::IID:
+      return static_cast< Usul::Interfaces::IRead* > ( this );
+    default:
+      return BaseClass::queryInterface ( iid );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerOssim::read (  const std::string& filename, Usul::Interfaces::IUnknown* caller, Usul::Interfaces::IUnknown* progress )
+{
+  this->_open ( filename );
+  
+  if ( true == this->name().empty() )
+  {
+    this->name ( filename );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Open the image.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterLayerOssim::open ( const std::string& filename )
+void RasterLayerOssim::_open ( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -339,7 +389,7 @@ void RasterLayerOssim::deserialize ( const XmlTree::Node &node )
   _dataMemberMap.deserialize ( node );
 
   // Open ourselfs.
-  this->open ( _filename );
+  this->_open ( _filename );
 }
 
 

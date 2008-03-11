@@ -10,6 +10,8 @@
 
 #include "Minerva/Core/Layers/ElevationLayerDem.h"
 
+#include "Minerva/Core/Factory/Readers.h"
+
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Math/Interpolate.h"
@@ -30,6 +32,17 @@
 #include <fstream>
 
 using namespace Minerva::Core::Layers;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register readers with the factory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace
+{
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < ElevationLayerDem > > _creator_for_dem ( "Digital Elevation Model (*.dem)", "*.dem" );
+}
 
 USUL_FACTORY_REGISTER_CREATOR ( ElevationLayerDem );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ElevationLayerDem, ElevationLayerDem::BaseClass );
@@ -66,7 +79,7 @@ ElevationLayerDem::ElevationLayerDem ( const ElevationLayerDem& rhs ) :
   _grid( 0x0 ),
   _projection ( 0x0 )
 {
-  this->open( rhs._filename );
+  this->_open( rhs._filename );
 }
 
 
@@ -105,11 +118,28 @@ Usul::Interfaces::IUnknown* ElevationLayerDem::clone() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Read.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ElevationLayerDem::read (  const std::string& filename, Usul::Interfaces::IUnknown* caller, Usul::Interfaces::IUnknown* progress )
+{
+  this->_open ( filename );
+  
+  if ( true == this->name().empty() )
+  {
+    this->name ( filename );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Open the grid.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ElevationLayerDem::open( const std::string& filename )
+void ElevationLayerDem::_open( const std::string& filename )
 {
   {
     std::ifstream in ( filename.c_str() );
@@ -308,7 +338,7 @@ void ElevationLayerDem::deserialize ( const XmlTree::Node &node )
   _dataMemberMap.deserialize ( node );
       
   // Open ourselfs.
-  this->open ( _filename );
+  this->_open ( _filename );
 }
 
 
@@ -336,6 +366,8 @@ Usul::Interfaces::IUnknown* ElevationLayerDem::queryInterface ( unsigned long ii
   {
   case Usul::Interfaces::IElevationDatabase::IID:
     return static_cast < Usul::Interfaces::IElevationDatabase* > ( this );
+  case Usul::Interfaces::IRead::IID:
+    return static_cast< Usul::Interfaces::IRead* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

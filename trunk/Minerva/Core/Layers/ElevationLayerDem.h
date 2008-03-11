@@ -15,7 +15,7 @@
 #include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Usul/Interfaces/IElevationDatabase.h"
-#include "Usul/Math/Vector2.h"
+#include "Usul/Interfaces/IRead.h"
 
 class ossimProjection; class ossimDemGrid;
 
@@ -25,7 +25,8 @@ namespace Layers {
 
 
 class MINERVA_EXPORT ElevationLayerDem : public RasterLayer,
-                                         public Usul::Interfaces::IElevationDatabase
+                                         public Usul::Interfaces::IElevationDatabase,
+                                         public Usul::Interfaces::IRead
 {
 public:
   typedef RasterLayer BaseClass;
@@ -39,8 +40,8 @@ public:
   /// Clone.
   virtual IUnknown*     clone() const;
   
-  /// Open the dem.
-  void                  open ( const std::string& filename );
+  /// Read.
+  virtual void          read ( const std::string& filename, Usul::Interfaces::IUnknown* caller = 0x0, Usul::Interfaces::IUnknown* progress = 0x0 );
 
   /// Get the texture
   virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
@@ -51,13 +52,18 @@ public:
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node &node );
 
+  // Get the value at the lat, lon location (IElevationDatabase).
   virtual double        elevationAtLatLong ( double lat, double lon ) const;
+  
 protected:
   virtual ~ElevationLayerDem();
   
   ElevationLayerDem ( const ElevationLayerDem& );
 
   virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
+  
+  /// Open the dem.
+  void                  _open ( const std::string& filename );
   
 private:
   ElevationLayerDem& operator= ( const ElevationLayerDem& );

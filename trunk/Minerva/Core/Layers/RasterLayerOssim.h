@@ -14,6 +14,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
 
+#include "Usul/Interfaces/IRead.h"
+
 class ossimImageData;
 class ossimImageHandler;
 class ossimImageRenderer;
@@ -25,19 +27,23 @@ namespace Core {
 namespace Layers {
 
 
-class MINERVA_EXPORT RasterLayerOssim : public RasterLayer
+class MINERVA_EXPORT RasterLayerOssim : public RasterLayer,
+                                        public Usul::Interfaces::IRead
 {
 public:
   typedef RasterLayer BaseClass;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
-  USUL_DECLARE_REF_POINTERS ( RasterLayerOssim );
-
+  USUL_DECLARE_QUERY_POINTERS ( RasterLayerOssim );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+  
   RasterLayerOssim();
   
   virtual IUnknown*     clone() const;
 
-  void                  open ( const std::string& );
-
+  /// Read.
+  virtual void          read ( const std::string& filename, Usul::Interfaces::IUnknown* caller = 0x0, Usul::Interfaces::IUnknown* progress = 0x0 );
+  
   /// Get the texture
   virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 
@@ -54,6 +60,8 @@ protected:
   
   virtual void          _convert ( const ossimImageData& data, osg::Image& image );
   void                  _updateExtents();
+
+  void                  _open ( const std::string& );
 
 private:
   // Do not use.

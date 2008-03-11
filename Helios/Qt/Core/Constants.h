@@ -36,7 +36,6 @@ namespace CadKit
         {
           // Registry sections.
           const std::string MAIN_WINDOW               ( "main_window" );
-          const std::string FILE_DIALOG               ( "file_dialog" );
           const std::string TEXT_WINDOW               ( "text_window" );
         }
 
@@ -49,10 +48,6 @@ namespace CadKit
           const std::string WIDTH                     ( "width" );
           const std::string HEIGHT                    ( "height" );
           const std::string MAXIMIZED                 ( "maximized" );
-
-          // File dialog properties.
-          const std::string LAST_DIRECTORY            ( "last_directory" );
-          const std::string LAST_FILTER               ( "last_filter" );
 
           // Dock window positions.
           const std::string DOCK_WINDOW_POSITIONS     ( "dock_window_positions" );

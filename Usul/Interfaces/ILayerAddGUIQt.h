@@ -29,7 +29,7 @@ struct ILayerAddGUIQt : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2946322505u };
 
-  virtual QWidget*            layerAddGUI ( ) = 0;
+  virtual QWidget*            layerAddGUI ( Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
 
   virtual std::string         name () const = 0;
 

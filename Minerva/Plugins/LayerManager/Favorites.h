@@ -37,16 +37,20 @@ public:
   virtual ~Favorites();
 
 signals:
+  
   void             layerAdded ( Usul::Interfaces::IUnknown* layer );
   
 public slots:
+  
   void             addLayer( Usul::Interfaces::IUnknown* layer );
 
 private slots:
+  
   void             on_addLayer_clicked();
   void             on_removeFavoriteButton_clicked();
 
 private:
+  
   /// Save/Restore state.
   void             _saveState();
   void             _restoreState();

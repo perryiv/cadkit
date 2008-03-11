@@ -13,6 +13,8 @@
 
 #include "Minerva/Plugins/OssimLayerQt/CompileGuard.h"
 
+#include "Usul/Interfaces/IUnknown.h"
+
 #include "QtGui/QWidget"
 
 #include <vector>
@@ -20,7 +22,6 @@
 
 class QListWidget;
 
-namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 class AddOssimLayerWidget : public QWidget
 {
@@ -28,7 +29,7 @@ class AddOssimLayerWidget : public QWidget
 public:
   typedef QWidget BaseClass;
 
-  AddOssimLayerWidget( QWidget *parent = 0x0 );
+  AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller = 0x0, QWidget *parent = 0x0 );
   virtual ~AddOssimLayerWidget();
 
   void apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
@@ -40,6 +41,7 @@ private slots:
   void             _browseClicked();
 
 private:
+  Usul::Interfaces::IUnknown::QueryPtr _caller;
   QListWidget *_listView;
 };
 

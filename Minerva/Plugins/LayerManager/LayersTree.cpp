@@ -229,7 +229,7 @@ void LayersTree::_addLayer ( Usul::Interfaces::IUnknown *parent )
   for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
   {
     Usul::Interfaces::ILayerAddGUIQt::QueryPtr gui ( (*iter).get() );
-    tabs->addTab ( gui->layerAddGUI (), gui->name ().c_str() );
+    tabs->addTab ( gui->layerAddGUI ( _caller ), gui->name ().c_str() );
   }
   
   dialog.setModal ( true );

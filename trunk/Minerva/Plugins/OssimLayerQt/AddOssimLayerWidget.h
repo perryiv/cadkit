@@ -39,7 +39,8 @@ protected:
 private slots:
 
   void             _browseClicked();
-
+  void             _searchDirectoryClicked();
+  
 private:
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   QListWidget *_listView;

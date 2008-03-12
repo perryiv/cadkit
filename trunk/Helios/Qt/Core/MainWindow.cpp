@@ -269,6 +269,9 @@ void MainWindow::_destroy()
 
   // Release all the plugins.
   this->releasePlugins();
+  
+  // Clear all loaded libraries.
+  Usul::DLL::LibraryPool::instance().clear ( &std::cout );
 
   // Wait here until all jobs are done.
   std::cout << "Waiting for all jobs to finish..." << std::endl;

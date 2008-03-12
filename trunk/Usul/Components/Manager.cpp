@@ -270,7 +270,7 @@ void Manager::load ( unsigned long iid, const std::string& file )
 	{
 		// Find the factory
   	Usul::Interfaces::IClassFactory::ValidQueryPtr factory ( this->_factory ( file ) );
-      
+
     // Get the IUnknown
     Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance ( iid ) );
 
@@ -305,7 +305,6 @@ void Manager::clear ( std::ostream *out )
   if ( 0x0 == out )
   {
     _unknowns.clear(); 
-    //_aliases.clear();
     Helper::_pool.clear();
     return;
   }

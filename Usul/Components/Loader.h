@@ -22,6 +22,8 @@
 
 #include "Usul/Components/Manager.h"
 #include "Usul/DLL/Loader.h"
+#include "Usul/DLL/Library.h"
+#include "Usul/DLL/LibraryPool.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -369,7 +371,10 @@ inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
     // Load.
     try
     {
-      Usul::DLL::Loader::load ( name );
+      Usul::DLL::Library::RefPtr library ( Usul::DLL::Loader::load ( name ) );
+      
+      // Add to our cache.
+      Usul::DLL::LibraryPool::instance().add ( library );
     }
     catch ( const std::exception &e )
     {

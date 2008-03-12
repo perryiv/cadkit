@@ -414,6 +414,14 @@
 				<File
 					RelativePath="DLL\Library.h"
 					>
+				</File>				
+				<File
+					RelativePath="DLL\LibraryPool.cpp"
+					>
+				</File>
+				<File
+					RelativePath="DLL\LibraryPool.h"
+					>
 				</File>
 				<File
 					RelativePath=".\DLL\Listener.cpp"

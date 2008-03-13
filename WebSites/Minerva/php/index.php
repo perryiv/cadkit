@@ -54,7 +54,7 @@
 </p>
 <p>
 
-  The program is written with a combination of platform independent C++ and Microsoft managed C++ and C#.
+  The program is written with platform independent C++.
   
   Source code is available via
   <a href="subversion.php">Subversion</a> courtesy of

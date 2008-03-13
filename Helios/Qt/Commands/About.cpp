@@ -8,15 +8,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Commands/ToggleView.h"
+#include "Helios/Qt/Commands/About.h"
 
 #include "Usul/Trace/Trace.h"
 
 #include "QtGui/QWidget"
+#include "QtGui/QMessageBox"
 
 using namespace CadKit::Helios::Commands;
 
-USUL_IMPLEMENT_COMMAND ( ToggleView );
+USUL_IMPLEMENT_COMMAND ( About );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,16 +26,15 @@ USUL_IMPLEMENT_COMMAND ( ToggleView );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ToggleView::ToggleView ( QWidget *widget ) : BaseClass ( 0x0 ),
-_widget ( widget )
+About::About ( QWidget *widget, const std::string& text, const std::string& about ) : BaseClass ( 0x0 ),
+  _parent ( widget ),
+  _about ( about )
 {
   USUL_TRACE_SCOPE;
-
-  if ( 0x0 != widget )
-    this->text ( widget->windowTitle ().toStdString() );
-
-  this->statusTip ( "Toggle the visibility of the widget." );
-  this->toolTip ( "Toggle the visibility of the widget." );
+  
+  this->text ( text );
+  this->statusTip ( "Display information about this program." );
+  this->toolTip ( "Display information about this program." );
 }
 
 
@@ -44,7 +44,7 @@ _widget ( widget )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ToggleView::~ToggleView ()
+About::~About ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -56,34 +56,9 @@ ToggleView::~ToggleView ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ToggleView::_execute ()
+void About::_execute ()
 {
   USUL_TRACE_SCOPE;
-
-  if ( 0x0 != _widget )
-    _widget->setVisible ( !_widget->isVisible () );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Are we enabled?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool ToggleView::updateEnable () const
-{
-  return 0x0 != _widget;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Are we enabled?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool ToggleView::updateCheck () const
-{
-  return 0x0 != _widget ? _widget->isVisible () : false;
+  
+  QMessageBox::about ( _parent, this->text().c_str(), _about.c_str() );
 }

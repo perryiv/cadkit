@@ -225,7 +225,7 @@ void Program::run ( int argc, char **argv,
     // We want the application to live longer than the main window.
     {
       // Declare the main window.
-      CadKit::Helios::Core::MainWindow mw ( vendor, url, program, manual, icon, output, true );
+      CadKit::Helios::Core::MainWindow mw ( vendor, url, program, manual, icon, output, out.str(), true );
 
       // Main window needs to live longer than the stream listener.
       {

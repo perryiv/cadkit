@@ -113,6 +113,7 @@ public:
                const std::string &manual, 
                const std::string &icon,
                const std::string &output,
+               const std::string& about,
                bool showSplash = true );
   virtual ~MainWindow();
 
@@ -151,6 +152,7 @@ public:
   std::string                       programName() const;
   std::string                       vendor() const;
   std::string                       url() const;
+  std::string                       about() const;
 
   // Parse the command-line.
   void                              parseCommandLine ( int argc, char **argv );
@@ -259,6 +261,7 @@ private:
   std::string _manual;
   std::string _icon;
   std::string _output;
+  std::string _about;
   SplashScreen::RefPtr _splash;
   QWorkspace *_workSpace;
   TextWindow _textWindow;

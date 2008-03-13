@@ -27,6 +27,7 @@
 #include "Helios/Qt/Commands/ExitApplication.h"
 #include "Helios/Qt/Commands/ToggleView.h"
 #include "Helios/Qt/Commands/OpenManual.h"
+#include "Helios/Qt/Commands/About.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
@@ -115,6 +116,7 @@ MainWindow::MainWindow ( const std::string &vendor,
                          const std::string &manual,
                          const std::string &icon,
                          const std::string &output,
+                         const std::string& about,
                          bool showSplash ) : BaseClass(),
   _mutex        ( new MainWindow::Mutex ),
   _actions      (),
@@ -127,6 +129,7 @@ MainWindow::MainWindow ( const std::string &vendor,
   _manual       ( manual ),
   _icon         ( icon ),
   _output       ( output ),
+  _about        ( about ),
   _splash       ( 0x0 ),
   _workSpace    ( 0x0 ),
   _textWindow   ( 0x0, StreamQueuePtr ( new StreamQueue() ) ),
@@ -461,11 +464,11 @@ void MainWindow::_buildMenuKitMenu()
 
   // Add help menu.
   {
-    {
-      MenuKit::Menu::RefPtr help ( new MenuKit::Menu ( "&Help" ) );
-      help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenManual ( me, _manual ) ) );
-      _menu->append ( help );
-    }
+    MenuKit::Menu::RefPtr help ( new MenuKit::Menu ( "&Help" ) );
+    help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::OpenManual ( me, _manual ) ) );
+    help->addSeparator();
+    help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::About ( this, Usul::Strings::format ( "About ", this->programName() ), this->about() ) ) );
+    _menu->append ( help );
   }
 }
 
@@ -913,6 +916,20 @@ std::string MainWindow::url() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return std::string ( _url.begin(), _url.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the about.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MainWindow::about() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return std::string ( _about.begin(), _about.end() );
 }
 
 

@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __CADKIT_HELIOS_QT_COMMANDS_TOGGLE_VIEW_H__
-#define __CADKIT_HELIOS_QT_COMMANDS_TOGGLE_VIEW_H__
+#ifndef __CADKIT_HELIOS_QT_COMMANDS_ABOUT_H__
+#define __CADKIT_HELIOS_QT_COMMANDS_ABOUT_H__
 
 #include "Helios/Qt/Commands/Command.h"
 
@@ -26,35 +26,30 @@ namespace Helios {
 namespace Commands {
 
 
-class HELIOS_QT_COMMANDS_EXPORT ToggleView : public Usul::Commands::Command
+class HELIOS_QT_COMMANDS_EXPORT About : public Usul::Commands::Command
 {
 public:
-
+  
   // Typedefs
   typedef Usul::Commands::Command               BaseClass;
   typedef Usul::Interfaces::IUnknown            IUnknown;
-
+  
   // Smart-pointer definitions.
-  USUL_DECLARE_COMMAND ( ToggleView );
-
+  USUL_DECLARE_COMMAND ( About );
+  
   // Constructor.
-  ToggleView ( QWidget *widget );
-
+  About ( QWidget *parent, const std::string& text, const std::string& about );
+  
 protected:
   // Use reference counting.
-  virtual ~ToggleView();
-
+  virtual ~About();
+  
   // Execute.
   virtual void              _execute();
-
-  // Update the enabled flag.
-  virtual bool              updateEnable () const;
-
-  // Update the checked state.
-  virtual bool              updateCheck () const;
-
+  
 private:
-  QWidget *_widget;
+  QWidget *_parent;
+  std::string _about;
 };
 
 }
@@ -62,4 +57,4 @@ private:
 }
 
 
-#endif // __CADKIT_HELIOS_QT_COMMANDS_SAVE_DOCUMENT_H__
+#endif // __CADKIT_HELIOS_QT_COMMANDS_ABOUT_H__

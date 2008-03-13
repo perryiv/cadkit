@@ -16,6 +16,7 @@ echo "<tr><td height=\"$nav_bar_top_margin\"></td></tr>\n";
 $url = basename ( $PHP_SELF );
 
 main_navigation_bar_entry ( "index.php",        "Home",       $nav_bar_vertical_space, $nav_bar_current_cell_color, $nav_bar_current_text_color, $url );
+main_navigation_bar_entry ( "download.php",     "Download",   $nav_bar_vertical_space, $nav_bar_current_cell_color, $nav_bar_current_text_color, $url );
 main_navigation_bar_entry ( "build.php",        "Build",      $nav_bar_vertical_space, $nav_bar_current_cell_color, $nav_bar_current_text_color, $url );
 main_navigation_bar_entry ( "subversion.php",   "Subversion", $nav_bar_vertical_space, $nav_bar_current_cell_color, $nav_bar_current_text_color, $url );
 main_navigation_bar_entry ( "documentation.php","Docs",       $nav_bar_vertical_space, $nav_bar_current_cell_color, $nav_bar_current_text_color, $url );

@@ -13,6 +13,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
+#include "Usul/Cast/Cast.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
 #include "Usul/Commands/RenderLoop.h"

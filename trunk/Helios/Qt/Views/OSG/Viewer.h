@@ -141,6 +141,9 @@ protected:
 
   /// Add to the menu.
   virtual void                            _menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+  
+  /// View OpenGL information.
+  void                                    _openGLInformation();
 
   /// Prompt the user (IQuestion).
   virtual std::string                     question ( const std::string &buttons, const std::string &title, const std::string &text );

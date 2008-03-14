@@ -52,6 +52,7 @@
 #include "QtGui/QSpinBox"
 #include "QtGui/QLabel"
 #include "QtGui/QFileDialog"
+#include "QtGui/QMessageBox"
 
 #include <ctime>
 
@@ -1424,6 +1425,14 @@ void Viewer::_onContextMenuShow ( const QPoint& pos )
 
   MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
   this->_menuAdd ( *menu );
+  
+  typedef MenuKit::Button Button;
+  namespace UC = Usul::Commands;
+  namespace UA = Usul::Adaptors;
+  menu->append ( new Button ( UC::genericCommand ( "OpenGL information", 
+                                                  UA::memberFunction<void> ( this, &Viewer::_openGLInformation ), 
+                                                  UC::TrueFunctor() ) ) );
+  
 
   QtTools::Menu qMenu;
   qMenu.menu ( menu.get() );
@@ -1639,4 +1648,52 @@ void Viewer::updateCursor( bool left, bool middle, bool right )
     if ( OsgTools::Render::Viewer::NAVIGATION == mode )
       this->setCursor ( Qt::ClosedHandCursor );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  View OpenGL information.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_openGLInformation()
+{
+  // Format the string.
+  std::ostringstream message;
+  
+  this->makeCurrent();
+  message << "OpenGL information:" << std::endl;
+  const char *vendor     ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_VENDOR     ) ) );
+  const char *renderer   ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_RENDERER   ) ) );
+  const char *version    ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_VERSION    ) ) );
+  
+  if ( vendor )
+    message << "\n  -- Vendor: " << vendor;
+  if ( renderer )
+    message << "\n  -- Renderer: " << renderer;
+  if ( version )
+    message << "\n  -- Version: " << version;
+  
+  // This is useful info, but makes the dialog to big to close.
+#if 0
+  const char *extensions ( USUL_UNSAFE_CAST ( const char *, ::glGetString ( GL_EXTENSIONS ) ) );
+  
+  if ( extensions )
+  {
+    std::string e ( extensions );
+    std::replace ( e.begin(), e.end(), ' ', '\n' );
+    message << "\n  -- Extensions: " << e;
+  }
+#endif
+  
+  message << "\nContext information:" << std::endl;
+  QGLFormat format ( this->format() );
+  message << "Depth buffer: " << ( format.depth() ? Usul::Strings::format ( format.depthBufferSize(), " bits" ) : "Disabled" ) << std::endl;
+  message << "Accumulation buffer: " << ( format.accum() ? Usul::Strings::format ( format.accumBufferSize(), " bits" ) : "Disabled" ) << std::endl;
+  message << "Stencil buffer: " << ( format.stencil() ? Usul::Strings::format ( format.stencilBufferSize(), " bits" ) : "Disabled" ) << std::endl;
+  message << "Mutlisample buffer: " << ( format.sampleBuffers() ? Usul::Strings::format ( format.samples(), " samples" ) : "Disabled" ) << std::endl;
+  message << "Stereo: " << ( format.stereo() ? "Enabled" : "Disabled" ) << std::endl;
+  
+  QMessageBox::information ( this, "OpenGL information", message.str().c_str() );
 }

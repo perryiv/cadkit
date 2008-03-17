@@ -8,6 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#endif
+
 #include "Minerva/Layers/Kml/KmlLayer.h"
 #include "Minerva/Layers/Kml/NetworkLink.h"
 #include "Minerva/Core/Factory/Readers.h"
@@ -705,7 +711,7 @@ KmlLayer::DataObject::AltitudeMode KmlLayer::_parseAltitudeMode ( const XmlTree:
   if ( "relativeToGround" == node.value() )
     mode = DataObject::RELATIVE_TO_GROUND;
   if ( "absolute" == node.value() )
-    mode = DataObject::ABSOLUTE;
+    mode = DataObject::ABSOLUTE_MODE;
   
   return mode;
 }
@@ -921,7 +927,7 @@ void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
       
       // Download.
       Usul::Network::Curl curl ( href, filename );
-      Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), "1638679894" );
+      Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( static_cast<std::ostream*> ( 0x0 ), Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ) ), "1638679894" );
       
       // Get the current time.
       Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );

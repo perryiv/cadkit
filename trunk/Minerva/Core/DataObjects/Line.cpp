@@ -135,7 +135,7 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
       Usul::Interfaces::IFitLineTerrain::QueryPtr fit ( PluginManager::instance().getInterface ( Usul::Interfaces::IFitLineTerrain::IID ) );
 
       Vertices sampledPoints;
-      if ( fit.valid() && DataObject::ABSOLUTE != this->altitudeMode() )
+      if ( fit.valid() && DataObject::ABSOLUTE_MODE != this->altitudeMode() )
         fit->resample( data, sampledPoints, 5 );
       else
         sampledPoints = data;

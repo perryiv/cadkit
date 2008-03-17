@@ -361,17 +361,18 @@ protected:
       Real bnz ( botX * sinLongA );
 
       // Set the point.
-      points.push_back ( Point ( _centerX + _radius * tnx, _centerX + _radius * tny, _centerX + _radius * tnz ) );
       points.push_back ( Point ( _centerX + _radius * bnx, _centerX + _radius * bny, _centerX + _radius * bnz ) );
+      points.push_back ( Point ( _centerX + _radius * tnx, _centerX + _radius * tny, _centerX + _radius * tnz ) );
+      
 
       // Set the normal.
-#ifdef __linux // Is the negation still needed?
-      normals.push_back ( Normal ( _normalLength * tnx, _normalLength * tny, _normalLength * tnz ) * -1 );
-      normals.push_back ( Normal ( _normalLength * bnx, _normalLength * bny, _normalLength * bnz ) * -1 ); 
-#else
-      normals.push_back ( Normal ( _normalLength * tnx, _normalLength * tny, _normalLength * tnz ) );
+//#ifdef __linux // Is the negation still needed?
+//      normals.push_back ( Normal ( _normalLength * tnx, _normalLength * tny, _normalLength * tnz ) * -1 );
+//      normals.push_back ( Normal ( _normalLength * bnx, _normalLength * bny, _normalLength * bnz ) * -1 ); 
+//#else
       normals.push_back ( Normal ( _normalLength * bnx, _normalLength * bny, _normalLength * bnz ) ); 
-#endif
+      normals.push_back ( Normal ( _normalLength * tnx, _normalLength * tny, _normalLength * tnz ) );
+//#endif
     }
   }
 

@@ -56,7 +56,7 @@ public:
   {
     CLAMP_TO_GROUND,
     RELATIVE_TO_GROUND,
-    ABSOLUTE
+    ABSOLUTE_MODE
   };
 
   /// Get the shape factory.
@@ -156,7 +156,7 @@ protected:
         return ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 );
       case RELATIVE_TO_GROUND:
         return ( point[2] + ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 ) );
-      case ABSOLUTE:
+      case ABSOLUTE_MODE:
         return point[2];
     }
     return 0.0;

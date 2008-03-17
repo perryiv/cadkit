@@ -309,20 +309,17 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   Minerva::Interfaces::IAddLayer::QueryPtr al ( unknown );
   add.setEnabled( al.valid() );
   
-  if ( layer.valid () )
-  {
-    QAction favorites ( 0x0 );
-    favorites.setText( "Add to favorites" );
-    favorites.setToolTip( "Add layer to favorites" );
-    QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
-    
-    PropertiesAction action ( layer.get(), _caller.get() );
-    
-    menu.addAction ( &favorites );
-    menu.addAction ( &action );
-    
-    //this->buildTree( _document );
-  }
+  QAction favorites ( 0x0 );
+  favorites.setText( "Add to favorites" );
+  favorites.setToolTip( "Add layer to favorites" );
+  favorites.setEnabled ( layer.valid() );
+  QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
+  
+  PropertiesAction action ( layer.get(), _caller.get() );
+  favorites.setEnabled ( layer.valid() );
+  
+  menu.addAction ( &favorites );
+  menu.addAction ( &action );
   
   menu.exec ( _tree->mapToGlobal ( pos ) );
 }

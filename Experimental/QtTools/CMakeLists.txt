@@ -20,6 +20,7 @@ SET (SOURCES
   Action.cpp
   AnimationControl.cpp
   ColorButton.cpp
+  FileDialog.cpp
   Image.cpp
   Menu.cpp
   PropertyBrowser.cpp

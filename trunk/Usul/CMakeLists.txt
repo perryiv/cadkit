@@ -81,6 +81,7 @@ SET (SOURCES
 ./Functions/GUID.cpp
 ./DLL/Listener.cpp
 ./DLL/Library.cpp
+./DLL/LibraryPool.cpp
 ./DLL/Loader.cpp
 ./Trace/Scope.cpp
 ./Trace/Print.cpp

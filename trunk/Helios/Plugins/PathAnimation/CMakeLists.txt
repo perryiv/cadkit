@@ -2,7 +2,7 @@ PROJECT (PathAnimation)
 
 SET(PLUGIN_NAME "PathAnimation")
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
+SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 ADD_DEFINITIONS ("-D_COMPILING_PATH_ANIMATION")
@@ -10,6 +10,7 @@ ADD_DEFINITIONS ("-D_COMPILING_PATH_ANIMATION")
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
+  "${PROJECT_SOURCE_DIR}/../"
 	"${CADKIT_INC_DIR}/" 
   "${CADKIT_INC_DIR}/GenericNurbs"
   "${CADKIT_INC_DIR}/Experimental"

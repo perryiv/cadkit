@@ -18,13 +18,16 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Factory.h"
+#include "Usul/Documents/Document.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IIntersectNotify.h"
 #include "Usul/Interfaces/IButtonPressSubject.h"
 #include "Usul/Interfaces/IButtonID.h"
+#include "Usul/Interfaces/IMouseEventSubject.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -45,12 +48,14 @@
 #include "osg/Material"
 #include "osg/LineWidth"
 
+#include "osgGA/GUIEventAdapter"
 
 #include "osgUtil/IntersectVisitor"
 
 #include <algorithm>
 #include <iostream>
 
+#define COMPILE_FOR_VRV 0
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -120,6 +125,8 @@ Usul::Interfaces::IUnknown *MeasureToolComponent::queryInterface ( unsigned long
     return static_cast <Usul::Interfaces::IActiveViewListener*>(this);
   case Usul::Interfaces::IButtonPressListener::IID:
     return static_cast <Usul::Interfaces::IButtonPressListener*>(this);
+  case Usul::Interfaces::IMouseEventListener::IID:
+    return static_cast <Usul::Interfaces::IMouseEventListener*> ( this );
   default:
     return 0x0;
   }
@@ -149,9 +156,22 @@ void MeasureToolComponent::activeViewChanged ( Usul::Interfaces::IUnknown *oldVi
     if ( bls.valid() )
       bls->removeButtonPressListener ( me );
 
+#if COMPILE_FOR_VRV
     VRV::Interfaces::INavigationScene::QueryPtr ns ( oldView );
     if ( ns.valid() )
       OsgTools::Group::removeAllOccurances ( _root.get(), ns->navigationScene() );
+#else
+    Usul::Interfaces::IGroup::QueryPtr g ( oldView );
+    if ( g.valid() )
+    {
+      osg::ref_ptr<osg::Group> group ( g->getGroup ( Detail::MEASURE_TOOL_GROUP ) );
+      OsgTools::Group::removeAllOccurances ( _root.get(), group.get() );
+    }
+
+    Usul::Interfaces::IMouseEventSubject::QueryPtr mes ( oldView );
+    if ( mes.valid() )
+      mes->removeMouseEventListener ( me );
+#endif
   }
 
   // Add our selfs to the new view.
@@ -164,9 +184,22 @@ void MeasureToolComponent::activeViewChanged ( Usul::Interfaces::IUnknown *oldVi
     if ( bls.valid() )
       bls->addButtonPressListener ( me );
 
+#if COMPILE_FOR_VRV
     VRV::Interfaces::INavigationScene::QueryPtr ns ( newView );
     if ( ns.valid() )
       ns->navigationScene()->addChild ( _root.get() );
+#else
+    Usul::Interfaces::IGroup::QueryPtr g ( newView );
+    if ( g.valid() )
+    {
+      osg::ref_ptr<osg::Group> group ( g->getGroup ( Detail::MEASURE_TOOL_GROUP ) );
+      group->addChild ( _root.get() );
+    }
+
+    Usul::Interfaces::IMouseEventSubject::QueryPtr mes ( newView );
+    if ( mes.valid() )
+      mes->addMouseEventListener ( me );
+#endif
   }
 
   _view = newView;
@@ -234,9 +267,11 @@ void MeasureToolComponent::intersectNotify ( float x, float y, const osgUtil::Hi
     // Add a sphere.
     if ( _root.valid() )
     {
+#if COMPILE_FOR_VRV
       Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
       if ( vm.valid() )
         position = position * osg::Matrix::inverse ( vm->getViewMatrix() );
+#endif
 
       // Make the auto transform.
       osg::ref_ptr< osg::AutoTransform > autoTransform ( new osg::AutoTransform );
@@ -334,7 +369,7 @@ void MeasureToolComponent::measureOn  ( bool b )
 
   _measure = b;
 
-  this->_clear();
+  //this->_clear();
 }
 
 
@@ -347,7 +382,6 @@ void MeasureToolComponent::measureOn  ( bool b )
 bool MeasureToolComponent::isMeasureOn() const
 {
   Guard guard ( this->mutex() );
-
   return _measure;
 }
 
@@ -438,6 +472,11 @@ void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this->mutex() );
 
+  // Helpful typedefs.
+  typedef Usul::Documents::Manager                     DocManager;
+  typedef DocManager::DocumentInfo                     Info;
+  typedef Usul::Interfaces::IArcGenReaderWriter        IArcGenReaderWriter;
+
   // debugging. Remove when fixed
   std::cout << "Calling _exportToArcGen " << std::endl;
 
@@ -473,4 +512,23 @@ void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
   std::cout << "Calling info.document->write " << std::endl;
   info.document->write ( filename );
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when mouse event occurs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MeasureToolComponent::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Interfaces::IUnknown * caller )
+{
+  // See if it's the left button.
+  const bool left ( Usul::Bits::has ( ea.getButton(), osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) );
+
+  if ( left && osgGA::GUIEventAdapter::PUSH == ea.getEventType() && this->isMeasureOn() )
+  {
+    Guard guard ( this->mutex() );
+    _appendPosition = true;
+  }
 }

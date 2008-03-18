@@ -20,14 +20,13 @@
 #include "MeasureTool/CompileGuard.h"
 
 #include "Usul/Base/Object.h"
-#include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/IActiveViewListener.h"
+#include "Usul/Interfaces/IArcGenReaderWriter.h"
+#include "Usul/Interfaces/IButtonPressListener.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IMenuAdd.h"
-#include "Usul/Interfaces/IActiveViewListener.h"
-#include "Usul/Interfaces/IButtonPressListener.h"
-#include "Usul/Interfaces/IArcGenReaderWriter.h"
-#include "Usul/Documents/Document.h"
-#include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/IMouseEventListener.h"
+#include "Usul/Interfaces/IPlugin.h"
 
 #include "osg/Group"
 #include "osg/Vec3"
@@ -39,7 +38,8 @@ class MeasureToolComponent : public Usul::Base::Object,
   public Usul::Interfaces::IIntersectListener,
   public Usul::Interfaces::IMenuAdd,
   public Usul::Interfaces::IActiveViewListener,
-  public Usul::Interfaces::IButtonPressListener
+  public Usul::Interfaces::IButtonPressListener,
+  public Usul::Interfaces::IMouseEventListener
 {
 public:
 
@@ -47,9 +47,6 @@ public:
   typedef Usul::Base::Object                           BaseClass;
   typedef Usul::Interfaces::IUnknown                   Unknown;
   typedef std::vector <osg::Vec3>                      Positions;
-  typedef Usul::Documents::Manager                     DocManager;
-  typedef DocManager::DocumentInfo                     Info;
-  typedef Usul::Interfaces::IArcGenReaderWriter        IArcGenReaderWriter;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MeasureToolComponent );
@@ -82,16 +79,18 @@ protected:
 
   bool              enableExportButton() const;
 
+  // Called when mouse event occurs.
+  virtual void      mouseEventNotify ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );
+
   // Do not copy.
   MeasureToolComponent ( const MeasureToolComponent & );
   MeasureToolComponent &operator = ( const MeasureToolComponent & );
-
-
 
   /// Use reference counting.
   virtual ~MeasureToolComponent();
 
 private:
+
   void              _updateMeasurement( Usul::Interfaces::IUnknown *caller );
   void              _clear();
   void              _exportToArcGen( Usul::Interfaces::IUnknown *caller );

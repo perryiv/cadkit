@@ -2332,6 +2332,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
   case Usul::Interfaces::IAxes::IID:
     return static_cast < Usul::Interfaces::IAxes * > ( this );
+  case Usul::Interfaces::IMouseEventSubject::IID:
+    return static_cast < Usul::Interfaces::IMouseEventSubject* > ( this );
   default:
     return 0x0;
   } 

@@ -577,6 +577,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva Kml", "..\..\M
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Measure Tool", "..\..\Experimental\MeasureTool\MeasureTool.vcproj", "{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -799,6 +810,10 @@ Global
 		{A4FC6731-FAE4-4949-9A50-E1DD52386344}.Debug|Win32.Build.0 = Debug|Win32
 		{A4FC6731-FAE4-4949-9A50-E1DD52386344}.Release|Win32.ActiveCfg = Release|Win32
 		{A4FC6731-FAE4-4949-9A50-E1DD52386344}.Release|Win32.Build.0 = Release|Win32
+		{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}.Debug|Win32.Build.0 = Debug|Win32
+		{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}.Release|Win32.ActiveCfg = Release|Win32
+		{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

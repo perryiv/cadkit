@@ -42,6 +42,7 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
+GdalLayer.cpp
 ../../Plugins/PostGISLayerQt/RasterPolygonLayer.cpp
 )
 
@@ -49,7 +50,7 @@ SET (SOURCES
 ADD_LIBRARY(MinervaLayersGDAL SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaLayersGDAL Usul OsgTools SerializeXML XmlTree StarSystem )
+LINK_CADKIT( MinervaLayersGDAL Usul OsgTools SerializeXML XmlTree Minerva MinervaPostGIS  )
 TARGET_LINK_LIBRARIES( MinervaLayersGDAL
 	${Boost_LIBRARIES}
   ${GDAL_LIB}

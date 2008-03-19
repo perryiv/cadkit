@@ -17,9 +17,9 @@
 #include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Interfaces/IPolygonData.h"
 
 #include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IPolygonData.h"
 #include "Usul/Interfaces/ITriangulate.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
@@ -76,11 +76,11 @@ void Polygon::accept ( Minerva::Core::Visitor& visitor )
 
 osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
 {
-  typedef Usul::Components::Manager      PluginManager;
-  typedef Usul::Interfaces::ITriangulate ITriangulate;
-  typedef Usul::Interfaces::IPolygonData IPolygonData;
-  typedef IPolygonData::Vertices         Vertices;
-  typedef IPolygonData::Boundaries       Boundaries;
+  typedef Usul::Components::Manager         PluginManager;
+  typedef Usul::Interfaces::ITriangulate    ITriangulate;
+  typedef Minerva::Interfaces::IPolygonData IPolygonData;
+  typedef IPolygonData::Vertices            Vertices;
+  typedef IPolygonData::Boundaries          Boundaries;
   
   // Get needed interfaces.
   ITriangulate::QueryPtr triangulate ( PluginManager::instance().getInterface ( ITriangulate::IID ) );

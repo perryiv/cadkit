@@ -16,6 +16,7 @@
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Trace/Trace.h"
 
 #include "osg/Group"
 
@@ -39,13 +40,13 @@ USUL_FACTORY_REGISTER_CREATOR ( PolygonLayer );
 ///////////////////////////////////////////////////////////////////////////////
 
 PolygonLayer::PolygonLayer() : BaseClass(), 
-_showInterior( true ),
-_showBorder( false ),
-_borderColor( 0.0, 0.0, 0.0, 1.0 ),
-_borderWidth ( 1.0f )
+  _showInterior( true ),
+  _showBorder( false ),
+  _borderColor( 0.0, 0.0, 0.0, 1.0 ),
+  _borderWidth ( 1.0f )
 {
+  USUL_TRACE_SCOPE;
   this->name( "PolygonLayer" );
-
   this->_registerMembers();
 }
 
@@ -57,11 +58,12 @@ _borderWidth ( 1.0f )
 ///////////////////////////////////////////////////////////////////////////////
 
 PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
-_showInterior( layer._showInterior ),
-_showBorder ( layer._showBorder ),
-_borderColor ( layer._borderColor ),
-_borderWidth ( layer._borderWidth )
+  _showInterior( layer._showInterior ),
+  _showBorder ( layer._showBorder ),
+  _borderColor ( layer._borderColor ),
+  _borderWidth ( layer._borderWidth )
 {
+  USUL_TRACE_SCOPE;
   this->_registerMembers();
 }
 
@@ -74,6 +76,7 @@ _borderWidth ( layer._borderWidth )
 
 void PolygonLayer::_registerMembers()
 {
+  USUL_TRACE_SCOPE;
   SERIALIZE_XML_ADD_MEMBER ( _showInterior );
   SERIALIZE_XML_ADD_MEMBER ( _showBorder );
   SERIALIZE_XML_ADD_MEMBER ( _borderColor );
@@ -89,6 +92,7 @@ void PolygonLayer::_registerMembers()
 
 void PolygonLayer::accept ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
   visitor.visit ( *this );
 }
 
@@ -101,6 +105,7 @@ void PolygonLayer::accept ( Minerva::Core::Visitor& visitor )
 
 Usul::Interfaces::IUnknown* PolygonLayer::clone() const
 {
+  USUL_TRACE_SCOPE;
   Usul::Interfaces::IUnknown::QueryPtr copy  ( new PolygonLayer( *this ) );
   return copy.release();
 }
@@ -114,6 +119,7 @@ Usul::Interfaces::IUnknown* PolygonLayer::clone() const
 
 PolygonLayer::~PolygonLayer()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -125,6 +131,7 @@ PolygonLayer::~PolygonLayer()
 
 void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
+  USUL_TRACE_SCOPE;
   Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
@@ -154,7 +161,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
       {
         (*geom)->srid( srid );
         Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-        Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
+        Minerva::Interfaces::IOffset::QueryPtr offset ( unknown );
 
         if( offset.valid() )
           offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
@@ -205,6 +212,8 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
 
 void PolygonLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+  
   // For now get what we have, clear and then rebuild.
   // Need a way to tell if the query has changed.  Then I think this can be handled better.
   this->clearDataObjects();
@@ -220,6 +229,7 @@ void PolygonLayer::modify( Usul::Interfaces::IUnknown *caller )
 
 void PolygonLayer::showBorder( bool b )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _showBorder = b;
 }
@@ -233,6 +243,7 @@ void PolygonLayer::showBorder( bool b )
 
 bool PolygonLayer::showBorder() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _showBorder;
 }
@@ -246,6 +257,7 @@ bool PolygonLayer::showBorder() const
 
 void PolygonLayer::borderColor( const osg::Vec4& color )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _borderColor = color;
 }
@@ -259,6 +271,7 @@ void PolygonLayer::borderColor( const osg::Vec4& color )
 
 const osg::Vec4& PolygonLayer::borderColor() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _borderColor;
 }
@@ -272,6 +285,7 @@ const osg::Vec4& PolygonLayer::borderColor() const
 
 void PolygonLayer::showInterior( bool b )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _showInterior = b;
 }
@@ -285,6 +299,7 @@ void PolygonLayer::showInterior( bool b )
 
 bool PolygonLayer::showInterior() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _showInterior;
 }
@@ -298,6 +313,7 @@ bool PolygonLayer::showInterior() const
 
 void PolygonLayer::borderWidth( float width )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _borderWidth = width;
 }
@@ -311,6 +327,7 @@ void PolygonLayer::borderWidth( float width )
 
 float PolygonLayer::borderWidth() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _borderWidth;
 }
@@ -324,11 +341,12 @@ float PolygonLayer::borderWidth() const
 
 Usul::Interfaces::IUnknown* PolygonLayer::queryInterface( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
+  
   switch ( iid )
   {
-  //case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IPolygonLayer::IID:
-    return static_cast < Usul::Interfaces::IPolygonLayer* > ( this );
+  case Minerva::Interfaces::IPolygonLayer::IID:
+    return static_cast < Minerva::Interfaces::IPolygonLayer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

@@ -11,7 +11,8 @@
 #include "Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h"
 #include "Minerva/Plugins/PostGISLayerQt/DatabasePage.h"
 #include "Minerva/Plugins/PostGISLayerQt/PropertyPage.h"
-#include "Minerva/Plugins/PostGISLayerQt/RasterPolygonLayer.h"
+
+#include "Minerva/Layers/GDAL/RasterPolygonLayer.h"
 
 #include "Minerva/Core/Commands/AddLayer.h"
 
@@ -94,7 +95,7 @@ void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::In
   
   if ( rasterize )
   {
-    layer = Usul::Interfaces::ILayer::QueryPtr ( new RasterPolygonLayer ( _databasePage->layer() ) );
+    layer = Usul::Interfaces::ILayer::QueryPtr ( new Minerva::RasterPolygonLayer ( _databasePage->layer() ) );
   }
   
   // Add the layer.

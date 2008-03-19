@@ -8,33 +8,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IOSSIM_PLANET_LAYER_H__
-#define __USUL_INTERFACES_IOSSIM_PLANET_LAYER_H__
+#ifndef __MINERVA_INTERFACES_IMULTI_POLYGON_DATA_H__
+#define __MINERVA_INTERFACES_IMULTI_POLYGON_DATA_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-class ossimPlanetTextureLayer;
-
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
-struct IOssimPlanetLayer : public Usul::Interfaces::IUnknown
+struct IMultiPolygonData : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IOssimPlanetLayer );
+  USUL_DECLARE_QUERY_POINTERS ( IMultiPolygonData );
 
   /// Id for this interface.
-  enum { IID = 1604465170u };
+  enum { IID = 3041902538u };
 
-  virtual ossimPlanetTextureLayer *     ossimPlanetLayer() = 0;
-
-}; // struct IOssimPlanetLayer
+}; // struct IMultiPolygonData
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IOSSIM_PLANET_LAYER_H__ */
+#endif /* __MINERVA_INTERFACES_IMULTI_POLYGON_DATA_H__ */
 

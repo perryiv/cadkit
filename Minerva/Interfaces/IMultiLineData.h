@@ -8,34 +8,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IOFFSET_H__
-#define __USUL_INTERFACES_IOFFSET_H__
+#ifndef __MINERVA_INTERFACES_IMULTI_LINE_DATA_H__
+#define __MINERVA_INTERFACES_IMULTI_LINE_DATA_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Vec3f; }
-
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
-struct IOffset : public Usul::Interfaces::IUnknown
+struct IMultiLineData : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IOffset );
+  USUL_DECLARE_QUERY_POINTERS ( IMultiLineData );
 
   /// Id for this interface.
-  enum { IID = 2942228631u };
+  enum { IID = 3602473287u };
 
-  virtual const osg::Vec3f&   spatialOffset () const  = 0;
-  virtual void                spatialOffset ( const osg::Vec3f& ) = 0;
-
-}; // struct IOffset
+}; // struct IMultiLineData
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IOFFSET_H__ */
+#endif /* __MINERVA_INTERFACES_IMULTI_LINE_DATA_H__ */
 

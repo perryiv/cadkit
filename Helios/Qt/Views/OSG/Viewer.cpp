@@ -120,7 +120,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnkno
   _timerRenderLoop = new QTimer ( this );
 
   // Save the mode.
-  _lastMode = _viewer->getMode();
+  _lastMode = _viewer->getViewMode();
 
   // Add ourselves as a modified listener.
   Usul::Interfaces::IModifiedSubject::QueryPtr subject ( doc );
@@ -668,8 +668,8 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
     // See if it was the s key...
     case Qt::Key_S:
 
-      _lastMode = viewer->getMode();
-      viewer->setMode ( OsgTools::Render::Viewer::SEEK );
+      _lastMode = viewer->getViewMode();
+      viewer->setViewMode ( OsgTools::Render::Viewer::SEEK );
       break;
 
     case Qt::Key_Escape:
@@ -703,7 +703,7 @@ void Viewer::keyReleaseEvent ( QKeyEvent * event )
   // See if it was the s key...
   if ( Qt::Key_S == event->key() )
   {
-    viewer->setMode ( _lastMode );
+    viewer->setViewMode ( _lastMode );
   }
 
   // Update the cursor.
@@ -996,14 +996,14 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   {
     MenuKit::Menu::RefPtr modes ( new MenuKit::Menu ( "Modes" ) );
     modes->append ( new RadioButton ( UC::genericCheckCommand ( "Navigate", 
-                                                                           UA::bind1<void> ( OsgViewer::NAVIGATION, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
-                                                                           UA::bind1<bool> ( OsgViewer::NAVIGATION, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+                                                                           UA::bind1<void> ( OsgViewer::NAVIGATION, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setViewMode ) ), 
+                                                                           UA::bind1<bool> ( OsgViewer::NAVIGATION, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isViewModeCurrent ) ) ) ) );
     modes->append ( new RadioButton ( UC::genericCheckCommand ( "Pick", 
-                                                                           UA::bind1<void> ( OsgViewer::PICK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
-                                                                           UA::bind1<bool> ( OsgViewer::PICK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+                                                                           UA::bind1<void> ( OsgViewer::PICK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setViewMode ) ), 
+                                                                           UA::bind1<bool> ( OsgViewer::PICK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isViewModeCurrent ) ) ) ) );
     modes->append ( new RadioButton ( UC::genericCheckCommand ( "Seek", 
-                                                                           UA::bind1<void> ( OsgViewer::SEEK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setMode ) ), 
-                                                                           UA::bind1<bool> ( OsgViewer::SEEK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isModeCurrent ) ) ) ) );
+                                                                           UA::bind1<void> ( OsgViewer::SEEK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setViewMode ) ), 
+                                                                           UA::bind1<bool> ( OsgViewer::SEEK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isViewModeCurrent ) ) ) ) );
     menu.append ( modes.get() );
   }
   
@@ -1612,7 +1612,7 @@ void Viewer::updateCursor()
   if ( false == viewer.valid() )
     return;
 
-  const ViewMode mode ( viewer->getMode() );
+  const ViewMode mode ( viewer->getViewMode() );
 
   if ( OsgTools::Render::Viewer::NAVIGATION == mode )
     this->setCursor ( Qt::OpenHandCursor );
@@ -1648,7 +1648,7 @@ void Viewer::updateCursor( bool left, bool middle, bool right )
     if ( false == viewer.valid() )
       return;
 
-    const ViewMode mode ( viewer->getMode() );
+    const ViewMode mode ( viewer->getViewMode() );
 
     if ( OsgTools::Render::Viewer::NAVIGATION == mode )
       this->setCursor ( Qt::ClosedHandCursor );

@@ -8,14 +8,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IDATABASE_CONNECTION_H__
-#define __USUL_INTERFACES_IDATABASE_CONNECTION_H__
+#ifndef __MINERVA_INTERFACES_IDATABASE_CONNECTION_H__
+#define __MINERVA_INTERFACES_IDATABASE_CONNECTION_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
 #include <string>
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
@@ -53,8 +53,7 @@ struct IDatabaseConnection : public Usul::Interfaces::IUnknown
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IDATABASE_CONNECTION_H__ */
-
+#endif /* __MINERVA_INTERFACES_IDATABASE_CONNECTION_H__ */

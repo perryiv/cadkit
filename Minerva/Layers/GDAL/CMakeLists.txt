@@ -43,7 +43,7 @@ INCLUDE_DIRECTORIES(
 #List the Sources
 SET (SOURCES
 GdalLayer.cpp
-../../Plugins/PostGISLayerQt/RasterPolygonLayer.cpp
+RasterPolygonLayer.cpp
 )
 
 # Create a Shared Library

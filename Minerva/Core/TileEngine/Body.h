@@ -26,6 +26,7 @@
 #include "Minerva/Core/Layers/ElevationGroup.h"
 #include "Minerva/Core/Layers/RasterGroup.h"
 #include "Minerva/Core/Layers/VectorGroup.h"
+#include "Minerva/Core/Utilities/SkyDome.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
@@ -264,6 +265,7 @@ private:
   Tiles _topTiles;
   UpdateListeners _updateListeners;
   bool _allowSplitting;
+  Minerva::Core::Utilities::SkyDome::RefPtr _sky;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

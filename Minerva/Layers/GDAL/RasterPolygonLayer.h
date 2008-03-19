@@ -27,6 +27,8 @@ namespace Usul {
   }
 }
 
+namespace Minerva {
+
 class RasterPolygonLayer : public Minerva::Core::Layers::RasterLayer
 {
 public:
@@ -83,5 +85,7 @@ private:
   SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
+  
+}
 
 #endif // __MINERVA_RASTER_POLYGON_LAYER_H__

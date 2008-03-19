@@ -165,7 +165,7 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
     {
       (*geom)->srid( srid );
       Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-      Usul::Interfaces::IOffset::QueryPtr sp ( geom->get() );
+      Minerva::Interfaces::IOffset::QueryPtr sp ( geom->get() );
 
       if( sp.valid() )
         sp->spatialOffset( offset );
@@ -221,9 +221,8 @@ Usul::Interfaces::IUnknown* LineLayer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  //case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ILineLayer::IID:
-    return static_cast < Usul::Interfaces::ILineLayer* > ( this );
+  case Minerva::Interfaces::ILineLayer::IID:
+    return static_cast < Minerva::Interfaces::ILineLayer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

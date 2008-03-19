@@ -13,14 +13,14 @@
 
 #include "Minerva/Layers/PostGIS/Layer.h"
 
-#include "Usul/Interfaces/IPointLayer.h"
+#include "Minerva/Interfaces/IPointLayer.h"
 
 namespace Minerva {
 namespace Layers {
 namespace PostGIS {
 
 class MINERVA_POSTGIS_EXPORT PointLayer : public Minerva::Layers::PostGIS::Layer,
-                                          public Usul::Interfaces::IPointLayer
+                                          public Minerva::Interfaces::IPointLayer
 {
 public:
   typedef Minerva::Layers::PostGIS::Layer BaseClass;

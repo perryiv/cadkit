@@ -8,29 +8,33 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_ITEMPORAL_DATA_H__
-#define __USUL_INTERFACES_ITEMPORAL_DATA_H__
+#ifndef __MINERVA_INTERFACES_IOSSIM_PLANET_LAYER_H__
+#define __MINERVA_INTERFACES_IOSSIM_PLANET_LAYER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul {
+class ossimPlanetTextureLayer;
+
+namespace Minerva {
 namespace Interfaces {
 
 
-struct ITemporalData : public Usul::Interfaces::IUnknown
+struct IOssimPlanetLayer : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ITemporalData );
+  USUL_DECLARE_QUERY_POINTERS ( IOssimPlanetLayer );
 
   /// Id for this interface.
-  enum { IID = 2307021671u };
+  enum { IID = 1604465170u };
 
-}; // struct ITemporalData
+  virtual ossimPlanetTextureLayer *     ossimPlanetLayer() = 0;
+
+}; // struct IOssimPlanetLayer
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_ITEMPORAL_DATA_H__ */
+#endif /* __MINERVA_INTERFACES_IOSSIM_PLANET_LAYER_H__ */
 

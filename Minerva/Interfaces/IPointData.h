@@ -8,36 +8,34 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_ILINE_DATA_H__
-#define __USUL_INTERFACES_ILINE_DATA_H__
+#ifndef __MINERVA_INTERFACES_IPOINT_DATA_H__
+#define __MINERVA_INTERFACES_IPOINT_DATA_H__
 
 #include "Usul/Interfaces/IUnknown.h"
+
 #include "Usul/Math/Vector3.h"
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
-struct ILineData : public Usul::Interfaces::IUnknown
+struct IPointData : public Usul::Interfaces::IUnknown
 {
-  /// Typedefs.
-  typedef Usul::Math::Vec3d                Vertex;
-  typedef std::vector < Vertex >           Vertices;
-
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ILineData );
+  USUL_DECLARE_QUERY_POINTERS ( IPointData );
 
   /// Id for this interface.
-  enum { IID = 2143101424u };
+  enum { IID = 1916416800u };
 
-  virtual const Vertices&     lineData () = 0;
+  /// Return the point.
+  virtual Usul::Math::Vec3d        pointData ( ) = 0;
 
-}; // struct ILineData
+}; // struct IPointData
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_ILINE_DATA_H__ */
+#endif /* __MINERVA_INTERFACES_IPOINT_DATA_H__ */
 

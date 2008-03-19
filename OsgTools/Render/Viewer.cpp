@@ -3411,9 +3411,21 @@ void Viewer::_findDragger ( const osgUtil::Hit &hit )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setMode ( ViewMode mode ) 
+void Viewer::setViewMode ( ViewMode mode ) 
 { 
   _currentMode = mode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current mode
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::ViewMode Viewer::getViewMode () const
+{
+  return _currentMode;
 }
 
 
@@ -3423,9 +3435,9 @@ void Viewer::setMode ( ViewMode mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::isModeCurrent ( ViewMode mode ) const
+bool Viewer::isViewModeCurrent ( ViewMode mode ) const
 {
-  return this->getMode() == mode;
+  return this->getViewMode() == mode;
 }
 
 

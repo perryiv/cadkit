@@ -12,8 +12,8 @@
 #include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/DataObjects/Point.h"
 
-#include "Usul/Interfaces/IGeometryCenter.h"
-#include "Usul/Interfaces/IOffset.h"
+#include "Minerva/Interfaces/IGeometryCenter.h"
+#include "Minerva/Interfaces/IOffset.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -52,7 +52,7 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
 {
   unsigned int srid ( 0 );
   
-  Usul::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( point.geometry() );
+  Minerva::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( point.geometry() );
   
   if( geometryCenter.valid () )
   {
@@ -74,7 +74,7 @@ void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
       point.altitudeMode ( Minerva::Core::DataObjects::DataObject::RELATIVE_TO_GROUND );
       unsigned int count ( iter->second );
       
-      Usul::Interfaces::IOffset::QueryPtr offset ( point.geometry() );
+      Minerva::Interfaces::IOffset::QueryPtr offset ( point.geometry() );
       
       if( offset.valid () )
       {

@@ -10,11 +10,12 @@
 
 #include "Minerva/Core/Functors/SingleColorFunctor.h"
 
+#include "Minerva/Interfaces/IPointLayer.h"
+#include "Minerva/Interfaces/ILineLayer.h"
+#include "Minerva/Interfaces/IPolygonLayer.h"
+
 #include "OsgTools/Legend/SolidIcon.h"
 
-#include "Usul/Interfaces/IPointLayer.h"
-#include "Usul/Interfaces/ILineLayer.h"
-#include "Usul/Interfaces/IPolygonLayer.h"
 #include "Usul/Factory/RegisterCreator.h"
 
 #include "osg/Geometry"
@@ -112,7 +113,7 @@ osg::Vec4 SingleColorFunctor::operator() ( double value ) const
 OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown *caller )
 {
 #if 0 // For now... always return quad for legend
-  Usul::Interfaces::ILineLayer::QueryPtr lineLayer ( caller );
+  Minerva::Interfaces::ILineLayer::QueryPtr lineLayer ( caller );
   if( lineLayer.valid() )
   {
     OsgTools::Legend::SolidColorLineIcon::RefPtr icon ( new OsgTools::Legend::SolidColorLineIcon );
@@ -121,7 +122,7 @@ OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
     return icon.release();
   }
 
-  Usul::Interfaces::IPolygonLayer::QueryPtr polygonLayer( caller );
+  Minerva::Interfaces::IPolygonLayer::QueryPtr polygonLayer( caller );
   if( polygonLayer.valid() )
   {
     if ( polygonLayer->showBorder() )
@@ -133,10 +134,10 @@ OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
     }
   }
 #endif
-  Usul::Interfaces::IPointLayer::QueryPtr pointLayer( caller );
+  Minerva::Interfaces::IPointLayer::QueryPtr pointLayer( caller );
   if( pointLayer.valid() )
   {
-    typedef Usul::Interfaces::IPointLayer IPointLayer;
+    typedef Minerva::Interfaces::IPointLayer IPointLayer;
 
     switch ( pointLayer->primitiveID() )
     {

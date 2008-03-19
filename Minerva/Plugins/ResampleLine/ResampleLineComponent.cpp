@@ -56,8 +56,8 @@ Usul::Interfaces::IUnknown *ResampleLineComponent::queryInterface ( unsigned lon
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IFitLineTerrain::IID:
-    return static_cast < Usul::Interfaces::IFitLineTerrain*>(this);
+  case Minerva::Interfaces::IFitLineTerrain::IID:
+    return static_cast < Minerva::Interfaces::IFitLineTerrain*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   default:

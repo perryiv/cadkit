@@ -12,9 +12,9 @@
 #define __DB_CONNECTION_H__
 
 #include "Minerva/DataSources/PG/Export.h"
+#include "Minerva/Interfaces/IDatabaseConnection.h"
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Interfaces/IDatabaseConnection.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
@@ -40,7 +40,7 @@ namespace DataSources {
 namespace PG {
 
 class MINERVA_POSTGRES_EXPORT Connection : public Usul::Base::Referenced,
-  public Usul::Interfaces::IDatabaseConnection
+                                           public Minerva::Interfaces::IDatabaseConnection
 {
 public:
   /// Typedefs.

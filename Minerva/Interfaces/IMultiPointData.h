@@ -8,29 +8,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IMULTI_POLYGON_DATA_H__
-#define __USUL_INTERFACES_IMULTI_POLYGON_DATA_H__
+#ifndef __MINERVA_INTERFACES_IMULTI_POINT_DATA_H__
+#define __MINERVA_INTERFACES_IMULTI_POINT_DATA_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
-struct IMultiPolygonData : public Usul::Interfaces::IUnknown
+struct IMultiPointData : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IMultiPolygonData );
+  USUL_DECLARE_QUERY_POINTERS ( IMultiPointData );
 
   /// Id for this interface.
-  enum { IID = 3041902538u };
+  enum { IID = 1093077418u };
 
-}; // struct IMultiPolygonData
+}; // struct IMultiPointData
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IMULTI_POLYGON_DATA_H__ */
+#endif /* __MINERVA_INTERFACES_IMULTI_POINT_DATA_H__ */
 

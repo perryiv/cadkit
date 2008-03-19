@@ -78,8 +78,8 @@ Usul::Interfaces::IUnknown* Point::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IPointData::IID:
-    return static_cast < Usul::Interfaces::IPointData* > ( this );
+  case Minerva::Interfaces::IPointData::IID:
+    return static_cast < Minerva::Interfaces::IPointData* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

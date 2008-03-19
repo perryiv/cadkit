@@ -14,7 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Geometry/Line.h"
 
-#include "Usul/Interfaces/IPolygonData.h"
+#include "Minerva/Interfaces/IPolygonData.h"
 
 
 namespace Minerva {
@@ -23,11 +23,11 @@ namespace Geometry {
 
 
 class MINERVA_EXPORT Polygon : public Line,
-                               public Usul::Interfaces::IPolygonData
+                               public Minerva::Interfaces::IPolygonData
 {
 public:
   typedef Line                             BaseClass;
-  typedef Usul::Interfaces::IPolygonData::Vertices Vertices;
+  typedef Minerva::Interfaces::IPolygonData::Vertices Vertices;
 
   USUL_DECLARE_QUERY_POINTERS ( Polygon );
   USUL_DECLARE_IUNKNOWN_MEMBERS;

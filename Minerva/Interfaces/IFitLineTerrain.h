@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IFIT_LINE_TERRAIN_H__
-#define __USUL_INTERFACES_IFIT_LINE_TERRAIN_H__
+#ifndef __MINERVA_INTERFACES_IFIT_LINE_TERRAIN_H__
+#define __MINERVA_INTERFACES_IFIT_LINE_TERRAIN_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -17,7 +17,7 @@
 
 #include <vector>
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
@@ -38,6 +38,6 @@ struct IFitLineTerrain : public Usul::Interfaces::IUnknown
 
 
 } // End namespace Interfaces
-} // End namespace Usul
+} // End namespace Minerva
 
-#endif // __USUL_INTERFACES_IFIT_LINE_TERRAIN_H__
+#endif // __MINERVA_INTERFACES_IFIT_LINE_TERRAIN_H__

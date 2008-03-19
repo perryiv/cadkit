@@ -13,9 +13,8 @@
 
 #include "Minerva/Layers/PostGIS/PointLayer.h"
 #include "Minerva/Core/Animate/Date.h"
-
-#include "Usul/Interfaces/IPointLayer.h"
-#include "Usul/Interfaces/ITemporalData.h"
+#include "Minerva/Interfaces/IPointLayer.h"
+#include "Minerva/Interfaces/ITemporalData.h"
 
 #include <map>
 
@@ -24,7 +23,7 @@ namespace Layers {
 namespace PostGIS {
 
 class MINERVA_POSTGIS_EXPORT PointTimeLayer : public Minerva::Layers::PostGIS::PointLayer,
-                                              public Usul::Interfaces::ITemporalData
+                                              public Minerva::Interfaces::ITemporalData
 {
 public:
   typedef Minerva::Layers::PostGIS::PointLayer BaseClass;

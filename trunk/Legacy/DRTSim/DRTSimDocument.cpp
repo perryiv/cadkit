@@ -82,8 +82,7 @@ DRTSimDocument::DRTSimDocument() :
   _isSporeOn( true ),
   _isStockOn( true ),
   _isTransOn( true ),
-  _counter( 0 ),
-  _mpdXML( "" )
+  _counter( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -737,16 +736,8 @@ osg::Group*		DRTSimDocument::_createHUDText( )
    std::string path = "C:/data/Santanam/output/";
 #if 1
     {
-      osg::ref_ptr< osg::Camera > camera ( new osg::Camera );
-
-      camera->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-      camera->setProjectionMatrixAsOrtho2D( 0, 1280, 0, 1024 );
-      camera->setViewMatrix( osg::Matrix::identity( ) );
-      camera->setClearMask( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-      camera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-      camera->addChild( group.get() );
       std::string filename = Usul::Strings::format( path, "legend", _counter, ".osg" );
-      osgDB::writeNodeFile( *( camera.get() ), filename.c_str() );
+      osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
     }
 #endif
   group->addChild( _agent.createAgentStepSequence( ) );

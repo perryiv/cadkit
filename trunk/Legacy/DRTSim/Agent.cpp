@@ -154,22 +154,17 @@ osg::Switch*	Agent::createAgentStepSwitch ( )
 // Create Agent Switch ( dots every step )
 osg::Switch*	Agent::createAgentSwitch ( )
 {
-	//
-	//_agentSwitch = new osg::Switch;
+	
+	_agentSwitch = new osg::Switch;
 
-	//if( !_agentDetails.empty() )
-	//{ 
- //   unsigned int count = 0;
- //   unsigned int counter = 0;
-	//	for( unsigned int i = 0; i < _agentSteps.size(); ++i )
- //   {
-	//		_agentSwitch->addChild( _createAgentDetailsbyStep( i, count, counter ) );
- //     counter ++;
- //   }
+	if( !_agentDetails.empty() )
+	{
+		for( unsigned int i = 0; i < _agentSteps.size(); ++i )
+			_agentSwitch->addChild( _createAgentDetailsbyStep( i ) );
 
-	//	_agentSwitch->setSingleChildOn( 0 );
+		_agentSwitch->setSingleChildOn( 0 );
 
-	//}
+	}
 
 
 	return _agentSwitch.get();
@@ -179,8 +174,7 @@ osg::Switch*	Agent::createAgentSwitch ( )
 
 
 // Agent Sequence
-// Actual HUD text creation
-osg::Sequence*		Agent::createAgentStepSequence ()
+osg::Sequence*		Agent::createAgentStepSequence ( )
 {
 
 	float zValue = 0.0f;
@@ -193,16 +187,14 @@ osg::Sequence*		Agent::createAgentStepSequence ()
 
 	_agentStepSequence->addChild( new osg::Geode );
 	_agentStepSequence->setTime( _agentStepSequence->getNumChildren()-1, _sTime );
-  
+
 	if ( !_agentDetails.empty() )
 	{
 		unsigned int count = 0;
     std::cout << Usul::Strings::format( "Agents size is: ", _agentSteps.size() );
-    unsigned int counter = 0;
-    unsigned int index = 0;
 		for( unsigned int i = 0; i < _agentSteps.size(); ++i )
 		{
-			std::string	str = "Current Step = " + _intToString( i + 1 );
+			std::string		str = "Current Step = " + _intToString( i + 1 );
       osg::ref_ptr< osg::Group > group ( new osg::Group );
       group->addChild( _createTextAsNode( pos, layoutColor, characterSize, str ) );
 			_agentStepSequence->addChild( group.get() );
@@ -221,50 +213,19 @@ osg::Sequence*		Agent::createAgentStepSequence ()
       std::string path = "C:/data/Santanam/output/TimeText/";
 #if 1
       {
-        osg::ref_ptr< osg::Camera > camera ( new osg::Camera );
-
-        camera->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-        camera->setProjectionMatrixAsOrtho2D( 0, 1280, 0, 1024 );
-        camera->setViewMatrix( osg::Matrix::identity( ) );
-        camera->setClearMask( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-        camera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-        camera->addChild( group.get() );
-        if( index < _transhipment.size() && i == ( _transhipment[ index ] - 1 ) )
-        {
-          for( unsigned int x = 0; x < _numTranMovements; x ++ )
-          {
-            
-            std::string stepValue = "";
-            if( counter < 10 )
-              stepValue = Usul::Strings::format( "00", counter );
-            if( counter < 100 && counter >= 10 )
-              stepValue = Usul::Strings::format( "0", counter );
-            if( counter >= 100 )
-              stepValue = Usul::Strings::format( counter );
+        std::string stepValue = "";
+        if( i < 10 )
+          stepValue = Usul::Strings::format( "00", i );
+        if( i < 100 && i >= 10 )
+          stepValue = Usul::Strings::format( "0", i );
+        if( i >= 100 )
+          stepValue = Usul::Strings::format( i );
         
-            std::string filename = Usul::Strings::format( path, "step", stepValue, ".osg" );
-            osgDB::writeNodeFile( *( camera.get() ), filename.c_str() );
-            counter ++;
-          }
-          index = count;
-        }
-        else
-        {
-          std::string stepValue = "";
-            if( counter < 10 )
-              stepValue = Usul::Strings::format( "00", counter );
-            if( counter < 100 && counter >= 10 )
-              stepValue = Usul::Strings::format( "0", counter );
-            if( counter >= 100 )
-              stepValue = Usul::Strings::format( counter );
-        
-            std::string filename = Usul::Strings::format( path, "step", stepValue, ".osg" );
-            osgDB::writeNodeFile( *( camera.get() ), filename.c_str() );
-            counter ++;
-        }
+        std::string filename = Usul::Strings::format( path, "step", stepValue, ".osg" );
+        osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
       }
 #endif
-      
+
 		}
 
 		// loop through all children
@@ -297,10 +258,10 @@ osg::Sequence*		Agent::createAgentSequence ( )
 	if( !_agentDetails.empty() )
 	{
 		unsigned int count = 0;
-    unsigned int counter = 0;
+
 		for( unsigned int i = 0; i < _agentSteps.size(); ++i )
 		{
-			_agentSequence->addChild( _createAgentDetailsbyStep( i, count, counter ) );
+			_agentSequence->addChild( _createAgentDetailsbyStep( i ) );
 
 			if( ( count < _numTranSteps ) && ( i == (_transhipment[count]-1) ) )
 			{
@@ -311,7 +272,7 @@ osg::Sequence*		Agent::createAgentSequence ( )
 			{
 				_agentSequence->setTime( _agentSequence->getNumChildren()-1, _seqTime );
 			}
-      //counter ++;
+
 		}
 
 		// loop through all children
@@ -335,17 +296,14 @@ osg::Sequence*		Agent::createAgentSequence ( )
 
 
 // Create Agent information by each step ( to display all dots )
-osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step, unsigned int &tCount, unsigned int &counter )
+osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step )
 {
 
 	osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
 
 	if( _agentDetails.empty() || _agentSteps.empty() )		return geode.release();
 
-  if( 20 == step )
-  {
-    std::cout << "Count is 20" << std::endl;
-  }
+
 	unsigned int	startIndex = 0;
 	for(unsigned int i = 0; i < step; ++i)		startIndex += _agentSteps[i];
 
@@ -405,7 +363,7 @@ osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step, unsigne
 
   // export the agent scene for this step
   
-#if 0 // agent
+#if 1 // agent
   {
     std::string stepValue = "";
     if( step < 10 )
@@ -420,47 +378,6 @@ osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step, unsigne
     std::string filename = Usul::Strings::format( path, "agent", stepValue, ".osg" );
     group->addChild( geode.get() );
     osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
-  }
-#endif
-#if 1
-   {
-    std::string path = "C:/data/Santanam/output/agent/";
-    if( tCount < _transhipment.size() && step == ( _transhipment[tCount]-1 ) )
-    {
-      for( unsigned int x = 0; x < _numTranMovements; x ++ )
-      {
-        
-        std::string stepValue = "";
-        if( counter < 10 )
-          stepValue = Usul::Strings::format( "00", counter );
-        if( counter < 100 && counter >= 10 )
-          stepValue = Usul::Strings::format( "0", counter );
-        if( counter >= 100 )
-          stepValue = Usul::Strings::format( counter );
-    
-        std::string filename = Usul::Strings::format( path, "agent", stepValue, ".osg" );
-        osg::ref_ptr< osg::Group > group ( new osg::Group );
-        group->addChild( geode.get() );
-        osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
-        ++counter;
-      }
-    }
-    else
-    {
-      std::string stepValue = "";
-        if( counter < 10 )
-          stepValue = Usul::Strings::format( "00", counter );
-        if( counter < 100 && counter >= 10 )
-          stepValue = Usul::Strings::format( "0", counter );
-        if( counter >= 100 )
-          stepValue = Usul::Strings::format( counter );
-    
-        std::string filename = Usul::Strings::format( path, "agent", stepValue, ".osg" );
-        osg::ref_ptr< osg::Group > group ( new osg::Group );
-        group->addChild( geode.get() );
-        osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
-        ++counter;
-    }
   }
 #endif
 	return geode.release();

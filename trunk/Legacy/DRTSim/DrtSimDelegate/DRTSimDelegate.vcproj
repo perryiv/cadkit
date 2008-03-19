@@ -2,9 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: DRT Simulation"
-	ProjectGUID="{A1C27B22-1E2A-4037-8BB2-130E02924701}"
-	RootNamespace="plug: DRT Simulation"
+	Name="plug: DrtSim Delegate Qt"
+	ProjectGUID="{C50F36C2-868A-4518-A7EC-7717573B2B61}"
 	>
 	<Platforms>
 		<Platform
@@ -40,14 +39,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/DRTSim/RCVV.tlb"
+				TypeLibraryName=".\Debug/QtDRTSimDelegate.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(CADKIT_INC_DIR)/CadViewer&quot;;&quot;$(CADKIT_INC_DIR)&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_DRT_SIM;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_DRT_SIM_DELEGATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -80,15 +79,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/DRTSim.plugd"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/QtDRTSimDelegate.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug\DRTSim/RCVVd.pdb"
-				ImportLibrary=".\Debug\DRTSimd.lib"
+				ProgramDatabaseFile=".\Debug\QtDRTSimDelegated.pdb"
+				ImportLibrary=".\Debug\QtDRTSimDelegated.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -141,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/DRTSim/Model.tlb"
+				TypeLibraryName=".\Release/QtDRTSimDelegate.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(BOOST_INC_DIR)&quot;;../../;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(VJ_BASE_DIR)/include&quot;;&quot;$(CADKIT_INC_DIR)/CadViewer&quot;;&quot;$(CADKIT_INC_DIR)&quot;"
-				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DRT_SIM;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(QTDIR)\include"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DRT_SIM_DELEGATE"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -179,14 +178,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/DRTSim.plug"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/QtDRTSimDelegate.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
 				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\DRTSim/Model.pdb"
-				ImportLibrary=".\Release\DRTSim.lib"
+				ProgramDatabaseFile=".\Release\QtDRTSimDelegate.pdb"
+				ImportLibrary=".\Release\QtDRTSimDelegate.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -224,23 +223,23 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\DRTSimDelegateComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DRTSimDelegateComponent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DRTSimDelegateFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DRTSimDelegateFactory.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CompileGuard.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DRTSimComponent.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DRTSimComponent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DRTSimDocument.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DRTSimDocument.h"
 					>
 				</File>
 			</Filter>
@@ -249,106 +248,6 @@
 				>
 				<File
 					RelativePath="Export.def"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Commands"
-				>
-				<File
-					RelativePath=".\DrtAgentShow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtAgentShow.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtAnimation.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtAnimation.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtSporeShow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtSporeShow.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtStartOver.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtStartOver.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtStockShow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtStockShow.h"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtTransShow.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DrtTransShow.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="santanamServ"
-				>
-				<File
-					RelativePath=".\Agent.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Agent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Area.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Area.h"
-					>
-				</File>
-				<File
-					RelativePath=".\IDrtCommands.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Spore.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Spore.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Stock.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Stock.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Transhipment.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Transhipment.h"
 					>
 				</File>
 			</Filter>

@@ -60,22 +60,6 @@ class DRTSimDocument : public Usul::Documents::Document,
 {
 public:
   // Structs
-  struct DynamicInformation
-  {
-
-  };
-  struct TimelineInformation
-  {
-
-  };
-  struct ModelInformation
-  {
-
-  };
-  struct SetInformation
-  {
-
-  };
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
@@ -219,9 +203,6 @@ private:
   std::string			_legendMachine;
 
   unsigned int _counter;
-
-  std::string _mpdXML;
-  
 
   // end here ( added by W.C )
   

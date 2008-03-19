@@ -98,7 +98,7 @@ public:
 private:
 
 	bool			_AgentDetailsLoader ( );
-	osg::Geode*		_createAgentDetailsbyStep ( const unsigned int& step, unsigned int &tCount, unsigned int &counter );
+	osg::Geode*		_createAgentDetailsbyStep ( const unsigned int& step );
 
 	const std::string	_intToString( const int& i );
 	osgText::Text*	_createText( const osg::Vec3& pos, const osg::Vec4& layoutColor, const float& characterSize, const std::string& str );

@@ -594,85 +594,89 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
 
   _keys[event->key()] = true;
 
-  // Process the key.
-  switch ( event->key() )
+  Usul::Interfaces::IKeyListener::QueryPtr kl ( this->document() );
+  bool handled ( kl.valid() ? kl->keyPressed( event->key() ) : false );
+  if ( false == handled )
   {
-  // See if it was the space-bar or the r-key...
-  case Qt::Key_Space:
-  case Qt::Key_R:
+    // Process the key.
+    switch ( event->key() )
+    {
+    // See if it was the space-bar or the r-key...
+    case Qt::Key_Space:
+    case Qt::Key_R:
 
-    // Move the camera.
-    viewer->camera ( OsgTools::Render::Viewer::RESET );
-    break;
+      // Move the camera.
+      viewer->camera ( OsgTools::Render::Viewer::RESET );
+      break;
 
-  // See if it was the f-key...
-  case Qt::Key_F:
+    // See if it was the f-key...
+    case Qt::Key_F:
 
-    // Move the camera.
-    viewer->camera ( OsgTools::Render::Viewer::FIT );
-    break;
+      // Move the camera.
+      viewer->camera ( OsgTools::Render::Viewer::FIT );
+      break;
 
-  // See if it was the right-arrow key...
-  case Qt::Key_Right:
+    // See if it was the right-arrow key...
+    case Qt::Key_Right:
 
-    // Move the camera.
-    viewer->camera ( OsgTools::Render::Viewer::ROTATE_Y_N45 );
-    break;
+      // Move the camera.
+      viewer->camera ( OsgTools::Render::Viewer::ROTATE_Y_N45 );
+      break;
 
-  // See if it was the left-arrow key...
-  case Qt::Key_Left:
+    // See if it was the left-arrow key...
+    case Qt::Key_Left:
 
-    // Move the camera.
-    viewer->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
-    break;
+      // Move the camera.
+      viewer->camera ( OsgTools::Render::Viewer::ROTATE_Y_P45 );
+      break;
 
-  // See if it was the up-arrow key...
-  case Qt::Key_Up:
+    // See if it was the up-arrow key...
+    case Qt::Key_Up:
 
-    // Move the camera.
-    viewer->camera ( OsgTools::Render::Viewer::ROTATE_X_P45 );
-    break;
+      // Move the camera.
+      viewer->camera ( OsgTools::Render::Viewer::ROTATE_X_P45 );
+      break;
 
-  // See if it was the down-arrow key...
-  case Qt::Key_Down:
+    // See if it was the down-arrow key...
+    case Qt::Key_Down:
 
-    // Move the camera.
-    viewer->camera ( OsgTools::Render::Viewer::ROTATE_X_N45 );
-    break;
+      // Move the camera.
+      viewer->camera ( OsgTools::Render::Viewer::ROTATE_X_N45 );
+      break;
 
-  // See if it was the h key...
-  case Qt::Key_H:
+    // See if it was the h key...
+    case Qt::Key_H:
 
-    Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
-    viewer->render();
-    break;
+      Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::HIDDEN_LINES );
+      viewer->render();
+      break;
 
-  // See if it was the w key...
-  case Qt::Key_W:
+    // See if it was the w key...
+    case Qt::Key_W:
 
-    Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::WIRE_FRAME );
-    viewer->render();
-    break;
+      Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::WIRE_FRAME );
+      viewer->render();
+      break;
 
-  // See if it was the p key...
-  case Qt::Key_P:
+    // See if it was the p key...
+    case Qt::Key_P:
 
-    Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::POINTS );
-    viewer->render();
-    break;
+      Helper::togglePolygonMode ( *(viewer), Usul::Interfaces::IPolygonMode::POINTS );
+      viewer->render();
+      break;
 
-  // See if it was the s key...
-  case Qt::Key_S:
+    // See if it was the s key...
+    case Qt::Key_S:
 
-    _lastMode = viewer->getMode();
-    viewer->setMode ( OsgTools::Render::Viewer::SEEK );
-    break;
+      _lastMode = viewer->getMode();
+      viewer->setMode ( OsgTools::Render::Viewer::SEEK );
+      break;
 
-  case Qt::Key_Escape:
-    viewer->cycleMode();
-    break;
+    case Qt::Key_Escape:
+      viewer->cycleMode();
+      break;
+    }
   }
-
   // Update the cursor.
   this->updateCursor();
 }

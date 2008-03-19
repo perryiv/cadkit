@@ -81,7 +81,7 @@ private:
 	osg::Geode*		_createShapeOfBox( const osg::Vec3 &center, const float &width, const osg::Vec4 &color );
 	osg::Geode*		_createShapeOfBox( const osg::Vec3 &center, const float &lengthX, const float &lengthY, const float &lengthZ, const osg::Vec4 &color );
 
-	osg::Group*		_createStockDetailsbyStep ( const unsigned int &step, unsigned int &counter, unsigned int &tCount );
+	osg::Group*		_createStockDetailsbyStep ( const unsigned int &step );
 
 	osg::MatrixTransform*	_transformTheShapeDrawable( const osg::Vec3 &pos, const osg::Vec3 &scale, osg::Geode *geode);
 

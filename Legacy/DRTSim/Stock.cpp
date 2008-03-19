@@ -3,15 +3,9 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////
 
-#include "Stock.h"
-
-#include "Usul/Endian/Endian.h"
-#include "Usul/File/Stats.h"
-#include "Usul/Errors/Assert.h"
-#include "Usul/Strings/Format.h"
-
-#include "OsgTools/ShapeFactory.h"
-#include "OsgTools/State/StateSet.h"
+#include <iostream>
+#include <fstream>
+#include <ctime>
 
 #include <osg/ref_ptr>
 #include <osg/ShapeDrawable>
@@ -23,9 +17,14 @@
 #include "osgDB/WriteFile"
 
 #include <sstream>
-#include <iostream>
-#include <fstream>
-#include <ctime>
+
+
+#include "Usul/Endian/Endian.h"
+#include "Usul/File/Stats.h"
+#include "Usul/Errors/Assert.h"
+#include "Usul/Strings/Format.h"
+
+#include "Stock.h"
 
 #define debug 1
 
@@ -104,7 +103,7 @@ osg::Group*		Stock::buildStockScene ( )
     _root->addChild( group.get() ); 
   }
 #endif
-	_root->addChild( createStockSequence (  ) );
+	_root->addChild( createStockSequence ( ) );
 
 	return _root.get();
 
@@ -141,16 +140,14 @@ bool			Stock::setStockFileName( const std::string &fn )
 		_vaccineCylinder	=  _createShapeOfCylinder( center, radius, height, _vaccineStockColor );
 		_doctorsCylinder	=  _createShapeOfCylinder( center, radius, height, _doctorsStockColor );
 		_nursesCylinder		=  _createShapeOfCylinder( center, radius, height, _nursesStockColor );
-		_bedsCylinder		=  _createShapeOfCylinder( center, radius, height, _bedsStockColor );	
-    
-    //dynamic_cast< osg::Geode* > ( _createShapeOfCylinder( center, radius, height, _bedsStockColor ) );
+		_bedsCylinder		=  _createShapeOfCylinder( center, radius, height, _bedsStockColor );	// dynamic_cast< osg::Geode* > ( _createShapeOfCylinder( center, radius, height, _bedsStockColor ) );
 
 		// boxes
-		//_medicineBox	=  _createShapeOfBox( center, radius, radius, height, _medicineStockColor );
-		//_vaccineBox		=  _createShapeOfBox( center, radius, radius, height, _vaccineStockColor );
-		//_doctorsBox		=  _createShapeOfBox( center, radius, radius, height, _doctorsStockColor );
-		//_nursesBox		=  _createShapeOfBox( center, radius, radius, height, _nursesStockColor );
-		//_bedsBox		=  _createShapeOfBox( center, radius, radius, height, _bedsStockColor );	
+		_medicineBox	=  _createShapeOfBox( center, radius, radius, height, _medicineStockColor );
+		_vaccineBox		=  _createShapeOfBox( center, radius, radius, height, _vaccineStockColor );
+		_doctorsBox		=  _createShapeOfBox( center, radius, radius, height, _doctorsStockColor );
+		_nursesBox		=  _createShapeOfBox( center, radius, radius, height, _nursesStockColor );
+		_bedsBox		=  _createShapeOfBox( center, radius, radius, height, _bedsStockColor );	
 
 
 		return true;
@@ -252,16 +249,11 @@ osg::Switch*	Stock::createStockSwitch ( )
 {
 
 	_stockSwitch = new osg::Switch;
-  
+
 	if( !_stockDetails.empty() )
 	{
-    unsigned int counter = 0;
-    unsigned int transCount = 0;
 		for( unsigned int i = 0; i < _stockSteps.size(); ++i )
-    {
-			_stockSwitch->addChild( _createStockDetailsbyStep( i, counter, transCount ) );
-      counter ++;
-    }
+			_stockSwitch->addChild( _createStockDetailsbyStep( i ) );
 
 		_stockSwitch->setSingleChildOn( 0 );	
 	}
@@ -339,10 +331,10 @@ osg::Sequence*	Stock::createStockSequence ( )
 	if( !_stockDetails.empty() )
 	{
 		unsigned int count ( 0 );
-    unsigned int counter ( 0 );
+
 		for( unsigned int i = 0; i < _stockSteps.size(); ++i )
 		{
-			_stockSequence->addChild( _createStockDetailsbyStep( i, counter, count ) );
+			_stockSequence->addChild( _createStockDetailsbyStep( i ) );
 
 			if( ( count < _numTranSteps ) && ( i == (_transhipment[count]-2) ) )		// before transhipment
 			{
@@ -353,7 +345,7 @@ osg::Sequence*	Stock::createStockSequence ( )
 			{
 				_stockSequence->setTime( _stockSequence->getNumChildren()-1, _seqTime );
 			}
-      //counter ++;
+
 		}
 
 		// loop through all children
@@ -379,14 +371,14 @@ osg::Geode*		Stock::_createShapeOfBox( const osg::Vec3 &center, const float &len
 {
 	osg::ref_ptr< osg::Geode >	geode ( new osg::Geode );
 
-	osg::ref_ptr< osg::ShapeDrawable >	box ( new osg::ShapeDrawable );
-	// box->setUseDisplayList ( false );
+		osg::ref_ptr< osg::ShapeDrawable >	box ( new osg::ShapeDrawable );
+		// box->setUseDisplayList ( false );
 
-	osg::ref_ptr< osg::TessellationHints >	hints ( new osg::TessellationHints );
-	hints->setDetailRatio( 2.0f );
-	
-	box = new osg::ShapeDrawable( new osg::Box( center, lengthX, lengthY, lengthZ ), hints.get() );
-	box->setColor( color );
+		osg::ref_ptr< osg::TessellationHints >	hints ( new osg::TessellationHints );
+		hints->setDetailRatio( 2.0f );
+		
+		box = new osg::ShapeDrawable( new osg::Box( center, lengthX, lengthY, lengthZ ), hints.get() );
+		box->setColor( color );
 
 	geode->addDrawable( box.release( ) );
 
@@ -398,6 +390,7 @@ osg::Geode*		Stock::_createShapeOfBox( const osg::Vec3 &center, const float &len
 // Cylinder
 osg::Geode*		Stock::_createShapeOfCylinder( const osg::Vec3 &center, const float &radius, const float &height, const osg::Vec4 &color )
 {
+
 	osg::ref_ptr< osg::Geode >	geode ( new osg::Geode );
 
 		osg::ref_ptr< osg::ShapeDrawable >		cylinder ( new osg::ShapeDrawable );
@@ -419,7 +412,7 @@ osg::Geode*		Stock::_createShapeOfCylinder( const osg::Vec3 &center, const float
 
 osg::MatrixTransform*		Stock::_transformTheShapeDrawable( const osg::Vec3 &pos, const osg::Vec3 &scale, osg::Geode *geode )
 {
-osg::ref_ptr< osg::MatrixTransform >	transform ( new osg::MatrixTransform );
+	osg::ref_ptr< osg::MatrixTransform >	transform ( new osg::MatrixTransform );
 
 		osg::Matrix		S = osg::Matrix::scale( scale );
 		osg::Matrix		T = osg::Matrix::translate( pos );
@@ -430,10 +423,12 @@ osg::ref_ptr< osg::MatrixTransform >	transform ( new osg::MatrixTransform );
 
 
 	return transform.release();
+
 }
 
 
-osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigned int &counter, unsigned int &tCount )
+
+osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step )
 {
 
 	const float heightMax	( 100.0f );
@@ -505,14 +500,10 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 			cylinderPos.set( center + centerDelta );
 			scale.set( 1.0f, 1.0f, height );
 
-      osg::ref_ptr< osg::Geode > textGeode ( new osg::Geode );
-			textGeode->addDrawable( _createText( textPos, _medicineStockColor, characterSize, _intToString( count ) ) );
+			geode->addDrawable( _createText( textPos, _medicineStockColor, characterSize, _intToString( count ) ) );
 
 			// use transform ( cylinder or box )
-      OsgTools::State::StateSet::setMaterial( textGeode.get(), _medicineStockColor, _medicineStockColor, 1.0 );
-      OsgTools::State::StateSet::setMaterial( _medicineCylinder.get(), _medicineStockColor, _medicineStockColor, 1.0 );
 			group->addChild ( _transformTheShapeDrawable( cylinderPos, scale, _medicineCylinder.get() ) );			// use 1.30G PF
-      group->addChild( textGeode.get() );
 
 			// using box
 //			group->addChild( _createShapeOfCylinder( cylinderPos, height, _medicineStockColor ) );
@@ -539,12 +530,10 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 			cylinderPos.set( center + centerDelta );
 			scale.set( 1.0f, 1.0f, height );
 
-      osg::ref_ptr< osg::Geode > textGeode ( new osg::Geode );
-			textGeode->addDrawable( _createText( textPos, _vaccineStockColor, characterSize, _intToString( count ) ) );
-      OsgTools::State::StateSet::setMaterial( textGeode.get(), _vaccineStockColor, _vaccineStockColor, 1.0 );
-      OsgTools::State::StateSet::setMaterial( _vaccineCylinder.get(), _vaccineStockColor, _vaccineStockColor, 1.0 );
+			geode->addDrawable( _createText( textPos, _vaccineStockColor, characterSize, _intToString( count ) ) );
+
 			group->addChild ( _transformTheShapeDrawable( cylinderPos, scale, _vaccineCylinder.get() ) );
-	    group->addChild( textGeode.get() );
+	
 		}
 
 
@@ -562,12 +551,10 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 			cylinderPos.set( center + centerDelta );
 			scale.set( 1.0f, 1.0f, height );
 
-      osg::ref_ptr< osg::Geode > textGeode ( new osg::Geode );
-			textGeode->addDrawable( _createText( textPos, _doctorsStockColor, characterSize, _intToString( count ) ) );
-      OsgTools::State::StateSet::setMaterial( textGeode.get(), _doctorsStockColor, _doctorsStockColor, 1.0 );
-      OsgTools::State::StateSet::setMaterial( _doctorsCylinder.get(), _doctorsStockColor, _doctorsStockColor, 1.0 );
+			geode->addDrawable( _createText( textPos, _doctorsStockColor, characterSize, _intToString( count ) ) );
+
 			group->addChild ( _transformTheShapeDrawable( cylinderPos, scale, _doctorsCylinder.get() ) );
-	    group->addChild( textGeode.get() );
+	
 		}
 
 
@@ -585,12 +572,10 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 			cylinderPos.set( center + centerDelta );
 			scale.set( 1.0f, 1.0f, height );
 
-      osg::ref_ptr< osg::Geode > textGeode ( new osg::Geode );
-			textGeode->addDrawable( _createText( textPos, _nursesStockColor, characterSize, _intToString( count ) ) );
-      OsgTools::State::StateSet::setMaterial( textGeode.get(), _nursesStockColor, _nursesStockColor, 1.0 );
-      OsgTools::State::StateSet::setMaterial( _nursesCylinder.get(), _nursesStockColor, _nursesStockColor, 1.0 );
+			geode->addDrawable( _createText( textPos, _nursesStockColor, characterSize, _intToString( count ) ) );
+
 			group->addChild ( _transformTheShapeDrawable( cylinderPos, scale, _nursesCylinder.get() ) );
-	    group->addChild( textGeode.get() );
+	
 		}
 
 
@@ -608,12 +593,9 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 			cylinderPos.set( center + centerDelta );
 			scale.set( 1.0f, 1.0f, height );
 
-      osg::ref_ptr< osg::Geode > textGeode ( new osg::Geode );
-			textGeode->addDrawable( _createText( textPos, _bedsStockColor, characterSize, _intToString( count ) ) );
-      OsgTools::State::StateSet::setMaterial( textGeode.get(), _bedsStockColor, _bedsStockColor, 1.0 );
-      OsgTools::State::StateSet::setMaterial( _bedsCylinder.get(), _bedsStockColor, _bedsStockColor, 1.0 );
+			geode->addDrawable( _createText( textPos, _bedsStockColor, characterSize, _intToString( count ) ) );
+
 			group->addChild ( _transformTheShapeDrawable( cylinderPos, scale, _bedsCylinder.get() ) );
-      group->addChild( textGeode.get() );
 	
 		}
 
@@ -625,41 +607,18 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 
 
 	group->addChild( geode.get( ) );
-  std::string path = "C:/data/Santanam/output/stock/";
-#if 1 
+#if 1 // agent
   {
-    if( tCount < _transhipment.size() && step == ( _transhipment[tCount] - 2 ) )
-    {
-      for( unsigned int x = 0; x < _numTranMovements; x ++ )
-      {
-        
-        std::string stepValue = "";
-        if( counter < 10 )
-          stepValue = Usul::Strings::format( "00", counter );
-        if( counter < 100 && counter >= 10 )
-          stepValue = Usul::Strings::format( "0", counter );
-        if( counter >= 100 )
-          stepValue = Usul::Strings::format( counter );
-    
-        std::string filename = Usul::Strings::format( path, "stock", stepValue, ".osg" );
-        osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
-        counter ++;
-      }
-    }
-    else
-    {
-      std::string stepValue = "";
-        if( counter < 10 )
-          stepValue = Usul::Strings::format( "00", counter );
-        if( counter < 100 && counter >= 10 )
-          stepValue = Usul::Strings::format( "0", counter );
-        if( counter >= 100 )
-          stepValue = Usul::Strings::format( counter );
-    
-        std::string filename = Usul::Strings::format( path, "stock", stepValue, ".osg" );
-        osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
-        counter ++;
-    }
+    std::string stepValue = "";
+    if( step < 10 )
+      stepValue = Usul::Strings::format( "00", step );
+    if( step < 100 && step >= 10 )
+      stepValue = Usul::Strings::format( "0", step );
+    if( step >= 100 )
+      stepValue = Usul::Strings::format( step );
+    std::string path = "C:/data/Santanam/output/stock/";
+    std::string filename = Usul::Strings::format( path, "stock", stepValue, ".osg" );
+    osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
   }
 #endif
 

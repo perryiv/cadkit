@@ -412,12 +412,17 @@ void TreeControl::removeItem ( QTreeWidgetItem *item )
   
   if ( 0x0 != parent )
   {
-    // removeChild does not delete the item.
-    parent->removeChild ( item );
-    delete item;
+    const int index ( parent->indexOfChild ( item ) );
+    parent->takeChild ( index );
   }
   else
-    _tree->removeItemWidget( item, 0 );
+  {
+    const int index ( _tree->indexOfTopLevelItem( item ) );
+    _tree->takeTopLevelItem( index );
+  }
+  
+  // takeChild does not delete the item.
+  delete item;
 }
 
 

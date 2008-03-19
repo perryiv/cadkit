@@ -414,7 +414,7 @@
 				<File
 					RelativePath="DLL\Library.h"
 					>
-				</File>				
+				</File>
 				<File
 					RelativePath="DLL\LibraryPool.cpp"
 					>
@@ -984,6 +984,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IElevationDatabase.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IExportImage.h"
 					>
 				</File>
@@ -1081,10 +1085,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IGeneralShader.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IGeometryCenter.h"
 					>
 				</File>
 				<File
@@ -1292,18 +1292,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IMultiLineData.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IMultiPointData.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IMultiPolygonData.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\INavigationFunctor.h"
 					>
 				</File>
@@ -1320,10 +1308,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IOffset.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IOpenGLContext.h"
 					>
 				</File>
@@ -1333,10 +1317,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IOpenSceneGraph.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IOssimPlanetLayer.h"
 					>
 				</File>
 				<File
@@ -1352,31 +1332,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IPointData.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IPointLayer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IPolygonData.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IPolygonLayer.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IPolygonMode.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IPostgresqlConnection.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\GUI\IPreferencesManager.h"
 					>
 				</File>
 				<File
@@ -1400,7 +1356,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IRawPointer.h"
+					RelativePath=".\Interfaces\IRasterAlphas.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IRasterLayer.h"
 					>
 				</File>
 				<File
@@ -1448,6 +1408,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IRotationCenter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\GUI\ISaveFileDialog.h"
 					>
 				</File>
@@ -1492,10 +1456,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ISmoothModel.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ISmoothTriangles.h"
 					>
 				</File>
@@ -1525,10 +1485,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IStringGridSet.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ISubdivideModel.h"
 					>
 				</File>
 				<File
@@ -1649,6 +1605,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IViewMatrix.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IViewMode.h"
 					>
 				</File>
 				<File

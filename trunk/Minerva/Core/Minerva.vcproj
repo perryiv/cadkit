@@ -801,6 +801,14 @@
 					Name="Utilities"
 					>
 					<File
+						RelativePath=".\Utilities\Atmosphere.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Atmosphere.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Utilities\ClampNearFar.h"
 						>
 					</File>
@@ -830,6 +838,14 @@
 					</File>
 					<File
 						RelativePath=".\Utilities\Hud.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\SkyDome.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\SkyDome.h"
 						>
 					</File>
 				</Filter>

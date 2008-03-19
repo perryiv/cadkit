@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="plug: Minerva PostGISLayerQt"
 	ProjectGUID="{FF83BBFA-BA37-4A60-B531-FB0566662B98}"
+	RootNamespace="plug: Minerva PostGISLayerQt"
 	>
 	<Platforms>
 		<Platform
@@ -353,14 +354,6 @@
 							Outputs=".\ui_LayerProperties.h;.\GeneratedFiles\moc_PropertyPage.cpp"
 						/>
 					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\RasterPolygonLayer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\RasterPolygonLayer.h"
-					>
 				</File>
 				<Filter
 					Name="Color"

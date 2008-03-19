@@ -371,7 +371,7 @@ namespace Detail
       }
       else
       {
-        buffer[3] = 255;
+		  buffer[3] = std::numeric_limits<PixelType>::max();
       }
       buffer[0] = *b1;
       buffer[1] = *b2;

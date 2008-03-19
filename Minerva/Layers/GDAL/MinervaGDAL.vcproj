@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib gdald.lib"
+				AdditionalDependencies="osgd.lib osgTextd.lib osgDBd.lib gdald.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDALd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib gdal.lib"
+				AdditionalDependencies="osg.lib osgText.lib osgDB.lib gdal.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDAL.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -219,6 +219,10 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\Common.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Convert.h"
 				>
 			</File>
@@ -228,6 +232,18 @@
 			</File>
 			<File
 				RelativePath=".\GDALLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Init.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterPolygonLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterPolygonLayer.h"
 				>
 			</File>
 		</Filter>

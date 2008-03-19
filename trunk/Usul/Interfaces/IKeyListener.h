@@ -13,10 +13,10 @@
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "Keys.h"
+//#include "Keys.h"
 
 namespace Usul {
-namespace Devices {
+namespace Interfaces {
 
 
   struct IKeyListener : public Usul::Interfaces::IUnknown
@@ -24,12 +24,14 @@ namespace Devices {
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IKeyListener );
 
-  virtual void keyPressed ( unsigned int code ) = 0;
-  virtual void keyReleased ( unsigned int code ) = 0;
+  enum { IID = 2516783779u };
+
+  virtual bool keyPressed ( int code ) = 0;
+  virtual bool keyReleased ( int code ) = 0;
 
 };
 
 } // namespace Usul
-} // namespace Devices
+} // namespace Interfaces
 
-#endif // __DEVICES_IKEY_LISTENER_H__
+#endif // __Interfaces_IKEY_LISTENER_H__

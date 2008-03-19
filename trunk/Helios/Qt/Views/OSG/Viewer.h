@@ -24,6 +24,7 @@
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IKeyListener.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 

@@ -1080,6 +1080,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IGeneralShader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IGeometryCenter.h"
 					>
 				</File>
@@ -1185,6 +1189,10 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IKeepAllConnected.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IKeyListener.h"
 					>
 				</File>
 				<File
@@ -2581,10 +2589,6 @@
 				</File>
 				<File
 					RelativePath=".\Devices\IKeyboardDevice.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Devices\IKeyListener.h"
 					>
 				</File>
 				<File

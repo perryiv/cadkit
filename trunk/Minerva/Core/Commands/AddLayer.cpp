@@ -10,10 +10,11 @@
 
 #include "Minerva/Core/Commands/AddLayer.h"
 #include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IVectorLayer.h"
 
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/IVectorLayer.h"
+
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
 
@@ -193,7 +194,7 @@ void AddLayer::AddLayerJob::_started()
   USUL_TRACE_SCOPE;
 
   // Query for needed interfaces.
-  Usul::Interfaces::IVectorLayer::QueryPtr vector ( _layer );
+  Minerva::Interfaces::IVectorLayer::QueryPtr vector ( _layer );
 
   // Show the progess bar.  Hides in the destructor.
   Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress () );

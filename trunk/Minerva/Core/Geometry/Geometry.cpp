@@ -116,8 +116,8 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IOffset::IID:
-    return static_cast < Usul::Interfaces::IOffset* > ( this );
+  case Minerva::Interfaces::IOffset::IID:
+    return static_cast < Minerva::Interfaces::IOffset* > ( this );
   default:
     return 0x0;
   }

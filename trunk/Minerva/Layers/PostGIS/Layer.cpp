@@ -853,8 +853,8 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IVectorLayer::IID:
-    return static_cast < Usul::Interfaces::IVectorLayer* > ( this );
+  case Minerva::Interfaces::IVectorLayer::IID:
+    return static_cast < Minerva::Interfaces::IVectorLayer* > ( this );
   case Usul::Interfaces::IAddRowLegend::IID:
     return static_cast < Usul::Interfaces::IAddRowLegend* > ( this );
   case Usul::Interfaces::IClonable::IID:

@@ -17,10 +17,9 @@
 #include "Minerva/Core/DataObjects/Point.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Interfaces/IPointData.h"
 
 #include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IElevationDatabase.h"
-#include "Usul/Interfaces/IPointData.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Trace/Trace.h"
@@ -227,7 +226,7 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
   // Make the group.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
-  Usul::Interfaces::IPointData::QueryPtr pointData ( this->geometry() );
+  Minerva::Interfaces::IPointData::QueryPtr pointData ( this->geometry() );
 
   Usul::Math::Vec3d center;
 

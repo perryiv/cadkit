@@ -13,14 +13,14 @@
 
 #include "Minerva/Layers/PostGIS/Layer.h"
 
-#include "Usul/Interfaces/ILineLayer.h"
+#include "Minerva/Interfaces/ILineLayer.h"
 
 namespace Minerva {
 namespace Layers {
 namespace PostGIS {
 
 class MINERVA_POSTGIS_EXPORT LineLayer : public Minerva::Layers::PostGIS::Layer,
-                                         public Usul::Interfaces::ILineLayer
+                                         public Minerva::Interfaces::ILineLayer
 {
 public:
   typedef Minerva::Layers::PostGIS::Layer BaseClass;

@@ -10,6 +10,7 @@
 
 #include "Minerva/Layers/GDAL/GdalLayer.h"
 #include "Minerva/Layers/GDAL/Convert.h"
+#include "Minerva/Layers/GDAL/Common.h"
 
 #include "Minerva/Core/Factory/Readers.h"
 
@@ -44,66 +45,6 @@ namespace
 
 USUL_FACTORY_REGISTER_CREATOR ( GdalLayer );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( GdalLayer, GdalLayer::BaseClass );
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize Gdal.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct Init
-  {
-    Init()
-    {
-      GDALAllRegister();
-      OGRRegisterAll();
-    }
-    ~Init()
-    {
-      GDALDestroyDriverManager();
-      OGRCleanupAll();
-    }
-  } _init;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Error handler.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  void errorHandler ( CPLErr, int, const char* text )
-  {
-    std::cout << text << std::endl;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Push/Pop error handler.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct PushPopErrorHandler
-  {
-    PushPopErrorHandler()
-    {
-      CPLPushErrorHandler( (CPLErrorHandler) Detail::errorHandler );
-    }
-    ~PushPopErrorHandler()
-    {
-      CPLPopErrorHandler();
-    }
-  };
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////

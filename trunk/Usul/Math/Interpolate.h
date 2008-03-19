@@ -25,6 +25,14 @@ struct Interpolate
   }
 
   /// Bilinear interpolate.
+  /* Corners are:
+       b ----- c
+    ^  |       |
+    |  |       |
+    v  |       |
+       a ----- d 
+         u->
+   */
   static T bilinear ( double u, double v, const T& a, const T& b, const T& c, const T& d )
   {
     return ( ( a *( 1 - u ) * ( 1 - v ) ) + ( d * ( 1 - u ) * v ) + ( b * u * ( 1 - v ) ) + ( c * u * v ) );

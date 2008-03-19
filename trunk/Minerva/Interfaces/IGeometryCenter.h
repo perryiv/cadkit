@@ -8,14 +8,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IGEOMETRY_CENTER_H__
-#define __USUL_INTERFACES_IGEOMETRY_CENTER_H__
+#ifndef __MINERVA_INTERFACES_IGEOMETRY_CENTER_H__
+#define __MINERVA_INTERFACES_IGEOMETRY_CENTER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace osg { class Vec3f; }
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
@@ -34,8 +34,8 @@ struct IGeometryCenter : public Usul::Interfaces::IUnknown
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IGEOMETRY_CENTER_H__ */
+#endif /* __MINERVA_INTERFACES_IGEOMETRY_CENTER_H__ */
 

@@ -8,29 +8,32 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IMULTI_LINE_DATA_H__
-#define __USUL_INTERFACES_IMULTI_LINE_DATA_H__
+#ifndef __MINERVA_INTERFACES_ILINE_LAYER_H__
+#define __MINERVA_INTERFACES_ILINE_LAYER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
-struct IMultiLineData : public Usul::Interfaces::IUnknown
+struct ILineLayer : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IMultiLineData );
+  USUL_DECLARE_QUERY_POINTERS ( ILineLayer );
 
   /// Id for this interface.
-  enum { IID = 3602473287u };
+  enum { IID = 1772311221u };
 
-}; // struct IMultiLineData
+  virtual float lineWidth() const = 0;
+  virtual void  lineWidth ( float value ) = 0;
+
+}; // struct ILineLayer
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IMULTI_LINE_DATA_H__ */
+#endif /* __MINERVA_INTERFACES_ILINE_LAYER_H__ */
 

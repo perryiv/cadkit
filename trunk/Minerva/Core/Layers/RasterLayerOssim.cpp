@@ -43,6 +43,7 @@ namespace
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator0 ( "JPEG (*.jpg)", "*.jpg" );
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator1 ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator2 ( "PNG (*.png)", "*.png" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator3 ( "NASA SRTM (*.hgt)", "*.hgt" );
 }
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterLayerOssim );
@@ -234,6 +235,57 @@ void RasterLayerOssim::_open ( const std::string& filename )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make an osg::Image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  osg::Image* makeImage ( unsigned int width, unsigned int height, ossimScalarType type )
+  {   
+    osg::ref_ptr<osg::Image> result ( new osg::Image );
+    
+    GLenum dataType ( GL_UNSIGNED_BYTE );
+    
+    switch ( type )
+    {
+      case OSSIM_UINT8:
+        dataType = GL_UNSIGNED_BYTE;
+        break;
+      case OSSIM_SINT8:
+        dataType = GL_BYTE;
+        break;
+      case OSSIM_UINT16:
+        dataType = GL_UNSIGNED_SHORT;
+        break;
+      case OSSIM_SINT16:
+        dataType = GL_SHORT;
+        break;
+      case OSSIM_UINT32:
+        dataType = GL_UNSIGNED_INT;
+        break;
+      case OSSIM_SINT32:
+        dataType = GL_INT;
+        break;
+      case OSSIM_FLOAT32:
+        dataType = GL_FLOAT;
+        break;
+      case OSSIM_FLOAT64:
+        dataType = GL_DOUBLE;
+        break;
+      default:
+        throw std::invalid_argument ( "Error 3452396252: invalid image passed to makeImage" ); // We don't handle this data type.
+    }
+    
+    result->allocateImage ( width, height, 1, GL_RGBA, dataType );
+    
+    return result.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the texture.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -267,10 +319,10 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
   // Check state and create image.
   if ( ( true == data.valid() ) && 
        ( 0x0 != data->getBuf() ) && 
-       ( OSSIM_EMPTY != data->getDataObjectStatus() ) &&
-       ( OSSIM_UINT8 == data->getScalarType() ) )
+       ( OSSIM_EMPTY != data->getDataObjectStatus() ) )
   {
-    result = this->_createBlankImage ( width, height );
+    //result = this->_createBlankImage ( width, height );
+    result = Detail::makeImage ( width, height, data->getScalarType() );
     this->_convert ( *data, *result );
   }
 
@@ -284,55 +336,96 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+namespace Detail
+{
+  template<class PixelType> void convert ( const ossimImageData& data, osg::Image& image )
+  {
+    USUL_TRACE_SCOPE_STATIC;
+    
+    const unsigned int width ( data.getWidth() );
+    const unsigned int height ( data.getHeight() );
+    const unsigned int size ( width * height );
+    
+    // Check sizes.
+    if ( ( static_cast<int> ( width ) != image.s() ) || ( static_cast<int> ( height ) != image.t() ) )
+      throw std::invalid_argument ( "Error 3651784054: image sizes are not equal" );
+    
+    PixelType *buffer ( reinterpret_cast < PixelType * > ( image.data() ) );
+    
+    bool greyscale ( data.getNumberOfBands() < 3 );
+    
+    const PixelType* b1 ( static_cast < const PixelType* > ( data.getBuf( 0 ) ) );
+    const PixelType* b2 ( static_cast < const PixelType* > ( data.getBuf( ( greyscale ? 0 : 1 ) ) ) );
+    const PixelType* b3 ( static_cast < const PixelType* > ( data.getBuf( ( greyscale ? 0 : 2 ) ) ) ); 
+    PixelType np1 ( static_cast < PixelType > ( data.getNullPix( 0 ) ) );
+    PixelType np2 ( static_cast < PixelType > ( data.getNullPix( ( greyscale ? 0 : 1 ) ) ) );
+    PixelType np3 ( static_cast < PixelType > ( data.getNullPix( ( greyscale ? 0 : 2 ) ) ) );
+    
+    // Copy the pixels into the osg image.
+    for ( unsigned int i = 0; i < size; ++i )
+    {
+      // If the pixel is null, make transparent.
+      if ( ( *b1 == np1 ) && ( *b2 == np2 ) && ( *b3 == np3 ) )
+      {
+        buffer[3] = 0;
+      }
+      else
+      {
+        buffer[3] = 255;
+      }
+      buffer[0] = *b1;
+      buffer[1] = *b2;
+      buffer[2] = *b3;
+      buffer +=4;
+      ++b1;
+      ++b2;
+      ++b3;
+    }
+    
+    image.flipVertical();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image )
 {
   USUL_TRACE_SCOPE;
 
-  // Only handle 8 byte pixels for now.
-  if ( OSSIM_UINT8 != data.getScalarType() && data.getSize() > 0 )
-    throw std::invalid_argument ( "Error 3651784054: invalid image passed to convert" );
-
-  const unsigned int width ( data.getWidth() );
-  const unsigned int height ( data.getHeight() );
-  const unsigned int size ( width * height );
-
-  // Check sizes.
-  if ( ( static_cast<int> ( width ) != image.s() ) || ( static_cast<int> ( height ) != image.t() ) )
-    throw std::invalid_argument ( "Error 3651784054: image sizes are not equal" );
-
-  unsigned char *buffer ( image.data() );
-
-  bool greyscale ( data.getNumberOfBands() < 3 );
-  
-  const unsigned char* b1 ( static_cast < const unsigned char* > ( data.getBuf( 0 ) ) );
-  const unsigned char* b2 ( static_cast < const unsigned char* > ( data.getBuf( ( greyscale ? 0 : 1 ) ) ) );
-  const unsigned char* b3 ( static_cast < const unsigned char* > ( data.getBuf( ( greyscale ? 0 : 2 ) ) ) ); 
-  unsigned char np1 ( static_cast < unsigned char > ( data.getNullPix( 0 ) ) );
-  unsigned char np2 ( static_cast < unsigned char > ( data.getNullPix( ( greyscale ? 0 : 1 ) ) ) );
-  unsigned char np3 ( static_cast < unsigned char > ( data.getNullPix( ( greyscale ? 0 : 2 ) ) ) );
-
-  // Copy the pixels into the osg image.
-  for ( unsigned int i = 0; i < size; ++i )
+  switch ( data.getScalarType() )
   {
-    // If the pixel is null, make transparent.
-    if ( ( *b1 == np1 ) && ( *b2 == np2 ) && ( *b3 == np3 ) )
-    {
-       buffer[3] = 0;
-    }
-    else
-    {
-       buffer[3] = 255;
-    }
-    buffer[0] = *b1;
-    buffer[1] = *b2;
-    buffer[2] = *b3;
-    buffer +=4;
-    ++b1;
-    ++b2;
-    ++b3;
+  case OSSIM_UINT8:
+    Detail::convert<unsigned char> ( data, image );
+    break;
+  case OSSIM_SINT8:
+    Detail::convert<char> ( data, image );
+    break;
+  case OSSIM_UINT16:
+    Detail::convert<short> ( data, image );
+    break;
+  case OSSIM_SINT16:
+    Detail::convert<unsigned short> ( data, image );
+    break;
+  case OSSIM_UINT32:
+    Detail::convert<unsigned int> ( data, image );
+    break;
+  case OSSIM_SINT32:
+    Detail::convert<int> ( data, image );
+    break;
+  case OSSIM_FLOAT32:
+    Detail::convert<float> ( data, image );
+    break;
+  case OSSIM_FLOAT64:
+    Detail::convert<double> ( data, image );
+    break;
+  default:
+    throw std::invalid_argument ( "Error 3651784054: invalid image passed to convert" );
   }
-
-   image.flipVertical();
 }
 
 

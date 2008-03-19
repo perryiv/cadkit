@@ -8,39 +8,36 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IPOLYGON_DATA_H__
-#define __USUL_INTERFACES_IPOLYGON_DATA_H__
+#ifndef __MINERVA_INTERFACES_ILINE_DATA_H__
+#define __MINERVA_INTERFACES_ILINE_DATA_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector3.h"
 
-#include <vector>
-
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
-struct IPolygonData : public Usul::Interfaces::IUnknown
+struct ILineData : public Usul::Interfaces::IUnknown
 {
   /// Typedefs.
   typedef Usul::Math::Vec3d                Vertex;
   typedef std::vector < Vertex >           Vertices;
-  typedef std::vector<Vertices>            Boundaries;
-  
+
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IPolygonData );
+  USUL_DECLARE_QUERY_POINTERS ( ILineData );
 
   /// Id for this interface.
-  enum { IID = 2101968926u };
+  enum { IID = 2143101424u };
 
-  virtual const Vertices&               outerBoundary() const = 0;
-  virtual const Boundaries&             innerBoundaries() const = 0;
-  
-}; // struct IPolygonData
+  virtual const Vertices&     lineData () = 0;
+
+}; // struct ILineData
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IPOLYGON_DATA_H__ */
+#endif /* __MINERVA_INTERFACES_ILINE_DATA_H__ */
+

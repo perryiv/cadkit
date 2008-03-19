@@ -8,12 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IPOLYGON_LAYER_H__
-#define __USUL_INTERFACES_IPOLYGON_LAYER_H__
+#ifndef __MINERVA_INTERFACES_IPOLYGON_LAYER_H__
+#define __MINERVA_INTERFACES_IPOLYGON_LAYER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
@@ -44,5 +44,4 @@ struct IPolygonLayer : public Usul::Interfaces::IUnknown
 } // end namespace Usul
 
 
-#endif /* __USUL_INTERFACES_IPOLYGON_LAYER_H__ */
-
+#endif /* __MINERVA_INTERFACES_IPOLYGON_LAYER_H__ */

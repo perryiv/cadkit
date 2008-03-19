@@ -29,6 +29,7 @@
 #include "Minerva/Core/Visitors/StackPoints.h"
 #include "Minerva/Core/Visitors/ResizePoints.h"
 #include "Minerva/Core/Visitors/BuildLegend.h"
+#include "Minerva/Interfaces/ITemporalData.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -43,9 +44,7 @@
 #include "Usul/Interfaces/ICullSceneVisitor.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/ITemporalData.h"
 #include "Usul/Interfaces/IClippingDistance.h"
-#include "Usul/Interfaces/IVectorLayer.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Trace/Trace.h"
@@ -597,7 +596,7 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
   }
   
   // If it's temporal, we need to find the min and max dates again.
-  Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
+  Minerva::Interfaces::ITemporalData::QueryPtr temporal ( layer );
   if ( temporal.valid () )
   {
     _datesDirty = true;
@@ -645,7 +644,7 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
     }
     
     // If it's temporal, we need to find the min and max dates again.
-    Usul::Interfaces::ITemporalData::QueryPtr temporal ( layer );
+    Minerva::Interfaces::ITemporalData::QueryPtr temporal ( layer );
     if ( temporal.valid () )
     {
       _datesDirty = true;

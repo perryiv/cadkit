@@ -17,6 +17,7 @@
 #include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/Utilities/DirtyTiles.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Core/Utilities/Atmosphere.h"
 
 #include "OsgTools/Convert/MatrixTransform.h"
 #include "OsgTools/Group.h"
@@ -79,7 +80,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _deleteTiles(),
   _topTiles(),
   _updateListeners(),
-  _allowSplitting ( true )
+  _allowSplitting ( true ),
+  _sky ( new Minerva::Core::Utilities::Atmosphere )
 {
   USUL_TRACE_SCOPE;
 
@@ -104,6 +106,14 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   
   // Add the vector data to the transform.
   _transform->addChild ( _vectorData->buildScene () );
+#if 0
+  // Set parameters.
+  _sky->innerRadius ( land->size() );
+  _sky->outerRadius ( _sky->innerRadius() + 400000 );
+  
+  // Add the sky to the scene.
+  _transform->addChild ( _sky );
+#endif
 }
 
 

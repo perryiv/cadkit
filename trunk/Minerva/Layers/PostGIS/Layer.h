@@ -13,17 +13,16 @@
 
 #include "Minerva/Layers/PostGIS/Export.h"
 
-#include "Minerva/DataSources/PG/Connection.h"
-
 #include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/Functors/BaseColorFunctor.h"
 #include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/DataSources/PG/Connection.h"
+#include "Minerva/Interfaces/IVectorLayer.h"
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Interfaces/IVectorLayer.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Math/Vector2.h"
@@ -48,7 +47,7 @@ namespace PostGIS {
 
   
 class MINERVA_POSTGIS_EXPORT Layer : public Minerva::Core::Layers::Vector,
-                                     public Usul::Interfaces::IVectorLayer,
+                                     public Minerva::Interfaces::IVectorLayer,
                                      public Usul::Interfaces::IAddRowLegend,
                                      public Usul::Interfaces::IClonable
 {

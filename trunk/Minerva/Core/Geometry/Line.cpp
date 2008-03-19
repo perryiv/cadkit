@@ -104,8 +104,8 @@ Usul::Interfaces::IUnknown* Line::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::ILineData::IID:
-    return static_cast < Usul::Interfaces::ILineData* > ( this );
+  case Minerva::Interfaces::ILineData::IID:
+    return static_cast < Minerva::Interfaces::ILineData* > ( this );
   default:
     return BaseClass::queryInterface( iid );
   }

@@ -17,11 +17,11 @@
 #include "Minerva/Core/DataObjects/Line.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Interfaces/ILineData.h"
+#include "Minerva/Interfaces/IFitLineTerrain.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
-#include "Usul/Interfaces/ILineData.h"
-#include "Usul/Interfaces/IFitLineTerrain.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
 #include "OsgTools/State/StateSet.h"
@@ -119,20 +119,20 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
     // Query for needed interfaces.
     Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
     Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-    Usul::Interfaces::ILineData::QueryPtr line ( this->geometry() );
+    Minerva::Interfaces::ILineData::QueryPtr line ( this->geometry() );
 
     osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
     _node->addChild( geode.get() );
 
     if( line.valid () )
     {
-      typedef Usul::Interfaces::ILineData::Vertices Vertices;
+      typedef Minerva::Interfaces::ILineData::Vertices Vertices;
       typedef Usul::Components::Manager PluginManager;
 
       // Get the line data.
       Vertices data ( line->lineData() );
 
-      Usul::Interfaces::IFitLineTerrain::QueryPtr fit ( PluginManager::instance().getInterface ( Usul::Interfaces::IFitLineTerrain::IID ) );
+      Minerva::Interfaces::IFitLineTerrain::QueryPtr fit ( PluginManager::instance().getInterface ( Minerva::Interfaces::IFitLineTerrain::IID ) );
 
       Vertices sampledPoints;
       if ( fit.valid() && DataObject::ABSOLUTE_MODE != this->altitudeMode() )

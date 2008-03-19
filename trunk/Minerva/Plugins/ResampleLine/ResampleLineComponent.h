@@ -18,20 +18,20 @@
 #define _RESAMPLE_LINE_H_
 
 #include "Minerva/Plugins/ResampleLine/CompileGuard.h"
+#include "Minerva/Interfaces/IFitLineTerrain.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IFitLineTerrain.h"
 
 
 class ResampleLineComponent : public Usul::Base::Referenced,
-                              public Usul::Interfaces::IFitLineTerrain,
+                              public Minerva::Interfaces::IFitLineTerrain,
                               public Usul::Interfaces::IPlugin
 {
 public:
 
   /// Typedefs.
-  typedef Usul::Interfaces::IFitLineTerrain::Vertices      Vertices;
+  typedef Minerva::Interfaces::IFitLineTerrain::Vertices   Vertices;
   typedef Usul::Base::Referenced                           BaseClass;
   typedef Usul::Interfaces::IUnknown                       Unknown;
 

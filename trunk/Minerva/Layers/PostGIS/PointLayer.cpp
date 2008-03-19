@@ -13,10 +13,11 @@
 
 #include "Minerva/Core/DataObjects/Point.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Interfaces/IOffset.h"
 
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/IOffset.h"
+#include "Usul/Trace/Trace.h"
 
 #include "pqxx/pqxx"
 
@@ -43,6 +44,7 @@ PointLayer::PointLayer() :
   _primitiveSizeColumn(),
   _autotransform ( true )
 {
+  USUL_TRACE_SCOPE;
   this->name( "PointLayer" );
 
   this->_registerMembers();
@@ -65,6 +67,7 @@ PointLayer::PointLayer ( const PointLayer& layer ) :
   _primitiveSizeColumn( layer._primitiveSizeColumn ),
   _autotransform ( layer._autotransform )
 {
+  USUL_TRACE_SCOPE;
   this->_registerMembers();
 }
 
@@ -77,6 +80,7 @@ PointLayer::PointLayer ( const PointLayer& layer ) :
 
 void PointLayer::_registerMembers()
 {
+  USUL_TRACE_SCOPE;
   SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
   SERIALIZE_XML_ADD_MEMBER ( _size );
   SERIALIZE_XML_ADD_MEMBER ( _secondarySize );
@@ -95,6 +99,7 @@ void PointLayer::_registerMembers()
 
 void PointLayer::accept ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
   visitor.visit ( *this );
 }
 
@@ -107,6 +112,7 @@ void PointLayer::accept ( Minerva::Core::Visitor& visitor )
 
 Usul::Interfaces::IUnknown* PointLayer::clone() const
 {
+  USUL_TRACE_SCOPE;
   Usul::Interfaces::IUnknown::QueryPtr copy ( new PointLayer( *this ) );
   return copy.release();
 }
@@ -120,6 +126,7 @@ Usul::Interfaces::IUnknown* PointLayer::clone() const
 
 PointLayer::~PointLayer()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -131,6 +138,7 @@ PointLayer::~PointLayer()
 
 void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
+  USUL_TRACE_SCOPE;
   Connection::ScopedConnection scopedConnection ( *this->connection() );
 
   Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
@@ -161,7 +169,7 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Int
       {
         (*geom)->srid( srid );
         Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-        Usul::Interfaces::IOffset::QueryPtr offset ( unknown );
+        Minerva::Interfaces::IOffset::QueryPtr offset ( unknown );
 
         if( offset.valid () )
         {
@@ -220,6 +228,8 @@ void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Int
 
 void PointLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+  
   // For now get what we have, clear and then rebuild.
   // Need a way to tell if the query has changed.  Then I think this can be handled better.
   this->clearDataObjects();
@@ -235,6 +245,8 @@ void PointLayer::modify( Usul::Interfaces::IUnknown *caller )
 
 void PointLayer::primitiveID( Usul::Types::Uint32 primitiveId )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   _primitiveID = primitiveId;
 }
 
@@ -247,6 +259,8 @@ void PointLayer::primitiveID( Usul::Types::Uint32 primitiveId )
 
 Usul::Types::Uint32 PointLayer::primitiveID() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _primitiveID;
 }
 
@@ -259,6 +273,8 @@ Usul::Types::Uint32 PointLayer::primitiveID() const
 
 void PointLayer::size( float size )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   _size = size;
 }
 
@@ -271,6 +287,8 @@ void PointLayer::size( float size )
 
 float PointLayer::size() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _size;
 }
 
@@ -283,6 +301,8 @@ float PointLayer::size() const
 
 float PointLayer::secondarySize () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _secondarySize;
 }
 
@@ -295,6 +315,8 @@ float PointLayer::secondarySize () const
 
 void PointLayer::secondarySize ( float size )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   _secondarySize = size;
 }
 
@@ -307,6 +329,8 @@ void PointLayer::secondarySize ( float size )
 
 void PointLayer::stackPoints( bool b )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   _stackPoints = b;
 }
 
@@ -319,6 +343,8 @@ void PointLayer::stackPoints( bool b )
 
 bool PointLayer::stackPoints() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _stackPoints;
 }
 
@@ -331,11 +357,12 @@ bool PointLayer::stackPoints() const
 
 Usul::Interfaces::IUnknown* PointLayer::queryInterface( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
+  
   switch ( iid )
   {
-  //case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IPointLayer::IID:
-    return static_cast < Usul::Interfaces::IPointLayer* > ( this );
+  case Minerva::Interfaces::IPointLayer::IID:
+    return static_cast < Minerva::Interfaces::IPointLayer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -350,6 +377,8 @@ Usul::Interfaces::IUnknown* PointLayer::queryInterface( unsigned long iid )
 
 void PointLayer::quality( float value )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   _quality = value;
 }
 
@@ -362,6 +391,8 @@ void PointLayer::quality( float value )
 
 float PointLayer::quality() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _quality;
 }
 
@@ -374,6 +405,8 @@ float PointLayer::quality() const
 
 void PointLayer::primitiveSizeColumn( const std::string& value )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   _primitiveSizeColumn = value;
 }
 
@@ -386,6 +419,8 @@ void PointLayer::primitiveSizeColumn( const std::string& value )
 
 const std::string& PointLayer::primitiveSizeColumn() const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _primitiveSizeColumn;
 }
 
@@ -398,6 +433,8 @@ const std::string& PointLayer::primitiveSizeColumn() const
 
 std::string PointLayer::defaultQuery() const
 {
+  USUL_TRACE_SCOPE;
+  
   // Get the geometry colomn.
   const std::string geomColumn ( this->geometryColumn() );
 
@@ -427,6 +464,8 @@ std::string PointLayer::defaultQuery() const
 
 void PointLayer::autotransform ( bool b )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   _autotransform = b;
 }
 
@@ -439,6 +478,8 @@ void PointLayer::autotransform ( bool b )
 
 bool PointLayer::autotransform () const
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   return _autotransform;
 }
 

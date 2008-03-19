@@ -761,6 +761,23 @@
 		668E0DA70D4022F70030649B /* TransferFunction1D.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E0D9D0D4022F70030649B /* TransferFunction1D.h */; };
 		668E0DE80D406F400030649B /* KmlLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668E0DE60D406F400030649B /* KmlLayer.cpp */; };
 		668E0DE90D406F400030649B /* KmlLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E0DE70D406F400030649B /* KmlLayer.h */; };
+		668E3AB70D8A33FC00FD7F58 /* IDatabaseConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AA60D8A33FC00FD7F58 /* IDatabaseConnection.h */; };
+		668E3AB80D8A33FC00FD7F58 /* IFitLineTerrain.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AA70D8A33FC00FD7F58 /* IFitLineTerrain.h */; };
+		668E3AB90D8A33FC00FD7F58 /* IGeometryCenter.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AA80D8A33FC00FD7F58 /* IGeometryCenter.h */; };
+		668E3ABA0D8A33FC00FD7F58 /* ILineData.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AA90D8A33FC00FD7F58 /* ILineData.h */; };
+		668E3ABB0D8A33FC00FD7F58 /* ILineLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AAA0D8A33FC00FD7F58 /* ILineLayer.h */; };
+		668E3ABC0D8A33FC00FD7F58 /* IMultiLineData.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AAB0D8A33FC00FD7F58 /* IMultiLineData.h */; };
+		668E3ABD0D8A33FC00FD7F58 /* IMultiPointData.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AAC0D8A33FC00FD7F58 /* IMultiPointData.h */; };
+		668E3ABE0D8A33FC00FD7F58 /* IMultiPolygonData.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AAD0D8A33FC00FD7F58 /* IMultiPolygonData.h */; };
+		668E3ABF0D8A33FC00FD7F58 /* IOffset.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AAE0D8A33FC00FD7F58 /* IOffset.h */; };
+		668E3AC00D8A33FC00FD7F58 /* IOssimPlanetLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AAF0D8A33FC00FD7F58 /* IOssimPlanetLayer.h */; };
+		668E3AC10D8A33FC00FD7F58 /* IPointData.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB00D8A33FC00FD7F58 /* IPointData.h */; };
+		668E3AC20D8A33FC00FD7F58 /* IPointLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB10D8A33FC00FD7F58 /* IPointLayer.h */; };
+		668E3AC30D8A33FC00FD7F58 /* IPolygonData.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB20D8A33FC00FD7F58 /* IPolygonData.h */; };
+		668E3AC40D8A33FC00FD7F58 /* IPolygonLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB30D8A33FC00FD7F58 /* IPolygonLayer.h */; };
+		668E3AC50D8A33FC00FD7F58 /* IPostgresqlConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB40D8A33FC00FD7F58 /* IPostgresqlConnection.h */; };
+		668E3AC60D8A33FC00FD7F58 /* ITemporalData.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB50D8A33FC00FD7F58 /* ITemporalData.h */; };
+		668E3AC70D8A33FC00FD7F58 /* IVectorLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB60D8A33FC00FD7F58 /* IVectorLayer.h */; };
 		6691517E0D52642A00C2BF8D /* big_compass_1.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
 		6691517F0D52642A00C2BF8D /* big_compass_mask.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517D0D52642A00C2BF8D /* big_compass_mask.tga */; };
 		669151800D52643F00C2BF8D /* big_compass_1.tga in Copy Icons */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
@@ -1066,12 +1083,21 @@
 		66CFB2010D134FB400F93E67 /* times.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58F09677C07008DF27C /* times.ttf */; };
 		66CFB21B0D13597B00F93E67 /* SceneModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB89409246ADA00ED2131 /* SceneModel.plugd */; };
 		66CFB2460D135FEF00F93E67 /* helios_sun.png in Resources */ = {isa = PBXBuildFile; fileRef = 666766A20D124D2C002F40C6 /* helios_sun.png */; };
-		66CFF0E20D3899EF00ED0216 /* RasterPolygonLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CFF0E00D3899EF00ED0216 /* RasterPolygonLayer.h */; };
-		66CFF0E30D3899EF00ED0216 /* RasterPolygonLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CFF0E10D3899EF00ED0216 /* RasterPolygonLayer.cpp */; };
 		66CFF1510D38A19700ED0216 /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
 		66DA93200ACCDBD300D3E379 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DA931E0ACCDBD300D3E379 /* Environment.cpp */; };
 		66DDED3C0D46E241005886AE /* Model.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DDED3A0D46E241005886AE /* Model.h */; };
 		66DDED3D0D46E241005886AE /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DDED3B0D46E241005886AE /* Model.cpp */; };
+		66E1D7220D8C375D00732EE0 /* Atmosphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E1D7200D8C375D00732EE0 /* Atmosphere.h */; };
+		66E1D7230D8C375D00732EE0 /* Atmosphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1D7210D8C375D00732EE0 /* Atmosphere.cpp */; };
+		66E1D98B0D8DC26600732EE0 /* SkyDome.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1D9890D8DC26600732EE0 /* SkyDome.cpp */; };
+		66E1D98C0D8DC26600732EE0 /* SkyDome.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E1D98A0D8DC26600732EE0 /* SkyDome.h */; };
+		66E5C0670D91900000C858B7 /* RasterPolygonLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E5C0650D91900000C858B7 /* RasterPolygonLayer.cpp */; };
+		66E5C0680D91900000C858B7 /* RasterPolygonLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E5C0660D91900000C858B7 /* RasterPolygonLayer.h */; };
+		66E5C06B0D91902400C858B7 /* Init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E5C06A0D91902400C858B7 /* Init.cpp */; };
+		66E5C0700D91908100C858B7 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E5C06F0D91908100C858B7 /* Common.h */; };
+		66E5C0760D9190EA00C858B7 /* libMinervaPostGISLayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */; };
+		66E5C08A0D9191C300C858B7 /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E5C0890D9191C300C858B7 /* Common.cpp */; };
+		66E5C0920D91929D00C858B7 /* libMinervaGdalLayerd.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */; };
 		66E7B0BF0B17617300E3D682 /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BB0B17617300E3D682 /* Renderer.cpp */; };
 		66E7B0C00B17617300E3D682 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BC0B17617300E3D682 /* Renderer.h */; };
 		66E7B0C10B17617300E3D682 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BD0B17617300E3D682 /* SceneManager.cpp */; };
@@ -3275,6 +3301,23 @@
 		668E0DDC0D4063AB0030649B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		668E0DE60D406F400030649B /* KmlLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KmlLayer.cpp; sourceTree = "<group>"; };
 		668E0DE70D406F400030649B /* KmlLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KmlLayer.h; sourceTree = "<group>"; };
+		668E3AA60D8A33FC00FD7F58 /* IDatabaseConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDatabaseConnection.h; sourceTree = "<group>"; };
+		668E3AA70D8A33FC00FD7F58 /* IFitLineTerrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFitLineTerrain.h; sourceTree = "<group>"; };
+		668E3AA80D8A33FC00FD7F58 /* IGeometryCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGeometryCenter.h; sourceTree = "<group>"; };
+		668E3AA90D8A33FC00FD7F58 /* ILineData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILineData.h; sourceTree = "<group>"; };
+		668E3AAA0D8A33FC00FD7F58 /* ILineLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILineLayer.h; sourceTree = "<group>"; };
+		668E3AAB0D8A33FC00FD7F58 /* IMultiLineData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMultiLineData.h; sourceTree = "<group>"; };
+		668E3AAC0D8A33FC00FD7F58 /* IMultiPointData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMultiPointData.h; sourceTree = "<group>"; };
+		668E3AAD0D8A33FC00FD7F58 /* IMultiPolygonData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMultiPolygonData.h; sourceTree = "<group>"; };
+		668E3AAE0D8A33FC00FD7F58 /* IOffset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOffset.h; sourceTree = "<group>"; };
+		668E3AAF0D8A33FC00FD7F58 /* IOssimPlanetLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOssimPlanetLayer.h; sourceTree = "<group>"; };
+		668E3AB00D8A33FC00FD7F58 /* IPointData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPointData.h; sourceTree = "<group>"; };
+		668E3AB10D8A33FC00FD7F58 /* IPointLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPointLayer.h; sourceTree = "<group>"; };
+		668E3AB20D8A33FC00FD7F58 /* IPolygonData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPolygonData.h; sourceTree = "<group>"; };
+		668E3AB30D8A33FC00FD7F58 /* IPolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPolygonLayer.h; sourceTree = "<group>"; };
+		668E3AB40D8A33FC00FD7F58 /* IPostgresqlConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPostgresqlConnection.h; sourceTree = "<group>"; };
+		668E3AB50D8A33FC00FD7F58 /* ITemporalData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITemporalData.h; sourceTree = "<group>"; };
+		668E3AB60D8A33FC00FD7F58 /* IVectorLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IVectorLayer.h; sourceTree = "<group>"; };
 		6691517C0D52642A00C2BF8D /* big_compass_1.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = big_compass_1.tga; sourceTree = "<group>"; };
 		6691517D0D52642A00C2BF8D /* big_compass_mask.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = big_compass_mask.tga; sourceTree = "<group>"; };
 		669245D20D35A32000C41A28 /* BinaryReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryReader.h; sourceTree = "<group>"; };
@@ -3414,7 +3457,6 @@
 		6699A0940D1EFC7300A9AE47 /* ICommandQueueAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICommandQueueAdd.h; sourceTree = "<group>"; };
 		6699A0950D1EFC7300A9AE47 /* IComputeTriangleNormals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IComputeTriangleNormals.h; sourceTree = "<group>"; };
 		6699A0960D1EFC7300A9AE47 /* ICullSceneVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICullSceneVisitor.h; sourceTree = "<group>"; };
-		6699A0970D1EFC7300A9AE47 /* IDatabaseConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDatabaseConnection.h; sourceTree = "<group>"; };
 		6699A0980D1EFC7300A9AE47 /* IDatabasePager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDatabasePager.h; sourceTree = "<group>"; };
 		6699A0990D1EFC7300A9AE47 /* IDataSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDataSync.h; sourceTree = "<group>"; };
 		6699A09A0D1EFC7300A9AE47 /* IDirtyState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDirtyState.h; sourceTree = "<group>"; };
@@ -3425,10 +3467,8 @@
 		6699A0A00D1EFC7300A9AE47 /* IExportImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IExportImage.h; sourceTree = "<group>"; };
 		6699A0A10D1EFC7300A9AE47 /* IExportModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IExportModel.h; sourceTree = "<group>"; };
 		6699A0A20D1EFC7300A9AE47 /* IExportScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IExportScene.h; sourceTree = "<group>"; };
-		6699A0A30D1EFC7300A9AE47 /* IFitLineTerrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFitLineTerrain.h; sourceTree = "<group>"; };
 		6699A0A40D1EFC7300A9AE47 /* IFrameInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFrameInfo.h; sourceTree = "<group>"; };
 		6699A0A50D1EFC7300A9AE47 /* IFrameStamp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFrameStamp.h; sourceTree = "<group>"; };
-		6699A0A60D1EFC7300A9AE47 /* IGeometryCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGeometryCenter.h; sourceTree = "<group>"; };
 		6699A0A70D1EFC7300A9AE47 /* IIntersectListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IIntersectListener.h; sourceTree = "<group>"; };
 		6699A0A80D1EFC7300A9AE47 /* IIntersectNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IIntersectNotify.h; sourceTree = "<group>"; };
 		6699A0A90D1EFC7300A9AE47 /* IJoystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJoystick.h; sourceTree = "<group>"; };
@@ -3436,8 +3476,6 @@
 		6699A0AB0D1EFC7300A9AE47 /* ILayerAddGUIQt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayerAddGUIQt.h; sourceTree = "<group>"; };
 		6699A0AC0D1EFC7300A9AE47 /* ILayerExtents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayerExtents.h; sourceTree = "<group>"; };
 		6699A0AE0D1EFC7300A9AE47 /* ILayerModifyGUIQt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILayerModifyGUIQt.h; sourceTree = "<group>"; };
-		6699A0AF0D1EFC7300A9AE47 /* ILineData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILineData.h; sourceTree = "<group>"; };
-		6699A0B00D1EFC7300A9AE47 /* ILineLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILineLayer.h; sourceTree = "<group>"; };
 		6699A0B10D1EFC7300A9AE47 /* ILoadColorFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILoadColorFile.h; sourceTree = "<group>"; };
 		6699A0B20D1EFC7300A9AE47 /* IMaterials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMaterials.h; sourceTree = "<group>"; };
 		6699A0B30D1EFC7300A9AE47 /* IMatrixManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMatrixManipulator.h; sourceTree = "<group>"; };
@@ -3449,19 +3487,9 @@
 		6699A0B90D1EFC7300A9AE47 /* IMouseEventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMouseEventListener.h; sourceTree = "<group>"; };
 		6699A0BA0D1EFC7300A9AE47 /* IMouseEventSubject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMouseEventSubject.h; sourceTree = "<group>"; };
 		6699A0BB0D1EFC7300A9AE47 /* IMpdNavigator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMpdNavigator.h; sourceTree = "<group>"; };
-		6699A0BC0D1EFC7300A9AE47 /* IMultiLineData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMultiLineData.h; sourceTree = "<group>"; };
-		6699A0BD0D1EFC7300A9AE47 /* IMultiPointData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMultiPointData.h; sourceTree = "<group>"; };
-		6699A0BE0D1EFC7300A9AE47 /* IMultiPolygonData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMultiPolygonData.h; sourceTree = "<group>"; };
 		6699A0BF0D1EFC7300A9AE47 /* INavigationFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = INavigationFunctor.h; sourceTree = "<group>"; };
-		6699A0C00D1EFC7300A9AE47 /* IOffset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOffset.h; sourceTree = "<group>"; };
-		6699A0C10D1EFC7300A9AE47 /* IOssimPlanetLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOssimPlanetLayer.h; sourceTree = "<group>"; };
 		6699A0C20D1EFC7300A9AE47 /* IPlanetCoordinates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPlanetCoordinates.h; sourceTree = "<group>"; };
 		6699A0C50D1EFC7300A9AE47 /* IPluginInitialize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPluginInitialize.h; sourceTree = "<group>"; };
-		6699A0C60D1EFC7300A9AE47 /* IPointData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPointData.h; sourceTree = "<group>"; };
-		6699A0C70D1EFC7300A9AE47 /* IPointLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPointLayer.h; sourceTree = "<group>"; };
-		6699A0C80D1EFC7300A9AE47 /* IPolygonData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPolygonData.h; sourceTree = "<group>"; };
-		6699A0C90D1EFC7300A9AE47 /* IPolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPolygonLayer.h; sourceTree = "<group>"; };
-		6699A0CA0D1EFC7300A9AE47 /* IPostgresqlConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPostgresqlConnection.h; sourceTree = "<group>"; };
 		6699A0CB0D1EFC7300A9AE47 /* IProjectCoordinates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IProjectCoordinates.h; sourceTree = "<group>"; };
 		6699A0CC0D1EFC7300A9AE47 /* IQtDockWidgetMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IQtDockWidgetMenu.h; sourceTree = "<group>"; };
 		6699A0CE0D1EFC7300A9AE47 /* IRedo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRedo.h; sourceTree = "<group>"; };
@@ -3476,7 +3504,6 @@
 		6699A0D70D1EFC7300A9AE47 /* IStreamListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IStreamListener.h; sourceTree = "<group>"; };
 		6699A0D80D1EFC7300A9AE47 /* IStringGridGet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IStringGridGet.h; sourceTree = "<group>"; };
 		6699A0D90D1EFC7300A9AE47 /* IStringGridSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IStringGridSet.h; sourceTree = "<group>"; };
-		6699A0DA0D1EFC7300A9AE47 /* ITemporalData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITemporalData.h; sourceTree = "<group>"; };
 		6699A0DB0D1EFC7300A9AE47 /* ITimestepAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITimestepAnimation.h; sourceTree = "<group>"; };
 		6699A0DC0D1EFC7300A9AE47 /* ITimeVaryingData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITimeVaryingData.h; sourceTree = "<group>"; };
 		6699A0DE0D1EFC7300A9AE47 /* ITranslationSpeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITranslationSpeed.h; sourceTree = "<group>"; };
@@ -3488,7 +3515,6 @@
 		6699A0E40D1EFC7300A9AE47 /* IUpdateListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IUpdateListener.h; sourceTree = "<group>"; };
 		6699A0E50D1EFC7300A9AE47 /* IUpdateSceneVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IUpdateSceneVisitor.h; sourceTree = "<group>"; };
 		6699A0E60D1EFC7300A9AE47 /* IUpdateSubject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IUpdateSubject.h; sourceTree = "<group>"; };
-		6699A0E70D1EFC7300A9AE47 /* IVectorLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IVectorLayer.h; sourceTree = "<group>"; };
 		6699A0E80D1EFC7300A9AE47 /* IVertices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IVertices.h; sourceTree = "<group>"; };
 		6699A0E90D1EFC7300A9AE47 /* IViewport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IViewport.h; sourceTree = "<group>"; };
 		6699A0EA0D1EFC7300A9AE47 /* IWandState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IWandState.h; sourceTree = "<group>"; };
@@ -3707,8 +3733,6 @@
 		66CCE8990D304A080084E49D /* Resample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Resample.h; path = ResampleLine/Resample.h; sourceTree = "<group>"; };
 		66CCE9C80D3186630084E49D /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		66CFB2200D135A2000F93E67 /* libSceneDelegateQt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSceneDelegateQt.dylib; path = ../../bin/Debug/libSceneDelegateQt.dylib; sourceTree = SOURCE_ROOT; };
-		66CFF0E00D3899EF00ED0216 /* RasterPolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RasterPolygonLayer.h; path = PostGISLayerQt/RasterPolygonLayer.h; sourceTree = "<group>"; };
-		66CFF0E10D3899EF00ED0216 /* RasterPolygonLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RasterPolygonLayer.cpp; path = PostGISLayerQt/RasterPolygonLayer.cpp; sourceTree = "<group>"; };
 		66CFF1500D38A19700ED0216 /* GDAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GDAL.framework; path = ../../../Library/Frameworks/GDAL.framework; sourceTree = SOURCE_ROOT; };
 		66CFF1D60D39EE5E00ED0216 /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		66CFF1D70D39EE5E00ED0216 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
@@ -3720,6 +3744,22 @@
 		66DA931F0ACCDBD300D3E379 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		66DDED3A0D46E241005886AE /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
 		66DDED3B0D46E241005886AE /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
+		66E1D7200D8C375D00732EE0 /* Atmosphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Atmosphere.h; sourceTree = "<group>"; };
+		66E1D7210D8C375D00732EE0 /* Atmosphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Atmosphere.cpp; sourceTree = "<group>"; };
+		66E1D9890D8DC26600732EE0 /* SkyDome.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyDome.cpp; sourceTree = "<group>"; };
+		66E1D98A0D8DC26600732EE0 /* SkyDome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyDome.h; sourceTree = "<group>"; };
+		66E5C0650D91900000C858B7 /* RasterPolygonLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RasterPolygonLayer.cpp; sourceTree = "<group>"; };
+		66E5C0660D91900000C858B7 /* RasterPolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RasterPolygonLayer.h; sourceTree = "<group>"; };
+		66E5C06A0D91902400C858B7 /* Init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Init.cpp; sourceTree = "<group>"; };
+		66E5C06F0D91908100C858B7 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		66E5C0890D9191C300C858B7 /* Common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Common.cpp; sourceTree = "<group>"; };
+		66E5C0940D91965C00C858B7 /* IArcGenReaderWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IArcGenReaderWriter.h; sourceTree = "<group>"; };
+		66E5C0950D91965C00C858B7 /* ICancel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICancel.h; sourceTree = "<group>"; };
+		66E5C0960D91965C00C858B7 /* ICanceledStateGet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICanceledStateGet.h; sourceTree = "<group>"; };
+		66E5C0970D91965C00C858B7 /* ICoordinateTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICoordinateTransform.h; sourceTree = "<group>"; };
+		66E5C0980D91965C00C858B7 /* IRotationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRotationCenter.h; sourceTree = "<group>"; };
+		66E5C0990D91965C00C858B7 /* ITriangulateGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITriangulateGrid.h; sourceTree = "<group>"; };
+		66E5C09A0D91965C00C858B7 /* IViewMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IViewMode.h; sourceTree = "<group>"; };
 		66E7B0BB0B17617300E3D682 /* Renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Renderer.cpp; sourceTree = "<group>"; };
 		66E7B0BC0B17617300E3D682 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
 		66E7B0BD0B17617300E3D682 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
@@ -4288,6 +4328,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E5C0760D9190EA00C858B7 /* libMinervaPostGISLayer.dylib in Frameworks */,
 				669B69D20D7CA2D5001392F1 /* osg.framework in Frameworks */,
 				669B69AB0D7CA2D2001392F1 /* GDAL.framework in Frameworks */,
 				669B69790D7C9BAE001392F1 /* libMinerva.dylib in Frameworks */,
@@ -4332,6 +4373,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E5C0920D91929D00C858B7 /* libMinervaGdalLayerd.dylib in Frameworks */,
 				66942E120D77D8E400633017 /* libMinervaPostGISLayer.dylib in Frameworks */,
 				66A119A80D2EC523009B29ED /* QtCore.framework in Frameworks */,
 				66A119A90D2EC523009B29ED /* QtGui.framework in Frameworks */,
@@ -4541,7 +4583,6 @@
 				66EF175D0D1518BE00B4B1AA /* Minerva */,
 				66EF05F20D14604000B4B1AA /* modflow */,
 				431BAD8709245AB600ED2131 /* OsgTools */,
-				668BE82D0D24AA2500109210 /* PathAnimation */,
 				66C8FABD0D120542003F6A58 /* QtTools */,
 				66C8FA740D11FED6003F6A58 /* Serialize */,
 				43FEDAEA092454D500EBB610 /* Threads */,
@@ -4798,6 +4839,7 @@
 		431BB648092466C300ED2131 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				668BE82D0D24AA2500109210 /* PathAnimation */,
 				668C96A70D42B5180007D7F4 /* TriangulateGrid */,
 				66EF1A9D0D1644C400B4B1AA /* StarSystemModel */,
 				43E9B1FE09F6CA5000444335 /* SceneModel */,
@@ -5043,7 +5085,7 @@
 			isa = PBXGroup;
 			children = (
 				6667669F0D124CEF002F40C6 /* Images */,
-				6667618F0D122D84002F40C6 /* Helios */,
+				6667618F0D122D84002F40C6 /* QT */,
 				4392274C095C9F1B004A602C /* Cocoa */,
 				431BB648092466C300ED2131 /* Plugins */,
 			);
@@ -5122,6 +5164,13 @@
 		43E9AF4709F6B98D00444335 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				66E5C0940D91965C00C858B7 /* IArcGenReaderWriter.h */,
+				66E5C0950D91965C00C858B7 /* ICancel.h */,
+				66E5C0960D91965C00C858B7 /* ICanceledStateGet.h */,
+				66E5C0970D91965C00C858B7 /* ICoordinateTransform.h */,
+				66E5C0980D91965C00C858B7 /* IRotationCenter.h */,
+				66E5C0990D91965C00C858B7 /* ITriangulateGrid.h */,
+				66E5C09A0D91965C00C858B7 /* IViewMode.h */,
 				6699A0580D1EFC7200A9AE47 /* Fox */,
 				6699A0680D1EFC7200A9AE47 /* GUI */,
 				6699A07F0D1EFC7200A9AE47 /* IActiveDocumentListener.h */,
@@ -5161,7 +5210,6 @@
 				6699A0950D1EFC7300A9AE47 /* IComputeTriangleNormals.h */,
 				4358FB770A1A4BAC008F482D /* ICreateTriangleDocument.h */,
 				6699A0960D1EFC7300A9AE47 /* ICullSceneVisitor.h */,
-				6699A0970D1EFC7300A9AE47 /* IDatabaseConnection.h */,
 				6699A0980D1EFC7300A9AE47 /* IDatabasePager.h */,
 				6699A0990D1EFC7300A9AE47 /* IDataSync.h */,
 				43E9AF8409F6B98D00444335 /* IDecimateTriangles.h */,
@@ -5179,13 +5227,11 @@
 				6699A0A10D1EFC7300A9AE47 /* IExportModel.h */,
 				6699A0A20D1EFC7300A9AE47 /* IExportScene.h */,
 				43E9AF8A09F6B98D00444335 /* IFindLoops.h */,
-				6699A0A30D1EFC7300A9AE47 /* IFitLineTerrain.h */,
 				43E9AF8B09F6B98D00444335 /* IFlipNormal.h */,
 				43E9AF8C09F6B98D00444335 /* IFlipNormals.h */,
 				43E9AF8D09F6B98D00444335 /* IFrameDump.h */,
 				6699A0A40D1EFC7300A9AE47 /* IFrameInfo.h */,
 				6699A0A50D1EFC7300A9AE47 /* IFrameStamp.h */,
-				6699A0A60D1EFC7300A9AE47 /* IGeometryCenter.h */,
 				43E9AF8E09F6B98D00444335 /* IGetBoundingBox.h */,
 				43E9AF8F09F6B98D00444335 /* IGetDocument.h */,
 				43E9AF9009F6B98D00444335 /* IGetImageData.h */,
@@ -5214,8 +5260,6 @@
 				6699A0AC0D1EFC7300A9AE47 /* ILayerExtents.h */,
 				6699A0AE0D1EFC7300A9AE47 /* ILayerModifyGUIQt.h */,
 				43E9AFA509F6B98D00444335 /* ILights.h */,
-				6699A0AF0D1EFC7300A9AE47 /* ILineData.h */,
-				6699A0B00D1EFC7300A9AE47 /* ILineLayer.h */,
 				6699A0B10D1EFC7300A9AE47 /* ILoadColorFile.h */,
 				6699A0B20D1EFC7300A9AE47 /* IMaterials.h */,
 				6699A0B30D1EFC7300A9AE47 /* IMatrixManipulator.h */,
@@ -5227,27 +5271,17 @@
 				6699A0B90D1EFC7300A9AE47 /* IMouseEventListener.h */,
 				6699A0BA0D1EFC7300A9AE47 /* IMouseEventSubject.h */,
 				6699A0BB0D1EFC7300A9AE47 /* IMpdNavigator.h */,
-				6699A0BC0D1EFC7300A9AE47 /* IMultiLineData.h */,
-				6699A0BD0D1EFC7300A9AE47 /* IMultiPointData.h */,
-				6699A0BE0D1EFC7300A9AE47 /* IMultiPolygonData.h */,
 				6699A0BF0D1EFC7300A9AE47 /* INavigationFunctor.h */,
 				43E9AFA709F6B98D00444335 /* INewDocumentCreate.h */,
 				43E9AFA809F6B98D00444335 /* INotify.h */,
 				43E9AFA909F6B98D00444335 /* INotifyClose.h */,
-				6699A0C00D1EFC7300A9AE47 /* IOffset.h */,
 				43E9AFAA09F6B98D00444335 /* IOpenGLContext.h */,
 				43E9AFAB09F6B98D00444335 /* IOpenGLState.h */,
 				43E9AFAC09F6B98D00444335 /* IOpenSceneGraph.h */,
-				6699A0C10D1EFC7300A9AE47 /* IOssimPlanetLayer.h */,
 				6699A0C20D1EFC7300A9AE47 /* IPlanetCoordinates.h */,
 				43E9AFAD09F6B98D00444335 /* IPlugin.h */,
 				6699A0C50D1EFC7300A9AE47 /* IPluginInitialize.h */,
-				6699A0C60D1EFC7300A9AE47 /* IPointData.h */,
-				6699A0C70D1EFC7300A9AE47 /* IPointLayer.h */,
-				6699A0C80D1EFC7300A9AE47 /* IPolygonData.h */,
-				6699A0C90D1EFC7300A9AE47 /* IPolygonLayer.h */,
 				43E9AFAE09F6B98D00444335 /* IPolygonMode.h */,
-				6699A0CA0D1EFC7300A9AE47 /* IPostgresqlConnection.h */,
 				6699A0CB0D1EFC7300A9AE47 /* IProjectCoordinates.h */,
 				6699A0CC0D1EFC7300A9AE47 /* IQtDockWidgetMenu.h */,
 				668D4C100D36C3F500CE039D /* IRasterAlphas.h */,
@@ -5276,7 +5310,6 @@
 				6699A0D80D1EFC7300A9AE47 /* IStringGridGet.h */,
 				6699A0D90D1EFC7300A9AE47 /* IStringGridSet.h */,
 				43E9AFC109F6B98D00444335 /* ISubdivideTriangles.h */,
-				6699A0DA0D1EFC7300A9AE47 /* ITemporalData.h */,
 				43E9AFC209F6B98D00444335 /* ITextMatrix.h */,
 				43E9AFC309F6B98D00444335 /* ITimeoutAnimate.h */,
 				43E9AFC409F6B98D00444335 /* ITimeoutSpin.h */,
@@ -5296,7 +5329,6 @@
 				6699A0E40D1EFC7300A9AE47 /* IUpdateListener.h */,
 				6699A0E50D1EFC7300A9AE47 /* IUpdateSceneVisitor.h */,
 				6699A0E60D1EFC7300A9AE47 /* IUpdateSubject.h */,
-				6699A0E70D1EFC7300A9AE47 /* IVectorLayer.h */,
 				6699A0E80D1EFC7300A9AE47 /* IVertices.h */,
 				43E9AFCB09F6B98D00444335 /* IView.h */,
 				43E9AFCC09F6B98D00444335 /* IViewer.h */,
@@ -6106,6 +6138,23 @@
 		664B434C0D54EE8C0080DF60 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				668E3AA60D8A33FC00FD7F58 /* IDatabaseConnection.h */,
+				668E3AA70D8A33FC00FD7F58 /* IFitLineTerrain.h */,
+				668E3AA80D8A33FC00FD7F58 /* IGeometryCenter.h */,
+				668E3AA90D8A33FC00FD7F58 /* ILineData.h */,
+				668E3AAA0D8A33FC00FD7F58 /* ILineLayer.h */,
+				668E3AAB0D8A33FC00FD7F58 /* IMultiLineData.h */,
+				668E3AAC0D8A33FC00FD7F58 /* IMultiPointData.h */,
+				668E3AAD0D8A33FC00FD7F58 /* IMultiPolygonData.h */,
+				668E3AAE0D8A33FC00FD7F58 /* IOffset.h */,
+				668E3AAF0D8A33FC00FD7F58 /* IOssimPlanetLayer.h */,
+				668E3AB00D8A33FC00FD7F58 /* IPointData.h */,
+				668E3AB10D8A33FC00FD7F58 /* IPointLayer.h */,
+				668E3AB20D8A33FC00FD7F58 /* IPolygonData.h */,
+				668E3AB30D8A33FC00FD7F58 /* IPolygonLayer.h */,
+				668E3AB40D8A33FC00FD7F58 /* IPostgresqlConnection.h */,
+				668E3AB50D8A33FC00FD7F58 /* ITemporalData.h */,
+				668E3AB60D8A33FC00FD7F58 /* IVectorLayer.h */,
 				664B434D0D54EE8C0080DF60 /* IAddLayer.h */,
 				664B434E0D54EE8C0080DF60 /* IAnimationControl.h */,
 				664B434F0D54EE8C0080DF60 /* IDirtyScene.h */,
@@ -6114,7 +6163,7 @@
 			path = Interfaces;
 			sourceTree = "<group>";
 		};
-		6667618F0D122D84002F40C6 /* Helios */ = {
+		6667618F0D122D84002F40C6 /* QT */ = {
 			isa = PBXGroup;
 			children = (
 				666761A80D122E06002F40C6 /* Plugins */,
@@ -6124,7 +6173,7 @@
 				6667619C0D122DB0002F40C6 /* Application */,
 				666761920D122D89002F40C6 /* Commands */,
 			);
-			name = Helios;
+			name = QT;
 			sourceTree = "<group>";
 		};
 		666761920D122D89002F40C6 /* Commands */ = {
@@ -6387,6 +6436,7 @@
 				66A09F0D0D87241C00E7E212 /* PathAnimationComponent.h */,
 			);
 			name = PathAnimation;
+			path = ../../Xcode;
 			sourceTree = "<group>";
 		};
 		668C94170D41C27B0007D7F4 /* Factory */ = {
@@ -6483,6 +6533,8 @@
 		668DB5AB0D78A74E00EA4DCD /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				66E1D7210D8C375D00732EE0 /* Atmosphere.cpp */,
+				66E1D7200D8C375D00732EE0 /* Atmosphere.h */,
 				668DB5AC0D78A74E00EA4DCD /* ClampNearFar.h */,
 				668DB5AD0D78A74E00EA4DCD /* Compass.cpp */,
 				668DB5AE0D78A74E00EA4DCD /* Compass.h */,
@@ -6491,6 +6543,8 @@
 				668DB5B10D78A74E00EA4DCD /* DirtyTiles.h */,
 				668DB5B20D78A74E00EA4DCD /* Hud.cpp */,
 				668DB5B30D78A74E00EA4DCD /* Hud.h */,
+				66E1D9890D8DC26600732EE0 /* SkyDome.cpp */,
+				66E1D98A0D8DC26600732EE0 /* SkyDome.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -6552,10 +6606,15 @@
 		668E0DDB0D4063AB0030649B /* GDAL */ = {
 			isa = PBXGroup;
 			children = (
+				66E5C0650D91900000C858B7 /* RasterPolygonLayer.cpp */,
+				66E5C0660D91900000C858B7 /* RasterPolygonLayer.h */,
 				669B696F0D7C9822001392F1 /* GdalLayer.cpp */,
 				669B69700D7C9822001392F1 /* GdalLayer.h */,
 				668E0DDC0D4063AB0030649B /* CMakeLists.txt */,
 				669FAF970D7F3E27007B5B8B /* Convert.h */,
+				66E5C06A0D91902400C858B7 /* Init.cpp */,
+				66E5C06F0D91908100C858B7 /* Common.h */,
+				66E5C0890D9191C300C858B7 /* Common.cpp */,
 			);
 			path = GDAL;
 			sourceTree = "<group>";
@@ -6874,8 +6933,6 @@
 				66A112F70D2EBCA8009B29ED /* SingleColorWidget.h */,
 				66A112F80D2EBCA8009B29ED /* UniqueColorWidget.cpp */,
 				66A112F90D2EBCA8009B29ED /* UniqueColorWidget.h */,
-				66CFF0E00D3899EF00ED0216 /* RasterPolygonLayer.h */,
-				66CFF0E10D3899EF00ED0216 /* RasterPolygonLayer.cpp */,
 			);
 			name = PostGISLayerQt;
 			sourceTree = "<group>";
@@ -7870,6 +7927,8 @@
 			files = (
 				669B69720D7C9822001392F1 /* GdalLayer.h in Headers */,
 				669FAF980D7F3E27007B5B8B /* Convert.h in Headers */,
+				66E5C0680D91900000C858B7 /* RasterPolygonLayer.h in Headers */,
+				66E5C0700D91908100C858B7 /* Common.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7910,7 +7969,6 @@
 				66A1130D0D2EBCA8009B29ED /* PropertyPage.h in Headers */,
 				66A1130F0D2EBCA8009B29ED /* SingleColorWidget.h in Headers */,
 				66A113110D2EBCA8009B29ED /* UniqueColorWidget.h in Headers */,
-				66CFF0E20D3899EF00ED0216 /* RasterPolygonLayer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8127,6 +8185,25 @@
 				668DB5FB0D78A77100EA4DCD /* Scale.h in Headers */,
 				668DB5FD0D78A77100EA4DCD /* SetJobManager.h in Headers */,
 				669B69160D7C9078001392F1 /* BuildLegend.h in Headers */,
+				668E3AB70D8A33FC00FD7F58 /* IDatabaseConnection.h in Headers */,
+				668E3AB80D8A33FC00FD7F58 /* IFitLineTerrain.h in Headers */,
+				668E3AB90D8A33FC00FD7F58 /* IGeometryCenter.h in Headers */,
+				668E3ABA0D8A33FC00FD7F58 /* ILineData.h in Headers */,
+				668E3ABB0D8A33FC00FD7F58 /* ILineLayer.h in Headers */,
+				668E3ABC0D8A33FC00FD7F58 /* IMultiLineData.h in Headers */,
+				668E3ABD0D8A33FC00FD7F58 /* IMultiPointData.h in Headers */,
+				668E3ABE0D8A33FC00FD7F58 /* IMultiPolygonData.h in Headers */,
+				668E3ABF0D8A33FC00FD7F58 /* IOffset.h in Headers */,
+				668E3AC00D8A33FC00FD7F58 /* IOssimPlanetLayer.h in Headers */,
+				668E3AC10D8A33FC00FD7F58 /* IPointData.h in Headers */,
+				668E3AC20D8A33FC00FD7F58 /* IPointLayer.h in Headers */,
+				668E3AC30D8A33FC00FD7F58 /* IPolygonData.h in Headers */,
+				668E3AC40D8A33FC00FD7F58 /* IPolygonLayer.h in Headers */,
+				668E3AC50D8A33FC00FD7F58 /* IPostgresqlConnection.h in Headers */,
+				668E3AC60D8A33FC00FD7F58 /* ITemporalData.h in Headers */,
+				668E3AC70D8A33FC00FD7F58 /* IVectorLayer.h in Headers */,
+				66E1D7220D8C375D00732EE0 /* Atmosphere.h in Headers */,
+				66E1D98C0D8DC26600732EE0 /* SkyDome.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9851,6 +9928,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				669B69710D7C9822001392F1 /* GdalLayer.cpp in Sources */,
+				66E5C0670D91900000C858B7 /* RasterPolygonLayer.cpp in Sources */,
+				66E5C06B0D91902400C858B7 /* Init.cpp in Sources */,
+				66E5C08A0D9191C300C858B7 /* Common.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9903,7 +9983,6 @@
 				66A119CE0D2EC68E009B29ED /* moc_AddPostGISLayerWidget.cpp in Sources */,
 				66A119CF0D2EC68E009B29ED /* moc_ConnectToDatabase.cpp in Sources */,
 				66A119D00D2EC68E009B29ED /* moc_UniqueColorWidget.cpp in Sources */,
-				66CFF0E30D3899EF00ED0216 /* RasterPolygonLayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10091,6 +10170,8 @@
 				668DB5FA0D78A77100EA4DCD /* Scale.cpp in Sources */,
 				668DB5FC0D78A77100EA4DCD /* SetJobManager.cpp in Sources */,
 				669B69170D7C9078001392F1 /* BuildLegend.cpp in Sources */,
+				66E1D7230D8C375D00732EE0 /* Atmosphere.cpp in Sources */,
+				66E1D98B0D8DC26600732EE0 /* SkyDome.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

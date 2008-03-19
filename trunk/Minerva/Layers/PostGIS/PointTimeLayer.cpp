@@ -79,6 +79,7 @@ PointTimeLayer::PointTimeLayer ( const PointTimeLayer& layer ) :
 
 void PointTimeLayer::_registerMembers()
 {
+  USUL_TRACE_SCOPE;
   BaseClass::_registerMembers();
   SERIALIZE_XML_ADD_MEMBER ( _firstDateColumn );
   SERIALIZE_XML_ADD_MEMBER ( _lastDateColumn );
@@ -95,6 +96,7 @@ void PointTimeLayer::_registerMembers()
 
 Usul::Interfaces::IUnknown* PointTimeLayer::clone() const
 {
+  USUL_TRACE_SCOPE;
   Usul::Interfaces::IUnknown::QueryPtr copy ( new PointTimeLayer( *this ) );
   return copy.release();
 }
@@ -108,6 +110,7 @@ Usul::Interfaces::IUnknown* PointTimeLayer::clone() const
 
 PointTimeLayer::~PointTimeLayer()
 {
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -119,6 +122,7 @@ PointTimeLayer::~PointTimeLayer()
 
 void PointTimeLayer::accept ( Minerva::Core::Visitor& visitor )
 {
+  USUL_TRACE_SCOPE;
   visitor.visit ( *this );
 }
 
@@ -187,7 +191,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
         {
           (*geom)->srid( srid );
           Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-          Usul::Interfaces::IOffset::QueryPtr so ( unknown );
+          Minerva::Interfaces::IOffset::QueryPtr so ( unknown );
 
           if( so.valid () )
           {
@@ -250,6 +254,8 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
 
 void PointTimeLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+  
   // Clear what we have...
   this->clearDataObjects();
 
@@ -268,6 +274,7 @@ void PointTimeLayer::modify( Usul::Interfaces::IUnknown *caller )
 
 bool PointTimeLayer::isTemporal() const
 {
+  USUL_TRACE_SCOPE;
   return true;
 }
 
@@ -293,6 +300,7 @@ void PointTimeLayer::firstDateColumn( const std::string& dateColumn )
 
 const std::string& PointTimeLayer::firstDateColumn() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _firstDateColumn;
 }
@@ -306,6 +314,7 @@ const std::string& PointTimeLayer::firstDateColumn() const
 
 void PointTimeLayer::lastDateColumn( const std::string& dateColumn )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _lastDateColumn = dateColumn;
 }
@@ -319,6 +328,7 @@ void PointTimeLayer::lastDateColumn( const std::string& dateColumn )
 
 const std::string& PointTimeLayer::lastDateColumn() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _lastDateColumn;
 }
@@ -332,6 +342,8 @@ const std::string& PointTimeLayer::lastDateColumn() const
 
 std::string PointTimeLayer::defaultQuery() const
 {
+  USUL_TRACE_SCOPE;
+  
   std::ostringstream query;
   query << "SELECT id, srid(" << this->geometryColumn() << ") as srid, asBinary(" << this->geometryColumn() << ") as geom";
 
@@ -366,6 +378,8 @@ std::string PointTimeLayer::defaultQuery() const
 
 std::string PointTimeLayer::_whereClause() const
 {
+  USUL_TRACE_SCOPE;
+  
   std::ostringstream whereClause;
 
   if ( this->firstDateColumn().size() > 0 )
@@ -395,6 +409,7 @@ std::string PointTimeLayer::_whereClause() const
 
 void PointTimeLayer::minDate( const Date& date )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _minDate = date;
 }
@@ -408,6 +423,8 @@ void PointTimeLayer::minDate( const Date& date )
 
 void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int year )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   std::ostringstream os;
   os << year << "/" << month << "/" << day;
   _minDate = Date( os.str() );
@@ -422,6 +439,7 @@ void PointTimeLayer::minDate( unsigned int day, unsigned int month, unsigned int
 
 const PointTimeLayer::Date& PointTimeLayer::minDate() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _minDate;
 }
@@ -435,6 +453,7 @@ const PointTimeLayer::Date& PointTimeLayer::minDate() const
 
 void PointTimeLayer::maxDate ( const Date& date )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _maxDate = date;
 }
@@ -448,6 +467,7 @@ void PointTimeLayer::maxDate ( const Date& date )
 
 void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int year )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   std::ostringstream os;
   os << year << "/" << month << "/" << day;
@@ -463,6 +483,7 @@ void PointTimeLayer::maxDate (unsigned int day, unsigned int month, unsigned int
 
 const PointTimeLayer::Date& PointTimeLayer::maxDate() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _maxDate;
 }
@@ -475,11 +496,12 @@ const PointTimeLayer::Date& PointTimeLayer::maxDate() const
 
 Usul::Interfaces::IUnknown* PointTimeLayer::queryInterface( unsigned long iid )
 {
+  USUL_TRACE_SCOPE;
+  
   switch ( iid )
   {
-  //case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ITemporalData::IID:
-    return static_cast < Usul::Interfaces::ITemporalData* > ( this );
+  case Minerva::Interfaces::ITemporalData::IID:
+    return static_cast < Minerva::Interfaces::ITemporalData* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -494,6 +516,7 @@ Usul::Interfaces::IUnknown* PointTimeLayer::queryInterface( unsigned long iid )
 
 void PointTimeLayer::_updateMinMaxDate ( const std::string& min, const std::string& max )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
 
   Date d0 ( min );

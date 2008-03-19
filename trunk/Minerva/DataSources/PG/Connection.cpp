@@ -207,11 +207,13 @@ void Connection::connect()
 
 std::string Connection::connectionString() const
 {
+#if 0
 #ifndef _MSC_VER
   /// HACK for viz cluster.
   std::string host ( Usul::System::Host::name() );
   if( boost::algorithm::find_first ( host, "viz" ) )
     (const_cast<Connection*>(this))->_host = "cinema";
+#endif
 #endif
 
   // Connection parameters.
@@ -568,8 +570,8 @@ Usul::Interfaces::IUnknown* Connection::queryInterface ( unsigned long iid )
   switch ( iid )
   {
     case Usul::Interfaces::IUnknown::IID:
-    case Usul::Interfaces::IDatabaseConnection::IID:
-      return static_cast < Usul::Interfaces::IDatabaseConnection* > ( this );
+    case Minerva::Interfaces::IDatabaseConnection::IID:
+      return static_cast < Minerva::Interfaces::IDatabaseConnection* > ( this );
     default:
       return 0x0;
   }

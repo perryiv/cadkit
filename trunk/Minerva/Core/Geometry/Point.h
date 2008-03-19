@@ -14,7 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Geometry/Geometry.h"
 
-#include "Usul/Interfaces/IPointData.h"
+#include "Minerva/Interfaces/IPointData.h"
 
 namespace Minerva {
 namespace Core {
@@ -22,7 +22,7 @@ namespace Geometry {
 
 
 class MINERVA_EXPORT Point : public Geometry,
-                             public Usul::Interfaces::IPointData
+                             public Minerva::Interfaces::IPointData
 {
 public:
   typedef Geometry BaseClass;

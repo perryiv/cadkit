@@ -12,15 +12,14 @@
 #define __MINERVA_LAYERS_POLYGON_LAYER_H__
 
 #include "Minerva/Layers/PostGIS/Layer.h"
-
-#include "Usul/Interfaces/IPolygonLayer.h"
+#include "Minerva/Interfaces/IPolygonLayer.h"
 
 namespace Minerva {
 namespace Layers {
 namespace PostGIS {
 
 class MINERVA_POSTGIS_EXPORT PolygonLayer : public Minerva::Layers::PostGIS::Layer,
-                                            public Usul::Interfaces::IPolygonLayer
+                                            public Minerva::Interfaces::IPolygonLayer
 {
 public:
   typedef Minerva::Layers::PostGIS::Layer BaseClass;

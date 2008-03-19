@@ -8,12 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IPOINT_LAYER_H__
-#define __USUL_INTERFACES_IPOINT_LAYER_H__
+#ifndef __MINERVA_INTERFACES_IPOINT_LAYER_H__
+#define __MINERVA_INTERFACES_IPOINT_LAYER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
@@ -44,8 +44,8 @@ struct IPointLayer : public Usul::Interfaces::IUnknown
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IPOINT_LAYER_H__ */
+#endif /* __MINERVA_INTERFACES_IPOINT_LAYER_H__ */
 

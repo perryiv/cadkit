@@ -63,6 +63,7 @@
 #include "Usul/Interfaces/IIntersectNotify.h"
 #include "Usul/Interfaces/IMouseEventListener.h"
 #include "Usul/Interfaces/IMouseEventSubject.h"
+#include "Usul/Interfaces/IViewMode.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -132,7 +133,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IViewport,
                                 public Usul::Interfaces::IMenuAdd,
                                 public Usul::Interfaces::IRenderLoop,
-                                public Usul::Interfaces::IRenderingPasses
+                                public Usul::Interfaces::IRenderingPasses,
+                                public Usul::Interfaces::IViewMode
 {
 public:
 
@@ -179,13 +181,8 @@ public:
   typedef std::vector<IMouseEventListener::RefPtr> MouseEventListeners;
   typedef Renderer::GradientBackground GradientBackground;
   typedef Renderer::Corners            Corners;
-
-  enum ViewMode
-  {
-    NAVIGATION,
-    PICK,
-    SEEK
-  };
+  typedef Usul::Interfaces::IViewMode IViewMode;
+  typedef IViewMode::ViewMode ViewMode;
 
   // Construction
   Viewer ( Document *doc, IUnknown* context, IUnknown *caller );
@@ -297,13 +294,13 @@ public:
   bool                  navigating() const { return NAVIGATION == _currentMode; }
   bool                  picking()    const { return PICK       == _currentMode; }
 
-  void                  navigating( bool b ) { this->setMode( NAVIGATION ); }
-  void                  picking   ( bool b ) { this->setMode( PICK       ); }
+  void                  navigating( bool b ) { this->setViewMode( NAVIGATION ); }
+  void                  picking   ( bool b ) { this->setViewMode( PICK       ); }
 
   // Set/get the mode
-  void                  setMode ( ViewMode mode );
-  ViewMode              getMode () const { return _currentMode; }
-  bool                  isModeCurrent ( ViewMode mode ) const;
+  void                  setViewMode ( ViewMode mode );
+  ViewMode              getViewMode () const;
+  bool                  isViewModeCurrent ( ViewMode mode ) const;
 
   // Save/load the state.
   void                  stateLoad();

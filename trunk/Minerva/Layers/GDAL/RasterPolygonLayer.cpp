@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "RasterPolygonLayer.h"
+#include "Common.h"
 
 #include "Usul/Adaptors/Random.h"
 #include "Usul/App/Application.h"
@@ -37,67 +38,9 @@
 #include "ogrsf_frmts.h"
 #include "cpl_error.h"
 
+using namespace Minerva;
+
 USUL_FACTORY_REGISTER_CREATOR ( RasterPolygonLayer );
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize Gdal.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct Init
-  {
-    Init()
-    {
-      GDALAllRegister();
-      OGRRegisterAll();
-    }
-    ~Init()
-    {
-      GDALDestroyDriverManager();
-      OGRCleanupAll();
-    }
-  } _init;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Error handler.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  void errorHandler ( CPLErr, int, const char* text )
-  {
-    std::cout << text << std::endl;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Push/Pop error handler.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct PushPopErrorHandler
-  {
-    PushPopErrorHandler()
-    {
-      CPLPushErrorHandler( (CPLErrorHandler) Detail::errorHandler );
-    }
-    ~PushPopErrorHandler()
-    {
-      CPLPopErrorHandler();
-    }
-  };
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////

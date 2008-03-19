@@ -97,8 +97,8 @@ Usul::Interfaces::IUnknown* Polygon::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IPolygonData::IID:
-    return static_cast < Usul::Interfaces::IPolygonData* > ( this );
+  case Minerva::Interfaces::IPolygonData::IID:
+    return static_cast < Minerva::Interfaces::IPolygonData* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

@@ -8,14 +8,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_INTERFACES_IVECTOR_LAYER_H__
-#define __USUL_INTERFACES_IVECTOR_LAYER_H__
+#ifndef __MINERVA_INTERFACES_IVECTOR_LAYER_H__
+#define __MINERVA_INTERFACES_IVECTOR_LAYER_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Group; }
 
-namespace Usul {
+namespace Minerva {
 namespace Interfaces {
 
 
@@ -37,8 +36,8 @@ struct IVectorLayer : public Usul::Interfaces::IUnknown
 
 
 } // end namespace Interfaces
-} // end namespace Usul
+} // end namespace Minerva
 
 
-#endif /* __USUL_INTERFACES_IVECTOR_LAYER_H__ */
+#endif /* __MINERVA_INTERFACES_IVECTOR_LAYER_H__ */
 

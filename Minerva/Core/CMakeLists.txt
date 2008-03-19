@@ -76,9 +76,11 @@ SET (SOURCES
 ./TileEngine/SplitCallbacks.cpp
 ./TileEngine/System.cpp
 ./TileEngine/Tile.cpp
+./Utilities/Atmosphere.cpp
 ./Utilities/Compass.cpp
 ./Utilities/DirtyTiles.cpp
 ./Utilities/Hud.cpp
+./Utilities/SkyDome.cpp
 ./Visitor.cpp
 ./Visitors/BuildLegend.cpp
 ./Visitors/BuildScene.cpp

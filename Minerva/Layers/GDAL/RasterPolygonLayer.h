@@ -11,6 +11,8 @@
 #ifndef __MINERVA_RASTER_POLYGON_LAYER_H__
 #define __MINERVA_RASTER_POLYGON_LAYER_H__
 
+#include "Minerva/Layers/GDAL/Export.h"
+
 #include "Minerva/Core/Layers/RasterLayerOssim.h"
 
 #include "Minerva/Layers/PostGIS/Layer.h"
@@ -29,7 +31,7 @@ namespace Usul {
 
 namespace Minerva {
 
-class RasterPolygonLayer : public Minerva::Core::Layers::RasterLayer
+class MINERVA_GDAL_EXPORT RasterPolygonLayer : public Minerva::Core::Layers::RasterLayer
 {
 public:
   typedef Minerva::Core::Layers::RasterLayer BaseClass;

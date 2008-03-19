@@ -227,6 +227,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Export.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GDALLayer.cpp"
 				>
 			</File>

@@ -105,6 +105,8 @@ class MpdDefinitions
         std::string name;
         bool visible;  
         unsigned int maxFilesToLoad;
+        bool absolute;
+        std::string position;
       };
       struct MpdSequenceStep
       {

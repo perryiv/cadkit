@@ -193,7 +193,8 @@ protected:
   void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
   void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
-
+  
+  osg::Vec3d                  _getPosition( const std::string &position, Usul::Interfaces::IUnknown *caller );
   
 
   /// Use reference counting.

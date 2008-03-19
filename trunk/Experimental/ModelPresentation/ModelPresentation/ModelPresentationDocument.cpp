@@ -62,6 +62,7 @@
 #include "osg/Depth"
 #include "osgText/Font"
 #include "osgText/Text"
+#include "osgUtil/GLObjectsVisitor"
 
 
 #include <iterator>
@@ -329,16 +330,35 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   //{
   //  _root->addChild( _timeSets.at( i ).timeline.get() );
   //}
+  
+    //for( std::map< string, unsigned int >::iterator iter = _mpdModels.modelMap.begin();
+    //     iter != _mpdModels.modelMap.end();
+    //     ++iter )
+    //{
+    //  _sets.at( (*iter).second ).
 
+    //}
+    for( unsigned int i = 0; i < _sets.size(); ++i )
+    {
+      this->setGroup( i, 0 );
+    }
   // Add dynamic sets to the scene tree
   for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
   {
+    //osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    //mt->addChild( _dynamicSets.at( i ).models.get() );
+    //if( true == _dynamicSets.at( i ).absolute )
+    //{
+    //  mt->postMult( osg::Matrix::translate( osg::Vec3d( 0.0, 0.0, -1.0 ) ) );
+    //  mt->setReferenceFrame( osg::MatrixTransform::ABSOLUTE_RF );
+    //}
     _root->addChild( _dynamicSets.at( i ).models.get() );
   }
 
   // add the sequence to the scene tree
   //_root->addChild( _sequence.groups.get() );
-
+  std::cout << "Building Display Lists..." << std::endl;
+  //osgUtil::GLObjectsVisitor ( root.get() );
   return _root.get();
 }
 
@@ -363,7 +383,7 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
   {
     for( unsigned int j = 0; j < _timeSets.size(); ++j )
     {
-     
+ 
       for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
       {
         unsigned int currentIndex = _timeSets.at( j ).currentTime;
@@ -371,18 +391,25 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
       }
       if( true == _timeSets.at( j ).visible )
       {
-        unsigned int currentIndex = _timeSets.at( j ).currentTime;
-        for( std::map< std::string, bool >::iterator iter =  _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.begin();
-                                                     iter != _timeSets.at( j ).groups.at( currentIndex ).visibleModelsMap.end();
-                                                     ++iter )
+        for( unsigned int t = 0; t < _timeSets.at( j ).groups.size(); ++t )
         {
-          std::string modelName = (*iter).first;
-          bool value            = (*iter).second;
-          unsigned int mIndex   = _mpdModels.modelMap[modelName];
-          _mpdModels.models->setValue( mIndex, value );
-        }    
+          if( _timeSets.at( j ).groups.at( t ).startTime <= _timeSets.at( j ).currentTime &&
+              _timeSets.at( j ).groups.at( t ).endTime > _timeSets.at( j ).currentTime )
+          {
+            for( std::map< std::string, bool >::iterator iter =  _timeSets.at( j ).groups.at( t ).visibleModelsMap.begin();
+                                                         iter != _timeSets.at( j ).groups.at( t ).visibleModelsMap.end();
+                                                         ++iter )
+            {
+              std::string modelName = (*iter).first;
+              bool value            = (*iter).second;
+              unsigned int mIndex   = _mpdModels.modelMap[modelName];
+              _mpdModels.models->setValue( mIndex, value );
+            }   
+          }
+        }
       }
     }
+    
   }
 
   // Check dynamic sets
@@ -510,6 +537,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
     }
    
   }
+
   // If we have a timeline or a dynamic set check the steps
   if( true == this->_checkTime() )
   {
@@ -519,6 +547,12 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
       this->_checkTimeSteps( caller );
       this->_checkTime( false );
     }
+  }
+
+  // make sure sets that should be shown are shown
+  for( unsigned int i = 0; i < _sets.size(); ++i )
+  {
+    this->setGroup( i, _sets.at( i ).index );
   }
   
 }
@@ -618,13 +652,14 @@ void ModelPresentationDocument::nextStep ()
   {
     _globalCurrentTime ++;
   }
-
+ 
   for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
     if( false == this->isAnimating() )
     {
       if( true == _useTimeLine )
       {
+
         if( _timeSets.at( i ).currentTime == _globalTimelineEnd )
           _timeSets.at( i ).currentTime = 0;
         else
@@ -636,6 +671,10 @@ void ModelPresentationDocument::nextStep ()
   {
    if( true == _useDynamic )
     {
+      for( unsigned int j = 0; j < _dynamicSets.at( i ).models->getNumChildren(); ++j )
+      {
+        _dynamicSets.at( i ).models->setValue( j, false );
+      }
        if( _dynamicSets.at( i ).currentTime == _globalTimelineEnd )
         _dynamicSets.at( i ).currentTime = 0;
       else
@@ -684,6 +723,10 @@ void ModelPresentationDocument::prevStep ()
   {
     if( true == _useDynamic )
     {
+      for( unsigned int j = 0; j < _dynamicSets.at( i ).models->getNumChildren(); ++j )
+      {
+        _dynamicSets.at( i ).models->setValue( j, false );
+      }
       if( _dynamicSets.at( i ).currentTime == 0 )
         _dynamicSets.at( i ).currentTime = _dynamicSets.at( i ).endTime;
       else
@@ -711,6 +754,16 @@ void ModelPresentationDocument::firstStep ()
 
   if( false == this->isAnimating() )
   {
+    if( true == _useDynamic )
+    {
+      for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
+      { 
+        for( unsigned int j = 0; j < _dynamicSets.at( i ).models->getNumChildren(); ++j )
+        {
+          _dynamicSets.at( i ).models->setValue( j, false );
+        }
+      }
+    }
     if( true == _useTimeLine )
     {
       for( unsigned int i = 0; i < _timeSets.size(); ++i )
@@ -1410,6 +1463,7 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   dset.name = "Unknown";
   dset.models = new osg::Switch;
   dset.header.prefix = "";
+  dset.absolute = false;
   if( 0 == _dynamicSets.size() )
   {
     dset.visible = true;
@@ -1440,7 +1494,20 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
     if ( "max" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, dset.maxFilesToLoad );
-    }      
+    }
+    if ( "absolute" == iter->first )
+    {
+      std::string value( "" );
+      Usul::Strings::fromString ( iter->second, value );
+      if( "true" == value || "TRUE" == value )
+      {
+        dset.absolute = true;
+      }
+    }  
+    if ( "position" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, dset.position );
+    }
   }
   for( unsigned int i = 0; i < dset.maxFilesToLoad; ++i )
   {
@@ -1635,7 +1702,6 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
   Attributes& attributes ( node.attributes() );
   std::string path;
   osg::ref_ptr< osg::Group > group ( new osg::Group );
-
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
 
@@ -1653,9 +1719,9 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
     {
       Usul::Strings::fromString ( iter->second, name );
     }
+
    
   }
-  
   return group.release();  
 }
 
@@ -2582,3 +2648,33 @@ void ModelPresentationDocument::_checkTime( bool value )
   _checkTimeStatus = value;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set to check time steps
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3d ModelPresentationDocument::_getPosition( const std::string &position, Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  osg::Vec3d pos ( 0.0, 0.0, 0.0 );
+
+  IViewport::QueryPtr viewPort( caller );
+
+  if( false == viewPort.valid() )
+    throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
+
+  double xpos = 0, ypos = 0;   
+
+  if( "ul" == position || "UL" == position )
+  {
+    xpos = floor( viewPort->width() * 0.1 );
+    ypos = floor( viewPort->height() * 0.1 );
+    pos.x() = xpos;
+    pos.y() = ypos;
+  }
+
+  return pos;
+}

@@ -298,7 +298,8 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
         Usul::System::Directory::ScopedCwd cwd ( _workingDir );
         
         //this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
-        this->_openDocument ( Usul::Strings::format ( _searchDir, '/', filename ), info.document.get(), caller, progress );
+        //this->_openDocument ( Usul::Strings::format ( _searchDir, '/', filename ), info.document.get(), caller, progress );
+        this->_openDocument ( Usul::Strings::format ( _searchDir, '/', Usul::File::base( filename ), ".", Usul::File::extension( filename ) ), info.document.get(), caller, progress );
 
         // Disable Memory pools
         {
@@ -380,7 +381,9 @@ MpdDefinitions::Groups MpdJob::getData()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  return _root;
+  MpdDefinitions::Groups group = _root;
+  
+  return group;
 }
 
 

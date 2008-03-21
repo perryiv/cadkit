@@ -16,11 +16,13 @@
 #ifndef _USUL_JOBS_JOB_MANAGER_CLASS_H_
 #define _USUL_JOBS_JOB_MANAGER_CLASS_H_
 
+#include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Pool.h"
 
+#include <vector>
 
 namespace Usul {
 namespace Jobs {
@@ -34,6 +36,8 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Threads::Pool ThreadPool;
+  typedef Usul::Interfaces::IJobFinishedListener IJobFinishedListener;
+  typedef std::vector<IJobFinishedListener::RefPtr> JobFinishedListeners;
 
   // Constructor and destructor. Use as a singleton or as individual objects.
   Manager ( unsigned int poolSize, bool lazyStart );
@@ -41,6 +45,9 @@ public:
 
   // Add a job to the list.
   void                    addJob ( Job * );
+  
+  // Add a job finished listener.
+  void                    addJobFinishedListener ( Usul::Interfaces::IUnknown * );
 
   // Cancel the job(s).
   void                    cancel();
@@ -71,6 +78,9 @@ public:
 
   // Get the size and resize the thread pool.
   unsigned int            poolSize() const;
+  
+  // Remove a job finished listener.
+  void                    removeJobFinishedListener ( Usul::Interfaces::IUnknown * );
 
   // Remove the queued job. Has no effect on running jobs.
   void                    removeQueuedJob ( Job * );
@@ -85,11 +95,16 @@ private:
   Manager &operator = ( const Manager & );
 
   void                    _destroy();
+  void                    _jobFinished ( Job* job );
+  
+  // Use namespaces here, or gcc 4.0 will give an error.
+  friend class Usul::Jobs::Detail::Task;
 
   // Data members.
   static Manager *_instance;
   mutable Mutex _mutex;
   ThreadPool::RefPtr _pool;
+  JobFinishedListeners _jobFinishedListeners;
 };
 
 

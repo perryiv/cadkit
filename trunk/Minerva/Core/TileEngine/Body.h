@@ -142,6 +142,13 @@ public:
 
   // Return the mesh size for the extents.
   MeshSize                  meshSize ( const Body::Extents &extents );
+  
+  // Set/get the needs redraw state.
+  void                      needsRedraw ( bool b );
+  bool                      needsRedraw() const;
+  
+  // Get the number of new textures last frame.
+  unsigned int              newTexturesLastFrame() const;
 
   // Pre- and post-render notifications.
   virtual void              preRender  ( Usul::Interfaces::IUnknown *caller );
@@ -246,6 +253,7 @@ private:
   Body &operator = ( const Body & );
 
   void                      _destroy();
+  void                      _textureAdded();
 
   MatrixTransformPtr _transform;
   LandModel::RefPtr _landModel;
@@ -266,6 +274,8 @@ private:
   UpdateListeners _updateListeners;
   bool _allowSplitting;
   Minerva::Core::Utilities::SkyDome::RefPtr _sky;
+  unsigned int _newTexturesLastFrame;
+  bool _needsRedraw;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

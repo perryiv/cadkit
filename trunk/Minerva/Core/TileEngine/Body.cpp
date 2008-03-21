@@ -81,7 +81,9 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _topTiles(),
   _updateListeners(),
   _allowSplitting ( true ),
-  _sky ( new Minerva::Core::Utilities::Atmosphere )
+  _sky ( new Minerva::Core::Utilities::Atmosphere ),
+  _newTexturesLastFrame ( 0 ),
+  _needsRedraw ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -518,6 +520,10 @@ void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   BaseClass::preRender ( caller );
+  
+  // Reset the number of new textures.
+  Guard guard ( this->mutex() );
+  _newTexturesLastFrame = 0;
 }
 
 
@@ -1249,4 +1255,60 @@ bool Body::allowSplitting() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _allowSplitting;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of new textures last frame.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Body::newTexturesLastFrame() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _newTexturesLastFrame;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A texture has been added.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::_textureAdded()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  ++_newTexturesLastFrame;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the needs redraw state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::needsRedraw ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _needsRedraw = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the needs redraw state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::needsRedraw() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _needsRedraw;
 }

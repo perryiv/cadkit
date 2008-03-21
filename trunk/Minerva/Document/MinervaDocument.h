@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
 #include "Usul/Interfaces/IIntersectListener.h"
+#include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -67,7 +68,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IMenuAdd,
                                                 public Usul::Interfaces::ICommandExecuteListener,
                                                 public Usul::Interfaces::IIntersectListener,
-                                                public Usul::Interfaces::ITreeNode
+                                                public Usul::Interfaces::ITreeNode,
+                                                public Usul::Interfaces::IJobFinishedListener
 {
 public:
   /// Useful typedefs.
@@ -285,6 +287,9 @@ protected:
   // Set/get the name (ITreeNode).
   virtual void                             setTreeNodeName ( const std::string & );
   virtual std::string                      getTreeNodeName() const;
+  
+  /// The job has finished (IJobFinishedListener).
+  virtual void                             jobFinished ( Usul::Jobs::Job *job );
   
 private:
   

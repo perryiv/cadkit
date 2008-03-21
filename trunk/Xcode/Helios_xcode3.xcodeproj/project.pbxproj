@@ -976,6 +976,13 @@
 		66B0F31D0D4C515F0045BC40 /* NetworkLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B0F31B0D4C515F0045BC40 /* NetworkLink.h */; };
 		66B0F31E0D4C515F0045BC40 /* NetworkLink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B0F31C0D4C515F0045BC40 /* NetworkLink.cpp */; };
 		66B0F3700D4D4AB80045BC40 /* curl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
+		66B647460D9441FE00F426B2 /* MeasureTool.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plugd */; };
+		66B647470D94420C00F426B2 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
+		66B647480D94420F00F426B2 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66B647490D94421200F426B2 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66B647570D9442A500F426B2 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B647540D9442A500F426B2 /* CompileGuard.h */; };
+		66B647580D9442A500F426B2 /* MeasureToolComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B647550D9442A500F426B2 /* MeasureToolComponent.cpp */; };
+		66B647590D9442A500F426B2 /* MeasureToolComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B647560D9442A500F426B2 /* MeasureToolComponent.h */; };
 		66B923140D653C3600087AB4 /* Pumping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B923120D653C3600087AB4 /* Pumping.cpp */; };
 		66B923150D653C3600087AB4 /* Pumping.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B923130D653C3600087AB4 /* Pumping.h */; };
 		66B923180D653C4200087AB4 /* Cylinders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B923160D653C4200087AB4 /* Cylinders.cpp */; };
@@ -1102,6 +1109,8 @@
 		66E7B0C00B17617300E3D682 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BC0B17617300E3D682 /* Renderer.h */; };
 		66E7B0C10B17617300E3D682 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BD0B17617300E3D682 /* SceneManager.cpp */; };
 		66E7B0C20B17617300E3D682 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BE0B17617300E3D682 /* SceneManager.h */; };
+		66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */; };
+		66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E8B3760D930B7300024CB2 /* WmsLayerItem.h */; };
 		66EF05BC0D143F0000B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B50D143F0000B4B1AA /* CompileGuard.h */; };
 		66EF05BD0D143F0000B4B1AA /* SnapShotComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05B70D143F0000B4B1AA /* SnapShotComponent.cpp */; };
 		66EF05BE0D143F0000B4B1AA /* SnapShotComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B80D143F0000B4B1AA /* SnapShotComponent.h */; };
@@ -1978,6 +1987,34 @@
 			remoteGlobalIDString = 43FED6F1092452E100EBB610;
 			remoteInfo = Usul;
 		};
+		66B647430D9441F300F426B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66B6473F0D94418200F426B2 /* MeasureTool */;
+			remoteInfo = MeasureTool;
+		};
+		66B6474A0D94421B00F426B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610 /* Usul */;
+			remoteInfo = Usul;
+		};
+		66B6474C0D94421F00F426B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			remoteInfo = OsgTools;
+		};
+		66B6474E0D94422100F426B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FE740D12084C003F6A58 /* MenuKit */;
+			remoteInfo = MenuKit;
+		};
 		66C024FA0D7797AE00371AB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -2310,6 +2347,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				66B647460D9441FE00F426B2 /* MeasureTool.plugd in Copy Files to Plugins */,
 				669E1D080D80931B00B7FA74 /* libMinerva.dylib in Copy Files to Plugins */,
 				669E1D030D80930A00B7FA74 /* libMinervaDocument.dylib in Copy Files to Plugins */,
 				669E1D040D80930A00B7FA74 /* libMinervaGdalLayerd.dylib in Copy Files to Plugins */,
@@ -3628,6 +3666,11 @@
 		66B0F3180D4C51510045BC40 /* Link.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Link.cpp; sourceTree = "<group>"; };
 		66B0F31B0D4C515F0045BC40 /* NetworkLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkLink.h; sourceTree = "<group>"; };
 		66B0F31C0D4C515F0045BC40 /* NetworkLink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkLink.cpp; sourceTree = "<group>"; };
+		66B647400D94418200F426B2 /* MeasureTool.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MeasureTool.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		66B647540D9442A500F426B2 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		66B647550D9442A500F426B2 /* MeasureToolComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MeasureToolComponent.cpp; sourceTree = "<group>"; };
+		66B647560D9442A500F426B2 /* MeasureToolComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureToolComponent.h; sourceTree = "<group>"; };
+		66B6476A0D94492900F426B2 /* IJobFinishedListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJobFinishedListener.h; sourceTree = "<group>"; };
 		66B923120D653C3600087AB4 /* Pumping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pumping.cpp; sourceTree = "<group>"; };
 		66B923130D653C3600087AB4 /* Pumping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pumping.h; sourceTree = "<group>"; };
 		66B923160D653C4200087AB4 /* Cylinders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cylinders.cpp; sourceTree = "<group>"; };
@@ -3764,6 +3807,8 @@
 		66E7B0BC0B17617300E3D682 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
 		66E7B0BD0B17617300E3D682 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
 		66E7B0BE0B17617300E3D682 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
+		66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WmsLayerItem.cpp; path = WmsLayerQt/WmsLayerItem.cpp; sourceTree = "<group>"; };
+		66E8B3760D930B7300024CB2 /* WmsLayerItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WmsLayerItem.h; path = WmsLayerQt/WmsLayerItem.h; sourceTree = "<group>"; };
 		66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3dc.so; sourceTree = "<group>"; };
 		66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3ds.so; sourceTree = "<group>"; };
 		66EF05740D143B2B00B4B1AA /* osgdb_ac.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_ac.so; sourceTree = "<group>"; };
@@ -4385,6 +4430,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66B6473E0D94418200F426B2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66B647490D94421200F426B2 /* libUsul.dylib in Frameworks */,
+				66B647480D94420F00F426B2 /* libOsgTools.dylib in Frameworks */,
+				66B647470D94420C00F426B2 /* libMenuKit.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66C8FA6B0D11FE9D003F6A58 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4573,12 +4628,12 @@
 		08FB7794FE84155DC02AAC07 /* Helios */ = {
 			isa = PBXGroup;
 			children = (
-				668E0CB60D40221E0030649B /* WRF */,
 				1AB674ADFE9D54B511CA2CBB /* Base Libs */,
 				43F66685092481C5006DE918 /* Cadkit Libraries */,
 				431BB9DE09246F3B00ED2131 /* Cadkit Plugins */,
 				43E1AAF3094619B7007F0715 /* Frameworks/Libs */,
 				4392274B095C9F1B004A602C /* Helios */,
+				66B647530D94427D00F426B2 /* MeasureTool */,
 				66C8FE7D0D1208BB003F6A58 /* MenuKit */,
 				66EF175D0D1518BE00B4B1AA /* Minerva */,
 				66EF05F20D14604000B4B1AA /* modflow */,
@@ -4587,6 +4642,7 @@
 				66C8FA740D11FED6003F6A58 /* Serialize */,
 				43FEDAEA092454D500EBB610 /* Threads */,
 				43FED6F4092452F700EBB610 /* Usul */,
+				668E0CB60D40221E0030649B /* WRF */,
 				43887E750945DA6B00B519D0 /* X-Window */,
 				66FF45180D10FF18003A0AC1 /* XmlTree */,
 			);
@@ -4854,6 +4910,7 @@
 		431BB9DE09246F3B00ED2131 /* Cadkit Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				66B647400D94418200F426B2 /* MeasureTool.plugd */,
 				668C984B0D43E2EF0007D7F4 /* TriangulateCGAL.plugd */,
 				668C969E0D42B4D00007D7F4 /* TriangulateGrid.plugd */,
 				66CCE5800D2F536D0084E49D /* ResampleLine.plugd */,
@@ -5164,13 +5221,6 @@
 		43E9AF4709F6B98D00444335 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
-				66E5C0940D91965C00C858B7 /* IArcGenReaderWriter.h */,
-				66E5C0950D91965C00C858B7 /* ICancel.h */,
-				66E5C0960D91965C00C858B7 /* ICanceledStateGet.h */,
-				66E5C0970D91965C00C858B7 /* ICoordinateTransform.h */,
-				66E5C0980D91965C00C858B7 /* IRotationCenter.h */,
-				66E5C0990D91965C00C858B7 /* ITriangulateGrid.h */,
-				66E5C09A0D91965C00C858B7 /* IViewMode.h */,
 				6699A0580D1EFC7200A9AE47 /* Fox */,
 				6699A0680D1EFC7200A9AE47 /* GUI */,
 				6699A07F0D1EFC7200A9AE47 /* IActiveDocumentListener.h */,
@@ -5179,6 +5229,7 @@
 				43E9AF6F09F6B98D00444335 /* IAddSharedVertex.h */,
 				43E9AF7009F6B98D00444335 /* IAddTriangle.h */,
 				6699A0820D1EFC7200A9AE47 /* IAnimatePath.h */,
+				66E5C0940D91965C00C858B7 /* IArcGenReaderWriter.h */,
 				43E9AF7209F6B98D00444335 /* IAxes.h */,
 				43E9AF7309F6B98D00444335 /* IBackground.h */,
 				6699A0850D1EFC7200A9AE47 /* IBackgroundColor.h */,
@@ -5193,6 +5244,8 @@
 				6699A08B0D1EFC7200A9AE47 /* IButtonReleaseSubject.h */,
 				43E9AF7709F6B98D00444335 /* ICalculatePerVertexNormals.h */,
 				43E9AF7809F6B98D00444335 /* ICamera.h */,
+				66E5C0950D91965C00C858B7 /* ICancel.h */,
+				66E5C0960D91965C00C858B7 /* ICanceledStateGet.h */,
 				43E9AF7909F6B98D00444335 /* ICanClose.h */,
 				43E9AF7A09F6B98D00444335 /* ICanInsert.h */,
 				6699A08C0D1EFC7200A9AE47 /* ICanRedo.h */,
@@ -5208,6 +5261,7 @@
 				6699A0920D1EFC7200A9AE47 /* ICommandExecuteListener.h */,
 				6699A0940D1EFC7300A9AE47 /* ICommandQueueAdd.h */,
 				6699A0950D1EFC7300A9AE47 /* IComputeTriangleNormals.h */,
+				66E5C0970D91965C00C858B7 /* ICoordinateTransform.h */,
 				4358FB770A1A4BAC008F482D /* ICreateTriangleDocument.h */,
 				6699A0960D1EFC7300A9AE47 /* ICullSceneVisitor.h */,
 				6699A0980D1EFC7300A9AE47 /* IDatabasePager.h */,
@@ -5253,6 +5307,7 @@
 				43E9AFA309F6B98D00444335 /* IInitNewDocument.h */,
 				6699A0A70D1EFC7300A9AE47 /* IIntersectListener.h */,
 				6699A0A80D1EFC7300A9AE47 /* IIntersectNotify.h */,
+				66B6476A0D94492900F426B2 /* IJobFinishedListener.h */,
 				6699A0A90D1EFC7300A9AE47 /* IJoystick.h */,
 				43E9AFA409F6B98D00444335 /* IKeepAllConnected.h */,
 				6699A0AA0D1EFC7300A9AE47 /* ILayer.h */,
@@ -5296,6 +5351,7 @@
 				6699A0D00D1EFC7300A9AE47 /* IRenderListener.h */,
 				6699A0D10D1EFC7300A9AE47 /* IRenderLoop.h */,
 				6699A0D20D1EFC7300A9AE47 /* IRenderNotify.h */,
+				66E5C0980D91965C00C858B7 /* IRotationCenter.h */,
 				6699A0D30D1EFC7300A9AE47 /* ISceneElement.h */,
 				43E9AFB509F6B98D00444335 /* ISceneIntersect.h */,
 				6699A0D40D1EFC7300A9AE47 /* IScreenCapture.h */,
@@ -5321,6 +5377,7 @@
 				43E9AFC709F6B98D00444335 /* ITriangle.h */,
 				43E9AFC809F6B98D00444335 /* ITriangleSV.h */,
 				43E9AFC909F6B98D00444335 /* ITriangulate.h */,
+				66E5C0990D91965C00C858B7 /* ITriangulateGrid.h */,
 				6699A0E00D1EFC7300A9AE47 /* ITriangulateLoop.h */,
 				6699A0E10D1EFC7300A9AE47 /* IUndo.h */,
 				43E9AFCA09F6B98D00444335 /* IUnknown.h */,
@@ -5333,6 +5390,7 @@
 				43E9AFCB09F6B98D00444335 /* IView.h */,
 				43E9AFCC09F6B98D00444335 /* IViewer.h */,
 				43E9AFCD09F6B98D00444335 /* IViewMatrix.h */,
+				66E5C09A0D91965C00C858B7 /* IViewMode.h */,
 				6699A0E90D1EFC7300A9AE47 /* IViewport.h */,
 				6699A0EA0D1EFC7300A9AE47 /* IWandState.h */,
 				6699A0EB0D1EFC7300A9AE47 /* IWorldInfo.h */,
@@ -6883,6 +6941,8 @@
 		66A112C80D2EBBA3009B29ED /* WmsLayerQt */ = {
 			isa = PBXGroup;
 			children = (
+				66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */,
+				66E8B3760D930B7300024CB2 /* WmsLayerItem.h */,
 				668D4CCE0D372FD900CE039D /* moc_OptionWidget.cpp */,
 				668D4CC90D372F9E00CE039D /* OptionWidget.cpp */,
 				668D4CCA0D372F9E00CE039D /* OptionWidget.h */,
@@ -6937,6 +6997,17 @@
 			name = PostGISLayerQt;
 			sourceTree = "<group>";
 		};
+		66B647530D94427D00F426B2 /* MeasureTool */ = {
+			isa = PBXGroup;
+			children = (
+				66B647540D9442A500F426B2 /* CompileGuard.h */,
+				66B647550D9442A500F426B2 /* MeasureToolComponent.cpp */,
+				66B647560D9442A500F426B2 /* MeasureToolComponent.h */,
+			);
+			name = MeasureTool;
+			path = ../Experimental/MeasureTool;
+			sourceTree = "<group>";
+		};
 		66C8FA740D11FED6003F6A58 /* Serialize */ = {
 			isa = PBXGroup;
 			children = (
@@ -6972,8 +7043,6 @@
 		66C8FABD0D120542003F6A58 /* QtTools */ = {
 			isa = PBXGroup;
 			children = (
-				66AA98280D596CCE0046045C /* Question.cpp */,
-				66AA98290D596CCE0046045C /* Question.h */,
 				66C8FAC00D12056B003F6A58 /* Action.cpp */,
 				66C8FAC10D12056B003F6A58 /* Action.h */,
 				66C8FAC20D12056B003F6A58 /* AnimationControl.cpp */,
@@ -6984,6 +7053,8 @@
 				66C8FAC70D12056B003F6A58 /* ColorButton.h */,
 				66C8FAC80D12056B003F6A58 /* ComboBox.h */,
 				66C8FAC90D12056B003F6A58 /* Export.h */,
+				66A09F200D8728A900E7E212 /* FileDialog.cpp */,
+				66A09F1E0D87288100E7E212 /* FileDialog.h */,
 				666B9B200D16F321001C1F7C /* icons */,
 				66C8FACA0D12056B003F6A58 /* Image.cpp */,
 				66C8FACB0D12056B003F6A58 /* Image.h */,
@@ -6997,11 +7068,11 @@
 				66C8FEF30D120C3E003F6A58 /* moc_TreeControl.cpp */,
 				66C8FACE0D12056B003F6A58 /* PropertyBrowser.cpp */,
 				66C8FACF0D12056B003F6A58 /* PropertyBrowser.h */,
+				66AA98280D596CCE0046045C /* Question.cpp */,
+				66AA98290D596CCE0046045C /* Question.h */,
 				66AC89F20D2B3C9400762CC7 /* ScopedSignals.h */,
 				66C8FAD00D12056B003F6A58 /* TreeControl.cpp */,
 				66C8FAD10D12056B003F6A58 /* TreeControl.h */,
-				66A09F1E0D87288100E7E212 /* FileDialog.h */,
-				66A09F200D8728A900E7E212 /* FileDialog.cpp */,
 			);
 			name = QtTools;
 			path = ../Experimental/QtTools;
@@ -7950,6 +8021,7 @@
 				66A112DE0D2EBC77009B29ED /* CompileGuard.h in Headers */,
 				66A112E00D2EBC77009B29ED /* WmsLayerQtComponent.h in Headers */,
 				668D4CCC0D372F9E00CE039D /* OptionWidget.h in Headers */,
+				66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7969,6 +8041,15 @@
 				66A1130D0D2EBCA8009B29ED /* PropertyPage.h in Headers */,
 				66A1130F0D2EBCA8009B29ED /* SingleColorWidget.h in Headers */,
 				66A113110D2EBCA8009B29ED /* UniqueColorWidget.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66B6473C0D94418200F426B2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66B647570D9442A500F426B2 /* CompileGuard.h in Headers */,
+				66B647590D9442A500F426B2 /* MeasureToolComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8533,6 +8614,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66B647440D9441F300F426B2 /* PBXTargetDependency */,
 				668C96B60D42B5B60007D7F4 /* PBXTargetDependency */,
 				66892DFB0D283E70005CB399 /* PBXTargetDependency */,
 				668BE84F0D24CE3500109210 /* PBXTargetDependency */,
@@ -8880,6 +8962,26 @@
 			name = PostGISLayerQt;
 			productName = PostGISLayerQt;
 			productReference = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		66B6473F0D94418200F426B2 /* MeasureTool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66B647520D94422A00F426B2 /* Build configuration list for PBXNativeTarget "MeasureTool" */;
+			buildPhases = (
+				66B6473C0D94418200F426B2 /* Headers */,
+				66B6473D0D94418200F426B2 /* Sources */,
+				66B6473E0D94418200F426B2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66B6474F0D94422100F426B2 /* PBXTargetDependency */,
+				66B6474D0D94421F00F426B2 /* PBXTargetDependency */,
+				66B6474B0D94421B00F426B2 /* PBXTargetDependency */,
+			);
+			name = MeasureTool;
+			productName = MeasureTool;
+			productReference = 66B647400D94418200F426B2 /* MeasureTool.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66C8FA6C0D11FE9D003F6A58 /* SerializeXML */ = {
@@ -9233,6 +9335,7 @@
 				66A112BA0D2EBAF3009B29ED /* WmsLayerQt */,
 				668E0C910D4021F50030649B /* WRFModel */,
 				66FF450E0D10FED2003A0AC1 /* XmlTree */,
+				66B6473F0D94418200F426B2 /* MeasureTool */,
 			);
 		};
 /* End PBXProject section */
@@ -9955,6 +10058,7 @@
 				66A119970D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp in Sources */,
 				668D4CCB0D372F9E00CE039D /* OptionWidget.cpp in Sources */,
 				668D4CCF0D372FD900CE039D /* moc_OptionWidget.cpp in Sources */,
+				66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9983,6 +10087,14 @@
 				66A119CE0D2EC68E009B29ED /* moc_AddPostGISLayerWidget.cpp in Sources */,
 				66A119CF0D2EC68E009B29ED /* moc_ConnectToDatabase.cpp in Sources */,
 				66A119D00D2EC68E009B29ED /* moc_UniqueColorWidget.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66B6473D0D94418200F426B2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66B647580D9442A500F426B2 /* MeasureToolComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10688,6 +10800,26 @@
 			isa = PBXTargetDependency;
 			target = 43FED6F1092452E100EBB610 /* Usul */;
 			targetProxy = 66B286730D382053003BDAF3 /* PBXContainerItemProxy */;
+		};
+		66B647440D9441F300F426B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66B6473F0D94418200F426B2 /* MeasureTool */;
+			targetProxy = 66B647430D9441F300F426B2 /* PBXContainerItemProxy */;
+		};
+		66B6474B0D94421B00F426B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66B6474A0D94421B00F426B2 /* PBXContainerItemProxy */;
+		};
+		66B6474D0D94421F00F426B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			targetProxy = 66B6474C0D94421F00F426B2 /* PBXContainerItemProxy */;
+		};
+		66B6474F0D94422100F426B2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FE740D12084C003F6A58 /* MenuKit */;
+			targetProxy = 66B6474E0D94422100F426B2 /* PBXContainerItemProxy */;
 		};
 		66C024FB0D7797AE00371AB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -12662,6 +12794,57 @@
 			};
 			name = Release;
 		};
+		66B647410D94418300F426B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = plugd;
+				EXECUTABLE_PREFIX = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_MEASURE_TOOL,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					../../../sdk/3rdParty/include,
+					../,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				PREBINDING = NO;
+				PRODUCT_NAME = MeasureTool;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66B647420D94418300F426B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_EXTENSION = plug;
+				EXECUTABLE_PREFIX = "";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_MEASURE_TOOL,
+					NDEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					../../../sdk/3rdParty/include,
+					../,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				PREBINDING = NO;
+				PRODUCT_NAME = MeasureTool;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		66C8FA6E0D11FE9E003F6A58 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -13753,6 +13936,15 @@
 			buildConfigurations = (
 				66A112C30D2EBB06009B29ED /* Debug */,
 				66A112C40D2EBB06009B29ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66B647520D94422A00F426B2 /* Build configuration list for PBXNativeTarget "MeasureTool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66B647410D94418300F426B2 /* Debug */,
+				66B647420D94418300F426B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

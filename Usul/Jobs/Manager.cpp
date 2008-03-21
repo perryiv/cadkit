@@ -20,6 +20,7 @@
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
+#include <algorithm>
 
 using namespace Usul::Jobs;
 
@@ -52,15 +53,13 @@ namespace Usul
         typedef Usul::Threads::Task BaseClass;
 
         Task ( Usul::Jobs::Job *job, Manager& manager ) : 
-          BaseClass ( job->id(), 
-                      job->_startedCB,  
-                      Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Task::_taskFinished ) ),
-                      job->_cancelledCB,
-                      job->_errorCB ), 
+          BaseClass ( job->id(), job->_startedCB, 0x0, job->_cancelledCB, job->_errorCB ), 
           _job ( job ),
           _manager ( manager )
         {
           this->name ( job->name() );
+
+					_finishedCB = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Task::_taskFinished ) );
         }
 
       protected:

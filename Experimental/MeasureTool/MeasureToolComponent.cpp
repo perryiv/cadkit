@@ -297,7 +297,6 @@ void MeasureToolComponent::intersectNotify ( float x, float y, const osgUtil::Hi
 
       if ( false == _positions.empty() )
         _root->addChild ( Detail::makeLineSegment ( position, _positions.back() ) );
-
     }
 
     // Add the position.
@@ -362,7 +361,7 @@ bool MeasureToolComponent::enableExportButton() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MeasureToolComponent::measureOn  ( bool b )
+void MeasureToolComponent::measureOn ( bool b )
 {
   Guard guard ( this->mutex() );
 
@@ -412,7 +411,7 @@ bool MeasureToolComponent::buttonPressNotify ( Usul::Interfaces::IUnknown * call
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MeasureToolComponent::_updateMeasurement( Usul::Interfaces::IUnknown *caller )
+void MeasureToolComponent::_updateMeasurement ( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this->mutex() );
 
@@ -436,7 +435,6 @@ void MeasureToolComponent::_updateMeasurement( Usul::Interfaces::IUnknown *calle
 
   // Set the internal measurement distance
   _measurement = distance;
-
 }
 
 
@@ -467,7 +465,7 @@ void MeasureToolComponent::_clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MeasureToolComponent::_exportToArcGen( Usul::Interfaces::IUnknown *caller )
+void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this->mutex() );
 

@@ -296,7 +296,7 @@ inline void Loader< Document >::addLibrary ( const std::string &file )
   std::string name ( file );
 
   // Prepend 'lib' if not on windows.
-#ifndef _MSV_VER
+#ifndef _MSC_VER
   name = "lib" + name;
 #endif
   

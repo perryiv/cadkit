@@ -366,6 +366,13 @@ void Tile::updateTexture()
 
     // Turn off lighting.
     OsgTools::State::StateSet::setLighting ( this, false );
+    
+    // Let the body know we have a new texture.
+    if ( 0x0 != _body )
+    {
+      _body->_textureAdded();
+      _body->needsRedraw ( true );
+    }
 
     // Texture no longer dirty.
     this->dirty ( false, Tile::TEXTURE, false );
@@ -405,7 +412,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // See if our job is done loading image.
     if ( _imageJob.valid() && _imageJob->isDone() )
     {
-        _imageJob = 0x0;
+      _imageJob = 0x0;
     }
     
     // Not currently using this...

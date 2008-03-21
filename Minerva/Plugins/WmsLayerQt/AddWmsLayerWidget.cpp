@@ -15,6 +15,7 @@
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h"
 #include "Minerva/Plugins/WmsLayerQt/OptionWidget.h"
+#include "Minerva/Plugins/WmsLayerQt/WmsLayerItem.h"
 
 #include "Minerva/Core/Layers/RasterLayerWms.h"
 
@@ -28,6 +29,8 @@
 #include "Usul/Network/Curl.h"
 #include "Usul/Network/Names.h"
 
+#include "XmlTree/Document.h"
+
 #include "QtGui/QDialog"
 #include "QtGui/QLabel"
 #include "QtGui/QLineEdit"
@@ -39,6 +42,8 @@
 #include "QtGui/QButtonGroup"
 #include "QtGui/QFileDialog"
 #include "QtGui/QTextEdit"
+#include "QtGui/QTreeWidget"
+#include "QtGui/QHeaderView"
 
 #include <iostream>
 
@@ -50,7 +55,7 @@
 
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   _imageTypes ( 0x0 ),
-  _options()
+  _tree ( new QTreeWidget )
 {
   this->setupUi ( this );
 
@@ -60,13 +65,23 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   _imageTypes->addButton ( _pngButton );
   
   _optionsWidget->setLayout ( new QVBoxLayout );
+  _optionsWidget->layout()->addWidget( _tree );
+  
+  _tree->setColumnCount( 2 );
+  
+  QStringList titles;
+  titles.push_back( "Name" );
+  titles.push_back( "Title");
+  _tree->setHeaderLabels ( titles );
+  
+  // We want exteneded selection.
+  _tree->setSelectionMode ( QAbstractItemView::ExtendedSelection );
   
   _cacheDirectory->setText ( Minerva::Core::Layers::RasterLayerWms::defaultCacheDirectory().c_str() );
   
   QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
 
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), addOptionButton,    SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _jpegButton,        SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _pngButton,         SLOT ( setEnabled ( bool ) ) );
   
@@ -109,20 +124,36 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
   // Make sure we have a server and cache directory.
   if ( false == server.empty () && false == cacheDirectory.empty() )
   {
-    Minerva::Core::Layers::RasterLayerWms::Extents extents ( -180, -90, 180, 90 );
+    Minerva::Core::Layers::RasterLayerWms::Extents extents ( 0, 0, 0, 0 );
     
     Minerva::Core::Layers::RasterLayerWms::Options options;
     
-    for ( Options::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
+    options[Usul::Network::Names::REQUEST] = "GetMap";
+    options[Usul::Network::Names::SRS    ] = "EPSG:4326";
+    options[Usul::Network::Names::VERSION] = "1.1.1";
+
+    typedef QList<QTreeWidgetItem *> Items;
+    Items items ( _tree->selectedItems() );
+    
+    if ( true == items.isEmpty() )
+      return;
+    
+    QStringList layers;
+    QStringList styles;
+    
+    for ( Items::const_iterator iter = items.begin(); iter != items.end(); ++iter )
     {
-      std::string key ( (*iter)->key() );
-      std::string value ( (*iter)->value() );
-      
-      if ( false == key.empty() )
+      if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
       {
-        options[key] = value;
+        layers.push_back( item->name().c_str() );
+        styles.push_back( item->style().c_str() );
+        
+        extents.expand ( item->extents() );
       }
     }
+    
+    options[Usul::Network::Names::LAYERS] = layers.join(",").toStdString();
+    options[Usul::Network::Names::STYLES] = styles.join(",").toStdString();
     
     options[Usul::Network::Names::FORMAT] = format;
     
@@ -136,7 +167,6 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     layer->name ( false == name.empty() ? name : server );
     
     al->addLayer ( layer.get () );
-
   }
 }
 
@@ -160,28 +190,6 @@ void AddWmsLayerWidget::on_browseDirectory_clicked ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add an option.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void AddWmsLayerWidget::on_addOptionButton_clicked()
-{
-  OptionWidget::Names names;
-  names.push_back ( Usul::Network::Names::REQUEST );
-  names.push_back ( Usul::Network::Names::SRS     );
-  names.push_back ( Usul::Network::Names::STYLES  );
-  names.push_back ( Usul::Network::Names::LAYERS  );
-  names.push_back ( Usul::Network::Names::VERSION );
-  
-  OptionWidget *widget ( new OptionWidget ( names, _optionsWidget ) );
-  _optionsWidget->layout()->addWidget( widget );
-  
-  _options.push_back ( widget );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the capabilites of the server.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -189,7 +197,7 @@ void AddWmsLayerWidget::on_addOptionButton_clicked()
 void AddWmsLayerWidget::on_capabilitiesButton_clicked()
 {
   // Url request.
-  std::string request ( _server->text().toStdString() + "?request=GetCapabilities" );
+  std::string request ( _server->text().toStdString() + "?request=GetCapabilities&Service=WMS&Version=1.1.1" );
   
   // File to download to.
   Usul::File::Temp temp;
@@ -198,23 +206,21 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
   Usul::Network::Curl curl ( request, temp.name() );
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "3034499311" );
   
-  // File contents.
-  std::string contents;
-  Usul::File::contents ( temp.name(), contents );
+  // Open the xml document.
+  XmlTree::Document::RefPtr document ( new XmlTree::Document );
+  document->load ( temp.name() );
   
-  QDialog dialog;
+  typedef XmlTree::Node::Children    Children;
   
-  QVBoxLayout* layout ( new QVBoxLayout );
-  
-  QTextEdit *edit ( new QTextEdit );
-  edit->setPlainText ( contents.c_str() );
-  edit->setReadOnly( true );
-  
-  layout->addWidget ( edit );
-  
-  dialog.setLayout ( layout );
+  Children layers ( document->find ( "Layer", true ) );
 
-  dialog.exec();
+  _tree->clear();
+  
+  for ( Children::const_iterator iter = layers.begin(); iter != layers.end(); ++iter )
+  {
+    QTreeWidgetItem *item ( new WmsLayerItem ( (*iter).get(), _tree ) );
+    _tree->addTopLevelItem( item );
+  }
 }
 
 

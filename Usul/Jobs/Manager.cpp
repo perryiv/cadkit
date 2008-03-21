@@ -51,9 +51,14 @@ namespace Usul
 
         typedef Usul::Threads::Task BaseClass;
 
-        Task ( Usul::Jobs::Job *job ) : 
-          BaseClass ( job->id(), job->_startedCB, job->_finishedCB, job->_cancelledCB, job->_errorCB ), 
-          _job ( job )
+        Task ( Usul::Jobs::Job *job, Manager& manager ) : 
+          BaseClass ( job->id(), 
+                      job->_startedCB,  
+                      Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Task::_taskFinished ) ),
+                      job->_cancelledCB,
+                      job->_errorCB ), 
+          _job ( job ),
+          _manager ( manager )
         {
           this->name ( job->name() );
         }
@@ -63,10 +68,21 @@ namespace Usul
         virtual ~Task()
         {
         }
+        
+        void _taskFinished ( Usul::Threads::Thread* thread )
+        {
+          // Call the job's callback first.
+          if ( _job.valid() && _job->_finishedCB.valid() )
+            (*_job->_finishedCB) ( thread );
+          
+          // Let the manager know.
+          _manager._jobFinished ( _job.get() );
+        }
 
       private:
 
         Usul::Jobs::Job::RefPtr _job;
+        Manager &_manager;
       };
     }
   }
@@ -81,7 +97,8 @@ namespace Usul
 
 Manager::Manager ( unsigned int poolSize, bool lazyStart ) :
   _mutex     (),
-  _pool      ( new Usul::Threads::Pool ( poolSize, lazyStart ) )
+  _pool      ( new Usul::Threads::Pool ( poolSize, lazyStart ) ),
+  _jobFinishedListeners ()
 {
   USUL_TRACE_SCOPE;
 }
@@ -183,7 +200,7 @@ void Manager::addJob ( Job *job )
   if ( ( 0x0 != job ) && ( true == _pool.valid() ) )
   {
     job->_setId ( this->nextJobId() );
-    Usul::Jobs::Detail::Task::RefPtr task ( new Usul::Jobs::Detail::Task ( job ) );
+    Usul::Jobs::Detail::Task::RefPtr task ( new Usul::Jobs::Detail::Task ( job, *this ) );
     _pool->addTask ( job->priority(), task.get() );
   }
 }
@@ -376,4 +393,109 @@ unsigned int Manager::numJobs() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( this->numJobsQueued() + this->numJobsExecuting() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+namespace Usul {
+namespace Jobs {
+namespace Helper
+{
+  template < class Listeners, class MutexType > void removeListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  {
+    typedef typename Listeners::value_type::element_type InterfaceType;
+    typedef Usul::Threads::Guard<MutexType> Guard;
+    typedef typename Listeners::iterator Itr;
+    
+    USUL_TRACE_SCOPE_STATIC;
+    
+    typename InterfaceType::QueryPtr listener ( caller );
+    if ( true == listener.valid() )
+    {
+      Guard guard ( mutex );
+      typename InterfaceType::RefPtr value ( listener.get() );
+      Itr end ( std::remove ( listeners.begin(), listeners.end(), value ) );
+      listeners.erase ( end, listeners.end() );
+    }
+  }
+}
+}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul {
+namespace Jobs {
+namespace Helper
+{
+  template < class Listeners, class MutexType > void addListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  {
+    typedef typename Listeners::value_type::element_type InterfaceType;
+    typedef Usul::Threads::Guard<MutexType> Guard;
+    
+    USUL_TRACE_SCOPE_STATIC;
+    
+    // Don't add twice.
+    removeListener ( listeners, caller, mutex );
+    
+    // Check for necessary interface.
+    typename InterfaceType::QueryPtr listener ( caller );
+    if ( true == listener.valid() )
+    {
+      // Block while we add the listener.
+      Guard guard ( mutex );
+      listeners.push_back ( typename InterfaceType::RefPtr ( listener.get() ) );
+    }
+  }
+}
+}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a job finished listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::addJobFinishedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::addListener ( _jobFinishedListeners, caller, this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a job finished listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::removeJobFinishedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Helper::removeListener ( _jobFinishedListeners, caller, this->mutex() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A job has finished.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::_jobFinished ( Job* job_ )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Usul::Jobs::Job::RefPtr job ( job_ );
+  std::for_each ( _jobFinishedListeners.begin(), _jobFinishedListeners.end(), std::bind2nd ( std::mem_fun ( &IJobFinishedListener::jobFinished ), job.get() ) );
 }

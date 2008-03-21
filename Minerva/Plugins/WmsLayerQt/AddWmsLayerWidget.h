@@ -22,6 +22,7 @@
 class QLineEdit;
 class QButtonGroup;
 class OptionWidget;
+class QTreeWidget;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
@@ -42,7 +43,6 @@ signals:
 
 protected slots:
   void on_browseDirectory_clicked();
-  void on_addOptionButton_clicked();
   void on_capabilitiesButton_clicked();
   
   void _onServerTextChanged ( const QString& text );
@@ -51,7 +51,7 @@ private:
   typedef std::vector<OptionWidget*> Options;
   
   QButtonGroup *_imageTypes;
-  Options _options;
+  QTreeWidget *_tree;
 };
 
 

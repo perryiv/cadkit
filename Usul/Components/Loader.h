@@ -295,10 +295,17 @@ inline void Loader< Document >::addLibrary ( const std::string &file )
 
   std::string name ( file );
 
+  // Prepend 'lib' if not on windows.
+#ifndef _MSV_VER
+  name = "lib" + name;
+#endif
+  
+  // Add a d if building bebug.
 #if _DEBUG
   name += 'd';
 #endif
 
+  // Add the correct extension.
 #ifdef _MSC_VER
   name += ".dll";
 #elif __APPLE__

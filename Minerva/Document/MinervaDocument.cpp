@@ -212,6 +212,8 @@ MinervaDocument::~MinervaDocument()
   // Clean up job manager.
   if ( 0x0 != _manager )
   {
+    _manager->removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+    
     // Remove all queued jobs and cancel running jobs.
     _manager->cancel();
     
@@ -254,6 +256,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IIntersectListener * > ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
+  case Usul::Interfaces::IJobFinishedListener::IID:
+    return static_cast < Usul::Interfaces::IJobFinishedListener* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -872,7 +876,16 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
   {
     Body::RefPtr body ( *iter );
     if ( body.valid() )
+    {
       body->postRender ( caller );
+      
+      // Draw again if a new texture has been added.
+      if ( body->newTexturesLastFrame() > 0 || body->needsRedraw() )
+        this->requestRedraw();
+      
+      // Request has been made.  Reset state.
+      body->needsRedraw ( false );
+    }
   }
 
   BaseClass::postRenderNotify ( caller );
@@ -2088,6 +2101,7 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
   if ( 0x0 == _manager )
   {
     _manager = new Usul::Jobs::Manager ( 5, true );
+    _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
   
   return _manager;
@@ -2224,4 +2238,16 @@ void MinervaDocument::freezeTiling( bool b )
     if ( body.valid() )
       body->allowSplitting ( !_freezeSpliting );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The job has finished.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::jobFinished ( Usul::Jobs::Job *job )
+{
+  this->requestRedraw();
 }

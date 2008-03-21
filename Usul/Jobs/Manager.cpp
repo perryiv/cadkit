@@ -494,7 +494,11 @@ void Manager::removeJobFinishedListener ( Usul::Interfaces::IUnknown *caller )
 void Manager::_jobFinished ( Job* job_ )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+
+  // Make a copy to reduce risk of deadlocks.
+  JobFinishedListeners listeners ( Usul::Threads::Safe::get ( this->mutex(), _jobFinishedListeners ) );
   Usul::Jobs::Job::RefPtr job ( job_ );
-  std::for_each ( _jobFinishedListeners.begin(), _jobFinishedListeners.end(), std::bind2nd ( std::mem_fun ( &IJobFinishedListener::jobFinished ), job.get() ) );
+
+  // Notify the listeners.
+  std::for_each ( listeners.begin(), listeners.end(), std::bind2nd ( std::mem_fun ( &IJobFinishedListener::jobFinished ), job.get() ) );
 }

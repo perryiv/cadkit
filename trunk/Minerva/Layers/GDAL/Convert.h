@@ -85,7 +85,7 @@ namespace Minerva
             *data++ = value;
             
             // Make transparent if value is equal to no data.
-            *data++ = ( value == static_cast<PixelType> ( noDataValue ) ? 0.0 : std::numeric_limits<PixelType>::max() );
+            *data++ = ( value == static_cast<PixelType> ( noDataValue ) ? static_cast<PixelType> ( 0.0 ) : std::numeric_limits<PixelType>::max() );
           }
         }
       }

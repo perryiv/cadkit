@@ -287,6 +287,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\WmsLayerItem.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\WmsLayerItem.h"
+					>
+				</File>
+				<File
 					RelativePath=".\WmsLayerQtComponent.cpp"
 					>
 				</File>

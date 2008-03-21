@@ -49,6 +49,12 @@ protected:
   // Destructor
   virtual ~Task();
 
+	unsigned long _id;
+  Callback::RefPtr _cancelledCB;
+  Callback::RefPtr _errorCB;
+  Callback::RefPtr _finishedCB;
+  Callback::RefPtr _startedCB;
+
 private:
 
   // No copying or assignment.
@@ -57,11 +63,6 @@ private:
 
   void                      _destroy();
 
-  unsigned long _id;
-  Callback::RefPtr _cancelledCB;
-  Callback::RefPtr _errorCB;
-  Callback::RefPtr _finishedCB;
-  Callback::RefPtr _startedCB;
 };
 
 

@@ -297,6 +297,11 @@ void MeasureToolComponent::intersectNotify ( float x, float y, const osgUtil::Hi
 
       if ( false == _positions.empty() )
         _root->addChild ( Detail::makeLineSegment ( position, _positions.back() ) );
+      
+      // Request a redraw.
+      Usul::Interfaces::IDocument::QueryPtr doc ( Usul::Documents::Manager::instance().activeDocument() );
+      if ( doc.valid() )
+        doc->requestRedraw();
     }
 
     // Add the position.

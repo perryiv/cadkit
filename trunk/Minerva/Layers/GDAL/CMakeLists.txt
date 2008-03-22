@@ -15,14 +15,13 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 SET ( Boost_USE_DATE_TIME TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
-
+# ------------ Find GDAL Library ----------------------
+INCLUDE( ${CMakeModules}/FindGDAL.cmake)
 
 
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
-# ------------ Find GDAL Library ----------------------
-FIND_LIBRARY(GDAL_LIB gdal $ENV{GDAL_LIB_DIR} )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
@@ -36,7 +35,7 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${OSSIM_INC_DIR}
 		     $ENV{PQXX_INC_DIR}
-         $ENV{GDAL_INC_DIR}
+         ${GDAL_INCLUDE_DIR}
 		     )
 
 
@@ -53,7 +52,7 @@ ADD_LIBRARY(MinervaLayersGDAL SHARED ${SOURCES} )
 LINK_CADKIT( MinervaLayersGDAL Usul OsgTools SerializeXML XmlTree Minerva MinervaPostGIS  )
 TARGET_LINK_LIBRARIES( MinervaLayersGDAL
 	${Boost_LIBRARIES}
-  ${GDAL_LIB}
+  ${GDAL_LIBRARY}
 	${PQXX_LIB}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}

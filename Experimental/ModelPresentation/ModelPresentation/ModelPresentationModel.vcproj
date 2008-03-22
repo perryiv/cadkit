@@ -371,6 +371,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Writer"
+				>
+				<File
+					RelativePath=".\MpdWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MpdWriter.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

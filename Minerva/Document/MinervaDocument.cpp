@@ -212,8 +212,6 @@ MinervaDocument::~MinervaDocument()
   // Clean up job manager.
   if ( 0x0 != _manager )
   {
-    _manager->removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
-    
     // Remove all queued jobs and cancel running jobs.
     _manager->cancel();
     
@@ -902,7 +900,7 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 {
   USUL_TRACE_SCOPE;
 
-  // Call the base classes on first.
+  // Call the base class' on first.
   BaseClass::addView ( view );
   
   // Hide the axes.
@@ -919,6 +917,25 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a view to this document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::removeView ( Usul::Interfaces::IView *view )
+{
+  // Call the base class' first.
+  BaseClass::removeView ( view );
+  
+  // If there are no more views, remove the job finished listener.
+  if ( 0 == this->numViews() )
+  {
+    Usul::Jobs::Manager *manager ( this->_getJobManager() );
+    manager->removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -52,7 +52,7 @@ namespace Usul
 
         typedef Usul::Threads::Task BaseClass;
 
-        Task ( Usul::Jobs::Job *job, Manager& manager ) : 
+        Task ( Usul::Jobs::Job *job, Manager* manager ) : 
           BaseClass ( job->id(), job->_startedCB, 0x0, job->_cancelledCB, job->_errorCB ), 
           _job ( job ),
           _manager ( manager )
@@ -75,13 +75,16 @@ namespace Usul
             (*_job->_finishedCB) ( thread );
           
           // Let the manager know.
-          _manager._jobFinished ( _job.get() );
+          if ( 0x0 != _manager )
+            _manager->_jobFinished ( _job.get() );
+          
+          _finishedCB = 0x0;
         }
 
       private:
 
         Usul::Jobs::Job::RefPtr _job;
-        Manager &_manager;
+        Manager *_manager;
       };
     }
   }
@@ -199,7 +202,7 @@ void Manager::addJob ( Job *job )
   if ( ( 0x0 != job ) && ( true == _pool.valid() ) )
   {
     job->_setId ( this->nextJobId() );
-    Usul::Jobs::Detail::Task::RefPtr task ( new Usul::Jobs::Detail::Task ( job, *this ) );
+    Usul::Jobs::Detail::Task::RefPtr task ( new Usul::Jobs::Detail::Task ( job, this ) );
     _pool->addTask ( job->priority(), task.get() );
   }
 }

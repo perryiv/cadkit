@@ -7,6 +7,7 @@ FIND_PATH(GDAL_INCLUDE_DIR gdal.h
   $ENV{GDAL_INC_DIR}
   /usr/include
   /usr/local/include
+  /usr/include/gdal
 )
 
 # Find the library

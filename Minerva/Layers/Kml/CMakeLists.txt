@@ -42,7 +42,7 @@ SET (SOURCES
 ADD_LIBRARY(MinervaLayersKml SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaLayersKml Usul OsgTools SerializeXML XmlTree StarSystem )
+LINK_CADKIT( MinervaLayersKml Usul OsgTools SerializeXML XmlTree Minerva )
 TARGET_LINK_LIBRARIES( MinervaLayersKml
 	${Boost_LIBRARIES}
 	${OPENTHREADS_LIB}

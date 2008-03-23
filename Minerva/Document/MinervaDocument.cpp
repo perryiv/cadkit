@@ -151,8 +151,8 @@ MinervaDocument::MinervaDocument() :
     osg::ref_ptr< osg::Light > light ( new osg::Light );
     light->setLightNum ( 1 );
     light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
-    //light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
-    light->setPosition ( osg::Vec4 ( 0.0, 0.0, -1.0f, 0.0 ) );
+    light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
+    light->setPosition ( osg::Vec4 ( 0.0, 0.0, 1.0f, 0.0 ) );
     
     ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   }
@@ -1595,7 +1595,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
   if ( viewportChanged )
   {
     _camera->setViewport ( 0, 0, _width, _height );
-    _camera->setProjectionMatrixAsOrtho ( 0, _width, 0, _height, -40.0, 40.0 );
+    _camera->setProjectionMatrixAsOrtho ( 0, _width, 0, _height, -100.0, 100.0 );
     
     // Set the build legend flag.
     buildLegend = true;

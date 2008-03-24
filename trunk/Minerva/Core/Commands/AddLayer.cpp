@@ -14,8 +14,8 @@
 
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
-
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace Minerva::Core::Commands;
@@ -102,6 +102,10 @@ void AddLayer::_execute ()
     job->progress ( _progressBar );
 
   Usul::Jobs::Manager::instance().addJob ( job.get() );
+  
+  Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  if ( document.valid() )
+    document->requestRedraw();
 }
 
 

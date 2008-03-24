@@ -13,6 +13,7 @@
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Interfaces/IDocument.h"
 
 using namespace Minerva::Core::Commands;
 
@@ -67,11 +68,19 @@ RemoveLayer::~RemoveLayer()
 
 void RemoveLayer::_execute ()
 {
-  Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( Usul::Documents::Manager::instance().activeDocument () );
+  // Use the caller if we have one, if not fall back on the active document.
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != this->caller() ? this->caller() : Usul::Documents::Manager::instance().activeDocument() );
+  
+  // Query for the interface.
+  Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( unknown );
 
   // Remove the layer.
   if ( remove.valid () )
     remove->removeLayer ( _layer );
+  
+  Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  if ( document.valid() )
+    document->requestRedraw();
 }
 
 

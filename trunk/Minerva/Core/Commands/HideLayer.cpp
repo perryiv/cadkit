@@ -12,6 +12,7 @@
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
@@ -40,7 +41,7 @@ HideLayer::HideLayer ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  HideLayer::HideLayer ( Usul::Interfaces::ILayer* layer ) : 
+HideLayer::HideLayer ( Usul::Interfaces::ILayer* layer ) : 
   BaseClass( 0x0 ),
   _layer ( layer )
 {
@@ -76,6 +77,10 @@ void HideLayer::_execute ()
   // Dirty the scene.
   if ( dirty.valid () )
     dirty->dirtyScene ( true );
+  
+  Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  if ( document.valid() )
+    document->requestRedraw();
 }
 
 

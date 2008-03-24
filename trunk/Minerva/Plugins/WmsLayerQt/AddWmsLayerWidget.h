@@ -44,14 +44,16 @@ signals:
 protected slots:
   void on_browseDirectory_clicked();
   void on_capabilitiesButton_clicked();
+  void on_addOptionButton_clicked();
   
   void _onServerTextChanged ( const QString& text );
 
 private:
   typedef std::vector<OptionWidget*> Options;
   
+  Options _options;
   QButtonGroup *_imageTypes;
-  QTreeWidget *_tree;
+  QWidget *_optionsWidget;
 };
 
 

@@ -40,6 +40,7 @@ private slots:
 
   void             _browseClicked();
   void             _searchDirectoryClicked();
+  void             _removeSelectedFiles();
   
 private:
   Usul::Interfaces::IUnknown::QueryPtr _caller;

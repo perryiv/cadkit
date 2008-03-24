@@ -51,7 +51,6 @@ protected slots:
   void _onItemChanged ( QTreeWidgetItem * item, int columnNumber );
   void _onAddLayerClick ();
   void _onRemoveLayerClick ();
-  void _onRefreshClick ();
   void _onContextMenuShow ( const QPoint& pos );
   void _onAddLayerFavorites();
 

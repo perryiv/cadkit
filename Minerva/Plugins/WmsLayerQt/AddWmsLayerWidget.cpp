@@ -44,6 +44,7 @@
 #include "QtGui/QTextEdit"
 #include "QtGui/QTreeWidget"
 #include "QtGui/QHeaderView"
+#include "QtGui/QScrollArea"
 
 #include <iostream>
 
@@ -54,8 +55,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
+  _options(),
   _imageTypes ( 0x0 ),
-  _tree ( new QTreeWidget )
+  _optionsWidget ( new QWidget )
 {
   this->setupUi ( this );
 
@@ -64,28 +66,39 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   _imageTypes->addButton ( _jpegButton );
   _imageTypes->addButton ( _pngButton );
   
+  QScrollArea *scrollArea ( new QScrollArea );
+  _scrollOptionsWidget->setLayout ( new QVBoxLayout );
+  _scrollOptionsWidget->layout()->addWidget ( scrollArea );
+  scrollArea->setWidget ( _optionsWidget );
+  scrollArea->setWidgetResizable ( true );
+
   _optionsWidget->setLayout ( new QVBoxLayout );
-  _optionsWidget->layout()->addWidget( _tree );
   
-  _tree->setColumnCount( 2 );
+  _layersTree->setColumnCount( 2 );
   
   QStringList titles;
   titles.push_back( "Name" );
   titles.push_back( "Title");
-  _tree->setHeaderLabels ( titles );
+  _layersTree->setHeaderLabels ( titles );
   
   // We want exteneded selection.
-  _tree->setSelectionMode ( QAbstractItemView::ExtendedSelection );
+  _layersTree->setSelectionMode ( QAbstractItemView::ExtendedSelection );
   
   _cacheDirectory->setText ( Minerva::Core::Layers::RasterLayerWms::defaultCacheDirectory().c_str() );
   
   QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
 
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), addOptionButton,    SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _jpegButton,        SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _pngButton,         SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _layersTree,        SLOT ( setEnabled ( bool ) ) );
   
   emit serverValid ( false );
+  
+#ifndef _DEBUG
+  _optionsGroupBox->setVisible ( false );
+#endif
 }
 
 
@@ -133,7 +146,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     options[Usul::Network::Names::VERSION] = "1.1.1";
 
     typedef QList<QTreeWidgetItem *> Items;
-    Items items ( _tree->selectedItems() );
+    Items items ( _layersTree->selectedItems() );
     
     if ( true == items.isEmpty() )
       return;
@@ -156,6 +169,18 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     options[Usul::Network::Names::STYLES] = styles.join(",").toStdString();
     
     options[Usul::Network::Names::FORMAT] = format;
+    
+    // Add user specified options.
+    for ( Options::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
+    {
+      std::string key ( (*iter)->key() );
+      std::string value ( (*iter)->value() );
+       
+      if ( false == key.empty() )
+      {
+        options[key] = value;
+      }
+    }
     
     // Make the layer
     Minerva::Core::Layers::RasterLayerWms::RefPtr layer ( new Minerva::Core::Layers::RasterLayerWms ( extents, server, options ) );
@@ -214,12 +239,18 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
   
   Children layers ( document->find ( "Layer", true ) );
 
-  _tree->clear();
+  _layersTree->clear();
   
-  for ( Children::const_iterator iter = layers.begin(); iter != layers.end(); ++iter )
+  // Return now if we don't have any layers.
+  if ( true == layers.empty() )
+    return;
+  
+  WmsLayerItem::Extents defaultExtents ( WmsLayerItem::parseExtents ( *layers.front() ) );
+  
+  for ( Children::const_iterator iter = layers.begin() + 1; iter != layers.end(); ++iter )
   {
-    QTreeWidgetItem *item ( new WmsLayerItem ( (*iter).get(), _tree ) );
-    _tree->addTopLevelItem( item );
+    QTreeWidgetItem *item ( new WmsLayerItem ( (*iter).get(), defaultExtents, _layersTree ) );
+    _layersTree->addTopLevelItem( item );
   }
 }
 
@@ -233,4 +264,26 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
 void AddWmsLayerWidget::_onServerTextChanged ( const QString& text )
 {
   emit serverValid ( false == text.isEmpty() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add an option.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddWmsLayerWidget::on_addOptionButton_clicked()
+{
+  OptionWidget::Names names;
+  names.push_back ( Usul::Network::Names::REQUEST );
+  names.push_back ( Usul::Network::Names::SRS     );
+  //names.push_back ( Usul::Network::Names::STYLES  );
+  //names.push_back ( Usul::Network::Names::LAYERS  );
+  names.push_back ( Usul::Network::Names::VERSION );
+  
+  OptionWidget *widget ( new OptionWidget ( names, _optionsWidget ) );
+  _optionsWidget->layout()->addWidget( widget );
+  
+  _options.push_back ( widget );
 }

@@ -18,9 +18,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-WmsLayerItem::WmsLayerItem ( XmlTree::Node* node, QTreeWidget *parent ) : BaseClass ( parent ),
+WmsLayerItem::WmsLayerItem ( XmlTree::Node* node, const Extents& defaultExtents, QTreeWidget *parent ) : BaseClass ( parent ),
   _node ( node ),
-  _extents( -180, -90, 180, 90 )
+  _extents( defaultExtents )
 {
   if ( _node.valid() )
   {
@@ -37,18 +37,7 @@ WmsLayerItem::WmsLayerItem ( XmlTree::Node* node, QTreeWidget *parent ) : BaseCl
     this->setText ( 0, name.c_str() );
     this->setText ( 1, title.c_str() );
     
-    Children bbNode ( _node->find ( "LatLonBoundingBox", false ) );
-    if ( false == bbNode.empty() )
-    {
-      XmlTree::Node::ValidRefPtr bb ( bbNode.front() );
-      Attributes& attributes ( bb->attributes() );
-      
-      Extents e (  ToDouble::convert ( attributes["minx"] ),
-                   ToDouble::convert ( attributes["miny"] ),               
-                   ToDouble::convert ( attributes["maxx"] ),
-                   ToDouble::convert ( attributes["maxy"] ) );
-      _extents = e;
-    }
+    _extents = WmsLayerItem::parseExtents ( *_node, defaultExtents );
     
     Children stylesNodes ( _node->find ( "Styles", true ) );
   }
@@ -99,4 +88,32 @@ std::string WmsLayerItem::name() const
 std::string WmsLayerItem::style() const
 {
   return "";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+WmsLayerItem::Extents WmsLayerItem::parseExtents ( const XmlTree::Node & node, const Extents& defaultExtents )
+{
+  typedef XmlTree::Node::Children    Children;
+  typedef XmlTree::Node::Attributes  Attributes;
+  typedef Usul::Convert::Type<std::string,double> ToDouble;
+  
+  Children bbNode ( node.find ( "LatLonBoundingBox", false ) );
+  if ( false == bbNode.empty() )
+  {
+    XmlTree::Node::ValidRefPtr bb ( bbNode.front() );
+    Attributes& attributes ( bb->attributes() );
+    
+    return Extents ( ToDouble::convert ( attributes["minx"] ),
+                     ToDouble::convert ( attributes["miny"] ),               
+                     ToDouble::convert ( attributes["maxx"] ),
+                     ToDouble::convert ( attributes["maxy"] ) );
+  }
+  
+  return defaultExtents;
 }

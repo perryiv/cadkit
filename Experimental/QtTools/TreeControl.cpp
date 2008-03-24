@@ -448,3 +448,15 @@ void TreeControl::selectionMode( QAbstractItemView::SelectionMode mode )
 {
   _tree->setSelectionMode ( mode );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all the selected items.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QList<QTreeWidgetItem*> TreeControl::selectedItems() const
+{
+  return _tree->selectedItems();
+}

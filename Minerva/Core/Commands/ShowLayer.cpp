@@ -12,6 +12,7 @@
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Factory/RegisterCreator.h"
 
 using namespace Minerva::Core::Commands;
@@ -76,6 +77,10 @@ void ShowLayer::_execute ()
   // Dirty the scene.
   if ( dirty.valid () )
     dirty->dirtyScene ( true );
+  
+  Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  if ( document.valid() )
+    document->requestRedraw();
 }
 
 

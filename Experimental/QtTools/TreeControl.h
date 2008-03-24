@@ -39,6 +39,7 @@ public:
   typedef Usul::Interfaces::ITreeNode ITreeNode;
   typedef std::map < QTreeWidgetItem *, ITreeNode::RefPtr > NodeMap;
   typedef QAbstractItemView::SelectionMode SelectionMode;
+  typedef QList<QTreeWidgetItem*> TreeWidgetItems;
 
   TreeControl ( Unknown *caller, QWidget *parent = 0x0 );
   virtual ~TreeControl();
@@ -56,6 +57,9 @@ public:
   
   // Remove the item.
   void                removeItem ( QTreeWidgetItem *item );
+  
+  // Get all the selected items.
+  TreeWidgetItems     selectedItems() const;
   
   // Get/set the selection mode.
   SelectionMode       selectionMode() const;

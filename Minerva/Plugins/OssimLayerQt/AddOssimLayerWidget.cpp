@@ -48,12 +48,17 @@ AddOssimLayerWidget::AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller, QW
   _listView ( 0x0 )
 {
   _listView = new QListWidget ( this );
+  
+  // We want exteneded selection.
+  _listView->setSelectionMode ( QAbstractItemView::ExtendedSelection );
 
   QPushButton *browse ( new QPushButton ( "Browse..." ) );
   QPushButton *search ( new QPushButton ( "Search Directory..." ) );
+  QPushButton *remove ( new QPushButton ( "Remove Selected Files" ) );
 
-  connect ( browse, SIGNAL ( clicked () ), this, SLOT ( _browseClicked () ) );
-  connect ( search, SIGNAL ( clicked () ), this, SLOT ( _searchDirectoryClicked () ) );
+  connect ( browse, SIGNAL ( clicked() ), this, SLOT ( _browseClicked () ) );
+  connect ( search, SIGNAL ( clicked() ), this, SLOT ( _searchDirectoryClicked () ) );
+  connect ( remove, SIGNAL ( clicked() ), this, SLOT ( _removeSelectedFiles() ) );
 
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );
@@ -61,6 +66,10 @@ AddOssimLayerWidget::AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller, QW
   topLayout->addWidget ( browse );
   topLayout->addWidget ( search );
   topLayout->addWidget ( _listView );
+  
+#ifdef _DEBUG
+  topLayout->addWidget ( remove );
+#endif
 }
 
 
@@ -177,4 +186,21 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Inte
       al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( read ) );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove selected files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddOssimLayerWidget::_removeSelectedFiles()
+{
+  typedef QList<QListWidgetItem *> Items;
+  Items items ( _listView->selectedItems() );
+  for ( Items::iterator iter = items.begin(); iter != items.end(); ++iter )
+    _listView->removeItemWidget( *iter );
+  
+  _listView->update();
 }

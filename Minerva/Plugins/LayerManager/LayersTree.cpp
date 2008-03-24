@@ -21,6 +21,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 
@@ -62,9 +63,6 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
 
   QPushButton *removeLayer ( new QPushButton ( "Remove" ) );
   buttonLayout->addWidget ( removeLayer );
-
-  QPushButton *refresh ( new QPushButton ( "Refresh" ) );
-  buttonLayout->addWidget ( refresh );
   
   _tree = new QtTools::TreeControl ( caller, parent );
   
@@ -85,19 +83,12 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
 
   connect ( addLayer,    SIGNAL ( clicked () ), this,     SLOT   ( _onAddLayerClick () ) );
   connect ( removeLayer, SIGNAL ( clicked () ), this,     SLOT   ( _onRemoveLayerClick () ) );
-  connect ( refresh,     SIGNAL ( clicked () ), this,     SLOT   ( _onRefreshClick () ) );
 
   connect ( this,        SIGNAL ( enableWidgets ( bool ) ), addLayer,     SLOT   ( setEnabled ( bool ) ) );
   connect ( this,        SIGNAL ( enableWidgets ( bool ) ), removeLayer,  SLOT   ( setEnabled ( bool ) ) );
-  connect ( this,        SIGNAL ( enableWidgets ( bool ) ), refresh,      SLOT   ( setEnabled ( bool ) ) );
 
   // Disable by default.
   emit enableWidgets( false );
-  
-  // Hide in release.
-#ifdef NDEBUG
-  refresh->setVisible ( false );
-#endif
 }
 
 
@@ -174,6 +165,10 @@ void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
   Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
   if ( dirty.valid() )
     dirty->dirtyScene ( true, unknown );
+  
+  Usul::Interfaces::IDocument::QueryPtr document ( _document );
+  if ( document.valid() )
+    document->requestRedraw();
 }
 
 
@@ -255,34 +250,29 @@ void LayersTree::_addLayer ( Usul::Interfaces::IUnknown *parent )
 
 void LayersTree::_onRemoveLayerClick ()
 {
-  // Get the current item.
-  QTreeWidgetItem *item ( _tree->currentItem() );
+  // Get all selected items.
+  typedef QtTools::TreeControl::TreeWidgetItems Items;
+  Items items ( _tree->selectedItems() );
   
-  if ( 0x0 == item )
-    return;
-  
-  // Get the unknown for the item.
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->unknown ( item ) );
-  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
-
-  if ( layer.valid () )
+  // Loop through all items.
+  for ( Items::iterator iter = items.begin(); iter != items.end(); ++iter )
   {
-    Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
-    command->execute ( _document );
+    // Get the item.
+    QTreeWidgetItem *item ( *iter );
+    
+    // Get the unknown for the item.
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->unknown ( item ) );
+    //Usul::Interfaces::IUnknown::QueryPtr parent ( _tree->unknown ( item->parent() ) );
+    Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
 
-    _tree->removeItem( item );
+    if ( layer.valid () )
+    {
+      Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
+      command->execute ( _document );
+
+      _tree->removeItem( item );
+    }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayersTree::_onRefreshClick ()
-{
 }
 
 

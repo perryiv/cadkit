@@ -58,6 +58,10 @@ public:
   /// Get the texture
   virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
   
+  /// Set/get the url.
+  void                  url ( const std::string& url );
+  std::string           url() const;
+  
 protected:
 
   virtual ~RasterLayerWms();

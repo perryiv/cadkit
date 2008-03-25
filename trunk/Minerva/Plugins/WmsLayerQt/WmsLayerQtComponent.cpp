@@ -17,7 +17,7 @@
 #include "Minerva/Plugins/WmsLayerQt/WmsLayerQtComponent.h"
 #include "Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h"
 
-#include "QtGui/QDialog.h"
+#include "QtGui/QDialog"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"

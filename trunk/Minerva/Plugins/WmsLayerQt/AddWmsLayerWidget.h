@@ -23,6 +23,7 @@ class QLineEdit;
 class QButtonGroup;
 class OptionWidget;
 class QTreeWidget;
+class QStringListModel;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
@@ -54,6 +55,7 @@ private:
   Options _options;
   QButtonGroup *_imageTypes;
   QWidget *_optionsWidget;
+  QStringListModel *_recentServers;
 };
 
 

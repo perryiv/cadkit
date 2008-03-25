@@ -28,6 +28,9 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Network/Names.h"
+#include "Usul/Registry/Convert.h"
+#include "Usul/Registry/Database.h"
+#include "Usul/Registry/Qt.h"
 
 #include "XmlTree/Document.h"
 
@@ -45,8 +48,18 @@
 #include "QtGui/QTreeWidget"
 #include "QtGui/QHeaderView"
 #include "QtGui/QScrollArea"
+#include "QtGui/QStringListModel"
+#include "QtGui/QCompleter"
 
 #include <iostream>
+
+
+namespace Detail
+{
+  const std::string SECTION ( "add_wms_server" );
+  const std::string KEY     ( "recent_servers" );
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -57,7 +70,8 @@
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   _options(),
   _imageTypes ( 0x0 ),
-  _optionsWidget ( new QWidget )
+  _optionsWidget ( new QWidget ),
+  _recentServers ( new QStringListModel )
 {
   this->setupUi ( this );
 
@@ -99,6 +113,27 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
 #ifndef _DEBUG
   _optionsGroupBox->setVisible ( false );
 #endif
+  
+  // Get recent-server list.
+  QStringList recent ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get<QStringList> ( QStringList() ) );
+  
+  // Sort.
+  recent.sort();
+  
+  // Make sure all are unique.
+  recent.erase ( std::unique ( recent.begin(), recent.end() ), recent.end() );
+  
+  // Se the model's string list.
+  _recentServers->setStringList ( recent );
+  
+  // Make the completer.
+  QCompleter *completer ( new QCompleter );
+  
+  // Set the model.
+  completer->setModel ( _recentServers );
+  
+  // Set the completer.
+  _server->setCompleter( completer );
 }
 
 
@@ -110,6 +145,8 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
 
 AddWmsLayerWidget::~AddWmsLayerWidget()
 {
+  // Save the server names.
+  Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = _recentServers->stringList();
 }
 
 

@@ -66,10 +66,7 @@ AddOssimLayerWidget::AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller, QW
   topLayout->addWidget ( browse );
   topLayout->addWidget ( search );
   topLayout->addWidget ( _listView );
-  
-#ifdef _DEBUG
   topLayout->addWidget ( remove );
-#endif
 }
 
 
@@ -200,7 +197,10 @@ void AddOssimLayerWidget::_removeSelectedFiles()
   typedef QList<QListWidgetItem *> Items;
   Items items ( _listView->selectedItems() );
   for ( Items::iterator iter = items.begin(); iter != items.end(); ++iter )
-    _listView->removeItemWidget( *iter );
+  {
+    _listView->takeItem ( _listView->row ( *iter ) );
+    delete *iter;
+  }
   
   _listView->update();
 }

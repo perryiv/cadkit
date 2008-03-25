@@ -36,6 +36,7 @@ class MpdWriter : public Usul::Base::Object
       typedef Usul::Base::Object BaseClass;
 
       USUL_DECLARE_REF_POINTERS ( MpdWriter );
+
       typedef Usul::Documents::Document::RefPtr DocumentPtr;
       typedef Usul::Interfaces::IUnknown IUnknown;
       typedef Usul::Documents::Manager DocManager;
@@ -176,9 +177,10 @@ class MpdWriter : public Usul::Base::Object
       
 
 
+      void                    buildXMLString();
 
-      void                    write();
-      void                    write( const std::string &filename );
+      void                    write() const;
+      void                    write( const std::string &filename ) const;
 
      
 

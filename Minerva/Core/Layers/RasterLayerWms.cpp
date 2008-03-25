@@ -501,3 +501,31 @@ void RasterLayerWms::_downloadFailed ( const std::string &file, const std::strin
     out << "Failed to download\nFile: " << file << "\nURL: " << url << std::endl;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the options map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerWms::options ( const Options& options )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _options = options;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the options map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerWms::Options RasterLayerWms::options() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _options;
+}

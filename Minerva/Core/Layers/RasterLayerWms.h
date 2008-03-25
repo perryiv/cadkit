@@ -51,6 +51,10 @@ public:
   static void           defaultCacheDirectory ( const std::string& );
   static std::string    defaultCacheDirectory();
   
+  /// Set/get the options map.
+  void                  options ( const Options& options );
+  Options               options() const;
+  
   /// Get the texture
   virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
   

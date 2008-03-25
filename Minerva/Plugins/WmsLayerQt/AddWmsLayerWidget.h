@@ -12,7 +12,7 @@
 #define __ADD_WMS_LAYER_WIDGET_H__
 
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
-#include "Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h"
+#include "ui_WmsWidget.h"
 
 #include "QtGui/QWidget"
 

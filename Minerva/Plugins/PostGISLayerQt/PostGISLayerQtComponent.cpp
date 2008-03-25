@@ -39,7 +39,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PostGISLayerQtComponent, PostGISLayerQtCompone
 ///////////////////////////////////////////////////////////////////////////////
 
 PostGISLayerQtComponent::PostGISLayerQtComponent() : BaseClass(),
-_widget ( 0x0 )
+  _widget ( 0x0 )
 {
 }
 

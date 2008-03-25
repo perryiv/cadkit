@@ -295,36 +295,6 @@
 						/>
 					</FileConfiguration>
 				</File>
-				<File
-					RelativePath=".\PropertiesAction.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PropertiesAction.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing PropertiesAction.h..."
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\PropertiesAction.h&quot; -o &quot;.\GeneratedFiles\moc_PropertiesAction.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\PropertiesAction.h"
-							Outputs=".\GeneratedFiles\moc_PropertiesAction.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing PropertiesAction.h..."
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\PropertiesAction.h&quot; -o &quot;.\GeneratedFiles\moc_PropertiesAction.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\PropertiesAction.h"
-							Outputs=".\GeneratedFiles\moc_PropertiesAction.cpp"
-						/>
-					</FileConfiguration>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"
@@ -343,10 +313,6 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_LayersTree.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\GeneratedFiles\moc_PropertiesAction.cpp"
 					>
 				</File>
 			</Filter>

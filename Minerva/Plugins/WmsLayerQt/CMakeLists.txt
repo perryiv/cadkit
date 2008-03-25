@@ -32,6 +32,7 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 
 SET (SOURCES
   AddWmsLayerWidget.cpp
+  EditWmsLayerWidget.cpp
   OptionWidget.cpp
   WmsLayerItem.cpp
   WmsLayerQtFactory.cpp
@@ -41,11 +42,13 @@ SET (SOURCES
 
 SET(MOC_HDRS
   AddWmsLayerWidget.h
+  EditWmsLayerWidget.h
   OptionWidget.h
 )
 
 # Make .h from .ui
 SET(UIS WmsWidget.ui)
+SET(UIS EditWmsLayerWidget.ui)
 
 QT4_WRAP_UI( UIS_HDRS ${UIS} )
 

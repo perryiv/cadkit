@@ -17,8 +17,6 @@
 #include "Minerva/Plugins/WmsLayerQt/OptionWidget.h"
 #include "Minerva/Plugins/WmsLayerQt/WmsLayerItem.h"
 
-#include "Minerva/Core/Layers/RasterLayerWms.h"
-
 #include "Minerva/Interfaces/IAddLayer.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -54,6 +52,12 @@
 #include <iostream>
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constants for registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 namespace Detail
 {
   const std::string SECTION ( "add_wms_server" );
@@ -71,7 +75,8 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   _options(),
   _imageTypes ( 0x0 ),
   _optionsWidget ( new QWidget ),
-  _recentServers ( new QStringListModel )
+  _recentServers ( new QStringListModel ),
+  _layer ( new Minerva::Core::Layers::RasterLayerWms )
 {
   this->setupUi ( this );
 
@@ -134,6 +139,15 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   
   // Set the completer.
   _server->setCompleter( completer );
+  
+  // Set the default options.
+  Options options;
+  
+  options[Usul::Network::Names::REQUEST] = "GetMap";
+  options[Usul::Network::Names::SRS    ] = "EPSG:4326";
+  options[Usul::Network::Names::VERSION] = "1.1.1";
+  
+  _layer->options( options );
 }
 
 
@@ -160,7 +174,8 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
 {
   Minerva::Interfaces::IAddLayer::QueryPtr al ( parent );
 
-  if ( false == al.valid () )
+  // Check for valid state...
+  if ( false == al.valid () || false == _layer.valid() )
     return;
 
   std::string server ( _server->text().toStdString() );
@@ -174,20 +189,14 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
   // Make sure we have a server and cache directory.
   if ( false == server.empty () && false == cacheDirectory.empty() )
   {
-    Minerva::Core::Layers::RasterLayerWms::Extents extents ( 0, 0, 0, 0 );
+    Extents extents ( 0, 0, 0, 0 );
     
-    Minerva::Core::Layers::RasterLayerWms::Options options;
+    // Get the current options.
+    Options options ( _layer->options() );
     
-    options[Usul::Network::Names::REQUEST] = "GetMap";
-    options[Usul::Network::Names::SRS    ] = "EPSG:4326";
-    options[Usul::Network::Names::VERSION] = "1.1.1";
-
     typedef QList<QTreeWidgetItem *> Items;
     Items items ( _layersTree->selectedItems() );
-    
-    if ( true == items.isEmpty() )
-      return;
-    
+
     QStringList layers;
     QStringList styles;
     
@@ -205,10 +214,11 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     options[Usul::Network::Names::LAYERS] = layers.join(",").toStdString();
     options[Usul::Network::Names::STYLES] = styles.join(",").toStdString();
     
+    // Set the format.
     options[Usul::Network::Names::FORMAT] = format;
     
     // Add user specified options.
-    for ( Options::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
+    for ( OptionWidgets::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
     {
       std::string key ( (*iter)->key() );
       std::string value ( (*iter)->value() );
@@ -219,16 +229,22 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
       }
     }
     
-    // Make the layer
-    Minerva::Core::Layers::RasterLayerWms::RefPtr layer ( new Minerva::Core::Layers::RasterLayerWms ( extents, server, options ) );
-
+    // Set the options.
+    _layer->options ( options );
+    
+    // Set the extents.
+    _layer->extents ( extents );
+    
+    // Set the url.
+    _layer->url ( server );
+    
     // Set the cache directory.
-    layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
+    _layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
     
     // Set the name.
-    layer->name ( false == name.empty() ? name : server );
+    _layer->name ( false == name.empty() ? name : server );
     
-    al->addLayer ( layer.get () );
+    al->addLayer ( _layer.get () );
   }
 }
 

@@ -4,7 +4,7 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author(s): Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -13,6 +13,8 @@
 
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "ui_WmsWidget.h"
+
+#include "Minerva/Core/Layers/RasterLayerWms.h"
 
 #include "QtGui/QWidget"
 
@@ -50,12 +52,15 @@ protected slots:
   void _onServerTextChanged ( const QString& text );
 
 private:
-  typedef std::vector<OptionWidget*> Options;
+  typedef std::vector<OptionWidget*> OptionWidgets;
+  typedef Minerva::Core::Layers::RasterLayerWms::Extents Extents;
+  typedef Minerva::Core::Layers::RasterLayerWms::Options Options;
   
-  Options _options;
+  OptionWidgets _options;
   QButtonGroup *_imageTypes;
   QWidget *_optionsWidget;
   QStringListModel *_recentServers;
+  Minerva::Core::Layers::RasterLayerWms::RefPtr _layer;
 };
 
 

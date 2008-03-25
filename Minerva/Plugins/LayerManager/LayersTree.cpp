@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/LayerManager/LayersTree.h"
-#include "Minerva/Plugins/LayerManager/PropertiesAction.h"
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
@@ -23,6 +22,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
+#include "Usul/Interfaces/ILayerModifyGUIQt.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 
 #include "QtTools/Action.h"
@@ -294,7 +294,6 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   
   Usul::Commands::Command::RefPtr command ( Usul::Commands::genericCommand ( "Add...", Usul::Adaptors::bind1 ( unknown.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_addLayer ) ), Usul::Commands::TrueFunctor() ) );
   QtTools::Action add ( command.get() );
-  menu.addAction ( &add );
   
   Minerva::Interfaces::IAddLayer::QueryPtr al ( unknown );
   add.setEnabled( al.valid() );
@@ -305,11 +304,14 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   favorites.setEnabled ( layer.valid() );
   QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
   
-  PropertiesAction action ( layer.get(), _caller.get() );
+  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind1 ( unknown.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
+  favorites.setToolTip ( tr ( "Show the property dialog for this layer" ) );
   favorites.setEnabled ( layer.valid() );
   
+  // Add the actions to the menu.
+  menu.addAction ( &add );
   menu.addAction ( &favorites );
-  menu.addAction ( &action );
+  menu.addAction ( &properties );
   
   menu.exec ( _tree->mapToGlobal ( pos ) );
 }
@@ -337,4 +339,39 @@ void LayersTree::_onAddLayerFavorites()
 void LayersTree::addLayer ( Usul::Interfaces::IUnknown * unknown )
 {
   this->buildTree( _document );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit layer properties.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown )
+{
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
+  
+  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
+  
+  // Make sure we have a valid layer.
+  if ( false == layer.valid() )
+    return;
+  
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerModifyGUIQt::IID ) );
+  
+  for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
+  {
+    Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
+    if ( gui->handle ( layer.get() ) )
+    {
+      gui->showModifyGUI( layer.get(), _caller.get() );
+      
+      QTreeWidgetItem *item ( _tree->currentItem() );
+      item->setText( 0, layer->name().c_str() );
+      
+      break;
+    }
+  }
 }

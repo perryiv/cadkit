@@ -19,6 +19,7 @@
 
 #include "Experimental/ModelPresentation/ModelPresentation/MpdJob.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdDefinitions.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdWriter.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IAnimatePath.h"
@@ -30,6 +31,7 @@
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/IMpdWriter.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -52,7 +54,8 @@ class ModelPresentationDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
                                   public Usul::Interfaces::IMpdNavigator,
-                                  public Usul::Interfaces::IMenuAdd
+                                  public Usul::Interfaces::IMenuAdd,
+                                  public Usul::Interfaces::IMpdWriter 
 {
 public:
  
@@ -139,6 +142,29 @@ public:
   void              nextSequenceStep();
   void              prevSequenceStep();
 
+  /// Usul::Interfaces::IMpdWriter functions
+  // Model Functions
+  virtual void                    addModel( const std::string &name, const std::string &path );
+  // Set functions
+  virtual void                    addSet( const std::string &name, const std::string &menuName );
+  virtual void                    addModelToSet( const std::string &modelName, const std::string &setName, const std::string &groupName );
+  virtual void                    addGroupToSet( const std::string &setName, const std::string &groupName );
+  // TimeSet functions
+  virtual void                    addTimeSet( const std::string &name, const std::string &menuName, unsigned int endTime );
+  virtual void                    addModelsToTimeSet( std::vector< std::string > modelList, const std::string &timeSetName, unsigned int startTime, unsigned int endTime );
+  // Sequence Functions
+  virtual void                    addSequence( const std::string &name, const std::string &menuName );
+  virtual void                    addStepToSequence( const std::string &locationName, std::vector< std::string > modelList );
+  // Location Functions
+  virtual void                    addLocation( const std::string &name, const std::string &location );
+  virtual void                    addLocation( const std::string &name, osg::Matrix location );
+  // DynamicSet Functions
+  virtual void                    addDynamicSet( const std::string &name, const std::string &menuName, const std::string &prefix,
+                                                 const std::string &extension, const std::string &directory, unsigned int maxFiles );
+  virtual void                    buildXMLString();
+  virtual void                    write() const;
+  virtual void                    write( const std::string &filename ) const;
+
  
 protected:
 
@@ -195,6 +221,8 @@ protected:
   void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller );
   
   osg::Vec3d                  _getPosition( const std::string &position, Usul::Interfaces::IUnknown *caller );
+
+  void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   
 
   /// Use reference counting.
@@ -235,6 +263,8 @@ private:
   unsigned int                  _dynamicNotLoadedTextYPos;
 
   osg::ref_ptr< osg::Camera >   _camera;
+
+  MpdWriter::RefPtr             _writer;
 
   
 };

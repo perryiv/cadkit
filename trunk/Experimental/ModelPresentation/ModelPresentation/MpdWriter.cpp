@@ -303,11 +303,36 @@ void MpdWriter::addDynamicSet( const std::string &name, const std::string &menuN
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Create the xml string to for the mpd file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MpdWriter::buildXMLString()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );  
+
+  _mpdFile = "";
+
+  this->_writeHeader();
+  this->_writeModels();
+  this->_writeLocations();
+  this->_writeSets();
+  this->_writeTimeSets();
+  this->_writeSequence();
+  this->_writeDynamicSets();
+  this->_writeFooter();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Write the mpd file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MpdWriter::write()
+void MpdWriter::write() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );  
@@ -322,7 +347,7 @@ void MpdWriter::write()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MpdWriter::write( const std::string &filename )
+void MpdWriter::write( const std::string &filename ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );  
@@ -337,16 +362,9 @@ void MpdWriter::write( const std::string &filename )
     return;
   }
 
-  this->_writeHeader();
-  this->_writeModels();
-  this->_writeLocations();
-  this->_writeSets();
-  this->_writeTimeSets();
-  this->_writeSequence();
-  this->_writeDynamicSets();
-  this->_writeFooter();
 
-  ofs << _mpdFile;
+  const std::string xml = _mpdFile;
+  ofs << xml;
   ofs.close();
 
 }

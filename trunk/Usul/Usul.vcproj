@@ -1292,6 +1292,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IMpdWriter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\INavigationFunctor.h"
 					>
 				</File>

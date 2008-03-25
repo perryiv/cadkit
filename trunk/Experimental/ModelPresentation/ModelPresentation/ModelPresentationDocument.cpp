@@ -154,6 +154,8 @@ Usul::Interfaces::IUnknown *ModelPresentationDocument::queryInterface ( unsigned
     return static_cast < Usul::Interfaces::IMpdNavigator* > ( this ); 
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+  case Usul::Interfaces::IMpdWriter::IID:
+    return static_cast < Usul::Interfaces::IMpdWriter * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -224,6 +226,8 @@ void ModelPresentationDocument::write ( const std::string &name, Unknown *caller
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+ _writer->write( name );
 }
 
 
@@ -240,6 +244,8 @@ void ModelPresentationDocument::read ( const std::string &name, Unknown *caller,
 
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
   _workingDir = Usul::File::directory( name, true );
+
+  _writer = new MpdWriter( _workingDir + "/output.mpd" );
 
   document->load ( name );
 
@@ -963,6 +969,8 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
 
       models.models->addChild( this->_parseModel( *node, caller, progress, name ), false );
       models.modelMap[name] = count;
+
+      
     }
 
     // Feedback.
@@ -1177,6 +1185,9 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
     }
         
   }
+  // Add the set to the writer
+  _writer->addSet( set.name, set.menuName );
+
   // TODO: create a set here --
   osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -1255,6 +1266,10 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
           std::string name;
           Usul::Strings::fromString ( att_iter->second, name );
           grp.visibleModelsMap[name] = true;
+
+          // add the model to the set to be shown
+          _writer->addModelToSet( name, set.name, grp.name );
+
         }
       }
     } 
@@ -1340,6 +1355,10 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
     }
         
   }
+
+  //Add the timeset to the writer
+  _writer->addTimeSet( timeset.name, timeset.menuName, timeset.endTime );
+  
   // TODO: create a set here --
   osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
   unsigned int currentTime = 0;
@@ -1423,13 +1442,26 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
           std::string name;
           Usul::Strings::fromString ( att_iter->second, name );
           timeGroup.visibleModelsMap[name] = true;
+
+          
         }
 
       }
     }  
 
   }
+
   timeset.groups.push_back( timeGroup );
+  // add the time group to the writer
+  std::vector< std::string > modelList;
+  for( std::map< std::string, bool >::iterator iter = timeGroup.visibleModelsMap.begin();
+                                               iter != timeGroup.visibleModelsMap.end();
+                                               ++iter )
+  {
+    modelList.push_back( (*iter).first );
+  }
+  _writer->addModelsToTimeSet( modelList, timeset.name, timeGroup.startTime, timeGroup.endTime );
+
   return group.release();
 }
 
@@ -1524,6 +1556,15 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   MpdJob::RefPtr job;
   _jobs.push_back( job );
   _dynamicSets.push_back( dset );
+
+  // Add dynamic set to the writer
+  _writer->addDynamicSet( dset.name,
+                          dset.menuName, 
+                          dset.header.prefix, 
+                          dset.header.extension, 
+                          dset.header.directory, 
+                          dset.maxFilesToLoad );
+
   
 }
 
@@ -1560,6 +1601,9 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
       Usul::Strings::fromString ( iter->second, _sequence.menuName );
     }   
   }
+  // add the sequence to the writer
+  _writer->addSequence( _sequence.name, _sequence.menuName );
+
   // TODO: create a step here --
   //osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -1576,6 +1620,17 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
       this->_parseSequenceStep( *node, caller, progress, step );
 
       _sequence.steps.push_back( step );
+
+      // Add the sequence step to the writer
+      std::vector< std::string > modelList;
+      for( std::map< std::string, bool >::iterator iter = step.visibleModelsMap.begin();
+                                                   iter != step.visibleModelsMap.end();
+                                                   ++iter )
+      {
+        modelList.push_back( (*iter).first );
+      }
+      _writer->addStepToSequence( step.locationName, modelList );
+
     }
   }
 #if 0
@@ -1722,6 +1777,8 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
 
    
   }
+  // add a model to the writer
+  _writer->addModel( name, path );
   return group.release();  
 }
 
@@ -2677,4 +2734,222 @@ osg::Vec3d ModelPresentationDocument::_getPosition( const std::string &position,
   }
 
   return pos;
+}
+
+
+// Model Functions
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a model
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::addModel( const std::string &name, const std::string &path )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+  _writer->addModel( name, path );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create a set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// Set functions
+void ModelPresentationDocument::addSet( const std::string &name, const std::string &menuName )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addSet( name, menuName );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a group to a set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::addModelToSet( const std::string &modelName, const std::string &setName, const std::string &groupName )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addModelToSet( modelName, setName, groupName );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add a model to a group of a set.  Create the set if it doesn't exist.  
+// Create the group if that doesn't exist.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::addGroupToSet( const std::string &setName, const std::string &groupName )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addGroupToSet( setName, groupName );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a time set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// TimeSet functions
+void ModelPresentationDocument::addTimeSet( const std::string &name, const std::string &menuName, unsigned int endTime )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addTimeSet( name, menuName, endTime );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a model to a time set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::addModelsToTimeSet( std::vector< std::string > modelList, const std::string &timeSetName, unsigned int startTime, unsigned int endTime )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addModelsToTimeSet( modelList, timeSetName, startTime, endTime );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a sequence.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// Sequence Functions
+void ModelPresentationDocument::addSequence( const std::string &name, const std::string &menuName )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addSequence( name, menuName );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a step to a sequence.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::addStepToSequence( const std::string &locationName, std::vector< std::string > modelList )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addStepToSequence( locationName, modelList );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a location from a string containing matrix information.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// Location Functions
+void ModelPresentationDocument::addLocation( const std::string &name, const std::string &location )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addLocation( name, location );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a location from an osg matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::addLocation( const std::string &name, osg::Matrix location )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addLocation( name, location );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a dynamic set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// DynamicSet Functions
+void ModelPresentationDocument::addDynamicSet( const std::string &name, const std::string &menuName, const std::string &prefix,
+                                               const std::string &extension, const std::string &directory, unsigned int maxFiles )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->addDynamicSet( name, menuName, prefix, extension, directory, maxFiles );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create the xml string to for the mpd file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::buildXMLString()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->buildXMLString();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the mpd file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::write() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->write();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the mpd file to filename <filename>.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::write( const std::string &filename ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+
+  _writer->write( filename );
 }

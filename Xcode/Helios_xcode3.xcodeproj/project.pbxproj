@@ -6941,15 +6941,15 @@
 		66A112C80D2EBBA3009B29ED /* WmsLayerQt */ = {
 			isa = PBXGroup;
 			children = (
-				66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */,
-				66E8B3760D930B7300024CB2 /* WmsLayerItem.h */,
-				668D4CCE0D372FD900CE039D /* moc_OptionWidget.cpp */,
-				668D4CC90D372F9E00CE039D /* OptionWidget.cpp */,
-				668D4CCA0D372F9E00CE039D /* OptionWidget.h */,
-				66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */,
 				66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */,
 				66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */,
 				66A112D80D2EBC77009B29ED /* CompileGuard.h */,
+				66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */,
+				668D4CCE0D372FD900CE039D /* moc_OptionWidget.cpp */,
+				668D4CC90D372F9E00CE039D /* OptionWidget.cpp */,
+				668D4CCA0D372F9E00CE039D /* OptionWidget.h */,
+				66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */,
+				66E8B3760D930B7300024CB2 /* WmsLayerItem.h */,
 				66A112D90D2EBC77009B29ED /* WmsLayerQtComponent.cpp */,
 				66A112DA0D2EBC77009B29ED /* WmsLayerQtComponent.h */,
 				66A112DB0D2EBC77009B29ED /* WmsLayerQtFactory.cpp */,

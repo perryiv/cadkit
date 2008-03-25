@@ -614,14 +614,11 @@
 		66892DE30D283DF9005CB399 /* LayerManagerComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66892DDB0D283DF9005CB399 /* LayerManagerComponent.h */; };
 		66892DE50D283DF9005CB399 /* LayersTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66892DDD0D283DF9005CB399 /* LayersTree.cpp */; };
 		66892DE60D283DF9005CB399 /* LayersTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 66892DDE0D283DF9005CB399 /* LayersTree.h */; };
-		66892DE70D283DF9005CB399 /* PropertiesAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66892DDF0D283DF9005CB399 /* PropertiesAction.cpp */; };
-		66892DE80D283DF9005CB399 /* PropertiesAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 66892DE00D283DF9005CB399 /* PropertiesAction.h */; };
 		66892E090D284073005CB399 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66892E0D0D284094005CB399 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAE50D120596003F6A58 /* QtCore.framework */; };
 		66892E0E0D284094005CB399 /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAE60D120596003F6A58 /* QtGui.framework */; };
 		668931690D2840F0005CB399 /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
 		668931760D2841D5005CB399 /* moc_LayersTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668931740D2841D5005CB399 /* moc_LayersTree.cpp */; };
-		668931770D2841D5005CB399 /* moc_PropertiesAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668931750D2841D5005CB399 /* moc_PropertiesAction.cpp */; };
 		6689317A0D28510D005CB399 /* LayerManager.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66892DD00D283D61005CB399 /* LayerManager.plugd */; };
 		668931940D285DCD005CB399 /* Favorites.h in Headers */ = {isa = PBXBuildFile; fileRef = 668931920D285DCD005CB399 /* Favorites.h */; };
 		668931950D285DCD005CB399 /* Favorites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668931930D285DCD005CB399 /* Favorites.cpp */; };
@@ -870,6 +867,9 @@
 		669E1D060D80930A00B7FA74 /* libMinervaPostgres.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */; };
 		669E1D080D80931B00B7FA74 /* libMinerva.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
 		669FAF980D7F3E27007B5B8B /* Convert.h in Headers */ = {isa = PBXBuildFile; fileRef = 669FAF970D7F3E27007B5B8B /* Convert.h */; };
+		66A06F740D997C5900D0B56A /* EditWmsLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A06F720D997C5900D0B56A /* EditWmsLayerWidget.h */; };
+		66A06F750D997C5900D0B56A /* EditWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A06F730D997C5900D0B56A /* EditWmsLayerWidget.cpp */; };
+		66A06F9E0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A06F9D0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp */; };
 		66A09F0E0D87241C00E7E212 /* CameraPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A09F070D87241C00E7E212 /* CameraPath.cpp */; };
 		66A09F0F0D87241C00E7E212 /* CameraPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A09F080D87241C00E7E212 /* CameraPath.h */; };
 		66A09F100D87241C00E7E212 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A09F090D87241C00E7E212 /* CompileGuard.h */; };
@@ -1916,6 +1916,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 669B696A0D7C96E9001392F1;
 			remoteInfo = MinervaGdalLayer;
+		};
+		66A06FD20D998BD700D0B56A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66942DB50D77D66900633017 /* MinervaPostGISLayer */;
+			remoteInfo = MinervaPostGISLayer;
+		};
+		66A06FF60D998BDE00D0B56A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610 /* Usul */;
+			remoteInfo = Usul;
 		};
 		66A09F540D872E3600E7E212 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3209,10 +3223,7 @@
 		66892DDB0D283DF9005CB399 /* LayerManagerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerManagerComponent.h; sourceTree = "<group>"; };
 		66892DDD0D283DF9005CB399 /* LayersTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LayersTree.cpp; sourceTree = "<group>"; };
 		66892DDE0D283DF9005CB399 /* LayersTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayersTree.h; sourceTree = "<group>"; };
-		66892DDF0D283DF9005CB399 /* PropertiesAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertiesAction.cpp; sourceTree = "<group>"; };
-		66892DE00D283DF9005CB399 /* PropertiesAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertiesAction.h; sourceTree = "<group>"; };
 		668931740D2841D5005CB399 /* moc_LayersTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_LayersTree.cpp; sourceTree = "<group>"; };
-		668931750D2841D5005CB399 /* moc_PropertiesAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_PropertiesAction.cpp; sourceTree = "<group>"; };
 		668931920D285DCD005CB399 /* Favorites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Favorites.h; sourceTree = "<group>"; };
 		668931930D285DCD005CB399 /* Favorites.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Favorites.cpp; sourceTree = "<group>"; };
 		668B9BE50D35CC0D00E41E9D /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
@@ -3583,6 +3594,9 @@
 		669F45D20D5B87BB00BFA6C6 /* Functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Functions.h; sourceTree = "<group>"; };
 		669F46350D5BD9CD00BFA6C6 /* Execute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Execute.h; sourceTree = "<group>"; };
 		669FAF970D7F3E27007B5B8B /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
+		66A06F720D997C5900D0B56A /* EditWmsLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EditWmsLayerWidget.h; path = WmsLayerQt/EditWmsLayerWidget.h; sourceTree = "<group>"; };
+		66A06F730D997C5900D0B56A /* EditWmsLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EditWmsLayerWidget.cpp; path = WmsLayerQt/EditWmsLayerWidget.cpp; sourceTree = "<group>"; };
+		66A06F9D0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_EditWmsLayerWidget.cpp; path = WmsLayerQt/moc_EditWmsLayerWidget.cpp; sourceTree = "<group>"; };
 		66A09F070D87241C00E7E212 /* CameraPath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CameraPath.cpp; path = ../Helios/Plugins/PathAnimation/CameraPath.cpp; sourceTree = SOURCE_ROOT; };
 		66A09F080D87241C00E7E212 /* CameraPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraPath.h; path = ../Helios/Plugins/PathAnimation/CameraPath.h; sourceTree = SOURCE_ROOT; };
 		66A09F090D87241C00E7E212 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Helios/Plugins/PathAnimation/CompileGuard.h; sourceTree = SOURCE_ROOT; };
@@ -6462,9 +6476,6 @@
 				66892DDE0D283DF9005CB399 /* LayersTree.h */,
 				66AC8A330D2B4F0100762CC7 /* moc_Favorites.cpp */,
 				668931740D2841D5005CB399 /* moc_LayersTree.cpp */,
-				668931750D2841D5005CB399 /* moc_PropertiesAction.cpp */,
-				66892DDF0D283DF9005CB399 /* PropertiesAction.cpp */,
-				66892DE00D283DF9005CB399 /* PropertiesAction.h */,
 			);
 			path = LayerManager;
 			sourceTree = "<group>";
@@ -6941,9 +6952,12 @@
 		66A112C80D2EBBA3009B29ED /* WmsLayerQt */ = {
 			isa = PBXGroup;
 			children = (
+				66A06F9D0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp */,
 				66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */,
 				66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */,
 				66A112D80D2EBC77009B29ED /* CompileGuard.h */,
+				66A06F730D997C5900D0B56A /* EditWmsLayerWidget.cpp */,
+				66A06F720D997C5900D0B56A /* EditWmsLayerWidget.h */,
 				66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */,
 				668D4CCE0D372FD900CE039D /* moc_OptionWidget.cpp */,
 				668D4CC90D372F9E00CE039D /* OptionWidget.cpp */,
@@ -7908,7 +7922,6 @@
 				66892DE10D283DF9005CB399 /* CompileGuard.h in Headers */,
 				66892DE30D283DF9005CB399 /* LayerManagerComponent.h in Headers */,
 				66892DE60D283DF9005CB399 /* LayersTree.h in Headers */,
-				66892DE80D283DF9005CB399 /* PropertiesAction.h in Headers */,
 				668931940D285DCD005CB399 /* Favorites.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -8022,6 +8035,7 @@
 				66A112E00D2EBC77009B29ED /* WmsLayerQtComponent.h in Headers */,
 				668D4CCC0D372F9E00CE039D /* OptionWidget.h in Headers */,
 				66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */,
+				66A06F740D997C5900D0B56A /* EditWmsLayerWidget.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8894,6 +8908,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				66A06FF70D998BDE00D0B56A /* PBXTargetDependency */,
+				66A06FD30D998BD700D0B56A /* PBXTargetDependency */,
 				669B697B0D7C9BB2001392F1 /* PBXTargetDependency */,
 			);
 			name = MinervaGdalLayer;
@@ -9472,12 +9488,22 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionWidget.h,
 			);
 			outputPaths = (
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionWidget.cpp,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionWidget.cpp";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionWidget.cpp\n";
 		};
 		66A1198A0D2EC239009B29ED /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -9942,9 +9968,7 @@
 			files = (
 				66892DE20D283DF9005CB399 /* LayerManagerComponent.cpp in Sources */,
 				66892DE50D283DF9005CB399 /* LayersTree.cpp in Sources */,
-				66892DE70D283DF9005CB399 /* PropertiesAction.cpp in Sources */,
 				668931760D2841D5005CB399 /* moc_LayersTree.cpp in Sources */,
-				668931770D2841D5005CB399 /* moc_PropertiesAction.cpp in Sources */,
 				668931950D285DCD005CB399 /* Favorites.cpp in Sources */,
 				66AC8A340D2B4F0100762CC7 /* moc_Favorites.cpp in Sources */,
 			);
@@ -10059,6 +10083,8 @@
 				668D4CCB0D372F9E00CE039D /* OptionWidget.cpp in Sources */,
 				668D4CCF0D372FD900CE039D /* moc_OptionWidget.cpp in Sources */,
 				66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */,
+				66A06F750D997C5900D0B56A /* EditWmsLayerWidget.cpp in Sources */,
+				66A06F9E0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10750,6 +10776,16 @@
 			isa = PBXTargetDependency;
 			target = 669B696A0D7C96E9001392F1 /* MinervaGdalLayer */;
 			targetProxy = 669B697C0D7C9BE1001392F1 /* PBXContainerItemProxy */;
+		};
+		66A06FD30D998BD700D0B56A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66942DB50D77D66900633017 /* MinervaPostGISLayer */;
+			targetProxy = 66A06FD20D998BD700D0B56A /* PBXContainerItemProxy */;
+		};
+		66A06FF70D998BDE00D0B56A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66A06FF60D998BDE00D0B56A /* PBXContainerItemProxy */;
 		};
 		66A09F550D872E3600E7E212 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

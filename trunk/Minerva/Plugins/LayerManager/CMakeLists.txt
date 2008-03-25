@@ -35,14 +35,12 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 set (SOURCES
     LayerManagerComponent.cpp
     Favorites.cpp
-    PropertiesAction.cpp
     LayersTree.cpp
 )
 
 SET(MOC_HDRS
   Favorites.h
   LayersTree.h
-  PropertiesAction.h
 )
 
 # Make .h from .ui

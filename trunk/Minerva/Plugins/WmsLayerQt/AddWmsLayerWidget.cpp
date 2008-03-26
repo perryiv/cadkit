@@ -14,7 +14,7 @@
 
 #include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h"
-#include "Minerva/Plugins/WmsLayerQt/OptionWidget.h"
+#include "Minerva/Plugins/WmsLayerQt/OptionsDialog.h"
 #include "Minerva/Plugins/WmsLayerQt/WmsLayerItem.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
@@ -74,9 +74,7 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
-  //_options(),
   _imageTypes ( 0x0 ),
-  //_optionsWidget ( new QWidget ),
   _recentServers ( new QStringListModel ),
   _layer ( new Minerva::Core::Layers::RasterLayerWms )
 {
@@ -86,14 +84,6 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
 
   _imageTypes->addButton ( _jpegButton );
   _imageTypes->addButton ( _pngButton );
-  
-  /*QScrollArea *scrollArea ( new QScrollArea );
-  _scrollOptionsWidget->setLayout ( new QVBoxLayout );
-  _scrollOptionsWidget->layout()->addWidget ( scrollArea );
-  scrollArea->setWidget ( _optionsWidget );
-  scrollArea->setWidgetResizable ( true );
-
-  _optionsWidget->setLayout ( new QVBoxLayout );*/
   
   _layersTree->setColumnCount( 2 );
   
@@ -116,11 +106,7 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _layersTree,        SLOT ( setEnabled ( bool ) ) );
   
   emit serverValid ( false );
-  
-#ifndef _DEBUG
-  _optionsGroupBox->setVisible ( false );
-#endif
-  
+
   // Get recent-server list.
   QStringList recent ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get<QStringList> ( QStringList() ) );
   
@@ -334,15 +320,17 @@ void AddWmsLayerWidget::_onServerTextChanged ( const QString& text )
 
 void AddWmsLayerWidget::on_viewOptionsButton_clicked()
 {
+  if ( false == _layer.valid() )
+    return;
+  
+  OptionsDialog dialog ( _layer->options(), this );
+  
+  dialog.exec();
+  
   //OptionWidget::Names names;
   //names.push_back ( Usul::Network::Names::REQUEST );
   //names.push_back ( Usul::Network::Names::SRS     );
-  ////names.push_back ( Usul::Network::Names::STYLES  );
-  ////names.push_back ( Usul::Network::Names::LAYERS  );
+  //names.push_back ( Usul::Network::Names::STYLES  );
+  //names.push_back ( Usul::Network::Names::LAYERS  );
   //names.push_back ( Usul::Network::Names::VERSION );
-  //
-  //OptionWidget *widget ( new OptionWidget ( names, _optionsWidget ) );
-  //_optionsWidget->layout()->addWidget( widget );
-  //
-  //_options.push_back ( widget );
 }

@@ -74,9 +74,9 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
-  _options(),
+  //_options(),
   _imageTypes ( 0x0 ),
-  _optionsWidget ( new QWidget ),
+  //_optionsWidget ( new QWidget ),
   _recentServers ( new QStringListModel ),
   _layer ( new Minerva::Core::Layers::RasterLayerWms )
 {
@@ -87,13 +87,13 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   _imageTypes->addButton ( _jpegButton );
   _imageTypes->addButton ( _pngButton );
   
-  QScrollArea *scrollArea ( new QScrollArea );
+  /*QScrollArea *scrollArea ( new QScrollArea );
   _scrollOptionsWidget->setLayout ( new QVBoxLayout );
   _scrollOptionsWidget->layout()->addWidget ( scrollArea );
   scrollArea->setWidget ( _optionsWidget );
   scrollArea->setWidgetResizable ( true );
 
-  _optionsWidget->setLayout ( new QVBoxLayout );
+  _optionsWidget->setLayout ( new QVBoxLayout );*/
   
   _layersTree->setColumnCount( 2 );
   
@@ -110,7 +110,7 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
 
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), addOptionButton,    SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), viewOptionsButton,    SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _jpegButton,        SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _pngButton,         SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _layersTree,        SLOT ( setEnabled ( bool ) ) );
@@ -220,7 +220,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     options[Usul::Network::Names::FORMAT] = format;
     
     // Add user specified options.
-    for ( OptionWidgets::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
+    /*for ( OptionWidgets::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
     {
       std::string key ( (*iter)->key() );
       std::string value ( (*iter)->value() );
@@ -229,7 +229,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
       {
         options[key] = value;
       }
-    }
+    }*/
     
     // Set the options.
     _layer->options ( options );
@@ -332,17 +332,17 @@ void AddWmsLayerWidget::_onServerTextChanged ( const QString& text )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddWmsLayerWidget::on_addOptionButton_clicked()
+void AddWmsLayerWidget::on_viewOptionsButton_clicked()
 {
-  OptionWidget::Names names;
-  names.push_back ( Usul::Network::Names::REQUEST );
-  names.push_back ( Usul::Network::Names::SRS     );
-  //names.push_back ( Usul::Network::Names::STYLES  );
-  //names.push_back ( Usul::Network::Names::LAYERS  );
-  names.push_back ( Usul::Network::Names::VERSION );
-  
-  OptionWidget *widget ( new OptionWidget ( names, _optionsWidget ) );
-  _optionsWidget->layout()->addWidget( widget );
-  
-  _options.push_back ( widget );
+  //OptionWidget::Names names;
+  //names.push_back ( Usul::Network::Names::REQUEST );
+  //names.push_back ( Usul::Network::Names::SRS     );
+  ////names.push_back ( Usul::Network::Names::STYLES  );
+  ////names.push_back ( Usul::Network::Names::LAYERS  );
+  //names.push_back ( Usul::Network::Names::VERSION );
+  //
+  //OptionWidget *widget ( new OptionWidget ( names, _optionsWidget ) );
+  //_optionsWidget->layout()->addWidget( widget );
+  //
+  //_options.push_back ( widget );
 }

@@ -288,6 +288,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\OptionsDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsDialog.h"
+					>
+				</File>
+				<File
 					RelativePath=".\OptionWidget.cpp"
 					>
 				</File>

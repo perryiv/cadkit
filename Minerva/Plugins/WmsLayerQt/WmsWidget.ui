@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>751</width>
-    <height>896</height>
+    <width>747</width>
+    <height>887</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -63,42 +63,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="_optionsGroupBox" >
-     <property name="title" >
-      <string>Options</string>
-     </property>
-     <layout class="QVBoxLayout" >
-      <item>
-       <widget class="QWidget" native="1" name="_scrollOptionsWidget" />
-      </item>
-      <item>
-       <layout class="QHBoxLayout" >
-        <item>
-         <spacer>
-          <property name="orientation" >
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" >
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="addOptionButton" >
-          <property name="text" >
-           <string>Add Option</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
     <widget class="QGroupBox" name="groupBox_2" >
      <property name="title" >
       <string>Image Type</string>
@@ -123,6 +87,30 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="viewOptionsButton" >
+       <property name="text" >
+        <string>View Options</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" >

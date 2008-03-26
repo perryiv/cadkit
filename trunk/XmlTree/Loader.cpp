@@ -89,7 +89,9 @@ namespace Helper
 
     // Normalize the document. I think this eliminates empty nodes that 
     // Xerces may create.
-    parser->getDocument()->normalizeDocument();
+		xercesc::DOMDocument* doc ( parser->getDocument() );
+		if ( 0x0 != doc )
+			doc->normalizeDocument();
 
     // Take over ownership of document and return it.
     return parser->adoptDocument();

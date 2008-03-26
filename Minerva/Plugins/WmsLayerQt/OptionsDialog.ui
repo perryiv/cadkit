@@ -20,7 +20,16 @@
      </property>
      <layout class="QVBoxLayout" >
       <item>
-       <widget class="QTableWidget" name="tableWidget" />
+       <widget class="QTreeWidget" name="_optionsTreeWidget" >
+        <property name="alternatingRowColors" >
+         <bool>true</bool>
+        </property>
+        <column>
+         <property name="text" >
+          <string>1</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </widget>

@@ -294,6 +294,28 @@
 				<File
 					RelativePath=".\OptionsDialog.h"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing OptionsDialog.h"
+							CommandLine="$(QTDIR)\bin\uic.exe .\OptionsDialog.ui -o .\ui_OptionsDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\OptionsDialog.h&quot; -o &quot;.\GeneratedFiles\moc_OptionsDialog.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\OptionsDialog.ui;.\OptionsDialog.h"
+							Outputs=".\ui_OptionsDialog.h;.\GeneratedFiles\moc_OptionsDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing OptionsDialog.h"
+							CommandLine="$(QTDIR)\bin\uic.exe .\OptionsDialog.ui -o .\ui_OptionsDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\OptionsDialog.h&quot; -o &quot;.\GeneratedFiles\moc_OptionsDialog.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\OptionsDialog.ui;.\OptionsDialog.h"
+							Outputs=".\ui_OptionsDialog.h;.\GeneratedFiles\moc_OptionsDialog.cpp"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\OptionWidget.cpp"

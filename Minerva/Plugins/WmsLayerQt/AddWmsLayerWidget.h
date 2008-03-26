@@ -52,13 +52,10 @@ protected slots:
   void _onServerTextChanged ( const QString& text );
 
 private:
-  //typedef std::vector<OptionWidget*> OptionWidgets;
   typedef Minerva::Core::Layers::RasterLayerWms::Extents Extents;
   typedef Minerva::Core::Layers::RasterLayerWms::Options Options;
   
-  //OptionWidgets _options;
   QButtonGroup *_imageTypes;
-  //QWidget *_optionsWidget;
   QStringListModel *_recentServers;
   Minerva::Core::Layers::RasterLayerWms::RefPtr _layer;
 };

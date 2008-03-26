@@ -388,6 +388,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\generatedfiles\moc_OptionsDialog.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generatedfiles\moc_OptionWidget.cpp"
 					>
 				</File>

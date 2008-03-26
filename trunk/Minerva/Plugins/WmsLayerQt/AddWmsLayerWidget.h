@@ -47,18 +47,18 @@ signals:
 protected slots:
   void on_browseDirectory_clicked();
   void on_capabilitiesButton_clicked();
-  void on_addOptionButton_clicked();
+  void on_viewOptionsButton_clicked();
   
   void _onServerTextChanged ( const QString& text );
 
 private:
-  typedef std::vector<OptionWidget*> OptionWidgets;
+  //typedef std::vector<OptionWidget*> OptionWidgets;
   typedef Minerva::Core::Layers::RasterLayerWms::Extents Extents;
   typedef Minerva::Core::Layers::RasterLayerWms::Options Options;
   
-  OptionWidgets _options;
+  //OptionWidgets _options;
   QButtonGroup *_imageTypes;
-  QWidget *_optionsWidget;
+  //QWidget *_optionsWidget;
   QStringListModel *_recentServers;
   Minerva::Core::Layers::RasterLayerWms::RefPtr _layer;
 };

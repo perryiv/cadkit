@@ -21,7 +21,6 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Documents/Manager.h"
-#include "Usul/File/Contents.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Network/Curl.h"
@@ -29,8 +28,10 @@
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Qt.h"
+#include "Usul/Scope/RemoveFile.h"
 
 #include "XmlTree/Document.h"
+#include "XmlTree/XercesLife.h"
 
 #include "QtGui/QDialog"
 #include "QtGui/QLabel"
@@ -50,6 +51,7 @@
 #include "QtGui/QCompleter"
 
 #include <iostream>
+#include <fstream>
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -278,15 +280,19 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
   std::string request ( _server->text().toStdString() + "?request=GetCapabilities&Service=WMS&Version=1.1.1" );
   
   // File to download to.
-  Usul::File::Temp temp;
+	std::string name ( Usul::File::Temp::file() );
+	Usul::Scope::RemoveFile remove ( name );
   
-  // Download.
-  Usul::Network::Curl curl ( request, temp.name() );
-  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "3034499311" );
-  
+	// Download.
+	{
+		Usul::Network::Curl curl ( request, name );
+		Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "3034499311" );
+	}
+
   // Open the xml document.
+	XmlTree::XercesLife life;
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
-  document->load ( temp.name() );
+  document->load ( name );
   
   typedef XmlTree::Node::Children    Children;
   

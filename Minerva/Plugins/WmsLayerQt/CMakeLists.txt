@@ -43,12 +43,12 @@ SET (SOURCES
 SET(MOC_HDRS
   AddWmsLayerWidget.h
   EditWmsLayerWidget.h
+  OptionsDialog.h
   OptionWidget.h
 )
 
 # Make .h from .ui
-SET(UIS WmsWidget.ui)
-SET(UIS EditWmsLayerWidget.ui)
+SET(UIS WmsWidget.ui EditWmsLayerWidget.ui OptionsDialog.ui )
 
 QT4_WRAP_UI( UIS_HDRS ${UIS} )
 

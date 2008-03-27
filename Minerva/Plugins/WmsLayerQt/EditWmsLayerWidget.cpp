@@ -9,6 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h"
+#include "Minerva/Plugins/WmsLayerQt/OptionsDialog.h"
+#include "Minerva/Plugins/WmsLayerQt/AlphasDialog.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,4 +71,40 @@ void EditWmsLayerWidget::_serverFinishedEditing()
 {
   if ( _layer.valid() )
     _layer->url ( _server->text().toStdString() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The view options button has been clicked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void EditWmsLayerWidget::on_viewOptionsButton_clicked()
+{
+  if ( _layer.valid() )
+  {
+    OptionsDialog dialog ( _layer->options(), this );
+    dialog.exec();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The view options button has been clicked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void EditWmsLayerWidget::on_viewAlphasButton_clicked()
+{
+  if ( _layer.valid() )
+  {
+    RasterLayerWms::Alphas alphas ( _layer->alphas() );
+    
+    AlphasDialog dialog ( alphas, this );
+    
+    if ( QDialog::Accepted == dialog.exec() )
+      _layer->alphas ( dialog.alphas() );
+  }
 }

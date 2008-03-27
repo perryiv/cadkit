@@ -33,6 +33,9 @@ protected slots:
   void _nameFinishedEditing();
   void _serverFinishedEditing();
   
+  void on_viewOptionsButton_clicked();
+  void on_viewAlphasButton_clicked();
+  
 private:
   RasterLayerWms::RefPtr _layer;
 };

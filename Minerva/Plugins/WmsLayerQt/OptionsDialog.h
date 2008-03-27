@@ -20,7 +20,7 @@
 #include <string>
 
 class OptionsDialog : public QDialog,
-private Ui::OptionsDialog
+                      private Ui::OptionsDialog
 {
   Q_OBJECT;
 public:

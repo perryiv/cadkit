@@ -784,6 +784,12 @@
 		669243F00D35778E00C41A28 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		669243F10D35779800C41A28 /* ossimPlanet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A50D15177F00B4B1AA /* ossimPlanet.framework */; };
 		669244680D3577F500C41A28 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		6693572A0D9AD0CA0066DEDC /* OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357280D9AD0CA0066DEDC /* OptionsDialog.cpp */; };
+		6693572B0D9AD0CA0066DEDC /* OptionsDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 669357290D9AD0CA0066DEDC /* OptionsDialog.h */; };
+		669357410D9AD2A90066DEDC /* moc_OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357400D9AD2A90066DEDC /* moc_OptionsDialog.cpp */; };
+		669357AF0D9AF0420066DEDC /* AlphasDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 669357AD0D9AF0420066DEDC /* AlphasDialog.h */; };
+		669357B00D9AF0420066DEDC /* AlphasDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357AE0D9AF0420066DEDC /* AlphasDialog.cpp */; };
+		669357B40D9AF1CA0066DEDC /* moc_AlphasDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357B30D9AF1CA0066DEDC /* moc_AlphasDialog.cpp */; };
 		66942DC40D77D6A200633017 /* Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DBA0D77D6A200633017 /* Layer.cpp */; };
 		66942DC50D77D6A200633017 /* Layer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942DBB0D77D6A200633017 /* Layer.h */; };
 		66942DC60D77D6A200633017 /* LineLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DBC0D77D6A200633017 /* LineLayer.cpp */; };
@@ -1921,14 +1927,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66942DB50D77D66900633017 /* MinervaPostGISLayer */;
+			remoteGlobalIDString = 66942DB50D77D66900633017;
 			remoteInfo = MinervaPostGISLayer;
 		};
 		66A06FF60D998BDE00D0B56A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 43FED6F1092452E100EBB610 /* Usul */;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
 			remoteInfo = Usul;
 		};
 		66A09F540D872E3600E7E212 /* PBXContainerItemProxy */ = {
@@ -3378,6 +3384,12 @@
 		669245D80D35A32000C41A28 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector2.h; sourceTree = "<group>"; };
 		669245D90D35A32000C41A28 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector3.h; sourceTree = "<group>"; };
 		669245DA0D35A32000C41A28 /* Vector4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector4.h; sourceTree = "<group>"; };
+		669357280D9AD0CA0066DEDC /* OptionsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OptionsDialog.cpp; path = WmsLayerQt/OptionsDialog.cpp; sourceTree = "<group>"; };
+		669357290D9AD0CA0066DEDC /* OptionsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OptionsDialog.h; path = WmsLayerQt/OptionsDialog.h; sourceTree = "<group>"; };
+		669357400D9AD2A90066DEDC /* moc_OptionsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_OptionsDialog.cpp; path = WmsLayerQt/moc_OptionsDialog.cpp; sourceTree = "<group>"; };
+		669357AD0D9AF0420066DEDC /* AlphasDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlphasDialog.h; path = WmsLayerQt/AlphasDialog.h; sourceTree = "<group>"; };
+		669357AE0D9AF0420066DEDC /* AlphasDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlphasDialog.cpp; path = WmsLayerQt/AlphasDialog.cpp; sourceTree = "<group>"; };
+		669357B30D9AF1CA0066DEDC /* moc_AlphasDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_AlphasDialog.cpp; path = WmsLayerQt/moc_AlphasDialog.cpp; sourceTree = "<group>"; };
 		66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaPostGISLayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66942DBA0D77D6A200633017 /* Layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Layer.cpp; sourceTree = "<group>"; };
 		66942DBB0D77D6A200633017 /* Layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Layer.h; sourceTree = "<group>"; };
@@ -6952,14 +6964,20 @@
 		66A112C80D2EBBA3009B29ED /* WmsLayerQt */ = {
 			isa = PBXGroup;
 			children = (
-				66A06F9D0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp */,
 				66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */,
 				66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */,
+				669357AE0D9AF0420066DEDC /* AlphasDialog.cpp */,
+				669357AD0D9AF0420066DEDC /* AlphasDialog.h */,
 				66A112D80D2EBC77009B29ED /* CompileGuard.h */,
 				66A06F730D997C5900D0B56A /* EditWmsLayerWidget.cpp */,
 				66A06F720D997C5900D0B56A /* EditWmsLayerWidget.h */,
 				66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */,
+				669357B30D9AF1CA0066DEDC /* moc_AlphasDialog.cpp */,
+				66A06F9D0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp */,
+				669357400D9AD2A90066DEDC /* moc_OptionsDialog.cpp */,
 				668D4CCE0D372FD900CE039D /* moc_OptionWidget.cpp */,
+				669357280D9AD0CA0066DEDC /* OptionsDialog.cpp */,
+				669357290D9AD0CA0066DEDC /* OptionsDialog.h */,
 				668D4CC90D372F9E00CE039D /* OptionWidget.cpp */,
 				668D4CCA0D372F9E00CE039D /* OptionWidget.h */,
 				66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */,
@@ -8036,6 +8054,8 @@
 				668D4CCC0D372F9E00CE039D /* OptionWidget.h in Headers */,
 				66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */,
 				66A06F740D997C5900D0B56A /* EditWmsLayerWidget.h in Headers */,
+				6693572B0D9AD0CA0066DEDC /* OptionsDialog.h in Headers */,
+				669357AF0D9AF0420066DEDC /* AlphasDialog.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9493,17 +9513,25 @@
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.ui,
 			);
 			outputPaths = (
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionWidget.cpp,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AlphasDialog.cpp,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_AlphasDialog.h,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionWidget.cpp\n";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionsDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_OptionsDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AlphasDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_AlphasDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionWidget.cpp\n";
 		};
 		66A1198A0D2EC239009B29ED /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -10085,6 +10113,10 @@
 				66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */,
 				66A06F750D997C5900D0B56A /* EditWmsLayerWidget.cpp in Sources */,
 				66A06F9E0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp in Sources */,
+				6693572A0D9AD0CA0066DEDC /* OptionsDialog.cpp in Sources */,
+				669357410D9AD2A90066DEDC /* moc_OptionsDialog.cpp in Sources */,
+				669357B00D9AF0420066DEDC /* AlphasDialog.cpp in Sources */,
+				669357B40D9AF1CA0066DEDC /* moc_AlphasDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

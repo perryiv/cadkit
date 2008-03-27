@@ -132,7 +132,7 @@ template < class T > inline Usul::Types::Uint32 pack ( T red, T green, T blue, T
 
 template < class ColorType > inline ColorType unpack ( Usul::Types::Uint32 c )
 {
-  return ColorType ( ( c & 0xFF000000 ), ( c & 0x00FF0000 ), ( c & 0x0000FF00 ), ( c & 0x000000FF ) );
+  return ColorType ( ( ( c & 0xFF000000 ) >> 24 ), ( ( c & 0x00FF0000 ) >> 16 ), ( ( c & 0x0000FF00 ) >> 8 ), ( c & 0x000000FF ) );
 }
 
 

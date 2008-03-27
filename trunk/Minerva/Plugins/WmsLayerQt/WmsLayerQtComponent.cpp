@@ -17,12 +17,28 @@
 #include "Minerva/Plugins/WmsLayerQt/WmsLayerQtComponent.h"
 #include "Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h"
 
+#include "Usul/Registry/Database.h"
+#include "Usul/Registry/Qt.h"
+
 #include "QtGui/QDialog"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayerQtComponent, WmsLayerQtComponent::BaseClass );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Registry constants.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  const std::string SECTION  ( "wms_qt_gui" );
+  const std::string GEOMETRY ( "geometry" );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,10 +191,19 @@ void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul:
   hLayout->addWidget ( ok );
   hLayout->addWidget ( cancel );
   
+  // Set the title.
+  dialog.setWindowTitle( QString ( "Edit " ) + QString ( name.c_str() ) );
+  
+  // Set the window's properties.
+  dialog.restoreGeometry ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::GEOMETRY].get<QByteArray> ( QByteArray() ) );
+  
   if ( QDialog::Rejected == dialog.exec() )
   {
     // Restore the state.
     wms->name ( name );
     wms->url ( url );
   }  
+  
+  // Save the window's properties.
+  Usul::Registry::Database::instance()[Detail::SECTION][Detail::GEOMETRY] = dialog.saveGeometry();
 }

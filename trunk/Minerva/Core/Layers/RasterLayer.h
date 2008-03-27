@@ -77,6 +77,7 @@ public:
   // Get the alpha values.
   virtual float         alpha() const;
   virtual Alphas        alphas() const;
+  virtual void          alphas ( const Alphas& alphas );
 
   /// Get/Set the extents.
   void                  extents ( const Extents& extents );

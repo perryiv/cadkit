@@ -2993,11 +2993,11 @@ void Application::setStatusBarText ( const std::string &text, bool force )
 
 bool Application::_isHeadNode() const
 {
-#ifdef _MSC_VER
-  return true;
-#else
+//#ifdef _MSC_VER
+//  return true;
+//#else
   return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
-#endif
+//#endif
 }
 
 

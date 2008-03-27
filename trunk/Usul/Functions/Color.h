@@ -120,7 +120,7 @@ template < class T > inline Usul::Types::Uint32 pack ( T red, T green, T blue, T
   const unsigned char g ( static_cast < unsigned char > ( ( static_cast < double > ( green ) / maxValue ) * 255 ) );
   const unsigned char b ( static_cast < unsigned char > ( ( static_cast < double > ( blue  ) / maxValue ) * 255 ) );
   const unsigned char a ( static_cast < unsigned char > ( ( static_cast < double > ( alpha ) / maxValue ) * 255 ) );
-  return Usul::Functions::Color::pack ( r, b, b, a );
+  return Usul::Functions::Color::pack ( r, g, b, a );
 }
 
 

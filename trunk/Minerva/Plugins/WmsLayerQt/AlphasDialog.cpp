@@ -14,6 +14,8 @@
 #include "Usul/Math/Vector4.h"
 #include "Usul/Strings/Format.h"
 
+#include "QtTools/ColorButton.h"
+
 #include "QtGui/QLabel"
 #include "QtGui/QSpinBox"
 #include "QtGui/QPainter"
@@ -168,6 +170,12 @@ bool AlphasDialog::AlphasItemModel::setData ( const QModelIndex& index, const QV
     // Color.
     if ( 0 == index.column() )
     {
+			QColor color ( value.value<QColor>() );
+			_colors[index.row()] = color;
+
+			emit dataChanged ( index, index );
+      
+      return true;
     }
     
     // Alpha.
@@ -286,7 +294,8 @@ QWidget * AlphasDialog::AlphasItemDelegate::createEditor ( QWidget *parent, cons
 {
   if ( 0 == index.column() )
   {
-    return new QLabel ( parent );
+    //return new QLabel ( parent );
+		return new QtTools::ColorButton ( parent );
   }
   if ( 1 == index.column() )
   {
@@ -309,9 +318,9 @@ void AlphasDialog::AlphasItemDelegate::setEditorData( QWidget *editor, const QMo
 {
   if ( 0 == index.column() )
   {
-    QColor color ( index.model()->data ( index, Qt::DisplayRole ).toUInt() );
-    QLabel *label ( static_cast< QLabel* > ( editor ) );
-    label->setText ( Usul::Strings::format ( "Red: ", color.red(), " Green: ", color.green(), " Blue: ", color.blue() ).c_str() );
+    QColor color ( index.model()->data ( index, Qt::DisplayRole ).value<QColor>() );
+		QtTools::ColorButton* button ( static_cast<QtTools::ColorButton*> ( editor ) );
+		button->color ( color );
   }
   else if ( 1 == index.column() )
   {

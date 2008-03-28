@@ -15,11 +15,11 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 INCLUDE(${QT_USE_FILE})
 
 SUBDIRS (
-${PROJECT_SOURCE_DIR}/../Experimental/QtTools
-${PROJECT_SOURCE_DIR}/Qt/Views/OSG
-${PROJECT_SOURCE_DIR}/Qt/Commands
-${PROJECT_SOURCE_DIR}/Qt/Tools
-${PROJECT_SOURCE_DIR}/Qt/Core
-${PROJECT_SOURCE_DIR}/Qt/Application
-${PROJECT_SOURCE_DIR}/Qt/Plugins/SceneDelegate
+${CADKIT_INC_DIR}/Experimental/QtTools
+${CADKIT_INC_DIR}/Helios/Qt/Views/OSG
+${CADKIT_INC_DIR}/Helios/Qt/Commands
+${CADKIT_INC_DIR}/Helios/Qt/Tools
+${CADKIT_INC_DIR}/Helios/Qt/Core
+${CADKIT_INC_DIR}/Helios/Qt/Application
+${CADKIT_INC_DIR}/Helios/Qt/Plugins/SceneDelegate
 )

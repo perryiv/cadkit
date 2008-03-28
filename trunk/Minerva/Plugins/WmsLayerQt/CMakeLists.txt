@@ -32,7 +32,9 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 
 SET (SOURCES
   AddWmsLayerWidget.cpp
+  AlphasDialog.cpp
   EditWmsLayerWidget.cpp
+  OptionsDialog.cpp
   OptionWidget.cpp
   WmsLayerItem.cpp
   WmsLayerQtFactory.cpp
@@ -42,13 +44,19 @@ SET (SOURCES
 
 SET(MOC_HDRS
   AddWmsLayerWidget.h
+  AlphasDialog.h
   EditWmsLayerWidget.h
   OptionsDialog.h
   OptionWidget.h
 )
 
 # Make .h from .ui
-SET(UIS WmsWidget.ui EditWmsLayerWidget.ui OptionsDialog.ui )
+SET ( UIS 
+  AlphasDialog.ui 
+  WmsWidget.ui 
+  EditWmsLayerWidget.ui 
+  OptionsDialog.ui 
+)
 
 QT4_WRAP_UI( UIS_HDRS ${UIS} )
 

@@ -436,7 +436,8 @@ void AlphasDialog::AlphasItemDelegate::paint ( QPainter *painter, const QStyleOp
 #if 0
   if ( 0x0 != painter, 0 == index.column() )
   {
-    painter->fillRect ( option.rect, QColor ( 10 * index.row(), 0, 0, 255 ) );
+		QColor color ( index.model()->data ( index, Qt::DisplayRole ).value<QColor>() );
+    painter->fillRect ( option.rect, color );
   }
   
   else

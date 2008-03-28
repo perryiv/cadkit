@@ -60,6 +60,7 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/ResampleLine
 ${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
 ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
 ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
+${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
 )
 #ENDIF(BUILD_MINERVA)
 

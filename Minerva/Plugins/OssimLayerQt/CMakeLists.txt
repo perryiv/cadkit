@@ -1,28 +1,40 @@
-project (ComputeNormals)
+project (OssimLayerQt)
 
-SET(PLUGIN_NAME "ComputeNormals")
+SET(PLUGIN_NAME "OssimLayerQt")
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+SET( CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
-set(COMPILE_GUARD "_COMPILING_COMPUTE_NORMALS")
+set(COMPILE_GUARD "_COMPILING_OSSIM_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+                     "${CADKIT_INC_DIR}/Experimental"
+                     "${PROJECT_SOURCE_DIR}/../" 
+                     ${OSG_INC_DIR}
+                     ${QT_INCLUDE_DIR} )
 
 set (SOURCES
-    ComputeNormalsFactory.cpp
-    ComputeNormalsComponent.cpp
+  AddOssimLayerWidget.cpp
+  OssimLayerQtComponent.cpp
+  OssimLayerQtFactory.cpp
 )
 
+SET(MOC_HDRS
+  AddOssimLayerWidget.h
+)
+
+# Make the moc files.
+QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
+
 # ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} )
 
 CADKIT_PLUGIN()
 
 # Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul )	
+LINK_CADKIT( ${PLUGIN_NAME} Usul QtTools Minerva )	
 

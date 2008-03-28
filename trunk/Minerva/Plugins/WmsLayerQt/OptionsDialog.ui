@@ -20,19 +20,28 @@
      </property>
      <layout class="QVBoxLayout" >
       <item>
-       <widget class="QTreeWidget" name="_optionsTreeWidget" >
-        <property name="alternatingRowColors" >
-         <bool>true</bool>
-        </property>
-        <column>
-         <property name="text" >
-          <string>1</string>
-         </property>
-        </column>
-       </widget>
+       <widget class="QTreeView" name="_optionsTreeWidget" />
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QPushButton" name="addRowButton" >
+       <property name="text" >
+        <string>Add Row</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="removeRowButton" >
+       <property name="text" >
+        <string>Remove Row</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox" >

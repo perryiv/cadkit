@@ -284,7 +284,12 @@ bool AlphasDialog::AlphasItemModel::hasChildren ( const QModelIndex & parent ) c
 
 Qt::ItemFlags AlphasDialog::AlphasItemModel::flags ( const QModelIndex &index ) const
 {
-  return BaseClass::flags ( index );
+  Qt::ItemFlags flags ( BaseClass::flags ( index ) );
+  
+  if ( index.isValid() )
+    flags |= Qt::ItemIsEditable;
+  
+  return flags;
 }
 
 

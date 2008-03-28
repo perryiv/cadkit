@@ -153,6 +153,7 @@ class MpdWriter : public Usul::Base::Object
 
       // TimeSet functions
       void                    addTimeSet( const std::string &name, const std::string &menuName, unsigned int endTime );
+      void                    addTimeSet( TimeSet timeset );
       void                    addModelsToTimeSet( std::vector< std::string > modelList,
                                                  const std::string &timeSetName,
                                                  unsigned int startTime,

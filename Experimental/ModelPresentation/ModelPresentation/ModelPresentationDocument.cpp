@@ -384,23 +384,25 @@ void ModelPresentationDocument::_checkTimeSteps( Usul::Interfaces::IUnknown *cal
   std::string message = Usul::Strings::format( "Current Step: ", _globalCurrentTime + 1 );
   this->_setStatusText( message, _textXPos, _textYPos, 0.80, 0.05, caller );
 
+
   // Check Time Sets
   if( true == _useTimeLine )
   {
+   // Set all models to hide
+    for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
+    { 
+      _mpdModels.models->setValue( modelIndex, false );
+    }
     for( unsigned int j = 0; j < _timeSets.size(); ++j )
     {
- 
-      for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
-      {
-        unsigned int currentIndex = _timeSets.at( j ).currentTime;
-        _mpdModels.models->setValue( modelIndex, false );
-      }
+      unsigned int currentIndex = _timeSets.at( j ).currentTime;
+
       if( true == _timeSets.at( j ).visible )
       {
         for( unsigned int t = 0; t < _timeSets.at( j ).groups.size(); ++t )
         {
-          if( _timeSets.at( j ).groups.at( t ).startTime <= _timeSets.at( j ).currentTime &&
-              _timeSets.at( j ).groups.at( t ).endTime > _timeSets.at( j ).currentTime )
+          if( _timeSets.at( j ).groups.at( t ).startTime <= currentIndex &&
+              _timeSets.at( j ).groups.at( t ).endTime > currentIndex )
           {
             for( std::map< std::string, bool >::iterator iter =  _timeSets.at( j ).groups.at( t ).visibleModelsMap.begin();
                                                          iter != _timeSets.at( j ).groups.at( t ).visibleModelsMap.end();
@@ -511,7 +513,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
       if( set.nextIndexToLoad < set.maxFilesToLoad )
       {
         
-        if( false == this->_getJobAtIndex( index ) )
+        if( false == this->_getJobAtIndex( index ).valid() )
         {
           Guard guard ( this );
           _jobs.at( index ) = new MpdJob( caller, _workingDir, set.header.directory, set.header.prefix, set.header.extension, set.header.modelNames );
@@ -519,7 +521,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
         }
         else
         {
-          if ( this->_getJobAtIndex( index )->isDone() )
+          if ( true == this->_getJobAtIndex( index )->isDone() )
           {
            
             // process the data from the completed job
@@ -760,16 +762,7 @@ void ModelPresentationDocument::firstStep ()
 
   if( false == this->isAnimating() )
   {
-    if( true == _useDynamic )
-    {
-      for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
-      { 
-        for( unsigned int j = 0; j < _dynamicSets.at( i ).models->getNumChildren(); ++j )
-        {
-          _dynamicSets.at( i ).models->setValue( j, false );
-        }
-      }
-    }
+
     if( true == _useTimeLine )
     {
       for( unsigned int i = 0; i < _timeSets.size(); ++i )
@@ -783,6 +776,10 @@ void ModelPresentationDocument::firstStep ()
       for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
       {
         _dynamicSets.at( i ).currentTime = 0;
+        for( unsigned int j = 0; j < _dynamicSets.at( i ).models->getNumChildren(); ++j )
+        {
+          _dynamicSets.at( i ).models->setValue( j, false );
+        }
       }
       this->_checkTime( true );
     }
@@ -2428,65 +2425,60 @@ void ModelPresentationDocument::_processJobData( unsigned int index, Usul::Inter
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
 
-  if( _jobs.size() > index && true == _jobs.at( index ).valid() )
-  {
-    if( true == _jobs.at( index )->foundNewData() )
-    {
-     // Ask job for it's stuff and rebuild scene, etc.
-      MpdDefinitions::Groups groups = _jobs.at( index )->getData();
-      for( unsigned int i = 0; i < groups.size(); ++i )
-      {
-        MpdDefinitions::MpdDynamicGroup grp;
-        MpdDefinitions::MpdDynamicSetHeader header = _jobs.at( index )->getHeader();
-        grp.valid = false;
-        grp.loaded = true;
-        grp.filename="";
-
-        // Sanity Check to see if the child at position nextIndexToLoad exists
-        if( _dynamicSets.at( index ).models->getNumChildren() > _dynamicSets.at( index ).nextIndexToLoad )
-        {
-          _dynamicSets.at( index ).models->setChild( _dynamicSets.at( index ).nextIndexToLoad, groups.at( i ).get() );
-        }
-        else
-        {
-          std::cout << Usul::Strings::format( "When trying to setChild: The group at position ", _dynamicSets.at( index ).nextIndexToLoad, " does not exist!" ) << std::endl;
-          return;
-        }
-        // Sanity Check to see if the group at position nextIndexToLoad exists
-        if( _dynamicSets.at( index ).groups.size() > _dynamicSets.at( index ).nextIndexToLoad )
-        {
-          _dynamicSets.at( index ).groups.at( _dynamicSets.at( index ).nextIndexToLoad ) = grp;
-        }
-        else
-        {
-          std::cout << Usul::Strings::format( "When trying to set the group: The group at position ", _dynamicSets.at( index ).nextIndexToLoad, " does not exist!" ) << std::endl;
-          return;
-        }
-
-        _dynamicSets.at( index ).header = header;
-        _dynamicSets.at( index ).nextIndexToLoad ++;
-        std::cout << Usul::Strings::format( "Loaded ", _dynamicSets.at( index ).nextIndexToLoad, " of ", _dynamicSets.at( index ).maxFilesToLoad, " steps." ) << std::endl;
-       
-        
-      }
-      
-      // Set the rest of the steps to be this last loaded step and the "not loaded" text
-      for( unsigned int i = _dynamicSets.at( index ).nextIndexToLoad; i < _dynamicSets.at( index ).models->getNumChildren(); ++i )
-      {
-        GroupPtr grpPtr ( new osg::Group );
-        grpPtr->addChild( _dynamicSets.at( index ).models->getChild( _dynamicSets.at( index ).nextIndexToLoad - 1 ) );        
-        _dynamicSets.at( index ).models->setChild( i, grpPtr.get() );
-
-      }
-    }
-  }
-  else
+  MpdJob::RefPtr job ( ( index < _jobs.size() ) ? _jobs.at ( index ) : 0x0 );
+  if ( false == job.valid() )
     return;
+
+  if ( false == job->foundNewData() )
+    return;
+
+  // Ask job for it's stuff and rebuild scene, etc.
+  MpdDefinitions::Groups groups = job->getData();
+  for( unsigned int i = 0; i < groups.size(); ++i )
+  {
+    MpdDefinitions::MpdDynamicGroup grp;
+    MpdDefinitions::MpdDynamicSetHeader header = job->getHeader();
+    grp.valid = false;
+    grp.loaded = true;
+    grp.filename="";
+
+    // Sanity Check to see if the child at position nextIndexToLoad exists
+    if( _dynamicSets.at( index ).models->getNumChildren() > _dynamicSets.at( index ).nextIndexToLoad )
+    {
+      _dynamicSets.at( index ).models->setChild( _dynamicSets.at( index ).nextIndexToLoad, groups.at( i ).get() );
+    }
+    else
+    {
+      std::cout << Usul::Strings::format( "When trying to setChild: The group at position ", _dynamicSets.at( index ).nextIndexToLoad, " does not exist!" ) << std::endl;
+      return;
+    }
+    // Sanity Check to see if the group at position nextIndexToLoad exists
+    if( _dynamicSets.at( index ).groups.size() > _dynamicSets.at( index ).nextIndexToLoad )
+    {
+      _dynamicSets.at( index ).groups.at( _dynamicSets.at( index ).nextIndexToLoad ) = grp;
+    }
+    else
+    {
+      std::cout << Usul::Strings::format( "When trying to set the group: The group at position ", _dynamicSets.at( index ).nextIndexToLoad, " does not exist!" ) << std::endl;
+      return;
+    }
+
+    _dynamicSets.at( index ).header = header;
+    _dynamicSets.at( index ).nextIndexToLoad ++;
+    std::cout << Usul::Strings::format( "Loaded ", _dynamicSets.at( index ).nextIndexToLoad, " of ", _dynamicSets.at( index ).maxFilesToLoad, " steps." ) << std::endl;
+  }
+  
+  // Set the rest of the steps to be this last loaded step and the "not loaded" text
+  for( unsigned int i = _dynamicSets.at( index ).nextIndexToLoad; i < _dynamicSets.at( index ).models->getNumChildren(); ++i )
+  {
+    GroupPtr grpPtr ( new osg::Group );
+    grpPtr->addChild( _dynamicSets.at( index ).models->getChild( _dynamicSets.at( index ).nextIndexToLoad - 1 ) );        
+    _dynamicSets.at( index ).models->setChild( i, grpPtr.get() );
+
+  }
+
   // Assign to null.
   _jobs.at( index ) = 0x0;
-
-  
-
 }
 
 
@@ -2496,7 +2488,7 @@ void ModelPresentationDocument::_processJobData( unsigned int index, Usul::Inter
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MpdJob* ModelPresentationDocument::_getJobAtIndex( unsigned int index )
+MpdJob::RefPtr ModelPresentationDocument::_getJobAtIndex( unsigned int index )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
@@ -2504,7 +2496,7 @@ MpdJob* ModelPresentationDocument::_getJobAtIndex( unsigned int index )
   if( _jobs.size() <= index )
     return 0x0;
 
-  return _jobs.at( index ).get();
+  return _jobs.at( index );
 }
 
 

@@ -9,6 +9,7 @@
 #ifndef	_CLASS_STOCK_H_
 #define	_CLASS_STOCK_H_
 
+#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
 
 #include <osg/Node>
 #include <osg/Switch>
@@ -47,7 +48,11 @@ public:
 	void			setWindowWidth  ( const unsigned int &ww )	{ _winWidth  = ww;	  }
 	void			setWindowMargin ( const unsigned int &wm )	{ _winMargin = wm;	  }
 
+  void      setWorkingDir ( const std::string &dir ){ _workingDir = dir; }
+  void      setWriter( ModelPresentationLib* writer ){ _mpdWriter = writer; }
+
 	unsigned int	getNumOfStockSteps ( )		{ return _stockSteps.size( ); }
+  unsigned int  getTotalSteps() { return ( _stockSteps.size( ) + ( _numTranSteps * _numTranMovements ) ); } 
 
 	osg::Geode*		createStockColorCodeBar ( );
 
@@ -156,6 +161,9 @@ private:
 	osg::ref_ptr< osg::Switch >		_stockSwitch;
 	osg::ref_ptr< osg::Sequence >	_stockStepSequence;
 	osg::ref_ptr< osg::Sequence >	_stockSequence;
+
+  std::string _workingDir;
+  ModelPresentationLib::RefPtr _mpdWriter;
 
 };
 

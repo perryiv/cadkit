@@ -20,11 +20,13 @@
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
-//#include "Usul/Interfaces/IViewPort.h"
+#include "Usul/Documents/Document.h"
+#include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/System/Host.h"
+#include "Usul/System/Directory.h"
 
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
@@ -83,7 +85,7 @@ DRTSimDocument::DRTSimDocument() :
   _isStockOn( true ),
   _isTransOn( true ),
   _counter( 0 ),
-  _mpdXML( "" )
+  _workingDir( "" )
 {
   USUL_TRACE_SCOPE;
 
@@ -98,9 +100,11 @@ DRTSimDocument::DRTSimDocument() :
   _stockFileName	= "StockDetails.dat";
   _transFileName	= "Transhipments.dat";
   _sporeFileName	= "SporeDetails.dat";
-  _legendMachine        = "localhost";
+  _legendMachine  = "localhost";
 
   // end here ( added by W.C )
+
+  _mpdWriter = new ModelPresentationLib();
    
 }
 
@@ -255,6 +259,9 @@ void DRTSimDocument::_read ( const std::string &filename, Unknown *caller, Unkno
 {
   std::string id, fn;
 
+  //set the working directory
+  _workingDir = Usul::File::directory( filename, true );
+
   std::ifstream infile( filename.c_str(), std::ios::in );
   if( !infile ) {
 	  std::cerr << "Error: unable to open drt file!\n";
@@ -273,7 +280,7 @@ void DRTSimDocument::_read ( const std::string &filename, Unknown *caller, Unkno
 	  if( "stock" == id )		_stockFileName = fn;
 	  if( "spore" == id )		_sporeFileName = fn;
 	  if( "trans" == id )		_transFileName = fn;
-          if( "legend" == id )          _legendMachine = fn;
+    if( "legend" == id )  _legendMachine = fn;
 
           
   }
@@ -359,6 +366,20 @@ osg::Node *DRTSimDocument::buildScene ( const BaseClass::Options &options, Unkno
 		exit( 0 );		// program got exit once any one of files failed to open
 	}
 
+  _area.setWorkingDir ( _workingDir );
+  _agent.setWorkingDir( _workingDir );
+  _stock.setWorkingDir( _workingDir );
+  _trans.setWorkingDir( _workingDir );
+
+  _agent.setWriter( _mpdWriter.get() );
+  _stock.setWriter( _mpdWriter.get() );
+  _trans.setWriter( _mpdWriter.get() );
+
+  _mpdWriter->addTimeSet( "Steps", "Variables", 0 );
+  _mpdWriter->addTimeSet( "Agents", "Variables", 0 );
+  _mpdWriter->addTimeSet( "Stock", "Variables", 0 );
+  _mpdWriter->addTimeSet( "Transhipments", "Variables", 0 );
+
   // put "current step" and Agent & Stock color bars
   {
 		osg::ref_ptr< osg::Camera > camera ( new osg::Camera );
@@ -375,34 +396,45 @@ osg::Node *DRTSimDocument::buildScene ( const BaseClass::Options &options, Unkno
         }
         camera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
 
-		_root->addChild( camera.get() );
+		//_root->addChild( camera.get() );
 
   }
 
 	// area
 #if 1
   osg::ref_ptr< osg::Group > areaNode ( new osg::Group );
+  _area.setWriter( _mpdWriter.get() );
   areaNode->addChild( _area.buildAreaScene( ) );
-	_root->addChild( areaNode.get() );
+	//_root->addChild( areaNode.get() );
 #endif
+
 	// agent
 #if 1
   osg::ref_ptr< osg::Group > agentNode ( new osg::Group );
+  
+  
   agentNode->addChild( _agent.buildAgentScene( ) );
-  _root->addChild( agentNode.get() );
+  //_mpdWriter->addDynamicSet( "Steps", "Variables", "step", "osg", _workingDir, _agent.getTotalSteps() - 1 );
+  //_mpdWriter->addDynamicSet( "Agents", "Variables", "agent", "osg", _workingDir, _agent.getTotalSteps() - 1 );
+  //_root->addChild( agentNode.get() );
 #endif
+
 	// stock
 #if 1
   osg::ref_ptr< osg::Group > stockNode ( new osg::Group );
+  
   stockNode->addChild( _stock.buildStockScene( ) );
-	_root->addChild( stockNode.get() );
+  //_mpdWriter->addDynamicSet( "Stock", "Variables", "stock", "osg", _workingDir, _stock.getTotalSteps() - 1 );
+	//_root->addChild( stockNode.get() );
 #endif
+
 	// transhipment
 #if 1
   osg::ref_ptr< osg::Group > transNode ( new osg::Group );
   transNode->addChild( _trans.buildTranshipmentScene( ) );
-	_root->addChild( transNode.get() );
+	//_root->addChild( transNode.get() );
 #endif
+
 	// spore
 #if 0
   osg::ref_ptr< osg::Group > sporeNode ( new osg::Group );
@@ -412,9 +444,53 @@ osg::Node *DRTSimDocument::buildScene ( const BaseClass::Options &options, Unkno
 
   // end here ( added by W.C )
 
+  
+
+  //---------------------------------------------------
+  // create and open a model presentation document here
+  //---------------------------------------------------
+  _mpdWriter->buildXMLString();
+  std::string filename ( _workingDir + "DrtSim.mpd" );
+
+  _mpdWriter->write( filename );
+
+  // This will create a new document.
+    //Info info ( DocManager::instance().find ( filename, caller ) );
+    //
+    //// Check to see if we created a document.
+    //if ( true == info.document.valid() && info.document->canOpen( filename ) )
+    //{
+    //  
+    //  // Ask the document to open the file.
+    //  try
+    //  {       
+    //    this->_openDocument ( filename, info.document.get(), caller, 0x0 );
+ 
+    //    Usul::Interfaces::IBuildScene::QueryPtr build ( info.document.get() );
+    //    if ( true == build.valid() )
+    //    {
+
+    //      OsgTools::Triangles::TriangleSet::Options opt;
+    //      opt[ "normals" ] = "per-vertex";
+    //      opt[ "colors" ]  = "per-vertex";
+
+    //      _root->addChild( build->buildScene( opt, caller ) );
+    //      
+    //    }
+    //  }
+    //  catch( ... )
+    //  {
+    //    std::cout << "Unable to open file: " << filename << std::endl;
+    //  }
+    //}
+  
+   
+
+  //---------------------------------------------------
+
   // make osg files from each node.
   std::string path = "C:/data/Santanam/output/";
-#if 1 // area
+#if 0 // area
   {
     std::string filename = Usul::Strings::format( path, "area", ".osg" );
     osgDB::writeNodeFile( *( areaNode.get() ), filename.c_str() );
@@ -734,7 +810,7 @@ osg::Group*		DRTSimDocument::_createHUDText( )
 
 	// to display "Current Step = ", only need one sequence from either Agent or Stock
 	
-   std::string path = "C:/data/Santanam/output/";
+   std::string path = _workingDir;
 #if 1
     {
       osg::ref_ptr< osg::Camera > camera ( new osg::Camera );
@@ -745,8 +821,15 @@ osg::Group*		DRTSimDocument::_createHUDText( )
       camera->setClearMask( GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
       camera->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
       camera->addChild( group.get() );
-      std::string filename = Usul::Strings::format( path, "legend", _counter, ".osg" );
+      std::string filename = Usul::Strings::format( path, "/legend", _counter, ".osg" );
       osgDB::writeNodeFile( *( camera.get() ), filename.c_str() );
+      _mpdWriter->addModel( "legend", filename );
+      _mpdWriter->addModel( "hide", "" );
+      _mpdWriter->addSet( "Legend", "Settings" );
+      _mpdWriter->addModelToSet( "hide", "Legend", "Hide" );
+      _mpdWriter->addModelToSet( "legend", "Legend", "Show" );
+      
+
     }
 #endif
   group->addChild( _agent.createAgentStepSequence( ) );
@@ -891,3 +974,29 @@ bool		DRTSimDocument::transShow ( )
 
 // end here ( Added by W.C )
 ///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Open the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DRTSimDocument::_openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller, Unknown *progress )
+{
+  USUL_TRACE_SCOPE;
+  //Guard guard ( this->mutex() );
+  if ( 0x0 == document )
+    return;
+#if 1
+  if( true == document->canOpen( file ) )
+    document->open ( file, caller, progress );
+  else
+    std::cout << "Unable to open document for file: " << file << std::endl;
+#else
+    document->open ( file, caller );
+#endif
+    std::cout << "Done loading file: " << file << std::endl;
+  
+	
+}

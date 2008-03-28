@@ -8,6 +8,7 @@
 #ifndef	_CLASS_AREA_H_
 #define	_CLASS_AREA_H_
 
+#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
 
 #include <osg/Node>
 #include <osg/ShapeDrawable>
@@ -35,6 +36,9 @@ public:
 
 	const unsigned int		getHospitalCoordinateX ( const unsigned int id );
 	const unsigned int		getHospitalCoordinateY ( const unsigned int id );
+
+  void                  setWorkingDir( const std::string &dir ) { _workingDir = dir; }
+  void                  setWriter( ModelPresentationLib* writer ){ _writer = writer; }
 
 	osg::Vec3				getHospitalCoordinates ( const unsigned int id );
 
@@ -84,6 +88,9 @@ private:
 	std::string		_filename;
 
 	std::vector< AreaDetail > _areaDetails;
+
+  std::string   _workingDir;
+  ModelPresentationLib::RefPtr  _writer;
 
 
 };

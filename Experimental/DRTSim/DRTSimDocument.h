@@ -98,7 +98,6 @@ public:
   typedef osg::BoundingBox BoundingBox;
   typedef osg::ref_ptr< osg::MatrixTransform > MatrixTransformPtr;
 
- 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DRTSimDocument );
 
@@ -166,7 +165,7 @@ protected:
   virtual bool              animating ();
 
   // same for other animation
-  virtual void				startOver ();
+  virtual void				      startOver ();
 
   virtual void              agentShow ( bool state );
   virtual bool              agentShow ();
@@ -179,6 +178,12 @@ protected:
 
   virtual void              transShow ( bool state );
   virtual bool              transShow ();
+
+  void                      _openDocument ( const std::string &file, 
+                                            Usul::Documents::Document *document, 
+                                            Usul::Interfaces::IUnknown *caller, 
+                                            Unknown *progress );
+
 
 private:
   GroupPtr                    _root;
@@ -218,9 +223,12 @@ private:
 
   std::string			_legendMachine;
 
-  unsigned int _counter;
+  unsigned int        _counter;
 
-  std::string _mpdXML;
+
+  // Model Presentation library pointer to create the mpd file
+  ModelPresentationLib::RefPtr        _mpdWriter;
+  std::string                         _workingDir;
   
 
   // end here ( added by W.C )

@@ -9,6 +9,7 @@
 #ifndef	_CLASS_AGENT_H_
 #define	_CLASS_AGENT_H_
 
+#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
 
 #include <osg/Node>
 #include <osg/Switch>
@@ -39,7 +40,12 @@ public:
 	void			setTranshipmentReserve( )					{ _transhipment.reserve( _numTranSteps ); }
 	void			setTranshipmentSteps( const unsigned int &n )		{ _transhipment.push_back( n ); }
 
+  void      setWorkingDir( const std::string &dir ){ _workingDir = dir; }
+  void      setWriter( ModelPresentationLib* writer ){ _mpdWriter = writer; }
+
 	unsigned int	getNumOfAgentSteps ( )	{ return _agentSteps.size(); }
+  unsigned int  getNumTranshipmentSteps() { return _numTranSteps * _numTranMovements; }
+  unsigned int getTotalSteps() { return ( _agentSteps.size() + ( _numTranSteps * _numTranMovements ) ); }
 
 	void	hide ();
 	void	show ();
@@ -144,6 +150,9 @@ private:
 	osg::ref_ptr< osg::Switch >		_agentSwitch;
 	osg::ref_ptr< osg::Sequence >	_agentStepSequence;
 	osg::ref_ptr< osg::Sequence >	_agentSequence;
+
+  std::string _workingDir;
+  ModelPresentationLib::RefPtr _mpdWriter;
 
 
 };

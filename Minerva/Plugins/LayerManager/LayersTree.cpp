@@ -366,7 +366,7 @@ void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown )
     Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
     if ( gui->handle ( layer.get() ) )
     {
-      gui->showModifyGUI( layer.get(), _caller.get() );
+      gui->showModifyGUI( layer.get(), _document.get() );
       
       QTreeWidgetItem *item ( _tree->currentItem() );
       item->setText( 0, layer->name().c_str() );

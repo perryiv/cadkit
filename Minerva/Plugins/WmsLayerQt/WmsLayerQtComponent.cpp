@@ -17,6 +17,9 @@
 #include "Minerva/Plugins/WmsLayerQt/WmsLayerQtComponent.h"
 #include "Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h"
 
+#include "Minerva/Interfaces/IDirtyScene.h"
+
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Qt.h"
 
@@ -160,13 +163,19 @@ bool WmsLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
 
 void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* caller )
 {
-  Minerva::Core::Layers::RasterLayerWms::RefPtr wms ( dynamic_cast < Minerva::Core::Layers::RasterLayerWms* > ( layer ) );
+	typedef Minerva::Core::Layers::RasterLayerWms RasterLayerWms;
+	typedef RasterLayerWms::Options Options;
+	typedef RasterLayerWms::Alphas Alphas;
+
+  RasterLayerWms::RefPtr wms ( dynamic_cast <RasterLayerWms*> ( layer ) );
   
   // Return now if no layer.
   if ( 0x0 == wms )
     return;
   
   // Save current state.
+	Alphas alphas ( wms->alphas() );
+	Options options ( wms->options() );
   std::string name ( wms->name() );
   std::string url ( wms->url() );
   
@@ -197,9 +206,25 @@ void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul:
   // Set the window's properties.
   dialog.restoreGeometry ( Usul::Registry::Database::instance()[Detail::SECTION][Detail::GEOMETRY].get<QByteArray> ( QByteArray() ) );
   
-  if ( QDialog::Rejected == dialog.exec() )
+	const int result ( dialog.exec() );
+
+	if ( QDialog::Accepted == result )
+	{
+		// Query for needed interfaces.
+		Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( caller );
+		Usul::Interfaces::IDocument::QueryPtr document ( caller );
+
+		if ( dirty.valid() )
+			dirty->dirtyScene ( true, Usul::Interfaces::IUnknown::QueryPtr ( wms ) );
+  
+		if ( document.valid() )
+			document->requestRedraw();
+	}
+  else if ( QDialog::Rejected == result )
   {
     // Restore the state.
+		wms->alphas ( alphas );
+		wms->options ( options );
     wms->name ( name );
     wms->url ( url );
   }  

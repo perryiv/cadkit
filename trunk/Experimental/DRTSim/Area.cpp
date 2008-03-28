@@ -11,6 +11,8 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Strings/Format.h"
 
+#include "OsgTools/State/StateSet.h"
+
 #include "Area.h"
 
 #include <osg/ref_ptr>
@@ -159,6 +161,7 @@ osg::Geode*	Area::buildAreaScene ( )
 			{
 				osg::Vec3	center( _areaDetails[n].hospitalX, _areaSizeY - _areaDetails[n].hospitalY, zValue );
 				geode->addDrawable( _createShapeOfSphere( center, radius, color ) );
+        OsgTools::State::StateSet::setMaterial( geode.get(), color, color, 1.0 );
 
 			}
         
@@ -180,11 +183,17 @@ osg::Geode*	Area::buildAreaScene ( )
 	}
 #if 1 // agent
   {
-    std::string path = "C:/data/Santanam/output/area/";
+    std::string path = _workingDir;
     osg::ref_ptr< osg::Group > group ( new osg::Group );
-    std::string filename = Usul::Strings::format( "area.osg" );
+    std::string filename = Usul::Strings::format( path, "/area.ive" );
     group->addChild( geode.get() );
     osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
+    _writer->addModel( "SampleArea", filename );
+    _writer->addModel( "hide", "" );
+    _writer->addSet( "Area", "Variables" );
+    _writer->addModelToSet( "hide", "Area", "Hide" ); 
+    _writer->addModelToSet( "SampleArea", "Area", "Show" ); 
+    
   }
 #endif
 	return geode.release();

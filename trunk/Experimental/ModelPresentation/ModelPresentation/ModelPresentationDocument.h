@@ -198,7 +198,9 @@ protected:
 
   std::string                 _getWorkingDir();
   void                        _processJobData( unsigned int index, Usul::Interfaces::IUnknown *caller );
-  MpdJob*                     _getJobAtIndex( unsigned int index );
+
+  // TODO: return a smart pointer instead
+  MpdJob::RefPtr              _getJobAtIndex( unsigned int index );
 
   void                        _handleSequenceEvent();
   osg::Node*                  _createProxyGeometry( const std::string &message, Usul::Interfaces::IUnknown *caller );

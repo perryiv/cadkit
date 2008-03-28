@@ -57,7 +57,7 @@ class MpdJob : public Usul::Jobs::Job
       void                                foundNewData( bool state );
 
     protected:
-      ~MpdJob();
+      virtual ~MpdJob();
       virtual void                        _started ();
       void                                _findFiles();
       void                                _loadNewDynamicFiles( std::string filename, IUnknown *caller, IUnknown *progress );

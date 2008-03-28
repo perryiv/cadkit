@@ -35,9 +35,9 @@ osg::Group*		Transhipment::buildTranshipmentScene( )
 
 #if 1 
   {
-    std::string path = "C:/data/Santanam/output/text/";
+    std::string path = _workingDir + "/text/";
     osg::ref_ptr< osg::Group > group ( new osg::Group );
-    std::string filename = Usul::Strings::format( path, "transText.osg" );
+    std::string filename = Usul::Strings::format( path, "transText.ive" );
     group->addChild( _createTextAsNode( osg::Vec3( 200.0f, -30.0f, 0.0f), osg::Vec4( 1.0f, 0.5f, 0.5f, 1.0f ), 20.0f, " Transipment " ) );
     osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
     _root->addChild( group.get() ); 
@@ -146,13 +146,17 @@ osg::Sequence*	Transhipment::createTranshipmentSequence( )
 			preStep = _tranDetails[sId].tranStep;
 
 			_tranSequence->setTime( _tranSequence->getNumChildren()-1, _seqTime*(count-1) );
+
+      // TODO: set to the proper values
+      unsigned int startTime = preStep + ( s * _numBezierPoints );
+      unsigned int endTime = startTime +1;
 			
 			for( unsigned int j = 0; j < _numBezierPoints; ++j )
 			{
         osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
         geode = _createTranshipmentDetailsbyStep( j, sId, eId );
 				_tranSequence->addChild( geode.get() );
-        #if 1 // agent
+        #if 1 
         {
           std::string stepValue = "";
           if( counter < 10 )
@@ -162,23 +166,30 @@ osg::Sequence*	Transhipment::createTranshipmentSequence( )
           if( counter >= 100 )
             stepValue = Usul::Strings::format( counter );
 
-          std::string path = "C:/data/Santanam/output/trans/";
+          std::string path = _workingDir;
           osg::ref_ptr< osg::Group > group ( new osg::Group );
-          std::string filename = Usul::Strings::format( path, "trans", stepValue, ".osg" );
+          std::string filename = Usul::Strings::format( "trans", stepValue );
+          std::string fullpath = Usul::Strings::format( path, "/", filename, ".ive" ); 
           group->addChild( geode.get() );
-          osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
-          counter ++;
+          osgDB::writeNodeFile( *( group.get() ), fullpath.c_str() );
+          _mpdWriter->addModel( filename, fullpath );
+          std::vector< std::string > modelList;
+          modelList.push_back( filename );
+          _mpdWriter->addModelsToTimeSet( modelList, "Transhipments", startTime, endTime );
+          ++counter;
+          ++startTime;
+          ++endTime;
         }
         #endif
 				_tranSequence->setTime( _tranSequence->getNumChildren()-1, _seqTime );
 			}
 
 			_tranSequence->addChild( new osg::Geode );
-        #if 0 // agent
+        #if 0 
         {
           std::string path = "C:/data/Santanam/output/trans/";
           osg::ref_ptr< osg::Group > group ( new osg::Group );
-          std::string filename = Usul::Strings::format( path, "trans", counter, ".osg" );
+          std::string filename = Usul::Strings::format( path, "trans", counter, ".ive" );
           group->addChild( new osg::Geode );
           osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
           counter ++;

@@ -9,6 +9,7 @@
 #ifndef	_CLASS_TRANSHIPMENT_H_
 #define	_CLASS_TRANSHIPMENT_H_
 
+#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
 
 #include <osg/Node>
 #include <osg/Switch>
@@ -27,6 +28,7 @@
 class Transhipment
 {
 public:
+      
 
 	bool			setTranshipmentFileName ( const std::string &fn );
 	osg::Group*		buildTranshipmentScene ( );
@@ -39,6 +41,9 @@ public:
 	void			setHospitalReserve ( )		{ _hospitals.reserve( _numHospitals );	}
 	void			setHospitalCoordinates( osg::Vec3 &hos )		{ _hospitals.push_back( hos );	}
 
+  void      setWorkingDir( const std::string &dir ){ _workingDir = dir; }
+  void      setWriter( ModelPresentationLib* writer ){ _mpdWriter = writer; }
+
 	osg::Switch*	createTranshipmentSwitch ( );
 	osg::Sequence*	createTranshipmentSequence ( );
 
@@ -46,6 +51,8 @@ public:
 	unsigned int	getNumOfTranshipments ( )		{ return _tranSteps.size(); }
 	unsigned int    getNumOfTranMovements ( )		{ return (_numBezierPoints+1); }
 	unsigned int	getStepOfTranshipments ( const unsigned int n );
+
+
 
 
 	void	hide ();
@@ -136,6 +143,9 @@ private:
 	osg::ref_ptr< osg::Switch >		_tranSwitch;
 	osg::ref_ptr< osg::Sequence >	_tranSequence;
 
+  std::string                   _workingDir; 
+
+  ModelPresentationLib::RefPtr  _mpdWriter;
 
 };
 

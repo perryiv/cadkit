@@ -35,9 +35,9 @@ osg::Group*		Agent::buildAgentScene ( )
   #if 1 // agent
   {
 
-    std::string path = "C:/data/Santanam/output/text/";
+    std::string path = _workingDir;
     osg::ref_ptr< osg::Group > group ( new osg::Group );
-    std::string filename = Usul::Strings::format( path, "agentText.osg" );
+    std::string filename = Usul::Strings::format( path, "/agentText.ive" );
     group->addChild( _createTextAsNode( osg::Vec3( 0.0f, -30.0f, 0.0f), osg::Vec4( 1.0f, 0.5f, 0.5f, 1.0f ), 20.0f, " Agent " ) );
     osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
     _root->addChild( group.get() ); 
@@ -182,7 +182,8 @@ osg::Switch*	Agent::createAgentSwitch ( )
 // Actual HUD text creation
 osg::Sequence*		Agent::createAgentStepSequence ()
 {
-
+try
+{
 	float zValue = 0.0f;
 	float characterSize = 26.0f;
 
@@ -218,7 +219,7 @@ osg::Sequence*		Agent::createAgentStepSequence ()
 				_agentStepSequence->setTime( _agentStepSequence->getNumChildren()-1, _seqTime );
 			}
       // dump osg file
-      std::string path = "C:/data/Santanam/output/TimeText/";
+      std::string path = _workingDir;
 #if 1
       {
         osg::ref_ptr< osg::Camera > camera ( new osg::Camera );
@@ -241,9 +242,14 @@ osg::Sequence*		Agent::createAgentStepSequence ()
               stepValue = Usul::Strings::format( "0", counter );
             if( counter >= 100 )
               stepValue = Usul::Strings::format( counter );
-        
-            std::string filename = Usul::Strings::format( path, "step", stepValue, ".osg" );
-            osgDB::writeNodeFile( *( camera.get() ), filename.c_str() );
+
+            std::string filename = Usul::Strings::format( "step", stepValue );
+            std::string fullpath = Usul::Strings::format( path, "/", filename, ".ive" ); 
+            osgDB::writeNodeFile( *( camera.get() ), fullpath.c_str() );
+            _mpdWriter->addModel( filename, fullpath );
+            std::vector< std::string > modelList;
+            modelList.push_back( filename );
+            _mpdWriter->addModelsToTimeSet( modelList, "Steps", counter, counter + 1 );
             counter ++;
           }
           index = count;
@@ -258,8 +264,13 @@ osg::Sequence*		Agent::createAgentStepSequence ()
             if( counter >= 100 )
               stepValue = Usul::Strings::format( counter );
         
-            std::string filename = Usul::Strings::format( path, "step", stepValue, ".osg" );
-            osgDB::writeNodeFile( *( camera.get() ), filename.c_str() );
+            std::string filename = Usul::Strings::format( "step", stepValue );
+            std::string fullpath = Usul::Strings::format( path, "/", filename, ".ive" ); 
+            osgDB::writeNodeFile( *( camera.get() ), fullpath.c_str() );
+            _mpdWriter->addModel( filename, fullpath );
+            std::vector< std::string > modelList;
+            modelList.push_back( filename );
+            _mpdWriter->addModelsToTimeSet( modelList, "Steps", counter, counter + 1 );
             counter ++;
         }
       }
@@ -278,7 +289,11 @@ osg::Sequence*		Agent::createAgentStepSequence ()
 
 	}
 
-
+  }
+  catch( ... )
+  {
+    std::cout << "";
+  }
 	return _agentStepSequence.get();
 
 }
@@ -417,14 +432,14 @@ osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step, unsigne
 
     std::string path = "C:/data/Santanam/output/agent/";
     osg::ref_ptr< osg::Group > group ( new osg::Group );
-    std::string filename = Usul::Strings::format( path, "agent", stepValue, ".osg" );
+    std::string filename = Usul::Strings::format( path, "agent", stepValue, ".ive" );
     group->addChild( geode.get() );
     osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
   }
 #endif
 #if 1
    {
-    std::string path = "C:/data/Santanam/output/agent/";
+    std::string path = _workingDir;
     if( tCount < _transhipment.size() && step == ( _transhipment[tCount]-1 ) )
     {
       for( unsigned int x = 0; x < _numTranMovements; x ++ )
@@ -437,11 +452,17 @@ osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step, unsigne
           stepValue = Usul::Strings::format( "0", counter );
         if( counter >= 100 )
           stepValue = Usul::Strings::format( counter );
+
+        std::string filename = Usul::Strings::format( "agent", stepValue );
+        std::string fullpath = Usul::Strings::format( path, "/", filename, ".ive" ); 
+        _mpdWriter->addModel( filename, fullpath );
+        std::vector< std::string > modelList;
+        modelList.push_back( filename );
+        _mpdWriter->addModelsToTimeSet( modelList, "Agents", counter, counter + 1 );
     
-        std::string filename = Usul::Strings::format( path, "agent", stepValue, ".osg" );
         osg::ref_ptr< osg::Group > group ( new osg::Group );
         group->addChild( geode.get() );
-        osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
+        osgDB::writeNodeFile( *( group.get() ), fullpath.c_str() );
         ++counter;
       }
     }
@@ -455,10 +476,15 @@ osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step, unsigne
         if( counter >= 100 )
           stepValue = Usul::Strings::format( counter );
     
-        std::string filename = Usul::Strings::format( path, "agent", stepValue, ".osg" );
+        std::string filename = Usul::Strings::format( "agent", stepValue );
+        std::string fullpath = Usul::Strings::format( path, "/", filename, ".ive" ); 
+        _mpdWriter->addModel( filename, fullpath );
+        std::vector< std::string > modelList;
+        modelList.push_back( filename );
+        _mpdWriter->addModelsToTimeSet( modelList, "Agents", counter, counter + 1 );
         osg::ref_ptr< osg::Group > group ( new osg::Group );
         group->addChild( geode.get() );
-        osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
+        osgDB::writeNodeFile( *( group.get() ), fullpath.c_str() );
         ++counter;
     }
   }

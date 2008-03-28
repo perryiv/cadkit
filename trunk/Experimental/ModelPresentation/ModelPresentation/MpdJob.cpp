@@ -259,7 +259,7 @@ void MpdJob::_loadNewDynamicFiles( std::string filename, Usul::Interfaces::IUnkn
   // guard and add to the root
   {
     Guard guard ( this ); 
-    _root.push_back( node );
+    _root.push_back( node.get() );
   }
  
   // unlock here
@@ -310,7 +310,7 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
           }
         }
         
-        Usul::Interfaces::IBuildScene::QueryPtr build ( info.document.get() );
+        Usul::Interfaces::IBuildScene::QueryPtr build ( info.document );
         if ( true == build.valid() )
         {
 

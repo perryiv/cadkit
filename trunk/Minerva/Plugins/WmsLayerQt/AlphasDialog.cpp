@@ -79,6 +79,32 @@ AlphasDialog::Alphas AlphasDialog::alphas() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add a row.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AlphasDialog::on_addRowButton_clicked()
+{
+  QModelIndex index;
+  _model->insertRow ( _model->rowCount(), index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a row.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AlphasDialog::on_removeRowButton_clicked()
+{
+  QModelIndex index ( _alphasTreeView->selectionModel()->currentIndex() );
+  _model->removeRow ( index.row(), index.parent() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -258,7 +284,51 @@ bool AlphasDialog::AlphasItemModel::hasChildren ( const QModelIndex & parent ) c
 
 Qt::ItemFlags AlphasDialog::AlphasItemModel::flags ( const QModelIndex &index ) const
 {
-  return Qt::ItemIsEnabled | Qt::ItemIsEditable;
+  return BaseClass::flags ( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the row.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AlphasDialog::AlphasItemModel::removeRow ( int row, const QModelIndex & parent )
+{
+  if ( row < static_cast<int> ( _colors.size() ) && row < static_cast<int> ( _opacities.size() ) )
+  {
+    this->beginRemoveRows ( parent, row, row );
+    _colors.erase ( _colors.begin() + row );
+    _opacities.erase ( _opacities.begin() + row );
+    this->endRemoveRows();
+    
+    return true;
+  }
+  
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Insert a row.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AlphasDialog::AlphasItemModel::insertRow ( int row, const QModelIndex & parent )
+{
+  if ( row <= static_cast<int> ( _colors.size() ) && row <= static_cast<int> ( _opacities.size() ) )
+  {
+    this->beginInsertRows ( parent, row, row );
+    _colors.insert ( _colors.begin() + row, Usul::Functions::Color::pack ( 255, 255, 255, 0 ) );
+    _opacities.insert ( _opacities.begin() + row, 255 );
+    this->endInsertRows();
+    
+    return true;
+  }
+  
+  return false;
 }
 
 

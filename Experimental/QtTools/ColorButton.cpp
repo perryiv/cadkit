@@ -22,8 +22,8 @@ using namespace QtTools;
 ///////////////////////////////////////////////////////////////////////////////
 
 ColorButton::ColorButton ( QWidget *parent ) :
-BaseClass ( parent ),
-_color ( 255, 255, 255 )
+	BaseClass ( parent ),
+	_color ( 255, 255, 255 )
 {
   connect ( this, SIGNAL ( clicked() ), this, SLOT ( _buttonClicked() ) );
 }

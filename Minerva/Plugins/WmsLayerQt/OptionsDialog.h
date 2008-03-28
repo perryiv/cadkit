@@ -15,6 +15,7 @@
 #include "ui_OptionsDialog.h"
 
 #include "QtGui/QDialog"
+#include "QtGui/QItemDelegate"
 
 #include <map>
 #include <string>
@@ -30,8 +31,67 @@ public:
   OptionsDialog ( const Options& options, QWidget *parent = 0x0 );
   virtual ~OptionsDialog();
   
+  Options options() const;
+  
+protected slots:
+  
+  void on_addRowButton_clicked();
+  void on_removeRowButton_clicked();
+  
 private:
-  Options _options;
+  
+  // Custom item model.
+  class OptionsItemModel : public QAbstractItemModel
+  {
+  public:
+    typedef QAbstractItemModel BaseClass;
+    typedef std::pair<std::string,std::string> Value;
+    typedef std::vector<Value> Values;
+    
+    OptionsItemModel ( const Options& alphas, QObject *parent = 0x0 );
+    virtual ~OptionsItemModel();
+    
+    Values values() const { return _values; }
+    
+    virtual QModelIndex index ( int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+    
+    virtual Qt::ItemFlags flags ( const QModelIndex &index ) const;
+    
+    virtual int rowCount ( const QModelIndex &parent = QModelIndex() ) const;
+    virtual int columnCount ( const QModelIndex &parent = QModelIndex() ) const;
+    
+    virtual QVariant data ( const QModelIndex& index, int role = Qt::DisplayRole ) const;
+    virtual bool     setData ( const QModelIndex& index, const QVariant& value, int role );
+    
+    virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
+    virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+    
+    virtual QModelIndex parent ( const QModelIndex & index ) const;
+    
+    virtual bool insertRow ( int row, const QModelIndex & parent = QModelIndex() );
+    virtual bool removeRow ( int row, const QModelIndex & parent = QModelIndex() );
+    
+  private:
+    Values _values;
+  };
+  
+  // Custom item delegate.
+  class OptionsItemDelegate : public QItemDelegate
+  {
+  public:
+    typedef QItemDelegate BaseClass;
+    
+    OptionsItemDelegate( QObject *parent = 0x0 );
+    virtual ~OptionsItemDelegate();
+    
+    virtual QWidget *createEditor  ( QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index ) const;
+    virtual void     setEditorData ( QWidget *editor, const QModelIndex &index ) const;
+    virtual void     setModelData  ( QWidget *editor, QAbstractItemModel *model, const QModelIndex &index ) const;
+    virtual void     paint ( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+  };
+  
+  OptionsItemModel *_model;
+  QAbstractItemDelegate *_delegate;
 };
 
 #endif // __WMS_OPTIONS_DIALOG_H__

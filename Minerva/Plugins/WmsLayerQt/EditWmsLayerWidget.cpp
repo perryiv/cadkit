@@ -85,7 +85,9 @@ void EditWmsLayerWidget::on_viewOptionsButton_clicked()
   if ( _layer.valid() )
   {
     OptionsDialog dialog ( _layer->options(), this );
-    dialog.exec();
+    
+    if ( QDialog::Accepted == dialog.exec() )
+      _layer->options ( dialog.options() );
   }
 }
 

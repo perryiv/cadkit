@@ -37,7 +37,6 @@ AlphasDialog::AlphasDialog ( const Alphas& alphas, QWidget *parent ) : BaseClass
   
   _alphasTreeView->setModel ( _model );
   _alphasTreeView->setItemDelegate ( _delegate );
-  //_alphasTreeView->setItemDelegateForColumn( 0, _delegate );
 }
 
 
@@ -369,7 +368,6 @@ QWidget * AlphasDialog::AlphasItemDelegate::createEditor ( QWidget *parent, cons
 {
   if ( 0 == index.column() )
   {
-    //return new QLabel ( parent );
 		return new QtTools::ColorButton ( parent );
   }
   if ( 1 == index.column() )

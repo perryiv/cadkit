@@ -325,7 +325,8 @@ void AddWmsLayerWidget::on_viewOptionsButton_clicked()
   
   OptionsDialog dialog ( _layer->options(), this );
   
-  dialog.exec();
+  if ( QDialog::Accepted == dialog.exec() )
+    _layer->options ( dialog.options() );
   
   //OptionWidget::Names names;
   //names.push_back ( Usul::Network::Names::REQUEST );

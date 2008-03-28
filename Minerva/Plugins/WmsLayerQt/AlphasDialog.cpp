@@ -70,7 +70,7 @@ AlphasDialog::Alphas AlphasDialog::alphas() const
   for ( unsigned int i = 0; i < colors.size(); ++i )
   {
     QColor color ( colors.at ( i ) );
-    alphas[Usul::Functions::Color::pack ( color.red(), color.green(), color.red(), 0 )] = opacities.at ( i );
+    alphas[Usul::Functions::Color::pack ( color.red(), color.green(), color.blue(), 0, 255 )] = opacities.at ( i );
   }
   
   return alphas;
@@ -174,7 +174,7 @@ QVariant AlphasDialog::AlphasItemModel::data ( const QModelIndex& index, int rol
   if ( Qt::DisplayRole == role )
   {
     if ( 0 == index.column() )
-      return _colors.at ( index.row() );
+			return _colors.at ( index.row() );
     if ( 1 == index.column() )
       return _opacities.at ( index.row() );
   }
@@ -417,7 +417,13 @@ void AlphasDialog::AlphasItemDelegate::setEditorData( QWidget *editor, const QMo
 
 void AlphasDialog::AlphasItemDelegate::setModelData ( QWidget *editor, QAbstractItemModel *model, const QModelIndex &index ) const
 {
-  BaseClass::setModelData ( editor, model, index );
+	if ( 0 == index.column() )
+	{
+		QtTools::ColorButton* button ( static_cast<QtTools::ColorButton*> ( editor ) );
+		model->setData ( index, button->color(), Qt::EditRole );
+	}
+	else
+		BaseClass::setModelData ( editor, model, index );
 }
 
 

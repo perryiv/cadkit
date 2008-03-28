@@ -36,6 +36,11 @@ public:
   /// Get the alphas.
   Alphas alphas() const;
   
+protected slots:
+  
+  void on_addRowButton_clicked();
+  void on_removeRowButton_clicked();
+  
 private:
   
   // Custom item model.
@@ -66,6 +71,9 @@ private:
     virtual QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
     
     virtual QModelIndex parent ( const QModelIndex & index ) const;
+    
+    virtual bool insertRow ( int row, const QModelIndex & parent = QModelIndex() );
+    virtual bool removeRow ( int row, const QModelIndex & parent = QModelIndex() );
     
   private:
     Colors _colors;

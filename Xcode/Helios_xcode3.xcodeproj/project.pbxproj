@@ -1079,6 +1079,8 @@
 		66C8FEF90D120C3E003F6A58 /* moc_TreeControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEF30D120C3E003F6A58 /* moc_TreeControl.cpp */; };
 		66C8FEFF0D120C64003F6A58 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEFD0D120C64003F6A58 /* Application.cpp */; };
 		66CA7A3A0D552790004909C6 /* Feature.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CA7A380D552790004909C6 /* Feature.h */; };
+		66CCC9630D9C6A260083EB1F /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
+		66CCC9890D9C6A450083EB1F /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAE70D120596003F6A58 /* QtOpenGL.framework */; };
 		66CCE5880D2F53D60084E49D /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CCE5850D2F53D60084E49D /* CompileGuard.h */; };
 		66CCE5890D2F53D60084E49D /* ResampleLineComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CCE5860D2F53D60084E49D /* ResampleLineComponent.cpp */; };
 		66CCE58A0D2F53D60084E49D /* ResampleLineComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CCE5870D2F53D60084E49D /* ResampleLineComponent.h */; };
@@ -2076,6 +2078,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 43FED6F1092452E100EBB610;
 			remoteInfo = Usul;
+		};
+		66CCC9690D9C6A300083EB1F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			remoteInfo = XmlTree;
 		};
 		66CCE8860D2F54150084E49D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -4428,6 +4437,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66CCC9890D9C6A450083EB1F /* QtOpenGL.framework in Frameworks */,
+				66CCC9630D9C6A260083EB1F /* libQtTools.dylib in Frameworks */,
 				668DB7EB0D78BD5A00EA4DCD /* libMinerva.dylib in Frameworks */,
 				66A9E9220D34A31A00FD67B6 /* osg.framework in Frameworks */,
 				66A9E91F0D34A2F400FD67B6 /* libSerializeXML.dylib in Frameworks */,
@@ -5222,16 +5233,21 @@
 			children = (
 				66CFF1500D38A19700ED0216 /* GDAL.framework */,
 				66EF1A900D16447000B4B1AA /* curl.framework */,
+				66EF13A60D15177F00B4B1AA /* wms.framework */,
+				66EF17690D15190B00B4B1AA /* libMinerva.dylib */,
+				66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */,
+				66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */,
+				43FED6F2092452E100EBB610 /* libUsul.dylib */,
+				66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */,
+				66430AE70D10B61900984C94 /* osg.framework */,
 				66EF13A40D15177F00B4B1AA /* ossim.framework */,
 				66EF13A50D15177F00B4B1AA /* ossimPlanet.framework */,
-				66EF13A60D15177F00B4B1AA /* wms.framework */,
 				66C8FAE50D120596003F6A58 /* QtCore.framework */,
 				66C8FAE60D120596003F6A58 /* QtGui.framework */,
 				66C8FAE70D120596003F6A58 /* QtOpenGL.framework */,
 				663C4EC80D110AFE00949515 /* Boost.framework */,
 				66FF45540D11012C003A0AC1 /* Xerces.framework */,
 				664308DE0D10B05700984C94 /* osgManipulator.framework */,
-				66430AE70D10B61900984C94 /* osg.framework */,
 				4358F6A8095B3210008F7E5E /* Other Frameworks */,
 				4358F6A5095B3210008F7E5E /* Linked Frameworks */,
 				43D724CC094DE500009181E3 /* OpenThreads.framework */,
@@ -5512,22 +5528,17 @@
 			children = (
 				434D2D15095B2CA700642126 /* Helios.app */,
 				66CFB2200D135A2000F93E67 /* libSceneDelegateQt.dylib */,
-				43FED6F2092452E100EBB610 /* libUsul.dylib */,
 				4366F2450A158D5500882B30 /* libSceneModel.dylib */,
 				43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */,
 				4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */,
 				431BAD7D09245A4600ED2131 /* libOsgTools.dylib */,
 				6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */,
-				66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */,
-				66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */,
-				66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */,
 				66C8FE750D12084C003F6A58 /* libMenuKit.dylib */,
 				6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */,
 				666760BA0D122AE0002F40C6 /* libHeliosQtTools.dylib */,
 				666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */,
 				666765E60D1235EC002F40C6 /* HeliosQtApp.app */,
 				666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */,
-				66EF17690D15190B00B4B1AA /* libMinerva.dylib */,
 				66EF189C0D1581ED00B4B1AA /* libMinervaDocument.dylib */,
 				668E0C920D4021F50030649B /* WRFModel.plugd */,
 				668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */,
@@ -8970,6 +8981,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66CCC96A0D9C6A300083EB1F /* PBXTargetDependency */,
 				66B286290D37EDC6003BDAF3 /* PBXTargetDependency */,
 				66B286270D37EDC3003BDAF3 /* PBXTargetDependency */,
 			);
@@ -10919,6 +10931,11 @@
 			target = 43FED6F1092452E100EBB610 /* Usul */;
 			targetProxy = 66C8FEBC0D12090F003F6A58 /* PBXContainerItemProxy */;
 		};
+		66CCC96A0D9C6A300083EB1F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			targetProxy = 66CCC9690D9C6A300083EB1F /* PBXContainerItemProxy */;
+		};
 		66CCE8870D2F54150084E49D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 66CCE57F0D2F536D0084E49D /* ResampleLine */;
@@ -12740,9 +12757,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -12774,7 +12793,9 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;

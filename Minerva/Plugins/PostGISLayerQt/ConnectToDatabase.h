@@ -13,7 +13,7 @@
 
 #include "Minerva/DataSources/PG/Connection.h"
 
-#include "QtGui/QDialog.h"
+#include "QtGui/QDialog"
 
 class QLineEdit;
 class QComboBox;

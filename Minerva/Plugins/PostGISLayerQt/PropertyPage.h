@@ -11,7 +11,7 @@
 #ifndef __POSTGIS_COLOR_PAGE_H__
 #define __POSTGIS_COLOR_PAGE_H__
 
-#include "Minerva/Plugins/PostGISLayerQt/ui_LayerProperties.h"
+#include "ui_LayerProperties.h"
 
 #include "Minerva/DataSources/PG/Connection.h"
 #include "Minerva/Layers/PostGIS/Layer.h"

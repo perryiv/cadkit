@@ -19,7 +19,7 @@
 #include "Minerva/Layers/PostGIS/PolygonLayer.h"
 
 
-#include "QtGui/QListWidget.h"
+#include "QtGui/QListWidget"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"

@@ -23,7 +23,7 @@
 #include "Usul/Components/Factory.h"
 #include "Usul/Documents/Manager.h"
 
-#include "QtGui/QDialog.h"
+#include "QtGui/QDialog"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"

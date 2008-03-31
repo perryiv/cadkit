@@ -120,6 +120,15 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   // Turn off back-face culling.
   this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
 
+   // Get the state set.
+  osg::ref_ptr<osg::StateSet > ss ( this->getOrCreateStateSet() );
+
+  // Need an offset.
+  osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
+  offset->setFactor ( 1.0f );
+  offset->setUnits  ( 4.0f );
+  ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
   // For some reason this is now needed or else we cannot see the images.
   OsgTools::State::StateSet::setMaterialDefault ( this );
 }
@@ -1006,12 +1015,6 @@ Tile::NodePtr Tile::_buildBorderLine()
   
   // Get the state set.
   osg::ref_ptr<osg::StateSet > ss ( geode->getOrCreateStateSet() );
-
-  // Need an offset.
-  osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
-  offset->setFactor ( -1.0f );
-  offset->setUnits  ( -1.0f );
-  ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
   
   // Set depth parameters.
   osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );

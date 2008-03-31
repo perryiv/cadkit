@@ -47,6 +47,8 @@ Line::Line() :
   _width ( 1.0 ),
   _node ( new osg::Group )
 {
+  // Default render bin.
+  this->renderBin ( 1 );
 }
 
 
@@ -176,11 +178,21 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 
       geode->addDrawable ( geometry.get() );
 
+      // Get the state set.
+      osg::ref_ptr<osg::StateSet> ss ( geometry->getOrCreateStateSet() );
+
       // Turn off lighting.
-      OsgTools::State::StateSet::setLighting  ( _node.get(), false );
-      OsgTools::State::StateSet::setLineWidth ( _node.get(), _width );
+      OsgTools::State::StateSet::setLighting  ( ss.get(), false );
+      OsgTools::State::StateSet::setLineWidth ( ss.get(), _width );
 
       geometry->dirtyDisplayList();
+
+      // Set depth parameters.
+      osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
+      ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
+      // Set the render bin.
+      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
     }
 
     // Do we have a label?

@@ -15,6 +15,6 @@
   require ( "start_page.php" );
 ?>
 <p>Download latest binaries:</p>
-<a href="../downloads/installers/windows/2008_3_14/MinervaSetup.msi">Windows</a>
+<a href="../downloads/installers/windows/2008_3_31/MinervaSetup.msi">Windows</a>
 <?php require ( "end_page.php" ); ?>
 </html>

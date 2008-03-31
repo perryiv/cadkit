@@ -243,14 +243,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ModelPresentationFactory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ModelPresentationFactory.h"
-					>
-				</File>
-				<File
 					RelativePath=".\MpdDefinitions.h"
 					>
 				</File>

@@ -19,7 +19,7 @@
 
 #include "Experimental/ModelPresentation/ModelPresentation/MpdJob.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdDefinitions.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdWriter.h"
+#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IAnimatePath.h"
@@ -265,8 +265,7 @@ private:
   unsigned int                  _dynamicNotLoadedTextYPos;
 
   osg::ref_ptr< osg::Camera >   _camera;
-
-  MpdWriter::RefPtr             _writer;
+  ModelPresentationLib::RefPtr  _writer;
 
   
 };

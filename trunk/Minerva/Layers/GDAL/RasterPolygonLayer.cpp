@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "RasterPolygonLayer.h"
-#include "Common.h"
+#include "Minerva/Layers/GDAL/RasterPolygonLayer.h"
+#include "Minerva/Layers/GDAL/Common.h"
 
 #include "Usul/Adaptors/Random.h"
 #include "Usul/App/Application.h"
@@ -411,6 +411,9 @@ namespace Detail
 
 RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
 {
+  // Set an error handler.
+  Detail::PushPopErrorHandler handler;
+
   // How many channels do we want.
   const unsigned int channels ( 4 );
 
@@ -506,10 +509,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
 
   if ( CE_None != data->RasterIO( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 ) )
     return 0x0;
-    
-  // Set an error handler.
-  Detail::PushPopErrorHandler handler;
-
+ 
   std::cout << "Burning raster..." << std::endl;
 
   // Burn the raster.

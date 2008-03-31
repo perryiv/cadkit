@@ -11,7 +11,7 @@
 #ifndef __POSTGIS_POINT_WIDGET_H__
 #define __POSTGIS_POINT_WIDGET_H__
 
-#include "Minerva/Plugins/PostGISLayerQt/ui_PointWidget.h"
+#include "ui_PointWidget.h"
 #include "Minerva/Layers/PostGIS/PointLayer.h"
 
 #include "QtGui/QWidget"

@@ -11,7 +11,7 @@
 #ifndef __POSTGIS_LINE_WIDGET_H__
 #define __POSTGIS_LINE_WIDGET_H__
 
-#include "Minerva/Plugins/PostGISLayerQt/ui_LineWidget.h"
+#include "ui_LineWidget.h"
 #include "Minerva/Layers/PostGIS/LineLayer.h"
 
 #include "QtGui/QWidget"

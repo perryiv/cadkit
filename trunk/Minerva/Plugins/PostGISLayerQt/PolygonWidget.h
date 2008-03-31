@@ -11,7 +11,7 @@
 #ifndef __POSTGIS_POLYGON_WIDGET_H__
 #define __POSTGIS_POLYGON_WIDGET_H__
 
-#include "Minerva/Plugins/PostGISLayerQt/ui_PolygonWidget.h"
+#include "ui_PolygonWidget.h"
 #include "Minerva/Layers/PostGIS/PolygonLayer.h"
 
 #include "QtGui/QWidget"
@@ -30,7 +30,7 @@ public:
 protected slots:
   void _drawBorderChanged ( int state );
   void _drawInteriorChanged ( int state );
-  void _borderWidthChanged ( double value );
+  void _borderWidthChanged ( int value );
   void _borderColorChanged ();
 
 private:

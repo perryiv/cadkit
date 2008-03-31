@@ -89,7 +89,7 @@
 				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);$(VJ_BASE_DIR)/lib;$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/VRVd.pdb"
-				ImportLibrary="../../bin/VRVd.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/VRVd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -188,7 +188,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);$(VJ_BASE_DIR)/lib;$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/VRV.pdb"
-				ImportLibrary="../../bin/VRV.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/VRV.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

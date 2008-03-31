@@ -105,6 +105,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
 {
   USUL_TRACE_SCOPE;
   _mpdModels.models = new osg::Switch();
+  _writer = new ModelPresentationLib();
 
 }
 
@@ -198,7 +199,8 @@ bool ModelPresentationDocument::canOpen ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "mpd" );
+  return ( ext == "mpd" || ext == "drtmpd" );
+
 }
 
 
@@ -245,14 +247,33 @@ void ModelPresentationDocument::read ( const std::string &name, Unknown *caller,
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
   _workingDir = Usul::File::directory( name, true );
 
-  _writer = new MpdWriter( _workingDir + "/output.mpd" );
+  //_writer = new ModelPresentationLib( _workingDir + "/output.mpd" );
 
+  
   document->load ( name );
-
   if ( "mpd" == document->name() )
   {
+    
     this->_readParameterFile( *document, caller, progress );
     this->updateGlobalEndtime();
+  }
+  else
+  {
+    std::string ext = Usul::File::extension( name );
+    std::string dir = Usul::File::directory( name, true );
+    std::string base = Usul::File::base( name );
+    if ( "drtmpd" == ext )
+    {
+      ModelPresentationLib::RefPtr drtReader ( new ModelPresentationLib() );
+      drtReader->read( name, "drt", caller, progress );
+      XmlTree::Document::RefPtr doc ( new XmlTree::Document );
+      _workingDir = dir;
+
+      doc->load ( dir + "DrtSim.mpd" );
+      this->_readParameterFile( *doc, caller, progress );
+      this->updateGlobalEndtime();
+      
+    }
   }
 
 }
@@ -2804,7 +2825,7 @@ void ModelPresentationDocument::addTimeSet( const std::string &name, const std::
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
 
-  _writer->addTimeSet( name, menuName, endTime );
+//  _writer->addTimeSet( name, menuName, endTime );
 }
 
 
@@ -2913,7 +2934,7 @@ void ModelPresentationDocument::buildXMLString()
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
 
-  _writer->buildXMLString();
+ _writer->buildXMLString();
 }
 
 

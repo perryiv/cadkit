@@ -64,6 +64,9 @@ public:
   /// Construction.
   ModelPresentationLib();
 
+  // Reader
+  void                    read( const std::string &filename, const std::string &type, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
+
   /// Build the scene.
   virtual osg::Node *     buildScene ( Unknown *caller = 0x0 );
 

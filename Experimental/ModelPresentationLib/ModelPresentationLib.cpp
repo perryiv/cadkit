@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ModelPresentationlib.h"
+#include "DrtSim/DrtSimReader.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -104,6 +105,26 @@ void ModelPresentationLib::clear ( Unknown *caller )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationLib::read( const std::string &filename, const std::string &type, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  if( "drt" == type )
+  {
+    DrtSimReader::RefPtr drtReader ( new DrtSimReader() );
+    drtReader->read( filename, caller, progress );
+    std::map< std::string, std::string > opt;
+    drtReader->buildScene( opt, caller );
+  }
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

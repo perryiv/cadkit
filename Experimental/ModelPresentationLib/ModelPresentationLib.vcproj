@@ -216,7 +216,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source"
+			Name="MpdReaderWriter"
 			>
 			<File
 				RelativePath=".\ModelPresentationLib.cpp"
@@ -240,6 +240,58 @@
 			>
 			<File
 				RelativePath="Export\Export.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="DrtSimReader"
+			>
+			<File
+				RelativePath=".\DrtSim\Agent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Agent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Area.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Area.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\DRTSimReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\DRTSimReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Spore.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Spore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Stock.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Stock.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Transhipment.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DrtSim\Transhipment.h"
 				>
 			</File>
 		</Filter>

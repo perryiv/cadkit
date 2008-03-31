@@ -16,10 +16,11 @@
 #include "ModelPresentationComponent.h"
 #include "ModelPresentationDocument.h"
 
-
+#include "Usul/Components/Factory.h"
 
 #include <algorithm>
 
+USUL_DECLARE_COMPONENT_FACTORY( ModelPresentationComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ModelPresentationComponent, ModelPresentationComponent::BaseClass );
 
 

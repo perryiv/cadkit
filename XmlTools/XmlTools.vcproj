@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/XmlToolsd.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/XmlToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -176,7 +176,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				OutputFile="../bin/XmlTools.dll"
+				OutputFile="$(CADKIT_BIN_DIR)/XmlTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""

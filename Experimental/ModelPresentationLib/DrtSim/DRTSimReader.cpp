@@ -12,6 +12,10 @@
 
 #include "DrtSimReader.h"
 
+#include "OsgTools/DisplayLists.h"
+#include "OsgTools/Group.h"
+#include "OsgTools/Convert.h"
+
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/System/Host.h"
 #include "Usul/System/Directory.h"
@@ -26,10 +30,6 @@
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/Functions.h"
 #include "Usul/Math/MinMax.h"
-
-#include "OsgTools/DisplayLists.h"
-#include "OsgTools/Group.h"
-#include "OsgTools/Convert.h"
 
 #include "osgDB/ReadFile"
 #include "osg/Group"
@@ -46,7 +46,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-
+#include <stdexcept>
 
 
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DrtSimReader, DrtSimReader::BaseClass );
@@ -122,12 +122,8 @@ void DrtSimReader::read ( const std::string &name, Unknown *caller, Unknown *pro
 
   _drtFileName = Usul::File::base( name );
   this->_read( name, caller, progress );
-  
-  // name == santanam.drt ??
-  
 
-  // end here ( added by W.C )
-
+  this->_init ( progress );
 }
 
 
@@ -153,11 +149,8 @@ void DrtSimReader::_read ( const std::string &filename, Unknown *caller, Unknown
   std::ifstream infile( filename.c_str(), std::ios::in );
   if( !infile ) 
   {
-    std::cerr << "Error: unable to open the simulation file!" << std::endl;
-	  ///exit( 0 );
-    return;
+    throw std::runtime_error ( Usul::Strings::format ( "Error 8651628270: unable to open the simulation file: ", filename ) );
   }
-
   
   while( !infile.eof() )
   {
@@ -181,11 +174,11 @@ void DrtSimReader::_read ( const std::string &filename, Unknown *caller, Unknown
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
+//  Initialize.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *DrtSimReader::buildScene ( const BaseClass::Options &options, Unknown *caller )
+void DrtSimReader::_init ( Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   
@@ -193,14 +186,12 @@ osg::Node *DrtSimReader::buildScene ( const BaseClass::Options &options, Unknown
  // add code here (application) by Wei.CHEN
 	
   if (	!_readAreaDetailsFile( ) 	|| 
-		!_readAgentDetailsFile( )	||
-		!_readStockDetailsFile( )	|| 
-		/*!_readSporeDetailsFile( )	||*/ 
-		!_readTranshipmentsFile( )		)
+		    !_readAgentDetailsFile( )	||
+		    !_readStockDetailsFile( )	|| 
+		  /*!_readSporeDetailsFile( )	||*/ 
+		    !_readTranshipmentsFile( )		)
 	{
-    std::cerr << "Couldn't open one or more files needed to run the simulation!" << std::endl;
-		//exit( 0 );		// program got exit once any one of files failed to open
-    return _root.get();
+    throw std::runtime_error ( "Error 2797071041: Couldn't open one or more files needed to run the simulation" );
 	}
 
   _root->removeChild( 0, _root->getNumChildren() );
@@ -292,7 +283,7 @@ osg::Node *DrtSimReader::buildScene ( const BaseClass::Options &options, Unknown
   //---------------------------------------------------
 
   //std::cout << "Buildscene complete!" << std::endl;
-  return _root.get();
+  //return _root.get();
 }
 
 

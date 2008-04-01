@@ -34,8 +34,8 @@ public:
   DateTime();
   ~DateTime();
 
-  static std::string        format ( time_t ); // time_t
-  static std::string        format();
+  static std::string        format ( time_t, const std::string &f = std::string() ); // time_t
+  static std::string        format ( const std::string &f = std::string() );
 
   static ::tm               local ( time_t );
   static ::tm               local();

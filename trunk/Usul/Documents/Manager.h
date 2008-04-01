@@ -81,8 +81,8 @@ public:
   // Close the document.  Does nothing if there are referenced windows
   void                  close ( Document* );
 
-  // Create new document(s) that can open given extension.
-  Documents             create ( const std::string &ext, Unknown *caller = 0x0 );
+  // Create new document(s) that can open given extension. Pass the "check" flags as a selection criteria.
+  Documents             create ( const std::string &ext, Unknown *caller = 0x0, bool checkOpen = true, bool checkSave = false );
 
   // Create new document with the given component
   Document *            create ( Unknown *component, Unknown *caller = 0x0 );
@@ -98,7 +98,7 @@ public:
   Filters               filtersOpen() const;
 
   // Find a document and delegate for the given filename.
-  DocumentInfo          find ( const std::string& filename, Usul::Interfaces::IUnknown *caller = 0x0 );
+  DocumentInfo          find ( const std::string& filename, Usul::Interfaces::IUnknown *caller = 0x0, bool checkOpen = true, bool checkSave = false );
 
   // Get the mutex. Use with caution.
   Mutex&                mutex() { return *_mutex; }

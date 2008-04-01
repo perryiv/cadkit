@@ -482,7 +482,6 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
   // debugging. Remove when fixed
   std::cout << "Calling _exportToArcGen " << std::endl;
 
-
   // This will create a new document.
   const std::string filename ( "output.gen" );
   Info info ( DocManager::instance().find ( filename, caller ) );

@@ -113,7 +113,10 @@ void ModelPresentationDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     {
       viewer->viewer()->scene ( build->buildScene ( document->options(), caller ) );
     }
-
+    
     viewer->show();
+
+    // Turn on render loop
+    //viewer->renderLoop( true );
   }
 }

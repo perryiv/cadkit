@@ -207,6 +207,9 @@ protected:
   void                        _handleSequenceEvent();
   osg::Node*                  _createProxyGeometry( const std::string &message, Usul::Interfaces::IUnknown *caller );
 
+   /// Usul::Interfaces::IRenderListener inherited from base class.
+  virtual void                postRenderNotify ( Unknown *caller );
+
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 

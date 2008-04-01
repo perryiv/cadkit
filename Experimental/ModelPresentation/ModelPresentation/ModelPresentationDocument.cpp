@@ -21,6 +21,9 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdNextSequence.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdPrevSequence.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdFirstSequence.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdAnimationSpeed.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdslowerAnimationSpeed.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdFasterAnimationSpeed.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -101,7 +104,8 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _textYPos( 0 ),
   _dynamicNotLoadedTextXPos( 0 ),
   _dynamicNotLoadedTextYPos( 0 ),
-  _camera( new osg::Camera )
+  _camera( new osg::Camera ),
+  _animationSpeed( 10 )
 {
   USUL_TRACE_SCOPE;
   _mpdModels.models = new osg::Switch();
@@ -269,7 +273,7 @@ void ModelPresentationDocument::read ( const std::string &name, Unknown *caller,
       XmlTree::Document::RefPtr doc ( new XmlTree::Document );
       _workingDir = dir;
 
-      doc->load ( dir + "DrtSim.mpd" );
+      doc->load ( dir + base + ".mpd" );
       this->_readParameterFile( *doc, caller, progress );
       this->updateGlobalEndtime();
       
@@ -352,40 +356,25 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   // Add the models
   _root->addChild( _mpdModels.models.get() );
 
-  // Add time sets to the scene tree
-  //for( unsigned int i = 0; i < _timeSets.size(); ++i )
-  //{
-  //  _root->addChild( _timeSets.at( i ).timeline.get() );
-  //}
-  
-    //for( std::map< string, unsigned int >::iterator iter = _mpdModels.modelMap.begin();
-    //     iter != _mpdModels.modelMap.end();
-    //     ++iter )
-    //{
-    //  _sets.at( (*iter).second ).
-
-    //}
-    for( unsigned int i = 0; i < _sets.size(); ++i )
-    {
-      this->setGroup( i, 0 );
-    }
+  // start the timeline at the first step
+  if( true == _useTimeLine )
+  {
+    this->firstStep();
+  }
+  // show groups that should be shown at start up
+  for( unsigned int i = 0; i < _sets.size(); ++i )
+  {
+    this->setGroup( i, 0 );
+  }
   // Add dynamic sets to the scene tree
   for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
   {
-    //osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    //mt->addChild( _dynamicSets.at( i ).models.get() );
-    //if( true == _dynamicSets.at( i ).absolute )
-    //{
-    //  mt->postMult( osg::Matrix::translate( osg::Vec3d( 0.0, 0.0, -1.0 ) ) );
-    //  mt->setReferenceFrame( osg::MatrixTransform::ABSOLUTE_RF );
-    //}
     _root->addChild( _dynamicSets.at( i ).models.get() );
   }
 
-  // add the sequence to the scene tree
-  //_root->addChild( _sequence.groups.get() );
   std::cout << "Building Display Lists..." << std::endl;
-  //osgUtil::GLObjectsVisitor ( root.get() );
+  osg::ref_ptr< osgUtil::GLObjectsVisitor > visitor( new osgUtil::GLObjectsVisitor( osgUtil::GLObjectsVisitor::COMPILE_DISPLAY_LISTS ) );
+  //visitor->traverse( _root );
   return _root.get();
 }
 
@@ -2165,6 +2154,17 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     TimelineMenu->append ( new Button ( new MpdFirstTimestep( me.get() ) ) );
     TimelineMenu->append ( new ToggleButton ( new MpdAnimation( me.get() ) ) );
 
+    MenuKit::Menu::RefPtr TimelineSubMenu ( new MenuKit::Menu ( "Speed", MenuKit::Menu::VERTICAL ) );
+    TimelineSubMenu->append( new Button ( new MpdSlowerAnimationSpeed( me.get(), 5, "Slower x5" ) ) );
+    TimelineSubMenu->append( new Button ( new MpdSlowerAnimationSpeed( me.get(), 2, "Slower x2" ) ) );
+    TimelineSubMenu->append( new Button ( new MpdAnimationSpeed( me.get(), 50, "Slow" ) ) );
+    TimelineSubMenu->append( new Button ( new MpdAnimationSpeed( me.get(), 30, "Medium" ) ) );
+    TimelineSubMenu->append( new Button ( new MpdAnimationSpeed( me.get(), 10, "Fast" ) ) );
+    TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x2" ) ) );
+    TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x5" ) ) );
+    TimelineMenu->append( TimelineSubMenu.get() );
+
+
     menu.append ( TimelineMenu );
   }
 
@@ -2965,4 +2965,33 @@ void ModelPresentationDocument::write( const std::string &filename ) const
   Guard guard ( this ); 
 
   _writer->write( filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the animation speed to <speed>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::setAnimationSpeed( unsigned int speed )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+  _animationSpeed = speed;
+  _update = UpdatePolicyPtr( new UpdatePolicy( speed ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the animation speed
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ModelPresentationDocument::getAnimationSpeed()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this ); 
+  return _animationSpeed;
 }

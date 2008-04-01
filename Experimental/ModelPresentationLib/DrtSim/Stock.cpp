@@ -717,15 +717,13 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 bool			Stock::_StockDetailsLoader( )
 {
 	
-	std::cout << "Stock filename: " << _filename << std::endl;
-
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary);
 
 	if (! infile)
 	{
-		std::cerr << "Error: unable to open StockDetails file!\n";
+    std::cerr << "Error: unable to open StockDetails file!" << std::endl;
 		return false;
 	}
 
@@ -812,34 +810,12 @@ bool			Stock::_StockDetailsLoader( )
 			count = 1;
 		}
 
-#if debug
-		clock_t currentTime = ::clock();
-		char c				= ' ';
-		if ( ( currentTime - startTime ) > updateDuration )
-		{
-			startTime = currentTime;
-			
-			std::cout << tmp.stockStep << c << tmp.hospitalID << c << tmp.medicineStock << c << tmp.vaccineStock << c << tmp.doctorsStock << c << tmp.nursesStock << c << tmp.bedsStock << c << tmp.hospitalStatus << std::endl;
-		}
-#endif
-
-
 	}
 
 	
 	_stockSteps.push_back(count);		// the last step
 
 
-#if debug
-//	for(unsigned int w=0; w < _stockSteps.size(); ++w)
-//		std::cout << "stockStep " << w << ": " << _stockSteps[w] << std::endl;
-
-//	std::cout << "Stock totalSteps ...: " << _stockSteps.size() << std::endl;
-
-	std::cout << "stock maximum: M " << _medicineStockMax << " V " << _vaccineStockMax << " D " << _doctorsStockMax << " N " << _nursesStockMax << " B " << _bedsStockMax << std::endl;
-	std::cout << "stock steps: " << _stockSteps.size() << std::endl;
-	
-#endif
 
 	infile.close();
 	

@@ -40,7 +40,7 @@ osg::Group*		Transhipment::buildTranshipmentScene( )
 
 #if 1 
   {
-    std::string path = _workingDir + "/text/";
+    std::string path = _workingDir;
     osg::ref_ptr< osg::Group > group ( new osg::Group );
     std::string filename = Usul::Strings::format( path, "transText.ive" );
     group->addChild( _createTextAsNode( osg::Vec3( 200.0f, -30.0f, 0.0f), osg::Vec4( 1.0f, 0.5f, 0.5f, 1.0f ), 20.0f, " Transipment " ) );
@@ -374,7 +374,7 @@ void			Transhipment::_computeQuadraticBezier( )
 bool		Transhipment::_TranDetailsLoader ( )
 {
 
-	std::cout << "Transhipment filename: " << _filename << std::endl;
+	//std::cout << "Transhipment filename: " << _filename << std::endl;
 
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 
@@ -382,7 +382,7 @@ bool		Transhipment::_TranDetailsLoader ( )
 	
 	if ( !infile )
 	{
-		std::cerr << "Error: unable to open Transhipments file!\n";
+    std::cerr << "Error: unable to open Transhipments file!" << std::endl;
 		return false;
 	}
 
@@ -426,7 +426,7 @@ bool		Transhipment::_TranDetailsLoader ( )
 		if( tmp.quantityST > 0 )		// if "0", do not need draw transhipments
 		{
 
-			std::cout << "_tranDetails size: " << _tranDetails.size() << std::endl;
+			//std::cout << "_tranDetails size: " << _tranDetails.size() << std::endl;
 
 			// put number of transhipmentSteps, a slightly different since the number of transhipments not continuous
 			if ( count == 0 )
@@ -444,9 +444,7 @@ bool		Transhipment::_TranDetailsLoader ( )
 				++numSteps;
 				count = 1;
 			}
-#if debug
-			std::cout << "transhipment: " << tmp.tranStep << " " << tmp.stockType << " " << tmp.fromHospID << " " << tmp.toHospID << " " << tmp.quantityST << std::endl;
-#endif
+
 			_tranDetails.push_back(tmp);
 
 		}
@@ -455,11 +453,6 @@ bool		Transhipment::_TranDetailsLoader ( )
 
 	_tranSteps.push_back( count );
 
-#if debug
-	std::cout << "transhipment total steps: " << _tranSteps.size() << std::endl;
-		for( unsigned int w = 0; w < _tranSteps.size(); ++w )
-			std::cout << "transhipment steps: " << w << " " << _tranSteps[w] << std::endl;
-#endif
 
 	infile.close();
 

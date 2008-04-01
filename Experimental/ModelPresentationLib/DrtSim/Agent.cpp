@@ -187,8 +187,7 @@ osg::Switch*	Agent::createAgentSwitch ( )
 // Actual HUD text creation
 osg::Sequence*		Agent::createAgentStepSequence ()
 {
-try
-{
+
 	float zValue = 0.0f;
 	float characterSize = 26.0f;
 
@@ -203,7 +202,6 @@ try
 	if ( !_agentDetails.empty() )
 	{
 		unsigned int count = 0;
-    std::cout << Usul::Strings::format( "Agents size is: ", _agentSteps.size() );
     unsigned int counter = 0;
     unsigned int index = 0;
 		for( unsigned int i = 0; i < _agentSteps.size(); ++i )
@@ -294,11 +292,7 @@ try
 
 	}
 
-  }
-  catch( ... )
-  {
-    std::cout << "";
-  }
+
 	return _agentStepSequence.get();
 
 }
@@ -362,10 +356,6 @@ osg::Geode*		Agent::_createAgentDetailsbyStep( const unsigned int &step, unsigne
 
 	if( _agentDetails.empty() || _agentSteps.empty() )		return geode.release();
 
-  if( 20 == step )
-  {
-    std::cout << "Count is 20" << std::endl;
-  }
 	unsigned int	startIndex = 0;
 	for(unsigned int i = 0; i < step; ++i)		startIndex += _agentSteps[i];
 
@@ -513,7 +503,6 @@ bool Agent::_AgentDetailsLoader( )
 
 	const unsigned int zoom = 3;
 
-	std::cout << "Agent filename: " << _filename << std::endl;
 
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 
@@ -521,7 +510,7 @@ bool Agent::_AgentDetailsLoader( )
 
 	if ( !infile )
 	{
-		std::cerr << "Error: unable to open AgentDetails file!\n";
+    std::cerr << "Error: unable to open AgentDetails file!" << std::endl;
 		return false;
 	}
 
@@ -582,38 +571,12 @@ bool Agent::_AgentDetailsLoader( )
 			++numSteps;
 			count = 1;
 		}
-
-
-#if debug
-		clock_t		currentTime	= ::clock();
-		char		c			= ' ';
-
-		if ( ( currentTime - startTime ) > updateDuration )
-		{
-			startTime = currentTime;
-			
-			std::cout << tmp.agentStep << c << tmp.agentID << c << tmp.agentX << c << tmp.agentY << c << tmp.diseaseStage << std::endl;
-		}
-#endif
-
 	}
 
 	_agentSteps.push_back(count);		// the last step
 
-
-#if debug
-//	for( unsigned int w = 0; w < _agentSteps.size(); ++w )
-//		std::cout << "step " << w << ": " << _agentSteps[w] << std::endl;
-
-	std::cout << "Agent totalSteps ...: " << _agentSteps.size() << std::endl;
-#endif
-
-
 	infile.close();
-	
 	return true;
-
-
 }
 
 

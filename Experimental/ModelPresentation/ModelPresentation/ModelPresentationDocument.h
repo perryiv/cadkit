@@ -141,6 +141,8 @@ public:
   void              firstSequenceStep();
   void              nextSequenceStep();
   void              prevSequenceStep();
+  void              setAnimationSpeed( unsigned int speed );
+  unsigned int      getAnimationSpeed();
 
   /// Usul::Interfaces::IMpdWriter functions
   // Model Functions
@@ -266,6 +268,8 @@ private:
 
   osg::ref_ptr< osg::Camera >   _camera;
   ModelPresentationLib::RefPtr  _writer;
+
+  unsigned int                  _animationSpeed;
 
   
 };

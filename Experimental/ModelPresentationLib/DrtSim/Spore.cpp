@@ -228,28 +228,19 @@ bool	Spore::_SporeDetailsLoader( )
 	
 	const unsigned int zoom = 3;
 
-	std::cout << "Spore filename: " << _filename << std::endl;
-	
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary );
 	
 	if ( !infile )
 	{
-		std::cerr << "Error: unable to open SporeDetails file!\n";
+    std::cerr << "Error: unable to open SporeDetails file!" << std::endl;
 		return false;
 	}
 	
 	
 	infile.read( ( char * ) &_sporeStartingStep, sizeof( int ) );		Usul::Endian::FromBigToSystem::convert ( _sporeStartingStep );
 	infile.read( ( char * ) &_sporeEndingStep,	 sizeof( int ) );		Usul::Endian::FromBigToSystem::convert ( _sporeEndingStep );
-	
-	
-#if debug
-	char c = ' ';
-	std::cout << _sporeStartingStep << c << _sporeEndingStep << c << std::endl;
-#endif	
-	
 	
 	const Usul::Types::Uint64 remaining ( fileSize - 2 * sizeof ( int ) );
 	const Usul::Types::Uint64 rowBytes  ( 2 * sizeof ( int ) );
@@ -275,10 +266,6 @@ bool	Spore::_SporeDetailsLoader( )
 
 
 		_sporeDetails.push_back(tmp);
-
-#if debug
-		// std::cout << "spore " << i << ": " << tmp.sporeX << c << tmp.sporeY << std::endl;
-#endif
 
 	}
 

@@ -302,18 +302,12 @@ bool	Area::_AreaDetailsLoader ( )
 {
 	
 	const unsigned int zoom = 3;
-	
-	std::cout << "Area filename: " << _filename << std::endl;
-
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
-	std::cout << "Area file to load is " << _filename << std::endl;
-
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary );
         
-	
 	if ( false == infile.is_open() )
 	{
-		std::cerr << "Error: unable to open AreaDetails file!\n";
+    std::cerr << "Error: unable to open AreaDetails file!" << std::endl;
 		return false;
 	}
 	
@@ -326,12 +320,6 @@ bool	Area::_AreaDetailsLoader ( )
 	_areaSizeX = zoom * _areaSizeX;
 	_areaSizeY = zoom * _areaSizeY;
 
-#if debug
-	char c = ' ';
-	std::cout << _areaSizeX << c << _areaSizeY << c << _areaRows << c << _areaCols << std::endl;
-#endif	
-	
-	
 	const Usul::Types::Uint64 remaining ( fileSize - 4 * sizeof ( int ) );
 	const Usul::Types::Uint64 rowBytes ( 4 * sizeof ( int ) );
 	const Usul::Types::Uint64 numHospitals ( remaining / rowBytes );
@@ -365,10 +353,6 @@ bool	Area::_AreaDetailsLoader ( )
 		tmp.hospitalY = zoom * static_cast<unsigned int> ( ::abs ( tValue ) );
 
 		_areaDetails.push_back(tmp);
-
-#if debug
-		std::cout << tmp.hospitalID << c << tmp.hospitalGrid << c << tmp.hospitalX << c << tmp.hospitalY << std::endl;
-#endif
 
 	}
 

@@ -267,14 +267,6 @@
 				Name="Commands"
 				>
 				<File
-					RelativePath=".\MpdAnimation.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\MpdAnimation.h"
-					>
-				</File>
-				<File
 					RelativePath=".\MpdDynamicModel.cpp"
 					>
 				</File>
@@ -288,14 +280,6 @@
 				</File>
 				<File
 					RelativePath=".\MpdFirstSequence.h"
-					>
-				</File>
-				<File
-					RelativePath=".\MpdFirstTimestep.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\MpdFirstTimestep.h"
 					>
 				</File>
 				<File
@@ -339,14 +323,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\MpdPrevTimestep.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\MpdPrevTimestep.h"
-					>
-				</File>
-				<File
 					RelativePath=".\MpdTimelineModel.cpp"
 					>
 				</File>
@@ -362,6 +338,58 @@
 					RelativePath=".\MpdTools.h"
 					>
 				</File>
+				<Filter
+					Name="Animation"
+					>
+					<File
+						RelativePath=".\MpdAnimation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdAnimation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdAnimationSpeed.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdAnimationSpeed.h"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdFasterAnimationSpeed.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdFasterAnimationSpeed.h"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdFirstTimestep.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdFirstTimestep.h"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdPrevTimestep.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdPrevTimestep.h"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdSlowerAnimationSpeed.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\MpdSlowerAnimationSpeed.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Writer"

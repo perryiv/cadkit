@@ -28,6 +28,7 @@ protected:
   virtual ~MpdAnimationSpeed ();
 
   virtual void _execute ();
+  virtual bool updateCheck () const;
 
 private:
   unsigned int _speed;

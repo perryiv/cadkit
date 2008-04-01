@@ -2177,13 +2177,15 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     TimelineMenu->append ( new ToggleButton ( new MpdAnimation( me.get() ) ) );
 
     MenuKit::Menu::RefPtr TimelineSubMenu ( new MenuKit::Menu ( "Speed", MenuKit::Menu::VERTICAL ) );
-    TimelineSubMenu->append( new Button ( new MpdSlowerAnimationSpeed( me.get(), 5, "Slower x5" ) ) );
-    TimelineSubMenu->append( new Button ( new MpdSlowerAnimationSpeed( me.get(), 2, "Slower x2" ) ) );
-    TimelineSubMenu->append( new Button ( new MpdAnimationSpeed( me.get(), 50, "Slow" ) ) );
-    TimelineSubMenu->append( new Button ( new MpdAnimationSpeed( me.get(), 30, "Medium" ) ) );
-    TimelineSubMenu->append( new Button ( new MpdAnimationSpeed( me.get(), 10, "Fast" ) ) );
-    TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x2" ) ) );
-    TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x5" ) ) );
+    //TimelineSubMenu->append( new Button ( new MpdSlowerAnimationSpeed( me.get(), 5, "Slower x5" ) ) );
+    //TimelineSubMenu->append( new Button ( new MpdSlowerAnimationSpeed( me.get(), 2, "Slower x2" ) ) );
+    TimelineSubMenu->append( new Radio ( new MpdAnimationSpeed( me.get(), 60, "Every 60 Frames" ) ) );
+    TimelineSubMenu->append( new Radio ( new MpdAnimationSpeed( me.get(), 30, "Every 30 Frames" ) ) );
+    TimelineSubMenu->append( new Radio ( new MpdAnimationSpeed( me.get(), 10, "Every 10 Frames" ) ) );
+    TimelineSubMenu->append( new Radio ( new MpdAnimationSpeed( me.get(), 5,  "Every 05 Frames" ) ) );
+    TimelineSubMenu->append( new Radio ( new MpdAnimationSpeed( me.get(), 1,  "Every Frame" ) ) );
+    //TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x2" ) ) );
+    //TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x5" ) ) );
     TimelineMenu->append( TimelineSubMenu.get() );
 
 

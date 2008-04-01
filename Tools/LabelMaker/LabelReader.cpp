@@ -13,6 +13,8 @@
 #include "osgText/Text"
 #include "osg/Geometry"
 #include "osg/StateSet"
+#include "osg/MatrixTransform"
+#include "osg/Matrix"
 
 #include <iostream>
 
@@ -68,6 +70,7 @@ osg::Node * LabelReader::buildScene( bool box )
 {
   
   _scene->removeChild( 0, _scene->getNumChildren() );
+#if 0
   // Feedback
   std::cout << "Building the scene... " << std::endl;
   for( unsigned int i = 0; i < _locations.size(); ++i )
@@ -77,6 +80,20 @@ osg::Node * LabelReader::buildScene( bool box )
   if( true == box )
     _scene->addChild( this->_drawBox() );
   std::cout << "Done! " << std::endl;
+#else
+  // Feedback
+  std::cout << "Building the scene... " << std::endl;
+  osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  //mt->setMatrix( osg::Matrix::scale( 12.0, 12.0, 1.0 ) );
+  for( unsigned int i = 0; i < _locations.size(); ++i )
+  {
+    mt->addChild( this->_createText( i ) );
+  }
+  if( true == box )
+    mt->addChild( this->_drawBox() );
+  std::cout << "Done! " << std::endl;
+#endif
+  _scene->addChild( mt.get() );
   return _scene.get();
 }
 

@@ -528,6 +528,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\DisplayLists.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DisplayLists.h"
+					>
+				</File>
+				<File
 					RelativePath="Export.h"
 					>
 				</File>

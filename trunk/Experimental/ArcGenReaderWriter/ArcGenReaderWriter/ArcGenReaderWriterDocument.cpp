@@ -24,7 +24,6 @@
 
 #include "osg/Vec3d"
 
-#include <iterator>
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -44,7 +43,6 @@ ArcGenReaderWriterDocument::ArcGenReaderWriterDocument() :
   _measurement( 0.0 )
 {
   USUL_TRACE_SCOPE;
-   
 }
 
 
@@ -69,7 +67,6 @@ ArcGenReaderWriterDocument::~ArcGenReaderWriterDocument()
 void ArcGenReaderWriterDocument::clear ( Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 }
 
 
@@ -85,7 +82,7 @@ Usul::Interfaces::IUnknown *ArcGenReaderWriterDocument::queryInterface ( unsigne
 
   switch ( iid )
   {
-   case Usul::Interfaces::IArcGenReaderWriter::IID:
+  case Usul::Interfaces::IArcGenReaderWriter::IID:
     return static_cast < Usul::Interfaces::IArcGenReaderWriter* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
@@ -128,8 +125,7 @@ bool ArcGenReaderWriterDocument::canInsert ( const std::string &file ) const
 bool ArcGenReaderWriterDocument::canOpen ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "gen" );
+  return false;
 }
 
 
@@ -213,7 +209,6 @@ ArcGenReaderWriterDocument::Filters ArcGenReaderWriterDocument::filtersOpen() co
 {
   USUL_TRACE_SCOPE;
   Filters filters;
-  filters.push_back ( Filter ( "Arc Generate (*.gen)", "*.gen" ) );
   return filters;
 }
 
@@ -294,7 +289,7 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// set the positions vector
+//  Set the positions vector.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -309,10 +304,9 @@ void ArcGenReaderWriterDocument::setPolyLineVertices ( Positions p )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// set the recorded measurement value
+//  Set the recorded measurement value.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 
 void ArcGenReaderWriterDocument::measurement( double m )
 {

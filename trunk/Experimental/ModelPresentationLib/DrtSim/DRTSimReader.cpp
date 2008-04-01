@@ -118,11 +118,11 @@ void DrtSimReader::write ( const std::string &name, Unknown *caller, Unknown *pr
 void DrtSimReader::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
-  //Guard guard ( this->mutex() );
+  Guard guard ( this->mutex() );
 
-  // added by Wei.CHEN
+  _drtFileName = Usul::File::base( name );
   this->_read( name, caller, progress );
-
+  
   // name == santanam.drt ??
   
 
@@ -139,24 +139,28 @@ void DrtSimReader::read ( const std::string &name, Unknown *caller, Unknown *pro
 
 void DrtSimReader::_read ( const std::string &filename, Unknown *caller, Unknown *progress )
 {
-  std::string id, fn;
+  
 
   //set the working directory
   _workingDir = Usul::File::directory( filename, true );
 
   std::ifstream infile( filename.c_str(), std::ios::in );
-  if( !infile ) {
-	  std::cerr << "Error: unable to open drt file!\n";
+  if( !infile ) 
+  {
+    std::cerr << "Error: unable to open the simulation file!" << std::endl;
 	  ///exit( 0 );
     return;
   }
 
+  
   while( !infile.eof() )
   {
-	  std::getline( infile, id, ':');		// agent: AgentDetails.dat
-	  std::getline( infile, fn, '\n');
-	  fn.erase(0, 1);		// erase the space
-	  std::cout << Usul::Strings::format( "ID=",id,"\tfilename=",fn ) << std::endl;
+    std::string id, fn;
+    infile >> id >> fn;
+	  //std::getline( infile, id, ':');		// agent: AgentDetails.dat
+	  //std::getline( infile, fn, '\n');
+	  //fn.erase(0, 1);		// erase the space
+	  //std::cout << Usul::Strings::format( "ID=",id,"\tfilename=",fn ) << std::endl;
 	  if( "agent" == id )		_agentFileName = fn;
 	  if( "area"  == id )		_areaFileName  = fn;
 	  if( "stock" == id )		_stockFileName = fn;
@@ -178,19 +182,22 @@ void DrtSimReader::_read ( const std::string &filename, Unknown *caller, Unknown
 osg::Node *DrtSimReader::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  _root->removeChild( 0, _root->getNumChildren() );
+  
   
  // add code here (application) by Wei.CHEN
 	
   if (	!_readAreaDetailsFile( ) 	|| 
 		!_readAgentDetailsFile( )	||
 		!_readStockDetailsFile( )	|| 
-		!_readSporeDetailsFile( )	|| 
+		/*!_readSporeDetailsFile( )	||*/ 
 		!_readTranshipmentsFile( )		)
 	{
-		std::cerr << " Can not open files, Exit !!\n";
-		exit( 0 );		// program got exit once any one of files failed to open
+    std::cerr << "Couldn't open one or more files needed to run the simulation!" << std::endl;
+		//exit( 0 );		// program got exit once any one of files failed to open
+    return _root.get();
 	}
+
+  _root->removeChild( 0, _root->getNumChildren() );
 
   _area.setWorkingDir ( _workingDir );
   _agent.setWorkingDir( _workingDir );
@@ -276,14 +283,14 @@ osg::Node *DrtSimReader::buildScene ( const BaseClass::Options &options, Unknown
   // create and open a model presentation document here
   //---------------------------------------------------
   _mpdWriter->buildXMLString();
-  std::string filename ( _workingDir + "DrtSim.mpd" );
+  std::string filename ( _workingDir + _drtFileName + ".mpd" );
 
   _mpdWriter->write( filename );
    
 
   //---------------------------------------------------
 
-  std::cout << "Buildscene complete!" << std::endl;
+  //std::cout << "Buildscene complete!" << std::endl;
   return _root.get();
 }
 
@@ -308,7 +315,7 @@ void DrtSimReader::_openDocument ( const std::string &file, Usul::Documents::Doc
 #else
     document->open ( file, caller );
 #endif
-  std::cout << "Done" << std::endl;
+  //std::cout << "Done" << std::endl;
   
 	
 }
@@ -521,7 +528,7 @@ void DrtSimReader::_openDocument ( const std::string &file, Usul::Documents::Doc
 #else
     document->open ( file, caller );
 #endif
-    std::cout << "Done loading file: " << file << std::endl;
+    //std::cout << "Done loading file: " << file << std::endl;
   
 	
 }

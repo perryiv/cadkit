@@ -165,6 +165,7 @@ private:
   // Model Presentation library pointer to create the mpd file
   ModelPresentationLib::RefPtr        _mpdWriter;
   std::string                         _workingDir;
+  std::string                         _drtFileName;
   
 
   // end here ( added by W.C )

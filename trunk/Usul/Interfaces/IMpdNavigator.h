@@ -68,6 +68,10 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   virtual void              nextSequenceStep() = 0;
   virtual void              prevSequenceStep() = 0;
 
+  // Set the animation speed for dynamic and timesets
+  virtual void              setAnimationSpeed( unsigned int speed ) = 0;
+  virtual unsigned int      getAnimationSpeed() = 0;
+
   
 }; //struct IVertices
 

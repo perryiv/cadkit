@@ -115,6 +115,8 @@ class CompassOrientationCallback : public osg::NodeCallback
                     VM(3,1) = 0.0;
                     VM(3,2) = 0.0;
 
+                    
+
 					osg::Quat temp ( VM.getRotate() );
           osg::Quat quat = temp;
 					quat.set(0,0,quat.z(),quat.w());

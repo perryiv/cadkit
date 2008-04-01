@@ -61,3 +61,24 @@ void MpdAnimationSpeed::_execute ()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the radio button.  Return true to have radio checked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MpdAnimationSpeed::updateCheck () const
+{
+  USUL_TRACE_SCOPE;
+
+  // Implement me to update radio state.
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+
+  unsigned int speed = nav->getAnimationSpeed();
+  if( speed == _speed )
+    return true;
+  else
+    return false;
+}
+
+

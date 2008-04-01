@@ -479,40 +479,31 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
   typedef DocManager::DocumentInfo                     Info;
   typedef Usul::Interfaces::IArcGenReaderWriter        IArcGenReaderWriter;
 
-  // debugging. Remove when fixed
-  std::cout << "Calling _exportToArcGen " << std::endl;
-
   // This will create a new document.
   const std::string filename ( "output.gen" );
   Info info ( DocManager::instance().find ( filename, caller ) );
 
-  if ( false == info.document.valid() )
+	// Get the document.
+	Usul::Documents::Document::RefPtr document ( info.document );
+
+  if ( false == document.valid() )
     throw std::runtime_error ( "Error 1845732421: Failed to find a matching document for file: " + filename );
 
   // See if it can write the file.
-  if ( false == info.document->canSave ( filename ) )
+  if ( false == document->canSave ( filename ) )
     throw std::runtime_error ( "Error 4094644228: " + filename + " can't write to the specified extension .gen" );
 
   // Get the interface.
-  Usul::Interfaces::IArcGenReaderWriter::QueryPtr writer ( info.document );
+  Usul::Interfaces::IArcGenReaderWriter::QueryPtr writer ( document );
   if ( false == writer.valid() )
     throw std::runtime_error ( "Error 3075911574: Invalid document for file: " + filename );
 
-  // set the measurement and positions in the ArcGen reader/writer
-
-  // debugging. Remove when fixed
-  std::cout << "Calling writer->measurement " << std::endl;
+  // Set the measurement and positions.
   writer->measurement( _measurement );
-
-  // debugging. Remove when fixed
-  std::cout << "Calling writer->positions " << std::endl;
   writer->setPolyLineVertices( _positions );
 
-  // Tell the ArcGenRW to write the output file
-  // debugging. Remove when fixed
-  std::cout << "Calling info.document->write " << std::endl;
-  info.document->write ( filename );
-
+  // Write the file.
+  document->write ( filename );
 }
 
 

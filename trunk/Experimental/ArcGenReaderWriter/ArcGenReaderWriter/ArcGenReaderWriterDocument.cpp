@@ -157,9 +157,6 @@ void ArcGenReaderWriterDocument::write ( const std::string &name, Unknown *calle
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
-  //debugging. Remove when fixed
-  std::cout << "Calling _writePolylineZ in ArcGenReaderWriter" << std::endl;
   this->_writePolylineZ( name, caller, progress );
 }
 
@@ -174,8 +171,6 @@ void ArcGenReaderWriterDocument::read ( const std::string &name, Unknown *caller
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
-
 }
 
 
@@ -247,9 +242,6 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  //debugging. Remove when fixed
-  std::cout << "inside _writePolylineZ in ArcGenReaderWriter" << std::endl;
-
   std::ofstream outfile;
   outfile.open( filename.c_str() );
   if ( !outfile.is_open() )
@@ -262,17 +254,13 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
   // Get needed interfaces.
   IPlanetCoordinates::QueryPtr planetCoordinates ( Usul::Documents::Manager::instance().activeDocument() );
 
-  if( false == planetCoordinates.valid() )
-    throw std::runtime_error ( "Error 1633616291: Failed to find a valid document for Usul::Interfaces::IPlanetCoordinates " );
-
-  // write the gen file category descriptor
+  // Write the gen file category descriptor.
   outfile << "ID,Length" << std::endl;
-  std::cout << "ID,Length" << std::endl;
 
-  // write the id number and measurement value
-  outfile << "0," << Usul::Convert::Type<double,std::string>::convert ( _measurement ) << std::endl;
-  std::cout << Usul::Strings::format ( "0,", _measurement ) << std::endl;
+  // Write the id number and measurement value.
+  outfile << "0," << Converter::convert ( _measurement ) << std::endl;
 
+	// Write out each position.
   for( Positions::const_iterator iter = _positions.begin(); iter < _positions.end(); ++iter )
   {
 		// Get the position.
@@ -281,29 +269,24 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
 		// Make a copy.
 		Usul::Math::Vec3d from ( position[0], position[1], position[2] );
 
-		Usul::Math::Vec3d latLon(  0, 0, 0 );
+		Usul::Math::Vec3d out ( 0, 0, 0 );
 
     // Convert the planet point into lat/lon
     if( true == planetCoordinates.valid() )
     {
-      std::cout << "Planet detected.  Converting coordinates... " << std::endl;
-      std::cout << Usul::Strings::format( "Calling convertFromPlanet with: x = ", from[0], "y = ", from[1], "z = ", from[2] );
-      planetCoordinates->convertFromPlanet( from, latLon );
+      planetCoordinates->convertFromPlanet( from, out );
     }
     else
     {
-      std::cout << "Planet not detected.  Using original coordinate values... " << std::endl;
-      latLon = from;
+      out = from;
     }
 
-    // Write the coordinate to the gen file
-    outfile << Converter::convert ( latLon[0] ) << "," << Converter::convert ( latLon[1] ) << std::endl;
-    std::cout << Usul::Strings::format( latLon[0], ",", latLon[1] ) << std::endl;
+    // Write the coordinate.
+    outfile << Converter::convert ( out[0] ) << "," << Converter::convert ( out[1] ) << std::endl;
   }
 
   // End of the gen file notation
   outfile << "END" << std::endl;
-  std::cout << "END" << std::endl;
 
   outfile.close();
 }

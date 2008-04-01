@@ -37,9 +37,9 @@ std::string Usul::System::DateTime::now()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Usul::System::DateTime::format() 
+std::string Usul::System::DateTime::format ( const std::string &f ) 
 {
-  return Usul::System::DateTime::format ( ::time ( 0x0 ) );
+  return Usul::System::DateTime::format ( ::time ( 0x0 ), f );
 }
 
 
@@ -49,14 +49,17 @@ std::string Usul::System::DateTime::format()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Usul::System::DateTime::format ( time_t t )
+std::string Usul::System::DateTime::format ( time_t t, const std::string &f )
 {
-  // Convert it to a string.
+  // Determine format string.
+  std::string fs ( ( true == f.empty() ) ? "%a %Y-%b-%d %I:%M:%S %p" : f );
+
+  // Convert the time to a string.
   const unsigned int size ( 1024 );
   char buffer[size];
   ::memset ( buffer, '\0', size );
   ::tm lt ( Usul::System::DateTime::local ( t ) );
-  ::strftime ( buffer, size - 1, "%a %Y-%b-%d %I:%M:%S %p", &lt );
+  ::strftime ( buffer, size - 1, f.c_str(), &lt );
 
   // Return the string.
   return std::string ( buffer );

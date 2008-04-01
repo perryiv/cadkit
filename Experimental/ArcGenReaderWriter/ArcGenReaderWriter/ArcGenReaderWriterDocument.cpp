@@ -24,9 +24,33 @@
 
 #include "osg/Vec3d"
 
+#include "ogr_api.h"
+#include "ogrsf_frmts.h"
+
 #include <vector>
 #include <fstream>
 #include <iostream>
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize Gdal.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct Init
+  {
+    Init()
+    {
+      OGRRegisterAll();
+    }
+    ~Init()
+    {
+      OGRCleanupAll();
+    }
+  } _init;
+}
 
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ArcGenReaderWriterDocument, ArcGenReaderWriterDocument::BaseClass );
@@ -139,7 +163,7 @@ bool ArcGenReaderWriterDocument::canSave ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "gen" );
+  return ( ext == "gen" || ext == "shp" );
 }
 
 
@@ -152,8 +176,13 @@ bool ArcGenReaderWriterDocument::canSave ( const std::string &file ) const
 void ArcGenReaderWriterDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  this->_writePolylineZ( name, caller, progress );
+  
+	const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
+
+	if ( "gen" == ext )
+		this->_writePolylineZ( name, caller, progress );
+	else if ( "shp" == ext )
+		this->_writeShapeFile ( name );
 }
 
 
@@ -181,6 +210,7 @@ ArcGenReaderWriterDocument::Filters ArcGenReaderWriterDocument::filtersSave() co
   USUL_TRACE_SCOPE;
   Filters filters;
   filters.push_back ( Filter ( "Arc Generate (*.gen)", "*.gen" ) );
+	filters.push_back ( Filter ( "ESRI ShapeFile (*.shp)", "*.shp" ) );
   return filters;
 }
 
@@ -289,10 +319,76 @@ void ArcGenReaderWriterDocument::_writePolylineZ( const std::string &filename, U
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the positions vector.
+//  Write a shape file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+void ArcGenReaderWriterDocument::_writeShapeFile ( const std::string& filename ) const
+{
+	USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+	const std::string driverName ( "ESRI Shapefile" );
+	OGRSFDriver *driver ( ::OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( driverName.c_str() ) );
+
+	if ( 0x0 == driver )
+		throw std::runtime_error ( "Error 5496285230: Could not find driver for " + driverName + "." );
+
+	OGRDataSource *dataSource ( driver->CreateDataSource( filename.c_str(), 0x0 ) );
+
+	if ( 0x0 == dataSource )
+		throw std::runtime_error ( "Error 3162280902: Could not create file " + filename + "." );
+
+	OGRLayer *layer ( dataSource->CreateLayer( "line_out", 0x0, wkbLineString, 0x0 ) );
+  
+	if( 0x0 == layer )
+		throw std::runtime_error ( "Error 4257001710: Could not create layer in " + filename + "." );
+
+	// Make a field for the length.
+	OGRFieldDefn length ( "Length", OFTReal );
+
+	if ( OGRERR_NONE != layer->CreateField ( &length ) )
+		throw std::runtime_error ( "Error 3402584574: Could not create field in " + filename + "." );
+
+	OGRFeature *feature ( OGRFeature::CreateFeature( layer->GetLayerDefn() ) );
+
+	if ( 0x0 != feature )
+	{
+		feature->SetField( "Length", _measurement );
+
+		OGRLineString line;
+    
+		for( Positions::const_iterator iter = _positions.begin(); iter < _positions.end(); ++iter )
+		{
+			// Get the position.
+			Positions::value_type position ( *iter );
+
+			// Make the point.
+			OGRPoint pt ( position[0], position[1], position[2] );
+
+			// Add the point.
+			line.addPoint ( &pt );
+		}
+
+    feature->SetGeometry( &line ); 
+
+    if( OGRERR_NONE != layer->CreateFeature( feature )  )
+    {
+			throw std::runtime_error ( "Error 9646379370: Failed to create feature in " + filename + "." );
+    }
+
+     OGRFeature::DestroyFeature( feature );
+	}
+
+	OGRDataSource::DestroyDataSource( dataSource );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the positions vector.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 void ArcGenReaderWriterDocument::setPolyLineVertices ( Positions p )
 {

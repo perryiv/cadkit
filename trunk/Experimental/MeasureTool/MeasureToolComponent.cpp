@@ -349,8 +349,7 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Query the state to decide whether or not to enable/disable the export
-//  menu.
+//  Query the state to decide whether or not to enable/disable the export menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -480,8 +479,8 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
   typedef Usul::Interfaces::IArcGenReaderWriter        IArcGenReaderWriter;
 
   // This will create a new document.
-  const std::string filename ( "output.gen" );
-  Info info ( DocManager::instance().find ( filename, caller ) );
+  const std::string filename ( "output.shp" );
+  Info info ( DocManager::instance().find ( filename, caller, false, true ) );
 
 	// Get the document.
 	Usul::Documents::Document::RefPtr document ( info.document );
@@ -503,7 +502,7 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
   writer->setPolyLineVertices( _positions );
 
   // Write the file.
-  document->write ( filename );
+  document->write ( filename, caller );
 }
 
 

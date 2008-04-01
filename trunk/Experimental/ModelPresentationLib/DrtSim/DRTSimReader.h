@@ -89,9 +89,6 @@ public:
   /// Construction.
   DrtSimReader();
 
-  /// Build the scene.
-  virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
-
   /// Read the document.
   virtual void     read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
@@ -106,11 +103,11 @@ protected:
 
   void                        _openDocument ( const std::string &file, Usul::Documents::Document *document, Usul::Interfaces::IUnknown *caller );
  
-  // Scene Builders
-  void                        _buildScene( Unknown *caller );
-   
   //Reads
   void						            _read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+
+  void                        _init ( Unknown *progress );
+
   /// Use reference counting.
   virtual ~DrtSimReader();
 

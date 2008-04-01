@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="plug: Arc Gen Reader Writer"
 	ProjectGUID="{2D780010-2314-41E6-84A9-79A4EFE29592}"
+	RootNamespace="plug: Arc Gen Reader Writer"
 	>
 	<Platforms>
 		<Platform
@@ -250,10 +251,6 @@
 					RelativePath="Export.def"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="Commands"
-				>
 			</Filter>
 		</Filter>
 	</Files>

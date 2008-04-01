@@ -143,6 +143,12 @@ void DrtSimReader::_read ( const std::string &filename, Unknown *caller, Unknown
 
   //set the working directory
   _workingDir = Usul::File::directory( filename, true );
+  _area.setWorkingDir ( _workingDir );
+  _agent.setWorkingDir( _workingDir );
+  _stock.setWorkingDir( _workingDir );
+  _trans.setWorkingDir( _workingDir );
+
+  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
 
   std::ifstream infile( filename.c_str(), std::ios::in );
   if( !infile ) 
@@ -198,11 +204,6 @@ osg::Node *DrtSimReader::buildScene ( const BaseClass::Options &options, Unknown
 	}
 
   _root->removeChild( 0, _root->getNumChildren() );
-
-  _area.setWorkingDir ( _workingDir );
-  _agent.setWorkingDir( _workingDir );
-  _stock.setWorkingDir( _workingDir );
-  _trans.setWorkingDir( _workingDir );
 
   _agent.setWriter( _mpdWriter.get() );
   _stock.setWriter( _mpdWriter.get() );

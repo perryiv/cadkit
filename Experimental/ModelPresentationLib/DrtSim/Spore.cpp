@@ -19,6 +19,8 @@
 #include "Usul/File/Stats.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/Directory.h"
+#include "Usul/File/Path.h"
 
 #include "osgDB/WriteFile"
 
@@ -229,6 +231,7 @@ bool	Spore::_SporeDetailsLoader( )
 	const unsigned int zoom = 3;
 
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
+  Usul::System::Directory::ScopedCwd cwd ( Usul::File::directory( _filename, true ) );
 
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary );
 	

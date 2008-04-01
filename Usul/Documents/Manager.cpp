@@ -108,7 +108,7 @@ void Manager::reset()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::Documents Manager::create ( const std::string &ext, Unknown *caller )
+Manager::Documents Manager::create ( const std::string &ext, Unknown *caller, bool checkOpen, bool checkSave )
 {
   // Typedefs.
   typedef Usul::Components::Manager PluginManager;
@@ -116,7 +116,7 @@ Manager::Documents Manager::create ( const std::string &ext, Unknown *caller )
   typedef PluginSet::iterator PluginItr;
   typedef Usul::Interfaces::IDocumentCreate::ValidQueryPtr CreatorPtr;
 
-  // Ask for plugins that open documents.
+  // Ask for plugins that create documents.
   PluginSet plugins ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IDocumentCreate::IID ) );
 
   Documents documentList;
@@ -128,9 +128,29 @@ Manager::Documents Manager::create ( const std::string &ext, Unknown *caller )
     CreatorPtr creator ( (*i).get() );
     Document::RefPtr doc ( creator->createDocument ( caller ) );
 
-    // Can the document open the given file?
-    if ( doc.valid() && doc->canOpen ( ext ) )
-      documentList.push_back( doc.get() );
+    // If the document is valid.
+    if ( true == doc.valid() )
+    {
+      bool addMe ( false );
+
+      // Can the document open the given file?
+      if ( ( true == checkOpen ) && ( true == doc->canOpen ( ext ) ) )
+      {
+        addMe = true;
+      }
+
+      // Can the document save the given file?
+      if ( ( true == checkSave ) && ( true == doc->canSave ( ext ) ) )
+      {
+        addMe = true;
+      }
+
+      // If the document qualifies...
+      if ( true == addMe )
+      {
+        documentList.push_back ( doc.get() );
+      }
+    }
   }
 
   // Return the document list, which may be empty;
@@ -404,7 +424,7 @@ Manager::Delegate* Manager::_findDelegate ( Document * document )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::DocumentInfo Manager::find ( const std::string& filename, Usul::Interfaces::IUnknown *caller )
+Manager::DocumentInfo Manager::find ( const std::string& filename, Usul::Interfaces::IUnknown *caller, bool checkOpen, bool checkSave )
 {
   DocumentInfo info;
 
@@ -437,7 +457,7 @@ Manager::DocumentInfo Manager::find ( const std::string& filename, Usul::Interfa
   if( 0x0 == document )
   {
     // Create the document.
-    Documents documents ( this->create ( filename ) );
+    Documents documents ( this->create ( filename, caller, checkOpen, checkSave ) );
 
     // Make sure...
     if ( documents.empty() )

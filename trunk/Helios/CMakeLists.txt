@@ -64,6 +64,7 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
 ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
 ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
 ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
+${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
 )
 #ENDIF(BUILD_MINERVA)
 

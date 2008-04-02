@@ -13,7 +13,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/File/Remove.h"
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
+#include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/ISnapShot.h"
 
 #include "QtCore/QProcess"

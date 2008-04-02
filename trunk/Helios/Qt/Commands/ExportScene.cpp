@@ -11,7 +11,7 @@
 #include "Helios/Qt/Commands/ExportScene.h"
 
 #include "Usul/Interfaces/IExportScene.h"
-#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
+#include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 

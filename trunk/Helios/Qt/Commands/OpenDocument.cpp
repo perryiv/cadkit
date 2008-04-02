@@ -19,7 +19,6 @@
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
 #include "Usul/Interfaces/GUI/IGUIDelegateNotify.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Resources/TextWindow.h"

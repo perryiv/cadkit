@@ -1220,19 +1220,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ILineData.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ILineLayer.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ILoadColorFile.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\GUI\ILoadFileDialog.h"
+					RelativePath=".\Interfaces\ILoadFileDialog.h"
 					>
 				</File>
 				<File
@@ -1416,7 +1408,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\GUI\ISaveFileDialog.h"
+					RelativePath=".\Interfaces\ISaveFileDialog.h"
 					>
 				</File>
 				<File

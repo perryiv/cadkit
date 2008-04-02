@@ -183,15 +183,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation", 
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Arc Gen Reader Writer", "..\Experimental\ArcGenReaderWriter\ArcGenReaderWriter\ArcGenReaderWriterModel.vcproj", "{2D780010-2314-41E6-84A9-79A4EFE29592}"
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva Postgres", "..\Minerva\DataSources\PG\MinervaPostgres.vcproj", "{A232FF6C-6B18-46CE-91F9-84FE9AF17992}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
@@ -299,10 +290,6 @@ Global
 		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Debug|Win32.Build.0 = Debug|Win32
 		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Release|Win32.ActiveCfg = Release|Win32
 		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Release|Win32.Build.0 = Release|Win32
-		{2D780010-2314-41E6-84A9-79A4EFE29592}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2D780010-2314-41E6-84A9-79A4EFE29592}.Debug|Win32.Build.0 = Debug|Win32
-		{2D780010-2314-41E6-84A9-79A4EFE29592}.Release|Win32.ActiveCfg = Release|Win32
-		{2D780010-2314-41E6-84A9-79A4EFE29592}.Release|Win32.Build.0 = Release|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Debug|Win32.Build.0 = Debug|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Release|Win32.ActiveCfg = Release|Win32

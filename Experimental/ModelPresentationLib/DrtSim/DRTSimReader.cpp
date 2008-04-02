@@ -10,7 +10,7 @@
 
 // #include "Experimental/DRTSim/DRTSim/DrtSimReader.h"
 
-#include "DrtSimReader.h"
+#include "DRTSimReader.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"

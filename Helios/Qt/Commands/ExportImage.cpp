@@ -11,7 +11,7 @@
 #include "Helios/Qt/Commands/ExportImage.h"
 
 #include "Usul/Interfaces/IExportImage.h"
-#include "Usul/Interfaces/GUI/ISaveFileDialog.h"
+#include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Trace/Trace.h"
 

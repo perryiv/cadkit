@@ -21,7 +21,6 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
-#include "Usul/Interfaces/IArcGenReaderWriter.h"
 #include "Usul/Interfaces/IButtonPressListener.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -34,12 +33,12 @@
 #include <vector>
 
 class MeasureToolComponent : public Usul::Base::Object,
-  public Usul::Interfaces::IPlugin,
-  public Usul::Interfaces::IIntersectListener,
-  public Usul::Interfaces::IMenuAdd,
-  public Usul::Interfaces::IActiveViewListener,
-  public Usul::Interfaces::IButtonPressListener,
-  public Usul::Interfaces::IMouseEventListener
+                             public Usul::Interfaces::IPlugin,
+                             public Usul::Interfaces::IIntersectListener,
+                             public Usul::Interfaces::IMenuAdd,
+                             public Usul::Interfaces::IActiveViewListener,
+                             public Usul::Interfaces::IButtonPressListener,
+                             public Usul::Interfaces::IMouseEventListener
 {
 public:
 
@@ -63,6 +62,7 @@ public:
   /// Get/Set the measure state.
   void                        measureOn  ( bool b );
   bool                        isMeasureOn() const;
+
 protected: 
 
   /// The active document has changed.
@@ -94,7 +94,6 @@ private:
   void              _updateMeasurement( Usul::Interfaces::IUnknown *caller );
   void              _clear();
   void              _exportToArcGen( Usul::Interfaces::IUnknown *caller );
-
 
   bool _measure;
   bool _appendPosition;

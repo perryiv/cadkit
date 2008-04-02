@@ -24,10 +24,12 @@
 #include "Usul/Components/Factory.h"
 #include "Usul/Documents/Document.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/IArcGenReaderWriter.h"
 #include "Usul/Interfaces/IIntersectNotify.h"
 #include "Usul/Interfaces/IButtonPressSubject.h"
 #include "Usul/Interfaces/IButtonID.h"
 #include "Usul/Interfaces/IMouseEventSubject.h"
+#include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -476,30 +478,49 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
   // Helpful typedefs.
   typedef Usul::Documents::Manager                     DocManager;
   typedef DocManager::DocumentInfo                     Info;
+	typedef Usul::Interfaces::ISaveFileDialog            ISaveFileDialog;
+	typedef ISaveFileDialog::Filters                     Filters;
+	typedef ISaveFileDialog::Filter                      Filter;
+	typedef ISaveFileDialog::FileResult                  FileResult;
   typedef Usul::Interfaces::IArcGenReaderWriter        IArcGenReaderWriter;
 
-  // This will create a new document.
-  const std::string filename ( "output.shp" );
-  Info info ( DocManager::instance().find ( filename, caller, false, true ) );
+	// Default filename.
+	const std::string filename ( "output.shp" );
+
+	// The filters.
+	Filters filters;
+	filters.push_back ( Filter ( "ESRI ShapeFile (*.shp)", "*.shp" ) );
+
+	// Query for the dialog.
+	ISaveFileDialog::QueryPtr dialog ( caller );
+
+	// Get the filename.
+	FileResult result ( dialog.valid() ? dialog->getSaveFileName ( "Save Measurement", filters ) : FileResult ( filename, Filter() ) );
+
+  // Find a document that can save the file..
+	Info info ( DocManager::instance().find ( result.first, caller, false, true ) );
 
 	// Get the document.
 	Usul::Documents::Document::RefPtr document ( info.document );
 
+	// Make sure it's valid.
   if ( false == document.valid() )
     throw std::runtime_error ( "Error 1845732421: Failed to find a matching document for file: " + filename );
 
   // See if it can write the file.
   if ( false == document->canSave ( filename ) )
-    throw std::runtime_error ( "Error 4094644228: " + filename + " can't write to the specified extension .gen" );
+    throw std::runtime_error ( "Error 4094644228: " + filename + " can't write to the specified extension." );
 
   // Get the interface.
   Usul::Interfaces::IArcGenReaderWriter::QueryPtr writer ( document );
   if ( false == writer.valid() )
     throw std::runtime_error ( "Error 3075911574: Invalid document for file: " + filename );
 
+	document->setOption ( "write_length", "true" );
+
   // Set the measurement and positions.
-  writer->measurement( _measurement );
-  writer->setPolyLineVertices( _positions );
+  writer->measurement ( _measurement );
+  writer->setPolyLineVertices ( _positions );
 
   // Write the file.
   document->write ( filename, caller );

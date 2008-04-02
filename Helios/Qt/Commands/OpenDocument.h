@@ -19,7 +19,7 @@
 
 #include "Helios/Qt/Commands/Command.h"
 
-#include "Usul/Interfaces/GUI/ILoadFileDialog.h"
+#include "Usul/Interfaces/ILoadFileDialog.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Documents/Document.h"
 

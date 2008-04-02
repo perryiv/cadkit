@@ -505,25 +505,23 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
 
 	// Make sure it's valid.
   if ( false == document.valid() )
-    throw std::runtime_error ( "Error 1845732421: Failed to find a matching document for file: " + filename );
+    throw std::runtime_error ( "Error 1845732421: Failed to find a matching document for file: " + result.first );
 
   // See if it can write the file.
-  if ( false == document->canSave ( filename ) )
+  if ( false == document->canSave ( result.first ) )
     throw std::runtime_error ( "Error 4094644228: " + filename + " can't write to the specified extension." );
 
   // Get the interface.
   Usul::Interfaces::IArcGenReaderWriter::QueryPtr writer ( document );
   if ( false == writer.valid() )
-    throw std::runtime_error ( "Error 3075911574: Invalid document for file: " + filename );
-
-	document->setOption ( "write_length", "true" );
+    throw std::runtime_error ( "Error 3075911574: Invalid document for file: " + result.first );
 
   // Set the measurement and positions.
   writer->measurement ( _measurement );
   writer->setPolyLineVertices ( _positions );
 
   // Write the file.
-  document->write ( filename, caller );
+  document->write ( result.first, caller );
 }
 
 

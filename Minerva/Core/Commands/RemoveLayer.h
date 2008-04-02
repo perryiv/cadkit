@@ -12,9 +12,9 @@
 #define __MINERVA_CORE_COMMANDS_REMOVE_LAYER_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Layers/PostGIS/Layer.h"
 
 #include "Usul/Commands/Command.h"
+#include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ISerialize.h"
 
 #include "Serialize/XML/Macros.h"

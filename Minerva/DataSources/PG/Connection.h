@@ -117,6 +117,8 @@ public:
     Connection &_c;
   };
 
+	virtual void deserialize ( const XmlTree::Node &node );
+
 protected:
   virtual ~Connection();
 
@@ -137,22 +139,9 @@ private:
   mutable Mutex *_connectionMutex;
 
   SERIALIZE_XML_DEFINE_MAP;
-public:
-  virtual const char *className() const { return "Connection"; }
-  virtual void serialize ( XmlTree::Node &parent ) const
-  {
-    _dataMemberMap.serialize ( parent );
-  }
-  virtual void deserialize ( const XmlTree::Node &node )
-  {
-    _dataMemberMap.deserialize ( node );
-    this->connect();
-  }
-protected:
-  template < class T > void _addMember ( const std::string &name, T &value )
-  {
-    _dataMemberMap.addMember ( name, value );
-  }
+	SERIALIZE_XML_CLASS_NAME ( Connection );
+	SERIALIZE_XML_SERIALIZE_FUNCTION;
+	SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
 
 }

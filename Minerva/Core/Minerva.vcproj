@@ -862,11 +862,79 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IDatabaseConnection.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IDirtyScene.h"
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IFitLineTerrain.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IGeometryCenter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\ILineData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\ILineLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IMultiLineData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IMultiPointData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IMultiPolygonData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IOffset.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IOssimPlanetLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IPointData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IPointLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IPolygonData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IPolygonLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IPostgresqlConnection.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IRemoveLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\ITemporalData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IVectorLayer.h"
 					>
 				</File>
 			</Filter>

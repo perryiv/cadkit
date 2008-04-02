@@ -165,15 +165,14 @@ public:
   virtual void                modified ( bool m );
 
   /// Return the number of windows.
-  unsigned int                numWindows()   const { return ( static_cast<unsigned int> ( _windows.size() ) );   }
-  unsigned int                numViews()     const { return ( static_cast<unsigned int> ( _views.size() ) );     }
+  unsigned int                numWindows() const;
+  unsigned int                numViews() const;
 
   /// Open the file. Clears any data this document already has.
   void                        open ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Get the options
-  Options&                    options();
-  const Options&              options() const;
+  Options                     options() const;
 
   /// Read the file and add it to existing document's data.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 ) = 0;
@@ -196,6 +195,9 @@ public:
 
   /// Use given filename.
   void                        saveAs ( const std::string& filename, Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 );
+
+  /// Set the option.
+  void                        setOption ( const std::string &key, const std::string &value );
 
   /// Convenience function to set progress bar and flush events.
   void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller = 0x0 );
@@ -228,14 +230,12 @@ protected:
   /// Use reference counting.
   virtual ~Document();
 
-  void                        _addOptions ( const Options & );
-
   // Build the title for given window.
   virtual std::string         _buildTitle ( Window* );
 
-  std::string                 _getSaveAsFileName ( Options &options, Unknown *caller = 0x0 );
+  std::string                 _getSaveAsFileName ( Unknown *caller = 0x0 );
 
-  void                        _save ( const std::string &filename, Unknown *caller, Unknown *progress, const Options &options = Options(), std::ostream *out = 0x0 );
+  void                        _save ( const std::string &filename, Unknown *caller, Unknown *progress, std::ostream *out = 0x0 );
 
   // Notify the observers.
   void                        _notifyModifiedObservers();

@@ -99,10 +99,17 @@ void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
   this->delegate( 0x0 );
 
   // Clear the modified observers.
-  _modifiedObservers.clear();
+  {
+    Guard guard ( this );
+    _modifiedObservers.clear();
+  }
 
   typedef std::list< Window * > Temp;
-  Temp temp ( _windows.begin(), _windows.end() );
+  Temp temp;
+  {
+    Guard guard ( this );
+    temp.assign ( _windows.begin(), _windows.end() );
+  }
 
   // Loop through the windows.
   for ( Temp::iterator i = temp.begin(); i != temp.end(); ++i )
@@ -125,8 +132,11 @@ void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
 void Document::addWindow ( Window *window )
 {
   // Changed set to list to get proper order of addition
-  if ( std::find_if ( _windows.begin(), _windows.end(), WindowPtr::IsEqual ( window ) ) == _windows.end() )
-    _windows.push_back ( window );
+  {
+    Guard guard ( this );
+    if ( std::find_if ( _windows.begin(), _windows.end(), WindowPtr::IsEqual ( window ) ) == _windows.end() )
+      _windows.push_back ( window );
+  }
 
   // Update window titles.
   this->updateWindowTitles ();
@@ -141,6 +151,7 @@ void Document::addWindow ( Window *window )
 
 void Document::addView ( View *view )
 {
+  Guard guard ( this );
   if ( std::find_if ( _views.begin(), _views.end(), ViewPtr::IsEqual ( view ) ) == _views.end() )
     _views.push_back ( view );
 }
@@ -154,7 +165,10 @@ void Document::addView ( View *view )
 
 void Document::removeWindow ( Window *window )
 {
-  _windows.remove ( window );
+  {
+    Guard guard ( this );
+    _windows.remove ( window );
+  }
 
   // Update window titles.
   this->updateWindowTitles ();
@@ -169,8 +183,11 @@ void Document::removeWindow ( Window *window )
 
 void Document::removeView ( View *view )
 {
-  _views.remove ( view );
-  
+  {
+    Guard guard ( this );
+    _views.remove ( view );
+  }
+
   // If the view the active view, set the active view to null.
   if( view == Usul::Documents::Manager::instance().activeView () )
     Usul::Documents::Manager::instance().activeView ( 0x0 );
@@ -234,7 +251,7 @@ void Document::save ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnk
 {
   // If the filename is valid...
   if ( this->fileValid() )
-    this->_save ( this->fileName(), caller, progress, this->options(), out );
+    this->_save ( this->fileName(), caller, progress, out );
 
   // Otherwise...
   else
@@ -251,7 +268,7 @@ void Document::save ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnk
 void Document::saveAs ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress, std::ostream *out )
 {
   // Ask for file name.
-  const std::string name ( this->_getSaveAsFileName ( this->options(), caller ) );
+  const std::string name ( this->_getSaveAsFileName ( caller ) );
 
   // Should have valid name unless user pressed cancel. This behavior is 
   // needed in canClose() and it's consistant with how we cancel elsewhere.
@@ -271,7 +288,7 @@ void Document::saveAs ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IU
 void Document::saveAs ( const std::string& filename, Unknown *caller, Unknown *progress, std::ostream *out )
 {
   // Save the document.
-  this->_save ( filename, caller, progress, this->options(), out );
+  this->_save ( filename, caller, progress, out );
 
   // Since the filename changed, update titles
   this->updateWindowTitles();
@@ -284,7 +301,7 @@ void Document::saveAs ( const std::string& filename, Unknown *caller, Unknown *p
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
+std::string Document::_getSaveAsFileName ( Unknown *caller )
 {
   // For convenience.
   typedef Usul::Interfaces::ISaveFileDialog FileDialog;
@@ -307,7 +324,7 @@ std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
   std::string format ( ( std::string::npos != filter.find ( "binary" ) ) ? "binary" : "ascii" );
   
   // Set the format option.
-  options["format"] = format;
+  this->setOption ( "format", format );
 
   // Set the binary flag
   this->binary ( "binary" == format );
@@ -323,7 +340,7 @@ std::string Document::_getSaveAsFileName ( Options &options, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::_save ( const std::string &name, Unknown *caller, Unknown *progress, const Options &options, std::ostream *out )
+void Document::_save ( const std::string &name, Unknown *caller, Unknown *progress, std::ostream *out )
 {
   // Write the document.
   OUTPUT(out) << "Saving file: " << name << " ... " << Usul::Resources::TextWindow::flush;
@@ -427,16 +444,18 @@ void Document::exportDocument ( Unknown *caller )
 
 bool Document::canClose ( Window *window, Usul::Interfaces::IUnknown *caller, bool checkNumWindows )
 {
+  Windows windows ( Usul::Threads::Safe::get ( this->mutex(), _windows ) );
+
   // If the given window is not in our set...
-  if ( _windows.end() == std::find_if ( _windows.begin(), _windows.end(), WindowPtr::IsEqual( window ) ) )
+  if ( windows.end() == std::find_if ( windows.begin(), windows.end(), WindowPtr::IsEqual ( window ) ) )
     return true;
 
   // If there are no reference windows...
-  if ( _windows.empty() )
+  if ( windows.empty() )
     return true;
 
   // If there are more than one window referencing this document...
-  if ( checkNumWindows && _windows.size() > 1 )
+  if ( checkNumWindows && windows.size() > 1 )
     return true;
 
   return this->canClose( caller );
@@ -498,12 +517,12 @@ bool Document::canClose ( Unknown *caller )
 
 bool Document::closeWindows ( Usul::Interfaces::IUnknown *caller, const Window* skip )
 {
-  // See if we can close.  Don't check the number of referenced windows
-  if ( false == this->canClose ( *_windows.begin(), caller, false ) )
-    return false;
-
   // Make a copy because closing the window invalidates the iterator
-  Windows copy ( _windows );
+  Windows copy ( Usul::Threads::Safe::get ( this->mutex(), _windows ) );
+
+  // See if we can close.  Don't check the number of referenced windows
+  if ( false == this->canClose ( *copy.begin(), caller, false ) )
+    return false;
 
   // Tell the windows to close
   for ( Windows::iterator iter = copy.begin(); iter != copy.end(); ++iter )
@@ -620,7 +639,8 @@ void Document::binary ( bool b )
 void Document::windowsForward()
 {
   // Loop through the documents in reverse order.  The first window will be on top.
-  for ( Windows::reverse_iterator i = _windows.rbegin(); i != _windows.rend(); ++i )
+  Windows windows ( Usul::Threads::Safe::get ( this->mutex(), _windows ) );
+  for ( Windows::reverse_iterator i = windows.rbegin(); i != windows.rend(); ++i )
   {
     // Set the focus (brings window to the front).
     (*i)->setFocus();
@@ -642,6 +662,8 @@ std::string Document::_buildTitle ( Window *window )
   // See if there is more than one window...
   if ( this->numWindows() > 1 )
   {
+    Guard guard ( this );
+
     // Find our window.
     typedef Document::WindowConstItr Itr;
     Document::WindowPtr::IsEqual pred ( window );
@@ -666,7 +688,7 @@ std::string Document::_buildTitle ( Window *window )
 
 void Document::closing ( Window *window )
 {
-  if ( _windows.empty() )
+  if ( 0 == this->numWindows() )
   {
     // Tell the manager we are closing.
     Manager::instance().close ( this );
@@ -687,6 +709,7 @@ void Document::closing ( Window *window )
 
 void Document::delegate ( Delegate *delegate )
 {
+  Guard guard ( this );
   _delegate = delegate;
 }
 
@@ -699,6 +722,7 @@ void Document::delegate ( Delegate *delegate )
 
 Document::Delegate* Document::delegate()
 {
+  Guard guard ( this );
   return _delegate.get();
 }
 
@@ -737,20 +761,9 @@ void Document::updateGUI  (  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Document::Options& Document::options()
+Document::Options Document::options() const
 {
-  return _options;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the options.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Document::Options& Document::options() const
-{
+  Guard guard ( this );
   return _options;
 }
 
@@ -761,10 +774,10 @@ const Document::Options& Document::options() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::_addOptions ( const Options &options )
+void Document::setOption ( const std::string &key, const std::string &value )
 {
-  for ( Options::const_iterator i = options.begin(); i != options.end(); ++i )
-    _options[i->first] = i->second;
+  Guard guard ( this );
+  _options[key] = value;
 }
 
 
@@ -776,6 +789,8 @@ void Document::_addOptions ( const Options &options )
 
 void Document::addModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer )
 {
+  Guard guard ( this );
+
   if ( 0x0 == observer )
     return;
 
@@ -790,6 +805,7 @@ void Document::addModifiedObserver ( Usul::Interfaces::IModifiedObserver* observ
 
 void Document::removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer )
 {
+  Guard guard ( this );
   if ( false == _modifiedObservers.empty() )
     _modifiedObservers.erase ( observer );
 }
@@ -1005,4 +1021,32 @@ std::string Document::registryTagName() const
   const std::string tag ( Usul::Registry::Database::instance().convertToTag ( name ) );
 
   return tag;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Document::numWindows() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( static_cast<unsigned int> ( _windows.size() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of views.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Document::numViews() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( static_cast<unsigned int> ( _views.size() ) );
 }

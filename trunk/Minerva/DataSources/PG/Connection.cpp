@@ -576,3 +576,16 @@ Usul::Interfaces::IUnknown* Connection::queryInterface ( unsigned long iid )
       return 0x0;
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::deserialize ( const XmlTree::Node &node )
+{
+  _dataMemberMap.deserialize ( node );
+  this->connect();
+}

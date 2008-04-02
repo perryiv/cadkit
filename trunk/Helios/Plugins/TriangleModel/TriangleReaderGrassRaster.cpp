@@ -1,3 +1,4 @@
+
 #include "TriangleReaderGrassRaster.h"
 
 #include "Usul/File/Stats.h"
@@ -528,8 +529,10 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
 
 void TriangleReaderGrassRaster::_loadTexture ( const std::string& filename )
 {
+
   // Get interface to triangle set for loading a color file
   Usul::Interfaces::ILoadColorFile::QueryPtr colorFile ( _document );
+
 
   // Create header vector from header information
   std::vector< float > header ( 0 );

@@ -47,7 +47,7 @@ ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 CADKIT_PLUGIN()
 
 # Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree )
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree ModelPresentationLib )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 

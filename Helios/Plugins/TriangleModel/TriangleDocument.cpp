@@ -83,10 +83,8 @@ TriangleDocument::TriangleDocument() : BaseClass ( "Triangle Document" ),
 #endif
 
   // Default options.
-  OsgTools::Triangles::TriangleSet::Options options;
-  options["normals"] = "per-vertex";
-  options["colors"] = "per-vertex";
-  this->_addOptions ( options );
+  this->setOption ( "normals", "per-vertex" );
+  this->setOption ( "colors", "per-vertex" );
 }
 
 

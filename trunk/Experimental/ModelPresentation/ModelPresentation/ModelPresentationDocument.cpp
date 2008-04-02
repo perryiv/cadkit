@@ -22,7 +22,7 @@
 #include "Experimental/ModelPresentation/ModelPresentation/MpdPrevSequence.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdFirstSequence.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdAnimationSpeed.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdslowerAnimationSpeed.h"
+#include "Experimental/ModelPresentation/ModelPresentation/MpdSlowerAnimationSpeed.h"
 #include "Experimental/ModelPresentation/ModelPresentation/MpdFasterAnimationSpeed.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"

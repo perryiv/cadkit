@@ -736,9 +736,8 @@ void TriangleDocument::createDefaultGUI ( Unknown *caller )
 {
   if ( this->delegate() )
   {
-    BaseClass::Options &options ( this->options() );
-    options["normals"] = "per-vertex";
-    options["colors"]  = "per-vertex";
+    this->setOption ( "normals", "per-vertex" );
+    this->setOption ( "colors", "per-vertex" );
     this->delegate()->createDefaultGUI ( this, caller );
   }
 }

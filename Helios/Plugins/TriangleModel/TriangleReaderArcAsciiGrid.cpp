@@ -426,3 +426,4 @@ void TriangleReaderArcAsciiGrid::_incrementProgress ( bool state )
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
 }
+

@@ -63,7 +63,7 @@ public:
   void                        measureOn  ( bool b );
   bool                        isMeasureOn() const;
 
-protected: 
+protected:
 
   /// The active document has changed.
   virtual void      activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView );
@@ -93,7 +93,9 @@ private:
 
   void              _updateMeasurement( Usul::Interfaces::IUnknown *caller );
   void              _clear();
-  void              _exportToArcGen( Usul::Interfaces::IUnknown *caller );
+	void              _export ( const std::string& key, const std::string& value, Usul::Interfaces::IUnknown* caller );
+  void              _exportLine ( Usul::Interfaces::IUnknown *caller );
+	void              _exportLineSegments ( Usul::Interfaces::IUnknown *caller );
 
   bool _measure;
   bool _appendPosition;

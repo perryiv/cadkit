@@ -24,6 +24,7 @@
 #include <string>
 
 class OGRSFDriver;
+class OGRLayer;
 
 class EsriShapeFileDocument : public Usul::Documents::Document,
                               public Usul::Interfaces::IArcGenReaderWriter
@@ -81,6 +82,8 @@ protected:
 
   // Writers
 	void                     _writeShapeFile ( const std::string& filename ) const;
+
+	static void              _addLine ( OGRLayer* layer, const Positions& p );
 
   /// Use reference counting.
   virtual ~EsriShapeFileDocument();

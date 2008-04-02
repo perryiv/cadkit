@@ -24,6 +24,7 @@
 #include "Usul/Components/Factory.h"
 #include "Usul/Documents/Document.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/Interfaces/IArcGenReaderWriter.h"
 #include "Usul/Interfaces/IIntersectNotify.h"
 #include "Usul/Interfaces/IButtonPressSubject.h"
@@ -338,12 +339,13 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
 
   measure->append ( new Button ( Usul::Commands::genericCommand ( "Clear", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_clear ), Usul::Commands::TrueFunctor() ) ) );
   
-  // Menu Function to export the measurement points to an Arc Gen file
-  measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", 
-      Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen ) ),
+  measure->append ( new Button ( Usul::Commands::genericCommand ( "Export Line", 
+      Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportLine ) ),
       Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
 
-//measure->append ( new Button ( Usul::Commands::genericCommand ( "Export", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportToArcGen ), Usul::Commands::TrueFunctor() ) ) );
+	measure->append ( new Button ( Usul::Commands::genericCommand ( "Export Line Segments", 
+      Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportLineSegments ) ),
+      Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
   
   menu->append ( measure );
 }
@@ -372,8 +374,6 @@ void MeasureToolComponent::measureOn ( bool b )
   Guard guard ( this->mutex() );
 
   _measure = b;
-
-  //this->_clear();
 }
 
 
@@ -467,13 +467,13 @@ void MeasureToolComponent::_clear()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Export to an Arc Gen format file.
+//  Export to file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller )
+void MeasureToolComponent::_export ( const std::string& key, const std::string& value, Usul::Interfaces::IUnknown* caller )
 {
-  Guard guard ( this->mutex() );
+	Guard guard ( this->mutex() );
 
   // Helpful typedefs.
   typedef Usul::Documents::Manager                     DocManager;
@@ -485,7 +485,7 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
   typedef Usul::Interfaces::IArcGenReaderWriter        IArcGenReaderWriter;
 
 	// Default filename.
-	const std::string filename ( "output.shp" );
+	const std::string filename ( "output" + Usul::Functions::GUID::generate() + ".shp" );
 
 	// The filters.
 	Filters filters;
@@ -520,8 +520,35 @@ void MeasureToolComponent::_exportToArcGen ( Usul::Interfaces::IUnknown *caller 
   writer->measurement ( _measurement );
   writer->setPolyLineVertices ( _positions );
 
+	// Add the option.
+	document->setOption ( key, value );
+
   // Write the file.
   document->write ( result.first, caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export to entire line to file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MeasureToolComponent::_exportLine ( Usul::Interfaces::IUnknown *caller )
+{
+  this->_export ( "expand_geometry", "false", caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export line segments to file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MeasureToolComponent::_exportLineSegments ( Usul::Interfaces::IUnknown *caller )
+{
+	this->_export ( "expand_geometry", "true", caller );
 }
 
 

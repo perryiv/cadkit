@@ -20,6 +20,7 @@
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/Vec3d"
@@ -266,7 +267,8 @@ EsriShapeFileDocument::Filters EsriShapeFileDocument::filtersInsert() const
 void EsriShapeFileDocument::_writeShapeFile ( const std::string& filename ) const
 {
 	USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+
+	bool expand ( this->hasOption ( "expand_geometry", "true" ) );
 
 	// Get the driver.
 	OGRSFDriver *driver ( this->driver() );
@@ -274,7 +276,9 @@ void EsriShapeFileDocument::_writeShapeFile ( const std::string& filename ) cons
 	if ( 0x0 == driver )
 		throw std::runtime_error ( "Error 5496285230: Could not find driver for " + filename + "." );
 
-	OGRDataSource *dataSource ( driver->CreateDataSource( filename.c_str(), 0x0 ) );
+	char *option ( "SHPT=ARCZ" );
+
+	OGRDataSource *dataSource ( driver->CreateDataSource( filename.c_str(), &option ) );
 
 	if ( 0x0 == dataSource )
 		throw std::runtime_error ( "Error 3162280902: Could not create file " + filename + "." );
@@ -290,15 +294,43 @@ void EsriShapeFileDocument::_writeShapeFile ( const std::string& filename ) cons
 	if ( OGRERR_NONE != layer->CreateField ( &length ) )
 		throw std::runtime_error ( "Error 3402584574: Could not create field in " + filename + "." );
 
+	// Get the positions.
+	Positions positions ( Usul::Threads::Safe::get ( this->mutex(), _positions ) );
+
+	if ( false == expand )
+	{
+		EsriShapeFileDocument::_addLine ( layer, positions );
+	}
+	else
+	{
+		for ( Positions::const_iterator iter = positions.begin(); iter < positions.end() - 1; ++iter )
+		{
+			Positions segment ( iter, iter + 2 );
+			EsriShapeFileDocument::_addLine ( layer, segment );
+		}
+	}
+	
+	OGRDataSource::DestroyDataSource( dataSource );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a line to the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void EsriShapeFileDocument::_addLine ( OGRLayer* layer, const Positions& positions )
+{
 	OGRFeature *feature ( OGRFeature::CreateFeature( layer->GetLayerDefn() ) );
 
 	if ( 0x0 != feature )
 	{
-		feature->SetField( "Length", _measurement );
-
 		OGRLineString line;
+
+		double length ( 0.0 );
     
-		for( Positions::const_iterator iter = _positions.begin(); iter < _positions.end(); ++iter )
+		for( Positions::const_iterator iter = positions.begin(); iter < positions.end(); ++iter )
 		{
 			// Get the position.
 			Positions::value_type position ( *iter );
@@ -308,19 +340,28 @@ void EsriShapeFileDocument::_writeShapeFile ( const std::string& filename ) cons
 
 			// Add the point.
 			line.addPoint ( &pt );
+
+			// Make sure the next one isn't the end.
+			if ( iter + 1 != positions.end() )
+			{
+				// Get the next position.
+				Positions::value_type next ( *(iter + 1) );
+				const double distance ( (next - position).length() );
+				length += distance;
+			}
 		}
+
+		feature->SetField( "Length", length );
 
     feature->SetGeometry( &line ); 
 
     if( OGRERR_NONE != layer->CreateFeature( feature )  )
     {
-			throw std::runtime_error ( "Error 9646379370: Failed to create feature in " + filename + "." );
+			throw std::runtime_error ( "Error 9646379370: Failed to create feature." );
     }
 
      OGRFeature::DestroyFeature( feature );
 	}
-
-	OGRDataSource::DestroyDataSource( dataSource );
 }
 
 

@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ModelPresentationlib.h"
-#include "DrtSim/DrtSimReader.h"
+#include "ModelPresentationLib.h"
+#include "DrtSim/DRTSimReader.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"

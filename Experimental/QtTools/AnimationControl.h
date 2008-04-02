@@ -18,7 +18,8 @@
 #define _CADKIT_QT_TOOLS_ANIMATION_CONTROL_PANEL_CLASS_H_
 
 #include "QtTools/Export.h"
-#include "QtTools/ui_AnimationControl.h"
+
+#include "ui_AnimationControl.h" // Cannot have path here.
 
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"

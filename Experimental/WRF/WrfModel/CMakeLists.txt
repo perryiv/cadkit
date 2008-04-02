@@ -3,7 +3,7 @@ project (WrfModel)
 # Set the name.  Needed for the macros to set up plugin properties.
 SET(PLUGIN_NAME "WrfModel")
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
@@ -33,7 +33,7 @@ ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 CADKIT_PLUGIN()
 
 # Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML )
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML Minerva )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 

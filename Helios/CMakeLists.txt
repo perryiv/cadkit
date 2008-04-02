@@ -41,6 +41,8 @@ ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 ${PROJECT_SOURCE_DIR}/Plugins/PathAnimation
 ${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentation/ModelPresentation
+${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfModel
+${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfDelegate
 ${CADKIT_INC_DIR}/Experimental/MeasureTool
 )
 

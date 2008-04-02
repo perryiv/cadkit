@@ -157,6 +157,9 @@ public:
   /// Prompt user for documents to export.
   void                        exportDocument ( Unknown *caller = 0x0 );
 
+	/// Do we have this option?
+  bool                        hasOption ( const std::string &key, const std::string &value ) const;
+
   /// Prompt user for documents to insert into this one.
   void                        insert ( Unknown *caller = 0x0 );
 

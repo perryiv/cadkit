@@ -323,6 +323,7 @@ ModelPresentationDocument::Filters ModelPresentationDocument::filtersOpen() cons
   USUL_TRACE_SCOPE;
   Filters filters;
   filters.push_back ( Filter ( "Model Presentation (*.mpd)", "*.mpd" ) );
+  filters.push_back ( Filter ( "Disaster Recovery Simulation (*.drtmpd)", "*.drtmpd" ) );
   return filters;
 }
 
@@ -336,7 +337,7 @@ ModelPresentationDocument::Filters ModelPresentationDocument::filtersOpen() cons
 ModelPresentationDocument::Filters ModelPresentationDocument::filtersInsert() const
 {
   USUL_TRACE_SCOPE;
-  return this->filtersOpen();
+  return Filters();
 }
 
 

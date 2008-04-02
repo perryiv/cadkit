@@ -34,9 +34,11 @@ set (SOURCES
 ./MpdPrevSequence.cpp
 ./MpdNextSequence.cpp
 ./MpdFirstSequence.cpp
+./MpdSlowerAnimationSpeed.cpp
+./MpdFasterAnimationSpeed.cpp
+./MpdAnimationSpeed.cpp
 ./ModelPresentationComponent.cpp
 ./ModelPresentationDocument.cpp
-./ModelPresentationFactory.cpp
 )
 
 # ---------- Create a Shared Library

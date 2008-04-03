@@ -38,6 +38,7 @@ ${CADKIT_INC_DIR}/MenuKit
 ${CADKIT_INC_DIR}/Helios/Plugins/PathAnimation
 ${CADKIT_INC_DIR}/Experimental/MeasureTool
 ${CADKIT_INC_DIR}/Helios/Qt
+${CADKIT_INC_DIR}/Helios/Qt/Plugins/PasswordPrompt
 ${CADKIT_INC_DIR}/Minerva/Application
 ${CADKIT_INC_DIR}/Minerva/Core
 ${CADKIT_INC_DIR}/Minerva/DataSources/PG

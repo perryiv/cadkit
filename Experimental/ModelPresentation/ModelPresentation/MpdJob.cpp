@@ -159,7 +159,7 @@ void MpdJob::_findFiles()
     #endif
 
     // Get all files with the prefix name.
-    //std::cout << "Checking directory: " << header.directory + slash << " for files with prefix: " << header.prefix << std::endl;
+    //std::cout << "\rChecking directory: " << header.directory + slash << " for files with prefix: " << header.prefix << std::flush;
 
     Files::iterator end ( std::remove_if 
                                  ( files.begin(), files.end(),  

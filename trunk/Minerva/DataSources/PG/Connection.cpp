@@ -9,16 +9,19 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/DataSources/PG/Connection.h"
+#include "Minerva/DataSources/PG/ConnectionPool.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Components/Manager.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/GUID.h"
+#include "Usul/Interfaces/IPasswordPrompt.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/Sleep.h"
 #include "Usul/System/Host.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Thread.h"
 #include "Usul/Threads/Manager.h"
-#include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Strings/Format.h"
-#include "Usul/System/Sleep.h"
-#include "Usul/Factory/RegisterCreator.h"
 
 #include "boost/algorithm/string/find.hpp"
 
@@ -38,18 +41,18 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Connection, Connection::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Connection::Connection() : BaseClass(),
-_host (),
-_database (),
-_user (),
-_password(),
-_connection ( static_cast < ConnectionType* > ( 0x0 ) ),
-_connectionMutex ( Mutex::create () ),
-SERIALIZE_XML_INITIALIZER_LIST
+	_host (),
+	_database (),
+	_user (),
+	_password(),
+	_connection ( static_cast < ConnectionType* > ( 0x0 ) ),
+	_connectionMutex ( Mutex::create () ),
+	SERIALIZE_XML_INITIALIZER_LIST
 {
   SERIALIZE_XML_ADD_MEMBER ( _host );
   SERIALIZE_XML_ADD_MEMBER ( _database );
   SERIALIZE_XML_ADD_MEMBER ( _user );
-  SERIALIZE_XML_ADD_MEMBER ( _password );
+	// Don't serialize or deserialize password in clear text.
 }
 
 
@@ -183,19 +186,29 @@ const std::string& Connection::password() const
 
 void Connection::connect()
 {
-  try
-  {
-    // Set up a connection to the backend.
-    _connection = ConnectionPtr ( new ConnectionType( this->connectionString() ) );
-  }
-  catch ( const std::exception& e )
-  {
-    std::cerr << "Error 3839724500: " << e.what() << std::endl;
-  }
-  catch ( ... )
-  {
-    std::cerr << "Error 4295095950: Unknown exception caught while trying to connect." << std::endl;
-  }
+	const unsigned int maxTries ( 3 );
+	unsigned int tries ( 0 );
+
+	do
+	{
+		// Increate the number of tries.
+		++tries;
+
+		try
+		{
+			// Set up a connection to the backend.
+			_connection = ConnectionPtr ( new ConnectionType( this->connectionString() ) );
+		}
+		catch ( const std::exception& e )
+		{
+			std::cerr << "Error 3839724500: " << e.what() << std::endl;
+		}
+		catch ( ... )
+		{
+			std::cerr << "Error 4295095950: Unknown exception caught while trying to connect." << std::endl;
+		}
+
+	} while ( 0x0 == _connection || tries < maxTries );
 }
 
 
@@ -205,16 +218,27 @@ void Connection::connect()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Connection::connectionString() const
+std::string Connection::connectionString()
 {
-#if 0
-#ifndef _MSC_VER
-  /// HACK for viz cluster.
-  std::string host ( Usul::System::Host::name() );
-  if( boost::algorithm::find_first ( host, "viz" ) )
-    (const_cast<Connection*>(this))->_host = "cinema";
-#endif
-#endif
+	// Check to see if the password has been cached.
+	if ( true == ConnectionPool::instance().hasPassword( this->username(), this->hostname() ) )
+		this->password ( ConnectionPool::instance().getPassword ( this->username(), this->hostname() ) );
+
+	// Check to see if we have a password.
+	if ( true == this->password().empty() )
+	{
+		typedef Usul::Components::Manager PluginManager;
+		typedef Usul::Interfaces::IPasswordPrompt IPasswordPrompt;
+
+		IPasswordPrompt::QueryPtr pp ( PluginManager::instance().getInterface ( IPasswordPrompt::IID ) );
+
+		if ( pp.valid() )
+		{
+			const std::string prompt ( Usul::Strings::format ( "Enter password for ", this->username(), " on ", this->hostname() ) );
+			this->password ( pp->promptForPassword ( prompt ) );
+			ConnectionPool::instance().setPassword ( this->username(), this->hostname(), this->password() );
+		}
+	}
 
   // Connection parameters.
   std::string hostname ( Usul::Strings::format (     "host=", this->hostname() ) );

@@ -533,7 +533,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
       numJobs = _jobs.size();
     }
 
-
+    //std::cout << "\rChecking file system." << std::flush;
     for( unsigned int index = 0; index < numJobs; ++index )
     {
       MpdDefinitions::MpdDynamicSet set;
@@ -548,6 +548,7 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
         
         if( false == this->_getJobAtIndex( index ).valid() )
         {
+          //std::cout << "Starting job to look at file system" << std::endl;
           Guard guard ( this );
           _jobs.at( index ) = new MpdJob( caller, _workingDir, set.header.directory, set.header.prefix, set.header.extension, set.header.modelNames );
           Usul::Jobs::Manager::instance().addJob ( _jobs.at( index ).get() );
@@ -556,10 +557,15 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
         {
           if ( true == this->_getJobAtIndex( index )->isDone() )
           {
-           
+            //std::cout << "\nJob is finished.  Getting data..." << std::flush;
             // process the data from the completed job
             this->_processJobData( index, caller );
             
+          }
+          else
+          {
+            //if( false == this->_getJobAtIndex( index ).valid() )
+              //std::cout << "\rJob is valid but not finished... " << std::flush;
           }
         }
       }
@@ -2473,11 +2479,19 @@ void ModelPresentationDocument::_processJobData( unsigned int index, Usul::Inter
 
   MpdJob::RefPtr job ( ( index < _jobs.size() ) ? _jobs.at ( index ) : 0x0 );
   if ( false == job.valid() )
+  {
+    //std::cout << "Job is invalid." << std::endl;
     return;
+  }
 
   if ( false == job->foundNewData() )
+  {
+    //std::cout << "Job has no new data." << std::endl;
+    // Assign to null.
+    _jobs.at( index ) = 0x0;
     return;
-
+  }
+  //std::cout << "Job is valid." << std::endl;
   // Ask job for it's stuff and rebuild scene, etc.
   MpdDefinitions::Groups groups = job->getData();
   for( unsigned int i = 0; i < groups.size(); ++i )

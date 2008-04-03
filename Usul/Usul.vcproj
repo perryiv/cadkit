@@ -1316,6 +1316,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IPasswordPrompt.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IPlanetCoordinates.h"
 					>
 				</File>

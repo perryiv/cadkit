@@ -276,14 +276,14 @@ void EsriShapeFileDocument::_writeShapeFile ( const std::string& filename ) cons
 	if ( 0x0 == driver )
 		throw std::runtime_error ( "Error 5496285230: Could not find driver for " + filename + "." );
 
-	char *option ( "SHPT=ARCZ" );
-
-	OGRDataSource *dataSource ( driver->CreateDataSource( filename.c_str(), &option ) );
+	OGRDataSource *dataSource ( driver->CreateDataSource( filename.c_str(), 0x0 ) );
 
 	if ( 0x0 == dataSource )
 		throw std::runtime_error ( "Error 3162280902: Could not create file " + filename + "." );
 
-	OGRLayer *layer ( dataSource->CreateLayer( "line_out", 0x0, wkbLineString, 0x0 ) );
+	char *option ( "SHPT=ARCZ" );
+
+	OGRLayer *layer ( dataSource->CreateLayer( "line_out", 0x0, wkbLineString, &option ) );
   
 	if( 0x0 == layer )
 		throw std::runtime_error ( "Error 4257001710: Could not create layer in " + filename + "." );

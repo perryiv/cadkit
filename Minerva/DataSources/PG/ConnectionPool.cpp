@@ -24,11 +24,28 @@ ConnectionPool* ConnectionPool::_instance( 0x0 );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ConnectionPool& ConnectionPool::instance()
+{
+	if ( 0x0 == _instance )
+		_instance = new ConnectionPool;
+	return *_instance;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ConnectionPool::ConnectionPool() : _connections()
+ConnectionPool::ConnectionPool() : 
+	_mutex ( Mutex::create() ),
+	_connections(),
+	_passwords()
 {
 }
 
@@ -41,6 +58,7 @@ ConnectionPool::ConnectionPool() : _connections()
 
 ConnectionPool::~ConnectionPool()
 {
+	delete _mutex;
 }
 
 
@@ -52,6 +70,7 @@ ConnectionPool::~ConnectionPool()
 
 bool ConnectionPool::hasConnection ( const std::string& name ) const
 {
+	Guard guard ( *_mutex );
   Connections::const_iterator iter = _connections.find( name );
   return iter != _connections.end();
 }
@@ -65,6 +84,7 @@ bool ConnectionPool::hasConnection ( const std::string& name ) const
 
 Connection* ConnectionPool::getConnection ( const std::string& name )
 {
+	Guard guard ( *_mutex );
   return _connections[name].get();
 }
 
@@ -77,6 +97,47 @@ Connection* ConnectionPool::getConnection ( const std::string& name )
 
 void ConnectionPool::addConnection ( Connection* connection )
 {
+	Guard guard ( *_mutex );
   _connections[ connection->name() ] = connection;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the password saved for this user and host.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ConnectionPool::hasPassword ( const std::string& user, const std::string& host ) const
+{
+	Guard guard ( *_mutex );
+	Passwords::const_iterator iter ( _passwords.find ( Passwords::key_type ( user, host ) ) );
+	return ( iter != _passwords.end() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the password saved for this user and host.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string ConnectionPool::getPassword ( const std::string& user, const std::string& host ) const
+{
+	Guard guard ( *_mutex );
+	Passwords::const_iterator iter ( _passwords.find ( Passwords::key_type ( user, host ) ) );
+	return ( iter != _passwords.end() ? iter->second : "" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the password saved for this user and host.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ConnectionPool::setPassword ( const std::string& user, const std::string& host, const std::string& password )
+{
+	Guard guard ( *_mutex );
+	_passwords[Passwords::key_type ( user, host )] = password;
+}

@@ -14,6 +14,9 @@
 #include "Minerva/DataSources/PG/Export.h"
 #include "Minerva/DataSources/PG/Connection.h"
 
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/Mutex.h"
+
 #include <string>
 #include <map>
 
@@ -30,14 +33,25 @@ public:
   Connection*                      getConnection ( const std::string& name );
   void                             addConnection ( Connection* connection );
 
+	bool                             hasPassword ( const std::string& user, const std::string& host ) const;
+	std::string                      getPassword ( const std::string& user, const std::string& host ) const;
+	void                             setPassword ( const std::string& user, const std::string& host, const std::string& password );
+
 protected:
   ConnectionPool();
   ~ConnectionPool();
 
 private:
-  typedef std::map< std::string, Connection::RefPtr > Connections;
 
+	typedef Usul::Threads::Mutex Mutex;
+	typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef std::map< std::string, Connection::RefPtr > Connections;
+	typedef std::pair<std::string, std::string> Key;
+	typedef std::map<Key, std::string> Passwords;
+
+	mutable Mutex *_mutex;
   Connections _connections;
+	Passwords _passwords;
 
   static ConnectionPool *_instance;
 };

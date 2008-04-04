@@ -110,6 +110,7 @@ SET (SOURCES
   Utilities/DeleteHandler.cpp
   Utilities/FindNormals.cpp
   Utilities/Intersect.cpp
+  Utilities/TranslateGeometry.cpp
   Widgets/Axes.cpp
   Widgets/ClipPlane.cpp
   Widgets/ProgressBar.cpp

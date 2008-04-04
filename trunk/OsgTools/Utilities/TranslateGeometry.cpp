@@ -71,7 +71,7 @@ void TranslateGeometry::apply( osg::Geode& geode )
       {
         for ( osg::Vec3Array::iterator iter = vertices->begin(); iter != vertices->end(); ++iter )
         {
-          osg::Vec3d vertex ( osg::Vec3d ( *iter ) + _amount );
+          osg::Vec3d vertex ( osg::Vec3d ( *iter ) - _amount );
           (*iter).set ( static_cast<osg::Vec3f::value_type> ( vertex[0] ),
                         static_cast<osg::Vec3f::value_type> ( vertex[1] ),
                         static_cast<osg::Vec3f::value_type> ( vertex[2] ) );
@@ -81,5 +81,7 @@ void TranslateGeometry::apply( osg::Geode& geode )
         _vertices.insert ( vertices );
       }
     }
+
+		drawable->dirtyBound();
   }
 }

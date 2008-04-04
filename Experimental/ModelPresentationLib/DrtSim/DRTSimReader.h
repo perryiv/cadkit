@@ -155,6 +155,7 @@ private:
   bool				_isTransOn;
 
   std::string			_legendMachine;
+  std::string     _writerMachine;
 
   unsigned int        _counter;
 

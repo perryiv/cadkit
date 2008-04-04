@@ -46,6 +46,7 @@ osg::Group*		Agent::buildAgentScene ( )
     osg::ref_ptr< osg::Group > group ( new osg::Group );
     std::string filename = Usul::Strings::format( path, "/agentText.ive" );
     group->addChild( _createTextAsNode( osg::Vec3( 0.0f, -30.0f, 0.0f), osg::Vec4( 1.0f, 0.5f, 0.5f, 1.0f ), 20.0f, " Agent " ) );
+    
     osgDB::writeNodeFile( *( group.get() ), filename.c_str() );
     _root->addChild( group.get() ); 
   }

@@ -76,6 +76,7 @@ DrtSimReader::DrtSimReader() :
   _transFileName	= "Transhipments.dat";
   _sporeFileName	= "SporeDetails.dat";
   _legendMachine  = "localhost";
+  _writerMachine  = "localhost";
 
   // end here ( added by W.C )
 
@@ -166,6 +167,7 @@ void DrtSimReader::_read ( const std::string &filename, Unknown *caller, Unknown
 	  if( "spore" == id )		_sporeFileName = fn;
 	  if( "trans" == id )		_transFileName = fn;
     if( "legend" == id )  _legendMachine = fn;
+    if( "writer" == id )  _writerMachine = fn;
 
           
   }

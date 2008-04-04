@@ -1791,30 +1791,55 @@ osg::Node* ModelPresentationDocument::_parseModel( XmlTree::Node &node, Unknown 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   Attributes& attributes ( node.attributes() );
-  std::string path;
+  std::string path = "";
   osg::ref_ptr< osg::Group > group ( new osg::Group );
+  std::string machine = "localhost";
+  std::string type = "";
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
 
     if ( "file" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, path );
-      group->addChild( this->_loadFile( path, caller, progress ) );
+      type = "file";
+      //group->addChild( this->_loadFile( path, caller, progress ) );
     }
     if ( "directory" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, path );
-      group->addChild( this->_loadDirectory( path, caller, progress ) );
+      type = "directory";
+      //group->addChild( this->_loadDirectory( path, caller, progress ) );
     }
     if ( "name" == iter->first )
     {
       Usul::Strings::fromString ( iter->second, name );
     }
-
+    if ( "machine" == iter->first )
+    {
+      Usul::Strings::fromString ( iter->second, machine );
+    }
    
   }
-  // add a model to the writer
-  _writer->addModel( name, path );
+  // get the hostname of the machine
+  std::string hostname = Usul::System::Host::name();
+
+
+  // if the machine name is localhost or <hostname> the add the model(s) to the scene.
+  if( "localhost" == machine || hostname == machine && "" != path )
+  {
+    if( "file" == type )
+    {
+      group->addChild( this->_loadFile( path, caller, progress ) );
+    }
+    if( "directory" == type )
+    {
+      group->addChild( this->_loadDirectory( path, caller, progress ) );
+    }
+    // add a model to the writer
+    _writer->addModel( name, path );
+  }
+
+  
   return group.release();  
 }
 
@@ -2194,7 +2219,6 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     //TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x2" ) ) );
     //TimelineSubMenu->append( new Button ( new MpdFasterAnimationSpeed( me.get(), 2, "Faster x5" ) ) );
     TimelineMenu->append( TimelineSubMenu.get() );
-
 
     menu.append ( TimelineMenu );
   }

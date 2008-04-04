@@ -28,6 +28,7 @@
 #include "OsgTools/Group.h"
 #include "OsgTools/Utilities/TranslateGeometry.h"
 
+#include "osg/BoundingBox"
 #include "osg/MatrixTransform"
 
 #include <algorithm>
@@ -121,16 +122,16 @@ void CenterGeometryComponent::centerGeometry()
 	osg::BoundingSphere bs ( group->getBound() );
 
 	// Get the center.
-	osg::Vec3d center ( bs.center() );
+	osg::Vec3d offset ( bs.center() );
 
 	// Visit the scene.
-	osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> visitor ( new OsgTools::Utilities::TranslateGeometry ( -center ) );
+	osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> visitor ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
 	group->accept ( *visitor );
 
 	if ( osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform*> ( group.get() ) )
 	{
 		osg::Matrixd matrix ( mt->getMatrix() );
-		matrix.makeTranslate ( matrix.getTrans() + center );
+		matrix.makeTranslate ( matrix.getTrans() + offset );
 
 		mt->setMatrix ( matrix );
 	}
@@ -143,8 +144,10 @@ void CenterGeometryComponent::centerGeometry()
 
 		group->addChild ( transform.get() );
 
-		transform->setMatrix ( osg::Matrixd::translate ( center ) );
+		transform->setMatrix ( osg::Matrixd::translate ( offset ) );
 	}
+
+	group->dirtyBound();
 }
 
 

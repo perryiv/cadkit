@@ -943,3 +943,29 @@ std::string Settings::imageDirectory() const
   std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", Keys::IMAGE, "/", Keys::DIRECTORY ) );
   return this->value<std::string> ( path, Usul::File::Temp::directory ( true ) );
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the wand offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Settings::wandOffset ( const Usul::Math::Vec3d& o )
+{
+  _database[Sections::PREFERENCES][Keys::WAND_OFFSET] = o;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the wand offset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec3d Settings::wandOffset() const
+{
+  std::string path ( Usul::Strings::format ( Sections::PREFERENCES, "/", Keys::WAND_OFFSET ) );
+  return this->value<Vec3d> ( path, Vec3d ( 0.0, 0.0, 0.0 ) );
+}

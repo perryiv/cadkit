@@ -146,7 +146,7 @@ Application::Application() :
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _joystick          ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogTrim        ( 0, 0 ),
-  _wandOffset        ( 0, -1.6, -0.67 ), // feet (used to be z=-4).  Need to add this to preference file.
+  _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4). Move to preference file.
   _databasePager     ( 0x0 ),
   _commandQueue      ( ),
   _frameDump         (),
@@ -1083,6 +1083,9 @@ void Application::_init()
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON3, "VJButton3" ) );
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON4, "VJButton4" ) );
   _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON5, "VJButton5" ) );
+
+  // Set the wand offset
+  _wandOffset = this->preferences()->wandOffset();
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -4237,7 +4240,9 @@ void Application::_initLight()
   light->setDiffuse ( diffuse );
   light->setSpecular ( specular );
 
-  this->addLight ( light.get() );
+  osg::ref_ptr<osg::StateSet> ss ( _root->getOrCreateStateSet() );
+  ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+  //this->addLight ( light.get() );
 }
 
 
@@ -4308,7 +4313,7 @@ Application::FileResult Application::getSaveFileName  ( const std::string &title
   const std::string writer  ( this->preferences()->fileWriterMachineName() );
 
   // Write the file iff the machine name is the same as the writer-name.
-  if ( filters.size() > 1 && host == writer )
+  if ( filters.size() >= 1 && host == writer )
   {
     const Filter filter ( filters.front() );
     const std::string ext ( filter.second );

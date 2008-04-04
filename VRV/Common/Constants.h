@@ -74,6 +74,7 @@ namespace VRV
       const std::string FRAME_SCALE        ( "frame_scale" );
       const std::string EXTENSION          ( "ext" );
       const std::string DIRECTORY          ( "directory" );
+      const std::string WAND_OFFSET        ( "wand_offset" );
     }
 
     namespace Defaults

@@ -2334,6 +2334,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IAxes * > ( this );
   case Usul::Interfaces::IMouseEventSubject::IID:
     return static_cast < Usul::Interfaces::IMouseEventSubject* > ( this );
+	case Usul::Interfaces::IModelsScene::IID:
+		return static_cast< Usul::Interfaces::IModelsScene* > ( this );
   default:
     return 0x0;
   } 
@@ -5052,4 +5054,58 @@ bool Viewer::isBackFacesShowing() const
   
   // Return the state.
   return ( ( 0x0 == this->viewer() ) ? false : !OsgTools::State::StateSet::getBackFaceCulling ( this->viewer()->getGlobalStateSet() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the model's scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Group * Viewer::modelsScene() const
+{
+	USUL_TRACE_SCOPE;
+	return ( ( 0x0 == this->sceneManager() ) ? 0x0 : this->sceneManager()->clipNode() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the model's scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Group * Viewer::modelsScene()
+{
+	USUL_TRACE_SCOPE;
+	return ( ( 0x0 == this->sceneManager() ) ? 0x0 : this->sceneManager()->clipNode() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const SceneManager * Viewer::sceneManager() const
+{
+	USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+	return _sceneManager.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scene manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SceneManager * Viewer::sceneManager()
+{
+	USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+	return _sceneManager.get();
 }

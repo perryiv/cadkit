@@ -13,15 +13,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _VRV_INTERFACE_MODELS_SCENE_H_
-#define _VRV_INTERFACE_MODELS_SCENE_H_
+#ifndef _USUL_INTERFACE_MODELS_SCENE_H_
+#define _USUL_INTERFACE_MODELS_SCENE_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
 namespace osg { class Group; };
 
 
-namespace VRV {
+namespace Usul {
 namespace Interfaces {
 
 
@@ -40,7 +40,7 @@ struct IModelsScene : public Usul::Interfaces::IUnknown
 
 
 } // namespace Interfaces
-} // namespace VRV
+} // namespace Usul
 
 
-#endif // _VRV_INTERFACE_MODELS_SCENE_H_
+#endif // _USUL_INTERFACE_MODELS_SCENE_H_

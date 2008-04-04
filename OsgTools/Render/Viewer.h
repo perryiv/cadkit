@@ -64,6 +64,7 @@
 #include "Usul/Interfaces/IMouseEventListener.h"
 #include "Usul/Interfaces/IMouseEventSubject.h"
 #include "Usul/Interfaces/IViewMode.h"
+#include "Usul/Interfaces/IModelsScene.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -134,7 +135,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IMenuAdd,
                                 public Usul::Interfaces::IRenderLoop,
                                 public Usul::Interfaces::IRenderingPasses,
-                                public Usul::Interfaces::IViewMode
+                                public Usul::Interfaces::IViewMode,
+																public Usul::Interfaces::IModelsScene
 {
 public:
 
@@ -381,7 +383,8 @@ public:
   virtual Node *        scene();
 
   /// Get the scene manager
-  SceneManager *        sceneManager() { return _sceneManager.get(); }
+	const SceneManager *  sceneManager() const;
+  SceneManager *        sceneManager();
 
   // Get/Set back to front sorting.
   bool                  sortBackToFront() const;
@@ -710,6 +713,10 @@ protected:
   /// Get/Set the number of rendering passes (IRenderingPasses).
   virtual void                  renderingPasses ( unsigned int number );
   virtual unsigned int          renderingPasses () const;
+
+	// Get the model's scene (IModelsScene).
+  virtual const osg::Group *    modelsScene() const;
+  virtual osg::Group *          modelsScene();
 
 private:
 

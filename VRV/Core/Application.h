@@ -19,7 +19,6 @@
 #include "VRV/Devices/TrackerDevice.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/INavigationScene.h"
-#include "VRV/Interfaces/IModelsScene.h"
 #include "VRV/Interfaces/IAuxiliaryScene.h"
 #include "VRV/Functors/Intersect.h"
 
@@ -45,6 +44,7 @@
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IJoystick.h"
 #include "Usul/Interfaces/IMatrixMultiply.h"
+#include "Usul/Interfaces/IModelsScene.h"
 #include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Interfaces/ITranslationSpeed.h"
 #include "Usul/Interfaces/IPolygonMode.h"
@@ -109,7 +109,7 @@ namespace Core {
 class VRV_EXPORT Application : public vrj::GlApp,
                                public VRV::Interfaces::IModelAdd,
                                public VRV::Interfaces::INavigationScene,
-                               public VRV::Interfaces::IModelsScene,
+                               public Usul::Interfaces::IModelsScene,
                                public VRV::Interfaces::IAuxiliaryScene,
                                public Usul::Interfaces::IClippingDistance,
                                public Usul::Interfaces::IFrameInfo,
@@ -346,9 +346,6 @@ public:
   /// Get/Set show memory state.
   void                          setShowMemory( bool b );
   bool                          getShowMemory() const;
-
-	/// Center geometry at center of bounding sphere of scene.
-	void                          centerGeometry();
 
 protected:
 

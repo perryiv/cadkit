@@ -1264,6 +1264,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IModelsScene.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IModifiedObserver.h"
 					>
 				</File>

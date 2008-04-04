@@ -81,7 +81,6 @@
 #include "OsgTools/Ray.h"
 #include "OsgTools/ShapeFactory.h"
 #include "OsgTools/Utilities/DeleteHandler.h"
-#include "OsgTools/Utilities/TranslateGeometry.h"
 
 #include "Serialize/XML/TypeWrapper.h"
 
@@ -399,8 +398,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IFrameInfo* > ( this );
   case Usul::Interfaces::IWorldInfo::IID:
     return static_cast < Usul::Interfaces::IWorldInfo* > ( this );
-  case VRV::Interfaces::IModelsScene::IID:
-    return static_cast < VRV::Interfaces::IModelsScene * > ( this );
+  case Usul::Interfaces::IModelsScene::IID:
+    return static_cast < Usul::Interfaces::IModelsScene * > ( this );
   case VRV::Interfaces::INavigationScene::IID:
     return static_cast < VRV::Interfaces::INavigationScene* > ( this );
   case Usul::Interfaces::IMatrixMultiplyDouble::IID:
@@ -3718,8 +3717,6 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, me.get() ) ) );
     shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );
   }
-
-	menu->append ( new Button ( new BasicCommand ( "Center Geometry", UA::memberFunction<void> ( this, &Application::centerGeometry ) ) ) );
 }
 
 
@@ -5268,29 +5265,4 @@ bool Application::getShowMemory() const
   Guard guard ( this->mutex() );
 
   return Usul::Bits::has<unsigned int,unsigned int> ( _flags, Application::SHOW_MEMORY );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Center geometry at center of bounding sphere of scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::centerGeometry()
-{
-	USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-
-	osg::BoundingSphere bs ( _models->getBound() );
-
-	osg::Vec3d center ( bs.center() );
-
-	osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> visitor ( new OsgTools::Utilities::TranslateGeometry ( -center ) );
-	_models->accept ( *visitor );
-
-	osg::Matrixd matrix ( _models->getMatrix() );
-	matrix.makeTranslate ( matrix.getTrans() + center );
-
-	_models->setMatrix ( matrix );
 }

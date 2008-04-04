@@ -32,7 +32,7 @@ ${CADKIT_INC_DIR}/Helios/Plugins/PathAnimation
 # ---- Document Plug-ins -------
 ${CADKIT_INC_DIR}/Helios/Plugins/SceneModel
 ${CADKIT_INC_DIR}/Helios/Plugins/TriangleModel
-${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
+#${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
 ${CADKIT_INC_DIR}/Experimental/ModelPresentation/ModelPresentation
 ${CADKIT_INC_DIR}/Experimental/ModelPresentationLib
 

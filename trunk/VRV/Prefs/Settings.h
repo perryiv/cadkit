@@ -58,6 +58,7 @@ public:
   typedef Usul::Math::Vec2ui Vec2ui;
   typedef Usul::Math::Vec2f Vec2f;
   typedef Usul::Math::Vec3f Vec3f;
+  typedef Usul::Math::Vec3d Vec3d;
   typedef Usul::Math::Vec4f Vec4f;
   typedef Usul::Math::Matrix44f Matrix;
 
@@ -202,6 +203,10 @@ public:
   /// Get/set the image directory.
   void                  imageDirectory ( const std::string& s );
   std::string           imageDirectory() const;
+
+  /// Get/set the wand offset.
+  void                  wandOffset ( const Vec3d& );
+  Vec3d                 wandOffset() const;
 
   template<class T>
   T                     value ( const std::string& path, const T& defaultValue ) const;

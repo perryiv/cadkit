@@ -142,6 +142,8 @@ void CenterGeometryComponent::centerGeometry()
 		OsgTools::Group::removeAllChildren ( group.get() );
 
 		group->addChild ( transform.get() );
+
+		transform->setMatrix ( osg::Matrixd::translate ( center ) );
 	}
 }
 

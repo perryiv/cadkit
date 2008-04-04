@@ -512,6 +512,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utilities\TranslateGeometry.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utilities\TranslateGeometry.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utilities\Transparency.h"
 					>
 				</File>

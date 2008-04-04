@@ -18,30 +18,38 @@ import popen2
 def usage():
     print '''report.py -- build and sent report
     Options:
-    --email'''
+    --email
+    --src_directory'''
 
 def main():
     try:
-        options, args = getopt.getopt(sys.argv[1:],  '', ['email='])
+        options, args = getopt.getopt(sys.argv[1:],  '', ['email=', 'src_directory='])
     except getopt.error:
         print 'Invalid option'
         usage()
-        sys.exit(0)
+        sys.exit(1)
 
     email = ''
+    src_directory = ''
 
     for a in options[:]:
         if a[0] == '--email':
             email=a[1]
+        if a[0] == '--src_directory':
+            src_directory=a[1]
 
     if email=='':
         print 'Error: Must provide an email address.'
         usage()
-        sys.exit(0)
+        sys.exit(1)
+    
+    if src_directory=='':
+        print 'Error: Must provide a source directory.'
+        usage();
+        sys.exit(1)
 
     # Get the directory where the source code lives.
-    srcDirectory = os.environ['CADKIT_INC_DIR']
-    os.chdir ( srcDirectory );
+    os.chdir ( src_directory );
 
     # Do an update.
     svn = os.popen ( 'svn update' ).read()

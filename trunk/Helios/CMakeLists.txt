@@ -45,6 +45,7 @@ ${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentation/ModelPresentation
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfModel
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfDelegate
 ${CADKIT_INC_DIR}/Experimental/MeasureTool
+${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry
 )
 
 #SET(BUILD_MINERVA ON)

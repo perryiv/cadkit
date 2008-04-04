@@ -81,6 +81,7 @@
 #include "OsgTools/Ray.h"
 #include "OsgTools/ShapeFactory.h"
 #include "OsgTools/Utilities/DeleteHandler.h"
+#include "OsgTools/Utilities/TranslateGeometry.h"
 
 #include "Serialize/XML/TypeWrapper.h"
 
@@ -3646,16 +3647,16 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
   menu->append ( nearFar );
 
   nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "On", 
-                        Usul::Adaptors::bind1<void> ( true, 
-                                                      UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
-                        Usul::Adaptors::bind1<bool> ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES,
-                                                      UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
+                        UA::bind1<void> ( true, 
+                                          UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
+                        UA::bind1<bool> ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES,
+                                          UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
 
   nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Off", 
-                        Usul::Adaptors::bind1<void> ( false, 
-                                                      UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
-                                                      UA::bind1<bool> ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR, 
-                                                      UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
+                        UA::bind1<void> ( false, 
+                                          UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
+                        UA::bind1<bool> ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR, 
+                                          UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
 
 
   menu->addSeparator();
@@ -3717,6 +3718,8 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, me.get() ) ) );
     shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );
   }
+
+	menu->append ( new Button ( new BasicCommand ( "Center Geometry", UA::memberFunction<void> ( this, &Application::centerGeometry ) ) ) );
 }
 
 
@@ -5265,4 +5268,29 @@ bool Application::getShowMemory() const
   Guard guard ( this->mutex() );
 
   return Usul::Bits::has<unsigned int,unsigned int> ( _flags, Application::SHOW_MEMORY );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Center geometry at center of bounding sphere of scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::centerGeometry()
+{
+	USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+
+	osg::BoundingSphere bs ( _models->getBound() );
+
+	osg::Vec3d center ( bs.center() );
+
+	osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> visitor ( new OsgTools::Utilities::TranslateGeometry ( -center ) );
+	_models->accept ( *visitor );
+
+	osg::Matrixd matrix ( _models->getMatrix() );
+	matrix.makeTranslate ( matrix.getTrans() + center );
+
+	_models->setMatrix ( matrix );
 }

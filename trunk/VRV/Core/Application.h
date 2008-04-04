@@ -347,6 +347,9 @@ public:
   void                          setShowMemory( bool b );
   bool                          getShowMemory() const;
 
+	/// Center geometry at center of bounding sphere of scene.
+	void                          centerGeometry();
+
 protected:
 
   /// VR Juggler methods.

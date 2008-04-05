@@ -51,7 +51,7 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals
 ${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
 ${CADKIT_INC_DIR}/Minerva/Plugins/Document
 
-
+${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry
 ${CADKIT_INC_DIR}/Experimental/MeasureTool
 
 

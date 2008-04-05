@@ -49,16 +49,19 @@
 #include "osg/AutoTransform"
 #include "osg/Geode"
 #include "osg/Material"
+#include "osg/MatrixTransform"
 #include "osg/LineWidth"
 
 #include "osgGA/GUIEventAdapter"
+
+#include "osgText/Text"
 
 #include "osgUtil/IntersectVisitor"
 
 #include <algorithm>
 #include <iostream>
 
-#define COMPILE_FOR_VRV 0
+#define COMPILE_FOR_VRV 1
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -225,8 +228,8 @@ namespace Detail
     osg::ref_ptr<osg::Vec3Array> p ( new osg::Vec3Array );
 
     p->resize ( 2 );
-    (*p)[0] = start;
-    (*p)[1] = end;
+    (*p)[0] = osg::Vec3 ( 0.0, 0.0, 0.0 );
+    (*p)[1] = end - start;
 
     geom->setVertexArray ( p.get() );
     geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINES, 0, 2 ) );
@@ -247,8 +250,22 @@ namespace Detail
     state->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
 
     geode->addDrawable ( geom.get() );
+
+    const double distance ( ( start - end ).length() );
+    osg::ref_ptr<osgText::Text> text ( new osgText::Text );
+    text->setText ( Usul::Strings::format ( distance ) );
+    text->setColor( osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 ) );
+    text->setPosition ( (*p)[1] / 2.0 );
+    text->setAutoRotateToScreen( true );
+    text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+    text->setCharacterSize( 60.0 );
+    geode->addDrawable ( text.get() );
     
-    return geode.release();
+    osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+    mt->setMatrix ( osg::Matrix::translate ( start ) );
+    mt->addChild ( geode.get() );
+
+    return mt.release();
   }
 }
 

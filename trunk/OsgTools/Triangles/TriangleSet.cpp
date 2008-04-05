@@ -109,7 +109,8 @@ TriangleSet::TriangleSet ( unsigned int unitsInLastPlace ) : BaseClass(),
   _blocks    ( ),
   _progress  ( 0, 1 ),
   _color     ( new ColorFunctor ),
-  _root      ( new osg::Group )
+                                                             _root      ( new osg::Group ),
+                                                             _useMaterial ( false )
 {
 #ifdef _MSC_VER
   // Keeping tabs on memory consumption...
@@ -1334,6 +1335,7 @@ void TriangleSet::_updateBlocks()
   // Make new blocks. Subdivide sufficient number of times.
   _blocks.clear();
   Blocks::RefPtr blocks ( new Blocks ( _bbox, divisions, numTriangles ) );
+  blocks->useMaterial ( _useMaterial );
   _blocks.push_back ( blocks.get() );
 
   // Loop through triangles.
@@ -2216,6 +2218,8 @@ osg::Vec4Array * TriangleSet::getColorsV ( bool reserve )
 
 void TriangleSet::useMaterial ( bool b )
 {
+  _useMaterial = b;
+
   // Set all the blocks' use material flag.
   std::for_each ( _blocks.begin(), _blocks.end(), std::bind2nd ( std::mem_fun ( &Blocks::useMaterial ), b ) );
 }

@@ -349,6 +349,7 @@ private:
   Progress _progress;
   ColorFunctor::RefPtr _color;
   GroupPtr _root;
+  bool _useMaterial;
 };
 
 

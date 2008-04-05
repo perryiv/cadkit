@@ -63,6 +63,8 @@ TriangleReaderArcAsciiGrid::TriangleReaderArcAsciiGrid ( const std::string &file
   _document  ( doc ),
   _progress  ( 0, 1 )
 {
+  if ( 0x0 != doc )
+    doc->useMaterial ( true );
 }
 
 

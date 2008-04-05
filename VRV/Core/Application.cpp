@@ -260,10 +260,12 @@ void Application::_construct()
   _models->addChild ( geode.get() );
 #endif
 
+#if 0
   osg::Matrix m;
   m.makeRotate ( -osg::PI / 2, osg::Vec3 ( 1, 0, 0 ) );
 
   _models->setMatrix( m );
+#endif
 
   if ( _databasePager.valid() )
   {

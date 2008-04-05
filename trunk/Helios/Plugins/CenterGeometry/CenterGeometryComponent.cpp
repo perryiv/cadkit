@@ -131,8 +131,7 @@ void CenterGeometryComponent::centerGeometry()
 	if ( osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform*> ( group.get() ) )
 	{
 		osg::Matrixd matrix ( mt->getMatrix() );
-		matrix.makeTranslate ( matrix.getTrans() + offset );
-
+    matrix.postMult ( osg::Matrixd::translate ( offset ) );
 		mt->setMatrix ( matrix );
 	}
 	else

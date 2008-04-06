@@ -97,10 +97,10 @@ void Document::load ( const std::istream &stream )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::write ( const std::string &file ) const
+void Document::write ( const std::string &file, bool includeHeader ) const
 {
   Writer writer;
-  writer.write ( this, file );
+  writer.write ( this, file, includeHeader );
 }
 
 
@@ -110,8 +110,8 @@ void Document::write ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::write ( std::ostream &out ) const
+void Document::write ( std::ostream &out, bool includeHeader ) const
 {
   Writer writer;
-  writer.write ( this, out );
+  writer.write ( this, out, includeHeader );
 }

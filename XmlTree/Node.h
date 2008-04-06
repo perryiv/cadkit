@@ -46,6 +46,10 @@ public:
   Node ( const std::string &name, const std::string &value = std::string() );
   template < class T > Node ( const std::string &name, T value );
 
+  // Append the child.
+  void                    append ( Node * );
+  Node::RefPtr            append ( const std::string &name, const std::string &value = std::string() );
+
   // Access the attributes.
   const Attributes &      attributes() const { return _attributes; }
   Attributes &            attributes()       { return _attributes; }

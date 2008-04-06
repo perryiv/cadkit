@@ -50,3 +50,9 @@ ifeq ($(OS_TYPE), Cygwin)
 	os = cygwin
 	EXECUTABLE_EXTENSION = .exe
 endif
+
+# Default target directory
+TARGET_DIR = $(CADKIT_BIN_DIR)
+
+# Default post-build command
+POST_BUILD_COMMAND = echo > /dev/null

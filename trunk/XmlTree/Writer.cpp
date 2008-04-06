@@ -131,7 +131,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Writer::write ( const Document *document, const std::string &file )
+void Writer::write ( const Document *document, const std::string &file, bool includeHeader )
 {
   // Handle bad input.
   if ( 0x0 == document )
@@ -143,7 +143,7 @@ void Writer::write ( const Document *document, const std::string &file )
     throw std::runtime_error ( "Error 2178129023: failed to open file for writing: " + file );
 
   // Call other one.
-  this->write ( document, out );
+  this->write ( document, out, includeHeader );
 }
 
 
@@ -153,14 +153,15 @@ void Writer::write ( const Document *document, const std::string &file )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Writer::write ( const Document *document, std::ostream &out )
+void Writer::write ( const Document *document, std::ostream &out, bool includeHeader )
 {
   // Handle bad document.
   if ( 0x0 == document )
     return;
 
   // Write header.
-  out << document->header();
+  if ( true == includeHeader )
+    out << document->header();
 
   // Traverse the tree.
   Helper::traverse ( document, _indent, out );

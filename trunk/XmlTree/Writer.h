@@ -35,8 +35,8 @@ public:
   ~Writer();
 
   // Write the document to file or stream.
-  void                    write ( const Document *doc, const std::string &file );
-  void                    write ( const Document *doc, std::ostream &out );
+  void                    write ( const Document *doc, const std::string &file, bool includeHeader = true );
+  void                    write ( const Document *doc, std::ostream &out, bool includeHeader = true );
 
 private:
 

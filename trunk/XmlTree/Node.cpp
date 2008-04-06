@@ -293,3 +293,32 @@ Node::Children Node::find ( const std::string &name, bool traverse ) const
   this->find ( name, traverse, children );
   return children;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Node::append ( Node *node )
+{
+  if ( 0x0 != node )
+  {
+    _children.push_back ( Node::ValidRefPtr ( node ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node::RefPtr Node::append ( const std::string &name, const std::string &value )
+{
+  Node::RefPtr node ( new Node ( name, value ) );
+  this->append ( node.get() );
+  return node;
+}

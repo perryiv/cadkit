@@ -175,8 +175,7 @@ void LoadDocument::LoadJob::_loadModel( const std::string& filename )
     document->addView ( view );
 
   // Get the node.
-  Usul::Interfaces::IBuildScene::Options options;
-  osg::ref_ptr < osg::Node > model ( buildScene->buildScene ( options ) );
+  osg::ref_ptr < osg::Node > model ( buildScene->buildScene ( document->options() ) );
 
   // Do any post-processing.
   this->_postProcessModelLoad ( filename, model.get() );

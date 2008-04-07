@@ -376,6 +376,7 @@ TriangleDocument::Filters TriangleDocument::filtersSave() const
 TriangleDocument::Filters TriangleDocument::filtersExport() const
 {
   Filters filters;
+  filters.push_back ( Filter ( "Triangle Document Format (*.tdf)", "*.tdf" ) );
   filters.push_back ( Filter ( "Stereolithography ASCII (*.stl)",  "*.stl" ) );
   filters.push_back ( Filter ( "Stereolithography Binary (*.stl)", "*.stl" ) );
   return filters;

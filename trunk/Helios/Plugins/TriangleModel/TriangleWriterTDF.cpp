@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Policies/Update.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/IO/BinaryWriter.h"
 
 
@@ -269,5 +270,15 @@ void TriangleWriterTDF::operator()()
   // TODO... Write loops?
 
   // Rename temporary file to final filename
-  file.rename ( _file );
+  try
+  {
+    file.rename ( _file );
+  }
+  // Copy if there was an error.
+  catch ( ... )
+  {
+    const std::string command ( Usul::Strings::format ( "cp ", file.name(), " ", _file ) );
+    std::cout << command << std::endl;
+    system ( command.c_str() );
+  }
 }

@@ -314,6 +314,8 @@ public:
   void                    exportWorldBinary ();
   void                    exportScene ();
   void                    exportSceneBinary ();
+  void                    exportDocument ( const std::string& ext );
+  void                    saveDocument ( const std::string& ext );
 
   // View functions.
   void                    viewWorld ();
@@ -346,6 +348,10 @@ public:
   /// Get/Set show memory state.
   void                          setShowMemory( bool b );
   bool                          getShowMemory() const;
+
+  /// Set/get the show back face culling state.
+  void                          showBackFaces ( bool b );
+  bool                          isBackFacesShowing() const;
 
 protected:
 

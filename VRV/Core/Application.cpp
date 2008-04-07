@@ -3580,15 +3580,49 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
   typedef MenuKit::Button Button;
 
   // The export sub-menu.
-  {
-    MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export", MenuKit::Menu::VERTICAL ) );
-    menu->append ( exportMenu.get() );
+  MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export", MenuKit::Menu::VERTICAL ) );
+  menu->append ( exportMenu.get() );
 
-    exportMenu->append ( new Button ( new BasicCommand ( "Image", Usul::Adaptors::memberFunction<void> ( this, &Application::exportNextFrame ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Models ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorld ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Models Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorldBinary ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Scene ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportScene ) ) ) );
-    exportMenu->append ( new Button ( new BasicCommand ( "Scene Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportSceneBinary ) ) ) );
+  // The save sub-menu.
+  //MenuKit::Menu::RefPtr saveMenu ( new MenuKit::Menu ( "Save", MenuKit::Menu::VERTICAL ) );
+  //menu->append ( saveMenu.get() );
+
+  exportMenu->append ( new Button ( new BasicCommand ( "Image", Usul::Adaptors::memberFunction<void> ( this, &Application::exportNextFrame ) ) ) );
+  exportMenu->append ( new Button ( new BasicCommand ( "Models ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorld ) ) ) );
+  exportMenu->append ( new Button ( new BasicCommand ( "Models Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorldBinary ) ) ) );
+  exportMenu->append ( new Button ( new BasicCommand ( "Scene ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportScene ) ) ) );
+  exportMenu->append ( new Button ( new BasicCommand ( "Scene Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportSceneBinary ) ) ) );
+
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  if ( document.valid() )
+  {
+    typedef Usul::Interfaces::IDocument::Filters Filters;
+
+    Filters save ( document->filtersSave() );
+    Filters exportFilters ( document->filtersExport() );
+#if 0
+    for ( Filters::const_iterator iter = save.begin(); iter != save.end(); ++iter )
+    {
+      saveMenu->append ( new Button ( Usul::Commands::genericCommand ( "Save As " + iter->first, 
+                                                         Usul::Adaptors::bind1<void> ( iter->second, 
+                                                         Usul::Adaptors::memberFunction<void> ( this, &Application::saveDocument ) ), 
+                                                         Usul::Commands::TrueFunctor() ) ) );
+    }
+#endif
+    for ( Filters::const_iterator iter = exportFilters.begin(); iter != exportFilters.end(); ++iter )
+    {
+      std::string ext ( iter->second );
+      
+      if ( ext.size() > 2 )
+      {
+        //ext.erase ( 0 );
+        //ext.erase ( 0 );
+        exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Export " + iter->first, 
+                                                         Usul::Adaptors::bind1<void> ( Usul::File::extension ( ext ), 
+                                                         Usul::Adaptors::memberFunction<void> ( this, &Application::exportDocument ) ), 
+                                                         Usul::Commands::TrueFunctor() ) ) );
+      }
+    }
   }
 
   menu->addSeparator();
@@ -3719,6 +3753,11 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, me.get() ) ) );
     shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );
   }
+
+  menu->append ( new ToggleButton ( 
+                                   Usul::Commands::genericToggleCommand ( "Show Back Faces", 
+                                   UA::memberFunction<void> ( this, &Application::showBackFaces ), 
+                                   UA::memberFunction<bool> ( this, &Application::isBackFacesShowing ) ) ) );
 }
 
 
@@ -4340,7 +4379,8 @@ Application::FileResult Application::getSaveFileName  ( const std::string &title
 std::string Application::_filename ( const std::string& base, const std::string& ext )
 {
   Guard guard ( this->mutex () );
-  return Usul::Strings::format ( base, _count++, ext );
+  std::string directory ( 0x0 != this->preferences() ? this->preferences()->imageDirectory() : "" );
+  return Usul::Strings::format ( directory, "/", base, _count++, ext );
 }
 
 
@@ -5267,4 +5307,75 @@ bool Application::getShowMemory() const
   Guard guard ( this->mutex() );
 
   return Usul::Bits::has<unsigned int,unsigned int> ( _flags, Application::SHOW_MEMORY );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show back face culling state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::showBackFaces ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Set the state.
+  OsgTools::State::StateSet::setBackFaceCulling ( this->models()->getOrCreateStateSet(), !b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the show back face culling state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::isBackFacesShowing() const
+{
+  USUL_TRACE_SCOPE;
+  
+  // Return the state.
+  return ( ( 0x0 == this->models()->getStateSet() ? false : !OsgTools::State::StateSet::getBackFaceCulling ( this->models()->getStateSet() ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Export the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::exportDocument ( const std::string& ext )
+{
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  const std::string writer ( 0x0 != this->preferences() ? this->preferences()->fileWriterMachineName() : "" );
+
+  if ( document.valid() && Usul::System::Host::name() == writer  )
+  {
+    std::string filename ( this->_filename ( "vrv_export_" + Usul::File::base ( document->fileName() ) + "_", "." + ext ) );
+    document->write ( filename );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::saveDocument ( const std::string& ext )
+{
+#if 0
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  if ( document.valid() )
+  {
+    std::string filename ( this->_filename ( "vrv_save_" + Usul::File::base ( document->fileName() ), ext ) );
+    document->saveAs ( filename );
+  }
+#endif
 }

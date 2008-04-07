@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "XmlTree/Document.h"
+#include "XmlTree/RegistryIO.h"
 #include "XmlTree/XercesLife.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -45,7 +46,7 @@ class Program
 {
 public:
 
-  typedef std::map<std::string,std::string> StringMap;
+  typedef Usul::Registry::Node RegistryNode;
 
   Program ( int argc, char **argv, char **env );
   ~Program();
@@ -56,12 +57,12 @@ protected:
 
   XmlTree::Node::ValidRefPtr         _loadXmlFile ( const std::string &file );
 
-  XmlTree::Node::ValidRefPtr         _makeBody ( XmlTree::Node::ValidRefPtr root ) const;
-  XmlTree::Node::ValidRefPtr         _makeHead ( XmlTree::Node::ValidRefPtr root ) const;
+  XmlTree::Node::ValidRefPtr         _makeBody() const;
+  XmlTree::Node::ValidRefPtr         _makeHead() const;
 
 private:
 
-  StringMap _query;
+  RegistryNode &_query;
 };
 
 
@@ -71,12 +72,9 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Program::Program ( int argc, char **argv, char **env ) : _query()
+Program::Program ( int argc, char **argv, char **env ) : _query ( Usul::Registry::Database::instance()["query_string"] )
 {
   typedef std::list<std::string> StringList;
-
-  // Initialize mutex factory.
-  Usul::Threads::Mutex::createFunction ( &Usul::Threads::newSingleThreadedMutexStub );
 
   // Grab the command-line arguments.
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
@@ -119,10 +117,13 @@ Program::~Program()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-XmlTree::Node::ValidRefPtr Program::_makeHead ( XmlTree::Node::ValidRefPtr root ) const
+XmlTree::Node::ValidRefPtr Program::_makeHead() const
 {
   // Add the header section.
-  XmlTree::Node::ValidRefPtr head ( root->append ( "head" ) );
+  XmlTree::Node::ValidRefPtr head ( new XmlTree::Node ( "head" ) );
+
+  // TODO: Add css files.
+  // TODO: Add scripts.
 
   // Return it.
   return head;
@@ -135,13 +136,13 @@ XmlTree::Node::ValidRefPtr Program::_makeHead ( XmlTree::Node::ValidRefPtr root 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-XmlTree::Node::ValidRefPtr Program::_makeBody ( XmlTree::Node::ValidRefPtr root ) const
+XmlTree::Node::ValidRefPtr Program::_makeBody() const
 {
   // Add the body sections.
-  XmlTree::Node::ValidRefPtr body ( root->append ( "body" ) );
+  XmlTree::Node::ValidRefPtr body ( new XmlTree::Node ( "body" ) );
 
   // Indent all content of the body.
-  body = body->append ( "blockquote" );
+  body->append ( "blockquote" );
 
   // Return it.
   return body;
@@ -194,26 +195,18 @@ void Program::run()
   // Manage the life-span of xerces.
   XmlTree::XercesLife life;
 
+  // Read the main site into the registry.
+  XmlTree::RegistryIO::read ( "site.xml", Usul::Registry::Database::instance() );
+
   // Make a new document for the html content.
-  XmlTree::Document::ValidRefPtr html ( new XmlTree::Document );
-  html->name ( "html" );
+  XmlTree::Document::ValidRefPtr root ( new XmlTree::Document ( "html" ) );
 
   // Add the main sections.
-  XmlTree::Node::ValidRefPtr head ( this->_makeHead ( html.get() ) );
-  XmlTree::Node::ValidRefPtr body ( this->_makeBody ( html.get() ) );
-
-  // Open the main xml content file.
-  XmlTree::Node::ValidRefPtr site ( this->_loadXmlFile ( "site.xml" ) );
-
-  for ( StringMap::const_iterator i = _query.begin(); i != _query.end(); ++i )
-  {
-    body->append ( "p", Usul::Strings::format ( "argument pair: ", i->first, " = ", i->second ) );
-  }
-
-  //body->append ( "p", Usul::Strings::format ( "QUERY_STRING = ", Usul::System::Environment::get ( "QUERY_STRING" ) ) );
+  root->append ( this->_makeHead() );
+  root->append ( this->_makeBody() );
 
   // Write the html.
-  html->write ( std::cout, false );
+  root->write ( std::cout, false );
 }
 
 
@@ -227,6 +220,9 @@ int main ( int argc, char **argv, char **env )
 {
   try
   {
+    // Initialize mutex factory.
+    Usul::Threads::Mutex::createFunction ( &Usul::Threads::newSingleThreadedMutexStub );
+
     // Instantiate the program.
     Program program ( argc, argv, env );
 

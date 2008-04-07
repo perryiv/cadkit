@@ -12,17 +12,23 @@ IF ( USUL_TRACING )
 ADD_DEFINITIONS("-D_USUL_TRACE")
 ENDIF( USUL_TRACING )
 
+#######################################################
+#
+#  No need to define _DEBUG and NDEBUG.  Cmake defines these.
+#
+#######################################################
+
 # Add _DEBUG definition is it's debug.
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-ADD_DEFINITIONS("-D_DEBUG")
+#ADD_DEFINITIONS("-D_DEBUG")
 SET(CMAKE_DEBUG_POSTFIX d)
 ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 
 # Add NDEBUG definition is it's release.
-IF (CMAKE_BUILD_TYPE STREQUAL "Release")
-ADD_DEFINITIONS("-DNDEBUG")
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
+#IF (CMAKE_BUILD_TYPE STREQUAL "Release")
+#ADD_DEFINITIONS("-DNDEBUG")
+#ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
 
 
 # A macro for linking to other cadkit libraries.

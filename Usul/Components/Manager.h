@@ -64,7 +64,7 @@ public:
   void                          load ( unsigned long iid, const std::string& file );
 
   // Return list of plugin names. This queries each unknown pointer for IPlugin.
-  Strings                       names() const;
+  Strings                       names ( bool sort = true ) const;
 
   // Print message about loaded plugins.
   void                          print ( std::ostream & ) const;

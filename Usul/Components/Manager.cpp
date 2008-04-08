@@ -198,7 +198,7 @@ void Manager::load ( unsigned long iid, bool keepGoingIfException )
       Usul::File::find ( *dir, *j, plugins );
   }
 
-  this->load( iid, plugins, keepGoingIfException );
+  this->load ( iid, plugins, keepGoingIfException );
 }
 
 
@@ -287,7 +287,7 @@ void Manager::load ( unsigned long iid, const std::string& file )
 	}
 	catch ( ... )
 	{
-		std::cout << "Error 4241786283: Unknown exception caught while trying to load. " << std::endl;
+		std::cout << "Error 7167132960: Unknown exception caught while trying to load. " << std::endl;
 	}
 }
 
@@ -399,7 +399,7 @@ Manager::UnknownSet Manager::getInterfaces ( unsigned long iid1, unsigned long i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::Strings Manager::names() const
+Manager::Strings Manager::names ( bool sort ) const
 {
   USUL_TRACE_SCOPE;
 
@@ -411,7 +411,10 @@ Manager::Strings Manager::names() const
     if ( plugin.valid() )
       names.push_back ( plugin->getPluginName() );
   }
-  names.sort();
+
+  if ( true == sort )
+    names.sort();
+
   return names;
 }
 

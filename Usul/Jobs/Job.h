@@ -24,6 +24,8 @@
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Thread.h"
 
+#include <iosfwd>
+
 namespace Usul { namespace Jobs { class Manager; } }
 namespace Usul { namespace Jobs { namespace Detail { class Task; } } }
 namespace Usul { namespace Jobs { namespace Helper { class ScopedThread; class ScopedDone; } } }
@@ -69,19 +71,22 @@ public:
   // Is the job done?
   bool                      isDone() const;
 
-  // Return this job's thread.
-  const Thread *            thread() const;
+  // Set the label.
+  void                      label ( IUnknown* label );
 
-  /// Get/Set the progress bar.
-  void                      progress ( IUnknown* progress );
-  IUnknown*                 progress ();
-
-  /// Get/Set the priority.
+  // Get/Set the priority.
   void                      priority( int );
   int                       priority() const;
 
-  /// Set the label.
-  void                      label ( IUnknown* label );
+  // Get/Set the progress bar.
+  void                      progress ( IUnknown* progress );
+  IUnknown *                progress();
+
+  // Return this job's thread.
+  const Thread *            thread() const;
+
+  // Wait for this job to finish. Calling from the job's thread will throw.
+  void                      wait ( std::ostream *out = 0x0, unsigned int numLoops = 0xFFFFFFFF, unsigned int sleep = 500 );
 
 protected:
 

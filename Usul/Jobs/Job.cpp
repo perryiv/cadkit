@@ -16,9 +16,14 @@
 #include "Usul/Jobs/Job.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Scope/Caller.h"
-#include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
+#include "Usul/Scope/Caller.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/Sleep.h"
+#include "Usul/Threads/ThreadId.h"
+#include "Usul/Trace/Trace.h"
+
+#include <stdexcept>
 
 using namespace Usul::Jobs;
 
@@ -525,4 +530,38 @@ int Job::priority() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _priority;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for this job to finish. Calling from the job's thread will throw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Job::wait ( std::ostream *out, unsigned int numLoops, unsigned int sleep )
+{
+  USUL_TRACE_SCOPE;
+
+  // Do not call from the thread the job is running in.
+  if ( this->thread()->systemId() == Usul::Threads::currentThreadId() )
+  {
+    throw std::runtime_error ( "Error 1534701658: cannot wait for job in its execution thread" );
+  }
+
+  // Loop while it's running.
+  for ( unsigned int i = 0; i < numLoops; ++i )
+  {
+    if ( true == this->isDone() )
+    {
+      break;
+    }
+
+    if ( 0x0 != out )
+    {
+      (*out) << Usul::Strings::format ( "Waiting for job ", this->id(), ", loop ", i, " of ", numLoops, ", sleeping for ", sleep, " ms" ) << std::endl;
+    }
+
+    Usul::System::Sleep::milliseconds ( sleep );
+  }
 }

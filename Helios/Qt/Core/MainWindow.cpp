@@ -1062,7 +1062,7 @@ void MainWindow::loadPlugins ( const std::string &config )
 
   typedef Usul::Components::Loader < XmlTree::Document > Loader;
   Loader loader;
-	loader.parse( config );
+	loader.parse ( config );
   loader.load ( ( splash.valid() ) ? splash : unknown );
 }
 
@@ -1623,10 +1623,10 @@ void MainWindow::_closeEvent ( QCloseEvent* event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* MainWindow::createProgressBar()
+Usul::Interfaces::IUnknown* MainWindow::createProgressBar ( bool waitIfNotGuiThread )
 {
   USUL_TRACE_SCOPE;
-  return _progressBars->createProgressBar();
+  return _progressBars->createProgressBar ( waitIfNotGuiThread );
 }
 
 

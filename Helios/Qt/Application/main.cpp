@@ -20,6 +20,7 @@
 #include "Threads/OpenThreads/Thread.h"
 
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/System/DateTime.h"
 #include "Usul/Trace/Print.h"
 
 #include <string>
@@ -38,7 +39,7 @@ int main ( int argc, char **argv )
 
   // Branding.
   const std::string program ( "Helios" );
-  const std::string version ( "" );
+  const std::string version ( Usul::System::DateTime::format ( "%Y.%m.%d" ) );  // Version is YY.MM.DD
   const std::string vendor  ( "CadKit" );
   const std::string url     ( "cadkit.sf.net" );
   const std::string icon    ( "helios_sun.png" );

@@ -3781,7 +3781,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
 
     // Get step size.
-    const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 25, true ) );
+    const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 10, true ) );
 
     // Animate through the path.
     animate->animatePath ( matrices, steps );

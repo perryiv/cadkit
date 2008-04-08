@@ -16,6 +16,7 @@
 
 #include "OsgTools/Triangles/Blocks.h"
 #include "OsgTools/Triangles/TriangleSet.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
@@ -736,10 +737,12 @@ float Blocks::getTransparency () const
 
 void Blocks::useMaterial ( bool b )
 {
-  if( true == b )
+  if ( true == b )
   {
-    osg::StateAttribute::OverrideValue value ( ( b ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
-    osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
-    ss->setAttributeAndModes ( _material.get(), value );
+    OsgTools::State::StateSet::setMaterial ( _geode.get(), _material.get() );
+  }
+  else
+  {
+    OsgTools::State::StateSet::removeMaterial ( _geode.get() );
   }
 }

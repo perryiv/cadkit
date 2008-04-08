@@ -860,3 +860,35 @@ void StateSet::setBackFaceCulling ( osg::StateSet *ss, bool state )
   // Apply the mode settings
   ss->setMode ( GL_CULL_FACE, ( ( state ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the material, if there is any.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::removeMaterial ( osg::Node *node )
+{
+  if ( 0x0 != node )
+  {
+    OsgTools::State::StateSet::removeMaterial ( node->getOrCreateStateSet() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the material, if there is any.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::removeMaterial ( osg::StateSet *ss )
+{
+  // Handle bad input
+  if ( 0x0 == ss )
+    return;
+
+  // Remove the material.
+  ss->removeAttribute ( osg::StateAttribute::MATERIAL );
+}

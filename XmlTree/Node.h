@@ -50,6 +50,9 @@ public:
   void                    append ( Node * );
   Node::RefPtr            append ( const std::string &name, const std::string &value = std::string() );
 
+  // Get the attribute. Returns empty string if it's not there.
+  std::string             attribute ( const std::string & ) const;
+
   // Access the attributes.
   const Attributes &      attributes() const { return _attributes; }
   Attributes &            attributes()       { return _attributes; }

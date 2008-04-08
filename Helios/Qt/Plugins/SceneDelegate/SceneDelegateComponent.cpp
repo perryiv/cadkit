@@ -53,6 +53,8 @@ Usul::Interfaces::IUnknown *SceneDelegateComponent::queryInterface ( unsigned lo
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
+  case Usul::Interfaces::IDefaultGUIDelegate::IID:
+    return static_cast < Usul::Interfaces::IDefaultGUIDelegate * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }

@@ -22,12 +22,14 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/IDefaultGUIDelegate.h"
 
 #include <string>
 
 
 class SceneDelegateComponent : public CadKit::Helios::Views::OSG::Delegate,
-                               public Usul::Interfaces::IPlugin
+                               public Usul::Interfaces::IPlugin,
+                               public Usul::Interfaces::IDefaultGUIDelegate
 {
 public:
 

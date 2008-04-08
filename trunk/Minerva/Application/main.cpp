@@ -37,18 +37,9 @@ int main ( int argc, char **argv )
   // Initialize the result.
   int result ( 1 );
 
-	// Get the current time.
-  ::tm time ( Usul::System::DateTime::local() );
-
-  // Convert it to a string.
-  const unsigned int size ( 1024 );
-  char buffer[size];
-  ::memset ( buffer, '\0', size );
-  ::strftime ( buffer, size - 1, "%y.%m.%d", &time );
-
   // Branding.
   const std::string program ( "Minerva" );
-	const std::string version ( buffer );  // Version is YY.MM.DD
+  const std::string version ( Usul::System::DateTime::format ( "%Y.%m.%d" ) );  // Version is YY.MM.DD
   const std::string vendor  ( "CadKit" );
   const std::string url     ( "www.minerva-gis.org" );
   const std::string icon    ( "minerva_icon.png" );

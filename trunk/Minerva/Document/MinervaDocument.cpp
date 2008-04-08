@@ -38,7 +38,6 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Strings/Case.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
 #include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/ICullSceneVisitor.h"
@@ -46,10 +45,13 @@
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IViewport.h"
-#include "Usul/Math/Constants.h"
-#include "Usul/Trace/Trace.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Math/Constants.h"
+#include "Usul/Registry/Constants.h"
+#include "Usul/Registry/Database.h"
+#include "Usul/Strings/Case.h"
 #include "Usul/System/Host.h"
+#include "Usul/Trace/Trace.h"
 
 #include "MenuKit/Button.h"
 #include "MenuKit/ToggleButton.h"
@@ -2117,7 +2119,14 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
   // Only make it once.
   if ( 0x0 == _manager )
   {
-    _manager = new Usul::Jobs::Manager ( 5, true );
+    typedef Usul::Registry::Database Reg;
+    namespace Sections = Usul::Registry::Sections;
+
+    const std::string type ( Reg::instance().convertToTag ( this->typeName() ) );
+    Usul::Registry::Node &node ( Reg::instance()[Sections::DOCUMENT_SETTINGS][type]["job_manager_thread_pool_size"] );
+    const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
+
+    _manager = new Usul::Jobs::Manager ( poolSize, true );
     _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
   

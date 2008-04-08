@@ -67,7 +67,7 @@ Usul::Interfaces::IUnknown *SceneDelegateComponent::queryInterface ( unsigned lo
 //
 /////////////////////////////////////////////////////////////////////////////
 
-bool SceneDelegateComponent::doesHandle( const std::string& token ) const
+bool SceneDelegateComponent::doesHandle ( const std::string& token ) const
 {
   return ( token ==    "Scene Document" || 
            token == "Molecule Document" ||
@@ -75,5 +75,6 @@ bool SceneDelegateComponent::doesHandle( const std::string& token ) const
            token ==   "Volume Document" ||
            token ==  "Minerva Document" ||
            token == "Triangle Document" ||
+           token ==     "Show Document" ||
            token == "Model Presentation Document" );
 }

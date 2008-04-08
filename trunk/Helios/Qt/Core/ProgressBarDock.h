@@ -52,7 +52,7 @@ public:
 
   QWidget* operator () ( QDockWidget* parent );
 
-  Usul::Interfaces::IUnknown * createProgressBar ();
+  Usul::Interfaces::IUnknown * createProgressBar ( bool waitIfNotGuiThread );
 
 protected:
   virtual ~ProgressBarDock ();
@@ -63,14 +63,16 @@ protected slots:
 private:
 
   // Wrapper around QProgressBar.
-  class ProgressBar : public Usul::Base::Referenced,
+  class ProgressBar : public Usul::Base::Object,
                       public Usul::Interfaces::IProgressBar,
                       public Usul::Interfaces::IStatusBar
   {
   public:
-    typedef Usul::Base::Referenced BaseClass;
+
+    typedef Usul::Base::Object BaseClass;
 
     USUL_DECLARE_QUERY_POINTERS ( ProgressBar );
+    USUL_DECLARE_TYPE_ID ( ProgressBar );
 
     ProgressBar ();
 
@@ -81,6 +83,9 @@ private:
 
     // Create a progress bar.
     void operator () ( QVBoxLayout *layout );
+
+    // Is it created?
+    bool     isCreated() const;
 
     // Set the progress bar.
     void     progressBar ( QProgressBar * );
@@ -101,6 +106,7 @@ private:
     QLabel *_label;
     QVBoxLayout *_layout;
     QVBoxLayout *_parentLayout;
+    bool _created;
   };
 
   typedef std::list < ProgressBar::RefPtr > ProgressBars;

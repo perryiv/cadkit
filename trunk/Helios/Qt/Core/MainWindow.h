@@ -212,7 +212,7 @@ protected:
   virtual void                      notify ( Usul::Interfaces::IUnknown *caller, const char *values, unsigned int numValues );
 
   // Create a progress bar (Usul::Interfaces::IProgressBarFactory).
-  virtual Unknown*                  createProgressBar();
+  virtual Unknown*                  createProgressBar ( bool waitIfNotGuiThread = false );
 
   // Add dock widget to menu (Usul::Interfaces::IQtDockWidgetMenu).
   virtual void                      addDockWidgetMenu ( QDockWidget * dock );

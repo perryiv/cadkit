@@ -17,6 +17,7 @@
 
 #include "Usul/Errors/Assert.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Interfaces/IDefaultGUIDelegate.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IDocumentSelect.h"
@@ -43,12 +44,12 @@ Manager *Manager::_manager ( 0x0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Manager::Manager() :
-_mutex ( Mutex::create() ),
-_documents(),
-_activeDocument ( 0x0 ),
-_activeDocumentListeners(),
-_activeView ( 0x0 ),
-_activeViewListeners()
+  _mutex ( Mutex::create() ),
+  _documents(),
+  _activeDocument ( 0x0 ),
+  _activeDocumentListeners(),
+  _activeView ( 0x0 ),
+  _activeViewListeners()
 {
 }
 
@@ -413,8 +414,10 @@ Manager::Delegate* Manager::_findDelegate ( Document * document )
         return gd.get();
     }
   }
-
-  return 0x0;
+  
+  // If we get here, look for the default delegate.
+  Usul::Interfaces::IGUIDelegate::QueryPtr gd ( PluginManager::instance().getInterface ( Usul::Interfaces::IDefaultGUIDelegate::IID ) );
+  return gd.get();
 }
 
 

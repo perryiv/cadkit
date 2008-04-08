@@ -971,7 +971,7 @@ void TriangleDocument::usePool ( bool use )
 
 void TriangleDocument::useMaterial ( bool use )
 {
-  _triangles->useMaterial ( false );
+  _triangles->useMaterial ( use );
 }
 
 

@@ -736,7 +736,10 @@ float Blocks::getTransparency () const
 
 void Blocks::useMaterial ( bool b )
 {
-  osg::StateAttribute::OverrideValue value ( ( b ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
-  osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
-  ss->setAttributeAndModes ( _material.get(), value );
+  if( true == b )
+  {
+    osg::StateAttribute::OverrideValue value ( ( b ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
+    osg::ref_ptr< osg::StateSet > ss ( _geode->getOrCreateStateSet() );
+    ss->setAttributeAndModes ( _material.get(), value );
+  }
 }

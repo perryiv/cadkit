@@ -20,6 +20,7 @@
 
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
+#include "Usul/File/Path.h"
 #include "Usul/IO/BinaryReader.h"
 #include "Usul/IO/BinaryWriter.h"
 #include "Usul/Math/Vector4.h"
@@ -28,6 +29,7 @@
 #include "Usul/Policies/Update.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Predicates/FileExists.h"
 
 #include "osg/Vec3"
 
@@ -61,10 +63,10 @@ TriangleReaderArcAsciiGrid::TriangleReaderArcAsciiGrid ( const std::string &file
   _file      ( file, Usul::File::size ( file ) ),
   _caller    ( caller ),
   _document  ( doc ),
-  _progress  ( 0, 1 )
+  _progress  ( 0, 1 ),
+  _textureFilename( "" )
 {
-  if ( 0x0 != doc )
-    doc->useMaterial ( true );
+  
 }
 
 
@@ -97,6 +99,9 @@ void TriangleReaderArcAsciiGrid::operator()()
 
   // Read the file.
   this->_read();
+
+  // Load the texture file
+  this->_loadTexture ( _textureFilename );
 }
 
 
@@ -199,6 +204,8 @@ void TriangleReaderArcAsciiGrid::_read()
   if ( !in.is_open() )
     throw std::runtime_error ( "Error 1099205557: Failed to open file: " + _file.first );
 
+  _textureFilename = Usul::File::directory( _file.first, true ) + Usul::File::base( _file.first ) + ".png";
+
   // Initialize local vaiables.
   Usul::Math::Vec2ui gridSize ( 0, 0 );
   Usul::Math::Vec2d lowerLeft ( 0, 0 );
@@ -214,6 +221,14 @@ void TriangleReaderArcAsciiGrid::_read()
     in >> label >> lowerLeft[1]; // Lower left y coordinate
     in >> label >> cellSize;
     in >> label >> noDataDouble;
+
+    _header.cols = gridSize[1];
+    _header.rows = gridSize[0];
+    _header.west = lowerLeft[0];
+    _header.south = lowerLeft[1];
+    _header.ew_resol = cellSize;
+    _header.ns_resol = cellSize;
+    
   }
 
   // Make sure nodata value is an integer.
@@ -427,5 +442,45 @@ void TriangleReaderArcAsciiGrid::_incrementProgress ( bool state )
   _document->setProgressBar ( state, numerator, denominator, _caller );
   ++numerator;
   USUL_ASSERT ( numerator <= denominator );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load an image file to use as a texture file to the model.
+//  An actual texture object is not created.  Instead, we use
+//  the color information contained in the image to set the 
+//  corresponding color at a given point in the terrain file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TriangleReaderArcAsciiGrid::_loadTexture ( const std::string& filename )
+{
+
+  std::cout << "Checking for texture with name " << filename << std::endl;
+  if( true != Usul::Predicates::FileExists::test( filename ) )
+  {
+      if ( 0x0 != _document )
+       _document->useMaterial ( true );
+      std::cout << "Texture file not found.  Using default material color." << std::endl;
+      return;
+  }
+
+  std::cout << "Texture file: " << filename << " found.  Loading texture file..." << std::endl;
+  // Get interface to triangle set for loading a color file
+  Usul::Interfaces::ILoadColorFile::QueryPtr colorFile ( _document );
+
+
+  // Create header vector from header information
+  std::vector< float > header ( 0 );
+
+  header.push_back( _header.rows );
+  header.push_back( _header.cols );
+  header.push_back( _header.west );
+  header.push_back( _header.south );
+  header.push_back( _header.ns_resol );
+  
+  colorFile->loadColorFile( filename, header );
 }
 

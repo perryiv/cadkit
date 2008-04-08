@@ -2242,7 +2242,10 @@ void TriangleSet::useMaterial ( bool b )
 void TriangleSet::loadColorFile( const std::string &file, const HeaderInfo& header )
 {
   if( 5 != header.size() )
+  {
+    std::cout << "Header size is not 5.  Aborting texture loading. " << std::endl;
     return;
+  }
   if( Usul::Predicates::FileExists::test ( file ) )
   {
    
@@ -2298,11 +2301,7 @@ void TriangleSet::loadColorFile( const std::string &file, const HeaderInfo& head
     this->dirtyColorsV ( false );
 
     std::cout << "\nTexture file reading complete!" << std::endl;
-
-   
-    
-
-    }
+  }
   else
   {
     std::cout << "Unable to load image file:" << file << ".  File does not exist!" << std::endl;

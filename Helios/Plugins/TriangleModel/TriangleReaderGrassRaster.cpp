@@ -388,16 +388,7 @@ void TriangleReaderGrassRaster::_read()
     // Make the Triangle Set
     this->_makeTriangleDocument( vertices );
   }
-  //delete old triangles
-  //_triangleSet->clear();
 
-  // Reserve triangles.
-  // NOTE: commented out this line to debug a bad_alloc error happening
-  //       in reserve, called by reserveTriangles( ... )
-  //_triangleSet->reserveTriangles ( gridSize[0] * gridSize[1] );
-
-  // Grab the first row.
-  //std::for_each ( row0.begin(), row0.end(), vertices );
  
 }
 
@@ -529,6 +520,16 @@ template < class VectorType > void TriangleReaderGrassRaster::_makeTriangleDocum
 
 void TriangleReaderGrassRaster::_loadTexture ( const std::string& filename )
 {
+
+  std::cout << "Checking for texture with name " << filename << std::endl;
+  if( true != Usul::Predicates::FileExists::test( filename ) )
+  {
+      if ( 0x0 != _document )
+       _document->useMaterial ( true );
+      std::cout << "Texture file not found.  Using default material color." << std::endl;
+      return;
+  }
+  std::cout << "Texture file: " << filename << " found.  Loading texture file..." << std::endl;
 
   // Get interface to triangle set for loading a color file
   Usul::Interfaces::ILoadColorFile::QueryPtr colorFile ( _document );

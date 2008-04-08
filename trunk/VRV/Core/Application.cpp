@@ -1854,7 +1854,7 @@ const osg::Group* Application::_sceneRoot() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* Application::createProgressBar()
+Usul::Interfaces::IUnknown* Application::createProgressBar ( bool waitIfNotGuiThread )
 {
   Guard guard ( this->mutex() );
   return _progressBars->append();

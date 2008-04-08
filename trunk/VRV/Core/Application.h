@@ -517,7 +517,7 @@ protected:
   virtual void                  preMultiply ( const Matrix &M );
 
   /// Usul::Interfaces::IProgressBarFactory
-  virtual Usul::Interfaces::IUnknown*   createProgressBar();
+  virtual Usul::Interfaces::IUnknown*   createProgressBar ( bool waitIfNotGuiThread = false );
 
   //  VRV::Interfaces::IJoystickFloat
   // Get the joystick value in the range [-1,1].

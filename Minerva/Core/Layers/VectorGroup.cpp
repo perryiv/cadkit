@@ -80,7 +80,12 @@ void VectorGroup::traverse ( Minerva::Core::Visitor& visitor )
   // Visit the layers.
   Guard guard ( this );
   for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
-    (*iter)->accept ( visitor );
+  {
+    if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( (*iter).get() ) )
+    {
+      vector->accept ( visitor );
+    }
+  }
 }
 
 
@@ -119,9 +124,10 @@ void VectorGroup::_buildScene ( Usul::Interfaces::IUnknown *caller )
 
     for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
     {
-      Vector::RefPtr layer ( *iter );
-      if ( layer.valid() && layer->showLayer() )
-        _root->addChild ( layer->buildScene ( Usul::Interfaces::IBuildScene::Options(), caller ) );
+      Layers::value_type layer ( *iter );
+      Usul::Interfaces::IBuildScene::QueryPtr build ( layer.get() );
+      if ( layer.valid() && layer->showLayer() && build.valid() )
+        _root->addChild ( build->buildScene ( Usul::Interfaces::IBuildScene::Options(), caller ) );
     }
 
     // Our scene is no longer dirty.
@@ -136,11 +142,12 @@ void VectorGroup::_buildScene ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VectorGroup::addLayer ( Vector* layer )
+void VectorGroup::addLayer ( Usul::Interfaces::IUnknown* unknown )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   
+  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
   if ( 0x0 != layer )
   {
     _layers.push_back ( layer );
@@ -156,11 +163,11 @@ void VectorGroup::addLayer ( Vector* layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VectorGroup::removeLayer ( Vector* layer )
+void VectorGroup::removeLayer ( Usul::Interfaces::IUnknown* layer )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  Layers::iterator doomed ( std::find( _layers.begin(), _layers.end(), Usul::Interfaces::ILayer::QueryPtr ( layer ) ) );
+  Layers::iterator doomed ( std::find( _layers.begin(), _layers.end(), Layers::value_type ( layer ) ) );
   if( doomed != _layers.end() )
     _layers.erase( doomed );
   
@@ -257,7 +264,13 @@ void VectorGroup::updateNotify ( Usul::Interfaces::IUnknown *caller )
   this->layers ( layers );
   
   // Ask each one to update.
-  std::for_each ( layers.begin(), layers.end(), std::bind2nd ( std::mem_fun ( &Vector::updateNotify ), caller ) );
+  for ( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
+  {
+    Layers::value_type layer ( *iter );
+    Usul::Interfaces::IUpdateListener::QueryPtr un ( layer.get() );
+    if ( un.valid() )
+      un->updateNotify ( caller );
+  }
 }
 
 
@@ -281,13 +294,11 @@ void VectorGroup::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
   // Ask each one to dirty scene.
   for ( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
   {
-    Vector::RefPtr layer ( *iter );
-    if ( layer.valid() )
-      layer->dirtyScene ( b, caller );
+    Layers::value_type layer ( *iter );
+    Minerva::Interfaces::IDirtyScene::QueryPtr ds ( layer.get() );
+    if ( ds.valid() )
+      ds->dirtyScene ( b, caller );
   }
-  
-  // This won't compile using gcc. I'm not sure why not...
-  //Usul::Functions::executeMemberFunctions ( layers, &Vector::dirtyScene, b, caller );
 }
 
 

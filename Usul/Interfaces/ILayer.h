@@ -27,7 +27,7 @@ struct ILayer : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1743049682u };
 
-  /// Return by copy incase a guid is hard coded.
+  /// Get the guid.
   virtual std::string                 guid() const = 0;
 
   /// Get/Set the name.

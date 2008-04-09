@@ -313,7 +313,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
     layer->dirtyScene ( true );
     
     // Add the layer to the parent.
-    this->addLayer ( layer.get() );
+    this->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
   }
   else if ( "NetworkLink" == name )
   {
@@ -325,7 +325,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
       {
         KmlLayer::RefPtr layer ( new KmlLayer ( link.get() ) );
         layer->read ( 0x0, 0x0 );
-        this->addLayer ( layer.get() );
+        this->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
       }
     }
   }

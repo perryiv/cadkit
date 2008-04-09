@@ -29,7 +29,7 @@ public:
   // Typedefs.
   typedef Minerva::Core::Layers::Vector     BaseClass;
   typedef Usul::Interfaces::ILayer          ILayer;
-  typedef std::vector<Vector::RefPtr>       Layers;
+  typedef std::vector<ILayer::QueryPtr>     Layers;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( VectorGroup );
@@ -46,10 +46,10 @@ public:
   virtual osg::Node *         buildScene ( const Options &options = Options(), Usul::Interfaces::IUnknown *caller = 0x0 );
   
   /// Add a layer.
-  void                        addLayer ( Vector* layer );
+  void                        addLayer ( Usul::Interfaces::IUnknown* layer );
   
   /// Remove a layer.
-  void                        removeLayer ( Vector* layer );
+  void                        removeLayer ( Usul::Interfaces::IUnknown* layer );
   
   /// Clear layers.
   void                        clearLayers();

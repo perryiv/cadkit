@@ -1171,13 +1171,10 @@ void Body::vectorAppend ( Usul::Interfaces::IUnknown *unknown )
   Guard guard ( this );
   
   // Add the layer to our group.
-  if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( unknown ) )
-  {
-    _vectorData->addLayer ( vector );
+  _vectorData->addLayer ( unknown );
     
-    // Add to the update listeners.
-    this->_addUpdateListener( unknown );
-  }
+  // Add to the update listeners.
+  this->_addUpdateListener( unknown );
 }
 
 
@@ -1207,13 +1204,10 @@ void Body::vectorRemove ( Usul::Interfaces::IUnknown *unknown )
   Guard guard ( this );
   
   // Add the layer to our group.
-  if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( unknown ) )
-  {
-    _vectorData->removeLayer ( vector );
+  _vectorData->removeLayer ( unknown );
     
-    // Add to the update listeners.
-    this->_removeUpdateListener( unknown );
-  }
+  // Add to the update listeners.
+  this->_removeUpdateListener( unknown );
 }
 
 

@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				66A8B15B0DAC16D500088B3B /* PBXTargetDependency */,
 				669B697D0D7C9BE1001392F1 /* PBXTargetDependency */,
 				668C985F0D43E3940007D7F4 /* PBXTargetDependency */,
 				668C946D0D41D7290007D7F4 /* PBXTargetDependency */,
@@ -952,6 +953,9 @@
 		66A8B0B70DABF5ED00088B3B /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		66A8B0B80DABF5F400088B3B /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		66A8B0E60DAC03BB00088B3B /* FlashModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A8B08E0DABECA400088B3B /* FlashModel.plugd */; };
+		66A8B1230DAC0A7200088B3B /* WRFModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0C920D4021F50030649B /* WRFModel.plugd */; };
+		66A8B12C0DAC0ACA00088B3B /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
+		66A8B1930DAC1AEE00088B3B /* WRFModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0C920D4021F50030649B /* WRFModel.plugd */; };
 		66A9E5B30D34A2D600FD67B6 /* ossim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A40D15177F00B4B1AA /* ossim.framework */; };
 		66A9E5B40D34A2D600FD67B6 /* ossimPlanet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A50D15177F00B4B1AA /* ossimPlanet.framework */; };
 		66A9E91F0D34A2F400FD67B6 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
@@ -1997,29 +2001,50 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66A8B08D0DABECA400088B3B /* FlashModel */;
+			remoteGlobalIDString = 66A8B08D0DABECA400088B3B;
 			remoteInfo = FlashModel;
 		};
 		66A8B0B90DABF5F900088B3B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 43FED6F1092452E100EBB610 /* Usul */;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
 			remoteInfo = Usul;
 		};
 		66A8B0BB0DABF5FB00088B3B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
 			remoteInfo = XmlTree;
 		};
 		66A8B0BD0DABF60200088B3B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
+			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
 			remoteInfo = SerializeXML;
+		};
+		66A8B1210DAC0A5900088B3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 668E0C910D4021F50030649B;
+			remoteInfo = WRFModel;
+		};
+		66A8B15A0DAC16D500088B3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66942EB80D77EA4F00633017;
+			remoteInfo = MinervaPostgres;
+		};
+		66A8B1910DAC1AE500088B3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 668E0C910D4021F50030649B;
+			remoteInfo = WRFModel;
 		};
 		66AC8A690D2B58C300762CC7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2500,6 +2525,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				66A8B1230DAC0A7200088B3B /* WRFModel.plugd in Copy Files to Plugins */,
 				66A8B0E60DAC03BB00088B3B /* FlashModel.plugd in Copy Files to Plugins */,
 				66B647460D9441FE00F426B2 /* MeasureTool.plugd in Copy Files to Plugins */,
 				668BE8FD0D24CEBE00109210 /* PathAnimation.plugd in Copy Files to Plugins */,
@@ -2555,6 +2581,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				66A8B1930DAC1AEE00088B3B /* WRFModel.plugd in Copy Files to Plugins */,
 				66C4E9D20DAAEAEB00A3B1FB /* MinervaPlugins.xml in Copy Files to Plugins */,
 				66C4E9660DAAE46500A3B1FB /* libHeliosQtCommands.dylib in Copy Files to Plugins */,
 				66C4E9670DAAE46500A3B1FB /* libHeliosQtCore.dylib in Copy Files to Plugins */,
@@ -3944,7 +3971,7 @@
 		66C4D80B0DAABEC200A3B1FB /* minerva_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = minerva_icon.png; sourceTree = "<group>"; };
 		66C4D80C0DAABEC200A3B1FB /* minerva_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = minerva_splash.png; sourceTree = "<group>"; };
 		66C4D80D0DAABEC200A3B1FB /* Readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
-		66C4E9100DAABF4D00A3B1FB /* MinervaPlugins.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MinervaPlugins.xml; sourceTree = "<group>"; };
+		66C4E9100DAABF4D00A3B1FB /* MinervaPlugins.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = MinervaPlugins.xml; path = ../Minerva/Application/MinervaPlugins.xml; sourceTree = "<group>"; };
 		66C4E91C0DAAE3B400A3B1FB /* MinervaQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinervaQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C4E91E0DAAE3B400A3B1FB /* MinervaQt-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "MinervaQt-Info.plist"; path = "../../Xcode/MinervaQt-Info.plist"; sourceTree = "<group>"; };
 		66C4E9230DAAE3E800A3B1FB /* Minerva.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Minerva.icns; sourceTree = "<group>"; };
@@ -4595,6 +4622,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66A8B12C0DAC0ACA00088B3B /* libMinerva.dylib in Frameworks */,
 				668E0D910D4022CC0030649B /* libMenuKit.dylib in Frameworks */,
 				668E0D8A0D4022B00030649B /* libOsgTools.dylib in Frameworks */,
 				668E0D8B0D4022B00030649B /* libSerializeXML.dylib in Frameworks */,
@@ -4947,7 +4975,6 @@
 			children = (
 				431BAD8809245AB600ED2131 /* Axes.cpp */,
 				431BAD8909245AB600ED2131 /* Axes.h */,
-				431BAD8A09245AB600ED2131 /* Box.h */,
 				43A192F9094F20210029ED97 /* Builders */,
 				431BAD8B09245AB600ED2131 /* Callbacks */,
 				431BAD8D09245AB600ED2131 /* Circle.cpp */,
@@ -4961,7 +4988,6 @@
 				431BAD9509245AB600ED2131 /* DisplayLists.cpp */,
 				431BAD9609245AB600ED2131 /* DisplayLists.h */,
 				431BAD9809245AB600ED2131 /* Drawables */,
-				431BAD9C09245AB600ED2131 /* FlipNormals.h */,
 				431BAD9D09245AB600ED2131 /* Font.cpp */,
 				431BAD9E09245AB600ED2131 /* Font.h */,
 				431BAD9F09245AB600ED2131 /* ForEach.h */,
@@ -4970,15 +4996,11 @@
 				431BADA309245AB600ED2131 /* GraphStreamVisitor.h */,
 				431BADA409245AB600ED2131 /* Grid.cpp */,
 				431BADA509245AB600ED2131 /* Grid.h */,
-				431BADA609245AB600ED2131 /* Group.cpp */,
-				431BADA709245AB600ED2131 /* Group.h */,
 				431BADA809245AB600ED2131 /* HasOption.h */,
 				431BADA909245AB600ED2131 /* Images */,
 				431BADBD09245AB700ED2131 /* Index.h */,
 				439228A2095CB158004A602C /* Intersect */,
 				431BADBE09245AB700ED2131 /* IO */,
-				431BADC309245AB700ED2131 /* Jitter.cpp */,
-				431BADC409245AB700ED2131 /* Jitter.h */,
 				431BADC509245AB700ED2131 /* KeepFirst.h */,
 				66999EF90D1CD18E00A9AE47 /* Legend */,
 				431BADC609245AB700ED2131 /* Lod.cpp */,
@@ -4987,33 +5009,20 @@
 				431BADCA09245AB700ED2131 /* MaterialFactory.h */,
 				431BADCB09245AB700ED2131 /* MaterialSetter.cpp */,
 				431BADCC09245AB700ED2131 /* MaterialSetter.h */,
-				431BADCD09245AB700ED2131 /* Mesh.cpp */,
-				431BADCE09245AB700ED2131 /* Mesh.h */,
-				431BADD209245AB700ED2131 /* Ray.cpp */,
-				431BADD309245AB700ED2131 /* Ray.h */,
 				431BADD409245AB700ED2131 /* ReadModel.cpp */,
 				431BADD509245AB700ED2131 /* ReadModel.h */,
 				431BADD609245AB700ED2131 /* Render */,
 				431BADE409245AB700ED2131 /* Sample.cpp */,
 				431BADE509245AB700ED2131 /* Sample.h */,
-				431BADE609245AB700ED2131 /* ScopedDisplayLists.h */,
-				431BADE709245AB700ED2131 /* ScopedOptions.h */,
-				431BADE809245AB700ED2131 /* ScopedProjection.h */,
-				431BADE909245AB700ED2131 /* ScopedViewport.h */,
 				431BADEA09245AB700ED2131 /* SetDataVariance.h */,
-				431BADEB09245AB700ED2131 /* ShapeFactory.cpp */,
-				431BADEC09245AB700ED2131 /* ShapeFactory.h */,
 				431BADEF09245AB700ED2131 /* Sphere.h */,
 				431BADF009245AB700ED2131 /* State */,
 				431BADF709245AB700ED2131 /* Statistics.cpp */,
 				431BADF809245AB700ED2131 /* Statistics.h */,
 				431BADF909245AB700ED2131 /* Text.cpp */,
 				431BADFA09245AB700ED2131 /* Text.h */,
-				431BADFB09245AB700ED2131 /* Torus.cpp */,
-				431BADFC09245AB700ED2131 /* Torus.h */,
 				431BADFD09245AB700ED2131 /* Triangles */,
 				437A27B609447D920024AFBC /* Utilities */,
-				431BAE1109245AB700ED2131 /* Visitor.h */,
 				668E0D930D4022F70030649B /* Volume */,
 				43442F870960A303000A1AB5 /* Widgets */,
 			);
@@ -5185,26 +5194,45 @@
 			isa = PBXGroup;
 			children = (
 				66A8B08E0DABECA400088B3B /* FlashModel.plugd */,
-				668E0C920D4021F50030649B /* WRFModel.plugd */,
-				66B647400D94418200F426B2 /* MeasureTool.plugd */,
-				668C984B0D43E2EF0007D7F4 /* TriangulateCGAL.plugd */,
-				668C969E0D42B4D00007D7F4 /* TriangulateGrid.plugd */,
-				66CCE5800D2F536D0084E49D /* ResampleLine.plugd */,
-				66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */,
-				66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */,
-				66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */,
-				66892DD00D283D61005CB399 /* LayerManager.plugd */,
-				668BE8220D24A96B00109210 /* PathAnimation.plugd */,
-				66EF19310D16106000B4B1AA /* ProjectionManager.plugd */,
-				66EF18E20D15C0E600B4B1AA /* MinervaModel.plugd */,
-				66EF05FD0D14608800B4B1AA /* ModflowModel.plugd */,
-				66EF06090D14610700B4B1AA /* ModflowDelegateQt.plugd */,
-				66EF05AC0D143DF100B4B1AA /* SnapShotQt.plugd */,
 				66EFF3930D139F7200B4B1AA /* ClipPlanesQt.plugd */,
-				6676A6480D136AFD00B95C16 /* SceneTreeQt.plugd */,
+				66892DD00D283D61005CB399 /* LayerManager.plugd */,
+				6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */,
+				666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */,
+				666760BA0D122AE0002F40C6 /* libHeliosQtTools.dylib */,
+				666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */,
+				66C8FE750D12084C003F6A58 /* libMenuKit.dylib */,
+				66EF17690D15190B00B4B1AA /* libMinerva.dylib */,
+				66EF189C0D1581ED00B4B1AA /* libMinervaDocument.dylib */,
+				669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */,
+				668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */,
+				66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */,
+				66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */,
+				43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */,
+				431BAD7D09245A4600ED2131 /* libOsgTools.dylib */,
+				66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */,
+				66CFB2200D135A2000F93E67 /* libSceneDelegateQt.dylib */,
+				66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */,
+				43FED6F2092452E100EBB610 /* libUsul.dylib */,
+				66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */,
+				66B647400D94418200F426B2 /* MeasureTool.plugd */,
+				66EF18E20D15C0E600B4B1AA /* MinervaModel.plugd */,
+				66C4E9100DAABF4D00A3B1FB /* MinervaPlugins.xml */,
+				66EF06090D14610700B4B1AA /* ModflowDelegateQt.plugd */,
+				66EF05FD0D14608800B4B1AA /* ModflowModel.plugd */,
+				66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */,
+				668BE8220D24A96B00109210 /* PathAnimation.plugd */,
+				66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */,
+				66EF19310D16106000B4B1AA /* ProjectionManager.plugd */,
+				66CCE5800D2F536D0084E49D /* ResampleLine.plugd */,
 				666767590D12FDCF002F40C6 /* SceneDelegateQt.plugd */,
 				431BB89409246ADA00ED2131 /* SceneModel.plugd */,
+				6676A6480D136AFD00B95C16 /* SceneTreeQt.plugd */,
+				66EF05AC0D143DF100B4B1AA /* SnapShotQt.plugd */,
 				431BB8D409246B9A00ED2131 /* TriangleModel.plugd */,
+				668C984B0D43E2EF0007D7F4 /* TriangulateCGAL.plugd */,
+				668C969E0D42B4D00007D7F4 /* TriangulateGrid.plugd */,
+				668E0C920D4021F50030649B /* WRFModel.plugd */,
+				66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */,
 				431BB8E809246BD700ED2131 /* VolumeModel.plugd */,
 			);
 			name = "Cadkit Plugins";
@@ -5392,13 +5420,23 @@
 		437A27B609447D920024AFBC /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				437A27B709447D920024AFBC /* DirtyBounds.h */,
 				66430BFF0D10BA6500984C94 /* FindNormals.cpp */,
 				66430C000D10BA6500984C94 /* FindNormals.h */,
+				431BAD9C09245AB600ED2131 /* FlipNormals.h */,
+				431BADA609245AB600ED2131 /* Group.cpp */,
+				431BADA709245AB600ED2131 /* Group.h */,
 				43442F920960A375000A1AB5 /* Intersect.cpp */,
 				43442F930960A375000A1AB5 /* Intersect.h */,
-				437B6C340944A0DF00C9F948 /* Transparency.h */,
-				437A27B709447D920024AFBC /* DirtyBounds.h */,
+				431BADC309245AB700ED2131 /* Jitter.cpp */,
+				431BADC409245AB700ED2131 /* Jitter.h */,
 				437A27B809447D920024AFBC /* ReferenceFrame.h */,
+				431BADE609245AB700ED2131 /* ScopedDisplayLists.h */,
+				431BADE709245AB700ED2131 /* ScopedOptions.h */,
+				431BADE809245AB700ED2131 /* ScopedProjection.h */,
+				431BADE909245AB700ED2131 /* ScopedViewport.h */,
+				437B6C340944A0DF00C9F948 /* Transparency.h */,
+				431BAE1109245AB700ED2131 /* Visitor.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -5456,11 +5494,20 @@
 		43A192F9094F20210029ED97 /* Builders */ = {
 			isa = PBXGroup;
 			children = (
-				6691517B0D52642A00C2BF8D /* Images */,
-				6673DD280BC5F2F800C0131F /* GradientBackground.cpp */,
-				6673DD290BC5F2F800C0131F /* GradientBackground.h */,
 				43A192FA094F20210029ED97 /* Arrow.cpp */,
 				43A192FB094F20210029ED97 /* Arrow.h */,
+				431BAD8A09245AB600ED2131 /* Box.h */,
+				6673DD280BC5F2F800C0131F /* GradientBackground.cpp */,
+				6673DD290BC5F2F800C0131F /* GradientBackground.h */,
+				6691517B0D52642A00C2BF8D /* Images */,
+				431BADCD09245AB700ED2131 /* Mesh.cpp */,
+				431BADCE09245AB700ED2131 /* Mesh.h */,
+				431BADD209245AB700ED2131 /* Ray.cpp */,
+				431BADD309245AB700ED2131 /* Ray.h */,
+				431BADEB09245AB700ED2131 /* ShapeFactory.cpp */,
+				431BADEC09245AB700ED2131 /* ShapeFactory.h */,
+				431BADFB09245AB700ED2131 /* Torus.cpp */,
+				431BADFC09245AB700ED2131 /* Torus.h */,
 			);
 			path = Builders;
 			sourceTree = "<group>";
@@ -5759,29 +5806,11 @@
 		43F66685092481C5006DE918 /* Cadkit Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				66EF17690D15190B00B4B1AA /* libMinerva.dylib */,
-				66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */,
-				66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */,
-				43FED6F2092452E100EBB610 /* libUsul.dylib */,
-				66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */,
 				434D2D15095B2CA700642126 /* Helios.app */,
-				66CFB2200D135A2000F93E67 /* libSceneDelegateQt.dylib */,
 				4366F2450A158D5500882B30 /* libSceneModel.dylib */,
-				43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */,
 				4366F26A0A158D6D00882B30 /* libTriangleModel.dylib */,
-				431BAD7D09245A4600ED2131 /* libOsgTools.dylib */,
 				6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */,
-				66C8FE750D12084C003F6A58 /* libMenuKit.dylib */,
-				6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */,
-				666760BA0D122AE0002F40C6 /* libHeliosQtTools.dylib */,
-				666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */,
 				666765E60D1235EC002F40C6 /* HeliosQtApp.app */,
-				666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */,
-				66EF189C0D1581ED00B4B1AA /* libMinervaDocument.dylib */,
-				668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */,
-				66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */,
-				66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */,
-				669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */,
 				66C4E91C0DAAE3B400A3B1FB /* MinervaQt.app */,
 			);
 			name = "Cadkit Libraries";
@@ -7303,7 +7332,6 @@
 			isa = PBXGroup;
 			children = (
 				66C4E91E0DAAE3B400A3B1FB /* MinervaQt-Info.plist */,
-				66C4E9100DAABF4D00A3B1FB /* MinervaPlugins.xml */,
 				66C4D0090DAA9CB500A3B1FB /* CMakeLists.txt */,
 				66C4D00A0DAA9CB500A3B1FB /* main.cpp */,
 				66C4D00B0DAA9CB500A3B1FB /* MinervaApp.vcproj */,
@@ -8930,6 +8958,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66A8B1220DAC0A5900088B3B /* PBXTargetDependency */,
 				66A8B0A80DABF4CE00088B3B /* PBXTargetDependency */,
 				66B647440D9441F300F426B2 /* PBXTargetDependency */,
 				668C96B60D42B5B60007D7F4 /* PBXTargetDependency */,
@@ -9339,6 +9368,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66A8B1920DAC1AE500088B3B /* PBXTargetDependency */,
 				66C4E9B30DAAE64C00A3B1FB /* PBXTargetDependency */,
 				66C4E9B10DAAE64A00A3B1FB /* PBXTargetDependency */,
 				66C4E9AF0DAAE64600A3B1FB /* PBXTargetDependency */,
@@ -11151,6 +11181,21 @@
 			isa = PBXTargetDependency;
 			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
 			targetProxy = 66A8B0BD0DABF60200088B3B /* PBXContainerItemProxy */;
+		};
+		66A8B1220DAC0A5900088B3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 668E0C910D4021F50030649B /* WRFModel */;
+			targetProxy = 66A8B1210DAC0A5900088B3B /* PBXContainerItemProxy */;
+		};
+		66A8B15B0DAC16D500088B3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66942EB80D77EA4F00633017 /* MinervaPostgres */;
+			targetProxy = 66A8B15A0DAC16D500088B3B /* PBXContainerItemProxy */;
+		};
+		66A8B1920DAC1AE500088B3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 668E0C910D4021F50030649B /* WRFModel */;
+			targetProxy = 66A8B1910DAC1AE500088B3B /* PBXContainerItemProxy */;
 		};
 		66AC8A6A0D2B58C300762CC7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

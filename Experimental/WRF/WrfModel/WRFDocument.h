@@ -25,15 +25,14 @@
 #include "Usul/Jobs/Manager.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ITimestepAnimation.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
-#include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 
 #include "Serialize/XML/Macros.h"
-
-#include "Minerva/Core/TileEngine/System.h"
-#include "Minerva/Core/TileEngine/Body.h"
 
 #include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/Volume/TransferFunction.h"
@@ -51,7 +50,9 @@ class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::ITimestepAnimation,
                     public Usul::Interfaces::ITimeVaryingData,
                     public Usul::Interfaces::IUpdateListener,
-                    public Usul::Interfaces::IMenuAdd
+                    public Usul::Interfaces::IMenuAdd,
+                    public Usul::Interfaces::ILayer,
+                    public Usul::Interfaces::ITreeNode
 {
 public:
 
@@ -171,6 +172,27 @@ protected:
 
   /// Add to the menu.
   virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+  
+  /// Get the guid.
+  virtual std::string         guid() const;
+  
+  /// Get/Set the name.
+  virtual std::string         name() const;
+  virtual void                name( const std::string& );
+  
+  /// Get/Set show layer
+  virtual void                showLayer ( bool b );
+  virtual bool                showLayer() const;
+  
+  // Get the number of children (ITreeNode).
+  virtual unsigned int        getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *         getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                setTreeNodeName ( const std::string & );
+  virtual std::string         getTreeNodeName() const;
 
   /// Do not copy.
   WRFDocument ( const WRFDocument & );
@@ -216,7 +238,6 @@ private:
   unsigned int _numPlanes;
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
-  osg::ref_ptr < osg::Group > _planet;
   osg::ref_ptr < osg::MatrixTransform > _volumeTransform;
   osg::ref_ptr < OsgTools::Volume::Texture3DVolume > _volumeNode;
   osg::BoundingBox _bb;
@@ -236,8 +257,6 @@ private:
   Usul::Math::Vec2d _upperRight;
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
-  Minerva::Core::TileEngine::System::RefPtr _system;
-  Usul::Jobs::Manager *      _manager;
   
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( WRFDocument );

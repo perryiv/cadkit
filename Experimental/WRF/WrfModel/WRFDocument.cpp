@@ -51,14 +51,6 @@
 #include "MenuKit/RadioButton.h"
 #include "MenuKit/ToggleButton.h"
 
-#include "Minerva/Core/Visitors/BuildScene.h"
-#include "Minerva/Core/Extents.h"
-#include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
-#include "Minerva/Core/TileEngine/LandModelFlat.h"
-#include "Minerva/Core/Layers/RasterLayerWms.h"
-#include "Minerva/Core/Visitors/SetJobManager.h"
-#include "Minerva/Core/TileEngine/SplitCallbacks.h"
-
 #include "osgText/Text"
 #include "osg/Geode"
 #include "osg/Geometry"
@@ -103,7 +95,6 @@ WRFDocument::WRFDocument() :
   _numPlanes ( 256 ),
   _channelInfo (),
   _root ( new osg::MatrixTransform ),
-  _planet ( new osg::Group ),
   _volumeTransform ( new osg::MatrixTransform ),
   _volumeNode ( new OsgTools::Volume::Texture3DVolume ),
   _bb (),
@@ -121,13 +112,8 @@ WRFDocument::WRFDocument() :
   _lowerLeft ( 0.0, 0.0 ),
   _upperRight ( 0.0, 0.0 ),
   _transferFunctions (),
-  _system ( 0x0 ),
-  _manager ( new Usul::Jobs::Manager ( 5, true ) ),
   SERIALIZE_XML_INITIALIZER_LIST
-{
-  // Make the system.
-  _system = new Minerva::Core::TileEngine::System ( _manager );
-  
+{ 
   this->_addMember ( "filename", _filename );
   this->_addMember ( "num_timesteps", _timesteps );
   this->_addMember ( "num_channels", _channels );
@@ -143,7 +129,6 @@ WRFDocument::WRFDocument() :
   this->_addMember ( "lower_left", _lowerLeft );
   this->_addMember ( "upper_right", _upperRight );
   this->_addMember ( "cell_size", _cellSize );
-  this->_addMember ( "star_system", _system );
 }
 
 
@@ -155,21 +140,6 @@ WRFDocument::WRFDocument() :
 
 WRFDocument::~WRFDocument()
 {
-  // Delete the star-system.
-  _system = 0x0;
-  
-  // Clean up job manager.
-  if ( 0x0 != _manager )
-  {
-    // Remove all queued jobs and cancel running jobs.
-    _manager->cancel();
-    
-    // Wait for remaining jobs to finish.
-    _manager->wait();
-    
-    // Delete the manager.
-    delete _manager; _manager = 0x0;
-  }
 }
 
 
@@ -193,6 +163,10 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+  case Usul::Interfaces::ILayer::IID:
+    return static_cast < Usul::Interfaces::ILayer* > ( this );
+  case Usul::Interfaces::ITreeNode::IID:
+    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -345,6 +319,21 @@ WRFDocument::Filters WRFDocument::filtersInsert() const
 osg::Node *WRFDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
+   
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr pc ( caller );
+
+  if ( pc.valid() )
+  {
+     Guard guard ( this->mutex() );
+    
+    // Lat long center of the bounding box.
+    const Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) * 0.5  );
+    double height ( ( _z * _cellSize [ 2 ] ) / 2.0 );
+
+    osg::Matrix m ( pc->planetRotationMatrix ( center [ 0 ], center [ 1 ], height, 0.0 ) );
+    _volumeTransform->setMatrix ( m );
+  }
+  
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &WRFDocument::_buildScene ), "2642125610" );
   return _root.get();
 }
@@ -372,9 +361,6 @@ void WRFDocument::_buildScene()
 
   // Add the volume back.
   _root->addChild ( _volumeTransform.get () );
-
-  // Add the planet.
-  _root->addChild ( _planet.get() );
 
   // If we don't have the data already...
   if ( false == this->_dataCached ( _currentTimestep, _currentChannel ) )
@@ -553,8 +539,6 @@ void WRFDocument::_initBoundingBox ()
   double xLength ( _x * _cellSize [ 0 ] );
   double yLength ( _y * _cellSize [ 1 ] );
   double zLength ( _z * _cellSize [ 2 ] );
-
-  std::cout << "Z: " << _z << " Z Cell size: " << _cellSize [ 2 ] << std::endl;
 
   float xHalf ( static_cast < float > ( xLength ) / 2.0f );
   float yHalf ( static_cast < float > ( yLength ) / 2.0f );
@@ -1297,115 +1281,6 @@ void WRFDocument::deserialize ( const XmlTree::Node &node )
 
   // Build the transfer function.
   _volumeNode->transferFunction ( _transferFunctions.at ( 0 ).get() );
-
-  if ( 0x0 == _system->body() )
-  {
-    std::cout << "Adding body..." << std::endl;
-
-    // Local typedefs to shorten the lines.
-    typedef Minerva::Core::TileEngine::Body Body;
-    typedef Body::Extents Extents;
-  
-    // Make the land model.
-    typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
-    Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-    Land::RefPtr land ( new Land ( radii ) );
-  
-    // Make a good split distance.
-    const double splitDistance ( land->size() * 3 );
-  
-    // Size of the mesh.
-    Body::MeshSize meshSize ( 17, 17 );
-  
-    // Add the body.
-    Body::RefPtr body ( new Body ( land, _manager, meshSize, splitDistance ) );
-    body->useSkirts ( true );
-  
-    // Add tiles to the body.
-    body->addTile ( Extents ( -180, -90,    0,   90 ) );
-    body->addTile ( Extents (    0, -90,  180,   90 ) );
-  
-    {
-      const std::string url ( "http://onearth.jpl.nasa.gov/wms.cgi" );
-    
-      typedef Minerva::Core::Layers::RasterLayerWms::Options Options;
-      Options options;
-      options[Usul::Network::Names::LAYERS]  = "BMNG,global_mosaic";
-      options[Usul::Network::Names::STYLES]  = "Jul,visual";
-      options[Usul::Network::Names::SRS]     = "EPSG:4326";
-      options[Usul::Network::Names::REQUEST] = "GetMap";
-      options[Usul::Network::Names::FORMAT]  = "image/jpeg";
-    
-      typedef Body::Extents Extents;
-      typedef Extents::Vertex Vertex;
-      const Extents maxExtents ( Vertex ( -180, -90 ), Vertex ( 180, 90 ) );
-    
-      Minerva::Core::Layers::RasterLayerWms::RefPtr layer ( new Minerva::Core::Layers::RasterLayerWms ( maxExtents, url, options ) );
-      body->rasterAppend ( layer.get() );
-    }
-  
-    _system->body ( body.get() );
-  }
-
-  // Set the job manager.
-  Minerva::Core::Visitors::SetJobManager::RefPtr setter ( new Minerva::Core::Visitors::SetJobManager ( _manager ) );
-  _system->accept ( *setter );
-
-  Minerva::Core::Visitors::BuildScene::RefPtr builder ( new Minerva::Core::Visitors::BuildScene );
-  _system->accept ( *builder );
-
-#if 1
-  _planet = builder->scene();
-#else
-  _planet = new osg::Group;
-#endif
-
-  {
-    // Lat long center of the bounding box.
-    const Usul::Math::Vec2d center ( ( _lowerLeft + _upperRight ) * 0.5  );
-    //center /= 2.0;
-
-    osg::Vec3d translate;
-
-    double height ( (_z * _cellSize [ 2 ] ) / 2.0 );
-
-    _system->body()->latLonHeightToXYZ ( center [ 0 ], center [ 1 ], height, translate );
-
-    // Matrix to translate the proper location.
-    const osg::Matrix T ( osg::Matrix::translate ( translate [ 0 ], translate [ 1 ], translate [ 2 ] ) );
-
-    // Make the up vector at the lat long location.
-    osg::Vec3 up ( translate [ 0 ], translate [ 1 ], translate [ 2 ] );
-    up.normalize();
-
-    const osg::Matrix R ( osg::Matrix::rotate ( osg::Vec3( 0.0, 0.0, -1.0 ), up ) );
-
-    // Calculate the up vector of the bounding box.
-    osg::Vec3 bbUp ( R * osg::Vec3 ( 0.0, 0.0, -1.0 ) );
-    bbUp.normalize();
-
-    // Calculate the north vector.
-    osg::Vec3d v1;
-    _system->body()->latLonHeightToXYZ ( center [ 0 ] + 0.1, center [ 1 ], height, v1 );
-    osg::Vec3 diff ( v1 - translate );
-    diff.normalize();
-
-    const osg::Vec3 north ( diff[0], diff[1], diff[2] );
-
-    // Get the angle bewteen the bounding box's up and north.
-    typedef Usul::Math::Angle < double, 3 > Angle;
-    const double angle ( Angle::get < osg::Vec3 > ( bbUp, north ) );
-
-    const osg::Matrix R1 ( osg::Matrix::rotate ( angle, up ) );
-
-    osg::Matrix m;
-    m.postMult ( osg::Matrix::rotate ( osg::PI, osg::Vec3 ( 1.0, 0.0, 0.0 ) ) );
-    m.postMult ( R );
-    m.postMult ( R1 );
-    m.postMult ( T );
-
-    _volumeTransform->setMatrix ( m );
-  }
 }
 
 
@@ -1529,6 +1404,118 @@ void WRFDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
 void WRFDocument::addView ( Usul::Interfaces::IView *view )
 {
   USUL_TRACE_SCOPE;
-
   BaseClass::addView ( view );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string WRFDocument::guid() const
+{
+  USUL_TRACE_SCOPE;
+  return "0B3F5A87-BA2E-4B06-A229-DC9F21F7EC27";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string WRFDocument::name() const
+{
+  USUL_TRACE_SCOPE;
+  std::string name ( BaseClass::name() );
+  return ( false == name.empty() ? name : this->fileName() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::name( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::name ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set show layer state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::showLayer ( bool b )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get show layer state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::showLayer() const
+{
+  USUL_TRACE_SCOPE;
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int WRFDocument::getNumChildNodes() const
+{
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * WRFDocument::getChildNode ( unsigned int which )
+{
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::setTreeNodeName ( const std::string & s )
+{
+  this->name ( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string WRFDocument::getTreeNodeName() const
+{
+  return this->name();
 }

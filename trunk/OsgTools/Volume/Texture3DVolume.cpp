@@ -154,6 +154,8 @@ void Texture3DVolume::numPlanes ( unsigned int num )
 
 namespace Detail
 {
+# if 0
+  // I don't think this one is needed any more...
   static const char* vertSource = 
   { 
     "void main(void)\n"
@@ -162,6 +164,7 @@ namespace Detail
     "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
     "}\n"
   };
+#endif
 
   std::string buildVertexShader ( )
   {
@@ -210,7 +213,7 @@ namespace Detail
 
       // Compute specular.
       << "  float specularLight = pow ( max ( dot ( h, normal ), 0.0 ), shininess );\n"
-      << "  if ( diffuseLight <= 0 ) specularLight = 0;\n"
+      << "  if ( diffuseLight <= 0.0 ) specularLight = 0;\n"
       << "  vec3 specular = Ks * lightColor * specularLight;\n"
 
       // Return the result.
@@ -268,10 +271,15 @@ namespace Detail
     "}\n"
   };
 
-  std::string buildFagmentShader ( bool transferFunction )
+  std::string buildFagmentShader ( bool transferFunction, bool shading = false )
   {
     if ( transferFunction )
-      return buildShadingFunction ( osg::Vec3 ( 0.1, 0.1, 0.1 ), osg::Vec3 ( 0.6, 0.6, 0.6 ), osg::Vec3 ( 0.2, 0.2, 0.2 ), 50 ) + fragTransferFunctionSource;
+    {
+      if ( shading )
+        return buildShadingFunction ( osg::Vec3 ( 0.1, 0.1, 0.1 ), osg::Vec3 ( 0.6, 0.6, 0.6 ), osg::Vec3 ( 0.2, 0.2, 0.2 ), 50 ) + fragTransferFunctionSource;
+      
+      return fragTransferFunctionSource;
+    }
 
     return fragSource;
   }

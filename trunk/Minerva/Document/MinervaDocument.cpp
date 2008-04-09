@@ -348,7 +348,17 @@ MinervaDocument::Filters MinervaDocument::filtersExport() const
 
 MinervaDocument::Filters MinervaDocument::filtersInsert() const
 {
-  return Minerva::Core::Factory::Readers::instance().filters();
+  Filters filters ( Minerva::Core::Factory::Readers::instance().filters() );
+  Filters open ( Usul::Documents::Manager::instance().filtersOpen() );
+  filters.insert ( filters.end(), open.begin(), open.end() );
+  
+  // Remove our filter until inserting is tested.
+  filters.erase ( std::remove ( filters.begin(), 
+                                filters.end(), 
+                                Filter ( "Minerva (*.minerva)", "*.minerva" ) ),
+                  filters.end() );
+  
+  return filters;
 }
 
 
@@ -414,7 +424,15 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
   }
   else
   {
-    Usul::Interfaces::IUnknown::RefPtr unknown ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
+    // Check the registered readers first.
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
+    
+    // If we didn't find one, ask the document manager.
+    if ( false == unknown.valid() )
+    {
+      unknown = Usul::Interfaces::IUnknown::QueryPtr ( Usul::Documents::Manager::instance().find ( filename ).document.get() );
+    }
+    
     Usul::Interfaces::IRead::QueryPtr read ( unknown );
     
     if ( read.valid() )
@@ -627,8 +645,6 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
 
   try
   {
-    Guard guard ( this->mutex() );
-
     // Get the active body.
     Body::RefPtr body ( this->activeBody() );
     
@@ -651,6 +667,7 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
     Minerva::Interfaces::ITemporalData::QueryPtr temporal ( layer );
     if ( temporal.valid () )
     {
+      Guard guard ( this->mutex() );
       _datesDirty = true;
     }
 
@@ -1948,6 +1965,10 @@ namespace Detail
         Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ) );
         if ( child.valid() )
           Detail::buildLayerMenu ( *layerMenu, child.get() );
+        
+        Usul::Interfaces::IMenuAdd::QueryPtr ma ( node->getChildNode ( i ) );
+        if ( ma.valid() )
+          ma->menuAdd ( *layerMenu );
       }
       menu.append ( layerMenu.get() );
     }

@@ -41,6 +41,9 @@ public:
   static ::tm               local();
 
   static std::string        now(); // Depreciated. Use format() instead.
+
+  // Pass __DATE__ macro to get YYYY.MM.DD formatted string.
+  static std::string        version ( const std::string &date, const std::string &delim = "." );
 };
 
 

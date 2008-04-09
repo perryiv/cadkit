@@ -39,7 +39,7 @@ int main ( int argc, char **argv )
 
   // Branding.
   const std::string program ( "Minerva" );
-  const std::string version ( Usul::System::DateTime::format ( "%Y.%m.%d" ) );  // Version is YY.MM.DD
+  const std::string version ( Usul::System::DateTime::version ( __DATE__ ) );
   const std::string vendor  ( "CadKit" );
   const std::string url     ( "www.minerva-gis.org" );
   const std::string icon    ( "minerva_icon.png" );

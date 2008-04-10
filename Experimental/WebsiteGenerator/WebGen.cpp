@@ -178,13 +178,16 @@ std::string WebGen::_specialChar ( const std::string &name, unsigned int num ) c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-XmlTree::Node::ValidRefPtr WebGen::_makeHead() const
+XmlTree::Node::ValidRefPtr WebGen::_makeHead()
 {
   // Add the header section.
   XmlTree::Node::ValidRefPtr head ( new XmlTree::Node ( "head" ) );
 
-  // TODO: Add css files.
-  // TODO: Add scripts.
+  // Add any cascading style sheets.
+  this->_addStyles ( head );
+
+  // Add any scripts.
+  this->_addScripts ( head );
 
   // Return it.
   return head;
@@ -210,6 +213,11 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   XmlTree::Node::ValidRefPtr logo ( this->_cell ( 0, 0 ) );
   logo->append ( this->_makeImage ( "logo", "Logo Image" ) );
 
+  // Add the page title and separator.
+  XmlTree::Node::ValidRefPtr title ( this->_cell ( 0, 2 ) );
+  title->append ( "h1", Usul::Registry::Database::instance()["subject"]["long_name"].get ( "Title" ) );
+  title->append ( "hr" );
+  
   // Return it.
   return body;
 }
@@ -228,9 +236,6 @@ XmlTree::Node::ValidRefPtr WebGen::_makeImage ( const std::string &src, const st
 
   // Get the image directory.
   const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["images"]["directory"] ) );
-
-  // Get the base url.
-  const std::string url ( this->_urlScriptDir ( true ) );
 
   // Is the given src string a file?
   std::string file ( dir + src );
@@ -334,8 +339,17 @@ XmlTree::Node::ValidRefPtr WebGen::_loadXmlFile ( const std::string &file ) cons
 
 void WebGen::_findPages()
 {
+  // Get the file for the pages.
+  const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["pages"]["directory"] ) );
+  std::string file ( Usul::Registry::Database::instance()["pages"]["file"].get ( "" ) );
+  if ( true == file.empty() )
+    return;
+  file = dir + file;
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
+    return;
+
   // Read the pages file.
-  XmlTree::Node::ValidRefPtr pages ( this->_loadXmlFile ( Usul::Registry::Database::instance()["pages"].get ( "" ) ) );
+  XmlTree::Node::ValidRefPtr pages ( this->_loadXmlFile ( file ) );
 
   // Loop through the pages.
   typedef XmlTree::Node::Children Children;
@@ -447,6 +461,64 @@ std::string WebGen::_protocol() const
   return ( ( "on" == Usul::Strings::lowerCase ( Usul::System::Environment::get ( "HTTPS" ) ) ) ? "https" : "http" );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the scripts.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
+{
+  // Get the file name.
+  const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["scripts"]["directory"] ) );
+  std::string file ( Usul::Registry::Database::instance()["scripts"]["file"].get ( "" ) );
+  if ( true == file.empty() )
+    return;
+  file = dir + file;
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
+    return;
+
+  // Read the file.
+  XmlTree::Node::ValidRefPtr scripts ( this->_loadXmlFile ( file ) );
+
+  // Loop through the correct children.
+  typedef XmlTree::Node::Children Children;
+  Children kids ( scripts->find ( "script", false ) );
+  for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+  {
+    XmlTree::Node::ValidRefPtr script ( *i );
+    parent->append ( script );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the style sheets.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WebGen::_addStyles ( XmlTree::Node::ValidRefPtr parent )
+{
+  // Get the file name.
+  const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["styles"]["directory"] ) );
+  std::string file ( Usul::Registry::Database::instance()["styles"]["file"].get ( "" ) );
+  if ( true == file.empty() )
+    return;
+  file = dir + file;
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
+    return;
+
+  // Make the node.
+  XmlTree::Node::ValidRefPtr link ( new XmlTree::Node ( "link" ) );
+  link->attributes()["href"] = file;
+  link->attributes()["rel"]  = "stylesheet";
+  link->attributes()["type"] = "text/css";
+
+  // Add the file.
+  parent->append ( link );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

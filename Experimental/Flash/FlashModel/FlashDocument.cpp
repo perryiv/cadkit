@@ -9,20 +9,28 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Experimental/Flash/FlashModel/FlashDocument.h"
+#include "Experimental/Flash/FlashModel/H5File.h"
+#include "Experimental/Flash/FlashModel/Dataset.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Case.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
 
+#include "OsgTools/Box.h"
+#include "OsgTools/State/StateSet.h"
+
+#include "osg/MatrixTransform"
+
+#include "hdf5.h"
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( FlashDocument, FlashDocument::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( FlashDocument );
 
-USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_3 ( osg::Vec3 );
-USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_3 ( osg::Vec3 );
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec3 );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -34,6 +42,8 @@ FlashDocument::FlashDocument() :
   BaseClass ( "Flash Document" ),
   _filenames(),
   _currentTimestep ( 0 ),
+  _root ( new osg::Group ),
+  _dirty ( true ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filenames", _filenames );
@@ -63,6 +73,8 @@ Usul::Interfaces::IUnknown *FlashDocument::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast<Usul::Interfaces::IUpdateListener*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -169,6 +181,9 @@ void FlashDocument::read ( const std::string &filename, Unknown *caller, Unknown
 
 void FlashDocument::clear ( Usul::Interfaces::IUnknown *caller )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _filenames.clear();
 }
 
 
@@ -236,7 +251,142 @@ FlashDocument::Filters FlashDocument::filtersInsert() const
 osg::Node *FlashDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  return 0x0;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), "3960901428" );
+  return _root.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::_buildScene()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  
+  // Remove what we have.
+  _root->removeChild ( 0, _root->getNumChildren() );
+  
+  // Make sure we are in range...
+  if ( _currentTimestep < _filenames.size() )
+  {
+    // Open the file.
+    H5File file ( _filenames.at ( _currentTimestep ) );
+    
+    // Make sure we got a good file handle.
+    if ( false == file.isOpen())
+      throw std::runtime_error ( "Error 1747059583: Could not open file: " + _filenames.at ( _currentTimestep ) );
+    
+    // Open the data set.
+    Dataset::RefPtr boundingBox ( file.openDataset( "bounding box" ) );
+    
+    // Make sure we got a good data set handle.
+    if ( false == boundingBox.valid() || false == boundingBox->isOpen() )
+      throw std::runtime_error ( "Error 1220099573: Could not open data set." );
+    
+    // Get the rank.
+    //const int dimensions ( boundingBox->dimensions() );
+    
+    // Get the number of elements.
+    const hsize_t elements ( boundingBox->elements() );
+    
+    // Buffer for the data.
+    std::vector<double> buffer ( elements );
+    
+    // Read the data.
+    boundingBox->read ( H5T_NATIVE_DOUBLE, &buffer[0] );
+    
+    // Number of nodes.
+    const unsigned int numNodes ( boundingBox->size ( 0 ) );
+    
+    // Open the data set.
+    Dataset::RefPtr levelsData ( file.openDataset( "refine level" ) );
+    
+    // Make sure we got a good data set handle.
+    if ( false == levelsData.valid() || false == levelsData->isOpen() )
+      throw std::runtime_error ( "Error 3972712559: Could not open data set." );
+    
+    // Buffer for refine level.
+    std::vector<int> levels ( levelsData->elements() );
+    
+    // Read the levels.
+    levelsData->read ( H5T_NATIVE_INT, &levels[0] );
+    
+    // Open the data set.
+    Dataset::RefPtr nodeData ( file.openDataset( "node type" ) );
+    
+    // Make sure we got a good data set handle.
+    if ( false == nodeData.valid() || false == nodeData->isOpen() )
+      throw std::runtime_error ( "Error 1356818230: Could not open data set." );
+    
+    // Buffer for node type.
+    std::vector<int> nodeType ( nodeData->elements() );
+    
+    // Read the levels.
+    nodeData->read ( H5T_NATIVE_INT, &nodeType[0] );
+    
+    // Colors.
+    std::vector<osg::Vec4> colors ( 6 );
+    colors[0] = osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 );
+    colors[1] = osg::Vec4 ( 0.0, 1.0, 0.0, 1.0 );
+    colors[2] = osg::Vec4 ( 0.0, 0.0, 1.0, 1.0 );
+    colors[3] = osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 );
+    colors[4] = osg::Vec4 ( 1.0, 0.0, 1.0, 1.0 );
+    colors[5] = osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 );
+    
+    // Make bounding boxes.
+    for ( unsigned int i = 0; i < numNodes; ++i )
+    {
+      const bool isLeaf ( 1 == nodeType.at ( i ) );
+      
+      if ( isLeaf )
+      {
+        const unsigned int start ( i * 6 );
+
+        osg::BoundingBox bb ( buffer[start    ], buffer[start + 2], buffer[start + 4], 
+                              buffer[start + 1], buffer[start + 3], buffer[start + 5] );
+      
+        bb._min =  bb._min / float ( 1e+20f );
+        bb._max =  bb._max / float ( 1e+20f );
+        
+        OsgTools::ColorBox box ( bb );
+        box.color_policy().color ( colors.at ( levels.at ( i ) - 1 ) );
+        
+        osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+        mt->setMatrix ( osg::Matrix::translate ( bb.center() ) );
+        mt->addChild ( box() );
+        
+        // Add the bounding box.
+        _root->addChild ( mt.get() );
+      }
+    }
+    
+    // Wire-frame.
+    OsgTools::State::StateSet::setPolygonsLines ( _root.get(), true );
+    OsgTools::State::StateSet::setLighting ( _root.get(), false );
+  }
+  
+  // No longer dirty.
+  this->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Buid the scene if we need to.
+  if ( this->dirty () )
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), "3279281359" );
 }
 
 
@@ -248,6 +398,35 @@ osg::Node *FlashDocument::buildScene ( const BaseClass::Options &options, Unknow
 
 void FlashDocument::deserialize ( const XmlTree::Node &node )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
   _dataMemberMap.deserialize ( node );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::dirty ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _dirty = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dirty flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool FlashDocument::dirty () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _dirty;
 }

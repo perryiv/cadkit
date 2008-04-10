@@ -4,7 +4,7 @@
 //  Copyright (c) 2007, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author(s): Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -33,15 +33,15 @@
 #include "OsgTools/Volume/TransferFunction.h"
 
 #include "osg/BoundingBox"
-#include "osg/MatrixTransform"
-#include "osg/Image"
+#include "osg/Group"
 
 #include <string>
 #include <vector>
 #include <list>
 
 class FlashDocument : public Usul::Documents::Document,
-                      public Usul::Interfaces::IBuildScene
+                      public Usul::Interfaces::IBuildScene,
+                      public Usul::Interfaces::IUpdateListener
 {
 public:
 
@@ -68,6 +68,13 @@ public:
 
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
+  
+  // Deserialize.
+  virtual void                deserialize ( const XmlTree::Node &node );
+  
+  /// Get/Set the dirty flag.
+  void                        dirty ( bool b );
+  bool                        dirty () const;
 
   /// Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersOpen()   const;
@@ -80,10 +87,10 @@ public:
 
   /// Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
-
-  // Deserialize.
-  virtual void                deserialize ( const XmlTree::Node &node );
   
+  /// Usul::Interfaces::IUpdateListener
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+
 protected:
 
   /// Do not copy.
@@ -92,6 +99,9 @@ protected:
 
   /// Use reference counting.
   virtual ~FlashDocument();
+  
+  /// Build the scene.
+  void                        _buildScene();
 
 private:
   
@@ -99,6 +109,8 @@ private:
   
   Filenames _filenames;
   unsigned int _currentTimestep;
+  osg::ref_ptr < osg::Group > _root;
+  bool _dirty;
   
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( FlashDocument );

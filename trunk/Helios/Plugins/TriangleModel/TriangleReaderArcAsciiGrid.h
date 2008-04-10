@@ -49,7 +49,7 @@ public:
     int             format;
     int             compressed;
 
-    Header::Header() : proj( 0 ), zone( 0 ), north( 0.0 ), south( 0.0 ), west( 0.0 ), 
+    Header() : proj( 0 ), zone( 0 ), north( 0.0 ), south( 0.0 ), west( 0.0 ), 
       cols( 0 ), rows( 0 ), ew_resol( 0.0 ), ns_resol( 0.0 ), format( 0 ), compressed( 0 ) {}
   };
 

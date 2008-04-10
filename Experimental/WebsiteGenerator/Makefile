@@ -22,7 +22,7 @@ LOCAL_LIBS = \
 TARGET = make_page
 
 # Override the target directory.
-TARGET_DIR = $(HOME)/www/cgi-bin/minerva
+TARGET_DIR = $(HOME)/www/cgi-bin
 
 # Do this after the target builds.
 POST_BUILD_COMMAND = chcon -t httpd_sys_content_t $(TARGET_DIR)/$(TARGET)

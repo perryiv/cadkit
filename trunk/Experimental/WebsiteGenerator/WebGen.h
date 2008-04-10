@@ -44,6 +44,9 @@ public:
 
 protected:
 
+  void                               _addScripts ( XmlTree::Node::ValidRefPtr parent );
+  void                               _addStyles  ( XmlTree::Node::ValidRefPtr parent );
+
   XmlTree::Node::ValidRefPtr         _cell ( unsigned int row, unsigned int column );
 
   std::string                        _directory ( Usul::Registry::Node & );
@@ -55,7 +58,7 @@ protected:
   std::string                        _protocol() const;
 
   XmlTree::Node::ValidRefPtr         _makeBody();
-  XmlTree::Node::ValidRefPtr         _makeHead() const;
+  XmlTree::Node::ValidRefPtr         _makeHead();
   XmlTree::Node::ValidRefPtr         _makeImage ( const std::string &src, const std::string &alt );
   XmlTree::Node::ValidRefPtr         _makeTable();
 

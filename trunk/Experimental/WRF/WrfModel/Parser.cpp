@@ -272,9 +272,10 @@ void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
   // Calculate the size of one timestep.
   const Usul::Types::Uint64 timestepSize ( ( channelSizeBytes * _numChannels ) + ( sliceSizeBytes * _numFields2D ) );
 
-#if 1
+  // Calculate the offset to the given timestep.
   const Usul::Types::Uint64 timestepOffset ( timestepSize * static_cast < Usul::Types::Uint64 > ( timestep ) );
 
+  // Calculate the offset from the start of the timestep to the given channel.
   const Usul::Types::Uint64 channelOffset ( channelSizeBytes * static_cast < Usul::Types::Uint64 > ( channel ) );
 
   // Calculate the file offset.
@@ -282,18 +283,11 @@ void Parser::data ( Data& data, unsigned int timestep, unsigned int channel )
 
   // Jump to the correct location.
   this->_seek ( offset );
-#else
-  // Jump to the begining.
-  this->_seek ( 0 );
 
-  for ( unsigned int i = 0; i < timestep; ++i )
-    this->_seek ( timestepSize, SEEK_CUR );
-
-  this->_seek ( channelSizeBytes * channel, SEEK_CUR );
-#endif
   // Make enough room.
   data.resize ( sliceSize * _zSize );
   
+  // Read all the slices.
   for ( unsigned int z = 0; z < _zSize; ++z )
   {
     // Offset for our current slice.
@@ -362,14 +356,7 @@ void Parser::_open ()
 
 void Parser::_seek ( Usul::Types::Int64 offset )
 {
-#ifdef _MSC_VER
-  Usul::Types::Uint64 result ( ::_fseeki64 ( _fp, offset, SEEK_SET ) );
-#else
-  Usul::Types::Uint64 result ( ::fseek ( _fp, offset, SEEK_SET ) );
-#endif
-
-  if ( result != 0 )
-    Usul::Exceptions::Thrower < std::runtime_error > ( "Error 1556671836: Could not seek in file: ", _filename, " to location: ", offset );
+  this->_seek ( offset, SEEK_SET );
 }
 
 
@@ -382,9 +369,14 @@ void Parser::_seek ( Usul::Types::Int64 offset )
 void Parser::_seek ( Usul::Types::Int64 offset, int whence )
 {
 #ifdef _MSC_VER
-  Usul::Types::Uint64 result ( ::_fseeki64 ( _fp, offset, whence ) );
+  Usul::Types::Int64 result ( ::_fseeki64 ( _fp, offset, whence ) );
+#elif __APPLE__
+  // 64 bit offset for seeking in the file.
+  // See: http://lists.apple.com/archives/scitech/2005/Jan/msg00271.html and http://www.opengroup.org/onlinepubs/007908799/xsh/fseek.html
+  // TODO: I believe the fseeko function should work on linux also.
+  Usul::Types::Int32 result ( ::fseeko ( _fp, offset, whence ) );
 #else
-  Usul::Types::Uint64 result ( ::fseek ( _fp, offset, whence ) );
+  Usul::Types::Int32 result ( ::fseek ( _fp, offset, whence ) );
 #endif
 
   if ( result != 0 )
@@ -411,20 +403,10 @@ void Parser::_readSlice ( Data::value_type* buffer )
   // Read the header.
   if ( this->headers () )
     ::fread ( &header, sizeof ( HeaderFooterType ), 1, _fp );
-  
-#if 1
+
   // Read.
   ::fread ( buffer, sizeof ( Usul::Types::Float32 ), sliceSize, _fp );
-#else
-  // Create temp buffer.
-  Data temp ( sliceSize );
 
-  // Read.
-  ::fread ( &temp.front(), sizeof ( Usul::Types::Float32 ), sliceSize, _fp );
-
-  // Transpose.
-  Usul::Math::transpose ( &temp.front(), buffer, _xSize, _ySize );
-#endif
   // Read the footer.
   if ( this->headers () )
     ::fread ( &footer, sizeof ( HeaderFooterType ), 1, _fp );

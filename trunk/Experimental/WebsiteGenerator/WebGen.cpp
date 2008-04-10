@@ -537,7 +537,8 @@ void WebGen::run()
   XmlTree::XercesLife life;
 
   // Read the main site into the registry.
-  XmlTree::RegistryIO::read ( "site.xml", Usul::Registry::Database::instance() );
+  const std::string site ( Usul::Strings::format ( _query["site"].get ( "default" ), ".xml" ) );
+  XmlTree::RegistryIO::read ( site, Usul::Registry::Database::instance() );
 
   // Find the pages.
   this->_findPages();

@@ -15,8 +15,8 @@
 
 #include "XmlTree/Node.h"
 
-#include "Usul/Errors/Assert.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Strings/Split.h"
 
 #include <algorithm>
@@ -99,7 +99,7 @@ void Node::value ( const std::string &v )
 Node *Node::child ( unsigned int which, const std::string &path, const char delim, bool createIfNeeded )
 {
   // Empty path is an error.
-  if ( path.empty() )
+  if ( true == path.empty() )
     throw std::runtime_error ( "Error 2832818132: Empty node-path given" );
 
   // Split the path.
@@ -108,7 +108,8 @@ Node *Node::child ( unsigned int which, const std::string &path, const char deli
   Usul::Strings::split ( path, delim, false, parts );
 
   // Should be true.
-  USUL_ASSERT ( false == parts.empty() );
+  if ( true == parts.empty() )
+    throw std::runtime_error ( "Error 2941769360: Failed to split node-path: " + path );
 
   // We special-case the last one.
   const std::string last ( parts.back() );
@@ -196,10 +197,6 @@ namespace Helper
     T1 _t1;
     T2 _t2;
   };
-  //template < class T1, class T2 > And < T1, T2 > and ( const T1 &t1, const T2 &t2 )
-  //{
-  //  return ( And < T1, T2 > ( t1, t2 ) );
-  //}
 }
 
 
@@ -211,7 +208,8 @@ namespace Helper
 
 XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool createIfNeeded )
 {
-  USUL_ASSERT ( false == name.empty() );
+  if ( true == name.empty() )
+    throw std::runtime_error ( "Error 1803369517: Empty node name given" );
 
   // See if we can quickly find the child.
   {
@@ -230,7 +228,8 @@ XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool 
   // If we get to here then we have to add children.
   {
     const unsigned int existing ( std::count_if ( _children.begin(), _children.end(), Helper::SameName ( name ) ) );
-    USUL_ASSERT ( which >= existing );
+    if ( which < existing )
+      throw std::runtime_error ( Usul::Strings::format ( "Error 4256284815: Failed to add new child, which = ", which, ", existing = ", existing ) );
     _children.reserve ( _children.size() + ( which + 1 - existing ) );
     for ( unsigned int i = _children.size(); i < _children.capacity(); ++i )
       _children.push_back ( new Node ( name ) );
@@ -333,5 +332,30 @@ Node::RefPtr Node::append ( const std::string &name, const std::string &value )
 {
   Node::RefPtr node ( new Node ( name, value ) );
   this->append ( node.get() );
+  return node;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first child by the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node::RefPtr Node::child ( const std::string &name, bool createIfNeeded )
+{
+  Node::RefPtr node ( 0x0 );
+  Children kids ( this->find ( name, false ) );
+  if ( false == kids.empty() )
+  {
+    node = kids.front().get();
+  }
+  else
+  {
+    if ( true == createIfNeeded )
+    {
+      node = this->append ( name );
+    }
+  }
   return node;
 }

@@ -4,7 +4,8 @@ include $(CADKIT_MAKE_DIR)/header.mak
 
 # C++ source files.
 CPP_FILES = \
-  ./Main.cpp
+	./WebGen.cpp \
+	./Main.cpp
 
 LOCAL_INCLUDE = \
 	-I$(CADKIT_INC_DIR) \

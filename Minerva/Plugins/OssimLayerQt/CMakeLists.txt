@@ -5,6 +5,10 @@ SET(PLUGIN_NAME "OssimLayerQt")
 SET( CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
+# ------------ Find boost ----------------------
+SET ( Boost_USE_FILESYSTEM TRUE )
+INCLUDE( ${CMakeModules}/FindBoost.cmake)
+
 set(COMPILE_GUARD "_COMPILING_OSSIM_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
@@ -36,5 +40,9 @@ ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} )
 CADKIT_PLUGIN()
 
 # Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul QtTools Minerva )	
+LINK_CADKIT( ${PLUGIN_NAME} Usul QtTools Minerva )
+
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
+	${Boost_LIBRARIES}
+)
 

@@ -8,12 +8,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef __linux
+#define __USE_LARGEFILE64
+#endif
+
 #include "Experimental/WRF/WrfModel/Parser.h"
 
 #include "OsgTools/Images/Matrix.h"
 
 #include "Usul/Exceptions/Thrower.h"
-//#include "Usul/Math/Transpose.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/LastError.h"
 
 #include <stdexcept>
 
@@ -340,11 +345,23 @@ void Parser::field2D ( Data& data, unsigned int i )
 
 void Parser::_open ()
 {
-  if ( 0x0 == _fp )
-    _fp = ::fopen ( _filename.c_str(), "rb" );
+  Usul::System::LastError::init();
 
   if ( 0x0 == _fp )
-    Usul::Exceptions::Thrower < std::runtime_error > ( "Error 2490086597: Could not open file: ", _filename );
+  {
+#ifdef __linux
+    _fp = ::fopen64 ( _filename.c_str(), "rb" );
+#else
+    _fp = ::fopen ( _filename.c_str(), "rb" );
+#endif
+  }
+
+  if ( 0x0 == _fp )
+  {
+    const std::string error ( ( true == Usul::System::LastError::has() ) ? Usul::System::LastError::message() : "" );
+    const std::string message ( Usul::Strings::format ( "Error 2490086597: Could not open file: ", _filename, ". ", error ) );
+    throw std::runtime_error ( message );
+  }
 }
 
 
@@ -369,14 +386,19 @@ void Parser::_seek ( Usul::Types::Int64 offset )
 void Parser::_seek ( Usul::Types::Int64 offset, int whence )
 {
 #ifdef _MSC_VER
+
   Usul::Types::Int64 result ( ::_fseeki64 ( _fp, offset, whence ) );
+
 #elif __APPLE__
+
   // 64 bit offset for seeking in the file.
   // See: http://lists.apple.com/archives/scitech/2005/Jan/msg00271.html and http://www.opengroup.org/onlinepubs/007908799/xsh/fseek.html
-  // TODO: I believe the fseeko function should work on linux also.
   Usul::Types::Int32 result ( ::fseeko ( _fp, offset, whence ) );
-#else
-  Usul::Types::Int32 result ( ::fseek ( _fp, offset, whence ) );
+
+#else // __linux
+
+  Usul::Types::Int32 result ( ::fseeko64 ( _fp, offset, whence ) );
+
 #endif
 
   if ( result != 0 )

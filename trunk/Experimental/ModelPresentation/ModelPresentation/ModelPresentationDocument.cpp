@@ -2725,13 +2725,11 @@ void ModelPresentationDocument::_setStatusText( const std::string message, unsig
   if( false == viewPort.valid() )
     throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
 
-  double xpos = 0, ypos = 0;
   textMatrix->removeText( static_cast< unsigned int > ( textXPos ),
                           static_cast< unsigned int > ( textYPos ) );
    
-
-  xpos = floor( viewPort->width() * xmult );
-  ypos = floor( viewPort->height() * ymult );
+  const double xpos ( ::floor( viewPort->width()  * xmult ) );
+  const double ypos ( ::floor( viewPort->height() * ymult ) );
 
 #if 0
   osg::Vec4f fcolor (  0.841, 0.763, 0.371, 1 );
@@ -2741,14 +2739,10 @@ void ModelPresentationDocument::_setStatusText( const std::string message, unsig
   osg::Vec4f bcolor (  0.0, 0.0, 0.0, 1 );
 #endif
 
-  textMatrix->setText( static_cast< unsigned int > ( xpos ), 
-                       static_cast< unsigned int > ( ypos ), 
-                       message, 
-                       fcolor, bcolor );
-  textXPos = xpos;
-  textYPos = ypos;
-  
+  textXPos = static_cast< unsigned int > ( xpos );
+  textYPos = static_cast< unsigned int > ( ypos );
 
+  textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
 }
 
 

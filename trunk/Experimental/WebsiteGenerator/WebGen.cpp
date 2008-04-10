@@ -206,7 +206,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   XmlTree::Node::ValidRefPtr body ( new XmlTree::Node ( "body" ) );
 
   // Make the table structure.
-  XmlTree::Node::ValidRefPtr table ( this->_makeTable() );
+  XmlTree::Node::ValidRefPtr table ( this->_makeTable ( 3, 2, "outer", _matrix ) );
   body->append ( table.get() );
 
   // Add the logo.
@@ -214,7 +214,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   logo->append ( this->_makeImage ( "logo", "Logo Image" ) );
 
   // Add the page title and separator.
-  XmlTree::Node::ValidRefPtr title ( this->_cell ( 0, 2 ) );
+  XmlTree::Node::ValidRefPtr title ( this->_cell ( 0, 1 ) );
   title->append ( "h1", Usul::Registry::Database::instance()["subject"]["long_name"].get ( "Title" ) );
   title->append ( "hr" );
   
@@ -269,29 +269,27 @@ XmlTree::Node::ValidRefPtr WebGen::_makeImage ( const std::string &src, const st
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-XmlTree::Node::ValidRefPtr WebGen::_makeTable()
+XmlTree::Node::ValidRefPtr WebGen::_makeTable ( unsigned int numRows, unsigned int numCols, const std::string &cssClassName, NodeMatrix &matrix ) const
 {
   XmlTree::Node::ValidRefPtr table ( new XmlTree::Node ( "table" ) );
-  table->attributes()["class"] = "outer";
+  table->attributes()["class"] = cssClassName;
 
-  const unsigned int numRows ( 3 );
-  const unsigned int numCols ( 3 );
-  _matrix.clear();
-  _matrix.reserve ( numRows );
+  matrix.clear();
+  matrix.reserve ( numRows );
 
   for ( unsigned int i = 0; i < numRows; ++i )
   {
     XmlTree::Node::ValidRefPtr tr ( table->append ( "tr" ) );
-    tr->attributes()["class"] = "outer";
+    tr->attributes()["class"] = Usul::Strings::format ( "outer_row_", i );
 
-    _matrix.push_back ( NodeVector() );
-    NodeVector &row ( _matrix.back() );
+    matrix.push_back ( NodeVector() );
+    NodeVector &row ( matrix.back() );
     row.reserve ( numCols );
 
     for ( unsigned int j = 0; j < numCols; ++j )
     {
       XmlTree::Node::ValidRefPtr td ( tr->append ( "td" ) );
-      td->attributes()["class"] = "outer";
+      td->attributes()["class"] = Usul::Strings::format ( "outer_row_", i, "_column_", j );
       row.push_back ( td );
     }
   }

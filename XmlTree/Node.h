@@ -65,6 +65,9 @@ public:
   // as the node-name. Throws an exception if it was asked to create but failed.
   Node *                  child ( unsigned int i, const std::string &path, const char delim = '/', bool createIfNeeded = true );
 
+  // Get the first child by the name.
+  Node::RefPtr            child ( const std::string &name, bool createIfNeeded = true );
+
   // Access the children.
   const Children &        children() const { return _children; }
   Children &              children()       { return _children; }

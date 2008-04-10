@@ -60,7 +60,7 @@ protected:
   XmlTree::Node::ValidRefPtr         _makeBody();
   XmlTree::Node::ValidRefPtr         _makeHead();
   XmlTree::Node::ValidRefPtr         _makeImage ( const std::string &src, const std::string &alt );
-  XmlTree::Node::ValidRefPtr         _makeTable();
+  XmlTree::Node::ValidRefPtr         _makeTable ( unsigned int numRows, unsigned int numCols, const std::string &cssClassName, NodeMatrix &matrix ) const;
 
   std::string                        _specialChar ( const std::string &name, unsigned int num ) const;
 

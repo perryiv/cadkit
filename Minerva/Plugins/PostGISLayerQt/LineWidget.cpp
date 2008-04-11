@@ -24,9 +24,9 @@ _layer ( layer )
   this->setupUi ( this );
 
   if ( _layer.valid () )
-    _lineWidth->setValue ( _layer->lineWidth() );
+    _lineWidth->setValue ( static_cast<int> ( _layer->lineWidth() ) );
 
-  connect ( _lineWidth, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _lineWidthChanged ( double ) ) );
+  connect ( _lineWidth, SIGNAL ( valueChanged ( int ) ), this, SLOT ( _lineWidthChanged ( int ) ) );
 }
 
 
@@ -36,7 +36,7 @@ _layer ( layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineWidget::_lineWidthChanged( double value )
+void LineWidget::_lineWidthChanged( int value )
 {
   if ( _layer.valid() )
     _layer->lineWidth ( value );

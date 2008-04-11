@@ -723,7 +723,7 @@ osg::Image* Renderer::screenCapture ( const osg::Matrix& matrix, unsigned int wi
   tiled.size ( width, height );
   tiled.clearColor ( this->backgroundColor() );
   tiled.viewMatrix ( matrix );
-  tiled.numSamples ( 1.0f );
+  tiled.numSamples ( 1 );
   tiled.scale ( 1.0f );
   tiled.background ( _gradient );
   

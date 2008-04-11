@@ -249,8 +249,8 @@ void PropertyPage::_initLabelProperties()
       QtTools::ComboBox::populate ( *_labelColumn, columns, _layer->labelColumn() );
     }
 
-    _labelSize->setValue ( _layer->labelSize () );
-    _labelZOffset->setValue ( _layer->labelZOffset () );
+    _labelSize->setValue ( static_cast<int> ( _layer->labelSize () ) );
+    _labelZOffset->setValue ( static_cast<int> ( _layer->labelZOffset () ) );
   }
 
   // Slots and signals for labels.

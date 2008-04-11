@@ -27,7 +27,7 @@ public:
   LineWidget ( LineLayer* layer, QWidget* parent = 0x0 );
 
 protected slots:
-  void _lineWidthChanged( double value );
+  void _lineWidthChanged( int value );
 
 private:
   LineLayer::RefPtr _layer;

@@ -34,7 +34,7 @@ _layer ( layer )
     _primitiveType->setCurrentIndex ( _layer->primitiveID() - 1);
     _size->setValue ( _layer->size() );
     _secondarySize->setValue ( _layer->secondarySize() );
-    _quality->setValue ( _layer->quality() * 100 );
+    _quality->setValue ( static_cast<int> ( _layer->quality() * 100 ) );
 
     // Get all columns.
     Minerva::DataSources::PG::Connection::RefPtr connection ( _layer->connection() );

@@ -32,18 +32,47 @@ using namespace XmlTree;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RegistryIO::read ( const std::string &file, Usul::Registry::Database& db )
+namespace Helper
+{
+  template < class RegistryType > void readRegistry ( const std::string &file, RegistryType &reg )
+  {
+    USUL_TRACE_SCOPE_STATIC;
+
+    // Read xml tree.
+    XmlTree::Loader loader;
+    XmlTree::Document::RefPtr document ( new XmlTree::Document );
+    loader.load ( file, document.get() );
+
+    // Build registry.
+    XmlTree::RegistryBuilder::RefPtr builder ( new XmlTree::RegistryBuilder );
+    builder->build ( document.get(), reg );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RegistryIO::read ( const std::string &file, Usul::Registry::Database &reg )
 {
   USUL_TRACE_SCOPE_STATIC;
+  Helper::readRegistry ( file, reg );
+}
 
-  // Read xml tree.
-  XmlTree::Loader loader;
-  XmlTree::Document::RefPtr document ( new XmlTree::Document );
-  loader.load ( file, document.get() );
 
-  // Build registry.
-  XmlTree::RegistryBuilder::RefPtr builder ( new XmlTree::RegistryBuilder );
-  builder->build ( document.get(), db );
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Read the registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RegistryIO::readNode ( const std::string &file, Usul::Registry::Node &reg )
+{
+  USUL_TRACE_SCOPE_STATIC;
+  Helper::readRegistry ( file, reg );
 }
 
 

@@ -20,8 +20,8 @@
 
 #include "Usul/Base/Object.h"
 
-namespace Usul { namespace Registry { class Database; } }
-namespace XmlTree { class Document; }
+namespace Usul { namespace Registry { class Database; class Node; } }
+namespace XmlTree { class Node; }
 
 
 namespace XmlTree {
@@ -44,7 +44,8 @@ public:
   RegistryBuilder();
 
   // Build the registry.
-  void                      build ( const XmlTree::Document *, Usul::Registry::Database& );
+  void                      build ( const XmlTree::Node *, Usul::Registry::Database & );
+  void                      build ( const XmlTree::Node *, Usul::Registry::Node & );
 
 protected:
 

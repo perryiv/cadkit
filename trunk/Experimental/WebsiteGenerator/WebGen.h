@@ -53,14 +53,15 @@ protected:
 
   void                               _findPages();
 
+  XmlTree::Node::ValidRefPtr         _link ( const std::string &text, const std::string &href, bool internal = true );
   XmlTree::Node::ValidRefPtr         _loadXmlFile ( const std::string &file ) const;
-
-  std::string                        _protocol() const;
 
   XmlTree::Node::ValidRefPtr         _makeBody();
   XmlTree::Node::ValidRefPtr         _makeHead();
   XmlTree::Node::ValidRefPtr         _makeImage ( const std::string &src, const std::string &alt );
   XmlTree::Node::ValidRefPtr         _makeTable ( unsigned int numRows, unsigned int numCols, const std::string &cssClassName, NodeMatrix &matrix ) const;
+
+  std::string                        _protocol() const;
 
   std::string                        _specialChar ( const std::string &name, unsigned int num ) const;
 
@@ -72,6 +73,7 @@ private:
 
   RegistryNode &_query;
   RegistryNode &_env;
+  RegistryNode &_site;
   StringMap _chars;
   Pages _pages;
   NodeMatrix _matrix;

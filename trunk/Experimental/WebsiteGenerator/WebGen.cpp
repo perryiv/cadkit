@@ -21,6 +21,8 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Convert/Vector2.h"
+#include "Usul/Math/Vector2.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
@@ -50,6 +52,7 @@
 WebGen::WebGen ( int argc, char **argv, char **env ) : 
   _query ( Usul::Registry::Database::instance()["query_string"] ),
   _env   ( Usul::Registry::Database::instance()["environment"] ),
+  _site  ( Usul::Registry::Database::instance()["site"] ),
   _chars (),
   _pages (),
   _matrix()
@@ -205,19 +208,39 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   // Add the body sections.
   XmlTree::Node::ValidRefPtr body ( new XmlTree::Node ( "body" ) );
 
+  // Get the table grid size.
+  const unsigned int numRows ( _site["tables"]["outer"]["num_rows"].get ( 3 ) );
+  const unsigned int numCols ( _site["tables"]["outer"]["num_cols"].get ( 2 ) );
+
   // Make the table structure.
-  XmlTree::Node::ValidRefPtr table ( this->_makeTable ( 3, 2, "outer", _matrix ) );
+  XmlTree::Node::ValidRefPtr table ( this->_makeTable ( numRows, numCols, "outer", _matrix ) );
   body->append ( table.get() );
 
+  // Get the logo's cell.
+  typedef Usul::Math::Vec2ui CellIndex;
+  CellIndex index ( _site["images"]["logo"]["cell"].get<CellIndex> ( CellIndex ( 0, 0 ) ) );
+
   // Add the logo.
-  XmlTree::Node::ValidRefPtr logo ( this->_cell ( 0, 0 ) );
-  logo->append ( this->_makeImage ( "logo", "Logo Image" ) );
+  XmlTree::Node::ValidRefPtr logo ( this->_cell ( index[0], index[1] ) );
+  logo->append ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
 
   // Add the page title and separator.
-  XmlTree::Node::ValidRefPtr title ( this->_cell ( 0, 1 ) );
-  title->append ( "h1", Usul::Registry::Database::instance()["subject"]["long_name"].get ( "Title" ) );
-  title->append ( "hr" );
-  
+  index = _site["subject"]["cell"].get<CellIndex> ( CellIndex ( 0, 1 ) );
+  XmlTree::Node::ValidRefPtr subject ( this->_cell ( index[0], index[1] ) );
+  subject->append ( "h1", _site["subject"]["long_name"].get ( "Title" ) );
+  subject->append ( "hr" );
+
+  // Add the main menu.
+  index = _site["menus"]["main"]["cell"].get<CellIndex> ( CellIndex ( 1, 0 ) );
+  XmlTree::Node::ValidRefPtr menu ( this->_cell ( index[0], index[1] ) );
+  for ( Pages::const_iterator i = _pages.begin(); i != _pages.end(); ++i )
+  {
+    const PageInfo page ( *i );
+    XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
+    para->append ( this->_link ( page.first, page.second ) );
+    menu->append ( para );
+  }
+
   // Return it.
   return body;
 }
@@ -235,28 +258,13 @@ XmlTree::Node::ValidRefPtr WebGen::_makeImage ( const std::string &src, const st
   img->attributes()["alt"] = alt;
 
   // Get the image directory.
-  const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["images"]["directory"] ) );
+  const std::string dir ( this->_directory ( _site["images"]["directory"] ) );
 
-  // Is the given src string a file?
-  std::string file ( dir + src );
-  if ( true == Usul::Predicates::FileExists::test ( file ) )
-  {
-    img->attributes()["src"] = src;
-  }
+  // Make the path name.
+  std::string path ( dir + src );
 
-  // Otherwise, try the registry.
-  else
-  {
-    file = Usul::Registry::Database::instance()["images"][src].get ( "" );
-    if ( false == file.empty() )
-    {
-      file = dir + file;
-      if ( true == Usul::Predicates::FileExists::test ( file ) )
-      {
-        img->attributes()["src"] = file;
-      }
-    }
-  }
+  // Set the source attribute.
+  img->attributes()["src"] = path;
 
   // Return it.
   return img;
@@ -338,8 +346,8 @@ XmlTree::Node::ValidRefPtr WebGen::_loadXmlFile ( const std::string &file ) cons
 void WebGen::_findPages()
 {
   // Get the file for the pages.
-  const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["pages"]["directory"] ) );
-  std::string file ( Usul::Registry::Database::instance()["pages"]["file"].get ( "" ) );
+  const std::string dir ( this->_directory ( _site["pages"]["directory"] ) );
+  std::string file ( _site["pages"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;
   file = dir + file;
@@ -469,8 +477,8 @@ std::string WebGen::_protocol() const
 void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
 {
   // Get the file name.
-  const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["scripts"]["directory"] ) );
-  std::string file ( Usul::Registry::Database::instance()["scripts"]["file"].get ( "" ) );
+  const std::string dir ( this->_directory ( _site["scripts"]["directory"] ) );
+  std::string file ( _site["scripts"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;
   file = dir + file;
@@ -500,8 +508,8 @@ void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
 void WebGen::_addStyles ( XmlTree::Node::ValidRefPtr parent )
 {
   // Get the file name.
-  const std::string dir ( this->_directory ( Usul::Registry::Database::instance()["styles"]["directory"] ) );
-  std::string file ( Usul::Registry::Database::instance()["styles"]["file"].get ( "" ) );
+  const std::string dir ( this->_directory ( _site["styles"]["directory"] ) );
+  std::string file ( _site["styles"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;
   file = dir + file;
@@ -521,6 +529,29 @@ void WebGen::_addStyles ( XmlTree::Node::ValidRefPtr parent )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Return a link.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+XmlTree::Node::ValidRefPtr WebGen::_link ( const std::string &text, const std::string &href, bool internal )
+{
+  // Make the node and set the attributes.
+  XmlTree::Node::ValidRefPtr anchor ( new XmlTree::Node ( "a", text ) );
+  anchor->attributes()["href"] = href;
+
+  // Open a new browser or tab?
+  if ( false == internal )
+  {
+    anchor->attributes()["target"] = "blank";
+  }
+
+  // Return the node.
+  return anchor;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Run the program.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -534,15 +565,22 @@ void WebGen::run()
   // Manage the life-span of xerces.
   XmlTree::XercesLife life;
 
+  // Make a new document for the html content.
+  XmlTree::Document::ValidRefPtr root ( new XmlTree::Document ( "html" ) );
+
+  // Read the configuration file that holds all the sites.
+  Usul::Registry::Node &sites ( Usul::Registry::Database::instance()["sites"] );
+  XmlTree::RegistryIO::readNode ( "sites.xml", sites );
+
+  // Determine the file to read for the site information.
+  const std::string siteName ( _query["site"].get ( "default" ) );
+  const std::string siteFile ( sites[siteName].get ( "default" ) );
+
   // Read the main site into the registry.
-  const std::string site ( Usul::Strings::format ( _query["site"].get ( "default" ), ".xml" ) );
-  XmlTree::RegistryIO::read ( site, Usul::Registry::Database::instance() );
+  XmlTree::RegistryIO::readNode ( siteFile, _site );
 
   // Find the pages.
   this->_findPages();
-
-  // Make a new document for the html content.
-  XmlTree::Document::ValidRefPtr root ( new XmlTree::Document ( "html" ) );
 
   // Add the main sections.
   root->append ( this->_makeHead() );

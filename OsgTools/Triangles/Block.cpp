@@ -19,8 +19,7 @@
 
 #include <iostream>
 
-using namespace std;
-using namespace Usul::Types;
+
 using namespace OsgTools::Triangles;
 
 

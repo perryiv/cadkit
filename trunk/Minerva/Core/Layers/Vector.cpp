@@ -245,7 +245,10 @@ void Vector::addDataObject ( DataObject *dataObject )
   Guard guard ( this->mutex() );
 
   if ( 0x0 != dataObject )
+  {
     _dataObjects.push_back ( dataObject );
+    this->dirtyScene ( true );
+  }
 }
 
 
@@ -260,6 +263,7 @@ void Vector::clearDataObjects ()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _dataObjects.clear();
+  this->dirtyScene ( true );
 }
 
 
@@ -491,7 +495,12 @@ void Vector::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d
 void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  if ( this->dirtyScene() )
+
+  // Check to see if the number of children in the root is the same as the data objects.  This is a hack before dirtyScene isn't alway accurate.
+  const bool needsBuild ( _root.valid() ? _root->getNumChildren() != _dataObjects.size() : false );
+
+  // Build if we need to...
+  if ( this->dirtyScene() || needsBuild )
     this->_buildScene( caller );
 }
 

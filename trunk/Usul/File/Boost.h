@@ -37,6 +37,12 @@ namespace Usul
           return false;
         }
       }
+
+      static bool test ( const std::string& s )
+      {
+        IsDirectory dir;
+        return dir ( s );
+      }
     };
 
     ///////////////////////////////////////////////////////////////////////////////

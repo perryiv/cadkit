@@ -56,6 +56,7 @@ SET (SOURCES
 ./System/Environment.cpp
 ./Types/Types.cpp
 ./File/Remove.cpp
+./File/Rename.cpp
 ./File/Make.cpp
 ./File/Temp.cpp
 ./Commands/RenderLoop.cpp

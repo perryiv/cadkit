@@ -2126,6 +2126,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\File\Rename.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\File\Rename.h"
+					>
+				</File>
+				<File
 					RelativePath=".\File\Slash.h"
 					>
 				</File>

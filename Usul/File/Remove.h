@@ -46,7 +46,7 @@ struct USUL_EXPORT Remove : public std::unary_function < std::string, void >
 {
   void operator () ( const std::string& file ) const
   {
-    Usul::File::remove ( file, false, false );
+    Usul::File::remove ( file, false, 0x0 );
   }
 };
 

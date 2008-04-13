@@ -15,6 +15,7 @@
 
 #include "Usul/File/Temp.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Rename.h"
 #include "Usul/System/LastError.h"
 #include "Usul/Errors/Stack.h"
 #include "Usul/Errors/Assert.h"
@@ -202,42 +203,8 @@ void Temp::rename ( const std::string &name )
   // Close the file.
   this->close();
 
-  // Initialize the last error.
-  typedef Usul::System::LastError LastError;
-  LastError::init();
-
-  // Make sure there is no file with the given name.
-  if ( Usul::Predicates::FileExists::test ( name ) )
-  {
-    if ( 0 != ::remove ( name.c_str() ) )
-    {
-      // Format the error message.
-      std::ostringstream out;
-      out << "Error 1836817535: Failed to remove existing file: " << name;
-
-      // Append any system error...
-      if ( LastError::number() )
-        out << "\n  Reason: " << LastError::message();
-
-      // Throw the error.
-      throw std::runtime_error ( out.str() );
-    }
-  }
-
   // Try to rename the file.
-  if ( 0 != ::rename ( this->name().c_str(), name.c_str() ) )
-  {
-    // Format the error message.
-    std::ostringstream out;
-    out << "Error 4003249375: Failed to rename temporary file from '" << this->name() << "' to '" << name;
-
-    // Append any system error...
-    if ( LastError::number() )
-      out << "\n  Reason: " << LastError::message();
-
-    // Throw the error.
-    throw std::runtime_error ( out.str() );
-  }
+  Usul::File::rename ( this->name(), name, true );
 
   // Set this flag so that the destructor does not try to remove the file.
   _remove = false;

@@ -32,7 +32,7 @@ const float  PIE_OVER_2             ( PIE / 2.0f );
 // Square Root.
 const float  SQRT_2                 ( 1.41421356237309504880f );
 const float  SQRT_3                 ( 1.73205080757f );
-
+const float  INV_SQRT_2             ( 0.70710678118654752440f );
 
 } // namespace Math
 } // namespace Usul

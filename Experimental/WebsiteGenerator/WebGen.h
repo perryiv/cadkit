@@ -46,6 +46,7 @@ protected:
 
   void                               _addScripts ( XmlTree::Node::ValidRefPtr parent );
   void                               _addStyles  ( XmlTree::Node::ValidRefPtr parent );
+  void                               _appendChildren ( XmlTree::Node::ValidRefPtr from, XmlTree::Node::ValidRefPtr to );
 
   XmlTree::Node::ValidRefPtr         _cell ( unsigned int row, unsigned int column );
 
@@ -62,6 +63,8 @@ protected:
   XmlTree::Node::ValidRefPtr         _makeTable ( unsigned int numRows, unsigned int numCols, const std::string &cssClassName, NodeMatrix &matrix ) const;
 
   std::string                        _protocol() const;
+
+  std::string                        _queryValue ( const std::string &name, const std::string &defaultValue = std::string() ) const;
 
   std::string                        _specialChar ( const std::string &name, unsigned int num ) const;
 

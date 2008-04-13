@@ -205,40 +205,66 @@ XmlTree::Node::ValidRefPtr WebGen::_makeHead()
 
 XmlTree::Node::ValidRefPtr WebGen::_makeBody()
 {
+  typedef Usul::Math::Vec2ui CellIndex;
+
   // Add the body sections.
   XmlTree::Node::ValidRefPtr body ( new XmlTree::Node ( "body" ) );
 
-  // Get the table grid size.
-  const unsigned int numRows ( _site["tables"]["outer"]["num_rows"].get ( 3 ) );
-  const unsigned int numCols ( _site["tables"]["outer"]["num_cols"].get ( 2 ) );
-
   // Make the table structure.
-  XmlTree::Node::ValidRefPtr table ( this->_makeTable ( numRows, numCols, "outer", _matrix ) );
-  body->append ( table.get() );
-
-  // Get the logo's cell.
-  typedef Usul::Math::Vec2ui CellIndex;
-  CellIndex index ( _site["images"]["logo"]["cell"].get<CellIndex> ( CellIndex ( 0, 0 ) ) );
+  {
+    const unsigned int numRows ( _site["tables"]["outer"]["num_rows"].get ( 3 ) );
+    const unsigned int numCols ( _site["tables"]["outer"]["num_cols"].get ( 2 ) );
+    XmlTree::Node::ValidRefPtr table ( this->_makeTable ( numRows, numCols, "outer", _matrix ) );
+    body->append ( table.get() );
+  }
 
   // Add the logo.
-  XmlTree::Node::ValidRefPtr logo ( this->_cell ( index[0], index[1] ) );
-  logo->append ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
+  {
+    CellIndex index ( _site["images"]["logo"]["cell"].get<CellIndex> ( CellIndex ( 0, 0 ) ) );
+    XmlTree::Node::ValidRefPtr logo ( this->_cell ( index[0], index[1] ) );
+    logo->append ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
+  }
 
   // Add the page title and separator.
-  index = _site["subject"]["cell"].get<CellIndex> ( CellIndex ( 0, 1 ) );
-  XmlTree::Node::ValidRefPtr subject ( this->_cell ( index[0], index[1] ) );
-  subject->append ( "h1", _site["subject"]["long_name"].get ( "Title" ) );
-  subject->append ( "hr" );
+  {
+    CellIndex index ( _site["subject"]["cell"].get<CellIndex> ( CellIndex ( 0, 1 ) ) );
+    XmlTree::Node::ValidRefPtr subject ( this->_cell ( index[0], index[1] ) );
+    XmlTree::Node::ValidRefPtr h1 ( subject->append ( "h1", _site["subject"]["long_name"].get ( "Subject" ) ) );
+    h1->attributes()["class"] = "subject";
+    subject->append ( "hr" );
+  }
 
   // Add the main menu.
-  index = _site["menus"]["main"]["cell"].get<CellIndex> ( CellIndex ( 1, 0 ) );
-  XmlTree::Node::ValidRefPtr menu ( this->_cell ( index[0], index[1] ) );
-  for ( Pages::const_iterator i = _pages.begin(); i != _pages.end(); ++i )
   {
-    const PageInfo page ( *i );
-    XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
-    para->append ( this->_link ( page.first, page.second ) );
-    menu->append ( para );
+    CellIndex index ( _site["menus"]["main"]["cell"].get<CellIndex> ( CellIndex ( 1, 0 ) ) );
+    XmlTree::Node::ValidRefPtr menu ( this->_cell ( index[0], index[1] ) );
+    for ( Pages::const_iterator i = _pages.begin(); i != _pages.end(); ++i )
+    {
+      const PageInfo info ( *i );
+      XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
+      const std::string site ( this->_queryValue ( "site" ) );
+      const std::string page ( Usul::File::base ( info.second ) );
+      para->append ( this->_link ( info.first, Usul::Strings::format ( this->_urlScript(), "?site=", site, "&page=", page ) ) );
+    }
+  }
+
+  // Add the content.
+  {
+    CellIndex index ( _site["content"]["cell"].get<CellIndex> ( CellIndex ( 1, 1 ) ) );
+    XmlTree::Node::ValidRefPtr content ( this->_cell ( index[0], index[1] ) );
+
+    const std::string base ( this->_queryValue ( "page", "home" ) );
+    const std::string dir ( this->_directory ( _site["pages"]["directory"] ) );
+    const std::string path ( Usul::Strings::format ( dir, base, ".xml" ) );
+    XmlTree::Node::ValidRefPtr page ( this->_loadXmlFile ( path ) );
+
+    typedef XmlTree::Node::Children Children;
+    Children kids ( page->find ( "section", false ) );
+    for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+    {
+      XmlTree::Node::ValidRefPtr section ( *i );
+      this->_appendChildren ( section, content );
+    }
   }
 
   // Return it.
@@ -552,6 +578,36 @@ XmlTree::Node::ValidRefPtr WebGen::_link ( const std::string &text, const std::s
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Return the query value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string WebGen::_queryValue ( const std::string &name, const std::string &defaultValue ) const
+{
+  return _query[name].get ( defaultValue );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WebGen::_appendChildren ( XmlTree::Node::ValidRefPtr from, XmlTree::Node::ValidRefPtr to )
+{
+  typedef XmlTree::Node::Children Children;
+  Children kids ( from->children() );
+  for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+  {
+    XmlTree::Node::ValidRefPtr child ( *i );
+    to->append ( child );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Run the program.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -573,7 +629,7 @@ void WebGen::run()
   XmlTree::RegistryIO::readNode ( "sites.xml", sites );
 
   // Determine the file to read for the site information.
-  const std::string siteName ( _query["site"].get ( "default" ) );
+  const std::string siteName ( this->_queryValue ( "site", "default" ) );
   const std::string siteFile ( sites[siteName].get ( "default" ) );
 
   // Read the main site into the registry.

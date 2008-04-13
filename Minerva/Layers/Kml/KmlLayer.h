@@ -46,7 +46,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   KmlLayer();
-  KmlLayer( const XmlTree::Node& node, const std::string& filename );
+  KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory );
   KmlLayer( Link* link );
   
   // Read the file.
@@ -83,12 +83,13 @@ protected:
   void                        _parseNode         ( const XmlTree::Node& node );
   void                        _parseStyle        ( const XmlTree::Node& node );
   void                        _parseFolder       ( const XmlTree::Node& node );
-  DataObject*                 _parsePlacemark    ( const XmlTree::Node& node );
+  void                        _parsePlacemark    ( const XmlTree::Node& node );
   DataObject*                 _parseModel        ( const XmlTree::Node& node );
   DataObject*                 _parsePoint        ( const XmlTree::Node& node );
   DataObject*                 _parsePolygon      ( const XmlTree::Node& node );
   DataObject*                 _parseLineString   ( const XmlTree::Node& node );
   DataObject*                 _parseLineRing     ( const XmlTree::Node& node );
+  void                        _parseMultiGeometry ( const XmlTree::Node& node );
   DataObject::AltitudeMode    _parseAltitudeMode ( const XmlTree::Node& node );
   NetworkLink*                _parseNetworkLink  ( const XmlTree::Node& node );
   Link*                       _parseLink         ( const XmlTree::Node& node );
@@ -104,6 +105,7 @@ private:
   };
   
   std::string _filename;
+  std::string _directory;
   Link::RefPtr _link;
   double _lastUpdate;
   unsigned int _flags;

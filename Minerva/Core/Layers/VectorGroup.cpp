@@ -256,7 +256,9 @@ void VectorGroup::updateNotify ( Usul::Interfaces::IUnknown *caller )
   // Restore state.
   BaseClass::dirtyScene ( dirtyScene );
   
-  if ( dirtyScene )
+  const bool needsBuild ( _root.valid() ? _root->getNumChildren() != ( this->number() + _layers.size() ) : false );
+
+  if ( dirtyScene || needsBuild )
     this->_buildScene( caller );
   
   // Get all the layers.

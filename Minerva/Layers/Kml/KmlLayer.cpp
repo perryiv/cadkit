@@ -35,6 +35,7 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Remove.h"
+#include "Usul/File/Rename.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IFrameStamp.h"
@@ -43,6 +44,7 @@
 #include "Usul/Network/Curl.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Scope/Caller.h"
+#include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 #include "Usul/System/Directory.h"
@@ -56,6 +58,7 @@
 
 #include "osgDB/ReadFile"
 
+#include "boost/algorithm/string/find.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "Usul/File/Boost.h"
 
@@ -99,6 +102,7 @@ USUL_FACTORY_REGISTER_CREATOR ( KmlLayer );
 KmlLayer::KmlLayer() :
   BaseClass(),
   _filename(),
+  _directory(),
   _link ( 0x0 ),
   _lastUpdate( 0.0 ),
   _flags ( 0 )
@@ -113,9 +117,10 @@ KmlLayer::KmlLayer() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename ) :
+KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory ) :
   BaseClass(),
   _filename( filename ),
+  _directory( directory ),
   _link ( 0x0 ),
   _lastUpdate( 0.0 ),
   _flags ( 0 )
@@ -135,6 +140,7 @@ KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename ) :
 KmlLayer::KmlLayer( Link* link ) :
   BaseClass(),
   _filename(),
+  _directory(),
   _link ( link ),
   _lastUpdate ( 0.0 ),
   _flags ( 0 )
@@ -234,7 +240,11 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
   {
     std::string dir ( Usul::File::Temp::directory( true ) + Usul::File::base ( filename ) + "/" );
     
+#ifndef _MSC_VER
     std::string command ( "/usr/bin/unzip -o " + filename + " -d " + dir );
+#else
+    std::string command ( "7za.exe x -o" + dir + " " + filename );
+#endif
     ::system ( command.c_str() );
     
     // The filenames to load.
@@ -251,7 +261,7 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
   // Our data is no longer dirty.
   this->dirtyData ( false );
   
-  // Our scene needs rebuit.
+  // Our scene needs rebuilt.
   this->dirtyScene ( true );
 }
 
@@ -265,6 +275,8 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
 void KmlLayer::_parseKml ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
   XmlTree::XercesLife life;
+
+  Usul::Scope::Reset<std::string> reset ( _directory, Usul::File::directory ( filename, true ), _directory );
   
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( filename );
@@ -307,7 +319,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   else if ( "Folder" == name || "Document" == name )
   {
     // Make a new layer.
-    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( new Minerva::Layers::Kml::KmlLayer ( node, Usul::Threads::Safe::get ( this->mutex(), _filename ) ) );
+    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( new Minerva::Layers::Kml::KmlLayer ( node, Usul::Threads::Safe::get ( this->mutex(), _filename ), _directory ) );
     
     // Make sure the scene gets built.
     layer->dirtyScene ( true );
@@ -331,10 +343,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   }
   else if ( "Placemark" == name )
   {
-    DataObject::RefPtr object ( this->_parsePlacemark( node ) );
-    
-    // Add the data object.
-    this->addDataObject ( object );
+    this->_parsePlacemark( node );
   }
 }
 
@@ -386,8 +395,9 @@ void KmlLayer::_parseFolder ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
+void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 { 
+  Children multiGeometry ( node.find ( "MultiGeometry", false ) );
   Children polygon ( node.find ( "Polygon", false ) );
   Children point   ( node.find ( "Point", false ) );
   Children linestring ( node.find ( "LineString", false ) );
@@ -407,6 +417,8 @@ KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
     object = this->_parseLineString( *linestring.front() );
   else if ( false == linering.empty() )
     object = this->_parseLineRing( *linering.front() );
+  else if ( false == multiGeometry.empty() )
+    this->_parseMultiGeometry ( *multiGeometry.front() );
   
   if ( object.valid () )
   {
@@ -422,9 +434,10 @@ KmlLayer::DataObject* KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
         object->showLabel ( true );
       }
     }
+
+    // Add the data object.
+    this->addDataObject ( object );
   }
-  
-  return object.release();
 }
 
 
@@ -577,6 +590,22 @@ KmlLayer::DataObject* KmlLayer::_parseLineRing ( const XmlTree::Node& node )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Parse a multi-geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node )
+{
+  Children polygon ( node.find ( "Polygon", false ) );
+  for ( Children::iterator iter = polygon.begin(); iter != polygon.end(); ++iter )
+  {
+    this->addDataObject ( this->_parsePolygon ( *(*iter) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Parse coordinates.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -674,7 +703,7 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node )
   
   if ( false == filename.empty() )
   {
-    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( Usul::File::directory ( _filename, true ) + filename ) );
+    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( _directory /*Usul::File::directory ( _filename, true )*/ + filename ) );
     if ( node.valid() )
     {
       model->model ( node.get() );
@@ -921,13 +950,42 @@ void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
       // Build the filename.
       std::string filename ( href.begin() + pos + 1, href.end() );
       filename = Usul::File::Temp::directory ( true ) + filename;
-      
-      // Set the filename.
-      Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
+
+      // Replace illegal characters for filename.
+      boost::algorithm::replace_all ( filename, "?", "_" );
+      boost::algorithm::replace_all ( filename, "=", "_" );
       
       // Download.
-      Usul::Network::Curl curl ( href, filename );
-      Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( static_cast<std::ostream*> ( 0x0 ), Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ) ), "1638679894" );
+      {
+        Usul::Network::Curl curl ( href, filename );
+        Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( static_cast<std::ostream*> ( 0x0 ), Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ) ), "1638679894" );
+      }
+
+      // Check the extension.
+      const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+
+      // If there is no extension, attempt to find out what the file is.
+      if ( "kml" != ext || "kmz" != ext )
+      {
+        std::ifstream fin ( filename.c_str() );
+
+        if ( fin.is_open() )
+        {
+          std::string line;
+          std::getline ( fin, line );
+
+          const std::string ext ( boost::algorithm::find_first ( line, "<?xml" ) ? ".kml" : ".kmz" );
+          const std::string newFilename ( filename + ext );
+
+          fin.close();
+
+          Usul::File::rename ( filename.c_str(), newFilename.c_str(), true );
+          filename = newFilename; 
+        }
+      }
+
+      // Set the filename.
+      Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
       
       // Get the current time.
       Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );

@@ -1170,11 +1170,16 @@ void Body::vectorAppend ( Usul::Interfaces::IUnknown *unknown )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   
-  // Add the layer to our group.
-  _vectorData->addLayer ( unknown );
-    
-  // Add to the update listeners.
-  this->_addUpdateListener( unknown );
+  Usul::Interfaces::IBuildScene::QueryPtr build ( unknown );
+
+  if ( build.valid() )
+  {
+    // Add the layer to our group.
+    _vectorData->addLayer ( unknown );
+      
+    // Add to the update listeners.
+    this->_addUpdateListener( unknown );
+  }
 }
 
 

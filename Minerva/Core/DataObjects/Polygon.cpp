@@ -23,10 +23,16 @@
 #include "Usul/Interfaces/ITriangulate.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
+#include "OsgTools/Utilities/TranslateGeometry.h"
+
 #include "osg/Material"
+#include "osg/MatrixTransform"
 #include "osg/PolygonOffset"
 #include "osg/Geode"
 #include "osg/Geometry"
+
+#include "osgUtil/Tessellator"
+#include "osgUtil/SmoothingVisitor"
 
 using namespace Minerva::Core::DataObjects;
 
@@ -38,9 +44,9 @@ using namespace Minerva::Core::DataObjects;
 ///////////////////////////////////////////////////////////////////////////////
 
 Polygon::Polygon() :
-BaseClass(),
-_showBorder( false ),
-_showInterior ( true )
+  BaseClass(),
+  _showBorder( false ),
+  _showInterior ( true )
 {
 }
 
@@ -70,6 +76,25 @@ void Polygon::accept ( Minerva::Core::Visitor& visitor )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Predicate for comparing vertices.  Should use CloseFloat for robustness?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  struct VectorCompare
+  {
+    template < class T >
+    bool operator() ( const T& lhs, const T& rhs ) const
+    {
+      return lhs.equal( rhs );
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build a mesh.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -77,56 +102,48 @@ void Polygon::accept ( Minerva::Core::Visitor& visitor )
 osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
 {
   typedef Usul::Components::Manager         PluginManager;
-  typedef Usul::Interfaces::ITriangulate    ITriangulate;
   typedef Minerva::Interfaces::IPolygonData IPolygonData;
   typedef IPolygonData::Vertices            Vertices;
   typedef IPolygonData::Boundaries          Boundaries;
   
   // Get needed interfaces.
-  ITriangulate::QueryPtr triangulate ( PluginManager::instance().getInterface ( ITriangulate::IID ) );
   IPolygonData::QueryPtr polygon ( this->geometry() );
   Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
 
   // Make sure we have them...
-  if( polygon.valid() && triangulate.valid() && planet.valid() )
+  if( polygon.valid() && planet.valid() )
   {
     Vertices outerBoundary ( polygon->outerBoundary() );
     Boundaries innerBoundaries ( polygon->innerBoundaries() );
-    
-    Vertices out;
-    triangulate->triangulate ( outerBoundary, out );
+
+    // Make sure we have vertices.
+    if ( outerBoundary.empty() )
+      return 0x0;
+
+    // Remove any duplicate vertices.
+    outerBoundary.erase ( std::unique ( outerBoundary.begin(), outerBoundary.end(), Detail::VectorCompare() ), outerBoundary.end() );
     
     // Vertices and normals.
     osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
     osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
     
     // Reserve enough rooms.
-    vertices->reserve( out.size() );
-    normals->reserve( out.size() );
+    vertices->reserve( outerBoundary.size() );
+    normals->reserve( outerBoundary.size() );
     
-    for ( Vertices::const_iterator iter = out.begin(); iter != out.end(); ++iter )
+    for ( Vertices::const_iterator iter = outerBoundary.begin(); iter != outerBoundary.end(); ++iter )
     {
       Vertices::value_type v0 ( *iter );
-      Vertices::value_type v1 ( *( iter + 1 ) );
-      Vertices::value_type v2 ( *( iter + 2 ) );
       
-      Vertices::value_type p0, p1, p2;
+      Vertices::value_type p0;
       
       planet->convertToPlanet ( v0, p0 );
-      planet->convertToPlanet ( v1, p1 );
-      planet->convertToPlanet ( v2, p2 );
       
       vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
-      vertices->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
-      vertices->push_back ( osg::Vec3 ( p2[0], p2[1], p2[2] ) );
       
       Vertices::value_type n0 ( p0 ); n0.normalize();
-      Vertices::value_type n1 ( p1 ); n1.normalize();
-      Vertices::value_type n2 ( p2 ); n2.normalize();
       
       normals->push_back ( osg::Vec3 ( n0[0], n0[1], n0[2] ) );
-      normals->push_back ( osg::Vec3 ( n1[0], n1[1], n1[2] ) );
-      normals->push_back ( osg::Vec3 ( n2[0], n2[1], n2[2] ) );
     }
     
     osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
@@ -135,7 +152,14 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
     geom->setNormalArray ( normals.get() );
     geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
 
-    geom->addPrimitiveSet ( new osg::DrawArrays ( GL_TRIANGLES, 0, vertices->size() ) );
+    geom->addPrimitiveSet ( new osg::DrawArrays ( GL_POLYGON, 0, vertices->size() ) );
+    
+    // Make into triangles.
+    osg::ref_ptr<osgUtil::Tessellator> tessellator ( new osgUtil::Tessellator );
+    tessellator->retessellatePolygons ( *geom );
+
+    // Make normals.
+    osgUtil::SmoothingVisitor::smooth ( *geom );
 
     osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
     geode->addDrawable( geom.get() );
@@ -164,12 +188,21 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
       ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
     }
 
-    osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset( -1.0f, -1.0f ) );
+    osg::ref_ptr< osg::PolygonOffset > po ( new osg::PolygonOffset( -1.0f, -1.0f ) );
     ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-    ss->setAttribute( offset.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    ss->setAttribute( po.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 
     geode->setUserData ( new Minerva::Core::DataObjects::UserData ( this ) );
-    return geode.release();
+
+    osg::Vec3 offset ( vertices->front() );
+    osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
+    tg->apply ( *geode );
+
+    osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+    mt->setMatrix ( osg::Matrix::translate ( offset ) );
+    mt->addChild ( geode.get() );
+
+    return mt.release();
   }
 
   return 0x0;

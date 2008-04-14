@@ -2733,6 +2733,12 @@ void Application::_navigate()
 {
   USUL_TRACE_SCOPE;
 
+	Menu::RefPtr menu ( this->menu () );
+
+  // If the menu is showing then we don't navigate.
+  if ( menu.valid() && menu->menu()->expanded() )
+    return;
+
 #if 0
   Vector t ( this->rotationCenter() );
 
@@ -2929,12 +2935,12 @@ void Application::_initStatusBar()
   mt->setName ( "StatusBar" );
 
   // Set the status bar's scene.
-  this->statusBar ()->scene ( mt.get() );
+  this->statusBar()->scene ( mt.get() );
 
   // Set the status-bar's properties.
-  this->statusBar ()->menu()->append ( new MenuKit::Button );
-  this->statusBar ()->menu()->expanded ( this->preferences()->statusBarVisibleAtStartup() );
-  this->statusBar ()->updateScene();
+  this->statusBar()->menu()->append ( new MenuKit::Button );
+  this->statusBar()->menu()->expanded ( this->preferences()->statusBarVisibleAtStartup() );
+  this->statusBar()->updateScene();
 
   // Add status bar to main scene.
   osg::ref_ptr < osg::Group > group ( this->projectionGroupGet ( "VRV_STATUS_BAR" ) );
@@ -2998,11 +3004,7 @@ void Application::setStatusBarText ( const std::string &text, bool force )
 
 bool Application::_isHeadNode() const
 {
-//#ifdef _MSC_VER
-//  return true;
-//#else
-  return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
-//#endif
+	return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
 }
 
 
@@ -3583,10 +3585,6 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
   MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export", MenuKit::Menu::VERTICAL ) );
   menu->append ( exportMenu.get() );
 
-  // The save sub-menu.
-  //MenuKit::Menu::RefPtr saveMenu ( new MenuKit::Menu ( "Save", MenuKit::Menu::VERTICAL ) );
-  //menu->append ( saveMenu.get() );
-
   exportMenu->append ( new Button ( new BasicCommand ( "Image", Usul::Adaptors::memberFunction<void> ( this, &Application::exportNextFrame ) ) ) );
   exportMenu->append ( new Button ( new BasicCommand ( "Models ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorld ) ) ) );
   exportMenu->append ( new Button ( new BasicCommand ( "Models Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorldBinary ) ) ) );
@@ -3600,24 +3598,14 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
 
     Filters save ( document->filtersSave() );
     Filters exportFilters ( document->filtersExport() );
-#if 0
-    for ( Filters::const_iterator iter = save.begin(); iter != save.end(); ++iter )
-    {
-      saveMenu->append ( new Button ( Usul::Commands::genericCommand ( "Save As " + iter->first, 
-                                                         Usul::Adaptors::bind1<void> ( iter->second, 
-                                                         Usul::Adaptors::memberFunction<void> ( this, &Application::saveDocument ) ), 
-                                                         Usul::Commands::TrueFunctor() ) ) );
-    }
-#endif
+
     for ( Filters::const_iterator iter = exportFilters.begin(); iter != exportFilters.end(); ++iter )
     {
       std::string ext ( iter->second );
-      
-      if ( ext.size() > 2 )
-      {
-        //ext.erase ( 0 );
-        //ext.erase ( 0 );
-        exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Export " + iter->first, 
+  
+			if ( false == ext.empty() )
+			{
+				exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Export " + iter->first, 
                                                          Usul::Adaptors::bind1<void> ( Usul::File::extension ( ext ), 
                                                          Usul::Adaptors::memberFunction<void> ( this, &Application::exportDocument ) ), 
                                                          Usul::Commands::TrueFunctor() ) ) );

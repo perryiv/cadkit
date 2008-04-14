@@ -17,9 +17,6 @@
 #define _CV_APPLICATION_CLASS_H_
 
 #include "CadViewer/Declarations.h"
-#include "CadViewer/Interfaces/IVisibility.h"
-#include "CadViewer/Interfaces/IMaterialStack.h"
-#include "CadViewer/Interfaces/ISelection.h"
 
 #include "Usul/Pointers/Pointers.h"
 
@@ -84,20 +81,17 @@ protected:
   // Called by the kernel to initialize this instance.
   virtual void                  _init();
 
-  // Intersect if we are supposed to.
-  void                          _intersect();
-
   // Navigate if we are supposed to.
-  void                          _navigate();
+  virtual void                  _navigate();
 
   // Get the number of selected
   unsigned int                  _numSelected();
 
   // Called by the kernel before the frame.
-  void                          _latePreFrame();
+  virtual void                  _latePreFrame();
 
   // Called by the kernel after the frame.
-  void                          _postFrame();
+  virtual void                  _postFrame();
 
   // Select/unselect the intersected node, if any.
   void                          _select();
@@ -125,9 +119,6 @@ protected:
   typedef osg::ref_ptr<osg::MatrixTransform>                        MatTransPtr;
   typedef Usul::Functors::Interaction::Common::BaseFunctor::RefPtr  FunctorPtr;
   typedef std::auto_ptr<OsgTools::Text>                             TextPtr;
-  typedef Interfaces::IVisibility::QueryPtr                         IVisibilityPtr;
-  typedef Interfaces::ISelection::QueryPtr                          ISelectionPtr;
-  typedef Interfaces::IMaterialStack::QueryPtr                      IMaterialStackPtr;
 
   // Data members.
   static ThreadId   _appThread;
@@ -139,9 +130,6 @@ protected:
   TextPtr           _frameText;
   TextPtr           _msgText;
   unsigned int      _flags;
-  IVisibilityPtr    _iVisibility;
-  ISelectionPtr     _iSelection;
-  IMaterialStackPtr _iMaterialStack;
   std::vector<OsgTools::Grid> _gridFunctors;
   bool              _textures;
 };

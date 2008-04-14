@@ -32,6 +32,7 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Split.h"
+#include "Usul/System/DateTime.h"
 #include "Usul/System/Environment.h"
 #include "Usul/System/LastError.h"
 #include "Usul/Threads/Mutex.h"
@@ -264,6 +265,19 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
     {
       XmlTree::Node::ValidRefPtr section ( *i );
       this->_appendChildren ( section, content );
+    }
+  }
+
+  // Add the legal section.
+  {
+    CellIndex index ( _site["legal"]["cell"].get<CellIndex> ( CellIndex ( 2, 1 ) ) );
+    XmlTree::Node::ValidRefPtr legal ( this->_cell ( index[0], index[1] ) );
+    const std::string owner ( _site["owner"]["long_name"].get ( "" ) );
+    if ( false == owner.empty() )
+    {
+      const std::string year ( Usul::System::DateTime::format ( "%Y" ) );
+      legal->append ( "hr" );
+      legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", ", owner ) );
     }
   }
 

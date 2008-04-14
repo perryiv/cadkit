@@ -21,9 +21,6 @@
 #include "ScenePredicates.h"
 
 #include "VRV/Common/Libraries.h"
-//#include "CadViewer/Functors/ToolPair.h"
-
-//#include "CadViewer/Pick/Select.h"
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Components/Manager.h"
@@ -117,9 +114,6 @@ Application::Application ( ) :
   _frameText      ( new OsgTools::Text ),
   _msgText        ( new OsgTools::Text ),
   _flags          ( 0 ),
-  _iVisibility    ( static_cast < CV::Interfaces::IVisibility* >    ( 0x0 ) ),
-  _iSelection     ( static_cast < CV::Interfaces::ISelection* >     ( 0x0 ) ),
-  _iMaterialStack ( static_cast < CV::Interfaces::IMaterialStack* > ( 0x0 ) ),
   _textures       ( true )
 {
   ErrorChecker ( 1067097070u, 0 == _appThread );
@@ -145,13 +139,6 @@ Application::Application ( ) :
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-
-  typedef Usul::Components::Manager Manager;
-
-  // Save the plugin pointers.
-  _iVisibility    = Manager::instance().getInterface( CV::Interfaces::IVisibility::IID );
-  _iSelection     = Manager::instance().getInterface( CV::Interfaces::ISelection::IID );
-  _iMaterialStack = Manager::instance().getInterface( CV::Interfaces::IMaterialStack::IID );
 }
 
 
@@ -517,12 +504,6 @@ void Application::_navigate()
 
   ErrorChecker ( 1068000936, isAppThread(), CV::NOT_APP_THREAD );
 
-  Menu::RefPtr menu ( this->menu () );
-
-  // If the menu is showing then we don't navigate.
-  if ( menu.valid () && menu->menu()->expanded() )
-    return;
-
   // If we have a valid tool then we don't navigate.
   if ( _sceneTool.valid() )
     return;
@@ -549,40 +530,6 @@ void Application::_useSceneTool()
   // Tell it to execute.
   if ( _sceneTool.valid() )
     (*_sceneTool)();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Intersect if we are supposed to.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_intersect()
-{
-  ErrorChecker ( 1069016548, isAppThread(), CV::NOT_APP_THREAD );
-#if 0
-  // If the menu is showing then we don't use the tool.
-  if ( this->menu()->menu()->expanded() )
-    return;
-
-  // If we have a valid intersector...
-  if ( _intersector.valid() )
-  {
-    // Tell it to execute.
-    (*_intersector)();
-
-    // If it is a selector...
-    CV::Pick::Select *selector = dynamic_cast < CV::Pick::Select * > ( _intersector.get() );
-    if ( selector )
-    {
-      // Report node name to user.
-      const osg::Node *node = selector->node();
-      if ( node )
-        this->_updateStatusBar ( "Intersected node: " + node->getName() );
-    }
-  }
-#endif
 }
 
 
@@ -689,22 +636,7 @@ void Application::unref ( bool allowDeletion )
 
 Usul::Interfaces::IUnknown *Application::queryInterface ( unsigned long iid )
 {
-#if 0
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUnknown::IID:
-  case CV::Interfaces::IVisibility::IID:
-    return _iVisibility.get();
-  case CV::Interfaces::ISelection::IID:
-    return _iSelection.get();
-  case CV::Interfaces::IMaterialStack::IID:
-    return _iMaterialStack.get();
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
-#else
   return BaseClass::queryInterface ( iid );
-#endif
 }
 
 

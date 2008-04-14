@@ -19,7 +19,6 @@
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/XercesString.h"
 
-#include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Stats.h"
 #include "Usul/Predicates/FileExists.h"
@@ -188,10 +187,12 @@ namespace Helper
     // Element nodes are the groups. This should always be true because of 
     // the way we decide to recursively call this function, and the way we 
     // initially call it with the document's root element.
-    USUL_ASSERT ( xercesc::DOMNode::ELEMENT_NODE == dom->getNodeType() );
+    if ( xercesc::DOMNode::ELEMENT_NODE != dom->getNodeType() )
+      Usul::Exceptions::Thrower<std::runtime_error> ( "Error 4028759980: expected element node while traversing" );
 
     // Should also be true.
-    USUL_ASSERT ( false == node->name().empty() );
+    if ( true == node->name().empty() )
+      Usul::Exceptions::Thrower<std::runtime_error> ( "Error 3856531268: found node with empty name while traversing" );
 
     // Set the attributes.
     Helper::setAttributes ( dom->getAttributes(), node );

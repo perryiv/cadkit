@@ -12,8 +12,10 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/System/LastError.h"
 
-#include <sstream>
 #include <cstdio>
+#include <sstream>
+#include <stdexcept>
+
 
 void Usul::File::rename ( const std::string& oldFilename, const std::string& newFilename, bool allowThrow, std::ostream *stream )
 {
@@ -43,6 +45,8 @@ void Usul::File::rename ( const std::string& oldFilename, const std::string& new
 
     // Throw the error.
     if ( allowThrow )
+    {
       throw std::runtime_error ( out.str() );
+    }
   }
 }

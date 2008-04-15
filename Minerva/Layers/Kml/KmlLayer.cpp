@@ -243,7 +243,7 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
 #ifndef _MSC_VER
     std::string command ( "/usr/bin/unzip -o " + filename + " -d " + dir );
 #else
-    std::string command ( "7za.exe x -o" + dir + " " + filename );
+    std::string command ( "7za.exe x -y -o" + dir + " " + filename );
 #endif
     ::system ( command.c_str() );
     
@@ -957,6 +957,8 @@ void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
       
       // Download.
       {
+				if ( boost::filesystem::exists ( filename ) && boost::filesystem::is_directory ( filename ) )
+					boost::filesystem::remove_all ( filename );
         Usul::Network::Curl curl ( href, filename );
         Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( static_cast<std::ostream*> ( 0x0 ), Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ) ), "1638679894" );
       }

@@ -24,6 +24,7 @@ using namespace Minerva::Layers::Kml;
 Feature::Feature() : 
   BaseClass(),
   _name(),
+	_styleUrl(),
   _visiblity ( true ),
   _lookAt ( 0x0 )
 {
@@ -39,6 +40,7 @@ Feature::Feature() :
 Feature::Feature( const XmlTree::Node& node ) : 
   BaseClass( node ),
   _name(),
+	_styleUrl(),
   _visiblity ( true ),
   _lookAt ( 0x0 )
 {
@@ -63,6 +65,10 @@ Feature::Feature( const XmlTree::Node& node ) :
     {
       _lookAt = new LookAt ( *node );
     }
+		else if ( "styleUrl" == name )
+		{
+			_styleUrl = node->value();
+		}
   }
 }
 
@@ -123,4 +129,28 @@ bool Feature::visiblity() const
 void Feature::visiblity( bool b )
 {
   _visiblity = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the style url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::styleUrl ( const std::string& url )
+{
+	_styleUrl = url;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the style url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Feature::styleUrl() const
+{
+	return _styleUrl;
 }

@@ -219,6 +219,14 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\ColorStyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ColorStyle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Feature.cpp"
 				>
 			</File>
@@ -264,6 +272,22 @@
 			</File>
 			<File
 				RelativePath=".\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PolyStyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PolyStyle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Style.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Style.h"
 				>
 			</File>
 		</Filter>

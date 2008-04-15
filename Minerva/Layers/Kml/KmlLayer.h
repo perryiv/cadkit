@@ -12,6 +12,7 @@
 #define __MINERVA_LAYERS_KML_H__
 
 #include "Minerva/Layers/Kml/Link.h"
+#include "Minerva/Layers/Kml/Style.h"
 
 #include "Minerva/Core/Layers/VectorGroup.h"
 
@@ -84,19 +85,23 @@ protected:
   void                        _parseStyle        ( const XmlTree::Node& node );
   void                        _parseFolder       ( const XmlTree::Node& node );
   void                        _parsePlacemark    ( const XmlTree::Node& node );
-  DataObject*                 _parseModel        ( const XmlTree::Node& node );
-  DataObject*                 _parsePoint        ( const XmlTree::Node& node );
-  DataObject*                 _parsePolygon      ( const XmlTree::Node& node );
-  DataObject*                 _parseLineString   ( const XmlTree::Node& node );
-  DataObject*                 _parseLineRing     ( const XmlTree::Node& node );
-  void                        _parseMultiGeometry ( const XmlTree::Node& node );
+  DataObject*                 _parseModel        ( const XmlTree::Node& node, Style *style );
+  DataObject*                 _parsePoint        ( const XmlTree::Node& node, Style *style );
+  DataObject*                 _parsePolygon      ( const XmlTree::Node& node, Style *style );
+  DataObject*                 _parseLineString   ( const XmlTree::Node& node, Style *style );
+  DataObject*                 _parseLineRing     ( const XmlTree::Node& node, Style *style );
+  void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style );
   DataObject::AltitudeMode    _parseAltitudeMode ( const XmlTree::Node& node );
   NetworkLink*                _parseNetworkLink  ( const XmlTree::Node& node );
   Link*                       _parseLink         ( const XmlTree::Node& node );
   void                        _parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices );
 
+	Style*                      _style ( const std::string& name );
+
   osg::Vec3                   _buildVec3         ( const XmlTree::Node& node );
 private:
+
+	typedef std::map<std::string,Style::RefPtr> Styles;
   
   enum STATUS_FLAGS
   {
@@ -109,6 +114,7 @@ private:
   Link::RefPtr _link;
   double _lastUpdate;
   unsigned int _flags;
+	Styles _styles;
   
   SERIALIZE_XML_CLASS_NAME ( KmlLayer );
 };

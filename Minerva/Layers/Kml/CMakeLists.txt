@@ -33,9 +33,15 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-./Link.cpp
-./NetworkLink.cpp
+./ColorStyle.cpp
+./Feature.cpp
 ./KmlLayer.cpp
+./Link.cpp
+./LookAt.cpp
+./NetworkLink.cpp
+./Object.cpp
+./PolyStyle.cpp
+./Style.cpp
 )
 
 # Create a Shared Library

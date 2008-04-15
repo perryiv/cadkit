@@ -29,6 +29,9 @@ public:
   
   Dataset ( hid_t FileHandle, const std::string& name );
   
+  // Get the attribute.
+  double     attribute ( const std::string& name );
+  
   // Get the number of dimensions.
   int        dimensions() const;
   

@@ -116,13 +116,15 @@ public:
     Uniforms uniforms;
     std::string type;
     std::string normalMapPath;
+    std::string heightMapPath;
+    std::string texturePath;
     osg::ref_ptr< osg::TextureCubeMap > emMap;
 
     ImagePtr normalMap;
     ImagePtr heightMap;
-    ImagePtr tangentMap;
+    ImagePtr texture;
     ImagePtr binormalMap;
-
+    
 
   };
   typedef std::vector< ShaderGroup > ShaderGroups;
@@ -235,6 +237,7 @@ protected:
   osg::Geode*                 _createSphereModel();
   osg::Geode*                 _createCubeModel();
   osg::Geode*                 _createTorusModel();
+  osg::Geode*                 _createPlaneModel();
   osg::Geode*                 _createMeshModel( const std::string &filename );
   void                        _createSkyBox( unsigned int index );
   Mesh                        _loadMesh( const std::string &filename );
@@ -289,6 +292,11 @@ private:
   SkyBoxes                    _skyBoxes;
 
   Uniforms                    _additionalUniforms;
+
+  osg::Vec2                   _nearFarClipPlane;
+
+  float                       _tile;
+  float                       _depth;
 
 
     

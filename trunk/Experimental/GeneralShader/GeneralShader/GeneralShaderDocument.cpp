@@ -16,6 +16,7 @@
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
+#include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
@@ -132,14 +133,16 @@ GeneralShaderDocument::GeneralShaderDocument() :
   _eyePosition( new osg::Uniform( "eyePosition", osg::Vec3( 0.0, 0.0, 0.0 ) ) ),
   _modelMatrixUniform( new osg::Uniform( "modelMatrix", osg::Matrixd()  ) ),
   _currentModel( 0 ),
-  _currentShader( 1 ),
+  _currentShader( 0 ),
   _workingDir( "." ),
   _eye( 0.0, 0.0, 0.0 ),
   _light( -50.0, -30.0, 100.0 ),
-  _theta( 0.0, 0.0 ),
+  _theta( 45.0, 0.0 ),
   _radius( 50.0 ),
   _modelMatrixTransform( new osg::MatrixTransform ),
-  _heightMapImage( new osg::Image )
+  _heightMapImage( new osg::Image ),
+  _tile( 1.0 ),
+  _depth( 0.09 )
 {
   USUL_TRACE_SCOPE;
    
@@ -426,6 +429,24 @@ void GeneralShaderDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
       _eyePosition->set( _eye );
           
     }
+
+#if 0
+    // get needed interface to access the near/far clipping planes
+    Usul::Interfaces::IClippingDistance::QueryPtr clip ( caller );
+
+    // set the near/far clip planes
+    //planes.x=-far/(far-near); planes.y =-far*near/(far-near);
+    float n = 0;
+    float f = 0;
+    clip->getClippingDistances( n, f );
+    _nearFarClipPlane.x() = -f / ( f - n );
+    _nearFarClipPlane.y() = ( -f * n ) / ( f - n );
+#else
+    float n = 0.01;
+    float f = 100;
+    _nearFarClipPlane.x() = -f / ( f - n );
+    _nearFarClipPlane.y() = ( -f * n ) / ( f - n );
+#endif
     
   }
 }
@@ -577,6 +598,10 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
           {
             geode = this->_createTorusModel();
           }
+          if( "plane" == type )
+          {
+            geode = this->_createPlaneModel();
+          }
           
         }
         if( "name" == att_iter->first )
@@ -704,7 +729,6 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
       _shaderNames.push_back( name );
       _shaderList[ name ] = _shaders.size();
       shaderGroup.name = name;
-      shaderGroup.normalMapPath = Usul::Strings::format( "NormalMaps/", name, ".jpg" );
     }
     if ( "vertex" == iter->first )
     {
@@ -727,6 +751,7 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
     {
       std::string hm;
       Usul::Strings::fromString ( iter->second, hm );
+      shaderGroup.heightMapPath = hm;
       shaderGroup.heightMap = this->_setHeightMap( hm );
     }
     if ( "posx" == iter->first )
@@ -765,8 +790,24 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
       Usul::Strings::fromString ( iter->second, texName );
       shaderGroup.cubeList.at( 5 ) = texName;
     }
+    if ( "texture" == iter->first )
+    {
+      std::string texName = "";
+      Usul::Strings::fromString ( iter->second, texName );
+      shaderGroup.texturePath = texName;
+
+    }
+    if ( "normalMap" == iter->first )
+    {
+      std::string texName = "";
+      Usul::Strings::fromString ( iter->second, texName );
+      shaderGroup.normalMapPath = texName;
+      
+    }
+
   
   }
+ 
 
   Children& children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -947,8 +988,11 @@ osg::Uniform* GeneralShaderDocument::_parseUniform( XmlTree::Node &node, General
     is >> x >> temp >> y >> temp >> z >> temp >> w;
     uniform = new osg::Uniform( name.c_str(), osg::Vec4( x, y, z, w ) );
   }
+  if ( "sampler2D" == type )
+  {
+    
+  }
   
-
   return uniform.release();
 }
 
@@ -1090,8 +1134,13 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
 
   Usul::System::Directory::ScopedCwd cwd ( _workingDir );
 
+  if( "" == _shaderGroups.at( index ).normalMapPath )
+  {
+    std::string name = _shaderGroups.at( index ).name;
+    _shaderGroups.at( index ).normalMapPath = Usul::Strings::format( "NormalMaps/", name, ".jpg" );
+    _shaderGroups.at( index ).normalMap = this->_createNormalMap( _shaderGroups.at( index ).normalMapPath, index );
+  }
   std::string normalMapPath = _shaderGroups.at( index ).normalMapPath;
-  _shaderGroups.at( index ).normalMap = this->_createNormalMap( normalMapPath, index );
 
   GroupPtr group ( new osg::Group );
   osg::ref_ptr< osg::PositionAttitudeTransform > posAttXform ( new osg::PositionAttitudeTransform );
@@ -1114,12 +1163,18 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
   // Add the eye position
   stateset->addUniform( _eyePosition.get() );  
 
+
   ImagePtr image = osgDB::readImageFile( normalMapPath.c_str() );
   if( true == image.valid() )
   {
     osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
 
     tex->setDataVariance( osg::Object::DYNAMIC ); 
+    tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+    tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+    tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
+    tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
+    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);    
     tex->setImage( image.get() );
 
     stateset->setTextureAttributeAndModes( 0, tex.get(), osg::StateAttribute::ON );
@@ -1166,8 +1221,47 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     // add cube map to stateset
     stateset->addUniform( new osg::Uniform( "map", 1 ) );
     _shaderGroups.at( index ).emMap = map;
+  }
 
-    
+  {
+    std::string texturePath = _shaderGroups.at( index ).texturePath;
+    ImagePtr image = osgDB::readImageFile( texturePath.c_str() );
+    if( true == image.valid() )
+    {
+      osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
+
+      tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+      tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+      tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
+      tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
+      tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
+      tex->setImage( image.get() );
+
+      stateset->setTextureAttributeAndModes( 2, tex.get(), osg::StateAttribute::ON );
+    }
+    // add bump map to stateset
+    stateset->addUniform( new osg::Uniform( "texture", 2 ) );
+  }
+  
+  {
+    std::string heightMapPath = _shaderGroups.at( index ).heightMapPath;
+    ImagePtr image = osgDB::readImageFile( heightMapPath.c_str() );
+    if( true == image.valid() )
+    {
+      osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
+
+      tex->setDataVariance( osg::Object::DYNAMIC ); 
+      //tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+      //tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+      //tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
+      //tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
+      //tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
+      tex->setImage( image.get() );
+
+      stateset->setTextureAttributeAndModes( 3, tex.get(), osg::StateAttribute::ON );
+    }
+    // add bump map to stateset
+    stateset->addUniform( new osg::Uniform( "heightMap", 3 ) );
   }
 
   stateset->setAttributeAndModes( program.get(), osg::StateAttribute::ON );
@@ -1475,9 +1569,9 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   normals->push_back( osg::Vec3( -1.0, 0.0, 0.0 ) );
   normals->push_back( osg::Vec3( -1.0, 0.0, 0.0 ) );
 #endif
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
 #endif
 
   
@@ -1493,9 +1587,9 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   normals->push_back( osg::Vec3( -1.0, 0.0, 0.0 ) );
   normals->push_back( osg::Vec3( -1.0, 0.0, 0.0 ) );
 #endif
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
 #endif
 
   //--------------------------------------------------------------------------
@@ -1639,9 +1733,9 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   normals->push_back( osg::Vec3( 1.0, 0.0, 0.0 ) );
 #endif
 
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
 #endif
 
   tex->push_back( t01 ); tex->push_back( t10 ); tex->push_back( t11 );
@@ -1658,9 +1752,9 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   normals->push_back( osg::Vec3( 1.0, 0.0, 0.0 ) );
 #endif
 
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
-  tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
+  tangent->push_back( osg::Vec4( 0.5, 0.5, 0.0, 1.0 ) );
 #endif
 
   //--------------------------------------------------------------------------
@@ -1704,68 +1798,241 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
 //  
 //
 ///////////////////////////////////////////////////////////////////////////////
-//
-//void GeneralShaderDocument::_createSkyBox( unsigned int index )
-//{
-//   
-//    //osg::StateSet* stateset = new osg::StateSet();
-//    osg::ref_ptr< osg::StateSet > stateset ( new osg::StateSet );
-//
-//    //osg::TexEnv* te = new osg::TexEnv;
-//    osg::ref_ptr< osg::TexEnv > te ( new osg::TexEnv );
-//    te->setMode(osg::TexEnv::REPLACE);
-//    stateset->setTextureAttributeAndModes( 0, te.get(), osg::StateAttribute::ON );
-//
-//    //osg::TexGen *tg = new osg::TexGen;
-//    osg::ref_ptr< osg::TexGen > tg ( new osg::TexGen );
-//    tg->setMode( osg::TexGen::NORMAL_MAP );
-//    stateset->setTextureAttributeAndModes( 0, tg.get(), osg::StateAttribute::ON );
-//
-//    //osg::TexMat *tm = new osg::TexMat;
-//    osg::ref_ptr< osg::TexMat > tm ( new osg::TexMat );
-//    stateset->setTextureAttribute( 0, tm.get() );
-//
-//    osg::ref_ptr< osg::TextureCubeMap > skymap = _shaderGroups.at( index ).emMap; 
-//    stateset->setTextureAttributeAndModes( 0, skymap.get(), osg::StateAttribute::ON );
-//
-//    stateset->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-//    stateset->setMode( GL_CULL_FACE, osg::StateAttribute::OFF );
-//
-//    // clear the depth to the far plane.
-//    //osg::Depth* depth = new osg::Depth;
-//    osg::ref_ptr< osg::Depth > depth ( new osg::Depth );
-//    depth->setFunction( osg::Depth::ALWAYS );
-//    depth->setRange( 1.0, 1.0 );   
-//    stateset->setAttributeAndModes( depth.get(), osg::StateAttribute::ON );
-//
-//    stateset->setRenderBinDetails( -1, "RenderBin" );
-//
-//    osg::ref_ptr< osg::Drawable > drawable = new osg::ShapeDrawable ( new osg::Sphere( osg::Vec3( 0.0f,0.0f,0.0f), 10 ) );
-//    //osg::Drawable* drawable = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3(0.0f,0.0f,0.0f),1));
-//
-//    //osg::Geode* geode = new osg::Geode;
-//    GeodePtr geode ( new osg::Geode );
-//    geode->setCullingActive( false );
-//    geode->setStateSet( stateset.get() );
-//    geode->addDrawable( drawable.get() );
-//
-//
-//    //osg::Transform* transform = new MoveEarthySkyWithEyePointTransform;
-//    osg::ref_ptr< osg::Transform > transform = new MoveEarthySkyWithEyePointTransform;
-//    transform->setCullingActive( false );
-//    transform->addChild( geode.get() );
-//
-//   // osg::ClearNode* clearNode = new osg::ClearNode;
-//    osg::ref_ptr< osg::ClearNode > clearNode ( new osg::ClearNode );
-////  clearNode->setRequiresClear(false);
-//    clearNode->setCullCallback( new TexMatCallback( *tm.get() ) );
-//    //clearNode->setStateSet( stateset.get() );
-//    clearNode->addChild( transform.get() );
-//
-//    _shaderGroups.at( index ).skyBoxIndex = _skyBoxes.size();
-//    _skyBoxes.push_back( clearNode.get() );
-//    //return clearNode.release();
-//}
+
+osg::Geode* GeneralShaderDocument::_createPlaneModel()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  GeodePtr geode( new osg::Geode );
+#if 1
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+  
+  // Vertices and faceNormals
+	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+	osg::ref_ptr< osg::Vec3Array > faceNormals ( new osg::Vec3Array );
+	osg::ref_ptr< osg::Vec3Array > vertexNormals ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
+  
+  // Vertices of the cube
+  //osg::Vec3d p0( -0.5, -0.5, -0.5 );
+	//osg::Vec3d p1( 0.5, -0.5, -0.5 );
+	//osg::Vec3d p2( -0.5, 0.5, -0.5 );
+	//osg::Vec3d p3( 0.5, 0.5, -0.5 );
+	osg::Vec3d p4( -0.5, -0.5, 0.5 );
+	osg::Vec3d p5( 0.5, -0.5, 0.5 );
+	osg::Vec3d p6( -0.5, 0.5, 0.5 );
+	osg::Vec3d p7( 0.5, 0.5, 0.5 );
+
+  // N0
+  //vertices->push_back( p0 ); vertices->push_back( p3 ); vertices->push_back( p1 );
+	//faceNormals->push_back( ( p1 - p3 ) ^ ( p0 - p3 ) );
+
+  //N1
+	//vertices->push_back( p0 ); vertices->push_back( p2 ); vertices->push_back( p3 );
+	//faceNormals->push_back( ( p3 - p2 ) ^ ( p0 - p2 ) );
+
+  //N2
+	//vertices->push_back( p0 ); vertices->push_back( p6 ); vertices->push_back( p2 );
+	//faceNormals->push_back( ( p2 - p6 ) ^ ( p0 - p6 ) );
+
+  //N3
+	//vertices->push_back( p0 ); vertices->push_back( p4 ); vertices->push_back( p6 );
+	//faceNormals->push_back( ( p6 - p4 ) ^ ( p0 - p4 ) );
+
+  //N4
+	//vertices->push_back( p0 ); vertices->push_back( p1 ); vertices->push_back( p5 );
+	//faceNormals->push_back( ( p5 - p1 ) ^ ( p0 - p1 ) );
+
+  //N5
+	//vertices->push_back( p0 ); vertices->push_back( p5 ); vertices->push_back( p4 );
+	//faceNormals->push_back( ( p4 - p5 ) ^ ( p0 - p5 ) );
+
+  //N6
+	//vertices->push_back( p7 ); vertices->push_back( p3 ); vertices->push_back( p2 );
+	//faceNormals->push_back( ( p2 - p3 ) ^ ( p7 - p3 ) );
+
+  //N7
+	//vertices->push_back( p7 ); vertices->push_back( p2 ); vertices->push_back( p6 );
+	//faceNormals->push_back( ( p6 - p2 ) ^ ( p7 - p2 ) );
+
+  //N8
+	vertices->push_back( p7 ); vertices->push_back( p6 ); vertices->push_back( p4 );
+	faceNormals->push_back( ( p4 - p6 ) ^ ( p7 - p6 ) );
+
+  //N9
+	vertices->push_back( p7 ); vertices->push_back( p4 ); vertices->push_back( p5 );
+	faceNormals->push_back( ( p5 - p4 ) ^ ( p7 - p4 ) );
+
+  //N10
+	//vertices->push_back( p7 ); vertices->push_back( p5 ); vertices->push_back( p1 );
+	//faceNormals->push_back( ( p1 - p5 ) ^ ( p7 - p5 ) );
+
+  //N11
+	//vertices->push_back( p7 ); vertices->push_back( p1 ); vertices->push_back( p3 );
+	//faceNormals->push_back( ( p3 - p1 ) ^ ( p7 - p1 ) );
+  
+#if 0
+  // normal and tex coords for v0 is fn[2], fn[1], fn[4] 
+  vertexNormals->push_back( ( faceNormals->at( 4 ) - faceNormals->at( 1 ) ) ^ ( faceNormals->at( 2 ) - faceNormals->at( 1 ) ) );
+  // normal and tex coords for v1 is fn[0], fn[11], fn[4]
+  vertexNormals->push_back( ( faceNormals->at( 4 ) - faceNormals->at( 11 ) ) ^ ( faceNormals->at( 0 ) - faceNormals->at( 11 ) ) );
+  // normal and tex coords for v2 is fn[6], fn[1], fn[2]
+  vertexNormals->push_back( ( faceNormals->at( 2 ) - faceNormals->at( 1 ) ) ^ ( faceNormals->at( 6 ) - faceNormals->at( 1 ) ) );
+  // normal and tex coords for v3 is fn[6], fn[11], fn[0]
+  vertexNormals->push_back( ( faceNormals->at( 0 ) - faceNormals->at( 11 ) ) ^ ( faceNormals->at( 6 ) - faceNormals->at( 11 ) ) );
+  // normal and tex coords for v4 is fn[8], fn[3], fn[5]
+  vertexNormals->push_back( ( faceNormals->at( 5 ) - faceNormals->at( 3 ) ) ^ ( faceNormals->at( 8 ) - faceNormals->at( 3 ) ) );
+  // normal and tex coords for v5 is fn[10], fn[9], fn[5]
+  vertexNormals->push_back( ( faceNormals->at( 5 ) - faceNormals->at( 9 ) ) ^ ( faceNormals->at( 10 ) - faceNormals->at( 9 ) ) );
+  // normal and tex coords for v6 is fn[7], fn[2], fn[8]
+  vertexNormals->push_back( ( faceNormals->at( 8 ) - faceNormals->at( 2 ) ) ^ ( faceNormals->at( 7 ) - faceNormals->at( 2 ) ) );
+  // normal and tex coords for v7 is fn[7], fn[8], fn[10]
+  vertexNormals->push_back( ( faceNormals->at( 10 ) - faceNormals->at( 8 ) ) ^ ( faceNormals->at( 7 ) - faceNormals->at( 8 ) ) );
+#endif
+  // texture coordinate array
+  osg::ref_ptr< osg::Vec2Array > tex ( new osg::Vec2Array );
+  osg::Vec2f t00 ( 0.0f, 0.0f );
+  osg::Vec2f t01 ( 0.0f, 1.0f );
+  osg::Vec2f t10 ( 1.0f, 0.0f );
+  osg::Vec2f t11 ( 1.0f, 1.0f );
+
+  // Tangent vector attributes
+  osg::ref_ptr< osg::Vec4Array > tangent ( new osg::Vec4Array );
+
+//--------------------------------------------------------------------------
+// -Z Face
+//--------------------------------------------------------------------------
+
+  tex->push_back( t11 ); tex->push_back( t01 ); tex->push_back( t00 );
+
+#if 0
+  tangent->push_back( p7 - p6 ); tangent->push_back( p6 - p4 ); tangent->push_back( p4 - p7 );
+#else
+
+  #if 0
+    normals->push_back( vertexNormals->at( 7 ) );normals->push_back( vertexNormals->at( 6 ) );normals->push_back( vertexNormals->at( 4 ) );
+  #else
+    normals->push_back( osg::Vec3( 0.0, 0.0, -1.0 ) );
+    normals->push_back( osg::Vec3( 0.0, 0.0, -1.0 ) );
+    normals->push_back( osg::Vec3( 0.0, 0.0, -1.0 ) );
+  #endif
+
+  #if 1
+    osg::Vec4 tng ( 1.0, 0.5, 0.5, 1.0 );
+    tangent->push_back( tng );
+    tangent->push_back( tng );
+    tangent->push_back( tng );
+  #else
+    
+    //v = vertex
+    osg::Vec3 v1 = vertices->at( 0 );
+    osg::Vec3 v2 = vertices->at( 1 );
+    osg::Vec3 v3 = vertices->at( 2 );
+
+    //w = texcoord
+    osg::Vec2 w1 = tex->at( 0 );
+    osg::Vec2 w2 = tex->at( 1 );
+    osg::Vec2 w3 = tex->at( 2 );
+    
+    float x1 = v2.x() - v1.x();
+    float x2 = v3.x() - v1.x();
+    float y1 = v2.y() - v1.y();
+    float y2 = v3.y() - v1.y();
+    float z1 = v2.z() - v1.z();
+    float z2 = v3.z() - v1.z();
+        
+    float s1 = w2.x() - w1.x();
+    float s2 = w3.x() - w1.x();
+    float t1 = w2.y() - w1.y();
+    float t2 = w3.y() - w1.y();
+
+    float r = 1.0f / ( s1 * t2 - s2 * t1 );
+
+    osg::Vec3 sdir( ( t2 * x1 - t1 * x2 ) * r,
+                    ( t2 * y1 - t1 * y2 ) * r, 
+                    ( t2 * z1 - t1 * z2 ) * r );
+
+    osg::Vec3 tdir( ( s1 * x2 - s2 * x1 ) * r,
+                    ( s1 * y2 - s2 * y1 ) * r,
+                    ( s1 * z2 - s2 * z1 ) * r );
+
+    //osg::Vec3 n = normals->at( 0 );
+        
+    // Gram-Schmidt orthogonalize
+    //osg::Vec3 tng = ( sdir - n * ( n, sdir ) ).Normalize();
+    Usul::Math::Vec3f n ( normals->at( 0 ).x(), normals->at( 0 ).y(), normals->at( 0 ).z() );
+    Usul::Math::Vec3f td ( sdir.x(), sdir.y(), sdir.z() );
+    Usul::Math::Vec3f tan1 = ( td - n * ( n.dot( td ) ) );
+    //tan1.normalize();
+    osg::Vec3 t ( tan1[0], tan1[1], tan1[2] );
+
+    tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
+    tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
+    tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
+    
+  #endif
+
+#endif
+
+  
+  tex->push_back( t11 ); tex->push_back( t00 ); tex->push_back( t10 );
+
+#if 0
+  tangent->push_back( p7 - p4 ); tangent->push_back( p4 - p5 ); tangent->push_back( p5 - p7 );
+#else
+
+  #if 0
+    normals->push_back( vertexNormals->at( 7 ) );normals->push_back( vertexNormals->at( 4 ) );normals->push_back( vertexNormals->at( 5 ) );
+  #else
+    normals->push_back( osg::Vec3( 0.0, 0.0, -1.0 ) );
+    normals->push_back( osg::Vec3( 0.0, 0.0, -1.0 ) );
+    normals->push_back( osg::Vec3( 0.0, 0.0, -1.0 ) );
+  #endif
+
+  #if 1
+    tangent->push_back( tng );
+    tangent->push_back( tng );
+    tangent->push_back( tng );
+  #else
+    
+    tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
+    tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
+    tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
+    
+  #endif
+
+#endif
+
+  //--------------------------------------------------------------------------
+
+	geometry->setVertexArray( vertices.get() );
+  geometry->setTexCoordArray( 0, tex.get() );
+  geometry->setColorArray( tangent.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
+  
+	geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
+
+#if 1
+	geometry->setNormalArray( faceNormals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_PRIMITIVE );
+#else
+	geometry->setNormalArray( normals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+#endif
+  geode->addDrawable( geometry.get() );
+#else
+  osg::ref_ptr< osg::ShapeDrawable > box ( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) ); 
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+  geometry = dynamic_cast< osg::Geometry* >( box.get() );
+  geode->addDrawable( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) );
+ 
+#endif
+  return geode.release();
+}
+
 
 void GeneralShaderDocument::_createSkyBox( unsigned int index )
 {
@@ -2306,6 +2573,22 @@ void GeneralShaderDocument::_updateScene()
       toAdd = uniform;
       ss->addUniform( toAdd.get() );
     }
+
+    // add the near/far plane uniform
+    UniformPtr nearfar = ss->getOrCreateUniform( "planes", osg::Uniform::FLOAT_VEC2 );
+    nearfar->set( _nearFarClipPlane );
+    ss->addUniform( nearfar.get() );   
+
+    //update the depth
+    UniformPtr tile = ss->getOrCreateUniform( "tile", osg::Uniform::FLOAT );
+    tile->set( _tile );
+    ss->addUniform( tile.get() );   
+
+    //update the tile
+    UniformPtr depth = ss->getOrCreateUniform( "depth", osg::Uniform::FLOAT );
+    depth->set( _depth );
+    ss->addUniform( depth.get() );   
+    
   }
   catch( ... )
   {
@@ -2324,6 +2607,34 @@ bool GeneralShaderDocument::keyPressed ( int code )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
+
+  // Depth value manipulation
+  if( 'd' == code || 'D' == code )
+  {
+    _depth -= 0.01;
+    this->_updateScene();
+    return true;
+  }
+  if( 'c' == code || 'C' == code )
+  {
+    _depth += 0.01;
+    this->_updateScene();
+    return true;
+  }
+
+ // Tile value manipulation
+  if( 't' == code || 'T' == code )
+  {
+    _tile -= 0.01;
+    this->_updateScene();
+    return true;
+  }
+  if( 'g' == code || 'G' == code )
+  {
+    _tile += 0.01;
+    this->_updateScene();
+    return true;
+  }
 
   if( 'j' == code || 'J' == code )
   {
@@ -2384,6 +2695,16 @@ bool GeneralShaderDocument::keyPressed ( int code )
   if( 'v' == code || 'V' == code )
   {
     _theta.y() += 1.0;
+    this->_updateScene();
+    return true;
+  }
+  if( 'r' == code || 'R' == code )
+  {
+    _modelMatrixTransform->setMatrix( osg::Matrix::identity() );
+    _theta.x() = 45.0; 
+    _theta.y() = 0.0;
+    _depth = 0.09;
+    _tile = 1.0;
     this->_updateScene();
     return true;
   }
@@ -2495,21 +2816,51 @@ osg::Image* GeneralShaderDocument::_createNormalMap( const std::string &name, un
       if( normal.z() >= 0.0 && normal.z() <= 1.0 )
         blue = 255;
 
+      // Alpha chanel
+      //unsigned char alpha = this->_getHeightFromImageAt( i, j, index );
+      
       texture.push_back( red );
       texture.push_back( green );
       texture.push_back( blue );
+      //texture.push_back( alpha );
     }
   }
-  //_scene->setImage( _imageResolution[0], _imageResolution[1], 1, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, &_colorVec[0], osg::Image::NO_DELETE );
-  //_scene->dirty();
-  normalMap->setImage( _shaderGroups.at( index ).heightMap->s(),
+  std::vector< unsigned char > tex;
+  {
+    //unsigned int i = 0, j = 0;
+    unsigned int s = static_cast< unsigned int > ( _shaderGroups.at( index ).heightMap->s() );
+    unsigned int t = static_cast< unsigned int > ( _shaderGroups.at( index ).heightMap->t() );
+  
+    unsigned int ceiling = 0;
+    for( unsigned int i = 0; i < t; ++i )
+    {
+      ceiling = ( t - 1 ) - i;
+      for( unsigned int j = 0; j < s; ++j )
+      {
+        unsigned int index = ( j * s ) + ceiling;
+        tex.push_back( texture.at( index ) );
+      }
+      
+    }
+  
+  }
+  
+  normalMap->allocateImage ( _shaderGroups.at( index ).heightMap->s(),
+                       _shaderGroups.at( index ).heightMap->t(), 
+                       1, 
+                       GL_RGB, 
+                       GL_UNSIGNED_BYTE );
+
+  /*normalMap->setImage( _shaderGroups.at( index ).heightMap->s(),
                        _shaderGroups.at( index ).heightMap->t(), 
                        1, 
                        GL_RGB, 
                        GL_RGB, 
                        GL_UNSIGNED_BYTE, 
-                       &texture[0], 
-                       osg::Image::NO_DELETE );
+                       &tex[0], 
+                       osg::Image::NO_DELETE );*/
+
+  std::copy ( tex.begin(), tex.end(), normalMap->data() );
   normalMap->dirty();
   
   osgDB::writeImageFile( *normalMap.get(), name.c_str() );

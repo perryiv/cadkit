@@ -30,13 +30,17 @@ public:
   Feature();
   Feature ( const XmlTree::Node& node );
   
-  /// Get/set the name.
+  /// Set/get the name.
+	void                   name ( const std::string& );
   const std::string&     name() const;
-  void                   name ( const std::string& );
   
-  /// Get/set the visiblity.
+  /// Set/get the visiblity.
+	void                   visiblity( bool b );
   bool                   visiblity() const;
-  void                   visiblity( bool b );
+
+	/// Set/get the style url.
+	void                   styleUrl ( const std::string& url );
+	const std::string&     styleUrl() const;
   
 protected:
   
@@ -45,6 +49,7 @@ protected:
 private:
   
   std::string _name;
+	std::string _styleUrl;
   bool _visiblity;
   LookAt::RefPtr _lookAt;
 };

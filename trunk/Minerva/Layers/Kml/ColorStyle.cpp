@@ -1,0 +1,93 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Minerva/Layers/Kml/ColorStyle.h"
+
+#include "XmlTree/Node.h"
+
+#include <cstdlib>
+
+using namespace Minerva::Layers::Kml;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ColorStyle::ColorStyle() : BaseClass(),
+	_color()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ColorStyle::ColorStyle ( const XmlTree::Node& node ) : BaseClass ( node ),
+	_color()
+{
+	typedef XmlTree::Node::Children Children;
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "color" == name )
+    {
+			const unsigned long c ( ::strtoul ( node->value().c_str(), 0x0, 16 ) );
+
+			_color[3] = static_cast<float> ( ( ( c & 0xff000000 ) >> 24 ) / 255.0 );
+			_color[0] = static_cast<float> ( ( ( c & 0x00ff0000 ) >> 16 ) / 255.0 );
+			_color[1] = static_cast<float> ( ( ( c & 0x0000ff00 ) >>  8 ) / 255.0 );
+			_color[2] = static_cast<float> ( ( ( c & 0x000000ff )       ) / 255.0 );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ColorStyle::~ColorStyle()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ColorStyle::color ( const Color& c )
+{
+	_color = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const ColorStyle::Color& ColorStyle::color() const
+{
+	return _color;
+}

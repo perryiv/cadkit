@@ -5,6 +5,7 @@ include $(CADKIT_MAKE_DIR)/header.mak
 # C++ source files.
 CPP_FILES = \
 	./WebGen.cpp \
+	./TranslateTags.cpp \
 	./Main.cpp
 
 LOCAL_INCLUDE = \

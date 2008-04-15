@@ -22,4 +22,5 @@ ${CADKIT_INC_DIR}/Helios/Qt/Tools
 ${CADKIT_INC_DIR}/Helios/Qt/Core
 ${CADKIT_INC_DIR}/Helios/Qt/Application
 ${CADKIT_INC_DIR}/Helios/Qt/Plugins/SceneDelegate
+${CADKIT_INC_DIR}/Helios/Qt/Plugins/SnapShot
 )

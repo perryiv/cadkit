@@ -119,3 +119,33 @@ hsize_t Dataset::size ( unsigned int dim ) const
 {
   return _dimensions[dim];
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the attribute.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Dataset::attribute ( const std::string& name )
+{
+  hid_t id ( ::H5Aopen_name ( _dataset, name.c_str() ) );
+  
+  // Make sure we got a valid id.
+  if ( id < 0 )
+    throw std::runtime_error ( "Error 2824719886: No attribute by name " + name + "." );
+  
+  // The value to read to.
+  double value ( 0.0 );
+  
+  // Read the value.
+  herr_t status ( ::H5Aread ( id, H5T_NATIVE_DOUBLE, &value ) );
+  
+  // Check the return status.
+  if ( status < 0 )
+    throw std::runtime_error ( "Error 1581158300: Could not retrieve value for " + name + "." );
+  
+  ::H5Aclose ( id );
+  
+  return value;
+}

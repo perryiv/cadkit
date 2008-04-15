@@ -22,7 +22,6 @@
 #include "Usul/Jobs/Manager.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
-#include "Usul/Interfaces/ITimestepAnimation.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -41,6 +40,7 @@
 
 class FlashDocument : public Usul::Documents::Document,
                       public Usul::Interfaces::IBuildScene,
+                      public Usul::Interfaces::ITimeVaryingData,
                       public Usul::Interfaces::IUpdateListener
 {
 public:
@@ -103,14 +103,29 @@ protected:
   /// Build the scene.
   void                        _buildScene();
 
+  /// Build the default transfer functions.
+  void                        _buildDefaultTransferFunctions ();
+  
+  /// Usul::Interfaces::ITimeVaryingData
+  virtual void                setCurrentTimeStep ( unsigned int current );
+  virtual unsigned int        getCurrentTimeStep () const;
+  
+  virtual unsigned int        getNumberOfTimeSteps () const;
+
 private:
   
   typedef std::vector<std::string> Filenames;
+  typedef OsgTools::Volume::TransferFunction                    TransferFunction;
+  typedef TransferFunction::RefPtr                              TransferFunctionPtr;
+  typedef std::vector < TransferFunctionPtr >                   TransferFunctions;
   
   Filenames _filenames;
   unsigned int _currentTimestep;
   osg::ref_ptr < osg::Group > _root;
   bool _dirty;
+  
+  unsigned int _currentTransferFunction;
+  TransferFunctions _transferFunctions;
   
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( FlashDocument );

@@ -33,7 +33,8 @@ public:
   typedef Usul::Registry::Node RegistryNode;
   typedef std::map<std::string,std::string> StringMap;
   typedef std::pair<std::string,std::string> PageInfo;
-  typedef std::vector<PageInfo> Pages;
+  typedef std::vector<PageInfo> PageList;
+  typedef std::map<std::string,std::string> PageMap;
   typedef std::vector<XmlTree::Node::ValidRefPtr> NodeVector;
   typedef std::vector<NodeVector> NodeMatrix;
 
@@ -62,6 +63,7 @@ protected:
   XmlTree::Node::ValidRefPtr         _makeImage ( const std::string &src, const std::string &alt );
   XmlTree::Node::ValidRefPtr         _makeTable ( unsigned int numRows, unsigned int numCols, const std::string &cssClassName, NodeMatrix &matrix ) const;
 
+  std::string                        _pageName() const;
   std::string                        _protocol() const;
 
   std::string                        _queryValue ( const std::string &name, const std::string &defaultValue = std::string() ) const;
@@ -78,7 +80,8 @@ private:
   RegistryNode &_env;
   RegistryNode &_site;
   StringMap _chars;
-  Pages _pages;
+  PageList _pageList;
+  PageMap _pageMap;
   NodeMatrix _matrix;
 };
 

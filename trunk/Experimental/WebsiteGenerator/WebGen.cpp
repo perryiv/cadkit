@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "WebGen.h"
+#include "TranslateTags.h"
 
 #include "XmlTree/RegistryIO.h"
 #include "XmlTree/XercesLife.h"
@@ -51,12 +52,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 WebGen::WebGen ( int argc, char **argv, char **env ) : 
-  _query ( Usul::Registry::Database::instance()["query_string"] ),
-  _env   ( Usul::Registry::Database::instance()["environment"] ),
-  _site  ( Usul::Registry::Database::instance()["site"] ),
-  _chars (),
-  _pages (),
-  _matrix()
+  _query    ( Usul::Registry::Database::instance()["query_string"] ),
+  _env      ( Usul::Registry::Database::instance()["environment"] ),
+  _site     ( Usul::Registry::Database::instance()["site"] ),
+  _chars    (),
+  _pageList (),
+  _pageMap  (),
+  _matrix   ()
 {
   typedef std::list<std::string> StringList;
 
@@ -125,7 +127,9 @@ WebGen::WebGen ( int argc, char **argv, char **env ) :
   _chars["divide"]        = "&divide;";
   _chars["paragraph"]     = "&para;";
   _chars["plus_or_minus"] = "&plusmn;";
-  _chars["registered"]    = "&reg;";}
+  _chars["registered"]    = "&reg;";
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -187,6 +191,11 @@ XmlTree::Node::ValidRefPtr WebGen::_makeHead()
   // Add the header section.
   XmlTree::Node::ValidRefPtr head ( new XmlTree::Node ( "head" ) );
 
+  // Add the title.
+  const std::string title ( _site["subject"]["long_name"].get ( "Title" ) );
+  const std::string page ( this->_pageName() );
+  head->append ( "title", Usul::Strings::format ( title, " - ", page ) );
+
   // Add any cascading style sheets.
   this->_addStyles ( head );
 
@@ -207,6 +216,11 @@ XmlTree::Node::ValidRefPtr WebGen::_makeHead()
 XmlTree::Node::ValidRefPtr WebGen::_makeBody()
 {
   typedef Usul::Math::Vec2ui CellIndex;
+
+  // For translating tags.
+  TranslateTags translateTags ( _site );
+  translateTags.add ( "para", "p" );
+  translateTags.add ( "text", ""  );
 
   // Add the body sections.
   XmlTree::Node::ValidRefPtr body ( new XmlTree::Node ( "body" ) );
@@ -239,7 +253,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   {
     CellIndex index ( _site["menus"]["main"]["cell"].get<CellIndex> ( CellIndex ( 1, 0 ) ) );
     XmlTree::Node::ValidRefPtr menu ( this->_cell ( index[0], index[1] ) );
-    for ( Pages::const_iterator i = _pages.begin(); i != _pages.end(); ++i )
+    for ( PageList::const_iterator i = _pageList.begin(); i != _pageList.end(); ++i )
     {
       const PageInfo info ( *i );
       XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
@@ -266,18 +280,32 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
       XmlTree::Node::ValidRefPtr section ( *i );
       this->_appendChildren ( section, content );
     }
+
+    translateTags ( content );
   }
 
   // Add the legal section.
   {
     CellIndex index ( _site["legal"]["cell"].get<CellIndex> ( CellIndex ( 2, 1 ) ) );
     XmlTree::Node::ValidRefPtr legal ( this->_cell ( index[0], index[1] ) );
-    const std::string owner ( _site["owner"]["long_name"].get ( "" ) );
-    if ( false == owner.empty() )
+    const std::string ownerLong ( _site["owner"]["long_name"].get ( "" ) );
+    if ( false == ownerLong.empty() )
     {
       const std::string year ( Usul::System::DateTime::format ( "%Y" ) );
       legal->append ( "hr" );
-      legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", ", owner ) );
+      const std::string ownerShort ( _site["owner"]["short_name"].get ( "" ) );
+      if ( true == ownerShort.empty() )
+      {
+        legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", ", ownerLong ) );
+      }
+      else
+      {
+        XmlTree::Node::ValidRefPtr para ( legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", " ) ) );
+        XmlTree::Node::ValidRefPtr link ( para->append ( "link" ) );
+        link->append ( "name", ownerShort );
+        link->append ( "text", ownerLong );
+        translateTags ( para );
+      }
     }
   }
 
@@ -400,13 +428,19 @@ void WebGen::_findPages()
   // Loop through the pages.
   typedef XmlTree::Node::Children Children;
   Children kids ( pages->find ( "page", false ) );
-  _pages.reserve ( kids.size() );
+  _pageList.reserve ( kids.size() );
   for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
   {
     XmlTree::Node::ValidRefPtr page ( *i );
     XmlTree::Node::ValidRefPtr menu ( page->child ( "menu", true ) );
     XmlTree::Node::ValidRefPtr file ( page->child ( "file", true ) );
-    _pages.push_back ( PageInfo ( menu->value(), file->value() ) );
+    _pageList.push_back ( PageInfo ( menu->value(), file->value() ) );
+
+    const std::string base ( Usul::File::base ( file->value() ) );
+    if ( ( false == base.empty() ) && ( false == menu->value().empty() ) )
+    {
+      _pageMap[base] = menu->value();
+    }
   }
 }
 
@@ -617,6 +651,20 @@ void WebGen::_appendChildren ( XmlTree::Node::ValidRefPtr from, XmlTree::Node::V
     XmlTree::Node::ValidRefPtr child ( *i );
     to->append ( child );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return this page's name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string WebGen::_pageName() const
+{
+  const std::string page ( this->_queryValue ( "page" ) );
+  PageMap::const_iterator i ( _pageMap.find ( page ) );
+  return ( ( _pageMap.end() == i ) ? "Home" : i->second );
 }
 
 

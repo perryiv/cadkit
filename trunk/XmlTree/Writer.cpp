@@ -84,7 +84,11 @@ namespace Helper
 {
   void traverse ( const Node *doc, std::string &indent, std::ostream &out )
   {
-    if ( doc )
+    if ( 0x0 == doc )
+      return;
+
+    // To support writing HTML, check for a name.
+    if ( false == doc->name().empty() )
     {
       // Write leading tag.
       out << '\n' << indent << '<' << doc->name();
@@ -93,32 +97,43 @@ namespace Helper
       for ( Node::Attributes::const_iterator a = doc->attributes().begin(); a != doc->attributes().end(); ++a )
       {
         if ( false == a->first.empty() && false == a->second.empty() )
+        {
           out << ' ' << a->first << "=\"" << XmlTree::translateToLegalCharacters ( a->second ) << "\"";
+        }
       }
 
       // Finish leading tag.
       out << '>';
+    }
 
-      // Write value if there is one.
-      const std::string &value ( doc->value() );
-      if ( false == value.empty() )
-        out << XmlTree::translateToLegalCharacters ( value );
+    // Write value if there is one.
+    const std::string &value ( doc->value() );
+    if ( false == value.empty() )
+    {
+      out << XmlTree::translateToLegalCharacters ( value );
+    }
 
-      // Need local scope.
+    // Need local scope.
+    {
+      // Indent.
+      Helper::Indent scoped ( indent );
+
+      // Write children.
+      for ( Node::Children::const_iterator c = doc->children().begin(); c != doc->children().end(); ++c )
       {
-        // Indent.
-        Helper::Indent scoped ( indent );
-
-        // Write children.
-        for ( Node::Children::const_iterator c = doc->children().begin(); c != doc->children().end(); ++c )
-          Helper::traverse ( c->get(), indent, out );
+        Helper::traverse ( c->get(), indent, out );
       }
+    }
 
-      // Go to new line if there are children.
-      if ( false == doc->children().empty() )
-        out << '\n' << indent;
+    // Go to new line if there are children.
+    if ( false == doc->children().empty() )
+    {
+      out << '\n' << indent;
+    }
 
-      // Write trailing tag.
+    // Write trailing tag iff there is a name.
+    if ( false == doc->name().empty() )
+    {
       out << "</" << doc->name() << '>';
     }
   }

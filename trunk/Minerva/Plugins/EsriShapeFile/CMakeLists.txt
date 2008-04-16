@@ -2,7 +2,7 @@ project (EsriShapeFile)
 
 SET(PLUGIN_NAME "EsriShapeFile")
 
-SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules" )
+SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 set(COMPILE_GUARD "_COMPILING_ESRI_SHAPE_FILE")

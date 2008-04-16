@@ -1,7 +1,7 @@
 
 PROJECT(MinervaQt)
 
-SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules")
+SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 INCLUDE ( ${CMakeModules}/FindOSG.cmake)

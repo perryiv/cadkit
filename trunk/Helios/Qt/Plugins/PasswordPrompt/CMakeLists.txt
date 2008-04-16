@@ -3,7 +3,7 @@ project (QtPasswordPrompt)
 # Set the name.  Needed for the macros to set up plugin properties.
 SET(PLUGIN_NAME "QtPasswordPrompt")
 
-SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules")
+SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 ADD_DEFINITIONS ("-D_COMPILING_PASSWORD_PROMPT")

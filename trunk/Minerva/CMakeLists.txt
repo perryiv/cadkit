@@ -1,5 +1,7 @@
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
+# Set variables needed below...
+SET ( CADKIT_INC_DIR ${PROJECT_SOURCE_DIR}/../ )
+SET ( CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules" )
 
 # Path to look for .cmake files.
 SET(CMAKE_MODULE_PATH ${CMakeModules} )
@@ -15,7 +17,6 @@ INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 # Note that the Boost Include path will automatically get added
 
 
-SET (HELIOS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../ )
 SET (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
 
 

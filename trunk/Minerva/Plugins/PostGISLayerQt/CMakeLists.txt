@@ -2,7 +2,7 @@ project (PostGISLayerQt)
 
 SET(PLUGIN_NAME "PostGISLayerQt")
 
-SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules" )
+SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 set(COMPILE_GUARD "_COMPILING_POSTGIS_LAYER_QT")

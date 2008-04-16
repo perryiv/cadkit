@@ -26,6 +26,7 @@
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/MatrixTransform"
+#include "osg/Version"
 
 using namespace Minerva::Core::Utilities;
 
@@ -58,15 +59,22 @@ Hud::Hud() :
   _feedback->setFont ( font.get() );
   _position->setFont ( font.get() );
 #endif
+
+#if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
+	unsigned int textSize ( 30 );
+#else
+	unsigned int textSize ( 15 );
+#endif
+
   _position->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  _position->setCharacterSize( 15 );
+  _position->setCharacterSize( textSize );
   _position->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   _position->setPosition ( osg::Vec3 ( 5.0, 7.5, 0.0 ) );
   _position->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   _position->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
   
   _feedback->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  _feedback->setCharacterSize( 15 );
+  _feedback->setCharacterSize( textSize );
   _feedback->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
   _feedback->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );

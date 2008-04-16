@@ -11,7 +11,7 @@
 #ifndef __HELIOS_QT_PLUGINS_CLIP_PLANES_H__
 #define __HELIOS_QT_PLUGINS_CLIP_PLANES_H__
 
-#include "Helios/Qt/Plugins/ClipPlanes/ui_ClipPlanes.h"
+#include "ui_ClipPlanes.h"
 
 #include "Usul/Interfaces/IUnknown.h"
 

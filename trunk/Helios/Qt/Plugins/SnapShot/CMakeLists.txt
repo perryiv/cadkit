@@ -1,7 +1,5 @@
 project (QtSnapShot)
 
-
-
 # Set the name.  Needed for the macros to set up plugin properties.
 SET(PLUGIN_NAME "QtSnapShot")
 

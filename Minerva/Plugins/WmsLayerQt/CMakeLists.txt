@@ -2,7 +2,7 @@ project (WmsLayerQt)
 
 SET(PLUGIN_NAME "WmsLayerQt")
 
-SET( CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules" )
+SET( CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 SET(COMPILE_GUARD "_COMPILING_WMS_LAYER_QT")

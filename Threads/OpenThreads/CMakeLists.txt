@@ -25,7 +25,7 @@ INCLUDE(${CMakeModules}/FindOSG.cmake)
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../" 
-                     "$ENV{CADKIT_INC_DIR}" 
+                     "${CADKIT_INC_DIR}" 
                      ${OT_INC_DIR} )
 
 ADD_DEFINITIONS("-D_COMPILING_OPEN_THREADS_EXTENSIONS")

@@ -20,16 +20,8 @@ ENDIF( USUL_TRACING )
 
 # Add _DEBUG definition is it's debug.
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-#ADD_DEFINITIONS("-D_DEBUG")
 SET(CMAKE_DEBUG_POSTFIX d)
 ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-
-# Add NDEBUG definition is it's release.
-#IF (CMAKE_BUILD_TYPE STREQUAL "Release")
-#ADD_DEFINITIONS("-DNDEBUG")
-#ENDIF (CMAKE_BUILD_TYPE STREQUAL "Release")
-
 
 # A macro for linking to other cadkit libraries.
 # This will link to the proper library depending on build type.
@@ -74,4 +66,5 @@ SET (EXECUTABLE_OUTPUT_PATH
 )
 
 # We want to see compiler arguments.
+# Note: If we set this here, the user cannot override in the user interface.
 SET (CMAKE_VERBOSE_MAKEFILE "ON")

@@ -2,7 +2,7 @@ project (OssimLayerQt)
 
 SET(PLUGIN_NAME "OssimLayerQt")
 
-SET( CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules" )
+SET( CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 # ------------ Find boost ----------------------

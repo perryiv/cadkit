@@ -3,8 +3,10 @@ PROJECT(CadViewer)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 
+SET ( CADKIT_INC_DIR ${PROJECT_SOURCE_DIR}/../ )
+
 # Path to look for .cmake files.
-SET(CMAKE_MODULE_PATH "$ENV{CADKIT_INC_DIR}/CMakeModules" )
+SET(CMAKE_MODULE_PATH "${CADKIT_INC_DIR}/CMakeModules" )
 
 INCLUDE ( ${CMakeModules}/Cadkit.cmake )
 

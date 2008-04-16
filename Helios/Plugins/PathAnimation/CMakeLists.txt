@@ -2,7 +2,7 @@ PROJECT (PathAnimation)
 
 SET(PLUGIN_NAME "PathAnimation")
 
-SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules")
+SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 ADD_DEFINITIONS ("-D_COMPILING_PATH_ANIMATION")
@@ -32,5 +32,3 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul MenuKit SerializeXML )
-
-

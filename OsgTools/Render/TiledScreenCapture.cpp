@@ -354,7 +354,14 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
   osg::Vec4 lr ( _background.color ( Corners::BOTTOM_RIGHT ) );
   osg::Vec4 ul ( _background.color ( Corners::TOP_LEFT ) );
   osg::Vec4 ur ( _background.color ( Corners::TOP_RIGHT ) );
+  
+  // Figure out how many tiles will be made.
+  const unsigned int tiles ( ::ceil ( static_cast<double> ( width ) / tileWidth ) * 
+                             ::ceil ( static_cast<double> ( height ) / tileHeight ) );
 
+  // Number of tiles created.
+  unsigned int tile ( 0 );
+  
   // Create the tiles.
   for ( int y = -firstY; y < static_cast < int > ( height ) + firstY; y += tileY )
   {
@@ -363,6 +370,9 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
 
     for ( int x = -firstX; x < static_cast < int > ( width ) + firstX; x += tileX )
     {
+      // Feedback.
+      std::cout << "Processing tile " << ++tile << " of " << tiles << std::endl;
+      
       // Interpolate colors for background.
       typedef Usul::Math::Interpolate<osg::Vec4> Interpolate;
       _background.color ( Interpolate::bilinear ( u,      v,      ll, lr, ur, ul ), Corners::BOTTOM_LEFT );

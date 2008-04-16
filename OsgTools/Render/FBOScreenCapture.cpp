@@ -29,9 +29,9 @@ using namespace OsgTools::Render;
 ///////////////////////////////////////////////////////////////////////////////
 
 FBOScreenCapture::FBOScreenCapture () :
-	_size (),
-	_color (),
-	_viewMatrix ()
+  _size (),
+  _color (),
+  _viewMatrix ()
 {
 }
 
@@ -178,7 +178,7 @@ void FBOScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& scen
   camera->setRenderTargetImplementation( osg::CameraNode::FRAME_BUFFER_OBJECT );
 
   // Attach the texture and use it as the color buffer.
-  camera->attach( osg::CameraNode::COLOR_BUFFER, &image );
+  camera->attach ( osg::CameraNode::COLOR_BUFFER, &image );
 
   // Save the old root.
   osg::ref_ptr< osg::Node > node ( sceneView.getSceneData() );

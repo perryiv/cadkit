@@ -27,16 +27,14 @@ namespace OsgTools {
 
 struct ScopedProjection
 {
-  ScopedProjection ( osgUtil::SceneView *sv ) : _matrix(), _viewer ( sv )
+  ScopedProjection ( osgUtil::SceneView &sv ) : _matrix(), _viewer ( sv )
   {
-    if ( _viewer.valid() )
-      _matrix = _viewer->getProjectionMatrix();
+    _matrix = _viewer.getProjectionMatrix();
   }
 
   ~ScopedProjection()
   {
-    if ( _viewer.valid() )
-      _viewer->setProjectionMatrix ( _matrix );
+    _viewer.setProjectionMatrix ( _matrix );
   }
 
 private:
@@ -45,7 +43,7 @@ private:
   ScopedProjection &operator = ( const ScopedProjection & );
 
   osg::Matrixd _matrix;
-  osg::ref_ptr<osgUtil::SceneView> _viewer;
+  osgUtil::SceneView &_viewer;
 };
 
 

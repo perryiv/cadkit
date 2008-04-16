@@ -29,9 +29,9 @@ using namespace OsgTools::Render;
 ///////////////////////////////////////////////////////////////////////////////
 
 FBOScreenCapture::FBOScreenCapture () :
-_size (),
-_color (),
-_viewMatrix ()
+	_size (),
+	_color (),
+	_viewMatrix ()
 {
 }
 

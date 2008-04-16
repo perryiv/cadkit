@@ -12,11 +12,13 @@
 #include "OsgTools/Render/FBOScreenCapture.h"
 #include "OsgTools/Images/DownSample.h"
 #include "OsgTools/ScopedViewport.h"
+#include "OsgTools/ScopedProjection.h"
 #include "OsgTools/Group.h"
 
 // For debugging...
 #include "Usul/File/Temp.h"
 
+#include "Usul/Bits/Bits.h"
 #include "Usul/Math/Interpolate.h"
 
 #include "osg/Geode"
@@ -38,12 +40,12 @@ using namespace OsgTools::Render;
 ///////////////////////////////////////////////////////////////////////////////
 
 TiledScreenCapture::TiledScreenCapture () :
-_size (),
-_color (),
-_viewMatrix (),
-_numSamples ( 4 ),
-_scale ( 1.0f ),
-_background()
+	_size (),
+	_color (),
+	_viewMatrix (),
+	_numSamples ( 4 ),
+	_scale ( 1.0f ),
+	_background()
 {
 }
 
@@ -217,6 +219,25 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   // Scope the viewport.
   OsgTools::ScopedViewport sv ( sceneView.getViewport () );
 
+	// Scope the projection.
+	OsgTools::ScopedProjection sp ( sceneView );
+
+	// Get the cull visitor.
+	osgUtil::CullVisitor *cv ( sceneView.getCullVisitor() );
+
+	// Turn off computing of near far.
+	osg::CullSettings::ComputeNearFarMode cullingMode ( cv->getComputeNearFarMode() );
+	cv->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+
+	// Turn off any camp projection callback.
+	osg::ref_ptr<osg::CullSettings::ClampProjectionMatrixCallback> cb ( cv->getClampProjectionMatrixCallback() );
+	cv->setClampProjectionMatrixCallback ( 0x0 );
+
+	// Get the inheritance mask.
+	const unsigned int mask ( cv->getInheritanceMask() );
+
+	cv->setInheritanceMask ( Usul::Bits::add ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+
   osg::ref_ptr < ProcessScene > ps ( new ProcessScene ( this->scale () ) );
   sceneView.getSceneData()->accept ( *ps );
 
@@ -228,11 +249,21 @@ void TiledScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& sc
   }
   catch ( ... )
   {
+		// Restore state.
+		cv->setComputeNearFarMode ( cullingMode );
+		cv->setClampProjectionMatrixCallback ( cb.get() );
+		cv->setInheritanceMask ( mask );
+
     ps->restoreScene ();
     sceneView.setSceneData( scene.get() );
 
     std::cout << "Exception caught while trying to capture screen." << std::endl;
   }
+
+	// Restore state.
+	cv->setComputeNearFarMode ( cullingMode );
+	cv->setClampProjectionMatrixCallback ( cb.get() );
+	cv->setInheritanceMask ( mask );
 
   ps->restoreScene ();
   sceneView.setSceneData( scene.get() );

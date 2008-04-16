@@ -268,7 +268,7 @@ void Renderer::_multiPassRender()
   try
   {
     // Save original projection matrix.
-    OsgTools::ScopedProjection sp ( _sceneView.get() );
+    OsgTools::ScopedProjection sp ( *_sceneView.get() );
 
     // Clear the accumulation buffer.
     ::glClearAccum ( 0.0f, 0.0f, 0.0f, 0.0f );

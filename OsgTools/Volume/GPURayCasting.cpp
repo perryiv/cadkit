@@ -27,20 +27,20 @@ using namespace OsgTools::Volume;
 ///////////////////////////////////////////////////////////////////////////////
 
 GPURayCasting::GPURayCasting() : BaseClass (),
-_vertexShader  ( new osg::Shader( osg::Shader::VERTEX ) ),
-_fragmentShader ( new osg::Shader( osg::Shader::FRAGMENT ) ),
-_volume ( 0x0, 0 ),
-_geometry ( new Geometry ),
-_transferFunction ( 0x0 ),
-_bb ( ),
-_samplingRate ( 0.1f ),
-_camera (),
-_cameraUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "camera" ) ),
-_minUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "bbMin" ) ),
-_maxUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "bbMax" ) ),
-_volumeUniform ( new osg::Uniform ( osg::Uniform::INT, "Volume" ) ),
-_tfUniform ( new osg::Uniform ( osg::Uniform::INT, "TransferFunction" ) ),
-_rateUniform ( new osg::Uniform ( osg::Uniform::FLOAT, "SampleRate" ) )
+  _vertexShader  ( new osg::Shader( osg::Shader::VERTEX ) ),
+  _fragmentShader ( new osg::Shader( osg::Shader::FRAGMENT ) ),
+  _volume ( 0x0, 0 ),
+  _geometry ( new Geometry ),
+  _transferFunction ( 0x0 ),
+  _bb ( ),
+  _samplingRate ( 0.1f ),
+  _camera (),
+  _cameraUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "camera" ) ),
+  _minUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "bbMin" ) ),
+  _maxUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "bbMax" ) ),
+  _volumeUniform ( new osg::Uniform ( osg::Uniform::INT, "Volume" ) ),
+  _tfUniform ( new osg::Uniform ( osg::Uniform::INT, "TransferFunction" ) ),
+  _rateUniform ( new osg::Uniform ( osg::Uniform::FLOAT, "SampleRate" ) )
 {
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss  ( this->getOrCreateStateSet() );

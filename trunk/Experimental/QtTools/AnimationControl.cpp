@@ -706,6 +706,7 @@ void AnimationControl::_setEnabledState()
   _stepBackwardButton->setEnabled ( enabled );
   _stopButton->setEnabled ( enabled );
   _loopCheckBox->setEnabled ( enabled );
+  _sliderSlider->setEnabled ( enabled );
 }
 
 

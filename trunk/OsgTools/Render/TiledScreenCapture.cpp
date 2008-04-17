@@ -356,8 +356,8 @@ void TiledScreenCapture::_capturePixels ( osg::Image& image, osgUtil::SceneView&
   osg::Vec4 ur ( _background.color ( Corners::TOP_RIGHT ) );
   
   // Figure out how many tiles will be made.
-  const unsigned int tiles ( ::ceil ( static_cast<double> ( width ) / tileWidth ) * 
-                             ::ceil ( static_cast<double> ( height ) / tileHeight ) );
+  const unsigned int tiles ( static_cast<unsigned int> ( ::ceil ( static_cast<double> ( width ) / tileWidth ) ) * 
+                             static_cast<unsigned int> ( ::ceil ( static_cast<double> ( height ) / tileHeight ) ) );
 
   // Number of tiles created.
   unsigned int tile ( 0 );

@@ -86,6 +86,9 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   // Make the timer.
   _timer = new QTimer ( this );
 
+	// Set the enabled state.
+	this->_setEnabledState();
+
   // Connect slots.
   this->_slotsConnect();
 }
@@ -236,14 +239,8 @@ void AnimationControl::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDo
   _document = newDoc;
   _data = newDoc;
 
-  // Set the values.
-  const bool enabled ( true == _data.valid() );
-  _playForwardButton->setEnabled ( enabled );
-  _playBackwardButton->setEnabled ( enabled );
-  _stepForwardButton->setEnabled ( enabled );
-  _stepBackwardButton->setEnabled ( enabled );
-  _stopButton->setEnabled ( enabled );
-  _loopCheckBox->setEnabled ( enabled );
+  // Set the enabled state.
+	this->_setEnabledState();
 }
 
 
@@ -662,4 +659,23 @@ void AnimationControl::_speedChangedEvent ( double speed )
     this->_stopTimer();
     this->_startTimer();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the enabled state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimationControl::_setEnabledState()
+{
+	// Set the values.
+  const bool enabled ( true == _data.valid() );
+  _playForwardButton->setEnabled ( enabled );
+  _playBackwardButton->setEnabled ( enabled );
+  _stepForwardButton->setEnabled ( enabled );
+  _stepBackwardButton->setEnabled ( enabled );
+  _stopButton->setEnabled ( enabled );
+  _loopCheckBox->setEnabled ( enabled );
 }

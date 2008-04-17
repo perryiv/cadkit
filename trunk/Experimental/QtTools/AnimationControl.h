@@ -94,6 +94,7 @@ protected:
   void                        _playForwardEvent();
   void                        _playBackwardEvent();
 
+	void                        _setEnabledState();
   void                        _slotsConnect();
   void                        _slotsDisconnect();
   void                        _speedChangedEvent ( double );

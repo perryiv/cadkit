@@ -501,10 +501,18 @@ KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *
 
 KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *style )
 {
+  // Get style properties.
 	Usul::Math::Vec4f defaultColor ( 0.8, 0.8, 0.8, 1.0 );
 	Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->color() : defaultColor ) : defaultColor );
+
+  const bool fill    ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->fill()    : true ) : true );
+  const bool outline ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->outline() : true ) : true );
+
+  // Make the data object.
   Minerva::Core::DataObjects::Polygon::RefPtr polygon ( new Minerva::Core::DataObjects::Polygon );
   polygon->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
+  polygon->showBorder ( outline );
+  polygon->showInterior ( fill );
   
   Minerva::Core::Geometry::Polygon::RefPtr data ( new Minerva::Core::Geometry::Polygon );
   polygon->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );

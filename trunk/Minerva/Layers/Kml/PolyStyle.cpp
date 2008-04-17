@@ -9,6 +9,8 @@
 
 #include "Minerva/Layers/Kml/PolyStyle.h"
 
+#include "XmlTree/Node.h"
+
 using namespace Minerva::Layers::Kml;
 
 
@@ -35,6 +37,24 @@ PolyStyle::PolyStyle( const XmlTree::Node &node ) : BaseClass( node ),
 	_fill ( true ),
 	_outline ( true )
 {
+  	typedef XmlTree::Node::Children Children;
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "fill" == name )
+    {
+      _fill = ( "1" == node->value() );
+    }
+    else if ( "outline" == name )
+    {
+      _outline = ( "1" == node->value() );
+    }
+  }
+
 }
 
 
@@ -46,4 +66,52 @@ PolyStyle::PolyStyle( const XmlTree::Node &node ) : BaseClass( node ),
 
 PolyStyle::~PolyStyle()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the fill flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolyStyle::fill ( bool b )
+{
+  _fill = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the fill flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PolyStyle::fill() const
+{
+  return _fill;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the outline flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PolyStyle::outline ( bool b )
+{
+  _outline = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the outline flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool PolyStyle::outline() const
+{
+  return _outline;
 }

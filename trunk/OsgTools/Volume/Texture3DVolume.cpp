@@ -29,10 +29,10 @@ using namespace OsgTools::Volume;
 ///////////////////////////////////////////////////////////////////////////////
 
 Texture3DVolume::Texture3DVolume() : BaseClass (),
-_volume ( 0x0, 0 ),
-_geometry ( new Geometry ),
-_flags ( 0 ),
-_transferFunction ( 0x0 )
+  _volume ( 0x0, 0 ),
+  _geometry ( new Geometry ),
+  _flags ( 0 ),
+  _transferFunction ( 0x0 )
 {
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss  ( this->getOrCreateStateSet() );
@@ -213,7 +213,7 @@ namespace Detail
 
       // Compute specular.
       << "  float specularLight = pow ( max ( dot ( h, normal ), 0.0 ), shininess );\n"
-      << "  if ( diffuseLight <= 0.0 ) specularLight = 0;\n"
+      << "  if ( diffuseLight <= 0.0 ) specularLight = 0.0;\n"
       << "  vec3 specular = Ks * lightColor * specularLight;\n"
 
       // Return the result.

@@ -24,6 +24,12 @@ class ColorStyle : public Minerva::Layers::Kml::Object
 public:
   typedef Minerva::Layers::Kml::Object BaseClass;
 	typedef Usul::Math::Vec4f Color;
+
+  enum ColorMode
+  {
+    NORMAL,
+    RANDOM
+  };
   
   USUL_DECLARE_REF_POINTERS ( ColorStyle );
   
@@ -41,6 +47,7 @@ protected:
 private:
   
 	Color _color;
+  ColorMode _mode;
 };
 
 

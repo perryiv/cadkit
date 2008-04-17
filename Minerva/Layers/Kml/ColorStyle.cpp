@@ -9,9 +9,12 @@
 
 #include "Minerva/Layers/Kml/ColorStyle.h"
 
+#include "Usul/Adaptors/Random.h"
+
 #include "XmlTree/Node.h"
 
 #include <cstdlib>
+#include <ctime>
 
 using namespace Minerva::Layers::Kml;
 
@@ -23,7 +26,8 @@ using namespace Minerva::Layers::Kml;
 ///////////////////////////////////////////////////////////////////////////////
 
 ColorStyle::ColorStyle() : BaseClass(),
-	_color()
+	_color( 1.0, 1.0, 1.0, 1.0 ),
+  _mode ( NORMAL )
 {
 }
 
@@ -35,7 +39,8 @@ ColorStyle::ColorStyle() : BaseClass(),
 ///////////////////////////////////////////////////////////////////////////////
 
 ColorStyle::ColorStyle ( const XmlTree::Node& node ) : BaseClass ( node ),
-	_color()
+	_color( 1.0, 1.0, 1.0, 1.0 ),
+  _mode ( NORMAL )
 {
 	typedef XmlTree::Node::Children Children;
   
@@ -54,6 +59,20 @@ ColorStyle::ColorStyle ( const XmlTree::Node& node ) : BaseClass ( node ),
 			_color[1] = static_cast<float> ( ( ( c & 0x0000ff00 ) >>  8 ) / 255.0 );
 			_color[2] = static_cast<float> ( ( ( c & 0x000000ff )       ) / 255.0 );
     }
+    else if ( "colorMode" == name )
+    {
+      _mode = ( "random" == node->value() ? RANDOM : NORMAL );
+    }
+  }
+
+  // Make a random color if we are suppose to.
+  if ( RANDOM == _mode )
+  {
+    ::srand ( static_cast<unsigned int> ( ::time ( 0 ) ) );
+    Usul::Adaptors::Random<float> random ( 0.0, 1.0 );
+    _color[0] = _color[0] * random();
+    _color[1] = _color[1] * random();
+    _color[2] = _color[2] * random();
   }
 }
 

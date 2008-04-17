@@ -16,6 +16,7 @@
 
 #include "QtTools/AnimationControl.h"
 #include "QtTools/Image.h"
+#include "QtTools/ScopedSignals.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
@@ -60,10 +61,12 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   this->setupUi ( this );
 
   // Hide the slider until it works.
+#if 0 // Remove when confident that slider is working.
   #ifndef _DEBUG
   _sliderSlider->hide();
   #endif
-
+#endif
+  
   // Set icon buttons.
   QtTools::Image::icon ( "animation_control_play_forward.png",  _playForwardButton );
   QtTools::Image::icon ( "animation_control_play_backward.png", _playBackwardButton );
@@ -238,6 +241,14 @@ void AnimationControl::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDo
   // Set the members.
   _document = newDoc;
   _data = newDoc;
+  
+  if ( _data.valid() )
+  {
+    const unsigned int num ( _data->getNumberOfTimeSteps() );
+    
+    _sliderSlider->setRange ( 0, ( 0 != num ? num - 1 : 0 ) );
+    _sliderSlider->setValue ( _data->getCurrentTimeStep() );
+  }
 
   // Set the enabled state.
 	this->_setEnabledState();
@@ -304,6 +315,8 @@ void AnimationControl::_slotsConnect()
   QObject::connect ( _loopCheckBox, SIGNAL ( toggled ( bool ) ), this, SLOT ( _onLoop ( bool ) ) );
 
   QObject::connect ( _speedSpinBox, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _onSpeedChanged ( double ) ) );
+  
+  QObject::connect ( _sliderSlider, SIGNAL ( valueChanged ( int ) ), this, SLOT ( _onSliderChanged( int ) ) );
 }
 
 
@@ -325,6 +338,7 @@ void AnimationControl::_slotsDisconnect()
   _stepBackwardButton->disconnect ( this );
   _stopButton->disconnect ( this );
   _loopCheckBox->disconnect ( this );
+  _sliderSlider->disconnect( this );
 }
 
 
@@ -557,6 +571,12 @@ void AnimationControl::_stepForward()
 
     _data->setCurrentTimeStep ( next );
 
+    // Set the slider value.
+    {
+      QtTools::ScopedSignals scoped ( *_sliderSlider );
+      _sliderSlider->setValue( next );
+    }
+
     // Render the views now.
     this->_render();
   }
@@ -599,6 +619,12 @@ void AnimationControl::_stepBackward()
 #endif
 
     _data->setCurrentTimeStep ( next );
+    
+    // Set the slider value.
+    {
+      QtTools::ScopedSignals scoped ( *_sliderSlider );
+      _sliderSlider->setValue( next );
+    }
 
     // Render the views now.
     this->_render();
@@ -670,6 +696,8 @@ void AnimationControl::_speedChangedEvent ( double speed )
 
 void AnimationControl::_setEnabledState()
 {
+  USUL_TRACE_SCOPE;
+  
 	// Set the values.
   const bool enabled ( true == _data.valid() );
   _playForwardButton->setEnabled ( enabled );
@@ -678,4 +706,21 @@ void AnimationControl::_setEnabledState()
   _stepBackwardButton->setEnabled ( enabled );
   _stopButton->setEnabled ( enabled );
   _loopCheckBox->setEnabled ( enabled );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The slider has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimationControl::_onSliderChanged ( int value )
+{
+  USUL_TRACE_SCOPE;
+  
+  if ( value >= 0 && ( _data.valid() && value < static_cast<int> ( _data->getNumberOfTimeSteps() ) ) )
+  {
+    _data->setCurrentTimeStep ( value );
+  }
 }

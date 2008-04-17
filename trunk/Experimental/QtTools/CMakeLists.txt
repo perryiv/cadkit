@@ -57,3 +57,23 @@ LINK_CADKIT( QtTools Usul )
 TARGET_LINK_LIBRARIES( QtTools
    ${QT_LIBRARIES}
 )
+
+ADD_CUSTOM_COMMAND(
+        SOURCE QtTools
+        COMMAND ${CCOMMAND_COMMAND}
+        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_AnimationControl.h" "${PROJECT_SOURCE_DIR}/ui_AnimationControl.h"
+        TARGET QtTools )
+
+SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons )
+FILE(GLOB PngFiles "${PROJECT_SOURCE_DIR}/Icons/*.png" )
+
+SET ( IconFiles ${PngFiles} )
+
+MAKE_DIRECTORY( ${IconDir} )
+FOREACH(FILE ${IconFiles})
+ADD_CUSTOM_COMMAND(
+        SOURCE QtTools
+        COMMAND ${CCOMMAND_COMMAND}
+        ARGS cp ${FILE}  ${IconDir}
+        TARGET QtTools )
+ENDFOREACH(FILE ${IconFiles})

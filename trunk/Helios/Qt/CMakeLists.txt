@@ -21,6 +21,7 @@ ${CADKIT_INC_DIR}/Helios/Qt/Commands
 ${CADKIT_INC_DIR}/Helios/Qt/Tools
 ${CADKIT_INC_DIR}/Helios/Qt/Core
 ${CADKIT_INC_DIR}/Helios/Qt/Application
+${CADKIT_INC_DIR}/Helios/Qt/Plugins/AnimationControl
 ${CADKIT_INC_DIR}/Helios/Qt/Plugins/ClipPlanes
 ${CADKIT_INC_DIR}/Helios/Qt/Plugins/SceneDelegate
 ${CADKIT_INC_DIR}/Helios/Qt/Plugins/SnapShot

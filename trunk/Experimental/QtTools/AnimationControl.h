@@ -77,6 +77,7 @@ protected slots:
   void                        _onLoop ( bool );
   void                        _onPlayForward();
   void                        _onPlayBackward();
+  void                        _onSliderChanged ( int );
   void                        _onSpeedChanged ( double );
   void                        _onStepForward();
   void                        _onStepBackward();

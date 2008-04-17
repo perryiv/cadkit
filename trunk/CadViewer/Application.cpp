@@ -13,12 +13,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Precompiled.h"
-#include "Application.h"
-#include "Constants.h"
-#include "ErrorChecker.h"
-#include "SceneFunctors.h"
-#include "ScenePredicates.h"
+#include "CadViewer/Application.h"
+#include "CadViewer/Constants.h"
+#include "CadViewer/ErrorChecker.h"
 
 #include "VRV/Common/Libraries.h"
 

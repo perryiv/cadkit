@@ -57,6 +57,7 @@ public:
 
   // Constructor.
   ButtonDevice ( unsigned long mask, const std::string &name );
+  ButtonDevice ( unsigned long mask, const std::string &vrj_name, const std::string &name );
 
   // Add the listener.
   virtual void          addButtonPressListener ( Usul::Interfaces::IUnknown * );
@@ -82,6 +83,9 @@ public:
   /// Get the button ID.
   unsigned long         buttonID () const;
 
+  /// Get the button name
+  std::string           getButtonName() const;
+
 protected:
 
   virtual ~ButtonDevice();
@@ -99,6 +103,7 @@ private:
   unsigned long _mask;
   ButtonPressListeners _pressed;
   ButtonReleaseListeners _released;
+  std::string _buttonName;
 };
 
 } // namespace Devices

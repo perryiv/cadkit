@@ -34,6 +34,7 @@
 #include "Usul/Commands/RenderingPasses.h"
 #include "Usul/Commands/ShadeModel.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Convert/Matrix44.h"
 #include "Usul/Convert/Vector4.h"
 #include "Usul/Documents/Manager.h"
@@ -186,6 +187,7 @@ Application::Application() :
   // Set default file paths.
   _functorFilename     = Usul::User::Directory::program ( vendor, program ) + "/functors.xml";
   _preferencesFilename = Usul::User::Directory::program ( vendor, program ) + "/preferences.xml";
+  _deviceFilename      = Usul::User::Directory::program ( vendor, program ) + "/devices.xml";
 
   // We want thread safe ref and unrefing.
   osg::Referenced::setThreadSafeReferenceCounting ( true );
@@ -283,6 +285,9 @@ void Application::_construct()
 
   // Read the user's functor file.
   this->_readFunctorFile ();
+
+  // Read the user's devices file
+  this->_readDevicesFile();
 
   // Make the intersector.
   typedef Usul::Functors::Interaction::Navigate::Direction Dir;
@@ -1079,12 +1084,19 @@ void Application::_init()
   group->addChild ( _progressBars->buildScene() );
 
   // Initialize the button group by adding the individual buttons.
-  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON1, "VJButton1" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON2, "VJButton2" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON3, "VJButton3" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON4, "VJButton4" ) );
-  _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON5, "VJButton5" ) );
+  if( _buttons->size() <= 0 )
+  {
+    _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
+    _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON1, "VJButton1" ) );
+    _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON2, "VJButton2" ) );
+    _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON3, "VJButton3" ) );
+    _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON4, "VJButton4" ) );
+    _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON5, "VJButton5" ) );
+  }
+
+  // read devices.xml and add buttons found there to the _buttons group
+
+
 
   // Set the wand offset
   _wandOffset = this->preferences()->wandOffset();
@@ -2645,12 +2657,31 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
 
+  // reinitialize when button 10 is pressed
+#if 1
+  {
+    Usul::Interfaces::IButtonID::QueryPtr button ( caller );
+    if ( button.valid () )
+    {
+      unsigned long id ( button->buttonID () );
+      
+      if( 512 == id )
+      {
+        std::cout << "Button 10 pressed:  calling reinitialize" << std::endl;
+        this->reinitialize();
+      }
+    }
+  }
+#endif
   // Get the button id.
   Usul::Interfaces::IButtonID::QueryPtr button ( caller );
   if ( button.valid () )
   {
     unsigned long id ( button->buttonID () );
 
+    
+#if 1
+    std::cout << Usul::Strings::format( "Button ID: ", id, " pressed." ) << std::endl;
     switch ( id )
     {
     case VRV::BUTTON0: std::cout << VRV::BUTTON0 << " Button 0 pressed (YELLOW)"   << std::endl; break;
@@ -2660,6 +2691,10 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     case VRV::BUTTON4: std::cout << VRV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
     case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
     }
+#else
+    
+#endif
+    
 
     // See if we should execute a user specified command.
     {
@@ -3032,6 +3067,7 @@ void Application::_parseCommandLine()
   // Get new preferences and functor file from the command line.
   _preferencesFilename   = options.get ( "preferences", _preferencesFilename );
   _functorFilename       = options.get ( "functors",    _functorFilename     );
+  _functorFilename       = options.get ( "devices",    _deviceFilename     );
 
   // Have to load the config files now. Remove them from the arguments.
   Parser::Args configs ( parser.files ( ".jconf", true ) );
@@ -3067,6 +3103,60 @@ void Application::_parseCommandLine()
 
   // Load the model files.
   this->_loadModelFiles ( filenames );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the user's devices config file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_readDevicesFile ()
+{
+  USUL_TRACE_SCOPE;
+
+  // Find all instances of button and add then to _buttons.
+
+  // Open the input file.
+  const std::string file ( _deviceFilename );
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( file );
+  
+  XmlTree::Node::Children buttons    ( document->find ( "Button",    true ) );
+
+  for ( Children::iterator iter = buttons.begin(); iter != buttons.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "Button" == node->name() )
+    {
+      std::string name = "";
+      std::string vj_name = "";
+      std::string id = "";
+
+      XmlTree::Node::Attributes attributes ( node->attributes() );
+      for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+      {
+        if ( "name" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, name );
+
+        }
+        if ( "vj_name" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, vj_name );
+
+        }
+        if ( "id" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, id );
+
+        }
+      }
+      unsigned int uiid = ::strtoul ( id.c_str(), 0x0, 16 );
+      //unsigned int uiid = Usul::Convert::Type< std::string, unsigned int >::convert ( id );
+      _buttons->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
+    }
+  }
 }
 
 
@@ -3852,6 +3942,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     MenuKit::Menu::RefPtr buttons ( new MenuKit::Menu ( "Buttons" ) );
 
     MenuKit::Menu::RefPtr assign ( new MenuKit::Menu ( "Assign" ) );
+#if 0
     assign->append ( new Button ( Usul::Commands::genericCommand ( "Red Button", 
                      UA::bind1<void> ( VRV::BUTTON_RED, 
                      UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
@@ -3864,7 +3955,18 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     assign->append ( new Button ( Usul::Commands::genericCommand ( "Blue Button", 
                      UA::bind1<void> ( VRV::BUTTON_BLUE, 
                      UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );;
-    
+#else
+    for( Buttons::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+    {
+      std::string name = (*iter)->getButtonName();
+      unsigned long id = (*iter)->buttonID();
+
+      assign->append ( new Button ( Usul::Commands::genericCommand ( name, 
+                     UA::bind1<void> ( id, 
+                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+
+    }
+#endif
     
     buttons->append ( assign );
 

@@ -160,3 +160,18 @@ void ButtonGroup::add ( ButtonDevice *b )
   // Add the new button device.
   _buttons.push_back ( b );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ButtonGroup::size()
+{
+  unsigned int size = _buttons.size();
+
+  return size;
+}
+

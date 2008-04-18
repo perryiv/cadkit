@@ -399,6 +399,9 @@ protected:
   // Read the user's functor config file.
   void                          _readFunctorFile ();
 
+  // Read the user's devices config file.
+  void                          _readDevicesFile ();
+
   /// Update notify.
   void                          _updateNotify ();
   virtual bool                  _allowNotify () const;
@@ -719,6 +722,7 @@ private:
   MenuPtr                                _statusBar;
   std::string                            _functorFilename;
   std::string                            _preferencesFilename;
+  std::string                            _deviceFilename;
   AnalogInputs                           _analogInputs;
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;

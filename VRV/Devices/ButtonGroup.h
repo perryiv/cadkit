@@ -59,6 +59,9 @@ public:
   // Return bitmask of buttons just released.
   unsigned long   released() const { return _released; }
 
+  // return the number of buttons
+  unsigned int    size();
+
 protected:
 
   virtual ~ButtonGroup();

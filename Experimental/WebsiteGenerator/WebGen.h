@@ -86,4 +86,4 @@ private:
 };
 
 
-#endif // #define _WEBSITE_GENERATOR_CLASS_
+#endif // _WEBSITE_GENERATOR_CLASS_

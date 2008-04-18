@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "WebGen.h"
+#include "Functions.h"
 #include "TranslateTags.h"
 
 #include "XmlTree/RegistryIO.h"
@@ -244,9 +245,13 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   {
     CellIndex index ( _site["subject"]["cell"].get<CellIndex> ( CellIndex ( 0, 1 ) ) );
     XmlTree::Node::ValidRefPtr subject ( this->_cell ( index[0], index[1] ) );
-    XmlTree::Node::ValidRefPtr h1 ( subject->append ( "h1", _site["subject"]["long_name"].get ( "Subject" ) ) );
+    const std::string longName ( _site["subject"]["long_name"].get ( "Subject" ) );
+    const std::string pageName ( this->_pageName() );
+    XmlTree::Node::ValidRefPtr h1 ( subject->append ( "h1", longName ) );
     h1->attributes()["class"] = "subject";
     subject->append ( "hr" );
+    XmlTree::Node::ValidRefPtr page ( subject->append ( "p", pageName ) );
+    page->attributes()["class"] = "page_name";
   }
 
   // Add the main menu.
@@ -269,7 +274,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
     XmlTree::Node::ValidRefPtr content ( this->_cell ( index[0], index[1] ) );
 
     const std::string base ( this->_queryValue ( "page", "home" ) );
-    const std::string dir ( this->_directory ( _site["pages"]["directory"] ) );
+    const std::string dir ( Functions::directory ( _site["pages"]["directory"] ) );
     const std::string path ( Usul::Strings::format ( dir, base, ".xml" ) );
     XmlTree::Node::ValidRefPtr page ( this->_loadXmlFile ( path ) );
 
@@ -326,7 +331,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeImage ( const std::string &src, const st
   img->attributes()["alt"] = alt;
 
   // Get the image directory.
-  const std::string dir ( this->_directory ( _site["images"]["directory"] ) );
+  const std::string dir ( Functions::directory ( _site["images"]["directory"] ) );
 
   // Make the path name.
   std::string path ( dir + src );
@@ -414,7 +419,7 @@ XmlTree::Node::ValidRefPtr WebGen::_loadXmlFile ( const std::string &file ) cons
 void WebGen::_findPages()
 {
   // Get the file for the pages.
-  const std::string dir ( this->_directory ( _site["pages"]["directory"] ) );
+  const std::string dir ( Functions::directory ( _site["pages"]["directory"] ) );
   std::string file ( _site["pages"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;
@@ -447,7 +452,7 @@ void WebGen::_findPages()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  FinReturn the cell.
+//  Return the cell.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -456,33 +461,6 @@ XmlTree::Node::ValidRefPtr WebGen::_cell ( unsigned int r, unsigned int c )
   NodeVector &row ( _matrix.at ( r ) );
   XmlTree::Node::ValidRefPtr node ( row.at ( c ) );
   return node;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Find the pages.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string WebGen::_directory ( Usul::Registry::Node &node )
-{
-  // Get the directory.
-  std::string dir ( node.get ( "./" ) );
-
-  // Fix the slashes.
-  std::replace ( dir.begin(), dir.end(), '\\', '/' );
-
-  // Make sure we have something.
-  dir = ( ( true == dir.empty() ) ? std::string ( "./" ) : dir );
-
-  // Make sure there is a trailing slash.
-  const unsigned int last ( dir.size() - 1 );
-  if ( '/' != dir.at(last) )
-    dir += "/";
-
-  // Return the string.
-  return dir;
 }
 
 
@@ -551,7 +529,7 @@ std::string WebGen::_protocol() const
 void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
 {
   // Get the file name.
-  const std::string dir ( this->_directory ( _site["scripts"]["directory"] ) );
+  const std::string dir ( Functions::directory ( _site["scripts"]["directory"] ) );
   std::string file ( _site["scripts"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;
@@ -582,7 +560,7 @@ void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
 void WebGen::_addStyles ( XmlTree::Node::ValidRefPtr parent )
 {
   // Get the file name.
-  const std::string dir ( this->_directory ( _site["styles"]["directory"] ) );
+  const std::string dir ( Functions::directory ( _site["styles"]["directory"] ) );
   std::string file ( _site["styles"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;

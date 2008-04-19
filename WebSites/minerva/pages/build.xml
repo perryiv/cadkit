@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content>
+  <section>
+    <h3>Building on Linux</h3>
+    <p class="shell_command">
+      setenv CADKIT_INC_DIR /path/to/source/cadkit
+      setenv CADKIT_BIN_DIR $CADKIT_INC_DIR/bin
+      setenv CADKIT_LIB_DIR $CADKIT_BIN_DIR
+      cd cadkit/Helios
+      mkdir build
+      mkdir build/release
+      cd build/release
+      ccmake ../../
+      make
+    </p>
+  </section>
+</content>

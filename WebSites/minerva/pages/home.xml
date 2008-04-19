@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content>
+  <section>
+    <table class="home_content">
+      <tr>
+        <td class="home_content_row_0_column_0">
+          <para>
+            <text>
+              Minerva is a free program for viewing geospatial data. 
+              It unifies standard GIS capabilities with high-performance, 3D visualization. 
+              Written in modular, platform independent C++, the core functionality is highly 
+              extensible through a plugin architecture that supports interface-querying.
+            </text>
+          </para>
+          <para>
+            <text>At the top level, there is a</text>
+            <link><name>Qt</name><text>Qt</text></link>
+            <text>
+              desktop application that compiles on most versions of Windows, Mac, and Linux. 
+              There is also a
+            </text>
+            <link><name>Juggler</name><text>VR-Juggler</text></link>
+            <text> executable for multi-screen deployment.</text>
+          </para>
+          <para>
+            <text>Using a</text>
+            <link><name>postgres</name><text>PostgreSQL</text></link>
+            <text>
+              database as the communication conduit, any running instance of Minerva
+              can send commands to and receive commands from other instances of Minerva.
+              This feature is most often used to "drive" a VR-based Minerva session from the desktop.
+            </text>
+          </para>
+          <para>
+            <text>
+              Minerva is an open-source project under active development at the
+            </text>
+            <link><name>HPC</name><text>Fulton High Performance Computing Initiative</text></link>
+            <text> at</text>
+            <link><name>ASU</name><text>Arizona State University</text></link>
+            <text>.</text>
+            <text>
+              It has seen heavy use in our production visualization facility,
+            </text>
+            <link><name>DT</name><text>Decision Theater</text></link>
+            <text>, </text>
+            <text>supporting</text>
+            <link><name>serv</name><text>SERV</text></link>
+            <text>
+              projects as well as policy decision-making meetings.
+            </text>
+          </para>
+          <para>
+            <text>
+              Projects completed with Minerva vary from 
+            </text>
+            <link><name>SUSD</name><text>school enrollment</text></link>
+            <text> and</text>
+            <link><name>WNV</name><text>disease propagation</text></link>
+            <text> to</text>
+            <link><name>serv_mahalov</name><text>real-time weather prediction</text></link>
+            <text>.</text>
+          </para>
+        </td>
+        <td class="home_content_row_0_column_1">
+          <image><name>wire_world</name></image>
+        </td>
+      </tr>
+    </table>
+  </section>
+</content>

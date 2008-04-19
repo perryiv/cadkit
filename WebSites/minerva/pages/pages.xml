@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pages>
+  <page>
+    <menu>Home</menu>
+    <file>home.xml</file>
+  </page>
+  <page>
+    <menu>About</menu>
+    <file>about.xml</file>
+  </page>
+  <page>
+    <menu>Build</menu>
+    <file>build.xml</file>
+  </page>
+  <page>
+    <menu>Download</menu>
+    <file>download.xml</file>
+  </page>
+  <page>
+    <menu>Features</menu>
+    <file>features.xml</file>
+  </page>
+  <page>
+    <menu>License</menu>
+    <file>license.xml</file>
+  </page>
+</pages>

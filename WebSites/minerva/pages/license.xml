@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content>
+  <section>
+    <para>
+      <text>
+        Minerva and supporting CadKit modules are released under the
+      </text>
+      <link><name>bsd_license</name><text>BSD License</text></link>
+      <text>.</text>
+      <text>
+        The code is provided "as is" with absolutely no warranty whatsoever.
+      </text>
+    </para>
+    <para>
+      <text>    
+        You are welcome and encouraged to use Minerva in proprietary work.
+        Just keep the author's name and copyright notice at the top of each source file.
+      </text>
+    </para>
+  </section>
+</content>

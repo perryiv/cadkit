@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content>
+  <section>
+    <table class="features_content">
+      <tr>
+        <td class="features_content_row_0_column_0">
+          <para>
+            <ul>
+              <li>Arbitrary latitude and longitude extents</li>
+              <li>Ability to turn tile "skirts" on/off</li>
+              <li>Hide or show the back side of the ground tiles</li>
+              <li>Change the distance in which tiles subdivide</li>
+              <li>Arbitrary number of background threads building tiles</li>
+              <li>WMS imagery</li>
+              <li>Imagery from georeferenced raster formats (e.g., geotiff)</li>
+              <li>Vector data from PostGIS databases</li>
+              <li>WMS terrain using 16-bit greyscale PNG images</li>
+              <li>ArcAscii terrain</li>
+              <li>Multiple planetary bodies</li>
+              <li>Classic trackball navigation</li>
+              <li>Click to define center of rotation</li>
+              <li>Fly underground</li>
+              <li>Ellipsoidal and flat land models</li>
+              <li>Arbitrarily scale geometry</li>
+              <li>Local caching of imagery and terrain data</li>
+              <li>Planetary tiling engine that manages level-of-detail</li>
+              <ul><li>Runtime generation of tiles</li></ul>
+              <li>Arbitrary number of color-to-alpha mappings for each raster layer</li>
+              <li>Ability to display data according to a time-stamp or time-window</li>
+              <li>Multi-pass antialiased rendering</li>
+              <li>Export screenshots of arbitrary pixel dimensions</li>
+              <ul><li>Bounded only by system memory and destination file format</li></ul>
+            </ul>
+          </para>
+        </td>
+        <td class="features_content_row_0_column_1">
+          <image><name>terra_server_drg</name></image>
+        </td>
+      </tr>
+    </table>
+  </section>
+</content>

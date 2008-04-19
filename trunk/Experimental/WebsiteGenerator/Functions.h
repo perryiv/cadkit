@@ -24,7 +24,17 @@ namespace Usul { namespace Registry { class Node; } }
 
 struct Functions
 {
-  static std::string             directory ( Usul::Registry::Node & );
+  // Always returns a valid directory string, if only "./"
+  static std::string     directory ( Usul::Registry::Node & );
+  static std::string     directory ( const std::string & );
+
+  // Return "http" or "https".
+  static std::string     protocol();
+
+  // Return the url.
+  static std::string     urlDomain ( bool wantSlash );
+  static std::string     urlScriptDir ( bool wantSlash );
+  static std::string     urlScript();
 };
 
 

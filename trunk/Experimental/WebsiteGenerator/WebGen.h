@@ -64,15 +64,10 @@ protected:
   XmlTree::Node::ValidRefPtr         _makeTable ( unsigned int numRows, unsigned int numCols, const std::string &cssClassName, NodeMatrix &matrix ) const;
 
   std::string                        _pageName() const;
-  std::string                        _protocol() const;
 
   std::string                        _queryValue ( const std::string &name, const std::string &defaultValue = std::string() ) const;
 
   std::string                        _specialChar ( const std::string &name, unsigned int num ) const;
-
-  std::string                        _urlDomain ( bool wantSlash ) const;
-  std::string                        _urlScriptDir ( bool wantSlash ) const;
-  std::string                        _urlScript() const;
 
 private:
 

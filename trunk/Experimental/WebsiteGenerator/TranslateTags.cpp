@@ -161,7 +161,7 @@ namespace Helper
     // Make the node into an image.
     node->value ( "" );
     node->name ( "img" );
-    node->attributes()["src"] = dir + src;
+    node->attributes()["src"] = Functions::urlDomain ( true ) + dir + src;
 
     // Is there alternative text?
     if ( false == alt.empty() )

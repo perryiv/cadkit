@@ -17,6 +17,8 @@
 #include "Functions.h"
 
 #include "Usul/Registry/Node.h"
+#include "Usul/Strings/Case.h"
+#include "Usul/System/Environment.h"
 
 #include <algorithm>
 
@@ -29,8 +31,19 @@
 
 std::string Functions::directory ( Usul::Registry::Node &node )
 {
-  // Get the directory.
-  std::string dir ( node.get ( "./" ) );
+  return Functions::directory ( node.get ( "." ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find the directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Functions::directory ( const std::string &s )
+{
+  std::string dir ( s );
 
   // Fix the slashes.
   std::replace ( dir.begin(), dir.end(), '\\', '/' );
@@ -39,10 +52,70 @@ std::string Functions::directory ( Usul::Registry::Node &node )
   dir = ( ( true == dir.empty() ) ? std::string ( "./" ) : dir );
 
   // Make sure there is a trailing slash.
-  const unsigned int last ( dir.size() - 1 );
-  if ( '/' != dir.at(last) )
-    dir += "/";
+  if ( false == dir.empty() )
+  {
+    const unsigned int last ( dir.size() - 1 );
+    if ( '/' != dir.at(last) )
+    {
+      dir += '/';
+    }
+  }
 
   // Return the string.
   return dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return URL of the domain. Ex: http://www.mysite.com/
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Functions::urlDomain ( bool wantSlash )
+{
+  const std::string protocol ( Functions::protocol() );
+  const std::string serverName ( Usul::System::Environment::get ( "SERVER_NAME" ) );
+  return Usul::Strings::format ( protocol + "://" + serverName + ( ( wantSlash ) ? "/" : "" ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return URL of the script. Ex: http://www.mysite.com/cgi-bin/my_dir/my_script
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Functions::urlScript()
+{
+  const std::string domain ( Functions::urlDomain ( false ) );
+  std::string script ( Usul::System::Environment::get ( "SCRIPT_NAME" ) );
+  return Usul::Strings::format ( domain, script );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return URL of the script. Ex: http://www.mysite.com/cgi-bin/my_dir/
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Functions::urlScriptDir ( bool wantSlash )
+{
+  std::string script ( Functions::urlScript() );
+  std::vector<char> temp ( script.rbegin(), script.rend() );
+  temp.erase ( temp.begin(), std::find ( temp.begin(), temp.end(), '/' ) );
+  return std::string ( temp.rbegin(), temp.rend() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the protocol, either "http" or "https".
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Functions::protocol()
+{
+  return ( ( "on" == Usul::Strings::lowerCase ( Usul::System::Environment::get ( "HTTPS" ) ) ) ? "https" : "http" );
 }

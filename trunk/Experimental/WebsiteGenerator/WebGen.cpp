@@ -121,14 +121,14 @@ WebGen::WebGen ( int argc, char **argv, char **env ) :
   _chars["®"] = "&reg;";
 
   // Same values but friendly keys.
-  _chars["space"]         = "&nbsp;";
-  _chars["short_dash"]    = "&ndash;";
-  _chars["long_dash"]     = "&mdash;";
-  _chars["copyright"]     = "&copy;";
-  _chars["divide"]        = "&divide;";
-  _chars["paragraph"]     = "&para;";
-  _chars["plus_or_minus"] = "&plusmn;";
-  _chars["registered"]    = "&reg;";
+  _chars["space"]         = " ";
+  _chars["short_dash"]    = "–";
+  _chars["long_dash"]     = "—";
+  _chars["copyright"]     = "©";
+  _chars["divide"]        = "÷";
+  _chars["paragraph"]     = "¶";
+  _chars["plus_or_minus"] = "±";
+  _chars["registered"]    = "®";
 }
 
 
@@ -264,7 +264,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
       XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
       const std::string site ( this->_queryValue ( "site" ) );
       const std::string page ( Usul::File::base ( info.second ) );
-      para->append ( this->_link ( info.first, Usul::Strings::format ( this->_urlScript(), "?site=", site, "&page=", page ) ) );
+      para->append ( this->_link ( info.first, Usul::Strings::format ( Functions::urlScript(), "?site=", site, "&page=", page ) ) );
     }
   }
 
@@ -274,8 +274,9 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
     XmlTree::Node::ValidRefPtr content ( this->_cell ( index[0], index[1] ) );
 
     const std::string base ( this->_queryValue ( "page", "home" ) );
+    const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
     const std::string dir ( Functions::directory ( _site["pages"]["directory"] ) );
-    const std::string path ( Usul::Strings::format ( dir, base, ".xml" ) );
+    const std::string path ( Usul::Strings::format ( root, dir, base, ".xml" ) );
     XmlTree::Node::ValidRefPtr page ( this->_loadXmlFile ( path ) );
 
     typedef XmlTree::Node::Children Children;
@@ -325,7 +326,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-XmlTree::Node::ValidRefPtr WebGen::_makeImage ( const std::string &src, const std::string &alt )
+XmlTree::Node::ValidRefPtr WebGen::_makeImage ( const std::string &file, const std::string &alt )
 {
   XmlTree::Node::ValidRefPtr img ( new XmlTree::Node ( "img" ) );
   img->attributes()["alt"] = alt;
@@ -333,11 +334,11 @@ XmlTree::Node::ValidRefPtr WebGen::_makeImage ( const std::string &src, const st
   // Get the image directory.
   const std::string dir ( Functions::directory ( _site["images"]["directory"] ) );
 
-  // Make the path name.
-  std::string path ( dir + src );
+  // Make the src.
+  std::string src ( Usul::Strings::format ( Functions::urlDomain ( true ), dir, file ) );
 
   // Set the source attribute.
-  img->attributes()["src"] = path;
+  img->attributes()["src"] = src;
 
   // Return it.
   return img;
@@ -419,13 +420,20 @@ XmlTree::Node::ValidRefPtr WebGen::_loadXmlFile ( const std::string &file ) cons
 void WebGen::_findPages()
 {
   // Get the file for the pages.
+  const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
   const std::string dir ( Functions::directory ( _site["pages"]["directory"] ) );
   std::string file ( _site["pages"]["file"].get ( "" ) );
   if ( true == file.empty() )
+  {
+    std::cout << "No pages specified" << std::endl;
     return;
-  file = dir + file;
+  }
+  file = Usul::Strings::format ( root, dir, file );
   if ( false == Usul::Predicates::FileExists::test ( file ) )
+  {
+    std::cout << "File '" << file << "' does not exists" << std::endl;
     return;
+  }
 
   // Read the pages file.
   XmlTree::Node::ValidRefPtr pages ( this->_loadXmlFile ( file ) );
@@ -466,62 +474,6 @@ XmlTree::Node::ValidRefPtr WebGen::_cell ( unsigned int r, unsigned int c )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return URL of the domain. Ex: http://www.mysite.com/
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string WebGen::_urlDomain ( bool wantSlash ) const
-{
-  const std::string protocol ( this->_protocol() );
-  const std::string serverName ( _env["SERVER_NAME"].get ( "localhost" ) );
-  return Usul::Strings::format ( protocol + "://" + serverName + ( ( wantSlash ) ? "/" : "" ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return URL of the script. Ex: http://www.mysite.com/cgi-bin/my_dir/my_script
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string WebGen::_urlScript() const
-{
-  const std::string domain ( this->_urlDomain ( false ) );
-  const std::string program ( Usul::File::base ( Usul::CommandLine::Arguments::instance().argv ( 0 ) ) );
-  std::string script ( _env["SCRIPT_NAME"].get ( program ) );
-  return Usul::Strings::format ( domain, script );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return URL of the script. Ex: http://www.mysite.com/cgi-bin/my_dir/
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string WebGen::_urlScriptDir ( bool wantSlash ) const
-{
-  std::string script ( this->_urlScript() );
-  std::vector<char> temp ( script.rbegin(), script.rend() );
-  temp.erase ( temp.begin(), std::find ( temp.begin(), temp.end(), '/' ) );
-  return std::string ( temp.rbegin(), temp.rend() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the protocol, either "http" or "https".
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string WebGen::_protocol() const
-{
-  return ( ( "on" == Usul::Strings::lowerCase ( Usul::System::Environment::get ( "HTTPS" ) ) ) ? "https" : "http" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add the scripts.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -529,11 +481,12 @@ std::string WebGen::_protocol() const
 void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
 {
   // Get the file name.
+  const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
   const std::string dir ( Functions::directory ( _site["scripts"]["directory"] ) );
   std::string file ( _site["scripts"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;
-  file = dir + file;
+  file = Usul::Strings::format ( root, dir, file );
   if ( false == Usul::Predicates::FileExists::test ( file ) )
     return;
 
@@ -560,17 +513,18 @@ void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
 void WebGen::_addStyles ( XmlTree::Node::ValidRefPtr parent )
 {
   // Get the file name.
+  const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
   const std::string dir ( Functions::directory ( _site["styles"]["directory"] ) );
   std::string file ( _site["styles"]["file"].get ( "" ) );
   if ( true == file.empty() )
     return;
-  file = dir + file;
-  if ( false == Usul::Predicates::FileExists::test ( file ) )
-    return;
+
+  // Make the url to the style sheet.
+  const std::string url ( Usul::Strings::format ( Functions::urlDomain ( true ), dir, file ) );
 
   // Make the node.
   XmlTree::Node::ValidRefPtr link ( new XmlTree::Node ( "link" ) );
-  link->attributes()["href"] = file;
+  link->attributes()["href"] = url;
   link->attributes()["rel"]  = "stylesheet";
   link->attributes()["type"] = "text/css";
 

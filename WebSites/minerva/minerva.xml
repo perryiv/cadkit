@@ -13,7 +13,7 @@
     </outer>
   </tables>
   <images>
-    <directory>../minerva/images/</directory>
+    <directory>minerva/images/</directory>
     <logo>
       <file>minerva_icon.png</file>
       <cell>0 0</cell>
@@ -47,15 +47,15 @@
     <cell>2 1</cell>
   </legal>
   <pages>
-    <directory>../minerva/pages/</directory>
+    <directory>minerva/pages/</directory>
     <file>pages.xml</file>
   </pages>
   <scripts>
-    <directory>../minerva/scripts/</directory>
+    <directory>minerva/scripts/</directory>
     <file>scripts.xml</file>
   </scripts>
   <styles>
-    <directory>../minerva/css/</directory>
+    <directory>minerva/css/</directory>
     <file>styles.css</file>
   </styles>
   <links>

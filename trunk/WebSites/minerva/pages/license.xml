@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content>
   <section>
-    <para>
-      <text>
-        Minerva and supporting CadKit modules are released under the
-      </text>
-      <link><name>bsd_license</name><text>BSD License</text></link>
-      <text>.</text>
-      <text>
-        The code is provided "as is" with absolutely no warranty whatsoever.
-      </text>
-    </para>
-    <para>
-      <text>    
-        You are welcome and encouraged to use Minerva in proprietary work.
-        Just keep the author's name and copyright notice at the top of each source file.
-      </text>
-    </para>
+    <table class="content">
+      <tr>
+        <td class="content_row_0_column_0">
+          <para>
+            <text>
+              Minerva and supporting</text>
+            <link><name>cadkit</name><text>CadKit</text></link>
+            <text>
+              modules are released under the
+            </text>
+            <link><name>bsd_license</name><text>BSD License</text></link>
+            <text>.</text>
+            <text>
+              The code is provided "as is" with absolutely no warranty whatsoever.
+            </text>
+          </para>
+          <para>
+            <text>
+              You are welcome and encouraged to use Minerva in closed-source, proprietary work.
+            </text>
+          </para>
+        </td>
+        <td class="content_row_0_column_1">
+          <center><image><name>wire_world</name></image></center>
+        </td>
+      </tr>
+    </table>
   </section>
 </content>

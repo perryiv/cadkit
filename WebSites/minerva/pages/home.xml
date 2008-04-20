@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content>
   <section>
-    <table class="home_content">
+    <table class="content">
       <tr>
-        <td class="home_content_row_0_column_0">
+        <td class="content_row_0_column_0">
           <para>
             <text>
               Minerva is a free program for viewing geospatial data. 
@@ -62,8 +62,8 @@
             <text>.</text>
           </para>
         </td>
-        <td class="home_content_row_0_column_1">
-          <image><name>wire_world</name></image>
+        <td class="content_row_0_column_1">
+          <center><image><name>gradient_world</name></image></center>
         </td>
       </tr>
     </table>

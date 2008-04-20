@@ -1,17 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content>
   <section>
-    <h3>Building on Linux</h3>
-    <p class="shell_command">
-      setenv CADKIT_INC_DIR /path/to/source/cadkit
-      setenv CADKIT_BIN_DIR $CADKIT_INC_DIR/bin
-      setenv CADKIT_LIB_DIR $CADKIT_BIN_DIR
-      cd cadkit/Helios
-      mkdir build
-      mkdir build/release
-      cd build/release
-      ccmake ../../
-      make
-    </p>
+    <table class="content">
+      <tr>
+        <td class="content_row_0_column_0">
+          <h3 class="first">All Platforms</h3>
+          <p>
+            Set these environment variables:
+          </p>
+          <ul class="shell_command">
+            <li>CADKIT_INC_DIR /path/to/source/cadkit</li>
+            <li>CADKIT_BIN_DIR $CADKIT_INC_DIR/bin</li>
+            <li>CADKIT_LIB_DIR $CADKIT_BIN_DIR</li>
+          </ul>
+          <p>
+            CADKIT_BIN_DIR and CADKIT_LIB_DIR do not have 
+            to be relative to CADKIT_INC_DIR as shown above.
+          </p>
+          <h3>Windows</h3>
+          <para>
+            <text>
+              The development team uses
+            </text>
+            <link><name>vcpp</name><text>Microsoft Visual C++ 2005</text></link>
+            <text>,</text>
+            <text> but newer versions may also work.</text>
+          </para>
+          <p>
+            Open this solution file:
+          </p>
+          <ul class="shell_command">
+            <li>$CADKIT_INC_DIR/Helios/Qt/HeliosQt.sln</li>
+          </ul>
+          <p>
+            Press the F7 key to build all the projects. 
+          </p>
+          <h3>Linux</h3>
+          <para>
+            <text>
+              Building on Linux requires
+            </text>
+            <link><name>cmake</name><text>CMake</text></link>
+            <text>.</text>
+          </para>
+          <ul class="shell_command">
+            <li>cd cadkit/Helios</li>
+            <li>mkdir build</li>
+            <li>mkdir build/release</li>
+            <li>cd build/release</li>
+            <li>ccmake ../../</li>
+            <li>make</li>
+          </ul>
+        </td>
+        <td class="content_row_0_column_1">
+          <center><image><name>wire_world</name></image></center>
+        </td>
+      </tr>
+    </table>
   </section>
 </content>

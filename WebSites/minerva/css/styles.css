@@ -4,96 +4,95 @@ body, td, th, input
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 14px;
 }
+
 h1.subject
 {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 32px;
 }
+
 h3.first
 {
   padding: 0px 0px 0px 0px;
 }
+
 h3
 {
   padding: 25px 0px 0px 0px;
 }
+
 table
 {
 #  border-width: 1px 1px 1px 1px;
 #  border-style: solid solid solid solid;
 }
+
 td.outer_row_0_column_0
 {
 #  background-color: #CCCCCC;
   padding: 30px 30px 10px 30px;
 }
+
 td.outer_row_0_column_1
 {
 #  background-color: #FFCCCC;
   padding: 40px 30px 10px 30px;
   width: 100%;
 }
+
 td.outer_row_1_column_0
 {
 #  background-color: #CCFFCC;
   padding: 30px 30px 30px 70px;
   vertical-align: top;
 }
+
 td.outer_row_1_column_1
 {
 #  background-color: #CCCCFF;
   padding: 10px 60px 30px 60px;
   vertical-align: top;
 }
+
 td.outer_row_2_column_1
 {
   padding: 10px 30px 30px 30px;
   vertical-align: top;
   text-align: center;
 }
-td.home_content_row_0_column_0
-{
-  vertical-align: top;
-  width: 100%;
-}
-td.home_content_row_0_column_1
-{
-  vertical-align: top;
-}
-td.about_content_row_0_column_0
-{
-  vertical-align: top;
-  width: 100%;
-}
-td.about_content_row_0_column_1
-{
-  vertical-align: top;
-}
-td.features_content_row_0_column_0
-{
-  vertical-align: top;
-  width: 100%;
-}
-td.features_content_row_0_column_1
-{
-  vertical-align: top;
-}
-td.download_content_row_0_column_0
+
+table.content
 {
   width: 100%;
 }
-td.download_content_row_1_column_0
+
+td.content_row_0_column_0
 {
-  padding: 30px 0px 0px 0px;
+  vertical-align: top;
+  width: 60%;
 }
+
+td.content_row_0_column_1
+{
+  vertical-align: top;
+  width: 40%;
+}
+
 td
 {
 #  border-width: 1px 1px 1px 1px;
 #  border-style: solid solid solid solid;
 }
+
 p.shell_command
 {
   white-space: pre;
   padding: 0px 0px 0px 0px;
-#  background-color: #CCCCFF;
+  margin: 0px 0px 0px 0px;
+#  background-color: #FFCCCC;
+}
+
+ul.shell_command
+{
+  list-style: none;
 }

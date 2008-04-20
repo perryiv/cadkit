@@ -30,6 +30,10 @@
       <file>wire_world.png</file>
       <alternative>World rendered in wireframe</alternative>
     </wire_world>
+    <gradient_world>
+      <file>gradient_world.png</file>
+      <alternative>World rendered in gradient</alternative>
+    </gradient_world>
     <terra_server_drg>
       <file>terra_server_drg.png</file>
       <alternative>World rendered in wireframe</alternative>
@@ -99,14 +103,18 @@
       <href>http://www.vrjuggler.org</href>
       <target>blank</target>
     </Juggler>
-    <windows_installer>
-      <href>http://www.minerva-gis.org/downloads/installers/windows/</href>
+    <latest_windows_installer>
+      <href>http://enuvis08.fulton.asu.edu/minerva//downloads/installers/windows/2008_4_16/MinervaSetup.msi</href>
       <target>blank</target>
-    </windows_installer>
-    <mac_installer>
+    </latest_windows_installer>
+    <all_installers>
+      <href>http://www.minerva-gis.org/downloads/installers/</href>
+      <target>blank</target>
+    </all_installers>
+    <mac_installers>
       <href>http://www.minerva-gis.org/downloads/installers/osx/</href>
       <target>blank</target>
-    </mac_installer>
+    </mac_installers>
     <osg>
       <href>http://www.openscenegraph.org</href>
       <target>blank</target>
@@ -127,5 +135,17 @@
       <href>http://www.opensource.org/licenses/bsd-license.html</href>
       <target>blank</target>
     </bsd_license>
+    <cadkit>
+      <href>http://sf.net/projects/cadkit</href>
+      <target>blank</target>
+    </cadkit>
+    <cmake>
+      <href>http://www.cmake.org</href>
+      <target>blank</target>
+    </cmake>
+    <vcpp>
+      <href>http://msdn2.microsoft.com/en-us/visualc/</href>
+      <target>blank</target>
+    </vcpp>
   </links>
 </site>

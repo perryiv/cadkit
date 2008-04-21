@@ -442,6 +442,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Configs"
+				>
+				<File
+					RelativePath="..\Configs\devices.xml"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

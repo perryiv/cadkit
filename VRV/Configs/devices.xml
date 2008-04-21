@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Devices>
   <Device>
+    <Analogs>
+      <Analog name ="Analog0" horizontal_name="Analog0"
+                              vertical_name="Analog1" />
+      <Analog name ="Analog1" horizontal_name="Analog2"
+                              vertical_name="Analog3" />
+    </Analogs>
+    
     <Buttons>
       <Button name="Button1" vj_name="VJButton0" id="0x00000001" />
       <Button name="Button2" vj_name="VJButton1" id="0x00000002" />

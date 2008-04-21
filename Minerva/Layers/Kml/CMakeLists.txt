@@ -35,7 +35,9 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
 ./ColorStyle.cpp
 ./Feature.cpp
+./IconStyle.cpp
 ./KmlLayer.cpp
+./LineStyle.cpp
 ./Link.cpp
 ./LookAt.cpp
 ./NetworkLink.cpp

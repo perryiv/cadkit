@@ -315,7 +315,6 @@ public:
   void                    exportScene ();
   void                    exportSceneBinary ();
   void                    exportDocument ( const std::string& ext );
-  void                    saveDocument ( const std::string& ext );
 
   // View functions.
   void                    viewWorld ();
@@ -352,6 +351,10 @@ public:
   /// Set/get the show back face culling state.
   void                          showBackFaces ( bool b );
   bool                          isBackFacesShowing() const;
+
+	/// Set/get body centered rotation flag.
+	void                          bodyCenteredRotation ( bool b );
+	bool                          isBodyCenteredRotation() const;
 
 protected:
 
@@ -743,6 +746,7 @@ private:
   IntersectListeners                     _intersectListeners;
   ButtonMap                              _buttonMap;
   ButtonMap::key_type                    _buttonToAssign;
+	bool                                   _bodyCenteredRotation;
 };
 
 }

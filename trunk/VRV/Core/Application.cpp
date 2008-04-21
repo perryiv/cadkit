@@ -177,7 +177,8 @@ Application::Application() :
   _renderListeners   (),
   _intersectListeners (),
   _buttonMap          (),
-  _buttonToAssign     ( 0 )
+  _buttonToAssign     ( 0 ),
+	_bodyCenteredRotation ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -2774,13 +2775,23 @@ void Application::_navigate()
   if ( menu.valid() && menu->menu()->expanded() )
     return;
 
+	const bool bodyCentered ( Usul::Threads::Safe::get ( this->mutex(), _bodyCenteredRotation ) );
+
+	osg::Matrix vm ( this->getViewMatrix() );
+  osg::Vec3 translation ( vm.getTrans() );
+	Vector t ( translation[0], translation[1], translation[2] );
+
+	// Move world to orgin.
+	if ( true == bodyCentered )
+	{
+		Usul::Math::Matrix44d m;
+		m.makeTranslation ( -t );
+		this->preMultiply ( m );
+	}
+
+	// This is trying to get the seek to work...
 #if 0
   Vector t ( this->rotationCenter() );
-
-  //osg::Matrix vm ( this->getViewMatrix() );
-  //osg::Vec3 translation ( vm.getTrans() );
-
-  //t += Vector ( translation[0], translation[1], translation[2] );
 
   Usul::Math::Matrix44d m;
   m.makeTranslation ( -t );
@@ -2792,10 +2803,13 @@ void Application::_navigate()
   if ( _navigator.valid() )
     (*_navigator)();
 
-#if 0
-  m.makeTranslation ( t );
-  this->postMultiply ( m );
-#endif
+	// Restore center.
+	if ( true == bodyCentered )
+	{
+		Usul::Math::Matrix44d m;
+		m.makeTranslation ( t );
+		this->postMultiply ( m );
+	}
 }
 
 
@@ -3866,6 +3880,7 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 
   // Namespace aliases to help shorten lines.
   namespace UA = Usul::Adaptors;
+	namespace UC = Usul::Commands;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   
@@ -3885,12 +3900,13 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 
   menu->addSeparator();
   
+	menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Body Centered Rotation", UA::memberFunction<void> ( this, &Application::bodyCenteredRotation ), UA::memberFunction<bool> ( this, &Application::isBodyCenteredRotation ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
 
-  menu->append ( new Button ( new BasicCommand ( "Translate Speed x 10", UA::memberFunction<void> ( this, &Application::_increaseSpeedTen ) ) ) );
-  menu->append ( new Button ( new BasicCommand ( "Translate Speed x 2", UA::memberFunction<void> ( this, &Application::_increaseSpeed ) ) ) );
-  menu->append ( new Button ( new BasicCommand ( "Translate Speed / 2", UA::memberFunction<void> ( this, &Application::_decreaseSpeed ) ) ) );
-  menu->append ( new Button ( new BasicCommand ( "Translate Speed / 10", UA::memberFunction<void> ( this, &Application::_decreaseSpeedTen ) ) ) );
+	menu->append ( new Button ( UC::genericCommand ( "Translate Speed x 10", UA::memberFunction<void> ( this, &Application::_increaseSpeedTen ), UC::TrueFunctor() ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Translate Speed x 2", UA::memberFunction<void> ( this, &Application::_increaseSpeed ), UC::TrueFunctor() ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Translate Speed / 2", UA::memberFunction<void> ( this, &Application::_decreaseSpeed ), UC::TrueFunctor() ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Translate Speed / 10", UA::memberFunction<void> ( this, &Application::_decreaseSpeedTen ), UC::TrueFunctor() ) ) );
 }
 
 
@@ -5454,19 +5470,27 @@ void Application::exportDocument ( const std::string& ext )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Save the document.
+//  Set body centered rotation flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::saveDocument ( const std::string& ext )
+void Application::bodyCenteredRotation ( bool b )
 {
-#if 0
-  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+	USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+	_bodyCenteredRotation = b;
+}
 
-  if ( document.valid() )
-  {
-    std::string filename ( this->_filename ( "vrv_save_" + Usul::File::base ( document->fileName() ), ext ) );
-    document->saveAs ( filename );
-  }
-#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get body centered rotation flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Application::isBodyCenteredRotation() const
+{
+	USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+	return _bodyCenteredRotation;
 }

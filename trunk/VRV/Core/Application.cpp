@@ -3105,6 +3105,7 @@ void Application::_parseCommandLine()
   this->_loadModelFiles ( filenames );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Read the user's devices config file.
@@ -3152,10 +3153,20 @@ void Application::_readDevicesFile ()
 
         }
       }
-      unsigned int uiid = ::strtoul ( id.c_str(), 0x0, 16 );
-      //unsigned int uiid = Usul::Convert::Type< std::string, unsigned int >::convert ( id );
+      const unsigned int uiid ( ::strtoul ( id.c_str(), 0x0, 16 ) );
       _buttons->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
     }
+		else if ( "Analog" == node->name() )
+		{
+			//std::string name, analog0, analog1;
+
+			// Check attributes...
+
+			/*if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
+			{
+				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 )
+			}*/
+		}
   }
 }
 
@@ -3218,7 +3229,7 @@ void Application::_readFunctorFile ()
   DirectionFunctors directionFunctors;
 
   // Setters.
-  Helper::AnalogSetter analogSetter;
+  Helper::AnalogSetter analogSetter; // ( _analogs );
   Helper::MatrixSetter matrixSetter;
   Helper::DirectionSetter directionSetter ( matrixFunctors );
   Helper::TransformSetter transformSetter ( directionFunctors );
@@ -3942,31 +3953,21 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     MenuKit::Menu::RefPtr buttons ( new MenuKit::Menu ( "Buttons" ) );
 
     MenuKit::Menu::RefPtr assign ( new MenuKit::Menu ( "Assign" ) );
-#if 0
-    assign->append ( new Button ( Usul::Commands::genericCommand ( "Red Button", 
-                     UA::bind1<void> ( VRV::BUTTON_RED, 
-                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
-    assign->append ( new Button ( Usul::Commands::genericCommand ( "Yellow Button", 
-                     UA::bind1<void> ( VRV::BUTTON_YELLOW, 
-                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
-    assign->append ( new Button ( Usul::Commands::genericCommand ( "Green Button", 
-                     UA::bind1<void> ( VRV::BUTTON_GREEN, 
-                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
-    assign->append ( new Button ( Usul::Commands::genericCommand ( "Blue Button", 
-                     UA::bind1<void> ( VRV::BUTTON_BLUE, 
-                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );;
-#else
+
     for( Buttons::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
     {
-      std::string name = (*iter)->getButtonName();
-      unsigned long id = (*iter)->buttonID();
+			VRV::Devices::ButtonDevice::RefPtr button ( *iter );
 
-      assign->append ( new Button ( Usul::Commands::genericCommand ( name, 
-                     UA::bind1<void> ( id, 
-                     UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+			if ( true == button.valid() )
+			{
+				std::string name ( button->getButtonName() );
+				unsigned long id ( button->buttonID() );
 
+				assign->append ( new Button ( Usul::Commands::genericCommand ( name, 
+											 UA::bind1<void> ( id, 
+											 UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+			}
     }
-#endif
     
     buttons->append ( assign );
 

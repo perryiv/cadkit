@@ -139,8 +139,8 @@ namespace Helper
           if ( false == name.empty() )
           {
             pointer->name ( name );
+						pointer->caller ( caller );
             setter ( *node, *pointer );
-            pointer->caller ( caller );
             functors[name] = pointer;
           }
         }
@@ -160,10 +160,16 @@ namespace Helper
 {
   struct AnalogSetter
   {
+		//AnalogSetter ( const Analogs& analogs ) : _analogs() { }
+
     void operator () ( XmlTree::Node &node, AnalogInput &functor ) const
     {
+			//functor.caller ( _analogs[node.attributes()["analog_device"]] );
       functor.range ( Helper::FromString<AnalogInput::Vec2>::convert ( node.attributes()["range"], AnalogInput::Vec2 ( -1.0f, 1.0f ) ) );
     }
+
+	//private:
+		//Analogs _analogs;
   };
 
   struct MatrixSetter

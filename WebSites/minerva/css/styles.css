@@ -21,6 +21,11 @@ h3
   padding: 25px 0px 0px 0px;
 }
 
+h4
+{
+  padding: 20px 0px 0px 0px;
+}
+
 table
 {
 #  border-width: 1px 1px 1px 1px;
@@ -78,18 +83,34 @@ td.content_row_0_column_1
   width: 40%;
 }
 
+td.documentation_content_row_0_column_0
+{
+  vertical-align: top;
+  width: 40%;
+}
+
+td.documentation_content_row_0_column_1
+{
+  vertical-align: top;
+  width: 1px;
+}
+
+td.documentation_content_row_1_column_0
+{
+  vertical-align: top;
+  width: 50%;
+}
+
+td.documentation_content_row_1_column_1
+{
+  vertical-align: middle;
+  width: 50%;
+}
+
 td
 {
 #  border-width: 1px 1px 1px 1px;
 #  border-style: solid solid solid solid;
-}
-
-p.shell_command
-{
-  white-space: pre;
-  padding: 0px 0px 0px 0px;
-  margin: 0px 0px 0px 0px;
-#  background-color: #FFCCCC;
 }
 
 ul.shell_command

@@ -17,6 +17,8 @@
 #ifndef _FLASH_MODEL_DOCUMENT_H_
 #define _FLASH_MODEL_DOCUMENT_H_
 
+#include "Experimental/Flash/FlashModel/Timestep.h"
+
 #include "Usul/Documents/Document.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
@@ -106,6 +108,12 @@ protected:
   /// Build the default transfer functions.
   void                        _buildDefaultTransferFunctions ();
   
+  /// Is the i'th timestep loaded?
+  bool                        _hasTimestep ( unsigned int i ) const;
+  
+  /// Load the i'th timestep.
+  void                        _loadTimestep ( unsigned int i );
+  
   /// Usul::Interfaces::ITimeVaryingData
   virtual void                setCurrentTimeStep ( unsigned int current );
   virtual unsigned int        getCurrentTimeStep () const;
@@ -118,6 +126,7 @@ private:
   typedef OsgTools::Volume::TransferFunction                    TransferFunction;
   typedef TransferFunction::RefPtr                              TransferFunctionPtr;
   typedef std::vector < TransferFunctionPtr >                   TransferFunctions;
+  typedef std::map <unsigned int, Timestep::RefPtr>             Timesteps;
   
   Filenames _filenames;
   unsigned int _currentTimestep;
@@ -126,6 +135,7 @@ private:
   
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
+  Timesteps _timesteps;
   
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( FlashDocument );

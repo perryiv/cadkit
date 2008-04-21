@@ -9,8 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Experimental/Flash/FlashModel/FlashDocument.h"
-#include "Experimental/Flash/FlashModel/H5File.h"
-#include "Experimental/Flash/FlashModel/Dataset.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
@@ -19,18 +17,12 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Threads/Safe.h"
+
+#include "OsgTools/Volume/TransferFunction1D.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
-
-#include "OsgTools/Box.h"
-#include "OsgTools/State/StateSet.h"
-#include "OsgTools/Volume/TransferFunction1D.h"
-
-#include "osg/MatrixTransform"
-#include "osg/Point"
-
-#include "boost/multi_array.hpp"
 
 #include "hdf5.h"
 
@@ -52,6 +44,7 @@ FlashDocument::FlashDocument() :
   _dirty ( true ),
   _currentTransferFunction ( 0 ),
   _transferFunctions(),
+  _timesteps(),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filenames", _filenames );
@@ -285,244 +278,18 @@ void FlashDocument::_buildScene()
   // Make sure we are in range...
   if ( _currentTimestep < _filenames.size() )
   {
-    // Open the file.
-    H5File file ( _filenames.at ( _currentTimestep ) );
+    // Do we need to load the data?
+    if ( false == this->_hasTimestep( _currentTimestep ) )
+      this->_loadTimestep ( _currentTimestep );
     
-    // Make sure we got a good file handle.
-    if ( false == file.isOpen())
-      throw std::runtime_error ( "Error 1747059583: Could not open file: " + _filenames.at ( _currentTimestep ) );
-    
-    // Open the data set.
-    Dataset::RefPtr boundingBox ( file.openDataset( "bounding box" ) );
-    
-    // Make sure we got a good data set handle.
-    if ( false == boundingBox.valid() || false == boundingBox->isOpen() )
-      throw std::runtime_error ( "Error 1220099573: Could not open data set." );
-    
-    // Get the rank.
-    //const int dimensions ( boundingBox->dimensions() );
-    
-    // Get the number of elements.
-    const hsize_t elements ( boundingBox->elements() );
-    
-    // Buffer for the data.
-    std::vector<double> buffer ( elements );
-    
-    // Read the data.
-    boundingBox->read ( H5T_NATIVE_DOUBLE, &buffer[0] );
-    
-    // Number of nodes.
-    const unsigned int numNodes ( boundingBox->size ( 0 ) );
-    
-    // Open the data set.
-    Dataset::RefPtr levelsData ( file.openDataset( "refine level" ) );
-    
-    // Make sure we got a good data set handle.
-    if ( false == levelsData.valid() || false == levelsData->isOpen() )
-      throw std::runtime_error ( "Error 3972712559: Could not open data set." );
-    
-    // Buffer for refine level.
-    std::vector<int> levels ( levelsData->elements() );
-    
-    // Read the levels.
-    levelsData->read ( H5T_NATIVE_INT, &levels[0] );
-    
-    // Open the data set.
-    Dataset::RefPtr nodeData ( file.openDataset( "node type" ) );
-    
-    // Make sure we got a good data set handle.
-    if ( false == nodeData.valid() || false == nodeData->isOpen() )
-      throw std::runtime_error ( "Error 1356818230: Could not open data set." );
-    
-    // Buffer for node type.
-    std::vector<int> nodeType ( nodeData->elements() );
-    
-    // Read the levels.
-    nodeData->read ( H5T_NATIVE_INT, &nodeType[0] );
-    
-    // Colors.
-    std::vector<osg::Vec4> colors ( 6 );
-    colors[0] = osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 );
-    colors[1] = osg::Vec4 ( 0.0, 1.0, 0.0, 1.0 );
-    colors[2] = osg::Vec4 ( 0.0, 0.0, 1.0, 1.0 );
-    colors[3] = osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 );
-    colors[4] = osg::Vec4 ( 1.0, 0.0, 1.0, 1.0 );
-    colors[5] = osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 );
-    
-    // Read the density.
-    Dataset::RefPtr densityData ( file.openDataset( "dens" ) );
-    
-    // Make sure it's valid.
-    if ( false == densityData.valid() || false == densityData->isOpen() )
-      throw std::runtime_error ( "Error 6348683680: Could not open data set." );
-    
-    // Buffer for density.
-    typedef boost::multi_array<double, 4> Array;
-    Array density ( boost::extents [densityData->size ( 0 )][densityData->size ( 1 )][densityData->size ( 2 )][densityData->size ( 3 )] );
-    
-    //std::vector<double> density ( densityData->elements() );
-    
-    // Read the density.
-    //densityData->read ( H5T_NATIVE_DOUBLE, &density[0] );
-    densityData->read ( H5T_NATIVE_DOUBLE, density.origin() );
-    
-    // Get min and max from the data set.
-    const double minimum ( densityData->attribute ( "minimum" ) );
-    const double maximum ( densityData->attribute ( "maximum" ) );
-    
-    // Get the dimensions in each direction.
-    const unsigned int x ( densityData->size ( 1 ) );
-    const unsigned int y ( densityData->size ( 2 ) );
-    const unsigned int z ( densityData->size ( 3 ) );
-    
-    // Make bounding boxes.
-    for ( unsigned int num = 0; num < numNodes; ++num )
-    {
-      const bool isLeaf ( 1 == nodeType.at ( num ) );
-      const int level ( levels.at ( num ) );
-      
-      if ( isLeaf && 5 == level )
-      {
-        const unsigned int start ( num * 6 );
+    // Get the timestep.
+    Timestep::RefPtr timestep ( _timesteps[_currentTimestep] );
 
-        osg::BoundingBox bb ( buffer[start    ], buffer[start + 2], buffer[start + 4], 
-                              buffer[start + 1], buffer[start + 3], buffer[start + 5] );
-
-        bb._min =  bb._min / float ( 1e+20f );
-        bb._max =  bb._max / float ( 1e+20f );
-        
-#if 0
-        OsgTools::ColorBox box ( bb );
-        box.color_policy().color ( colors.at ( level - 1 ) );
-        
-        osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-        mt->setMatrix ( osg::Matrix::translate ( bb.center() ) );
-        mt->addChild ( box() );
-        
-        // Add the bounding box.
-        _root->addChild ( mt.get() );
-        
-        // Wire-frame.
-        OsgTools::State::StateSet::setPolygonsLines ( mt.get(), true );
-        OsgTools::State::StateSet::setLighting ( mt.get(), false );
-#endif
-        //const unsigned int total ( x * y * z );
-        
-#if 1
-        // Data pointer.
-        //double* data ( reinterpret_cast<double*> ( &density[0] + ( num * total ) ) );
-        
-        const osg::Vec3 min ( bb._min );
-        const osg::Vec3 max ( bb._max );
-        
-        const double lengthX ( bb._max.x() - bb._min.x() );
-        const double lengthY ( bb._max.y() - bb._min.y() );
-        const double lengthZ ( bb._max.z() - bb._min.z() );
-        
-        const double deltaX ( lengthX / ( x + 1 ) );
-        const double deltaY ( lengthY / ( y + 1 ) );
-        const double deltaZ ( lengthZ / ( z + 1 ) );
-        
-        osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
-        osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array ( 1 ) );
-        osg::ref_ptr<osg::Vec4Array> myColors ( new osg::Vec4Array );
-        
-        // One normal.
-        normals->at ( 0 ) = osg::Vec3 ( 0.0, 0.0, 1.0 );
-        
-        const double tmin ( ::log10 ( minimum * 5 ) + 3.0 );
-        const double tmax ( ::log10 ( maximum * 5 ) + 3.0 );
-        
-        for ( unsigned int i = 0; i < x; ++i )
-        {
-          for ( unsigned int j = 0; j < y; ++j )
-          {
-            for ( unsigned int k = 0; k < z; ++k )
-            {
-              const double value ( density[num][k][j][i] );
-              
-              float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-              
-              double temp ( ( ( ::log10 ( value * 5 ) + 3.0 ) - tmin ) / ( tmax - tmin ) );
-              
-              Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - static_cast<float> ( temp * 300.0f ), 1.0f, 1.0f );
-              
-              osg::Vec3 position ( ( i + 1 ) * deltaX, ( j + 1 ) * deltaY, ( k + 1 ) * deltaZ );
-              vertices->push_back ( osg::Vec3 ( bb._min + position ) );
-              myColors->push_back ( osg::Vec4 ( r, g, b, 1.0 ) );
-            }
-          }
-        }
-        
-        osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
-        geometry->setVertexArray ( vertices.get() );
-        geometry->setNormalArray ( normals.get() );
-        geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
-        geometry->setColorArray ( myColors.get() );
-        geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-        
-        geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_POINTS, 0, vertices->size() ) );
-        
-        osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-        geode->addDrawable ( geometry.get() );
-        
-        osg::ref_ptr<osg::Point> ps ( new osg::Point );
-        ps->setSize ( 5.0f );
-        geode->getOrCreateStateSet()->setAttributeAndModes ( ps.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-        
-        // Turn off lighting
-        OsgTools::State::StateSet::setLighting ( geode.get(), false );
-        
-        _root->addChild ( geode.get() );
-#else
-        osg::ref_ptr<OsgTools::Volume::Texture3DVolume> volumeNode ( new OsgTools::Volume::Texture3DVolume );
-        
-        // Set the volume nodes bounding box.
-        volumeNode->boundingBox ( bb );
-        
-        // Get the 3D image for the volume.
-        osg::ref_ptr<osg::Image> image ( new osg::Image );
-        //image->allocateImage ( x, y, z, GL_LUMINANCE, GL_UNSIGNED_BYTE );
-        image->allocateImage ( x, y, z, GL_LUMINANCE, GL_FLOAT );
-        
-        // Data pointer.
-        //double* data ( &density[0] + ( num * total ) );
-        
-        for ( unsigned int i = 0; i < x; ++i )
-        {
-          for ( unsigned int j = 0; j < y; ++j )
-          {
-            for ( unsigned int k = 0; k < z; ++k )
-            {
-              //double value ( density[num][i][j][k] );
-              double value ( density[num][k][j][i] );
-#if 0
-              value = ( value - minimum ) / ( maximum - minimum );
-              const unsigned char pixel ( static_cast < unsigned char > ( value * 255 ) );
-              image->data()[v] = pixel;
-#else
-              float* pixel ( reinterpret_cast<float*> ( image->data( i, j, k ) ) );
-              *pixel = static_cast < float > ( ( value - minimum ) / ( maximum - minimum ) );
-#endif
-            }
-          }
-        }
-        
-        volumeNode->numPlanes ( 64 );
-        volumeNode->image ( image.get() );
-        
-        // Build the transfer function.
-        volumeNode->transferFunction ( _transferFunctions.at ( 0 ).get() );
-        
-        volumeNode->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
-        
-        _root->addChild ( volumeNode.get() );
-#endif
-      }
-    }
+    // Add the child to the scene.
+    if ( timestep.valid() )
+      _root->addChild ( timestep->buildScene() );
   }
   
-  // No longer dirty.
   this->dirty ( false );
 }
 
@@ -669,4 +436,42 @@ unsigned int FlashDocument::getNumberOfTimeSteps () const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _filenames.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the i'th timestep.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::_loadTimestep ( unsigned int i )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Get the filename for the timestep.
+  std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filenames.at ( i ) ) );
+  
+  // Make the timestep.
+  Timestep::RefPtr timestep ( new Timestep ( filename ) );
+  timestep->init();
+  
+  // Add the timestep.
+  Guard guard ( this->mutex() );
+  _timesteps[i] = timestep;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the i'th timestep loaded?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool FlashDocument::_hasTimestep ( unsigned int i ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Timesteps::const_iterator iter ( _timesteps.find ( i ) );
+  return ( iter != _timesteps.end() );
 }

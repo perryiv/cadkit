@@ -67,7 +67,6 @@ SET (SOURCES
 ./Layers/RasterLayerOssim.cpp
 ./Layers/RasterLayerWms.cpp
 ./Layers/Vector.cpp
-./Layers/VectorGroup.cpp
 ./TileEngine/Body.cpp
 ./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp

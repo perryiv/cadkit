@@ -127,7 +127,7 @@ public:
     {
       Guard guard ( *_mutex );
       PointerType value ( ptr.get() );
-      Container::iterator end ( std::remove ( _container.begin(), _container.end(), value ) );
+      typename Container::iterator end ( std::remove ( _container.begin(), _container.end(), value ) );
       _container.erase ( end, _container.end() );
     }
   }

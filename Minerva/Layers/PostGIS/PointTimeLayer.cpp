@@ -224,7 +224,7 @@ void PointTimeLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul:
             data->preBuildScene ( caller );
 
             // Also add to the vector of data objects.  This allows for faster updating.
-            this->addDataObject( data.get() );
+            this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
           }
         }
         if( progress.valid() )
@@ -257,7 +257,7 @@ void PointTimeLayer::modify( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
   
   // Clear what we have...
-  this->clearDataObjects();
+  this->clear();
 
   // For now rebuild the data objects.
   // In the future need to check if the query has changed, and then go get new data objects.

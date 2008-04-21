@@ -17,7 +17,6 @@
 #include "Minerva/Core/Visitor.h"
 #include "Minerva/Core/TileEngine/System.h"
 #include "Minerva/Core/Layers/Vector.h"
-#include "Minerva/Core/Layers/VectorGroup.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Cast/Cast.h"
@@ -139,18 +138,6 @@ void Visitor::visit ( Minerva::Core::Layers::Vector& vector )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Visit the vector layer group.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Visitor::visit ( Minerva::Core::Layers::VectorGroup& group )
-{
-  this->visit ( USUL_UNSAFE_CAST ( Vector&, group ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Visit the node.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,7 +157,7 @@ void Visitor::visit ( Minerva::Core::TileEngine::Node & )
 void Visitor::visit ( Minerva::Core::TileEngine::Body & body )
 {
   USUL_TRACE_SCOPE;
-  Minerva::Core::Layers::VectorGroup::RefPtr vector ( body.vectorData() );
+  Minerva::Core::Layers::Vector::RefPtr vector ( body.vectorData() );
   
   if ( vector.valid() )
     vector->traverse ( *this );

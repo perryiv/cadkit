@@ -182,7 +182,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
         // Pre build the scene.
         data->preBuildScene( caller );
 
-        this->addDataObject( data.get() );
+        this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
       }
     }
     catch ( const std::exception& e )
@@ -216,7 +216,7 @@ void PolygonLayer::modify( Usul::Interfaces::IUnknown *caller )
   
   // For now get what we have, clear and then rebuild.
   // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  this->clearDataObjects();
+  this->clear ();
   this->buildDataObjects ( caller, 0x0 );
 }
 

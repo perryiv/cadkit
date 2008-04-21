@@ -23,7 +23,9 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
+#include "Usul/Interfaces/ITreeNode.h"
 
 #include "OsgTools/ShapeFactory.h"
 
@@ -38,7 +40,9 @@ namespace Core {
 
 namespace DataObjects {
 
-class MINERVA_EXPORT DataObject : public Usul::Base::Object
+class MINERVA_EXPORT DataObject : public Usul::Base::Object,
+                                  public Usul::Interfaces::IBuildScene,
+                                  public Usul::Interfaces::ITreeNode
 {
 public:
   typedef Usul::Base::Object           BaseClass;
@@ -47,6 +51,9 @@ public:
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
+
+  // Declare IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Constructor.
   DataObject();
@@ -70,7 +77,7 @@ public:
   AltitudeMode          altitudeMode () const;
 
   /// Build the scene branch for the data object.
-  virtual osg::Node*    buildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
   void                  preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Get/Set the color.
@@ -161,6 +168,16 @@ protected:
     }
     return 0.0;
   }
+
+  // Get the number of children (ITreeNode).
+  virtual unsigned int        getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *         getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                setTreeNodeName ( const std::string & );
+  virtual std::string         getTreeNodeName() const;
 
 private:
 

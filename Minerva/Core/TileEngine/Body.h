@@ -25,9 +25,10 @@
 #include "Minerva/Core/Jobs/BuildRaster.h"
 #include "Minerva/Core/Layers/ElevationGroup.h"
 #include "Minerva/Core/Layers/RasterGroup.h"
-#include "Minerva/Core/Layers/VectorGroup.h"
+#include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/Utilities/SkyDome.h"
 
+#include "Usul/Containers/Unknowns.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
@@ -70,7 +71,7 @@ public:
   typedef Minerva::Core::TileEngine::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
-  typedef Minerva::Core::Layers::VectorGroup VectorGroup;
+  typedef Minerva::Core::Layers::Vector VectorGroup;
   typedef Minerva::Core::Layers::ElevationGroup ElevationGroup;
   typedef Minerva::Core::Layers::RasterGroup RasterGroup;
   typedef Minerva::Core::Layers::RasterLayer RasterLayer;
@@ -246,7 +247,7 @@ private:
   typedef std::map < unsigned long, BuildRaster::RefPtr > TextureJobs;
   typedef Usul::Threads::Variable<Usul::Jobs::Manager*> JobManager;
   typedef Usul::Interfaces::IUpdateListener IUpdateListener;
-  typedef std::vector<IUpdateListener::RefPtr> UpdateListeners;
+  typedef Usul::Containers::Unknowns<IUpdateListener> UpdateListeners;
 
   // No copying or assignment.
   Body ( const Body & );

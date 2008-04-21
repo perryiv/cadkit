@@ -48,7 +48,7 @@ Line::Line() :
   _node ( new osg::Group )
 {
   // Default render bin.
-  this->renderBin ( 1 );
+  this->renderBin ( 3 );
 }
 
 
@@ -116,7 +116,6 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
     _node->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
     osg::ref_ptr < osg::StateSet > ss ( _node->getOrCreateStateSet() );
-    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
 
     // Query for needed interfaces.
     Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
@@ -185,14 +184,20 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
       OsgTools::State::StateSet::setLighting  ( ss.get(), false );
       OsgTools::State::StateSet::setLineWidth ( ss.get(), _width );
 
+      // Turn on blending if we are semi-transparent.
+      if ( this->color().w() < 1.0f )
+      {
+        ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+      }
+
+      // Set the render bin.
+      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+
       geometry->dirtyDisplayList();
 
       // Set depth parameters.
       osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
       ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-
-      // Set the render bin.
-      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
     }
 
     // Do we have a label?

@@ -32,7 +32,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Vector, Vector::BaseClass );
 
 Vector::Vector() : 
   BaseClass (),
-  _dataObjects(),
+  _layers(),
+  _updateListeners(),
+  _builders(),
   _name(),
   _guid( Usul::Functions::GUID::generate() ),
   _shown ( true ),
@@ -55,7 +57,9 @@ SERIALIZE_XML_INITIALIZER_LIST
 
 Vector::Vector( const Vector& rhs ) : 
   BaseClass ( rhs ),
-  _dataObjects( rhs._dataObjects ),
+  _layers( rhs._layers ),
+  _updateListeners ( rhs._updateListeners ),
+  _builders ( rhs._builders ),
   _name( rhs._name ),
   _guid( Usul::Functions::GUID::generate() ),
   _shown ( rhs._shown ),
@@ -152,12 +156,17 @@ void Vector::traverse ( Minerva::Core::Visitor& visitor )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  for ( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
+  for ( Unknowns::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {
-    DataObjectPtr dataObject ( *iter );
+    if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( (*iter).get() ) )
+    {
+      vector->accept ( visitor );
+    }
 
-    if ( dataObject.valid() )
-      dataObject->accept ( visitor );
+    if ( Minerva::Core::DataObjects::DataObject *object = dynamic_cast< Minerva::Core::DataObjects::DataObject*> ( (*iter).get() ) )
+    {
+      object->accept ( visitor );
+    }
   }
 }
 
@@ -239,16 +248,48 @@ bool Vector::showLayer() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::addDataObject ( DataObject *dataObject )
+void Vector::add ( Usul::Interfaces::IUnknown* unknown )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
-  if ( 0x0 != dataObject )
+  if ( 0x0 != unknown )
   {
-    _dataObjects.push_back ( dataObject );
-    this->dirtyScene ( true );
+    Guard guard ( this );
+    _layers.push_back ( unknown );
   }
+
+  // Add the update listener.
+  _updateListeners.add ( unknown );
+
+  // Add the builder.
+  _builders.add ( unknown );
+
+  this->dirtyScene ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Vector::remove ( Usul::Interfaces::IUnknown* unknown )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  Unknowns::iterator doomed ( std::find( _layers.begin(), _layers.end(), Unknowns::value_type ( unknown ) ) );
+  if( doomed != _layers.end() )
+    _layers.erase( doomed );
+
+  // Remove the update listener.
+  _updateListeners.remove ( unknown );
+
+  // Remove the builder.
+  _builders.remove ( unknown );
+  
+  this->dirtyScene( true );
 }
 
 
@@ -258,11 +299,15 @@ void Vector::addDataObject ( DataObject *dataObject )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::clearDataObjects ()
+void Vector::clear ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _dataObjects.clear();
+
+  _layers.clear();
+  _builders.clear();
+  _updateListeners.clear();
+
   this->dirtyScene ( true );
 }
 
@@ -277,7 +322,7 @@ unsigned int Vector::number() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _dataObjects.size();
+  return _layers.size();
 }
 
 
@@ -314,12 +359,21 @@ void Vector::_buildScene( Usul::Interfaces::IUnknown *caller )
     // Remove all children.
     OsgTools::Group::removeAllChildren ( _root.get() );
 
-    if ( true == this->showLayer () )
+    // Add to the scene.
     {
-      for( DataObjects::iterator iter = _dataObjects.begin(); iter != _dataObjects.end(); ++iter )
+      Builders::Guard guard ( _builders.mutex() );
+      for ( Builders::iterator iter = _builders.begin(); iter != _builders.end(); ++iter )
       {
-        if ( (*iter).valid() )
-          _root->addChild( (*iter)->buildScene( caller ) );
+        // Query for needed interfaces.
+        ILayer::QueryPtr layer ( *iter );
+        Usul::Interfaces::IBuildScene::QueryPtr build ( *iter );
+
+        // Should the layer be shown?
+        const bool show ( layer.valid() ? layer->showLayer() : true );
+
+        // Build the scene.
+        if ( show && build.valid() )
+          _root->addChild ( build->buildScene ( Usul::Interfaces::IBuildScene::Options(), caller ) );
       }
     }
     
@@ -497,11 +551,14 @@ void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
   USUL_TRACE_SCOPE;
 
   // Check to see if the number of children in the root is the same as the data objects.  This is a hack before dirtyScene isn't alway accurate.
-  const bool needsBuild ( _root.valid() ? _root->getNumChildren() != _dataObjects.size() : false );
+  const bool needsBuild ( _root.valid() ? _root->getNumChildren() != _builders.size() : false );
 
   // Build if we need to...
   if ( this->dirtyScene() || needsBuild )
     this->_buildScene( caller );
+
+  // Ask each one to update.
+  _updateListeners.for_each ( std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), caller ) );
 }
 
 
@@ -514,7 +571,7 @@ void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
 unsigned int Vector::getNumChildNodes() const
 {
   USUL_TRACE_SCOPE;
-  return 0;
+  return _layers.size();
 }
 
 
@@ -527,7 +584,7 @@ unsigned int Vector::getNumChildNodes() const
 Usul::Interfaces::ITreeNode * Vector::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
-  return 0x0;
+  return Usul::Interfaces::ITreeNode::QueryPtr ( _layers.at( which ) );
 }
 
 

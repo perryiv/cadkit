@@ -37,7 +37,7 @@ PolyStyle::PolyStyle( const XmlTree::Node &node ) : BaseClass( node ),
 	_fill ( true ),
 	_outline ( true )
 {
-  	typedef XmlTree::Node::Children Children;
+ 	typedef XmlTree::Node::Children Children;
   
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )

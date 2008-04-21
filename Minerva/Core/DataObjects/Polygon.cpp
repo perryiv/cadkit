@@ -95,6 +95,64 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build geometry from vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template < class Vertices >
+  osg::Geometry* buildGeometry ( const Vertices& inVertices, Usul::Interfaces::IPlanetCoordinates *planet )
+  {
+    // Make sure we have vertices.
+    if ( inVertices.empty() )
+      return 0x0;
+    
+    // Vertices and normals.
+    osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+    osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
+    
+    // Reserve enough rooms.
+    vertices->reserve( inVertices.size() );
+    normals->reserve( inVertices.size() );
+    
+    for ( typename Vertices::const_iterator iter = inVertices.begin(); iter != inVertices.end(); ++iter )
+    {
+      typename Vertices::value_type v0 ( *iter );
+      
+      typename Vertices::value_type p0;
+      
+      planet->convertToPlanet ( v0, p0 );
+      
+      vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
+      
+      typename Vertices::value_type n0 ( p0 ); n0.normalize();
+      
+      normals->push_back ( osg::Vec3 ( n0[0], n0[1], n0[2] ) );
+    }
+    
+    osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
+    
+    geom->setVertexArray ( vertices.get() );
+    geom->setNormalArray ( normals.get() );
+    geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+
+    geom->addPrimitiveSet ( new osg::DrawArrays ( GL_POLYGON, 0, vertices->size() ) );
+    
+    // Make into triangles.
+    osg::ref_ptr<osgUtil::Tessellator> tessellator ( new osgUtil::Tessellator );
+    tessellator->retessellatePolygons ( *geom );
+
+    // Make normals.
+    osgUtil::SmoothingVisitor::smooth ( *geom );
+
+    return geom.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build a mesh.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -116,53 +174,8 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
     Vertices outerBoundary ( polygon->outerBoundary() );
     Boundaries innerBoundaries ( polygon->innerBoundaries() );
 
-    // Make sure we have vertices.
-    if ( outerBoundary.empty() )
-      return 0x0;
-
-    // Remove any duplicate vertices.
-    outerBoundary.erase ( std::unique ( outerBoundary.begin(), outerBoundary.end(), Detail::VectorCompare() ), outerBoundary.end() );
-    
-    // Vertices and normals.
-    osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
-    osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
-    
-    // Reserve enough rooms.
-    vertices->reserve( outerBoundary.size() );
-    normals->reserve( outerBoundary.size() );
-    
-    for ( Vertices::const_iterator iter = outerBoundary.begin(); iter != outerBoundary.end(); ++iter )
-    {
-      Vertices::value_type v0 ( *iter );
-      
-      Vertices::value_type p0;
-      
-      planet->convertToPlanet ( v0, p0 );
-      
-      vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
-      
-      Vertices::value_type n0 ( p0 ); n0.normalize();
-      
-      normals->push_back ( osg::Vec3 ( n0[0], n0[1], n0[2] ) );
-    }
-    
-    osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
-    
-    geom->setVertexArray ( vertices.get() );
-    geom->setNormalArray ( normals.get() );
-    geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
-
-    geom->addPrimitiveSet ( new osg::DrawArrays ( GL_POLYGON, 0, vertices->size() ) );
-    
-    // Make into triangles.
-    osg::ref_ptr<osgUtil::Tessellator> tessellator ( new osgUtil::Tessellator );
-    tessellator->retessellatePolygons ( *geom );
-
-    // Make normals.
-    osgUtil::SmoothingVisitor::smooth ( *geom );
-
     osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable( geom.get() );
+    geode->addDrawable( Detail::buildGeometry ( outerBoundary, planet ) );
     
     osg::Vec4 color ( this->color() );
     osg::ref_ptr < osg::Material > mat ( new osg::Material );
@@ -194,7 +207,7 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
 
     geode->setUserData ( new Minerva::Core::DataObjects::UserData ( this ) );
 
-    osg::Vec3 offset ( vertices->front() );
+    osg::Vec3 offset ( geode->getBound().center() );
     osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
     tg->apply ( *geode );
 

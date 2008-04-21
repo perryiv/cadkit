@@ -360,14 +360,6 @@
 						RelativePath=".\Layers\Vector.h"
 						>
 					</File>
-					<File
-						RelativePath=".\Layers\VectorGroup.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\VectorGroup.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="Functors"

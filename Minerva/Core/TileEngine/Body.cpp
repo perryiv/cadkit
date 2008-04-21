@@ -107,7 +107,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _vectorData->name ( "Vector" );
   
   // Add the vector data to the transform.
-  _transform->addChild ( _vectorData->buildScene () );
+  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
 #if 0
   // Set parameters.
   _sky->innerRadius ( land->size() );
@@ -859,7 +859,7 @@ void Body::deserialize ( const XmlTree::Node &node )
   }
   
   // Add the vector data to the transform.
-  _transform->addChild ( _vectorData->buildScene () );
+  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
 }
 
 
@@ -1015,17 +1015,8 @@ void Body::purgeTiles()
 
 void Body::_addUpdateListener ( IUnknown *caller )
 {
-  USUL_TRACE_SCOPE;
-  
-  // Don't add twice.
-  this->_removeUpdateListener ( caller );
-  
-  IUpdateListener::QueryPtr listener ( caller );
-  if ( true == listener.valid() )
-  {
-    Guard guard ( this->mutex() );
-    _updateListeners.push_back ( IUpdateListener::RefPtr ( listener.get() ) );
-  }
+  USUL_TRACE_SCOPE;  
+  _updateListeners.add ( caller );
 }
 
 
@@ -1047,7 +1038,7 @@ void Body::updateNotify ( Usul::Interfaces::IUnknown *caller )
   _vectorData->updateNotify ( unknown );
   
   // Update any other listeners.
-  std::for_each ( _updateListeners.begin(), _updateListeners.end(), std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
+  _updateListeners.for_each ( std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
 }
 
 
@@ -1060,15 +1051,7 @@ void Body::updateNotify ( Usul::Interfaces::IUnknown *caller )
 void Body::_removeUpdateListener ( IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  
-  IUpdateListener::QueryPtr listener ( caller );
-  if ( true == listener.valid() )
-  {
-    Guard guard ( this->mutex() );
-    IUpdateListener::RefPtr value ( listener.get() );
-    UpdateListeners::iterator end ( std::remove ( _updateListeners.begin(), _updateListeners.end(), value ) );
-    _updateListeners.erase ( end, _updateListeners.end() );
-  }
+  _updateListeners.remove ( caller );  
 }
 
 
@@ -1175,7 +1158,7 @@ void Body::vectorAppend ( Usul::Interfaces::IUnknown *unknown )
   if ( build.valid() )
   {
     // Add the layer to our group.
-    _vectorData->addLayer ( unknown );
+    _vectorData->add ( unknown );
       
     // Add to the update listeners.
     this->_addUpdateListener( unknown );
@@ -1209,7 +1192,7 @@ void Body::vectorRemove ( Usul::Interfaces::IUnknown *unknown )
   Guard guard ( this );
   
   // Add the layer to our group.
-  _vectorData->removeLayer ( unknown );
+  _vectorData->remove ( unknown );
     
   // Add to the update listeners.
   this->_removeUpdateListener( unknown );

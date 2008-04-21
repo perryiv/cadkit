@@ -16,6 +16,7 @@
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Containers/Unknowns.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ILayer.h"
@@ -52,6 +53,9 @@ public:
   typedef Minerva::Core::DataObjects::DataObject    DataObject;
   typedef DataObject::RefPtr                        DataObjectPtr;
   typedef std::vector< DataObjectPtr >	            DataObjects;
+  typedef Usul::Interfaces::ILayer                  ILayer;
+  typedef Usul::Interfaces::IUnknown                IUnknown;
+  typedef std::vector<IUnknown::QueryPtr>           Unknowns;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Vector );
@@ -87,9 +91,14 @@ public:
   virtual void                showLayer( bool b );
   virtual bool                showLayer() const;
   
-  /// Data object functions.
-  void                        addDataObject ( DataObject *dataObject );
-  void                        clearDataObjects ();
+  /// Add an object.
+  void                        add ( Usul::Interfaces::IUnknown* layer );
+  
+  /// Remove an object.
+  void                        remove ( Usul::Interfaces::IUnknown* layer );
+  
+  /// Clear objects.
+  void                        clear();
   
   /// Get the number of data objects in this layer.
   virtual unsigned int        number() const;
@@ -147,8 +156,13 @@ private:
   
   // Register members for serialization.
   void                        _registerMembers();
+
+  typedef Usul::Containers::Unknowns<IUpdateListener> UpdateListeners;
+  typedef Usul::Containers::Unknowns<IBuildScene>     Builders;
   
-  DataObjects _dataObjects;
+  Unknowns _layers;
+  UpdateListeners _updateListeners;
+  Builders _builders;
   std::string _name;
   std::string _guid;
   bool _shown;

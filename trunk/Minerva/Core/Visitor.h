@@ -33,7 +33,6 @@ namespace Minerva
     namespace Layers
     {
       class Vector;
-      class VectorGroup;
     }
     
     namespace TileEngine
@@ -62,7 +61,6 @@ namespace Minerva
       virtual void visit ( Minerva::Core::DataObjects::Model &model );
 
       virtual void visit ( Minerva::Core::Layers::Vector& vector );
-      virtual void visit ( Minerva::Core::Layers::VectorGroup& group );
       
       virtual void visit ( Minerva::Core::TileEngine::System & );
       virtual void visit ( Minerva::Core::TileEngine::Group & );

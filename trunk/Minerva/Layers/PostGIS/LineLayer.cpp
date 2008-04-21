@@ -183,7 +183,7 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
       data->preBuildScene( caller );
 
       // Add the data object.
-      this->addDataObject( data.get() );
+      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
     }
 
     // Update progress.
@@ -206,7 +206,7 @@ void LineLayer::modify( Usul::Interfaces::IUnknown *caller )
 {
   // For now get what we have, clear and then rebuild.
   // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  this->clearDataObjects();
+  this->clear();
   this->buildDataObjects ( caller, 0x0 );
 }
 

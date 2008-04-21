@@ -235,11 +235,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IconStyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\IconStyle.h"
+				>
+			</File>
+			<File
 				RelativePath=".\KmlLayer.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\KmlLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LineStyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LineStyle.h"
 				>
 			</File>
 			<File

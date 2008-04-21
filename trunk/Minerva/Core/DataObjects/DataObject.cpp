@@ -25,6 +25,7 @@
 
 using namespace Minerva::Core::DataObjects;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DataObject, DataObject::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -84,6 +85,27 @@ DataObject::DataObject() :
 
 DataObject::~DataObject()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IBuildScene::IID:
+    return static_cast<Usul::Interfaces::IBuildScene*> ( this );
+  case Usul::Interfaces::ITreeNode::IID:
+    return static_cast<Usul::Interfaces::ITreeNode*> ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -464,7 +486,7 @@ bool DataObject::transparent() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* DataObject::buildScene( Usul::Interfaces::IUnknown* caller )
+osg::Node* DataObject::buildScene( const Options& options, Usul::Interfaces::IUnknown* caller )
 {
   // Build the scene if we need to.
   if ( this->dirty () )
@@ -615,4 +637,56 @@ void DataObject::extrude ( bool b )
 bool DataObject::extrude() const
 {
   return _extrude;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int DataObject::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * DataObject::getChildNode ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::setTreeNodeName ( const std::string & s )
+{
+  USUL_TRACE_SCOPE;
+  this->name ( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DataObject::getTreeNodeName() const
+{
+  USUL_TRACE_SCOPE;
+  return ( false == this->name().empty() ? this->name() : this->label() );
 }

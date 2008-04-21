@@ -236,8 +236,7 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
   
   // Clear what we have.
-  this->clearLayers();
-  this->clearDataObjects();
+  this->clear();
   
   // See if we need to unzip...
   if ( "kmz" == ext )
@@ -329,7 +328,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
     layer->dirtyScene ( true );
     
     // Add the layer to the parent.
-    this->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
+    this->add ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
   }
   else if ( "NetworkLink" == name )
   {
@@ -341,7 +340,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
       {
         KmlLayer::RefPtr layer ( new KmlLayer ( link.get() ) );
         layer->read ( 0x0, 0x0 );
-        this->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
+        this->add ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
       }
     }
   }
@@ -434,13 +433,14 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
     this->_parseMultiGeometry ( *multiGeometry.front(), style.get() );
   
   if ( object.valid () )
-  {    
+  {
+    object->name ( feature->name() );
 		object->label ( feature->name() );
     object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
     object->showLabel ( true );
 
     // Add the data object.
-    this->addDataObject ( object );
+    this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
   }
 }
 
@@ -560,9 +560,15 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
 
 KmlLayer::DataObject* KmlLayer::_parseLineString ( const XmlTree::Node& node, Style *style )
 {
+  // Get style properties.
+	Usul::Math::Vec4f defaultColor ( 1.0, 1.0, 1.0, 1.0 );
+	Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->color() : defaultColor ) : defaultColor );
+
+  const float width ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->width() : 1.0f ) : 1.0f );
+
   Minerva::Core::DataObjects::Line::RefPtr line ( new Minerva::Core::DataObjects::Line );
-  line->width ( 2.0f );
-  line->color ( osg::Vec4 ( 1.0, 0.0, 1.0, 1.0 ) );
+  line->width ( width );
+  line->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -613,7 +619,8 @@ void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node, Style *style )
   Children polygon ( node.find ( "Polygon", false ) );
   for ( Children::iterator iter = polygon.begin(); iter != polygon.end(); ++iter )
   {
-    this->addDataObject ( this->_parsePolygon ( *(*iter), style ) );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( this->_parsePolygon ( *(*iter), style ) );
+    this->add ( unknown.get() );
   }
 }
 
@@ -811,9 +818,9 @@ NetworkLink* KmlLayer::_parseNetworkLink ( const XmlTree::Node& node )
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
+    std::string name ( Usul::Strings::lowerCase ( node->name() ) );
     
-    if ( "Link" == name || "Url" == name ) // Url is an older name, but many elements are the same.
+    if ( "link" == name || "url" == name ) // Url is an older name, but many elements are the same.
     {
       network->link ( this->_parseLink ( *node ) );
     }
@@ -981,7 +988,7 @@ void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
       const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 
       // If there is no extension, attempt to find out what the file is.
-      if ( "kml" != ext || "kmz" != ext )
+      if ( "kml" != ext && "kmz" != ext )
       {
         std::ifstream fin ( filename.c_str() );
 

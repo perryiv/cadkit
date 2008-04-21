@@ -11,6 +11,7 @@
 #define __MINERVA_LAYERS_KML_STYLE_H__
 
 #include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Layers/Kml/LineStyle.h"
 #include "Minerva/Layers/Kml/PolyStyle.h"
 
 namespace Minerva {
@@ -32,12 +33,17 @@ public:
 	void           polystyle ( PolyStyle * );
 	PolyStyle*     polystyle() const;
 
+  /// Set/get the linestyle.
+	void           linestyle ( LineStyle * );
+	LineStyle*     linestyle() const;
+
 protected:
   
   virtual ~Style();
   
 private:
 
+  LineStyle::RefPtr _linestyle;
 	PolyStyle::RefPtr _polystyle;
 };
 

@@ -7,7 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/Style.h"
+#include "Minerva/Layers/Kml/LineStyle.h"
+
+#include "Usul/Convert/Convert.h"
 
 #include "XmlTree/Node.h"
 
@@ -20,9 +22,8 @@ using namespace Minerva::Layers::Kml;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Style::Style() : BaseClass(),
-  _linestyle ( 0x0 ),
-	_polystyle ( 0x0 )
+LineStyle::LineStyle() : BaseClass(),
+	_width ( 1.0f )
 {
 }
 
@@ -33,11 +34,10 @@ Style::Style() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Style::Style ( const XmlTree::Node& node ) : BaseClass ( node ),
-  _linestyle ( 0x0 ),
-	_polystyle ( 0x0 )
+LineStyle::LineStyle( const XmlTree::Node &node ) : BaseClass( node ),
+	_width ( 1.0f )
 {
-	typedef XmlTree::Node::Children Children;
+  typedef XmlTree::Node::Children Children;
   
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -45,15 +45,12 @@ Style::Style ( const XmlTree::Node& node ) : BaseClass ( node ),
     XmlTree::Node::RefPtr node ( *iter );
     std::string name ( node->name() );
     
-    if ( "PolyStyle" == name )
+    if ( "width" == name )
     {
-			_polystyle = new PolyStyle ( *node );
-    }
-    else if ( "LineStyle" == name )
-    {
-      _linestyle = new LineStyle ( *node );
+      _width = Usul::Convert::Type<std::string, float>::convert ( node->value() );
     }
   }
+
 }
 
 
@@ -63,54 +60,30 @@ Style::Style ( const XmlTree::Node& node ) : BaseClass ( node ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Style::~Style()
+LineStyle::~LineStyle()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the polystyle.
+//  Set the width.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Style::polystyle ( PolyStyle * polystyle )
+void LineStyle::width ( float w )
 {
-	_polystyle = polystyle;
+  _width = w;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the polystyle.
+//  Get the width.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PolyStyle* Style::polystyle() const
+float LineStyle::width() const
 {
-	return _polystyle.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the polystyle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Style::linestyle ( LineStyle * linestyle )
-{
-	_linestyle = linestyle;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the polystyle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-LineStyle* Style::linestyle() const
-{
-	return _linestyle.get();
+  return _width;
 }

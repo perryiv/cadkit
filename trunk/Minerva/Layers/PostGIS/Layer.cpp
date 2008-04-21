@@ -881,7 +881,7 @@ void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfa
                                                                 UA::bind1 ( false, UA::memberFunction ( this, &Layer::updating ) ) ) );
   
   // Clear what we have.
-  this->clearDataObjects();
+  this->clear();
 
   // Set the query.
   if( true == _query.empty() && false == this->customQuery() )

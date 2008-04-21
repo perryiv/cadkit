@@ -147,5 +147,13 @@
       <href>http://msdn2.microsoft.com/en-us/visualc/</href>
       <target>blank</target>
     </vcpp>
+    <adobe_flash>
+      <href>http://www.adobe.com/products/flashplayer/</href>
+      <target>blank</target>
+    </adobe_flash>
+    <wms>
+      <href>http://www.opengeospatial.org/standards/wms</href>
+      <target>blank</target>
+    </wms>
   </links>
 </site>

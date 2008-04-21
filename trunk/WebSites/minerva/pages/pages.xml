@@ -12,6 +12,12 @@
     <menu>Build</menu>
     <file>build.xml</file>
   </page>
+  <!--
+  <page>
+    <menu>Documentation</menu>
+    <file>documentation.xml</file>
+  </page>
+  -->
   <page>
     <menu>Download</menu>
     <file>download.xml</file>

@@ -4,6 +4,8 @@
 # Option for tracing.
 OPTION ( USUL_TRACING "Should tracing be enabled?" OFF )
 
+SET ( CMAKE_BUILD_TYPE "Release" )
+
 # We don't want RPath.
 SET ( CMAKE_SKIP_RPATH ON )
 

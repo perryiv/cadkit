@@ -71,11 +71,16 @@ IF(BUILD_MINERVA)
     ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
     ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
     ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
+    ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
+    ${CADKIT_INC_DIR}/Minerva/Application
     )
 ENDIF(BUILD_MINERVA)
 
 
 # Include the QT Cmake files.
-SUBDIRS (	${PROJECT_SOURCE_DIR}/Qt )
+SUBDIRS (
+  ${PROJECT_SOURCE_DIR}/Qt 
+  ${CADKIT_INC_DIR}/Helios/Qt/Plugins/PasswordPrompt
+)
 
 

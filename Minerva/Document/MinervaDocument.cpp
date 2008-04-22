@@ -93,7 +93,7 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 MinervaDocument::MinervaDocument() : 
   BaseClass( "Minerva Document" ),
   _dirty ( false ),
-  _layersMenu ( new MenuKit::Menu ( "Layers" ) ),
+  _layersMenu ( new MenuKit::Menu ( "&Layers" ) ),
   _root ( new osg::Group ),
   _camera ( new osg::Camera ),
   _dateText ( new osgText::Text ),
@@ -1295,39 +1295,37 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   namespace UC = Usul::Commands;
   
   MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "&Minerva" ) );
+	MenuKit::Menu::RefPtr animate ( new MenuKit::Menu ( "&Animate" ) );
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
-  m->append ( new Button       ( new Minerva::Core::Commands::StartAnimation ( me ) ) );
-  m->append ( new Button       ( new Minerva::Core::Commands::StopAnimation  ( me ) ) );
-  m->append ( new Button       ( new Minerva::Core::Commands::PauseAnimation ( me ) ) );
-  m->append ( new ToggleButton ( new Minerva::Core::Commands::ShowPastEvents ( me ) ) );
+  animate->append ( new Button       ( new Minerva::Core::Commands::StartAnimation ( me ) ) );
+  animate->append ( new Button       ( new Minerva::Core::Commands::StopAnimation  ( me ) ) );
+  animate->append ( new Button       ( new Minerva::Core::Commands::PauseAnimation ( me ) ) );
+  animate->append ( new ToggleButton ( new Minerva::Core::Commands::ShowPastEvents ( me ) ) );
 
   MenuKit::Menu::RefPtr speed ( new MenuKit::Menu ( "Speed" ) );
   speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.1, me ) ) );
   speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 0.5, me ) ) );
   speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 1.0, me ) ) );
   speed->append ( new RadioButton ( new Minerva::Core::Commands::AnimationSpeed ( 2.0, me ) ) );
-  m->append ( speed );
+  animate->append ( speed );
 
   MenuKit::Menu::RefPtr type ( new MenuKit::Menu ( "Timestep" ) );
   type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::DAY,   me ) ) );
   type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::MONTH, me ) ) );
   type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::YEAR,  me ) ) );
-  m->append ( type );
+  animate->append ( type );
 
-  this->_buildLayerMenu();
-  m->append ( _layersMenu.get() );
+	// Time spans.
+  this->_buildTimeSpanMenu();
+  animate->append ( _timeSpanMenu.get() );
 
   // Points sub menu.
   MenuKit::Menu::RefPtr points ( new MenuKit::Menu ( "Points" ) );
   points->append ( new Button ( UC::genericCommand ( "Size * 2", UA::bind1<void> ( 2.0, UA::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), UC::TrueFunctor() ) ) );
   points->append ( new Button ( UC::genericCommand ( "Size / 2", UA::bind1<void> ( 0.5, UA::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), UC::TrueFunctor() ) ) ); 
   m->append ( points.get() );
-
-  // Time spans.
-  this->_buildTimeSpanMenu();
-  m->append ( _timeSpanMenu.get() );
 
   MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split" ) );
   split->append ( new Button ( UC::genericCommand ( "Increase Split", UA::memberFunction<void> ( this, &MinervaDocument::_increaseSplitDistance ), UC::TrueFunctor() ) ) );
@@ -1352,6 +1350,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isFreezeTiling ) ) ) );
 
   menu.append ( m );
+	menu.append ( animate );
+
+	this->_buildLayerMenu();
+  menu.append ( _layersMenu.get() );
 }
 
 

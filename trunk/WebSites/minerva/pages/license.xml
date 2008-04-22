@@ -19,6 +19,16 @@
           </para>
           <para>
             <text>
+              Portions of the code link to 3rd party libraries (e.g., 
+            </text>
+            <link><name>Qt</name><text>Qt</text></link>
+            <text>)</text>
+            <text>
+              and are subject to those licenses as well.
+            </text>
+          </para>
+          <para>
+            <text>
               You are welcome and encouraged to use Minerva in closed-source, proprietary work.
             </text>
           </para>

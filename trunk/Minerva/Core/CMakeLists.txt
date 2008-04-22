@@ -15,7 +15,10 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 SET ( Boost_USE_DATE_TIME TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
+INCLUDE( ${CMakeModules}/FindCURL.cmake)
+#FIND_PACKAGE(Curl)
 
+ADD_DEFINITIONS("-D_COMPILING_MINERVA")
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
@@ -26,6 +29,7 @@ INCLUDE_DIRECTORIES(
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${OSSIM_INC_DIR}
+		     ${CURL_INCLUDE_DIR}
 		     )
 
 
@@ -102,5 +106,5 @@ TARGET_LINK_LIBRARIES(Minerva
 	${OSG_LIB}
 	${OSG_DB_LIB}
 	${OSSIM_LIB}
-        curl
+    ${CURL_LIBRARIES}
 )

@@ -129,6 +129,9 @@ WebGen::WebGen ( int argc, char **argv, char **env ) :
   _chars["paragraph"]     = "¶";
   _chars["plus_or_minus"] = "±";
   _chars["registered"]    = "®";
+
+  // For convenience, put the site from the query string into the member.
+  _site["name"] = _query["site"].get ( "" );
 }
 
 
@@ -226,91 +229,140 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   // Add the body sections.
   XmlTree::Node::ValidRefPtr body ( new XmlTree::Node ( "body" ) );
 
-  // Make the table structure.
+  // Is this a movie?
+  if ( "movie" == _query["type"].get ( "" ) )
   {
-    const unsigned int numRows ( _site["tables"]["outer"]["num_rows"].get ( 3 ) );
-    const unsigned int numCols ( _site["tables"]["outer"]["num_cols"].get ( 2 ) );
-    XmlTree::Node::ValidRefPtr table ( this->_makeTable ( numRows, numCols, "outer", _matrix ) );
-    body->append ( table.get() );
+    // Get the movie directory.
+    const std::string dir ( Functions::directory ( _site["movies"]["directory"] ) );
+
+    // The page name is the movie name.
+    const std::string name ( _query["page"].get ( "" ) );
+
+    // Get the url for the movie and the cover image.
+    const std::string cover ( Functions::urlDomain ( true ) + dir + _site["movies"][name]["cover"].get ( "" ) );
+    const std::string movie ( Functions::urlDomain ( true ) + dir + _site["movies"][name]["file" ].get ( "" ) );
+
+    // Get the url for the player.
+    const std::string player ( Functions::urlDomain ( true ) + dir + _site["movies"]["player"]["file" ].get ( "" ) );
+
+    // Make the movie object.
+    XmlTree::Node::ValidRefPtr center ( body->append ( "center" ) );
+    XmlTree::Node::ValidRefPtr object ( center->append ( "object" ) );
+
+    // Add object attributes.
+    object->attributes()["type"]   = "application/x-shockwave-flash";
+    object->attributes()["data"]   = player;
+    object->attributes()["width"]  = _site["movies"][name]["width"].get ( "" );
+    object->attributes()["height"] = _site["movies"][name]["height"].get ( "" );
+    object->attributes()["id"]     = "FlowPlayer";
+
+    // Add the param children.
+    Functions::addMovieParam ( *object, "allowScriptAccess", "always" );
+    Functions::addMovieParam ( *object, "movie",              player );
+    Functions::addMovieParam ( *object, "quality",           "high" );
+    Functions::addMovieParam ( *object, "scaleMode",         "showAll" );
+    Functions::addMovieParam ( *object, "allowfullscreen",   "true" );
+    Functions::addMovieParam ( *object, "wmode",             "transparent" );
+    Functions::addMovieParam ( *object, "allowNetworking",   "all" );
+
+    // Add the flash variables.
+    const std::string flashVars
+      ( Usul::Strings::format
+        ( "config={ autoPlay: false, loop: false, initialScale: 'scale', ",
+          "showLoopButton: true, showPlayListButtons: false, ",
+          "playList: [ { url: '", cover, "' }, { url: '", movie, "' } ] }" ) );
+    Functions::addMovieParam ( *object, "flashvars", flashVars );
   }
 
-  // Add the logo.
+  // Otherwise, it's a regular page.
+  else
   {
-    CellIndex index ( _site["images"]["logo"]["cell"].get<CellIndex> ( CellIndex ( 0, 0 ) ) );
-    XmlTree::Node::ValidRefPtr logo ( this->_cell ( index[0], index[1] ) );
-    logo->append ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
-  }
-
-  // Add the page title and separator.
-  {
-    CellIndex index ( _site["subject"]["cell"].get<CellIndex> ( CellIndex ( 0, 1 ) ) );
-    XmlTree::Node::ValidRefPtr subject ( this->_cell ( index[0], index[1] ) );
-    const std::string longName ( _site["subject"]["long_name"].get ( "Subject" ) );
-    const std::string pageName ( this->_pageName() );
-    XmlTree::Node::ValidRefPtr h1 ( subject->append ( "h1", longName ) );
-    h1->attributes()["class"] = "subject";
-    subject->append ( "hr" );
-    XmlTree::Node::ValidRefPtr page ( subject->append ( "p", pageName ) );
-    page->attributes()["class"] = "page_name";
-  }
-
-  // Add the main menu.
-  {
-    CellIndex index ( _site["menus"]["main"]["cell"].get<CellIndex> ( CellIndex ( 1, 0 ) ) );
-    XmlTree::Node::ValidRefPtr menu ( this->_cell ( index[0], index[1] ) );
-    for ( PageList::const_iterator i = _pageList.begin(); i != _pageList.end(); ++i )
+    // Make the table structure.
     {
-      const PageInfo info ( *i );
-      XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
-      const std::string site ( this->_queryValue ( "site" ) );
-      const std::string page ( Usul::File::base ( info.second ) );
-      para->append ( this->_link ( info.first, Usul::Strings::format ( Functions::urlScript(), "?site=", site, "&page=", page ) ) );
-    }
-  }
-
-  // Add the content.
-  {
-    CellIndex index ( _site["content"]["cell"].get<CellIndex> ( CellIndex ( 1, 1 ) ) );
-    XmlTree::Node::ValidRefPtr content ( this->_cell ( index[0], index[1] ) );
-
-    const std::string base ( this->_queryValue ( "page", "home" ) );
-    const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
-    const std::string dir ( Functions::directory ( _site["pages"]["directory"] ) );
-    const std::string path ( Usul::Strings::format ( root, dir, base, ".xml" ) );
-    XmlTree::Node::ValidRefPtr page ( this->_loadXmlFile ( path ) );
-
-    typedef XmlTree::Node::Children Children;
-    Children kids ( page->find ( "section", false ) );
-    for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
-    {
-      XmlTree::Node::ValidRefPtr section ( *i );
-      this->_appendChildren ( section, content );
+      const unsigned int numRows ( _site["tables"]["outer"]["num_rows"].get ( 3 ) );
+      const unsigned int numCols ( _site["tables"]["outer"]["num_cols"].get ( 2 ) );
+      XmlTree::Node::ValidRefPtr table ( this->_makeTable ( numRows, numCols, "outer", _matrix ) );
+      body->append ( table.get() );
     }
 
-    translateTags ( content );
-  }
-
-  // Add the legal section.
-  {
-    CellIndex index ( _site["legal"]["cell"].get<CellIndex> ( CellIndex ( 2, 1 ) ) );
-    XmlTree::Node::ValidRefPtr legal ( this->_cell ( index[0], index[1] ) );
-    const std::string ownerLong ( _site["owner"]["long_name"].get ( "" ) );
-    if ( false == ownerLong.empty() )
+    // Add the logo.
     {
-      const std::string year ( Usul::System::DateTime::format ( "%Y" ) );
-      legal->append ( "hr" );
-      const std::string ownerShort ( _site["owner"]["short_name"].get ( "" ) );
-      if ( true == ownerShort.empty() )
+      CellIndex index ( _site["images"]["logo"]["cell"].get<CellIndex> ( CellIndex ( 0, 0 ) ) );
+      XmlTree::Node::ValidRefPtr logo ( this->_cell ( index[0], index[1] ) );
+      logo->append ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
+    }
+
+    // Add the page title and separator.
+    {
+      CellIndex index ( _site["subject"]["cell"].get<CellIndex> ( CellIndex ( 0, 1 ) ) );
+      XmlTree::Node::ValidRefPtr subject ( this->_cell ( index[0], index[1] ) );
+      const std::string longName ( _site["subject"]["long_name"].get ( "Subject" ) );
+      const std::string pageName ( this->_pageName() );
+      XmlTree::Node::ValidRefPtr h1 ( subject->append ( "h1", longName ) );
+      h1->attributes()["class"] = "subject";
+      subject->append ( "hr" );
+      XmlTree::Node::ValidRefPtr page ( subject->append ( "p", pageName ) );
+      page->attributes()["class"] = "page_name";
+    }
+    
+    // Add the main menu.
+    {
+      CellIndex index ( _site["menus"]["main"]["cell"].get<CellIndex> ( CellIndex ( 1, 0 ) ) );
+      XmlTree::Node::ValidRefPtr menu ( this->_cell ( index[0], index[1] ) );
+      for ( PageList::const_iterator i = _pageList.begin(); i != _pageList.end(); ++i )
       {
-        legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", ", ownerLong ) );
+        const PageInfo info ( *i );
+        XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
+        const std::string site ( this->_queryValue ( "site" ) );
+        const std::string page ( Usul::File::base ( info.second ) );
+        para->append ( this->_link ( info.first, Usul::Strings::format ( Functions::urlScript(), "?site=", site, "&page=", page ) ) );
       }
-      else
+    }
+
+    // Add the content.
+    {
+      CellIndex index ( _site["content"]["cell"].get<CellIndex> ( CellIndex ( 1, 1 ) ) );
+      XmlTree::Node::ValidRefPtr content ( this->_cell ( index[0], index[1] ) );
+
+      const std::string base ( this->_queryValue ( "page", "home" ) );
+      const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
+      const std::string dir ( Functions::directory ( _site["pages"]["directory"] ) );
+      const std::string path ( Usul::Strings::format ( root, dir, base, ".xml" ) );
+      XmlTree::Node::ValidRefPtr page ( this->_loadXmlFile ( path ) );
+
+      typedef XmlTree::Node::Children Children;
+      Children kids ( page->find ( "section", false ) );
+      for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
       {
-        XmlTree::Node::ValidRefPtr para ( legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", " ) ) );
-        XmlTree::Node::ValidRefPtr link ( para->append ( "link" ) );
-        link->append ( "name", ownerShort );
-        link->append ( "text", ownerLong );
-        translateTags ( para );
+        XmlTree::Node::ValidRefPtr section ( *i );
+        this->_appendChildren ( section, content );
+      }
+
+      translateTags ( content );
+    }
+
+    // Add the legal section.
+    {
+      CellIndex index ( _site["legal"]["cell"].get<CellIndex> ( CellIndex ( 2, 1 ) ) );
+      XmlTree::Node::ValidRefPtr legal ( this->_cell ( index[0], index[1] ) );
+      const std::string ownerLong ( _site["owner"]["long_name"].get ( "" ) );
+      if ( false == ownerLong.empty() )
+      {
+        const std::string year ( Usul::System::DateTime::format ( "%Y" ) );
+        legal->append ( "hr" );
+        const std::string ownerShort ( _site["owner"]["short_name"].get ( "" ) );
+        if ( true == ownerShort.empty() )
+        {
+          legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", ", ownerLong ) );
+        }
+        else
+        {
+          XmlTree::Node::ValidRefPtr para ( legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", " ) ) );
+          XmlTree::Node::ValidRefPtr link ( para->append ( "link" ) );
+          link->append ( "name", ownerShort );
+          link->append ( "text", ownerLong );
+          translateTags ( para );
+        }
       }
     }
   }

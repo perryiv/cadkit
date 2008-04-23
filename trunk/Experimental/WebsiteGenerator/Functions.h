@@ -20,10 +20,14 @@
 #include <string>
 
 namespace Usul { namespace Registry { class Node; } }
+namespace XmlTree { class Node; }
 
 
 struct Functions
 {
+  // Add the movie parameter.
+  static void            addMovieParam ( XmlTree::Node &node, const std::string &name, const std::string &value );
+
   // Always returns a valid directory string, if only "./"
   static std::string     directory ( Usul::Registry::Node & );
   static std::string     directory ( const std::string & );

@@ -94,7 +94,9 @@ namespace Helper
 
     // Always clear the children.
     typedef XmlTree::Node::Children Children;
-    Usul::Scope::Caller::RefPtr clear ( Usul::Scope::makeCaller ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
+    Usul::Scope::Caller::RefPtr clear
+      ( Usul::Scope::makeCaller
+        ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
 
     // Get the name of the link.
     const std::string name ( node->child ( "name", true )->value() );
@@ -140,7 +142,9 @@ namespace Helper
 
     // Always clear the children.
     typedef XmlTree::Node::Children Children;
-    Usul::Scope::Caller::RefPtr clear ( Usul::Scope::makeCaller ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
+    Usul::Scope::Caller::RefPtr clear
+      ( Usul::Scope::makeCaller
+        ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
 
     // Get the name of the link.
     const std::string name ( node->child ( "name", true )->value() );
@@ -172,6 +176,66 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to translate the node's value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline void makeMovie ( XmlTree::Node::ValidRefPtr node, Usul::Registry::Node &site )
+  {
+    if ( "movie" != node->name() )
+      return;
+
+    // Always clear the children.
+    typedef XmlTree::Node::Children Children;
+    Usul::Scope::Caller::RefPtr clear
+      ( Usul::Scope::makeCaller
+        ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
+
+    // Get the name of the link.
+    const std::string name ( node->child ( "name", true )->value() );
+    if ( true == name.empty() )
+      return;
+
+    // Get the movie file.
+    const std::string file ( site["movies"][name]["file"].get ( "" ) );
+    if ( true == file.empty() )
+      return;
+
+    // Get the cover image file.
+    const std::string cover ( site["movies"][name]["cover"].get ( "" ) );
+
+    // Get the thumbnail image file.
+    const std::string thumb ( site["movies"][name]["thumb"].get ( "" ) );
+
+    // Get the movie directory.
+    const std::string dir ( Functions::directory ( site["movies"]["directory"] ) );
+
+    // Clear the children now.
+    clear = 0x0;
+
+    // Make the link.
+    const std::string href
+      ( Usul::Strings::format
+        ( Functions::urlScript(), "?site=", site["name"].get ( "" ), 
+          "&page=", site["movies"][name].name(), "&type=movie" ) );
+
+    // Make the node into a link.
+    node->value ( "" );
+    node->name ( "a" );
+    node->attributes()["href"] = href;
+
+    // The image is the value of the link.
+    XmlTree::Node::ValidRefPtr img ( node->append ( "img" ) );
+    img->attributes()["src"] = Functions::urlDomain ( true ) + dir + thumb;
+    img->attributes()["alt"] = file;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Helper function to translate the tags.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,6 +252,9 @@ namespace Helper
 
     // Is it an image?
     Helper::makeImage ( node, site );
+
+    // Is it a movie?
+    Helper::makeMovie ( node, site );
 
     // Loop through the children.
     typedef XmlTree::Node::Children Children;

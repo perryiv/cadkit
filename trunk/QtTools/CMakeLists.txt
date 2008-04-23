@@ -1,7 +1,7 @@
 
 PROJECT(QtTools)
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 
@@ -9,8 +9,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( ${OSG_INC_DIR} 
                      ${CADKIT_INC_DIR} 
-                     "${CADKIT_INC_DIR}/Experimental"
-                     "${PROJECT_SOURCE_DIR}/../../../" 
                      ${QT_INCLUDE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 

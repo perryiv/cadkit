@@ -130,6 +130,7 @@ Application::Application ( ) :
   // Name the branches.
   _gridBranch->setName   ( "_gridBranch"   );
 
+  ///// Moved Joystick callbacks to VRV::Core::Application
   // Hook up the joystick callbacks.
   JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
   this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );

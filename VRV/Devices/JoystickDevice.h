@@ -22,6 +22,10 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
+#include "Usul/Interfaces/IJoystick.h"
+
+#include "Usul/Math/Vector2.h"
+
 #ifdef _MSC_VER
 # pragma warning ( disable : 4290 )
 #endif
@@ -37,7 +41,8 @@ namespace VRV {
 namespace Devices {
 
 
-class VRV_EXPORT JoystickDevice : public Usul::Base::Referenced
+class VRV_EXPORT JoystickDevice : public Usul::Base::Referenced,
+                                  public Usul::Interfaces::IJoystickFloat
 {
 public:
 
@@ -50,6 +55,9 @@ public:
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( JoystickDevice );
 
+  // Declare IUnknown Members
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+
   // Constructor.
   JoystickDevice ( const std::string &h, const std::string &v );
 
@@ -61,11 +69,23 @@ public:
   float             horizontal() const { return _h; }
   float             vertical()   const { return _v; }
 
+  // set the analog trim value
+  void              analogTrim( float x, float y );
+
   // Notify the client of any state changes.
   void              notify();
 
   // Update the internal state.
   void              update();
+
+  // set the name ( for debugging ) 
+  void              name( const std::string &name );
+
+  //  VRV::Interfaces::IJoystickFloat
+  // Get the joystick value in the range [-1,1].
+  virtual float                 joystickHorizontal() const;
+  virtual float                 joystickVertical()   const;
+
 
 protected:
 
@@ -95,6 +115,9 @@ private:
   float _v;
   Message _hs;
   Message _vs;
+
+  Usul::Math::Vec2f                      _analogTrim;
+  std::string                            _name;
 };
 
 

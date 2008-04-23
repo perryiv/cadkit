@@ -160,16 +160,20 @@ namespace Helper
 {
   struct AnalogSetter
   {
-		//AnalogSetter ( const Analogs& analogs ) : _analogs() { }
+    typedef VRV::Core::Application::Analogs Analogs;
+    typedef Usul::Interfaces::IUnknown IUnknown;
+    AnalogSetter ( const Analogs& analogs ) : _analogs( analogs ) { };
 
     void operator () ( XmlTree::Node &node, AnalogInput &functor ) const
     {
-			//functor.caller ( _analogs[node.attributes()["analog_device"]] );
+      Analogs::const_iterator iter = _analogs.find( node.attributes()["analog_device"] );
+      if( iter != _analogs.end() )
+        functor.caller ( IUnknown::QueryPtr ( const_cast<VRV::Devices::JoystickDevice*> ( iter->second.get() ) ) );
       functor.range ( Helper::FromString<AnalogInput::Vec2>::convert ( node.attributes()["range"], AnalogInput::Vec2 ( -1.0f, 1.0f ) ) );
     }
 
-	//private:
-		//Analogs _analogs;
+	private:
+		Analogs _analogs;
   };
 
   struct MatrixSetter

@@ -2,7 +2,7 @@ project ( MeasureTool )
 
 SET(PLUGIN_NAME "MeasureTool")
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 

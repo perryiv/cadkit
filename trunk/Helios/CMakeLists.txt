@@ -48,6 +48,7 @@ ${PROJECT_SOURCE_DIR}/Plugins/PathAnimation
 ${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentationLib
 ${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentation/ModelPresentation
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfModel
+${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfDelegate
 ${CADKIT_INC_DIR}/Helios/Plugins/MeasureTool
 ${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry

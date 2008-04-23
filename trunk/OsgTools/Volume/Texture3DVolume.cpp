@@ -173,7 +173,6 @@ namespace Detail
     os << "uniform vec3 bb;\n";
     os << "uniform vec3 bbMin;\n";
     os << "uniform vec3 bbHalf;\n";
-    os << "varying vec4 vertex;\n";
     os << "void main(void)\n";
     os << "{\n";
 #if 0
@@ -188,8 +187,7 @@ namespace Detail
     os << "   gl_TexCoord[0].w =  ( gl_Vertex.w + 1.0 ) / 2.0;\n";
 
     os << "   gl_Position = ftransform();\n";
-    os << "   gl_ClipVertex = gl_ModelViewProjectionMatrix * gl_Vertex;\n"; //gl_ModelViewMatrix * gl_Vertex;\n";
-    os << "   vertex = gl_ModelViewMatrix * gl_Vertex;\n";
+    os << "   gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;\n";
     os << "}\n";
 
     return os.str();
@@ -249,13 +247,8 @@ namespace Detail
   {
     "uniform sampler3D Volume;\n"
     "uniform sampler1D TransferFunction;\n"
-    "varying vec4 vertex;\n"
     "void main(void)\n"
-    "{\n"
-    //"   if ( distance ( gl_ClipPlane[0], vertex ) <= 0.0 )\n"
-    //"   if ( distance ( gl_ClipPlane[0], gl_FragCoord ) <= 0.0 )\n"
-    //"     discard;\n"
-    
+    "{\n"    
     "   float index = vec4( texture3D( Volume, gl_TexCoord[0].xyz ) ).x;\n"
     "   vec4 color = vec4( texture1D( TransferFunction, index ) );\n"
     #if 0
@@ -283,10 +276,7 @@ namespace Detail
     // Add to color.
     "   color.rgb += shading ( normal, view, light );\n"
 #endif
-    "  if ( distance ( gl_ClipPlane[0], vertex ) <= 0.0 )\n"
-    "   gl_FragColor = vec4( 0.0, 0.0, 0.0, 0.0 );\n"
-    "  else"
-    "   gl_FragColor = vec4( color );\n"
+    "  gl_FragColor = vec4( color );\n"
     "}\n"
   };
 
@@ -331,7 +321,6 @@ namespace Detail
 
 void Texture3DVolume::_createShaders ()
 {
-#if 1
   // Get the state set.
   osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
 
@@ -361,7 +350,6 @@ void Texture3DVolume::_createShaders ()
 
   if ( _transferFunction.valid () )
     Detail::addUniform ( *ss, new osg::Uniform ( "TransferFunction", static_cast < int > ( _transferFunction->textureUnit () ) ) );
-#endif
 }
 
 

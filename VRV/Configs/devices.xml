@@ -2,12 +2,13 @@
 <Devices>
   <Device>
     <Analogs>
-      <Analog name ="Analog0" horizontal_name="Analog0"
-                              vertical_name="Analog1" />
-      <Analog name ="Analog1" horizontal_name="Analog2"
-                              vertical_name="Analog3" />
+      <!--<Analog name ="Axis0" horizontal_name="VJAxis0"
+                              vertical_name="VJAxis1" />-->
+      <Analog name ="RightJoystick" horizontal_name="VJAnalog0" vertical_name="VJAnalog1" />
+      <Analog name ="LeftJoystick"  horizontal_name="VJAnalog2" vertical_name="VJAnalog3" />
+      <Analog name ="DirectionPad"  horizontal_name="VJAnalog4" vertical_name="VJAnalog5" />
+      
     </Analogs>
-    
     <Buttons>
       <Button name="Button1" vj_name="VJButton0" id="0x00000001" />
       <Button name="Button2" vj_name="VJButton1" id="0x00000002" />
@@ -22,5 +23,10 @@
       <Button name="PushAnalog1" vj_name="VJButton10" id="0x00000400" />
       <Button name="PushAnalog2" vj_name="VJButton11" id="0x00000800" />
     </Buttons>
+    <Mappings>
+      <Map button_id="0x00000400" command="menu" />
+      <Map button_id="0x00000800" command="trigger" />
+      <Map button_id="DirectionalPad" command="menu_navigation"
+    </Mappings>
   </Device>
 </Devices>

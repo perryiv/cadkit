@@ -132,11 +132,11 @@ Application::Application ( ) :
 
   ///// Moved Joystick callbacks to VRV::Core::Application
   // Hook up the joystick callbacks.
-  JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-  this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+  //JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 }
 
 

@@ -8,8 +8,8 @@
       <analog type="vertical joystick"   name="vertical joystick"   analog_device="LeftJoystick" range="-1 1"/>
       <analog type="horizontal joystick" name="horizontal joystick2" analog_device="RightJoystick" range="-1 1"/>
       <analog type="vertical joystick"   name="vertical joystick2"   analog_device="RightJoystick" range="-1 1"/>
-      <analog type="horizontal joystick" name="horizontal joystick3" analog_device="DirectionPad" range="-1 1"/>
-      <analog type="vertical joystick"   name="vertical joystick3"   analog_device="DirectionPad" range="-1 1"/>
+      <analog type="horizontal joystick" name="horizontal joystick3" analog_device="DirectionalPad" range="-1 1"/>
+      <analog type="vertical joystick"   name="vertical joystick3"   analog_device="DirectionalPad" range="-1 1"/>
       
       <analog type="wand pitch"          name="wand pitch"          range="-1 1"/>
       <analog type="wand yaw"            name="wand yaw"            range="-1 1"/>

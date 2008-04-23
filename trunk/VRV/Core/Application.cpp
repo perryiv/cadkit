@@ -158,6 +158,7 @@ Application::Application() :
   _statusBar         ( new Menu ),
   _functorFilename   (),
   _preferencesFilename (),
+  _deviceFilename    (),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  (),
@@ -178,6 +179,9 @@ Application::Application() :
   _intersectListeners (),
   _buttonMap          (),
   _buttonToAssign     ( 0 ),
+  _selectButtonID     ( 0 ),
+  _menuButtonID       ( 1 ),
+  _menuNavigationAnalogID ( "Joystick" ),
 	_bodyCenteredRotation ( false )
 {
   USUL_TRACE_SCOPE;
@@ -284,11 +288,11 @@ void Application::_construct()
   // Make a copy of the translation speed.
   _translationSpeed = this->preferences()->translationSpeed ();
 
-  // Read the user's functor file.
-  this->_readFunctorFile ();
-
   // Read the user's devices file
   this->_readDevicesFile();
+
+  // Read the user's functor file.
+  this->_readFunctorFile ();
 
   // Make the intersector.
   typedef Usul::Functors::Interaction::Navigate::Direction Dir;
@@ -1085,7 +1089,7 @@ void Application::_init()
   group->addChild ( _progressBars->buildScene() );
 
   // Initialize the button group by adding the individual buttons.
-  if( _buttons->size() <= 0 )
+  if( _buttons->size() == 0 )
   {
     _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
     _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON1, "VJButton1" ) );
@@ -1166,11 +1170,22 @@ void Application::_preFrame()
   // Update these input devices.
   _buttons->notify();
   _tracker->update();
+
+  // update all the joystick.
   _joystick->update();
 
   // Send any notifications.
   _joystick->notify();
 
+  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
+  {
+    // update all the joystick analog inputs
+    (*iter).second->update();
+
+    // Send any notifications to all joystick analog inputs.
+    (*iter).second->notify();
+  }
+  std::cout << "\r" << std::flush;
   // Navigate if we are supposed to.
   this->_navigate ();
 
@@ -2367,6 +2382,18 @@ void Application::analogTrim ( )
   
   Guard guard ( this->mutex() );
   _analogTrim.set ( x, y );
+
+  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
+  {
+    float x ( 0.5f - (*iter).second->horizontal() );
+    float y ( 0.5f - (*iter).second->vertical() );
+  
+    Guard guard ( this->mutex() );
+    (*iter).second->analogTrim( x, y );
+  }
+
+
+
 }
 
 
@@ -2659,7 +2686,7 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
   USUL_TRACE_SCOPE;
 
   // reinitialize when button 10 is pressed
-#if 1
+#if 0
   {
     Usul::Interfaces::IButtonID::QueryPtr button ( caller );
     if ( button.valid () )
@@ -3081,7 +3108,7 @@ void Application::_parseCommandLine()
   // Get new preferences and functor file from the command line.
   _preferencesFilename   = options.get ( "preferences", _preferencesFilename );
   _functorFilename       = options.get ( "functors",    _functorFilename     );
-  _functorFilename       = options.get ( "devices",    _deviceFilename     );
+  _deviceFilename        = options.get ( "devices",    _deviceFilename     );
 
   // Have to load the config files now. Remove them from the arguments.
   Parser::Args configs ( parser.files ( ".jconf", true ) );
@@ -3170,18 +3197,99 @@ void Application::_readDevicesFile ()
       const unsigned int uiid ( ::strtoul ( id.c_str(), 0x0, 16 ) );
       _buttons->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
     }
-		else if ( "Analog" == node->name() )
+		
+  }
+  XmlTree::Node::Children analogs    ( document->find ( "Analog",    true ) );
+  for ( Children::iterator iter = analogs.begin(); iter != analogs.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "Analog" == node->name() )
 		{
-			//std::string name, analog0, analog1;
+			std::string name, analog0, analog1;
 
 			// Check attributes...
+      XmlTree::Node::Attributes attributes ( node->attributes() );
 
-			/*if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
+      for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+      {
+        if ( "name" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, name );
+        }
+        if ( "horizontal_name" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, analog0 );
+        }
+        if ( "vertical_name" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, analog1 );
+        }
+      }
+			if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
 			{
-				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 )
-			}*/
+				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
+        _analogs[name]->name( name );
+			}
 		}
   }
+  if( _analogs.size() == 0 )
+  {
+    _analogs[ "Joystick" ] = new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" );
+    _analogs[ "Joystick" ]->name( "Joystick" );
+  }
+  XmlTree::Node::Children mappings    ( document->find ( "Map",    true ) );
+
+  for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "Map" == node->name() )
+    {
+      std::string cmd, btn; 
+
+      XmlTree::Node::Attributes attributes ( node->attributes() );
+      for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+      {
+        if ( "button_id" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, btn );
+
+        }
+        if ( "command" == iter->first )
+        {
+          Usul::Strings::fromString ( iter->second, cmd );
+
+        }
+       
+      }
+      if( "menu" == cmd )
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _menuButtonID = uiid;
+      }
+      else if( "trigger" == cmd )
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _selectButtonID = uiid;
+      }
+      else if( "menu_navigation" == cmd )
+      {
+        _menuNavigationAnalogID = btn;
+      }
+    }
+		
+  }
+  // assign the menu navigation to the specified joystick or default if none specified
+  //{
+  //  JoystickPtr joystick = _analogs[ _menuNavigationAnalogID ];
+  //  if( true == joystick.valid() )
+  //  {
+  //    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+  //  }
+  //}
 }
 
 
@@ -3243,7 +3351,7 @@ void Application::_readFunctorFile ()
   DirectionFunctors directionFunctors;
 
   // Setters.
-  Helper::AnalogSetter analogSetter; // ( _analogs );
+  Helper::AnalogSetter analogSetter       ( _analogs );
   Helper::MatrixSetter matrixSetter;
   Helper::DirectionSetter directionSetter ( matrixFunctors );
   Helper::TransformSetter transformSetter ( directionFunctors );
@@ -4563,7 +4671,7 @@ bool Application::_handleMenuEvent( unsigned long id )
     return false;
 
   // First see if you are supposed to show or hide it. Always do this first.
-  if ( BUTTON_JOYSTICK == id )
+  if ( _menuButtonID == id )
   {
     menu->toggleVisible();
     return true;
@@ -4577,39 +4685,38 @@ bool Application::_handleMenuEvent( unsigned long id )
   bool handled ( true );
 
   // Process button states iff the menu is showing.
+  
+  if(  _selectButtonID == id )
+  {
+    if ( this->_isAssignNextMenuSelection() )
+    {
+      MenuKit::Behavior::RefPtr behavior ( menu->behavior() );
+
+      if ( behavior.valid() )
+      {
+        MenuKit::Item::RefPtr item ( behavior->focus() );
+        if ( MenuKit::Button *button = dynamic_cast < MenuKit::Button* > ( item.get() ) )
+        {
+          Guard guard ( this );
+          _buttonMap[_buttonToAssign] = button->command();
+          
+          // We don't want to set the next one too.
+          _flags = Usul::Bits::set<unsigned int,unsigned int> ( _flags, Application::ASSIGN_NEXT_COMMAND, false );
+          _buttonToAssign = 0;
+
+          // Hide the menu.
+          behavior->close ( behavior->root() );
+
+          // No more focused item.
+          behavior->focus ( 0x0 );
+        }
+      }
+    }
+    else
+      menu->selectFocused();
+  }
   switch ( id )
   {
-    case BUTTON_TRIGGER:
-      {
-        if ( this->_isAssignNextMenuSelection() )
-        {
-          MenuKit::Behavior::RefPtr behavior ( menu->behavior() );
-
-          if ( behavior.valid() )
-          {
-            MenuKit::Item::RefPtr item ( behavior->focus() );
-            if ( MenuKit::Button *button = dynamic_cast < MenuKit::Button* > ( item.get() ) )
-            {
-              Guard guard ( this );
-              _buttonMap[_buttonToAssign] = button->command();
-              
-              // We don't want to set the next one too.
-              _flags = Usul::Bits::set<unsigned int,unsigned int> ( _flags, Application::ASSIGN_NEXT_COMMAND, false );
-              _buttonToAssign = 0;
-
-              // Hide the menu.
-              behavior->close ( behavior->root() );
-
-              // No more focused item.
-              behavior->focus ( 0x0 );
-            }
-          }
-        }
-        else
-          menu->selectFocused();
-      }
-      break;
-
     case BUTTON_RED:
       menu->moveFocused ( MenuKit::Behavior::LEFT );
       break;

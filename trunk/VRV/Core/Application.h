@@ -188,6 +188,8 @@ public:
   typedef Usul::Commands::GenericCommand < ExecuteFunctor >                    BasicCommand;
   typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor >    CheckCommand;
 
+  typedef std::map< std::string, Joystick::RefPtr > Analogs;
+
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructors.
@@ -264,6 +266,10 @@ public:
   /// Get the joystick.
   Joystick *              joystick ();
   const Joystick *        joystick () const;
+
+  /// Get the 2nd joystick.
+  Joystick *              joystick2 ();
+  const Joystick *        joystick2 () const;
 
   /// Get/Set the analog trim.
   const Usul::Math::Vec2f&    analogTrim () const;
@@ -713,6 +719,7 @@ private:
   ButtonsPtr                             _buttons;
   TrackerPtr                             _tracker;
   JoystickPtr                            _joystick;
+  Analogs                                _analogs;
   Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3d                      _wandOffset;
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
@@ -746,7 +753,11 @@ private:
   IntersectListeners                     _intersectListeners;
   ButtonMap                              _buttonMap;
   ButtonMap::key_type                    _buttonToAssign;
+  unsigned int                           _selectButtonID;
+  unsigned int                           _menuButtonID;
+  std::string                            _menuNavigationAnalogID;
 	bool                                   _bodyCenteredRotation;
+
 };
 
 }

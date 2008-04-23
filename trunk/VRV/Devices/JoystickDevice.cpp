@@ -15,8 +15,11 @@
 
 #include "VRV/Devices/JoystickDevice.h"
 
+#include "Usul/Strings/Format.h"
+
 using namespace VRV::Devices;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( JoystickDevice, JoystickDevice::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,7 +36,9 @@ JoystickDevice::JoystickDevice ( const std::string &h, const std::string &v ) :
   _h ( 0 ),
   _v ( 0 ),
   _hs ( JOYSTICK_AT_CENTER ),
-  _vs ( JOYSTICK_AT_CENTER )
+  _vs ( JOYSTICK_AT_CENTER ),
+  _analogTrim( 0.0, 0.0 ),
+  _name( "" )
 {
   // Initialize.
   _hai.init ( h );
@@ -72,6 +77,25 @@ JoystickDevice::~JoystickDevice()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* JoystickDevice::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IJoystickFloat::IID:
+    return static_cast< Usul::Interfaces::IJoystickFloat * > ( this );
+  default:
+    return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update the internal state.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,6 +104,11 @@ void JoystickDevice::update()
 {
   _h = _hai->getData();
   _v = _vai->getData();
+  /*std::string output = Usul::Strings::format( "Joytick: ", _name, "\t H = ", 
+                                              this->joystickHorizontal(), "  V = ", 
+                                              this->joystickVertical(), " | " );
+  ::OutputDebugStringA( output.c_str() );
+  std::cout << output << std::flush;*/
 }
 
 
@@ -100,6 +129,7 @@ void JoystickDevice::notify()
   // Notify for both directions.
   this->_notify ( hs, _hs );
   this->_notify ( vs, _vs );
+ 
 }
 
 
@@ -199,3 +229,54 @@ void JoystickDevice::_updateState()
   else
     _vs = JOYSTICK_AT_CENTER;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the analog input in the range [-1,1].
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float JoystickDevice::joystickHorizontal() const
+{
+  //USUL_TRACE_SCOPE;
+  return 2.0f * ( this->horizontal() + _analogTrim[0] ) - 1.0f;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the analog input in the range [-1,1].
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float JoystickDevice::joystickVertical() const
+{
+  //USUL_TRACE_SCOPE;
+  return 2.0f * ( this->vertical() + _analogTrim[1] ) - 1.0f;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the analog trim value
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void JoystickDevice::analogTrim( float x, float y )
+{
+  _analogTrim.set( x, y );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Set the name ( for debugging ) 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void JoystickDevice::name( const std::string &name )
+{
+  _name = name;
+}
+

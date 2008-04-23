@@ -15,7 +15,7 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 INCLUDE(${QT_USE_FILE})
 
 SUBDIRS (
-${CADKIT_INC_DIR}/Experimental/QtTools
+${CADKIT_INC_DIR}/QtTools
 ${CADKIT_INC_DIR}/Helios/Qt/Views/OSG
 ${CADKIT_INC_DIR}/Helios/Qt/Commands
 ${CADKIT_INC_DIR}/Helios/Qt/Tools

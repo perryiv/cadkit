@@ -17,7 +17,7 @@
 #ifndef _MEASURE_TOOL_COMPONENT_CLASS_H_
 #define _MEASURE_TOOL_COMPONENT_CLASS_H_
 
-#include "MeasureTool/CompileGuard.h"
+#include "Helios/Plugins/MeasureTool/CompileGuard.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IActiveViewListener.h"

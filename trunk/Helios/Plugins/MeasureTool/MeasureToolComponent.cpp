@@ -14,7 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MeasureTool/MeasureToolComponent.h"
+#include "Helios/Plugins/MeasureTool/MeasureToolComponent.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"

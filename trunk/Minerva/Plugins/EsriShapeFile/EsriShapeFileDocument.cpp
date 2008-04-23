@@ -63,7 +63,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( EsriShapeFileDocument, EsriShapeFileDocument::
 ///////////////////////////////////////////////////////////////////////////////
 
 EsriShapeFileDocument::EsriShapeFileDocument() : 
-  BaseClass ( "Esri Shape File Document" ),
+  BaseClass ( "ESRI Shape File Document" ),
 	_driver ( 0x0 ),
   _positions( 0 ),
   _measurement( 0.0 )

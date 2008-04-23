@@ -20,6 +20,8 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/System/Environment.h"
 
+#include "XmlTree/Node.h"
+
 #include <algorithm>
 
 
@@ -118,4 +120,18 @@ std::string Functions::urlScriptDir ( bool wantSlash )
 std::string Functions::protocol()
 {
   return ( ( "on" == Usul::Strings::lowerCase ( Usul::System::Environment::get ( "HTTPS" ) ) ) ? "https" : "http" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the movie parameter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Functions::addMovieParam ( XmlTree::Node &node, const std::string &name, const std::string &value )
+{
+  XmlTree::Node::ValidRefPtr param ( node.append ( "param" ) );
+  param->attributes()["name"]  = name;
+  param->attributes()["value"] = value;
 }

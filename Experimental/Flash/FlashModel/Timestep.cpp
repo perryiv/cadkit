@@ -283,8 +283,8 @@ osg::Node* Timestep::buildScene()
     const bool isLeaf ( _leafFlags.at ( num ) );
     const int level ( _levels.at ( num ) );
     
-    //if ( isLeaf && 5 == level )
-    if ( isLeaf )
+    if ( isLeaf && 5 == level )
+    //if ( isLeaf )
     {      
       bb._min =  bb._min / float ( 1e+20f );
       bb._max =  bb._max / float ( 1e+20f );
@@ -305,7 +305,7 @@ osg::Node* Timestep::buildScene()
       OsgTools::State::StateSet::setLighting ( mt.get(), false );
 #endif
       
-#if 1
+#if 0
       const osg::Vec3 min ( bb._min );
       const osg::Vec3 max ( bb._max );
       
@@ -345,7 +345,7 @@ osg::Node* Timestep::buildScene()
                                  ( static_cast<double> ( j ) + 0.5 ) * deltaY, 
                                  ( static_cast<double> ( k ) + 0.5 ) * deltaZ );
             vertices->push_back ( osg::Vec3 ( bb._min + position ) );
-            myColors->push_back ( osg::Vec4 ( r, g, b, 1.0 ) );
+            myColors->push_back ( osg::Vec4 ( r, g, b, temp * 0.5f ) );
           }
         }
       }
@@ -369,6 +369,8 @@ osg::Node* Timestep::buildScene()
       // Turn off lighting
       OsgTools::State::StateSet::setLighting ( geode.get(), false );
       
+      geode->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
+      
       root->addChild ( geode.get() );
 #else
       osg::ref_ptr<OsgTools::Volume::Texture3DVolume> volumeNode ( new OsgTools::Volume::Texture3DVolume );
@@ -378,6 +380,7 @@ osg::Node* Timestep::buildScene()
       
       // Get the 3D image for the volume.
       osg::ref_ptr<osg::Image> image ( new osg::Image );
+      
       image->allocateImage ( x, y, z, GL_LUMINANCE, GL_UNSIGNED_BYTE );
       //image->allocateImage ( x, y, z, GL_LUMINANCE, GL_FLOAT );
       
@@ -401,11 +404,15 @@ osg::Node* Timestep::buildScene()
         }
       }
       
+      // Build the transfer function.
+#if 0
+      volumeNode->useTransferFunction ( false );
+#else
+      volumeNode->transferFunction ( tf.get() );
+#endif
+      
       volumeNode->numPlanes ( 64 );
       volumeNode->image ( image.get() );
-      
-      // Build the transfer function.
-      volumeNode->transferFunction ( tf.get() );
       
       volumeNode->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
       
@@ -415,9 +422,9 @@ osg::Node* Timestep::buildScene()
   }
 
   // Create a blend function.
-  //osg::ref_ptr< osg::BlendFunc > blendFunc ( new osg::BlendFunc );
-  //blendFunc->setFunction( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-  //_root->getOrCreateStateSet()->setAttributeAndModes( blendFunc.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  osg::ref_ptr< osg::BlendFunc > blendFunc ( new osg::BlendFunc );
+  blendFunc->setFunction( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  root->getOrCreateStateSet()->setAttributeAndModes( blendFunc.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
 
   return root.release();
 }

@@ -243,7 +243,7 @@ namespace Detail
 void PlanarProxyGeometry::_drawImplementation( osg::State& state ) const
 {
   // Apply the state.
-  Detail::PushPopStateSet pushPopState ( this->getStateSet(), state );
+  //Detail::PushPopStateSet pushPopState ( this->getStateSet(), state );
 
   // Get the vector of the view direction.
   osg::Matrix matrix ( state.getModelViewMatrix() );

@@ -12,6 +12,7 @@
 #define __OSGTOOLS_VOLUME_3D_TEXTURE_VOLUME_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Drawables/VoxelGeometry.h"
 #include "OsgTools/Volume/PlanarProxyGeometry.h"
 #include "OsgTools/Volume/TransferFunction.h"
 
@@ -27,6 +28,7 @@ public:
   /// Typedefs.
   typedef osg::Geode                             BaseClass;
   typedef OsgTools::Volume::PlanarProxyGeometry  Geometry;
+  //typedef OsgTools::Drawables::VoxelGeometry     Geometry;
   typedef osg::ref_ptr < osg::Image >            ImagePtr;
   typedef unsigned int                           TextureUnit;
   typedef std::pair < ImagePtr, TextureUnit >    TexutreInfo;

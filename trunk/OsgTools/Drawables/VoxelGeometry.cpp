@@ -36,6 +36,7 @@ VoxelGeometry::VoxelGeometry() : BaseClass(),
   _numPlanes ( 3 ),
   _bbox      ( osg::Vec3 ( 0, 0, 0 ), osg::Vec3 ( 5, 1, 5 ) )
 {
+  this->setUseDisplayList( false );
 }
 
 
@@ -450,7 +451,7 @@ void VoxelGeometry::_drawPoint ( const VoxelGeometry::Point &p ) const
 
 #endif
 
-  //::glTexCoord3dv ( p.second.get() );
+  ::glTexCoord3dv ( p.second.get() );
   ::glVertex3dv   ( p.first.get()  );
 }
 

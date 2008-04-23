@@ -65,7 +65,7 @@ protected:
   };
 
   // The callbacks are friendly.
-  friend struct JoystickCB;
+  //friend struct JoystickCB;
 
   // These are not implemented by design.
   Application ( const Application &app );

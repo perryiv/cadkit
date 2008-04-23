@@ -3237,12 +3237,13 @@ void Application::_readDevicesFile ()
     _analogs[ "Joystick" ] = new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" );
     _analogs[ "Joystick" ]->name( "Joystick" );
   }
-  XmlTree::Node::Children mappings    ( document->find ( "Map",    true ) );
+
+  XmlTree::Node::Children mappings    ( document->find ( "Mapping",    true ) );
 
   for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
-    if ( "Map" == node->name() )
+    if ( "Mapping" == node->name() )
     {
       std::string cmd, btn; 
 
@@ -3275,21 +3276,30 @@ void Application::_readDevicesFile ()
       {
         _menuNavigationAnalogID = btn;
       }
-    }
-		
+     }	
   }
+
   // assign the menu navigation to the specified joystick or default if none specified
-  //{
-  //  JoystickPtr joystick = _analogs[ _menuNavigationAnalogID ];
-  //  if( true == joystick.valid() )
-  //  {
-  //    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-  //    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-  //  }
-  //}
+  if( true == _analogs[ _menuNavigationAnalogID ].valid() )
+  {
+    JoystickPtr jptr ( _analogs[ _menuNavigationAnalogID ] );
+    {
+      JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+      if( true == jptr.valid() )
+      {
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+      }
+    }
+  }
+  else
+  {
+    //throw exception here
+    Usul::Exceptions::Thrower < std::runtime_error > 
+      ( "Error 3677656649: No valid menu navigation joystick found" );
+  }
 }
 
 
@@ -5600,4 +5610,44 @@ bool Application::isBodyCenteredRotation() const
 	USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
 	return _bodyCenteredRotation;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback for the joystick.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::Referenced * )
+{
+  USUL_TRACE_SCOPE;
+
+  //ErrorChecker ( 1915253659u, isAppThread(), CV::NOT_APP_THREAD );
+  //ErrorChecker ( 4165917933u, 0x0 != _app );
+
+  MenuKit::OSG::Menu::RefPtr menu ( _app->menu () );
+
+  // Make sure we have a valid menu.
+  if ( false == menu.valid () )
+    return;
+
+  switch ( m )
+  {
+  case VRV::Devices::JOYSTICK_ENTERING_RIGHT:
+    menu->moveFocused ( MenuKit::Behavior::RIGHT );
+    break;
+
+  case VRV::Devices::JOYSTICK_ENTERING_LEFT:
+    menu->moveFocused ( MenuKit::Behavior::LEFT );
+    break;
+
+  case VRV::Devices::JOYSTICK_ENTERING_UP:
+    menu->moveFocused ( MenuKit::Behavior::UP );
+    break;
+
+  case VRV::Devices::JOYSTICK_ENTERING_DOWN:
+    menu->moveFocused ( MenuKit::Behavior::DOWN );
+    break;
+  }
 }

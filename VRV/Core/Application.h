@@ -645,6 +645,15 @@ protected:
   Application ( const Application& );
   Application& operator = (const Application&);
 
+  // Joystick callbacks.
+  struct JoystickCB : public VRV::Devices::Callback
+  {
+    JoystickCB ( Application *app ) : _app ( app ){}
+    virtual void operator () ( VRV::Devices::Message m, Usul::Base::Referenced *caller );
+  private:
+    Application *_app;
+  };
+
 private:
   // Don't allow derived classes to implement these VR Juggler functions.
   // Implement the _function instead.  

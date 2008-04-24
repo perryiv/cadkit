@@ -43,7 +43,8 @@
 class FlashDocument : public Usul::Documents::Document,
                       public Usul::Interfaces::IBuildScene,
                       public Usul::Interfaces::ITimeVaryingData,
-                      public Usul::Interfaces::IUpdateListener
+                      public Usul::Interfaces::IUpdateListener,
+                      public Usul::Interfaces::IMenuAdd
 {
 public:
 
@@ -78,6 +79,19 @@ public:
   void                        dirty ( bool b );
   bool                        dirty () const;
 
+  /// Set/get the draw bounding box flag.
+  void                        drawBBox ( bool b );
+  bool                        isDrawBBox() const;
+  
+  /// Set/get the draw points flag.
+  void                        drawPoints ( bool b );
+  bool                        isDrawPoints() const;
+  
+  /// Set/get the draw volume flag.
+  void                        drawVolume ( bool b );
+  bool                        isDrawVolume() const;
+
+  
   /// Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersOpen()   const;
   virtual Filters             filtersSave()   const;
@@ -119,6 +133,9 @@ protected:
   virtual unsigned int        getCurrentTimeStep () const;
   
   virtual unsigned int        getNumberOfTimeSteps () const;
+  
+  /// Add to the menu (IMenuAdd).
+  virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
 private:
   
@@ -132,6 +149,9 @@ private:
   unsigned int _currentTimestep;
   osg::ref_ptr < osg::Group > _root;
   bool _dirty;
+  bool _drawBBox;
+  bool _drawPoints;
+  bool _drawVolume;
   
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;

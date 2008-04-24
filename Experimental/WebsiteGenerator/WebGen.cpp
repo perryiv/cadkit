@@ -289,7 +289,17 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
     {
       CellIndex index ( _site["images"]["logo"]["cell"].get<CellIndex> ( CellIndex ( 0, 0 ) ) );
       XmlTree::Node::ValidRefPtr logo ( this->_cell ( index[0], index[1] ) );
-      logo->append ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
+      XmlTree::Node::ValidRefPtr link ( logo->append ( "a" ) );
+
+      // The image gets the logo attribute.
+      XmlTree::Node::ValidRefPtr img
+        ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
+      img->attributes()["class"] = "logo_link";
+      link->append ( img );
+
+      // Set link attributes.
+      link->attributes()["href"] = 
+        Usul::Strings::format ( Functions::urlScript(), "?site=", _site["name"].get ( "" ) );
     }
 
     // Add the page title and separator.

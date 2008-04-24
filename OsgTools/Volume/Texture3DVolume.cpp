@@ -106,9 +106,9 @@ void Texture3DVolume::image ( osg::Image* image, TextureUnit unit )
 
   texture3D->setFilter( osg::Texture3D::MIN_FILTER, osg::Texture3D::LINEAR );
   texture3D->setFilter( osg::Texture3D::MAG_FILTER, osg::Texture3D::LINEAR );
-  texture3D->setWrap( osg::Texture3D::WRAP_R, osg::Texture3D::CLAMP );
-  texture3D->setWrap( osg::Texture3D::WRAP_S, osg::Texture3D::CLAMP );
-  texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP );
+  texture3D->setWrap( osg::Texture3D::WRAP_R, osg::Texture3D::CLAMP_TO_EDGE );
+  texture3D->setWrap( osg::Texture3D::WRAP_S, osg::Texture3D::CLAMP_TO_EDGE );
+  texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP_TO_EDGE );
 
   // Don't resize.
   texture3D->setResizeNonPowerOfTwoHint( this->resizePowerTwo () );
@@ -321,6 +321,7 @@ namespace Detail
 
 void Texture3DVolume::_createShaders ()
 {
+#if 1
   // Get the state set.
   osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
 
@@ -350,6 +351,7 @@ void Texture3DVolume::_createShaders ()
 
   if ( _transferFunction.valid () )
     Detail::addUniform ( *ss, new osg::Uniform ( "TransferFunction", static_cast < int > ( _transferFunction->textureUnit () ) ) );
+#endif
 }
 
 
@@ -442,7 +444,7 @@ void Texture3DVolume::transferFunction ( TransferFunction* tf, TextureUnit unit 
 
     // Get the state set.
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-    ss->setTextureAttributeAndModes ( unit, _transferFunction->texture (), osg::StateAttribute::ON );
+    ss->setTextureAttributeAndModes ( unit, tf->texture (), osg::StateAttribute::ON );
 
     // Create the shaders.
     this->_createShaders ();

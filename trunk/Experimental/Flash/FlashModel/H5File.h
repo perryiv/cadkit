@@ -35,7 +35,9 @@ public:
   Dataset*   openDataset ( const std::string& name );
   
 private:
+
   hid_t _handle;
+  std::string _file;
 };
 
 #endif

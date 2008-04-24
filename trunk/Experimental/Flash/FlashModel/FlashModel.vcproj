@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: WRF Model"
-	ProjectGUID="{C6A9E05B-C03A-4445-AC47-32290F1191DD}"
+	Name="plug: Flash Model"
+	ProjectGUID="{73176B31-DB8C-41E7-863E-A4FC610C00BF}"
 	>
 	<Platforms>
 		<Platform
@@ -39,14 +39,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/WRFModel.tlb"
+				TypeLibraryName=".\Debug/FLASHModel.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_WRF_MODEL;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(HDF_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_FLASH_MODEL;_CRT_SECURE_NO_WARNINGS;_HDF5USEDLL_"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -79,15 +79,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib OpenThreadsd.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/WRFModel.plugd"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib OpenThreadsd.lib hdf5dll.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/FLASHModel.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);$(HDF_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug\WRFModeld.pdb"
-				ImportLibrary=".\Debug\WRFModeld.lib"
+				ProgramDatabaseFile=".\Debug\FLASHModeld.pdb"
+				ImportLibrary=".\Debug\FLASHModeld.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/WRFModel.tlb"
+				TypeLibraryName=".\Release/FLASHModel.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_WRF_MODEL;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OPENTHREADS_INC_DIR);$(BOOST_INC_DIR);$(HDF_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_FLASH_MODEL;_CRT_SECURE_NO_WARNINGS;_HDF5USEDLL_"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -178,14 +178,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib OpenThreads.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/WRFModel.plug"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib OpenThreads.lib hdf5dll.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/FLASHModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);$(HDF_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\WRFModel.pdb"
-				ImportLibrary=".\Release\WRFModel.lib"
+				ProgramDatabaseFile=".\Release\FLASHModel.pdb"
+				ImportLibrary=".\Release\FLASHModel.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -223,51 +223,47 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\Channel.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Channel.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>
 				<File
-					RelativePath=".\LoadDataJob.cpp"
+					RelativePath=".\Dataset.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\LoadDataJob.h"
+					RelativePath=".\Dataset.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Parser.cpp"
+					RelativePath=".\FlashComponent.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Parser.h"
+					RelativePath=".\FlashComponent.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WRFComponent.cpp"
+					RelativePath=".\FlashDocument.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WRFComponent.h"
+					RelativePath=".\FlashDocument.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WRFDocument.cpp"
+					RelativePath=".\H5File.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\WRFDocument.h"
+					RelativePath=".\H5File.h"
 					>
 				</File>
 				<File
-					RelativePath=".\WRFFactory.cpp"
+					RelativePath=".\Timestep.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Timestep.h"
 					>
 				</File>
 			</Filter>

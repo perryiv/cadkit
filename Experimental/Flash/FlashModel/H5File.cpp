@@ -11,6 +11,10 @@
 #include "H5File.h"
 #include "Dataset.h"
 
+#include "Usul/Strings/Format.h"
+
+#include <iostream>
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -19,7 +23,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 H5File::H5File ( const std::string& file ) : 
-  _handle ( -1 )
+  _handle ( -1 ),
+  _file ( file )
 {
   // Open the file.
   _handle = ::H5Fopen ( file.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT );
@@ -34,6 +39,16 @@ H5File::H5File ( const std::string& file ) :
 
 H5File::~H5File()
 {
+  const int numOpenObjects ( ::H5Fget_obj_count ( _handle, H5F_OBJ_ALL ) );
+  if ( 0 != numOpenObjects )
+  {
+    const std::string message
+      ( Usul::Strings::format ( "Warning 1403446461: Closing HDF5 file '", 
+                                _file, "' while ", numOpenObjects, 
+                                " of its objects are still open" ) );
+    std::cout << message << std::endl;
+  }
+
   // Close the file.
   ::H5Fclose ( _handle );
 }

@@ -26,8 +26,6 @@ public:
   // Apply this visitor to the items.
   virtual void        apply ( Menu &m );
   virtual void        apply ( Button &b );
-  //virtual void        apply ( ToggleButton &toggle );
-  //virtual void        apply ( RadioButton &radio );
 
 protected:
   virtual ~UpdateVisitor ();

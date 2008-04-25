@@ -991,6 +991,35 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     background->append ( new Button ( UC::genericCommand ( "Default", UA::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), UC::TrueFunctor() ) ) );
     menu.append ( background.get() );
   }
+  
+  // Goto menu.
+  {
+    MenuKit::Menu::RefPtr gotoMenu ( new MenuKit::Menu ( "Goto" ) );
+    
+    gotoMenu->append ( new Button ( UC::genericCommand ( "Fit", 
+                                                         UA::bind1<void> ( OsgViewer::FIT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
+                                                         UC::TrueFunctor() ) ) );
+    gotoMenu->append ( new Button ( UC::genericCommand ( "Front", 
+                                                        UA::bind1<void> ( OsgViewer::FRONT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
+                                                        UC::TrueFunctor() ) ) );
+    gotoMenu->append ( new Button ( UC::genericCommand ( "Back", 
+                                                        UA::bind1<void> ( OsgViewer::BACK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
+                                                        UC::TrueFunctor() ) ) );
+    gotoMenu->append ( new Button ( UC::genericCommand ( "Left", 
+                                                        UA::bind1<void> ( OsgViewer::LEFT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
+                                                        UC::TrueFunctor() ) ) );
+    gotoMenu->append ( new Button ( UC::genericCommand ( "Right", 
+                                                        UA::bind1<void> ( OsgViewer::RIGHT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
+                                                        UC::TrueFunctor() ) ) );
+    gotoMenu->append ( new Button ( UC::genericCommand ( "Top", 
+                                                        UA::bind1<void> ( OsgViewer::TOP, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
+                                                        UC::TrueFunctor() ) ) );
+    gotoMenu->append ( new Button ( UC::genericCommand ( "Bottom", 
+                                                        UA::bind1<void> ( OsgViewer::BOTTOM, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
+                                                        UC::TrueFunctor() ) ) );
+    
+    menu.append ( gotoMenu.get() );
+  }
 
   // Mode menu.
   {

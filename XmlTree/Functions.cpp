@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "XmlTree/Functions.h"
+#include "XmlTree/XercesString.h"
 
 #include <sstream>
 #include <memory>
@@ -118,23 +119,7 @@ std::string Functions::value ( const xercesc::DOMNode *node )
 
 std::string Functions::translate ( const XMLCh *text )
 {
-  // Initialize.
-  std::string s;
-
-  // If there is text...
-  if ( text )
-  {
-    // The translate function allocates with "new".
-    std::auto_ptr<const char> translated ( xercesc::XMLString::transcode ( text ) );
-    if ( translated.get() )
-    {
-      // Set the string.
-      s = translated.get();
-    }
-  }
-
-  // Return what we have.
-  return s;
+  return XmlTree::toNative ( text );
 }
 
 

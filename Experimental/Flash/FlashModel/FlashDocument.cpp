@@ -16,7 +16,6 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/Color.h"
 #include "Usul/Functions/SafeCall.h"
-//#include "Usul/Interfaces/IGLObjectsVisitor.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Threads/Safe.h"
@@ -28,8 +27,6 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/ToggleButton.h"
-
-#include "osgUtil/GLObjectsVisitor"
 
 #include "hdf5.h"
 
@@ -321,24 +318,9 @@ void FlashDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   // Buid the scene if we need to.
   if ( this->dirty () )
   {
-    /*Usul::Interfaces::IGLObjectsVisitor::QueryPtr glov ( caller );
-    
-    //_root->releaseGLObjects();
-    
-    if ( glov.valid() )
-    {
-      const unsigned int mode ( osgUtil::GLObjectsVisitor::RELEASE_DISPLAY_LISTS | osgUtil::GLObjectsVisitor::RELEASE_STATE_ATTRIBUTES );
-      osg::ref_ptr<osgUtil::GLObjectsVisitor> visitor ( new osgUtil::GLObjectsVisitor ( mode ) );
-      glov->acceptGLObjectsVisitor ( *visitor );
-    }*/
+		_root->releaseGLObjects();
 
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), "3279281359" );
-    
-    /*if ( glov.valid() )
-    {
-      osg::ref_ptr<osgUtil::GLObjectsVisitor> visitor ( new osgUtil::GLObjectsVisitor );
-      glov->acceptGLObjectsVisitor ( *visitor );
-    }*/
   }
 }
 

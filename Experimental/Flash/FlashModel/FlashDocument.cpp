@@ -20,6 +20,8 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Threads/Safe.h"
 
+#include "OsgTools/State/StateSet.h"
+#include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/Volume/TransferFunction1D.h"
 
 #include "Serialize/XML/Serialize.h"
@@ -27,6 +29,8 @@
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/ToggleButton.h"
+
+#include "osg/BlendFunc"
 
 #include "hdf5.h"
 
@@ -43,20 +47,29 @@ USUL_FACTORY_REGISTER_CREATOR ( FlashDocument );
 FlashDocument::FlashDocument() : 
   BaseClass ( "Flash Document" ),
   _filenames(),
+  _scale ( 1.0 / 1e+20f ),
   _currentTimestep ( 0 ),
   _root ( new osg::Group ),
   _dirty ( true ),
-  _currentTransferFunction ( 0 ),
-  _transferFunctions(),
-  _timesteps(),
   _drawBBox ( false ),
   _drawPoints ( false ),
   _drawVolume ( true ),
+  _currentTransferFunction ( 0 ),
+  _transferFunctions(),
+  _timesteps(),
+  _volumes(),
+  _program ( Volume::createProgram() ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filenames", _filenames );
   
   this->_buildDefaultTransferFunctions();
+  
+  // Create a blend function.
+  osg::ref_ptr< osg::BlendFunc > blendFunc ( new osg::BlendFunc );
+  blendFunc->setFunction( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+  _root->getOrCreateStateSet()->setAttributeAndModes( blendFunc.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  _root->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
 }
 
 
@@ -296,7 +309,99 @@ void FlashDocument::_buildScene()
 
     // Add the child to the scene.
     if ( timestep.valid() )
-      _root->addChild ( timestep->buildScene( _drawBBox, _drawPoints, _drawVolume ) );
+    {
+      // Colors.
+      std::vector<osg::Vec4> colors ( 6 );
+      colors[0] = osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 );
+      colors[1] = osg::Vec4 ( 0.0, 1.0, 0.0, 1.0 );
+      colors[2] = osg::Vec4 ( 0.0, 0.0, 1.0, 1.0 );
+      colors[3] = osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 );
+      colors[4] = osg::Vec4 ( 1.0, 0.0, 1.0, 1.0 );
+      colors[5] = osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 );
+      
+      // Get min and max from the data set.
+      const double minimum ( timestep->minimum() );
+      const double maximum ( timestep->maximum() );
+      
+      // Typedefs.
+      typedef OsgTools::Volume::TransferFunction1D TransferFunction1D;
+      typedef TransferFunction1D::Colors           Colors;
+      
+      const unsigned int size ( 256 );
+      Colors hsv       ( size );
+      
+      {
+        const double tmin ( ::log10 ( minimum * 5 ) + 3.0 );
+        const double tmax ( ::log10 ( maximum * 5 ) + 3.0 );
+        
+        const double range ( maximum - minimum );
+        
+        for ( unsigned int i = 0; i < size; ++i )
+        {
+          const float u ( static_cast < float > ( i ) / ( size - 1 ) );
+          const unsigned char alpha ( 35 );
+          
+          float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
+          
+          const double value ( minimum + ( u * range ) );
+          double temp ( ( ( ::log10 ( value * 5 ) + 3.0 ) - tmin ) / ( tmax - tmin ) );
+          
+          Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - static_cast<float> ( temp * 300.0f ), 1.0f, 1.0f );
+          hsv.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
+          hsv.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
+          hsv.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
+          hsv.at ( i ) [ 3 ] = static_cast < unsigned char > ( u * alpha );
+        }
+      }
+      
+      TransferFunction1D::RefPtr tf ( new TransferFunction1D ( hsv ) );
+      
+      const unsigned int numNodes ( timestep->numNodes() );
+      
+      // Make bounding boxes.
+      for ( unsigned int num = 0; num < numNodes; ++num )
+      {
+        osg::BoundingBox bb ( timestep->boundingBox ( num ) );
+        const bool isLeaf ( timestep->isLeaf ( num ) );
+        const int level ( timestep->level ( num ) );
+        
+        if ( isLeaf && 5 == level )
+          //if ( isLeaf )
+        {      
+          bb._min =  bb._min * _scale;
+          bb._max =  bb._max * _scale;
+          
+          // Add the bounding box.
+          if ( _drawBBox )
+            _root->addChild ( timestep->buildBoundingBox ( bb, colors.at ( level - 1 ) ) );
+          
+          // Add the points.
+          if ( _drawPoints )
+          {
+            _root->addChild ( timestep->buildPoints ( bb, num ) );
+          }
+          
+          if ( _drawVolume )
+          {
+            //osg::ref_ptr<OsgTools::Volume::Texture3DVolume> volumeNode ( this->_volume ( num ) );
+            osg::ref_ptr<Volume> volumeNode ( new Volume ( _program.get() ) );
+            
+            // Set the volume nodes bounding box.
+            volumeNode->boundingBox ( bb );
+            
+            // Set the transfer function.
+            volumeNode->transferFunction ( tf.get() );
+            
+            volumeNode->numPlanes ( 64 );
+            volumeNode->image ( timestep->buildVolume ( num ) );
+            
+            volumeNode->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
+            
+            _root->addChild ( volumeNode.get() );
+          }
+        }
+      }
+    }
     
     _timesteps.clear();
   }
@@ -317,9 +422,7 @@ void FlashDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   
   // Buid the scene if we need to.
   if ( this->dirty () )
-  {
-		_root->releaseGLObjects();
-
+  {  
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), "3279281359" );
   }
 }
@@ -625,4 +728,16 @@ void FlashDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
                                                                 UA::memberFunction<void> ( this, &FlashDocument::drawVolume ), 
                                                                 UA::memberFunction<bool> ( this, &FlashDocument::isDrawVolume ) ) ) );
   }
+}
+
+/// Get a volume.
+OsgTools::Volume::Texture3DVolume * FlashDocument::_volume ( unsigned int i )
+{
+  if ( i + 1 >= _volumes.size() )
+    _volumes.resize ( i + 1 );
+  
+  if ( 0x0 == _volumes.at ( i ).get() )
+    _volumes.at ( i ) = new OsgTools::Volume::Texture3DVolume;
+  
+  return _volumes.at ( i ).get();
 }

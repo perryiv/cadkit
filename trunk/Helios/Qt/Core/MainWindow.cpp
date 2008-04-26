@@ -64,8 +64,10 @@
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Qt.h"
 #include "Usul/Resources/TextWindow.h"
+#include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Qt.h"
+#include "Usul/System/Environment.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
@@ -995,7 +997,16 @@ std::string MainWindow::defautPluginFile() const
 {
   USUL_TRACE_SCOPE;
   //Guard guard ( this->mutex() );
-  
+
+  // First check the environment.
+  std::string file ( Usul::System::Environment::get (  Usul::Strings::format ( Usul::Strings::upperCase ( this->programName() ), "_PLUGIN_FILE" ) ) );
+  if ( false == file.empty() )
+  {
+    std::replace ( file.begin(), file.end(), '\\', '/' );
+    return file;
+  }
+
+  // If we get to here then figure out the file.
   #ifdef __APPLE__
   // Relative path for an application bundle on OS X.
   std::string relativePath ( "/../Plugins/" );
@@ -1003,8 +1014,9 @@ std::string MainWindow::defautPluginFile() const
   std::string relativePath ( "/../configs/" );
   #endif
 
-  std::string file ( this->directory() + relativePath + this->programName() + "Plugins.xml" );
+  file = Usul::Strings::format ( this->directory(), relativePath, this->programName(), "Plugins.xml" );
   std::replace ( file.begin(), file.end(), '\\', '/' );
+
   return file;
 }
 

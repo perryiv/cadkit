@@ -303,7 +303,7 @@
 				Name="GeneratedItems"
 				>
 				<File
-					RelativePath=".\generatedfiles\moc_AddOssimLayerWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_AddOssimLayerWidget.cpp"
 					>
 				</File>
 			</Filter>

@@ -556,43 +556,43 @@
 				Name="GeneratedFiles"
 				>
 				<File
-					RelativePath=".\generatedfiles\moc_AddPostGISLayerWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_AddPostGISLayerWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_ConnectToDatabase.cpp"
+					RelativePath=".\GeneratedFiles\moc_ConnectToDatabase.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_DatabasePage.cpp"
+					RelativePath=".\GeneratedFiles\moc_DatabasePage.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_GradientColorWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_GradientColorWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_LineWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_LineWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_PointWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_PointWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_PolygonWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_PolygonWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_PropertyPage.cpp"
+					RelativePath=".\GeneratedFiles\moc_PropertyPage.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_SingleColorWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_SingleColorWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_UniqueColorWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_UniqueColorWidget.cpp"
 					>
 				</File>
 				<File

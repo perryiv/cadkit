@@ -308,11 +308,11 @@
 				Name="GeneratedFiles"
 				>
 				<File
-					RelativePath=".\generatedfiles\moc_Favorites.cpp"
+					RelativePath=".\GeneratedFiles\moc_Favorites.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_LayersTree.cpp"
+					RelativePath=".\GeneratedFiles\moc_LayersTree.cpp"
 					>
 				</File>
 			</Filter>

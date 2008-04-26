@@ -12,6 +12,9 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/User/Directory.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Strings/Case.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/Environment.h"
 
 #include <algorithm>
 
@@ -77,8 +80,23 @@ Application::~Application()
 
 const std::string Application::iconDirectory() const
 {
-	const std::string dir ( Usul::CommandLine::Arguments::instance().directory() );
-  
+  // First check the environment.
+  std::string dir ( Usul::System::Environment::get ( Usul::Strings::format ( Usul::Strings::upperCase ( this->program() ), "_ICON_DIR" ) ) );
+  if ( false == dir.empty() )
+  {
+    // Make sure there is a trailing slash.
+    const unsigned int last ( dir.size() - 1 );
+    if ( ( '/' != dir.at(last) ) && ( '\\' != dir.at(last) ) )
+    {
+      dir.append ( "/" );
+    }
+    std::replace ( dir.begin(), dir.end(), '\\', '/' );
+    return dir;
+  }
+
+  // If we get to here then figure out the directory.
+  dir = Usul::CommandLine::Arguments::instance().directory();
+
 #ifdef __APPLE__
   std::string path ( dir + "/../Resources/icons/" );
 #else

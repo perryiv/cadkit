@@ -717,7 +717,7 @@ protected:
 	// Get the model's scene (IModelsScene).
   virtual const osg::Group *    modelsScene() const;
   virtual osg::Group *          modelsScene();
-
+  
 private:
 
   // Do not use.
@@ -760,7 +760,7 @@ private:
 
   IContext::QueryPtr _context;
   Renderer::ValidRefPtr _renderer;
-  SceneManager::ValidRefPtr _sceneManager;
+  SceneManager::RefPtr _sceneManager;
   ITimeoutSpin::QueryPtr _timeoutSpin;
   IUnknown::QueryPtr _caller;
   Lods _lods;

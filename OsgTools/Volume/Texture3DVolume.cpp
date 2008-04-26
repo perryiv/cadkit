@@ -31,8 +31,46 @@ using namespace OsgTools::Volume;
 Texture3DVolume::Texture3DVolume() : BaseClass (),
   _volume ( 0x0, 0 ),
   _geometry ( new Geometry ),
-  _flags ( 0 ),
-  _transferFunction ( 0x0 )
+  _flags ( _USE_TRANSFER_FUNCTION ),
+  _transferFunction ( 0x0 ),
+  _bbLengths ( new osg::Uniform ( "bb", osg::Vec3 ( 1.0f, 1.0f, 1.0f ) ) ),
+  _bbMin ( new osg::Uniform ( "bbMin", osg::Vec3 ( 0.0f, 0.0f, 0.0f ) ) ),
+  _volumeSampler ( new osg::Uniform ( "Volume", 0 ) ),
+  _tfSampler ( new osg::Uniform ( "TransferFunction", 1 ) ),
+  _program ( Texture3DVolume::createProgram() )
+{
+  this->_construct();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Texture3DVolume::Texture3DVolume( osg::Program *program ) : BaseClass (),
+  _volume ( 0x0, 0 ),
+  _geometry ( new Geometry ),
+  _flags ( _USE_TRANSFER_FUNCTION ),
+  _transferFunction ( 0x0 ),
+  _bbLengths ( new osg::Uniform ( "bb", osg::Vec3 ( 1.0f, 1.0f, 1.0f ) ) ),
+  _bbMin ( new osg::Uniform ( "bbMin", osg::Vec3 ( 0.0f, 0.0f, 0.0f ) ) ),
+  _volumeSampler ( new osg::Uniform ( "Volume", 0 ) ),
+  _tfSampler ( new osg::Uniform ( "TransferFunction", 1 ) ),
+  _program ( program )
+{
+  this->_construct();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Construction.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Texture3DVolume::_construct()
 {
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss  ( this->getOrCreateStateSet() );
@@ -41,16 +79,23 @@ Texture3DVolume::Texture3DVolume() : BaseClass (),
   osg::ref_ptr< osg::BlendFunc > blendFunc ( new osg::BlendFunc );
 	blendFunc->setFunction( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	ss->setAttributeAndModes( blendFunc.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
-
+  
   // Turn off back face culling
   ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
-
+  
   ss->setRenderBinDetails ( 1000, "RenderBin" );
-
+  
+  // Add the uniforms.
+  ss->addUniform ( _bbLengths.get() );
+  ss->addUniform ( _bbMin.get() );
+  ss->addUniform ( _volumeSampler.get() );
+  ss->addUniform ( _tfSampler.get() );
+  
+  // Add the program
+  ss->setAttributeAndModes( _program.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  
   // Add the planes.
   this->addDrawable ( _geometry.get() );
-
-  this->resizePowerTwo ( false );
 }
 
 
@@ -110,15 +155,15 @@ void Texture3DVolume::image ( osg::Image* image, TextureUnit unit )
   texture3D->setWrap( osg::Texture3D::WRAP_S, osg::Texture3D::CLAMP_TO_EDGE );
   texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP_TO_EDGE );
 
-  // Don't resize.
+  // Resize if we are suppose to.
   texture3D->setResizeNonPowerOfTwoHint( this->resizePowerTwo () );
 
   // Get the state set.
   osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
   ss->setTextureAttributeAndModes ( unit, texture3D.get(), osg::StateAttribute::ON );
-
-  // Create the shaders.
-  this->_createShaders ();
+  
+  // Set the uniform value.
+  _volumeSampler->set ( static_cast<int> ( unit ) );
 }
 
 
@@ -172,20 +217,12 @@ namespace Detail
 
     os << "uniform vec3 bb;\n";
     os << "uniform vec3 bbMin;\n";
-    os << "uniform vec3 bbHalf;\n";
     os << "void main(void)\n";
     os << "{\n";
-#if 0
-    os << "   gl_TexCoord[0].x =  ( gl_Vertex.x + bbHalf.x  ) / bb.x;\n";
-    os << "   gl_TexCoord[0].y =  ( gl_Vertex.y + bbHalf.y  ) / bb.y;\n";
-    os << "   gl_TexCoord[0].z =  ( gl_Vertex.z + bbHalf.z  ) / bb.z;\n";
-#else
     os << "   gl_TexCoord[0].x =  ( ( gl_Vertex.x - bbMin.x ) ) / bb.x;\n";
     os << "   gl_TexCoord[0].y =  ( ( gl_Vertex.y - bbMin.y ) ) / bb.y;\n";
     os << "   gl_TexCoord[0].z =  ( ( gl_Vertex.z - bbMin.z ) ) / bb.z;\n";
-#endif
     os << "   gl_TexCoord[0].w =  ( gl_Vertex.w + 1.0 ) / 2.0;\n";
-
     os << "   gl_Position = ftransform();\n";
     os << "   gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;\n";
     os << "}\n";
@@ -297,61 +334,23 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a uniform.  Performs a remove first.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  void addUniform ( osg::StateSet &ss, osg::Uniform *uniform )
-  {
-    if ( 0x0 != uniform )
-    {
-      ss.removeUniform ( uniform->getName () );
-      ss.addUniform ( uniform );
-    }
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Create the shaders.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Texture3DVolume::_createShaders ()
+osg::Program* Texture3DVolume::createProgram ( bool useTransferFunction )
 {
-#if 1
-  // Get the state set.
-  osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-
   osg::ref_ptr< osg::Program > program( new osg::Program() ); 
 	osg::ref_ptr< osg::Shader > vertShader( new osg::Shader( osg::Shader::VERTEX ) );
 	osg::ref_ptr< osg::Shader > fragShader( new osg::Shader( osg::Shader::FRAGMENT ) );
 
-  osg::Vec3 min ( _geometry->boundingBox()._min );
-  osg::Vec3 max ( _geometry->boundingBox()._max );
-
-  // Get the lengths of the bounding box.
-  double xLength ( max.x() - min.x() );
-  double yLength ( max.y() - min.y() );
-  double zLength ( max.z() - min.z() );
-
   vertShader->setShaderSource( Detail::buildVertexShader (  ) );
-  fragShader->setShaderSource( Detail::buildFagmentShader ( this->useTransferFunction() ) );
+  fragShader->setShaderSource( Detail::buildFagmentShader ( useTransferFunction ) );
 
 	program->addShader( vertShader.get() );
 	program->addShader( fragShader.get() );
  
-  ss->setAttributeAndModes( program.get(), osg::StateAttribute::ON );
-  Detail::addUniform ( *ss, new osg::Uniform ( "bb", osg::Vec3 ( xLength, yLength, zLength ) ) );
-  Detail::addUniform ( *ss, new osg::Uniform ( "bbMin", min ) );
-  Detail::addUniform ( *ss, new osg::Uniform ( "bbHalf", osg::Vec3 ( xLength / 2.0, yLength / 2.0, zLength / 2.0 ) ) );
-  Detail::addUniform ( *ss, new osg::Uniform ( "Volume",           static_cast < int > ( _volume.second           ) ) );
-
-  if ( _transferFunction.valid () )
-    Detail::addUniform ( *ss, new osg::Uniform ( "TransferFunction", static_cast < int > ( _transferFunction->textureUnit () ) ) );
-#endif
+  return program.release();
 }
 
 
@@ -364,7 +363,18 @@ void Texture3DVolume::_createShaders ()
 void Texture3DVolume::boundingBox ( const osg::BoundingBox& bb )
 {
   _geometry->boundingBox ( bb );
-  this->_createShaders ();
+  
+  const osg::Vec3 min ( bb._min );
+  const osg::Vec3 max ( bb._max );
+  
+  // Get the lengths of the bounding box.
+  const double xLength ( max.x() - min.x() );
+  const double yLength ( max.y() - min.y() );
+  const double zLength ( max.z() - min.z() );
+  
+  // Set uniform values.
+  _bbLengths->set ( osg::Vec3 ( xLength, yLength, zLength ) );
+  _bbMin->set ( min );
 }
 
 
@@ -446,8 +456,8 @@ void Texture3DVolume::transferFunction ( TransferFunction* tf, TextureUnit unit 
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
     ss->setTextureAttributeAndModes ( unit, tf->texture (), osg::StateAttribute::ON );
 
-    // Create the shaders.
-    this->_createShaders ();
+    // Set the uniform value.
+    _tfSampler->set ( static_cast<int> ( unit ) );
   }
 }
 
@@ -462,4 +472,3 @@ OsgTools::Volume::TransferFunction* Texture3DVolume::transferFunction () const
 {
   return _transferFunction.get();
 }
-

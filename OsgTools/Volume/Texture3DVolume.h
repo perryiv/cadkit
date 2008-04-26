@@ -12,12 +12,13 @@
 #define __OSGTOOLS_VOLUME_3D_TEXTURE_VOLUME_H__
 
 #include "OsgTools/Export.h"
-#include "OsgTools/Drawables/VoxelGeometry.h"
 #include "OsgTools/Volume/PlanarProxyGeometry.h"
 #include "OsgTools/Volume/TransferFunction.h"
 
-#include "osg/Image"
 #include "osg/Geode"
+#include "osg/Image"
+#include "osg/Program"
+#include "osg/Uniform"
 
 namespace OsgTools {
 namespace Volume {
@@ -28,7 +29,6 @@ public:
   /// Typedefs.
   typedef osg::Geode                             BaseClass;
   typedef OsgTools::Volume::PlanarProxyGeometry  Geometry;
-  //typedef OsgTools::Drawables::VoxelGeometry     Geometry;
   typedef osg::ref_ptr < osg::Image >            ImagePtr;
   typedef unsigned int                           TextureUnit;
   typedef std::pair < ImagePtr, TextureUnit >    TexutreInfo;
@@ -36,7 +36,10 @@ public:
 
   /// Construction.
   Texture3DVolume();
-
+  Texture3DVolume( osg::Program * );
+  
+  static osg::Program*             createProgram ( bool useTransferFunction = true );
+  
   /// Get/Set the image.
   osg::Image*                      image ();
   const osg::Image*                image () const;
@@ -65,7 +68,7 @@ public:
 protected:
   virtual ~Texture3DVolume();
 
-  void                             _createShaders ();
+  void                             _construct();
 
 private:
 
@@ -80,6 +83,11 @@ private:
   unsigned int                 _flags;
   TransferFunction::RefPtr     _transferFunction;
   unsigned int                 _tfTextureUnit;
+  osg::ref_ptr<osg::Program>   _program;
+  osg::ref_ptr<osg::Uniform>   _bbLengths;
+  osg::ref_ptr<osg::Uniform>   _bbMin;
+  osg::ref_ptr<osg::Uniform>   _volumeSampler;
+  osg::ref_ptr<osg::Uniform>   _tfSampler;
 };
 
 }

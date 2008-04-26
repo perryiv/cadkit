@@ -108,6 +108,7 @@
 #include "osg/Version"
 #include "osg/GL"
 #include "osg/GLU"
+#include "osg/GLObjects"
 
 #include <limits>
 
@@ -269,10 +270,6 @@ void Viewer::create()
   // Counter for display-list id. OSG will handle using the correct display 
   // list for this context.
   _renderer->uniqueID ( _contextId );
-
-  // Compute with bounding primitives.  This doesn't seem to have any affect.
-  //this->viewer()->getCullVisitor()->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
-  //this->viewer()->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
 }
 
 
@@ -298,8 +295,31 @@ void Viewer::clear()
   {
     _context->makeCurrent();
   }
+  
+  // Get the state for the viewer.
+  osg::ref_ptr<osg::State> state ( this->viewer()->getRenderInfo().getState() );
+  
+  // Have the scene release all it's gl objects.
+  _sceneManager->scene()->releaseGLObjects ( state.get() );
+  
+  // Unref the scene manager.
+  _sceneManager = 0x0;
+  
+  // Have the viewer release all it's gl objects.
+  this->viewer()->releaseAllGLObjects();
+  
+  // Reset the state.
+  if ( true == state.valid() ) 
+    state->reset();
 
+  // Clear the renderer.
   _renderer->clear();
+  
+  // Unset the scene.
+  this->viewer()->setSceneData ( 0x0 );
+  
+  // Flush all delete objects for this context.
+  osg::flushAllDeletedGLObjects ( _contextId );
 
   _context = static_cast < Usul::Interfaces::IUnknown* > ( 0x0 );
   _timeoutSpin = static_cast < Usul::Interfaces::ITimeoutSpin* > ( 0x0 );
@@ -375,6 +395,9 @@ void Viewer::render()
   // Check for errors.
   Detail::checkForErrors ( 1491085606 );
 
+  // Update.
+  this->update();
+  
   // Need local scope.
   {
     Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
@@ -422,6 +445,9 @@ void Viewer::render()
 
   // Flush deleted GL objects.
   this->viewer()->flushAllDeletedGLObjects();
+  
+  double maxtime ( std::numeric_limits<double>::max() );
+  osg::Texture::flushDeletedTextureObjects ( _contextId, Usul::System::Clock::milliseconds(), maxtime );
 
   // Check for errors.
   Detail::checkForErrors ( 896118310 );
@@ -496,9 +522,6 @@ void Viewer::_hiddenLineRender()
 
 void Viewer::_render()
 {
-  // Update.
-  this->update();
-
   // Draw.
   _renderer->render();
 }

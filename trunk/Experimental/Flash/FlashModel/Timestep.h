@@ -20,7 +20,7 @@
 
 #include <vector>
 
-namespace osg { class Node; }
+namespace osg { class Node; class Image; }
 
 class H5File;
 
@@ -33,16 +33,38 @@ public:
   
   Timestep ( const std::string& filename );
   
+  /// Get the bounding box.
+  osg::BoundingBox  boundingBox ( unsigned int i ) const;
+  
+  /// Build functions.
+  osg::Node*     buildBoundingBox ( const osg::BoundingBox& bb, const osg::Vec4f& color ) const;
+  osg::Node*     buildPoints      ( const osg::BoundingBox& bb, unsigned int i ) const;
+  osg::Image*    buildVolume      ( unsigned int i ) const;
+  
+  /// Initialize.
   void init();
+  
+  /// Is the node a leaf?
+  bool isLeaf( unsigned int i ) const;
+  
+  /// Get the level of the node.
+  int level ( unsigned int i ) const;
+  
+  /// Load the data with the given name.
   void loadData ( const std::string& name );
+  
+  /// Get the min and max values.
+  double minimum() const;
+  double maximum() const;
+  
+  /// Get the number of nodes.
+  unsigned int numNodes() const;
   
   osg::Node* buildScene ( bool drawBBox, bool drawPoints, bool drawVolume );
   
 protected:
   
   virtual ~Timestep();
-  
-  osg::Node*     _buildBoundingBox ( const osg::BoundingBox& bb, const osg::Vec4f& color ) const;
   
 private:
   
@@ -58,7 +80,6 @@ private:
   typedef boost::multi_array<int, 2> HierarchyArray;
   
   std::string _filename;
-  double _scale;
   BoundingBoxes _boundingBoxes;
   LeafFlags _leafFlags;
   Levels _levels;

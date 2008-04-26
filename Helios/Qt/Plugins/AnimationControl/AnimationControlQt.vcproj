@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib osg.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/QtAnimationControl.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

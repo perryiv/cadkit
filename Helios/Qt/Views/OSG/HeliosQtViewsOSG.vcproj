@@ -253,11 +253,11 @@
 			Name="Generated Files"
 			>
 			<File
-				RelativePath=".\generatedfiles\moc_EditBackground.cpp"
+				RelativePath=".\GeneratedFiles\moc_EditBackground.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\generatedfiles\moc_Viewer.cpp"
+				RelativePath=".\GeneratedFiles\moc_Viewer.cpp"
 				>
 			</File>
 		</Filter>

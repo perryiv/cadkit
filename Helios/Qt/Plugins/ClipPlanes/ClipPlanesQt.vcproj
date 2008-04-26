@@ -277,7 +277,7 @@
 				Name="GeneratedFiles"
 				>
 				<File
-					RelativePath=".\generatedfiles\moc_ClipPlanes.cpp"
+					RelativePath=".\GeneratedFiles\moc_ClipPlanes.cpp"
 					>
 				</File>
 				<File

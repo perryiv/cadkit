@@ -444,27 +444,27 @@
 				Name="GeneratedFiles"
 				>
 				<File
-					RelativePath=".\generatedfiles\moc_Action.cpp"
+					RelativePath=".\GeneratedFiles\moc_Action.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_AnimationControl.cpp"
+					RelativePath=".\GeneratedFiles\moc_AnimationControl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_ColorButton.cpp"
+					RelativePath=".\GeneratedFiles\moc_ColorButton.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_Menu.cpp"
+					RelativePath=".\GeneratedFiles\moc_Menu.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_PropertyBrowser.cpp"
+					RelativePath=".\GeneratedFiles\moc_PropertyBrowser.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_TreeControl.cpp"
+					RelativePath=".\GeneratedFiles\moc_TreeControl.cpp"
 					>
 				</File>
 			</Filter>

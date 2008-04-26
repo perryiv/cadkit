@@ -303,7 +303,7 @@
 				Name="GeneratedFiles"
 				>
 				<File
-					RelativePath=".\generatedfiles\moc_SnapShotWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_SnapShotWidget.cpp"
 					>
 				</File>
 				<File

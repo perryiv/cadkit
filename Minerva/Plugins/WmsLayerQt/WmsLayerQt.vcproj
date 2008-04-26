@@ -410,23 +410,23 @@
 				Name="GeneratedItems"
 				>
 				<File
-					RelativePath=".\generatedfiles\moc_AddWmsLayerWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_AddWmsLayerWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_AlphasDialog.cpp"
+					RelativePath=".\GeneratedFiles\moc_AlphasDialog.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_EditWmsLayerWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_EditWmsLayerWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_OptionsDialog.cpp"
+					RelativePath=".\GeneratedFiles\moc_OptionsDialog.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\moc_OptionWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_OptionWidget.cpp"
 					>
 				</File>
 			</Filter>

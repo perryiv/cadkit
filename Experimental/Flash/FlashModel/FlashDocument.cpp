@@ -62,6 +62,7 @@ FlashDocument::FlashDocument() :
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "filenames", _filenames );
+  this->_addMember ( "current_time_step", _currentTimestep );
   
   this->_buildDefaultTransferFunctions();
   

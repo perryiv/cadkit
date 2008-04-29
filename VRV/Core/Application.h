@@ -75,6 +75,7 @@
 #include "OsgTools/Widgets/ProgressBarGroup.h"
 
 #include "MenuKit/OSG/Menu.h"
+#include "MenuKit/CommandVisitor.h"
 
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
@@ -693,6 +694,7 @@ private:
   typedef Usul::Interfaces::IRenderListener                IRenderListener;
   typedef std::vector<IRenderListener::RefPtr>             RenderListeners;
   typedef std::map<unsigned long, CommandPtr>              ButtonMap;
+  typedef std::map<unsigned int, std::string>              ButtonCommandsMap;
 
   enum Flags
   {
@@ -766,6 +768,7 @@ private:
   unsigned int                           _menuButtonID;
   std::string                            _menuNavigationAnalogID;
 	bool                                   _bodyCenteredRotation;
+  ButtonCommandsMap                      _buttonCommandsMap;
 
 };
 

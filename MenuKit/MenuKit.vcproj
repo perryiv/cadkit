@@ -215,6 +215,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CommandVisitor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CommandVisitor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Errors.cpp"
 				>
 			</File>
@@ -252,6 +260,14 @@
 			</File>
 			<File
 				RelativePath=".\Menu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MenuCommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MenuCommands.h"
 				>
 			</File>
 			<File

@@ -16,6 +16,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/Color.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Threads/Safe.h"
@@ -420,6 +421,14 @@ void FlashDocument::_buildScene()
 void FlashDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  
+  Usul::Interfaces::ITextMatrix::QueryPtr tm ( caller );
+  if ( tm.valid() )
+  {
+    const unsigned int timestep  ( Usul::Threads::Safe::get ( this->mutex(), _currentTimestep ) );
+    const unsigned int total ( Usul::Threads::Safe::get ( this->mutex(), _filenames.size() ) );
+    tm->setText ( 15, 15, Usul::Strings::format ( "Timestep ", timestep, " of ",  total ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  }
   
   // Buid the scene if we need to.
   if ( this->dirty () )

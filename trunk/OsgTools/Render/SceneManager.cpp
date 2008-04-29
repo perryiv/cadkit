@@ -17,6 +17,7 @@
 #include "osg/Geode"
 #include "osg/LightSource"
 #include "osg/PolygonMode"
+#include "osg/Version"
 
 using namespace OsgTools::Render;
 
@@ -301,7 +302,12 @@ osgText::Text* SceneManager::getText ( unsigned int x, unsigned int y )
     text->setFont ( font.get() );
 
     text->setColor ( osg::Vec4 ( 0.0f, 0.0f, 0.0f, 1.0f ) );
+
+#if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
+    text->setCharacterSize ( 24.0f );
+#else
     text->setCharacterSize ( 12.0f );
+#endif
 
     _textMap.insert ( TextMap::value_type( TextMap::key_type ( x, y ), text ) );
 

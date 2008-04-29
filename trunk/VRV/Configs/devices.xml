@@ -27,6 +27,9 @@
       <Mapping button_id="0x00000400" command="menu" />
       <Mapping button_id="0x00000800" command="trigger" />
       <Mapping button_id="DirectionalPad" command="menu_navigation" />
+      <Mapping button_id="0x00000001" command="|Navigate|Favorites|TranslateXY" />
+      <Mapping button_id="0x00000002" command="|Navigate|Favorites|TranslateXZ" />
+      <Mapping button_id="0x00000004" command="|Navigate|Favorites|6DegreesWingman" />
     </Mappings>
   </Device>
 </Devices>

@@ -14,6 +14,7 @@
 #include "VRV/Core/Exceptions.h"
 #include "VRV/Common/Buttons.h"
 #include "VRV/Commands/LoadDocument.h"
+#include "Usul/Commands/Command.h"
 #include "VRV/Common/Constants.h"
 #include "VRV/Jobs/SaveImage.h"
 #include "VRV/Core/FunctorHelpers.h"
@@ -76,6 +77,7 @@
 #include "MenuKit/ToggleButton.h"
 #include "MenuKit/RadioButton.h"
 #include "MenuKit/Separator.h"
+#include "MenuKit/MenuCommands.h"
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
@@ -2602,6 +2604,8 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
     // Add the document as an intersect listener.
     this->addIntersectListener ( unknown.get() );
   }
+
+  
 }
 
 
@@ -3276,6 +3280,11 @@ void Application::_readDevicesFile ()
       {
         _menuNavigationAnalogID = btn;
       }
+      else
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _buttonCommandsMap[ uiid ] = cmd;
+      }
      }	
   }
 
@@ -3799,6 +3808,18 @@ void Application::_initMenu()
   // Default settings, so that the menu has the correct toggle's checked.
   OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
   OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
+
+  // Traverse the menu and build the map of commands
+  MenuKit::CommandVisitor::RefPtr commandVisitor ( new MenuKit::CommandVisitor );
+  commandVisitor->apply( *menu );
+
+  // Apply preset button mappings
+  for( ButtonCommandsMap::iterator iter = _buttonCommandsMap.begin(); iter != _buttonCommandsMap.end(); ++iter )
+  {
+    Usul::Commands::Command::RefPtr command = MenuKit::MenuCommands::instance().find( (*iter).second );
+    unsigned int buttonID = (*iter).first;
+    _buttonMap[ buttonID ] = command;
+  }
 }
 
 

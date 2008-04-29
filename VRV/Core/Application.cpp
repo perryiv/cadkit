@@ -3162,9 +3162,9 @@ void Application::_readDevicesFile ()
   USUL_TRACE_SCOPE;
 
   // clear buttons and analogs varialbles
-  _buttons = new VRV::Devices::ButtonGroup;
-  _analogs.clear();
-  _menuNavigationAnalogID = "Joystick";
+  //_buttons = new VRV::Devices::ButtonGroup;
+  //_analogs.clear();
+  //_menuNavigationAnalogID = "Joystick";
 
   // Open the input file.
   const std::string file ( _deviceFilename );
@@ -4680,7 +4680,7 @@ std::string Application::_screenShotDirectory() const
 void Application::reinitialize()
 {
   this->_readUserPreferences();
-  this->_readDevicesFile();
+  //this->_readDevicesFile();
   this->_readFunctorFile();
   this->_initMenu();
   this->_initLight();

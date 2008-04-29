@@ -297,18 +297,6 @@ void VolumeDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   if ( vp.valid () )
     _projection->setMatrix ( osg::Matrix::ortho2D ( vp->x(), vp->width(), vp->y(), vp->height () ) );
 
-#if 0
-  Usul::Interfaces::IViewMatrix::QueryPtr vm ( caller );
-  if ( vm.valid () )
-  {
-    osg::Matrix matrix ( vm->getViewMatrix() );
-    osg::Vec3f  eye ( matrix( 0, 2 ), matrix( 1, 2 ), matrix( 2, 2 ) );
-
-    if ( OsgTools::Volume::GPURayCasting *volume = dynamic_cast < OsgTools::Volume::GPURayCasting* > ( _node.get() ) )
-      volume->camera ( eye );
-  }
-#endif
-
   if ( this->dirty ( ) )
     this->_buildScene ();
 }
@@ -352,14 +340,10 @@ void VolumeDocument::_buildScene ()
       volume->transferFunction ( _transferFunctions.at ( _activeTransferFunction ) );
 
     osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    mt->setReferenceFrame ( osg::Transform::ABSOLUTE_RF );
 
     mt->addChild ( volume.get() );
 
-    _projection->removeChild ( 0, 1 );
-    _projection->addChild ( mt.get() );
-
-    _root->addChild ( _projection.get() );
+    _root->addChild ( mt.get() );
 
     _node = volume.get();
 

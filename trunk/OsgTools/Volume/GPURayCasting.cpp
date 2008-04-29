@@ -15,6 +15,8 @@
 #include "osg/Texture1D"
 #include "osg/Texture3D"
 
+#include "osgUtil/CullVisitor"
+
 #include <sstream>
 
 using namespace OsgTools::Volume;
@@ -27,8 +29,7 @@ using namespace OsgTools::Volume;
 ///////////////////////////////////////////////////////////////////////////////
 
 GPURayCasting::GPURayCasting() : BaseClass (),
-  _vertexShader  ( new osg::Shader( osg::Shader::VERTEX ) ),
-  _fragmentShader ( new osg::Shader( osg::Shader::FRAGMENT ) ),
+  _program( GPURayCasting::createProgram() ),
   _volume ( 0x0, 0 ),
   _geometry ( new Geometry ),
   _transferFunction ( 0x0 ),
@@ -42,23 +43,67 @@ GPURayCasting::GPURayCasting() : BaseClass (),
   _tfUniform ( new osg::Uniform ( osg::Uniform::INT, "TransferFunction" ) ),
   _rateUniform ( new osg::Uniform ( osg::Uniform::FLOAT, "SampleRate" ) )
 {
+  this->_construct();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+GPURayCasting::GPURayCasting( osg::Program * program ) : BaseClass (),
+_program( program ),
+_volume ( 0x0, 0 ),
+_geometry ( new Geometry ),
+_transferFunction ( 0x0 ),
+_bb ( ),
+_samplingRate ( 0.1f ),
+_camera (),
+_cameraUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "camera" ) ),
+_minUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "bbMin" ) ),
+_maxUniform ( new osg::Uniform ( osg::Uniform::FLOAT_VEC3, "bbMax" ) ),
+_volumeUniform ( new osg::Uniform ( osg::Uniform::INT, "Volume" ) ),
+_tfUniform ( new osg::Uniform ( osg::Uniform::INT, "TransferFunction" ) ),
+_rateUniform ( new osg::Uniform ( osg::Uniform::FLOAT, "SampleRate" ) )
+{
+  this->_construct();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GPURayCasting::_construct()
+{
   // Get the state set.
   osg::ref_ptr < osg::StateSet > ss  ( this->getOrCreateStateSet() );
   
   // Turn off back face culling
-  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
   ss->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-
+  
   ss->setRenderBinDetails ( 1000, "RenderBin" );
-
+  
   // Add the planes.
   this->addDrawable ( _geometry.get() );
-
+  
   // Set the internal bounding box.
   this->boundingBox ( osg::BoundingBox ( -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f ) );
-
-  // Create the shaders.
-  this->_createShaders ();
+  
+  ss->setAttributeAndModes( _program.get(), osg::StateAttribute::ON );
+  
+  // Add the uniforms.
+  ss->addUniform ( _cameraUniform.get() );
+  ss->addUniform ( _minUniform.get() );
+  ss->addUniform ( _maxUniform.get() );
+  ss->addUniform ( _volumeUniform.get() );
+  ss->addUniform ( _tfUniform.get() );
+  ss->addUniform ( _rateUniform.get() );
 }
 
 
@@ -118,17 +163,14 @@ void GPURayCasting::image ( osg::Image* image, TextureUnit unit )
   texture3D->setFilter( osg::Texture3D::MIN_FILTER, osg::Texture3D::LINEAR );
   texture3D->setFilter( osg::Texture3D::MAG_FILTER, osg::Texture3D::LINEAR );
 
-#if 1
+#if 0
   texture3D->setWrap( osg::Texture3D::WRAP_R, osg::Texture3D::CLAMP );
   texture3D->setWrap( osg::Texture3D::WRAP_S, osg::Texture3D::CLAMP );
   texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP );
 #else
-  texture3D->setWrap( osg::Texture3D::WRAP_R, osg::Texture3D::CLAMP_TO_BORDER );
-  texture3D->setWrap( osg::Texture3D::WRAP_S, osg::Texture3D::CLAMP_TO_BORDER );
-  texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP_TO_BORDER );
-
-  texture3D->setBorderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
-  texture3D->setBorderWidth ( 1.0f );
+  texture3D->setWrap( osg::Texture3D::WRAP_R, osg::Texture3D::CLAMP_TO_EDGE );
+  texture3D->setWrap( osg::Texture3D::WRAP_S, osg::Texture3D::CLAMP_TO_EDGE );
+  texture3D->setWrap( osg::Texture3D::WRAP_T, osg::Texture3D::CLAMP_TO_EDGE );
 #endif
 
   // Don't resize.
@@ -171,19 +213,27 @@ void GPURayCasting::samplingRate ( float rate )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GPURayCasting::_buildVertexShader ( )
+osg::Shader* GPURayCasting::_buildVertexShader ( )
 {
   std::ostringstream os;
 
+  os << "uniform vec3 bbMax;\n";
+  os << "uniform vec3 bbMin;\n";
+  os << "varying vec3 v;\n";
   os << "void main(void)\n";
   os << "{\n";
-  os << "   gl_TexCoord[0] = vec4 ( gl_Vertex.x / 512, gl_Vertex.y / 512, gl_Vertex.z, gl_Vertex.w );\n";
-  //os << "   gl_TexCoord[0] =  vec4 ( ( gl_Vertex.xy + 1.0 ) / 2.0, 0.0, 1.0 );\n";
-  //os << "   gl_TexCoord[0] =  ( gl_Vertex.xyzw + 1.0 ) / 2.0;\n";
-  os << "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n";
+  os << "   gl_TexCoord[0].x =  ( ( gl_Vertex.x - bbMin.x ) ) / ( bbMax.x - bbMin.x );\n";
+  os << "   gl_TexCoord[0].y =  ( ( gl_Vertex.y - bbMin.y ) ) / ( bbMax.y - bbMin.y );\n";
+  os << "   gl_TexCoord[0].z =  ( ( gl_Vertex.z - bbMin.z ) ) / ( bbMax.z - bbMin.z );\n";
+  os << "   gl_TexCoord[0].w =  ( gl_Vertex.w + 1.0 ) / 2.0;\n";
+  os << "   v = gl_Vertex.xyz;\n";
+  os << "   gl_Position = ftransform();\n";
+  os << "   gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;\n";
   os << "}\n";
 
-  _vertexShader->setShaderSource ( os.str() );
+  osg::ref_ptr< osg::Shader > vertexShader ( new osg::Shader( osg::Shader::VERTEX ) );
+  vertexShader->setShaderSource ( os.str() );
+  return vertexShader.release();
 }
 
 namespace Detail
@@ -217,7 +267,7 @@ namespace Detail
 
       // Compute specular.
       << "  float specularLight = pow ( max ( dot ( h, normal ), 0.0 ), shininess );\n"
-      << "  if ( diffuseLight <= 0 ) specularLight = 0;\n"
+      << "  if ( diffuseLight <= 0.0 ) specularLight = 0.0;\n"
       << "  vec3 specular = Ks * lightColor * specularLight;\n"
 
       // Return the result.
@@ -241,37 +291,28 @@ namespace Detail
        <<  "uniform vec3 bbMin;\n"
        <<  "uniform vec3 bbMax;\n"
        <<  "uniform float SampleRate;\n"
+       << " varying vec3 v;\n"
        <<  "void main(void)\n"
        <<  "{\n"
-
-       //<<"   gl_FragColor = vec4 ( gl_TexCoord[0].xyz, 1 );\n"
 #if 1
        <<  "   float scalar;\n"
        <<  "   vec3 lightPosition = vec3 ( 0.0, 0.0, 1.0 );\n"
 
-       //<<  "   vec3 camera = vec3 ( gl_ModelViewMatrixInverse[0][3], gl_ModelViewMatrixInverse[1][3], gl_ModelViewMatrixInverse[2][3] );\n"
-
     // Initialize answer fragment.
        <<  "   vec4 dst = vec4 ( 0, 0, 0, 0 );\n"
-
-       << "    vec3 texCoord = gl_TexCoord[0].xyz;\n"
 
     // Find the entry position in the volume.
        <<  "   vec3 position = gl_TexCoord[0].xyz;\n"
 
     // Compute the ray direction.
-       <<  "   vec3 direction = normalize ( vec3 ( position - camera ) );\n"
-       //<<  "   vec3 direction = vec3 ( 0, 0, 1 );\n"
-
-       //<<  "   gl_FragColor = vec4 ( direction.xyz, 1 );\n"
-       //<<  "   gl_FragColor = vec4 ( 0, 0, direction.z, 1 );\n"
+       <<  "   vec3 direction = normalize ( vec3 ( camera - v ) );\n"
 
     // Ray traversal loop.  Should probably make the 200 an input.
-       <<  "   for ( int i = 0; i < 100; i++ )\n"
+       <<  "   for ( int i = 0; i < 200; i++ )\n"
        <<  "   {\n"
 
     //  Look up the scalar value.
-       <<  "   scalar = vec4( texture3D( Volume, position ) ).a;\n"
+       <<  "   scalar = vec4( texture3D( Volume, position ) ).x;\n"
        <<  "   vec4 src = vec4( texture1D( TransferFunction, scalar ) );\n"
 
 #if 0
@@ -297,33 +338,34 @@ namespace Detail
        // Front to back compositing.
        <<  "   dst = ( 1.0 - dst.a ) * src + dst;\n"
 
-       /*<<  "   if ( dst.r > 1.0 && dst.g > 1.0 && dst.b > 1.0 )\n"
-       <<  "   {\n"
-       <<  "     dst = vec4 ( 0, 1, 0, 1 );\n"
-       <<  "     break;\n"
-       <<  "   }\n"*/
-
-       //<<  "   if ( dst.a > 0 ) break;\n"
-
        // Advance the ray position
        <<  "   position = position + direction * SampleRate;\n"
 
        // Ray termination.
-       <<  "   vec3 temp1 = sign ( position - bbMin );\n"
-       <<  "   vec3 temp2 = sign ( bbMax - position );\n"
+       //<<  "   vec3 temp1 = sign ( position - bbMin );\n"
+       //<<  "   vec3 temp2 = sign ( bbMax - position );\n"
+#if 1
+    <<  "   vec3 temp1 = sign ( position - vec3 ( 0.0, 0.0, 0.0 ) );\n"
+    <<  "   vec3 temp2 = sign ( vec3 ( 1.0, 1.0, 1.0 ) - position );\n"
+    
        <<  "   float inside = dot ( temp1, temp2 );\n"
-
+    
     // If inside, break.
        <<  "   if ( inside < 3.0 )\n"
-       <<  "     break;\n"
+    <<  "     break;\n"
 
+#else
+       
+       <<  "   if ( position.x < 0.0 || position.y < 0.0 || position.z < 0.0 || position.x > 1.0 || position.y > 1.0 || position.z > 1.0 )\n"
+       <<  "     break;\n"
+#endif
     // End of the for loop.
        <<  "   }\n"
 
     // Return the result.
        <<  "   gl_FragColor = vec4( dst );\n"
 #else
-       //<<  "   gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n"
+       <<  "   gl_FragColor = vec4 ( gl_TexCoord[0].xyz, 1 );\n"
 #endif
        <<  "}\n";
 
@@ -331,20 +373,24 @@ namespace Detail
   }
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Fragment shader.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GPURayCasting::_buildFragmentShader ( )
+osg::Shader* GPURayCasting::_buildFragmentShader ( )
 {
+  osg::ref_ptr< osg::Shader > fragmentShader ( new osg::Shader( osg::Shader::FRAGMENT ) );
+  
   std::ostringstream os;
-  os << Detail::buildShadingFunction ( osg::Vec3 ( 0.1, 0.1, 0.1 ), osg::Vec3 ( 0.6, 0.6, 0.6 ), osg::Vec3 ( 0.2, 0.2, 0.2 ), 50 )
-     << "\n"
+  os //<< Detail::buildShadingFunction ( osg::Vec3 ( 0.1, 0.1, 0.1 ), osg::Vec3 ( 0.6, 0.6, 0.6 ), osg::Vec3 ( 0.2, 0.2, 0.2 ), 50 )
+     //<< "\n"
      << Detail::buildFragmentShader( 0.01 );
 
-  _fragmentShader->setShaderSource( os.str() );
+  fragmentShader->setShaderSource( os.str() );
+  return fragmentShader.release();
 }
 
 
@@ -354,30 +400,48 @@ void GPURayCasting::_buildFragmentShader ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GPURayCasting::_createShaders ()
+osg::Program* GPURayCasting::createProgram ( bool useTransferFunction )
 {
   // Get the state set.
-  osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
 
   osg::ref_ptr< osg::Program > program ( new osg::Program ); 
 
-  this->_buildVertexShader ( );
-  this->_buildFragmentShader ( );
-
-	program->addShader( _vertexShader.get() );
-	program->addShader( _fragmentShader.get() );
+	program->addShader( GPURayCasting::_buildVertexShader() );
+	program->addShader( GPURayCasting::_buildFragmentShader() );
  
-  ss->setAttributeAndModes( program.get(), osg::StateAttribute::ON );
-  
-  // Add the uniforms.
-  ss->addUniform ( _cameraUniform.get() );
-  ss->addUniform ( _minUniform.get() );
-  ss->addUniform ( _maxUniform.get() );
-  ss->addUniform ( _volumeUniform.get() );
-  ss->addUniform ( _tfUniform.get() );
-  ss->addUniform ( _rateUniform.get() );
+  return program.release();
 }
 
+namespace Detail {
+  
+// Callback to get the eye position.  This is a bit of a hack and needs to be improved.
+  class Callback : public osg::Drawable::CullCallback
+{
+public:
+  typedef osg::Drawable::CullCallback BaseClass;
+  
+  Callback ( osg::Uniform *uniform ) : BaseClass(), _uniform( uniform )
+  {
+  }
+  
+  virtual void operator()( osg::Node* node, osg::NodeVisitor* nv )
+  {
+    if ( osg::NodeVisitor::CULL_VISITOR ==  nv->getVisitorType() )
+    {
+      osgUtil::CullVisitor* cullVisitor = dynamic_cast<osgUtil::CullVisitor*>( nv );
+      if( cullVisitor && _uniform.valid() )
+      {
+        // Set the eye position.
+        _uniform->set ( cullVisitor->getEyePoint() );
+      }
+    }
+  }
+  
+private:
+  osg::ref_ptr<osg::Uniform> _uniform;
+};
+  
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -388,62 +452,77 @@ void GPURayCasting::_createShaders ()
 void GPURayCasting::boundingBox ( const osg::BoundingBox& bb )
 {
   _bb = bb;
+  
+  const osg::Vec3 min ( bb._min );
+  const osg::Vec3 max ( bb._max );
 
-  // Set the rotation mode.
-  //this->setMode( osg::Billboard::POINT_ROT_EYE );
+  // Half lengths
+  const float hw ( 0.5f * ( max.x() - min.x() ) );
+  const float hh ( 0.5f * ( max.y() - min.y() ) );
+  const float hd ( 0.5f * ( max.z() - min.z() ) );
+  
+  // Vertices and normals.
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
+  
+  // Front face
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw, -hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw, -hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw,  hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw,  hh,  hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, 0, 1 ) );
+  
+  // Back face
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw, -hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw, -hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw,  hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw,  hh, -hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, 0, -1 ) );
+  
+  // Top face
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw,  hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw,  hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw,  hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw,  hh,  hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, 1, 0 ) );
+  
+  // Bottom face
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw, -hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw, -hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw, -hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw, -hh, -hd ) );
+  normals->push_back  ( osg::Vec3 ( 0, -1, 0 ) );
+  
+  // Left face
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw,  hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw,  hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw, -hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 ( -hw, -hh,  hd ) );
+  normals->push_back  ( osg::Vec3 ( -1, 0, 0 ) );
+  
+  // Right face
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw,  hh, -hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw,  hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw, -hh,  hd ) );
+  vertices->push_back ( bb.center() + osg::Vec3 (  hw, -hh, -hd ) );
+  normals->push_back  ( osg::Vec3 ( 1, 0, 0 ) );
+  
+  // Make a new geometry and add the vertices and normals.
+  osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+  geometry->setVertexArray ( vertices.get() );
+  geometry->setNormalArray ( normals.get() );
+  geometry->setNormalBinding ( osg::Geometry::BIND_PER_PRIMITIVE );
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
 
-  // Set the center of the billboard
-  //this->setPosition( 0, _bb.center() );
-
-  // Make the half sizes.
-  //double halfSize ( _bb.radius() / 2.0 );
-  double halfSize ( 0.5f );
-
-  // New geometry.
-  _geometry = new osg::Geometry;
-
-  // Create a quad.
-  osg::ref_ptr < osg::Vec3Array > vertices  ( new osg::Vec3Array ( 4 ) );
-  osg::ref_ptr < osg::Vec3Array > texcoords ( new osg::Vec3Array ( 4 ) );
-
-#if 0
-  vertices->at( 0 ).set( -halfSize, halfSize, 0.0 );
-  vertices->at( 1 ).set( -halfSize, -halfSize, 0.0 ); 	 
-	vertices->at( 2 ).set( halfSize,  -halfSize, 0.0 ); 	 
-	vertices->at( 3 ).set( halfSize,  halfSize, 0.0 );
-#else
-  vertices->at( 0 ).set( 0.0, 512, 0.0 );
-  vertices->at( 1 ).set( 0.0, 0.0, 0.0 ); 	 
-	vertices->at( 2 ).set( 512, 0.0, 0.0 ); 	 
-	vertices->at( 3 ).set( 512, 512, 0.0 );
-#endif
-  /*texcoords->at( 0 ).set( 0.0f, 1.0f, 0.0f );
-	texcoords->at( 1 ).set( 0.0f, 0.0f, 0.0f );
-	texcoords->at( 2 ).set( 1.0f, 0.0f, 0.0f );
-	texcoords->at( 3 ).set( 1.0f, 1.0f, 0.0f );*/
-
-  // Make the normals
-  //osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array( 4 ) );
-  // Set the value
-  //std::fill( normals->begin(), normals->end(), osg::Vec3( 0.0f, 0.0f, 1.0f ) );
-
-  // Set the arrays
-  _geometry->setVertexArray   ( vertices.get() );
-  /*_geometry->setNormalArray   ( normals.get() );
-  _geometry->setTexCoordArray ( _volume.second, texcoords.get() );*/
-
-  // Set the bindings
-  //_geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-
-  // Add the primitive set
-  _geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
-
+  _geometry = geometry;
+  _geometry->setCullCallback ( new Detail::Callback ( _cameraUniform.get() ) );
+  
   this->removeDrawables ( 0 );
   this->addDrawable ( _geometry.get() );
 
   // Set the min and max values of the bounding box.
-  _minUniform->set ( _bb._min );
-  _maxUniform->set ( _bb._max );
+  _minUniform->set ( min );
+  _maxUniform->set ( max );
 }
 
 

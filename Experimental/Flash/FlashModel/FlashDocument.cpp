@@ -58,7 +58,6 @@ FlashDocument::FlashDocument() :
   _currentTransferFunction ( 0 ),
   _transferFunctions(),
   _timesteps(),
-  _volumes(),
   _program ( Volume::createProgram() ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
@@ -394,7 +393,12 @@ void FlashDocument::_buildScene()
             // Set the transfer function.
             volumeNode->transferFunction ( tf.get() );
             
+#if USE_RAY_CASTING
+            volumeNode->samplingRate ( 0.001f ); 
+#else
             volumeNode->numPlanes ( 64 );
+#endif
+
             volumeNode->image ( timestep->buildVolume ( num ) );
             
             volumeNode->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
@@ -738,16 +742,4 @@ void FlashDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
                                                                 UA::memberFunction<void> ( this, &FlashDocument::drawVolume ), 
                                                                 UA::memberFunction<bool> ( this, &FlashDocument::isDrawVolume ) ) ) );
   }
-}
-
-/// Get a volume.
-OsgTools::Volume::Texture3DVolume * FlashDocument::_volume ( unsigned int i )
-{
-  if ( i + 1 >= _volumes.size() )
-    _volumes.resize ( i + 1 );
-  
-  if ( 0x0 == _volumes.at ( i ).get() )
-    _volumes.at ( i ) = new OsgTools::Volume::Texture3DVolume;
-  
-  return _volumes.at ( i ).get();
 }

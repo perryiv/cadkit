@@ -1294,7 +1294,7 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   namespace UA = Usul::Adaptors;
   namespace UC = Usul::Commands;
   
-  MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "&Minerva" ) );
+  MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "&Options" ) );
 	MenuKit::Menu::RefPtr animate ( new MenuKit::Menu ( "&Animate" ) );
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );

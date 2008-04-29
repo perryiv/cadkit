@@ -36,6 +36,9 @@ public:
 
   /// Construction.
   GPURayCasting();
+  GPURayCasting( osg::Program * );
+  
+  static osg::Program*             createProgram ( bool useTransferFunction = true );
 
   /// Get/Set the image.
   osg::Image*                      image ();
@@ -63,14 +66,13 @@ public:
 protected:
   virtual ~GPURayCasting();
 
-  void                             _createShaders ();
-  void                             _buildVertexShader ();
-  void                             _buildFragmentShader ();
+  void                             _construct();
+  static osg::Shader*              _buildVertexShader ();
+  static osg::Shader*              _buildFragmentShader ();
 
 private:
 
-  osg::ref_ptr< osg::Shader >   _vertexShader;
-  osg::ref_ptr< osg::Shader >   _fragmentShader;
+  osg::ref_ptr<osg::Program>    _program;
   TexutreInfo                   _volume;
   osg::ref_ptr < Geometry >     _geometry;
   TransferFunction::RefPtr      _transferFunction;

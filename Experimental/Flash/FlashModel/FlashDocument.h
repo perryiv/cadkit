@@ -30,6 +30,7 @@
 
 #include "Serialize/XML/Macros.h"
 
+#include "OsgTools/Volume/GPURayCasting.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/Volume/TransferFunction.h"
 
@@ -39,6 +40,9 @@
 #include <string>
 #include <vector>
 #include <list>
+
+// Uncomment this line to use GPU ray casting.  There are still some issues to work out.
+#define USE_RAY_CASTING 0
 
 class FlashDocument : public Usul::Documents::Document,
                       public Usul::Interfaces::IBuildScene,
@@ -50,7 +54,12 @@ public:
 
   /// Useful typedefs.
   typedef Usul::Documents::Document      BaseClass;
+  
+#if USE_RAY_CASTING
+  typedef OsgTools::Volume::GPURayCasting Volume;
+#else
   typedef OsgTools::Volume::Texture3DVolume Volume;
+#endif
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( FlashDocument );
@@ -128,10 +137,7 @@ protected:
   
   /// Load the i'th timestep.
   void                        _loadTimestep ( unsigned int i );
-  
-  /// Get a volume.
-  Volume *                    _volume ( unsigned int i );
-  
+
   /// Usul::Interfaces::ITimeVaryingData
   virtual void                setCurrentTimeStep ( unsigned int current );
   virtual unsigned int        getCurrentTimeStep () const;
@@ -148,7 +154,6 @@ private:
   typedef TransferFunction::RefPtr                              TransferFunctionPtr;
   typedef std::vector < TransferFunctionPtr >                   TransferFunctions;
   typedef std::map <unsigned int, Timestep::RefPtr>             Timesteps;
-  typedef std::vector<osg::ref_ptr<Volume> >                    Volumes;
   
   Filenames _filenames;
   double _scale;
@@ -162,7 +167,6 @@ private:
   unsigned int _currentTransferFunction;
   TransferFunctions _transferFunctions;
   Timesteps _timesteps;
-  Volumes _volumes;
   osg::ref_ptr<osg::Program> _program;
   
   SERIALIZE_XML_DEFINE_MAP;

@@ -48,6 +48,8 @@ SET (SOURCES
 ./RadioButton.cpp
 ./ToggleButton.cpp
 ./Separator.cpp
+./CommandVisitor.cpp
+./MenuCommands.cpp
 )
 
 # Create a Shared Library

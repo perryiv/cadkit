@@ -3167,7 +3167,14 @@ void Application::_readDevicesFile ()
   //_menuNavigationAnalogID = "Joystick";
 
   // Open the input file.
-  const std::string file ( _deviceFilename );
+  const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _deviceFilename ) );
+
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
+  {
+    std::cout << "Warning 3773295320: No devices file found." << std::endl;
+    return;
+  }
+
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
   

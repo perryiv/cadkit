@@ -794,8 +794,6 @@
 		668E3AC70D8A33FC00FD7F58 /* IVectorLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB60D8A33FC00FD7F58 /* IVectorLayer.h */; };
 		6691517E0D52642A00C2BF8D /* big_compass_1.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
 		6691517F0D52642A00C2BF8D /* big_compass_mask.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517D0D52642A00C2BF8D /* big_compass_mask.tga */; };
-		669151800D52643F00C2BF8D /* big_compass_1.tga in Copy Icons */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
-		669151810D52643F00C2BF8D /* big_compass_mask.tga in Copy Icons */ = {isa = PBXBuildFile; fileRef = 6691517D0D52642A00C2BF8D /* big_compass_mask.tga */; };
 		669151B20D52650A00C2BF8D /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
 		669243EF0D35778E00C41A28 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		669243F00D35778E00C41A28 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
@@ -1220,6 +1218,11 @@
 		66E7B0C20B17617300E3D682 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BE0B17617300E3D682 /* SceneManager.h */; };
 		66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */; };
 		66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E8B3760D930B7300024CB2 /* WmsLayerItem.h */; };
+		66ECBC1A0DC81ED200008CED /* animation_control_play_backward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE560DC0FF2B006DEE5E /* animation_control_play_backward.png */; };
+		66ECBC1B0DC81ED200008CED /* animation_control_play_forward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE570DC0FF2B006DEE5E /* animation_control_play_forward.png */; };
+		66ECBC1C0DC81ED200008CED /* animation_control_step_backward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE580DC0FF2B006DEE5E /* animation_control_step_backward.png */; };
+		66ECBC1D0DC81ED200008CED /* animation_control_step_forward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE590DC0FF2B006DEE5E /* animation_control_step_forward.png */; };
+		66ECBC1E0DC81ED200008CED /* animation_control_stop.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE5A0DC0FF2B006DEE5E /* animation_control_stop.png */; };
 		66EF05BC0D143F0000B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B50D143F0000B4B1AA /* CompileGuard.h */; };
 		66EF05BD0D143F0000B4B1AA /* SnapShotComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05B70D143F0000B4B1AA /* SnapShotComponent.cpp */; };
 		66EF05BE0D143F0000B4B1AA /* SnapShotComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B80D143F0000B4B1AA /* SnapShotComponent.h */; };
@@ -1482,14 +1485,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 43FED6F1092452E100EBB610 /* Usul */;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
 			remoteInfo = Usul;
 		};
 		664A55E20DC6A47600B0F137 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			remoteGlobalIDString = 431BAD5B09245A4600ED2131;
 			remoteInfo = OsgTools;
 		};
 		666761D30D12314D002F40C6 /* PBXContainerItemProxy */ = {
@@ -2530,8 +2533,11 @@
 			dstPath = icons;
 			dstSubfolderSpec = 7;
 			files = (
-				669151800D52643F00C2BF8D /* big_compass_1.tga in Copy Icons */,
-				669151810D52643F00C2BF8D /* big_compass_mask.tga in Copy Icons */,
+				66ECBC1A0DC81ED200008CED /* animation_control_play_backward.png in Copy Icons */,
+				66ECBC1B0DC81ED200008CED /* animation_control_play_forward.png in Copy Icons */,
+				66ECBC1C0DC81ED200008CED /* animation_control_step_backward.png in Copy Icons */,
+				66ECBC1D0DC81ED200008CED /* animation_control_step_forward.png in Copy Icons */,
+				66ECBC1E0DC81ED200008CED /* animation_control_stop.png in Copy Icons */,
 				666766A70D124D34002F40C6 /* helios_sun.png in Copy Icons */,
 				666766A80D124D34002F40C6 /* newDocument.png in Copy Icons */,
 				666766A90D124D34002F40C6 /* openDocument.png in Copy Icons */,

@@ -98,6 +98,7 @@ void Vector::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _name );
   SERIALIZE_XML_ADD_MEMBER ( _guid );
   SERIALIZE_XML_ADD_MEMBER ( _shown );
+  this->_addMember ( "layers", _layers );
 }
 
 

@@ -639,3 +639,28 @@ bool Vector::getBooleanState() const
   USUL_TRACE_SCOPE;
   return this->showLayer();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Vector::deserialize ( const XmlTree::Node &node )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  _dataMemberMap.deserialize ( node );
+
+  // Add layers.
+  for ( Unknowns::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+  {
+    // Add the update listener.
+    _updateListeners.add ( *iter );
+
+    // Add the builder.
+    _builders.add ( *iter );
+  }
+}

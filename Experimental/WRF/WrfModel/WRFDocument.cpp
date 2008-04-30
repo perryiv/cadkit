@@ -44,6 +44,7 @@
 #include "OsgTools/Builders/Arrow.h"
 #include "OsgTools/Volume/TransferFunction1D.h"
 
+#include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
 
 #include "MenuKit/Menu.h"
@@ -96,7 +97,7 @@ WRFDocument::WRFDocument() :
   _channelInfo (),
   _root ( new osg::MatrixTransform ),
   _volumeTransform ( new osg::MatrixTransform ),
-  _volumeNode ( new OsgTools::Volume::Texture3DVolume ),
+  _volumeNode ( new Volume ),
   _bb (),
   _dirty ( true ),
   _requests (),
@@ -167,6 +168,8 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ILayer* > ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
+  case Usul::Interfaces::ISerialize::IID:
+    return static_cast<Usul::Interfaces::ISerialize*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -242,7 +245,11 @@ void WRFDocument::write ( const std::string &name, Unknown *caller, Unknown *pro
 
 void WRFDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
-  Serialize::XML::deserialize ( name, *this );
+  // Deserialize the xml tree.
+  XmlTree::XercesLife life;
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( name );
+  this->deserialize ( *document );
 }
 
 
@@ -411,7 +418,11 @@ void WRFDocument::_buildScene()
     image = scaled;
 #endif
 
+#if USE_RAY_CASTING
+    _volumeNode->samplingRate ( 1.0 / _numPlanes ); 
+#else
     _volumeNode->numPlanes ( _numPlanes );
+#endif
     _volumeNode->image ( image.get() );
 
     // Add the volume to the scene.

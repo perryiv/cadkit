@@ -31,9 +31,11 @@
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/ISerialize.h"
 
 #include "Serialize/XML/Macros.h"
 
+#include "OsgTools/Volume/GPURayCasting.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
 #include "OsgTools/Volume/TransferFunction.h"
 
@@ -45,6 +47,9 @@
 #include <vector>
 #include <list>
 
+// Uncomment this line to use GPU ray casting.  There are still some issues to work out.
+#define USE_RAY_CASTING 0
+
 class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::IBuildScene,
                     public Usul::Interfaces::ITimestepAnimation,
@@ -52,7 +57,8 @@ class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::IUpdateListener,
                     public Usul::Interfaces::IMenuAdd,
                     public Usul::Interfaces::ILayer,
-                    public Usul::Interfaces::ITreeNode
+                    public Usul::Interfaces::ITreeNode,
+                    public Usul::Interfaces::ISerialize
 {
 public:
 
@@ -224,6 +230,11 @@ private:
   typedef OsgTools::Volume::TransferFunction                    TransferFunction;
   typedef TransferFunction::RefPtr                              TransferFunctionPtr;
   typedef std::vector < TransferFunctionPtr >                   TransferFunctions;
+#if USE_RAY_CASTING
+  typedef OsgTools::Volume::GPURayCasting Volume;
+#else
+  typedef OsgTools::Volume::Texture3DVolume Volume;
+#endif
 
   Parser _parser;
   std::string _filename;
@@ -239,7 +250,7 @@ private:
   ChannelInfos _channelInfo;
   osg::ref_ptr < osg::MatrixTransform > _root;
   osg::ref_ptr < osg::MatrixTransform > _volumeTransform;
-  osg::ref_ptr < OsgTools::Volume::Texture3DVolume > _volumeNode;
+  osg::ref_ptr < Volume > _volumeNode;
   osg::BoundingBox _bb;
   bool _dirty;
   Requests _requests;

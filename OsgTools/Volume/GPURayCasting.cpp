@@ -344,7 +344,7 @@ namespace Detail
        // Ray termination.
        //<<  "   vec3 temp1 = sign ( position - bbMin );\n"
        //<<  "   vec3 temp2 = sign ( bbMax - position );\n"
-#if 1
+#if 0
     <<  "   vec3 temp1 = sign ( position - vec3 ( 0.0, 0.0, 0.0 ) );\n"
     <<  "   vec3 temp2 = sign ( vec3 ( 1.0, 1.0, 1.0 ) - position );\n"
     
@@ -515,7 +515,7 @@ void GPURayCasting::boundingBox ( const osg::BoundingBox& bb )
   geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
 
   _geometry = geometry;
-  _geometry->setCullCallback ( new Detail::Callback ( _cameraUniform.get() ) );
+  //_geometry->setCullCallback ( new Detail::Callback ( _cameraUniform.get() ) );
   
   this->removeDrawables ( 0 );
   this->addDrawable ( _geometry.get() );

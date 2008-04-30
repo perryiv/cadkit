@@ -3178,10 +3178,11 @@ void Application::_readDevicesFile ()
     XmlTree::Node::RefPtr node ( *iter );
     if ( "Button" == node->name() )
     {
-      std::string name = "";
-      std::string vj_name = "";
-      std::string id = "";
+      const std::string name    ( node->attributes()["name"] );
+      const std::string vj_name ( node->attributes()["vj_name"] );
+      const std::string id      ( node->attributes()["id"] );
 
+#if 0
       XmlTree::Node::Attributes attributes ( node->attributes() );
       for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
       {
@@ -3201,6 +3202,8 @@ void Application::_readDevicesFile ()
 
         }
       }
+#endif
+      // Debugging on Unix
       const unsigned int uiid ( ::strtoul ( id.c_str(), 0x0, 16 ) );
       _buttons->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
     }
@@ -3212,9 +3215,12 @@ void Application::_readDevicesFile ()
     XmlTree::Node::RefPtr node ( *iter );
     if ( "Analog" == node->name() )
 		{
-			std::string name, analog0, analog1;
+			const std::string name    ( node->attributes()["name"] );
+      const std::string analog0 ( node->attributes()["horizontal_name"] ); 
+      const std::string analog1 ( node->attributes()["vertical_name"] );
 
-			// Check attributes...
+			// Check attributes....
+#if 0
       XmlTree::Node::Attributes attributes ( node->attributes() );
 
       for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
@@ -3232,6 +3238,7 @@ void Application::_readDevicesFile ()
           Usul::Strings::fromString ( iter->second, analog1 );
         }
       }
+#endif
 			if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
 			{
 				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
@@ -3252,23 +3259,22 @@ void Application::_readDevicesFile ()
     XmlTree::Node::RefPtr node ( *iter );
     if ( "Mapping" == node->name() )
     {
-      std::string cmd, btn; 
-
+      const std::string cmd ( node->attributes()["command"] );
+      const std::string btn ( node->attributes()["button_id"] );
+#if 0
       XmlTree::Node::Attributes attributes ( node->attributes() );
       for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
       {
         if ( "button_id" == iter->first )
         {
-          Usul::Strings::fromString ( iter->second, btn );
-
+          btn = iter->second;
         }
         if ( "command" == iter->first )
         {
-          Usul::Strings::fromString ( iter->second, cmd );
-
+          cmd = iter->second;
         }
-       
       }
+#endif
       if( "menu" == cmd )
       {
         const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
@@ -3288,7 +3294,7 @@ void Application::_readDevicesFile ()
         const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
         _buttonCommandsMap[ uiid ] = cmd;
       }
-     }	
+    }	
   }
 
   // assign the menu navigation to the specified joystick or default if none specified

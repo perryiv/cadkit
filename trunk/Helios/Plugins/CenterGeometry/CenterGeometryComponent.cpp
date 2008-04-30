@@ -27,6 +27,9 @@
 
 #include "OsgTools/Group.h"
 #include "OsgTools/Utilities/TranslateGeometry.h"
+#include "OsgTools/Visitor.h"
+
+#include "osgUtil/Optimizer"
 
 #include "osg/BoundingBox"
 #include "osg/MatrixTransform"
@@ -97,6 +100,10 @@ void CenterGeometryComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnk
 	menu->append ( new Button ( Usul::Commands::genericCommand ( "Center Geometry", 
       Usul::Adaptors::memberFunction<void> ( this, &CenterGeometryComponent::centerGeometry ),
       Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableCenterGeometry ) ) ) );
+
+	menu->append ( new Button ( Usul::Commands::genericCommand ( "Flatten Geometry", 
+      Usul::Adaptors::memberFunction<void> ( this, &CenterGeometryComponent::flattenGeometry ),
+      Usul::Adaptors::memberFunction<bool> ( this, &CenterGeometryComponent::enableFlattenGeometry ) ) ) );
 }
 
 
@@ -152,11 +159,70 @@ void CenterGeometryComponent::centerGeometry()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Flatten the geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CenterGeometryComponent::flattenGeometry()
+{
+  // Get neded interface.
+	Usul::Interfaces::IModelsScene::QueryPtr ms ( Usul::Documents::Manager::instance().activeView() );
+	if ( false == ms.valid() )
+		return;
+
+  // Get the scene.
+	osg::ref_ptr<osg::Group> group ( ms->modelsScene() );
+	if ( false == group.valid() )
+		return;
+
+  // Make all matrix-transforms static.
+  osg::ref_ptr<osg::NodeVisitor> visitor 
+    ( OsgTools::MakeVisitor<osg::Transform>::make ( &CenterGeometryComponent::_toStaticTransform ) );
+
+  // Flatten the geometry.
+  osgUtil::Optimizer optimizer;
+  optimizer.optimize ( group.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS );
+
+  // Make sure the bounds are dirty.
+	group->dirtyBound();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the matrix-transform static.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CenterGeometryComponent::_toStaticTransform ( osg::Transform *transform )
+{
+  if ( 0x0 != transform )
+  {
+    transform->setDataVariance ( osg::Object::STATIC );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Enable the button?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 bool CenterGeometryComponent::enableCenterGeometry() const
+{
+	Usul::Interfaces::IModelsScene::QueryPtr ms ( Usul::Documents::Manager::instance().activeView() );
+	return ms.valid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Enable the button?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool CenterGeometryComponent::enableFlattenGeometry() const
 {
 	Usul::Interfaces::IModelsScene::QueryPtr ms ( Usul::Documents::Manager::instance().activeView() );
 	return ms.valid();

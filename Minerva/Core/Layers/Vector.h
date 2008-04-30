@@ -55,7 +55,7 @@ public:
   typedef std::vector< DataObjectPtr >	            DataObjects;
   typedef Usul::Interfaces::ILayer                  ILayer;
   typedef Usul::Interfaces::IUnknown                IUnknown;
-  typedef std::vector<IUnknown::QueryPtr>           Unknowns;
+  typedef std::vector<ILayer::QueryPtr>             Unknowns;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Vector );
@@ -73,9 +73,12 @@ public:
   
   /// Accept the visitor.
   virtual void                accept ( Minerva::Core::Visitor& visitor );
-  
+
   /// Traverse all DataObjects.
   virtual void                traverse ( Minerva::Core::Visitor& visitor );
+
+  /// Deserialize.
+  virtual void                deserialize ( const XmlTree::Node &node );
   
   /// Build the scene (IBuildScene).
   virtual osg::Node *         buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -171,7 +174,9 @@ private:
   Usul::Math::Vec2d _upperRight;
   osg::ref_ptr<osg::Group> _root;
   
-  SERIALIZE_XML_DEFINE_MEMBERS ( Vector );
+  SERIALIZE_XML_CLASS_NAME( Vector )
+  SERIALIZE_XML_SERIALIZE_FUNCTION
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION
   SERIALIZE_XML_DEFINE_MAP;
 };
 

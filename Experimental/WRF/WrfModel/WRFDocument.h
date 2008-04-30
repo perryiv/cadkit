@@ -76,6 +76,7 @@ public:
 
   /// Construction.
   WRFDocument();
+
   /// Add the view to the document.
   virtual void                addView ( Usul::Interfaces::IView *view );
 

@@ -24,6 +24,8 @@
 
 #include <string>
 
+namespace osg { class Transform; }
+
 
 class CenterGeometryComponent : public Usul::Base::Referenced,
                                 public Usul::Interfaces::IPlugin,
@@ -56,6 +58,12 @@ public:
 	/// Enable the button?
 	bool                        enableCenterGeometry() const;
 
+  /// Flatten the geometry.
+  void                        flattenGeometry();
+
+	/// Enable the button?
+	bool                        enableFlattenGeometry() const;
+
 protected:
 
   // Do not copy.
@@ -64,6 +72,9 @@ protected:
 
   /// Use reference counting.
   virtual ~CenterGeometryComponent();
+
+  // Make the matrix-transform static.
+  static void                 _toStaticTransform ( osg::Transform * );
 
 };
 

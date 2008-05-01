@@ -161,6 +161,8 @@ Usul::Interfaces::IUnknown *ModelPresentationDocument::queryInterface ( unsigned
     return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   case Usul::Interfaces::IMpdWriter::IID:
     return static_cast < Usul::Interfaces::IMpdWriter * > ( this );
+  case Usul::Interfaces::ITimeVaryingData::IID:
+    return static_cast < Usul::Interfaces::ITimeVaryingData * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -3096,4 +3098,48 @@ unsigned int ModelPresentationDocument::getAnimationSpeed()
   USUL_TRACE_SCOPE;
   Guard guard ( this ); 
   return _animationSpeed;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the current time step.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::setCurrentTimeStep ( unsigned int current )
+{
+  USUL_TRACE_SCOPE;
+  if ( current < this->getNumberOfTimeSteps() )
+  {
+    this->setStep ( current );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current time step.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ModelPresentationDocument::getCurrentTimeStep() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _globalCurrentTime;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of timesteps.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ModelPresentationDocument::getNumberOfTimeSteps() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( _globalTimelineEnd > 0 ) ? ( _globalTimelineEnd + 1 ) : 0 );
 }

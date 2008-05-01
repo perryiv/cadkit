@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: Minerva GDAL"
-	ProjectGUID="{1776A800-7D61-4F0E-B7CD-7991042820AB}"
-	RootNamespace="lib: Minerva GDAL"
+	Name="plug: Minerva GDAL Read Image"
+	ProjectGUID="{13F38255-48A8-40A6-83FF-9BD90EEA5090}"
+	RootNamespace="plug: Minerva GDAL Read Image"
 	>
 	<Platforms>
 		<Platform
@@ -40,14 +40,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/MinervaGDAL.tlb"
+				TypeLibraryName=".\Debug/GdalReadImage.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_GDAL;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="../../../;../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_GDAL_READ_IMAGE;_CRT_SECURE_NO_WARNINGS"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -56,7 +56,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -80,14 +80,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib osgDBd.lib gdald.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDALd.dll"
+				AdditionalDependencies="osgd.lib gdald.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/GDALReadImage.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;"
+				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/MinervaGDALd.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGDALd.lib"
+				ProgramDatabaseFile=".\Debug\GdalReadImage.pdb"
+				ImportLibrary=".\Debug\GdalReadImage.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +141,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/MinervaGDAL.tlb"
+				TypeLibraryName=".\Release/GdalReadImage.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_GDAL;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="../../../;../../;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;"
+				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_GDAL_READ_IMAGE;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -155,7 +156,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -178,13 +179,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib osgDB.lib gdal.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDAL.dll"
+				AdditionalDependencies="osg.lib gdal.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/GDALReadImage.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
-				ProgramDatabaseFile=".\Release/MinervaGDAL.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGDAL.lib"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;"
+				ModuleDefinitionFile="Export.def"
+				ProgramDatabaseFile=".\Release\GdalReadImage.pdb"
+				ImportLibrary=".\Release\GdalReadImage.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -218,42 +220,38 @@
 		<Filter
 			Name="Source"
 			>
-			<File
-				RelativePath=".\Common.h"
+			<Filter
+				Name="Implementation"
 				>
-			</File>
-			<File
-				RelativePath=".\Convert.h"
+				<File
+					RelativePath=".\CompileGuard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GDALReadImageComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GDALReadImageComponent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GDALReadImageDocument.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GDALReadImageDocument.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="DLL"
 				>
-			</File>
-			<File
-				RelativePath=".\Export.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GDALLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GDALLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Init.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MakeImage.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RasterPolygonLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RasterPolygonLayer.h"
-				>
-			</File>
+				<File
+					RelativePath="Export.def"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

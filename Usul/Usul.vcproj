@@ -1260,6 +1260,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IReadImageFile.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IReadProperties.h"
 					>
 				</File>

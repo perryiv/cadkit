@@ -181,8 +181,8 @@ Application::Application() :
   _intersectListeners (),
   _buttonMap          (),
   _buttonToAssign     ( 0 ),
-  _selectButtonID     ( 0 ),
-  _menuButtonID       ( 1 ),
+  _selectButtonID     ( VRV::BUTTON_TRIGGER ),
+  _menuButtonID       ( VRV::BUTTON_JOYSTICK ),
   _menuNavigationAnalogID ( "Joystick" ),
 	_bodyCenteredRotation ( false )
 {
@@ -225,6 +225,20 @@ Application::Application() :
   _colorMap["Grey"]   = Usul::Math::Vec4f ( 0.5,0.5,0.5,1.0 );
   _colorMap["Black"]  = Usul::Math::Vec4f ( 0.0,0.0,0.0,1.0 );
   _colorMap["Sky Blue"] = Usul::Math::Vec4f ( 0.592156, 0.713725, 1.0, 1.0 );
+
+  _joystick->name ( "Joystick" );
+
+  JoystickPtr jptr ( _joystick );
+  {
+    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+    if( true == jptr.valid() )
+    {
+      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+    }
+  }
 }
 
 
@@ -3189,27 +3203,6 @@ void Application::_readDevicesFile ()
       const std::string vj_name ( node->attributes()["vj_name"] );
       const std::string id      ( node->attributes()["id"] );
 
-#if 0
-      XmlTree::Node::Attributes attributes ( node->attributes() );
-      for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-      {
-        if ( "name" == iter->first )
-        {
-          Usul::Strings::fromString ( iter->second, name );
-
-        }
-        if ( "vj_name" == iter->first )
-        {
-          Usul::Strings::fromString ( iter->second, vj_name );
-
-        }
-        if ( "id" == iter->first )
-        {
-          Usul::Strings::fromString ( iter->second, id );
-
-        }
-      }
-#endif
       // Debugging on Unix
       const unsigned int uiid ( ::strtoul ( id.c_str(), 0x0, 16 ) );
       _buttons->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
@@ -3226,26 +3219,6 @@ void Application::_readDevicesFile ()
       const std::string analog0 ( node->attributes()["horizontal_name"] ); 
       const std::string analog1 ( node->attributes()["vertical_name"] );
 
-			// Check attributes....
-#if 0
-      XmlTree::Node::Attributes attributes ( node->attributes() );
-
-      for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-      {
-        if ( "name" == iter->first )
-        {
-          Usul::Strings::fromString ( iter->second, name );
-        }
-        if ( "horizontal_name" == iter->first )
-        {
-          Usul::Strings::fromString ( iter->second, analog0 );
-        }
-        if ( "vertical_name" == iter->first )
-        {
-          Usul::Strings::fromString ( iter->second, analog1 );
-        }
-      }
-#endif
 			if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
 			{
 				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
@@ -3268,20 +3241,7 @@ void Application::_readDevicesFile ()
     {
       const std::string cmd ( node->attributes()["command"] );
       const std::string btn ( node->attributes()["button_id"] );
-#if 0
-      XmlTree::Node::Attributes attributes ( node->attributes() );
-      for ( XmlTree::Node::Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-      {
-        if ( "button_id" == iter->first )
-        {
-          btn = iter->second;
-        }
-        if ( "command" == iter->first )
-        {
-          cmd = iter->second;
-        }
-      }
-#endif
+
       if( "menu" == cmd )
       {
         const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
@@ -4713,13 +4673,13 @@ bool Application::_handleMenuEvent( unsigned long id )
   USUL_TRACE_SCOPE;
 
   // Get the menu.
-  Menu::RefPtr menu ( this->menu () );
+  Menu::RefPtr menu ( this->menu() );
 
   if ( 0x0 == menu.get() )
     return false;
 
   // First see if you are supposed to show or hide it. Always do this first.
-  if ( _menuButtonID == id )
+  if ( Usul::Threads::Safe::get ( this->mutex(), _menuButtonID ) == id )
   {
     menu->toggleVisible();
     return true;
@@ -4734,7 +4694,7 @@ bool Application::_handleMenuEvent( unsigned long id )
 
   // Process button states iff the menu is showing.
   
-  if(  _selectButtonID == id )
+  if( Usul::Threads::Safe::get ( this->mutex(), _selectButtonID ) == id )
   {
     if ( this->_isAssignNextMenuSelection() )
     {

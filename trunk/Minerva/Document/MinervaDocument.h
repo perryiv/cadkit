@@ -26,6 +26,7 @@
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IMouseEventListener.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
@@ -69,7 +70,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::ICommandExecuteListener,
                                                 public Usul::Interfaces::IIntersectListener,
                                                 public Usul::Interfaces::ITreeNode,
-                                                public Usul::Interfaces::IJobFinishedListener
+                                                public Usul::Interfaces::IJobFinishedListener,
+                                                public Usul::Interfaces::IMouseEventListener
 {
 public:
   /// Useful typedefs.
@@ -293,6 +295,9 @@ protected:
   /// The job has finished (IJobFinishedListener).
   virtual void                             jobFinished ( Usul::Jobs::Job *job );
   
+  // Called when mouse event occurs.
+  virtual void                             mouseEventNotify ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );
+
 private:
   
   // Callback to get the eye position.  This is a bit of a hack and needs to be improved.

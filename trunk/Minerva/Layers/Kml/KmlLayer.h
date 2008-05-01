@@ -41,14 +41,15 @@ public:
   typedef Minerva::Core::DataObjects::DataObject     DataObject;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;
+  typedef std::map<std::string,Style::RefPtr>        Styles;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( KmlLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   KmlLayer();
-  KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory );
-  KmlLayer( Link* link );
+  KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles );
+  KmlLayer( Link* link, const Styles& styles );
   
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
@@ -69,6 +70,7 @@ public:
   void                        reading( bool b );
   
 protected:
+
   virtual ~KmlLayer();
   
   // Read.
@@ -99,9 +101,8 @@ protected:
 	Style*                      _style ( const std::string& name );
 
   osg::Vec3                   _buildVec3         ( const XmlTree::Node& node );
-private:
 
-	typedef std::map<std::string,Style::RefPtr> Styles;
+private:
   
   enum STATUS_FLAGS
   {

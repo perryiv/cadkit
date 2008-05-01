@@ -23,6 +23,7 @@
 #include "Minerva/Core/Commands/ToggleShown.h"
 #include "Minerva/Core/Commands/ShowPastEvents.h"
 #include "Minerva/Core/Commands/ChangeTimestepType.h"
+#include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
@@ -45,6 +46,7 @@
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Registry/Constants.h"
@@ -71,6 +73,8 @@
 #include "osg/CoordinateSystemNode"
 #include "osg/Geode"
 #include "osg/Light"
+
+#include "osgGA/GUIEventAdapter"
 
 #include "osgUtil/IntersectVisitor"
 #include "osgUtil/CullVisitor"
@@ -258,6 +262,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IJobFinishedListener::IID:
     return static_cast < Usul::Interfaces::IJobFinishedListener* > ( this );
+  case Usul::Interfaces::IMouseEventListener::IID:
+    return static_cast < Usul::Interfaces::IMouseEventListener* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -2022,6 +2028,7 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
 {
   Body::RefPtr body ( this->activeBody() );
   
+  // Set the intersection point.
   if ( body.valid() )
   {
     osg::Vec3 world ( hit.getWorldIntersectPoint() );
@@ -2299,4 +2306,43 @@ void MinervaDocument::freezeTiling( bool b )
 void MinervaDocument::jobFinished ( Usul::Jobs::Job *job )
 {
   this->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when mouse event occurs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Interfaces::IUnknown * caller )
+{
+  // Query for the interface.
+  Usul::Interfaces::ISceneIntersect::QueryPtr si ( caller );
+
+  // See if it's the left button.
+  const bool left ( Usul::Bits::has ( ea.getButton(), osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) );
+
+  if ( left && si.valid() && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
+  {
+    osgUtil::Hit hit;
+    if ( si->intersect ( ea.getX(), ea.getY(), hit ) )
+    {
+      // See if there is user data.
+      osg::ref_ptr < Minerva::Core::DataObjects::UserData > userdata ( 0x0 );
+      for( osg::NodePath::const_reverse_iterator iter = hit._nodePath.rbegin(); iter != hit._nodePath.rend(); ++iter )
+      {
+        if( Minerva::Core::DataObjects::UserData *ud = dynamic_cast < Minerva::Core::DataObjects::UserData *> ( (*iter)->getUserData() ) )
+          userdata = ud;
+      }
+
+      if( userdata.valid() && 0x0 != userdata->_do )
+      {
+        Minerva::Core::DataObjects::DataObject::RefPtr dataObject ( userdata->_do );
+        dataObject->clicked();
+      }
+    }
+  }
+  else if ( osgGA::GUIEventAdapter::MOVE == ea.getEventType() )
+    this->requestRedraw();
 }

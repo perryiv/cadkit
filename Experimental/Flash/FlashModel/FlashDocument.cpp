@@ -196,7 +196,20 @@ void FlashDocument::read ( const std::string &filename, Unknown *caller, Unknown
   }
   else
   {
+    // Add the filename.
     _filenames.push_back ( filename );
+    
+    // Notify any observers.
+    this->_notifyModifiedObservers();
+    
+    // We are modified.
+    this->modified ( true );
+    
+    // We are dirty.
+    this->dirty ( true );
+    
+    // Request a redraw.
+    this->requestRedraw();
   }
 }
 

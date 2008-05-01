@@ -144,6 +144,8 @@ public:
   void              setAnimationSpeed( unsigned int speed );
   unsigned int      getAnimationSpeed();
 
+  void              setStep ( unsigned int time );
+
   /// Usul::Interfaces::IMpdWriter functions
   // Model Functions
   virtual void                    addModel( const std::string &name, const std::string &path );

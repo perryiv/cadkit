@@ -61,7 +61,7 @@ Hud::Hud() :
 #endif
 
 #if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
-	unsigned int textSize ( 30 );
+	unsigned int textSize ( 25 );
 #else
 	unsigned int textSize ( 15 );
 #endif

@@ -31,6 +31,28 @@ namespace Strings {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+inline bool trimLeft ( std::string &s, char c = ' ' )
+{
+  if ( !s.empty() )
+  {
+    if ( c == s[0] )
+    {
+      std::string temp ( s.begin() + 1, s.end() );
+      s = temp;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove trailing characters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 inline bool trimRight ( std::string &s, char c = ' ' )
 {
   if ( !s.empty() )

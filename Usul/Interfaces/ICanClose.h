@@ -12,8 +12,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace FX { class FXWindow; }
-
 namespace Usul {
 namespace Interfaces {
 
@@ -28,7 +26,6 @@ struct ICanClose : public Usul::Interfaces::IUnknown
   enum { IID = 1072485030u };
 
   virtual bool canClose ( Usul::Interfaces::IWindow *window, Usul::Interfaces::IUnknown *caller = 0x0, bool checkNumWindows = true ) = 0;
-
 
 }; // class ICanClose
 

@@ -760,10 +760,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IAddFrame.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IAddRowLegend.h"
 					>
 				</File>
@@ -797,14 +793,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IBooleanState.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IBoundingBox.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IBoundingSphere.h"
 					>
 				</File>
 				<File
@@ -865,10 +853,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ICanUndo.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ICenterOfRotation.h"
 					>
 				</File>
 				<File
@@ -933,10 +917,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IDatabasePager.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IDataSync.h"
 					>
 				</File>
 				<File
@@ -1020,58 +1000,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\Fox\IFoxAddTab.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxClientArea.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxDockBar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxImage.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxMDIMenu.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxMenuPane.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxRadioButton.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxSubMenu.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxTabBook.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxTabItem.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxToggleButton.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxToolbar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IFoxWindow.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IFrameDump.h"
 					>
 				</File>
@@ -1140,35 +1068,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IGuiInit.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\GUI\IGUIServer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IHandle.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IHandleMessage.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IImage.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IImageList.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IImageToGrayScale.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IImageView.h"
 					>
 				</File>
 				<File
@@ -1208,15 +1108,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ILayerList.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ILayerModifyGUIQt.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ILights.h"
 					>
 				</File>
 				<File
@@ -1253,14 +1145,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IMenuAdd.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\IMenuBar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\GUI\IMenuEntry.h"
 					>
 				</File>
 				<File
@@ -1436,19 +1320,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ISendMessage.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ISerialize.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\Fox\ISetCursor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\GUI\ISetCursorType.h"
 					>
 				</File>
 				<File
@@ -1476,10 +1348,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IStereo.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IStreamListener.h"
 					>
 				</File>
@@ -1493,10 +1361,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ISubdivideTriangles.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ITemporalData.h"
 					>
 				</File>
 				<File
@@ -1589,10 +1453,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\GUI\IUpdateTreeControls.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IVectorLayer.h"
 					>
 				</File>
 				<File
@@ -2379,14 +2239,6 @@
 				</File>
 				<File
 					RelativePath=".\Resources\EventQueue.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\MenuBar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\MenuBar.h"
 					>
 				</File>
 				<File

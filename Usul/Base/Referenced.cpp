@@ -223,3 +223,15 @@ unsigned long Referenced::refCount() const
   Guard guard ( *_rcMutex );
   return _refCount;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get this referenced as an IUnknown.  May return null.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Referenced::asUnknown() const
+{
+	return 0x0;
+}

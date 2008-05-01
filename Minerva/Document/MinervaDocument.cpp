@@ -1294,8 +1294,11 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   namespace UA = Usul::Adaptors;
   namespace UC = Usul::Commands;
   
-  MenuKit::Menu::RefPtr m ( new MenuKit::Menu ( "&Options" ) );
-	MenuKit::Menu::RefPtr animate ( new MenuKit::Menu ( "&Animate" ) );
+  MenuKit::Menu::RefPtr m ( menu.find ( "&Options", true ) );
+	MenuKit::Menu::RefPtr animate ( menu.find ( "&Animate", true ) );
+
+  if ( false == m->items().empty() )
+    m->addSeparator();
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -1348,9 +1351,6 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Freeze Tiling", 
                                                            UA::memberFunction<void> ( this, &MinervaDocument::freezeTiling ), 
                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isFreezeTiling ) ) ) );
-
-  menu.append ( m );
-	menu.append ( animate );
 
 	this->_buildLayerMenu();
   menu.append ( _layersMenu.get() );

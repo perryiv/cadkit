@@ -19,6 +19,7 @@
 #include "MenuKit/Errors.h"
 #include "MenuKit/Separator.h"
 
+#include "Usul/Strings/Trim.h"
 #include "Usul/Threads/Safe.h"
 
 #include <algorithm>
@@ -251,13 +252,18 @@ namespace Detail
   {
     FindMenu ( const std::string& name ) : _name ( name )
     {
+      Usul::Strings::trimLeft ( _name, '&' );
     }
 
     template < class T >
     bool operator() ( const T& t ) const
     {
       if ( Menu* m = dynamic_cast < Menu* > ( t.get() ) )
-        return ( _name == m->text() );
+      {
+        std::string name ( m->text() );
+        Usul::Strings::trimLeft ( name, '&' );
+        return ( _name == name );
+      }
       return false;
     }
 

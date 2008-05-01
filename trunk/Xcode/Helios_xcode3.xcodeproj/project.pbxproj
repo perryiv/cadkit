@@ -765,8 +765,6 @@
 		668E3AC70D8A33FC00FD7F58 /* IVectorLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 668E3AB60D8A33FC00FD7F58 /* IVectorLayer.h */; };
 		6691517E0D52642A00C2BF8D /* big_compass_1.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
 		6691517F0D52642A00C2BF8D /* big_compass_mask.tga in Resources */ = {isa = PBXBuildFile; fileRef = 6691517D0D52642A00C2BF8D /* big_compass_mask.tga */; };
-		669151800D52643F00C2BF8D /* big_compass_1.tga in Copy Icons */ = {isa = PBXBuildFile; fileRef = 6691517C0D52642A00C2BF8D /* big_compass_1.tga */; };
-		669151810D52643F00C2BF8D /* big_compass_mask.tga in Copy Icons */ = {isa = PBXBuildFile; fileRef = 6691517D0D52642A00C2BF8D /* big_compass_mask.tga */; };
 		669151B20D52650A00C2BF8D /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
 		669243EF0D35778E00C41A28 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		669243F00D35778E00C41A28 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
@@ -1015,6 +1013,11 @@
 		66B647470D94420C00F426B2 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		66B647480D94420F00F426B2 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66B647490D94421200F426B2 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66B7C62D0DC995A80071939F /* animation_control_play_backward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE560DC0FF2B006DEE5E /* animation_control_play_backward.png */; };
+		66B7C62E0DC995A80071939F /* animation_control_play_forward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE570DC0FF2B006DEE5E /* animation_control_play_forward.png */; };
+		66B7C62F0DC995A80071939F /* animation_control_step_backward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE580DC0FF2B006DEE5E /* animation_control_step_backward.png */; };
+		66B7C6300DC995A80071939F /* animation_control_step_forward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE590DC0FF2B006DEE5E /* animation_control_step_forward.png */; };
+		66B7C6310DC995A80071939F /* animation_control_stop.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE5A0DC0FF2B006DEE5E /* animation_control_stop.png */; };
 		66B923140D653C3600087AB4 /* Pumping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B923120D653C3600087AB4 /* Pumping.cpp */; };
 		66B923150D653C3600087AB4 /* Pumping.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B923130D653C3600087AB4 /* Pumping.h */; };
 		66B923180D653C4200087AB4 /* Cylinders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B923160D653C4200087AB4 /* Cylinders.cpp */; };
@@ -2616,8 +2619,11 @@
 			dstPath = icons;
 			dstSubfolderSpec = 7;
 			files = (
-				669151800D52643F00C2BF8D /* big_compass_1.tga in Copy Icons */,
-				669151810D52643F00C2BF8D /* big_compass_mask.tga in Copy Icons */,
+				66B7C62D0DC995A80071939F /* animation_control_play_backward.png in Copy Icons */,
+				66B7C62E0DC995A80071939F /* animation_control_play_forward.png in Copy Icons */,
+				66B7C62F0DC995A80071939F /* animation_control_step_backward.png in Copy Icons */,
+				66B7C6300DC995A80071939F /* animation_control_step_forward.png in Copy Icons */,
+				66B7C6310DC995A80071939F /* animation_control_stop.png in Copy Icons */,
 				666766A70D124D34002F40C6 /* helios_sun.png in Copy Icons */,
 				666766A80D124D34002F40C6 /* newDocument.png in Copy Icons */,
 				666766A90D124D34002F40C6 /* openDocument.png in Copy Icons */,

@@ -22,6 +22,7 @@
 #include "ui_AnimationControl.h" // Cannot have path here.
 
 #include "Usul/Interfaces/IActiveDocumentListener.h"
+#include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -36,7 +37,8 @@ namespace QtTools {
 
 class QT_TOOLS_EXPORT AnimationControl : public QWidget,
                                          private Ui::AnimationControl,
-                                         public Usul::Interfaces::IActiveDocumentListener
+                                         public Usul::Interfaces::IActiveDocumentListener,
+                                         public Usul::Interfaces::IModifiedObserver
 {
   Q_OBJECT;
 
@@ -68,6 +70,9 @@ public:
 
   // The active document has changed (IActiveDocumentListener).
   virtual void                activeDocumentChanged ( Unknown *oldDoc, Unknown *newDoc );
+  
+  // The subject has been modified (IModifiedObserver).
+  virtual void                subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   // Get the mutex.
   Mutex &                     mutex() const;
@@ -96,6 +101,7 @@ protected:
   void                        _playBackwardEvent();
 
 	void                        _setEnabledState();
+  void                        _setState();
   void                        _slotsConnect();
   void                        _slotsDisconnect();
   void                        _speedChangedEvent ( double );

@@ -24,6 +24,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IModifiedSubject.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Trace/Trace.h"
@@ -167,6 +168,8 @@ Usul::Interfaces::IUnknown *AnimationControl::queryInterface ( unsigned long iid
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IActiveDocumentListener::IID:
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
+  case Usul::Interfaces::IModifiedObserver::IID:
+    return static_cast < Usul::Interfaces::IModifiedObserver* > ( this );
   default:
     return 0x0;
   }
@@ -231,16 +234,46 @@ void AnimationControl::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDo
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  
+  // Remove ourselfs from the old document.
+  {
+    Usul::Interfaces::IModifiedSubject::QueryPtr ms ( oldDoc );
+    if ( ms.valid() )
+      ms->removeModifiedObserver ( Usul::Interfaces::IModifiedObserver::QueryPtr ( this ) );
+  }
+  
+  // Add ourselfs to the new document.
+  {
+    Usul::Interfaces::IModifiedSubject::QueryPtr ms ( newDoc );
+    if ( ms.valid() )
+      ms->addModifiedObserver ( Usul::Interfaces::IModifiedObserver::QueryPtr ( this ) );
+  }
+  
   Guard guard ( this );
-
-  // Disconnect the slots and make sure they are re-connected.
-  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( 
-    Usul::Adaptors::memberFunction ( this, &AnimationControl::_slotsDisconnect ),
-    Usul::Adaptors::memberFunction ( this, &AnimationControl::_slotsConnect ) ) );
 
   // Set the members.
   _document = newDoc;
   _data = newDoc;
+
+  // Set the slider and enabled state.
+	this->_setState();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimationControl::_setState()
+{
+  Guard guard ( this );
+  
+  // Disconnect the slots and make sure they are re-connected.
+  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( 
+                                                               Usul::Adaptors::memberFunction ( this, &AnimationControl::_slotsDisconnect ),
+                                                               Usul::Adaptors::memberFunction ( this, &AnimationControl::_slotsConnect ) ) );
   
   if ( _data.valid() )
   {
@@ -249,7 +282,7 @@ void AnimationControl::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDo
     _sliderSlider->setRange ( 0, ( 0 != num ? num - 1 : 0 ) );
     _sliderSlider->setValue ( _data->getCurrentTimeStep() );
   }
-
+  
   // Set the enabled state.
 	this->_setEnabledState();
 }
@@ -724,4 +757,17 @@ void AnimationControl::_onSliderChanged ( int value )
   {
     _data->setCurrentTimeStep ( value );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The subject has been modified (IModifiedObserver).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AnimationControl::subjectModified ( Usul::Interfaces::IUnknown *caller )
+{
+  // Set the slider and enabled state.
+	this->_setState();
 }

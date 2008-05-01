@@ -68,7 +68,6 @@ SET (SOURCES
 ./Resources/TextWindow.cpp
 ./Resources/CancelButton.cpp
 ./Resources/ProgressBar.cpp
-./Resources/MenuBar.cpp
 ./Resources/EventQueue.cpp
 ./Resources/StatusBar.cpp
 ./Resources/ReportErrors.cpp

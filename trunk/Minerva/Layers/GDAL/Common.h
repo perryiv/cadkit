@@ -8,6 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef __GDAL_COMMON_H__
+#define __GDAL_COMMON_H__
+
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "ogr_api.h"
@@ -51,3 +54,6 @@ namespace Detail
     }
   };
 }
+
+
+#endif // __GDAL_COMMON_H__

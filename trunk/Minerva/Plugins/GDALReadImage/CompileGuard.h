@@ -1,0 +1,24 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  This header file should not be included in client code.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _GDAL_READ_IMAGE_COMPILE_GUARD_H_
+#define _GDAL_READ_IMAGE_COMPILE_GUARD_H_
+
+#ifndef _COMPILING_GDAL_READ_IMAGE
+# error "This header file is only used for compiling the library."
+# error "It should not be included in client code."
+#endif
+
+#endif // _GDAL_READ_IMAGE_COMPILE_GUARD_H_

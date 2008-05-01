@@ -784,7 +784,6 @@ void ModelPresentationDocument::prevStep ()
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Go to the next group in the set
@@ -823,6 +822,52 @@ void ModelPresentationDocument::firstStep ()
       this->_checkTime( true );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the specific timeline set to <time>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::setStep ( unsigned int time )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Set the global time to 0 for text updating
+  if( time > _globalCurrentTime )
+     _globalCurrentTime = _globalTimelineEnd;
+  else if( time < 0 )
+    _globalCurrentTime = 0;
+  else
+    _globalCurrentTime = time;
+
+  for( unsigned int i = 0; i < _timeSets.size(); ++i )
+  {
+    if( false == this->isAnimating() )
+    {
+      if( true == _useTimeLine )
+      {
+        if( _timeSets.at( i ).currentTime <= _globalTimelineEnd )
+          _timeSets.at( i ).currentTime = _globalCurrentTime;
+      }
+    }
+  }
+  for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
+  {
+   if( true == _useDynamic )
+    {
+      for( unsigned int j = 0; j < _dynamicSets.at( i ).models->getNumChildren(); ++j )
+      {
+        _dynamicSets.at( i ).models->setValue( j, false );
+      }
+       if( _dynamicSets.at( i ).currentTime <= _globalTimelineEnd )
+        _dynamicSets.at( i ).currentTime = _globalCurrentTime;
+    }
+  }
+  
 }
 
 

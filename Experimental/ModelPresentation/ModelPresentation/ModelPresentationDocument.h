@@ -32,6 +32,7 @@
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IMpdWriter.h"
+#include "Usul/Interfaces/ITimeVaryingData.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -55,7 +56,8 @@ class ModelPresentationDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IUpdateListener,
                                   public Usul::Interfaces::IMpdNavigator,
                                   public Usul::Interfaces::IMenuAdd,
-                                  public Usul::Interfaces::IMpdWriter 
+                                  public Usul::Interfaces::IMpdWriter,
+                                  public Usul::Interfaces::ITimeVaryingData
 {
 public:
  
@@ -169,6 +171,11 @@ public:
   virtual void                    write() const;
   virtual void                    write( const std::string &filename ) const;
 
+  /// Usul::Interfaces::ITimeVaryingData
+  virtual void                    setCurrentTimeStep ( unsigned int current );
+  virtual unsigned int            getCurrentTimeStep() const;
+  
+  virtual unsigned int            getNumberOfTimeSteps() const;
  
 protected:
 

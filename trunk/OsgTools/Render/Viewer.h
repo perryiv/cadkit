@@ -35,7 +35,6 @@
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/IClippingPlanes.h"
-#include "Usul/Interfaces/IViewer.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/ISceneIntersect.h"

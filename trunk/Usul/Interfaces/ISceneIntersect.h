@@ -20,7 +20,6 @@
 
 namespace osg { class Node; };
 namespace osgUtil { class Hit; };
-namespace FX { struct FXEvent; };
 
 namespace Usul {
 namespace Interfaces {

@@ -28,7 +28,6 @@ namespace Interfaces {
 
   struct IWindow;
   struct IView;
-  struct IViewer;
 
 struct IDocument : public Usul::Interfaces::IUnknown
 {

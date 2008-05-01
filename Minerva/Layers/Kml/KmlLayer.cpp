@@ -48,6 +48,7 @@
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
+#include "Usul/Strings/Trim.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
@@ -119,14 +120,14 @@ KmlLayer::KmlLayer() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory ) :
+KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles ) :
   BaseClass(),
   _filename( filename ),
   _directory( directory ),
   _link ( 0x0 ),
   _lastUpdate( 0.0 ),
   _flags ( 0 ),
-	_styles()
+	_styles( styles )
 {
   this->_addMember ( "filename", _filename );
   this->_parseFolder ( node );
@@ -140,14 +141,14 @@ KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename, cons
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::KmlLayer( Link* link ) :
+KmlLayer::KmlLayer( Link* link, const Styles& styles ) :
   BaseClass(),
   _filename(),
   _directory(),
   _link ( link ),
   _lastUpdate ( 0.0 ),
   _flags ( 0 ),
-	_styles()
+	_styles( styles )
 {
   this->_addMember ( "filename", _filename );
 
@@ -321,8 +322,15 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   // For now treat documents as folders.
   else if ( "Folder" == name || "Document" == name )
   {
+    // Get the filename and directory.
+    const std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
+    const std::string directory ( Usul::Threads::Safe::get ( this->mutex(), _directory ) );
+
+    // Get the current styles map.
+    Styles styles ( Usul::Threads::Safe::get ( this->mutex(), _styles ) );
+
     // Make a new layer.
-    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( new Minerva::Layers::Kml::KmlLayer ( node, Usul::Threads::Safe::get ( this->mutex(), _filename ), _directory ) );
+    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( new Minerva::Layers::Kml::KmlLayer ( node, filename, directory, styles ) );
     
     // Make sure the scene gets built.
     layer->dirtyScene ( true );
@@ -338,7 +346,11 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
       Link::RefPtr link ( networkLink->link() );
       if ( link.valid() )
       {
-        KmlLayer::RefPtr layer ( new KmlLayer ( link.get() ) );
+        // Get the current styles map.
+        Styles styles ( Usul::Threads::Safe::get ( this->mutex(), _styles ) );
+
+        // Make a new layer.
+        KmlLayer::RefPtr layer ( new KmlLayer ( link.get(), styles ) );
         layer->read ( 0x0, 0x0 );
         this->add ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
       }
@@ -1087,9 +1099,13 @@ Style* KmlLayer::_style ( const std::string& url )
 	if ( true == url.empty() )
 		return 0x0;
 
-	if ( '#' == url[0] )
+  const bool hasHttp ( boost::algorithm::find_first ( url, "http://" ) );
+  const bool local ( '#' == url[0] || false == hasHttp );
+
+	if ( local )
 	{
-		std::string name ( url.begin() + 1, url.end() );
+    std::string name ( url );
+    Usul::Strings::trimLeft ( name, '#' );
 		Styles::const_iterator iter ( _styles.find ( name ) );
 		return ( iter != _styles.end() ? iter->second.get() : 0x0 );
 	}

@@ -690,3 +690,14 @@ std::string DataObject::getTreeNodeName() const
   USUL_TRACE_SCOPE;
   return ( false == this->name().empty() ? this->name() : this->label() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  DataObject has been clicked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::clicked() const
+{
+}

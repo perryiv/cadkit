@@ -76,6 +76,9 @@ public:
   void                  altitudeMode ( AltitudeMode mode );
   AltitudeMode          altitudeMode () const;
 
+  /// DataObject has been clicked.
+  virtual void          clicked() const;
+
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
   void                  preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );

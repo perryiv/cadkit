@@ -73,6 +73,7 @@ IF(BUILD_MINERVA)
     ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
     ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
     ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
+    ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage
     ${CADKIT_INC_DIR}/Minerva/Application
     )
 ENDIF(BUILD_MINERVA)

@@ -24,6 +24,34 @@
 
 #include "gdal.h"
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize Gdal.
+//  On Linux each dynamic library that uses GDAL, has to initialize GDAL.  
+//  Need to find out why.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef __linux
+
+namespace Detail
+{
+  struct Init
+  {
+    Init()
+    {
+      GDALAllRegister();
+    }
+    ~Init()
+    {
+      GDALDestroyDriverManager();
+    }
+  } _init;
+}
+
+#endif
+
+
 #include <vector>
 #include <fstream>
 #include <iostream>

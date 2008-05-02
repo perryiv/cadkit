@@ -20,6 +20,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
 
+#include "Usul/Interfaces/IReadImageFile.h"
+
 #include <map>
 #include <string>
 
@@ -35,6 +37,7 @@ public:
 
   typedef RasterLayer BaseClass;
   typedef std::map < std::string, std::string > Options;
+  typedef Usul::Interfaces::IReadImageFile IReadImageFile;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayerWms );
 
@@ -50,6 +53,9 @@ public:
   /// Get/Set the default cache directory.
   static void           defaultCacheDirectory ( const std::string& );
   static std::string    defaultCacheDirectory();
+  
+  /// Deserialize.
+  virtual void          deserialize ( const XmlTree::Node& node );
   
   /// Set/get the options map.
   void                  options ( const Options& options );
@@ -79,8 +85,12 @@ private:
   std::string           _cacheDirectory() const;
 
   void                  _destroy();
+  
+  void                  _findImageReader();
 
   std::string           _getAllOptions() const;
+  
+  ImagePtr              _readImageFile ( const std::string& filename ) const;
   
   void                  _registerMembers();
 
@@ -92,8 +102,11 @@ private:
   bool _useNetwork;
   bool _writeFailedFlags;
   bool _readFailedFlags;
+  IReadImageFile::RefPtr _reader;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayerWms );
+  SERIALIZE_XML_CLASS_NAME ( RasterLayerWms );
+  SERIALIZE_XML_SERIALIZE_FUNCTION
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
 

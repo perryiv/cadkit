@@ -14,13 +14,14 @@ ENDIF( USUL_TRACING )
 
 #######################################################
 #
-#  No need to define _DEBUG and NDEBUG.  Cmake defines these.
+#  No need to define NDEBUG.  Cmake defines these.
 #
 #######################################################
 
 # Add _DEBUG definition is it's debug.
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 SET(CMAKE_DEBUG_POSTFIX d)
+ADD_DEFINITIONS("-D_DEBUG")
 ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # A macro for linking to other cadkit libraries.

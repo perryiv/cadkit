@@ -79,6 +79,9 @@ public:
 
   /// Add the view to the document.
   virtual void                addView ( Usul::Interfaces::IView *view );
+  
+  /// Get this as an IUnknown.
+	virtual Usul::Interfaces::IUnknown*   asUnknown();
 
   /// Usul::Interfaces::IRenderListener inherited from base class.
   virtual void                postRenderNotify ( Unknown *caller );

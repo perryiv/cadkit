@@ -231,7 +231,7 @@ unsigned long Referenced::refCount() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* Referenced::asUnknown() const
+Usul::Interfaces::IUnknown* Referenced::asUnknown()
 {
 	return 0x0;
 }

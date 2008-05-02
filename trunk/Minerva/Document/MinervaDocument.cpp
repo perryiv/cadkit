@@ -53,6 +53,7 @@
 #include "Usul/Registry/Database.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/System/Host.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include "MenuKit/Button.h"
@@ -707,6 +708,9 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 
   // Connect.
   this->_connectToDistributedSession ();
+  
+  // The dates are dirty.
+  Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
 }
 
 

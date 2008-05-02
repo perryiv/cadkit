@@ -1052,7 +1052,7 @@ void MainWindow::loadPlugins()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////ƒ
 //
 //  Load the plugins.
 //
@@ -1194,14 +1194,19 @@ void MainWindow::updateTextWindow ( bool force )
   try
   {
     bool changed ( false );
+    
+    // Maximum number of iterations.
+    const unsigned int maxIterations ( Reg::instance()[Sections::TEXT_WINDOW][Keys::MAXIMUM_ITERATIONS].get<unsigned int> ( 5 ) );
+    unsigned int iterations ( 0 );
 
     // Loop over all strings in the queue. The queue has an internal mutex.
-    while ( false == _textWindow.second->empty() )
+    while ( false == _textWindow.second->empty() && iterations < maxIterations )
     {
       // Append the new string.
       const std::string s ( _textWindow.second->next() );
       _textWindow.first->append ( s.c_str() );
       changed = true;
+      ++iterations;
     }
 
     // Force a GUI update now if we should.

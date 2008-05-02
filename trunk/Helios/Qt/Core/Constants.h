@@ -57,6 +57,7 @@ namespace CadKit
 
           // Misc.
           const std::string MAXIMUM_BLOCK_COUNT       ( "maximum_block_count" );
+          const std::string MAXIMUM_ITERATIONS        ( "maximum_iterations" );
         }
 
         namespace Defaults

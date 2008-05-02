@@ -122,7 +122,8 @@ bool GDALReadImageDocument::canInsert ( const std::string &file ) const
 bool GDALReadImageDocument::canOpen ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
-  return false;
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
+  return ( "jpg" == ext || "gif" == ext || "tif" == ext || "tiff" == ext || "png" == ext );
 }
 
 
@@ -135,8 +136,7 @@ bool GDALReadImageDocument::canOpen ( const std::string &file ) const
 bool GDALReadImageDocument::canSave ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( "jpg" == ext || "gif" == ext || "tif" == ext || "tiff" == ext || "png" == ext );
+  return false;
 }
 
 

@@ -24,6 +24,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
@@ -74,13 +75,17 @@ RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &u
   _dir              ( RasterLayerWms::defaultCacheDirectory() ),
   _useNetwork       ( true ),
   _writeFailedFlags ( false ),
-  _readFailedFlags  ( false )
+  _readFailedFlags  ( false ),
+  _reader           ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
   this->extents ( maxExtents );
 
   this->_registerMembers();
+  
+  // Find a reader.
+  this->_findImageReader();
 }
 
 
@@ -97,9 +102,13 @@ RasterLayerWms::RasterLayerWms ( const RasterLayerWms& rhs ) :
   _dir ( rhs._dir ),
   _useNetwork ( rhs._useNetwork ),
   _writeFailedFlags ( rhs._writeFailedFlags ),
-  _readFailedFlags ( rhs._readFailedFlags )
+  _readFailedFlags ( rhs._readFailedFlags ),
+  _reader          ( 0x0 )
 {
   this->_registerMembers();
+  
+  // Find a reader.
+  this->_findImageReader();
 }
 
 
@@ -305,7 +314,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   }
 
   // Load the file.
-  ImagePtr image ( osgDB::readImageFile ( file ) );
+  ImagePtr image ( this->_readImageFile ( file ) );
 
   // See if the job has been cancelled.
   if ( ( 0x0 != job ) && ( true == job->canceled() ) )
@@ -514,6 +523,9 @@ void RasterLayerWms::options ( const Options& options )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _options = options;
+  
+  // Find a reader.
+  this->_findImageReader();
 }
 
 
@@ -556,4 +568,71 @@ std::string RasterLayerWms::url() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _url;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find a reader for our format.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerWms::_findImageReader()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  
+  // Clear the one we have.
+  _reader = 0x0;
+  
+  std::string format ( _options[Usul::Network::Names::FORMAT] );
+  std::string ext ( ( format.size() > 6 && '/' == format.at(5) ) ? std::string ( format.begin() + 6, format.end() ) : format );
+  ext = ( ( "jpeg" == ext ) ? "jpg" : ext );
+  
+  // Typedefs to shorten the lines.
+  typedef Usul::Documents::Manager DocManager;
+  typedef DocManager::Documents Documents;
+  
+  Documents docs ( DocManager::instance().create ( "." + ext, 0x0, true, false ) );
+  
+  // Only use png this way for now.
+  if ( false == docs.empty() && "png" == ext )
+    _reader = Usul::Interfaces::IReadImageFile::QueryPtr ( docs.front() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read an image file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerWms::ImagePtr RasterLayerWms::_readImageFile ( const std::string& filename ) const
+{
+  USUL_TRACE_SCOPE;
+  
+  IReadImageFile::RefPtr reader ( Usul::Threads::Safe::get ( this->mutex(), _reader ) );
+  
+  if ( reader.valid() )
+    return reader->readImageFile ( filename );
+  
+  // Fall back on OSG if we don't have a reader.
+  return osgDB::readImageFile ( filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerWms::deserialize ( const XmlTree::Node& node )
+{
+  USUL_TRACE_SCOPE;
+  
+  BaseClass::deserialize ( node );
+  
+  // Find a reader.
+  this->_findImageReader();
 }

@@ -33,7 +33,6 @@ class GDALReadImageDocument : public Usul::Documents::Document,
 public:
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
-  typedef std::vector< osg::Vec3 > Positions;
  
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( GDALReadImageDocument );

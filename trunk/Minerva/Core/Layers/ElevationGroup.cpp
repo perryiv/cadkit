@@ -103,14 +103,26 @@ namespace Detail
     DstType       *dst ( reinterpret_cast < DstType* >       ( image.data() ) );
     const SrcType *src ( reinterpret_cast < const SrcType* > ( data.data()  ) );
     
+    // Get the pixel format.
+    const GLenum pixelFormat ( image.getPixelFormat() );
+    
+    // Does this image have alpha?
+    const bool hasAlpha ( GL_RGBA == pixelFormat || GL_LUMINANCE_ALPHA == pixelFormat );
+    
+    // The offset amount.
+    const unsigned int offset ( hasAlpha ? 2 : 1 );
+    
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      SrcType value ( *src );
-      *dst = static_cast<DstType> ( value );
+      const SrcType alpha ( hasAlpha ? ( ( 0.0 == src[1] ) ? 0.0 : 1.0 ) : 1.0 );
       
-      ++dst;
-      ++src;
+      SrcType value ( *src );
+      dst[0] = static_cast<DstType> ( value );
+      dst[1] = alpha * std::numeric_limits<DstType>::max();
+
+      dst += 2;
+      src += offset;
     }
   }
 }
@@ -169,7 +181,7 @@ void ElevationGroup::_compositeImages ( osg::Image& result, const osg::Image& im
   else
   {
     ImagePtr convert ( new osg::Image );
-    convert->allocateImage ( image.s(), image.t(), 1, GL_LUMINANCE, GL_FLOAT );
+    convert->allocateImage ( image.s(), image.t(), 1, GL_LUMINANCE_ALPHA, GL_FLOAT );
     ::memset ( convert->data(), 0, convert->getImageSizeInBytes() );
     
     switch ( image.getDataType() )

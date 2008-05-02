@@ -122,7 +122,16 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::QueryPointer 
   }
   static ObjectType *create ( const std::string &typeName )
   {
-    ObjectType * object ( dynamic_cast < ObjectType* > ( Factory::instance().create ( typeName ) ) );
+    Usul::Base::Referenced *referenced ( Factory::instance().create ( typeName ) );
+    
+    if ( 0x0 != referenced )
+    {
+      PointerType unknown ( referenced->asUnknown() );
+      if ( unknown.valid() )
+        return unknown.release();
+    }
+    
+    ObjectType * object ( dynamic_cast < ObjectType* > ( referenced ) );
     return object;
   }
   static void deserialize ( const XmlTree::Node &node, PointerType &value )

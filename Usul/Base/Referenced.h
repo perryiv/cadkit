@@ -39,7 +39,7 @@ public:
   USUL_DECLARE_TYPE_ID ( Referenced );
 
 	/// Get this referenced as an IUnknown.  May return null.
-	virtual Usul::Interfaces::IUnknown*   asUnknown() const;
+	virtual Usul::Interfaces::IUnknown*   asUnknown();
 
   /// Reference the instance.
   void                        ref();

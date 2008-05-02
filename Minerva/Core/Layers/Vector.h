@@ -55,7 +55,7 @@ public:
   typedef std::vector< DataObjectPtr >	            DataObjects;
   typedef Usul::Interfaces::ILayer                  ILayer;
   typedef Usul::Interfaces::IUnknown                IUnknown;
-  typedef std::vector<ILayer::QueryPtr>             Unknowns;
+  typedef std::vector<IUnknown::QueryPtr>           Unknowns;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Vector );
@@ -70,6 +70,9 @@ public:
   };
   
   Vector();
+  
+  /// Get this as an IUnknown.
+	virtual IUnknown*           asUnknown();
   
   /// Accept the visitor.
   virtual void                accept ( Minerva::Core::Visitor& visitor );

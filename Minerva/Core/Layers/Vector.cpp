@@ -664,3 +664,15 @@ void Vector::deserialize ( const XmlTree::Node &node )
     _builders.add ( *iter );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get this as an IUnknown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Vector::asUnknown()
+{
+  return this->queryInterface( Usul::Interfaces::IUnknown::IID );
+}

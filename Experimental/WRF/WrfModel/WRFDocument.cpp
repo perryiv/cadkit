@@ -1530,3 +1530,15 @@ std::string WRFDocument::getTreeNodeName() const
 {
   return this->name();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get this as an IUnknown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* WRFDocument::asUnknown()
+{
+  return this->queryInterface( Usul::Interfaces::IUnknown::IID );
+}

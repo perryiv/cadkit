@@ -36,6 +36,7 @@
 #include "OsgTools/Render/EventAdapter.h"
 #include "OsgTools/Render/Constants.h"
 #include "OsgTools/Render/ClampProjection.h"
+#include "OsgTools/Render/FBOScreenCapture.h"
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/Utilities/DirtyBounds.h"
 #include "OsgTools/Utilities/ReferenceFrame.h"
@@ -51,6 +52,7 @@
 #include "Usul/Errors/Checker.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
+#include "Usul/Convert/Vector2.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/Functions.h"
 #include "Usul/Math/NaN.h"
@@ -1591,7 +1593,18 @@ double Viewer::_animationTime()
 void Viewer::_dumpFrame()
 {
   if ( _frameDump.dump() )
+  {
+#if 1
+
     this->writeImageFile ( _frameDump.file() );
+
+#else // Better for the long-term, but no anti-aliasing yet...
+
+    this->_writeImageFile ( _frameDump.file(), 
+                            static_cast<unsigned int> ( this->width() ), 
+                            static_cast<unsigned int> ( this->height() ) );
+#endif
+  }
 }
 
 
@@ -1661,6 +1674,9 @@ bool Viewer::_writeImageFile ( const std::string &filename ) const
 
 bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, unsigned int height ) const
 {
+  if ( 0x0 == this->viewer() )
+    return false;
+
   // Get non const pointer to this
   Viewer *me ( const_cast < Viewer * > ( this ) );
 
@@ -1668,11 +1684,31 @@ bool Viewer::_writeImageFile ( const std::string &filename, unsigned int width, 
   if ( _context.valid() )
     me->_context->makeCurrent();
 
-  // Capture image.
-  osg::ref_ptr<osg::Image> image ( me->_renderer->screenCapture ( this->getViewMatrix(), width, height ) );
+  // Initialize the image.
+  osg::ref_ptr<osg::Image> image ( 0x0 );
+
+  // Get size of frame buffer object.
+  const Usul::Math::Vec2ui maxSize 
+    ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::FRAME_BUFFER_OBJECT_SIZE].get<Usul::Math::Vec2ui> 
+      ( Usul::Math::Vec2ui ( 4096, 4096 ) ) );
+
+  // Can we use the frame-buffer object?
+  if ( ( width <= maxSize[0] ) && ( height <= maxSize[1] ) )
+  {
+    OsgTools::Render::FBOScreenCapture fbo;
+    fbo.size ( width, height );
+    fbo.viewMatrix ( this->getViewMatrix() );
+    image = fbo ( *(me->viewer()), this->viewer()->getProjectionMatrix() );
+  }
+
+  // Otherwise, tile.
+  else
+  {
+    image = me->_renderer->screenCapture ( this->getViewMatrix(), width, height );
+  }
 
   // Write the image to file.
-  return osgDB::writeImageFile ( *image, filename );
+  return ( ( true == image.valid() ) ? osgDB::writeImageFile ( *image, filename ) : false );
 }
 
 

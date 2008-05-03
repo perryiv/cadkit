@@ -19,6 +19,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Scope/Caller.h"
+#include "Usul/System/Environment.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,55 +88,7 @@ namespace Helper
 
 namespace Helper
 {
-  inline void makeLink ( XmlTree::Node::ValidRefPtr node, Usul::Registry::Node &site )
-  {
-    if ( "link" != node->name() )
-      return;
-
-    // Always clear the children.
-    typedef XmlTree::Node::Children Children;
-    Usul::Scope::Caller::RefPtr clear
-      ( Usul::Scope::makeCaller
-        ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
-
-    // Get the name of the link.
-    const std::string name ( node->child ( "name", true )->value() );
-    if ( true == name.empty() )
-      return;
-
-    // Get the text inside the link.
-    const std::string text ( node->child ( "text", true )->value() );
-    if ( true == text.empty() )
-      return;
-
-    // Get the url.
-    const std::string href ( site["links"][name]["href"].get ( "" ) );
-    if ( true == href.empty() )
-      return;
-
-    const std::string target ( site["links"][name]["target"].get ( "" ) );
-
-    // Make the node into a link.
-    node->value ( text );
-    node->name ( "a" );
-    node->attributes()["href"] = href;
-
-    // Is it an external link?
-    if ( false == target.empty() )
-      node->attributes()["target"] = target;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper function to translate the node's value.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  inline void makeImage ( XmlTree::Node::ValidRefPtr node, Usul::Registry::Node &site )
+  inline void makeImage ( XmlTree::Node::ValidRefPtr node, Usul::Registry::Node &site, const std::string &fileTagName = "file" )
   {
     if ( "image" != node->name() )
       return;
@@ -152,7 +105,7 @@ namespace Helper
       return;
 
     // Get the src.
-    const std::string src ( site["images"][name]["file"].get ( "" ) );
+    const std::string src ( site["images"][name][fileTagName].get ( "" ) );
     if ( true == src.empty() )
       return;
 
@@ -170,6 +123,84 @@ namespace Helper
     // Is there alternative text?
     if ( false == alt.empty() )
       node->attributes()["alt"] = alt;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to translate the node's value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline void makeLink ( XmlTree::Node::ValidRefPtr node, Usul::Registry::Node &site )
+  {
+    if ( "link" != node->name() )
+      return;
+
+    // Always clear the children.
+    typedef XmlTree::Node::Children Children;
+    Usul::Scope::Caller::RefPtr clear
+      ( Usul::Scope::makeCaller
+        ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
+
+    // Get the name of the link.
+    const std::string name ( node->child ( "name", true )->value() );
+    if ( true == name.empty() )
+      return;
+
+    // Make the node into a link.
+    node->name ( "a" );
+    node->value ( node->child ( "text", true )->value() );
+
+    // Set the url.
+    {
+      const std::string href ( site["links"][name]["href"].get ( "" ) );
+      if ( false == href.empty() )
+        node->attributes()["href"] = href;
+    }
+
+    // Are we linking to an image?
+    {
+      const std::string image ( site["links"][name]["image"].get ( "" ) );
+      if ( false == image.empty() )
+      {
+        const std::string domain ( Functions::urlDomain ( true ) );
+        const std::string dir  ( Functions::directory ( site["images"]["directory"].get ( "" ) ) );
+        const std::string file ( site["images"][name]["file"].get ( "" ) );
+        const std::string href ( Usul::Strings::format ( domain, dir, file ) );
+        node->attributes()["href"] = href;
+      }
+    }
+
+    // Is it an external link?
+    {
+      const std::string target ( site["links"][name]["target"].get ( "" ) );
+      if ( false == target.empty() )
+        node->attributes()["target"] = target;
+    }
+
+    // Is this an image link?
+    {
+      XmlTree::Node::ValidRefPtr image ( node->child ( "image", true ) );
+      if ( false == image->value().empty() )
+      {
+        // Clear children now.
+        clear = 0x0;
+
+        // Make the correct xml tree.
+        image->append ( "name", image->value() );
+        image->value ( "" );
+
+        // Make the image.
+        Helper::makeImage ( image, site, "thumb" );
+
+        // Add image back to node.
+        node->append ( image );
+      }
+    }
   }
 }
 

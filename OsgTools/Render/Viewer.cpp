@@ -53,6 +53,7 @@
 #include "Usul/Convert/Convert.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/Functions.h"
+#include "Usul/Math/NaN.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Registry/Constants.h"
 
@@ -119,6 +120,14 @@ typedef Usul::Registry::Database Reg;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Viewer, Viewer::BaseClass );
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  NaN convienence function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+USUL_DECLARE_NAN_VEC3 ( osg::Vec3f );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3128,8 +3137,11 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec
     pt1 = osg::Vec3 ( x, y,  1 ) * IMP;
   }
 
-  // It worked.
-  return true;
+  // Are the numbers valid?
+  const bool valid ( ( false == Usul::Math::nan ( pt0 ) ) && ( false == Usul::Math::nan ( pt1 ) ) );
+
+  // It worked if the values are valid.
+  return valid;
 }
 
 

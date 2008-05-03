@@ -1081,6 +1081,7 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   sizes.push_back ( Size ( 1024, 768 ) );
   sizes.push_back ( Size ( 1280, 720 ) );
   sizes.push_back ( Size ( 1920, 1080 ) );
+  sizes.push_back ( Size ( 4200, 1050 ) );
 
   // Make the menu of common sizes.
   MenuKit::Menu::RefPtr size ( new MenuKit::Menu ( "Size" ) );

@@ -1158,37 +1158,25 @@ void MainWindow::hideSplashScreen()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::_updateTextWindow()
-{
-  USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  this->updateTextWindow ( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the text window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void MainWindow::updateTextWindow ( bool force )
 {
   USUL_TRACE_SCOPE;
-
-  // If this is not the GUI thread then re-direct.
-  if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
-  {
-    QMetaObject::invokeMethod ( this, "_updateTextWindow", Qt::QueuedConnection );
-    return;
-  }
-
-  // If we get this far it should be the gui thread.
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  
+  // Return now if queue is empty.
+  if ( true == _textWindow.second->empty() )
+    return;
 
   // Handle no text window.
   if ( 0x0 == _textWindow.first )
     return;
+  
+  // Return now if the window is hidden.
+  if ( false == _textWindow.first->isVisible() )
+  {
+    _textWindow.second->clear();
+    return;
+  }
 
   // Don't allow this to throw because it may create an infinite loop.
   try
@@ -1239,6 +1227,9 @@ void MainWindow::_idleProcess()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
+  
+  // Tell window to refresh.
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), true );
 }
 
 
@@ -1455,9 +1446,6 @@ void MainWindow::notify ( Usul::Interfaces::IUnknown *caller, const char *values
 
     // Append text.
     this->textWindowAppend ( s );
-
-    // Tell window to refresh.
-    this->updateTextWindow ( true );
   }
 }
 

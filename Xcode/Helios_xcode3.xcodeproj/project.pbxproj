@@ -394,6 +394,9 @@
 		6603BBE90DCBB04300FE0D89 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		6603BBEA0DCBB04D00FE0D89 /* QtPasswordPrompt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plugd */; };
 		6603BBFB0DCBB16300FE0D89 /* moc_PasswordPromptComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6603BBFA0DCBB16300FE0D89 /* moc_PasswordPromptComponent.cpp */; };
+		6603BD3F0DCBC6CD00FE0D89 /* newDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A30D124D2C002F40C6 /* newDocument.png */; };
+		6603BD400DCBC6CD00FE0D89 /* openDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A40D124D2C002F40C6 /* openDocument.png */; };
+		6603BD410DCBC6CD00FE0D89 /* saveDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A50D124D2C002F40C6 /* saveDocument.png */; };
 		660C4D9B0D53DD3A0072942F /* ResizePoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 660C4D990D53DD3A0072942F /* ResizePoints.cpp */; };
 		660C4D9C0D53DD3A0072942F /* ResizePoints.h in Headers */ = {isa = PBXBuildFile; fileRef = 660C4D9A0D53DD3A0072942F /* ResizePoints.h */; };
 		660D05D00D1B2CE600420497 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
@@ -2767,6 +2770,9 @@
 			dstPath = icons;
 			dstSubfolderSpec = 7;
 			files = (
+				6603BD3F0DCBC6CD00FE0D89 /* newDocument.png in Copy Files Icons */,
+				6603BD400DCBC6CD00FE0D89 /* openDocument.png in Copy Files Icons */,
+				6603BD410DCBC6CD00FE0D89 /* saveDocument.png in Copy Files Icons */,
 				66C4E92E0DAAE43000A3B1FB /* compassring.png in Copy Files Icons */,
 				66C4E92F0DAAE43000A3B1FB /* compassrose.png in Copy Files Icons */,
 				66C4E9310DAAE43000A3B1FB /* minerva_icon.png in Copy Files Icons */,
@@ -3363,7 +3369,6 @@
 		6603B87E0DCBAFEE00FE0D89 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		6603B87F0DCBAFEE00FE0D89 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
 		6603B8800DCBAFEE00FE0D89 /* PasswordPrompt.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PasswordPrompt.vcproj; sourceTree = "<group>"; };
-		6603B8810DCBAFEE00FE0D89 /* PasswordPrompt.vcproj.ADAMKUBACH3114.Administrator.user */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PasswordPrompt.vcproj.ADAMKUBACH3114.Administrator.user; sourceTree = "<group>"; };
 		6603B8820DCBAFEE00FE0D89 /* PasswordPromptComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PasswordPromptComponent.cpp; sourceTree = "<group>"; };
 		6603B8830DCBAFEE00FE0D89 /* PasswordPromptComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordPromptComponent.h; sourceTree = "<group>"; };
 		6603BBFA0DCBB16300FE0D89 /* moc_PasswordPromptComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_PasswordPromptComponent.cpp; sourceTree = "<group>"; };
@@ -6612,7 +6617,6 @@
 				6603B87E0DCBAFEE00FE0D89 /* CompileGuard.h */,
 				6603B87F0DCBAFEE00FE0D89 /* Export.def */,
 				6603B8800DCBAFEE00FE0D89 /* PasswordPrompt.vcproj */,
-				6603B8810DCBAFEE00FE0D89 /* PasswordPrompt.vcproj.ADAMKUBACH3114.Administrator.user */,
 				6603B8820DCBAFEE00FE0D89 /* PasswordPromptComponent.cpp */,
 				6603B8830DCBAFEE00FE0D89 /* PasswordPromptComponent.h */,
 			);

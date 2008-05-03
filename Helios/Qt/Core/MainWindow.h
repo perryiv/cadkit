@@ -231,8 +231,6 @@ private slots:
 
   void                              _notifyDocumentFinishedLoading ( DocumentProxy proxy );
 
-  void                              _updateTextWindow();
-
 private:
 
   typedef std::queue<std::string> StringQueue;

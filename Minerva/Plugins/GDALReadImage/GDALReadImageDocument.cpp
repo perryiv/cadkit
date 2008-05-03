@@ -151,7 +151,7 @@ bool GDALReadImageDocument::canOpen ( const std::string &file ) const
 {
   USUL_TRACE_SCOPE;
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( "jpg" == ext || "gif" == ext || "tif" == ext || "tiff" == ext || "png" == ext );
+  return ( /*"jpg" == ext ||*/ "gif" == ext || "tif" == ext || "tiff" == ext || "png" == ext );
 }
 
 

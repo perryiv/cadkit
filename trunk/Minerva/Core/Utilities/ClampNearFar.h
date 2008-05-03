@@ -43,36 +43,35 @@ namespace Utilities {
   protected:
     
     template < class Matrix > bool _common ( Matrix &projection, double &zNear, double &zFar ) const
-    {
-      //std::cout << "Clamping projection." << std::endl;
-      
+    {     
       if ( zNear <= 0 )
       {
         zNear = 10;
       }
-      //else
-      //  zNear = zNear * 0.50;
-      
-      //zFar = zFar * 0.90;
-#if 1
+
       typedef typename Matrix::value_type value_type;
       
-      value_type trans_near_plane = (-zNear*projection(2,2)+projection(3,2))/(-zNear*projection(2,3)+projection(3,3));
-      value_type trans_far_plane = (-zFar*projection(2,2)+projection(3,2))/(-zFar*projection(2,3)+projection(3,3));
+      const value_type trans_near_plane = (-zNear*projection(2,2)+projection(3,2))/(-zNear*projection(2,3)+projection(3,3));
+      const value_type trans_far_plane = (-zFar*projection(2,2)+projection(3,2))/(-zFar*projection(2,3)+projection(3,3));
       
-      value_type ratio = fabs(2.0/(trans_near_plane-trans_far_plane));
-      value_type center = -(trans_near_plane+trans_far_plane)/2.0;
+      const value_type difference ( trans_near_plane - trans_far_plane );
       
-      projection.postMult(osg::Matrix(1.0f,0.0f,0.0f,0.0f,
+      if ( 0.0 != difference )
+      {
+        value_type ratio = fabs ( 2.0 / ( difference ) );
+        value_type center = -(trans_near_plane+trans_far_plane) / 2.0;
+      
+        projection.postMult(osg::Matrix(1.0f,0.0f,0.0f,0.0f,
                                       0.0f,1.0f,0.0f,0.0f,
                                       0.0f,0.0f,ratio,0.0f,
                                       0.0f,0.0f,center*ratio,1.0f));
       
-      return true;
-#else
+        return true;
+      }
+      
       // Ask cull-visitor to clamp the projection matrix.
-      return _cv.clampProjectionMatrixImplementation ( projection, zNear, zFar );
-#endif
+      else
+        return _cv.clampProjectionMatrixImplementation ( projection, zNear, zFar );
     }
     
     osgUtil::CullVisitor &_cv;

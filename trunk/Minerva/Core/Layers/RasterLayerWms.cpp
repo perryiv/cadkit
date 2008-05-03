@@ -594,9 +594,7 @@ void RasterLayerWms::_findImageReader()
   typedef DocManager::Documents Documents;
   
   Documents docs ( DocManager::instance().create ( "." + ext, 0x0, true, false ) );
-  
-  // Only use png this way for now.
-  if ( false == docs.empty() && "png" == ext )
+  if ( false == docs.empty() )
     _reader = Usul::Interfaces::IReadImageFile::QueryPtr ( docs.front() );
 }
 

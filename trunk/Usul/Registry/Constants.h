@@ -67,6 +67,7 @@ namespace Usul
       const std::string RENDER_LOOP               ( "render_loop" );
       const std::string TRACKBALL                 ( "trackball" );
       const std::string SEEK_NUM_STEPS            ( "seek_num_steps" );
+      const std::string FRAME_BUFFER_OBJECT_SIZE  ( "frame_buffer_object_size" );
     };
   };
 };

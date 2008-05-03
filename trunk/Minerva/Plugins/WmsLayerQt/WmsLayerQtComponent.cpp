@@ -99,7 +99,7 @@ Usul::Interfaces::IUnknown *WmsLayerQtComponent::queryInterface ( unsigned long 
 
 std::string WmsLayerQtComponent::getPluginName() const 
 {
-  return "Wms Layer Qt GUI";
+  return "WMS Layer Qt GUI";
 }
 
 
@@ -124,7 +124,7 @@ QWidget* WmsLayerQtComponent::layerAddGUI ( Usul::Interfaces::IUnknown *caller )
 
 std::string WmsLayerQtComponent::name() const 
 {
-  return "Wms";
+  return "WMS";
 }
 
 

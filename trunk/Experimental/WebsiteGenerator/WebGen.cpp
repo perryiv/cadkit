@@ -279,9 +279,8 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   {
     // Make the table structure.
     {
-      const unsigned int numRows ( _site["tables"]["outer"]["num_rows"].get ( 3 ) );
-      const unsigned int numCols ( _site["tables"]["outer"]["num_cols"].get ( 2 ) );
-      XmlTree::Node::ValidRefPtr table ( this->_makeTable ( numRows, numCols, "outer", _matrix ) );
+      const Usul::Math::Vec2ui size ( _site["tables"]["outer"]["size"].get ( Usul::Math::Vec2ui ( 3, 2 ) ) );
+      XmlTree::Node::ValidRefPtr table ( this->_makeTable ( size[0], size[1], "outer", _matrix ) );
       body->append ( table.get() );
     }
 
@@ -325,7 +324,8 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
         XmlTree::Node::ValidRefPtr para ( menu->append ( "p" ) );
         const std::string site ( this->_queryValue ( "site" ) );
         const std::string page ( Usul::File::base ( info.second ) );
-        para->append ( this->_link ( info.first, Usul::Strings::format ( Functions::urlScript(), "?site=", site, "&page=", page ) ) );
+        para->append ( this->_link ( info.first, Usul::Strings::format 
+          ( Functions::urlScript(), "?site=", site, "&page=", page ) ) );
       }
     }
 

@@ -93,8 +93,8 @@ public:
   void                      addTile ( const Extents & );
   
   // Set/get the flag that says to allow spliting.
-  void                      freezeTiling ( bool );
-  bool                      freezeTiling() const;
+  void                      allowSplit ( bool );
+  bool                      allowSplit() const;
 
   // Set/get the flag that says to cache the tiles.
   bool                      cacheTiles() const;
@@ -125,6 +125,10 @@ public:
   // Set/get the job manager for this body.
   void                      jobManager ( Usul::Jobs::Manager * );
   Usul::Jobs::Manager *     jobManager();
+
+  // Set/get the flag that says to keep detail.
+  void                      keepDetail ( bool );
+  bool                      keepDetail() const;
 
   // Convert lat, lon, height to x,y,z.
   void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;
@@ -273,7 +277,8 @@ private:
   Tiles _deleteTiles;
   Tiles _topTiles;
   UpdateListeners _updateListeners;
-  bool _freezeTiling;
+  bool _allowSplit;
+  bool _keepDetail;
   Minerva::Core::Utilities::SkyDome::RefPtr _sky;
   unsigned int _newTexturesLastFrame;
   bool _needsRedraw;

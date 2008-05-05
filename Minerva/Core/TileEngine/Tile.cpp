@@ -25,6 +25,7 @@
 #include "Minerva/Core/Layers/RasterLayer.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Utilities/Composite.h"
+#include "Minerva/Core/Utilities/SubRegion.h"
 
 #include "OsgTools/Group.h"
 #include "OsgTools/Utilities/FindNormals.h"
@@ -450,12 +451,25 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     if ( 0x0 == cv || cv->isCulled ( *this ) )
       return;
 
-    // Check if we can split.  Don't freeze if we are waiting for a job.
-    const bool freeze ( _body->freezeTiling() && false == _tileJob.valid() );
+    // See what we are allowed to do.
+    const bool allowSplit ( _body->allowSplit() );
+    const bool keepDetail ( _body->keepDetail() );
 
-    if ( freeze && this->getNumChildren() > 0 )
+    // Do we have a high lod?
+    const bool hasDetail ( this->getNumChildren() == 2 );
+
+    // Is this the default behavoir?
+    const bool defaultMode ( true == allowSplit && false == keepDetail );
+
+    // Do we need to check if we need more detail?
+    const bool checkDetail ( true == allowSplit && true == keepDetail && false == hasDetail );
+
+    // Check if we can split.  Don't freeze if we are waiting for a job.
+    const bool splitIfNeeded ( ( false == _tileJob.valid() && this->getNumChildren() == 0 ) || true == defaultMode || true == checkDetail );
+
+    if ( false == splitIfNeeded )
     {
-      const unsigned int child ( this->getNumChildren() - 1 );
+      const unsigned int child ( ( false == allowSplit && false == keepDetail ) ? 0 : this->getNumChildren() - 1 );
       this->getChild ( child )->accept ( *cv );
     }
     // Spilt.
@@ -693,6 +707,15 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   
   // Get the data for our elevation.
   osg::ref_ptr < osg::Image > elevation ( Tile::buildRaster ( extents, size[0], size[1], level, elevationData.get(), job ) );
+
+  // See if we have valid elevation.
+  if ( false == elevation.valid() )
+  {
+    // Use a quarter of the parent's elevation for the child.
+    osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
+    if ( parentElevation.valid() )
+      elevation = Minerva::Core::Utilities::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
+  }
   
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )

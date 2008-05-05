@@ -11,6 +11,8 @@
 #ifndef __MINERVA_CORE_UTILITIES_COMPOSITE_H__
 #define __MINERVA_CORE_UTILITIES_COMPOSITE_H__
 
+#include "Minerva/Core/Utilities/SubRegion.h"
+
 #include "Usul/Functions/Color.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Math/MinMax.h"
@@ -198,7 +200,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Usul::Ma
     raster ( result, image, alphas, alpha, brightness, job );
   else
   {
-    osg::ref_ptr<osg::Image> sub ( Detail::subRegion ( image, region ) );
+    osg::ref_ptr<osg::Image> sub ( Minerva::Core::Utilities::subRegion<unsigned char> ( image, region, GL_RGBA, GL_UNSIGNED_BYTE ) );
     if ( sub.valid() )
       raster ( result, *sub, alphas, alpha, brightness, job );
   }

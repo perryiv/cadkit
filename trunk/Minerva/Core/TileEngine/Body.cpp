@@ -80,7 +80,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _deleteTiles(),
   _topTiles(),
   _updateListeners(),
-  _freezeTiling ( false ),
+  _allowSplit ( true ),
+  _keepDetail ( false ),
   _sky ( new Minerva::Core::Utilities::Atmosphere ),
   _newTexturesLastFrame ( 0 ),
   _needsRedraw ( false )
@@ -1218,11 +1219,11 @@ double Body::elevationAtLatLong ( double lat, double lon ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::freezeTiling ( bool b )
+void Body::allowSplit ( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _freezeTiling = b;
+  _allowSplit = b;
 }
 
 
@@ -1232,11 +1233,11 @@ void Body::freezeTiling ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Body::freezeTiling() const
+bool Body::allowSplit() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _freezeTiling;
+  return _allowSplit;
 }
 
 
@@ -1293,4 +1294,32 @@ bool Body::needsRedraw() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _needsRedraw;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag that says to keep detail.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::keepDetail ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _keepDetail = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flag that says to keep detail.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::keepDetail() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _keepDetail;
 }

@@ -216,8 +216,12 @@ public:
   Body*                                    activeBody() const;
   
   /// Toggle the freeze split flag.
-  bool                                     isFreezeTiling() const;
-  void                                     freezeTiling( bool b );
+  bool                                     isAllowSplit() const;
+  void                                     allowSplit( bool b );
+
+  /// Toggle the keep detail.
+  bool                                     isKeepDetail() const;
+  void                                     keepDetail ( bool b );
   
 protected:
   virtual ~MinervaDocument();
@@ -365,7 +369,8 @@ private:
   unsigned int _height;
 
   bool _showCompass;
-  bool _freezeTiling;
+  bool _allowSplit;
+  bool _keepDetail;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

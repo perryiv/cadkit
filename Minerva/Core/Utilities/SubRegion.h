@@ -30,11 +30,11 @@ namespace Utilities {
     ::memset ( result->data(), 0, result->getImageSizeInBytes() );
     
     // Is the image one channel?
-    const bool greyscale ( GL_LUMINANCE == dataType );
+    const bool greyscale ( GL_LUMINANCE == pixelFormat );
 
     // Check for alphas.
     const bool dstHasAlpha ( GL_RGBA == pixelFormat || GL_LUMINANCE_ALPHA == pixelFormat );
-    const bool hasAlpha ( GL_RGBA == image.getPixelFormat() );
+    const bool hasAlpha ( GL_RGBA == image.getPixelFormat() || GL_LUMINANCE_ALPHA == image.getPixelFormat() );
     
     // Width and height.
     const int width ( image.s() );

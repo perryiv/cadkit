@@ -222,6 +222,14 @@ public:
   /// Toggle the keep detail.
   bool                                     isKeepDetail() const;
   void                                     keepDetail ( bool b );
+
+  /// Toggle showing of lat lon text.
+  bool                                     isShowLatLonText() const;
+  void                                     showLatLonText ( bool b );
+
+  /// Toggle showing of job feedback.
+  bool                                     isShowJobFeedback() const;
+  void                                     showJobFeedback ( bool b );
   
 protected:
   virtual ~MinervaDocument();

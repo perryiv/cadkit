@@ -80,7 +80,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _deleteTiles(),
   _topTiles(),
   _updateListeners(),
-  _freezeTiling ( true ),
+  _freezeTiling ( false ),
   _sky ( new Minerva::Core::Utilities::Atmosphere ),
   _newTexturesLastFrame ( 0 ),
   _needsRedraw ( false )

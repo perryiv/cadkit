@@ -449,9 +449,18 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // Return if we are culled.
     if ( 0x0 == cv || cv->isCulled ( *this ) )
       return;
-    
+
+    // Check if we can split.  Don't freeze if we are waiting for a job.
+    const bool freeze ( !_body->allowSplitting() && false == _tileJob.valid() );
+
+    if ( freeze && this->getNumChildren() > 0 )
+    {
+      const unsigned int child ( this->getNumChildren() - 1 );
+      this->getChild ( child )->accept ( *cv );
+    }
     // Spilt.
-    this->_cull ( *cv );
+    else
+      this->_cull ( *cv );
   }
   else
   {
@@ -525,13 +534,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     OsgTools::Group::removeAllChildren ( _borders.get() );
 
     // Remove high level of detail.
-    if ( numChildren > 1 && true == allowSplit )
+    if ( numChildren > 1 && false == _body->cacheTiles() )
     {
-      if ( false == _body->cacheTiles() )
-      {
-        // Clear all the children.
-        this->_clearChildren ( false );
-      }
+      // Clear all the children.
+      this->_clearChildren ( false );
     }
   }
 
@@ -547,11 +553,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
            ( false == _children[UPPER_LEFT].valid()  ) ||
            ( false == _children[UPPER_RIGHT].valid() ) )
       {
-        // Check if we can split.
-        const bool allowSplit ( _body->allowSplitting() );
-        
-        // Use the low lod while we are waiting for the job, or if we can't split.
-        if ( _tileJob.valid() || false == allowSplit )
+        // Use the low lod while we are waiting for the job.
+        if ( _tileJob.valid() )
         {
           low = true;
         }

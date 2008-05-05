@@ -133,7 +133,7 @@ MinervaDocument::MinervaDocument() :
   _width( 0 ),
   _height( 0 ),
   _showCompass ( true ),
-  _freezeSpliting ( false ),
+  _freezeTiling ( false ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
@@ -2276,7 +2276,7 @@ bool MinervaDocument::isFreezeTiling() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _freezeSpliting;
+  return _freezeTiling;
 }
 
 
@@ -2290,13 +2290,13 @@ void MinervaDocument::freezeTiling( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _freezeSpliting = b;
+  _freezeTiling = b;
   
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );
     if ( body.valid() )
-      body->allowSplitting ( !_freezeSpliting );
+      body->freezeTiling ( _freezeTiling );
   }
 }
 

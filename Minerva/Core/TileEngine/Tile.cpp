@@ -451,7 +451,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       return;
 
     // Check if we can split.  Don't freeze if we are waiting for a job.
-    const bool freeze ( !_body->allowSplitting() && false == _tileJob.valid() );
+    const bool freeze ( _body->freezeTiling() && false == _tileJob.valid() );
 
     if ( freeze && this->getNumChildren() > 0 )
     {
@@ -524,9 +524,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   // Finally, ask the callback.
   low = !( _body->shouldSplit ( !low, this ) );
-  
-  // Check if we can split.
-  const bool allowSplit ( _body->allowSplitting() );
   
   if ( low )
   {

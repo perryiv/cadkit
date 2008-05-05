@@ -840,6 +840,10 @@
 						RelativePath=".\Utilities\SkyDome.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Utilities\SubRegion.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

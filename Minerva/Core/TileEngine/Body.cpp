@@ -80,7 +80,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _deleteTiles(),
   _topTiles(),
   _updateListeners(),
-  _allowSplitting ( true ),
+  _freezeTiling ( true ),
   _sky ( new Minerva::Core::Utilities::Atmosphere ),
   _newTexturesLastFrame ( 0 ),
   _needsRedraw ( false )
@@ -1218,11 +1218,11 @@ double Body::elevationAtLatLong ( double lat, double lon ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::allowSplitting ( bool b )
+void Body::freezeTiling ( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _allowSplitting = b;
+  _freezeTiling = b;
 }
 
 
@@ -1232,11 +1232,11 @@ void Body::allowSplitting ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Body::allowSplitting() const
+bool Body::freezeTiling() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _allowSplitting;
+  return _freezeTiling;
 }
 
 

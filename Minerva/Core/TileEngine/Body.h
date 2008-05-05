@@ -93,8 +93,8 @@ public:
   void                      addTile ( const Extents & );
   
   // Set/get the flag that says to allow spliting.
-  void                      allowSplitting ( bool );
-  bool                      allowSplitting() const;
+  void                      freezeTiling ( bool );
+  bool                      freezeTiling() const;
 
   // Set/get the flag that says to cache the tiles.
   bool                      cacheTiles() const;
@@ -273,7 +273,7 @@ private:
   Tiles _deleteTiles;
   Tiles _topTiles;
   UpdateListeners _updateListeners;
-  bool _allowSplitting;
+  bool _freezeTiling;
   Minerva::Core::Utilities::SkyDome::RefPtr _sky;
   unsigned int _newTexturesLastFrame;
   bool _needsRedraw;

@@ -1354,6 +1354,14 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Compass", 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showCompass ), 
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowCompass ) ) ) );
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Position", 
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showLatLonText ), 
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowLatLonText ) ) ) );
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Job Feedback", 
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ), 
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) ) );
   
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Use Skirts", 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::useSkirts ), 
@@ -2389,4 +2397,60 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
   }
   else if ( osgGA::GUIEventAdapter::MOVE == ea.getEventType() )
     this->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the lat lon text shown?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isShowLatLonText() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _hud.showPointerPosition();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle showing of lat lon text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showLatLonText ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _hud.showPointerPosition( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the job feedback text shown?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isShowJobFeedback() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _hud.showJobFeedback();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle showing of job feedback text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showJobFeedback ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _hud.showJobFeedback( b );
 }

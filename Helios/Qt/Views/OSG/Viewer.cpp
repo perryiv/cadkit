@@ -986,35 +986,35 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
 
   // Background menu.
   {
-    MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "Background" ) );
-    background->append ( new Button ( UC::genericCommand ( "Edit...", UA::memberFunction<void> ( this, &Viewer::editBackground ), UC::TrueFunctor() ) ) );
-    background->append ( new Button ( UC::genericCommand ( "Default", UA::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), UC::TrueFunctor() ) ) );
+    MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "&Background" ) );
+    background->append ( new Button ( UC::genericCommand ( "&Edit...", UA::memberFunction<void> ( this, &Viewer::editBackground ), UC::TrueFunctor() ) ) );
+    background->append ( new Button ( UC::genericCommand ( "&Default", UA::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), UC::TrueFunctor() ) ) );
     menu.append ( background.get() );
   }
   
-  // Goto menu.
+  // Camera menu.
   {
-    MenuKit::Menu::RefPtr gotoMenu ( new MenuKit::Menu ( "Goto" ) );
+    MenuKit::Menu::RefPtr gotoMenu ( new MenuKit::Menu ( "&Camera" ) );
     
-    gotoMenu->append ( new Button ( UC::genericCommand ( "Fit", 
+    gotoMenu->append ( new Button ( UC::genericCommand ( "&Fit", 
                                                          UA::bind1<void> ( OsgViewer::FIT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
                                                          UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "Front", 
+    gotoMenu->append ( new Button ( UC::genericCommand ( "F&ront", 
                                                         UA::bind1<void> ( OsgViewer::FRONT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
                                                         UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "Back", 
+    gotoMenu->append ( new Button ( UC::genericCommand ( "&Back", 
                                                         UA::bind1<void> ( OsgViewer::BACK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
                                                         UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "Left", 
+    gotoMenu->append ( new Button ( UC::genericCommand ( "&Left", 
                                                         UA::bind1<void> ( OsgViewer::LEFT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
                                                         UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "Right", 
+    gotoMenu->append ( new Button ( UC::genericCommand ( "&Right", 
                                                         UA::bind1<void> ( OsgViewer::RIGHT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
                                                         UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "Top", 
+    gotoMenu->append ( new Button ( UC::genericCommand ( "&Top", 
                                                         UA::bind1<void> ( OsgViewer::TOP, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
                                                         UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "Bottom", 
+    gotoMenu->append ( new Button ( UC::genericCommand ( "B&ottom", 
                                                         UA::bind1<void> ( OsgViewer::BOTTOM, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
                                                         UC::TrueFunctor() ) ) );
     
@@ -1023,14 +1023,14 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
 
   // Mode menu.
   {
-    MenuKit::Menu::RefPtr modes ( new MenuKit::Menu ( "Modes" ) );
-    modes->append ( new RadioButton ( UC::genericCheckCommand ( "Navigate", 
+    MenuKit::Menu::RefPtr modes ( new MenuKit::Menu ( "&Modes" ) );
+    modes->append ( new RadioButton ( UC::genericCheckCommand ( "&Navigate", 
                                                                            UA::bind1<void> ( OsgViewer::NAVIGATION, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setViewMode ) ), 
                                                                            UA::bind1<bool> ( OsgViewer::NAVIGATION, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isViewModeCurrent ) ) ) ) );
-    modes->append ( new RadioButton ( UC::genericCheckCommand ( "Pick", 
+    modes->append ( new RadioButton ( UC::genericCheckCommand ( "&Pick", 
                                                                            UA::bind1<void> ( OsgViewer::PICK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setViewMode ) ), 
                                                                            UA::bind1<bool> ( OsgViewer::PICK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isViewModeCurrent ) ) ) ) );
-    modes->append ( new RadioButton ( UC::genericCheckCommand ( "Seek", 
+    modes->append ( new RadioButton ( UC::genericCheckCommand ( "&Seek", 
                                                                            UA::bind1<void> ( OsgViewer::SEEK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::setViewMode ) ), 
                                                                            UA::bind1<bool> ( OsgViewer::SEEK, UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isViewModeCurrent ) ) ) ) );
     menu.append ( modes.get() );
@@ -1038,36 +1038,36 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   
   // Rendering passes menu.
   {
-    MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "Rendering Passes" ) );
+    MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "&Rendering Passes" ) );
     menu.append ( passes.get() );
 
-    passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, unknown.get() ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, unknown.get() ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, unknown.get() ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, unknown.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "&1",   1, unknown.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "&3",   3, unknown.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "&9",   9, unknown.get() ) ) );
+    passes->append ( new RadioButton ( new RenderingPasses ( "1&2", 12, unknown.get() ) ) );
   }
 
-  MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new UC::RenderLoop ( "Render Loop", unknown.get() ) ) );
+  MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new UC::RenderLoop ( "Render &Loop", unknown.get() ) ) );
   menu.append ( rl );
 
   // Polygons menu.
   {
-    MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu ( "Polygons" ) );
+    MenuKit::Menu::RefPtr polygons ( new MenuKit::Menu ( "&Polygons" ) );
     menu.append ( polygons.get() );
 
-    polygons->append ( new RadioButton ( new PolygonMode ( "Filled",       IPolygonMode::FILLED, unknown.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Hidden Lines", IPolygonMode::HIDDEN_LINES, unknown.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe",    IPolygonMode::WIRE_FRAME, unknown.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Points",       IPolygonMode::POINTS, unknown.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "&Filled",       IPolygonMode::FILLED, unknown.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "&Hidden Lines", IPolygonMode::HIDDEN_LINES, unknown.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "&Wireframe",    IPolygonMode::WIRE_FRAME, unknown.get() ) ) );
+    polygons->append ( new RadioButton ( new PolygonMode ( "&Points",       IPolygonMode::POINTS, unknown.get() ) ) );
   }
 
   // Shading menu.
   {
-    MenuKit::Menu::RefPtr shading ( new MenuKit::Menu ( "Shading" ) );
+    MenuKit::Menu::RefPtr shading ( new MenuKit::Menu ( "S&hading" ) );
     menu.append ( shading.get() );
 
-    shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, unknown.get() ) ) );
-    shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, unknown.get() ) ) );
+    shading->append ( new RadioButton ( new ShadeModel ( "&Smooth", IShadeModel::SMOOTH, unknown.get() ) ) );
+    shading->append ( new RadioButton ( new ShadeModel ( "&Flat",   IShadeModel::FLAT, unknown.get() ) ) );
   }
 
   // Add common window sizes.
@@ -1084,7 +1084,7 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   sizes.push_back ( Size ( 4200, 1050 ) );
 
   // Make the menu of common sizes.
-  MenuKit::Menu::RefPtr size ( new MenuKit::Menu ( "Size" ) );
+  MenuKit::Menu::RefPtr size ( new MenuKit::Menu ( "&Size" ) );
   for ( Sizes::const_iterator iter = sizes.begin(); iter != sizes.end(); ++iter )
   {
     Size s ( *iter );
@@ -1099,16 +1099,16 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   menu.append ( size );
 
   // Frame dump button.
-  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Frame Dump", UA::memberFunction<void> ( this, &Viewer::_frameDump ), UA::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Frame &Dump", UA::memberFunction<void> ( this, &Viewer::_frameDump ), UA::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
 
   // Axes button.
-  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Axes", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show &Axes", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) ) );
 
   // On-screen text button.
-  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Text", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::textShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isTextShown ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show &Text", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::textShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isTextShown ) ) ) );
   
   // Back face culling.
-  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Back Faces", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::showBackFaces ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isBackFacesShowing ) ) ) );
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Back &Faces", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::showBackFaces ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isBackFacesShowing ) ) ) );
 }
 
 

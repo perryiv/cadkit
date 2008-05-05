@@ -365,7 +365,7 @@ private:
   unsigned int _height;
 
   bool _showCompass;
-  bool _freezeSpliting;
+  bool _freezeTiling;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

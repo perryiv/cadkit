@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_COMPOSITE_H__
-#define __STAR_SYSTEM_COMPOSITE_H__
+#ifndef __MINERVA_CORE_UTILITIES_COMPOSITE_H__
+#define __MINERVA_CORE_UTILITIES_COMPOSITE_H__
 
 #include "Usul/Functions/Color.h"
 #include "Usul/Jobs/Job.h"
@@ -155,7 +155,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
           const int sp ( Usul::Math::maximum ( sMin, Usul::Math::minimum ( width,  static_cast<int> ( static_cast<int> ( up * width  ) + 0.5 ) ) ) );
           const int tp ( Usul::Math::maximum ( tMin, Usul::Math::minimum ( height, static_cast<int> ( static_cast<int> ( vp * height ) + 0.5 ) ) ) );
 
-          unsigned char *dst (  result->data ( s, t ) );
+          unsigned char *dst ( result->data ( s, t ) );
           const unsigned char* src ( image.data ( sp, tp  ) );
           
           dst[0] = src[0];
@@ -210,4 +210,4 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Usul::Ma
 }
 }
 
-#endif // __STAR_SYSTEM_COMPOSITE_H__
+#endif // __MINERVA_CORE_UTILITIES_COMPOSITE_H__

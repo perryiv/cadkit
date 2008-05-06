@@ -158,18 +158,55 @@ namespace Minerva
     // Make sure these values are sane.
     if ( bands < 1 || width <= 0 || height <= 0 || width != image->s() || height != image->t() )
       return;
-    
-    // Redirect.
-    switch ( bands )
+
+    const bool hasColorTable ( 1 == bands && 0x0 != data->GetRasterBand ( 1 )->GetColorTable() );
+
+    if ( hasColorTable && GDT_Byte == type )
     {
-    case 1:
-      Detail::Convert<PixelType, 1>::convert ( image, data, type, width, height );
-      break;
-    case 3:
-      Detail::Convert<PixelType, 3>::convert ( image, data, type, width, height );
-      break;
-    default:
-      Detail::convert<PixelType> ( image, data, type, width, height );
+      GDALRasterBand* band ( data->GetRasterBand ( 1 ) );
+      if ( 0x0 == band )
+        return;
+
+      const GDALColorTable* table ( band->GetColorTable() );
+      
+      // The no data value.
+      const double noDataValue ( band->GetNoDataValue() );
+      
+      // Number of pixel.
+      const int size ( width * height );
+      
+      std::vector<unsigned char> bytes ( size, 0 );
+      if ( CE_None == band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, type, 0, 0 ) )
+      {
+        unsigned char* data ( reinterpret_cast<unsigned char*> ( image->data() ) );
+        
+        for ( int i = 0; i < size; ++i )
+        {
+          unsigned char value ( bytes.at ( i ) );
+
+          const GDALColorEntry* entry ( table->GetColorEntry ( value ) );
+
+          *data++ = entry->c1;
+          *data++ = entry->c2;
+          *data++ = entry->c3;
+          *data++ = entry->c4;
+        }
+      }
+    }
+    else
+    {
+      // Redirect.
+      switch ( bands )
+      {
+      case 1:
+        Detail::Convert<PixelType, 1>::convert ( image, data, type, width, height );
+        break;
+      case 3:
+        Detail::Convert<PixelType, 3>::convert ( image, data, type, width, height );
+        break;
+      default:
+        Detail::convert<PixelType> ( image, data, type, width, height );
+      }
     }
     
     image->flipVertical();

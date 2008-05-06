@@ -24,7 +24,7 @@
 namespace Minerva {
 namespace GDAL {
 
-osg::Image* makeImage ( unsigned int width, unsigned int height, int bands, GDALDataType type )
+osg::Image* makeImage ( unsigned int width, unsigned int height, int bands, GDALDataType type, bool hasColorTable = false )
 {
   // Only handle 1, 3, and 4 bands.
   if ( 1 != bands && 3 != bands && 4 != bands )
@@ -33,7 +33,7 @@ osg::Image* makeImage ( unsigned int width, unsigned int height, int bands, GDAL
   osg::ref_ptr<osg::Image> result ( new osg::Image );
   
   // The pixel format.  Make sure the format always has an alpha.
-  GLenum pixelFormat ( ( 3 == bands || 4 == bands ) ? GL_RGBA : GL_LUMINANCE_ALPHA );
+  GLenum pixelFormat ( ( 3 == bands || 4 == bands || hasColorTable ) ? GL_RGBA : GL_LUMINANCE_ALPHA );
   
   GLenum dataType ( GL_UNSIGNED_BYTE );
   

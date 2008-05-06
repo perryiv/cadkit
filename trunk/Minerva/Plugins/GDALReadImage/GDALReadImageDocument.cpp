@@ -275,7 +275,9 @@ GDALReadImageDocument::ImagePtr GDALReadImageDocument::readImageFile ( const std
 	const unsigned int width ( data->GetRasterXSize() );
 	const unsigned int height ( data->GetRasterYSize() );
 
-	ImagePtr image ( Minerva::GDAL::makeImage ( width, height, bands, type ) );
+  const bool hasColorTable ( 1 == bands && 0x0 != data->GetRasterBand ( 1 )->GetColorTable() );
+
+	ImagePtr image ( Minerva::GDAL::makeImage ( width, height, bands, type, hasColorTable ) );
   
   // Return if we couldn't create the proper image type.
   if ( false == image.valid() )

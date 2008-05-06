@@ -222,9 +222,16 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   //this->_print( data );
   
   GDALWarpOptions *options ( GDALCreateWarpOptions() );
-  
+
+  char ** warpOptions = 0x0;
+    
+  warpOptions = ::CSLSetNameValue( warpOptions, "INIT_DEST", "NO_DATA" );
+
+  options->papszWarpOptions = warpOptions;
+
   // Make sure the options are destroyed.
-  Usul::Scope::Caller::RefPtr destroyOptions ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, GDALDestroyWarpOptions ) ) );
+  Usul::Scope::Caller::RefPtr destroyOptions     ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, ::GDALDestroyWarpOptions ) ) );
+  Usul::Scope::Caller::RefPtr destroyWarpOptions ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( warpOptions, ::CSLDestroy ) ) );
   
   options->hSrcDS = _data;
   options->hDstDS = data;

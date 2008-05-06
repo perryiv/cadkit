@@ -223,11 +223,13 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   
   GDALWarpOptions *options ( GDALCreateWarpOptions() );
 
+  // Initialize with no data.
   char ** warpOptions = 0x0;
-    
   warpOptions = ::CSLSetNameValue( warpOptions, "INIT_DEST", "NO_DATA" );
-
   options->papszWarpOptions = warpOptions;
+
+  // We want bilinear interpolation.
+  options->eResampleAlg = GRA_Bilinear;
 
   // Make sure the options are destroyed.
   Usul::Scope::Caller::RefPtr destroyOptions     ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, ::GDALDestroyWarpOptions ) ) );

@@ -75,16 +75,16 @@
     <!-- All favorites -->
     <favorites>
 	
-      <favorite type="sequence" name="TranslateXY">
-        <component input="horizontal joystick" transform="Translate Global X"/>
-        <component input="vertical joystick"   transform="Translate Global Y"/>
-      </favorite>
-	
-      <favorite type="sequence" name="TranslateXZ">
+      <favorite type="sequence" name="Natural Fly">
         <component input="horizontal joystick" transform="Translate Global X"/>
         <component input="vertical joystick"   transform="Translate Global Z"/>
+        <component input="horizontal joystick2" transform="Rotate Global Y"/>
+        <component input="vertical joystick2"   transform="Translate Global Y"/>
+        <component input="horizontal joystick3" transform="Rotate Global Z"/>
+        <component input="vertical joystick3"  transform="Rotate Global X" />
+
       </favorite>
-      <favorite type="sequence" name="6DegreesWingman">
+      <favorite type="sequence" name="6 Degrees Wingman">
         <component input="horizontal joystick" transform="Translate Global X"/>
         <component input="vertical joystick"   transform="Translate Global Z"/>
         <component input="horizontal joystick2" transform="Rotate Global Y"/>
@@ -98,9 +98,8 @@
       <Mapping button_id="0x00000400" command="menu" />
       <Mapping button_id="0x00000800" command="trigger" />
       <Mapping button_id="DirectionalPad" command="menu_navigation" />
-      <Mapping button_id="0x00000004" command="|Navigate|Favorites|TranslateXY" />
-      <Mapping button_id="0x00000002" command="|Navigate|Favorites|TranslateXZ" />
-      <Mapping button_id="0x00000001" command="|Navigate|Favorites|6DegreesWingman" />
+      <Mapping button_id="0x00000002" command="|Navigate|Favorites|Natural Fly" />
+      <Mapping button_id="0x00000001" command="|Navigate|Favorites|6 Degrees Wingman" />
     </Mappings>
   </interaction>
 </functors>

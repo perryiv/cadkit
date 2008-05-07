@@ -135,7 +135,7 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   
-  Detail::PushPopErrorHandler error;
+  Minerva::Detail::PushPopErrorHandler error;
   
   // Return if no data.
   if ( 0x0 == _data )

@@ -59,11 +59,15 @@ protected:
   void _initGeometries();
   
   /// Rasterize.
-  ImagePtr              _rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
+  ImagePtr              _rasterize ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
   
   /// Cache functions.
   std::string           _baseFileName ( Extents extents ) const;
   std::string           _directory ( unsigned int width, unsigned int height, unsigned int level ) const;
+
+  /// Read/Write image file.
+  ImagePtr              _readImageFile ( const std::string& filename ) const;
+  void                  _writeImageFile ( ImagePtr image, const std::string& filename ) const;
   
 private:
   RasterPolygonLayer& operator= ( const RasterPolygonLayer& );

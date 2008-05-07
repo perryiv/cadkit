@@ -19,6 +19,8 @@
 
 #include <iostream>
 
+namespace Minerva {
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Error handler.
@@ -53,6 +55,8 @@ namespace Detail
       CPLPopErrorHandler();
     }
   };
+}
+
 }
 
 

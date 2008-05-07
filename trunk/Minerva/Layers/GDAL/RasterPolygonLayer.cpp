@@ -10,6 +10,7 @@
 
 #include "Minerva/Layers/GDAL/RasterPolygonLayer.h"
 #include "Minerva/Layers/GDAL/Common.h"
+#include "Minerva/Layers/GDAL/Convert.h"
 
 #include "Usul/Adaptors/Random.h"
 #include "Usul/App/Application.h"
@@ -308,73 +309,18 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extent
   if ( false == Usul::Predicates::FileExists::test ( file ) )
   {
     // Rasterize.
-    image = this->_rasterize ( file, extents, width, height, level );
+    image = this->_rasterize ( extents, width, height, level );
     
     // Cache the file.
-    if ( image.valid() )
-    {
-      image->flipVertical();
-      osgDB::writeImageFile ( *image, file );
-    }
+    this->_writeImageFile ( image, file );
   }
   else
   {
     // Read from cache.
-    image = osgDB::readImageFile ( file );
+    image = this->_readImageFile ( file );
   }
   
   return image;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convert Gdal data to osg::image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  void convert ( osg::Image* image, GDALDataset *data )
-  {
-    if ( 0x0 != image && 0x0 != data )
-    {
-      const int bands ( data->GetRasterCount() );
-      if ( bands >= 1 )
-      {
-        const int width ( data->GetRasterXSize() );
-        const int height ( data->GetRasterYSize() );
-        
-        if ( width > 0 && height > 0 )
-        {
-          // Loop through the bands.
-          for ( int i = 1; i <= bands; ++i )
-          {
-            GDALRasterBand* band ( data->GetRasterBand ( i ) );
-            if ( 0x0 != band )
-            {
-              std::vector<unsigned char> bytes ( width * height, 0 );
-              if ( CE_None == band->RasterIO( GF_Read, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, 0, 0 ) )
-              {
-                unsigned char* data ( image->data() );
-                const int size ( width * height );
-
-                if ( width == image->s() && height == image->t() && 0x0 != data && size == static_cast<int> ( bytes.size() ) )
-                {
-                  const int offset ( i - 1 );
-                  for ( int i = 0; i < size; ++i )
-                  {
-                    *(data + offset) = bytes.at ( i );
-                    data += bands;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 }
 
 
@@ -384,6 +330,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+namespace Minerva {
 namespace Detail
 {
   struct ScopedDataset
@@ -401,6 +348,7 @@ namespace Detail
     GDALDataset *_data;
   };
 }
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -409,7 +357,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
+RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level )
 {
   // Set an error handler.
   Detail::PushPopErrorHandler handler;
@@ -424,13 +372,11 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   
   ImagePtr image ( 0x0 );
 
-  std::cout << "Burning " << filename << std::endl << std::endl;
-  
 #if 1  
   Guard guard ( this );
   
-  // Make a geotiff.
-  std::string format ( "GTiff" );
+  // Make an in memory raster.
+  std::string format ( "MEM" );
   
   // Find a drive for geotiff.
   GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName ( format.c_str() ) );
@@ -439,19 +385,11 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   if ( 0x0 == driver )
     return 0x0;
   
-#if 1
+  // Make a temp file.
   Usul::File::Temp temp;
-  std::string file ( Usul::Strings::format ( Usul::File::directory ( temp.name(), true ), Usul::File::base ( temp.name() ), ".tif" ) );
-  Usul::Scope::RemoveFile remove ( file );
-#else
-  std::string file ( filename );
-#endif
-
-  // Make sure.
-  Usul::File::remove ( file );
   
   // Create the file.
-  GDALDataset *data ( driver->Create( file.c_str(), width, height, channels, GDT_Byte, 0x0 ) );
+  GDALDataset *data ( driver->Create( temp.name().c_str(), width, height, channels, GDT_Byte, 0x0 ) );
   
   if ( 0x0 == data )
     return 0x0;
@@ -509,7 +447,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
 
   if ( CE_None != data->RasterIO( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 ) )
     return 0x0;
- 
+
   std::cout << "Burning raster..." << std::endl;
 
   // Burn the raster.
@@ -519,7 +457,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
   {
     std::cout << "Converting to osg." << std::endl;
     image = this->_createBlankImage( width, height );
-    Detail::convert ( image.get(), data );
+    Minerva::convert<unsigned char> ( image.get(), data, GDT_Byte );
     std::cout << "Done converting to osg." << std::endl;
   }
 
@@ -527,7 +465,6 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const std::string&
 
   data = 0x0;
 
-  std::cout << "File: " << file << " closed." << std::endl;
 #endif
 
   return image;
@@ -634,4 +571,31 @@ std::string RasterPolygonLayer::_directory ( unsigned int width, unsigned int he
                                            name, '/', resolution, '/', levelString, '/' ) );
   std::replace ( dir.begin(), dir.end(), '\\', '/' );
   return dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read image file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterPolygonLayer::ImagePtr RasterPolygonLayer::_readImageFile ( const std::string& filename ) const
+{
+  return osgDB::readImageFile ( filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write image file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterPolygonLayer::_writeImageFile ( ImagePtr image, const std::string& filename ) const
+{
+  if ( image.valid() )
+  {
+    osgDB::writeImageFile ( *image, filename );
+  }
 }

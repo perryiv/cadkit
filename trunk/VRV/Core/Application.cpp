@@ -1197,11 +1197,16 @@ void Application::_preFrame()
 
   for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
   {
-    // update all the joystick analog inputs
-    (*iter).second->update();
+    Joystick::RefPtr joystick ( iter->second );
 
-    // Send any notifications to all joystick analog inputs.
-    (*iter).second->notify();
+    if ( joystick.valid() )
+    {
+      // update all the joystick analog inputs
+      joystick->update();
+
+      // Send any notifications to all joystick analog inputs.
+      joystick->notify();
+    }
   }
   std::cout << "\r" << std::flush;
   // Navigate if we are supposed to.

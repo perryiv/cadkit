@@ -41,6 +41,8 @@
 namespace
 {
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_ArcAscii ( "Arc Ascii (*.asc)", "*.asc" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_DEM      ( "Digital Elevation Model (*.dem)", "*.dem" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_SRTM     ( "NASA SRTM (*.hgt)", "*.hgt" );
 }
 
 

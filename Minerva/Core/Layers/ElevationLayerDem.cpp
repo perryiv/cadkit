@@ -33,17 +33,6 @@
 
 using namespace Minerva::Core::Layers;
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Register readers with the factory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace
-{
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < ElevationLayerDem > > _creator_for_dem ( "Digital Elevation Model (*.dem)", "*.dem" );
-}
-
 USUL_FACTORY_REGISTER_CREATOR ( ElevationLayerDem );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ElevationLayerDem, ElevationLayerDem::BaseClass );
 

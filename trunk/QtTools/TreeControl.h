@@ -65,6 +65,9 @@ public:
   SelectionMode       selectionMode() const;
   void                selectionMode( QAbstractItemView::SelectionMode );
   
+  // Get the tree widget.
+  QTreeWidget*        treeWidget();
+  
 signals:
   void                onItemChanged ( QTreeWidgetItem *item, int columnNumber );
   

@@ -55,9 +55,9 @@ ColorStyle::ColorStyle ( const XmlTree::Node& node ) : BaseClass ( node ),
 			const unsigned long c ( ::strtoul ( node->value().c_str(), 0x0, 16 ) );
 
 			_color[3] = static_cast<float> ( ( ( c & 0xff000000 ) >> 24 ) / 255.0 );
-			_color[0] = static_cast<float> ( ( ( c & 0x00ff0000 ) >> 16 ) / 255.0 );
+			_color[2] = static_cast<float> ( ( ( c & 0x00ff0000 ) >> 16 ) / 255.0 );
 			_color[1] = static_cast<float> ( ( ( c & 0x0000ff00 ) >>  8 ) / 255.0 );
-			_color[2] = static_cast<float> ( ( ( c & 0x000000ff )       ) / 255.0 );
+			_color[0] = static_cast<float> ( ( ( c & 0x000000ff )       ) / 255.0 );
     }
     else if ( "colorMode" == name )
     {

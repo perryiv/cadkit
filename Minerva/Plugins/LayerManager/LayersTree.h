@@ -19,6 +19,7 @@
 
 class QTreeWidget;
 class QTreeWidgetItem;
+class QSlider;
 
 namespace QtTools { class TreeControl; }
 
@@ -46,6 +47,7 @@ protected:
   void     _connectTreeViewSlots ();
   void     _addLayer ( Usul::Interfaces::IUnknown *parent );
   void     _editLayerProperties ( Usul::Interfaces::IUnknown *unknown );
+  void     _dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown );
 
 protected slots:
   void _onDoubleClick ( QTreeWidgetItem * item, int columnNumber );
@@ -54,9 +56,12 @@ protected slots:
   void _onRemoveLayerClick ();
   void _onContextMenuShow ( const QPoint& pos );
   void _onAddLayerFavorites();
-
+  void _onSliderReleased();
+  void _onItemSelectionChanged();
+  
 private:
   QtTools::TreeControl *_tree;
+  QSlider *_slider;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   Usul::Interfaces::IUnknown::QueryPtr _document;
 };

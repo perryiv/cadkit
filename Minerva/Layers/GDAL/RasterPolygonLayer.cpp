@@ -300,7 +300,7 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extent
   // Make the directory and base file name.
   const std::string baseDir ( this->_directory ( width, height, level ) );
   Usul::File::make ( baseDir );
-  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), ".jpg" ) );  
+  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), ".png" ) );  
   
   // Initialize.
   ImagePtr image ( 0x0 );
@@ -372,7 +372,6 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const Extents& ext
   
   ImagePtr image ( 0x0 );
 
-#if 1  
   Guard guard ( this );
   
   // Make an in memory raster.
@@ -448,24 +447,14 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const Extents& ext
   if ( CE_None != data->RasterIO( GF_Write, 0, 0, width, height, &bytes[0], width, height, GDT_Byte, channels, 0x0, 0, 0, 0 ) )
     return 0x0;
 
-  std::cout << "Burning raster..." << std::endl;
-
   // Burn the raster.
   if ( CE_None == ::GDALRasterizeGeometries ( 
     data, bands.size(), &bands[0], _geometries.size(), (void**) &_geometries[0], 
     0x0, 0x0, &_burnValues[0], 0x0, GDALTermProgress, 0x0 ) )
   {
-    std::cout << "Converting to osg." << std::endl;
     image = this->_createBlankImage( width, height );
     Minerva::convert<unsigned char> ( image.get(), data, GDT_Byte );
-    std::cout << "Done converting to osg." << std::endl;
   }
-
-  std::cout << "Done burning raster." << std::endl;
-
-  data = 0x0;
-
-#endif
 
   return image;
 }

@@ -23,6 +23,7 @@
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
 #include "Usul/Interfaces/ILayerModifyGUIQt.h"
+#include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 
 #include "QtTools/Action.h"
@@ -40,6 +41,11 @@
 #include "QtGui/QMenu"
 #include "QtGui/QSlider"
 
+namespace Detail
+{
+  const unsigned int SLIDER_STEPS ( 1000 );
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -49,6 +55,7 @@
 LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) : 
   BaseClass ( parent ),
   _tree ( 0x0 ),
+  _slider ( new QSlider ( Qt::Horizontal ) ),
   _caller ( caller ),
   _document ()
 {
@@ -77,7 +84,10 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
   
   topLayout->addLayout ( buttonLayout );
   topLayout->addLayout ( treeLayout );
-  topLayout->addWidget ( new QSlider ( Qt::Horizontal ));
+  topLayout->addWidget ( _slider );
+  
+  _slider->setRange ( 0, Detail::SLIDER_STEPS );
+  _slider->setEnabled ( false );
 
   this->_connectTreeViewSlots ();
 
@@ -86,6 +96,8 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
 
   connect ( this,        SIGNAL ( enableWidgets ( bool ) ), addLayer,     SLOT   ( setEnabled ( bool ) ) );
   connect ( this,        SIGNAL ( enableWidgets ( bool ) ), removeLayer,  SLOT   ( setEnabled ( bool ) ) );
+  
+  connect ( _slider,     SIGNAL ( sliderReleased() ), SLOT ( _onSliderReleased() ) );
 
   // Disable by default.
   emit enableWidgets( false );
@@ -135,6 +147,7 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 void LayersTree::_connectTreeViewSlots ()
 {
   connect ( _tree, SIGNAL ( onItemChanged ( QTreeWidgetItem*, int ) ), this, SLOT ( _onItemChanged( QTreeWidgetItem*, int ) ) );
+  connect ( _tree->treeWidget(), SIGNAL ( itemSelectionChanged() ), this, SLOT ( _onItemSelectionChanged() ) );
   
   // Notify us when a context menu is requested.
   connect ( _tree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
@@ -162,13 +175,7 @@ void LayersTree::_onDoubleClick ( QTreeWidgetItem * item, int columnNumber )
 void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
 {
   Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->unknown ( item ) );
-  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
-  if ( dirty.valid() )
-    dirty->dirtyScene ( true, unknown );
-  
-  Usul::Interfaces::IDocument::QueryPtr document ( _document );
-  if ( document.valid() )
-    document->requestRedraw();
+  this->_dirtyAndRedraw ( unknown );
 }
 
 
@@ -374,4 +381,58 @@ void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown )
       break;
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The slider has been released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_onSliderReleased()
+{
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+  Usul::Interfaces::IRasterAlphas::QueryPtr ra ( unknown );
+  if ( ra.valid() )
+  {
+    const float alpha ( static_cast<float> ( _slider->value() ) / Detail::SLIDER_STEPS );
+    ra->alpha ( alpha );
+    this->_dirtyAndRedraw ( unknown );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The selection has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_onItemSelectionChanged()
+{
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+  Usul::Interfaces::IRasterAlphas::QueryPtr ra ( unknown );
+  _slider->setEnabled( ra.valid() );
+  
+  if ( ra.valid() )
+    _slider->setValue ( ra->alpha() * Detail::SLIDER_STEPS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dirty and request a redraw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown )
+{
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
+  if ( dirty.valid() )
+    dirty->dirtyScene ( true, unknown );
+  
+  Usul::Interfaces::IDocument::QueryPtr document ( _document );
+  if ( document.valid() )
+    document->requestRedraw();
 }

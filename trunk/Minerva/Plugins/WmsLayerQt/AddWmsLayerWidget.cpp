@@ -100,7 +100,7 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
 
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), viewOptionsButton,    SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), viewOptionsButton,  SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _jpegButton,        SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _pngButton,         SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _layersTree,        SLOT ( setEnabled ( bool ) ) );
@@ -121,6 +121,7 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   
   // Make the completer.
   QCompleter *completer ( new QCompleter );
+  completer->setCompletionMode ( QCompleter::PopupCompletion );
   
   // Set the model.
   completer->setModel ( _recentServers );
@@ -147,8 +148,6 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
 
 AddWmsLayerWidget::~AddWmsLayerWidget()
 {
-  // Save the server names.
-  Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = _recentServers->stringList();
 }
 
 
@@ -205,18 +204,6 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     // Set the format.
     options[Usul::Network::Names::FORMAT] = format;
     
-    // Add user specified options.
-    /*for ( OptionWidgets::const_iterator iter = _options.begin(); iter != _options.end(); ++iter )
-    {
-      std::string key ( (*iter)->key() );
-      std::string value ( (*iter)->value() );
-       
-      if ( false == key.empty() )
-      {
-        options[key] = value;
-      }
-    }*/
-    
     // Set the options.
     _layer->options ( options );
     
@@ -233,6 +220,12 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     _layer->name ( false == name.empty() ? name : server );
     
     al->addLayer ( _layer.get () );
+
+    // Save the server names.
+    QStringList recent ( _recentServers->stringList() );
+    recent.push_back ( server.c_str() );
+    recent.erase ( std::unique ( recent.begin(), recent.end() ), recent.end() );
+    Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = recent;
   }
 }
 

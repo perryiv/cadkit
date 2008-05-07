@@ -63,8 +63,6 @@ SET (SOURCES
 ./Jobs/BuildRaster.cpp
 ./Jobs/BuildTiles.cpp
 ./Layers/ElevationGroup.cpp
-./Layers/ElevationLayerArcAscii.cpp
-./Layers/ElevationLayerDem.cpp
 ./Layers/RasterGroup.cpp
 ./Layers/RasterLayer.cpp
 ./Layers/RasterLayerOssim.cpp

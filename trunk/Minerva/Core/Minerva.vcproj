@@ -305,22 +305,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Layers\ElevationLayerArcAscii.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\ElevationLayerArcAscii.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\ElevationLayerDem.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\ElevationLayerDem.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Layers\RasterGroup.cpp"
 						>
 					</File>

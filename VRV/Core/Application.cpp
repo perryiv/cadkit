@@ -1166,6 +1166,7 @@ void Application::preFrame()
 void Application::_preFrame()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
 
   // Mark the start of the frame.
   _frameStart = _timer.tick();
@@ -3174,12 +3175,13 @@ void Application::_parseCommandLine()
 void Application::_readDevicesFile ()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
 
+  ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
   // clear buttons and analogs varialbles
-  //_buttons = new VRV::Devices::ButtonGroup;
-  //_analogs.clear();
   //_menuNavigationAnalogID = "Joystick";
 
+  //_buttons->clear();
   // Open the input file.
   const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _deviceFilename ) );
 
@@ -3205,7 +3207,7 @@ void Application::_readDevicesFile ()
 
       // Debugging on Unix
       const unsigned int uiid ( ::strtoul ( id.c_str(), 0x0, 16 ) );
-      _buttons->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
+      buttonGroup->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
     }
 		
   }
@@ -3232,6 +3234,8 @@ void Application::_readDevicesFile ()
     _analogs[ "Joystick" ]->name( "Joystick" );
   }
 
+    // read the button mappings from the functor file
+#if 0
   XmlTree::Node::Children mappings    ( document->find ( "Mapping",    true ) );
 
   for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
@@ -3263,7 +3267,14 @@ void Application::_readDevicesFile ()
       }
     }	
   }
+#endif
 
+  _buttons = buttonGroup;
+
+  // Add our self as button listeners.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  this->addButtonPressListener( me.get() );
+  this->addButtonReleaseListener ( me.get() );
   // assign the menu navigation to the specified joystick or default if none specified
   if( true == _analogs[ _menuNavigationAnalogID ].valid() )
   {
@@ -3298,6 +3309,8 @@ void Application::_readFunctorFile ()
 {
   USUL_TRACE_SCOPE;
 
+  
+
   // Local factory for functor creation.
   Usul::Factory::ObjectFactory factory;
 
@@ -3330,6 +3343,62 @@ void Application::_readFunctorFile ()
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
 
+  // read the button mappings from the functor file
+#if 1
+  XmlTree::Node::Children mappings    ( document->find ( "Mapping",    true ) );
+
+  for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "Mapping" == node->name() )
+    {
+      const std::string cmd ( node->attributes()["command"] );
+      const std::string btn ( node->attributes()["button_id"] );
+
+      if( "menu" == cmd )
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _menuButtonID = uiid;
+      }
+      else if( "trigger" == cmd )
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _selectButtonID = uiid;
+      }
+      else if( "menu_navigation" == cmd )
+      {
+        _menuNavigationAnalogID = btn;
+      }
+      else
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _buttonCommandsMap[ uiid ] = cmd;
+      }
+    }	
+  }
+
+    // assign the menu navigation to the specified joystick or default if none specified
+  if( true == _analogs[ _menuNavigationAnalogID ].valid() )
+  {
+    JoystickPtr jptr ( _analogs[ _menuNavigationAnalogID ] );
+    {
+      JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+      if( true == jptr.valid() )
+      {
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+      }
+    }
+  }
+  else
+  {
+    //throw exception here
+    std::cout << Usul::Strings::format
+      ( "Warning 3677656649: No valid menu navigation joystick found" ) << std::endl;
+  }
+#endif
   // Initialize the caller.
   Usul::Interfaces::IUnknown::QueryPtr caller ( this );
 

@@ -47,6 +47,9 @@ public:
   iterator        begin () { return _buttons.begin (); }
   iterator        end ()   { return _buttons.end(); }
 
+  // clear out the button group
+  void            clear();
+
   // Return bitmask of buttons that are down.
   unsigned long   down() const { return _down; }
 

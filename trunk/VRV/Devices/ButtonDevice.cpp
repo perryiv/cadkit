@@ -44,25 +44,28 @@ ButtonDevice::ButtonDevice ( unsigned long mask, const std::string &name ) :
   _di.init ( name );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-  ButtonDevice::ButtonDevice ( unsigned long mask, const std::string &vrj_name, const std::string &name ) : 
+ButtonDevice::ButtonDevice ( unsigned long mask, const std::string &vrj_name, const std::string &name ) : 
   BaseClass(),
   _di(),
   _mask ( mask ),
   _pressed(),
-  _released()
+  _released(),
+  _buttonName ( name )
 {
   USUL_TRACE_SCOPE;
 
   // Initialize.
   _di.init ( vrj_name );
-  _buttonName = name;
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Destructor.

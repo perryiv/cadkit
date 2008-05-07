@@ -24,6 +24,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
+#include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
@@ -236,8 +237,14 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   if ( true == options.empty() )
     return ImagePtr ( 0x0 );
 
-  // Add options.
-  options[Usul::Network::Names::BBOX] = Usul::Strings::format ( extents.minimum()[0], ',', extents.minimum()[1], ',', extents.maximum()[0], ',', extents.maximum()[1] );
+  // Add bounding box.  Use Usul convert for full precision.
+  options[Usul::Network::Names::BBOX] = Usul::Strings::format ( 
+    Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.minimum()[0] ), ',', 
+    Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.minimum()[1] ), ',', 
+    Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.maximum()[0] ), ',', 
+    Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.maximum()[1] ) );
+
+  // Add width and height.
   options[Usul::Network::Names::WIDTH] = Usul::Strings::format ( width );
   options[Usul::Network::Names::HEIGHT] = Usul::Strings::format ( height );
 

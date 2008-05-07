@@ -94,9 +94,12 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
     }
     else
     {
+      // Get the current alpha.
+      const unsigned char currentAlpha ( hasAlpha ? src[3] : 255 );
+      
       // Get correct alpha.
       const unsigned char useThisAlpha ( ( hasExtraAlpha )   ? ( static_cast < unsigned char > ( iter->second ) ) : 
-                                       ( ( hasOverallAlpha ) ? ( static_cast < unsigned char > ( alpha * 255 ) ) : ( src[3] ) ) );
+                                       ( ( hasOverallAlpha ) ? ( static_cast < unsigned char > ( alpha * currentAlpha ) ) : ( currentAlpha ) ) );
       
       // Normalize between zero and one.
       const float a ( static_cast < float > ( useThisAlpha ) / 255.5f );

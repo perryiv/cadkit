@@ -148,6 +148,7 @@ Application::Application() :
   _buttons           ( new VRV::Devices::ButtonGroup ),
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _joystick          ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
+  _analogs           (),
   _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4). Move to preference file.
   _databasePager     ( 0x0 ),

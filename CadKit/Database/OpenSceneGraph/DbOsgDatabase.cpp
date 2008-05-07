@@ -299,8 +299,17 @@ bool DbOsgDatabase::writeData ( const std::string &filename )
   SL_ASSERT ( NULL != this->_getRoot() );
   
   // Perform optimization using environment variable settings.
+  int numPasses = 1;
+
+  char *passes = getenv("OSG_OPTIMIZER_PASSES");
+  
+  if(passes)
+    numPasses = atoi(passes);
+
   osgUtil::Optimizer optimizer;
-  optimizer.optimize((osg::Node *) this->_getRoot());
+
+  for(int i = 0; i < numPasses; i++)
+    optimizer.optimize((osg::Node *) this->_getRoot());
 
   // Write the root to file. Note: OpenSceneGraph will write binary or ascii 
   // depending on the extension.
@@ -1004,9 +1013,9 @@ bool DbOsgDatabase::startEntity ( PrimHandle prim, IUnknown *caller )
 
 bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::Geode *geode, osg::StateSet *state, PrimitiveType type, int set )
 {
-  SL_PRINT7 ( "In DbOsgDatabase::_addPrimitive(), this = %X, caller = %X, primitive = %d, drawable = %X, type = %d, set = %d\n", this, caller, prim, drawable, type, set );
+  SL_PRINT7 ( "In DbOsgDatabase::_addPrimitive(), this = %X, caller = %X, primitive = %d, geode = %X, type = %d, set = %d\n", this, caller, prim, geode, type, set );
   SL_ASSERT ( caller );
-  SL_ASSERT ( drawable );
+  SL_ASSERT ( geode );
 
   // Get the interfaces we need from the caller.
   SlQueryPtr<IQueryPrimOriginsVec3f> originQuery ( caller );

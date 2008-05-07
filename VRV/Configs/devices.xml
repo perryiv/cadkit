@@ -2,9 +2,9 @@
 <Devices>
   <Device>
     <Analogs>
-      <Analog name ="RightJoystick" horizontal_name="VJAnalog0" vertical_name="VJAnalog1" />
-      <Analog name ="LeftJoystick"  horizontal_name="VJAnalog2" vertical_name="VJAnalog3" />
-      <Analog name ="DirectionalPad"  horizontal_name="VJAnalog4" vertical_name="VJAnalog5" />
+      <Analog name ="RightJoystick" horizontal_name="VJAnalog0" vertical_name="VJAnalog1" h_modifier="1.0" v_modifier="1.0" />
+      <Analog name ="LeftJoystick"  horizontal_name="VJAnalog2" vertical_name="VJAnalog3" h_modifier="1.0" v_modifier="1.0" />
+      <Analog name ="DirectionalPad"  horizontal_name="VJAnalog4" vertical_name="VJAnalog5" h_modifier="1.0" v_modifier="1.0" />
     </Analogs>
     <Buttons>
       <Button name="Button1" vj_name="VJButton0" id="0x00000001" />

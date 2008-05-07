@@ -3226,11 +3226,19 @@ void Application::_readDevicesFile ()
 			const std::string name    ( node->attributes()["name"] );
       const std::string analog0 ( node->attributes()["horizontal_name"] ); 
       const std::string analog1 ( node->attributes()["vertical_name"] );
+      const std::string hm ( node->attributes()["h_modifier"] );
+      const std::string vm ( node->attributes()["v_modifier"] );
+
+      float hModifier = Usul::Convert::Type< std::string, float >::convert( hm );
+      float vModifier = Usul::Convert::Type< std::string, float >::convert( vm );
 
 			if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
 			{
 				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
         _analogs[name]->name( name );
+        _analogs[name]->horizontalModifier( hModifier );
+        _analogs[name]->verticalModifier( vModifier );
+        
 			}
 		}
   }
@@ -3281,27 +3289,7 @@ void Application::_readDevicesFile ()
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   this->addButtonPressListener( me.get() );
   this->addButtonReleaseListener ( me.get() );
-  // assign the menu navigation to the specified joystick or default if none specified
-  if( true == _analogs[ _menuNavigationAnalogID ].valid() )
-  {
-    JoystickPtr jptr ( _analogs[ _menuNavigationAnalogID ] );
-    {
-      JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-      if( true == jptr.valid() )
-      {
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-      }
-    }
-  }
-  else
-  {
-    //throw exception here
-    Usul::Exceptions::Thrower < std::runtime_error > 
-      ( "Error 3677656649: No valid menu navigation joystick found" );
-  }
+
 }
 
 
@@ -3384,7 +3372,7 @@ void Application::_readFunctorFile ()
   }
 
     // assign the menu navigation to the specified joystick or default if none specified
-  if( true == _analogs[ _menuNavigationAnalogID ].valid() )
+  if( _analogs.size() > 0 && true == _analogs[ _menuNavigationAnalogID ].valid() )
   {
     JoystickPtr jptr ( _analogs[ _menuNavigationAnalogID ] );
     {
@@ -3400,11 +3388,12 @@ void Application::_readFunctorFile ()
   }
   else
   {
-    //throw exception here
+    // if we can't find a menu navigation analog print a warning statement
     std::cout << Usul::Strings::format
       ( "Warning 3677656649: No valid menu navigation joystick found" ) << std::endl;
   }
 #endif
+
   // Initialize the caller.
   Usul::Interfaces::IUnknown::QueryPtr caller ( this );
 

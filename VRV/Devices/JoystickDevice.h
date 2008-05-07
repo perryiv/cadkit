@@ -81,6 +81,15 @@ public:
   // set the name ( for debugging ) 
   void              name( const std::string &name );
 
+  // set the horizontal modifier.  Should be either 1.0 or -1.0
+  void              horizontalModifier( float modifier );
+
+  // set the vertical modifier.  Should be either 1.0 or -1.0
+  void              verticalModifier( float modifier );
+
+  // get the current modifier
+  Usul::Math::Vec2f modifier();
+
   //  VRV::Interfaces::IJoystickFloat
   // Get the joystick value in the range [-1,1].
   virtual float                 joystickHorizontal() const;
@@ -118,6 +127,8 @@ private:
 
   Usul::Math::Vec2f                      _analogTrim;
   std::string                            _name;
+  float                                  _horizontalModifier;
+  float                                  _verticalModifier;
 };
 
 

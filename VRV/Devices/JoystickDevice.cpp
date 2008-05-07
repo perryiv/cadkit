@@ -38,7 +38,9 @@ JoystickDevice::JoystickDevice ( const std::string &h, const std::string &v ) :
   _hs ( JOYSTICK_AT_CENTER ),
   _vs ( JOYSTICK_AT_CENTER ),
   _analogTrim( 0.0, 0.0 ),
-  _name( "" )
+  _name( "" ),
+  _horizontalModifier( 1.0 ),
+  _verticalModifier( 1.0 )
 {
   // Initialize.
   _hai.init ( h );
@@ -214,20 +216,44 @@ void JoystickDevice::_updateState()
   const float low  ( 0.25f );
 
   // Horizontal.
-  if ( _h > high )
-    _hs = JOYSTICK_AT_RIGHT;
-  else if ( _h < low )
-    _hs = JOYSTICK_AT_LEFT;
+  if( _horizontalModifier > 0.0 )
+  {
+    if ( _h > high )
+      _hs = JOYSTICK_AT_RIGHT;
+    else if ( _h < low )
+      _hs = JOYSTICK_AT_LEFT;
+    else
+      _hs = JOYSTICK_AT_CENTER;
+  }
   else
-    _hs = JOYSTICK_AT_CENTER;
+  {
+    if ( _h > high )
+      _hs = JOYSTICK_AT_LEFT;
+    else if ( _h < low )
+      _hs = JOYSTICK_AT_RIGHT;
+    else
+      _hs = JOYSTICK_AT_CENTER;
+  }
 
   // Vertical.
-  if ( _v > high )
-    _vs = JOYSTICK_AT_UP;
-  else if ( _v < low )
-    _vs = JOYSTICK_AT_DOWN;
+  if( _verticalModifier > 0.0 )
+  {
+    if ( _v > high )
+      _vs = JOYSTICK_AT_UP;
+    else if ( _v < low )
+      _vs = JOYSTICK_AT_DOWN;
+    else
+      _vs = JOYSTICK_AT_CENTER;
+  }
   else
-    _vs = JOYSTICK_AT_CENTER;
+  {
+    if ( _v > high )
+      _vs = JOYSTICK_AT_DOWN;
+    else if ( _v < low )
+      _vs = JOYSTICK_AT_UP;
+    else
+      _vs = JOYSTICK_AT_CENTER;
+  }
 }
 
 
@@ -280,3 +306,39 @@ void JoystickDevice::name( const std::string &name )
   _name = name;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the modifier.  Should be either 1.0 or -1.0
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void JoystickDevice::horizontalModifier( float modifier )
+{
+  _horizontalModifier = modifier;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the modifier.  Should be either 1.0 or -1.0
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void JoystickDevice::verticalModifier( float modifier )
+{
+  _verticalModifier= modifier;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the current modifier
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec2f JoystickDevice::modifier()
+{
+  Usul::Math::Vec2f modifier( _horizontalModifier, _verticalModifier );
+  return modifier;
+}

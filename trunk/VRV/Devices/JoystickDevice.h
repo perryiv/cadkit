@@ -78,8 +78,9 @@ public:
   // Update the internal state.
   void              update();
 
-  // set the name ( for debugging ) 
+  // Set/get the name.
   void              name( const std::string &name );
+  std::string       name() const;
 
   // set the horizontal modifier.  Should be either 1.0 or -1.0
   void              horizontalModifier( float modifier );

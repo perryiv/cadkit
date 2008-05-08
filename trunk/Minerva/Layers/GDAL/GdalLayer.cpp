@@ -212,7 +212,6 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
 
   for ( int i = 1; i <= bands; ++i )
   {
-    GDALRasterBand* band0 ( _data->GetRasterBand ( i ) );
     GDALRasterBand* band1 (  data->GetRasterBand ( i ) );
     
     band1->SetNoDataValue( noDataValue );

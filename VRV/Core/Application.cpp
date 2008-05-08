@@ -3830,9 +3830,12 @@ void Application::_initMenu()
     ma->menuAdd ( *menu, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
 
+  // Clear the commands we have.
+  MenuKit::MenuCommands::instance().clear();
+
 	// Traverse the menu and build the map of commands
   MenuKit::CommandVisitor::RefPtr commandVisitor ( new MenuKit::CommandVisitor );
-  commandVisitor->apply( *menu );
+  menu->accept ( *commandVisitor );
 
 	{
 		Guard guard ( this->mutex() );
@@ -3844,8 +3847,13 @@ void Application::_initMenu()
 		for( ButtonCommandsMap::iterator iter = _buttonCommandsMap.begin(); iter != _buttonCommandsMap.end(); ++iter )
 		{
 			Usul::Commands::Command::RefPtr command ( MenuKit::MenuCommands::instance().find( (*iter).second ) );
-			const unsigned int buttonID ( (*iter).first );
-			_buttonMap[ buttonID ] = command;
+
+      // Only add to the map if the command is valid.
+      if ( command.valid() )
+      {
+        const unsigned int buttonID ( (*iter).first );
+        _buttonMap[ buttonID ] = command;
+      }
 		}
 	}
 

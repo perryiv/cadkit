@@ -26,11 +26,13 @@
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
+#include "OsgTools/Utilities/TranslateGeometry.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Depth"
 #include "osg/Material"
+#include "osg/MatrixTransform"
 #include "osg/Version"
 
 using namespace Minerva::Core::DataObjects;
@@ -215,6 +217,13 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
     this->dirty( false );
   }
 
-  return _node.get();
-}
+  osg::Vec3 offset ( _node->getBound().center() );
+  osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
+  _node->accept ( *tg );
 
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrix::translate ( offset ) );
+  mt->addChild ( _node.get() );
+
+  return mt.release();
+}

@@ -102,6 +102,10 @@ namespace Detail
     
     DstType       *dst ( reinterpret_cast < DstType* >       ( image.data() ) );
     const SrcType *src ( reinterpret_cast < const SrcType* > ( data.data()  ) );
+
+    // Make sure the pointers are valid.
+    if ( 0x0 == src || 0x0 == dst )
+      return;
     
     // Get the pixel format.
     const GLenum pixelFormat ( image.getPixelFormat() );

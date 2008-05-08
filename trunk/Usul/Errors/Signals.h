@@ -7,22 +7,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CV_SIGNAL_FUNCTIONS_H_
-#define _CV_SIGNAL_FUNCTIONS_H_
+#ifndef _USUL_ERRORS_SIGNAL_FUNCTIONS_H_
+#define _USUL_ERRORS_SIGNAL_FUNCTIONS_H_
 
-#ifdef _WIN32
-  TODO
-#elif __GNUC__
-#ifdef HAVE_GLIB
-# include <glib.h>
-#endif
-#elif __sgi
-  TODO
+#ifdef __linux
+# include <execinfo.h>
+# include <signal.h>
 #endif
 
 
-namespace CV {
-
+namespace Usul {
+namespace Errors {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -52,14 +47,19 @@ void handleSIGSEGV ( int num )
   std::cout << "------- Printing the function stack. -------" << std::endl;
   std::cout << "--------------------------------------------" << std::endl;
 
-#ifdef _WIN32
-  TODO
-#elif __GNUC__
-#ifdef HAVE_GLIB
-  ::g_on_error_stack_trace ( Detail::_programName.c_str() );
-#endif
-#elif __sgi
-  TODO
+#ifdef __linux
+
+  // See: http://www.ibm.com/developerworks/linux/library/l-cppexcep.html
+
+  void * array[25];
+  const int size ( ::backtrace ( array, 25 ) );
+  char **symbols ( ::backtrace_symbols ( array, size ) );
+
+  for ( unsigned int i = 0; i < size; ++i )
+    std::cout << symbols[i] << std::endl;
+
+  ::free ( symbols );
+
 #endif
 
   std::cout << "--------------------------------------------" << std::endl;
@@ -68,6 +68,7 @@ void handleSIGSEGV ( int num )
   std::cout << "\nCalling abort()..." << std::endl;
 
   // Exit the program.
+  // TODO: Throw an exception instead of aborting.
   ::abort();
 }
 
@@ -92,7 +93,8 @@ inline void registerSignalHandlers ( const std::string &programName )
 }
 
 
-}; // namespace CV
+} // namespace Errors
+} // namespace Usul
 
 
 #endif // _CV_SIGNAL_FUNCTIONS_H_

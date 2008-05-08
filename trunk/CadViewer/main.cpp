@@ -11,7 +11,7 @@
 #include "Application.h"
 
 #ifdef __GNUC__
-# include "Signals.h"
+# include "Usul/Errors/Signals.h"
 #endif
 
 #include "Threads/OpenThreads/Mutex.h"
@@ -40,7 +40,7 @@ int main ( int argc, char **argv )
 {
   #ifdef __GNUC__
   // Register the signal handlers.
-  CV::registerSignalHandlers ( argv[0] );
+  Usul::Errors::registerSignalHandlers ( argv[0] );
   #endif
 
   VRV::Core::Program < CV::Application > program ( "CadViewer" );

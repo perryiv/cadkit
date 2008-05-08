@@ -32,6 +32,7 @@ ${CADKIT_INC_DIR}/CadViewer/Plugins/display_scene_stats
 ${CADKIT_INC_DIR}/Helios/Plugins/PathAnimation
 ${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry
 ${CADKIT_INC_DIR}/Helios/Plugins/MeasureTool
+${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
 
 # ---- Document Plug-ins -------
 ${CADKIT_INC_DIR}/Helios/Plugins/SceneModel
@@ -54,6 +55,7 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
 ${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals
 ${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
 ${CADKIT_INC_DIR}/Minerva/Plugins/Document
+${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage
 )
 
 #---- ModFlow ---

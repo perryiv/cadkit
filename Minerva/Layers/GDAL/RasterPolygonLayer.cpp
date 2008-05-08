@@ -12,6 +12,7 @@
 #include "Minerva/Layers/GDAL/Common.h"
 #include "Minerva/Layers/GDAL/Convert.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/Random.h"
 #include "Usul/App/Application.h"
 #include "Usul/Factory/RegisterCreator.h"
@@ -20,6 +21,7 @@
 #include "Usul/File/Remove.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Threads/Safe.h"
@@ -402,7 +404,10 @@ RasterPolygonLayer::ImagePtr RasterPolygonLayer::_rasterize ( const Extents& ext
   
   // Make the transform.
   OGRSpatialReference dst ( _projectionText.c_str() ), src ( _latLonProjectionText.c_str() );
-  OGRCoordinateTransformation *transform ( OGRCreateCoordinateTransformation ( &src, &dst ) );
+  OGRCoordinateTransformation* transform ( ::OGRCreateCoordinateTransformation ( &src, &dst ) );
+  
+  // Make sure the transformation is destroyed.
+  Usul::Scope::Caller::RefPtr destroyTransform ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( transform, ::OCTDestroyCoordinateTransformation ) ) );
   
   // Set the extents.
   if ( 0x0 != transform )

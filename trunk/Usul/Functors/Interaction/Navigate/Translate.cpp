@@ -16,6 +16,8 @@
 #include "Usul/Functors/Interaction/Navigate/Translate.h"
 #include "Usul/Trace/Trace.h"
 
+#include "Usul/Interfaces/IJoystick.h"
+
 using namespace Usul::Functors::Interaction::Navigate;
 
 USUL_IMPLEMENT_TYPE_ID ( Translate );
@@ -45,7 +47,9 @@ Translate::Translate (
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Translate::Translate ( const Translate &cb ) : BaseClass ( cb )
+Translate::Translate ( const Translate &cb ) : 
+  BaseClass ( cb ),
+  _translateSpeed ( cb._translateSpeed )
 {
   USUL_TRACE_SCOPE;
 }

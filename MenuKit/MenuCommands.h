@@ -41,6 +41,9 @@ public:
 
   static MenuCommands&              instance();
 
+  // Clear the internal map.
+  void                              clear();
+
   CommandPtr                        find( const std::string& name );
   void                              add( const std::string& name, CommandPtr command );
 
@@ -51,13 +54,13 @@ protected:
 
 private:
 
-  // Construction.
+  // Construction/Destruction.
   MenuCommands();
+  ~MenuCommands();
+
+  // Do not copy.
   MenuCommands ( const MenuCommands & );
   MenuCommands &operator = ( const MenuCommands & );
-
-  // Use reference counting.
-  ~MenuCommands();
 
   static MenuCommands*            _instance;
   Commands                        _commandMap;

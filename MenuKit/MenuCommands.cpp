@@ -41,18 +41,9 @@ MenuCommands *MenuCommands::_instance ( 0x0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuCommands::MenuCommands()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Copy constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-MenuCommands::MenuCommands ( const MenuCommands &i )
+MenuCommands::MenuCommands() : 
+  _commandMap(),
+  _mutex ( Mutex::create() )
 {
 }
 
@@ -65,6 +56,7 @@ MenuCommands::MenuCommands ( const MenuCommands &i )
 
 MenuCommands::~MenuCommands()
 {
+  delete _mutex;
 }
 
 
@@ -84,13 +76,26 @@ MenuCommands& MenuCommands::instance()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Clear the internal map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MenuCommands::clear()
+{
+  Guard guard ( this->mutex() );
+  _commandMap.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Find a command with name <name>.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuCommands::CommandPtr MenuCommands::find( const std::string& name )
+MenuCommands::CommandPtr MenuCommands::find ( const std::string& name )
 {
-  //Guard guard ( _mutex );
+  Guard guard ( this->mutex() );
   return _commandMap[name];
 }
 
@@ -101,8 +106,8 @@ MenuCommands::CommandPtr MenuCommands::find( const std::string& name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MenuCommands::add( const std::string& name, CommandPtr command )
+void MenuCommands::add ( const std::string& name, CommandPtr command )
 {
-  //Guard guard ( _mutex );
+  Guard guard ( this->mutex() );
   _commandMap[name] = command;
 }

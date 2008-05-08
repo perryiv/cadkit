@@ -148,6 +148,10 @@ namespace Detail
     
     float *      dst ( reinterpret_cast < float* > ( result.data() ) );
     const float *src ( reinterpret_cast < const float* > ( image.data() ) );
+
+    // Make sure the pointers are valid.
+    if ( 0x0 == src || 0x0 == dst )
+      return;
     
     const GLenum pixelFormat ( image.getPixelFormat() );
     

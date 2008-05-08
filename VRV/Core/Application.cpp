@@ -2408,15 +2408,16 @@ void Application::analogTrim ( )
 
   for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
   {
-    float x ( 0.5f - (*iter).second->horizontal() );
-    float y ( 0.5f - (*iter).second->vertical() );
-  
-    Guard guard ( this->mutex() );
-    (*iter).second->analogTrim( x, y );
+		Joystick::RefPtr joystick ( iter->second );
+
+		if ( joystick.valid() )
+		{
+			float x ( 0.5f - joystick->horizontal() );
+			float y ( 0.5f - joystick->vertical() );
+	  
+			joystick->analogTrim( x, y );
+		}
   }
-
-
-
 }
 
 
@@ -2624,9 +2625,7 @@ void Application::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Us
 
     // Add the document as an intersect listener.
     this->addIntersectListener ( unknown.get() );
-  }
-
-  
+  }  
 }
 
 
@@ -2732,7 +2731,6 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
   {
     unsigned long id ( button->buttonID () );
 
-    
 #if 1
     std::cout << Usul::Strings::format( "Button ID: ", id, " pressed." ) << std::endl;
     switch ( id )
@@ -2744,10 +2742,7 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     case VRV::BUTTON4: std::cout << VRV::BUTTON4 << " Button 4 pressed (JOYSTICK)" << std::endl; break;
     case VRV::BUTTON5: std::cout << VRV::BUTTON5 << " Button 5 pressed (TRIGGER)"  << std::endl; break;
     }
-#else
-    
 #endif
-    
 
     // See if we should execute a user specified command.
     {
@@ -3289,7 +3284,6 @@ void Application::_readDevicesFile ()
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   this->addButtonPressListener( me.get() );
   this->addButtonReleaseListener ( me.get() );
-
 }
 
 
@@ -3302,8 +3296,6 @@ void Application::_readDevicesFile ()
 void Application::_readFunctorFile ()
 {
   USUL_TRACE_SCOPE;
-
-  
 
   // Local factory for functor creation.
   Usul::Factory::ObjectFactory factory;

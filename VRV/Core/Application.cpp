@@ -3792,7 +3792,6 @@ void Application::_initMenu()
     menu->append ( file.get() );
   }
 
-
   // The view menu.
   {
     MenuKit::Menu::RefPtr view ( new MenuKit::Menu ( "View", MenuKit::Menu::VERTICAL ) );
@@ -3837,6 +3836,9 @@ void Application::_initMenu()
 
 	{
 		Guard guard ( this->mutex() );
+
+		// Clear the current map.
+		_buttonMap.clear();
 
 		// Apply preset button mappings
 		for( ButtonCommandsMap::iterator iter = _buttonCommandsMap.begin(); iter != _buttonCommandsMap.end(); ++iter )

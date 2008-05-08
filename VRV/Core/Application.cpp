@@ -229,17 +229,12 @@ Application::Application() :
 
   _joystick->name ( "Joystick" );
 
-  JoystickPtr jptr ( _joystick );
-  {
-    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-    if( true == jptr.valid() )
-    {
-      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-      jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-    }
-  }
+  // Set the callback.
+  JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 }
 
 
@@ -3178,12 +3173,7 @@ void Application::_readDevicesFile ()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
 
-  ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
-  // clear buttons and analogs varialbles
-  //_menuNavigationAnalogID = "Joystick";
-
-  //_buttons->clear();
-  // Open the input file.
+  // Get the filename.
   const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _deviceFilename ) );
 
   if ( false == Usul::Predicates::FileExists::test ( file ) )
@@ -3191,6 +3181,8 @@ void Application::_readDevicesFile ()
     std::cout << "Warning 3773295320: No devices file found." << std::endl;
     return;
   }
+
+  ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
 
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
@@ -3363,20 +3355,17 @@ void Application::_readFunctorFile ()
     }	
   }
 
+  Analogs::iterator iter ( _analogs.find ( _menuNavigationAnalogID ) );
+  JoystickPtr joystick ( iter != _analogs.end() ? iter->second : 0x0 );
+
     // assign the menu navigation to the specified joystick or default if none specified
-  if( _analogs.size() > 0 && true == _analogs[ _menuNavigationAnalogID ].valid() )
+  if( joystick.valid() )
   {
-    JoystickPtr jptr ( _analogs[ _menuNavigationAnalogID ] );
-    {
-      JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-      if( true == jptr.valid() )
-      {
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-        jptr->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-      }
-    }
+    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
   }
   else
   {

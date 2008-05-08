@@ -675,7 +675,7 @@ private:
   typedef VRV::Devices::ButtonGroup                        ButtonGroup;
   typedef VRV::Devices::ButtonGroup::ValidRefPtr           ButtonsPtr;
   typedef VRV::Devices::TrackerDevice::ValidRefPtr         TrackerPtr;
-  typedef VRV::Devices::JoystickDevice::ValidRefPtr        JoystickPtr;
+  typedef VRV::Devices::JoystickDevice::RefPtr             JoystickPtr;
   typedef Usul::Interfaces::IUpdateListener                UpdateListener;
   typedef std::vector < UpdateListener::RefPtr >           UpdateListeners;
   typedef Usul::Interfaces::ICommand                       Command;

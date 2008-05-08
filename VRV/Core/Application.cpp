@@ -398,6 +398,9 @@ void Application::cleanup()
     }
   }
 
+  // Reset the document manager.
+  Usul::Documents::Manager::reset();
+
   if ( 0x0 != _deleteHandler )
     _deleteHandler->flushAll();
 }

@@ -16,8 +16,6 @@
 #include "Usul/Functors/Interaction/Navigate/Translate.h"
 #include "Usul/Trace/Trace.h"
 
-#include "Usul/Interfaces/IJoystick.h"
-
 using namespace Usul::Functors::Interaction::Navigate;
 
 USUL_IMPLEMENT_TYPE_ID ( Translate );

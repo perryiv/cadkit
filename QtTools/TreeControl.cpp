@@ -260,7 +260,8 @@ namespace Helper
     if ( 0 == numChildren )
     {
       Usul::Interfaces::IBooleanState::QueryPtr boolean ( items[item] );
-      item->setCheckState ( 0, ( ( boolean->getBooleanState() ) ? Qt::Checked : Qt::Unchecked ) );
+      Qt::CheckState check ( boolean.valid() ? ( ( boolean->getBooleanState() ) ? Qt::Checked : Qt::Unchecked ) : Qt::Unchecked );
+      item->setCheckState ( 0, check );
       return;
     }
 

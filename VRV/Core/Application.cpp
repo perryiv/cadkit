@@ -3831,6 +3831,22 @@ void Application::_initMenu()
     ma->menuAdd ( *menu, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
 
+	// Traverse the menu and build the map of commands
+  MenuKit::CommandVisitor::RefPtr commandVisitor ( new MenuKit::CommandVisitor );
+  commandVisitor->apply( *menu );
+
+	{
+		Guard guard ( this->mutex() );
+
+		// Apply preset button mappings
+		for( ButtonCommandsMap::iterator iter = _buttonCommandsMap.begin(); iter != _buttonCommandsMap.end(); ++iter )
+		{
+			Usul::Commands::Command::RefPtr command ( MenuKit::MenuCommands::instance().find( (*iter).second ) );
+			const unsigned int buttonID ( (*iter).first );
+			_buttonMap[ buttonID ] = command;
+		}
+	}
+
   // Set the menu.
   osgMenu->menu ( menu.get() );
 
@@ -3840,18 +3856,6 @@ void Application::_initMenu()
   // Default settings, so that the menu has the correct toggle's checked.
   OsgTools::State::StateSet::setPolygonsFilled ( this->models(), false );
   OsgTools::State::StateSet::setPolygonsSmooth ( this->models() );
-
-  // Traverse the menu and build the map of commands
-  MenuKit::CommandVisitor::RefPtr commandVisitor ( new MenuKit::CommandVisitor );
-  commandVisitor->apply( *menu );
-
-  // Apply preset button mappings
-  for( ButtonCommandsMap::iterator iter = _buttonCommandsMap.begin(); iter != _buttonCommandsMap.end(); ++iter )
-  {
-    Usul::Commands::Command::RefPtr command = MenuKit::MenuCommands::instance().find( (*iter).second );
-    unsigned int buttonID = (*iter).first;
-    _buttonMap[ buttonID ] = command;
-  }
 }
 
 

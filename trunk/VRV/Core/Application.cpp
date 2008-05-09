@@ -356,6 +356,15 @@ void Application::cleanup()
   // Remove our self as the active view.
   Usul::Documents::Manager::instance().activeView ( 0x0 );
 
+  // Remove our self from the document.
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  if ( document.valid() )
+    document->removeView ( Usul::Interfaces::IView::QueryPtr ( this ) );
+
+  // Clear the active document.
+  Usul::Documents::Manager::instance().activeDocument ( 0x0 );
+
   // Remove all button listeners.
   for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
   {
@@ -369,6 +378,9 @@ void Application::cleanup()
   // Clear all render listeners.
   this->clearRenderListeners();
 
+  // Clear the update listeners.
+  _updateListeners.clear();
+
   // Clear the navigator.
   this->navigator ( 0x0 );
 
@@ -376,6 +388,9 @@ void Application::cleanup()
   _analogInputs.clear ();
   _transformFunctors.clear ();
   _favoriteFunctors.clear ();
+
+  // Clear the commands.
+  MenuKit::MenuCommands::instance().clear();
 
   // Clear the menu.
   this->menu ( 0x0 );
@@ -398,8 +413,40 @@ void Application::cleanup()
     }
   }
 
+  // Typedefs.
+  typedef Usul::Documents::Manager::Documents  Documents;
+  typedef Usul::Documents::Document            Document;
+
+  {
+    // Make a copy because as the documents are closing, they remove themselves from the document manager.
+    Documents copy ( Usul::Documents::Manager::instance().documents() );
+
+    // Tell the remaining open documents that the application is about to close.
+    // This allows the document to clean up any circular references.
+    for ( Documents::iterator i = copy.begin(); i != copy.end(); ++i )
+    {
+      // Grab the document in a smart pointer so it doesn't get deleted out from under us.
+      Document::RefPtr doc ( *i );
+      doc->applicationClosing( 0x0 );
+    }
+  }
+
+  // Clear documents.
+  Usul::Documents::Manager::instance().documents().clear();
+
   // Reset the document manager.
   Usul::Documents::Manager::reset();
+
+  // Clear the button map.
+  _buttonMap.clear();
+  _buttonCommandsMap.clear();
+
+  // Clean up the scene.
+  _root = 0x0;
+  _navBranch = 0x0;
+  _models = 0x0;
+  _sceneManager = 0x0;
+  _auxiliary = 0x0;
 
   if ( 0x0 != _deleteHandler )
     _deleteHandler->flushAll();
@@ -633,6 +680,10 @@ void Application::contextClose()
   USUL_TRACE_SCOPE;
 
   RendererPtr renderer ( *_renderer );
+
+  // Clear the renderer.
+  if ( renderer.valid() )
+    renderer->clear();
 
   // Clean up context specific data.
   (*_renderer) = 0x0;
@@ -1360,7 +1411,7 @@ void Application::_postFrame()
   }
 
   if ( 0x0 != _deleteHandler )
-    _deleteHandler->flushAll();
+    _deleteHandler->flush();
 
   // Make sure.
   this->_setNearAndFarClippingPlanes();

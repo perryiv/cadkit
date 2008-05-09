@@ -95,9 +95,6 @@ public:
     // Wait for all jobs to finish
     Usul::Jobs::Manager::instance().wait();
 
-    // Clear any documents.
-    this->_clearDocuments();
-
     // Delete the job manager.
     Usul::Jobs::Manager::destroy();
 
@@ -208,33 +205,6 @@ protected:
     loader.load ( feedback->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   }
 
-  //  Clear all the documents.
-  void _clearDocuments()
-  {
-    // Typedefs.
-    typedef Usul::Documents::Manager::Documents  Documents;
-    typedef Usul::Documents::Document            Document;
-
-    {
-      // Make a copy because as the documents are closing, they remove themselves from the document manager.
-      Documents copy ( Usul::Documents::Manager::instance().documents() );
-
-      // Tell the remaining open documents that the application is about to close.
-      // This allows the document to clean up any circular references.
-      for ( Documents::iterator i = copy.begin(); i != copy.end(); ++i )
-      {
-        // Grab the document in a smart pointer so it doesn't get deleted out from under us.
-        Document::RefPtr doc ( *i );
-        doc->applicationClosing( 0x0 );
-      }
-    }
-
-    // Clear documents.
-    Usul::Documents::Manager::instance().documents().clear();
-
-    // Reset the document manager.
-    Usul::Documents::Manager::reset();
-  }
 
   // Read the registry.
   void _readRegistryFile ()

@@ -31,6 +31,21 @@
 #include "Minerva/Core/Visitors/ResizePoints.h"
 #include "Minerva/Core/Visitors/BuildLegend.h"
 #include "Minerva/Interfaces/ITemporalData.h"
+#include "Minerva/Core/Utilities/ClampNearFar.h"
+#include "Minerva/Core/Visitors/SetJobManager.h"
+#include "Minerva/Core/Extents.h"
+#include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
+#include "Minerva/Core/TileEngine/SplitCallbacks.h"
+
+#include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
+#include "MenuKit/RadioButton.h"
+
+#include "OsgTools/Font.h"
+#include "OsgTools/Group.h"
+
+#include "Serialize/XML/Serialize.h"
+#include "Serialize/XML/Deserialize.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -55,21 +70,6 @@
 #include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
-
-#include "MenuKit/Button.h"
-#include "MenuKit/ToggleButton.h"
-#include "MenuKit/RadioButton.h"
-
-#include "OsgTools/Font.h"
-
-#include "Minerva/Core/Utilities/ClampNearFar.h"
-#include "Minerva/Core/Visitors/SetJobManager.h"
-#include "Minerva/Core/Extents.h"
-#include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
-#include "Minerva/Core/TileEngine/SplitCallbacks.h"
-
-#include "Serialize/XML/Serialize.h"
-#include "Serialize/XML/Deserialize.h"
 
 #include "osg/CoordinateSystemNode"
 #include "osg/Geode"
@@ -213,6 +213,12 @@ MinervaDocument::~MinervaDocument()
 
   _sender = 0x0;
   _receiver = 0x0;
+
+  // Delete the tiles.
+  OsgTools::Group::removeAllChildren ( _root.get() );
+  if ( 1 != _root->referenceCount() )
+    std::cout << "Warning 3380491951: Dangling reference to Minerva's scene root, memory leak?" << std::endl;
+  _root = 0x0;
 
   // Clear the bodies.
   _bodies.clear();

@@ -29,7 +29,7 @@ USUL_IMPLEMENT_COMMAND ( ExportModel );
 ExportModel::ExportModel ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "&Export Model" );
+  this->text ( "Export &Model" );
   this->shortcut ( "" );
   this->statusTip ( "Export model of current view" );
   this->toolTip ( "Export model of current view" );

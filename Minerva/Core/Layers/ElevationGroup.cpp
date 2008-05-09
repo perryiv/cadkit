@@ -99,7 +99,7 @@ namespace Detail
     const unsigned int width ( data.s() );
     const unsigned int height ( data.t() );
     const unsigned int size ( width * height );
-    
+
     DstType       *dst ( reinterpret_cast < DstType* >       ( image.data() ) );
     const SrcType *src ( reinterpret_cast < const SrcType* > ( data.data()  ) );
 
@@ -109,18 +109,18 @@ namespace Detail
     
     // Get the pixel format.
     const GLenum pixelFormat ( image.getPixelFormat() );
-    
+
     // Does this image have alpha?
     const bool hasAlpha ( GL_RGBA == pixelFormat || GL_LUMINANCE_ALPHA == pixelFormat );
-    
+
     // The offset amount.
     const unsigned int offset ( hasAlpha ? 2 : 1 );
-    
+
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
       const SrcType alpha ( hasAlpha ? ( ( 0.0 == src[1] ) ? 0.0 : 1.0 ) : 1.0 );
-      
+
       SrcType value ( *src );
       dst[0] = static_cast<DstType> ( value );
       dst[1] = alpha * std::numeric_limits<DstType>::max();

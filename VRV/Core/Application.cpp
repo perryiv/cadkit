@@ -448,6 +448,9 @@ void Application::cleanup()
   _sceneManager = 0x0;
   _auxiliary = 0x0;
 
+	// Clear the intersector.
+	_intersector = 0x0;
+
   if ( 0x0 != _deleteHandler )
     _deleteHandler->flushAll();
 }

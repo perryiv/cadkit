@@ -214,27 +214,9 @@ MinervaDocument::~MinervaDocument()
   _sender = 0x0;
   _receiver = 0x0;
 
-  // Delete the tiles.
-  OsgTools::Group::removeAllChildren ( _root.get() );
-  if ( 1 != _root->referenceCount() )
-    std::cout << "Warning 3380491951: Dangling reference to Minerva's scene root, memory leak?" << std::endl;
-  _root = 0x0;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_clear ), "1582439358" );
 
-  // Clear the bodies.
-  _bodies.clear();
-  
-  // Clean up job manager.
-  if ( 0x0 != _manager )
-  {
-    // Remove all queued jobs and cancel running jobs.
-    _manager->cancel();
-    
-    // Wait for remaining jobs to finish.
-    _manager->wait();
-    
-    // Delete the manager.
-    delete _manager; _manager = 0x0;
-  }
+  _root = 0x0;
 }
 
 
@@ -488,9 +470,43 @@ void MinervaDocument::write ( const std::string &filename, Unknown *caller, Unkn
 
 void MinervaDocument::clear ( Unknown *caller )
 {
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_clear ), "2171542707" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_clear()
+{
   this->_connectToDistributedSession();
-  _sender->deleteSession();
-  _legend->clear();
+  
+  if ( _sender.valid() ) _sender->deleteSession();
+  if ( _legend.valid() ) _legend->clear();
+
+  // Delete the tiles.
+  OsgTools::Group::removeAllChildren ( _root.get() );
+  if ( 1 != _root->referenceCount() )
+    std::cout << "Warning 3380491951: Dangling reference to Minerva's scene root, memory leak?" << std::endl;
+  
+  // Clean up job manager.
+  if ( 0x0 != _manager )
+  {
+    // Remove all queued jobs and cancel running jobs.
+    _manager->cancel();
+    
+    // Wait for remaining jobs to finish.
+    _manager->wait();
+    
+    // Delete the manager.
+    delete _manager; _manager = 0x0;
+  }
+
+  // Clear the bodies.
+  _bodies.clear();
 }
 
 

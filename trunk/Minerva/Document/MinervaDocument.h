@@ -240,6 +240,9 @@ protected:
   /// Usul::Interfaces::IMatrixManipulator
   virtual osgGA::MatrixManipulator *       getMatrixManipulator ();
 
+  /// Clear.
+  void                                     _clear();
+
   /// Distributed functions.
   void                                     _connectToDistributedSession();
 

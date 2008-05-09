@@ -441,6 +441,10 @@ void Application::cleanup()
   _buttonMap.clear();
   _buttonCommandsMap.clear();
 
+	// Clear the progress bars.
+	_progressBars->removeFinishedProgressBars();
+	_progressBars = 0x0;
+
   // Clean up the scene.
   _root = 0x0;
   _navBranch = 0x0;

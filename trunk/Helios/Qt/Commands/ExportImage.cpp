@@ -29,7 +29,7 @@ USUL_IMPLEMENT_COMMAND ( ExportImage );
 ExportImage::ExportImage ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "&Export Image" );
+  this->text ( "Export &Image" );
   this->shortcut ( "" );
   this->statusTip ( "Export Image of current view" );
   this->toolTip ( "Export Image of current view" );

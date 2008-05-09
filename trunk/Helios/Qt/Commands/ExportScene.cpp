@@ -29,7 +29,7 @@ USUL_IMPLEMENT_COMMAND ( ExportScene );
 ExportScene::ExportScene ( IUnknown *caller ) : BaseClass ( caller )
 {
   USUL_TRACE_SCOPE;
-  this->text ( "&Export Scene" );
+  this->text ( "Export &Scene" );
   this->shortcut ( "" );
   this->statusTip ( "Export top-level scene of current view" );
   this->toolTip ( "Export top-level scene of current view" );

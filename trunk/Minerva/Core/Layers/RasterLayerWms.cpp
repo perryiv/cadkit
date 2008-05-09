@@ -24,7 +24,6 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
-#include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
@@ -245,8 +244,8 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
     Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.maximum()[1] ) );
 
   // Add width and height.
-  options[Usul::Network::Names::WIDTH] = Usul::Strings::format ( width );
-  options[Usul::Network::Names::HEIGHT] = Usul::Strings::format ( height );
+  options[Usul::Network::Names::WIDTH]  = Usul::Convert::Type<unsigned int,std::string>::convert ( width  );
+  options[Usul::Network::Names::HEIGHT] = Usul::Convert::Type<unsigned int,std::string>::convert ( height );
 
   // Get the cache directory.
   const std::string cachDir ( this->_cacheDirectory() );

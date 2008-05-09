@@ -156,9 +156,6 @@ Viewer::~Viewer()
 {
   USUL_TRACE_SCOPE;
 
-  // Save viewer's state first.
-  _viewer->stateSave();
-
   // Stop and delete the timer.
   if ( 0x0 != _timer )
   {
@@ -174,10 +171,6 @@ Viewer::~Viewer()
     delete _timerRenderLoop;
     _timerRenderLoop = 0x0;
   }
-
-  // Clear the viewer.
-  _viewer->clear();
-  _viewer = 0x0;
 
   // Clear the keys.
   _keys.clear();
@@ -1538,6 +1531,18 @@ std::string Viewer::question ( const std::string &buttons, const std::string &ti
 
 void Viewer::_close()
 {
+  // Clean up the viewer first.
+  {
+    Guard guard ( this->mutex() );
+  
+    // Save viewer's state first.
+    _viewer->stateSave();
+
+    // Clear the viewer.
+    _viewer->clear();
+    _viewer = 0x0;
+  }
+
   // Get the document.
   Viewer::Document::RefPtr document ( this->document() );
   if ( true == document.valid() )

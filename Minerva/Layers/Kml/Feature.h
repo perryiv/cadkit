@@ -13,7 +13,7 @@
 
 #include "Minerva/Layers/Kml/Object.h"
 #include "Minerva/Layers/Kml/LookAt.h"
-
+#include "Minerva/Layers/Kml/TimePrimitive.h"
 
 namespace Minerva {
 namespace Layers {
@@ -42,6 +42,10 @@ public:
 	void                   styleUrl ( const std::string& url );
 	const std::string&     styleUrl() const;
   
+  /// Set/get the time primitive.
+  void                   timePrimitive ( TimePrimitive* );
+  TimePrimitive*         timePrimitive() const;
+  
 protected:
   
   virtual ~Feature();
@@ -52,6 +56,7 @@ private:
 	std::string _styleUrl;
   bool _visiblity;
   LookAt::RefPtr _lookAt;
+  TimePrimitive::RefPtr _timePrimitive;
 };
 
 

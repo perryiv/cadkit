@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/Feature.h"
+#include "Minerva/Layers/Kml/TimeSpan.h"
 
 #include "XmlTree/Node.h"
 
@@ -26,7 +27,8 @@ Feature::Feature() :
   _name(),
 	_styleUrl(),
   _visiblity ( true ),
-  _lookAt ( 0x0 )
+  _lookAt ( 0x0 ),
+  _timePrimitive ( 0x0 )
 {
 }
 
@@ -42,7 +44,8 @@ Feature::Feature( const XmlTree::Node& node ) :
   _name(),
 	_styleUrl(),
   _visiblity ( true ),
-  _lookAt ( 0x0 )
+  _lookAt ( 0x0 ),
+  _timePrimitive ( 0x0 )
 {
   typedef XmlTree::Node::Children Children;
   
@@ -69,6 +72,10 @@ Feature::Feature( const XmlTree::Node& node ) :
 		{
 			_styleUrl = node->value();
 		}
+    else if ( "TimeSpan" == name )
+    {
+      _timePrimitive = new TimeSpan ( *node );
+    }
   }
 }
 
@@ -153,4 +160,28 @@ void Feature::styleUrl ( const std::string& url )
 const std::string& Feature::styleUrl() const
 {
 	return _styleUrl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the time primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::timePrimitive ( TimePrimitive* timePrimitive )
+{
+  _timePrimitive = timePrimitive;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the time primitive.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TimePrimitive* Feature::timePrimitive() const
+{
+  return _timePrimitive.get();
 }

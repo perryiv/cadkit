@@ -17,6 +17,7 @@
 #include "Minerva/Layers/Kml/KmlLayer.h"
 #include "Minerva/Layers/Kml/NetworkLink.h"
 #include "Minerva/Layers/Kml/Feature.h"
+#include "Minerva/Layers/Kml/TimeSpan.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/DataObjects/Model.h"
 #include "Minerva/Core/DataObjects/Point.h"
@@ -25,6 +26,9 @@
 #include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Geometry/Polygon.h"
+
+#include "OsgTools/Visitor.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -52,9 +56,6 @@
 #include "Usul/System/Directory.h"
 #include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
-
-#include "OsgTools/Visitor.h"
-#include "OsgTools/State/StateSet.h"
 
 #include "osg/Material"
 
@@ -450,6 +451,12 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 		object->label ( feature->name() );
     object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
     object->showLabel ( true );
+    
+    if ( TimeSpan *span = dynamic_cast<TimeSpan*> ( feature->timePrimitive() ) )
+    {
+      object->firstDate ( span->begin() );
+      object->lastDate ( span->end() );
+    }
 
     // Add the data object.
     this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );

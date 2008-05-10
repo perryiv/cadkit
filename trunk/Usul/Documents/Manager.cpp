@@ -334,6 +334,10 @@ Manager::View* Manager::activeView()
 
 void Manager::close ( Document *document )
 {
+  // Make sure the document is valid.
+  if ( 0x0 == document )
+    return;
+
   // Return now if the document still has windows open
   if ( document->numWindows() > 0 )
     return;
@@ -343,7 +347,7 @@ void Manager::close ( Document *document )
   // Unset the active document if it is the one that is closing
   if ( doc.get() == this->activeDocument() )
   {
-    // Set the active document to null.  Call this instead of setting it directy.
+    // Set the active document to null.  Call this instead of setting it directly.
     this->activeDocument ( 0x0 );
   }
 

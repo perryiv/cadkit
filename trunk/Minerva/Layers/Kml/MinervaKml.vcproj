@@ -306,6 +306,22 @@
 				RelativePath=".\Style.h"
 				>
 			</File>
+			<File
+				RelativePath=".\TimePrimitive.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimePrimitive.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeSpan.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeSpan.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

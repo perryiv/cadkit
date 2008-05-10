@@ -30,6 +30,7 @@ namespace Layers {
 namespace Kml {
   
   class NetworkLink;
+  class Feature;
 
 class KmlLayer : public Minerva::Core::Layers::Vector,
                  public Usul::Interfaces::IRead
@@ -92,12 +93,13 @@ protected:
   DataObject*                 _parsePolygon      ( const XmlTree::Node& node, Style *style );
   DataObject*                 _parseLineString   ( const XmlTree::Node& node, Style *style );
   DataObject*                 _parseLineRing     ( const XmlTree::Node& node, Style *style );
-  void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style );
+  void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, Feature& feature );
   DataObject::AltitudeMode    _parseAltitudeMode ( const XmlTree::Node& node );
   NetworkLink*                _parseNetworkLink  ( const XmlTree::Node& node );
   Link*                       _parseLink         ( const XmlTree::Node& node );
   void                        _parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices );
 
+  void                        _setDataObjects ( DataObject&, Feature& feature );
 	Style*                      _style ( const std::string& name );
 
   osg::Vec3                   _buildVec3         ( const XmlTree::Node& node );

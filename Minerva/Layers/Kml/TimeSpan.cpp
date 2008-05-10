@@ -63,7 +63,7 @@ TimeSpan::TimeSpan ( const XmlTree::Node &node ) : BaseClass ( node ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TimeSpan::~TimePrimitive()
+TimeSpan::~TimeSpan()
 {
 }
 

@@ -94,7 +94,6 @@
 
 namespace osg
 {
-  class DeleteHandler;
   class FrameStamp;
   class MatrixTransform;
   class Node;
@@ -102,6 +101,7 @@ namespace osg
 };
 
 namespace MenuKit { class Button; }
+namespace OsgTools { namespace Utilities { class DeleteHandler; } }
 
 namespace VRV {
 namespace Core {
@@ -267,10 +267,6 @@ public:
   /// Get the joystick.
   Joystick *              joystick ();
   const Joystick *        joystick () const;
-
-  /// Get the 2nd joystick.
-  Joystick *              joystick2 ();
-  const Joystick *        joystick2 () const;
 
   /// Get/Set the analog trim.
   const Usul::Math::Vec2f&    analogTrim () const;
@@ -695,6 +691,7 @@ private:
   typedef std::vector<IRenderListener::RefPtr>             RenderListeners;
   typedef std::map<unsigned long, CommandPtr>              ButtonMap;
   typedef std::map<unsigned int, std::string>              ButtonCommandsMap;
+  typedef OsgTools::Utilities::DeleteHandler               DeleteHandler;
 
   enum Flags
   {
@@ -756,7 +753,7 @@ private:
   VRV::Functors::Intersect::RefPtr       _intersector;
   MatTransPtr                            _auxiliary;
   bool                                   _allowIntersections;
-  osg::DeleteHandler *                   _deleteHandler;
+  DeleteHandler *                        _deleteHandler;
   Vector                                 _rotCenter;
   unsigned int                           _flags;
   UpdateListeners                        _updateListeners;

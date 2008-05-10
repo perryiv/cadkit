@@ -129,14 +129,6 @@ Application::Application ( ) :
 
   // Name the branches.
   _gridBranch->setName   ( "_gridBranch"   );
-
-  ///// Moved Joystick callbacks to VRV::Core::Application
-  // Hook up the joystick callbacks.
-  //JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-  //this->joystick()->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 }
 
 
@@ -341,46 +333,6 @@ void Application::_latePreFrame()
 
   // Use the scene-tool if we are supposed to.
   this->_useSceneTool();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Callback for the joystick.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::Referenced * )
-{
-  USUL_TRACE_SCOPE;
-
-  ErrorChecker ( 1915253659u, isAppThread(), CV::NOT_APP_THREAD );
-  ErrorChecker ( 4165917933u, 0x0 != _app );
-
-  MenuKit::OSG::Menu::RefPtr menu ( _app->menu () );
-
-  // Make sure we have a valid menu.
-  if ( false == menu.valid () )
-    return;
-
-  switch ( m )
-  {
-  case VRV::Devices::JOYSTICK_ENTERING_RIGHT:
-    menu->moveFocused ( MenuKit::Behavior::RIGHT );
-    break;
-
-  case VRV::Devices::JOYSTICK_ENTERING_LEFT:
-    menu->moveFocused ( MenuKit::Behavior::LEFT );
-    break;
-
-  case VRV::Devices::JOYSTICK_ENTERING_UP:
-    menu->moveFocused ( MenuKit::Behavior::UP );
-    break;
-
-  case VRV::Devices::JOYSTICK_ENTERING_DOWN:
-    menu->moveFocused ( MenuKit::Behavior::DOWN );
-    break;
-  }
 }
 
 

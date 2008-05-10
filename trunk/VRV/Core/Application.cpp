@@ -81,6 +81,7 @@
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
+#include "OsgTools/Group.h"
 #include "OsgTools/Ray.h"
 #include "OsgTools/ShapeFactory.h"
 #include "OsgTools/Utilities/DeleteHandler.h"
@@ -174,7 +175,7 @@ Application::Application() :
   _intersector       ( 0x0 ),
   _auxiliary         ( new osg::MatrixTransform ),
   _allowIntersections ( true ),
-  _deleteHandler     ( new OsgTools::Utilities::DeleteHandler ),
+  _deleteHandler     ( new DeleteHandler ),
   _rotCenter         ( 0, 0, 0 ),
   _flags             ( 0 ),
   _updateListeners   (),
@@ -347,31 +348,6 @@ void Application::cleanup()
 {
   USUL_TRACE_SCOPE;
 
-  // Wait for all jobs to finish
-  Usul::Jobs::Manager::instance().wait();
-
-  // Remove our self from the list of active document listeners.
-  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
-
-  // Remove our self as the active view.
-  Usul::Documents::Manager::instance().activeView ( 0x0 );
-
-  // Remove our self from the document.
-  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
-
-  if ( document.valid() )
-    document->removeView ( Usul::Interfaces::IView::QueryPtr ( this ) );
-
-  // Clear the active document.
-  Usul::Documents::Manager::instance().activeDocument ( 0x0 );
-
-  // Remove all button listeners.
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->clearButtonPressListeners ();
-    (*iter)->clearButtonReleaseListeners ();
-  }
-
   // Clear all intersect listeners.
   this->clearIntersectListeners();
 
@@ -380,6 +356,52 @@ void Application::cleanup()
 
   // Clear the update listeners.
   _updateListeners.clear();
+
+  // Clean up the scene.
+  OsgTools::Group::removeAllChildren ( _root.get() );
+  OsgTools::Group::removeAllChildren ( _navBranch.get() );
+  OsgTools::Group::removeAllChildren ( _models.get() );
+  OsgTools::Group::removeAllChildren ( _auxiliary.get() );
+  this->setSceneData ( 0x0 );
+
+  _root = 0x0;
+  _navBranch = 0x0;
+  _models = 0x0;
+  _sceneManager = 0x0;
+  _auxiliary = 0x0;
+
+  if ( 0x0 != _deleteHandler )
+  {
+    while ( _deleteHandler->numObjects() > 0 )
+      _deleteHandler->flushAll();
+  }
+
+  // Wait for all jobs to finish
+  Usul::Jobs::Manager::instance().wait();
+
+  // Remove our self from the list of active document listeners.
+  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
+
+  // Remove our self from the document.
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  if ( document.valid() )
+  {
+    document->removeView ( Usul::Interfaces::IView::QueryPtr ( this ) );
+    document->closing ( 0x0 );
+  }
+
+  // Clear the active view and document.
+  Usul::Documents::Manager::instance().activeView ( 0x0 );
+  Usul::Documents::Manager::instance().activeDocument ( 0x0 );
+  document = 0x0;
+
+  // Remove all button listeners.
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonPressListeners ();
+    (*iter)->clearButtonReleaseListeners ();
+  }
 
   // Clear the navigator.
   this->navigator ( 0x0 );
@@ -442,21 +464,19 @@ void Application::cleanup()
   _buttonCommandsMap.clear();
 
 	// Clear the progress bars.
-	_progressBars->removeFinishedProgressBars();
-	_progressBars = 0x0;
+  if ( _progressBars.valid() )
+    _progressBars->removeFinishedProgressBars();
 
-  // Clean up the scene.
-  _root = 0x0;
-  _navBranch = 0x0;
-  _models = 0x0;
-  _sceneManager = 0x0;
-  _auxiliary = 0x0;
+	_progressBars = 0x0;
 
 	// Clear the intersector.
 	_intersector = 0x0;
 
   if ( 0x0 != _deleteHandler )
-    _deleteHandler->flushAll();
+  {
+    while ( _deleteHandler->numObjects() > 0 )
+      _deleteHandler->flushAll();
+  }
 }
 
 
@@ -977,9 +997,9 @@ void Application::_capturePixels ( const std::string& filename )
 void Application::setSceneData( osg::Node* node )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  _sceneManager->model( node );
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  if ( sceneManager.valid() )
+    sceneManager->model( node );
 }
 
 
@@ -992,9 +1012,8 @@ void Application::setSceneData( osg::Node* node )
 const osg::Node* Application::getSceneData() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  return _sceneManager->model();
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  return ( sceneManager.valid() ? sceneManager->model() : 0x0 );
 }
 
 
@@ -4651,7 +4670,8 @@ std::string Application::_documentSection () const
 
 osgText::Text* Application::getText ( unsigned int x, unsigned int y )
 {
-  return _sceneManager->getText ( x, y );
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  return ( sceneManager.valid() ? sceneManager->getText ( x, y ) : 0x0 );
 }
 
 
@@ -4663,7 +4683,9 @@ osgText::Text* Application::getText ( unsigned int x, unsigned int y )
 
 void Application::setText ( unsigned int x, unsigned int y, const std::string& text, const osg::Vec4f& color, const osg::Vec4f& backDropColor )
 {
-  _sceneManager->setText ( x, y, text, color, backDropColor );
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  if ( sceneManager.valid() )
+    sceneManager->setText ( x, y, text, color, backDropColor );
 }
 
 
@@ -4675,7 +4697,9 @@ void Application::setText ( unsigned int x, unsigned int y, const std::string& t
 
 void Application::removeText ( unsigned int x, unsigned int y )
 {
-  _sceneManager->removeText ( x, y );
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  if ( sceneManager.valid() )
+    sceneManager->removeText ( x, y );
 }
 
 
@@ -5390,8 +5414,8 @@ void Application::removeButtonReleaseListener ( Usul::Interfaces::IUnknown *call
 osg::Group* Application::getGroup ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _sceneManager->groupGet ( name );
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  return ( sceneManager.valid() ? sceneManager->groupGet ( name ) : 0x0 );
 }
 
 
@@ -5404,8 +5428,9 @@ osg::Group* Application::getGroup ( const std::string& name )
 void Application::removeGroup ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _sceneManager->groupRemove ( name );
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  if ( sceneManager.valid() )
+    sceneManager->groupRemove ( name );
 }
 
 
@@ -5418,8 +5443,8 @@ void Application::removeGroup ( const std::string& name )
 bool Application::hasGroup ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _sceneManager->groupHas ( name );
+  OsgTools::Render::SceneManager::RefPtr sceneManager ( Usul::Threads::Safe::get ( this->mutex(), _sceneManager ) );
+  return ( sceneManager.valid() ? sceneManager->groupHas ( name ) : false );
 }
 
 

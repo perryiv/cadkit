@@ -28,6 +28,11 @@ public:
   
   virtual void flush();
   virtual void flushAll();
+
+  unsigned int numObjects();
+
+protected:
+  static std::string _name ( const osg::Referenced* );
 };
 
   }

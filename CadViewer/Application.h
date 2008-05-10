@@ -54,18 +54,6 @@ public:
   static bool                   isMainThread();
 
 protected:
-  
-  // Joystick callbacks.
-  struct JoystickCB : public VRV::Devices::Callback
-  {
-    JoystickCB ( Application *app ) : _app ( app ){}
-    virtual void operator () ( VRV::Devices::Message m, Usul::Base::Referenced *caller );
-  private:
-    Application *_app;
-  };
-
-  // The callbacks are friendly.
-  //friend struct JoystickCB;
 
   // These are not implemented by design.
   Application ( const Application &app );

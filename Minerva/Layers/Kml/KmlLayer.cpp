@@ -443,20 +443,12 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   else if ( false == linering.empty() )
     object = this->_parseLineRing( *linering.front(), style.get() );
   else if ( false == multiGeometry.empty() )
-    this->_parseMultiGeometry ( *multiGeometry.front(), style.get() );
+    this->_parseMultiGeometry ( *multiGeometry.back(), style.get(), *feature );
   
   if ( object.valid () )
   {
-    object->name ( feature->name() );
-		object->label ( feature->name() );
-    object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-    object->showLabel ( true );
-    
-    if ( TimeSpan *span = dynamic_cast<TimeSpan*> ( feature->timePrimitive() ) )
-    {
-      object->firstDate ( span->begin() );
-      object->lastDate ( span->end() );
-    }
+    // Set the data object members.
+    this->_setDataObjects ( *object, *feature );
 
     // Add the data object.
     this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
@@ -633,13 +625,18 @@ KmlLayer::DataObject* KmlLayer::_parseLineRing ( const XmlTree::Node& node, Styl
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node, Style *style )
+void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node, Style *style, Feature& feature )
 {
   Children polygon ( node.find ( "Polygon", false ) );
   for ( Children::iterator iter = polygon.begin(); iter != polygon.end(); ++iter )
   {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( this->_parsePolygon ( *(*iter), style ) );
-    this->add ( unknown.get() );
+    DataObject::RefPtr object ( this->_parsePolygon ( *(*iter), style ) );
+
+    if ( object.valid() )
+    {
+      this->_setDataObjects ( *object, feature );
+      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+    }
   }
 }
 
@@ -1118,4 +1115,25 @@ Style* KmlLayer::_style ( const std::string& url )
 	}
 
 	return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the data objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_setDataObjects ( DataObject& object, Feature& feature )
+{
+  object.name ( feature.name() );
+	object.label ( feature.name() );
+  object.labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  object.showLabel ( true );
+  
+  if ( TimeSpan *span = dynamic_cast<TimeSpan*> ( feature.timePrimitive() ) )
+  {
+    object.firstDate ( span->begin() );
+    object.lastDate ( span->end() );
+  }
 }

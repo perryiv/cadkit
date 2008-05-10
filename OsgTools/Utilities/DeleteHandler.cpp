@@ -41,7 +41,9 @@ DeleteHandler::~DeleteHandler()
 {
   OpenThreads::ScopedLock<OpenThreads::Mutex> lock ( _mutex );
   if ( false == _objectsToDelete.empty() )
+  {
     std::cout << _objectsToDelete.size() << " osg::Referenced items still remain." << std::endl;
+  }
 }
 
 
@@ -82,14 +84,7 @@ void DeleteHandler::flushAll()
         this->doDelete( itr->second );
       else
       {
-        std::string name;
-
-        if ( const osg::Node* node = dynamic_cast < const osg::Node* > ( object ) )
-          name = node->className();
-        else if ( const osg::Object *o = dynamic_cast < const osg::Object* > ( object ) )
-          name = o->className();
-        else
-          name = typeid(object).name();
+        std::string name ( DeleteHandler::_name ( object ) );
           
         std::cout << "Trying to delete object: " 
                   << name
@@ -102,4 +97,38 @@ void DeleteHandler::flushAll()
   }
 
   objects.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Delete all objects..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DeleteHandler::_name ( const osg::Referenced* object )
+{
+  std::string name;
+
+  if ( const osg::Node* node = dynamic_cast < const osg::Node* > ( object ) )
+    name = node->className();
+  else if ( const osg::Object *o = dynamic_cast < const osg::Object* > ( object ) )
+    name = o->className();
+  else
+    name = typeid(object).name();
+
+  return name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int DeleteHandler::numObjects()
+{
+  OpenThreads::ScopedLock<OpenThreads::Mutex> lock ( _mutex );
+  return _objectsToDelete.size();
 }

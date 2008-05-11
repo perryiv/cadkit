@@ -338,10 +338,16 @@ pqxx::result Connection::executeQuery( const std::string& query ) const
       result = transaction.exec ( query );
       transaction.commit();
     }
+    catch ( const std::exception& e )
+    {
+      transaction.abort();
+      std::cout << "Query: " << query << " did not execute properly." << std::endl
+        << "Message: " << e.what() << std::endl;
+    }
     catch ( ... )
     {
       transaction.abort();
-      std::cerr << "Query: " << query << " did not execute properly." << std::endl;
+      std::cout << "Query: " << query << " did not execute properly." << std::endl;
     }
   }
 

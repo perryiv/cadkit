@@ -30,7 +30,6 @@
 #include "Minerva/Core/Visitors/StackPoints.h"
 #include "Minerva/Core/Visitors/ResizePoints.h"
 #include "Minerva/Core/Visitors/BuildLegend.h"
-#include "Minerva/Interfaces/ITemporalData.h"
 #include "Minerva/Core/Utilities/ClampNearFar.h"
 #include "Minerva/Core/Visitors/SetJobManager.h"
 #include "Minerva/Core/Extents.h"
@@ -647,12 +646,8 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
     body->vectorRemove ( layer );
   }
   
-  // If it's temporal, we need to find the min and max dates again.
-  Minerva::Interfaces::ITemporalData::QueryPtr temporal ( layer );
-  if ( temporal.valid () )
-  {
-    _datesDirty = true;
-  }
+  // Find the min and max dates again.
+  Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
 
   this->modified( true );
   this->dirty( true );
@@ -693,13 +688,8 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
       body->vectorAppend ( layer );
     }
     
-    // If it's temporal, we need to find the min and max dates again.
-    Minerva::Interfaces::ITemporalData::QueryPtr temporal ( layer );
-    if ( temporal.valid () )
-    {
-      Guard guard ( this->mutex() );
-      _datesDirty = true;
-    }
+    // Find the min and max dates again.
+    Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
 
     // We are modified.
     this->modified ( true );

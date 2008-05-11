@@ -1535,11 +1535,15 @@ void Viewer::_close()
   {
     Guard guard ( this->mutex() );
   
-    // Save viewer's state first.
-    _viewer->stateSave();
+    if ( _viewer.valid() )
+    {
+      // Save viewer's state first.
+      _viewer->stateSave();
 
-    // Clear the viewer.
-    _viewer->clear();
+      // Clear the viewer.
+      _viewer->clear();
+    }
+
     _viewer = 0x0;
   }
 

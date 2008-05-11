@@ -72,7 +72,8 @@ DataObject::DataObject() :
   _firstDate ( boost::date_time::min_date_time ),
   _lastDate ( boost::date_time::max_date_time ),
   _altitudeMode ( CLAMP_TO_GROUND ),
-  _extrude ( false )
+  _extrude ( false ),
+  _extents()
 {
 }
 
@@ -103,6 +104,10 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IBuildScene*> ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast<Usul::Interfaces::ITreeNode*> ( this );
+  case Usul::Interfaces::ILayerExtents::IID:
+    return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
+  case Minerva::Interfaces::IElevationChangedListnerer::IID:
+    return static_cast<Minerva::Interfaces::IElevationChangedListnerer*> ( this );
   default:
     return 0x0;
   }
@@ -462,8 +467,9 @@ bool DataObject::showLabel () const
 
 void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
 {
+  osg::ref_ptr<osg::Node> node ( this->_preBuildScene ( caller ) );
   Guard guard ( this );
-  _preBuiltScene = this->_preBuildScene ( caller );
+  _preBuiltScene = node;
   this->dirty ( false );
 }
 
@@ -499,7 +505,7 @@ osg::Node* DataObject::buildScene( const Options& options, Usul::Interfaces::IUn
   if( _preBuiltScene.valid() )
   {
     // Get the visibilty state.
-    bool visible ( this->visibility () );
+    const bool visible ( this->visibility () );
     
     _root = _preBuiltScene;
     _preBuiltScene = 0x0;
@@ -524,7 +530,7 @@ void DataObject::visibility ( bool b )
 
   if ( _root.valid () )
   {
-    unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
+    const unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
     _root->setNodeMask ( nodeMask );
   }
 }
@@ -700,4 +706,109 @@ std::string DataObject::getTreeNodeName() const
 
 void DataObject::clicked() const
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::extents ( const Extents& e )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _extents = e;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DataObject::Extents DataObject::extents() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _extents;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double DataObject::minLon() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _extents.minLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double DataObject::minLat() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _extents.minLat();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double DataObject::maxLon() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _extents.maxLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double DataObject::maxLat() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _extents.maxLat();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Elevation has changed within given extents (IElevationChangedListnerer).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Unknown * caller )
+{
+  Extents e ( this->extents() );
+
+  if ( e.intersects ( extents ) )
+  {
+    this->dirty ( true );
+    this->preBuildScene ( caller );
+    return true;
+  }
+
+  return false;
 }

@@ -11,11 +11,12 @@
 #include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "OsgTools/Group.h"
+
 #include "Usul/Bits/Bits.h"
 #include "Usul/Functions/GUID.h"
 #include "Usul/Trace/Trace.h"
-
-#include "OsgTools/Group.h"
+#include "Usul/Threads/Safe.h"
 
 #include "osg/Group"
 
@@ -128,6 +129,8 @@ Usul::Interfaces::IUnknown* Vector::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
+  case Minerva::Interfaces::IElevationChangedListnerer::IID:
+    return static_cast < Minerva::Interfaces::IElevationChangedListnerer* > ( this );
   default:
     return 0x0;
   };
@@ -550,9 +553,12 @@ void Vector::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d
 void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  // No need to guard _builders or _updateListeners because they have thier own mutex.
+
+  osg::ref_ptr<osg::Group> root ( Usul::Threads::Safe::get ( this->mutex(), _root ) );
 
   // Check to see if the number of children in the root is the same as the data objects.  This is a hack before dirtyScene isn't alway accurate.
-  const bool needsBuild ( _root.valid() ? _root->getNumChildren() != _builders.size() : false );
+  const bool needsBuild ( root.valid() ? root->getNumChildren() != _builders.size() : false );
 
   // Build if we need to...
   if ( this->dirtyScene() || needsBuild )
@@ -674,5 +680,35 @@ void Vector::deserialize ( const XmlTree::Node &node )
 
 Usul::Interfaces::IUnknown* Vector::asUnknown()
 {
+  USUL_TRACE_SCOPE;
   return this->queryInterface( Usul::Interfaces::IUnknown::IID );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Elevation has changed within given extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Vector::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+
+  bool handled ( false );
+
+  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+  {
+    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+    {
+      Minerva::Interfaces::IElevationChangedListnerer::QueryPtr ecl ( *iter );
+      if ( ecl.valid() )
+        handled = ecl->elevationChangedNotify ( extents, elevationData, caller );
+    }
+  }
+
+  if ( handled )
+    this->dirtyScene ( true );
+
+  return handled;
 }

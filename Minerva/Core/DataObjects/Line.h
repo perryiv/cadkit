@@ -53,7 +53,6 @@ protected:
 
 private:
   float     _width;
-  osg::ref_ptr< osg::Group > _node;
 };
 
 }

@@ -46,8 +46,7 @@ using namespace Minerva::Core::DataObjects;
 
 Line::Line() :
   BaseClass(),
-  _width ( 1.0 ),
-  _node ( new osg::Group )
+  _width ( 1.0 )
 {
   // Default render bin.
   this->renderBin ( 3 );
@@ -110,14 +109,13 @@ void Line::width ( float width )
 
 osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 {
+  osg::ref_ptr< osg::Group > node ( new osg::Group );
+
   if ( this->dirty() )
   {
-    // Remove the drawables we have.
-    _node->removeChild( 0, _node->getNumChildren() );
+    node->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
 
-    _node->setUserData( new Minerva::Core::DataObjects::UserData( this ) );
-
-    osg::ref_ptr < osg::StateSet > ss ( _node->getOrCreateStateSet() );
+    osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
 
     // Query for needed interfaces.
     Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
@@ -125,7 +123,10 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
     Minerva::Interfaces::ILineData::QueryPtr line ( this->geometry() );
 
     osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-    _node->addChild( geode.get() );
+    node->addChild( geode.get() );
+
+    // Make new extents.
+    Extents e;
 
     if( line.valid () )
     {
@@ -152,6 +153,9 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
         for ( Vertices::const_iterator iter = sampledPoints.begin(); iter != sampledPoints.end(); ++iter )
         {
           Vertices::value_type v ( *iter );
+
+          // Expand the extents.
+          e.expand ( Extents::Vertex ( v[0], v[1] ) );
           
           // Get the height.
           v[2] = this->_elevation ( v, elevation.get() );
@@ -211,19 +215,20 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
       if ( planet.valid() )
         planet->convertToPlanet ( Usul::Math::Vec3d ( p ), p );
       
-      _node->addChild( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] )  ) );
+      node->addChild( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] )  ) );
     }
 
+    this->extents ( e );
     this->dirty( false );
   }
 
-  osg::Vec3 offset ( _node->getBound().center() );
+  osg::Vec3 offset ( node->getBound().center() );
   osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
-  _node->accept ( *tg );
+  node->accept ( *tg );
 
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( offset ) );
-  mt->addChild ( _node.get() );
+  mt->addChild ( node.get() );
 
   return mt.release();
 }

@@ -19,6 +19,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DataObjects/Line.h"
+#include "Minerva/Interfaces/IPolygonData.h"
 
 #include <map>
 
@@ -31,6 +32,9 @@ class MINERVA_EXPORT Polygon : public Line
 {
 public:
   typedef Minerva::Core::DataObjects::Line BaseClass;
+  typedef Minerva::Interfaces::IPolygonData IPolygonData;
+  typedef IPolygonData::Vertices            Vertices;
+  typedef IPolygonData::Boundaries          Boundaries;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Polygon );
@@ -56,6 +60,8 @@ protected:
   virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
 
   osg::Node*            _buildPolygons( Usul::Interfaces::IUnknown* caller );
+
+  osg::Geometry*        _buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller );
 
 private:
 

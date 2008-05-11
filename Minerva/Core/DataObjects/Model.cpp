@@ -76,6 +76,10 @@ osg::Node* Model::_preBuildScene( Usul::Interfaces::IUnknown* caller )
   
   osg::Vec3 location ( this->location() );
 
+  // Make new extents.
+  Extents e ( osg::Vec2d ( location[0], location[1] ), osg::Vec2d ( location[0], location[1] ) );
+  this->extents ( e );
+
   // Get the height.
   const double height ( this->_elevation ( location, elevation.get() ) );
 

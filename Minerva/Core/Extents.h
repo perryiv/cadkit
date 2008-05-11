@@ -37,8 +37,14 @@ public:
   /// Assignment.
   Extents& operator = ( const Extents& rhs );
 
+  /// Does the extents contain vertex v?
+  bool                  contains ( const Vertex& v );
+
   /// Expand by the extents.
   void                  expand ( const Extents& extents );
+
+  /// Expand by the vertex.
+  void                  expand ( const Vertex& v );
 
   /// Does the extent intersect this extent.
   bool                  intersects ( const Extents& extents ) const;
@@ -286,7 +292,34 @@ template < class VertexType > inline void ThisClass::expand ( const Extents& ext
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Does the extent intersect this extent.
+//  Expand by the vertex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline void ThisClass::expand ( const Vertex& v )
+{
+  Vertex zero ( 0.0, 0.0 );
+
+  // If we are invalid.
+  if ( zero == _min && zero == _max )
+  {
+    _min = v;
+    _max = v;
+  }
+  else
+  {
+    _min[0] = Usul::Math::minimum ( _min[0], v[0] );
+    _min[1] = Usul::Math::minimum ( _min[1], v[1] );
+
+    _max[0] = Usul::Math::maximum ( _max[0], v[0] );
+    _max[1] = Usul::Math::maximum ( _max[1], v[1] );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does the extent intersect this extent?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -297,6 +330,21 @@ template < class VertexType > inline bool ThisClass::intersects ( const Extents&
   
   return ( Usul::Math::maximum ( _min[0], mn[0] ) <= Usul::Math::minimum ( _max[0], mx[0] ) &&
            Usul::Math::maximum ( _min[1], mn[1] ) <= Usul::Math::minimum ( _max[1], mx[1] ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does the extents contain vertex v?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline bool ThisClass::contains ( const Vertex& v )
+{
+  const Vertex mn ( this->minimum() );
+  const Vertex mx ( this->maximum() );
+
+  return mn[0] <= v[0] && mn[1] <= v[1] && mx[0] >= v[0] && mx[1] >= v[1];
 }
 
 

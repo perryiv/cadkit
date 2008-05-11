@@ -513,8 +513,8 @@ KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *
 KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *style )
 {
   // Get style properties.
-	Usul::Math::Vec4f defaultColor ( 0.8, 0.8, 0.8, 1.0 );
-	Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->color() : defaultColor ) : defaultColor );
+	const Usul::Math::Vec4f defaultColor ( 0.8, 0.8, 0.8, 1.0 );
+	const Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->color() : defaultColor ) : defaultColor );
 
   const bool fill    ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->fill()    : true ) : true );
   const bool outline ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->outline() : true ) : true );

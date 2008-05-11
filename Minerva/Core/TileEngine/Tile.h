@@ -120,6 +120,9 @@ public:
 
   // Get the index of the child.
   Indices                   child ( Tile* ) const;
+
+  // Get the child at index i.
+  Tile::RefPtr              childAt ( unsigned int i ) const;
   
   // Build raster.
   static ImagePtr           buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr );
@@ -141,12 +144,18 @@ public:
   bool                      texCoordsDirty() const;
   bool                      textureDirty() const;
 
+  // Get the elevation data.
+  ImagePtr                  elevation();
+
   // Get the extents.
   Extents                   extents() const;
 
   // Get/Set the image.
   void                      image ( osg::Image* );
   ImagePtr                  image();
+
+  // Is this tile a leaf?
+  bool                      isLeaf() const;
 
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;

@@ -12,7 +12,7 @@
 #include "Minerva/Core/Layers/Vector.h"
 #include "Minerva/Core/DataObjects/Point.h"
 
-#include "Minerva/Interfaces/IGeometryCenter.h"
+#include "Minerva/Interfaces/IPointData.h"
 #include "Minerva/Interfaces/IOffset.h"
 
 using namespace Minerva::Core::Visitors;
@@ -50,13 +50,11 @@ StackPoints::~StackPoints()
 
 void StackPoints::visit ( Minerva::Core::DataObjects::Point &point )
 {
-  unsigned int srid ( 0 );
+  Minerva::Interfaces::IPointData::QueryPtr pd ( point.geometry() );
   
-  Minerva::Interfaces::IGeometryCenter::QueryPtr geometryCenter ( point.geometry() );
-  
-  if( geometryCenter.valid () )
+  if( pd.valid () )
   {
-    osg::Vec3 p ( geometryCenter->geometryCenter( srid ) );
+    Usul::Math::Vec3d p ( pd->pointData() );
 
     const unsigned int multiplier ( 100000 );
     Usul::Math::Vec3ui center ( static_cast<unsigned int> ( p[0] * multiplier ),

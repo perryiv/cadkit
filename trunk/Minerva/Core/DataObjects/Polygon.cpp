@@ -17,7 +17,6 @@
 #include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Visitor.h"
-#include "Minerva/Interfaces/IPolygonData.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/ITriangulate.h"
@@ -99,55 +98,59 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller )
 {
-  template < class Vertices >
-  osg::Geometry* buildGeometry ( const Vertices& inVertices, Usul::Interfaces::IPlanetCoordinates *planet )
+  // Make sure we have vertices.
+  if ( inVertices.empty() )
+    return 0x0;
+
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevationDatabase ( caller );
+  
+  // Vertices and normals.
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
+  
+  // Reserve enough rooms.
+  vertices->reserve( inVertices.size() );
+  normals->reserve( inVertices.size() );
+  
+  for ( Vertices::const_iterator iter = inVertices.begin(); iter != inVertices.end(); ++iter )
   {
-    // Make sure we have vertices.
-    if ( inVertices.empty() )
-      return 0x0;
+    Vertices::value_type v0 ( *iter ), p0;
+
+    // Expand the vertex.
+    e.expand ( Extents::Vertex ( v0[0], v0[1] ) );
+
+    if ( elevationDatabase.valid() )
+      v0[2] = this->_elevation ( v0, elevationDatabase );
     
-    // Vertices and normals.
-    osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
-    osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
-    
-    // Reserve enough rooms.
-    vertices->reserve( inVertices.size() );
-    normals->reserve( inVertices.size() );
-    
-    for ( typename Vertices::const_iterator iter = inVertices.begin(); iter != inVertices.end(); ++iter )
-    {
-      typename Vertices::value_type v0 ( *iter );
-      
-      typename Vertices::value_type p0;
-      
+    if ( planet.valid() )
       planet->convertToPlanet ( v0, p0 );
-      
-      vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
-      
-      typename Vertices::value_type n0 ( p0 ); n0.normalize();
-      
-      normals->push_back ( osg::Vec3 ( n0[0], n0[1], n0[2] ) );
-    }
     
-    osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
+    vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
     
-    geom->setVertexArray ( vertices.get() );
-    geom->setNormalArray ( normals.get() );
-    geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
-
-    geom->addPrimitiveSet ( new osg::DrawArrays ( GL_POLYGON, 0, vertices->size() ) );
+    Vertices::value_type n0 ( p0 ); n0.normalize();
     
-    // Make into triangles.
-    osg::ref_ptr<osgUtil::Tessellator> tessellator ( new osgUtil::Tessellator );
-    tessellator->retessellatePolygons ( *geom );
-
-    // Make normals.
-    osgUtil::SmoothingVisitor::smooth ( *geom );
-
-    return geom.release();
+    normals->push_back ( osg::Vec3 ( n0[0], n0[1], n0[2] ) );
   }
+  
+  osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
+  
+  geom->setVertexArray ( vertices.get() );
+  geom->setNormalArray ( normals.get() );
+  geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+
+  geom->addPrimitiveSet ( new osg::DrawArrays ( GL_POLYGON, 0, vertices->size() ) );
+  
+  // Make into triangles.
+  osg::ref_ptr<osgUtil::Tessellator> tessellator ( new osgUtil::Tessellator );
+  tessellator->retessellatePolygons ( *geom );
+
+  // Make normals.
+  osgUtil::SmoothingVisitor::smooth ( *geom );
+
+  return geom.release();
 }
 
 
@@ -160,22 +163,21 @@ namespace Detail
 osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
 {
   typedef Usul::Components::Manager         PluginManager;
-  typedef Minerva::Interfaces::IPolygonData IPolygonData;
-  typedef IPolygonData::Vertices            Vertices;
-  typedef IPolygonData::Boundaries          Boundaries;
   
   // Get needed interfaces.
   IPolygonData::QueryPtr polygon ( this->geometry() );
-  Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
 
   // Make sure we have them...
-  if( polygon.valid() && planet.valid() )
+  if( polygon.valid() )
   {
+    // Make new extents.
+    Extents e;
+
     Vertices outerBoundary ( polygon->outerBoundary() );
     Boundaries innerBoundaries ( polygon->innerBoundaries() );
 
     osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable( Detail::buildGeometry ( outerBoundary, planet ) );
+    geode->addDrawable( this->_buildGeometry ( outerBoundary, e, caller ) );
     
     osg::Vec4 color ( this->color() );
     osg::ref_ptr < osg::Material > mat ( new osg::Material );
@@ -214,6 +216,8 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
     osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
     mt->setMatrix ( osg::Matrix::translate ( offset ) );
     mt->addChild ( geode.get() );
+
+    this->extents ( e );
 
     return mt.release();
   }

@@ -18,13 +18,16 @@
 #define __DATA_OBJECT_H__
 
 #include "Minerva/Core/Export.h"
+#include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Animate/Date.h"
+#include "Minerva/Interfaces/IElevationChangedListener.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
+#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
 
 #include "OsgTools/ShapeFactory.h"
@@ -42,12 +45,15 @@ namespace DataObjects {
 
 class MINERVA_EXPORT DataObject : public Usul::Base::Object,
                                   public Usul::Interfaces::IBuildScene,
-                                  public Usul::Interfaces::ITreeNode
+                                  public Usul::Interfaces::ITreeNode,
+                                  public Usul::Interfaces::ILayerExtents,
+                                  public Minerva::Interfaces::IElevationChangedListnerer
 {
 public:
-  typedef Usul::Base::Object           BaseClass;
-  typedef Usul::Interfaces::IUnknown   Unknown;
-  typedef Minerva::Core::Animate::Date Date;
+  typedef Usul::Base::Object                  BaseClass;
+  typedef Usul::Interfaces::IUnknown          Unknown;
+  typedef Minerva::Core::Animate::Date        Date;
+  typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
@@ -87,9 +93,29 @@ public:
   const osg::Vec4&      color () const;
   void                  color ( const osg::Vec4& );
 
+  /// Get/Set the data source.
+  void                  dataSource( Unknown* );
+  Unknown *             dataSource();
+  const Unknown *       dataSource() const;
+
   /// Get/Set the dirty flag.
   bool                  dirty() const;
   void                  dirty ( bool );
+
+  /// Elevation has changed within given extents (IElevationChangedListnerer).
+  virtual bool          elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Unknown * caller = 0x0 );
+
+  /// Set/get the extents.
+  void                  extents ( const Extents& e );
+  Extents               extents() const;
+
+  /// Get/Set extrude flag.
+  void                  extrude ( bool b );
+  bool                  extrude() const;
+
+  /// Get/Set the first date.
+  const Date&           firstDate() const;
+  void                  firstDate ( const Date& );
 
   /// Get/Set the geometry.
   void                  geometry( Unknown *geometry );
@@ -112,13 +138,17 @@ public:
   void                  labelSize ( float size );
   float                 labelSize () const;
 
-  /// Get/Set the flag to show the label.
-  void                  showLabel ( bool value );
-  bool                  showLabel () const;
+  /// Get/Set the last date.
+  const Date&           lastDate() const;
+  void                  lastDate( const Date& );
 
-  /// Get/Set the render bin
-  unsigned int          renderBin() const;
-  void                  renderBin ( unsigned int );
+  /// Get the min latitude and min longitude (ILayerExtents).
+  virtual double        minLon() const;
+  virtual double        minLat() const;
+ 
+  /// Get the max latitude and max longitude (ILayerExtents).
+  virtual double        maxLon() const;
+  virtual double        maxLat() const;
 
   /// Get/Set id.
   void                  objectId ( const std::string& );
@@ -127,26 +157,17 @@ public:
   /// Is the data object transparent?
   bool                  transparent() const;
 
+  /// Get/Set the render bin
+  unsigned int          renderBin() const;
+  void                  renderBin ( unsigned int );
+
+  /// Get/Set the flag to show the label.
+  void                  showLabel ( bool value );
+  bool                  showLabel () const;
+
   /// Get/Set the visibilty flag.
   void                  visibility ( bool b );
   bool                  visibility ( ) const;
-
-  /// Get/Set the data source.
-  void                  dataSource( Unknown* );
-  Unknown *             dataSource();
-  const Unknown *       dataSource() const;
-
-  /// Get/Set the first date.
-  const Date&           firstDate() const;
-  void                  firstDate ( const Date& );
-  
-  /// Get/Set the last date.
-  const Date&           lastDate() const;
-  void                  lastDate( const Date& );
-  
-  /// Get/Set extrude flag.
-  void                  extrude ( bool b );
-  bool                  extrude() const;
   
 protected:
 
@@ -201,6 +222,7 @@ private:
   Minerva::Core::Animate::Date _lastDate;
   AltitudeMode _altitudeMode;
   bool _extrude;
+  Extents _extents;
 
   /// Shape Factory to share across all Data Objects.
   static OsgTools::ShapeFactory::Ptr _sf;

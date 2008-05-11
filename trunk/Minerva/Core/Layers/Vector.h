@@ -14,6 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
+#include "Minerva/Interfaces/IElevationChangedListener.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Containers/Unknowns.h"
@@ -45,7 +46,8 @@ class MINERVA_EXPORT Vector : public Usul::Base::Object,
                               public Usul::Interfaces::IUpdateListener,
                               public Minerva::Interfaces::IDirtyScene,
                               public Usul::Interfaces::ITreeNode,
-                              public Usul::Interfaces::IBooleanState
+                              public Usul::Interfaces::IBooleanState,
+                              public Minerva::Interfaces::IElevationChangedListnerer
 {
 public:
   /// Typedefs.
@@ -77,42 +79,18 @@ public:
   /// Accept the visitor.
   virtual void                accept ( Minerva::Core::Visitor& visitor );
 
-  /// Traverse all DataObjects.
-  virtual void                traverse ( Minerva::Core::Visitor& visitor );
+  /// Add an object.
+  void                        add ( IUnknown* layer );
+
+  /// Build the scene (IBuildScene).
+  virtual osg::Node *         buildScene ( const Options &options, IUnknown *caller = 0x0 );
+
+  /// Clear objects.
+  void                        clear();
 
   /// Deserialize.
   virtual void                deserialize ( const XmlTree::Node &node );
-  
-  /// Build the scene (IBuildScene).
-  virtual osg::Node *         buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller = 0x0 );
-  
-  /// Get/Set the name (ILayer).
-  virtual void                name( const std::string& name );
-  virtual std::string         name() const;
-  
-  /// Get the guid (ILayer).
-  virtual std::string         guid() const;
-  
-  /// Get/Set show layer (ILayer).
-  virtual void                showLayer( bool b );
-  virtual bool                showLayer() const;
-  
-  /// Add an object.
-  void                        add ( Usul::Interfaces::IUnknown* layer );
-  
-  /// Remove an object.
-  void                        remove ( Usul::Interfaces::IUnknown* layer );
-  
-  /// Clear objects.
-  void                        clear();
-  
-  /// Get the number of data objects in this layer.
-  virtual unsigned int        number() const;
-  
-  /// Get/Set the flags.
-  unsigned int                flags() const;
-  void                        flags( unsigned int );
-  
+
   /// Get/Set the data dirty flag.
   bool                        dirtyData() const;
   void                        dirtyData( bool );
@@ -124,9 +102,36 @@ public:
   /// Get/Set dirty scene flag.
   virtual bool                dirtyScene() const;
   virtual void                dirtyScene( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
+
+  /// Elevation has changed within given extents (IElevationChangedListnerer).
+  virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller = 0x0 );
   
   /// Get the extents.
   void                        extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight );
+
+  /// Get/Set the flags.
+  unsigned int                flags() const;
+  void                        flags( unsigned int );
+
+  /// Get the guid (ILayer).
+  virtual std::string         guid() const;
+
+  /// Get/Set the name (ILayer).
+  virtual void                name( const std::string& name );
+  virtual std::string         name() const;
+  
+  /// Get the number of data objects in this layer.
+  virtual unsigned int        number() const;
+
+  /// Remove an object.
+  void                        remove ( IUnknown* layer );
+
+  /// Get/Set show layer (ILayer).
+  virtual void                showLayer( bool b );
+  virtual bool                showLayer() const;
+
+  /// Traverse all DataObjects.
+  virtual void                traverse ( Minerva::Core::Visitor& visitor );
   
   // Update.
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );

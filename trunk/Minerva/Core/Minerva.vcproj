@@ -850,6 +850,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IElevationChangedListener.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IFitLineTerrain.h"
 					>
 				</File>
@@ -879,10 +883,6 @@
 				</File>
 				<File
 					RelativePath="..\Interfaces\IOffset.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\IOssimPlanetLayer.h"
 					>
 				</File>
 				<File

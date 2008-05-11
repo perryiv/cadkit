@@ -240,6 +240,10 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
   
   // Save the center in lat/lon coordinates.
   _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
+
+  // Make new extents.
+  Extents e ( osg::Vec2d ( _center[0], _center[1] ), osg::Vec2d ( _center[0], _center[1] ) );
+  this->extents ( e );
   
   // Convert to planet coordinates.
   Detail::convertToPlanet ( center, caller );

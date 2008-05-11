@@ -665,6 +665,16 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
+
+  Minerva::Core::Layers::Vector::RefPtr vector ( body->vectorData() );
+  if ( vector.valid() )
+  {
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
+    vector->elevationChangedNotify ( t0->extents(), t0->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
+  }
   
   {
     Guard guard ( this->mutex() );
@@ -1705,7 +1715,8 @@ void Tile::splitDistance ( double distance, bool children )
 
 void Tile::_cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords )
 {
-  Guard guard ( this );
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   
   if ( 0x0 != image )
   {
@@ -1714,4 +1725,46 @@ void Tile::_cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const U
     if ( false == filename.empty() )
       _textureMap[raster] = ImageCacheData ( filename, tCoords );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this tile a leaf?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Tile::isLeaf() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return !( _children[0].valid() && _children[1].valid() && _children[2].valid() && _children[3].valid() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child at index i.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::RefPtr Tile::childAt ( unsigned int i ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return ( i < _children.size() ? _children[i] : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the elevation data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::ImagePtr Tile::elevation()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _elevation;
 }

@@ -28,7 +28,6 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/Execute.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Threads/Named.h"
@@ -465,7 +464,6 @@ void Body::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math:
   USUL_TRACE_SCOPE;
   this->xyzToLatLonHeight ( osg::Vec3d ( planetPoint[0], planetPoint[1], planetPoint[2] ), latLonPoint[1], latLonPoint[0], latLonPoint[2] );
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -920,6 +918,67 @@ Body::Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the elevation from a tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  bool elevationFromTile ( Tile::RefPtr tile, const Body::Extents::Vertex& p, double& elevation )
+  {
+    if ( false == tile.valid() )
+      return false;
+
+    typedef Tile::Extents Extents;
+
+    Extents e ( tile->extents() );
+
+    if ( e.contains ( p ) )
+    {
+      if ( tile->isLeaf() )
+      {
+        // Use tile's elevation data.
+        osg::ref_ptr<osg::Image> elevationData ( tile->elevation() );
+
+        if ( elevationData.valid() )
+        {
+          // Size of the elevation grid.
+          const unsigned int width  ( elevationData->s() );
+          const unsigned int height ( elevationData->t() );
+
+          // Shortcuts.
+          const Extents::Vertex &mn ( e.minimum() );
+          const Extents::Vertex &mx ( e.maximum() );
+
+          const double u ( ( p[0] - mn[0] ) / ( mx[0] - mn[0] ) );
+          const double v ( ( p[1] - mn[1] ) / ( mx[1] - mn[1] ) );
+
+          const unsigned int i ( Usul::Math::minimum ( width - 1,  static_cast <unsigned int> ( ::floor ( ( u * width ) + 0.5 ) ) ) );
+          const unsigned int j ( Usul::Math::minimum ( height - 1, static_cast <unsigned int> ( ::floor ( ( v * height ) + 0.5 ) ) ) );
+
+          // Set the elevation data.
+          elevation = *reinterpret_cast<float*> ( elevationData->data ( i, j ) );
+
+          return true;
+        }
+      }
+      else
+      {
+        // Ask the children.
+        if ( Detail::elevationFromTile ( tile->childAt ( 0 ), p, elevation ) ) return true;
+        if ( Detail::elevationFromTile ( tile->childAt ( 1 ), p, elevation ) ) return true;
+        if ( Detail::elevationFromTile ( tile->childAt ( 2 ), p, elevation ) ) return true;
+        if ( Detail::elevationFromTile ( tile->childAt ( 3 ), p, elevation ) ) return true;
+      }
+    }
+
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the elevation at a lat, lon.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -927,6 +986,8 @@ Body::Extents Body::_buildExtents ( Usul::Interfaces::IUnknown* unknown )
 double Body::elevation ( double lat, double lon ) const
 {
   USUL_TRACE_SCOPE;
+
+#if 0
   Guard guard ( this );
 
   RasterGroup::RefPtr elevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation.get() ) );
@@ -946,6 +1007,21 @@ double Body::elevation ( double lat, double lon ) const
         return h;
     }
   }
+#else
+  Tiles tiles ( Usul::Threads::Safe::get ( this->mutex(), _topTiles ) );
+  
+  Extents::Vertex v ( lon, lat );
+  double elevation ( 0.0 );
+
+  for ( Tiles::const_iterator iter = _topTiles.begin(); iter != _topTiles.end(); ++iter )
+  {
+    if ( Detail::elevationFromTile ( *iter, v, elevation ) ) 
+      break;
+  }
+
+  return elevation;
+
+#endif
   
   // Should we use a geoid here?  Keeping this for reference.
 #if 0

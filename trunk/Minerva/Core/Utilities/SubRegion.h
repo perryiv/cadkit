@@ -57,8 +57,8 @@ namespace Utilities {
         const double up ( ( region[0] + ( u * du ) ) );
         const double vp ( ( region[2] + ( v * dv ) ) );
         
-        const int sp ( Usul::Math::maximum ( sMin, Usul::Math::minimum ( width,  static_cast<int> ( static_cast<int> ( up * width  ) + 0.5 ) ) ) );
-        const int tp ( Usul::Math::maximum ( tMin, Usul::Math::minimum ( height, static_cast<int> ( static_cast<int> ( vp * height ) + 0.5 ) ) ) );
+        const int sp ( Usul::Math::maximum ( sMin, Usul::Math::minimum ( width - 1,  static_cast<int> ( static_cast<int> ( up * width  ) + 0.5 ) ) ) );
+        const int tp ( Usul::Math::maximum ( tMin, Usul::Math::minimum ( height - 1, static_cast<int> ( static_cast<int> ( vp * height ) + 0.5 ) ) ) );
 
         PixelType *dst ( reinterpret_cast<PixelType*> ( result->data ( s, t ) ) );
         const PixelType* src ( reinterpret_cast<const PixelType*> ( image.data ( sp, tp ) ) );

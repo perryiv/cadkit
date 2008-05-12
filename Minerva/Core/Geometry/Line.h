@@ -45,7 +45,7 @@ protected:
   void                             _buildLatLongPoints();
 
   /// Usul::Interfaces::ILineData.
-  virtual const Vertices&          lineData ();
+  virtual const Vertices&          lineData();
 
 private:
 

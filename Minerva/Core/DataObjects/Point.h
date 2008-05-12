@@ -57,9 +57,6 @@ public:
   /// Accept the visitor.
   virtual void            accept ( Minerva::Core::Visitor& visitor );
 
-  /// Get the center.
-  osg::Vec3d              center () const;
-
   /// Get/Set the size.
   float                   size () const;
   void                    size ( float );
@@ -85,14 +82,14 @@ protected:
   // Use reference counting
   virtual ~Point();
 
-  osg::Node*            _buildGeometry( Usul::Interfaces::IUnknown* caller );
+  osg::Node*            _buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown* caller );
 
-  osg::Node*            _buildPoint();
-  osg::Node*            _buildSphere();
-  osg::Node*            _buildCone( bool invert );
-  osg::Node*            _buildDisk();
-  osg::Node*            _buildCube();
-  osg::Node*            _buildCylinder( Usul::Interfaces::IUnknown * caller );
+  osg::Node*            _buildPoint( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildSphere( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildCone( const osg::Vec3d& earthLocation, bool invert );
+  osg::Node*            _buildDisk( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildCube( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown * caller );
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
@@ -102,8 +99,6 @@ private:
   float        _secondarySize;
   unsigned int _primitiveId;
   float        _quality;
-  osg::Vec3d   _center;
-  osg::Vec3d   _centerEarth;
   bool         _autotransform;
 
   osg::ref_ptr < osg::Material >         _material;

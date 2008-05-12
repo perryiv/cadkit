@@ -83,7 +83,7 @@ void Line::_buildLatLongPoints()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Line::Vertices& Line::lineData ()
+const Line::Vertices& Line::lineData()
 {
   if( _latLongPoints.empty() )
   {

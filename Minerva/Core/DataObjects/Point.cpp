@@ -52,8 +52,6 @@ Point::Point() :
   _secondarySize ( 1.0 ),
   _primitiveId ( 1 ),
   _quality ( 0.80f ),
-  _center (),
-  _centerEarth(),
   _autotransform ( true ),
   _material ( new osg::Material )
 {
@@ -239,19 +237,19 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
   center[2] = this->_elevation( center, elevation.get() );
   
   // Save the center in lat/lon coordinates.
-  _center.set ( center [ 0 ], center [ 1 ], center [ 2 ] );
+  osg::Vec3d location ( center [ 0 ], center [ 1 ], center [ 2 ] );
 
   // Make new extents.
-  Extents e ( osg::Vec2d ( _center[0], _center[1] ), osg::Vec2d ( _center[0], _center[1] ) );
+  Extents e ( osg::Vec2d ( location[0], location[1] ), osg::Vec2d ( location[0], location[1] ) );
   this->extents ( e );
   
   // Convert to planet coordinates.
   Detail::convertToPlanet ( center, caller );
 
-  // Convert from Usul's Vec3d to a osg::Vec3
-  _centerEarth.set( center[0], center[1], center[2] );
+  // Location on earth in cartesian coordinates.
+  osg::Vec3d earthLocation ( center[0], center[1], center[2] );
 
-  osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry( caller ) );
+  osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry( earthLocation, caller ) );
 
   // Get the state set
   osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
@@ -296,15 +294,15 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
   
   if ( this->extrude() )
   {
-    double height ( elevation.valid() ? elevation->elevationAtLatLong ( _center[1], _center[0] ) : 0.0 );
-    Usul::Math::Vec3d p ( _center[0], _center[1], height );
+    double height ( elevation.valid() ? elevation->elevationAtLatLong ( location[1], location[0] ) : 0.0 );
+    Usul::Math::Vec3d p ( location[0], location[1], height );
     Detail::convertToPlanet ( p, caller );
     
     OsgTools::Ray ray;
     ray.thickness ( 1 );
     ray.color ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
     ray.start ( osg::Vec3 ( p[0], p[1], p[2] ) );
-    ray.end ( _centerEarth );
+    ray.end ( earthLocation );
     
     group->addChild ( ray() );
   }
@@ -327,19 +325,20 @@ osg::Node* Point::_preBuildScene( Usul::Interfaces::IUnknown * caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildGeometry( Usul::Interfaces::IUnknown* caller )
+osg::Node* Point::_buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown* caller )
 {
   USUL_TRACE_SCOPE;
 
+  // Redirect to proper build function.
   switch ( _primitiveId )
   {
-  case POINT:          return this->_buildPoint();
-  case SPHERE:         return this->_buildSphere();
-  case CONE:           return this->_buildCone( false );
-  case DISK:           return this->_buildDisk();
-  case CUBE:           return this->_buildCube();
-  case INVERTED_CONE:  return this->_buildCone( true );
-  case CYLINDER:       return this->_buildCylinder( caller );
+  case POINT:          return this->_buildPoint( earthLocation );
+  case SPHERE:         return this->_buildSphere( earthLocation );
+  case CONE:           return this->_buildCone( earthLocation, false );
+  case DISK:           return this->_buildDisk( earthLocation );
+  case CUBE:           return this->_buildCube( earthLocation );
+  case INVERTED_CONE:  return this->_buildCone( earthLocation, true );
+  case CYLINDER:       return this->_buildCylinder( earthLocation, caller );
   }
 
   return 0x0;
@@ -352,7 +351,7 @@ osg::Node* Point::_buildGeometry( Usul::Interfaces::IUnknown* caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildPoint()
+osg::Node* Point::_buildPoint( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
   
@@ -362,7 +361,7 @@ osg::Node* Point::_buildPoint()
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
 
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-  vertices->push_back ( _centerEarth );
+  vertices->push_back ( earthLocation );
 
   geometry->setVertexArray( vertices.get() );
 
@@ -400,7 +399,7 @@ osg::Node* Point::_buildPoint()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildSphere()
+osg::Node* Point::_buildSphere( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
   
@@ -412,20 +411,20 @@ osg::Node* Point::_buildSphere()
   OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 
-  osg::ref_ptr < osg::Geometry> geometry ( BaseClass::shapeFactory()->sphere ( _size, meshSize, latRange, longRange ) );
+  osg::ref_ptr < osg::Geometry> geometry ( BaseClass::shapeFactory()->sphere ( this->size(), meshSize, latRange, longRange ) );
   geometry->setUseDisplayList ( false );
   geometry->setUseVertexBufferObjects ( true );
   geode->addDrawable( geometry.get() );
 
   if ( this->autotransform() )
   {
-    osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
+    osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( earthLocation ) );
     autoTransform->addChild ( geode.get() );
     return autoTransform.release();
   }
   
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setMatrix ( osg::Matrix::translate ( _centerEarth ) );
+  mt->setMatrix ( osg::Matrix::translate ( earthLocation ) );
   mt->addChild ( geode.get() );
   return mt.release();
 }
@@ -437,7 +436,7 @@ osg::Node* Point::_buildSphere()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildCone( bool invert )
+osg::Node* Point::_buildCone( const osg::Vec3d& earthLocation, bool invert )
 {
   USUL_TRACE_SCOPE;
   
@@ -453,10 +452,10 @@ osg::Node* Point::_buildCone( bool invert )
   if( this->autotransform() )
     cone = new osg::Cone( osg::Vec3( 0.0, 0.0, height/2.0 ), radius, height );
   else
-    cone = new osg::Cone( osg::Vec3( _centerEarth ), radius, height );
+    cone = new osg::Cone( osg::Vec3( earthLocation ), radius, height );
 
   // v1 is also a vector from the center of the sphere, to the point on the sphere.
-  osg::Vec3 v1 ( _centerEarth );
+  osg::Vec3 v1 ( earthLocation );
   v1.normalize();
 
   // Figure out the needed rotation to place the cone on the earth.
@@ -479,7 +478,7 @@ osg::Node* Point::_buildCone( bool invert )
   // Use an auto transform if we should.
   if( this->autotransform() )
   {
-    osg::ref_ptr < osg::AutoTransform > at ( Detail::createAutoTransform( _centerEarth ) );
+    osg::ref_ptr < osg::AutoTransform > at ( Detail::createAutoTransform( earthLocation ) );
     at->addChild ( geode.get() );
     return at.release();
   }
@@ -502,7 +501,7 @@ osg::Node* Point::_buildCone( bool invert )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildDisk()
+osg::Node* Point::_buildDisk( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
   
@@ -512,7 +511,7 @@ osg::Node* Point::_buildDisk()
   // For now use a short cylinder.  Ellipsoid would be better.
   osg::ref_ptr < osg::Cylinder > cylinder ( new osg::Cylinder( osg::Vec3( 0.0, 0.0, 0.0 ), _size, _size * 0.25 ) );
 
-  osg::Vec3 v1 ( _centerEarth );
+  osg::Vec3 v1 ( earthLocation );
   v1.normalize();
 
   osg::Quat rotation;
@@ -523,7 +522,7 @@ osg::Node* Point::_buildDisk()
 
   geode->addDrawable ( sd.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( earthLocation ) );
   autoTransform->addChild ( geode.get() );
 
   return autoTransform.release();
@@ -536,7 +535,7 @@ osg::Node* Point::_buildDisk()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildCube()
+osg::Node* Point::_buildCube( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
   
@@ -545,7 +544,7 @@ osg::Node* Point::_buildCube()
 
   geode->addDrawable( BaseClass::shapeFactory()->cube ( osg::Vec3 ( _size, _size, _size )  ) );
 
-  osg::Vec3 v1 ( _centerEarth );
+  osg::Vec3 v1 ( earthLocation );
   v1.normalize();
 
   osg::Quat rotation;
@@ -556,7 +555,7 @@ osg::Node* Point::_buildCube()
   mt->setMatrix ( matrix );
   mt->addChild( geode.get() );
 
-  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( _centerEarth ) );
+  osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( earthLocation ) );
   autoTransform->addChild ( mt.get() );
 
   return autoTransform.release();
@@ -569,7 +568,7 @@ osg::Node* Point::_buildCube()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildCylinder( Usul::Interfaces::IUnknown * caller )
+osg::Node* Point::_buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -578,7 +577,7 @@ osg::Node* Point::_buildCylinder( Usul::Interfaces::IUnknown * caller )
 
   if( this->size() > 0 )
   {
-    osg::Vec3 v0 ( _centerEarth );
+    osg::Vec3 v0 ( earthLocation );
 
     osg::Vec3 v1 ( v0 );
 
@@ -658,17 +657,4 @@ bool Point::autotransform () const
 {
   USUL_TRACE_SCOPE;
   return _autotransform;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the center.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3d Point::center () const
-{
-  USUL_TRACE_SCOPE;
-  return _center;
 }

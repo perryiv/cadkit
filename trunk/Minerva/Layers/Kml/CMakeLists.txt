@@ -44,6 +44,8 @@ SET (SOURCES
 ./Object.cpp
 ./PolyStyle.cpp
 ./Style.cpp
+./TimePrimitive.cpp
+./TimeSpan.cpp
 )
 
 # Create a Shared Library

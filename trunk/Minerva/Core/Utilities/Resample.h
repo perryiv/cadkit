@@ -16,6 +16,9 @@
 
 #include <algorithm>
 
+namespace Minerva {
+namespace Core {
+namespace Utilities {
 namespace Detail
 {
   template < typename Point >
@@ -66,6 +69,7 @@ namespace Detail
     bisect ( point0, midPoint, answer, depth + 1, maximumDepth, caller );
     bisect ( midPoint, point2, answer, depth + 1, maximumDepth, caller );
   }
+}
 
   template < typename Points >
   void resample ( const Points& input, Points& output, unsigned int maximumDepth, Usul::Interfaces::IUnknown *caller )
@@ -84,7 +88,7 @@ namespace Detail
     // Useful typedefs.
     typedef typename Points::const_iterator ConstIterator;
     typedef typename Points::value_type PointType;
-    typedef ParametricPoint < PointType > UPoint;
+    typedef Detail::ParametricPoint < PointType > UPoint;
     typedef std::vector < UPoint > ParametricPoints;
 
     ParametricPoints points;
@@ -127,6 +131,7 @@ namespace Detail
       output.push_back ( iter->p );
   }
 }
-
+}
+}
 
 #endif //__MINERVA_RESAMPLE_H__

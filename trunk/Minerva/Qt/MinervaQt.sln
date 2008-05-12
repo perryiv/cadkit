@@ -277,15 +277,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva PostGIS", "..\
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992} = {A232FF6C-6B18-46CE-91F9-84FE9AF17992}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva ResampleLine", "..\Plugins\ResampleLine\ResampleLine.vcproj", "{B2AB7CF2-2A20-4888-9312-2AE8E81D066D}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit QtTools", "..\..\QtTools\QtTools.vcproj", "{768EABAD-0721-457D-820D-C0548B1F252A}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -478,10 +469,6 @@ Global
 		{D5BF2795-F1F4-4868-95A9-0ABCCAA3CC63}.Debug|Win32.Build.0 = Debug|Win32
 		{D5BF2795-F1F4-4868-95A9-0ABCCAA3CC63}.Release|Win32.ActiveCfg = Release|Win32
 		{D5BF2795-F1F4-4868-95A9-0ABCCAA3CC63}.Release|Win32.Build.0 = Release|Win32
-		{B2AB7CF2-2A20-4888-9312-2AE8E81D066D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B2AB7CF2-2A20-4888-9312-2AE8E81D066D}.Debug|Win32.Build.0 = Debug|Win32
-		{B2AB7CF2-2A20-4888-9312-2AE8E81D066D}.Release|Win32.ActiveCfg = Release|Win32
-		{B2AB7CF2-2A20-4888-9312-2AE8E81D066D}.Release|Win32.Build.0 = Release|Win32
 		{768EABAD-0721-457D-820D-C0548B1F252A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{768EABAD-0721-457D-820D-C0548B1F252A}.Debug|Win32.Build.0 = Debug|Win32
 		{768EABAD-0721-457D-820D-C0548B1F252A}.Release|Win32.ActiveCfg = Release|Win32

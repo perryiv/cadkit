@@ -44,6 +44,10 @@
 #include "Usul/Trace/Print.h"
 #include "Usul/User/Directory.h"
 
+#ifdef __GNUC__
+# include "Usul/Errors/Signals.h"
+#endif
+
 #include <fstream>
 #include <sstream>
 
@@ -172,6 +176,11 @@ void Program::run ( int argc, char **argv,
                     unsigned int poolSize,
                     int &result )
 {
+  #ifdef __GNUC__
+  // Register the signal handlers.
+  Usul::Errors::registerSignalHandlers ( argv[0] );
+  #endif
+
   // Set mutex and thread factories.
   Usul::Threads::Mutex::createFunction       ( mutexFactory );
   Usul::Threads::Manager::instance().factory ( threadFactory );

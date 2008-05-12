@@ -1552,6 +1552,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\Quaternion.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Math\Transpose.h"
 					>
 				</File>

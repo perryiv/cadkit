@@ -71,6 +71,7 @@ SET (SOURCES
 ./Resources/EventQueue.cpp
 ./Resources/StatusBar.cpp
 ./Resources/ReportErrors.cpp
+./Resources/Manager.cpp
 ./Registry/Database.cpp
 ./Registry/Node.cpp
 ./Registry/Visitor.cpp

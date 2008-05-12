@@ -17,8 +17,8 @@
 #include "Minerva/Core/DataObjects/Line.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Core/Utilities/Resample.h"
 #include "Minerva/Interfaces/ILineData.h"
-#include "Minerva/Interfaces/IFitLineTerrain.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
@@ -46,7 +46,8 @@ using namespace Minerva::Core::DataObjects;
 
 Line::Line() :
   BaseClass(),
-  _width ( 1.0 )
+  _width ( 1.0 ),
+  _tessellate ( false )
 {
   // Default render bin.
   this->renderBin ( 3 );
@@ -131,16 +132,13 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
     if( line.valid () )
     {
       typedef Minerva::Interfaces::ILineData::Vertices Vertices;
-      typedef Usul::Components::Manager PluginManager;
 
       // Get the line data.
       Vertices data ( line->lineData() );
 
-      Minerva::Interfaces::IFitLineTerrain::QueryPtr fit ( PluginManager::instance().getInterface ( Minerva::Interfaces::IFitLineTerrain::IID ) );
-
       Vertices sampledPoints;
-      if ( fit.valid() && DataObject::ABSOLUTE_MODE != this->altitudeMode() )
-        fit->resample( data, sampledPoints, 5 );
+      if ( this->tessellate() && DataObject::CLAMP_TO_GROUND == this->altitudeMode() )
+        Minerva::Core::Utilities::resample( data, sampledPoints, 5, caller );
       else
         sampledPoints = data;
 
@@ -231,4 +229,30 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
   mt->addChild ( node.get() );
 
   return mt.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set tessellate flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::tessellate ( bool b )
+{
+  Guard guard ( this->mutex() );
+  _tessellate = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get tessellate flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Line::tessellate() const
+{
+  Guard guard ( this->mutex() );
+  return _tessellate;
 }

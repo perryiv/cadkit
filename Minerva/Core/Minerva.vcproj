@@ -817,6 +817,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Utilities\Resample.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Utilities\SkyDome.cpp"
 						>
 					</File>

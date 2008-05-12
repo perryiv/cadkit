@@ -40,6 +40,10 @@ public:
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
 
+  /// Set/get tessellate flag.
+  void                  tessellate ( bool );
+  bool                  tessellate() const;
+
   /// Get/Set the width
   float                 width() const;
   void                  width( float );
@@ -53,6 +57,7 @@ protected:
 
 private:
   float     _width;
+  bool      _tessellate;
 };
 
 }

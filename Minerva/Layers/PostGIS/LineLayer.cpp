@@ -176,6 +176,9 @@ void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Inte
       data->geometry( unknown.get() );
       data->objectId ( Usul::Strings::format ( id ) );
 
+      // Set tessellate to true for backwards compatabilty.  Need to make this an option.
+      data->tessellate ( true );
+
       // Set the label.
       this->_setDataObjectMembers( data.get(), caller );
 

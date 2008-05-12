@@ -176,6 +176,9 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
         data->color( this->_color ( iter ) );
         data->objectId ( Usul::Strings::format ( id ) );
 
+        // Set tessellate to true for backwards compatabilty.  Need to make this an option.
+        data->tessellate ( true );
+
         /// Set the label.
         this->_setDataObjectMembers( data.get(), caller );
 

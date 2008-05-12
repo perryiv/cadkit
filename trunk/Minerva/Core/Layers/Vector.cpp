@@ -363,7 +363,8 @@ void Vector::_buildScene( Usul::Interfaces::IUnknown *caller )
     // Remove all children.
     OsgTools::Group::removeAllChildren ( _root.get() );
 
-    // Add to the scene.
+    // Add to the scene if we are shown.
+    if ( this->showLayer() )
     {
       Builders::Guard guard ( _builders.mutex() );
       for ( Builders::iterator iter = _builders.begin(); iter != _builders.end(); ++iter )

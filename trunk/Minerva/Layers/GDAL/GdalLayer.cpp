@@ -18,6 +18,7 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Temp.h"
+#include "Usul/MPL/StaticAssert.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Threads/Safe.h"
@@ -40,9 +41,10 @@
 
 namespace
 {
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_ArcAscii ( "Arc Ascii (*.asc)", "*.asc" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_DEM      ( "Digital Elevation Model (*.dem)", "*.dem" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_SRTM     ( "NASA SRTM (*.hgt)", "*.hgt" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_ArcAscii  ( "Arc Ascii (*.asc)", "*.asc" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
 }
 
 
@@ -62,6 +64,13 @@ GdalLayer::GdalLayer () :
   _filename()
 {
   this->_addMember ( "filename", _filename );
+  
+  // Sanity check.  TODO: Change from using built in types directy to Usul::Types
+  USUL_STATIC_ASSERT ( sizeof ( GByte )   == sizeof ( unsigned char ) );
+  USUL_STATIC_ASSERT ( sizeof ( GUInt16 ) == sizeof ( unsigned short ) );
+  USUL_STATIC_ASSERT ( sizeof ( GInt16 )  == sizeof ( short ) );
+  USUL_STATIC_ASSERT ( sizeof ( GInt32 )  == sizeof ( int ) );
+  USUL_STATIC_ASSERT ( sizeof ( GUInt32 ) == sizeof ( unsigned int ) );
 }
 
 

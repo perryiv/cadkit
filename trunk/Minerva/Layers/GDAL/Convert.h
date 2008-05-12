@@ -169,9 +169,6 @@ namespace Minerva
 
       const GDALColorTable* table ( band->GetColorTable() );
       
-      // The no data value.
-      const double noDataValue ( band->GetNoDataValue() );
-      
       // Number of pixel.
       const int size ( width * height );
       

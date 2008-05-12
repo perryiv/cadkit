@@ -46,7 +46,7 @@ Point::~Point()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Math::Vec3d Point::pointData( )
+Usul::Math::Vec3d Point::pointData() const
 {
   Usul::Math::Vec3d point;
 

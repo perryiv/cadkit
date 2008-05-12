@@ -28,7 +28,7 @@ struct IPointData : public Usul::Interfaces::IUnknown
   enum { IID = 1916416800u };
 
   /// Return the point.
-  virtual Usul::Math::Vec3d        pointData ( ) = 0;
+  virtual Usul::Math::Vec3d        pointData() const = 0;
 
 }; // struct IPointData
 

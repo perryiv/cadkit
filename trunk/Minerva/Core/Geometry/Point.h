@@ -40,7 +40,7 @@ protected:
   virtual ~Point();
 
   /// Usul::Interfaces::IPointData
-  virtual Usul::Math::Vec3d         pointData ( );
+  virtual Usul::Math::Vec3d         pointData() const;
 
 private:
   Usul::Math::Vec3d _point;

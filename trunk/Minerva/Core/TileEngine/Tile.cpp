@@ -665,6 +665,14 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
+  
+  {
+    Guard guard ( this->mutex() );
+    _children[LOWER_LEFT]  = t0.get();
+    _children[LOWER_RIGHT] = t1.get();
+    _children[UPPER_LEFT]  = t2.get();
+    _children[UPPER_RIGHT] = t3.get();
+  }
 
   Minerva::Core::Layers::Vector::RefPtr vector ( body->vectorData() );
   if ( vector.valid() )
@@ -674,14 +682,6 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
     vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
     vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
-  }
-  
-  {
-    Guard guard ( this->mutex() );
-    _children[LOWER_LEFT]  = t0.get();
-    _children[LOWER_RIGHT] = t1.get();
-    _children[UPPER_LEFT]  = t2.get();
-    _children[UPPER_RIGHT] = t3.get();
   }
 }
 

@@ -19,10 +19,13 @@
 #include "Usul/Convert/Vector2.h"
 #include "Usul/Functions/GUID.h"
 #include "Usul/Interfaces/IProjectCoordinates.h"
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/NaN.h"
+#include "Usul/Resources/Constants.h"
+#include "Usul/Resources/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
@@ -933,20 +936,29 @@ void Layer::updateNotify ( Usul::Interfaces::IUnknown *caller )
   // See if our data is dirty.
   if ( true == this->dirtyData() && false == this->isUpdating() )
   {
+    // Get the progress bar factory.
+    Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( Usul::Resources::Manager::instance().find ( Usul::Resources::Contants::PROGRESS_BAR_FACTORY ) );
+
+    // Make the progress bar.
+    Usul::Interfaces::IUnknown::QueryPtr progress ( factory.valid() ? factory->createProgressBar() : 0x0 );
+
     // Create a job to update the file.
-    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind2 ( caller, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ),
+    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind2 ( caller, progress.get(),
                                                                                Usul::Adaptors::memberFunction ( this, &Layer::buildVectorData ) ) ) );
-    
+
     if ( true == job.valid() )
     {
+      // Set the job's progress bar so the progress bar doesn't get deleted before job executes.
+      job->progress ( progress.get() );
+
       // Set the updating flag now so we don't launch another job before this one starts.
       this->updating ( true );
-      
+
       // Add job to manager.
       Usul::Jobs::Manager::instance().addJob ( job.get() );
     }
   }
-  
+
   BaseClass::updateNotify ( caller );
 }
 

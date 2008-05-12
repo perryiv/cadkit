@@ -9,8 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Document/MinervaDocument.h"
-#include "Minerva/Document/MinervaReader.h"
-#include "Minerva/Document/MinervaWriter.h"
 #include "Minerva/Document/KmlWriter.h"
 #include "Minerva/Core/Commands/StopAnimation.h"
 #include "Minerva/Core/Commands/StartAnimation.h"
@@ -1047,7 +1045,7 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   // Build the scene.
   this->_buildScene ( caller );
 
-  bool jobFinished ( _commandJob.valid() ? _commandJob->isDone () : true );
+  const bool jobFinished ( _commandJob.valid() ? _commandJob->isDone () : true );
 
   // Check to see if we should receive commands...
   if ( _commandsReceive && _commandUpdate () && jobFinished )

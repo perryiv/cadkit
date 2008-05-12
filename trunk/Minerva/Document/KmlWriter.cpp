@@ -118,6 +118,7 @@ void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Line &line )
 
 void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Point &point )
 {
+#if 0
   // Start of the the place mark.
   _out << "\t\t\t<Placemark>" << std::endl;
 
@@ -136,6 +137,7 @@ void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Point &point )
 
   // End of the the place mark.
   _out << "\t\t\t</Placemark>" << std::endl;
+#endif
 }
 
 

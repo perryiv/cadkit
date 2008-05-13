@@ -174,6 +174,7 @@ void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::I
         data->showInterior ( this->showInterior() );
         data->geometry ( unknown.get() );
         data->color( this->_color ( iter ) );
+        data->borderColor ( this->borderColor() );
         data->objectId ( Usul::Strings::format ( id ) );
 
         // Set tessellate to true for backwards compatabilty.  Need to make this an option.

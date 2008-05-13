@@ -44,11 +44,15 @@ public:
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
 
-  /// Get/Set draw border flag.
+  /// Set/get the border color flag.
+  void                  borderColor ( const osg::Vec4& color );
+  const osg::Vec4&      borderColor() const;
+  
+  /// Set/get draw border flag.
   void                  showBorder( bool b );
   bool                  showBorder() const;
 
-  /// Get/Set draw interior flag.
+  /// Set/get draw interior flag.
   void                  showInterior( bool b );
   bool                  showInterior() const;
 
@@ -67,6 +71,7 @@ private:
 
   bool _showBorder;
   bool _showInterior;
+  osg::Vec4 _borderColor;
 };
 
 }

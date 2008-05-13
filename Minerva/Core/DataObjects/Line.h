@@ -54,6 +54,7 @@ protected:
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
+  osg::Node*            _preBuildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller = 0x0 );
 
 private:
   float     _width;

@@ -412,8 +412,10 @@ const DataObject::Unknown* DataObject::dataSource() const
 osg::Node* DataObject::_buildLabel( const osg::Vec3& position )
 {
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  
+  const std::string label ( this->label() );
 
-  if ( this->showLabel () )
+  if ( this->showLabel () && false == label.empty() )
   {
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
 

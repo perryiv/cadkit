@@ -591,7 +591,7 @@ void RasterLayerWms::_findImageReader()
   // Clear the one we have.
   _reader = 0x0;
   
-  std::string format ( _options[Usul::Network::Names::FORMAT] );
+  const std::string format ( _options[Usul::Network::Names::FORMAT] );
   std::string ext ( ( format.size() > 6 && '/' == format.at(5) ) ? std::string ( format.begin() + 6, format.end() ) : format );
   ext = ( ( "jpeg" == ext ) ? "jpg" : ext );
   

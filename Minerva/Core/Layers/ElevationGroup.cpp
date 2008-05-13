@@ -12,6 +12,7 @@
 
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Types/Types.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"
@@ -116,10 +117,25 @@ namespace Detail
     // The offset amount.
     const unsigned int offset ( hasAlpha ? 2 : 1 );
 
+    // Get the number of bytes in the source image.
+    const unsigned int srcSize ( data.getImageSizeInBytes() );
+
+    // Get the size we are expecting.
+    const unsigned int expectedSize ( sizeof ( SrcType ) * size * offset );
+
+    // Print an error and return if the sizes are differnt.
+    if ( srcSize != expectedSize )
+    {
+      std::cout << "Error 1707935646: Size discrepancy when converting. Image size is " 
+                << srcSize << " when expected size is " << expectedSize << std::endl;
+      return;
+    }
+
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      const SrcType alpha ( hasAlpha ? ( ( 0.0 == src[1] ) ? 0.0 : 1.0 ) : 1.0 );
+      const SrcType a ( hasAlpha ? src[1] : 0 );
+      const SrcType alpha ( ( 0 == a ) ? 0.0 : 1.0 );
 
       SrcType value ( *src );
       dst[0] = static_cast<DstType> ( value );
@@ -195,15 +211,15 @@ void ElevationGroup::_compositeImages ( osg::Image& result, const osg::Image& im
     switch ( image.getDataType() )
     {
     case GL_SHORT:
-      Detail::convert<short, float> ( image, *convert );
+      Detail::convert<Usul::Types::Int16, Usul::Types::Float32> ( image, *convert );
       break;
     case GL_UNSIGNED_SHORT:
       // Treat as shorts.  Any number greater than max short will be treated as a negative number.
       // This is a work around for one earth's wms server.
-      Detail::convert<short, float> ( image, *convert );
+      Detail::convert<Usul::Types::Int16, Usul::Types::Float32> ( image, *convert );
       break;
     case GL_UNSIGNED_BYTE:
-      Detail::convert<unsigned char, float> ( image, *convert );
+      Detail::convert<Usul::Types::Uint8, Usul::Types::Float32> ( image, *convert );
       break;
     }
     

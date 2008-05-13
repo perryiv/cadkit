@@ -108,7 +108,19 @@ void Line::width ( float width )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
+osg::Node* Line::_preBuildScene( Usul::Interfaces::IUnknown* caller )
+{
+  return this->_preBuildScene ( this->color(), caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene branch for the data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Line::_preBuildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller )
 {
   osg::ref_ptr< osg::Group > node ( new osg::Group );
 
@@ -175,7 +187,7 @@ osg::Node* Line::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 
       // Set the colors.
       osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-      colors->push_back( this->color() );
+      colors->push_back( color );
       geometry->setColorArray( colors.get() );
       geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
 

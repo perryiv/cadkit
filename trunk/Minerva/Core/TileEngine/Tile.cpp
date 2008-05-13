@@ -61,6 +61,8 @@
 #include <algorithm>
 #include <limits>
 
+#define USE_MIP_MAPS 0
+
 using namespace Minerva::Core::TileEngine;
 
 USUL_IMPLEMENT_TYPE_ID ( Tile );
@@ -110,6 +112,17 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   if ( true == _image.valid() )
     _texture->setImage ( _image.get() );
   
+#if USE_MIP_MAPS == 1
+  // Set filter parameters.
+  _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_NEAREST );
+  _texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+  
+  _texture->setUseHardwareMipMapGeneration ( true );
+  
+  // Set texture coordinate wrapping parameters.
+  _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::MIRROR );
+  _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::MIRROR );
+#else
   // Set filter parameters.
   _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
   _texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
@@ -117,6 +130,7 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   // Set texture coordinate wrapping parameters.
   _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+#endif
 
   // Turn off back-face culling.
   this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
@@ -1243,6 +1257,9 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
 
   // Make the mesh
   Mesh mesh ( 2, columns );
+  
+  // Get the difference of texture coordinates.
+  const double difference ( _texCoords[3] - _texCoords[2] );
 
   // Left skirt.
   for ( unsigned int j = 0; j < columns; ++j )
@@ -1263,8 +1280,8 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
     p1 = p1 - ll;
 
     // Assign texture coordinate.
-    mesh.texCoord ( 0, j ).set ( _texCoords[0] + u, _texCoords[2] + v );
-    mesh.texCoord ( 1, j ).set ( _texCoords[0] + u, _texCoords[2] + v );
+    mesh.texCoord ( 0, j ).set ( u, _texCoords[2] + ( v * difference ) );
+    mesh.texCoord ( 1, j ).set ( u, _texCoords[2] + ( v * difference ) );
 
     // Assign normal vector.
     mesh.normal ( 0, j ) = normal;
@@ -1287,6 +1304,9 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double o
 
   // Make the mesh
   Mesh mesh ( rows, 2 );
+  
+  // Get the difference of texture coordinates.
+  const double difference ( _texCoords[3] - _texCoords[2] );
 
   // Left skirt.
   for ( int i = rows - 1; i >= 0; --i )
@@ -1307,8 +1327,8 @@ osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double o
     p1 = p1 - ll;
 
     // Assign texture coordinate.
-    mesh.texCoord ( i, 0 ).set ( _texCoords[0] + u, _texCoords[2] + v );
-    mesh.texCoord ( i, 1 ).set ( _texCoords[0] + u, _texCoords[2] + v );
+    mesh.texCoord ( i, 0 ).set ( _texCoords[0] + ( u * difference ), v );
+    mesh.texCoord ( i, 1 ).set ( _texCoords[0] + ( u * difference ), v );
 
     // Assign normal vector.
     mesh.normal ( i, 0 ) = normal;

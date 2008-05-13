@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/ITriangulate.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
+#include "OsgTools/State/StateSet.h"
 #include "OsgTools/Utilities/TranslateGeometry.h"
 
 #include "osg/Material"
@@ -45,7 +46,8 @@ using namespace Minerva::Core::DataObjects;
 Polygon::Polygon() :
   BaseClass(),
   _showBorder( false ),
-  _showInterior ( true )
+  _showInterior ( true ),
+  _borderColor ( 1.0, 1.0, 1.0, 1.0 )
 {
 }
 
@@ -110,6 +112,8 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
   // Vertices and normals.
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec4Array> colors  ( new osg::Vec4Array ( inVertices.size() ) );
+  std::fill ( colors->begin(), colors->end(), this->color() );
   
   // Reserve enough rooms.
   vertices->reserve( inVertices.size() );
@@ -140,6 +144,8 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
   geom->setVertexArray ( vertices.get() );
   geom->setNormalArray ( normals.get() );
   geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+  geom->setColorArray ( colors.get() );
+  geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
 
   geom->addPrimitiveSet ( new osg::DrawArrays ( GL_POLYGON, 0, vertices->size() ) );
   
@@ -180,13 +186,16 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
     geode->addDrawable( this->_buildGeometry ( outerBoundary, e, caller ) );
     
     osg::Vec4 color ( this->color() );
-    osg::ref_ptr < osg::Material > mat ( new osg::Material );
-    mat->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
+    //osg::ref_ptr < osg::Material > mat ( new osg::Material );
+    //mat->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
 
     osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet () );
 
+    // Set the render bin.
+    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+    
     // Set the material.
-    ss->setAttribute ( mat.get(), osg::StateAttribute::ON );
+    //ss->setAttribute ( mat.get(), osg::StateAttribute::ON );
 
     // Set state set modes depending on alpha value.
     if( 1.0f == color.w() )
@@ -194,18 +203,23 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
       ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF );
       ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  );
       
-      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+      // If we don't have a render bin assigned, use the transparent bin.
+      if( 0 == this->renderBin() )
+        ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
     }
     else
     {
       ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
       ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-      ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
     }
 
+    // Make a polygon offset.
     osg::ref_ptr< osg::PolygonOffset > po ( new osg::PolygonOffset( -1.0f, -1.0f ) );
     ss->setMode ( GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
     ss->setAttribute( po.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    
+    // Turn off lighting.
+    OsgTools::State::StateSet::setLighting  ( ss.get(), false );
 
     geode->setUserData ( new Minerva::Core::DataObjects::UserData ( this ) );
 
@@ -244,7 +258,7 @@ osg::Node* Polygon::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 
   if( this->showBorder() )
   {
-    group->addChild( BaseClass::_preBuildScene( caller ) );
+    group->addChild( BaseClass::_preBuildScene( this->borderColor(), caller ) );
   }
 
   this->dirty( false );
@@ -298,4 +312,28 @@ void Polygon::showInterior( bool b )
 bool Polygon::showInterior() const
 {
   return _showInterior;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the border color flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Polygon::borderColor ( const osg::Vec4& color )
+{
+  _borderColor = color;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the border color flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Vec4& Polygon::borderColor() const
+{
+  return _borderColor;
 }

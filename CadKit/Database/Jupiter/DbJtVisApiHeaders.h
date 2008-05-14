@@ -82,6 +82,7 @@
 #define eaiEntityFactory JtkEntityFactory
 #define eaiTraverser JtkTraverser
 #define eaiMaterial JtkMaterial
+#define eaiTexImage JtkTexImage
 #define eaiAssembly JtkAssembly
 #define eaiPointSet JtkPointSet
 #define eaiPart JtkPart

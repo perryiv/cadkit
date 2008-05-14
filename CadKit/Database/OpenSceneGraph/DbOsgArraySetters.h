@@ -16,6 +16,10 @@
 #ifndef _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_ARRAY_SETTERS_H_
 #define _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_ARRAY_SETTERS_H_
 
+#ifdef _WIN32
+# pragma warning(disable:4482) // Disable warning about use of enums.
+#endif
+
 // I need this up here or else I get this VC++ error (and many others):
 // SlTemplateSupport.h(79) : error C2039: 'sqrtl' : is not a member of '`global namespace''
 #include <math.h>

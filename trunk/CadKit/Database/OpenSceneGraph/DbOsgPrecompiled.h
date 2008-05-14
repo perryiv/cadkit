@@ -17,6 +17,7 @@
 #define _CADKIT_DATABASE_OPEN_SCENE_GRAPH_LIBRARY_INTERNAL_PRECOMPILED_HEADERS_H_
 
 #ifdef _WIN32
+# pragma warning(disable:4482) // Disable warning about use of enums.
 # pragma warning(disable:4251) // See note 3ce3a140-2edf-11d4-98a4-0040054c86c7.
 # pragma warning(disable:4786) // Truncated debug names.
 # define WIN32_LEAN_AND_MEAN   // Exclude rarely-used stuff from Windows headers.

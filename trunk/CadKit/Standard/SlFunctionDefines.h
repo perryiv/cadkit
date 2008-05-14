@@ -21,7 +21,6 @@
 # include <stdio.h>
 #endif
 
-
 //////////////////////////////////////////////////////////////////////////
 //
 //  Define the "current working directory" function.
@@ -55,7 +54,11 @@
 //////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
+#if _MSC_VER >= 1400
+# define SL_VSNPRINTF ::_vsnprintf_s
+#else
 # define SL_VSNPRINTF ::_vsnprintf
+#endif
 #else
 # define SL_VSNPRINTF ::vsnprintf
 #endif // Platforms
@@ -69,7 +72,11 @@
 //////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
+#if _MSC_VER >= 1400
+# define SL_VSNWPRINTF ::_vsnwprintf_s
+#else
 # define SL_VSNWPRINTF ::_vsnwprintf
+#endif
 #elif __linux__
 # define SL_VSNWPRINTF ::vswprintf
 #elif defined ( __sgi ) || defined ( __CYGWIN__ )

@@ -494,7 +494,17 @@ void CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown
 
   // Print the current time.
   time_t now = ::time ( NULL );
+#if defined _WIN32 && _MSC_VER >= 1400
+  char buf[256];
+  tm tmtemp;
+  if ( localtime_s(&tmtemp, &now) )
+    return;
+  if ( asctime_s( buf, 256, &tmtemp ) )
+    return;
+  PRINT_LEVEL ( 1 ) << "Start time: " << buf << std::flush;
+#else
   PRINT_LEVEL ( 1 ) << "Start time: " << ::asctime ( localtime ( &now ) ) << std::flush;
+#endif
 
   // Loop through the arguments.
   for ( Args::const_iterator i = args.begin(); i != args.end(); ++i )
@@ -502,7 +512,15 @@ void CtTranslation::_execute ( int argc, char **argv, IUnknown *source, IUnknown
 
   // Print the current time.
   now = ::time ( NULL );
+#if defined _WIN32 && _MSC_VER >= 1400
+  if ( localtime_s(&tmtemp, &now) )
+    return;
+  if ( asctime_s( buf, 256, &tmtemp ) )
+    return;
+  PRINT_LEVEL ( 1 ) << "End time: " << buf << std::flush;
+#else
   PRINT_LEVEL ( 1 ) << "End time: " << ::asctime ( localtime ( &now ) ) << std::flush;
+#endif
 }
 
 

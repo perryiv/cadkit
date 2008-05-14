@@ -74,6 +74,7 @@ class JtkClientData;
 
 #define eaiHierarchy JtkHierarchy
 #define eaiMaterial JtkMaterial
+#define eaiTexImage JtkTexImage
 #define eaiShape JtkShape
 #define eaiClientData JtkClientData
 

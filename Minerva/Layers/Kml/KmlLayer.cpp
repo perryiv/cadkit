@@ -515,6 +515,7 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
   // Get style properties.
 	const Usul::Math::Vec4f defaultColor ( 0.8, 0.8, 0.8, 1.0 );
 	const Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->color() : defaultColor ) : defaultColor );
+  const Usul::Math::Vec4f borderColor ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->color() : defaultColor ) : defaultColor );
 
   const bool fill    ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->fill()    : true ) : true );
   const bool outline ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->outline() : true ) : true );
@@ -522,6 +523,7 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
   // Make the data object.
   Minerva::Core::DataObjects::Polygon::RefPtr polygon ( new Minerva::Core::DataObjects::Polygon );
   polygon->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
+  polygon->borderColor ( osg::Vec4 ( borderColor[0], borderColor[1], borderColor[2], borderColor[3] ) );
   polygon->showBorder ( outline );
   polygon->showInterior ( fill );
   

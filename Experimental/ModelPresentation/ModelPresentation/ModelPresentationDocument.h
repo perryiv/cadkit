@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Arizona State University
+//  Copyright (c) 2007, 2008 Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Author(s): Jeff Conner
@@ -194,7 +194,6 @@ protected:
   osg::Node*                  _parseGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSet & set, MpdDefinitions::MpdGroup & grp );
   osg::Node*                  _parseTimeGroup( XmlTree::Node &node, Unknown *caller, Unknown *progress, unsigned int &currentTime, MpdDefinitions::MpdTimeSet &timeset );
   void                        _parseSequenceStep( XmlTree::Node &node, Unknown *caller, Unknown *progress, MpdDefinitions::MpdSequenceStep &step );
-  void                        _parseSequenceGroups( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   void                        _parseModels( XmlTree::Node &node, Unknown *caller, Unknown *progress );
   osg::Node*                  _parseModel( XmlTree::Node &node, Unknown *caller, Unknown *progress, std::string &name );
   void                        _parseDynamic( XmlTree::Node &node, Unknown *caller, Unknown *progress ); 

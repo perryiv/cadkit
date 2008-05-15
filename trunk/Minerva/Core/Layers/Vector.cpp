@@ -632,6 +632,15 @@ void Vector::setBooleanState ( bool b )
 {
   USUL_TRACE_SCOPE;
   this->showLayer ( b );
+
+  // Set the state of our children.
+  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+  {
+    Usul::Interfaces::IBooleanState::QueryPtr state ( *iter );
+    if ( state.valid() )
+      state->setBooleanState ( b );
+  }
 }
 
 

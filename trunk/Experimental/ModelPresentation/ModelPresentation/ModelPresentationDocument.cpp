@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Arizona State University
+//  Copyright (c) 2007, 2008 Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //  Author(s): Jeff Conner
@@ -848,13 +848,10 @@ void ModelPresentationDocument::setStep ( unsigned int time )
 
   for( unsigned int i = 0; i < _timeSets.size(); ++i )
   {
-    if( false == this->isAnimating() )
+    if( true == _useTimeLine )
     {
-      if( true == _useTimeLine )
-      {
-        if( _timeSets.at( i ).currentTime <= _globalTimelineEnd )
-          _timeSets.at( i ).currentTime = _globalCurrentTime;
-      }
+      
+        _timeSets.at( i ).currentTime = _globalCurrentTime;
     }
   }
   for( unsigned int i = 0; i < _dynamicSets.size(); ++i )
@@ -865,11 +862,10 @@ void ModelPresentationDocument::setStep ( unsigned int time )
       {
         _dynamicSets.at( i ).models->setValue( j, false );
       }
-       if( _dynamicSets.at( i ).currentTime <= _globalTimelineEnd )
         _dynamicSets.at( i ).currentTime = _globalCurrentTime;
     }
   }
-  
+  this->_checkTime( true );  
 }
 
 
@@ -965,8 +961,7 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
   {
     if ( "usetools" == iter->first )
     {
-      std::string value = "false";
-      Usul::Strings::fromString ( iter->second, value );
+      std::string value = iter->second;
       if( value == "true" )
         _showTools = true;
     }
@@ -1243,31 +1238,21 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   
-  
-  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   MpdDefinitions::MpdSet set;
-  set.index = 0;
-  set.name = "Set";
-  set.menuName = "Models";
   _useModels = true;
+
+  const std::string name    ( node.attributes()["name"] );
+  const std::string menuName ( node.attributes()["menu_name"] );
+
+  // if there is a name in the xml set it to the set name
+  if( "" != name )
+    set.name = name;
+
+  // if there is a menu name in the xml set the Set menu name
+  if( "" != menuName )
+    set.menuName = menuName;
   
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, set.name );
-    }
-    if ( "numgroups" == iter->first )
-    {
-      //Usul::Strings::fromString ( iter->second, _header.gridSize[1] );
-    }
-    if ( "menu_name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, set.menuName );
-    }
-        
-  }
   // Add the set to the writer
   _writer->addSet( set.name, set.menuName );
 
@@ -1307,30 +1292,13 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   
-  
-  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  std::string groupName = "group";
   
-  grp.name = "Unknown";
-  grp.visibleModels.resize( 0 );
+  const std::string name ( node.attributes()["name"] );
 
-
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "name" == iter->first )
-    {
-      
-      Usul::Strings::fromString ( iter->second, groupName );
-      set.groupNames.push_back( groupName );
-      grp.name = groupName;
-    }
-    if ( "numitems" == iter->first )
-    {
-      //Usul::Strings::fromString ( iter->second, _header.gridSize[1] );
-    }
-        
-  }
+  // if there is a group name in the xml set it to the group name
+  if( "" != name )
+    grp.name = name;
   
   // TODO: Create group here ---
   GroupPtr group ( new osg::Group );
@@ -1338,35 +1306,25 @@ osg::Node* ModelPresentationDocument::_parseGroup( XmlTree::Node &node, Unknown 
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
+    const std::string attString ( node->attributes()["name"] );   
 
     if ( "show" == node->name() )
     {
-      Attributes& att ( node->attributes() );
-      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      if ( "" != attString )
       {
-        if ( "name" == att_iter->first )
-        {
-          std::string name;
-          Usul::Strings::fromString ( att_iter->second, name );
-          grp.visibleModelsMap[name] = true;
+        grp.visibleModelsMap[attString] = true;
 
-          // add the model to the set to be shown
-          _writer->addModelToSet( name, set.name, grp.name );
+        // add the model to the set to be shown
+        _writer->addModelToSet( attString, set.name, grp.name );
 
-        }
       }
     } 
+
     if ( "hide" == node->name() )
     {
-      Attributes& att ( node->attributes() );
-      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      if ( "" != attString )
       {
-        if ( "name" == att_iter->first )
-        {
-          std::string name;
-          Usul::Strings::fromString ( att_iter->second, name );
-          grp.visibleModelsMap[name] = false;
-        }
+        grp.visibleModelsMap[attString] = false;
       }
     } 
   }
@@ -1388,55 +1346,27 @@ void ModelPresentationDocument::_parseTimeSet( XmlTree::Node &node, Unknown *cal
   // Ok to update the status bar with time related information
   _useTimeLine = true;
 
-  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
   MpdDefinitions::MpdTimeSet timeset;
-  timeset.currentTime = 0;
-  timeset.endTime = 0;
-  timeset.timeline = new osg::Switch;
-  timeset.name = "Unknown";
-  timeset.menuName = "Timelines";
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    
-    if ( "endTime" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, timeset.endTime );
-      _userSpecifiedEndTime = true;
-    }
-    if ( "name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, timeset.name );
-    }
-    if ( "timelength" == iter->first )
-    {
-      unsigned int interval = 1;
-      Usul::Strings::fromString ( iter->second, interval );
-      std::cout << "Setting time update interval to " << interval << std::endl;
-      _update = ( UpdatePolicyPtr( new UpdatePolicy( interval ) ) );
-      
-    }
-    if ( "menu_name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, timeset.menuName );
-    }
-    if ( "visible" == iter->first )
-    {
-      std::string value = "false";
 
-      Usul::Strings::fromString ( iter->second, value );
-      if( value == "true" || value == "TRUE" ||
-          value == "yes"  || value == "YES" )
-      {
-        timeset.visible = true;
-      }
-      else
-      {
-        timeset.visible = false;
-      }
-      
-    }
-        
+  const std::string name    ( node.attributes()["name"] );
+  const std::string menuName ( node.attributes()["menu_name"] );
+  const std::string endTime (  node.attributes()["endtime"] );
+  const std::string visible ( node.attributes()["visible"] );
+
+  if( "" != name )
+    timeset.name = name;
+
+  if( "" != menuName )
+    timeset.menuName = menuName;
+
+  if( "" != endTime )
+    timeset.endTime = Usul::Convert::Type< std::string, unsigned int >::convert( endTime );
+
+  if( visible == "true" || visible == "TRUE" ||
+      visible == "yes"  || visible == "YES" )
+  {
+    timeset.visible = true;
   }
 
   //Add the timeset to the writer
@@ -1488,24 +1418,19 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
   MpdDefinitions::MpdTimeGroup timeGroup;
   timeGroup.startTime = currentTime;
   timeGroup.endTime = currentTime + 1;
-  
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "startTime" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, timeGroup.startTime );
-    }
-    if ( "endTime" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, timeGroup.endTime );
-      currentTime = timeGroup.endTime;
-    }    
 
-  }
+  const std::string startTime (  node.attributes()["startTime"] );
+  const std::string endTime ( node.attributes()["endtime"] );
+  
+  if( "" != startTime )
+    timeGroup.startTime = Usul::Convert::Type< std::string, unsigned int >::convert( startTime );
+
+  if( "" != endTime )
+    timeGroup.endTime = Usul::Convert::Type< std::string, unsigned int >::convert( endTime );
+  
   if( false == _userSpecifiedEndTime )
   {
-    _globalTimelineEnd = Usul::Math::maximum( currentTime, _globalTimelineEnd );
-    
+    _globalTimelineEnd = Usul::Math::maximum( currentTime, _globalTimelineEnd );  
   }
   
   GroupPtr group ( new osg::Group );
@@ -1517,21 +1442,12 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
    
     if ( "show" == node->name() )
     {
-      Attributes& att ( node->attributes() );
-      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      const std::string attName ( node->attributes()["name"] );
+      if( "" != attName )
       {
-        if ( "name" == att_iter->first )
-        {
-          std::string name;
-          Usul::Strings::fromString ( att_iter->second, name );
-          timeGroup.visibleModelsMap[name] = true;
-
-          
-        }
-
+        timeGroup.visibleModelsMap[attName] = true;
       }
     }  
-
   }
 
   timeset.groups.push_back( timeGroup );
@@ -1563,77 +1479,38 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
   _useDynamic = true;
 
   Attributes& attributes ( node.attributes() );
-  std::string path;
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
   // Create a new MpdDynamicSet
   MpdDefinitions::MpdDynamicSet dset;
-  dset.currentTime = 0;
-  dset.header.directory = ".";
-  dset.endTime = 0;
-  dset.maxFilesToLoad = 1;
-  dset.nextIndexToLoad = 0;
-  dset.header.extension = "*";
-  dset.menuName = "DynamicSets";
-  dset.name = "Unknown";
-  dset.models = new osg::Switch;
-  dset.header.prefix = "";
-  dset.absolute = false;
+ 
   if( 0 == _dynamicSets.size() )
   {
     dset.visible = true;
   }
 
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "prefix" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, dset.header.prefix );
-    }
-    if ( "directory" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, dset.header.directory );
-    }
-    if ( "extension" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, dset.header.extension );
-    }
-    if ( "menuName" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, dset.menuName );
-    }
-    if ( "name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, dset.name );
-    }      
-    if ( "max" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, dset.maxFilesToLoad );
-    }
-    if ( "absolute" == iter->first )
-    {
-      std::string value( "" );
-      Usul::Strings::fromString ( iter->second, value );
-      if( "true" == value || "TRUE" == value )
-      {
-        dset.absolute = true;
-      }
-    }  
-    if ( "position" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, dset.position );
-    }
-  }
+  const std::string prefix ( node.attributes()["prefix"] );
+  const std::string directory ( node.attributes()["directory"] );
+  const std::string extension ( node.attributes()["extension"] );
+  const std::string menuName ( node.attributes()["menuName"] );
+  const std::string name ( node.attributes()["name"] ); 
+  const unsigned int maxFilesToLoad ( Usul::Convert::Type< std::string, unsigned int >::convert( node.attributes()["max"] ) );
+
+  dset.header.prefix = prefix;
+  dset.header.directory = directory;
+  dset.header.extension = extension;
+  dset.menuName = menuName;
+  dset.name = name;
+  dset.maxFilesToLoad = maxFilesToLoad;
+ 
   for( unsigned int i = 0; i < dset.maxFilesToLoad; ++i )
   {
     MpdDefinitions::MpdDynamicGroup grp;
-    grp.filename = "";
-    grp.loaded = false;
-    grp.valid = false;
     std::string text = Usul::Strings::format( "Step ", i + 1, " of ",dset.maxFilesToLoad, " is not loaded..." );
     dset.models->addChild( this->_createProxyGeometry( text, caller ), false );
     dset.groups.push_back( grp );
   }
+
   dset.models->setValue( 0, true );
   dset.endTime = dset.maxFilesToLoad;
   MpdJob::RefPtr job;
@@ -1665,38 +1542,25 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
    // Ok to update the status bar with time related information
   _useSequence = true;
 
-  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  //MpdDefinitions::MpdSequence sequence;
-  _sequence.name = "Unknown";
-  _sequence.menuName = "Sequence";
-  _sequence.groups = new osg::Switch;
+  
+  const std::string name ( node.attributes()["name"] );
+  const std::string menuName ( node.attributes()["menuName"] );
 
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, _sequence.name );
-    }
+  if( "" != name )
+    _sequence.name = name;
 
-    if ( "menu_name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, _sequence.menuName );
-    }   
-  }
+  if( "" != menuName )
+    _sequence.menuName = menuName;
+
   // add the sequence to the writer
   _writer->addSequence( _sequence.name, _sequence.menuName );
 
-  // TODO: create a step here --
-  //osg::ref_ptr< osg::Switch > switchNode ( new osg::Switch );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     
     XmlTree::Node::RefPtr node ( *iter );
-    //if ( "groups" == node->name() )
-    //{
-    //  this->_parseSequenceGroups( *node, caller, progress );
-    //}
+
     if ( "step" == node->name() )
     {
       MpdDefinitions::MpdSequenceStep step;
@@ -1716,45 +1580,10 @@ void ModelPresentationDocument::_parseSequence( XmlTree::Node &node, Unknown *ca
 
     }
   }
-#if 0
-  // Turn off display lists
-  OsgTools::DisplayLists dl( false );
-  dl( switchNode.get() );
-#endif
 
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse a sequence set of groups
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModelPresentationDocument::_parseSequenceGroups( XmlTree::Node &node, Unknown *caller, Unknown *progress )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Attributes& attributes ( node.attributes() );
-  Children& children ( node.children() );
-  
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-  }
-
-  MpdDefinitions::MpdSet set;
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    if ( "group" == node->name() )
-    {
-      MpdDefinitions::MpdGroup grp;
-      this->_parseGroup( *node, caller, progress, set, grp );
-    }  
-    
-  }
-  
-}
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Parse a sequence step
@@ -1765,66 +1594,46 @@ void ModelPresentationDocument::_parseSequenceStep( XmlTree::Node &node, Unknown
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  step.changeLocation = true;
-  step.overwriteGroup = true;
-  step.name = "Unknown";
-  step.locationName = "";
-  
-  
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    if ( "name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, step.name );
-    }
-    if ( "overwriteGroup" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, step.overwriteGroup );
-    }
-    if ( "changeLocation" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, step.changeLocation );
-    }
 
-  }
+  const std::string name ( node.attributes()["menuName"] );
+  const std::string overwriteGroup ( node.attributes()["overwriteGroup"] );
+  const std::string changeLocation ( node.attributes()["changeLocation"] );
  
+  if( "" != name )
+    step.name = name;
+
+  if( "" != overwriteGroup )
+    step.overwriteGroup = Usul::Convert::Type< std::string, bool >::convert( overwriteGroup );
+
+  if( "" != changeLocation )
+    step.changeLocation = Usul::Convert::Type< std::string, bool >::convert( changeLocation );
+  
   // initialize all the visible groups in this step to false
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
+    
+    const std::string attrName ( node->attributes()["name"] );
+
     if ( "location" == node->name() )
     {
-      Attributes& att ( node->attributes() );
-      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      if ( "" != attrName )
       {
-        if ( "name" == att_iter->first )
-        {
-          std::string name;
-          Usul::Strings::fromString ( att_iter->second, name );
-          step.locationName = name;
-        }
+        step.locationName = attrName;
       }
     } 
+
     if( "show" == node->name() )
     {
-      Attributes& att ( node->attributes() );
-      for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
+      if ( "" != attrName )
       {
-        if ( "name" == att_iter->first )
-        {
-          std::string name;
-          Usul::Strings::fromString ( att_iter->second, name );
-          step.visibleModelsMap[name] = true;
-        }
+        step.visibleModelsMap[attrName] = true;
       }
-     
     }
-    
+   
   }
   
-
 }
   
 ///////////////////////////////////////////////////////////////////////////////
@@ -2346,6 +2155,7 @@ void ModelPresentationDocument::timelineModelState( unsigned int i, bool state )
   Guard guard ( this );
 
   _timeSets.at( i ).visible = state;
+  this->_checkTime( true );
 }
 
 

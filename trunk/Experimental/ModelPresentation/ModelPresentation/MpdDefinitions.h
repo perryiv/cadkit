@@ -19,6 +19,7 @@
 
 #include "osg/Group"
 #include "osg/Matrixd"
+#include "osg/Switch"
 
 #include <map>
 #include <string>
@@ -47,6 +48,7 @@ class MpdDefinitions
         std::string name;
         std::vector< bool > visibleModels;
         std::map< std::string, bool > visibleModelsMap;
+        MpdGroup() : setIndex( 0 ), name( "Unknown" ), visibleModels(), visibleModelsMap() {}
       };
       struct MpdSet
       {
@@ -55,6 +57,8 @@ class MpdDefinitions
         std::string menuName;
         std::vector < MpdGroup > groups;
         std::vector< std::string > groupNames;
+
+        MpdSet() : index( 0 ), name ( "Set" ), menuName ( "Models" ), groups(), groupNames(){}
       };
       struct MpdModels
       {
@@ -68,6 +72,8 @@ class MpdDefinitions
         unsigned int endTime;
         std::vector< bool > visibleModels;
         std::map< std::string, bool > visibleModelsMap;
+
+        MpdTimeGroup() : startTime( 0 ), endTime( 0 ), visibleModels(), visibleModelsMap() {}
       };
       struct MpdTimeSet
       {
@@ -78,12 +84,18 @@ class MpdDefinitions
         bool visible;
         std::string name;
         std::string menuName;
+
+        MpdTimeSet() : timeline( new osg::Switch ), currentTime( 0 ), endTime( 0 ), groups(), visible( false ),
+          name( "Unknown" ), menuName( "Timelines" ) {}
+
       };
       struct MpdDynamicGroup
       {
         std::string filename;
         bool valid;
         bool loaded;
+
+        MpdDynamicGroup() : filename( "" ), valid( false ), loaded( false ) {}
       };
       struct MpdDynamicSetHeader
       {
@@ -91,6 +103,8 @@ class MpdDefinitions
         std::string extension;
         std::string prefix;
         std::vector< std::string > modelNames;
+
+        MpdDynamicSetHeader() : directory( "" ), extension( "" ), prefix( "" ), modelNames() {}
         
       };
       struct MpdDynamicSet
@@ -107,6 +121,11 @@ class MpdDefinitions
         unsigned int maxFilesToLoad;
         bool absolute;
         std::string position;
+ 
+        MpdDynamicSet() : header(),  models( new osg::Switch ), groups(), currentTime( 0 ),
+                          endTime( 0 ), nextIndexToLoad( 0 ), menuName( "DynamicSets" ),
+                          name( "Unknown" ), visible( false ), maxFilesToLoad( 1 ),
+                          absolute( false ), position( "" ) {}
       };
       struct MpdSequenceStep
       {
@@ -116,6 +135,9 @@ class MpdDefinitions
         bool changeLocation;
         std::vector< bool > visibleGroups;
         std::map< std::string, bool > visibleModelsMap;
+        
+        MpdSequenceStep() : locationName( "" ), name( "Unknown" ), overwriteGroup( true ), changeLocation( true ),
+          visibleGroups(), visibleModelsMap() {}
       };
       struct MpdSequence
       {
@@ -124,6 +146,10 @@ class MpdDefinitions
         std::string name;
         std::string menuName;
         unsigned int current;
+  
+        MpdSequence() : steps(), groups( new osg::Switch ), name( "Unknown" ),
+                        menuName( "Sequence" ), current( 0 ) {}
+
       };
   
 

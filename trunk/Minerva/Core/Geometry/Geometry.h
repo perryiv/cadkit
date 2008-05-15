@@ -14,7 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Interfaces/IOffset.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 
 #include "osg/Vec3f"
 namespace osg { class Geometry; class Node; }
@@ -25,11 +25,11 @@ namespace Minerva {
 namespace Core {
 namespace Geometry {
 
-class MINERVA_EXPORT Geometry : public Usul::Base::Referenced,
+class MINERVA_EXPORT Geometry : public Usul::Base::Object,
                                 public Minerva::Interfaces::IOffset
 {
 public:
-  typedef Usul::Base::Referenced        BaseClass;
+  typedef Usul::Base::Object        BaseClass;
 
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;

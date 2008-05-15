@@ -85,6 +85,7 @@ void Line::accept ( Minerva::Core::Visitor& visitor )
 
 float Line::width () const
 {
+  Guard guard ( this );
   return _width;
 }
 
@@ -97,6 +98,7 @@ float Line::width () const
 
 void Line::width ( float width )
 {
+  Guard guard ( this );
   _width = width;
   this->dirty( true );
 }
@@ -122,6 +124,7 @@ osg::Node* Line::_preBuildScene( Usul::Interfaces::IUnknown* caller )
 
 osg::Node* Line::_preBuildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller )
 {
+  Guard guard ( this );
   osg::ref_ptr< osg::Group > node ( new osg::Group );
 
   if ( this->dirty() )

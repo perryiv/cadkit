@@ -598,10 +598,20 @@ void RasterLayerWms::_findImageReader()
   // Typedefs to shorten the lines.
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::Documents Documents;
+
+  std::cout << "Looking for reader for " << ext << std::endl;
   
   Documents docs ( DocManager::instance().create ( "." + ext, 0x0, true, false ) );
-  if ( false == docs.empty() )
-    _reader = Usul::Interfaces::IReadImageFile::QueryPtr ( docs.front() );
+  for ( Documents::const_iterator iter = docs.begin(); iter != docs.end(); ++iter )
+  {
+    _reader = Usul::Interfaces::IReadImageFile::QueryPtr ( (*iter).get() );
+
+    if ( _reader.valid() )
+    {
+      std::cout << "Found document " << (*iter)->typeName() << std::endl;
+      break;
+    }
+  }
 }
 
 

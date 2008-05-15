@@ -71,6 +71,7 @@ const Polygon::Vertices& Polygon::outerBoundary() const
 
 void Polygon::addInnerBoundary ( const Vertices& vertices )
 {
+  Guard guard ( this->mutex() );
   _boundaries.push_back ( vertices );
 }
 
@@ -83,6 +84,7 @@ void Polygon::addInnerBoundary ( const Vertices& vertices )
 
 const Polygon::Boundaries& Polygon::innerBoundaries() const
 {
+  Guard guard ( this->mutex() );
   return _boundaries;
 }
 

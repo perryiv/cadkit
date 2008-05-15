@@ -134,6 +134,7 @@ void DataObject::accept ( Minerva::Core::Visitor& visitor )
 
 bool DataObject::dirty() const
 {
+  Guard guard ( this );
   return _dirty;
 }
 
@@ -146,6 +147,7 @@ bool DataObject::dirty() const
 
 void DataObject::dirty( bool b )
 {
+  Guard guard ( this );
   _dirty = b;
 }
 
@@ -158,6 +160,7 @@ void DataObject::dirty( bool b )
 
 unsigned int DataObject::renderBin() const
 {
+  Guard guard ( this );
   return _renderBin;
 }
 
@@ -173,6 +176,7 @@ void DataObject::renderBin( unsigned int renderBin )
   // Only change it if it's different.
   if ( renderBin != _renderBin )
   {
+    Guard guard ( this );
     _renderBin = renderBin;
     this->dirty( true );
   }
@@ -187,6 +191,7 @@ void DataObject::renderBin( unsigned int renderBin )
 
 const osg::Vec4& DataObject::color () const
 {
+  Guard guard ( this );
   return _color;
 }
 
@@ -199,6 +204,8 @@ const osg::Vec4& DataObject::color () const
 
 void DataObject::color ( const osg::Vec4& color )
 {
+  Guard guard ( this );
+
   // Set the internal color.
   _color = color;
   this->dirty( true );
@@ -213,6 +220,7 @@ void DataObject::color ( const osg::Vec4& color )
 
 void DataObject::objectId( const std::string & id )
 {
+  Guard guard ( this );
   _objectId = id;
 }
 
@@ -225,6 +233,7 @@ void DataObject::objectId( const std::string & id )
 
 const std::string & DataObject::objectId() const
 {
+  Guard guard ( this );
   return _objectId;
 }
 
@@ -237,6 +246,7 @@ const std::string & DataObject::objectId() const
 
 void DataObject::label ( const std::string& label )
 {
+  Guard guard ( this );
   _label = label;
   this->dirty( true );
 }
@@ -250,6 +260,7 @@ void DataObject::label ( const std::string& label )
 
 const std::string& DataObject::label () const
 {
+  Guard guard ( this );
   return _label;
 }
 
@@ -262,6 +273,7 @@ const std::string& DataObject::label () const
 
 void DataObject::labelPosition ( const osg::Vec3& position )
 {
+  Guard guard ( this );
   _labelPosition = position;
   this->dirty( true );
 }
@@ -275,6 +287,7 @@ void DataObject::labelPosition ( const osg::Vec3& position )
 
 const osg::Vec3& DataObject::labelPosition () const
 {
+  Guard guard ( this );
   return _labelPosition;
 }
 
@@ -287,6 +300,7 @@ const osg::Vec3& DataObject::labelPosition () const
 
 void DataObject::geometry( Unknown *geometry )
 {
+  Guard guard ( this );
   _geometry = geometry;
   this->dirty( true );
 }
@@ -300,6 +314,7 @@ void DataObject::geometry( Unknown *geometry )
 
 DataObject::Unknown* DataObject::geometry()
 {
+  Guard guard ( this );
   return _geometry.get();
 }
 
@@ -312,6 +327,7 @@ DataObject::Unknown* DataObject::geometry()
 
 const DataObject::Unknown* DataObject::geometry() const
 {
+  Guard guard ( this );
   return _geometry.get();
 }
 
@@ -324,6 +340,7 @@ const DataObject::Unknown* DataObject::geometry() const
 
 const osg::Vec4& DataObject::labelColor () const
 {
+  Guard guard ( this );
   return _labelColor;
 }
 
@@ -336,6 +353,7 @@ const osg::Vec4& DataObject::labelColor () const
 
 void DataObject::labelColor ( const osg::Vec4& color )
 {
+  Guard guard ( this );
   // Set the lable color.
   _labelColor = color;
   this->dirty( true );
@@ -350,6 +368,7 @@ void DataObject::labelColor ( const osg::Vec4& color )
 
 void DataObject::labelSize( float size )
 {
+  Guard guard ( this );
   _labelSize = size;
   this->dirty( true );
 }
@@ -363,6 +382,7 @@ void DataObject::labelSize( float size )
 
 float DataObject::labelSize() const
 {
+  Guard guard ( this );
   return _labelSize;
 }
 
@@ -375,6 +395,7 @@ float DataObject::labelSize() const
 
 void DataObject::dataSource ( Unknown* c )
 {
+  Guard guard ( this );
   _dataSource = c;
 }
 
@@ -387,6 +408,7 @@ void DataObject::dataSource ( Unknown* c )
 
 DataObject::Unknown* DataObject::dataSource()
 {
+  Guard guard ( this );
   return _dataSource.get();
 }
 
@@ -399,6 +421,7 @@ DataObject::Unknown* DataObject::dataSource()
 
 const DataObject::Unknown* DataObject::dataSource() const
 {
+  Guard guard ( this );
   return _dataSource.get();
 }
 
@@ -445,6 +468,7 @@ osg::Node* DataObject::_buildLabel( const osg::Vec3& position )
 
 void DataObject::showLabel ( bool value )
 {
+  Guard guard ( this );
   _showLabel = value;
 }
 
@@ -457,6 +481,7 @@ void DataObject::showLabel ( bool value )
 
 bool DataObject::showLabel () const
 {
+  Guard guard ( this );
   return _showLabel;
 }
 
@@ -470,6 +495,7 @@ bool DataObject::showLabel () const
 void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
 {
   osg::ref_ptr<osg::Node> node ( this->_preBuildScene ( caller ) );
+  
   Guard guard ( this );
   _preBuiltScene = node;
   this->dirty ( false );
@@ -559,6 +585,7 @@ bool DataObject::visibility ( ) const
 
 const Minerva::Core::Animate::Date& DataObject::firstDate() const
 {
+  Guard guard ( this );
   return _firstDate;
 }
 
@@ -571,6 +598,7 @@ const Minerva::Core::Animate::Date& DataObject::firstDate() const
 
 void DataObject::firstDate( const Minerva::Core::Animate::Date& date )
 {
+  Guard guard ( this );
   _firstDate = date;
 }
 
@@ -583,6 +611,7 @@ void DataObject::firstDate( const Minerva::Core::Animate::Date& date )
 
 const Minerva::Core::Animate::Date& DataObject::lastDate() const
 {
+  Guard guard ( this );
   return _lastDate;
 }
 
@@ -595,6 +624,7 @@ const Minerva::Core::Animate::Date& DataObject::lastDate() const
 
 void DataObject::lastDate( const Minerva::Core::Animate::Date& date )
 {
+  Guard guard ( this );
   _lastDate = date;
 }
 
@@ -607,6 +637,7 @@ void DataObject::lastDate( const Minerva::Core::Animate::Date& date )
 
 void DataObject::altitudeMode ( AltitudeMode mode )
 {
+  Guard guard ( this );
   _altitudeMode = mode;
 }
 
@@ -619,6 +650,7 @@ void DataObject::altitudeMode ( AltitudeMode mode )
 
 DataObject::AltitudeMode DataObject::altitudeMode () const
 {
+  Guard guard ( this );
   return _altitudeMode;
 }
 
@@ -631,6 +663,7 @@ DataObject::AltitudeMode DataObject::altitudeMode () const
 
 void DataObject::extrude ( bool b )
 {
+  Guard guard ( this );
   _extrude = b;
   this->dirty ( true );
 }
@@ -644,6 +677,7 @@ void DataObject::extrude ( bool b )
 
 bool DataObject::extrude() const
 {
+  Guard guard ( this );
   return _extrude;
 }
 

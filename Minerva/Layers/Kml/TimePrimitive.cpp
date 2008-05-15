@@ -77,6 +77,9 @@ TimePrimitive::Date TimePrimitive::parse ( const std::string& value )
     int year ( Usul::Convert::Type<std::string,int>::convert ( parts[0] ) );
     int month ( parts.size() > 1 ? Usul::Convert::Type<std::string,int>::convert ( parts[1] ) : 1 );
     int day ( parts.size() > 2 ? Usul::Convert::Type<std::string,int>::convert ( parts[2] ) : 1 );
+
+    if ( year < 1400 )
+      year += 1400;
   
     return Date ( boost::gregorian::from_simple_string ( Usul::Strings::format ( year, "-", month, "-", day ) ) );
   }

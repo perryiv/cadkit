@@ -97,6 +97,9 @@ protected:
 
   void                          _exportMovie ( Usul::Interfaces::IUnknown::QueryPtr );
 
+  void                          _goToNextCamera();
+  void                          _goToPrevCamera();
+
   bool                          _hasCurrentPath() const;
 
   bool                          _isCurrentPath ( CameraPath::RefPtr ) const;
@@ -153,6 +156,7 @@ private:
   bool _showPath;
   bool _looping;
   bool _dirtyScene;
+  unsigned int _currentCamera;
 };
 
 

@@ -1118,18 +1118,13 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
   Guard guard ( this->mutex() );
 
   
-  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  
-  
+
+  const std::string locName ( node.attributes()["name"] );
   std::string name = "Location";
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  { 
-    if ( "name" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, name );
-    }  
-  }
+  if( "" != name )
+      name = locName;
+
   // TODO: create destination matrix here --
   names.push_back( name );
   
@@ -1156,23 +1151,11 @@ void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *call
    USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Attributes& attributes ( node.attributes() );
   Children& children ( node.children() );
-  std::string type;
-  std::string value;
-  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
-  {
-    
-    if ( "type" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, type );
-    }
-    if ( "value" == iter->first )
-    {
-      Usul::Strings::fromString ( iter->second, value );
-    }
- 
-  }
+
+  const std::string type ( node.attributes()["type"] );
+  const std::string value ( node.attributes()["value"] );
+
   // TODO: create destination matrix here --
   osg::Matrix matrix;
   if( value.size() > 0 && type.size() > 0 )
@@ -1783,6 +1766,8 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
  
+  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+
   //std::cout << dir << " directory loading..." << std::endl;
   Files files;
   Usul::File::find( dir, "*", files );

@@ -76,7 +76,8 @@ PathAnimationComponent::PathAnimationComponent() :
   _root ( 0x0 ),
   _showPath ( false ),
   _looping ( false ),
-  _dirtyScene ( true )
+  _dirtyScene ( true ),
+  _currentCamera ( 0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -192,9 +193,11 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   menu->append ( new Button ( UC::genericCommand ( "&Close Path",             UA::memberFunction<void> ( this, &PathAnimationComponent::_closeCameraPath      ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canClosePath   ) ) ) );
 
   menu->addSeparator();
-  menu->append ( new Button ( UC::genericCommand ( "Play &Forward",  UA::memberFunction<void> ( this, &PathAnimationComponent::_playForward  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Play &Backward", UA::memberFunction<void> ( this, &PathAnimationComponent::_playBackward ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "&Stop",          UA::memberFunction<void> ( this, &PathAnimationComponent::_stopPlaying  ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isPlaying ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Play &Forward",    UA::memberFunction<void> ( this, &PathAnimationComponent::_playForward    ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Play &Backward",   UA::memberFunction<void> ( this, &PathAnimationComponent::_playBackward   ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Next Camera",     UA::memberFunction<void> ( this, &PathAnimationComponent::_goToNextCamera ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "Pre&vious Camera", UA::memberFunction<void> ( this, &PathAnimationComponent::_goToPrevCamera ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Stop",            UA::memberFunction<void> ( this, &PathAnimationComponent::_stopPlaying    ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isPlaying ) ) ) );
 
   menu->addSeparator();
   
@@ -685,6 +688,53 @@ void PathAnimationComponent::_stopPlaying()
 
   // No more player.
   _player = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Go to the next camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_goToNextCamera()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Are there any values?
+  if ( ( false == _currentPath.valid() ) || ( 0 == _currentPath->size() ) )
+    return;
+
+  // Increment the current camera but keep it in range.
+  ++_currentCamera;
+  _currentCamera = ( ( _currentCamera >= _currentPath->size() ) ? 0 : _currentCamera );
+
+  // Go to this position.
+  this->_setCameraPosition ( _currentCamera );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Go to the previous camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_goToPrevCamera()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Are there any values?
+  if ( ( false == _currentPath.valid() ) || ( 0 == _currentPath->size() ) )
+    return;
+
+  // Decrement the current camera but keep it in range.
+  _currentCamera = ( ( _currentCamera > 0 ) ? _currentCamera - 1 : _currentPath->size() - 1 );
+
+  // Go to this position.
+  this->_setCameraPosition ( _currentCamera );
 }
 
 

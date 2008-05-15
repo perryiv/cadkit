@@ -1,6 +1,7 @@
 #!/bin/tcsh
 
 setenv TARGET ${HOME}/distributions/`date "+%Y_%m_%d"`
+mkdir -p ${TARGET}
 
 #setenv PREPARE ${CADKIT_INC_DIR}/Tools/PrepareDistribution/PrepareDistribution/Debug/PrepareDistribution
 setenv PREPARE ${CADKIT_BIN_DIR}/PrepareDistribution

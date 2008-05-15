@@ -180,22 +180,17 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
     Extents e;
 
     Vertices outerBoundary ( polygon->outerBoundary() );
-    Boundaries innerBoundaries ( polygon->innerBoundaries() );
+    //Boundaries innerBoundaries ( polygon->innerBoundaries() );
 
     osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
     geode->addDrawable( this->_buildGeometry ( outerBoundary, e, caller ) );
     
     osg::Vec4 color ( this->color() );
-    //osg::ref_ptr < osg::Material > mat ( new osg::Material );
-    //mat->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
 
     osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet () );
 
     // Set the render bin.
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-    
-    // Set the material.
-    //ss->setAttribute ( mat.get(), osg::StateAttribute::ON );
 
     // Set state set modes depending on alpha value.
     if( 1.0f == color.w() )
@@ -253,6 +248,7 @@ osg::Node* Polygon::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 
   if( this->showInterior() )
   {
+    //Guard guard ( this );
     group->addChild( this->_buildPolygons( caller ) );
   }
 
@@ -275,6 +271,7 @@ osg::Node* Polygon::_preBuildScene ( Usul::Interfaces::IUnknown* caller )
 
 void Polygon::showBorder( bool b )
 {
+  Guard guard ( this );
   _showBorder = b;
 }
 
@@ -287,6 +284,7 @@ void Polygon::showBorder( bool b )
 
 bool Polygon::showBorder() const
 {
+  Guard guard ( this );
   return _showBorder;
 }
 
@@ -299,6 +297,7 @@ bool Polygon::showBorder() const
 
 void Polygon::showInterior( bool b )
 {
+  Guard guard ( this );
   _showInterior = b;
 }
 
@@ -311,6 +310,7 @@ void Polygon::showInterior( bool b )
 
 bool Polygon::showInterior() const
 {
+  Guard guard ( this );
   return _showInterior;
 }
 
@@ -323,6 +323,7 @@ bool Polygon::showInterior() const
 
 void Polygon::borderColor ( const osg::Vec4& color )
 {
+  Guard guard ( this );
   _borderColor = color;
 }
 
@@ -335,5 +336,6 @@ void Polygon::borderColor ( const osg::Vec4& color )
 
 const osg::Vec4& Polygon::borderColor() const
 {
+  Guard guard ( this );
   return _borderColor;
 }

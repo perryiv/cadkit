@@ -72,6 +72,7 @@ void Line::_convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints
 
 void Line::_buildLatLongPoints()
 {
+  Guard guard ( this );
   _latLongPoints.clear ();
   this->_convertToLatLong( _line, _latLongPoints );
 }
@@ -85,6 +86,7 @@ void Line::_buildLatLongPoints()
 
 const Line::Vertices& Line::lineData()
 {
+  Guard guard ( this->mutex() );
   if( _latLongPoints.empty() )
   {
     this->_convertToLatLong ( _line, _latLongPoints );

@@ -61,7 +61,7 @@
 #include <algorithm>
 #include <limits>
 
-#define USE_MIP_MAPS 0
+#define USE_MIP_MAPS 1
 
 using namespace Minerva::Core::TileEngine;
 
@@ -692,10 +692,12 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   if ( vector.valid() )
   {
     Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
+
+    // Since elevation data isn't currently used, just ask once.
     vector->elevationChangedNotify ( t0->extents(), t0->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
+    //vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
+    //vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
+    //vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
   }
 }
 

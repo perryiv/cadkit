@@ -26,6 +26,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
@@ -47,6 +48,7 @@ class MINERVA_EXPORT DataObject : public Usul::Base::Object,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::ITreeNode,
                                   public Usul::Interfaces::ILayerExtents,
+                                  public Usul::Interfaces::IBooleanState,
                                   public Minerva::Interfaces::IElevationChangedListnerer
 {
 public:
@@ -202,6 +204,10 @@ protected:
   // Set/get the name (ITreeNode).
   virtual void                setTreeNodeName ( const std::string & );
   virtual std::string         getTreeNodeName() const;
+  
+  // Set/get the state (IBooleanState).
+  virtual void                setBooleanState ( bool );
+  virtual bool                getBooleanState() const;
 
 private:
 

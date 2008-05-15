@@ -108,6 +108,8 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
   case Minerva::Interfaces::IElevationChangedListnerer::IID:
     return static_cast<Minerva::Interfaces::IElevationChangedListnerer*> ( this );
+  case Usul::Interfaces::IBooleanState::IID:
+    return static_cast<Usul::Interfaces::IBooleanState*> ( this );
   default:
     return 0x0;
   }
@@ -847,4 +849,28 @@ bool DataObject::elevationChangedNotify ( const Extents& extents, ImagePtr eleva
   }
 
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::setBooleanState ( bool b )
+{
+  this->visibility ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::getBooleanState() const
+{
+  return this->visibility();
 }

@@ -11,8 +11,7 @@
 #ifndef __MINERVA_LAYERS_KML_NETWORK_LINK_H__
 #define __MINERVA_LAYERS_KML_NETWORK_LINK_H__
 
-#include "Usul/Base/Object.h"
-
+#include "Minerva/Layers/Kml/Feature.h"
 #include "Minerva/Layers/Kml/Link.h"
 
 namespace Minerva {
@@ -20,16 +19,17 @@ namespace Layers {
 namespace Kml {
   
 
-class NetworkLink : public Usul::Base::Object
+class NetworkLink : public Feature
 {
 public:
   // Typedefs.
-  typedef Usul::Base::Object BaseClass;
+  typedef Feature BaseClass;
   
   // Declare pointers.
   USUL_DECLARE_REF_POINTERS ( NetworkLink );
   
   NetworkLink();
+  NetworkLink( const XmlTree::Node& );
   
   /// Get/Set the link.
   Link*       link() const;

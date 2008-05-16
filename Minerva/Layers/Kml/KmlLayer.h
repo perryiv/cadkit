@@ -95,8 +95,6 @@ protected:
   DataObject*                 _parseLineRing     ( const XmlTree::Node& node, Style *style );
   void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, Feature& feature );
   DataObject::AltitudeMode    _parseAltitudeMode ( const XmlTree::Node& node );
-  NetworkLink*                _parseNetworkLink  ( const XmlTree::Node& node );
-  Link*                       _parseLink         ( const XmlTree::Node& node );
   void                        _parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices );
 
   void                        _setDataObjects ( DataObject&, Feature& feature );

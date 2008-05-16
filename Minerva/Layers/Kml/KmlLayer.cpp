@@ -341,7 +341,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   }
   else if ( "NetworkLink" == name )
   {
-    NetworkLink::RefPtr networkLink ( this->_parseNetworkLink( node ) );
+    NetworkLink::RefPtr networkLink ( new NetworkLink ( node ) );
     if ( networkLink.valid() )
     {
       Link::RefPtr link ( networkLink->link() );
@@ -352,6 +352,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
 
         // Make a new layer.
         KmlLayer::RefPtr layer ( new KmlLayer ( link.get(), styles ) );
+        layer->name( networkLink->name() );
         layer->read ( 0x0, 0x0 );
         this->add ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
       }
@@ -516,6 +517,8 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
 	const Usul::Math::Vec4f defaultColor ( 0.8, 0.8, 0.8, 1.0 );
 	const Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->color() : defaultColor ) : defaultColor );
   const Usul::Math::Vec4f borderColor ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->color() : defaultColor ) : defaultColor );
+  
+  const float width ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->width() : 1.0 ) : 1.0f );
 
   const bool fill    ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->fill()    : true ) : true );
   const bool outline ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->outline() : true ) : true );
@@ -524,6 +527,7 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
   Minerva::Core::DataObjects::Polygon::RefPtr polygon ( new Minerva::Core::DataObjects::Polygon );
   polygon->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   polygon->borderColor ( osg::Vec4 ( borderColor[0], borderColor[1], borderColor[2], borderColor[3] ) );
+  polygon->width ( width );
   polygon->showBorder ( outline );
   polygon->showInterior ( fill );
   
@@ -736,7 +740,7 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node, Style *
   Children link ( node.find ( "Link", true ) );
   if ( false == link.empty() )
   {
-    Link::RefPtr l ( this->_parseLink ( *link.front() ) );
+    Link::RefPtr l ( new Link ( *link.front() ) ); //this->_parseLink ( *link.front() ) );
     filename = ( l.valid() ? l->href() : "" );
   }
   
@@ -818,70 +822,6 @@ void KmlLayer::deserialize( const XmlTree::Node &node )
 {
   BaseClass::deserialize ( node );
   this->read ( _filename );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse network link.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-NetworkLink* KmlLayer::_parseNetworkLink ( const XmlTree::Node& node )
-{
-  NetworkLink::RefPtr network ( new NetworkLink );
-  
-  // Loop over the children.
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( Usul::Strings::lowerCase ( node->name() ) );
-    
-    if ( "link" == name || "url" == name ) // Url is an older name, but many elements are the same.
-    {
-      network->link ( this->_parseLink ( *node ) );
-    }
-  }
-  
-  return network.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse link.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Link* KmlLayer::_parseLink ( const XmlTree::Node& node )
-{
-  Link::RefPtr link ( new Link );
-  
-  // Get the children.
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "href" == name )
-      link->href ( node->value() );
-    else if ( "refreshInterval" == name )
-      link->refreshInterval ( ToDouble::convert ( node->value() ) );
-    else if ( "refreshMode" == name )
-    {
-      std::string mode ( node->value() );
-      if ( "onChange" == mode )
-        link->refreshMode ( Link::ON_CHANGE );
-      else if ( "onInterval" == mode )
-        link->refreshMode ( Link::ON_INTERVAL );
-      else if ( "onExpire" == mode )
-        link->refreshMode ( Link::ON_EXPIRE );
-    }
-  }
-  
-  return link.release();
 }
 
 

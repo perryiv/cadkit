@@ -109,6 +109,7 @@ eaiMaterial *getMaterial ( eaiEntity *entity )
 
   // Initialize.
   eaiMaterial *material = NULL;
+  int numMaterials = 0;
 
   // Have to explicitly test every concrete type because the API does not 
   // offer a mechanism for checking abstract types, and the base classes do 
@@ -118,8 +119,16 @@ eaiMaterial *getMaterial ( eaiEntity *entity )
   case eaiEntity::eaiASSEMBLY:
   case eaiEntity::eaiPART:
   case eaiEntity::eaiINSTANCE:
-    
+
+#ifdef _CADKIT_USE_JTOPEN
+    // Use new "getAttrib" style of command to get the last material
+    // because that is what should be visible.
+    numMaterials = ((eaiHierarchy *) entity)->numAttribs( JtkEntity::JtkMATERIAL );
+    if(numMaterials > 0)
+      ((eaiHierarchy *) entity)->getAttrib(numMaterials - 1, (JtkAttrib *&) material, JtkEntity::JtkMATERIAL);
+#else
     ((eaiHierarchy *) entity)->getMaterial ( material );
+#endif
     break;
 
   case eaiEntity::eaiLINESTRIPSET:
@@ -143,7 +152,7 @@ eaiMaterial *getMaterial ( eaiEntity *entity )
 //    break;
 
   case eaiEntity::eaiTRISTRIPSET:
-
+    
     ((eaiTriStripSet *) entity)->getMaterial ( material );
     break;
   }

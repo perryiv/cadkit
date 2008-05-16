@@ -591,6 +591,7 @@ eaiMaterial *DbJtTraverser::_getMaterial ( EntityHandle theHandle ) const
 
   // Initialize.
   eaiMaterial *material = NULL;
+  int numMaterials = 0;
 
   // Get the base pointer.
   eaiEntity *entity = (eaiEntity *) theHandle;
@@ -603,8 +604,16 @@ eaiMaterial *DbJtTraverser::_getMaterial ( EntityHandle theHandle ) const
   case eaiEntity::eaiASSEMBLY:
   case eaiEntity::eaiPART:
   case eaiEntity::eaiINSTANCE:
-    
+
+#ifdef _CADKIT_USE_JTOPEN
+    // Use new "getAttrib" style of command to get the last material
+    // because that is what should be visible.
+    numMaterials = ((eaiHierarchy *) entity)->numAttribs( JtkEntity::JtkMATERIAL );
+    if(numMaterials > 0)
+      ((eaiHierarchy *) entity)->getAttrib(numMaterials - 1, (JtkAttrib *&) material, JtkEntity::JtkMATERIAL);
+#else
     ((eaiHierarchy *) entity)->getMaterial ( material );
+#endif
     break;
 
   case eaiEntity::eaiLINESTRIPSET:

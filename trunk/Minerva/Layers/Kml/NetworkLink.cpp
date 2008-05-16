@@ -10,6 +10,10 @@
 
 #include "Minerva/Layers/Kml/NetworkLink.h"
 
+#include "XmlTree/Node.h"
+
+#include "Usul/Strings/Case.h"
+
 using namespace Minerva::Layers::Kml;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,6 +25,32 @@ using namespace Minerva::Layers::Kml;
 NetworkLink::NetworkLink() : BaseClass(),
   _link ( 0x0 )
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+NetworkLink::NetworkLink( const XmlTree::Node& node ) : BaseClass( node ),
+  _link ( 0x0 )
+{
+  typedef XmlTree::Node::Children    Children;
+  
+  // Loop over the children.
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( Usul::Strings::lowerCase ( node->name() ) );
+    
+    if ( "link" == name || "url" == name ) // Url is an older name, but many elements are the same.
+    {
+      _link = new Link ( *node );
+    }
+  }
 }
 
 

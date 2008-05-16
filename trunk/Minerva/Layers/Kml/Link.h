@@ -11,7 +11,7 @@
 #ifndef __MINERVA_LAYERS_KML_LINK_H__
 #define __MINERVA_LAYERS_KML_LINK_H__
 
-#include "Usul/Base/Object.h"
+#include "Minerva/Layers/Kml/Object.h"
 
 #include <string>
 
@@ -20,11 +20,11 @@ namespace Layers {
 namespace Kml {
       
       
-class Link : public Usul::Base::Object
+class Link : public Object
 {
 public:
   // Typedefs.
-  typedef Usul::Base::Object BaseClass;
+  typedef Object BaseClass;
 
   // Declare pointers.
   USUL_DECLARE_REF_POINTERS ( Link );
@@ -38,6 +38,7 @@ public:
   };
   
   Link();
+  Link( const XmlTree::Node& node );
   
   /// Get/Set the href.
   void                href( const std::string& );

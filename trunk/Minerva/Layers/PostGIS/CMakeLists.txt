@@ -34,7 +34,6 @@ SET (SOURCES
 ./Layer.cpp
 ./LineLayer.cpp
 ./PointLayer.cpp
-./PointTimeLayer.cpp
 ./PolygonLayer.cpp
 )
 

@@ -14,15 +14,14 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Geometry/Geometry.h"
 
-#include "Minerva/Interfaces/ILineData.h"
+#include "Usul/Math/Vector3.h"
 
 namespace Minerva {
 namespace Core {
 namespace Geometry {
 
 
-class MINERVA_EXPORT Line : public Geometry,
-                            public Minerva::Interfaces::ILineData
+class MINERVA_EXPORT Line : public Geometry
 {
 public:
   typedef Geometry                         BaseClass;
@@ -30,7 +29,6 @@ public:
   typedef std::vector < Vertex >           Vertices;
 
   USUL_DECLARE_QUERY_POINTERS ( Line );
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Line ();
 
@@ -55,8 +53,8 @@ protected:
   virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
   osg::Node*            _buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller );
   
-  /// Usul::Interfaces::ILineData.
-  virtual const Vertices&          lineData();
+  /// Get the line data as WGS 84.
+  const Vertices&       _lineDataWgs84();
 
 private:
 

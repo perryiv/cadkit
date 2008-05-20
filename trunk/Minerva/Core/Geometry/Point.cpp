@@ -33,8 +33,6 @@
 
 using namespace Minerva::Core::Geometry;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Point, Point::BaseClass );
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Static Member.
@@ -111,24 +109,6 @@ Usul::Math::Vec3d Point::pointData() const
   }
 
   return _point;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query for the interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* Point::queryInterface( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Minerva::Interfaces::IPointData::IID:
-    return static_cast < Minerva::Interfaces::IPointData* > ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
 }
 
 

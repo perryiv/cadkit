@@ -14,23 +14,22 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Geometry/Geometry.h"
 
-#include "Minerva/Interfaces/IPointData.h"
-
 #include "OsgTools/ShapeFactory.h"
+
+#include "Usul/Math/Vector3.h"
 
 namespace Minerva {
 namespace Core {
 namespace Geometry {
 
 
-class MINERVA_EXPORT Point : public Geometry,
-                             public Minerva::Interfaces::IPointData
+class MINERVA_EXPORT Point : public Geometry
 {
 public:
   typedef Geometry BaseClass;
+  typedef Usul::Math::Vec3d Vec3d;
 
   USUL_DECLARE_QUERY_POINTERS ( Point );
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   enum PrimitiveTypes
   {
@@ -69,11 +68,11 @@ public:
   bool                    autotransform () const;
   
   /// Get/Set the point.
-  void                              point( const Usul::Math::Vec3d & );
-  const Usul::Math::Vec3d           point() const;
+  void                    point( const Usul::Math::Vec3d & );
+  const Vec3d             point() const;
 
-  /// Usul::Interfaces::IPointData
-  virtual Usul::Math::Vec3d         pointData() const;
+  /// Get the point data as WGS 84.
+  Vec3d                   pointData() const;
   
 protected:
   

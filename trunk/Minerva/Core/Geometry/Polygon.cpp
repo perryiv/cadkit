@@ -26,8 +26,6 @@
 
 using namespace Minerva::Core::Geometry;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Polygon, Polygon::BaseClass );
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -105,23 +103,6 @@ const Polygon::Boundaries& Polygon::innerBoundaries() const
   return _boundaries;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query for the interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* Polygon::queryInterface( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Minerva::Interfaces::IPolygonData::IID:
-    return static_cast < Minerva::Interfaces::IPolygonData* > ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

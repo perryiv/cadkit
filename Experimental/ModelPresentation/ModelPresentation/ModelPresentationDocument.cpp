@@ -8,22 +8,24 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Experimental/ModelPresentation/ModelPresentation/ModelPresentationDocument.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdMenuCommand.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdPrevTimestep.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdAnimation.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdFirstTimestep.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdNextCommand.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdLocation.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdTools.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdTimelineModel.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdDynamicModel.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdNextSequence.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdPrevSequence.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdFirstSequence.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdAnimationSpeed.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdSlowerAnimationSpeed.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdFasterAnimationSpeed.h"
+#include "ModelPresentationDocument.h"
+#include "MpdMenuCommand.h"
+#include "MpdPrevTimestep.h"
+#include "MpdAnimation.h"
+#include "MpdFirstTimestep.h"
+#include "MpdNextCommand.h"
+#include "MpdLocation.h"
+#include "MpdTools.h"
+#include "MpdTimelineModel.h"
+#include "MpdDynamicModel.h"
+#include "MpdNextSequence.h"
+#include "MpdPrevSequence.h"
+#include "MpdFirstSequence.h"
+#include "MpdAnimationSpeed.h"
+#include "MpdSlowerAnimationSpeed.h"
+#include "MpdFasterAnimationSpeed.h"
+#include "GenericIndexToggle.h"
+#include "SetIndexToggle.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -601,7 +603,29 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
   // make sure sets that should be shown are shown
   for( unsigned int i = 0; i < _sets.size(); ++i )
   {
-    this->setGroup( i, _sets.at( i ).index );
+   
+    if( _sets.at( i ).type == "toggle" )
+    {
+      // If the set has exactly 2 children toggle the state
+      if( _sets.at( i ).groups.size() == 2 )
+      {
+        if( true == _sets.at( i ).visible )
+        {
+          this->setGroup( i, 0 );
+
+        }
+        else
+        {
+          this->setGroup( i, 1 );
+        }
+        
+      }
+    }
+
+    if( _sets.at( i ).type == "radio" )
+    {
+      this->setGroup( i, _sets.at( i ).index );
+    }
   }
   
 }
@@ -632,32 +656,27 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-#if 0
-  for( unsigned int modelIndex = 0; modelIndex < _mpdModels.models->getNumChildren(); ++modelIndex )
-  {
-    _mpdModels.models->setValue( modelIndex, false );
-  }
-  
-  for( std::map< std::string, bool >::iterator iter =  _sets.at( set ).groups.at( group ).visibleModelsMap.begin();
-                                               iter != _sets.at( set ).groups.at( group ).visibleModelsMap.end();
-                                               ++iter )
-  {
-    std::string modelName = (*iter).first;
-    bool value            = (*iter).second;
-    unsigned int mIndex   = _mpdModels.modelMap[modelName];
-    _mpdModels.models->setValue( mIndex, value );
-  }
-#else
+
+  // Iterate through the groups in each set
   for( unsigned int i = 0; i < _sets.at( set ).groups.size(); ++i )
   {
+    // Iterate through the models that are visible in the group of set #<i>
     for( std::map< std::string, bool >::iterator iter =  _sets.at( set ).groups.at( i ).visibleModelsMap.begin();
                                                iter != _sets.at( set ).groups.at( i ).visibleModelsMap.end();
                                                ++iter )
     {
+      // Get the name of the model
       std::string modelName = (*iter).first;
+
+      // Get the visibility value of the model
       bool value            = (*iter).second;
+
+      // Get the index into the master list of models
       unsigned int mIndex   = _mpdModels.modelMap[modelName];
 
+      // If the model should be shown set it to false.  In the next loop set only the model that should be set
+      // for the group that should be shown will be set to visible.
+      // This is done so that different sets don't step on each other.
       if( true == value )
       {
         _mpdModels.models->setValue( mIndex, false );
@@ -665,19 +684,26 @@ void ModelPresentationDocument::setGroup ( unsigned int set, unsigned int group 
       
     }
   }
+  // Iterate through the groups at this set at the group to set
   for( std::map< std::string, bool >::iterator iter =  _sets.at( set ).groups.at( group ).visibleModelsMap.begin();
                                                iter != _sets.at( set ).groups.at( group ).visibleModelsMap.end();
                                                ++iter )
   {
+    // Get the model name
     std::string modelName = (*iter).first;
+
+    // Get the model visibility value
     bool value            = (*iter).second;
+
+    // Get the index into the master list of models
     unsigned int mIndex   = _mpdModels.modelMap[modelName];
-    if( true == value )
-    {
-      _mpdModels.models->setValue( mIndex, value );
-    }
+
+    // set the model to the value it needs to be set to
+    _mpdModels.models->setValue( mIndex, value );
+
   }
-#endif
+
+  // Set the group to show of this set to <group>
   _sets.at( set ).index = group;  
 }
 
@@ -1037,6 +1063,13 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
   MpdDefinitions::MpdModels models;
   models.models = new osg::Switch();
   unsigned int count = 0;
+
+  // Always create a blank model so set toggles can be assured to have an item to set 
+  // when visibility is false
+  models.models->addChild( new osg::Group );
+  models.modelMap["blank"] = count;
+  ++count;
+
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -1048,7 +1081,6 @@ void ModelPresentationDocument::_parseModels( XmlTree::Node &node, Unknown *call
       models.models->addChild( this->_parseModel( *node, caller, progress, name ), false );
       models.modelMap[name] = count;
 
-      
     }
 
     // Feedback.
@@ -1227,6 +1259,7 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
 
   const std::string name    ( node.attributes()["name"] );
   const std::string menuName ( node.attributes()["menu_name"] );
+  const std::string type ( node.attributes()["type"] );
 
   // if there is a name in the xml set it to the set name
   if( "" != name )
@@ -1235,6 +1268,9 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
   // if there is a menu name in the xml set the Set menu name
   if( "" != menuName )
     set.menuName = menuName;
+
+  if( "" != type )
+    set.type = type;
   
   // Add the set to the writer
   _writer->addSet( set.name, set.menuName );
@@ -1252,7 +1288,14 @@ void ModelPresentationDocument::_parseSet( XmlTree::Node &node, Unknown *caller,
       set.groups.push_back( grp );
     }
   }
-  
+  if( set.groups.size() == 1 )
+  {
+    MpdDefinitions::MpdGroup tempGroup;
+    tempGroup.visibleModelsMap["blank"] = true;
+   
+    set.groups.push_back( tempGroup );
+    set.type = "toggle";
+  }
 
 #if 1
   // Turn off display lists
@@ -1992,7 +2035,7 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
-  // Add the model menu
+  // Add the sets menu
   if( _useModels )
   {
     for( unsigned int i = 0; i < _sets.size(); ++i )
@@ -2000,12 +2043,21 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
       const std::string menuName ( _sets.at( i ).menuName );
       MenuKit::Menu::RefPtr ModelMenu ( menu.find ( menuName, true ) );
       MenuKit::Menu::RefPtr ModelSubMenu ( new MenuKit::Menu ( _sets.at(i).name, MenuKit::Menu::VERTICAL ) );
-     
-      for( unsigned int j = 0; j < _sets.at( i ).groups.size(); ++j )
+      if( "toggle" == _sets.at( i ).type )
       {
-         ModelSubMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at( i ).groups.at( j ).name, i, j ) ) );
+        ModelMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &ModelPresentationDocument::getToggleState ), 
+                                                                           Usul::Adaptors::memberFunction<void> ( this, &ModelPresentationDocument::setToggleState ),
+                                                                           _sets.at( i ).name, i ) ) );
+
       }
-      ModelMenu->append( ModelSubMenu.get() );
+      if( "radio" == _sets.at( i ).type )
+      {
+        for( unsigned int j = 0; j < _sets.at( i ).groups.size(); ++j )
+        {
+          ModelSubMenu->append ( new Radio ( new MpdMenuCommand( me.get(), _sets.at( i ).groups.at( j ).name, i, j ) ) );
+        }
+        ModelMenu->append( ModelSubMenu.get() );
+      }
     }
     
   }
@@ -2937,4 +2989,31 @@ unsigned int ModelPresentationDocument::getNumberOfTimeSteps() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( ( _globalTimelineEnd > 0 ) ? ( _globalTimelineEnd + 1 ) : 0 );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the set toggle state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::setToggleState ( bool b, unsigned int index )
+{
+  Guard guard ( this->mutex() );
+  _sets.at( index ).visible = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the set toggle state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModelPresentationDocument::getToggleState( unsigned int index ) const
+{
+  Guard guard ( this->mutex() );
+  return _sets.at( index ).visible;
 }

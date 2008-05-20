@@ -21,13 +21,15 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IInitNewDocument.h"
 
 #include <string>
 
 
 class ModelPresentationDelegateComponent : public Usul::Base::Referenced,
                                public Usul::Interfaces::IPlugin,
-                               public Usul::Interfaces::IGUIDelegate
+                               public Usul::Interfaces::IGUIDelegate,
+                               public Usul::Interfaces::IInitNewDocument
 {
 public:
 
@@ -50,6 +52,10 @@ public:
   /// Usul::Interfaces::IGUIDelegate
   virtual bool                doesHandle( const std::string& token ) const;
   virtual void                createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
+
+  // Usul::Interfaces::IInitNewDocument.
+  virtual bool                handlesDocumentType ( Unknown *document );
+  virtual void                initNewDocument ( Unknown *document, Unknown *caller );
 
 protected: 
 

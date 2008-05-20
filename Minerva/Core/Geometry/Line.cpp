@@ -208,83 +208,77 @@ osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown
   Guard guard ( this );
   osg::ref_ptr< osg::Group > node ( new osg::Group );
   
-  if ( this->dirty() )
-  { 
-    osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
+  osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
     
-    // Query for needed interfaces.
-    Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
+  // Query for needed interfaces.
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
     
-    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-    node->addChild( geode.get() );
-    
-    // Make new extents.
-    Extents e;
-    
-    // Get the line data.
-    Vertices data ( this->lineData() );
-    
-    Vertices sampledPoints;
-    if ( this->tessellate() && Geometry::CLAMP_TO_GROUND == this->altitudeMode() )
-      Minerva::Core::Utilities::resample( data, sampledPoints, 5, caller );
-    else
-      sampledPoints = data;
-    
-    // Make the osg::Vec3Array.
-    osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-    vertices->reserve ( sampledPoints.size() );
-    
-    if ( planet.valid() )
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  node->addChild( geode.get() );
+  
+  // Make new extents.
+  Extents e;
+  
+  // Get the line data.
+  Vertices data ( this->lineData() );
+  
+  Vertices sampledPoints;
+  if ( this->tessellate() && Geometry::CLAMP_TO_GROUND == this->altitudeMode() )
+    Minerva::Core::Utilities::resample( data, sampledPoints, 5, caller );
+  else
+    sampledPoints = data;
+  
+  // Make the osg::Vec3Array.
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  vertices->reserve ( sampledPoints.size() );
+  
+  if ( planet.valid() )
+  {
+    for ( Vertices::const_iterator iter = sampledPoints.begin(); iter != sampledPoints.end(); ++iter )
     {
-      for ( Vertices::const_iterator iter = sampledPoints.begin(); iter != sampledPoints.end(); ++iter )
-      {
-        Vertices::value_type v ( *iter );
-        
-        // Expand the extents.
-        e.expand ( Extents::Vertex ( v[0], v[1] ) );
-        
-        // Get the height.
-        v[2] = this->_elevation ( v, elevation.get() );
-        
-        Usul::Math::Vec3d point;
-        planet->convertToPlanet ( v, point );
-        vertices->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
-      }
+      Vertices::value_type v ( *iter );
+      
+      // Expand the extents.
+      e.expand ( Extents::Vertex ( v[0], v[1] ) );
+      
+      // Get the height.
+      v[2] = this->_elevation ( v, elevation.get() );
+      
+      Usul::Math::Vec3d point;
+      planet->convertToPlanet ( v, point );
+      vertices->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
     }
-    
-    // Create the geometry
-    osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-    
-    // Add the primitive set
-    geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
-    
-    // Set the vertices.
-    geometry->setVertexArray( vertices.get() );
-    
-    // Set the colors.
-    osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-    colors->push_back( color );
-    geometry->setColorArray( colors.get() );
-    geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
-    
-    geode->addDrawable ( geometry.get() );
-    
-    // Turn off lighting.
-    OsgTools::State::StateSet::setLighting  ( ss.get(), false );
-    OsgTools::State::StateSet::setLineWidth ( ss.get(), _width );
-    
-    geometry->dirtyDisplayList();
-    
-    // Set depth parameters.
-    osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
-    ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-    
-    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-    
-    this->extents ( e );
-    this->dirty( false );
   }
+  
+  // Create the geometry
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+  
+  // Add the primitive set
+  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
+  
+  // Set the vertices.
+  geometry->setVertexArray( vertices.get() );
+  
+  // Set the colors.
+  osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
+  colors->push_back( color );
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  
+  geode->addDrawable ( geometry.get() );
+  
+  // Turn off lighting.
+  OsgTools::State::StateSet::setLighting  ( ss.get(), false );
+  OsgTools::State::StateSet::setLineWidth ( ss.get(), _width );
+  
+  // Set depth parameters.
+  osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
+  ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+  
+  this->extents ( e );
   
   osg::Vec3 offset ( node->getBound().center() );
   osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );

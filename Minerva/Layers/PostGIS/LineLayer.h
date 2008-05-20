@@ -31,19 +31,12 @@ public:
 
   LineLayer();
 
-  /// Accept the visitor.
-  virtual void            accept ( Minerva::Core::Visitor& visitor );
-
-  /// Build the data objects.
-  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
-
-  virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );
-
   /// Get/Set the line width.
   void                    lineWidth( float );
   float                   lineWidth() const;
 
 protected:
+
   /// Use reference counting.
   virtual ~LineLayer();
 
@@ -51,7 +44,9 @@ protected:
   LineLayer ( const LineLayer& layer );
 
   void  _registerMembers();
-
+  
+  virtual void            _setGeometryMembers ( Geometry* geometry, const pqxx::result::const_iterator& iter );
+  
   /// Clone the this layer.
   virtual Usul::Interfaces::IUnknown*          clone() const;
 

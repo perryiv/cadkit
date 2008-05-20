@@ -11,7 +11,8 @@
 #include "Minerva/Layers/PostGIS/PointLayer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 
-#include "Minerva/Core/DataObjects/Point.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Visitor.h"
 #include "Minerva/Interfaces/IOffset.h"
 
@@ -93,19 +94,6 @@ void PointLayer::_registerMembers()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Accept the visitor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointLayer::accept ( Minerva::Core::Visitor& visitor )
-{
-  USUL_TRACE_SCOPE;
-  visitor.visit ( *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Clone this layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,104 +124,27 @@ PointLayer::~PointLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
+void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
   USUL_TRACE_SCOPE;
-  Connection::ScopedConnection scopedConnection ( *this->connection() );
-
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
-
-  // Execute the query.
-  pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
-
-  if( progress.valid() )
-    progress->setTotalProgressBar( geometryResult.size() );
-
-  // The data table.
-  std::string dataTable ( this->tablename() );
-
-  // Loop through the results.
-  for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
+  typedef Minerva::Core::Geometry::Point Point;
+  
+  // Set the point style.
+  if ( Point* point = dynamic_cast<Point*> ( geometry ) )
   {
-    try
+    point->size ( this->size() );
+    point->primitiveId ( this->primitiveID() );
+    point->quality ( this->quality() );
+    point->autotransform ( this->autotransform() );
+    point->secondarySize ( this->secondarySize() );
+
+    if( this->primitiveSizeColumn().size() > 0 )
     {
-      // Get the id.
-      int id ( iter["id"].as < int > () );
-      int srid ( iter["srid"].as < int > () );
-
-      pqxx::binarystring buffer ( iter["geom"] );
-      BinaryParser parser;
-      BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
-
-      for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
-      {
-        (*geom)->srid( srid );
-        Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-        Minerva::Interfaces::IOffset::QueryPtr offset ( unknown );
-
-        if( offset.valid () )
-        {
-          offset->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
-        }
-
-        Minerva::Core::DataObjects::Point::RefPtr data ( new Minerva::Core::DataObjects::Point );
-        data->geometry( unknown.get() );
-        data->color( this->_color ( iter ) );
-        data->size ( this->size() );
-        data->primitiveId ( this->primitiveID() );
-        data->quality ( this->quality() );
-        data->objectId ( Usul::Strings::format ( id ) );
-        data->autotransform ( this->autotransform () );
-        data->secondarySize ( this->secondarySize() );
-
-        if( this->primitiveSizeColumn().size() > 0 )
-        {
-          float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
-          data->size( this->size() * value );
-          this->_updateMinMax( value );
-        }
-
-         /// Set the common members.
-        this->_setDataObjectMembers( data.get(), caller );
-
-        // Pre build the scene.
-        data->preBuildScene( caller );
-
-        this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
-      }
-    }
-    catch ( const std::exception& e )
-    {
-      std::cout << "Error 6442903120: " << e.what() << std::endl;
-    }
-    catch ( ... )
-    {
-      std::cout << "Error 1112177078: Exception caught while adding data to layer." << std::endl;
-    }
-
-    if( progress.valid() )
-    {
-      unsigned int num ( iter - geometryResult.begin() );
-      progress->updateProgressBar( num );
+      const float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
+      point->size( this->size() * value );
+      this->_updateMinMax( value );
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointLayer::modify( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  
-  // For now get what we have, clear and then rebuild.
-  // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  this->clear();
-  this->buildDataObjects ( caller, 0x0 );
 }
 
 
@@ -442,16 +353,24 @@ std::string PointLayer::defaultQuery() const
   std::ostringstream query;
   query << "SELECT " << this->primaryKeyColumn() << " as id, srid(" << geomColumn << ") as srid, asBinary(" << geomColumn << ") as geom";
   if ( this->colorColumn().size() > 0 )
-  {
     query << ", " << this->colorColumn();
-  }
 
   if ( this->primitiveSizeColumn().size() > 0 )
-  {
     query << ", " << this->primitiveSizeColumn();
-  }
+  
+  if ( this->firstDateColumn().size() > 0 )
+    query << ", " << this->firstDateColumn();
+  
+  if ( this->lastDateColumn().size() > 0 )
+    query << ", " + this->lastDateColumn();
   
   query << " FROM " << this->tablename( );
+  
+  std::string whereClause ( this->_whereClause() );
+  
+  if ( whereClause.size() > 0 )
+    query << " WHERE " << whereClause;
+  
   return query.str();
 }
 

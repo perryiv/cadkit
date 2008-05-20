@@ -19,12 +19,9 @@
 #include "Minerva/Layers/Kml/Feature.h"
 #include "Minerva/Layers/Kml/TimeSpan.h"
 #include "Minerva/Core/Factory/Readers.h"
-#include "Minerva/Core/DataObjects/Model.h"
-#include "Minerva/Core/DataObjects/Point.h"
-#include "Minerva/Core/DataObjects/Line.h"
-#include "Minerva/Core/DataObjects/Polygon.h"
-#include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Geometry/Line.h"
+#include "Minerva/Core/Geometry/Model.h"
+#include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Geometry/Polygon.h"
 
 #include "OsgTools/Visitor.h"
@@ -429,31 +426,44 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   Children linestring ( node.find ( "LineString", false ) );
   Children linering ( node.find ( "LineRing", false ) );
   Children model ( node.find ( "Model", false ) );
-  
-  DataObject::RefPtr object ( 0x0 );
+
+  DataObject::RefPtr object ( new DataObject );
+  Geometry::RefPtr geometry ( 0x0 );
   
   // Pick which function to redirect to.
   if ( false == model.empty() )
-    object = this->_parseModel ( *model.front(), style.get() );
+    geometry = this->_parseModel ( *model.front(), style.get() );
   else if ( false == point.empty() )
-    object = this->_parsePoint( *point.front(), style.get() );
-  else if ( false == polygon.empty() )
-    object = this->_parsePolygon( *polygon.front(), style.get() );
-  else if ( false == linestring.empty() )
-    object = this->_parseLineString( *linestring.front(), style.get() );
-  else if ( false == linering.empty() )
-    object = this->_parseLineRing( *linering.front(), style.get() );
-  else if ( false == multiGeometry.empty() )
-    this->_parseMultiGeometry ( *multiGeometry.back(), style.get(), *feature );
-  
-  if ( object.valid () )
   {
-    // Set the data object members.
-    this->_setDataObjects ( *object, *feature );
-
-    // Add the data object.
-    this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+    geometry =  this->_parsePoint( *point.front(), style.get() );
+    
+    // Google Earth only appears to label points.
+    object->label ( feature->name() );
   }
+  else if ( false == polygon.empty() )
+    geometry = this->_parsePolygon( *polygon.front(), style.get() );
+  else if ( false == linestring.empty() )
+    geometry = this->_parseLineString( *linestring.front(), style.get() );
+  else if ( false == linering.empty() )
+    geometry = this->_parseLineRing( *linering.front(), style.get() );
+  else if ( false == multiGeometry.empty() )
+    this->_parseMultiGeometry ( *multiGeometry.back(), style.get(), *object );
+  
+  object->addGeometry ( geometry );
+  
+  // Set the data object members.
+  object->name ( feature->name() );
+  object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  object->showLabel ( true );
+  
+  if ( TimeSpan *span = dynamic_cast<TimeSpan*> ( feature->timePrimitive() ) )
+  {
+    object->firstDate ( span->begin() );
+    object->lastDate ( span->end() );
+  }
+
+  // Add the data object.
+  this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
 }
 
 
@@ -463,9 +473,9 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *style )
+KmlLayer::Geometry * KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *style )
 {
-  Minerva::Core::DataObjects::Point::RefPtr point ( new Minerva::Core::DataObjects::Point );
+  Minerva::Core::Geometry::Point::RefPtr point ( new Minerva::Core::Geometry::Point );
   point->autotransform ( true );
   point->size ( 5 );
   point->primitiveId ( 2 );
@@ -485,13 +495,8 @@ KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *
       this->_parseCoordinates( *node, vertices );
       if ( false == vertices.empty() )
       {
-        Minerva::Core::Geometry::Point::RefPtr data ( new Minerva::Core::Geometry::Point );
-        data->srid ( 4326 );
-        data->point ( vertices.front() );
-        point->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
-        
-        Usul::Math::Vec3d p ( data->point() );
-        point->labelPosition ( osg::Vec3 ( p[0], p[1], p[2] + 100 ) );
+        point->srid ( 4326 );
+        point->point ( vertices.front() );
       }
     }
     else if ( "extrude" == name )
@@ -511,7 +516,7 @@ KmlLayer::DataObject* KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *style )
+KmlLayer::Geometry* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *style )
 {
   // Get style properties.
 	const Usul::Math::Vec4f defaultColor ( 0.8, 0.8, 0.8, 1.0 );
@@ -524,15 +529,12 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
   const bool outline ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->outline() : true ) : true );
 
   // Make the data object.
-  Minerva::Core::DataObjects::Polygon::RefPtr polygon ( new Minerva::Core::DataObjects::Polygon );
+  Minerva::Core::Geometry::Polygon::RefPtr polygon ( new Minerva::Core::Geometry::Polygon );
   polygon->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   polygon->borderColor ( osg::Vec4 ( borderColor[0], borderColor[1], borderColor[2], borderColor[3] ) );
   polygon->width ( width );
   polygon->showBorder ( outline );
   polygon->showInterior ( fill );
-  
-  Minerva::Core::Geometry::Polygon::RefPtr data ( new Minerva::Core::Geometry::Polygon );
-  polygon->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
   
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -550,7 +552,7 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
       {
         Vertices vertices;
         this->_parseCoordinates( *coordinates, vertices );
-        data->outerBoundary ( vertices );
+        polygon->outerBoundary ( vertices );
       }
     }
     else if ( "innerBoundaryIs" == name )
@@ -561,7 +563,7 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
       {
         Vertices vertices;
         this->_parseCoordinates( *coordinates, vertices );
-        data->addInnerBoundary ( vertices );
+        polygon->addInnerBoundary ( vertices );
       }
     }
   }
@@ -575,7 +577,7 @@ KmlLayer::DataObject* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parseLineString ( const XmlTree::Node& node, Style *style )
+KmlLayer::Geometry* KmlLayer::_parseLineString ( const XmlTree::Node& node, Style *style )
 {
   // Get style properties.
 	Usul::Math::Vec4f defaultColor ( 1.0, 1.0, 1.0, 1.0 );
@@ -583,7 +585,7 @@ KmlLayer::DataObject* KmlLayer::_parseLineString ( const XmlTree::Node& node, St
 
   const float width ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->width() : 1.0f ) : 1.0f );
 
-  Minerva::Core::DataObjects::Line::RefPtr line ( new Minerva::Core::DataObjects::Line );
+  Minerva::Core::Geometry::Line::RefPtr line ( new Minerva::Core::Geometry::Line );
   line->width ( width );
   line->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   
@@ -602,9 +604,8 @@ KmlLayer::DataObject* KmlLayer::_parseLineString ( const XmlTree::Node& node, St
       if ( false == vertices.empty() )
       {
         Minerva::Core::Geometry::Line::RefPtr data ( new Minerva::Core::Geometry::Line );
-        data->srid ( 4326 );
-        data->line ( vertices );
-        line->geometry ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
+        line->srid ( 4326 );
+        line->line ( vertices );
       }
     }
   }
@@ -619,7 +620,7 @@ KmlLayer::DataObject* KmlLayer::_parseLineString ( const XmlTree::Node& node, St
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parseLineRing ( const XmlTree::Node& node, Style *style )
+KmlLayer::Geometry* KmlLayer::_parseLineRing ( const XmlTree::Node& node, Style *style )
 {
   return this->_parseLineString( node, style );
 }
@@ -631,18 +632,12 @@ KmlLayer::DataObject* KmlLayer::_parseLineRing ( const XmlTree::Node& node, Styl
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node, Style *style, Feature& feature )
+void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object )
 {
   Children polygon ( node.find ( "Polygon", false ) );
   for ( Children::iterator iter = polygon.begin(); iter != polygon.end(); ++iter )
   {
-    DataObject::RefPtr object ( this->_parsePolygon ( *(*iter), style ) );
-
-    if ( object.valid() )
-    {
-      this->_setDataObjects ( *object, feature );
-      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
-    }
+    object.addGeometry ( this->_parsePolygon ( *(*iter), style ) );
   }
 }
 
@@ -713,9 +708,9 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
+KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
 {
-  Minerva::Core::DataObjects::Model::RefPtr model ( new Minerva::Core::DataObjects::Model );
+  Minerva::Core::Geometry::Model::RefPtr model ( new Minerva::Core::Geometry::Model );
   
   Children children ( node.children() );
   
@@ -740,7 +735,7 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node, Style *
   Children link ( node.find ( "Link", true ) );
   if ( false == link.empty() )
   {
-    Link::RefPtr l ( new Link ( *link.front() ) ); //this->_parseLink ( *link.front() ) );
+    Link::RefPtr l ( new Link ( *link.front() ) );
     filename = ( l.valid() ? l->href() : "" );
   }
   
@@ -777,13 +772,13 @@ KmlLayer::DataObject* KmlLayer::_parseModel ( const XmlTree::Node& node, Style *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::DataObject::AltitudeMode KmlLayer::_parseAltitudeMode ( const XmlTree::Node& node )
+KmlLayer::Geometry::AltitudeMode KmlLayer::_parseAltitudeMode ( const XmlTree::Node& node )
 {
-  DataObject::AltitudeMode mode ( DataObject::CLAMP_TO_GROUND );
+  Geometry::AltitudeMode mode ( Geometry::CLAMP_TO_GROUND );
   if ( "relativeToGround" == node.value() )
-    mode = DataObject::RELATIVE_TO_GROUND;
+    mode = Geometry::RELATIVE_TO_GROUND;
   if ( "absolute" == node.value() )
-    mode = DataObject::ABSOLUTE_MODE;
+    mode = Geometry::ABSOLUTE_MODE;
   
   return mode;
 }
@@ -1057,25 +1052,4 @@ Style* KmlLayer::_style ( const std::string& url )
 	}
 
 	return 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the data objects.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KmlLayer::_setDataObjects ( DataObject& object, Feature& feature )
-{
-  object.name ( feature.name() );
-	object.label ( feature.name() );
-  object.labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-  object.showLabel ( true );
-  
-  if ( TimeSpan *span = dynamic_cast<TimeSpan*> ( feature.timePrimitive() ) )
-  {
-    object.firstDate ( span->begin() );
-    object.lastDate ( span->end() );
-  }
 }

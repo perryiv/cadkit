@@ -271,7 +271,7 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
                                                               GDALGetProjectionRef( _data ), 
                                                               data, 
                                                               GDALGetProjectionRef( data ), 
-                                                              FALSE, 0.0, 1 );
+                                                              FALSE, 0.0, 0 );
   
   // Make sure we got a transformer.
   if ( 0x0 == options->pTransformerArg )

@@ -11,7 +11,7 @@
 #include "Minerva/Layers/PostGIS/LineLayer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 
-#include "Minerva/Core/DataObjects/Line.h"
+#include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Factory/RegisterCreator.h"
@@ -31,7 +31,7 @@ USUL_FACTORY_REGISTER_CREATOR ( LineLayer );
 ///////////////////////////////////////////////////////////////////////////////
 
 LineLayer::LineLayer() : BaseClass(),
-_lineWidth ( 1.0f )
+  _lineWidth ( 1.0f )
 {
   this->name( "LineLayer" );
   this->_registerMembers();
@@ -45,7 +45,7 @@ _lineWidth ( 1.0f )
 ///////////////////////////////////////////////////////////////////////////////
 
 LineLayer::LineLayer ( const LineLayer& layer ) : BaseClass ( layer ),
-_lineWidth ( layer._lineWidth )
+  _lineWidth ( layer._lineWidth )
 {
   this->_registerMembers();
 }
@@ -60,18 +60,6 @@ _lineWidth ( layer._lineWidth )
 void LineLayer::_registerMembers()
 {
   SERIALIZE_XML_ADD_MEMBER ( _lineWidth );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Accept the visitor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LineLayer::accept ( Minerva::Core::Visitor& visitor )
-{
-  visitor.visit ( *this );
 }
 
 
@@ -131,86 +119,17 @@ float LineLayer::lineWidth() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
+void LineLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
-  Connection::ScopedConnection scopedConnection ( *this->connection() );
+  typedef Minerva::Core::Geometry::Line Line;
 
-  // Query for a progress bar.
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
-
-  // Execute the query.
-  pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
-
-  // Set the total number of items.
-  if( progress.valid() )
-    progress->setTotalProgressBar( geometryResult.size() );
-
-  // Data needed below.
-  const std::string dataTable ( this->tablename() );
-  const osg::Vec3f offset ( 0.0, 0.0, this->zOffset() );
-  const float lineWidth ( this->lineWidth() );
-
-  // Loop through the results.
-  for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
+  if ( Line* line = dynamic_cast<Line*> ( geometry ) )
   {
-    // Get the id.
-    int id ( iter["id"].as < int > () );
-    int srid ( iter["srid"].as < int > () );
+    line->width( this->lineWidth() );
 
-    pqxx::binarystring buffer ( iter["geom"] );
-    BinaryParser parser;
-    BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
-
-    for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
-    {
-      (*geom)->srid( srid );
-      Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-      Minerva::Interfaces::IOffset::QueryPtr sp ( geom->get() );
-
-      if( sp.valid() )
-        sp->spatialOffset( offset );
-
-      Minerva::Core::DataObjects::Line::RefPtr data ( new Minerva::Core::DataObjects::Line( ) );
-      data->color ( this->_color ( iter ) );
-      data->width( lineWidth );
-      data->geometry( unknown.get() );
-      data->objectId ( Usul::Strings::format ( id ) );
-
-      // Set tessellate to true for backwards compatabilty.  Need to make this an option.
-      data->tessellate ( true );
-
-      // Set the label.
-      this->_setDataObjectMembers( data.get(), caller );
-
-      // Build the scene.
-      data->preBuildScene( caller );
-
-      // Add the data object.
-      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
-    }
-
-    // Update progress.
-    if( progress.valid() )
-    {
-      unsigned int num ( iter - geometryResult.begin() );
-      progress->updateProgressBar( num );
-    }
+    // Set tessellate to true for backwards compatabilty.  Need to make this an option.
+    line->tessellate ( true );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LineLayer::modify( Usul::Interfaces::IUnknown *caller )
-{
-  // For now get what we have, clear and then rebuild.
-  // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  this->clear();
-  this->buildDataObjects ( caller, 0x0 );
 }
 
 

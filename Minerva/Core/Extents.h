@@ -39,6 +39,9 @@ public:
 
   /// Does the extents contain vertex v?
   bool                  contains ( const Vertex& v );
+  
+  /// Get the center of the extents.
+  Vertex                center() const;
 
   /// Expand by the extents.
   void                  expand ( const Extents& extents );
@@ -345,6 +348,12 @@ template < class VertexType > inline bool ThisClass::contains ( const Vertex& v 
   const Vertex mx ( this->maximum() );
 
   return mn[0] <= v[0] && mn[1] <= v[1] && mx[0] >= v[0] && mx[1] >= v[1];
+}
+  
+/// Get the center of the extents.
+template < class VertexType > inline VertexType ThisClass::center() const
+{
+  return ( Vertex ( this->minimum() + this->maximum() ) / 2.0 );
 }
 
 

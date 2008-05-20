@@ -49,15 +49,12 @@ SET (SOURCES
 ./Commands/StopAnimation.cpp
 ./Commands/ToggleShown.cpp
 ./DataObjects/DataObject.cpp
-./DataObjects/Line.cpp
-./DataObjects/Model.cpp
-./DataObjects/Point.cpp
-./DataObjects/Polygon.cpp
 ./Factory/Readers.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp
 ./Geometry/Geometry.cpp
 ./Geometry/Line.cpp
+./Geometry/Model.cpp
 ./Geometry/Point.cpp
 ./Geometry/Polygon.cpp
 ./Jobs/BuildRaster.cpp

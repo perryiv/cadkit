@@ -16,6 +16,7 @@
 
 #include "Minerva/Interfaces/IPolygonData.h"
 
+namespace osg { class Geometry; }
 
 namespace Minerva {
 namespace Core {
@@ -40,12 +41,34 @@ public:
   void                                  addInnerBoundary ( const Vertices& );
   virtual const Boundaries&             innerBoundaries() const;
 
+  /// Set/get the border color flag.
+  void                  borderColor ( const osg::Vec4& color );
+  const osg::Vec4&      borderColor() const;
+  
+  /// Set/get draw border flag.
+  void                  showBorder( bool b );
+  bool                  showBorder() const;
+  
+  /// Set/get draw interior flag.
+  void                  showInterior( bool b );
+  bool                  showInterior() const;
+  
 protected:
   virtual ~Polygon();
+  
+  /// Build the scene branch for the data object.
+  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
+  
+  osg::Node*            _buildPolygons( Usul::Interfaces::IUnknown* caller );
+  
+  osg::Geometry*        _buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller );
 
 private:
 
   Boundaries _boundaries;
+  bool _showBorder;
+  bool _showInterior;
+  osg::Vec4 _borderColor;
 };
 
 }

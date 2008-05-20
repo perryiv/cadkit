@@ -433,7 +433,7 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
       // Create a job to read the file.
       // Pass the QueryPtr to memberFunction so that if the user removes the layer, there is still a reference until the job finishes.
       Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, progress,
-                                                                                Usul::Adaptors::memberFunction ( read, &Usul::Interfaces::IRead::read ) ) ) );
+                                                                                Usul::Adaptors::memberFunction ( read, &Usul::Interfaces::IRead::read ) ), caller ) );
       
       // Add the job to the manager.
       Usul::Jobs::Manager::instance().addJob ( job );

@@ -17,29 +17,25 @@
 #ifndef __MINERVA_CORE_DATA_OBJECTS_MODEL_H__
 #define __MINERVA_CORE_DATA_OBJECTS_MODEL_H__
 
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Geometry/Geometry.h"
 
+#include "osg/Vec3"
+#include "osg/Node"
 
 namespace Minerva {
 namespace Core {
-    
-class Visitor;
-    
-namespace DataObjects {
+namespace Geometry {
       
 
-class MINERVA_EXPORT Model : public Minerva::Core::DataObjects::DataObject
+class MINERVA_EXPORT Model : public Minerva::Core::Geometry::Geometry
 {
 public:
-  typedef Minerva::Core::DataObjects::DataObject BaseClass;
+  typedef Minerva::Core::Geometry::Geometry BaseClass;
   
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Model );
   
   Model();
-  
-  /// Accept the visitor.
-  virtual void          accept ( Minerva::Core::Visitor& visitor );
   
   /// Get/Set the location.
   void                  location ( const osg::Vec3& );
@@ -60,7 +56,7 @@ public:
 protected:
   virtual ~Model();
   
-  virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
 
 private:
   osg::Vec3 _location;

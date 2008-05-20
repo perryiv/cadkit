@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/PostGIS/Layer.h"
+#include "Minerva/Layers/PostGIS/BinaryParser.h"
 
 #include "Minerva/Core/Visitor.h"
 
@@ -85,7 +86,11 @@ Layer::Layer() : BaseClass(),
   _legendFlags ( 0 ),
   _minMax ( std::numeric_limits< double >::max(), std::numeric_limits< double >::min() ),
   _alpha ( 1.0f ),
-  _updating ( false )
+  _updating ( false ),
+  _firstDateColumn(),
+  _lastDateColumn(),
+  _minDate( boost::date_time::min_date_time ),
+  _maxDate( boost::date_time::max_date_time )
 {
   USUL_TRACE_SCOPE;
 
@@ -124,7 +129,11 @@ Layer::Layer( const Layer& layer )  :
   _legendFlags ( layer._legendFlags ),
   _minMax( layer._minMax ),
   _alpha ( layer._alpha ),
-  _updating ( false )
+  _updating ( false ),
+  _firstDateColumn( layer._firstDateColumn ),
+  _lastDateColumn( layer._lastDateColumn ),
+  _minDate( layer._minDate ),
+  _maxDate( layer._maxDate )
 {
   USUL_TRACE_SCOPE;
 
@@ -153,7 +162,6 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _xOffset );
   SERIALIZE_XML_ADD_MEMBER ( _yOffset );
   SERIALIZE_XML_ADD_MEMBER ( _zOffset );
-  //DataObjects _dataObjects;
   SERIALIZE_XML_ADD_MEMBER ( _connection );
   SERIALIZE_XML_ADD_MEMBER ( _colorFunctor );
   SERIALIZE_XML_ADD_MEMBER ( _legendText );
@@ -166,6 +174,8 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _customQuery );
   SERIALIZE_XML_ADD_MEMBER ( _legendFlags );
   SERIALIZE_XML_ADD_MEMBER ( _alpha );
+  SERIALIZE_XML_ADD_MEMBER ( _firstDateColumn );
+  SERIALIZE_XML_ADD_MEMBER ( _lastDateColumn );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -324,18 +334,6 @@ const std::string& Layer::query ( ) const
 {
   Guard guard( this->mutex() );
   return _query;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Does this layer contain temporal data?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Layer::isTemporal() const
-{
-  return false;
 }
 
 
@@ -593,7 +591,6 @@ const std::string& Layer::colorColumn() const
 
 void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* dataObject, Usul::Interfaces::IUnknown* caller )
 {
-  dataObject->renderBin ( this->renderBin() );
   dataObject->dataSource ( Usul::Interfaces::IUnknown::QueryPtr ( this->connection() ) );
 
   // Label parameters.
@@ -698,9 +695,53 @@ std::string Layer::defaultQuery() const
     query << ", " << this->colorColumn();
   }
   
-  query << " FROM " << this->tablename( );
+  if ( this->firstDateColumn().size() > 0 )
+    query << ", " << this->firstDateColumn();
+  
+  if ( this->lastDateColumn().size() > 0 )
+    query << ", " + this->lastDateColumn();
+    
+  query << " FROM " << this->tablename();
+  
+  std::string whereClause ( this->_whereClause() );
+  
+  if ( whereClause.size() > 0 )
+    query << " WHERE " << whereClause;
+  
   return query.str();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the where clause.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Layer::_whereClause() const
+{
+  USUL_TRACE_SCOPE;
+  
+  std::ostringstream whereClause;
+  
+  if ( this->firstDateColumn().size() > 0 )
+  {
+    whereClause << this->firstDateColumn() << " >= '" << _minDate.toString() << "'";
+    whereClause << " AND " << this->firstDateColumn() << " <= '" << _maxDate.toString() << "'";
+  }
+  
+  if ( this->lastDateColumn().size() > 0 )
+  {
+    if ( whereClause.str().size() > 0 )
+      whereClause << " AND ";
+    
+    whereClause << this->lastDateColumn() << " >= '" << _minDate.toString() << "'";
+    whereClause << " AND " << this->lastDateColumn() << " <= '" << _maxDate.toString() << "'";
+  }
+  
+  return whereClause.str();
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -874,7 +915,7 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
+void Layer::buildVectorData ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
   // Help shorten lines.
   namespace UA = Usul::Adaptors;
@@ -897,7 +938,7 @@ void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfa
   status ( "Building " + this->name() );
 
   // Build the data objects.
-  this->buildDataObjects( caller, progress );
+  this->_buildDataObjects( caller, progress );
   
   // Our data is no longer dirty.
   this->dirtyData ( false );
@@ -913,9 +954,12 @@ void Layer::buildVectorData  ( Usul::Interfaces::IUnknown *caller, Usul::Interfa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::modifyVectorData ( Usul::Interfaces::IUnknown *caller )
+void Layer::modifyVectorData ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
-  this->modify ( caller );
+  // For now clear what we have and then rebuild.
+  // Need a way to tell if the query has changed.  Then I think this can be handled better.
+  this->clear();
+  this->buildVectorData ( caller, 0x0 );
   
   // Our data is no longer dirty.
   this->dirtyData ( false );
@@ -944,7 +988,7 @@ void Layer::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
     // Create a job to update the file.
     Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind2 ( caller, progress.get(),
-                                                                               Usul::Adaptors::memberFunction ( this, &Layer::buildVectorData ) ) ) );
+                                                                               Usul::Adaptors::memberFunction ( this, &Layer::modifyVectorData ) ) ) );
 
     if ( true == job.valid() )
     {
@@ -1320,4 +1364,279 @@ bool Layer::isUpdating() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _updating;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the data objects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Throw now if there is no connection.
+  if ( 0x0 == this->connection () )
+    throw std::runtime_error ( "Error 1770160824: A valid connection is needed to build data objects." );
+  
+  // Make a scoped connection.
+  Connection::ScopedConnection scopedConnection ( *this->connection() );
+  
+  // Execute the query.
+  pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
+  
+  // Query for the progress bar.
+  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
+  if( progress.valid() )
+    progress->setTotalProgressBar( geometryResult.size() );
+  
+  // The data table.
+  std::string dataTable ( this->tablename() );
+  
+  // Loop through the results.
+  for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
+  {
+    try
+    {
+      // Get the id.
+      const int id ( iter["id"].as < int > () );
+      const int srid ( iter["srid"].as < int > () );
+      
+      pqxx::binarystring buffer ( iter["geom"] );
+      BinaryParser parser;
+      BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
+      
+      Minerva::Core::DataObjects::DataObject::RefPtr data ( new Minerva::Core::DataObjects::DataObject );
+      data->objectId ( Usul::Strings::format ( id ) );
+      
+      // Set date parameters.
+      const std::string  firstDateColumn ( this->firstDateColumn () );
+      const std::string  lastDateColumn ( this->lastDateColumn () );
+
+      // Get first and last date if we have valid columns for them.
+      if ( false == firstDateColumn.empty() && false == lastDateColumn.empty() )
+      {
+        // Get first and last date.
+        std::string firstDate ( iter[ firstDateColumn ].as < std::string > () );
+        std::string lastDate  ( iter[ lastDateColumn  ].as < std::string > () );
+       
+        // Update min max.
+        this->_updateMinMaxDate( firstDate, lastDate );
+        
+        // Increment last day so animation works properly.
+        DataObject::Date last ( lastDate ); 
+        last.increment();
+       
+        data->firstDate ( DataObject::Date ( firstDate ) );
+        data->lastDate  ( last );
+      }
+      
+      for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+      {
+        Minerva::Core::Geometry::Geometry::RefPtr geometry ( *geom );
+        
+        // Set the geometry's data.
+        geometry->srid( srid );
+        geometry->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
+        geometry->color( this->_color ( iter ) );
+        geometry->renderBin ( this->renderBin() );
+        
+        // Set primitive specific data members.
+        this->_setGeometryMembers( geometry, iter );
+        
+        // Add the geometry to the data object.
+        data->addGeometry( geometry );
+      }
+      
+      /// Set the common members.
+      this->_setDataObjectMembers( data.get(), caller );
+      
+      // Pre build the scene.
+      data->preBuildScene( caller );
+      
+      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
+    }
+    catch ( const std::exception& e )
+    {
+      std::cout << "Error 6442903120: " << e.what() << std::endl;
+    }
+    catch ( ... )
+    {
+      std::cout << "Error 1112177078: Exception caught while adding data to layer." << std::endl;
+    }
+    
+    if( progress.valid() )
+    {
+      unsigned int num ( iter - geometryResult.begin() );
+      progress->updateProgressBar( num );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::firstDateColumn( const std::string& dateColumn )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _firstDateColumn = dateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Layer::firstDateColumn() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _firstDateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::lastDateColumn( const std::string& dateColumn )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _lastDateColumn = dateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the date column.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Layer::lastDateColumn() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _lastDateColumn;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the min date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::minDate( const Date& date )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _minDate = date;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the min date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::minDate( unsigned int day, unsigned int month, unsigned int year )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  std::ostringstream os;
+  os << year << "/" << month << "/" << day;
+  _minDate = Date( os.str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the min date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Layer::Date& Layer::minDate() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _minDate;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the max date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::maxDate ( const Date& date )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _maxDate = date;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the max date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::maxDate (unsigned int day, unsigned int month, unsigned int year )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  std::ostringstream os;
+  os << year << "/" << month << "/" << day;
+  _maxDate = Date( os.str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the max date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Layer::Date& Layer::maxDate() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _maxDate;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update min max dates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_updateMinMaxDate ( const std::string& min, const std::string& max )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  Date d0 ( min );
+  Date d1 ( max );
+  
+  if( d0 < _minDate )
+    _minDate = d0;
+  
+  if( d1 > _maxDate )
+    _maxDate = d1;
 }

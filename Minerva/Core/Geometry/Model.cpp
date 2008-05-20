@@ -8,15 +8,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/DataObjects/Model.h"
-#include "Minerva/Core/Visitor.h"
+#include "Minerva/Core/Geometry/Model.h"
 
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
 #include "osg/MatrixTransform"
 
-using namespace Minerva::Core::DataObjects;
+using namespace Minerva::Core::Geometry;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,23 +49,11 @@ Model::~Model()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Accept the visitor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Model::accept ( Minerva::Core::Visitor& visitor )
-{
-  visitor.visit ( *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Model::_preBuildScene( Usul::Interfaces::IUnknown* caller )
+osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
 {
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   

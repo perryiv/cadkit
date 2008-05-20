@@ -30,7 +30,7 @@ struct IVectorLayer : public Usul::Interfaces::IUnknown
   virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 ) = 0;
 
   /// Modify data objects
-  virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 ) = 0;
 
 }; // struct IVectorLayer
 

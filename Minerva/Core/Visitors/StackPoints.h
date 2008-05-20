@@ -34,9 +34,11 @@ public:
         
   StackPoints ( double mutliplier = 1.0 );
         
-  virtual void visit ( Minerva::Core::DataObjects::Point &object );
+  virtual void visit ( Minerva::Core::DataObjects::DataObject &object );
   virtual void visit ( Minerva::Core::Layers::Vector &layer );
+
 protected:
+  
   /// Use reference counting.
   virtual ~StackPoints ();
         

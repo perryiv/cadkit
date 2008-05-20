@@ -15,39 +15,22 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Font.h"
 
+#include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Math/Vector3.h"
+
 #include "osg/Geode"
+#include "osg/Group"
 #include "osgText/Text"
 #include "osg/Billboard"
 
 using namespace Minerva::Core::DataObjects;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DataObject, DataObject::BaseClass );
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Static Member.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OsgTools::ShapeFactory::Ptr DataObject::_sf ( 0x0 );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the shape factory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OsgTools::ShapeFactory* DataObject::shapeFactory()
-{
-  if ( 0x0 == _sf.get() )
-    _sf = new OsgTools::ShapeFactory;
-  return _sf.get();
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,21 +42,17 @@ OsgTools::ShapeFactory* DataObject::shapeFactory()
 DataObject::DataObject() :
   BaseClass(),
   _dirty ( true ),
-  _renderBin ( osg::StateSet::DEFAULT_BIN ),
-  _color ( 0.0, 0.0, 0.0, 1.0 ),
   _objectId ( "" ),
   _label(),
-  _labelPosition(),
-  _labelColor( 1.0, 1.0, 1.0, 1.0 ),
-  _labelSize( 25.0f ),
+  _labelPosition ( 0.0, 0.0, 1000.0 ),
+  _labelColor ( 1.0, 1.0, 1.0, 1.0 ),
+  _labelSize ( 25.0f ),
   _showLabel ( false ),
   _geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _firstDate ( boost::date_time::min_date_time ),
   _lastDate ( boost::date_time::max_date_time ),
-  _altitudeMode ( CLAMP_TO_GROUND ),
-  _extrude ( false ),
-  _extents()
+  _geometries()
 {
 }
 
@@ -127,6 +106,22 @@ void DataObject::accept ( Minerva::Core::Visitor& visitor )
   visitor.visit ( *this );
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a geometry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::addGeometry ( Geometry *geometry )
+{
+  if ( 0x0 != geometry )
+  {
+    Guard guard ( this->mutex() );
+    _geometries.push_back ( geometry );
+    this->dirty ( true );
+  }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -151,66 +146,6 @@ void DataObject::dirty( bool b )
 {
   Guard guard ( this );
   _dirty = b;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the render bin.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int DataObject::renderBin() const
-{
-  Guard guard ( this );
-  return _renderBin;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the render bin.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::renderBin( unsigned int renderBin )
-{
-  // Only change it if it's different.
-  if ( renderBin != _renderBin )
-  {
-    Guard guard ( this );
-    _renderBin = renderBin;
-    this->dirty( true );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Vec4& DataObject::color () const
-{
-  Guard guard ( this );
-  return _color;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::color ( const osg::Vec4& color )
-{
-  Guard guard ( this );
-
-  // Set the internal color.
-  _color = color;
-  this->dirty( true );
 }
 
 
@@ -300,37 +235,10 @@ const osg::Vec3& DataObject::labelPosition () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::geometry( Unknown *geometry )
+DataObject::Geometries DataObject::geometries() const
 {
   Guard guard ( this );
-  _geometry = geometry;
-  this->dirty( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-DataObject::Unknown* DataObject::geometry()
-{
-  Guard guard ( this );
-  return _geometry.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the geometry.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const DataObject::Unknown* DataObject::geometry() const
-{
-  Guard guard ( this );
-  return _geometry.get();
+  return _geometries;
 }
 
 
@@ -496,23 +404,47 @@ bool DataObject::showLabel () const
 
 void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
 {
-  osg::ref_ptr<osg::Node> node ( this->_preBuildScene ( caller ) );
+  Geometries geometries ( this->geometries() );
+  
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+  
+  Extents extents;
+  
+  for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
+  {
+    Geometry::RefPtr geometry ( *iter );
+    
+    osg::ref_ptr<osg::Node> node ( geometry->buildScene ( Options(), caller ) );
+    node->setUserData ( new Minerva::Core::DataObjects::UserData( this ) );
+    group->addChild ( node.get() );
+  
+    // Expand the extents by the geometry's extents.
+    extents.expand ( geometry->extents() );
+  }
+  
+  // Set the new extents.
+  this->extents ( extents );
+  
+  // Do we have a label?
+  if( this->showLabel() && !this->label().empty() )
+  {
+    osg::Vec3 position ( this->labelPosition() );
+    Usul::Math::Vec3d p ( extents.center()[0], extents.center()[1], position[2] );
+
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
+   
+    if( planet.valid() )
+    {
+      planet->convertToPlanet( Usul::Math::Vec3d ( p ), p );
+    }
+    
+    group->addChild ( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] ) ) );
+  }
   
   Guard guard ( this );
-  _preBuiltScene = node;
+  _preBuiltScene = group.get();
+  
   this->dirty ( false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Is this data object transparent?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DataObject::transparent() const
-{
-  return 1.0f != this->color().w();
 }
 
 
@@ -628,59 +560,6 @@ void DataObject::lastDate( const Minerva::Core::Animate::Date& date )
 {
   Guard guard ( this );
   _lastDate = date;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the altitude mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::altitudeMode ( AltitudeMode mode )
-{
-  Guard guard ( this );
-  _altitudeMode = mode;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the altitude mode.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-DataObject::AltitudeMode DataObject::altitudeMode () const
-{
-  Guard guard ( this );
-  return _altitudeMode;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set extrude flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::extrude ( bool b )
-{
-  Guard guard ( this );
-  _extrude = b;
-  this->dirty ( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get extrude flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DataObject::extrude() const
-{
-  Guard guard ( this );
-  return _extrude;
 }
 
 

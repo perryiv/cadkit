@@ -142,6 +142,7 @@ void Line::line( const Vertices& data )
 {
   Guard guard ( this->mutex() );
   _line = data;
+  this->dirty( true );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -276,8 +277,8 @@ osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown
     geometry->dirtyDisplayList();
     
     // Set depth parameters.
-    //osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
-    //ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
+    ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
     
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
     

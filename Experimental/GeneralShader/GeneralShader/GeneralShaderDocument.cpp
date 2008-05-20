@@ -61,6 +61,7 @@
 #include "osg/PositionAttitudeTransform"
 #include "osgDB/ReadFile"
 #include "osg/TexGen"
+#include "osg/TexEnvCombine"
 #include "osg/MatrixTransform"
 #include "osg/Matrix"
 #include "osg/TexEnv"
@@ -142,7 +143,8 @@ GeneralShaderDocument::GeneralShaderDocument() :
   _modelMatrixTransform( new osg::MatrixTransform ),
   _heightMapImage( new osg::Image ),
   _tile( 1.0 ),
-  _depth( 0.09 )
+  _depth( 0.04 ),
+  _etaRatio( 1.01, 1.02, 1.03 )
 {
   USUL_TRACE_SCOPE;
    
@@ -442,15 +444,38 @@ void GeneralShaderDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     _nearFarClipPlane.x() = -f / ( f - n );
     _nearFarClipPlane.y() = ( -f * n ) / ( f - n );
 #else
-    float n = 0.01;
-    float f = 100;
-    _nearFarClipPlane.x() = -f / ( f - n );
-    _nearFarClipPlane.y() = ( -f * n ) / ( f - n );
+    // get needed interface to access the near/far clipping planes
+    //Usul::Interfaces::IClippingDistance::QueryPtr clip ( caller );
+
+    //if( true == clip.valid() )
+    //{
+    //  float n = 0.001;
+    //  float f = 10;
+    //  _nearFarClipPlane.x() = -f / ( f - n );
+    //  _nearFarClipPlane.y() = ( -f * n ) / ( f - n );
+    //  clip->setClippingDistances( n, f );
+    //}
 #endif
     
   }
 }
 
+
+void GeneralShaderDocument::addView     ( View   *view   )
+{
+  BaseClass::addView ( view );
+
+   Usul::Interfaces::IClippingDistance::QueryPtr clip ( view );
+
+    if( true == clip.valid() )
+    {
+      float n = 0.001;
+      float f = 10;
+      _nearFarClipPlane.x() = -f / ( f - n );
+      _nearFarClipPlane.y() = ( -f * n ) / ( f - n );
+      clip->setClippingDistances( n, f );
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1170,11 +1195,11 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
 
     tex->setDataVariance( osg::Object::DYNAMIC ); 
-    tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
-    tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-    tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
-    tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);    
+    tex->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT );
+    tex->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT );
+    tex->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT );
+/*    tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
+    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR); */   
     tex->setImage( image.get() );
 
     stateset->setTextureAttributeAndModes( 0, tex.get(), osg::StateAttribute::ON );
@@ -1198,7 +1223,8 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     map->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
     map->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
     map->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-    map->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);    
+    map->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR); 
+    
 
     // assign the six images to the texture object
     ImagePtr pos_x = osgDB::readImageFile( _shaderGroups.at( index ).cubeList.at( 0 ) );
@@ -1216,7 +1242,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     map->setImage(osg::TextureCubeMap::NEGATIVE_Z, neg_z.get() );
 
     // enable texturing, replacing any textures in the subgraphs
-    stateset->setTextureAttributeAndModes( 1, map.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+    stateset->setTextureAttributeAndModes( 1, map.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
     
     // add cube map to stateset
     stateset->addUniform( new osg::Uniform( "map", 1 ) );
@@ -1230,11 +1256,11 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     {
       osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
 
-      tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
-      tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
-      tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
-      tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-      tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
+      tex->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT );
+      tex->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT );
+      //tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
+      //tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
+      //tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
       tex->setImage( image.get() );
 
       stateset->setTextureAttributeAndModes( 2, tex.get(), osg::StateAttribute::ON );
@@ -1288,7 +1314,7 @@ osg::Geode* GeneralShaderDocument::_createSphereModel()
   Guard guard ( this->mutex() );
 
   GeodePtr geode( new osg::Geode );
-#if 1
+#if 0
   geode->addDrawable(new osg::ShapeDrawable(new osg::Sphere(osg::Vec3(0.0f,0.0f,0.0f),1.0f)));
 #else
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
@@ -1297,92 +1323,130 @@ osg::Geode* GeneralShaderDocument::_createSphereModel()
   osg::ref_ptr< osg::Vec4Array > tangents ( new osg::Vec4Array );
   osg::ref_ptr< osg::Vec2Array > texCoords ( new osg::Vec2Array );
 
-  for( unsigned int i = 0; i < 9; ++i )
+  unsigned int max_s = 50, max_t = 50;
+  float radius = 10.0;
+  Usul::Math::Vec3f center( 0.0, 0.0, 0.0 );
+  for( unsigned int i = 0; i < max_s; ++i )
   {
-    for( unsigned int j = 0; j < 9; ++j )
+    for( unsigned int j = 0; j < max_t; ++j )
     {
-      float theta1 = static_cast< float > ( ( i / 10 ) * 360 );
-      float theta2 = static_cast< float > ( ( j / 10 ) * 360 );
+      float s0 = static_cast< float > ( i ) / max_s;
+      float t0 = static_cast< float > ( j ) / max_t;
+      float s1 = static_cast< float > ( i + 1 ) / max_s;
+      float t1 = static_cast< float > ( j + 1 ) / max_t;
 
-      float stepValue = static_cast< float > ( ( 1.0f / 10.0f ) * 360.0f );
+      float x00 = center[0] + radius * cos( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s0 );
+      float y00 = center[1] + radius * sin( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s0 );
+      float z00 = center[2] + radius * cos( Usul::Math::PIE * s0 );
+
+      float x10 = center[0] + radius * cos( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s1 );
+      float y10 = center[1] + radius * sin( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s1 );
+      float z10 = center[2] + radius * cos( Usul::Math::PIE * s1 );
+
+      float x01 = center[0] + radius * cos( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s0 );
+      float y01 = center[1] + radius * sin( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s0 );
+      float z01 = center[2] + radius * cos( Usul::Math::PIE * s0 );
+
+      float x11 = center[0] + radius * cos( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s1 );
+      float y11 = center[1] + radius * sin( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s1 );
+      float z11 = center[2] + radius * cos( Usul::Math::PIE * s1 );
+
+      // vertex 00
+      Usul::Math::Vec3d tangent00( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal00( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal00( 0.0, 0.0, 0.0 );
       
-      //-----------------------------------------------------------------------------------------------------------------------------------------------------
+      tangent00[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s0 );
+      tangent00[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s0 );
+      tangent00[2] = 0;
 
-      // Vertex 1 
-      osg::Vec3 v1 ( 0.0, 0.0, 0.0 );
-      v1.x() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * theta1 ) * cos( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    v1.y() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * theta1 ) * sin( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    v1.z() = static_cast< float > ( ( 1.0f * cos( ( Usul::Math::PIE / 180 ) * theta1 ) ) );	
+      binormal00[0] = Usul::Math::PIE * radius * cos( 2.0 * Usul::Math::PIE * t0 ) * cos ( Usul::Math::PIE * s0 );
+      binormal00[1] = Usul::Math::PIE * radius * sin( Usul::Math::PIE * t0 ) * cos ( Usul::Math::PIE * s0 );
+      binormal00[2] = -Usul::Math::PIE * radius * sin( Usul::Math::PIE * s0 );
 
-      osg::Vec3 n1 = v1;
-      n1.normalize();
+      normal00 = Usul::Math::Vec3d( center[0] + x00, center[1] + y00, center[2] + z00 );
 
-      osg::Vec2 tex1 ( 0.0, 0.0 );
-      tex1.x() = static_cast< float > ( i / 10 );
-      tex1.y() = static_cast< float > ( j / 10 );
-
-      //-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-      // Vertex 2
-      osg::Vec3 v2 ( 0.0, 0.0, 0.0 );
-      float th1 = static_cast< float > ( theta1 + stepValue ); 
-      v2.x() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * th1 ) * cos( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    v2.y() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * th1 ) * sin( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    v2.z() = static_cast< float > ( ( 1.0f * cos( ( Usul::Math::PIE / 180 ) * th1 ) ) );	
-
-      osg::Vec3 n2 = v2;
-      n2.normalize();
-
-      osg::Vec2 tex2 ( 0.0, 0.0 );
-      tex2.x() = static_cast< float > ( ( i + 1 ) / 10 );
-      tex2.y() = static_cast< float > ( j / 10 );
-
-      //-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-      // Vertex 3
-      osg::Vec3 v3 ( 0.0, 0.0, 0.0 );
-      float th2 = static_cast< float > ( theta2 + stepValue );
-      v3.x() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * theta1 ) * cos( ( Usul::Math::PIE / 180 ) * th2 ) ) );
-	    v3.y() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * theta1 ) * sin( ( Usul::Math::PIE / 180 ) * th2 ) ) );
-	    v3.z() = static_cast< float > ( ( 1.0f * cos( ( Usul::Math::PIE / 180 ) * theta1 ) ) );	
-
-      osg::Vec3 n3 = v3;
-      n3.normalize();
-
-      osg::Vec2 tex3 ( 0.0, 0.0 );
-      tex3.x() = static_cast< float > ( i / 10 );
-      tex3.y() = static_cast< float > ( ( j + 1 ) / 10 );
-
-      //-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-      osg::Vec4 tv1 ( 0.0, 0.0, 0.0, 0.0 );
-      osg::Vec4 tv2 ( 0.0, 0.0, 0.0, 0.0 );
-
-      float tangentTheta = 0;
-
-      if( i == 0 )
-      {
-        tangentTheta = static_cast< float > ( 360.0 - stepValue );
-      }
-      else
-      {
-        tangentTheta = static_cast< float > ( theta1 - stepValue );
-      }
-
-      tv1.x() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * tangentTheta ) * cos( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    tv1.y() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * tangentTheta ) * sin( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    tv1.z() = static_cast< float > ( ( 1.0f * cos( ( Usul::Math::PIE / 180 ) * tangentTheta ) ) );
-
-      tangentTheta = static_cast< float > ( theta1 + stepValue );
-      tv2.x() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * tangentTheta ) * cos( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    tv2.y() = static_cast< float > ( ( 1.0f * sin( ( Usul::Math::PIE / 180 ) * tangentTheta ) * sin( ( Usul::Math::PIE / 180 ) * theta2 ) ) );
-	    tv2.z() = static_cast< float > ( ( 1.0f * cos( ( Usul::Math::PIE / 180 ) * tangentTheta ) ) );
-
-      vertices->push_back( v1 ); vertices->push_back( v2 ); vertices->push_back( v3 );   
-      normals->push_back( n1 ); normals->push_back( n2 ); normals->push_back( n3 );
-      texCoords->push_back( tex1 ); texCoords->push_back( tex2 ); texCoords->push_back( tex3 );
-      tangents->push_back( tv1 - tv2 ); tangents->push_back( tv1 - tv2 ); tangents->push_back( tv1 - tv2 );
+      // vertex 10
+      Usul::Math::Vec3d tangent10( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal10( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal10( 0.0, 0.0, 0.0 );
       
+      tangent10[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s1 );
+      tangent10[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s1 );
+      tangent10[2] = 0;
+
+      binormal10[0] = Usul::Math::PIE * radius * cos( 2.0 * Usul::Math::PIE * t0 ) * cos ( Usul::Math::PIE * s1 );
+      binormal10[1] = Usul::Math::PIE * radius * sin( Usul::Math::PIE * t0 ) * cos ( Usul::Math::PIE * s1 );
+      binormal10[2] = -Usul::Math::PIE * radius * sin( Usul::Math::PIE * s1 );
+
+      normal10 = Usul::Math::Vec3d( center[0] + x10, center[1] + y10, center[2] + z10 );
+
+      // vertex 01
+      Usul::Math::Vec3d tangent01( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal01( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal01( 0.0, 0.0, 0.0 );
+      
+      tangent01[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s0 );
+      tangent01[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s0 );
+      tangent01[2] = 0;
+
+      binormal01[0] = Usul::Math::PIE * radius * cos( 2.0 * Usul::Math::PIE * t1 ) * cos ( Usul::Math::PIE * s0 );
+      binormal01[1] = Usul::Math::PIE * radius * sin( Usul::Math::PIE * t1 ) * cos ( Usul::Math::PIE * s0 );
+      binormal01[2] = -Usul::Math::PIE * radius * sin( Usul::Math::PIE * s0 );
+
+      normal01 = Usul::Math::Vec3d( center[0] + x01, center[1] + y01, center[2] + z01 );
+
+      // vertex 11
+      Usul::Math::Vec3d tangent11( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal11( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal11( 0.0, 0.0, 0.0 );
+      
+      tangent11[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s1 );
+      tangent11[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s1 );
+      tangent11[2] = 0;
+
+      binormal11[0] = Usul::Math::PIE * radius * cos( 2.0 * Usul::Math::PIE * t1 ) * cos ( Usul::Math::PIE * s1 );
+      binormal11[1] = Usul::Math::PIE * radius * sin( Usul::Math::PIE * t1 ) * cos ( Usul::Math::PIE * s1 );
+      binormal11[2] = -Usul::Math::PIE * radius * sin( Usul::Math::PIE * s1 );
+
+      normal11 = Usul::Math::Vec3d( center[0] + x11, center[1] + y11, center[2] + z11 );
+
+      vertices->push_back( osg::Vec3f( x00, y00, z00 ) );
+      vertices->push_back( osg::Vec3f( x10, y10, z10 ) );
+      vertices->push_back( osg::Vec3f( x11, y11, z11 ) );
+
+      vertices->push_back( osg::Vec3f( x00, y00, z00 ) );
+      vertices->push_back( osg::Vec3f( x11, y11, z11 ) );
+      vertices->push_back( osg::Vec3f( x01, y01, z01 ) );
+
+      tangents->push_back( osg::Vec4f( tangent00[0], tangent00[1], tangent00[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent10[0], tangent10[1], tangent10[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent11[0], tangent11[1], tangent11[2], 0.0 ) );
+
+      tangents->push_back( osg::Vec4f( tangent00[0], tangent00[1], tangent00[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent11[0], tangent11[1], tangent11[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent01[0], tangent01[1], tangent01[2], 0.0 ) );
+
+      normals->push_back( osg::Vec3f( normal00[0], normal00[1], normal00[2] ) );
+      normals->push_back( osg::Vec3f( normal10[0], normal10[1], normal10[2] ) );
+      normals->push_back( osg::Vec3f( normal11[0], normal11[1], normal11[2] ) );
+
+      normals->push_back( osg::Vec3f( normal00[0], normal00[1], normal00[2] ) );
+      normals->push_back( osg::Vec3f( normal11[0], normal11[1], normal11[2] ) );
+      normals->push_back( osg::Vec3f( normal01[0], normal01[1], normal01[2] ) );
+
+      texCoords->push_back( osg::Vec2f( s0, t0 ) );
+      texCoords->push_back( osg::Vec2f( s1, t0 ) );
+      texCoords->push_back( osg::Vec2f( s1, t1 ) );
+
+      texCoords->push_back( osg::Vec2f( s0, t0 ) );
+      texCoords->push_back( osg::Vec2f( s1, t1 ) );
+      texCoords->push_back( osg::Vec2f( s0, t1 ) );
+
+      //vertices->push_back( osg::Vec3f( x, y, z ) );
+      //tangents->push_back( osg::Vec4f( tangent[0], tangent[1], tangent[2], 0.0 ) );
+      //normals->push_back( osg::Vec3f( normal[0], normal[1], normal[2] ) );
+      //texCoords->push_back( osg::Vec2f( s, t ) );
     }
   }
   // Set Vertex array
@@ -2054,7 +2118,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
 	osg::Vec3d p6( -0.5, 0.5, 0.5 );
 	osg::Vec3d p7( 0.5, 0.5, 0.5 );
 
-  double scale = 300.0;
+  double scale = 1000.0;
   p0 *= scale;
   p1 *= scale;
   p2 *= scale;
@@ -2165,6 +2229,12 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
     SSposx->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    
+    // set tex env combine
+    osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
+    texCombine->setCombine_RGB( GL_REPLACE );
+
+    
   }
   Gposx->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vposx->size() ) );
 
@@ -2196,6 +2266,10 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSposy->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+     
+    
+
+    //SSposy->setAttributeAndModes( texCombine.get() );
   }
   Gposy->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vposy->size() ) );
 
@@ -2227,6 +2301,12 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSposz->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+     
+    // set tex env combine
+    osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
+    texCombine->setCombine_RGB( GL_REPLACE );
+
+    SSposz->setAttributeAndModes( texCombine.get() );
   }
   Gposz->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vposz->size() ) );
 
@@ -2258,6 +2338,12 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSnegx->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+     
+    // set tex env combine
+    osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
+    texCombine->setCombine_RGB( GL_REPLACE );
+
+    SSnegx->setAttributeAndModes( texCombine.get() );
   }
   Gnegx->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vnegx->size() ) );
 
@@ -2289,6 +2375,12 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSnegy->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+     
+    // set tex env combine
+    osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
+    texCombine->setCombine_RGB( GL_REPLACE );
+
+    SSnegy->setAttributeAndModes( texCombine.get() );
   }
   Gnegy->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vnegy->size() ) );
 
@@ -2320,6 +2412,12 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSnegz->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+     
+    // set tex env combine
+    osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
+    texCombine->setCombine_RGB( GL_REPLACE );
+
+    SSnegz->setAttributeAndModes( texCombine.get() );
   }
   Gnegz->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vnegz->size() ) );
 
@@ -2336,7 +2434,14 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
   // set the index into the vector of skyboxes for this environment map
   _shaderGroups.at( index ).skyBoxIndex = _skyBoxes.size();
   GroupPtr group ( new osg::Group );
+
+  // set tex env combine
+  osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
+  texCombine->setCombine_RGB( GL_REPLACE );
+  group->getOrCreateStateSet()->setTextureAttributeAndModes( 0, texCombine.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  
   group->addChild( geode.get() );
+  group->setCullingActive( false );
   _skyBoxes.push_back( group.get() );
 }
 
@@ -2354,6 +2459,269 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
 
   GeodePtr geode( new osg::Geode );
 
+  osg::ref_ptr< osg::Vec2Array > texCoords ( new osg::Vec2Array );
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec4Array > tangents ( new osg::Vec4Array );
+
+
+  unsigned int max_s = 50, max_t = 50;
+  double mRadius = 4, nRadius = 2;
+  for( unsigned int i = 0; i < max_s; ++i )
+  {
+    for( unsigned int j = 0; j < max_t; ++j )
+    {
+      float s0 = static_cast< float > ( i ) / max_s;
+      float t0 = static_cast< float > ( j ) / max_t;
+      float s1 = static_cast< float > ( i + 1 ) / max_s;
+      float t1 = static_cast< float > ( j + 1 ) / max_t;
+
+      float x00 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+      float y00 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+      float z00 = nRadius * sin( 2.0 * Usul::Math::PIE * t0 ) ;
+
+      float x10 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+      float y10 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+      float z10 = nRadius * sin( 2.0 * Usul::Math::PIE * t0 ) ;
+
+      float x01 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+      float y01 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+      float z01 = nRadius * sin( 2.0 * Usul::Math::PIE * t1 ) ;
+
+      float x11 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+      float y11 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+      float z11 = nRadius * sin( 2.0 * Usul::Math::PIE * t1 ) ;
+
+      // vertex 00
+      Usul::Math::Vec3d tangent00( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal00( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal00( 0.0, 0.0, 0.0 );
+      
+      tangent00[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+      tangent00[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+      tangent00[2] = 0;
+
+      binormal00[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t0 ) * cos( 2.0 * Usul::Math::PIE * s0 );
+      binormal00[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 ) * sin( 2.0 * Usul::Math::PIE * s0 );
+      binormal00[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 );
+
+      normal00 = tangent00.cross( binormal00 );
+
+      // vertex 10
+      Usul::Math::Vec3d tangent10( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal10( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal10( 0.0, 0.0, 0.0 );
+      
+      tangent10[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+      tangent10[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+      tangent10[2] = 0;
+
+      binormal10[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t0 ) * cos( 2.0 * Usul::Math::PIE * s1 );
+      binormal10[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 ) * sin( 2.0 * Usul::Math::PIE * s1 );
+      binormal10[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 );
+
+      normal10 = tangent10.cross( binormal10 );
+
+      // vertex 01
+      Usul::Math::Vec3d tangent01( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal01( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal01( 0.0, 0.0, 0.0 );
+      
+      tangent01[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+      tangent01[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+      tangent01[2] = 0;
+
+      binormal01[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t1 ) * cos( 2.0 * Usul::Math::PIE * s0 );
+      binormal01[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 ) * sin( 2.0 * Usul::Math::PIE * s0 );
+      binormal01[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 );
+
+      normal01 = tangent01.cross( binormal01 );
+
+      // vertex 11
+      Usul::Math::Vec3d tangent11( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d binormal11( 0.0, 0.0, 0.0 );
+      Usul::Math::Vec3d normal11( 0.0, 0.0, 0.0 );
+      
+      tangent11[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+      tangent11[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+      tangent11[2] = 0;
+
+      binormal11[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t1 ) * cos( 2.0 * Usul::Math::PIE * s1 );
+      binormal11[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 ) * sin( 2.0 * Usul::Math::PIE * s1 );
+      binormal11[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 );
+
+      normal11 = tangent11.cross( binormal11 );
+
+      vertices->push_back( osg::Vec3f( x00, y00, z00 ) );
+      vertices->push_back( osg::Vec3f( x10, y10, z10 ) );
+      vertices->push_back( osg::Vec3f( x11, y11, z11 ) );
+
+      vertices->push_back( osg::Vec3f( x00, y00, z00 ) );
+      vertices->push_back( osg::Vec3f( x11, y11, z11 ) );
+      vertices->push_back( osg::Vec3f( x01, y01, z01 ) );
+
+      tangents->push_back( osg::Vec4f( tangent00[0], tangent00[1], tangent00[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent10[0], tangent10[1], tangent10[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent11[0], tangent11[1], tangent11[2], 0.0 ) );
+
+      tangents->push_back( osg::Vec4f( tangent00[0], tangent00[1], tangent00[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent11[0], tangent11[1], tangent11[2], 0.0 ) );
+      tangents->push_back( osg::Vec4f( tangent01[0], tangent01[1], tangent01[2], 0.0 ) );
+
+      normals->push_back( osg::Vec3f( normal00[0], normal00[1], normal00[2] ) );
+      normals->push_back( osg::Vec3f( normal10[0], normal10[1], normal10[2] ) );
+      normals->push_back( osg::Vec3f( normal11[0], normal11[1], normal11[2] ) );
+
+      normals->push_back( osg::Vec3f( normal00[0], normal00[1], normal00[2] ) );
+      normals->push_back( osg::Vec3f( normal11[0], normal11[1], normal11[2] ) );
+      normals->push_back( osg::Vec3f( normal01[0], normal01[1], normal01[2] ) );
+
+      texCoords->push_back( osg::Vec2f( s0, t0 ) );
+      texCoords->push_back( osg::Vec2f( s1, t0 ) );
+      texCoords->push_back( osg::Vec2f( s1, t1 ) );
+
+      texCoords->push_back( osg::Vec2f( s0, t0 ) );
+      texCoords->push_back( osg::Vec2f( s1, t1 ) );
+      texCoords->push_back( osg::Vec2f( s0, t1 ) );
+
+      //vertices->push_back( osg::Vec3f( x, y, z ) );
+      //tangents->push_back( osg::Vec4f( tangent[0], tangent[1], tangent[2], 0.0 ) );
+      //normals->push_back( osg::Vec3f( normal[0], normal[1], normal[2] ) );
+      //texCoords->push_back( osg::Vec2f( s, t ) );
+
+    }
+  }
+  // last step to close everything
+#if 0
+  {
+    float s0 = 1.0;
+    float t0 = 1.0;
+    float s1 = 0.0;
+    float t1 = 0.0;
+
+    float x00 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+    float y00 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+    float z00 = nRadius * sin( 2.0 * Usul::Math::PIE * t0 ) ;
+
+    float x10 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+    float y10 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+    float z10 = nRadius * sin( 2.0 * Usul::Math::PIE * t0 ) ;
+
+    float x01 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+    float y01 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+    float z01 = nRadius * sin( 2.0 * Usul::Math::PIE * t1 ) ;
+
+    float x11 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+    float y11 = ( mRadius + ( nRadius * cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+    float z11 = nRadius * sin( 2.0 * Usul::Math::PIE * t1 ) ;
+
+    // vertex 00
+    Usul::Math::Vec3d tangent00( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d binormal00( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d normal00( 0.0, 0.0, 0.0 );
+    
+    tangent00[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+    tangent00[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+    tangent00[2] = 0;
+
+    binormal00[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t0 ) * cos( 2.0 * Usul::Math::PIE * s0 );
+    binormal00[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 ) * sin( 2.0 * Usul::Math::PIE * s0 );
+    binormal00[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 );
+
+    normal00 = tangent00.cross( binormal00 );
+
+    // vertex 10
+    Usul::Math::Vec3d tangent10( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d binormal10( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d normal10( 0.0, 0.0, 0.0 );
+    
+    tangent10[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+    tangent10[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+    tangent10[2] = 0;
+
+    binormal10[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t0 ) * cos( 2.0 * Usul::Math::PIE * s1 );
+    binormal10[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 ) * sin( 2.0 * Usul::Math::PIE * s1 );
+    binormal10[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t0 );
+
+    normal10 = tangent10.cross( binormal10 );
+
+    // vertex 01
+    Usul::Math::Vec3d tangent01( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d binormal01( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d normal01( 0.0, 0.0, 0.0 );
+    
+    tangent01[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
+    tangent01[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
+    tangent01[2] = 0;
+
+    binormal01[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t1 ) * cos( 2.0 * Usul::Math::PIE * s0 );
+    binormal01[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 ) * sin( 2.0 * Usul::Math::PIE * s0 );
+    binormal01[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 );
+
+    normal01 = tangent01.cross( binormal01 );
+
+    // vertex 11
+    Usul::Math::Vec3d tangent11( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d binormal11( 0.0, 0.0, 0.0 );
+    Usul::Math::Vec3d normal11( 0.0, 0.0, 0.0 );
+    
+    tangent11[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
+    tangent11[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
+    tangent11[2] = 0;
+
+    binormal11[0] = -2.0 * nRadius * Usul::Math::PIE * sin( 2.0 * Usul::Math::PIE * t1 ) * cos( 2.0 * Usul::Math::PIE * s1 );
+    binormal11[1] = -2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 ) * sin( 2.0 * Usul::Math::PIE * s1 );
+    binormal11[2] = 2.0 * nRadius * Usul::Math::PIE * cos( 2.0 * Usul::Math::PIE * t1 );
+
+    normal11 = tangent11.cross( binormal11 );
+
+    vertices->push_back( osg::Vec3f( x00, y00, z00 ) );
+    vertices->push_back( osg::Vec3f( x10, y10, z10 ) );
+    vertices->push_back( osg::Vec3f( x11, y11, z11 ) );
+
+    vertices->push_back( osg::Vec3f( x00, y00, z00 ) );
+    vertices->push_back( osg::Vec3f( x11, y11, z11 ) );
+    vertices->push_back( osg::Vec3f( x01, y01, z01 ) );
+
+    tangents->push_back( osg::Vec4f( tangent00[0], tangent00[1], tangent00[2], 0.0 ) );
+    tangents->push_back( osg::Vec4f( tangent10[0], tangent10[1], tangent10[2], 0.0 ) );
+    tangents->push_back( osg::Vec4f( tangent11[0], tangent11[1], tangent11[2], 0.0 ) );
+
+    tangents->push_back( osg::Vec4f( tangent00[0], tangent00[1], tangent00[2], 0.0 ) );
+    tangents->push_back( osg::Vec4f( tangent11[0], tangent11[1], tangent11[2], 0.0 ) );
+    tangents->push_back( osg::Vec4f( tangent01[0], tangent01[1], tangent01[2], 0.0 ) );
+
+    normals->push_back( osg::Vec3f( normal00[0], normal00[1], normal00[2] ) );
+    normals->push_back( osg::Vec3f( normal10[0], normal10[1], normal10[2] ) );
+    normals->push_back( osg::Vec3f( normal11[0], normal11[1], normal11[2] ) );
+
+    normals->push_back( osg::Vec3f( normal00[0], normal00[1], normal00[2] ) );
+    normals->push_back( osg::Vec3f( normal11[0], normal11[1], normal11[2] ) );
+    normals->push_back( osg::Vec3f( normal01[0], normal01[1], normal01[2] ) );
+
+    texCoords->push_back( osg::Vec2f( s0, t0 ) );
+    texCoords->push_back( osg::Vec2f( s1, t0 ) );
+    texCoords->push_back( osg::Vec2f( s1, t1 ) );
+
+    texCoords->push_back( osg::Vec2f( s0, t0 ) );
+    texCoords->push_back( osg::Vec2f( s1, t1 ) );
+    texCoords->push_back( osg::Vec2f( s0, t1 ) );
+  }
+#endif
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+  geometry->setVertexArray( vertices.get() );
+  
+  geometry->setNormalArray( normals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+  geometry->setTexCoordArray( 0, texCoords.get() );
+  geometry->setColorArray( tangents.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
+
+  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
+  
+  geode->addDrawable( geometry.get() );
   return geode.release();
 }
 
@@ -2574,6 +2942,11 @@ void GeneralShaderDocument::_updateScene()
       ss->addUniform( toAdd.get() );
     }
 
+    // add the etaRatio vec3
+    UniformPtr eta = ss->getOrCreateUniform( "etaRatio", osg::Uniform::FLOAT_VEC3 );
+    eta->set( _etaRatio );
+    ss->addUniform( eta.get() ); 
+
     // add the near/far plane uniform
     UniformPtr nearfar = ss->getOrCreateUniform( "planes", osg::Uniform::FLOAT_VEC2 );
     nearfar->set( _nearFarClipPlane );
@@ -2625,13 +2998,13 @@ bool GeneralShaderDocument::keyPressed ( int code )
  // Tile value manipulation
   if( 't' == code || 'T' == code )
   {
-    _tile -= 0.01;
+    _tile *= 0.5;
     this->_updateScene();
     return true;
   }
   if( 'g' == code || 'G' == code )
   {
-    _tile += 0.01;
+    _tile *= 2.0;
     this->_updateScene();
     return true;
   }
@@ -2660,6 +3033,7 @@ bool GeneralShaderDocument::keyPressed ( int code )
     this->_updateScene();
     return true;
   }
+ 
   if( ',' == code || '<' == code )
   {
     _modelMatrixTransform->postMult( osg::Matrix::rotate( .1, 0, 0, 1 ) );
@@ -2703,8 +3077,46 @@ bool GeneralShaderDocument::keyPressed ( int code )
     _modelMatrixTransform->setMatrix( osg::Matrix::identity() );
     _theta.x() = 45.0; 
     _theta.y() = 0.0;
-    _depth = 0.09;
+    _depth = 0.04;
     _tile = 1.0;
+    _etaRatio = osg::Vec3f( 1.01, 1.02, 1.03 );
+    this->_updateScene();
+    return true;
+  }
+
+  if( '1' == code  )
+  {
+    _etaRatio.x() += 0.001;
+    this->_updateScene();
+    return true;
+  }
+  if( '2' == code  )
+  {
+    _etaRatio.x() -= 0.001;
+    this->_updateScene();
+    return true;
+  }
+  if( '4' == code  )
+  {
+    _etaRatio.y() += 0.001;
+    this->_updateScene();
+    return true;
+  }
+  if( '5' == code  )
+  {
+    _etaRatio.y() -= 0.001;
+    this->_updateScene();
+    return true;
+  }
+  if( '7' == code  )
+  {
+    _etaRatio.z() += 0.001;
+    this->_updateScene();
+    return true;
+  }
+  if( '8' == code  )
+  {
+    _etaRatio.z() -= 0.001;
     this->_updateScene();
     return true;
   }
@@ -3069,17 +3481,25 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
   osg::ref_ptr< osg::Vec4Array > tangents ( new osg::Vec4Array );
   osg::ref_ptr< osg::Vec2Array > texCoords ( new osg::Vec2Array );
   std::vector< std::vector< osg::Vec3 > > faceNormalsPerVertex;
+  std::vector< std::vector< osg::Vec3 > > faceTangentsPerVertex;
 
   faceNormalsPerVertex.resize( mesh.vertices.size() );
-  
-  
+  faceTangentsPerVertex.resize( mesh.vertices.size() );
+
+  //scale all vertices by 10
+#if 0
+  for( unsigned int i = 0; i < mesh.vertices.size(); ++i )
+  {
+    mesh.vertices.at( i ) *= 10.0;
+  }
+#endif
   //Parse mesh object and create a geode
   for( unsigned int i = 0; i < mesh.indices.size(); i += 3 )
   {
     // get the vertices of a triangle in the mesh
-    osg::Vec3 v1 = mesh.vertices.at( mesh.indices.at( i + 0 ) );
-    osg::Vec3 v2 = mesh.vertices.at( mesh.indices.at( i + 1 ) );
-    osg::Vec3 v3 = mesh.vertices.at( mesh.indices.at( i + 2 ) );
+    osg::Vec3 v1 = mesh.vertices.at( mesh.indices.at( i + 0 ) ) * 100.0;
+    osg::Vec3 v2 = mesh.vertices.at( mesh.indices.at( i + 1 ) ) * 100.0;
+    osg::Vec3 v3 = mesh.vertices.at( mesh.indices.at( i + 2 ) ) * 100.0;
     vertices->push_back( v1 );vertices->push_back( v2 );vertices->push_back( v3 );
 
     // if there are normals provided in the file read and store
@@ -3091,35 +3511,128 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
       normals->push_back( n1 );normals->push_back( n2 );normals->push_back( n3 );
 
       // create and add tangents for each normal
-      osg::Vec3 tVec = v1 - v2;
-      tangents->push_back( osg::Vec4f( tVec.x(), tVec.y(), tVec.z(), 0.0 ) );
-      tangents->push_back( osg::Vec4f( tVec.x(), tVec.y(), tVec.z(), 0.0 ) );
-      tangents->push_back( osg::Vec4f( tVec.x(), tVec.y(), tVec.z(), 0.0 ) );
+      //osg::Vec3 tVec = v1 - v2;
+      //tangents->push_back( osg::Vec4f( tVec.x(), tVec.y(), tVec.z(), 0.0 ) );
+      //tangents->push_back( osg::Vec4f( tVec.x(), tVec.y(), tVec.z(), 0.0 ) );
+      //tangents->push_back( osg::Vec4f( tVec.x(), tVec.y(), tVec.z(), 0.0 ) );
     }
     // create the normals if none were provided in the file
     else
     {
-      FaceNormal fn;
+     // get the texture coordinates of a triangle in the mesh
+      osg::Vec2 t1 ( 0.0, 0.0 );
+      osg::Vec2 t2 ( 1.0, 0.0 );
+      osg::Vec2 t3 ( 1.0, 1.0 );
 
-      fn.normal = ( v3 - v2 ) ^ ( v1 - v2 );
+      if( mesh.texCoords.size() > 0 && mesh.texIndices.size() > 0 )
+      {
+        t1 = mesh.texCoords.at( mesh.texIndices.at( i + 0 ) );
+        t2 = mesh.texCoords.at( mesh.texIndices.at( i + 1 ) );
+        t3 = mesh.texCoords.at( mesh.texIndices.at( i + 2 ) );
+        texCoords->push_back( t1 );texCoords->push_back( t2 );texCoords->push_back( t3 );
+      }
+
+      FaceNormal fn;
       fn.vi1 = mesh.indices.at( i + 0 );
       fn.vi2 = mesh.indices.at( i + 1 );
       fn.vi3 = mesh.indices.at( i + 2 );
       
+#if 0
+      fn.normal = ( v3 - v2 ) ^ ( v1 - v2 );
+      fn.vi1 = mesh.indices.at( i + 0 );
+      fn.vi2 = mesh.indices.at( i + 1 );
+      fn.vi3 = mesh.indices.at( i + 2 );
       faceNormalsPerVertex.at( fn.vi1 ).push_back( fn.normal ); 
       faceNormalsPerVertex.at( fn.vi2 ).push_back( fn.normal ); 
       faceNormalsPerVertex.at( fn.vi3 ).push_back( fn.normal ); 
+#endif
+      /// tangent calculations per face
+#if 0 
+      float x1 = v2.x() - v1.x();
+      float x2 = v3.x() - v1.x();
+      float y1 = v2.y() - v1.y();
+      float y2 = v3.y() - v1.y();
+      float z1 = v2.z() - v1.z();
+      float z2 = v3.z() - v1.z();
+
+      float s1 = t2.x() - t1.x();
+      float s2 = t3.x() - t1.x();
+      float tn1 = t2.y() - t1.y();
+      float tn2 = t3.y() - t1.y();
+
+      float r = 1.0f / ( s1 * tn2 - s2 * tn1 );
+      osg::Vec3 sdir( ( tn2 * x1 - tn1 * x2 ) * r, ( tn2 * y1 - tn1 * y2 ) * r, ( tn2 * z1 - tn1 * z2 ) * r );
+      osg::Vec3 tdir( ( s1 * x2 - s2 * x1 ) * r, ( s1 * y2 - s2 * y1) * r, ( s1 * z2 - s2 * z1 ) * r );
+
+      //// Gram-Schmidt orthogonalize
+      //tangent[a] = (t - n * Dot(n, t)).Normalize();
+      //  
+      //// Calculate handedness
+      //tangent[a].w = (Dot(Cross(n, t), tan2[a]) < 0.0F) ? -1.0F : 1.0F;
+
+      Usul::Math::Vec3f t ( sdir.x(), sdir.y(), sdir.z() );
+      Usul::Math::Vec3f n ( fn.normal.x(), fn.normal.y(), fn.normal.z() );
+      Usul::Math::Vec3f temp_tan = ( t - n * n.dot( t ) );
+      temp_tan.normalize();
+
+      osg::Vec3 tangent ( temp_tan[0], temp_tan[1], temp_tan[2] );
+      faceTangentsPerVertex.at( fn.vi1 ).push_back( tangent ); 
+      faceTangentsPerVertex.at( fn.vi2 ).push_back( tangent ); 
+      faceTangentsPerVertex.at( fn.vi3 ).push_back( tangent ); 
+#else
+      Usul::Math::Vec3f xst0 ( v1.x(), t1.x(), t1.y() );
+      Usul::Math::Vec3f xst1 ( v2.x(), t2.x(), t2.y() );
+      Usul::Math::Vec3f xst2 ( v3.x(), t3.x(), t3.y() );
+
+      Usul::Math::Vec3f yst0 ( v1.y(), t1.x(), t1.y() );
+      Usul::Math::Vec3f yst1 ( v2.y(), t2.x(), t2.y() );
+      Usul::Math::Vec3f yst2 ( v3.y(), t3.x(), t3.y() );
+
+      Usul::Math::Vec3f zst0 ( v1.z(), t1.x(), t1.y() );
+      Usul::Math::Vec3f zst1 ( v2.z(), t2.x(), t2.y() );
+      Usul::Math::Vec3f zst2 ( v3.z(), t3.x(), t3.y() );
+
+      Usul::Math::Vec3f xst01 ( xst0 - xst1 );
+      Usul::Math::Vec3f xst02 ( xst0 - xst2 );
+
+      Usul::Math::Vec3f yst01 ( yst0 - yst1 );
+      Usul::Math::Vec3f yst02 ( yst0 - yst2 );
+
+      Usul::Math::Vec3f zst01 ( zst0 - zst1 );
+      Usul::Math::Vec3f zst02 ( zst0 - zst2 );
+
+      Usul::Math::Vec3f ABC0 ( xst01.cross( xst02 ) );
+      Usul::Math::Vec3f ABC1 ( yst01.cross( yst02 ) );
+      Usul::Math::Vec3f ABC2 ( zst01.cross( zst02 ) );
+
+      Usul::Math::Vec3f ut ( - ( ABC0[1] / ABC0[0] ), 
+                             - ( ABC1[1] / ABC1[0] ),
+                             - ( ABC2[1] / ABC2[0] ) );
+      Usul::Math::Vec3f ub ( - ( ABC0[2] / ABC0[0] ), 
+                             - ( ABC1[2] / ABC1[0] ),
+                             - ( ABC2[2] / ABC2[0] ) );
+
+      osg::Vec3f tangent ( ut[0], ut[1], ut[2] );
+
+      faceTangentsPerVertex.at( fn.vi1 ).push_back( tangent ); 
+      faceTangentsPerVertex.at( fn.vi2 ).push_back( tangent ); 
+      faceTangentsPerVertex.at( fn.vi3 ).push_back( tangent ); 
+
+      Usul::Math::Vec3f tn ( ut.cross( ub ) );
+
+      fn.normal = osg::Vec3f( tn[0], tn[1], tn[2] );
+      
+      faceNormalsPerVertex.at( fn.vi1 ).push_back( fn.normal ); 
+      faceNormalsPerVertex.at( fn.vi2 ).push_back( fn.normal ); 
+      faceNormalsPerVertex.at( fn.vi3 ).push_back( fn.normal ); 
+
+
+#endif
+
+      /// ---------------------------------------------------------------
     }
 
-    // get the texture coordinates of a triangle in the mesh
-    if( mesh.texCoords.size() > 0 && mesh.texIndices.size() > 0 )
-    {
-      osg::Vec2 t1 = mesh.texCoords.at( mesh.texIndices.at( i + 0 ) );
-      osg::Vec2 t2 = mesh.texCoords.at( mesh.texIndices.at( i + 1 ) );
-      osg::Vec2 t3 = mesh.texCoords.at( mesh.texIndices.at( i + 2 ) );
-      texCoords->push_back( t1 );texCoords->push_back( t2 );texCoords->push_back( t3 );
-    }
-
+    
   }
 
 
@@ -3145,6 +3658,7 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
     for( unsigned int i = 0; i < faceNormalsPerVertex.size(); ++i )
     {
       unsigned int size = faceNormalsPerVertex.at( i ).size();
+#if 0
       switch( size )
       { 
         case 0:
@@ -3176,20 +3690,35 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
         default:
           {
             osg::Vec3 normal ( 0.0, 0.0, 0.0 );
+            osg::Vec3 tangent ( 0.0, 0.0, 0.0 );
             for( unsigned int j = 0; j < faceNormalsPerVertex.at( i ).size(); ++j )
             {
               normal += faceNormalsPerVertex.at( i ).at( j );
+              tangent += faceTangentsPerVertex.at( i ).at( j );
             }
-            normal /= faceNormalsPerVertex.at( i ).size();
             normal.normalize();
             perVertexNormals->push_back( normal );
 
-            osg::Vec3 t = faceNormalsPerVertex.at( i ).at( 0 ) - faceNormalsPerVertex.at( i ).at( 1 );
-            t.normalize();
-            perVertexTangents->push_back( osg::Vec4( t.x(), t.y(), t.z(), 0.0 ) );
+            tangent.normalize();
+            perVertexTangents->push_back( osg::Vec4( ( tangent.x() + 1.0 ) * 0.5, ( tangent.y() + 1.0 ) * 0.5, ( tangent.z() + 1.0 ) * 0.5, 0.0 ) );
             break;
           };
       };
+#else
+      osg::Vec3 normal ( 0.0, 0.0, 0.0 );
+      osg::Vec3 tangent ( 0.0, 0.0, 0.0 );
+      for( unsigned int j = 0; j < faceNormalsPerVertex.at( i ).size(); ++j )
+      {
+        normal += faceNormalsPerVertex.at( i ).at( j );
+        tangent += faceTangentsPerVertex.at( i ).at( j );
+      }
+      normal.normalize();
+      perVertexNormals->push_back( normal );
+
+      tangent.normalize();
+      perVertexTangents->push_back( osg::Vec4( ( tangent.x() * 0.5 ) + 0.5, ( tangent.y() * 0.5 ) + 0.5, ( tangent.z() * 0.5 ) + 0.5, 0.0 ) );
+
+#endif
     } // end for loop
     for( unsigned int i = 0; i < mesh.indices.size(); ++i ) 
     {

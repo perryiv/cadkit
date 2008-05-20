@@ -1013,7 +1013,7 @@ double Body::elevation ( double lat, double lon ) const
   Extents::Vertex v ( lon, lat );
   double elevation ( 0.0 );
 
-  for ( Tiles::const_iterator iter = _topTiles.begin(); iter != _topTiles.end(); ++iter )
+  for ( Tiles::const_iterator iter = tiles.begin(); iter != tiles.end(); ++iter )
   {
     if ( Detail::elevationFromTile ( *iter, v, elevation ) ) 
       break;

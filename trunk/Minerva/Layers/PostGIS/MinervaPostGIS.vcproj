@@ -219,6 +219,14 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\BinaryParser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BinaryParser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>
@@ -247,27 +255,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PointTimeLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PointTimeLayer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\PolygonLayer.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\PolygonLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\BinaryParser.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\BinaryParser.h"
 				>
 			</File>
 		</Filter>

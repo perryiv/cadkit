@@ -34,10 +34,9 @@
 
 #include "osg/Vec3"
 #include "osg/Vec4"
+#include "osg/Node"
 
 #include <map>
-
-namespace osg { class Node; }
 
 namespace Minerva {
 namespace Core {

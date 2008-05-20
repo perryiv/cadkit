@@ -66,8 +66,6 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
       return static_cast<Usul::Interfaces::IBuildScene*> ( this );
     case Usul::Interfaces::ILayerExtents::IID:
       return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
-    case Minerva::Interfaces::IOffset::IID:
-      return static_cast < Minerva::Interfaces::IOffset* > ( this );
     default:
       return 0x0;
   }
@@ -130,6 +128,8 @@ osg::Node* Geometry::buildScene( const Options& options, Usul::Interfaces::IUnkn
       ss->setRenderBinDetails ( osg::StateSet::TRANSPARENT_BIN, "DepthSortedBin" );
     }
   }
+  
+  this->dirty( false );
   
   return node.release();
 }
@@ -329,11 +329,6 @@ void Geometry::spatialOffset( const osg::Vec3f& value )
   if( _offset != value )
   {
     _offset = value;
-    
-    // Make sure its the right altitude mode.
-    if ( value[2] > 0.0 )
-      this->altitudeMode ( Minerva::Core::Geometry::Geometry::RELATIVE_TO_GROUND );
-    
     this->dirty( true );
   }
 }

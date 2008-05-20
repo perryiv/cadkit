@@ -29,7 +29,6 @@
 
 using namespace Minerva::Core::Geometry;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Line, Line::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -102,7 +101,7 @@ void Line::_buildLatLongPoints()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Line::Vertices& Line::lineData()
+const Line::Vertices& Line::_lineDataWgs84()
 {
   Guard guard ( this->mutex() );
   if( _latLongPoints.empty() )
@@ -116,24 +115,6 @@ const Line::Vertices& Line::lineData()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Query for the interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* Line::queryInterface( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Minerva::Interfaces::ILineData::IID:
-    return static_cast < Minerva::Interfaces::ILineData* > ( this );
-  default:
-    return BaseClass::queryInterface( iid );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the line data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,6 +123,7 @@ void Line::line( const Vertices& data )
 {
   Guard guard ( this->mutex() );
   _line = data;
+  _latLongPoints.clear();
   this->dirty( true );
 }
 
@@ -221,7 +203,7 @@ osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown
   Extents e;
   
   // Get the line data.
-  Vertices data ( this->lineData() );
+  Vertices data ( this->_lineDataWgs84() );
   
   Vertices sampledPoints;
   if ( this->tessellate() && Geometry::CLAMP_TO_GROUND == this->altitudeMode() )
@@ -302,6 +284,7 @@ void Line::tessellate ( bool b )
 {
   Guard guard ( this->mutex() );
   _tessellate = b;
+  this->dirty ( true );
 }
 
 

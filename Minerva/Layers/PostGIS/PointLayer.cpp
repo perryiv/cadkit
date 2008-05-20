@@ -14,7 +14,6 @@
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Visitor.h"
-#include "Minerva/Interfaces/IOffset.h"
 
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"

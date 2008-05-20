@@ -14,7 +14,9 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Geometry/Line.h"
 
-#include "Minerva/Interfaces/IPolygonData.h"
+#include "Usul/Math/Vector3.h"
+
+#include <vector>
 
 namespace osg { class Geometry; }
 
@@ -23,23 +25,23 @@ namespace Core {
 namespace Geometry {
 
 
-class MINERVA_EXPORT Polygon : public Line,
-                               public Minerva::Interfaces::IPolygonData
+class MINERVA_EXPORT Polygon : public Line
 {
 public:
   typedef Line                             BaseClass;
-  typedef Minerva::Interfaces::IPolygonData::Vertices Vertices;
+  typedef Usul::Math::Vec3d                Vertex;
+  typedef std::vector < Vertex >           Vertices;
+  typedef std::vector<Vertices>            Boundaries;
 
   USUL_DECLARE_QUERY_POINTERS ( Polygon );
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   Polygon ();
   
-  void                                  outerBoundary ( const Vertices& );
-  virtual const Vertices&               outerBoundary() const;
+  void                  outerBoundary ( const Vertices& );
+  const Vertices&       outerBoundary() const;
 
-  void                                  addInnerBoundary ( const Vertices& );
-  virtual const Boundaries&             innerBoundaries() const;
+  void                  addInnerBoundary ( const Vertices& );
+  const Boundaries&     innerBoundaries() const;
 
   /// Set/get the border color flag.
   void                  borderColor ( const osg::Vec4& color );

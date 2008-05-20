@@ -13,7 +13,6 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
-#include "Minerva/Interfaces/IOffset.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -32,8 +31,7 @@ namespace Geometry {
 
 class MINERVA_EXPORT Geometry : public Usul::Base::Object,
                                 public Usul::Interfaces::IBuildScene,
-                                public Usul::Interfaces::ILayerExtents,
-                                public Minerva::Interfaces::IOffset
+                                public Usul::Interfaces::ILayerExtents
 {
 public:
   typedef Usul::Base::Object                  BaseClass;
@@ -98,7 +96,6 @@ public:
   // Is it valid?
   bool                  valid() const;
 
-  /// Usul::Interfaces::IOffset
   virtual const osg::Vec3f&   spatialOffset () const;
   virtual void                spatialOffset ( const osg::Vec3f& );
   

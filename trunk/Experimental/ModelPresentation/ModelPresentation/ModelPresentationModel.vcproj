@@ -267,6 +267,10 @@
 				Name="Commands"
 				>
 				<File
+					RelativePath=".\GenericIndexToggle.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MpdDynamicModel.cpp"
 					>
 				</File>
@@ -336,6 +340,14 @@
 				</File>
 				<File
 					RelativePath=".\MpdTools.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SetIndexToggle.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SetIndexToggle.h"
 					>
 				</File>
 				<Filter

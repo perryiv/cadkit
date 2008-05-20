@@ -53,12 +53,14 @@ class MpdDefinitions
       struct MpdSet
       {
         unsigned int index;
+        bool visible;
+        std::string type;
         std::string name;
         std::string menuName;
         std::vector < MpdGroup > groups;
         std::vector< std::string > groupNames;
 
-        MpdSet() : index( 0 ), name ( "Set" ), menuName ( "Models" ), groups(), groupNames(){}
+        MpdSet() : index( 0 ), visible( true ), type( "radio" ), name ( "Set" ), menuName ( "Models" ), groups(), groupNames(){}
       };
       struct MpdModels
       {

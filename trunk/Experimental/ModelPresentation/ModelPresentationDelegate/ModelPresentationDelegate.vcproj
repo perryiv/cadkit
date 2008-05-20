@@ -223,6 +223,36 @@
 				Name="Implementation"
 				>
 				<File
+					RelativePath=".\AddModelDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AddModelDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AddModelDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AddModelDialog.ui -o .\ui_AddModelDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddModelDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddModelDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddModelDialog.ui;$(QTDIR)\bin\moc.exe;.\AddModelDialog.h"
+							Outputs=".\ui_AddModelDialog.h;.\GeneratedFiles\moc_AddModelDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_AddModelDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\AddModelDialog.ui -o .\ui_AddModelDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddModelDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AddModelDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AddModelDialog.ui;$(QTDIR)\bin\moc.exe;.\AddModelDialog.h"
+							Outputs=".\ui_AddModelDialog.h;.\GeneratedFiles\moc_AddModelDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>
@@ -238,12 +268,123 @@
 					RelativePath=".\ModelPresentationDelegateFactory.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\NewGroupDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\NewGroupDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewGroupDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewGroupDialog.ui -o .\ui_NewGroupDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewGroupDialog.h&quot; -o &quot;.\GeneratedFiles\moc_NewGroupDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewGroupDialog.ui;$(QTDIR)\bin\moc.exe;.\NewGroupDialog.h"
+							Outputs=".\ui_NewGroupDialog.h;.\GeneratedFiles\moc_NewGroupDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewGroupDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewGroupDialog.ui -o .\ui_NewGroupDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewGroupDialog.h&quot; -o &quot;.\GeneratedFiles\moc_NewGroupDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewGroupDialog.ui;$(QTDIR)\bin\moc.exe;.\NewGroupDialog.h"
+							Outputs=".\ui_NewGroupDialog.h;.\GeneratedFiles\moc_NewGroupDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\NewMpdDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\NewMpdDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewMpdDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewMpdDialog.ui -o .\ui_NewMpdDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewMpdDialog.h&quot; -o &quot;.\GeneratedFiles\moc_NewMpdDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewMpdDialog.ui;$(QTDIR)\bin\moc.exe;.\NewMpdDialog.h"
+							Outputs=".\ui_NewMpdDialog.h;.\GeneratedFiles\moc_NewMpdDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewMpdDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewMpdDialog.ui -o .\ui_NewMpdDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewMpdDialog.h&quot; -o &quot;.\GeneratedFiles\moc_NewMpdDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewMpdDialog.ui;$(QTDIR)\bin\moc.exe;.\NewMpdDialog.h"
+							Outputs=".\ui_NewMpdDialog.h;.\GeneratedFiles\moc_NewMpdDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\NewSetDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\NewSetDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewSetDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewSetDialog.ui -o .\ui_NewSetDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewSetDialog.h&quot; -o &quot;.\GeneratedFiles\moc_NewSetDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewSetDialog.ui;$(QTDIR)\bin\moc.exe;.\NewSetDialog.h"
+							Outputs=".\ui_NewSetDialog.h;.\GeneratedFiles\moc_NewSetDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewSetDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewSetDialog.ui -o .\ui_NewSetDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewSetDialog.h&quot; -o &quot;.\GeneratedFiles\moc_NewSetDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewSetDialog.ui;$(QTDIR)\bin\moc.exe;.\NewSetDialog.h"
+							Outputs=".\ui_NewSetDialog.h;.\GeneratedFiles\moc_NewSetDialog.cpp"
+						/>
+					</FileConfiguration>
+
+				</File>
 			</Filter>
 			<Filter
 				Name="DLL"
 				>
 				<File
 					RelativePath="Export.def"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="GeneratedFiles"
+				>
+				<File
+					RelativePath=".\generatedfiles\moc_AddModelDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_NewGroupDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_NewMpdDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_NewSetDialog.cpp"
 					>
 				</File>
 			</Filter>

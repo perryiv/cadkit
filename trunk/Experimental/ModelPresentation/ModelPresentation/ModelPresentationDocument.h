@@ -145,6 +145,8 @@ public:
   void              prevSequenceStep();
   void              setAnimationSpeed( unsigned int speed );
   unsigned int      getAnimationSpeed();
+  void              setToggleState ( bool b, unsigned int index );
+  bool              getToggleState( unsigned int index ) const;
 
   void              setStep ( unsigned int time );
 
@@ -238,6 +240,8 @@ protected:
   osg::Vec3d                  _getPosition( const std::string &position, Usul::Interfaces::IUnknown *caller );
 
   void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+
+  
   
 
   /// Use reference counting.

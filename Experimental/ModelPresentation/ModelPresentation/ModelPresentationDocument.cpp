@@ -16,7 +16,6 @@
 #include "MpdNextCommand.h"
 #include "MpdLocation.h"
 #include "MpdTools.h"
-#include "MpdTimelineModel.h"
 #include "MpdDynamicModel.h"
 #include "MpdNextSequence.h"
 #include "MpdPrevSequence.h"
@@ -2071,8 +2070,14 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     {
       const std::string menuName ( _timeSets.at(i).menuName );
        MenuKit::Menu::RefPtr TimelineModelsMenu ( menu.find ( menuName, true ) );
-    
+#if 0
       TimelineModelsMenu->append ( new ToggleButton ( new MpdTimelineModel ( me.get(), _timeSets.at( i ).name, i ) ) );
+#else
+      TimelineModelsMenu->append ( new ToggleButton ( genericIndexToggle( caller, Usul::Adaptors::memberFunction<bool> ( this, &ModelPresentationDocument::getTimelineState ), 
+                                                                                  Usul::Adaptors::memberFunction<void> ( this, &ModelPresentationDocument::setTimelineState ),
+                                                                                  _timeSets.at( i ).name, i ) ) );
+#endif
+
     }
     //menu.append ( TimelineModelsMenu );
     
@@ -2186,7 +2191,7 @@ bool ModelPresentationDocument::animate()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::timelineModelState( unsigned int i, bool state )
+void ModelPresentationDocument::setTimelineState( unsigned int i, bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -2202,7 +2207,7 @@ void ModelPresentationDocument::timelineModelState( unsigned int i, bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ModelPresentationDocument::timelineModelState( unsigned int i )
+bool ModelPresentationDocument::getTimelineState( unsigned int i )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );  
@@ -2999,7 +3004,7 @@ unsigned int ModelPresentationDocument::getNumberOfTimeSteps() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModelPresentationDocument::setToggleState ( bool b, unsigned int index )
+void ModelPresentationDocument::setToggleState ( unsigned int index, bool b  )
 {
   Guard guard ( this->mutex() );
   _sets.at( index ).visible = b;

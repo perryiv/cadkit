@@ -132,8 +132,8 @@ public:
   void              setGroup ( unsigned int set, unsigned int group );
   void              animate( bool state );
   bool              animate();
-  void              timelineModelState( unsigned int i, bool state );  
-  bool              timelineModelState( unsigned int i );  
+  void              setTimelineState( unsigned int i, bool state );  
+  bool              getTimelineState( unsigned int i );  
   bool              isAnimating();
   void              isAnimating( bool value );
   void              dynamicModelState( unsigned int index, bool state );
@@ -145,7 +145,7 @@ public:
   void              prevSequenceStep();
   void              setAnimationSpeed( unsigned int speed );
   unsigned int      getAnimationSpeed();
-  void              setToggleState ( bool b, unsigned int index );
+  void              setToggleState ( unsigned int index, bool b );
   bool              getToggleState( unsigned int index ) const;
 
   void              setStep ( unsigned int time );

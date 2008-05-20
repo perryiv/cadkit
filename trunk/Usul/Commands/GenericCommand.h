@@ -79,7 +79,7 @@ protected:
 
   virtual void _execute ()
   {
-    _functor ( );
+    _functor();
   }
 
   virtual bool updateEnable () const

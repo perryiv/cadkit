@@ -51,10 +51,10 @@ struct IMpdNavigator : public Usul::Interfaces::IUnknown
   virtual bool              animate() = 0;
 
   // toggle the current timeline animation on/off
-  virtual void              timelineModelState( unsigned int i, bool state ) = 0;  
+  virtual void              setTimelineState( unsigned int i, bool state ) = 0;  
 
   // get the visibility state of a given model
-  virtual bool              timelineModelState( unsigned int i ) = 0;  
+  virtual bool              getTimelineState( unsigned int i ) = 0;  
 
   // dynamic model access
   virtual void              dynamicModelState( unsigned int index, bool state ) = 0;

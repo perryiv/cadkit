@@ -155,6 +155,8 @@ public:
   /// Construction.
   GeneralShaderDocument();
 
+  virtual void                addView     ( View   *view   );
+
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 
@@ -297,6 +299,7 @@ private:
 
   float                       _tile;
   float                       _depth;
+  osg::Vec3f                  _etaRatio;
 
 
     

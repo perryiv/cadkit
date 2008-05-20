@@ -126,6 +126,7 @@ namespace Helper
         // Make a tree item.
         QTreeWidgetItem *item ( new QTreeWidgetItem ( widget ) );
         item->setText ( 0, child->getTreeNodeName().c_str() );
+        item->setToolTip ( 0, item->text ( 0 ) );
 
         // Set the checked state.
         Usul::Interfaces::IBooleanState::QueryPtr boolean ( child );

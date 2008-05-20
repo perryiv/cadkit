@@ -187,7 +187,7 @@ osg::Node* Line::_buildScene( Usul::Interfaces::IUnknown* caller )
 
 osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller )
 {
-  Guard guard ( this );
+  //Guard guard ( this );
   osg::ref_ptr< osg::Group > node ( new osg::Group );
   
   osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
@@ -252,7 +252,7 @@ osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown
   
   // Turn off lighting.
   OsgTools::State::StateSet::setLighting  ( ss.get(), false );
-  OsgTools::State::StateSet::setLineWidth ( ss.get(), _width );
+  OsgTools::State::StateSet::setLineWidth ( ss.get(), this->width() );
   
   // Set depth parameters.
   osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );

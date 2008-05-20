@@ -24,7 +24,6 @@
 #include "MpdSlowerAnimationSpeed.h"
 #include "MpdFasterAnimationSpeed.h"
 #include "GenericIndexToggle.h"
-#include "SetIndexToggle.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"

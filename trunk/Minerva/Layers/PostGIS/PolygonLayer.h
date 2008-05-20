@@ -29,14 +29,6 @@ public:
 
   PolygonLayer();
 
-  /// Accept the visitor.
-  virtual void            accept ( Minerva::Core::Visitor& visitor );
-
-  /// Build the data objects.
-  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
-
-  virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );
-
   /// Get/Set the show interior flag.
   void                    showInterior( bool b );
   bool                    showInterior() const;
@@ -59,6 +51,8 @@ protected:
   PolygonLayer( const PolygonLayer& layer );
 
   void _registerMembers();
+  
+  virtual void                _setGeometryMembers   ( Geometry* geometry, const pqxx::result::const_iterator& iter );
 
   /// Clone the this layer.
   virtual Usul::Interfaces::IUnknown*          clone() const;

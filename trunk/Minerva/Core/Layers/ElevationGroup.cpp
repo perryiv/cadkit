@@ -178,10 +178,14 @@ namespace Detail
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      float alpha ( hasAlpha ? src[1] / std::numeric_limits<float>::max() : 1.0 );
-        
-      *dst = ( *dst * ( 1.0f - alpha ) ) + ( *src * alpha );
+      const float alpha ( hasAlpha ? src[1] / std::numeric_limits<float>::max() : 1.0 );
+      const float value ( *src );
+
+      const float current ( *dst );
       
+      const float destination = ( current * ( 1.0f - alpha ) ) + ( value * alpha );
+      
+      *dst = destination;
       ++dst;
       
       src += offset;

@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_POSTGIS_LINE_GEOMETRY_H__
-#define __MINERVA_POSTGIS_LINE_GEOMETRY_H__
+#ifndef __MINERVA_CORE_GEOMETRY_LINE_H__
+#define __MINERVA_CORE_GEOMETRY_LINE_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Geometry/Geometry.h"
@@ -35,15 +35,26 @@ public:
   Line ();
 
   /// Get/Set the line data.
-  void                       line( const Vertices& );
-  const Vertices&            line() const;
+  void                  line( const Vertices& );
+  const Vertices&       line() const;
 
+  /// Set/get tessellate flag.
+  void                  tessellate ( bool );
+  bool                  tessellate() const;
+  
+  /// Get/Set the width
+  float                 width() const;
+  void                  width( float );
+  
 protected:
-  ~Line();
+  virtual ~Line();
 
-  void                             _convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints );
-  void                             _buildLatLongPoints();
+  void                  _convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints );
+  void                  _buildLatLongPoints();
 
+  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
+  osg::Node*            _buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller );
+  
   /// Usul::Interfaces::ILineData.
   virtual const Vertices&          lineData();
 
@@ -51,6 +62,8 @@ private:
 
   Vertices   _line;
   Vertices   _latLongPoints;
+  float      _width;
+  bool       _tessellate;
 };
 
 }
@@ -58,4 +71,4 @@ private:
 }
 
 
-#endif // __MINERVA_POSTGIS_LINE_GEOMETRY_H__
+#endif // __MINERVA_CORE_GEOMETRY_LINE_H__

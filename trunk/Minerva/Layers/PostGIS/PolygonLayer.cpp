@@ -11,16 +11,14 @@
 #include "Minerva/Layers/PostGIS/PolygonLayer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 
-#include "Minerva/Core/DataObjects/Polygon.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Core/Geometry/Polygon.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/Group"
-
-#include "pqxx/pqxx"
 
 #include <algorithm>
 
@@ -86,19 +84,6 @@ void PolygonLayer::_registerMembers()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Accept the visitor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PolygonLayer::accept ( Minerva::Core::Visitor& visitor )
-{
-  USUL_TRACE_SCOPE;
-  visitor.visit ( *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Clone this layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,99 +114,21 @@ PolygonLayer::~PolygonLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolygonLayer::buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
+void PolygonLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
   USUL_TRACE_SCOPE;
-  Connection::ScopedConnection scopedConnection ( *this->connection() );
+  typedef Minerva::Core::Geometry::Polygon Polygon;
 
-  Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
-
-  std::string dataTable ( this->tablename() );
-
-  // Execute the query.  This will return data to draw.
-  pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
-
-  if( progress.valid() )
-    progress->setTotalProgressBar( geometryResult.size() );
-
-  for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
+  if ( Polygon* polygon = dynamic_cast<Polygon*> ( geometry ) )
   {
-    try
-    {
-      // Id for row
-      int id ( iter["id"].as < int > () );
-      int srid ( iter["srid"].as < int > () );
+    polygon->showBorder( this->showBorder() );
+    polygon->showInterior ( this->showInterior() );
+    polygon->borderColor ( this->borderColor() );
+    polygon->width ( this->borderWidth() );
 
-      // Create the geometry.
-      pqxx::binarystring buffer ( iter["geom"] );
-      BinaryParser parser;
-      BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
-
-      for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
-      {
-        (*geom)->srid( srid );
-        Usul::Interfaces::IUnknown::QueryPtr unknown ( *geom );
-        Minerva::Interfaces::IOffset::QueryPtr offset ( unknown );
-
-        if( offset.valid() )
-          offset->spatialOffset( osg::Vec3f ( 0.0, 0.0, this->zOffset() ) );
-
-        // Create the Data Object.
-        Minerva::Core::DataObjects::Polygon::RefPtr data ( new Minerva::Core::DataObjects::Polygon );
-
-        data->width ( this->borderWidth() );
-        data->showBorder( this->showBorder() );
-        data->showInterior ( this->showInterior() );
-        data->geometry ( unknown.get() );
-        data->color( this->_color ( iter ) );
-        data->borderColor ( this->borderColor() );
-        data->objectId ( Usul::Strings::format ( id ) );
-
-        // Set tessellate to true for backwards compatabilty.  Need to make this an option.
-        data->tessellate ( true );
-
-        /// Set the label.
-        this->_setDataObjectMembers( data.get(), caller );
-
-        // Pre build the scene.
-        data->preBuildScene( caller );
-
-        this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
-      }
-    }
-    catch ( const std::exception& e )
-    {
-      std::cout << "Error 3149586695: " << e.what() << std::endl;
-    }
-    catch ( ... )
-    {
-      std::cout << "Error 3420474749: Exception caught while adding data to layer." << std::endl;
-    }
-
-    // Update the progess.
-    if( progress.valid() )
-    {
-      unsigned int num ( iter - geometryResult.begin() );
-      progress->updateProgressBar( num );
-    }
+    // Set tessellate to true for backwards compatabilty.  Need to make this an option.
+    polygon->tessellate ( true );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify the data objects.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PolygonLayer::modify( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  
-  // For now get what we have, clear and then rebuild.
-  // Need a way to tell if the query has changed.  Then I think this can be handled better.
-  this->clear ();
-  this->buildDataObjects ( caller, 0x0 );
 }
 
 

@@ -10,9 +10,9 @@
 
 #include "KmlWriter.h"
 
-#include "Minerva/Core/DataObjects/Point.h"
-#include "Minerva/Core/DataObjects/Line.h"
-#include "Minerva/Core/DataObjects/Polygon.h"
+//#include "Minerva/Core/DataObjects/Point.h"
+//#include "Minerva/Core/DataObjects/Line.h"
+//#include "Minerva/Core/DataObjects/Polygon.h"
 
 #include "Usul/Functions/GUID.h"
 
@@ -104,7 +104,7 @@ KmlWriter::Visitor::~Visitor ()
 //  Write out a line.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
+#if 0 
 void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Line &line )
 {
 }
@@ -150,7 +150,7 @@ void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Point &point )
 void KmlWriter::Visitor::visit ( Minerva::Core::DataObjects::Polygon &polygon )
 {
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //

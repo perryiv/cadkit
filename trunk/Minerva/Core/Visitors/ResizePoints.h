@@ -26,7 +26,7 @@ public:
         
   ResizePoints ( double factor );
         
-  virtual void visit ( Minerva::Core::DataObjects::Point &object );
+  virtual void visit ( Minerva::Core::DataObjects::DataObject &object );
 
 protected:
   /// Use reference counting.

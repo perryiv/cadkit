@@ -14,7 +14,6 @@
 
 #include "Minerva/DataSources/PG/Info.h"
 #include "Minerva/Layers/PostGIS/PointLayer.h"
-#include "Minerva/Layers/PostGIS/PointTimeLayer.h"
 #include "Minerva/Layers/PostGIS/LineLayer.h"
 #include "Minerva/Layers/PostGIS/PolygonLayer.h"
 
@@ -131,10 +130,7 @@ void DatabasePage::_selectionChanged ()
 
   std::string table ( _listView->selectedItems().front()->text().toStdString () );
 
-  // Check time classes first...
-  if( info->isPointTimeTable ( table ) )
-    layer = new Minerva::Layers::PostGIS::PointTimeLayer;
-  else if ( info->isPointTable ( table ) )
+  if ( info->isPointTable ( table ) )
     layer = new Minerva::Layers::PostGIS::PointLayer;
   else if ( info->isLineTable ( table ) )
     layer = new Minerva::Layers::PostGIS::LineLayer;

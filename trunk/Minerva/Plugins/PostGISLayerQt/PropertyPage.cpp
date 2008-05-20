@@ -337,24 +337,19 @@ void PropertyPage::_initTimeTab()
 {
   if ( _layer.valid () )
   {
-    if ( !_layer->isTemporal() )
-      _tabWidget->removeTab ( _tabWidget->indexOf ( _timeTab ) );
-    else
+    // Get the conection.
+    Connection::RefPtr connection ( _layer->connection() );
+    if ( connection.valid() )
     {
-      // Get the conection.
-      Connection::RefPtr connection ( _layer->connection() );
-      if ( connection.valid() )
-      {
-        Connection::ScopedConnection sc ( *connection );
-        Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( connection ) );
+      Connection::ScopedConnection sc ( *connection );
+      Minerva::DataSources::PG::Info::RefPtr info ( new Minerva::DataSources::PG::Info ( connection ) );
 
-        // Get all date columns.
-        Strings columns ( info->getColumnNames ( _layer->tablename(), "date" ) );
+      // Get all date columns.
+      Strings columns ( info->getColumnNames ( _layer->tablename(), "date" ) );
 
-        // Add the items to the combo box.
-        QtTools::ComboBox::populate ( *_firstDateColumn, columns );
-        QtTools::ComboBox::populate ( *_lastDateColumn, columns );
-      }
+      // Add the items to the combo box.
+      QtTools::ComboBox::populate ( *_firstDateColumn, columns );
+      QtTools::ComboBox::populate ( *_lastDateColumn, columns );
     }
   }
 }

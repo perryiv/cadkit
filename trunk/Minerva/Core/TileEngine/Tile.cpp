@@ -692,9 +692,12 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   if ( vector.valid() )
   {
     Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
+    
+    Extents extents0 ( t0->extents() );
+    ImagePtr elevation0 ( t0->elevation() );
 
     // Since elevation data isn't currently used, just ask once.
-    vector->elevationChangedNotify ( t0->extents(), t0->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( extents0, elevation0, unknown.get() );
     //vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
     //vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
     //vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );

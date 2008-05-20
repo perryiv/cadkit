@@ -24,10 +24,6 @@ namespace Minerva
     namespace DataObjects 
     { 
       class DataObject;
-      class Line;
-      class Point;
-      class Polygon;
-      class Model;
     }
 
     namespace Layers
@@ -55,10 +51,6 @@ namespace Minerva
       MINERVA_DEFINE_VISITOR_CLASS ( Visitor );
 
       virtual void visit ( Minerva::Core::DataObjects::DataObject &dataObject );
-      virtual void visit ( Minerva::Core::DataObjects::Line &line );
-      virtual void visit ( Minerva::Core::DataObjects::Point &point );
-      virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon );
-      virtual void visit ( Minerva::Core::DataObjects::Model &model );
 
       virtual void visit ( Minerva::Core::Layers::Vector& vector );
       

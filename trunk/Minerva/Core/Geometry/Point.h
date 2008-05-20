@@ -16,6 +16,8 @@
 
 #include "Minerva/Interfaces/IPointData.h"
 
+#include "OsgTools/ShapeFactory.h"
+
 namespace Minerva {
 namespace Core {
 namespace Geometry {
@@ -30,20 +32,76 @@ public:
   USUL_DECLARE_QUERY_POINTERS ( Point );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
+  enum PrimitiveTypes
+  {
+    POINT = 1,
+    SPHERE,
+    CONE,
+    DISK,
+    CUBE,
+    INVERTED_CONE,
+    CYLINDER
+  };
+  
   Point ();
+  
+  /// Get the shape factory.
+  static OsgTools::ShapeFactory* shapeFactory();
 
+  /// Get/Set the size.
+  float                   size () const;
+  void                    size ( float );
+  
+  /// Get/Set the secondary size.
+  float                   secondarySize () const;
+  void                    secondarySize ( float );
+  
+  ///Get/Set the primitiveId.
+  unsigned int            primitiveId () const;
+  void                    primitiveId ( unsigned int );
+  
+  /// Get/Set quality
+  void                    quality( float value );
+  float                   quality() const;
+  
+  /// Get/Set use auto transform flag.
+  void                    autotransform ( bool b );
+  bool                    autotransform () const;
+  
   /// Get/Set the point.
   void                              point( const Usul::Math::Vec3d & );
   const Usul::Math::Vec3d           point() const;
 
-protected:
-  virtual ~Point();
-
   /// Usul::Interfaces::IPointData
   virtual Usul::Math::Vec3d         pointData() const;
+  
+protected:
+  
+  /// Use reference counting.
+  virtual ~Point();
 
+  /// Build the scene branch.
+  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
+  
+  osg::Node*            _buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown* caller );
+  
+  osg::Node*            _buildPoint( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildSphere( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildCone( const osg::Vec3d& earthLocation, bool invert );
+  osg::Node*            _buildDisk( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildCube( const osg::Vec3d& earthLocation );
+  osg::Node*            _buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown * caller );
+  
 private:
   Usul::Math::Vec3d _point;
+  float        _size;
+  float        _secondarySize;
+  unsigned int _primitiveId;
+  float        _quality;
+  bool         _autotransform;
+  
+  /// Shape Factory to share across all points.
+  static OsgTools::ShapeFactory::Ptr _sf;
 };
 
 }

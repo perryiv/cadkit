@@ -257,38 +257,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\DataObjects\Line.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\Line.h"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\Model.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\Model.h"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\Point.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\Point.h"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\Polygon.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\DataObjects\Polygon.h"
-						>
-					</File>
-					<File
 						RelativePath=".\DataObjects\UserData.h"
 						>
 					</File>
@@ -610,6 +578,14 @@
 					</File>
 					<File
 						RelativePath=".\Geometry\Line.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Geometry\Model.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Geometry\Model.h"
 						>
 					</File>
 					<File

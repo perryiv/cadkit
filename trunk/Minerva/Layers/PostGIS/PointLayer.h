@@ -31,15 +31,6 @@ public:
 
   PointLayer();
 
-  /// Accept the visitor.
-  virtual void            accept ( Minerva::Core::Visitor& visitor );
-
-  /// Build the data objects.
-  virtual void            buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
-
-  /// Modifty the data objects.
-  virtual void            modify( Usul::Interfaces::IUnknown *caller = 0x0 );
-
   /// Get/Set primitive id.
   void                    primitiveID( Usul::Types::Uint32 );
   Usul::Types::Uint32     primitiveID() const;
@@ -78,6 +69,7 @@ protected:
 
   void _registerMembers();
 
+  virtual void            _setGeometryMembers ( Geometry* geometry, const pqxx::result::const_iterator& iter );
   void _stack ();
 
   /// Clone the this layer.

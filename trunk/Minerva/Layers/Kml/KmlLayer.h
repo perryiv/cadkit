@@ -15,6 +15,7 @@
 #include "Minerva/Layers/Kml/Style.h"
 
 #include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/Geometry/Geometry.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IRead.h"
@@ -40,6 +41,7 @@ public:
   /// Typedefs.
   typedef Minerva::Core::Layers::Vector              BaseClass;
   typedef Minerva::Core::DataObjects::DataObject     DataObject;
+  typedef Minerva::Core::Geometry::Geometry          Geometry;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;
   typedef std::map<std::string,Style::RefPtr>        Styles;
@@ -88,16 +90,15 @@ protected:
   void                        _parseStyle        ( const XmlTree::Node& node );
   void                        _parseFolder       ( const XmlTree::Node& node );
   void                        _parsePlacemark    ( const XmlTree::Node& node );
-  DataObject*                 _parseModel        ( const XmlTree::Node& node, Style *style );
-  DataObject*                 _parsePoint        ( const XmlTree::Node& node, Style *style );
-  DataObject*                 _parsePolygon      ( const XmlTree::Node& node, Style *style );
-  DataObject*                 _parseLineString   ( const XmlTree::Node& node, Style *style );
-  DataObject*                 _parseLineRing     ( const XmlTree::Node& node, Style *style );
-  void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, Feature& feature );
-  DataObject::AltitudeMode    _parseAltitudeMode ( const XmlTree::Node& node );
+  Geometry*                   _parseModel        ( const XmlTree::Node& node, Style *style );
+  Geometry*                   _parsePoint        ( const XmlTree::Node& node, Style *style );
+  Geometry*                   _parsePolygon      ( const XmlTree::Node& node, Style *style );
+  Geometry*                   _parseLineString   ( const XmlTree::Node& node, Style *style );
+  Geometry*                   _parseLineRing     ( const XmlTree::Node& node, Style *style );
+  void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object );
+  Geometry::AltitudeMode      _parseAltitudeMode ( const XmlTree::Node& node );
   void                        _parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices );
 
-  void                        _setDataObjects ( DataObject&, Feature& feature );
 	Style*                      _style ( const std::string& name );
 
   osg::Vec3                   _buildVec3         ( const XmlTree::Node& node );

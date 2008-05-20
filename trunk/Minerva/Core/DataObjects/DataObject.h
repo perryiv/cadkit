@@ -20,6 +20,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Animate/Date.h"
+#include "Minerva/Core/Geometry/Geometry.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
 #include "Usul/Base/Object.h"
@@ -31,7 +32,8 @@
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
 
-#include "OsgTools/ShapeFactory.h"
+#include "osg/Vec3"
+#include "osg/Vec4"
 
 #include <map>
 
@@ -56,6 +58,8 @@ public:
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Minerva::Core::Animate::Date        Date;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
+  typedef Minerva::Core::Geometry::Geometry   Geometry;
+  typedef std::vector<Geometry::RefPtr>       Geometries;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
@@ -65,24 +69,12 @@ public:
 
   /// Constructor.
   DataObject();
-  
-  // Altitude Mode.
-  enum AltitudeMode
-  {
-    CLAMP_TO_GROUND,
-    RELATIVE_TO_GROUND,
-    ABSOLUTE_MODE
-  };
-
-  /// Get the shape factory.
-  static OsgTools::ShapeFactory* shapeFactory();
 
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
   
-  /// Get/Set the altitude mode.
-  void                  altitudeMode ( AltitudeMode mode );
-  AltitudeMode          altitudeMode () const;
+  /// Add a geometry.
+  void                  addGeometry ( Geometry* geometry );
 
   /// DataObject has been clicked.
   virtual void          clicked() const;
@@ -90,10 +82,6 @@ public:
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
   void                  preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
-
-  /// Get/Set the color.
-  const osg::Vec4&      color () const;
-  void                  color ( const osg::Vec4& );
 
   /// Get/Set the data source.
   void                  dataSource( Unknown* );
@@ -111,18 +99,12 @@ public:
   void                  extents ( const Extents& e );
   Extents               extents() const;
 
-  /// Get/Set extrude flag.
-  void                  extrude ( bool b );
-  bool                  extrude() const;
-
   /// Get/Set the first date.
   const Date&           firstDate() const;
   void                  firstDate ( const Date& );
 
-  /// Get/Set the geometry.
-  void                  geometry( Unknown *geometry );
-  Unknown*              geometry();
-  const Unknown*        geometry() const;
+  /// Get the geometries.
+  Geometries            geometries() const;
 
   /// Get/Set the label
   void                  label ( const std::string& label );
@@ -156,20 +138,13 @@ public:
   void                  objectId ( const std::string& );
   const std::string&    objectId() const;
 
-  /// Is the data object transparent?
-  bool                  transparent() const;
-
-  /// Get/Set the render bin
-  unsigned int          renderBin() const;
-  void                  renderBin ( unsigned int );
-
   /// Get/Set the flag to show the label.
   void                  showLabel ( bool value );
-  bool                  showLabel () const;
+  bool                  showLabel() const;
 
   /// Get/Set the visibilty flag.
   void                  visibility ( bool b );
-  bool                  visibility ( ) const;
+  bool                  visibility() const;
   
 protected:
 
@@ -177,23 +152,6 @@ protected:
   virtual ~DataObject ();
 
   osg::Node*            _buildLabel( const osg::Vec3& position );
-
-  virtual osg::Node*    _preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
-  
-  template<class Vertex>
-  double                _elevation ( const Vertex& point, Usul::Interfaces::IElevationDatabase* elevation )
-  {
-    switch ( this->altitudeMode() )
-    {
-      case CLAMP_TO_GROUND:
-        return ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 );
-      case RELATIVE_TO_GROUND:
-        return ( point[2] + ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 ) );
-      case ABSOLUTE_MODE:
-        return point[2];
-    }
-    return 0.0;
-  }
 
   // Get the number of children (ITreeNode).
   virtual unsigned int        getNumChildNodes() const;
@@ -212,8 +170,6 @@ protected:
 private:
 
   bool         _dirty;
-  unsigned int _renderBin;
-  osg::Vec4    _color;
   std::string  _objectId;
   std::string  _label;
   osg::Vec3    _labelPosition;
@@ -226,12 +182,8 @@ private:
   osg::ref_ptr < osg::Node > _preBuiltScene;
   Minerva::Core::Animate::Date _firstDate;
   Minerva::Core::Animate::Date _lastDate;
-  AltitudeMode _altitudeMode;
-  bool _extrude;
   Extents _extents;
-
-  /// Shape Factory to share across all Data Objects.
-  static OsgTools::ShapeFactory::Ptr _sf;
+  Geometries _geometries;
 };
 
 }

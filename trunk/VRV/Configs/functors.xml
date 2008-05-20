@@ -100,6 +100,8 @@
       <Mapping button_id="DirectionalPad" command="menu_navigation" />
       <Mapping button_id="0x00000002" command="|Navigate|Favorites|Natural Fly" />
       <Mapping button_id="0x00000001" command="|Navigate|Favorites|6 Degrees Wingman" />
+      <Mapping button_id="0x00000020" command="|Navigate|Translate Speed x 2" />
+      <Mapping button_id="0x00000010" command="|Navigate|Translate Speed / 2" />
     </Mappings>
   </interaction>
 </functors>

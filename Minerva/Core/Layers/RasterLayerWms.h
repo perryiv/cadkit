@@ -20,8 +20,6 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
 
-#include "Usul/Interfaces/IReadImageFile.h"
-
 #include <map>
 #include <string>
 
@@ -37,22 +35,14 @@ public:
 
   typedef RasterLayer BaseClass;
   typedef std::map < std::string, std::string > Options;
-  typedef Usul::Interfaces::IReadImageFile IReadImageFile;
+  typedef BaseClass::IReadImageFile IReadImageFile;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayerWms );
 
   RasterLayerWms ( const Extents &maxExtents = Extents ( -180, -90, 180, 90 ), const std::string &url = std::string(), const Options &options = Options() );
-  
-  /// Get/Set the cache directory.
-  void                  cacheDirectory ( const std::string& dir, bool makeDefault = false );
-  std::string           cacheDirectory() const;
 
   /// Clone.
   virtual IUnknown*     clone() const;
-
-  /// Get/Set the default cache directory.
-  static void           defaultCacheDirectory ( const std::string& );
-  static std::string    defaultCacheDirectory();
   
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node& node );
@@ -79,30 +69,24 @@ private:
   // Do not use.
   RasterLayerWms& operator = ( const RasterLayerWms& );
 
-  std::string           _baseDirectory ( const std::string &cacheDir, unsigned int width, unsigned int height, unsigned int level ) const;
-  std::string           _baseFileName ( Extents extents ) const;
-
-  std::string           _cacheDirectory() const;
+  virtual std::string   _cacheDirectory() const;
+  virtual std::string   _cacheFileExtension() const;
 
   void                  _destroy();
   
   void                  _findImageReader();
 
   std::string           _getAllOptions() const;
-  
-  ImagePtr              _readImageFile ( const std::string& filename ) const;
-  
+
   void                  _registerMembers();
 
   void                  _downloadFailed ( const std::string &file, const std::string &url );
 
   std::string _url;
   Options _options;
-  std::string _dir;
   bool _useNetwork;
   bool _writeFailedFlags;
   bool _readFailedFlags;
-  IReadImageFile::RefPtr _reader;
 
   SERIALIZE_XML_CLASS_NAME ( RasterLayerWms );
   SERIALIZE_XML_SERIALIZE_FUNCTION

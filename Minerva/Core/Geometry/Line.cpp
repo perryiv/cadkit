@@ -187,9 +187,9 @@ osg::Node* Line::_buildScene( Usul::Interfaces::IUnknown* caller )
 
 osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller )
 {
-  //Guard guard ( this );
-  osg::ref_ptr< osg::Group > node ( new osg::Group );
-  
+  //Guard guard ( this ); Was causing desdlock!
+
+  osg::ref_ptr < osg::Group > node ( new osg::Group );
   osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
     
   // Query for needed interfaces.

@@ -54,14 +54,20 @@ public:
   std::string           filename() const;
 
 protected:
+
   virtual ~RasterLayerOssim();
 
   RasterLayerOssim ( const RasterLayerOssim& );
-  
+
+  void                  _buildImagePyramids ( const std::string &file ) const;
+
+  virtual std::string   _cacheDirectory() const;
+  virtual std::string   _cacheFileExtension() const;
   virtual void          _convert ( const ossimImageData& data, osg::Image& image );
-  void                  _updateExtents();
 
   void                  _open ( const std::string& );
+
+  void                  _updateExtents();
 
 private:
   // Do not use.

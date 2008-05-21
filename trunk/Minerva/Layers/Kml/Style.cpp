@@ -21,6 +21,7 @@ using namespace Minerva::Layers::Kml;
 ///////////////////////////////////////////////////////////////////////////////
 
 Style::Style() : BaseClass(),
+  _iconstyle ( 0x0 ),
   _linestyle ( 0x0 ),
 	_polystyle ( 0x0 )
 {
@@ -34,6 +35,7 @@ Style::Style() : BaseClass(),
 ///////////////////////////////////////////////////////////////////////////////
 
 Style::Style ( const XmlTree::Node& node ) : BaseClass ( node ),
+  _iconstyle ( 0x0 ),
   _linestyle ( 0x0 ),
 	_polystyle ( 0x0 )
 {
@@ -52,6 +54,10 @@ Style::Style ( const XmlTree::Node& node ) : BaseClass ( node ),
     else if ( "LineStyle" == name )
     {
       _linestyle = new LineStyle ( *node );
+    }
+    else if ( "IconStyle" == name )
+    {
+      _iconstyle = new IconStyle ( *node );
     }
   }
 }
@@ -113,4 +119,28 @@ void Style::linestyle ( LineStyle * linestyle )
 LineStyle* Style::linestyle() const
 {
 	return _linestyle.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the iconstyle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Style::iconstyle ( IconStyle * style )
+{
+  _iconstyle = style;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the iconstyle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+IconStyle* Style::iconstyle() const
+{
+  return _iconstyle.get();
 }

@@ -8,8 +8,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/IconStyle.h"
+#include "Minerva/Layers/Kml/Link.h"
 
 #include "XmlTree/Node.h"
+
+#include "Usul/Convert/Convert.h"
 
 using namespace Minerva::Layers::Kml;
 
@@ -20,7 +23,10 @@ using namespace Minerva::Layers::Kml;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IconStyle::IconStyle() : BaseClass()
+IconStyle::IconStyle() : BaseClass(),
+  _scale ( 1.0 ),
+  _heading ( 0.0 ),
+  _href()
 {
 }
 
@@ -31,7 +37,10 @@ IconStyle::IconStyle() : BaseClass()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-IconStyle::IconStyle( const XmlTree::Node &node ) : BaseClass( node )
+IconStyle::IconStyle( const XmlTree::Node &node ) : BaseClass( node ),
+  _scale ( 1.0 ),
+  _heading ( 0.0 ),
+  _href()
 {
  	typedef XmlTree::Node::Children Children;
   
@@ -40,6 +49,20 @@ IconStyle::IconStyle( const XmlTree::Node &node ) : BaseClass( node )
   {
     XmlTree::Node::RefPtr node ( *iter );
     std::string name ( node->name() );
+
+    if ( "scale" == name )
+    {
+      _scale = Usul::Convert::Type<std::string, float>::convert ( node->value() );
+    }
+    else if ( "heading" == name )
+    {
+      _heading = Usul::Convert::Type<std::string, float>::convert ( node->value() );
+    }
+    else if ( "Link" == name )
+    {
+      Link::RefPtr link ( new Link ( *node ) );
+      _href = link->href();
+    }
   }
 }
 
@@ -52,4 +75,76 @@ IconStyle::IconStyle( const XmlTree::Node &node ) : BaseClass( node )
 
 IconStyle::~IconStyle()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void IconStyle::scale ( double scale )
+{
+  _scale = scale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double IconStyle::scale() const
+{
+  return _scale;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the heading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void IconStyle::heading ( double heading )
+{
+  _heading = heading;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the heading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double IconStyle::heading() const
+{
+  return _heading;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the href.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void IconStyle::href ( const std::string& href )
+{
+  _href = href;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the href.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string IconStyle::href() const
+{
+  return _href;
 }

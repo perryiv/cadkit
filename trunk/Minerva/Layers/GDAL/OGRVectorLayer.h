@@ -20,6 +20,8 @@ class OGRLayer;
 class OGRCoordinateTransformation;
 class OGRGeometry;
 class OGRPoint;
+class OGRLineString;
+class OGRPolygon;
 
 namespace Minerva {
 namespace Layers {
@@ -49,8 +51,10 @@ protected:
 
   void                        _addLayer ( OGRLayer* layer );
 
-  Geometry*                   _createGeoemtry ( OGRGeometry* geometry, OGRCoordinateTransformation *transform );
-  Geometry*                   _createPoint ( OGRPoint* geometry, OGRCoordinateTransformation *transform );
+  Geometry*                   _createGeoemtry ( OGRGeometry* geometry, OGRCoordinateTransformation *transform ) const;
+  Geometry*                   _createPoint    ( OGRPoint* geometry, OGRCoordinateTransformation *transform ) const;
+  Geometry*                   _createLine     ( OGRLineString* geometry, OGRCoordinateTransformation *transform ) const;
+  Geometry*                   _createPolygon  ( OGRPolygon* geometry, OGRCoordinateTransformation *transform ) const;
 
 private:
   std::string _filename;

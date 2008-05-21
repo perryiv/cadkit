@@ -296,6 +296,13 @@ Usul::Interfaces::IUnknown* RasterPolygonLayer::clone() const
 
 RasterPolygonLayer::ImagePtr RasterPolygonLayer::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
 {
+  // Let the base class go first.
+  {
+    ImagePtr answer ( BaseClass::texture ( extents, width, height, level, job, caller ) );
+    if ( true == answer.valid() )
+      return answer;
+  }
+
   // Make sure we are initialized.
   this->_init();
 

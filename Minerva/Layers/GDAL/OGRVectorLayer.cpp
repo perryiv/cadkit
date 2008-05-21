@@ -12,6 +12,8 @@
 
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Geometry/Line.h"
+#include "Minerva/Core/Geometry/Polygon.h"
 #include "Minerva/Core/Factory/Readers.h"
 
 #include "Usul/Adaptors/Bind.h"
@@ -179,7 +181,7 @@ void OGRVectorLayer::_addLayer ( OGRLayer* layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OGRVectorLayer::Geometry* OGRVectorLayer::_createGeoemtry ( OGRGeometry* geometry, OGRCoordinateTransformation *transform )
+OGRVectorLayer::Geometry* OGRVectorLayer::_createGeoemtry ( OGRGeometry* geometry, OGRCoordinateTransformation *transform ) const
 {
   if ( 0x0 == geometry )
     return 0x0;
@@ -188,10 +190,38 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createGeoemtry ( OGRGeometry* geometr
   {
   case wkbPoint:
     return this->_createPoint ( static_cast<OGRPoint*> ( geometry ), transform );
-    break;
+  case wkbLineString:
+  case wkbLinearRing:
+    return this->_createLine ( static_cast<OGRLineString*> ( geometry ), transform );
+  case wkbPolygon:
+    return this->_createPolygon ( static_cast<OGRPolygon*> ( geometry ), transform );
   }
 
   return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert and transform a point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline Usul::Math::Vec3d convertAndTransform ( const OGRPoint& point, OGRCoordinateTransformation* transform )
+  {
+    // Declare the point.
+    Usul::Math::Vec3d p ( point.getX(), point.getY(), point.getZ() );
+
+    // Transform the point.
+    if ( 0x0 != transform )
+    {
+      transform->Transform ( 1, &p[0], &p[1] );
+    }
+
+    return p;
+  }
 }
 
 
@@ -201,24 +231,69 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createGeoemtry ( OGRGeometry* geometr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OGRVectorLayer::Geometry* OGRVectorLayer::_createPoint ( OGRPoint* geometry, OGRCoordinateTransformation *transform )
+OGRVectorLayer::Geometry* OGRVectorLayer::_createPoint ( OGRPoint* geometry, OGRCoordinateTransformation *transform ) const
 {
   Minerva::Core::Geometry::Point::RefPtr point ( new Minerva::Core::Geometry::Point );
   
   if ( 0x0 != geometry )
   {
-    // Declare the point.
-    Usul::Math::Vec3d p ( geometry->getX(), geometry->getY(), geometry->getZ() );
-
-    // Transform the point.
-    if ( 0x0 != transform )
-    {
-      transform->Transform ( 1, &p[0], &p[1] );
-    }
-
     // Set the point.
-    point->point ( p );
+    point->point ( Helper::convertAndTransform ( *geometry, transform ) );
+
+    // Set reasonable defaults.
+    point->size ( 5 );
+    point->color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
   }
 
   return point.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a line.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry, OGRCoordinateTransformation *transform ) const
+{
+  typedef Minerva::Core::Geometry::Line Line;
+  typedef Line::Vertices Vertices;
+
+  Line::RefPtr line ( new Line );
+
+  if ( 0x0 != geometry )
+  {
+    Vertices vertices;
+
+    OGRPoint point;
+
+    const int numPoints ( geometry->getNumPoints() );
+    for ( int i = 0; i < numPoints; ++i )
+    {
+      geometry->getPoint ( i, &point );
+      vertices.push_back ( Helper::convertAndTransform ( point, transform ) );
+    }
+
+    line->line ( vertices );
+  }
+
+  line->width ( 2.0f );
+  line->color ( osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 ) );
+
+  return line.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a polygon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OGRVectorLayer::Geometry* OGRVectorLayer::_createPolygon ( OGRPolygon* geometry, OGRCoordinateTransformation *transform ) const
+{
+  Minerva::Core::Geometry::Polygon::RefPtr polygon ( new Minerva::Core::Geometry::Polygon );
+
+  return polygon.release();
 }

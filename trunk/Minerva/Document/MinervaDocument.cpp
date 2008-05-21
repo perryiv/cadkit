@@ -1706,8 +1706,11 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
 void MinervaDocument::_makePlanet()
 {
   // Only make it once.
-  if ( false == _bodies.empty() )
-    return;
+  {
+    Guard guard ( this );
+    if ( false == _bodies.empty() )
+      return;
+  }
   
   // Local typedefs to shorten the lines.
   typedef Body::Extents Extents;
@@ -1730,8 +1733,12 @@ void MinervaDocument::_makePlanet()
   // Add tiles to the body.
   body->addTile ( Extents ( -180, -90,    0,   90 ) );
   body->addTile ( Extents (    0, -90,  180,   90 ) );
-  
-  _bodies.push_back ( body.get() );
+
+  {
+    Guard guard ( this );
+    _bodies.push_back ( body.get() );
+  }
+
   this->activeBody ( body.get() );
 }
 

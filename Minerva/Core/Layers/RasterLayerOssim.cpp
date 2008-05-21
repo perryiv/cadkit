@@ -559,7 +559,7 @@ std::string RasterLayerOssim::_cacheFileExtension() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the image pyramids.
+//  Build the image pyramids if they do not exist.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -575,7 +575,7 @@ void RasterLayerOssim::_buildImagePyramids ( const std::string &file ) const
   if ( false == Usul::Predicates::FileExists::test ( file ) )
     return;
 
-  // Only do it once.
+  // Only build pyramids once.
   const std::string base ( Usul::Strings::format ( Usul::File::directory ( file, true ), Usul::File::base ( file ) ) );
   const std::string ovr ( base + ".ovr" );
   const std::string omd ( base + ".omd" );

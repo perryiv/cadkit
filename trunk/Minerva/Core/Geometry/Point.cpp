@@ -408,7 +408,7 @@ osg::Node* Point::_buildPoint( const osg::Vec3d& earthLocation )
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
   
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-  vertices->push_back ( earthLocation );
+  vertices->push_back ( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
   
   geometry->setVertexArray( vertices.get() );
   
@@ -435,8 +435,12 @@ osg::Node* Point::_buildPoint( const osg::Vec3d& earthLocation )
   geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
   
   geode->addDrawable ( geometry.get() );
+
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrix::translate ( earthLocation ) );
+  mt->addChild ( geode.get() );
   
-  return geode.release();
+  return mt.release();
 }
 
 

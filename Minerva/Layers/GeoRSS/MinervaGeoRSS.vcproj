@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: Minerva GDAL"
-	ProjectGUID="{1776A800-7D61-4F0E-B7CD-7991042820AB}"
-	RootNamespace="lib: Minerva GDAL"
+	Name="lib: Minerva GeoRSS"
+	ProjectGUID="{BD69E6D2-6380-43F8-ACC8-0E406035DE24}"
+	RootNamespace="lib: Minerva GeoRSS"
 	>
 	<Platforms>
 		<Platform
@@ -40,14 +40,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/MinervaGDAL.tlb"
+				TypeLibraryName=".\Debug/MinervaGeoRSS.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_GDAL;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(CURL_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_GEO_RSS;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -80,14 +80,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib osgDBd.lib gdald.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDALd.dll"
+				AdditionalDependencies="osgd.lib osgTextd.lib curld.lib osgDBd.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/MinervaGeoRSSd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;$(CURL_LIB_DIR)"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/MinervaGDALd.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGDALd.lib"
+				ProgramDatabaseFile=".\Debug/MinervaGeoRSSd.pdb"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGeoRSSd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/MinervaGDAL.tlb"
+				TypeLibraryName=".\Release/MinervaGeoRSS.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_GDAL;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(CURL_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_GEO_RSS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -178,13 +178,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib osgDB.lib gdal.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDAL.dll"
+				AdditionalDependencies="osg.lib osgText.lib curl.lib osgDB.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/MinervaGeoRSS.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
-				ProgramDatabaseFile=".\Release/MinervaGDAL.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGDAL.lib"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;$(CURL_LIB_DIR)"
+				ProgramDatabaseFile=".\Release/MinervaGeoRSS.pdb"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGeoRSS.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -219,47 +219,11 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\Common.h"
+				RelativePath=".\GeoRSSLayer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Convert.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Export.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GDALLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GDALLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Init.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MakeImage.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OGRVectorLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OGRVectorLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RasterPolygonLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RasterPolygonLayer.h"
+				RelativePath=".\GeoRSSLayer.h"
 				>
 			</File>
 		</Filter>

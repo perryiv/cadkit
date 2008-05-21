@@ -168,6 +168,9 @@ void RasterPolygonLayer::_init()
   OGRSpatialReference src ( _projectionText.c_str() ), dst ( _latLonProjectionText.c_str() );
   OGRCoordinateTransformation *transform ( OGRCreateCoordinateTransformation( &src, &dst ) );
   
+  // Make sure the transformation is destroyed.
+  Usul::Scope::Caller::RefPtr destroyTransform ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( transform, ::OCTDestroyCoordinateTransformation ) ) );
+
   // Set the extents.
   if ( 0x0 != transform )
   {

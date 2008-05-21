@@ -146,7 +146,7 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
 
 void LayersTree::_connectTreeViewSlots ()
 {
-  connect ( _tree, SIGNAL ( onItemChanged ( QTreeWidgetItem*, int ) ), this, SLOT ( _onItemChanged( QTreeWidgetItem*, int ) ) );
+  connect ( _tree->treeWidget(), SIGNAL ( onItemChanged ( QTreeWidgetItem*, int ) ), this, SLOT ( _onItemChanged( QTreeWidgetItem*, int ) ) );
   connect ( _tree->treeWidget(), SIGNAL ( itemSelectionChanged() ), this, SLOT ( _onItemSelectionChanged() ) );
   
   // Notify us when a context menu is requested.

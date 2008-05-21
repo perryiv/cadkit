@@ -54,10 +54,10 @@ protected:
   virtual ~RasterPolygonLayer();
   
   RasterPolygonLayer ( const RasterPolygonLayer& );
-  
-  void _init();
-  void _initGeometries();
-  
+
+  void                  _init();
+  void                  _initGeometries();
+
   /// Rasterize.
   ImagePtr              _rasterize ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level );
   
@@ -70,6 +70,7 @@ protected:
   void                  _writeImageFile ( ImagePtr image, const std::string& filename ) const;
   
 private:
+
   RasterPolygonLayer& operator= ( const RasterPolygonLayer& );
   
   friend class Usul::Factory::TypeCreator<RasterPolygonLayer>;

@@ -17,6 +17,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/File/Path.h"
 #include "Usul/File/Temp.h"
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Scope/Caller.h"
@@ -142,6 +143,15 @@ Usul::Interfaces::IUnknown* GdalLayer::clone() const
 GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+
+  // Let the base class go first.
+  {
+    ImagePtr answer ( BaseClass::texture ( extents, width, height, level, job, caller ) );
+    if ( true == answer.valid() )
+      return answer;
+  }
+
+  // Now guard.
   Guard guard ( this );
   
   Minerva::Detail::PushPopErrorHandler error;
@@ -443,4 +453,38 @@ void GdalLayer::_print ( GDALDataset * data )
            geoTransform[0], geoTransform[3], geoTransform[1], geoTransform[5] );
     std::cout << &buffer[0] << std::endl;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string GdalLayer::_cacheDirectory() const
+{
+  USUL_TRACE_SCOPE;
+
+  const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
+  const std::size_t hashValue ( BaseClass::_hashString ( Usul::File::fullPath ( file ) ) );
+  const std::string dir ( BaseClass::_buildCacheDir ( this->cacheDirectory(), "file_system", hashValue ) );
+
+  return dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extension for the cached files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string GdalLayer::_cacheFileExtension() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  const std::string ext ( Usul::File::extension ( _filename ) );
+  return ext;
 }

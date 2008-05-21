@@ -48,8 +48,12 @@ protected:
   virtual ~GdalLayer();
   
   GdalLayer ( const GdalLayer& );
-  
+
+  virtual std::string   _cacheDirectory() const;
+  virtual std::string   _cacheFileExtension() const;
+
   void                  _print ( GDALDataset * data );
+
 private:
   
   // No assignment.

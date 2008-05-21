@@ -28,7 +28,6 @@ set (SOURCES
 ./MpdPrevTimestep.cpp
 ./MpdFirstTimestep.cpp
 ./MpdAnimation.cpp
-./MpdTimelineModel.cpp
 ./MpdDynamicModel.cpp
 ./MpdJob.cpp
 ./MpdPrevSequence.cpp

@@ -25,8 +25,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 MOVWriter::MOVWriter( const Filename& filename, const Filenames& filenames ) :
-_filename ( filename ),
-_filenames ( filenames )
+	_filename ( filename ),
+	_filenames ( filenames )
 {
 }
 

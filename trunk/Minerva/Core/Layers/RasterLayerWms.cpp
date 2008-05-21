@@ -23,18 +23,14 @@
 #include "Minerva/Core/Layers/RasterLayerWms.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/App/Application.h"
-#include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
-#include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Network/WMS.h"
-#include "Usul/Registry/Database.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
@@ -45,11 +41,6 @@
 #include "osg/ref_ptr"
 #include "osg/Image"
 
-#include "boost/algorithm/string/trim.hpp"
-#include "boost/algorithm/string/replace.hpp"
-#include "boost/functional/hash.hpp"
-
-#include <algorithm>
 #include <iomanip>
 #include <fstream>
 
@@ -57,10 +48,6 @@ using namespace Minerva::Core::Layers;
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterLayerWms );
 
-namespace Detail
-{
-  const std::string WMS_CACHE_DIR ( "wms_cache_dir" );
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -72,11 +59,9 @@ RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &u
   BaseClass(),
   _url              ( url ),
   _options          ( options ),
-  _dir              ( RasterLayerWms::defaultCacheDirectory() ),
   _useNetwork       ( true ),
   _writeFailedFlags ( false ),
-  _readFailedFlags  ( false ),
-  _reader           ( 0x0 )
+  _readFailedFlags  ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -99,11 +84,9 @@ RasterLayerWms::RasterLayerWms ( const RasterLayerWms& rhs ) :
   BaseClass ( rhs ),
   _url ( rhs._url ),
   _options ( rhs._options ),
-  _dir ( rhs._dir ),
   _useNetwork ( rhs._useNetwork ),
   _writeFailedFlags ( rhs._writeFailedFlags ),
-  _readFailedFlags ( rhs._readFailedFlags ),
-  _reader          ( 0x0 )
+  _readFailedFlags ( rhs._readFailedFlags )
 {
   this->_registerMembers();
   
@@ -168,43 +151,6 @@ Usul::Interfaces::IUnknown* RasterLayerWms::clone() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the string for the value.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  std::string makeString ( unsigned int value )
-  {
-    std::ostringstream out;
-    out << std::setw ( 3 ) << std::setfill ( '0' ) << value;
-    return out.str();
-  }
-  std::string makeString ( double value )
-  {
-    std::ostringstream out;
-
-    const double positive ( Usul::Math::absolute ( value ) );
-
-    const unsigned long integer ( static_cast < unsigned long > ( positive ) );
-    const double decimal ( positive - static_cast < double > ( integer ) );
-
-    const unsigned int bufSize ( 2047 );
-    char buffer[bufSize + 1];
-    ::sprintf ( buffer, "%0.15f", decimal );
-
-    std::string temp ( buffer );
-    boost::replace_first ( temp, "0.", " " );
-    boost::trim_left ( temp );
-
-    out << ( ( value >= 0 ) ? 'P' : 'N' ) << std::setfill ( '0' ) << std::setw ( 3 ) << integer << '_' << temp;
-    return out.str();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  The name of the "failed" file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -224,14 +170,23 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown * )
+RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
+  // Let the base class go first.
+  {
+    ImagePtr answer ( BaseClass::texture ( extents, width, height, level, job, caller ) );
+    if ( true == answer.valid() )
+      return answer;
+  }
+
+  // Get url.
   std::string url ( Usul::Threads::Safe::get ( this->mutex(), _url ) );
   if ( true == url.empty() )
     return ImagePtr ( 0x0 );
 
+  // Get options.
   Options options ( Usul::Threads::Safe::get ( this->mutex(), _options ) );
   if ( true == options.empty() )
     return ImagePtr ( 0x0 );
@@ -250,9 +205,12 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   // Get the cache directory.
   const std::string cachDir ( this->_cacheDirectory() );
 
-  // Make the directory.
+  // Make the directory. Guard it so that it's atomic.
   const std::string baseDir ( this->_baseDirectory ( cachDir, width, height, level ) );
-  Usul::Functions::safeCallR1 ( Usul::File::make, baseDir, "1061955244" );
+  {
+    Guard guard ( this );
+    Usul::Functions::safeCallR1 ( Usul::File::make, baseDir, "1061955244" );
+  }
 
   // Make the base file name.
   std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ) ) );
@@ -287,8 +245,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   }
 
   // See if the job has been cancelled.
-  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
-    job->cancel();
+  _checkForCanceledJob ( job );
 
   // Pull it down if we should...
   if ( ( false == Usul::Predicates::FileExists::test ( file ) ) && ( true == Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) ) )
@@ -299,8 +256,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   }
 
   // See if the job has been cancelled.
-  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
-    job->cancel();
+  _checkForCanceledJob ( job );
 
   // If the file does not exist then return.
   if ( false == Usul::Predicates::FileExists::test ( file ) )
@@ -320,11 +276,10 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   }
 
   // Load the file.
-  ImagePtr image ( this->_readImageFile ( file ) );
+  ImagePtr image ( this->_readImageFile ( file, this->_imageReaderGet() ) );
 
   // See if the job has been cancelled.
-  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
-    job->cancel();
+  _checkForCanceledJob ( job );
 
   // If it failed to load...
   if ( false == image.valid() )
@@ -343,27 +298,6 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the base file name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayerWms::_baseFileName ( Extents extents ) const
-{
-  USUL_TRACE_SCOPE;
-
-  std::string file ( Usul::Strings::format ( 
-                     Helper::makeString ( extents.minimum()[0] ), '_', 
-                     Helper::makeString ( extents.minimum()[1] ), '_', 
-                     Helper::makeString ( extents.maximum()[0] ), '_', 
-                     Helper::makeString ( extents.maximum()[1] ) ) );
-  std::replace ( file.begin(), file.end(), '.', '-' );
-
-  return file;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the directory.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -372,105 +306,10 @@ std::string RasterLayerWms::_cacheDirectory() const
 {
   USUL_TRACE_SCOPE;
 
-  std::string urlProxy ( Usul::Threads::Safe::get ( this->mutex(), _url ) );
-  boost::replace_first ( urlProxy, "http://", " " );
-  boost::replace_first ( urlProxy, "https://", " " );
-  boost::trim_left ( urlProxy );
-  std::replace ( urlProxy.begin(), urlProxy.end(), ':', '_' );
-  std::replace ( urlProxy.begin(), urlProxy.end(), '/', '_' );
-  std::replace ( urlProxy.begin(), urlProxy.end(), '&', '_' );
-  std::replace ( urlProxy.begin(), urlProxy.end(), '?', '_' );
-  std::replace ( urlProxy.begin(), urlProxy.end(), '.', '_' );
-
-  boost::hash<std::string> stringHash;
-  const std::size_t hashValue ( stringHash ( this->_getAllOptions() ) );
-
-  std::string dir ( Usul::Strings::format ( this->cacheDirectory(), '/', 
-                                            Usul::App::Application::instance().program(), '/',
-                                            urlProxy, '/', hashValue, '/' ) );
-  std::replace ( dir.begin(), dir.end(), '\\', '/' );
+  std::string urlProxy ( BaseClass::_mangledURL ( Usul::Threads::Safe::get ( this->mutex(), _url ) ) );
+  const std::size_t hashValue ( BaseClass::_hashString ( this->_getAllOptions() ) );
+  const std::string dir ( BaseClass::_buildCacheDir ( this->cacheDirectory(), urlProxy, hashValue ) );
   return dir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayerWms::_baseDirectory ( const std::string &cacheDir, unsigned int width, unsigned int height, unsigned int level ) const
-{
-  USUL_TRACE_SCOPE;
-
-  const std::string resolution  ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
-  const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );
-
-  std::string dir ( Usul::Strings::format ( cacheDir, resolution, '/', levelString, '/' ) );
-  std::replace ( dir.begin(), dir.end(), '\\', '/' );
-  return dir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the default cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayerWms::defaultCacheDirectory ( const std::string& dir )
-{
-  Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR] = dir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the default cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayerWms::defaultCacheDirectory()
-{
-  return Usul::Registry::Database::instance()[Detail::WMS_CACHE_DIR].get ( Usul::File::Temp::directory ( false ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the base cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayerWms::cacheDirectory ( const std::string& dir, bool makeDefault )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  
-  // Only set the directory if it's not empty.
-  if ( false == dir.empty() )
-  {
-    // Set the directory.
-    _dir = dir;
-    
-    // Make it the default if we should.
-    if ( makeDefault )
-      RasterLayerWms::defaultCacheDirectory ( _dir );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the base cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayerWms::cacheDirectory() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _dir;
 }
 
 
@@ -589,46 +428,10 @@ void RasterLayerWms::_findImageReader()
   Guard guard ( this->mutex() );
   
   // Clear the one we have.
-  _reader = 0x0;
-  
-  const std::string format ( _options[Usul::Network::Names::FORMAT] );
-  std::string ext ( ( format.size() > 6 && '/' == format.at(5) ) ? std::string ( format.begin() + 6, format.end() ) : format );
-  ext = ( ( "jpeg" == ext ) ? "jpg" : ext );
-  
-  // Typedefs to shorten the lines.
-  typedef Usul::Documents::Manager DocManager;
-  typedef DocManager::Documents Documents;
-  
-  Documents docs ( DocManager::instance().create ( "." + ext, 0x0, true, false ) );
-  for ( Documents::const_iterator iter = docs.begin(); iter != docs.end(); ++iter )
-  {
-    _reader = Usul::Interfaces::IReadImageFile::QueryPtr ( (*iter).get() );
+  this->_imageReaderSet ( ReaderPtr ( 0x0 ) );
 
-    if ( _reader.valid() )
-    {
-      break;
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read an image file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-RasterLayerWms::ImagePtr RasterLayerWms::_readImageFile ( const std::string& filename ) const
-{
-  USUL_TRACE_SCOPE;
-  
-  IReadImageFile::RefPtr reader ( Usul::Threads::Safe::get ( this->mutex(), _reader ) );
-  
-  if ( reader.valid() )
-    return reader->readImageFile ( filename );
-  
-  // Fall back on OSG if we don't have a reader.
-  return osgDB::readImageFile ( filename );
+  // Set the reader.
+  this->_imageReaderFind ( this->_cacheFileExtension() );
 }
 
 
@@ -646,4 +449,26 @@ void RasterLayerWms::deserialize ( const XmlTree::Node& node )
   
   // Find a reader.
   this->_findImageReader();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extension for the cached files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerWms::_cacheFileExtension() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // Get the format.
+  Options::const_iterator i ( _options.find ( Usul::Network::Names::FORMAT ) );
+  const std::string format ( ( _options.end() == i ) ? "" : i->second );
+
+  // Determine file extension.
+  std::string ext ( ( format.size() > 6 && '/' == format.at(5) ) ? std::string ( format.begin() + 6, format.end() ) : format );
+  ext = ( ( "jpeg" == ext ) ? "jpg" : ext );
+  return ext;
 }

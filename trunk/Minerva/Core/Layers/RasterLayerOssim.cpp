@@ -8,13 +8,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _MSC_VER
+# define NOMINMAX
+# include <windows.h>
+#endif
+
 #include "Minerva/Core/Layers/RasterLayerOssim.h"
 
 #include "Minerva/Core/Factory/Readers.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Predicates/FileExists.h"
+#include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
@@ -24,7 +32,9 @@
 #include "ossim/imaging/ossimImageRenderer.h"
 #include "ossim/imaging/ossimImageHandler.h"
 #include "ossim/imaging/ossimImageHandlerRegistry.h"
-
+#include "ossim/imaging/ossimOverviewBuilderFactoryRegistry.h"
+#include "ossim/imaging/ossimOverviewBuilderFactory.h"
+#include "ossim/imaging/ossimTiffOverviewBuilder.h"
 #include "ossim/projection/ossimEquDistCylProjection.h"
 #include "ossim/projection/ossimImageViewTransform.h"
 #include "ossim/projection/ossimImageViewProjectionTransform.h"
@@ -65,6 +75,9 @@ RasterLayerOssim::RasterLayerOssim() :
   USUL_TRACE_SCOPE;
 
   this->_registerMembers();
+
+  // So we can automatically build pyramids.
+  ossimOverviewBuilderFactoryRegistry::instance()->registerFactory ( ossimOverviewBuilderFactory::instance(), true );
 }
 
 
@@ -229,6 +242,9 @@ void RasterLayerOssim::_open ( const std::string& filename )
 
   // Update our extents.
   this->_updateExtents();
+
+  // Make the pyramids.
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &RasterLayerOssim::_buildImagePyramids ), this->filename(), "7649047000" );
 }
 
 
@@ -289,9 +305,18 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller )
+RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+
+  // Let the base class go first.
+  {
+    ImagePtr answer ( BaseClass::texture ( extents, width, height, level, job, caller ) );
+    if ( true == answer.valid() )
+      return answer;
+  }
+
+  // Now guard.
   Guard guard ( this );
 
   // Create the answer.
@@ -323,6 +348,9 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
     //result = this->_createBlankImage ( width, height );
     result = Detail::makeImage ( width, height, data->getScalarType() );
     this->_convert ( *data, *result );
+
+    // Save the image to the cache.
+    BaseClass::_writeImageToCache ( extents, width, height, level, result );
   }
 
   return result;
@@ -496,4 +524,98 @@ std::string RasterLayerOssim::filename() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _filename;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerOssim::_cacheDirectory() const
+{
+  USUL_TRACE_SCOPE;
+
+  const std::size_t hashValue ( BaseClass::_hashString ( Usul::File::fullPath ( this->filename() ) ) );
+  const std::string dir ( BaseClass::_buildCacheDir ( this->cacheDirectory(), "file_system", hashValue ) );
+  return dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extension for the cached files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerOssim::_cacheFileExtension() const
+{
+  USUL_TRACE_SCOPE;
+  const std::string ext ( Usul::File::extension ( this->filename() ) );
+  return ext;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the image pyramids.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerOssim::_buildImagePyramids ( const std::string &file ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Yes, guard this whole function, including the check for existing files.
+  // We don't want two threads writing the pyramids.
+  Guard guard ( this );
+
+  // The source file has to exist.
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
+    return;
+
+  // Only do it once.
+  const std::string base ( Usul::Strings::format ( Usul::File::directory ( file, true ), Usul::File::base ( file ) ) );
+  const std::string ovr ( base + ".ovr" );
+  const std::string omd ( base + ".omd" );
+  if ( true == Usul::Predicates::FileExists::test ( ovr ) )
+    return;
+
+  // Need an input handler.
+  if ( 0x0 == _handler )
+    return;
+
+  // Remove these files if we fail.
+  Usul::Scope::RemoveFile remove1 ( ovr, false );
+  Usul::Scope::RemoveFile remove2 ( omd, false );
+
+  // Always remove these files.
+  Usul::Scope::RemoveFile remove3 ( ovr + ".tmp", false );
+  Usul::Scope::RemoveFile remove4 ( omd + ".tmp", false );
+
+  // Make the builder.
+  ossimString overviewType ( "ossim_tiff_box" );
+  ossimRefPtr<ossimOverviewBuilderBase> builder ( ossimOverviewBuilderFactoryRegistry::instance()->createBuilder ( overviewType ) );
+  if ( false == builder.valid() )
+    return;
+
+  // Set properties.
+  builder->setOutputFile ( ossimFilename ( ovr.c_str() ) );
+  builder->setInputSource ( _handler, false );
+
+  std::cout << Usul::Strings::format ( "Building overviews for: ", file ) << std::endl;
+
+  // Make the pyramids.
+  if ( false == builder->execute() )
+  {
+    std::cout << Usul::Strings::format ( "Warning 2517484520: Failed to build overviews for: ", file, ", performance will be slow" ) << std::endl;
+    return;
+  }
+
+  std::cout << Usul::Strings::format ( "Done building overviews for: ", file ) << std::endl;
+
+  // It worked so do not remove these files.
+  remove1.remove ( false );
+  remove2.remove ( false );
 }

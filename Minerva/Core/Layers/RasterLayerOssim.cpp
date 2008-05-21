@@ -34,7 +34,7 @@
 #include "ossim/imaging/ossimImageHandlerRegistry.h"
 #include "ossim/imaging/ossimOverviewBuilderFactoryRegistry.h"
 #include "ossim/imaging/ossimOverviewBuilderFactory.h"
-#include "ossim/imaging/ossimTiffOverviewBuilder.h"
+#include "ossim/imaging/ossimOverviewBuilderBase.h"
 #include "ossim/projection/ossimEquDistCylProjection.h"
 #include "ossim/projection/ossimImageViewTransform.h"
 #include "ossim/projection/ossimImageViewProjectionTransform.h"

@@ -38,6 +38,7 @@ class KmlLayer : public Minerva::Core::Layers::Vector,
                  
 {
 public:
+
   /// Typedefs.
   typedef Minerva::Core::Layers::Vector              BaseClass;
   typedef Minerva::Core::DataObjects::DataObject     DataObject;

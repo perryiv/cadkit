@@ -13,6 +13,7 @@
 #include "Minerva/Layers/Kml/Object.h"
 #include "Minerva/Layers/Kml/LineStyle.h"
 #include "Minerva/Layers/Kml/PolyStyle.h"
+#include "Minerva/Layers/Kml/IconStyle.h"
 
 namespace Minerva {
 namespace Layers {
@@ -29,13 +30,17 @@ public:
   Style();
   Style ( const XmlTree::Node& node );
 
-	/// Set/get the polystyle.
-	void           polystyle ( PolyStyle * );
-	PolyStyle*     polystyle() const;
+  /// Set/get the iconstyle.
+  void           iconstyle ( IconStyle * );
+  IconStyle*     iconstyle() const;
 
   /// Set/get the linestyle.
 	void           linestyle ( LineStyle * );
 	LineStyle*     linestyle() const;
+
+	/// Set/get the polystyle.
+	void           polystyle ( PolyStyle * );
+	PolyStyle*     polystyle() const;
 
 protected:
   
@@ -43,6 +48,7 @@ protected:
   
 private:
 
+  IconStyle::RefPtr _iconstyle;
   LineStyle::RefPtr _linestyle;
 	PolyStyle::RefPtr _polystyle;
 };

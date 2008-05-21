@@ -50,7 +50,6 @@ LineStyle::LineStyle( const XmlTree::Node &node ) : BaseClass( node ),
       _width = Usul::Convert::Type<std::string, float>::convert ( node->value() );
     }
   }
-
 }
 
 

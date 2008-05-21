@@ -27,7 +27,17 @@ public:
   IconStyle();
   IconStyle ( const XmlTree::Node& node );
 
-	
+  /// Set/get the scale.
+  void           scale ( double );
+	double         scale() const;
+
+  /// Set/get the heading.
+  void           heading ( double );
+	double         heading() const;
+
+  /// Set/get the href.
+  void           href ( const std::string& );
+	std::string    href() const;
 
 protected:
   
@@ -35,7 +45,9 @@ protected:
   
 private:
 
-	
+	double _scale;
+  double _heading;
+  std::string _href;
 };
 
 

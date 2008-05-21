@@ -27,6 +27,7 @@ public:
   void operator() ( Usul::Interfaces::IUnknown *caller );
 
 private:
+
   /// Filename to write to.
   Filename _filename;
 

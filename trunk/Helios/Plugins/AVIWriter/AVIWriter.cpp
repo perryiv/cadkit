@@ -60,10 +60,11 @@ struct AVIWriterHelper
 };
 
 AVIWriter::AVIWriter( const Filename& filename, const Filenames& filenames ) :
-_filename ( filename ),
-_filenames ( filenames )
+	_filename ( filename ),
+	_filenames ( filenames )
 {
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -111,27 +112,20 @@ void AVIWriter::_write ( Usul::Interfaces::IUnknown *caller )
 
   if( result != 0 )
   {
-    Usul::Exceptions::Thrower< std::runtime_error > ( "Unable to create movie: ", _filename );
+		Usul::Exceptions::Thrower< std::runtime_error > ( "Error 2783715167: Unable to create movie: ", _filename );
   }
 
   // Open the first image.
   ImagePtr image ( osgDB::readImageFile ( _filenames.at( 0 ) ) );
 
-  unsigned int pixelSize ( image->getPixelSizeInBits() );
-  unsigned int numComponents ( osg::Image::computeNumComponents ( image->getPixelFormat() ) );
+  const unsigned int pixelSize ( image->getPixelSizeInBits() );
+  const unsigned int numComponents ( osg::Image::computeNumComponents ( image->getPixelFormat() ) );
 
-  switch ( image->getPixelFormat() )
-  {
-    case GL_LUMINANCE:
-      break;
-  
-    case GL_RGB:
-      break;
+  if ( 3 != numComponents )
+		Usul::Exceptions::Thrower< std::runtime_error > ( "Error 2536623597: Invalid number of components for avi writing." );
 
-    case GL_RGBA:
-      break;
-  }
-
+	if ( 24 != pixelSize )
+		Usul::Exceptions::Thrower< std::runtime_error > ( "Error 3968712159: Invalid number of bits per pixel for avi writing." );
 
   AVISTREAMINFO strhdr;
 
@@ -182,7 +176,9 @@ void AVIWriter::_write ( Usul::Interfaces::IUnknown *caller )
   HANDLE              hDIB;
 
   DWORD               dwLen;      // size of memory block
-  unsigned int dataWidth ( image->getRowSizeInBytes() );
+  
+	// Size of a fow in the image.
+	const unsigned int dataWidth ( image->getRowSizeInBytes() );
   
   dwLen = sizeof(BITMAPINFOHEADER) + dataWidth * image->t();
   hDIB = ::GlobalAlloc(GHND, dwLen);
@@ -210,7 +206,8 @@ void AVIWriter::_write ( Usul::Interfaces::IUnknown *caller )
   {
     ImagePtr image ( osgDB::readImageFile ( _filenames.at( i ) ) );
 
-    unsigned char *dest = reinterpret_cast < unsigned char * > ( lpbi + lpbi->biSize );
+		// Not sure what this is supposed to be for.
+    //unsigned char *dest = reinterpret_cast < unsigned char * > ( lpbi + lpbi->biSize );
 
     std::vector< unsigned char > buffer;
     buffer.reserve( image->getImageSizeInBytes() );
@@ -224,11 +221,8 @@ void AVIWriter::_write ( Usul::Interfaces::IUnknown *caller )
         buffer.push_back ( *(source+2) );
         buffer.push_back ( *(source+1) );
         buffer.push_back ( *(source+0) );
-
-        source += 3;
       }
     }
-
 
     // write out the image
     ::AVIStreamWrite( helper.streamCompressed,  // stream pointer

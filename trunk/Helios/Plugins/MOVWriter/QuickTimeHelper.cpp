@@ -37,21 +37,21 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 QuickTimeHelper::QuickTimeHelper() :
-_width ( 0 ),
-_height( 0 ),
-_movie ( 0x0 ),
-_resRef ( 0 ),
-_file(),
-_track ( 0x0 ),
-_media ( 0x0 ),
-_gWorld ( 0x0 ),
-_pixMap ( 0x0 ),
-_savedPort ( 0x0 ),
-_savedDevice ( 0x0 ),
-_trackFrame(),
-_imageDescription( 0x0 ),
-_compressedDataHandle ( 0x0 ),
-_compressedDataPtr ( 0x0 )
+	_width ( 0 ),
+	_height( 0 ),
+	_movie ( 0x0 ),
+	_resRef ( 0 ),
+	_file(),
+	_track ( 0x0 ),
+	_media ( 0x0 ),
+	_gWorld ( 0x0 ),
+	_pixMap ( 0x0 ),
+	_savedPort ( 0x0 ),
+	_savedDevice ( 0x0 ),
+	_trackFrame(),
+	_imageDescription( 0x0 ),
+	_compressedDataHandle ( 0x0 ),
+	_compressedDataPtr ( 0x0 )
 {
 }
 

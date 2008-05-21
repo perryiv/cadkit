@@ -121,9 +121,9 @@ namespace Detail
     typedef MOVWriterComponent::Filenames Filenames;
 
     WriteMovJob ( const std::string& filename, const Filenames& filenames, Usul::Interfaces::IUnknown* caller ) :
-    BaseClass ( caller ),
-    _filename ( filename ),
-    _filenames ( filenames )
+			BaseClass ( caller ),
+			_filename ( filename ),
+			_filenames ( filenames )
     {
     }
 

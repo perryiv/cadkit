@@ -1316,6 +1316,9 @@ void PathAnimationComponent::_buildCameraMenu()
 
 void PathAnimationComponent::_setCameraPosition ( unsigned int num )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   // Get needed interface.
   Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
   if ( false == vm.valid() )
@@ -1350,6 +1353,9 @@ void PathAnimationComponent::_setCameraPosition ( unsigned int num )
 
   // Animate through the path.
   this->animatePath ( matrices );
+
+  // Make this the new current camera.
+  _currentCamera = num;
 }
 
 

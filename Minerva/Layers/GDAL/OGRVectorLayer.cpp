@@ -227,6 +227,29 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Convert and transform a line string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template <class Vertices>
+  inline void convertAndTransform ( Vertices &vertices, const OGRLineString& line, OGRCoordinateTransformation* transform )
+  {
+    OGRPoint point;
+
+    const int numPoints ( line.getNumPoints() );
+    for ( int i = 0; i < numPoints; ++i )
+    {
+      line.getPoint ( i, &point );
+      vertices.push_back ( Helper::convertAndTransform ( point, transform ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create a point.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -265,15 +288,7 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry,
   if ( 0x0 != geometry )
   {
     Vertices vertices;
-
-    OGRPoint point;
-
-    const int numPoints ( geometry->getNumPoints() );
-    for ( int i = 0; i < numPoints; ++i )
-    {
-      geometry->getPoint ( i, &point );
-      vertices.push_back ( Helper::convertAndTransform ( point, transform ) );
-    }
+    Helper::convertAndTransform ( vertices, *geometry, transform );
 
     line->line ( vertices );
   }
@@ -293,7 +308,38 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry,
 
 OGRVectorLayer::Geometry* OGRVectorLayer::_createPolygon ( OGRPolygon* geometry, OGRCoordinateTransformation *transform ) const
 {
-  Minerva::Core::Geometry::Polygon::RefPtr polygon ( new Minerva::Core::Geometry::Polygon );
+  typedef Minerva::Core::Geometry::Polygon Polygon;
+  typedef Polygon::Vertices Vertices;
+
+  Polygon::RefPtr polygon ( new Polygon );
+
+  if ( 0x0 != geometry )
+  {
+    // Add the outer rings.
+    OGRLinearRing *outer ( geometry->getExteriorRing() );
+    if ( 0x0 != outer )
+    {
+      Vertices vertices;
+      Helper::convertAndTransform ( vertices, *outer, transform );
+      polygon->outerBoundary ( vertices );
+    }
+
+    // Add the inner rings.
+    const int numRings ( geometry->getNumInteriorRings() );
+    for ( int i = 0; i < numRings; ++i )
+    {
+      OGRLinearRing* ring ( geometry->getInteriorRing ( i ) );
+      if ( 0x0 != ring )
+      {
+        Vertices vertices;
+        Helper::convertAndTransform ( vertices, *outer, transform );
+        polygon->addInnerBoundary ( vertices );
+      }
+    }
+  }
+
+  polygon->borderColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  polygon->color ( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
 
   return polygon.release();
 }

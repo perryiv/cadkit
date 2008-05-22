@@ -1,0 +1,33 @@
+<ui version="4.0" >
+ <class>FileInputForm</class>
+ <widget class="QWidget" name="FileInputForm" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>752</width>
+    <height>46</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" >
+   <item>
+    <widget class="QComboBox" name="_comboBox" />
+   </item>
+   <item>
+    <widget class="QLineEdit" name="_filename" />
+   </item>
+   <item>
+    <widget class="QPushButton" name="browseButton" >
+     <property name="text" >
+      <string>Browse ...</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

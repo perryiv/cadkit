@@ -15,9 +15,13 @@
 # include <signal.h>
 #endif
 
+#include <sstream>
+#include <fstream>
+
 
 namespace Usul {
 namespace Errors {
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,35 +43,47 @@ namespace Detail
 
 void handleSIGSEGV ( int num )
 {
-  assert ( SIGSEGV == num );
-  assert ( false == Detail::_programName.empty() );
+  if ( SIGSEGV != num )
+    return;
 
-  std::cout << "--------------------------------------------" << std::endl;
-  std::cout << "-------        SIGSEGV caught!       -------" << std::endl;
-  std::cout << "------- Printing the function stack. -------" << std::endl;
-  std::cout << "--------------------------------------------" << std::endl;
+  if ( false == Detail::_programName.empty() )
+    return;
 
-#ifdef __linux
+  std::ostringstream out;
+
+  out << "--------------------------------------------" << std::endl;
+  out << "-------        SIGSEGV caught!       -------" << std::endl;
+  out << "------- Printing the function stack. -------" << std::endl;
+  out << "--------------------------------------------" << std::endl;
+
+#ifdef  __GNUC__
 
   // See: http://www.ibm.com/developerworks/linux/library/l-cppexcep.html
 
-  void * array[25];
-  const int size ( ::backtrace ( array, 25 ) );
-  char **symbols ( ::backtrace_symbols ( array, size ) );
+  const int maxStackLevels ( 1000 );
+  void * array[maxStackLevels];
+  const int actualStackSize ( ::backtrace ( array, maxStackLevels ) );
+  char **symbols ( ::backtrace_symbols ( array, actualStackSize ) );
 
-  for ( unsigned int i = 0; i < size; ++i )
-    std::cout << symbols[i] << std::endl;
+  for ( unsigned int i = 0; i < actualStackSize; ++i )
+    out << symbols[i] << std::endl;
 
   ::free ( symbols );
 
 #endif
 
-  std::cout << "--------------------------------------------" << std::endl;
-  std::cout << "-------   Done printing the stack.   -------" << std::endl;
-  std::cout << "--------------------------------------------" << std::endl;
-  std::cout << "\nCalling abort()..." << std::endl;
+  out << "--------------------------------------------" << std::endl;
+  out << "-------   Done printing the stack.   -------" << std::endl;
+  out << "--------------------------------------------" << std::endl;
 
-  // Exit the program.
+  out << "\nCalling abort()..." << std::endl;
+
+
+  // Print to file.
+  const std::string file ( Usul::Strings::format ( Usul::File::base ( Detail::_programName ), ".stack" ) );
+  std::ofstream dump ( file.c_str() );
+  dump << out.str();
+
   // TODO: Throw an exception instead of aborting.
   ::abort();
 }

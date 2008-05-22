@@ -345,7 +345,7 @@ void TreeControl::_itemChanged ( QTreeWidgetItem *item, int column )
   }
   
   // Redirect.
-  //emit onItemChanged( item, column );
+  emit onItemChanged( item, column );
 }
 
 

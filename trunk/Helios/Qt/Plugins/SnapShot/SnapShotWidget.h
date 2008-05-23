@@ -33,16 +33,17 @@ public:
   virtual ~SnapShotWidget();
 
 protected:
-  void             _deleteFiles ();
+  std::string      _filename();
 
 private slots:
 
-  void             on__snapShotButton_clicked();
+  void             on_snapShotButton_clicked();
 
 private:
 
-  Files            _files;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
+  std::string _lastFilename;
+  unsigned int _count;
 };
 
 

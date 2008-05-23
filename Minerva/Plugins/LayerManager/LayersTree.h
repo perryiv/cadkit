@@ -46,7 +46,7 @@ public slots:
 protected:
   void     _connectTreeViewSlots ();
   void     _addLayer ( Usul::Interfaces::IUnknown *parent );
-  void     _editLayerProperties ( Usul::Interfaces::IUnknown *unknown );
+  void     _editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usul::Interfaces::IUnknown *editor );
   void     _dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown );
 
 protected slots:

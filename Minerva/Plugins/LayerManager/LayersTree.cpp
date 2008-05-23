@@ -46,6 +46,17 @@ namespace Detail
   const unsigned int SLIDER_STEPS ( 1000 );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef Usul::Components::Manager PluginManager;
+typedef PluginManager::UnknownSet Unknowns;
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -199,9 +210,6 @@ void LayersTree::_onAddLayerClick ()
 
 void LayersTree::_addLayer ( Usul::Interfaces::IUnknown *parent )
 {
-  typedef Usul::Components::Manager PluginManager;
-  typedef PluginManager::UnknownSet Unknowns;
-  
   Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerAddGUIQt::IID ) );
   
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mw ( _caller );
@@ -310,10 +318,25 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   favorites.setToolTip( "Add layer to favorites" );
   favorites.setEnabled ( layer.valid() );
   QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
+
+  // Editor for this layer.
+  Usul::Interfaces::IUnknown::QueryPtr editor;
+
+  // Atempt to find an editor.
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerModifyGUIQt::IID ) );
+  for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
+  {
+    Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
+    if ( gui->handle ( layer.get() ) )
+    {
+      editor = gui.get();
+      break;
+    }
+  }
   
-  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind1 ( unknown.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
-  favorites.setToolTip ( tr ( "Show the property dialog for this layer" ) );
-  favorites.setEnabled ( layer.valid() );
+  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind2 ( unknown.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
+  properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
+  properties.setEnabled ( layer.valid() && editor.valid() );
   
   // Add the actions to the menu.
   menu.addAction ( &add );
@@ -355,31 +378,20 @@ void LayersTree::addLayer ( Usul::Interfaces::IUnknown * unknown )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown )
-{
-  typedef Usul::Components::Manager PluginManager;
-  typedef PluginManager::UnknownSet Unknowns;
-  
+void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usul::Interfaces::IUnknown *editor )
+{  
   Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
+  Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( editor );
   
   // Make sure we have a valid layer.
-  if ( false == layer.valid() )
+  if ( false == layer.valid() || false == gui.valid() )
     return;
   
-  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerModifyGUIQt::IID ) );
-  
-  for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
+  if ( gui->handle ( layer.get() ) )
   {
-    Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
-    if ( gui->handle ( layer.get() ) )
-    {
-      gui->showModifyGUI( layer.get(), _document.get() );
-      
-      QTreeWidgetItem *item ( _tree->currentItem() );
-      item->setText( 0, layer->name().c_str() );
-      
-      break;
-    }
+    gui->showModifyGUI( layer.get(), _document.get() );  
+    QTreeWidgetItem *item ( _tree->currentItem() );
+    item->setText( 0, layer->name().c_str() );
   }
 }
 

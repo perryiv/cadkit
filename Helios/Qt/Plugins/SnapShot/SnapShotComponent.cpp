@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "SnapShotComponent.h"
-#include "SnapShotWidget.h"
+#include "Helios/Qt/Plugins/SnapShot/SnapShotComponent.h"
+#include "Helios/Qt/Plugins/SnapShot/SnapShotWidget.h"
 
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"

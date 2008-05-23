@@ -10,16 +10,14 @@
 
 #include "SnapShotWidget.h"
 
-#include "Usul/File/Temp.h"
-#include "Usul/File/Remove.h"
+#include "Usul/File/Path.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/ISnapShot.h"
 
-#include "QtCore/QProcess"
-
 #include <iostream>
-
+#include <iomanip>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -28,12 +26,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 SnapShotWidget::SnapShotWidget( QWidget *parent, Usul::Interfaces::IUnknown* caller ) : BaseClass ( parent ),
-  _files (),
-  _caller ( caller )
+  _caller ( caller ),
+  _lastFilename(),
+  _count ( 0 )
 {
   this->setupUi ( this );
 
-  label_2->setVisible ( false );
+  _numSamplesLabel->setVisible ( false );
   _numSamples->setVisible ( false );
 }
 
@@ -46,7 +45,6 @@ SnapShotWidget::SnapShotWidget( QWidget *parent, Usul::Interfaces::IUnknown* cal
 
 SnapShotWidget::~SnapShotWidget()
 {
-  this->_deleteFiles();
 }
 
 
@@ -56,20 +54,7 @@ SnapShotWidget::~SnapShotWidget()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SnapShotWidget::_deleteFiles ()
-{
-  for ( Files::iterator iter = _files.begin(); iter != _files.end(); ++iter )
-    Usul::File::remove ( *iter );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a snap shot.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void SnapShotWidget::on__snapShotButton_clicked()
+void SnapShotWidget::on_snapShotButton_clicked()
 {
   try
   {
@@ -78,40 +63,24 @@ void SnapShotWidget::on__snapShotButton_clicked()
     if ( snapShot.valid () )
     {
       // Get the parameters for the snap shot.
-      double frameScale ( _frameScale->value() );
-      unsigned int numSamples ( _numSamples->value() );
+      const double frameScale ( _frameScale->value() );
+      const unsigned int numSamples ( _numSamples->value() );
 
-      typedef Usul::Interfaces::ISaveFileDialog::Filter  Filter;
-      typedef Usul::Interfaces::ISaveFileDialog::Filters Filters;
-      typedef Usul::Interfaces::ISaveFileDialog::FileResult FileResult;
-      
-      Filters filters;
-      filters.push_back ( Filter ( "Bitmap (*.bmp)", "(*.bmp)" ) );
-      filters.push_back ( Filter ( "JPEG (*.jpg)", "(*.jpg)" ) );
-      filters.push_back ( Filter ( "PNG (*.png)", "(*.png)" ) );
-
-      Usul::Interfaces::ISaveFileDialog::QueryPtr dialog ( _caller );
-
-      if ( _caller.valid() )
+      std::string filename ( this->_filename() );
+      if ( false == filename.empty() )
       {
-        FileResult result ( dialog->getSaveFileName ( "Save Image", filters ) );
-
-        std::string filename ( result.first );
-        if ( false == filename.empty() )
+        // Force a redraw now to make sure the dialog's pixels are gone.
+        Usul::Interfaces::IRedraw::QueryPtr redraw ( snapShot );
+        if ( true == redraw.valid() )
         {
-          // Force a redraw now to make sure the dialog's pixels are gone.
-          Usul::Interfaces::IRedraw::QueryPtr redraw ( snapShot );
-          if ( true == redraw.valid() )
-          {
-            redraw->redraw();
-          }
-
-          // Some feedback...
-          std::cout << "Creating image: " << filename << std::endl;
-
-          // Take the picture.
-          snapShot->takePicture ( filename, frameScale, numSamples );
+          redraw->redraw();
         }
+
+        // Some feedback...
+        std::cout << "Creating image: " << filename << std::endl;
+
+        // Take the picture.
+        snapShot->takePicture ( filename, frameScale, numSamples );
       }
     }
   }
@@ -123,4 +92,56 @@ void SnapShotWidget::on__snapShotButton_clicked()
   {
     std::cout << "Error 3216169248: Unknown exception caught while trying to take snap shot." << std::endl;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string SnapShotWidget::_filename()
+{
+  typedef Usul::Interfaces::ISaveFileDialog::Filter  Filter;
+  typedef Usul::Interfaces::ISaveFileDialog::Filters Filters;
+  typedef Usul::Interfaces::ISaveFileDialog::FileResult FileResult;
+  
+  Filters filters;
+  filters.push_back ( Filter ( "Bitmap (*.bmp)", "(*.bmp)" ) );
+  filters.push_back ( Filter ( "JPEG (*.jpg)", "(*.jpg)" ) );
+  filters.push_back ( Filter ( "PNG (*.png)", "(*.png)" ) );
+
+  Usul::Interfaces::ISaveFileDialog::QueryPtr dialog ( _caller );
+
+  // Filename.
+  std::string filename ( "" );
+
+  const bool increment ( Qt::Checked == _incrementFilename->checkState() );
+  const bool prompt ( _lastFilename.empty() || false == increment );
+
+  if ( dialog.valid() && prompt )
+  {
+    FileResult result ( dialog->getSaveFileName ( "Save Image", filters ) );
+
+    filename = result.first;
+    _lastFilename = filename;
+  }
+  
+  if ( increment && false == _lastFilename.empty() )
+  {
+    // Make the zero-padded number.
+    std::ostringstream out;
+    out << std::setw ( 9 ) << _count++;
+    std::string number ( out.str() );
+    std::replace ( number.begin(), number.end(), ' ', '0' );
+
+    const std::string directory ( Usul::File::directory ( _lastFilename, true ) );
+    const std::string base ( Usul::File::base ( _lastFilename ) );
+    const std::string ext ( Usul::File::extension ( _lastFilename ) );
+
+    filename =  directory + base + number + "." + ext;
+  }
+
+  return filename;
 }

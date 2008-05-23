@@ -1402,7 +1402,7 @@ bool Viewer::_frameDumpProperties()
   // Set the frame dump properties.
   viewer->frameDump().dir ( directory );
   viewer->frameDump().base( "" );
-  viewer->frameDump().digits ( 10 );
+  viewer->frameDump().digits ( 9 ); // 9 works better with ffmpeg.
   viewer->frameDump().ext ( ".jpg" );
 
   return true;

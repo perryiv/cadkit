@@ -29,6 +29,7 @@
 #include "osg/ref_ptr"
 #include "osg/Image"
 
+#include "ossim/base/ossimKeywordNames.h"
 #include "ossim/imaging/ossimImageRenderer.h"
 #include "ossim/imaging/ossimImageHandler.h"
 #include "ossim/imaging/ossimImageHandlerRegistry.h"
@@ -350,7 +351,7 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
     this->_convert ( *data, *result );
 
     // Save the image to the cache.
-    BaseClass::_writeImageToCache ( extents, width, height, level, result );
+    //BaseClass::_writeImageToCache ( extents, width, height, level, result );
   }
 
   return result;
@@ -471,7 +472,7 @@ void RasterLayerOssim::_updateExtents()
   {
     ossimKeywordlist kwl;
     _handler->getImageGeometry( kwl );
-    
+
     ossimRefPtr<ossimProjection> projection ( ossimProjectionFactoryRegistry::instance()->createProjection( kwl ) );
 
     ossimIrect rect ( _handler->getBoundingRect() );
@@ -490,6 +491,43 @@ void RasterLayerOssim::_updateExtents()
 
       Extents extents ( Extents::Vertex ( llGpt.lon, llGpt.lat ), Extents::Vertex ( urGpt.lon, urGpt.lat ) );
       this->extents ( extents );
+    }
+    else
+    {
+      kwl.clear();
+
+      // Make a default projection.
+      kwl.add ( ossimKeywordNames::TYPE_KW, "ossimLlxyProjection" );
+
+      // Add the datum.
+      kwl.add ( ossimKeywordNames::DATUM_KW, "WGE" );
+
+      // Get the extents.
+      Extents extents ( this->extents() );
+
+      // Get the extents lower left and upper right.
+      Extents::Vertex ll ( extents.minimum() );
+      Extents::Vertex ur ( extents.maximum() );
+
+      // Get the length in x and y.
+      const double xLength ( ur[0] - ll[0] );
+      const double yLength ( ur[1] - ll[1] );
+      
+      // Figure out the pixel resolution.
+      const double xResolution  ( xLength / rect.width() );
+      const double yResolution  ( yLength / rect.height() );
+
+      // Set the lat, lon tie points ( Upper left ).
+      kwl.add ( ossimKeywordNames::TIE_POINT_LAT_KW, Usul::Convert::Type<double,std::string>::convert ( ur[1] ).c_str() );
+      kwl.add ( ossimKeywordNames::TIE_POINT_LON_KW, Usul::Convert::Type<double,std::string>::convert ( ll[0] ).c_str() );
+
+      // Set the degress per pixel.
+      kwl.add ( ossimKeywordNames::DECIMAL_DEGREES_PER_PIXEL_LAT, Usul::Convert::Type<double,std::string>::convert ( yResolution ).c_str() );
+      kwl.add ( ossimKeywordNames::DECIMAL_DEGREES_PER_PIXEL_LON, Usul::Convert::Type<double,std::string>::convert ( xResolution ).c_str() );
+
+      // Set the geometry.
+      _handler->setImageGeometry ( kwl );
+      _handler->saveImageGeometry();
     }
   }
 }

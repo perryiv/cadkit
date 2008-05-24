@@ -37,6 +37,9 @@ public:
 
   // Build the scene.
   osg::Node*    buildScene();
+
+  // Set the date text.
+  void          dateFeedback ( const std::string& text );
   
   // Update scene.
   void          updateScene( unsigned int width, unsigned int height );
@@ -63,6 +66,10 @@ public:
   // Show the job feedback.
   void          showJobFeedback ( bool b );
   bool          showJobFeedback() const;
+
+  // Show the date feedback.
+  void          showDateFeedback ( bool b );
+  bool          showDateFeedback() const;
   
   // Set heading, pitch, roll.
   void          hpr ( double heading, double pitch, double roll );
@@ -74,12 +81,17 @@ private:
     _SHOW_COMPASS          = 0x00000001,
     _SHOW_POINTER_POSITION = 0x00000002,
     _SHOW_JOB_FEEDBACK     = 0x00000004,
-    _ALL                   = _SHOW_COMPASS | _SHOW_POINTER_POSITION | _SHOW_JOB_FEEDBACK
+    _SHOW_DATE_FEEDBACK    = 0x00000008,
+    _ALL                   = _SHOW_COMPASS | 
+                             _SHOW_POINTER_POSITION | 
+                             _SHOW_JOB_FEEDBACK | 
+                             _SHOW_DATE_FEEDBACK
   };
   
   osg::ref_ptr < osg::Camera > _camera;
   osg::ref_ptr < osgText::Text > _feedback;
   osg::ref_ptr < osgText::Text > _position;
+  osg::ref_ptr < osgText::Text > _date;
   osg::Vec3d _latLonHeight;
   unsigned int _requests;
   unsigned int _running;

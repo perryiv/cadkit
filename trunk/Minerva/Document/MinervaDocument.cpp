@@ -98,7 +98,6 @@ MinervaDocument::MinervaDocument() :
   _layersMenu ( new MenuKit::Menu ( "&Layers" ) ),
   _root ( new osg::Group ),
   _camera ( new osg::Camera ),
-  _dateText ( new osgText::Text ),
   _bodies (),
   _activeBody ( 0x0 ),
   _manager ( 0x0 ),
@@ -168,12 +167,6 @@ MinervaDocument::MinervaDocument() :
     
     ss->setAttributeAndModes ( light.get(), osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
   }
-  
-  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
-  _dateText->setFont( font.get() );
-  _dateText->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-  _dateText->setText ( "" );
-  _dateText->setColor( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   
 #ifndef _MSC_VER
 #ifndef __APPLE__
@@ -808,8 +801,7 @@ void MinervaDocument::stopAnimation()
   }
 
   // Update the text.
-  _dateText->setText( "" );
-  _dateText->update ();
+  _hud.dateFeedback ( "" );
 }
 
 
@@ -1272,8 +1264,7 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
         }
 
         // Update the text.
-        _dateText->setText( lastDate.toString() );
-        _dateText->update ();
+        _hud.dateFeedback ( lastDate.toString() );
         _lastDate = lastDate;
 
         // Set the dates to show.
@@ -1380,6 +1371,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Job Feedback", 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ), 
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) ) );
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Date Feedback", 
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showDateFeedback ), 
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowDateFeedback ) ) ) );
   
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Borders", 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showBorders ), 
@@ -1650,9 +1645,6 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
       _height = height;
       viewportChanged = true;
       
-      // Set the date text's position.
-      _dateText->setPosition ( osg::Vec3( 5.0, _height - 25.0, 0.0 ) );
-      
       // Set the build legend flag.
       buildLegend = true;
     }
@@ -1673,12 +1665,6 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
     
     // Build the legend.
     this->_buildLegend( caller );
-    
-    // Add the date text.
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-    geode->addDrawable( _dateText.get() );
-    
-    _camera->addChild ( geode.get() );
   }
   
   _root->addChild ( _camera.get() );
@@ -2512,5 +2498,34 @@ void MinervaDocument::showJobFeedback ( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _hud.showJobFeedback( b );
+  _hud.showJobFeedback( b );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the date feedback text shown?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isShowDateFeedback() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _hud.showDateFeedback();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle showing of date feedback text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showDateFeedback ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _hud.showDateFeedback( b );
 }

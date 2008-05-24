@@ -615,10 +615,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Traverse low level of detail.
   if ( low || _tileJob.valid() )
   {
-    // See if we should draw skirts.
-    const unsigned int mask ( _body->useSkirts() ? 0xffffffff : 0x0 );
-    _skirts->setNodeMask ( mask );
-    
+    // See if we should draw skirts and borders.
+    _skirts->setNodeMask  ( ( _body->useSkirts() ? 0xffffffff : 0x0 ) );
+    _borders->setNodeMask ( ( _body->useBorders() ? 0xffffffff : 0x0 ) );
+
     this->getChild ( 0 )->accept ( cv );
   }
 

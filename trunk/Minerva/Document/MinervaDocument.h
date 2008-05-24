@@ -208,8 +208,12 @@ public:
   bool                                     dirty() const;
   
   /// Toggle the skirts on and off.
-  bool                                     isUseSkirts() const;
-  void                                     useSkirts( bool b );
+  bool                                     isShowSkirts() const;
+  void                                     showSkirts ( bool b );
+  
+  /// Toggle the borders on and off.
+  bool                                     isShowBorders() const;
+  void                                     showBorders ( bool b );
   
   /// Get/Set the active body.
   void                                     activeBody ( Body* );

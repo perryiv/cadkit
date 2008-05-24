@@ -74,6 +74,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _splitDistance ( splitDistance ),
   _meshSize ( ms ),
   _useSkirts ( true ),
+  _useBorders ( true ),
   _splitCallback ( new Minerva::Core::TileEngine::Callbacks::PassThrough ),
   _scale ( 1 ),
   _deleteTiles(),
@@ -98,6 +99,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "split_distance", _splitDistance );
   this->_addMember ( "mesh_size", _meshSize );
   this->_addMember ( "use_skirts", _useSkirts );
+  this->_addMember ( "use_borders", _useBorders );
   this->_addMember ( "split_callback", _splitCallback );
   this->_addMember ( "scale", _scale );
   
@@ -373,7 +375,7 @@ void Body::rasterChanged (  Usul::Interfaces::IRasterLayer *layer )
 void Body::dirtyTextures ( const Extents& e )
 {
   // Dirty the tiles.
-  Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::IMAGE /*, e*/ );
+  Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::IMAGE, e );
   osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
   _transform->accept ( *visitor );
 }
@@ -665,6 +667,36 @@ bool Body::useSkirts() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _useSkirts;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag to use borders.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::useBorders ( bool use )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Set the flag.
+  _useBorders = use;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flag to use borders.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::useBorders() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _useBorders;
 }
 
 

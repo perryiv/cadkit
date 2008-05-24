@@ -202,6 +202,10 @@ public:
   // Request texture.
   BuildRaster::RefPtr       textureRequest ( Tile* );
 
+  // Set/get the flag that says to use borders.
+  void                      useBorders ( bool );
+  bool                      useBorders() const;
+
   // Set/get the flag that says to use skirts.
   void                      useSkirts ( bool );
   bool                      useSkirts() const;
@@ -272,6 +276,7 @@ private:
   double _splitDistance;
   MeshSize _meshSize;
   bool _useSkirts;
+  bool _useBorders;
   SplitCallback::RefPtr _splitCallback;
   double _scale;
   Tiles _deleteTiles;

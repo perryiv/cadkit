@@ -351,7 +351,11 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
     this->_convert ( *data, *result );
 
     // Save the image to the cache.
-    //BaseClass::_writeImageToCache ( extents, width, height, level, result );
+    #ifndef _DEBUG 
+    // Still getting stack corruption?
+    // Need to make a GDAL-based writer.
+    BaseClass::_writeImageToCache ( extents, width, height, level, result );
+    #endif
   }
 
   return result;

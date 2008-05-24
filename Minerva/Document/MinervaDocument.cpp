@@ -1381,9 +1381,13 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ), 
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) ) );
   
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Use Skirts", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::useSkirts ), 
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isUseSkirts ) ) ) );
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Borders", 
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showBorders ), 
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowBorders ) ) ) );
+  
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Skirts", 
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showSkirts ), 
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowSkirts ) ) ) );
   
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Allow Splitting", 
                                                            UA::memberFunction<void> ( this, &MinervaDocument::allowSplit ), 
@@ -2117,7 +2121,7 @@ bool MinervaDocument::isShowCompass() const
 //  
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MinervaDocument::isUseSkirts() const
+bool MinervaDocument::isShowSkirts() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -2132,13 +2136,44 @@ bool MinervaDocument::isUseSkirts() const
 //  
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::useSkirts( bool b )
+void MinervaDocument::showSkirts ( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   Body::RefPtr body ( this->activeBody() );
   if ( body.valid() )
     body->useSkirts ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set use borders state.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isShowBorders() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  Body::RefPtr body ( this->activeBody() );
+  return ( body.valid() ? body->useBorders() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Toggle the borders on and off.
+//  
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showBorders ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  Body::RefPtr body ( this->activeBody() );
+  if ( body.valid() )
+    body->useBorders ( b );
 }
 
 

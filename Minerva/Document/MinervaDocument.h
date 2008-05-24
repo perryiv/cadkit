@@ -234,8 +234,13 @@ public:
   /// Toggle showing of job feedback.
   bool                                     isShowJobFeedback() const;
   void                                     showJobFeedback ( bool b );
+
+  /// Toggle showing of date feedback.
+  bool                                     isShowDateFeedback() const;
+  void                                     showDateFeedback ( bool b );
   
 protected:
+
   virtual ~MinervaDocument();
 
   MinervaDocument( const MinervaDocument& );
@@ -342,7 +347,6 @@ private:
 
   osg::ref_ptr < osg::Group >      _root;
   osg::ref_ptr < osg::Camera >     _camera;
-  osg::ref_ptr < osgText::Text >   _dateText;
 
   Bodies                     _bodies;
   Body::RefPtr               _activeBody;

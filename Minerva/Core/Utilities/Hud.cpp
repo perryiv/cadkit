@@ -41,6 +41,7 @@ Hud::Hud() :
   _camera ( new osg::Camera ),
   _feedback ( new osgText::Text ),
   _position ( new osgText::Text ),
+  _date ( new osgText::Text ),
   _latLonHeight(),
   _requests ( 0 ),
   _running ( 0 ),
@@ -58,6 +59,7 @@ Hud::Hud() :
   osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
   _feedback->setFont ( font.get() );
   _position->setFont ( font.get() );
+  _date->setFont( font.get() );
 #endif
 
 #if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
@@ -79,6 +81,13 @@ Hud::Hud() :
   _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
   _feedback->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   _feedback->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
+
+  _date->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  _date->setCharacterSize( textSize * 2 );
+  _date->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  _date->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
+  _date->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+  _date->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
 }
 
 
@@ -131,6 +140,9 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
 
   geode->addDrawable ( geometry.get() );
 #endif
+
+  // Set the date text's position.
+  _date->setPosition ( osg::Vec3( 5.0, height - 25.0, 0.0 ) );
   
   const unsigned int queued    ( this->requests() );
   const unsigned int executing ( this->running() );
@@ -139,14 +151,17 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
   
   _feedback->setText ( out );
-  _feedback->update();
   
   typedef Usul::Convert::Type<double,std::string> ToString;
   
   _position->setText ( Usul::Strings::format ( "Lat: ", ToString::convert ( _latLonHeight[1] ), 
                                                " Lon: ", ToString::convert ( _latLonHeight[0] ), 
                                                " E: ", ToString::convert (  _latLonHeight[2] ) ) );
+
+  // Update osgText objects.
+  _feedback->update();
   _position->update();
+  _date->update();
   
   const bool positionValid ( false == Usul::Math::nan ( _latLonHeight[0] ) && 
                              false == Usul::Math::nan ( _latLonHeight[1] ) && 
@@ -157,6 +172,9 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   
   if ( this->showPointerPosition() && positionValid )
     geode->addDrawable ( _position.get() );
+
+  if ( this->showDateFeedback() )
+    geode->addDrawable ( _date.get() );
   
   // Turn off lighting.
   geode->getOrCreateStateSet()->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
@@ -315,9 +333,45 @@ bool Hud::showJobFeedback() const
 
 void Hud::hpr ( double heading, double pitch, double roll )
 {
-#if 1
   _compass->heading ( heading );
   _compass->pitch( pitch );
   _compass->roll ( roll );
-#endif
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the date feedback shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::showDateFeedback ( bool b )
+{
+  _flags = Usul::Bits::set ( _flags, _SHOW_DATE_FEEDBACK, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the date feedback shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Hud::showDateFeedback() const
+{
+  return Usul::Bits::has ( _flags, _SHOW_DATE_FEEDBACK );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the date text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::dateFeedback ( const std::string& text )
+{
+  if ( _date.valid() )
+    _date->setText ( text );
 }

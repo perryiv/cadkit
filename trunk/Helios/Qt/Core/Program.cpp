@@ -203,7 +203,7 @@ void Program::run ( int argc, char **argv,
   Usul::File::make ( persistantDir );
 
   // Redirect standard out and error to a file.
-  const std::string output ( persistantDir + program + ".out" );
+  const std::string output ( persistantDir + "stdout.txt" );
   Usul::File::remove ( output, false );
   Helper::sink = Helper::StreamSink::RefPtr ( new Usul::IO::StreamSink ( output ) );
 
@@ -213,9 +213,13 @@ void Program::run ( int argc, char **argv,
   out << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
   // Send trace output here.
-  const std::string traceFile ( persistantDir + program + ".csv" );
+  const std::string traceFile ( persistantDir + "trace.csv" );
   std::ofstream traceStream ( traceFile.c_str() );
   Usul::Trace::Print::stream ( &traceStream );
+
+  // Set job manager's log file.
+  const std::string logFile ( persistantDir + "jobs.csv" );
+  Usul::Jobs::Manager::instance().log ( new Usul::File::Log ( logFile, false ) );
 
   // Initialize singleton of named threads.
   Usul::Threads::Named::instance().set ( Usul::Threads::Names::MAIN );

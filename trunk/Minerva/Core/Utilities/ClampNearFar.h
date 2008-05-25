@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _STAR_SYSTEM_CLAMP_NEAR_FAR_H_
-#define _STAR_SYSTEM_CLAMP_NEAR_FAR_H_
+#ifndef _MINERVA_CORE_CLAMP_NEAR_FAR_H_
+#define _MINERVA_CORE_CLAMP_NEAR_FAR_H_
 
 #include "osgUtil/CullVisitor"
 
@@ -81,4 +81,4 @@ namespace Utilities {
 } // namespace Core
 } // namespace Minerva
 
-#endif //_STAR_SYSTEM_CLAMP_NEAR_FAR_H_
+#endif //_MINERVA_CORE_CLAMP_NEAR_FAR_H_

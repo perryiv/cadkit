@@ -30,8 +30,7 @@ USUL_IMPLEMENT_TYPE_ID ( BuildRaster );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BuildRaster::BuildRaster ( Tile::RefPtr tile ) : 
-  BaseClass ( 0x0, false ),
+BuildRaster::BuildRaster ( Tile::RefPtr tile ) : BaseClass ( 0x0, false ),
   _tile ( tile )
 {
   USUL_TRACE_SCOPE;
@@ -41,8 +40,8 @@ BuildRaster::BuildRaster ( Tile::RefPtr tile ) :
     const unsigned int level ( _tile->level() );
     this->priority ( -1 * static_cast<int> ( level ) );
   
-    Tile::Extents extents ( _tile->extents() );
-    this->name ( Usul::Strings::format ( "Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
+    const Tile::Extents extents ( _tile->extents() );
+    this->name ( Usul::Strings::format ( "BuildRaster, Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
   }
 }
 

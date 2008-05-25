@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_RASTER_GROUP_H__
-#define __STAR_SYSTEM_RASTER_GROUP_H__
+#ifndef __MINERVA_CORE_RASTER_GROUP_H__
+#define __MINERVA_CORE_RASTER_GROUP_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
@@ -64,6 +64,9 @@ public:
   /// Get a copy of the layers.
   void                            layers ( Layers& layers ) const;
 
+  // Set the log.
+  virtual void                    log ( LogPtr );
+
   unsigned int                    size() const;
 
   virtual ImagePtr                texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
@@ -110,4 +113,4 @@ private:
 } // namespace Core
 } // namespace Minerva
 
-#endif // __STAR_SYSTEM_RASTER_GROUP_H__
+#endif // __MINERVA_CORE_RASTER_GROUP_H__

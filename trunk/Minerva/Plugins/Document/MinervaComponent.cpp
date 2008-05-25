@@ -16,6 +16,7 @@
 #include "Minerva/Plugins/Document/MinervaComponent.h"
 #include "Minerva/Document/MinervaDocument.h"
 
+#include "Usul/User/Directory.h"
 
 #include <algorithm>
 
@@ -28,7 +29,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( MinervaComponent, MinervaComponent::BaseClass 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaComponent::MinervaComponent() : BaseClass()
+MinervaComponent::MinervaComponent() : BaseClass(),
+  _log ( new Usul::File::Log ( Usul::User::Directory::program ( true ) + "log.txt", true ) )
 {
 }
 
@@ -41,6 +43,7 @@ MinervaComponent::MinervaComponent() : BaseClass()
 
 MinervaComponent::~MinervaComponent()
 {
+  _log = 0x0;
 }
 
 
@@ -73,6 +76,6 @@ Usul::Interfaces::IUnknown *MinervaComponent::queryInterface ( unsigned long iid
 
 Usul::Documents::Document *MinervaComponent::createDocument ( Unknown *caller )
 {
-  Minerva::Document::MinervaDocument::ValidRefPtr document ( new Minerva::Document::MinervaDocument );
+  Minerva::Document::MinervaDocument::ValidRefPtr document ( new Minerva::Document::MinervaDocument ( _log ) );
   return document.release();
 }

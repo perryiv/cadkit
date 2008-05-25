@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Layers/RasterLayer.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
@@ -23,6 +24,8 @@
 #include "Usul/Math/Absolute.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Scope/Caller.h"
+#include "Usul/Threads/ThreadId.h"
 
 #include "osgDB/ReadFile"
 #include "osgDB/WriteFile"
@@ -34,6 +37,7 @@
 #include "boost/functional/hash.hpp"
 
 #include <algorithm>
+#include <ctime>
 
 using namespace Minerva::Core::Layers;
 
@@ -78,6 +82,7 @@ RasterLayer::RasterLayer() :
   _alpha ( 1.0f ),
   _cacheDir ( RasterLayer::defaultCacheDirectory() ),
   _reader ( 0x0 ),
+  _log ( 0x0 ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_registerMembers();
@@ -101,6 +106,7 @@ RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
   _alpha ( rhs._alpha ),
   _cacheDir ( rhs._cacheDir ),
   _reader ( rhs._reader ),
+  _log ( rhs._log ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_registerMembers();
@@ -115,6 +121,11 @@ RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
 
 RasterLayer::~RasterLayer()
 {
+  _alphas.clear();
+  _guid.clear();
+  _cacheDir.clear();
+  _reader = 0x0;
+  _log = 0x0;
 }
 
 
@@ -554,7 +565,7 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
     Usul::Functions::safeCallR1 ( Usul::File::make, baseDir, "3201050697" );
   }
 
-  // Make the base file name.
+  // Make the file name.
   std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), '.', this->_cacheFileExtension() ) );
 
   // See if the job has been cancelled.
@@ -570,7 +581,7 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
   // If the file is empty then remove it and return.
   if ( 0 == Usul::File::size ( file ) )
   {
-    std::cout << Usul::Strings::format ( "Warning 3552986954: Removing empty cached file: ", file ) << std::endl;
+    this->_logEvent ( Usul::Strings::format ( "Warning 3552986954: Removing empty cached file: ", file ) );
     Usul::File::remove ( file, false, &std::cout );
     return ImagePtr ( 0x0 );
   }
@@ -584,7 +595,7 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
   // If it failed to load...
   if ( false == image.valid() )
   {
-    std::cout << Usul::Strings::format ( "Error 4739433170: Failed to load file: ", file, ", Removing file." ) << std::endl;
+    this->_logEvent ( Usul::Strings::format ( "Error 4739433170: Failed to load file: ", file, ", Removing file." ) );
     Usul::File::remove ( file, false, 0x0 );
     return ImagePtr ( 0x0 );
   }
@@ -687,14 +698,14 @@ std::string RasterLayer::_cacheDirectory() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the extension for the cached files.
+//  Default is to cache in PNG format.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 std::string RasterLayer::_cacheFileExtension() const
 {
   USUL_TRACE_SCOPE;
-  return std::string ( "" );
+  return std::string ( "png" );
 }
 
 
@@ -726,6 +737,11 @@ RasterLayer::ImagePtr RasterLayer::_readImageFile ( const std::string &file, Rea
   // Try to use the given reader.
   if ( reader.valid() )
     return reader->readImageFile ( file );
+
+  // Temporarily turn off verbose output.
+  osg::NotifySeverity level ( osg::getNotifyLevel() );
+  osg::setNotifyLevel ( osg::ALWAYS ); // Yes, this turns it off.
+  Usul::Scope::Caller::RefPtr reset ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( level, osg::setNotifyLevel ) ) );
 
   // Fall back on OSG if we don't have a reader.
   return osgDB::readImageFile ( file );
@@ -879,4 +895,50 @@ void RasterLayer::_writeImageToCache ( const Extents& extents, unsigned int widt
 
   // Write the file.
   osgDB::writeImageFile ( *image, cacheFile );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::log ( LogPtr lp )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _log = lp;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayer::LogPtr RasterLayer::log()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return LogPtr ( _log );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Log the event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::_logEvent ( const std::string &s )
+{
+  USUL_TRACE_SCOPE;
+
+  LogPtr file ( this->log() );
+  if ( ( false == s.empty() ) && ( true == file.valid() ) )
+  {
+    file->write ( Usul::Strings::format ( "clock: ", ::clock(), ", system thread: ", Usul::Threads::currentThreadId(), ", event: ", s ) );
+  }
 }

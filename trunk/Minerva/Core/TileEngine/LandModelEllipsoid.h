@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_RASTER_LAND_MODEL_ELLIPSOID_H__
-#define __STAR_SYSTEM_RASTER_LAND_MODEL_ELLIPSOID_H__
+#ifndef __MINERVA_CORE_RASTER_LAND_MODEL_ELLIPSOID_H__
+#define __MINERVA_CORE_RASTER_LAND_MODEL_ELLIPSOID_H__
 
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
@@ -86,4 +86,4 @@ private:
 } // namespace Minerva
 
 
-#endif // __STAR_SYSTEM_RASTER_LAND_MODEL_ELLIPSOID_H__
+#endif // __MINERVA_CORE_RASTER_LAND_MODEL_ELLIPSOID_H__

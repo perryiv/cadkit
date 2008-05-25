@@ -20,6 +20,7 @@
 #include "Usul/Documents/Document.h"
 
 #include "Usul/Interfaces/IReadImageFile.h"
+#include "Usul/Interfaces/IWriteImageFile.h"
 
 #include <string>
 
@@ -27,7 +28,8 @@ class OGRSFDriver;
 class OGRLayer;
 
 class GDALReadImageDocument : public Usul::Documents::Document,
-                              public Usul::Interfaces::IReadImageFile
+                              public Usul::Interfaces::IReadImageFile,
+                              public Usul::Interfaces::IWriteImageFile
                                   
 {
 public:
@@ -73,8 +75,11 @@ protected:
   /// Use reference counting.
   virtual ~GDALReadImageDocument();
 
-	/// Read a filename and return an image (IReadImageFile).
-	virtual ImagePtr         readImageFile ( const std::string& filename ) const;
+	/// Read a file and return an image (IReadImageFile).
+	virtual ImagePtr         readImageFile ( const std::string& file ) const;
+
+	/// Write the file (IWriteImageFile).
+  virtual void             writeImageFile ( const std::string& file, osg::Image & ) const;
 
 private:
 

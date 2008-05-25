@@ -30,14 +30,18 @@ USUL_IMPLEMENT_TYPE_ID ( BuildTiles );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass(),
+BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass ( 0x0, false ),
   _tile ( tile )
 {
   USUL_TRACE_SCOPE;
 
   if ( _tile.valid() )
   {
-    this->priority ( -1 * static_cast<int> ( _tile->level() ) );
+    const unsigned int level ( _tile->level() );
+    this->priority ( -1 * static_cast<int> ( level ) );
+  
+    const Tile::Extents extents ( _tile->extents() );
+    this->name ( Usul::Strings::format ( "BuildTiles, Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
   }
 }
 

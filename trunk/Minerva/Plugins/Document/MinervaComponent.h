@@ -19,6 +19,7 @@
 #include "CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/File/Log.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
 
@@ -35,6 +36,7 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef Usul::Documents::Document Document;
+  typedef Usul::File::Log::RefPtr LogPtr;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( MinervaComponent );
@@ -59,6 +61,10 @@ protected:
 
   /// Use reference counting.
   virtual ~MinervaComponent();
+
+private:
+
+  LogPtr _log;
 };
 
 

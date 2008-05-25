@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_HUD_H__
-#define __STAR_SYSTEM_HUD_H__
+#ifndef __MINERVA_CORE_HUD_H__
+#define __MINERVA_CORE_HUD_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Utilities/Compass.h"
@@ -104,4 +104,4 @@ private:
 } // namespace Core
 } // namespace Minerva
 
-#endif // __STAR_SYSTEM_HUD_H__
+#endif // __MINERVA_CORE_HUD_H__

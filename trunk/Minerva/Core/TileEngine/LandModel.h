@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_RASTER_LAND_MODEL_H__
-#define __STAR_SYSTEM_RASTER_LAND_MODEL_H__
+#ifndef __MINERVA_CORE_RASTER_LAND_MODEL_H__
+#define __MINERVA_CORE_RASTER_LAND_MODEL_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
@@ -77,4 +77,4 @@ protected:
 } // namespace Minerva
 
 
-#endif // __STAR_SYSTEM_RASTER_LAND_MODEL_H__
+#endif // __MINERVA_CORE_RASTER_LAND_MODEL_H__

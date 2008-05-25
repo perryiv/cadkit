@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _STAR_SYSTEM_SET_JOB_MANAGER_VISITOR_CLASS_H_
-#define _STAR_SYSTEM_SET_JOB_MANAGER_VISITOR_CLASS_H_
+#ifndef _MINERVA_CORE_SET_JOB_MANAGER_VISITOR_CLASS_H_
+#define _MINERVA_CORE_SET_JOB_MANAGER_VISITOR_CLASS_H_
 
 #include "Minerva/Core/Visitor.h"
 
@@ -64,4 +64,4 @@ private:
 } // namespace Minerva
 
 
-#endif // _STAR_SYSTEM_SET_JOB_MANAGER_VISITOR_CLASS_H_
+#endif // _MINERVA_CORE_SET_JOB_MANAGER_VISITOR_CLASS_H_

@@ -31,6 +31,7 @@
 #include "Usul/Jobs/Job.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Network/WMS.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
@@ -61,7 +62,8 @@ RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &u
   _options          ( options ),
   _useNetwork       ( true ),
   _writeFailedFlags ( false ),
-  _readFailedFlags  ( false )
+  _readFailedFlags  ( false ),
+  _maxNumAttempts   ( Usul::Registry::Database::instance()["max_num_wms_download_attempts"].get ( 5 ) )
 {
   USUL_TRACE_SCOPE;
 
@@ -86,7 +88,8 @@ RasterLayerWms::RasterLayerWms ( const RasterLayerWms& rhs ) :
   _options ( rhs._options ),
   _useNetwork ( rhs._useNetwork ),
   _writeFailedFlags ( rhs._writeFailedFlags ),
-  _readFailedFlags ( rhs._readFailedFlags )
+  _readFailedFlags ( rhs._readFailedFlags ),
+  _maxNumAttempts ( rhs._maxNumAttempts )
 {
   this->_registerMembers();
   
@@ -122,6 +125,7 @@ void RasterLayerWms::_registerMembers()
   this->_addMember ( "use_network", _useNetwork );
   this->_addMember ( "write_failed_flags", _writeFailedFlags );
   this->_addMember ( "read_failed_flags", _readFailedFlags );
+  this->_addMember ( "max_num_attempts", _maxNumAttempts );
 }
 
 
@@ -250,9 +254,28 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   // Pull it down if we should...
   if ( ( false == Usul::Predicates::FileExists::test ( file ) ) && ( true == Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) ) )
   {
-    std::ostream *stream ( 0x0 );
-    Usul::Interfaces::IUnknown::QueryPtr caller ( job );
-    Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction ( &wms, &Usul::Network::WMS::download ), 5, stream, caller.get(), "2052060829" );
+    try
+    {
+      std::ostream *stream ( 0x0 );
+      Usul::Interfaces::IUnknown::QueryPtr caller ( job );
+      wms.download ( _maxNumAttempts, stream, caller.get() );
+    }
+    catch ( const Usul::Exceptions::Canceled & )
+    {
+      throw;
+    }
+    catch ( const std::exception &e )
+    {
+      this->_logEvent ( Usul::Strings::format ( "Error 1156606570: Standard exeption caught while downloading. Reason: ", ( ( 0x0 != e.what() ) ? e.what() : "unknown" ), ", URL: ", fullUrl ) );
+      this->_downloadFailed ( file, fullUrl );
+      return ImagePtr ( 0x0 );
+    }
+    catch ( ... )
+    {
+      this->_logEvent ( Usul::Strings::format ( "Error 3173082684: Unknown exeption caught while downloading. URL: ", fullUrl ) );
+      this->_downloadFailed ( file, fullUrl );
+      return ImagePtr ( 0x0 );
+    }
   }
 
   // See if the job has been cancelled.
@@ -261,7 +284,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   // If the file does not exist then return.
   if ( false == Usul::Predicates::FileExists::test ( file ) )
   {
-    std::cout << Usul::Strings::format ( "Error 1276423772: Failed to download. File: ", file, ", URL: ", fullUrl ) << std::endl;
+    this->_logEvent ( Usul::Strings::format ( "Error 1276423772: Failed to download. File: ", file, ", URL: ", fullUrl ) );
     this->_downloadFailed ( file, fullUrl );
     return ImagePtr ( 0x0 );
   }
@@ -269,7 +292,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   // If the file is empty then remove it and return.
   if ( 0 == Usul::File::size ( file ) )
   {
-    std::cout << Usul::Strings::format ( "Error 3244363936: Download file is empty. File: ", file, ", URL: ", fullUrl, ". Removing file." ) << std::endl;
+    this->_logEvent ( Usul::Strings::format ( "Error 3244363936: Download file is empty. File: ", file, ", URL: ", fullUrl, ". Removing file." ) );
     Usul::File::remove ( file, false, 0x0 );
     this->_downloadFailed ( file, fullUrl );
     return ImagePtr ( 0x0 );
@@ -284,7 +307,7 @@ RasterLayerWms::ImagePtr RasterLayerWms::texture ( const Extents& extents, unsig
   // If it failed to load...
   if ( false == image.valid() )
   {
-    std::cout << Usul::Strings::format ( "Error 2720181403: Failed to load file: ", file, ", downloaded from URL: ", fullUrl, ". Removing file." ) << std::endl;
+    this->_logEvent ( Usul::Strings::format ( "Error 2720181403: Failed to load file: ", file, ", downloaded from URL: ", fullUrl, ". Removing file." ) );
     Usul::File::remove ( file, false, 0x0 );
     this->_downloadFailed ( file, fullUrl );
     return ImagePtr ( 0x0 );

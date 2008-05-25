@@ -84,7 +84,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _keepDetail ( false ),
   _sky ( new Minerva::Core::Utilities::Atmosphere ),
   _newTexturesLastFrame ( 0 ),
-  _needsRedraw ( false )
+  _needsRedraw ( false ),
+  _log ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -159,6 +160,8 @@ void Body::_destroy()
 
   // Should be ok now.
   _deleteTiles.clear();
+
+  _log = 0x0;
 }
 
 
@@ -564,7 +567,7 @@ Minerva::Core::Jobs::BuildRaster::RefPtr Body::textureRequest ( Tile* tile )
   }
 
   BuildRaster::RefPtr job ( new BuildRaster ( Tile::RefPtr ( tile ) ) );
-  this->jobManager()->addJob ( job );
+  this->jobManager()->addJob ( job.get() );
 
   return job;
 }
@@ -1430,4 +1433,36 @@ bool Body::keepDetail() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _keepDetail;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::log ( LogPtr lp )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  _log = lp;
+
+  if ( true == _rasters.valid() )
+    _rasters->log ( lp );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Body::LogPtr Body::log()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return LogPtr ( _log );
 }

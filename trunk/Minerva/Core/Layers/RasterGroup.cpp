@@ -451,3 +451,28 @@ void RasterGroup::addLayer ( Usul::Interfaces::ILayer *layer )
     this->append ( rl.get() );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::log ( LogPtr lp )
+{
+  USUL_TRACE_SCOPE;
+
+  // Get copy of the layers.
+  Layers layers ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+
+  // Loop through each layer and set its log.
+  for ( Layers::iterator i = layers.begin(); i != layers.end(); ++i )
+  {
+    RasterLayer::RefPtr raster ( dynamic_cast < RasterLayer * > ( i->get() ) );
+    if ( true == raster.valid() )
+    {
+      raster->log ( lp );
+    }
+  }
+}

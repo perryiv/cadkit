@@ -92,7 +92,7 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaDocument::MinervaDocument() : 
+MinervaDocument::MinervaDocument ( LogPtr log ) : 
   BaseClass( "Minerva Document" ),
   _dirty ( false ),
   _layersMenu ( new MenuKit::Menu ( "&Layers" ) ),
@@ -131,6 +131,7 @@ MinervaDocument::MinervaDocument() :
   _showCompass ( true ),
   _allowSplit ( true ),
   _keepDetail ( false ),
+  _log ( log ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
@@ -207,6 +208,7 @@ MinervaDocument::~MinervaDocument()
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_clear ), "1582439358" );
 
   _root = 0x0;
+  _log = 0x0;
 }
 
 
@@ -386,23 +388,32 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 
-  if( "minerva" == ext )
+  if ( "minerva" == ext )
   {
     // Deserialize the xml tree.
     XmlTree::XercesLife life;
     XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
     document->load ( filename );
     this->deserialize ( *document );
-    
-    // Set the job manager.
+
+    // Make a visitor to set the job manager.
     Minerva::Core::Visitors::SetJobManager::RefPtr setter ( new Minerva::Core::Visitors::SetJobManager ( this->_getJobManager() ) );
-    
-    // Set the job manager for each body.
+
+    // Get the log.
+    LogPtr logFile ( Usul::Threads::Safe::get ( this->mutex(), _log ) );
+
+    // Loop through the bodies.
     for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
     {
       Body::RefPtr body ( *iter );
       if ( body.valid() )
+      {
+        // Set the job manager for each body.
         body->accept ( *setter );
+
+        // Set the log.
+        body->log ( logFile );
+      }
     }
     
     if ( false == _bodies.empty() )
@@ -426,8 +437,8 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
       // Create a job to read the file.
       // Pass the QueryPtr to memberFunction so that if the user removes the layer, there is still a reference until the job finishes.
       Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, progress,
-                                                                                Usul::Adaptors::memberFunction ( read, &Usul::Interfaces::IRead::read ) ), caller ) );
-      
+                                    Usul::Adaptors::memberFunction ( read, &Usul::Interfaces::IRead::read ) ), caller ) );
+
       // Add the job to the manager.
       Usul::Jobs::Manager::instance().addJob ( job );
     }
@@ -2220,6 +2231,7 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
     const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
 
     _manager = new Usul::Jobs::Manager ( poolSize, true );
+    _manager->log ( Usul::Jobs::Manager::instance().log() );
     _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
   

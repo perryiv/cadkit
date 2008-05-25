@@ -16,9 +16,7 @@
 #include "Minerva/Document/CommandReceiver.h"
 
 #include "Usul/Documents/Document.h"
-#include "Usul/Policies/Update.h"
-#include "Usul/Jobs/Job.h"
-
+#include "Usul/File/Log.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
 #include "Usul/Interfaces/IIntersectListener.h"
@@ -29,6 +27,8 @@
 #include "Usul/Interfaces/IMouseEventListener.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Jobs/Job.h"
+#include "Usul/Policies/Update.h"
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Animate/TimeSpan.h"
@@ -82,6 +82,7 @@ public:
   typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
   typedef Minerva::Core::TileEngine::Body Body;
   typedef std::vector<Body::RefPtr> Bodies;
+  typedef Usul::File::Log::RefPtr LogPtr;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( MinervaDocument );
@@ -92,7 +93,7 @@ public:
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  MinervaDocument();
+  MinervaDocument ( LogPtr );
 
   /// Add the view to the document.
   virtual void                             addView ( Usul::Interfaces::IView *view );
@@ -119,7 +120,7 @@ public:
   /// Read the file and add it to existing document's data.
   virtual void                             read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
-  virtual void                             removeView     ( View   *view   );
+  virtual void                             removeView ( View *view );
   
   /// Write the document to given file name. Does not rename this document.
   virtual void                             write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
@@ -351,7 +352,7 @@ private:
   Bodies                     _bodies;
   Body::RefPtr               _activeBody;
   Usul::Jobs::Manager *      _manager;
-  Minerva::Core::Utilities::Hud            _hud;
+  Minerva::Core::Utilities::Hud _hud;
   osg::ref_ptr < Callback >  _callback;
 
   /// Command members.
@@ -390,6 +391,7 @@ private:
   bool _showCompass;
   bool _allowSplit;
   bool _keepDetail;
+  LogPtr _log;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

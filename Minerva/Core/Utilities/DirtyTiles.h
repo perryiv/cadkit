@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _STAR_SYSTEM_DIRTY_TILES_FUNCTOR_CLASS_H_
-#define _STAR_SYSTEM_DIRTY_TILES_FUNCTOR_CLASS_H_
+#ifndef _MINERVA_CORE_DIRTY_TILES_FUNCTOR_CLASS_H_
+#define _MINERVA_CORE_DIRTY_TILES_FUNCTOR_CLASS_H_
 
 #include "Minerva/Core/Extents.h"
 
@@ -61,4 +61,4 @@ private:
 } // namespace Minerva
 
 
-#endif // _STAR_SYSTEM_DIRTY_TILES_FUNCTOR_CLASS_H_
+#endif // _MINERVA_CORE_DIRTY_TILES_FUNCTOR_CLASS_H_

@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _STAR_SYSTEM_SURFACE_MESH_BUILDER_H_
-#define _STAR_SYSTEM_SURFACE_MESH_BUILDER_H_
+#ifndef _MINERVA_CORE_SURFACE_MESH_BUILDER_H_
+#define _MINERVA_CORE_SURFACE_MESH_BUILDER_H_
 
 #include "Usul/Errors/Checker.h"
 
@@ -378,4 +378,4 @@ osg::Node* Mesh<VertexType>::operator()() const
 } // namespace Minerva
 
 
-#endif // _STAR_SYSTEM_SURFACE_MESH_BUILDER_H_
+#endif // _MINERVA_CORE_SURFACE_MESH_BUILDER_H_

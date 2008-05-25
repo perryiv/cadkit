@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_ELEVATION_GROUP_H__
-#define __STAR_SYSTEM_ELEVATION_GROUP_H__
+#ifndef __MINERVA_CORE_ELEVATION_GROUP_H__
+#define __MINERVA_CORE_ELEVATION_GROUP_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterGroup.h"
@@ -52,4 +52,4 @@ private:
 } // namespace Core
 } // namespace Minerva
 
-#endif // __STAR_SYSTEM_ELEVATION_GROUP_H__
+#endif // __MINERVA_CORE_ELEVATION_GROUP_H__

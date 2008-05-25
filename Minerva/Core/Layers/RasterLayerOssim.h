@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_RASTER_LAYER_OSSIM_H__
-#define __STAR_SYSTEM_RASTER_LAYER_OSSIM_H__
+#ifndef __MINERVA_CORE_RASTER_LAYER_OSSIM_H__
+#define __MINERVA_CORE_RASTER_LAYER_OSSIM_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
@@ -62,7 +62,6 @@ protected:
   void                  _buildImagePyramids ( const std::string &file ) const;
 
   virtual std::string   _cacheDirectory() const;
-  virtual std::string   _cacheFileExtension() const;
   virtual void          _convert ( const ossimImageData& data, osg::Image& image );
 
   void                  _open ( const std::string& );
@@ -95,4 +94,4 @@ private:
 } // namespace Core
 } // namespace Minerva
 
-#endif // __STAR_SYSTEM_RASTER_LAYER_OSSIM_H__
+#endif // __MINERVA_CORE_RASTER_LAYER_OSSIM_H__

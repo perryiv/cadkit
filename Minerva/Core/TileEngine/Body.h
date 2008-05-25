@@ -29,13 +29,14 @@
 #include "Minerva/Core/Utilities/SkyDome.h"
 
 #include "Usul/Containers/Unknowns.h"
-#include "Usul/Math/Vector2.h"
-#include "Usul/Math/Vector3.h"
+#include "Usul/File/Log.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Math/Vector2.h"
+#include "Usul/Math/Vector3.h"
 #include "Usul/Threads/Variable.h"
 
 #include "boost/shared_ptr.hpp"
@@ -79,6 +80,7 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::list<Tile::RefPtr> Tiles;
   typedef Minerva::Core::Jobs::BuildRaster BuildRaster;
+  typedef Usul::File::Log::RefPtr LogPtr;
 
   // Helper macro for repeated code.
   MINERVA_DEFINE_NODE_CLASS ( Body );
@@ -141,6 +143,10 @@ public:
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
   virtual osg::Matrixd      planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
   
+  // Set/get the log.
+  void                      log ( LogPtr );
+  LogPtr                    log();
+
   // Set/get the maximum level.
   void                      maxLevel ( unsigned int level );
   unsigned int              maxLevel() const;
@@ -287,6 +293,7 @@ private:
   Minerva::Core::Utilities::SkyDome::RefPtr _sky;
   unsigned int _newTexturesLastFrame;
   bool _needsRedraw;
+  LogPtr _log;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

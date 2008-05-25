@@ -109,6 +109,10 @@ Usul::Interfaces::IUnknown *GDALReadImageDocument::queryInterface ( unsigned lon
   {
   case Usul::Interfaces::IReadImageFile::IID:
     return static_cast < Usul::Interfaces::IReadImageFile* > ( this );
+#if 0
+  case Usul::Interfaces::IWriteImageFile::IID:
+    return static_cast < Usul::Interfaces::IWriteImageFile* > ( this );
+#endif
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -255,6 +259,8 @@ GDALReadImageDocument::Filters GDALReadImageDocument::filtersInsert() const
 
 GDALReadImageDocument::ImagePtr GDALReadImageDocument::readImageFile ( const std::string& filename ) const
 {
+  USUL_TRACE_SCOPE;
+
 	// Open the file.
 	GDALDataset *data ( static_cast<GDALDataset*> ( ::GDALOpen ( filename.c_str(), GA_ReadOnly ) ) );
 
@@ -311,4 +317,17 @@ GDALReadImageDocument::ImagePtr GDALReadImageDocument::readImageFile ( const std
   }
   
   return image;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a filename and return an image (IReadImageFile).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GDALReadImageDocument::writeImageFile ( const std::string& file, osg::Image & ) const
+{
+  USUL_TRACE_SCOPE;
+  throw std::runtime_error ( "Error 4025700686: Imagw writing not implemented yet" );
 }

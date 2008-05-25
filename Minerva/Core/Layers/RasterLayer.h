@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_RASTER_LAYER_H__
-#define __STAR_SYSTEM_RASTER_LAYER_H__
+#ifndef __MINERVA_CORE_RASTER_LAYER_H__
+#define __MINERVA_CORE_RASTER_LAYER_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
@@ -17,6 +17,7 @@
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/File/Log.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ILayer.h"
@@ -63,6 +64,7 @@ public:
   typedef Usul::Interfaces::IRasterAlphas::Alphas Alphas;
   typedef Usul::Interfaces::IReadImageFile IReadImageFile;
   typedef IReadImageFile::RefPtr ReaderPtr;
+  typedef Usul::File::Log::RefPtr LogPtr;
 
   USUL_DECLARE_QUERY_POINTERS ( RasterLayer );
   
@@ -100,6 +102,10 @@ public:
   /// Get the guid for the layer.
   virtual std::string   guid() const;
 
+  // Set/get the log.
+  virtual void          log ( LogPtr );
+  LogPtr                log();
+
   /// Get/Set the name.
   virtual std::string   name() const;
   virtual void          name( const std::string& );
@@ -128,6 +134,8 @@ protected:
   ReaderPtr             _imageReaderGet();
   void                  _imageReaderSet ( ReaderPtr );
   void                  _imageReaderFind ( const std::string &ext );
+
+  void                  _logEvent ( const std::string &s );
 
   static std::string    _mangledURL ( const std::string &url );
 
@@ -172,6 +180,7 @@ private:
   float _alpha;
   std::string _cacheDir;
   IReadImageFile::RefPtr _reader;
+  LogPtr _log;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayer );
@@ -183,4 +192,4 @@ private:
 } // namespace Minerva
 
 
-#endif // __STAR_SYSTEM_RASTER_LAYER_H__
+#endif // __MINERVA_CORE_RASTER_LAYER_H__

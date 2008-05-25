@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_SPLIT_CALLBACKS_H__
-#define __STAR_SYSTEM_SPLIT_CALLBACKS_H__
+#ifndef __MINERVA_CORE_SPLIT_CALLBACKS_H__
+#define __MINERVA_CORE_SPLIT_CALLBACKS_H__
 
 #include "Minerva/Core/Export.h"
 
@@ -137,4 +137,4 @@ private:
 } // namespace Minerva
 
 
-#endif // __STAR_SYSTEM_SPLIT_CALLBACKS_H__
+#endif // __MINERVA_CORE_SPLIT_CALLBACKS_H__

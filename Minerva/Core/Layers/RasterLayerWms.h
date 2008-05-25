@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __STAR_SYSTEM_RASTER_LAYER_WMS_H__
-#define __STAR_SYSTEM_RASTER_LAYER_WMS_H__
+#ifndef __MINERVA_CORE_RASTER_LAYER_WMS_H__
+#define __MINERVA_CORE_RASTER_LAYER_WMS_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
@@ -87,6 +87,7 @@ private:
   bool _useNetwork;
   bool _writeFailedFlags;
   bool _readFailedFlags;
+  unsigned int _maxNumAttempts;
 
   SERIALIZE_XML_CLASS_NAME ( RasterLayerWms );
   SERIALIZE_XML_SERIALIZE_FUNCTION
@@ -99,4 +100,4 @@ private:
 } // namespace Minerva
 
 
-#endif // __STAR_SYSTEM_RASTER_LAYER_WMS_H__
+#endif // __MINERVA_CORE_RASTER_LAYER_WMS_H__

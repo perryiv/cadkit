@@ -19,6 +19,8 @@
 
 #include "Usul/Convert/Convert.h"
 #include "Usul/File/Remove.h"
+#include "Usul/Interfaces/ICancel.h"
+#include "Usul/Interfaces/ICanceledStateGet.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Network/Names.h"
 #include "Usul/Predicates/FileExists.h"
@@ -176,6 +178,17 @@ public:
           // This is not an xml file, so assume we got the desired file.
           success = true;
           break;
+        }
+      }
+
+      // Check to see if we've been canceled.
+      Usul::Interfaces::ICanceledStateGet::QueryPtr canceledState ( caller );
+      if ( ( true == canceledState.valid() ) && ( true == canceledState->canceled() ) )
+      {
+        Usul::Interfaces::ICancel::QueryPtr cancelJob ( caller );
+        if ( true == cancelJob.valid() )
+        {
+          cancelJob->cancel();
         }
       }
 

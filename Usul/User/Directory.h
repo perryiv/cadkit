@@ -37,9 +37,11 @@ struct USUL_EXPORT Directory
 
   // Get the directory in which the vendor can store persistent data. Throws if it fails.
   static std::string      vendor ( const std::string &vendorName, bool wantSlash = false );
+  static std::string      vendor ( bool wantSlash = false );
 
-  // Get the directory in which the vendor can store persistent data. Throws if it fails.
+  // Get the directory in which the program can store persistent data. Throws if it fails.
   static std::string      program ( const std::string &vendorName, const std::string &programName, bool wantSlash = false );
+  static std::string      program ( bool wantSlash = false );
 };
 
 

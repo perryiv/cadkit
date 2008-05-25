@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/User/Directory.h"
+#include "Usul/App/Application.h"
 #include "Usul/System/Environment.h"
 
 #ifdef _MSC_VER // Visual C++
@@ -192,4 +193,31 @@ std::string Usul::User::Directory::program ( const std::string &vendor, const st
 
   // Return string.
   return path;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get user's program directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Usul::User::Directory::program ( bool wantSlash )
+{
+  const std::string v ( Usul::App::Application::instance().vendor() );
+  const std::string p ( Usul::App::Application::instance().program() );
+  return Usul::User::Directory::program ( v, p, wantSlash );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get user's vendor directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Usul::User::Directory::vendor ( bool wantSlash )
+{
+  const std::string v ( Usul::App::Application::instance().vendor() );
+  return Usul::User::Directory::vendor ( v, wantSlash );
 }

@@ -17,6 +17,7 @@
 #define _USUL_JOBS_JOB_MANAGER_CLASS_H_
 
 #include "Usul/Interfaces/IJobFinishedListener.h"
+#include "Usul/File/Log.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -38,20 +39,21 @@ public:
   typedef Usul::Threads::Pool ThreadPool;
   typedef Usul::Interfaces::IJobFinishedListener IJobFinishedListener;
   typedef std::vector<IJobFinishedListener::RefPtr> JobFinishedListeners;
+  typedef Usul::File::Log::RefPtr LogPtr;
 
   // Constructor and destructor. Use as a singleton or as individual objects.
   Manager ( unsigned int poolSize, bool lazyStart );
   ~Manager();
 
   // Add a job to the list.
-  void                    addJob ( Job * );
+  void                    addJob ( Job::RefPtr );
   
   // Add a job finished listener.
   void                    addJobFinishedListener ( Usul::Interfaces::IUnknown * );
 
   // Cancel the job(s).
   void                    cancel();
-  void                    cancel ( Job * );
+  void                    cancel ( Job::RefPtr );
 
   // Clear any jobs that are queued, but not running.
   void                    clearQueuedJobs();
@@ -64,6 +66,10 @@ public:
 
   // Get the singleton.
   static Manager &        instance();
+
+  // Set/get the log.
+  void                    log ( LogPtr );
+  LogPtr                  log();
 
   // Get the next job id. This will also increment the internal counter.
   unsigned long           nextJobId();
@@ -83,7 +89,7 @@ public:
   void                    removeJobFinishedListener ( Usul::Interfaces::IUnknown * );
 
   // Remove the queued job. Has no effect on running jobs.
-  void                    removeQueuedJob ( Job * );
+  void                    removeQueuedJob ( Job::RefPtr );
 
   // Wait for all jobs to complete.
   void                    wait();
@@ -95,8 +101,11 @@ private:
   Manager &operator = ( const Manager & );
 
   void                    _destroy();
-  void                    _jobFinished ( Job* job );
-  
+
+  void                    _jobFinished ( Job::RefPtr );
+
+  void                    _logEvent ( const std::string &s, Job::RefPtr job = Job::RefPtr ( 0x0 ) );
+
   // Use namespaces here, or gcc 4.0 will give an error.
   friend class Usul::Jobs::Detail::Task;
 
@@ -105,6 +114,7 @@ private:
   mutable Mutex _mutex;
   ThreadPool::RefPtr _pool;
   JobFinishedListeners _jobFinishedListeners;
+  LogPtr _log;
 };
 
 

@@ -17,10 +17,13 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Threads/Safe.h"
+#include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
 #include <algorithm>
+#include <ctime>
 
 using namespace Usul::Jobs;
 
@@ -100,7 +103,8 @@ namespace Usul
 Manager::Manager ( unsigned int poolSize, bool lazyStart ) :
   _mutex     (),
   _pool      ( new Usul::Threads::Pool ( poolSize, lazyStart ) ),
-  _jobFinishedListeners ()
+  _jobFinishedListeners(),
+  _log       ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -185,6 +189,9 @@ void Manager::_destroy()
   // It then waits for running threads (jobs) to finish.
   USUL_ASSERT ( 1 == pool->refCount() );
   pool = 0x0;
+
+  // Set member _log to null.
+  { Guard guard ( this ); _log = 0x0; }
 }
 
 
@@ -194,16 +201,19 @@ void Manager::_destroy()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::addJob ( Job *job )
+void Manager::addJob ( Job::RefPtr job )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( ( 0x0 != job ) && ( true == _pool.valid() ) )
+  if ( ( true == job.valid() ) && ( true == _pool.valid() ) )
   {
     job->_setId ( this->nextJobId() );
-    Usul::Jobs::Detail::Task::RefPtr task ( new Usul::Jobs::Detail::Task ( job, this ) );
+    Usul::Jobs::Detail::Task::RefPtr task ( new Usul::Jobs::Detail::Task ( job.get(), this ) );
+
+    this->_logEvent ( "Adding job", job );
     _pool->addTask ( job->priority(), task.get() );
+    this->_logEvent ( "Done adding job", job );
   }
 }
 
@@ -214,15 +224,17 @@ void Manager::addJob ( Job *job )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::removeQueuedJob ( Job *job )
+void Manager::removeQueuedJob ( Job::RefPtr job )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( ( 0x0 != job ) && ( true == _pool.valid() ) )
+  if ( ( true == job.valid() ) && ( true == _pool.valid() ) )
   {
     Usul::Threads::Pool::TaskHandle task ( job->priority(), job->id() );
+    this->_logEvent ( "Removing queued job", job );
     _pool->removeQueuedTask ( task );
+    this->_logEvent ( "Done removing queued job", job );
   }
 }
 
@@ -264,32 +276,13 @@ void Manager::wait()
 {
   USUL_TRACE_SCOPE;
   if ( true == _pool.valid() )
+  {
+    this->_logEvent ( "Waiting for tasks... " );
     _pool->waitForTasks();
+    this->_logEvent ( "Done waiting for tasks" );
+  }
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Resize the thread pool.
-//  Depreciated. Use init() instead. Delete this after a while (25-Nov-2007).
-//
-///////////////////////////////////////////////////////////////////////////////
-#if 0
-void Manager::poolResize ( unsigned int numThreads )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  // Should be true.
-  USUL_ASSERT ( 1 == _pool->refCount() );
-
-  // To minimize the number of threads, delete existing pool first.
-  _pool = 0x0;
-
-  // Now make new pool.
-  _pool = new ThreadPool ( numThreads );
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -316,7 +309,11 @@ void Manager::cancel()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   if ( true == _pool.valid() )
+  {
+    this->_logEvent ( "Canceling thread pool..." );
     _pool->cancel();
+    this->_logEvent ( "Done canceling thread pool" );
+  }
 }
 
 
@@ -326,15 +323,17 @@ void Manager::cancel()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::cancel ( Job *job )
+void Manager::cancel ( Job::RefPtr job )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( ( 0x0 != job ) && ( true == _pool.valid() ) )
+  if ( ( true == job.valid() ) && ( true == _pool.valid() ) )
   {
     this->removeQueuedJob ( job );
+    this->_logEvent ( "Canceling job", job );
     job->cancel();
+    this->_logEvent ( "Done canceling job", job );
   }
 }
 
@@ -352,7 +351,11 @@ void Manager::clearQueuedJobs()
 
   // Clear all queued tasks.
   if ( true == _pool.valid() )
+  {
+    this->_logEvent ( "Clearing queued tasks" );
     _pool->clearQueuedTasks();
+    this->_logEvent ( "Done clearing queued tasks" );
+  }
 }
 
 
@@ -403,6 +406,7 @@ unsigned int Manager::numJobs() const
 //  Helper function to remove the listener.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
 namespace Usul {
 namespace Jobs {
 namespace Helper
@@ -427,6 +431,7 @@ namespace Helper
 }
 }
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -494,14 +499,69 @@ void Manager::removeJobFinishedListener ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::_jobFinished ( Job* job_ )
+void Manager::_jobFinished ( Job::RefPtr j )
 {
   USUL_TRACE_SCOPE;
 
   // Make a copy to reduce risk of deadlocks.
   JobFinishedListeners listeners ( Usul::Threads::Safe::get ( this->mutex(), _jobFinishedListeners ) );
-  Usul::Jobs::Job::RefPtr job ( job_ );
+  Usul::Jobs::Job::RefPtr job ( j );
+
+  this->_logEvent ( "Job finished", job );
 
   // Notify the listeners.
   std::for_each ( listeners.begin(), listeners.end(), std::bind2nd ( std::mem_fun ( &IJobFinishedListener::jobFinished ), job.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::log ( LogPtr lp )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _log = lp;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Manager::LogPtr Manager::log()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return LogPtr ( _log );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Log the event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::_logEvent ( const std::string &s, Job::RefPtr job )
+{
+  USUL_TRACE_SCOPE;
+
+  LogPtr file ( this->log() );
+  if ( ( false == s.empty() ) && ( true == file.valid() ) )
+  {
+    if ( true == job.valid() )
+    {
+      file->write ( Usul::Strings::format ( "clock: ", ::clock(), ", system thread: ", Usul::Threads::currentThreadId(), ", id: ", job->id(), ", priority: ", job->priority(), ", address: ", job.get(), ", manager: ", this, ", name: ", job->name(), ", event: ", s ) );
+    }
+    else
+    {
+      file->write ( Usul::Strings::format ( "clock: ", ::clock(), ", system thread: ", Usul::Threads::currentThreadId(), ", event: ", s ) );
+    }
+  }
 }

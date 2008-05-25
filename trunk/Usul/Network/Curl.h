@@ -20,8 +20,8 @@
 
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
-#include "Usul/Interfaces/ICanceledStateGet.h"
 #include "Usul/Interfaces/ICancel.h"
+#include "Usul/Interfaces/ICanceledStateGet.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Scope/RemoveFile.h"

@@ -39,4 +39,4 @@ protected:
 }
 
 
-#endif // __STAR_SYSTEM_DELETE_HANDLER_H__
+#endif // __OSG_TOOLS_DELETE_HANDLER_H__

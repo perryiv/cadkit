@@ -52,5 +52,5 @@ MinervaWriter::~MinervaWriter()
 void MinervaWriter::operator()()
 {
   Usul::Factory::ObjectFactory::instance().add ( new Usul::Factory::TypeCreator<MinervaDocument> ( "MinervaDocument" ) );
-  Serialize::XML::serialize( "MinervaDocument", *_document, _filename );
+  Serialize::XML::serialize ( "MinervaDocument", *_document, _filename );
 }

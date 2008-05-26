@@ -88,6 +88,7 @@ SET (SOURCES
 ./Trace/Print.cpp
 ./Errors/Stack.cpp
 ./Errors/Error.cpp
+./File/Log.cpp
 ./Functors/Interaction/Wand/WandPosition.cpp
 ./Functors/Interaction/Wand/WandRotation.cpp
 ./Functors/Interaction/Wand/WandMatrix.cpp

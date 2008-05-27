@@ -10,12 +10,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class for showing widgets.
+//  Class for moving widgets.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Tools/Show.h"
-#include "Helios/Qt/Tools/Move.h"
+#include "QtTools/Move.h"
 
 #include "Usul/Trace/Trace.h"
 
@@ -23,22 +22,22 @@
 #include "QtGui/QDesktopWidget"
 #include "QtGui/QWidget"
 
-using namespace CadKit::Helios::Tools;
+using namespace QtTools;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Show the widget to the center of the screen.
+//  Move the widget to the center of the screen.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Show::center ( QWidget *widget )
+void Move::center ( QWidget *widget )
 {
   USUL_TRACE_SCOPE_STATIC;
 
   if ( 0x0 != widget )
   {
-    CadKit::Helios::Tools::Move::center ( widget );
-    widget->show();
+    const QRect rect ( QApplication::desktop()->screenGeometry() );
+    widget->move ( rect.center() - QPoint ( widget->width() / 2, widget->height() / 2 ) );
   }
 }

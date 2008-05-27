@@ -14,28 +14,24 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_HELIOS_QT_TOOLS_MOVE_H_
-#define _CADKIT_HELIOS_QT_TOOLS_MOVE_H_
+#ifndef _QT_TOOLS_MOVE_H_
+#define _QT_TOOLS_MOVE_H_
 
-#include "Helios/Qt/Tools/Export.h"
+#include "QtTools/Export.h"
 
 class QWidget;
 
 
-namespace CadKit {
-namespace Helios {
-namespace Tools {
+namespace QtTools {
 
 
-struct HELIOS_QT_TOOLS_EXPORT Move
+struct QT_TOOLS_EXPORT Move
 {
   static void center ( QWidget *widget );
 };
 
 
-} // namespace Tools
-} // namespace Helios
-} // namespace CadKit
+} // namespace QtTools
 
 
-#endif //_CADKIT_HELIOS_QT_TOOLS_MOVE_H_
+#endif //_QT_TOOLS_MOVE_H_

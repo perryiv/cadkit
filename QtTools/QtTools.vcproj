@@ -372,6 +372,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\Move.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Move.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PropertyBrowser.cpp"
 					>
 				</File>
@@ -407,6 +415,22 @@
 				</File>
 				<File
 					RelativePath=".\Question.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SettingsGroupScope.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SettingsGroupScope.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Show.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Show.h"
 					>
 				</File>
 				<File

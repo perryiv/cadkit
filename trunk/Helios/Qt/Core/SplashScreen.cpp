@@ -9,8 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Helios/Qt/Core/SplashScreen.h"
-#include "Helios/Qt/Tools/Show.h"
 
+#include "QtTools/Show.h"
 #include "QtTools/Image.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -204,7 +204,7 @@ void SplashScreen::show()
   // Handle repeated calls.
   if ( 0x0 != _window )
   {
-    CadKit::Helios::Tools::Show::center ( _window );
+		QtTools::Show::center ( _window );
     return;
   }
 
@@ -229,7 +229,7 @@ void SplashScreen::show()
   }
 
   // Show it at the center of the screen.
-  CadKit::Helios::Tools::Show::center ( _window );
+  QtTools::Show::center ( _window );
 }
 
 

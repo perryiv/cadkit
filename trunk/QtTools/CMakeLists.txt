@@ -21,8 +21,11 @@ SET (SOURCES
   FileDialog.cpp
   Image.cpp
   Menu.cpp
+  Move.cpp
   PropertyBrowser.cpp
   Question.cpp
+  SettingsGroupScope.cpp
+  Show.cpp
   TreeControl.cpp
 
 )

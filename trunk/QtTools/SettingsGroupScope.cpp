@@ -10,34 +10,41 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class for moving widgets.
+//  Scope for setting groups.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Tools/Move.h"
+#include "QtTools/SettingsGroupScope.h"
 
 #include "Usul/Trace/Trace.h"
 
-#include "QtGui/QApplication"
-#include "QtGui/QDesktopWidget"
-#include "QtGui/QWidget"
+#include "QtCore/QSettings"
 
-using namespace CadKit::Helios::Tools;
+using namespace QtTools;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Move the widget to the center of the screen.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Move::center ( QWidget *widget )
+SettingsGroupScope::SettingsGroupScope ( const std::string &name, QSettings &settings ) :
+  _settings ( settings )
 {
-  USUL_TRACE_SCOPE_STATIC;
+  USUL_TRACE_SCOPE;
+  _settings.beginGroup ( name.c_str() );
+}
 
-  if ( 0x0 != widget )
-  {
-    const QRect rect ( QApplication::desktop()->screenGeometry() );
-    widget->move ( rect.center() - QPoint ( widget->width() / 2, widget->height() / 2 ) );
-  }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SettingsGroupScope::~SettingsGroupScope()
+{
+  USUL_TRACE_SCOPE;
+  _settings.endGroup();
 }

@@ -14,22 +14,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CADKIT_HELIOS_QT_TOOLS_SETTINGS_GROUP_SCOPE_H_
-#define _CADKIT_HELIOS_QT_TOOLS_SETTINGS_GROUP_SCOPE_H_
+#ifndef _QT_TOOLS_SETTINGS_GROUP_SCOPE_H_
+#define _QT_TOOLS_SETTINGS_GROUP_SCOPE_H_
 
-#include "Helios/Qt/Tools/Export.h"
+#include "QtTools/Export.h"
 
 #include <string>
 
 class QSettings;
 
 
-namespace CadKit {
-namespace Helios {
-namespace Tools {
+namespace QtTools {
 
 
-class HELIOS_QT_TOOLS_EXPORT SettingsGroupScope
+class QT_TOOLS_EXPORT SettingsGroupScope
 {
 public:
 
@@ -46,9 +44,7 @@ private:
 };
 
 
-} // namespace Tools
-} // namespace Helios
-} // namespace CadKit
+} // namespace QtTools
 
 
-#endif //_CADKIT_HELIOS_QT_TOOLS_SETTINGS_GROUP_SCOPE_H_
+#endif //_QT_TOOLS_SETTINGS_GROUP_SCOPE_H_

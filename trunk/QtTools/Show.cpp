@@ -10,41 +10,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Scope for setting groups.
+//  Class for showing widgets.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Helios/Qt/Tools/SettingsGroupScope.h"
+#include "QtTools/Show.h"
+#include "QtTools/Move.h"
 
 #include "Usul/Trace/Trace.h"
 
-#include "QtCore/QSettings"
+#include "QtGui/QApplication"
+#include "QtGui/QDesktopWidget"
+#include "QtGui/QWidget"
 
-using namespace CadKit::Helios::Tools;
+using namespace QtTools;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Constructor.
+//  Show the widget to the center of the screen.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SettingsGroupScope::SettingsGroupScope ( const std::string &name, QSettings &settings ) :
-  _settings ( settings )
+void Show::center ( QWidget *widget )
 {
-  USUL_TRACE_SCOPE;
-  _settings.beginGroup ( name.c_str() );
-}
+  USUL_TRACE_SCOPE_STATIC;
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-SettingsGroupScope::~SettingsGroupScope()
-{
-  USUL_TRACE_SCOPE;
-  _settings.endGroup();
+  if ( 0x0 != widget )
+  {
+    QtTools::Move::center ( widget );
+    widget->show();
+  }
 }

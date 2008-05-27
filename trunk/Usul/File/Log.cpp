@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/File/Log.h"
+#include "Usul/File/LineEnding.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
@@ -22,7 +23,6 @@
 using namespace Usul::File;
 
 USUL_IMPLEMENT_TYPE_ID ( Log );
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -116,7 +116,7 @@ void Log::write ( const std::string &s, bool appendNewLine, bool prependEventCou
 
   // Append a new line and flush if we should.
   if ( true == appendNewLine )
-    _out << std::endl;
+    _out << Usul::File::LINE_ENDING;
 
   // Increment the event count.
   ++_count;

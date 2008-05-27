@@ -377,19 +377,23 @@ void Tile::updateTexture()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   // Get the image.
-  if ( ( true == _texture.valid() ) && ( 0x0 != _image.get() ) && ( true == this->textureDirty() ) )
+  if ( ( true == _texture.valid() ) && ( true == this->textureDirty() ) )
   {
-    // Set the image.
-    _texture->setImage ( _image.get() );
-    
+    // Set the image if not null.
+    if ( true == _image.valid() )
+      _texture->setImage ( _image.get() );
+
+    // Set the proper texture state. This enables us to get a blank planet.
+    const unsigned int flags ( ( ( true == _image.valid() ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
+
     // Get the state set.
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-    ss->setTextureAttributeAndModes ( _textureUnit, _texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    ss->setTextureAttributeAndModes ( _textureUnit, _texture.get(), flags );
 
-    // Turn off lighting.
-    OsgTools::State::StateSet::setLighting ( this, false );
+    // Turn lighting on or off, depending on if there is an image.
+    OsgTools::State::StateSet::setLighting ( this, ( false == _image.valid() ) );
     
     // Let the body know we have a new texture.
     if ( 0x0 != _body )
@@ -916,9 +920,8 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
     }
   }
 
-  // Set our image if we have a valid result.
-  if ( result.valid() )
-    this->textureData ( result.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
+  // Always set our image, even if it's null.
+  this->textureData ( result.get(), Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
 }
 
 

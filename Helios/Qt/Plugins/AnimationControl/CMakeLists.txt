@@ -28,3 +28,6 @@ CADKIT_PLUGIN()
 # Link the Library with Cadkit Libraries.
 LINK_CADKIT( ${PLUGIN_NAME} Usul QtTools )
 
+INSTALL(TARGETS ${PLUGIN_NAME}
+  LIBRARY DESTINATION bin
+)

@@ -27,7 +27,6 @@ set (SOURCES
 # ---------- Create a Shared Library
 ADD_LIBRARY(QtSceneDelegate SHARED ${SOURCES} )
 
-
 CADKIT_PLUGIN()
 
 # Link the Library with Cadkit Libraries.
@@ -40,3 +39,6 @@ TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
 	${OSG_LIB}
 )
 
+INSTALL(TARGETS ${PLUGIN_NAME}
+  LIBRARY DESTINATION bin
+)

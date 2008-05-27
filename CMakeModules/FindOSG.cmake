@@ -11,8 +11,7 @@ FIND_PATH(OT_INC_DIR  OpenThreads/Mutex
 )
 
  set(OT_LIB_DIR "$ENV{OPENTHREADS_LIB_DIR}")
- #set(OT_INC_DIR "$ENV{OPENTHREADS_INC_DIR}")
- 
+  
  # Pick up if the user has set an environment variable to point to the 
 #  OpenSceneGraph Library Directory. If these are not set
 #  then they will simply be ignored.
@@ -60,10 +59,6 @@ FIND_LIBRARY(OSG_MANIPULATOR osgManipulator
  ${OSG_LIB_DIR}
 )
 
-
-# ------------ Find osgProducer Library ----------------------
-# osgProducer is no longer part of the main distribution as of OSG 2.0
-#FIND_LIBRARY(OSG_PRODUCER_LIB osgProducer ${OSG_LIB_DIR} )
 
 MARK_AS_ADVANCED(
   OT_INC_DIR

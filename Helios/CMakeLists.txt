@@ -85,3 +85,13 @@ SUBDIRS (
 )
 
 
+# Install 3rd party dependencies.
+INSTALL ( FILES ${OSG_LIB} 
+                ${OSG_DB_LIB} 
+                ${OSG_GA_LIB} 
+                ${OSG_TEXT_LIB}
+                ${OSG_UTIL_LIB}
+                ${OSG_MANIPULATOR}
+                ${OPENTHREADS_LIB}
+  DESTINATION bin
+)

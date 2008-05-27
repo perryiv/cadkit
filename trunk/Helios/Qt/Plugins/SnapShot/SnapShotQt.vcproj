@@ -252,7 +252,7 @@
 							Name="VCCustomBuildTool"
 							Description="Moc&apos;ing SnapShotWidget.h..."
 							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\SnapShotWidget.h&quot; -o &quot;.\GeneratedFiles\moc_SnapShotWidget.cpp&quot;&#x0D;&#x0A;;$(QTDIR)\bin\uic.exe .\SnapShot.ui -o .\ui_SnapShot.h&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\SnapShotWidget.h;$(QTDIR)\bin\uic.exe;.\ui_SnapShot.h"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\SnapShotWidget.h;$(QTDIR)\bin\uic.exe;.\SnapShot.ui"
 							Outputs=".\GeneratedFiles\moc_SnapShotWidget.cpp;.\ui_SnapShot.h"
 						/>
 					</FileConfiguration>
@@ -263,7 +263,7 @@
 							Name="VCCustomBuildTool"
 							Description="Moc&apos;ing SnapShotWidget.h..."
 							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\SnapShotWidget.h&quot; -o &quot;.\GeneratedFiles\moc_SnapShotWidget.cpp&quot;&#x0D;&#x0A;;$(QTDIR)\bin\uic.exe .\SnapShot.ui -o .\ui_SnapShot.h&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\SnapShotWidget.h;$(QTDIR)\bin\uic.exe;.\ui_SnapShot.h"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\SnapShotWidget.h;$(QTDIR)\bin\uic.exe;.\SnapShot.ui"
 							Outputs=".\GeneratedFiles\moc_SnapShotWidget.cpp;.\ui_SnapShot.h"
 						/>
 					</FileConfiguration>

@@ -10,7 +10,7 @@
 #ifndef _USUL_ERRORS_SIGNAL_FUNCTIONS_H_
 #define _USUL_ERRORS_SIGNAL_FUNCTIONS_H_
 
-#ifdef __linux
+#ifdef __GNUC__
 # include <execinfo.h>
 # include <signal.h>
 #endif

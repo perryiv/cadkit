@@ -25,15 +25,15 @@ namespace File {
     
 #ifdef _WIN32
     
-  const char LINE_ENDING ( '\r\n' );
+  const char* LINE_ENDING ( "\r\n'" );
     
 #else
     
-  const char LINE_ENDING ( '\n' );
+  const char* LINE_ENDING ( "\n" );
     
 #endif
     
-  inline std::string lineEnding() { return std::string ( &LINE_ENDING ); }
+  inline std::string lineEnding() { return std::string ( LINE_ENDING ); }
 
 } // namespace File
 } // namespace Usul

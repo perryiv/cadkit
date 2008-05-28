@@ -23,7 +23,6 @@
 
 class QLineEdit;
 class QButtonGroup;
-class OptionWidget;
 class QTreeWidget;
 class QStringListModel;
 

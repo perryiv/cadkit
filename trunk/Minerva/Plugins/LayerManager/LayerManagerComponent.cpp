@@ -241,6 +241,9 @@ void LayerManagerComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
     // Add to our list.
     _docks.push_back ( dock.release() );
   }
+
+  // Set the favorites.
+  _layers->favorites ( _favorites );
   
   QObject::connect ( _layers,    SIGNAL ( addLayerFavorites ( Usul::Interfaces::IUnknown * ) ), _favorites, SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
   QObject::connect ( _favorites, SIGNAL ( layerAdded ( Usul::Interfaces::IUnknown * ) ),        _layers,    SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );

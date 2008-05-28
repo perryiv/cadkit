@@ -11,8 +11,13 @@
 #include "Minerva/Plugins/LayerManager/Favorites.h"
 #include "Minerva/Core/Commands/AddLayer.h"
 
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
@@ -98,26 +103,42 @@ void Favorites::on_addLayer_clicked()
   FavoritesMap::const_iterator iter = _favoritesMap.find( name );
   if( iter != _favoritesMap.end() )
   {
-    Usul::Interfaces::IClonable::QueryPtr clonable ( iter->second.get() );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( iter->second.get() );
+    this->_addLayer ( unknown );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Favorites::_addLayer ( Usul::Interfaces::IUnknown* unknown )
+{
+  // Return now if unknown is null.
+  if ( 0x0 == unknown )
+    return;
+
+  Usul::Interfaces::IClonable::QueryPtr clonable ( unknown );
     
-    if( clonable.valid() )
+  if( clonable.valid() )
+  {
+    // Clone the "template"
+    Usul::Interfaces::ILayer::QueryPtr layer ( clonable->clone() );
+    
+    if( layer.valid() )
     {
-      // Clone the "template"
-      Usul::Interfaces::ILayer::QueryPtr layer ( clonable->clone() );
+      // Make sure that the favorite is shown.
+      layer->showLayer( true );
+    
+      // Add the layer.
+      Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( _caller, layer.get() ) );
+      addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
       
-      if( layer.valid() )
-      {
-        // Make sure that the favorite is shown.
-        layer->showLayer( true );
-      
-        // Add the layer.
-        Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( _caller, layer.get() ) );
-        addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
-        
-        // Emit the layer added signal.
-        Usul::Interfaces::IUnknown::QueryPtr unknown ( layer );
-        emit layerAdded ( unknown.get() );
-      }
+      // Emit the layer added signal.
+      emit layerAdded ( unknown );
     }
   }
 }
@@ -224,4 +245,31 @@ std::string Favorites::_filename() const
   
   // Return the file name.
   return filename;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Menu* Favorites::menu()
+{
+  // Shorten the lines.
+  typedef MenuKit::Menu Menu;
+  typedef MenuKit::Button Button;
+  namespace UA = Usul::Adaptors;
+  namespace UC = Usul::Commands;
+
+  // Make the menu.
+  Menu::RefPtr menu ( new Menu );
+
+  // Add buttons to the menu.
+  for ( FavoritesMap::const_iterator iter = _favoritesMap.begin(); iter != _favoritesMap.end(); ++iter )
+  {
+    menu->append ( new Button ( UC::genericCommand ( iter->first, UA::bind1<void> ( iter->second.get(), UA::memberFunction<void> ( this, &Favorites::_addLayer ) ), UC::TrueFunctor() ) ) );
+  }
+
+  return menu.release();
 }

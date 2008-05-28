@@ -17,7 +17,7 @@ while ( @ARGV )
   my $file = shift @ARGV;
   my @parts = split ( /\./, $file );
   my $ext = $parts [ @parts - 1 ];
-  my $command = sprintf ( "mv $file %09d.%s", $output, $ext );
+  my $command = sprintf ( "mv \"$file\" %09d.%s", $output, $ext );
   print "$command\n";
   `$command`;
   $output++;

@@ -294,6 +294,7 @@ private:
   unsigned int _newTexturesLastFrame;
   bool _needsRedraw;
   LogPtr _log;
+  std::string _name;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

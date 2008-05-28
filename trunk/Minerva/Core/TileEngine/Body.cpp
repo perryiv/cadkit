@@ -85,7 +85,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _sky ( new Minerva::Core::Utilities::Atmosphere ),
   _newTexturesLastFrame ( 0 ),
   _needsRedraw ( false ),
-  _log ( 0x0 )
+  _log ( 0x0 ),
+  _name( "Body" )
 {
   USUL_TRACE_SCOPE;
 
@@ -103,6 +104,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "use_borders", _useBorders );
   this->_addMember ( "split_callback", _splitCallback );
   this->_addMember ( "scale", _scale );
+  this->_addMember ( "name", _name );
   
   // Set the names.
   _elevation->name ( "Elevation" );
@@ -1234,9 +1236,11 @@ Usul::Interfaces::ITreeNode * Body::getChildNode ( unsigned int which )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::setTreeNodeName ( const std::string & )
+void Body::setTreeNodeName ( const std::string & s )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _name = s;
 }
 
 
@@ -1249,7 +1253,8 @@ void Body::setTreeNodeName ( const std::string & )
 std::string Body::getTreeNodeName() const
 {
   USUL_TRACE_SCOPE;
-  return "Body";
+  Guard guard ( this->mutex() );
+  return _name;
 }
 
 

@@ -26,8 +26,8 @@ SET (SOURCES
   Question.cpp
   SettingsGroupScope.cpp
   Show.cpp
+  StringsView.cpp
   TreeControl.cpp
-
 )
 
 # These need to be moc'd.

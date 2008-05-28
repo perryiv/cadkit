@@ -25,7 +25,7 @@ class QT_TOOLS_EXPORT StringsView : public QTreeView
 {
 public:
   typedef QTreeView BaseClass;
-  typedef std::vector<std::pair<std::string, std::string>> Items;
+  typedef std::vector<std::pair<std::string, std::string> > Items;
   
   StringsView ( QWidget *parent = 0x0 );
   virtual ~StringsView();

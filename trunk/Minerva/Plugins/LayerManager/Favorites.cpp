@@ -28,6 +28,7 @@
 #include "Serialize/XML/Deserialize.h"
 
 #include "QtGui/QHeaderView"
+#include "QtGui/QMenu"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -49,6 +50,16 @@ Favorites::Favorites(Usul::Interfaces::IUnknown* caller, QWidget* parent ) : Bas
   // Restore favorites.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Favorites::_restoreState ) );
   
+  // We want a custom context menu.
+  _favoritesTree->setContextMenuPolicy ( Qt::CustomContextMenu );
+
+  // Notify us when a context menu is requested.
+  connect ( _favoritesTree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
+            this,  SLOT   ( _onContextMenuShow ( const QPoint& ) ) );
+
+  // We want exteneded selection.
+  //_favoritesTree->selectionMode ( QAbstractItemView::ExtendedSelection );
+
   this->_buildTree();
 }
 
@@ -86,36 +97,11 @@ void Favorites::addLayer( Usul::Interfaces::IUnknown* unknown )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create a favorite from the string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Favorites::on_addLayer_clicked()
-{
-  // Get the current item.
-  QTreeWidgetItem * item ( _favoritesTree->currentItem() );
-  
-  if ( 0x0 == item )
-    return;
-  
-  std::string name ( item->text( 0 ).toStdString() );
-  
-  FavoritesMap::const_iterator iter = _favoritesMap.find( name );
-  if( iter != _favoritesMap.end() )
-  {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( iter->second.get() );
-    this->_addLayer ( unknown );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add a layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Favorites::_addLayer ( Usul::Interfaces::IUnknown* unknown )
+void Favorites::_addLayer ( Usul::Interfaces::IUnknown *parent, Usul::Interfaces::IUnknown* unknown )
 {
   // Return now if unknown is null.
   if ( 0x0 == unknown )
@@ -134,7 +120,7 @@ void Favorites::_addLayer ( Usul::Interfaces::IUnknown* unknown )
       layer->showLayer( true );
     
       // Add the layer.
-      Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( _caller, layer.get() ) );
+      Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( parent, layer.get() ) );
       addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
       
       // Emit the layer added signal.
@@ -150,7 +136,7 @@ void Favorites::_addLayer ( Usul::Interfaces::IUnknown* unknown )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Favorites::on_removeFavoriteButton_clicked()
+void Favorites::_removeFavoriteButtonClicked()
 {
   // Get the current item.
   QTreeWidgetItem * item ( _favoritesTree->currentItem() );
@@ -254,7 +240,7 @@ std::string Favorites::_filename() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuKit::Menu* Favorites::menu()
+MenuKit::Menu* Favorites::menu( Usul::Interfaces::IUnknown *caller )
 {
   // Shorten the lines.
   typedef MenuKit::Menu Menu;
@@ -268,8 +254,33 @@ MenuKit::Menu* Favorites::menu()
   // Add buttons to the menu.
   for ( FavoritesMap::const_iterator iter = _favoritesMap.begin(); iter != _favoritesMap.end(); ++iter )
   {
-    menu->append ( new Button ( UC::genericCommand ( iter->first, UA::bind1<void> ( iter->second.get(), UA::memberFunction<void> ( this, &Favorites::_addLayer ) ), UC::TrueFunctor() ) ) );
+    menu->append ( new Button ( UC::genericCommand ( iter->first, UA::bind2<void> ( caller, iter->second.get(), UA::memberFunction<void> ( this, &Favorites::_addLayer ) ), UC::TrueFunctor() ) ) );
   }
 
   return menu.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the context menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Favorites::_onContextMenuShow ( const QPoint& pos )
+{
+  // Get the current item.
+  QTreeWidgetItem * item ( _favoritesTree->currentItem() );
+  
+  // Return if no layer.
+  if ( 0x0 == item )
+    return;
+
+  QMenu menu;
+
+  QAction action ( "Remove", 0x0 );
+  connect ( &action, SIGNAL ( triggered() ), this, SLOT ( _removeFavoriteButtonClicked() ) );
+  menu.addAction ( &action );
+
+  menu.exec ( _favoritesTree->mapToGlobal ( pos ) );
 }

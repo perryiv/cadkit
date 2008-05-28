@@ -11,6 +11,7 @@
 #include "Minerva/Core/Commands/AddLayer.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IVectorLayer.h"
+#include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -91,12 +92,12 @@ AddLayer::~AddLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddLayer::_execute ()
+void AddLayer::_execute()
 {
   USUL_TRACE_SCOPE;
 
   // Create a job to add a layer.  It captures the active document.
-  AddLayerJob::RefPtr job ( new AddLayerJob ( _layer, this->caller () ) );
+  AddLayerJob::RefPtr job ( new AddLayerJob ( _layer, this->caller() ) );
 
   if ( _progressBar.valid() )
     job->progress ( _progressBar );
@@ -148,6 +149,10 @@ AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Inte
   // Try adding the layer with the caller first.  If that fails, try the active document.
   if ( false == this->_addLayer ( caller ) )
     this->_addLayer ( _document );
+
+  Minerva::Interfaces::IDirtyScene::QueryPtr ds ( _document );
+  if ( ds.valid() )
+    ds->dirtyScene ( true, layer );
 }
 
 

@@ -347,9 +347,9 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
 
   QtTools::Menu addFromFavorites ( "Add From Favorites" );
 
-  if ( 0x0 != this->favorites() )
+  if ( 0x0 != this->favorites() && al.valid() )
   {
-    MenuKit::Menu::RefPtr subMenu ( this->favorites()->menu() );
+    MenuKit::Menu::RefPtr subMenu ( this->favorites()->menu( unknown.get() ) );
     addFromFavorites.menu ( subMenu );
     menu.addMenu ( &addFromFavorites );
   }

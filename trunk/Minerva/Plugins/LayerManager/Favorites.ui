@@ -14,28 +14,7 @@
   </property>
   <layout class="QVBoxLayout" >
    <item>
-    <layout class="QHBoxLayout" >
-     <item>
-      <widget class="QPushButton" name="addLayer" >
-       <property name="toolTip" >
-        <string>Add layer to active document</string>
-       </property>
-       <property name="statusTip" >
-        <string>Add layer to active document</string>
-       </property>
-       <property name="text" >
-        <string>Add Layer</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="removeFavoriteButton" >
-       <property name="text" >
-        <string>Remove Favorite</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <layout class="QHBoxLayout" />
    </item>
    <item>
     <widget class="QTreeWidget" name="_favoritesTree" >

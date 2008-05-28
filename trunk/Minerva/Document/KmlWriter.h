@@ -41,11 +41,7 @@ protected:
 
     Visitor ( const std::string & filename );
 
-    //virtual void visit ( Minerva::Core::DataObjects::Line &line );
-    //virtual void visit ( Minerva::Core::DataObjects::Point &point );
-    //virtual void visit ( Minerva::Core::DataObjects::Polygon &polygon );
-
-    virtual void visit ( Minerva::Core::Layers::Vector& layer );
+    virtual void visit ( Minerva::Core::Layers::Container& layer );
 
   protected:
     virtual ~Visitor ();

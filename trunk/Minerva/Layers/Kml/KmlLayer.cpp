@@ -18,6 +18,7 @@
 #include "Minerva/Layers/Kml/NetworkLink.h"
 #include "Minerva/Layers/Kml/Feature.h"
 #include "Minerva/Layers/Kml/TimeSpan.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Geometry/Model.h"

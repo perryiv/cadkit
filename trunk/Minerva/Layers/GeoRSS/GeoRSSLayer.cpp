@@ -55,6 +55,7 @@
 #include "osgDB/ReadFile"
 
 #include "boost/algorithm/string/find.hpp"
+#include "boost/algorithm/string/replace.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "Usul/File/Boost.h"
 

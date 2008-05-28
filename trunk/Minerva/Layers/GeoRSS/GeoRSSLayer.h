@@ -10,7 +10,7 @@
 #ifndef __MINERVA_LAYERS_GEO_RSS_H__
 #define __MINERVA_LAYERS_GEO_RSS_H__
 
-#include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/Layers/Container.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IRead.h"
@@ -25,13 +25,13 @@ namespace Minerva {
 namespace Layers {
 namespace GeoRSS {  
 
-class GeoRSSLayer : public Minerva::Core::Layers::Vector,
+class GeoRSSLayer : public Minerva::Core::Layers::Container,
                     public Usul::Interfaces::IRead
                  
 {
 public:
   /// Typedefs.
-  typedef Minerva::Core::Layers::Vector              BaseClass;
+  typedef Minerva::Core::Layers::Container           BaseClass;
   typedef Minerva::Core::DataObjects::DataObject     DataObject;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;

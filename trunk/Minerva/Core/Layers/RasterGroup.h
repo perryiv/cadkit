@@ -29,7 +29,7 @@ namespace Core {
 namespace Layers {
 
 class MINERVA_EXPORT RasterGroup : public RasterLayer,
-  public Minerva::Interfaces::IAddLayer
+                                   public Minerva::Interfaces::IAddLayer
 {
 public:
 
@@ -60,7 +60,7 @@ public:
   
   /// Get the i'th layer.
   virtual ILayer*                 layer ( unsigned int i );
- 
+
   /// Get a copy of the layers.
   void                            layers ( Layers& layers ) const;
 
@@ -74,7 +74,7 @@ public:
 protected:
 
   virtual ~RasterGroup();
-  
+
   RasterGroup ( const RasterGroup& );
 
   void                            _updateExtents ( IRasterLayer* layer );
@@ -85,20 +85,20 @@ protected:
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * );
 
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
-  
+
   // Get the number of children (ITreeNode).
   virtual unsigned int            getNumChildNodes() const;
-  
+
   // Get the child node (ITreeNode).
   virtual ITreeNode *             getChildNode ( unsigned int which );
-  
+
   // Set/get the name (ITreeNode).
   virtual void                    setTreeNodeName ( const std::string & );
   virtual std::string             getTreeNodeName() const;
-  
+
   // Add a layer (IAddLayer).
   virtual void                    addLayer ( Usul::Interfaces::ILayer *layer );
-  
+
 private:
   RasterGroup& operator= ( const RasterGroup& );
 

@@ -14,7 +14,7 @@
 #include "Minerva/Layers/PostGIS/Export.h"
 
 #include "Minerva/Core/Animate/Date.h"
-#include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Functors/BaseColorFunctor.h"
 #include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/Geometry/Geometry.h"
@@ -48,7 +48,7 @@ namespace Layers {
 namespace PostGIS {
 
   
-class MINERVA_POSTGIS_EXPORT Layer : public Minerva::Core::Layers::Vector,
+class MINERVA_POSTGIS_EXPORT Layer : public Minerva::Core::Layers::Container,
                                      public Minerva::Interfaces::IVectorLayer,
                                      public Usul::Interfaces::IAddRowLegend,
                                      public Usul::Interfaces::IClonable
@@ -56,7 +56,7 @@ class MINERVA_POSTGIS_EXPORT Layer : public Minerva::Core::Layers::Vector,
 public:
   
   /// Typedefs.
-  typedef Minerva::Core::Layers::Vector             BaseClass;
+  typedef Minerva::Core::Layers::Container          BaseClass;
   typedef Minerva::Core::DataObjects::DataObject    DataObject;
   typedef DataObject::RefPtr                        DataObjectPtr;
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;

@@ -265,6 +265,14 @@
 					Name="Layers"
 					>
 					<File
+						RelativePath=".\Layers\Container.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\Container.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Layers\ElevationGroup.cpp"
 						>
 					</File>
@@ -302,14 +310,6 @@
 					</File>
 					<File
 						RelativePath=".\Layers\RasterLayerWms.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\Vector.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\Vector.h"
 						>
 					</File>
 				</Filter>

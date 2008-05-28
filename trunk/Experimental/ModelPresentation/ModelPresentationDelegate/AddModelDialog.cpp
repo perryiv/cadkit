@@ -18,6 +18,7 @@
 
 #include "QtTools/FileDialog.h"
 
+
 #include "Usul/File/Path.h"
 
 
@@ -56,7 +57,7 @@ void AddModelDialog::on_browseButton_clicked()
 {
 // Useful typedefs.
   typedef QtTools::FileDialog             FileDialog;
-  typedef FileDialog::FileResult          FileResult;
+  typedef FileDialog::FilesResult         FilesResult;
   typedef FileDialog::Filter              Filter;
   typedef FileDialog::Filters             Filters;
   
@@ -64,12 +65,29 @@ void AddModelDialog::on_browseButton_clicked()
   
   filters.push_back ( Filter ( "All Files (*.*)", "*.*" ) );
   
+#if 0 // Single result case
   // Prompt the user.
   FileResult result ( FileDialog::getLoadFileName ( this, "Browse to model file", filters ) );
   _pathText->setText( result.first.c_str() );
 
   std::string nameText = Usul::File::base( result.first.c_str() );
   _nameText->setText( nameText.c_str() );
+#else
+    // Prompt the user.
+  FilesResult results ( FileDialog::getLoadFileNames ( this, "Browse to model file", filters ) );
+
+  for( unsigned int i = 0; i < results.first.size(); ++i )
+  {
+
+    std::string result = results.first.at( i ).c_str();
+    std::string name = Usul::File::base( result );
+    _modelsList->addItem( name, result );
+  }
+  //_pathText->setText( result.first.c_str() );
+
+  //std::string nameText = Usul::File::base( result.first.c_str() );
+  //_nameText->setText( nameText.c_str() );
+#endif
 
 }
 
@@ -81,20 +99,10 @@ void AddModelDialog::on_browseButton_clicked()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string AddModelDialog::getFilePath() const
+QtTools::StringsView::Items AddModelDialog::getItems() const
 {
-  return _pathText->text().toStdString();
-}
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string AddModelDialog::getNameText() const
-{
-  return _nameText->text().toStdString();
+  //return _pathText->text().toStdString();
+  return _modelsList->items();
 }
 

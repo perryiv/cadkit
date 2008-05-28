@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Temp.h"
+#include "Usul/Scope/RemoveFile.h"
 
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
@@ -172,43 +173,22 @@ void ModelPresentationDelegateComponent::initNewDocument ( Unknown *document, Un
   // Show the dialog.
   if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
-
-  MpdDialogDefinitions::SetList sets = dialog.getSets();
-  std::string filename ( Usul::File::Temp::file() );
-  MpdWriter::RefPtr writer ( new MpdWriter() );
   
+  const std::string filename ( Usul::File::Temp::directory ( true ) + "temp_mpd_file.mpd" );
+  Usul::Scope::RemoveFile remove ( filename );
+  MpdWriter::RefPtr writer ( new MpdWriter() );
 
   this->_parseModels( dialog.getModels(), writer );
+
+  MpdDialogDefinitions::SetList sets = dialog.getSets();
   for( unsigned int i = 0; i < sets.size(); ++i )
   {
     MpdDialogDefinitions::Set set = sets.at( i );
     this->_parseGroups( set, writer );
   }
+
   writer->buildXMLString();
   writer->write( filename );
-#if 0
-  // Get the xml.
-  std::string xml ( dialog.buildXml() );
-
-  // The filename.
-  std::string filename;
-  
-  // Write the temp file.
-  {
-    Usul::File::Temp temp;
-    temp.stream() << xml;
-    temp.stream().flush();
-
-    // Capture the filename.
-    filename = temp.name();
-
-    // Do not delete file.
-    temp.release();
-  }
-
-  // Make sure file gets deleted.
-  Usul::Scope::RemoveFile remove ( filename );
-#endif
 
   // Read the file.
   Usul::Interfaces::IRead::QueryPtr read ( document );
@@ -240,8 +220,6 @@ void ModelPresentationDelegateComponent::initNewDocument ( Unknown *document, Un
   {
     doc->fileValid ( false );
     doc->modified ( true );
-
-    //doc->open( writer->name() );
   }
 }
 
@@ -257,9 +235,10 @@ void ModelPresentationDelegateComponent::_parseGroups( MpdDialogDefinitions::Set
   MpdDialogDefinitions::GroupList groups = set.groups;
   for( unsigned int i = 0; i < groups.size(); ++i )
   {
-    for( unsigned int j = 0; j < groups.at( i ).second.size(); ++j )
+    MpdDialogDefinitions::ModelList models = groups.at( i ).second;
+    for( unsigned int j = 0; j < models.size(); ++j )
     { 
-      writer->addModelToSet( groups.at( i ).second.at( j ).first, set.name, groups.at( i ).first );
+      writer->addModelToSet( models.at( j ).first, set.name, groups.at( i ).first );
     }
   }
 }

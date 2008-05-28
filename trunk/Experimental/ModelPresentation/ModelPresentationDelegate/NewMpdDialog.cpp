@@ -21,6 +21,8 @@
 
 #include "Usul/Convert/Convert.h"
 
+#include "QtTools/StringsView.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -74,17 +76,28 @@ void NewMpdDialog::on_modelsAddButton_clicked()
 
   if( QDialog::Accepted == dialog.exec() )
   {
-    QTreeWidgetItem* item ( new QTreeWidgetItem ( _modelsList ) );
-    item->setText ( 0, dialog.getNameText().c_str() );
-    item->setText ( 1, dialog.getFilePath().c_str() );
+    QtTools::StringsView::Items items = dialog.getItems();
 
-    MpdDialogDefinitions::Model model;
+    for( unsigned int i = 0; i < items.size(); ++i )
+    {
+      QTreeWidgetItem* item ( new QTreeWidgetItem ( _modelsList ) );
 
-    model.first = std::string( dialog.getNameText().c_str() );
-    model.second = std::string( dialog.getFilePath().c_str() );
+      std::string name = items.at( i ).first;
+      std::string path = items.at( i ).second;
 
-    _models.push_back( model );
-    _modelsList->addTopLevelItem( item );
+      item->setText ( 0, name.c_str() );
+      item->setText ( 1, path.c_str() );
+
+      MpdDialogDefinitions::Model model;
+
+      model.first = name;
+      model.second = path;
+
+      _models.push_back( model );
+      _modelsList->addTopLevelItem( item );   
+
+    }
+
   }
 }
 

@@ -234,8 +234,7 @@ void ModelPresentationDocument::write ( const std::string &name, Unknown *caller
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
- _writer->write( name );
+  _writer->write( name );
 }
 
 
@@ -377,7 +376,7 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
 
   std::cout << "Building Display Lists..." << std::endl;
   osg::ref_ptr< osgUtil::GLObjectsVisitor > visitor( new osgUtil::GLObjectsVisitor( osgUtil::GLObjectsVisitor::COMPILE_DISPLAY_LISTS ) );
-  //visitor->traverse( _root );
+  visitor->traverse( *(_root.get() ) );
   return _root.get();
 }
 
@@ -1033,7 +1032,7 @@ bool ModelPresentationDocument::_readParameterFile( XmlTree::Node &node, Unknown
       this->_parseModels( *node, caller, progress );
     }
   }
-  
+  this->buildXMLString();
   return true;
 }
 

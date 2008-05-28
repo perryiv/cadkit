@@ -24,6 +24,8 @@
 
 #include <map>
 
+namespace MenuKit { class Menu; }
+
 class Favorites : public QWidget,
                   private Ui::Favorites
 {
@@ -35,6 +37,8 @@ public:
   /// Construction/Destruction.
   Favorites( Usul::Interfaces::IUnknown* caller, QWidget* parent = 0x0 );
   virtual ~Favorites();
+
+  MenuKit::Menu*   menu();
 
 signals:
   
@@ -50,6 +54,9 @@ private slots:
   void             on_removeFavoriteButton_clicked();
 
 private:
+
+  /// Add a layer.
+  void             _addLayer ( Usul::Interfaces::IUnknown* layer );
   
   /// Save/Restore state.
   void             _saveState();

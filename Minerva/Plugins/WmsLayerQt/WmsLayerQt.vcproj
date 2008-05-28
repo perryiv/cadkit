@@ -348,36 +348,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\OptionWidget.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\OptionWidget.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing OptionWidget.h..."
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\OptionWidget.h&quot; -o &quot;.\GeneratedFiles\moc_OptionWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\OptionWidget.h"
-							Outputs=".\GeneratedFiles\moc_OptionWidget.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing OptionWidget.h..."
-							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\OptionWidget.h&quot; -o &quot;.\GeneratedFiles\moc_OptionWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\OptionWidget.h"
-							Outputs=".\GeneratedFiles\moc_OptionWidget.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\WmsLayerItem.cpp"
 					>
 				</File>
@@ -423,10 +393,6 @@
 				</File>
 				<File
 					RelativePath=".\GeneratedFiles\moc_OptionsDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\GeneratedFiles\moc_OptionWidget.cpp"
 					>
 				</File>
 			</Filter>

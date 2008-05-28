@@ -20,6 +20,7 @@
 class QTreeWidget;
 class QTreeWidgetItem;
 class QSlider;
+class Favorites;
 
 namespace QtTools { class TreeControl; }
 
@@ -34,7 +35,11 @@ public:
   LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget *parent = 0x0 );
   virtual ~LayersTree ();
 
-  void     buildTree ( Usul::Interfaces::IUnknown * document );
+  void        buildTree ( Usul::Interfaces::IUnknown * document );
+
+  /// Set/get the favorites.
+  void        favorites ( Favorites* );
+  Favorites*  favorites() const;
 
 signals:
   void enableWidgets ( bool );
@@ -64,6 +69,7 @@ private:
   QSlider *_slider;
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   Usul::Interfaces::IUnknown::QueryPtr _document;
+  Favorites *_favorites;
 };
 
 

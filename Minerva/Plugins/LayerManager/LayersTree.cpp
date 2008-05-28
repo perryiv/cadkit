@@ -9,12 +9,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/LayerManager/LayersTree.h"
+#include "Minerva/Plugins/LayerManager/Favorites.h"
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
+
+#include "QtTools/Action.h"
+#include "QtTools/Menu.h"
+#include "QtTools/ScopedSignals.h"
+#include "QtTools/TreeControl.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -25,10 +31,6 @@
 #include "Usul/Interfaces/ILayerModifyGUIQt.h"
 #include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
-
-#include "QtTools/Action.h"
-#include "QtTools/ScopedSignals.h"
-#include "QtTools/TreeControl.h"
 
 #include "QtGui/QHeaderView"
 #include "QtGui/QTreeWidget"
@@ -68,7 +70,8 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
   _tree ( 0x0 ),
   _slider ( new QSlider ( Qt::Horizontal ) ),
   _caller ( caller ),
-  _document ()
+  _document (),
+  _favorites ( 0x0 )
 {
   QVBoxLayout *topLayout ( new QVBoxLayout ( parent ) );
   this->setLayout ( topLayout );
@@ -341,6 +344,16 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   // Add the actions to the menu.
   menu.addAction ( &add );
   menu.addAction ( &favorites );
+
+  QtTools::Menu addFromFavorites ( "Add From Favorites" );
+
+  if ( 0x0 != this->favorites() )
+  {
+    MenuKit::Menu::RefPtr subMenu ( this->favorites()->menu() );
+    addFromFavorites.menu ( subMenu );
+    menu.addMenu ( &addFromFavorites );
+  }
+
   menu.addAction ( &properties );
   
   menu.exec ( _tree->mapToGlobal ( pos ) );
@@ -447,4 +460,28 @@ void LayersTree::_dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown )
   Usul::Interfaces::IDocument::QueryPtr document ( _document );
   if ( document.valid() )
     document->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::favorites ( Favorites* favorites )
+{
+  _favorites = favorites;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Favorites* LayersTree::favorites() const
+{
+  return _favorites;
 }

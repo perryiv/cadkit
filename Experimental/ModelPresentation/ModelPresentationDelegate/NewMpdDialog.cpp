@@ -17,6 +17,9 @@
 #include "NewMpdDialog.h"
 #include "AddModelDialog.h"
 #include "NewSetDialog.h"
+#include "MpdDialogDefinitions.h"
+
+#include "Usul/Convert/Convert.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,15 +27,26 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NewMpdDialog::NewMpdDialog ( QWidget *parent ) : BaseClass ( parent )
+NewMpdDialog::NewMpdDialog ( QWidget *parent ) : BaseClass ( parent ),
+_currentSetNumber( 0 )
 {
   // Initialize code from Designer.
   this->setupUi ( this );
 
-  QStringList titles;
-  titles.push_back( "Name" );
-  titles.push_back( "Path");
-  _modelsList->setHeaderLabels ( titles );
+  QStringList modelTitles;
+  modelTitles.push_back( "Name" );
+  modelTitles.push_back( "Path");
+  _modelsList->setHeaderLabels ( modelTitles );
+
+  QStringList setTitles;
+  setTitles.push_back( "Name" );
+  setTitles.push_back( "Menu Name");
+
+  _setsList->setHeaderLabels ( setTitles );
+  _timesetsList->setHeaderLabels ( setTitles );
+  _dynamicList->setHeaderLabels ( setTitles );
+
+  
 }
 
 
@@ -63,6 +77,13 @@ void NewMpdDialog::on_modelsAddButton_clicked()
     QTreeWidgetItem* item ( new QTreeWidgetItem ( _modelsList ) );
     item->setText ( 0, dialog.getNameText().c_str() );
     item->setText ( 1, dialog.getFilePath().c_str() );
+
+    MpdDialogDefinitions::Model model;
+
+    model.first = std::string( dialog.getNameText().c_str() );
+    model.second = std::string( dialog.getFilePath().c_str() );
+
+    _models.push_back( model );
     _modelsList->addTopLevelItem( item );
   }
 }
@@ -77,15 +98,34 @@ void NewMpdDialog::on_modelsAddButton_clicked()
 void NewMpdDialog::on_modelsRemoveButton_clicked()
 {
   typedef QList< QTreeWidgetItem* > TreeWidgetItems;
-
-  TreeWidgetItems listItems ( _modelsList->selectedItems() );
-
-  for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
   {
-    QTreeWidgetItem* item ( *iter );
-    const int index ( _modelsList->indexOfTopLevelItem( item ) );
-    _modelsList->takeTopLevelItem( index );
-    delete item;
+    TreeWidgetItems listItems ( _modelsList->selectedItems() );
+
+    _models.clear();
+    for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
+    {
+      QTreeWidgetItem* item ( *iter );
+      const int index ( _modelsList->indexOfTopLevelItem( item ) );
+      _modelsList->takeTopLevelItem( index );
+      delete item;
+    }
+  }
+
+  {
+    TreeWidgetItems listItems ( _modelsList->findItems( "*", Qt::MatchWildcard ) );
+
+    for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
+    {
+      QTreeWidgetItem* item ( *iter );
+      MpdDialogDefinitions::Model model;
+      
+      model.first = item->text( 0 ).toStdString();
+      model.second = item->text( 1 ).toStdString();
+
+      _models.push_back( model );;
+      
+    }
+
   }
   
 }
@@ -101,12 +141,23 @@ void NewMpdDialog::on_setsAddButton_clicked()
 {
   NewSetDialog dialog( this );
 
+  dialog.setModels( _models );
+
+  std::string setName ( "set" + Usul::Convert::Type< unsigned int, std::string >::convert( _currentSetNumber ) );
+  dialog.setName( setName );
+
+  dialog.setMenuName( "Models" );
+
   if( QDialog::Accepted == dialog.exec() )
   {
-   /* QTreeWidgetItem* item ( new QTreeWidgetItem ( _setsList ) );
-    item->setText ( 0, dialog.getNameText().c_str() );
-    item->setText ( 1, dialog.getFilePath().c_str() );
-    _modelsList->addTopLevelItem( item );*/
+    QTreeWidgetItem* item ( new QTreeWidgetItem ( _setsList ) );
+    MpdDialogDefinitions::Set set = dialog.getSet();
+    item->setText ( 0, set.name.c_str() );
+    item->setText ( 1, set.menuName.c_str() );
+    _setsList->addTopLevelItem( item );
+    _sets.push_back( set );
+
+    ++_currentSetNumber;
   }
 }
 
@@ -119,17 +170,40 @@ void NewMpdDialog::on_setsAddButton_clicked()
 
 void NewMpdDialog::on_setsRemoveButton_clicked()
 {
-  typedef QList< QTreeWidgetItem* > TreeWidgetItems;
+  //typedef QList< QTreeWidgetItem* > TreeWidgetItems;
 
-  TreeWidgetItems listItems ( _modelsList->selectedItems() );
+  //TreeWidgetItems listItems ( _modelsList->selectedItems() );
 
-  for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
-  {
-    QTreeWidgetItem* item ( *iter );
-    const int index ( _modelsList->indexOfTopLevelItem( item ) );
-    _setsList->takeTopLevelItem( index );
-    delete item;
-  }
+  //for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
+  //{
+  //  QTreeWidgetItem* item ( *iter );
+  //  const int index ( _modelsList->indexOfTopLevelItem( item ) );
+  //  _setsList->takeTopLevelItem( index );
+  //  delete item;
+  //}
   
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MpdDialogDefinitions::SetList NewMpdDialog::getSets()
+{
+  return _sets;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MpdDialogDefinitions::ModelList NewMpdDialog::getModels()
+{
+  return _models;
+}

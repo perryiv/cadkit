@@ -18,6 +18,8 @@
 
 #include "QtTools/FileDialog.h"
 
+#include "Usul/File/Path.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -65,6 +67,10 @@ void AddModelDialog::on_browseButton_clicked()
   // Prompt the user.
   FileResult result ( FileDialog::getLoadFileName ( this, "Browse to model file", filters ) );
   _pathText->setText( result.first.c_str() );
+
+  std::string nameText = Usul::File::base( result.first.c_str() );
+  _nameText->setText( nameText.c_str() );
+
 }
 
 

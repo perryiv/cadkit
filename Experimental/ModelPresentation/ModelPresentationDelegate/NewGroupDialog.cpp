@@ -31,6 +31,7 @@ NewGroupDialog::NewGroupDialog ( QWidget *parent ) : BaseClass ( parent )
   titles.push_back( "Name" );
   titles.push_back( "Path");
   _modelsList->setHeaderLabels ( titles );
+  _groupModelsList->setHeaderLabels( titles );
 }
 
 
@@ -45,46 +46,138 @@ NewGroupDialog::~NewGroupDialog()
 
 }
 
-//
-/////////////////////////////////////////////////////////////////////////////////
-////
-////  
-////
-/////////////////////////////////////////////////////////////////////////////////
-//
-//void NewGroupDialog::on_modelsAddButton_clicked()
-//{
-//  //AddModelDialog dialog( this );
-//
-//  //if( QDialog::Accepted == dialog.exec() )
-//  //{
-//  //  QTreeWidgetItem* item ( new QTreeWidgetItem ( _modelsList ) );
-//  //  item->setText ( 0, dialog.getNameText().c_str() );
-//  //  item->setText ( 1, dialog.getFilePath().c_str() );
-//  //  _modelsList->addTopLevelItem( item );
-//  //}
-//}
-//
-//
-/////////////////////////////////////////////////////////////////////////////////
-////
-////  
-////
-/////////////////////////////////////////////////////////////////////////////////
-//
-//void NewGroupDialog::on_modelsRemoveButton_clicked()
-//{
-//  //typedef QList< QTreeWidgetItem* > TreeWidgetItems;
-//
-//  //TreeWidgetItems listItems ( _modelsList->selectedItems() );
-//
-//  //for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
-//  //{
-//  //  QTreeWidgetItem* item ( *iter );
-//  //  const int index ( _modelsList->indexOfTopLevelItem( item ) );
-//  //  _modelsList->takeTopLevelItem( index );
-//  //  delete item;
-//  //}
-//  
-//}
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void NewGroupDialog::setModels( MpdDialogDefinitions::ModelList models )
+{
+  _models = models;
+  for( unsigned int i = 0; i < _models.size(); ++i )
+  {
+    QTreeWidgetItem* item ( new QTreeWidgetItem ( _modelsList ) );
+    item->setText ( 0, _models.at( i ).first.c_str() );
+    item->setText ( 1, _models.at( i ).second.c_str() );
+
+    _modelsList->addTopLevelItem( item );
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void NewGroupDialog::on_modelsAddButton_clicked()
+{
+  typedef QList< QTreeWidgetItem* > TreeWidgetItems;
+
+  TreeWidgetItems listItems ( _modelsList->selectedItems() );
+
+  for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
+  {
+    QTreeWidgetItem* item ( *iter );
+    const int index ( _modelsList->indexOfTopLevelItem( item ) );
+   
+    _groupModelsList->addTopLevelItem( _modelsList->takeTopLevelItem( index ) );
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void NewGroupDialog::on_groupsRemoveButton_clicked()
+{
+  typedef QList< QTreeWidgetItem* > TreeWidgetItems;
+
+  TreeWidgetItems listItems ( _groupModelsList->selectedItems() );
+
+  for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
+  {
+    QTreeWidgetItem* item ( *iter );
+    const int index ( _groupModelsList->indexOfTopLevelItem( item ) );
+    
+    _modelsList->addTopLevelItem( _groupModelsList->takeTopLevelItem( index ) );
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string NewGroupDialog::getName()
+{
+  return _nameText->text().toStdString();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QTreeWidget* NewGroupDialog::getGroupModels()
+{
+  return _groupModelsList;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MpdDialogDefinitions::Group NewGroupDialog::getGroup()
+{
+  typedef QList< QTreeWidgetItem* > TreeWidgetItems;
+
+  MpdDialogDefinitions::Group group;
+  group.first = this->getName();
+  MpdDialogDefinitions::ModelList modelList;
+
+  TreeWidgetItems listItems ( _groupModelsList->findItems( "*", Qt::MatchWildcard ) );
+
+  for( TreeWidgetItems::iterator iter = listItems.begin(); iter != listItems.end(); ++iter )
+  {
+    QTreeWidgetItem* item ( *iter );
+    MpdDialogDefinitions::Model model;
+    
+    model.first = item->text( 0 ).toStdString();
+    model.second = item->text( 1 ).toStdString();
+
+    modelList.push_back( model );
+    
+  }
+
+  group.second = modelList;
+  return group;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void NewGroupDialog::setName( const std::string &name )
+{
+  _nameText->setText( name.c_str() );
+}

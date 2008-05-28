@@ -18,19 +18,32 @@
 #define __MODELPRESENTATION_NEW_MPD_DIALOG_H__
 
 #include "ui_NewMpdDialog.h"
+#include "MpdDialogDefinitions.h"
+#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
 
 #include "QtGui/QDialog"
 
 
 class NewMpdDialog : public QDialog,
-                        private Ui::NewMpdDialog
+                     private Ui::NewMpdDialog
 {
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
+  
 
   NewMpdDialog ( QWidget *parent = 0x0 );
   virtual ~NewMpdDialog();
+
+  MpdDialogDefinitions::SetList           getSets();
+  MpdDialogDefinitions::ModelList         getModels();
+
+private:
+  MpdDialogDefinitions::ModelList         _models;
+  MpdDialogDefinitions::SetList           _sets;
+  
+  unsigned int                            _currentSetNumber;
+
 
 private slots:
 
@@ -39,6 +52,7 @@ private slots:
 
   void on_setsAddButton_clicked();
   void on_setsRemoveButton_clicked();
+
 
 
   

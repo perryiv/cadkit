@@ -18,6 +18,7 @@
 #define __MODELPRESENTATION_NEW_GROUP_DIALOG_H__
 
 #include "ui_NewGroupDialog.h"
+#include "MpdDialogDefinitions.h"
 
 #include "QtGui/QDialog"
 
@@ -28,14 +29,30 @@ class NewGroupDialog : public QDialog,
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
+  
 
   NewGroupDialog ( QWidget *parent = 0x0 );
   virtual ~NewGroupDialog();
 
-//private slots:
-//
-//  void on_groupsAddButton_clicked();
-//  void on_groupsRemoveButton_clicked();
+  void                              setModels( MpdDialogDefinitions::ModelList models );
+  void                              setName( const std::string &name );
+  std::string                       getName();
+  QTreeWidget*                      getGroupModels();
+
+  MpdDialogDefinitions::Group       getGroup();
+
+
+private:
+
+  MpdDialogDefinitions::ModelList   _models;
+  
+                         
+  
+
+private slots:
+
+  void on_modelsAddButton_clicked();
+  void on_groupsRemoveButton_clicked();
   
   
 };

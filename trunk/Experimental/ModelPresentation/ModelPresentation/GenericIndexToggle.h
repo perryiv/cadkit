@@ -33,13 +33,6 @@ public:
   this->text ( text );
 }
 
-//template < class GetFunction, class SetFunction > 
-//GenericIndexToggle< GetFunction, SetFunction >
-//genericIndexToggle ( Usul::Interfaces::IUnknown * caller, GetFunction getter, SetFunction setter, const std::string text, unsigned int set )
-//{
-//  return GenericIndexToggle < Getter, Setter > ( caller, getter, setter, text, set );
-//}
-
 protected:
   virtual ~GenericIndexToggle ()
   {

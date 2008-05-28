@@ -16,12 +16,18 @@
 #include "ModelPresentationDelegateComponent.h"
 #include "NewMpdDialog.h"
 
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Components/Factory.h"
+#include "Usul/Jobs/Manager.h"
+#include "Usul/System/Sleep.h"
 #include "Usul/Documents/Document.h"
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/File/Temp.h"
 
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
@@ -167,6 +173,19 @@ void ModelPresentationDelegateComponent::initNewDocument ( Unknown *document, Un
   if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
 
+  MpdDialogDefinitions::SetList sets = dialog.getSets();
+  std::string filename ( Usul::File::Temp::file() );
+  MpdWriter::RefPtr writer ( new MpdWriter() );
+  
+
+  this->_parseModels( dialog.getModels(), writer );
+  for( unsigned int i = 0; i < sets.size(); ++i )
+  {
+    MpdDialogDefinitions::Set set = sets.at( i );
+    this->_parseGroups( set, writer );
+  }
+  writer->buildXMLString();
+  writer->write( filename );
 #if 0
   // Get the xml.
   std::string xml ( dialog.buildXml() );
@@ -189,6 +208,7 @@ void ModelPresentationDelegateComponent::initNewDocument ( Unknown *document, Un
 
   // Make sure file gets deleted.
   Usul::Scope::RemoveFile remove ( filename );
+#endif
 
   // Read the file.
   Usul::Interfaces::IRead::QueryPtr read ( document );
@@ -211,12 +231,51 @@ void ModelPresentationDelegateComponent::initNewDocument ( Unknown *document, Un
   {
     loop.processEvents();
   }
-#endif
+
   // Set document state.
+  
   Usul::Interfaces::IDocument::QueryPtr doc ( document );
+  
   if ( doc.valid() )
   {
     doc->fileValid ( false );
     doc->modified ( true );
+
+    //doc->open( writer->name() );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDelegateComponent::_parseGroups( MpdDialogDefinitions::Set set, MpdWriter* writer )
+{
+  MpdDialogDefinitions::GroupList groups = set.groups;
+  for( unsigned int i = 0; i < groups.size(); ++i )
+  {
+    for( unsigned int j = 0; j < groups.at( i ).second.size(); ++j )
+    { 
+      writer->addModelToSet( groups.at( i ).second.at( j ).first, set.name, groups.at( i ).first );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDelegateComponent::_parseModels( MpdDialogDefinitions::ModelList models, MpdWriter* writer )
+{
+  for( unsigned int i = 0; i < models.size(); ++i )
+  {
+    writer->addModel( models.at( i ).first, models.at( i ).second );
+  }
+}
+

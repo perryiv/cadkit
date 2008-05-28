@@ -269,6 +269,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MpdDialogDefinitions.h"
+					>
+				</File>
+				<File
 					RelativePath=".\NewGroupDialog.cpp"
 					>
 				</File>
@@ -357,7 +361,6 @@
 							Outputs=".\ui_NewSetDialog.h;.\GeneratedFiles\moc_NewSetDialog.cpp"
 						/>
 					</FileConfiguration>
-
 				</File>
 			</Filter>
 			<Filter

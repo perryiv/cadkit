@@ -18,6 +18,9 @@
 
 #include "CompileGuard.h"
 
+#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
+#include "MpdDialogDefinitions.h"
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
@@ -62,6 +65,9 @@ protected:
   // Do not copy.
   ModelPresentationDelegateComponent ( const ModelPresentationDelegateComponent & );
   ModelPresentationDelegateComponent &operator = ( const ModelPresentationDelegateComponent & );
+
+  void                        _parseGroups( MpdDialogDefinitions::Set set, MpdWriter* writer );
+  void                        _parseModels( MpdDialogDefinitions::ModelList models, MpdWriter* writer );
 
   /// Use reference counting.
   virtual ~ModelPresentationDelegateComponent();

@@ -138,6 +138,7 @@ class MODEL_PRESENTATION_LIB_EXPORT MpdWriter : public Usul::Base::Object
 
 
       MpdWriter ( const std::string &filename  );
+      MpdWriter ();
       
       // Model Functions
       void                    addModel( const std::string &name, const std::string &path );

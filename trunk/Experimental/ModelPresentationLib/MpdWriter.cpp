@@ -40,13 +40,39 @@
 
 MpdWriter::MpdWriter (  const std::string &filename ) :
   BaseClass (),
+  _models(),
+  _sets(),
+  _timeSets(),
+  _dynamicSets(),
+  _locations(),
   _sequence(),
-  _mpdFile( "" )
+  _mpdFile( "" ),
+  _filename( filename )
 {
   USUL_TRACE_SCOPE;
 }
 
-  
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  MpdWriter Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MpdWriter::MpdWriter () :
+  BaseClass (),
+  _models(),
+  _sets(),
+  _timeSets(),
+  _dynamicSets(),
+  _locations(),
+  _sequence(),
+  _mpdFile( "" ),
+  _filename()
+{
+  USUL_TRACE_SCOPE;
+}  
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  MpdWriter Destructor.
@@ -566,19 +592,21 @@ void MpdWriter::_writeSequence()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
-  _mpdFile += "  <sequence name=\"" + _sequence.name + "\" menu_name=\"" + _sequence.menuName + "\" >\n";
-  for( unsigned int i = 0; i < _sequence.steps.size(); ++i )
+  if( _sequence.steps.size() > 0 )
   {
-    _mpdFile += "    <step>\n";
-    _mpdFile += "      <location name=\"" + _sequence.steps.at( i ).locationName + "\" />\n";
-    for( unsigned int j = 0; j < _sequence.steps.at( i ).modelList.size(); ++j )
+    _mpdFile += "  <sequence name=\"" + _sequence.name + "\" menu_name=\"" + _sequence.menuName + "\" >\n";
+    for( unsigned int i = 0; i < _sequence.steps.size(); ++i )
     {
-      _mpdFile += "      ";
-      _mpdFile += "<show name=\"" + _sequence.steps.at( i ).modelList.at( j ) + "\" />\n";
+      _mpdFile += "    <step>\n";
+      _mpdFile += "      <location name=\"" + _sequence.steps.at( i ).locationName + "\" />\n";
+      for( unsigned int j = 0; j < _sequence.steps.at( i ).modelList.size(); ++j )
+      {
+        _mpdFile += "      ";
+        _mpdFile += "<show name=\"" + _sequence.steps.at( i ).modelList.at( j ) + "\" />\n";
+      }
+      _mpdFile += "    </step>\n";
     }
-    _mpdFile += "    </step>\n";
+    _mpdFile += "  </sequence>\n\n";
   }
-  _mpdFile += "  </sequence>\n\n";
 }
 

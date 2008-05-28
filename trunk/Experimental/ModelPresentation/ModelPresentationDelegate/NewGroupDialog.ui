@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>325</width>
-    <height>360</height>
+    <width>482</width>
+    <height>539</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -15,8 +15,8 @@
   <widget class="QDialogButtonBox" name="okCancelButton" >
    <property name="geometry" >
     <rect>
-     <x>80</x>
-     <y>320</y>
+     <x>140</x>
+     <y>500</y>
      <width>161</width>
      <height>32</height>
     </rect>
@@ -31,8 +31,8 @@
   <widget class="QPushButton" name="modelsAddButton" >
    <property name="geometry" >
     <rect>
-     <x>210</x>
-     <y>80</y>
+     <x>180</x>
+     <y>240</y>
      <width>75</width>
      <height>27</height>
     </rect>
@@ -44,20 +44,20 @@
   <widget class="QLabel" name="modelsLabel" >
    <property name="geometry" >
     <rect>
-     <x>30</x>
-     <y>80</y>
-     <width>41</width>
+     <x>170</x>
+     <y>60</y>
+     <width>95</width>
      <height>18</height>
     </rect>
    </property>
    <property name="text" >
-    <string>Models</string>
+    <string>Available Models</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="nameText" >
+  <widget class="QLineEdit" name="_nameText" >
    <property name="geometry" >
     <rect>
-     <x>90</x>
+     <x>160</x>
      <y>20</y>
      <width>113</width>
      <height>23</height>
@@ -67,7 +67,7 @@
   <widget class="QLabel" name="nameLabel" >
    <property name="geometry" >
     <rect>
-     <x>30</x>
+     <x>100</x>
      <y>20</y>
      <width>53</width>
      <height>18</height>
@@ -77,24 +77,20 @@
     <string>Name</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="modelsComboBox" >
+  <widget class="QTreeWidget" name="_groupModelsList" >
    <property name="geometry" >
     <rect>
      <x>90</x>
-     <y>80</y>
-     <width>111</width>
-     <height>23</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QTreeWidget" name="_modelsList" >
-   <property name="geometry" >
-    <rect>
-     <x>30</x>
-     <y>120</y>
+     <y>300</y>
      <width>251</width>
      <height>151</height>
     </rect>
+   </property>
+   <property name="alternatingRowColors" >
+    <bool>true</bool>
+   </property>
+   <property name="selectionMode" >
+    <enum>QAbstractItemView::MultiSelection</enum>
    </property>
    <column>
     <property name="text" >
@@ -102,17 +98,51 @@
     </property>
    </column>
   </widget>
-  <widget class="QPushButton" name="modelsRemoveButton" >
+  <widget class="QPushButton" name="groupsRemoveButton" >
    <property name="geometry" >
     <rect>
-     <x>120</x>
-     <y>280</y>
+     <x>180</x>
+     <y>460</y>
      <width>75</width>
      <height>27</height>
     </rect>
    </property>
    <property name="text" >
     <string>Remove</string>
+   </property>
+  </widget>
+  <widget class="QTreeWidget" name="_modelsList" >
+   <property name="geometry" >
+    <rect>
+     <x>90</x>
+     <y>80</y>
+     <width>251</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="alternatingRowColors" >
+    <bool>true</bool>
+   </property>
+   <property name="selectionMode" >
+    <enum>QAbstractItemView::MultiSelection</enum>
+   </property>
+   <column>
+    <property name="text" >
+     <string>1</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QLabel" name="modelsLabel_2" >
+   <property name="geometry" >
+    <rect>
+     <x>140</x>
+     <y>280</y>
+     <width>157</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Visible Models in this Group</string>
    </property>
   </widget>
  </widget>

@@ -42,3 +42,6 @@ LINK_CADKIT( HeliosQtCommands Usul)
 
 TARGET_LINK_LIBRARIES( HeliosQtCommands ${QT_LIBRARIES} )
 
+INSTALL(TARGETS HeliosQtCommands
+  LIBRARY DESTINATION bin
+)

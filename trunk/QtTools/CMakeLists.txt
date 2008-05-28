@@ -78,3 +78,7 @@ ADD_CUSTOM_COMMAND(
         ARGS cp ${FILE}  ${IconDir}
         TARGET QtTools )
 ENDFOREACH(FILE ${IconFiles})
+
+INSTALL(TARGETS QtTools
+  LIBRARY DESTINATION bin
+)

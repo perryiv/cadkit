@@ -20,6 +20,7 @@
 #include "ui_AddModelDialog.h"
 
 #include "QtGui/QDialog"
+#include "QtTools/StringsView.h"
 
 
 class AddModelDialog : public QDialog,
@@ -32,8 +33,7 @@ public:
   AddModelDialog ( QWidget *parent = 0x0 );
   virtual ~AddModelDialog();
 
-  std::string     getFilePath() const;
-  std::string     getNameText() const;
+  QtTools::StringsView::Items     getItems() const;
 
 private slots:
 

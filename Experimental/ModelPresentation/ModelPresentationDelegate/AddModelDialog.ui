@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>345</width>
-    <height>228</height>
+    <width>272</width>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -15,8 +15,8 @@
   <widget class="QDialogButtonBox" name="okCancelButtons" >
    <property name="geometry" >
     <rect>
-     <x>110</x>
-     <y>170</y>
+     <x>50</x>
+     <y>260</y>
      <width>161</width>
      <height>32</height>
     </rect>
@@ -28,34 +28,11 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QLineEdit" name="_pathText" >
-   <property name="geometry" >
-    <rect>
-     <x>60</x>
-     <y>20</y>
-     <width>261</width>
-     <height>23</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="addModelLabel" >
-   <property name="geometry" >
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>25</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text" >
-    <string>Path</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="browseButton" >
    <property name="geometry" >
     <rect>
-     <x>140</x>
-     <y>50</y>
+     <x>100</x>
+     <y>200</y>
      <width>75</width>
      <height>27</height>
     </rect>
@@ -64,30 +41,37 @@
     <string>Browse</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="_nameText" >
+  <widget class="QLabel" name="modelsLabel" >
    <property name="geometry" >
     <rect>
-     <x>60</x>
-     <y>110</y>
-     <width>261</width>
-     <height>23</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="nameLabel" >
-   <property name="geometry" >
-    <rect>
-     <x>10</x>
-     <y>110</y>
-     <width>33</width>
+     <x>120</x>
+     <y>10</y>
+     <width>41</width>
      <height>18</height>
     </rect>
    </property>
    <property name="text" >
-    <string>Name</string>
+    <string>Models</string>
+   </property>
+  </widget>
+  <widget class="QtTools::StringsView" name="_modelsList" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>251</width>
+     <height>151</height>
+    </rect>
    </property>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtTools::StringsView</class>
+   <extends>QTreeView</extends>
+   <header>QtTools/StringsView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

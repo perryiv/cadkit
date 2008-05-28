@@ -165,6 +165,10 @@ void MpdWriter::addModelToSet( const std::string &modelName, const std::string &
   // The group will also check to see if the set exists and create it
   // if it doesn't
 
+  Sets::iterator set = _sets.find( setName );
+  if( _sets.end() == set )
+    this->addSet( setName, "Models" );
+
   Groups::iterator i = _sets[ setName ].groups.find( groupName );
   if( _sets[ setName ].groups.end() == i )
     this->addGroupToSet( setName, groupName );

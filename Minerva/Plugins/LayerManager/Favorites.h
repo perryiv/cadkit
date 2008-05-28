@@ -38,7 +38,7 @@ public:
   Favorites( Usul::Interfaces::IUnknown* caller, QWidget* parent = 0x0 );
   virtual ~Favorites();
 
-  MenuKit::Menu*   menu();
+  MenuKit::Menu*   menu( Usul::Interfaces::IUnknown *caller );
 
 signals:
   
@@ -50,13 +50,13 @@ public slots:
 
 private slots:
   
-  void             on_addLayer_clicked();
-  void             on_removeFavoriteButton_clicked();
+  void             _removeFavoriteButtonClicked();
+  void             _onContextMenuShow ( const QPoint& pos );
 
 private:
 
   /// Add a layer.
-  void             _addLayer ( Usul::Interfaces::IUnknown* layer );
+  void             _addLayer ( Usul::Interfaces::IUnknown *parent, Usul::Interfaces::IUnknown* layer );
   
   /// Save/Restore state.
   void             _saveState();

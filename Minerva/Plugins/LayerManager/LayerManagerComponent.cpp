@@ -199,8 +199,7 @@ namespace Detail
     
     // Return the dock widget.
     return dockWidget.release();
-  }
-  
+  }  
 }
 
 

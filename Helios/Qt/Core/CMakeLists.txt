@@ -60,3 +60,9 @@ ADD_CUSTOM_COMMAND(
         ARGS cp ${FILE}  ${IconDir}
         TARGET HeliosQtCore )
 ENDFOREACH(FILE ${IconFiles})
+
+INSTALL ( FILES ${IconFiles} DESTINATION bin/icons )
+
+INSTALL(TARGETS HeliosQtCore
+  LIBRARY DESTINATION bin
+)

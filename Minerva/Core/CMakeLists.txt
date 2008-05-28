@@ -59,12 +59,12 @@ SET (SOURCES
 ./Geometry/Polygon.cpp
 ./Jobs/BuildRaster.cpp
 ./Jobs/BuildTiles.cpp
+./Layers/Container.cpp
 ./Layers/ElevationGroup.cpp
 ./Layers/RasterGroup.cpp
 ./Layers/RasterLayer.cpp
 ./Layers/RasterLayerOssim.cpp
 ./Layers/RasterLayerWms.cpp
-./Layers/Vector.cpp
 ./TileEngine/Body.cpp
 ./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp

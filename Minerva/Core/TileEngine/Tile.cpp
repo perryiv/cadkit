@@ -22,7 +22,7 @@
 
 #include "Minerva/Core/TileEngine/Tile.h"
 #include "Minerva/Core/TileEngine/Body.h"
-#include "Minerva/Core/Layers/RasterLayer.h"
+#include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Utilities/Composite.h"
 #include "Minerva/Core/Utilities/SubRegion.h"
@@ -709,7 +709,7 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     _children[UPPER_RIGHT] = t3.get();
   }
 
-  Minerva::Core::Layers::Vector::RefPtr vector ( body->vectorData() );
+  Minerva::Core::Layers::Container::RefPtr vector ( body->vectorData() );
   if ( vector.valid() )
   {
     Usul::Interfaces::IUnknown::QueryPtr unknown ( body );

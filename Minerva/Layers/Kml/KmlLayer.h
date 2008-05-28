@@ -14,7 +14,7 @@
 #include "Minerva/Layers/Kml/Link.h"
 #include "Minerva/Layers/Kml/Style.h"
 
-#include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Geometry/Geometry.h"
 
 #include "Usul/Base/Object.h"
@@ -33,14 +33,14 @@ namespace Kml {
   class NetworkLink;
   class Feature;
 
-class KmlLayer : public Minerva::Core::Layers::Vector,
+class KmlLayer : public Minerva::Core::Layers::Container,
                  public Usul::Interfaces::IRead
                  
 {
 public:
 
   /// Typedefs.
-  typedef Minerva::Core::Layers::Vector              BaseClass;
+  typedef Minerva::Core::Layers::Container           BaseClass;
   typedef Minerva::Core::DataObjects::DataObject     DataObject;
   typedef Minerva::Core::Geometry::Geometry          Geometry;
   typedef Usul::Math::Vec3d                          Vertex;

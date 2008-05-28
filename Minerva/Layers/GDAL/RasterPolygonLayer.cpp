@@ -251,27 +251,26 @@ void RasterPolygonLayer::_initGeometries()
   // Get all geometries.
   while ( 0x0 != ( feature = layer->GetNextFeature() ) )
   {
-    // Get the index of the column
+    // Get the index of the column.
     const int index ( feature->GetFieldIndex ( column.c_str() ) );
     
     const double value ( index > 0 ? feature->GetFieldAsDouble ( index ) : 0.0 );
     
     // Burn color.
     const osg::Vec4 color ( functor.valid() ? (*functor) ( value ) : osg::Vec4 ( random(), random(), random(), 255 ) );
-    
+
     // Add the burn values.
     _burnValues.push_back ( color[0] * 255 );
     _burnValues.push_back ( color[1] * 255 );
     _burnValues.push_back ( color[2] * 255 );
     _burnValues.push_back ( 255 );
-    
+
     // Add the geometry.
-    //OGRGeometry *geometry ( feature->StealGeometry() );
     OGRGeometry *geometry ( feature->GetGeometryRef() );
-    
+
     if ( 0x0 != geometry )
       _geometries.push_back ( geometry->clone() );
-    
+
     // Cleanup.
     OGRFeature::DestroyFeature( feature );
   }

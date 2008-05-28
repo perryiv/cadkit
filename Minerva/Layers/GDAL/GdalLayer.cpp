@@ -191,31 +191,14 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   // Make sure data set is closed.
   Usul::Scope::Caller::RefPtr closeDataSet ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( data, GDALClose ) ) );
   
-  // Get the extents lower left and upper right.
-  Extents::Vertex ll ( extents.minimum() );
-  Extents::Vertex ur ( extents.maximum() );
-  
   // Make the transform.
   OGRSpatialReference src ( _data->GetProjectionRef() );
   OGRSpatialReference dst;
   dst.SetWellKnownGeogCS ( "WGS84" );
   
-  // Get the length in x and y.
-  const double xLength ( ur[0] - ll[0] );
-  const double yLength ( ur[1] - ll[1] );
-  
-  // Figure out the pixel resolution.
-  const double xResolution  ( xLength / width );
-  const double yResolution  ( yLength / height );
-  
+  // Create the geo transform.
   std::vector<double> geoTransform ( 6 );
-  
-  geoTransform[0] = ll[0];          // top left x
-  geoTransform[1] = xResolution;    // w-e pixel resolution
-  geoTransform[2] = 0;              // rotation, 0 if image is "north up"
-  geoTransform[3] = ur[1];          // top left y
-  geoTransform[4] = 0;              // rotation, 0 if image is "north up"
-  geoTransform[5] = -yResolution;   // n-s pixel resolution
+  GdalLayer::_createGeoTransform ( geoTransform, extents, width, height );
   
   if ( CE_None != data->SetGeoTransform( &geoTransform[0] ) )
     return 0x0;
@@ -370,15 +353,12 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
   
   if ( 0x0 != _data )
   {
-    // Print info.
-    //this->_print( _data );
-    
     std::vector<double> geoTransform ( 6 );
-    
-    const char* projection ( _data->GetProjectionRef() );
 
     if( CE_None == _data->GetGeoTransform( &geoTransform[0] ) )
     {
+      const char* projection ( _data->GetProjectionRef() );
+
       // Make the transform.
       OGRSpatialReference src ( projection );
       OGRSpatialReference dst;
@@ -487,4 +467,38 @@ std::string GdalLayer::_cacheFileExtension() const
 
   const std::string ext ( Usul::File::extension ( _filename ) );
   return ext;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a geo transform.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GdalLayer::_createGeoTransform ( GeoTransform &transfrom, const Extents& extents, unsigned int width, unsigned int height )
+{
+  USUL_TRACE_SCOPE_STATIC;
+
+  // Get the extents lower left and upper right.
+  Extents::Vertex ll ( extents.minimum() );
+  Extents::Vertex ur ( extents.maximum() );
+    
+  // Get the length in x and y.
+  const double xLength ( ur[0] - ll[0] );
+  const double yLength ( ur[1] - ll[1] );
+  
+  // Figure out the pixel resolution.
+  const double xResolution  ( xLength / width );
+  const double yResolution  ( yLength / height );
+
+  // Make sure there is enough room.
+  transfrom.resize ( 6 );
+  
+  transfrom[0] = ll[0];          // top left x
+  transfrom[1] = xResolution;    // w-e pixel resolution
+  transfrom[2] = 0;              // rotation, 0 if image is "north up"
+  transfrom[3] = ur[1];          // top left y
+  transfrom[4] = 0;              // rotation, 0 if image is "north up"
+  transfrom[5] = -yResolution;   // n-s pixel resolution
 }

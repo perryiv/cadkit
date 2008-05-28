@@ -9,7 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Visitors/StackPoints.h"
-#include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Geometry/Point.h"
 
 using namespace Minerva::Core::Visitors;
@@ -95,7 +96,7 @@ void StackPoints::visit ( Minerva::Core::DataObjects::DataObject &dataObject )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StackPoints::visit ( Minerva::Core::Layers::Vector &layer )
+void StackPoints::visit ( Minerva::Core::Layers::Container &layer )
 {
   if ( layer.showLayer() )
   {

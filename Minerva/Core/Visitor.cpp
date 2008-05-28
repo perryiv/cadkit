@@ -16,7 +16,7 @@
 
 #include "Minerva/Core/Visitor.h"
 #include "Minerva/Core/TileEngine/System.h"
-#include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/Layers/Container.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Cast/Cast.h"
@@ -82,7 +82,7 @@ void Visitor::visit ( Minerva::Core::DataObjects::DataObject &dataObject )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Visitor::visit ( Minerva::Core::Layers::Vector& vector )
+void Visitor::visit ( Minerva::Core::Layers::Container& vector )
 {
   vector.traverse ( *this );
 }
@@ -109,7 +109,7 @@ void Visitor::visit ( Minerva::Core::TileEngine::Node & )
 void Visitor::visit ( Minerva::Core::TileEngine::Body & body )
 {
   USUL_TRACE_SCOPE;
-  Minerva::Core::Layers::Vector::RefPtr vector ( body.vectorData() );
+  Minerva::Core::Layers::Container::RefPtr vector ( body.vectorData() );
   
   if ( vector.valid() )
     vector->traverse ( *this );

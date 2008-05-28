@@ -24,6 +24,7 @@ class GdalLayer : public Minerva::Core::Layers::RasterLayer,
 public:
   typedef Minerva::Core::Layers::RasterLayer BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef std::vector<double> GeoTransform;
   
   USUL_DECLARE_QUERY_POINTERS ( GdalLayer );
   
@@ -48,6 +49,8 @@ protected:
   virtual ~GdalLayer();
   
   GdalLayer ( const GdalLayer& );
+
+  static void           _createGeoTransform ( GeoTransform &transfrom, const Extents& e, unsigned int width, unsigned int height );
 
   virtual std::string   _cacheDirectory() const;
   virtual std::string   _cacheFileExtension() const;

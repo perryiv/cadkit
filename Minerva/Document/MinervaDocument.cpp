@@ -21,6 +21,7 @@
 #include "Minerva/Core/Commands/ToggleShown.h"
 #include "Minerva/Core/Commands/ShowPastEvents.h"
 #include "Minerva/Core/Commands/ChangeTimestepType.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/DataObjects/UserData.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"

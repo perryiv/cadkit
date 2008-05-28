@@ -16,8 +16,8 @@
 
 #include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/Utilities/DirtyTiles.h"
-#include "Minerva/Core/Visitor.h"
 #include "Minerva/Core/Utilities/Atmosphere.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Convert/MatrixTransform.h"
 #include "OsgTools/Group.h"

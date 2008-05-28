@@ -8,11 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_VECTOR_H__
-#define __MINERVA_LAYERS_VECTOR_H__
+#ifndef __MINERVA_LAYERS_CONTAINER_H__
+#define __MINERVA_LAYERS_CONTAINER_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
@@ -39,7 +39,7 @@ namespace Core {
   
 namespace Layers {
 
-class MINERVA_EXPORT Vector : public Usul::Base::Object,
+class MINERVA_EXPORT Container : public Usul::Base::Object,
                               public Usul::Interfaces::IBuildScene,
                               public Usul::Interfaces::ILayer,
                               public Usul::Interfaces::ISerialize,
@@ -47,20 +47,19 @@ class MINERVA_EXPORT Vector : public Usul::Base::Object,
                               public Minerva::Interfaces::IDirtyScene,
                               public Usul::Interfaces::ITreeNode,
                               public Usul::Interfaces::IBooleanState,
-                              public Minerva::Interfaces::IElevationChangedListnerer
+                              public Minerva::Interfaces::IElevationChangedListnerer,
+                              public Minerva::Interfaces::IAddLayer
 {
 public:
+
   /// Typedefs.
   typedef Usul::Base::Object                        BaseClass;
-  typedef Minerva::Core::DataObjects::DataObject    DataObject;
-  typedef DataObject::RefPtr                        DataObjectPtr;
-  typedef std::vector< DataObjectPtr >	            DataObjects;
   typedef Usul::Interfaces::ILayer                  ILayer;
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef std::vector<IUnknown::QueryPtr>           Unknowns;
   
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( Vector );
+  USUL_DECLARE_QUERY_POINTERS ( Container );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   enum Flags
@@ -71,7 +70,7 @@ public:
     ALL           = DATA_DIRTY | EXTENTS_DIRTY | SCENE_DIRTY
   };
   
-  Vector();
+  Container();
   
   /// Get this as an IUnknown.
 	virtual IUnknown*           asUnknown();
@@ -137,15 +136,19 @@ public:
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
   
 protected:
-  virtual ~Vector();
+
+  virtual ~Container();
   
-  Vector ( const Vector& rhs );
+  Container ( const Container& rhs );
   
   /// Get the extents.
   virtual void                _calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const;
   
   /// Build the scene.
   void                        _buildScene( Usul::Interfaces::IUnknown *caller );
+
+  // Add a layer (IAddLayer).
+  virtual void                addLayer ( Usul::Interfaces::ILayer *layer );
   
   // Get the number of children (ITreeNode).
   virtual unsigned int        getNumChildNodes() const;
@@ -163,8 +166,8 @@ protected:
   
 private:
   // Do not use.
-  Vector& operator= ( const Vector& rhs );
-  
+  Container& operator= ( const Container& rhs );
+
   // Register members for serialization.
   void                        _registerMembers();
 
@@ -182,7 +185,7 @@ private:
   Usul::Math::Vec2d _upperRight;
   osg::ref_ptr<osg::Group> _root;
   
-  SERIALIZE_XML_CLASS_NAME( Vector )
+  SERIALIZE_XML_CLASS_NAME( Container )
   SERIALIZE_XML_SERIALIZE_FUNCTION
   SERIALIZE_XML_ADD_MEMBER_FUNCTION
   SERIALIZE_XML_DEFINE_MAP;
@@ -193,4 +196,4 @@ private:
 }
 }
 
-#endif // __MINERVA_LAYERS_VECTOR_H__
+#endif // __MINERVA_LAYERS_CONTAINER_H__

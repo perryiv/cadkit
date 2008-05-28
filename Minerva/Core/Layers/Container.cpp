@@ -8,12 +8,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/Vector.h"
+#include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/DataObjects/DataObject.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Group.h"
 
 #include "Usul/Bits/Bits.h"
+#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/GUID.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Safe.h"
@@ -22,7 +24,20 @@
 
 using namespace Minerva::Core::Layers;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Vector, Vector::BaseClass );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register creators.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace
+{
+  Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < Container > > _creator_for_Container0 ( "Vector" );
+  Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < Container > > _creator_for_Container1 ( "Container" );
+}
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Container, Container::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,7 +46,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Vector, Vector::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Vector::Vector() : 
+Container::Container() : 
   BaseClass (),
   _layers(),
   _updateListeners(),
@@ -39,7 +54,7 @@ Vector::Vector() :
   _name(),
   _guid( Usul::Functions::GUID::generate() ),
   _shown ( true ),
-  _flags ( Vector::ALL ),
+  _flags ( Container::ALL ),
   _lowerLeft ( -180.0, -90.0 ),
   _upperRight ( 180.0, 90.0 ),
   _root ( new osg::Group ),
@@ -56,7 +71,7 @@ SERIALIZE_XML_INITIALIZER_LIST
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Vector::Vector( const Vector& rhs ) : 
+Container::Container( const Container& rhs ) : 
   BaseClass ( rhs ),
   _layers( rhs._layers ),
   _updateListeners ( rhs._updateListeners ),
@@ -64,7 +79,7 @@ Vector::Vector( const Vector& rhs ) :
   _name( rhs._name ),
   _guid( Usul::Functions::GUID::generate() ),
   _shown ( rhs._shown ),
-  _flags ( rhs._flags | Vector::SCENE_DIRTY ), // Make sure scene gets rebuilt.
+  _flags ( rhs._flags | Container::SCENE_DIRTY ), // Make sure scene gets rebuilt.
   _lowerLeft ( rhs._lowerLeft ),
   _upperRight ( rhs._upperRight ),
   _root ( new osg::Group ),
@@ -81,7 +96,7 @@ Vector::Vector( const Vector& rhs ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Vector::~Vector()
+Container::~Container()
 {
   USUL_TRACE_SCOPE;
 }
@@ -93,7 +108,7 @@ Vector::~Vector()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::_registerMembers()
+void Container::_registerMembers()
 {
   USUL_TRACE_SCOPE;
   SERIALIZE_XML_ADD_MEMBER ( _name );
@@ -109,7 +124,7 @@ void Vector::_registerMembers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* Vector::queryInterface ( unsigned long iid )
+Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
 {
   USUL_TRACE_SCOPE;
   switch ( iid )
@@ -131,6 +146,8 @@ Usul::Interfaces::IUnknown* Vector::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
   case Minerva::Interfaces::IElevationChangedListnerer::IID:
     return static_cast < Minerva::Interfaces::IElevationChangedListnerer* > ( this );
+  case Minerva::Interfaces::IAddLayer::IID:
+    return static_cast < Minerva::Interfaces::IAddLayer* > ( this );
   default:
     return 0x0;
   };
@@ -143,7 +160,7 @@ Usul::Interfaces::IUnknown* Vector::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::accept ( Minerva::Core::Visitor& visitor )
+void Container::accept ( Minerva::Core::Visitor& visitor )
 {
   USUL_TRACE_SCOPE;
   visitor.visit ( *this );
@@ -156,15 +173,15 @@ void Vector::accept ( Minerva::Core::Visitor& visitor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::traverse ( Minerva::Core::Visitor& visitor )
+void Container::traverse ( Minerva::Core::Visitor& visitor )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   for ( Unknowns::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {
-    if ( Minerva::Core::Layers::Vector *vector = dynamic_cast< Minerva::Core::Layers::Vector*> ( (*iter).get() ) )
+    if ( Minerva::Core::Layers::Container *Container = dynamic_cast< Minerva::Core::Layers::Container*> ( (*iter).get() ) )
     {
-      vector->accept ( visitor );
+      Container->accept ( visitor );
     }
 
     if ( Minerva::Core::DataObjects::DataObject *object = dynamic_cast< Minerva::Core::DataObjects::DataObject*> ( (*iter).get() ) )
@@ -181,7 +198,7 @@ void Vector::traverse ( Minerva::Core::Visitor& visitor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::name( const std::string& name )
+void Container::name( const std::string& name )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -195,7 +212,7 @@ void Vector::name( const std::string& name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Vector::name() const
+std::string Container::name() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -209,7 +226,7 @@ std::string Vector::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Vector::guid() const
+std::string Container::guid() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -223,7 +240,7 @@ std::string Vector::guid() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::showLayer( bool b )
+void Container::showLayer( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -238,7 +255,7 @@ void Vector::showLayer( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Vector::showLayer() const
+bool Container::showLayer() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -252,7 +269,7 @@ bool Vector::showLayer() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::add ( Usul::Interfaces::IUnknown* unknown )
+void Container::add ( Usul::Interfaces::IUnknown* unknown )
 {
   USUL_TRACE_SCOPE;
 
@@ -278,7 +295,7 @@ void Vector::add ( Usul::Interfaces::IUnknown* unknown )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::remove ( Usul::Interfaces::IUnknown* unknown )
+void Container::remove ( Usul::Interfaces::IUnknown* unknown )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -303,7 +320,7 @@ void Vector::remove ( Usul::Interfaces::IUnknown* unknown )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::clear ()
+void Container::clear ()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -322,7 +339,7 @@ void Vector::clear ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Vector::number() const
+unsigned int Container::number() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -336,7 +353,7 @@ unsigned int Vector::number() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node * Vector::buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller )
+osg::Node * Container::buildScene ( const Options &options, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -350,7 +367,7 @@ osg::Node * Vector::buildScene ( const Options &options, Usul::Interfaces::IUnkn
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::_buildScene( Usul::Interfaces::IUnknown *caller )
+void Container::_buildScene( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard( this->mutex() );
@@ -394,7 +411,7 @@ void Vector::_buildScene( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Vector::flags() const
+unsigned int Container::flags() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -408,7 +425,7 @@ unsigned int Vector::flags() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::flags( unsigned int f )
+void Container::flags( unsigned int f )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -422,11 +439,11 @@ void Vector::flags( unsigned int f )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Vector::dirtyData() const
+bool Container::dirtyData() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Vector::DATA_DIRTY );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Container::DATA_DIRTY );
 }
 
 
@@ -436,11 +453,11 @@ bool Vector::dirtyData() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::dirtyData( bool b )
+void Container::dirtyData( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Vector::DATA_DIRTY, b );
+  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Container::DATA_DIRTY, b );
 }
 
 
@@ -450,11 +467,11 @@ void Vector::dirtyData( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Vector::dirtyExtents() const
+bool Container::dirtyExtents() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Vector::EXTENTS_DIRTY );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Container::EXTENTS_DIRTY );
 }
 
 
@@ -464,11 +481,11 @@ bool Vector::dirtyExtents() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::dirtyExtents( bool b )
+void Container::dirtyExtents( bool b )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Vector::EXTENTS_DIRTY, b );
+  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Container::EXTENTS_DIRTY, b );
 }
 
 
@@ -478,11 +495,11 @@ void Vector::dirtyExtents( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Vector::dirtyScene() const
+bool Container::dirtyScene() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Vector::SCENE_DIRTY );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, Container::SCENE_DIRTY );
 }
 
 
@@ -492,11 +509,11 @@ bool Vector::dirtyScene() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
+void Container::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Vector::SCENE_DIRTY, b );
+  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, Container::SCENE_DIRTY, b );
 }
 
 
@@ -506,7 +523,7 @@ void Vector::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight )
+void Container::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight )
 {
   USUL_TRACE_SCOPE;
   if ( this->dirtyExtents() )
@@ -537,7 +554,7 @@ void Vector::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRig
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
+void Container::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
 {
   USUL_TRACE_SCOPE;
   lowerLeft.set ( -180.0, -90.0 );
@@ -551,7 +568,7 @@ void Vector::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
+void Container::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   // No need to guard _builders or _updateListeners because they have thier own mutex.
@@ -576,7 +593,7 @@ void Vector::updateNotify ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Vector::getNumChildNodes() const
+unsigned int Container::getNumChildNodes() const
 {
   USUL_TRACE_SCOPE;
   return _layers.size();
@@ -589,7 +606,7 @@ unsigned int Vector::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::ITreeNode * Vector::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode * Container::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
   return Usul::Interfaces::ITreeNode::QueryPtr ( _layers.at( which ) );
@@ -602,7 +619,7 @@ Usul::Interfaces::ITreeNode * Vector::getChildNode ( unsigned int which )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::setTreeNodeName ( const std::string & s )
+void Container::setTreeNodeName ( const std::string & s )
 {
   USUL_TRACE_SCOPE;
   this->name ( s );
@@ -615,7 +632,7 @@ void Vector::setTreeNodeName ( const std::string & s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Vector::getTreeNodeName() const
+std::string Container::getTreeNodeName() const
 {
   USUL_TRACE_SCOPE;
   return this->name();
@@ -628,7 +645,7 @@ std::string Vector::getTreeNodeName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::setBooleanState ( bool b )
+void Container::setBooleanState ( bool b )
 {
   USUL_TRACE_SCOPE;
   this->showLayer ( b );
@@ -650,7 +667,7 @@ void Vector::setBooleanState ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Vector::getBooleanState() const
+bool Container::getBooleanState() const
 {
   USUL_TRACE_SCOPE;
   return this->showLayer();
@@ -663,7 +680,7 @@ bool Vector::getBooleanState() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Vector::deserialize ( const XmlTree::Node &node )
+void Container::deserialize ( const XmlTree::Node &node )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -688,7 +705,7 @@ void Vector::deserialize ( const XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* Vector::asUnknown()
+Usul::Interfaces::IUnknown* Container::asUnknown()
 {
   USUL_TRACE_SCOPE;
   return this->queryInterface( Usul::Interfaces::IUnknown::IID );
@@ -701,7 +718,7 @@ Usul::Interfaces::IUnknown* Vector::asUnknown()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Vector::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller )
+bool Container::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -721,4 +738,17 @@ bool Vector::elevationChangedNotify ( const Extents& extents, ImagePtr elevation
     this->dirtyScene ( true );
 
   return handled;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer (IAddLayer).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::addLayer ( Usul::Interfaces::ILayer *layer )
+{
+  USUL_TRACE_SCOPE;
+  this->add ( layer );
 }

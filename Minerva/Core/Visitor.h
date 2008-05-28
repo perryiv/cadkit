@@ -28,7 +28,7 @@ namespace Minerva
 
     namespace Layers
     {
-      class Vector;
+      class Container;
     }
     
     namespace TileEngine
@@ -46,13 +46,13 @@ namespace Minerva
       // Typedefs.
       typedef Usul::Base::Object                      BaseClass;
       typedef Minerva::Core::DataObjects::DataObject  DataObject;
-      typedef Minerva::Core::Layers::Vector           Vector;
+      typedef Minerva::Core::Layers::Container        Container;
 
       MINERVA_DEFINE_VISITOR_CLASS ( Visitor );
 
-      virtual void visit ( Minerva::Core::DataObjects::DataObject &dataObject );
+      virtual void visit ( DataObject &dataObject );
 
-      virtual void visit ( Minerva::Core::Layers::Vector& vector );
+      virtual void visit ( Container& container );
       
       virtual void visit ( Minerva::Core::TileEngine::System & );
       virtual void visit ( Minerva::Core::TileEngine::Group & );

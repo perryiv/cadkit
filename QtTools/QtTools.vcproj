@@ -434,6 +434,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\StringsView.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\StringsView.h"
+					>
+				</File>
+				<File
 					RelativePath=".\TreeControl.cpp"
 					>
 				</File>

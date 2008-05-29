@@ -35,7 +35,6 @@ SET (SOURCES
   AlphasDialog.cpp
   EditWmsLayerWidget.cpp
   OptionsDialog.cpp
-  OptionWidget.cpp
   WmsLayerItem.cpp
   WmsLayerQtFactory.cpp
   WmsLayerQtComponent.cpp

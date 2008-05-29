@@ -15,6 +15,8 @@
 # include <signal.h>
 #endif
 
+#include "Usul/File/Path.h"
+
 #include <sstream>
 #include <fstream>
 

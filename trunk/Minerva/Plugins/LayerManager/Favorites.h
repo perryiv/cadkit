@@ -53,13 +53,13 @@ private slots:
   void             _removeFavoriteButtonClicked();
   void             _onContextMenuShow ( const QPoint& pos );
 
+  /// Build the tree.
+  void             _buildTree();
+  
 private:
 
   /// Add a layer.
   void             _addLayer ( Usul::Interfaces::IUnknown *parent, Usul::Interfaces::IUnknown* layer );
-  
-  /// Build the tree.
-  void             _buildTree();
 
   /// Build the menu.
   MenuKit::Menu*   _buildMenu ( const FavoritesMap& map, const std::string& name, Usul::Interfaces::IUnknown *caller );

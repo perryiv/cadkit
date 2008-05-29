@@ -25,6 +25,8 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/User/Directory.h"
@@ -66,7 +68,10 @@ Favorites::Favorites(Usul::Interfaces::IUnknown* caller, QWidget* parent ) : Bas
   //_favoritesTree->selectionMode ( QAbstractItemView::ExtendedSelection );
 
   // Read from server.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Favorites::_readFavoritesFromServer ), "2627940728" );
+  Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::memberFunction ( this, &Favorites::_readFavoritesFromServer ), caller ) );
+  
+  // Add the job to the manager.
+  Usul::Jobs::Manager::instance().addJob ( job );
 
   this->_buildTree();
 }
@@ -371,4 +376,7 @@ void Favorites::_readFavoritesFromServer()
   document->load ( name );
 
   map.deserialize ( *document );
+  
+  // Make sure the tree is rebuilt.
+  QMetaObject::invokeMethod ( this, "_buildTree", Qt::QueuedConnection );
 }

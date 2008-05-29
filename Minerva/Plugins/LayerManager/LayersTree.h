@@ -42,7 +42,6 @@ public:
   Favorites*  favorites() const;
 
 signals:
-  void enableWidgets ( bool );
   void addLayerFavorites ( Usul::Interfaces::IUnknown * layer );
 
 public slots:

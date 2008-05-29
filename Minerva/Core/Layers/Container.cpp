@@ -148,6 +148,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IElevationChangedListnerer* > ( this );
   case Minerva::Interfaces::IAddLayer::IID:
     return static_cast < Minerva::Interfaces::IAddLayer* > ( this );
+  case Minerva::Interfaces::IRemoveLayer::IID:
+    return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
   default:
     return 0x0;
   };
@@ -751,4 +753,17 @@ void Container::addLayer ( Usul::Interfaces::ILayer *layer )
 {
   USUL_TRACE_SCOPE;
   this->add ( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a layer (IRemoveLayer).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::removeLayer ( Usul::Interfaces::ILayer * layer )
+{
+  USUL_TRACE_SCOPE;
+  this->remove ( layer );
 }

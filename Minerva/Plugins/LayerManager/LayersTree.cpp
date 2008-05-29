@@ -41,6 +41,7 @@
 #include "QtGui/QDialog"
 #include "QtGui/QMainWindow"
 #include "QtGui/QMenu"
+#include "QtGui/QMessageBox"
 #include "QtGui/QSlider"
 
 namespace Detail
@@ -78,12 +79,6 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
 
   QHBoxLayout *buttonLayout ( new QHBoxLayout );
   QVBoxLayout *treeLayout ( new QVBoxLayout );
-
-  QPushButton *addLayer ( new QPushButton ( "Add" ) );
-  buttonLayout->addWidget ( addLayer );
-
-  QPushButton *removeLayer ( new QPushButton ( "Remove" ) );
-  buttonLayout->addWidget ( removeLayer );
   
   _tree = new QtTools::TreeControl ( caller, parent );
   
@@ -104,17 +99,8 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
   _slider->setEnabled ( false );
 
   this->_connectTreeViewSlots ();
-
-  connect ( addLayer,    SIGNAL ( clicked () ), this,     SLOT   ( _onAddLayerClick () ) );
-  connect ( removeLayer, SIGNAL ( clicked () ), this,     SLOT   ( _onRemoveLayerClick () ) );
-
-  connect ( this,        SIGNAL ( enableWidgets ( bool ) ), addLayer,     SLOT   ( setEnabled ( bool ) ) );
-  connect ( this,        SIGNAL ( enableWidgets ( bool ) ), removeLayer,  SLOT   ( setEnabled ( bool ) ) );
   
   connect ( _slider,     SIGNAL ( sliderReleased() ), SLOT ( _onSliderReleased() ) );
-
-  // Disable by default.
-  emit enableWidgets( false );
 }
 
 
@@ -143,12 +129,6 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
   _document = document;
 
   _tree->buildTree ( document );
-  
-  // See if the correct interface is implemented.
-  Minerva::Interfaces::IAddLayer::QueryPtr add ( document );
-  Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( document );
-  
-  emit enableWidgets( add.valid() && remove.valid() );
 }
 
 
@@ -271,6 +251,13 @@ void LayersTree::_onRemoveLayerClick ()
   // Get all selected items.
   typedef QtTools::TreeControl::TreeWidgetItems Items;
   Items items ( _tree->selectedItems() );
+
+  if ( items.size() > 0 )
+  {
+    std::string message ( Usul::Strings::format ( "Delete ", items.size(), " items?" ) );
+    if ( QMessageBox::Ok != QMessageBox::question ( this, "Confirm", message.c_str(), QMessageBox::Ok | QMessageBox::Cancel ) )
+      return;
+  }
   
   // Loop through all items.
   for ( Items::iterator iter = items.begin(); iter != items.end(); ++iter )
@@ -280,15 +267,16 @@ void LayersTree::_onRemoveLayerClick ()
     
     // Get the unknown for the item.
     Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->unknown ( item ) );
-    //Usul::Interfaces::IUnknown::QueryPtr parent ( _tree->unknown ( item->parent() ) );
+    Usul::Interfaces::IUnknown::QueryPtr parent ( _tree->unknown ( item->parent() ) );
     Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
 
-    if ( layer.valid () )
+    if ( layer.valid () && parent.valid() )
     {
       Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
-      command->execute ( _document );
+      command->execute ( parent );
 
       _tree->removeItem( item );
+      this->_dirtyAndRedraw ( unknown.get() );
     }
   }
 }
@@ -311,10 +299,18 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   QMenu menu;
   
   Usul::Commands::Command::RefPtr command ( Usul::Commands::genericCommand ( "Add...", Usul::Adaptors::bind1 ( unknown.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_addLayer ) ), Usul::Commands::TrueFunctor() ) );
+  
+  // Add button.
   QtTools::Action add ( command.get() );
   
   Minerva::Interfaces::IAddLayer::QueryPtr al ( unknown );
   add.setEnabled( al.valid() );
+
+  // Remove button.
+  QAction remove ( 0x0 );
+  remove.setText ( "Remove" );
+  remove.setToolTip ( "Remove selected layers." );
+  QObject::connect ( &remove, SIGNAL ( triggered() ), this, SLOT ( _onRemoveLayerClick() ) );
   
   QAction favorites ( 0x0 );
   favorites.setText( "Add to favorites" );
@@ -343,6 +339,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   
   // Add the actions to the menu.
   menu.addAction ( &add );
+  menu.addAction ( &remove );
   menu.addAction ( &favorites );
 
   QtTools::Menu addFromFavorites ( "Add From Favorites" );

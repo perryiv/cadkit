@@ -11,6 +11,7 @@
 #include "Minerva/Core/Layers/RasterGroup.h"
 #include "Minerva/Core/Utilities/Composite.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
 #include "Usul/Jobs/Job.h"
@@ -84,6 +85,8 @@ Usul::Interfaces::IUnknown * RasterGroup::queryInterface ( unsigned long iid )
   {
   case Minerva::Interfaces::IAddLayer::IID:
     return static_cast<Minerva::Interfaces::IAddLayer* > ( this );
+  case Minerva::Interfaces::IRemoveLayer::IID:
+    return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -455,6 +458,23 @@ void RasterGroup::addLayer ( Usul::Interfaces::ILayer *layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Remove a layer (IRemoveLayer).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::removeLayer ( Usul::Interfaces::ILayer * layer )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
+  if ( rl.valid() )
+  {
+    this->remove ( rl.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the log.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -475,4 +495,26 @@ void RasterGroup::log ( LogPtr lp )
       raster->log ( lp );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Deserialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::deserialize ( const XmlTree::Node &node )
+{
+  Guard guard ( this->mutex() );
+
+  // Call the base class.
+  BaseClass::deserialize ( node );
+
+  // Clear the extents.
+  this->extents ( Extents() );
+
+  // Update the extents.
+  for ( Layers::const_iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+    this->_updateExtents ( (*iter).get() );
 }

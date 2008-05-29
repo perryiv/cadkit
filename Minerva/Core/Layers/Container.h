@@ -15,6 +15,7 @@
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
+#include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Containers/Unknowns.h"
@@ -34,21 +35,22 @@
 
 namespace Minerva {
 namespace Core { 
-  
+
   class Visitor;
-  
+
 namespace Layers {
 
 class MINERVA_EXPORT Container : public Usul::Base::Object,
-                              public Usul::Interfaces::IBuildScene,
-                              public Usul::Interfaces::ILayer,
-                              public Usul::Interfaces::ISerialize,
-                              public Usul::Interfaces::IUpdateListener,
-                              public Minerva::Interfaces::IDirtyScene,
-                              public Usul::Interfaces::ITreeNode,
-                              public Usul::Interfaces::IBooleanState,
-                              public Minerva::Interfaces::IElevationChangedListnerer,
-                              public Minerva::Interfaces::IAddLayer
+                                 public Usul::Interfaces::IBuildScene,
+                                 public Usul::Interfaces::ILayer,
+                                 public Usul::Interfaces::ISerialize,
+                                 public Usul::Interfaces::IUpdateListener,
+                                 public Minerva::Interfaces::IDirtyScene,
+                                 public Usul::Interfaces::ITreeNode,
+                                 public Usul::Interfaces::IBooleanState,
+                                 public Minerva::Interfaces::IElevationChangedListnerer,
+                                 public Minerva::Interfaces::IAddLayer,
+                                 public Minerva::Interfaces::IRemoveLayer
 {
 public:
 
@@ -149,6 +151,9 @@ protected:
 
   // Add a layer (IAddLayer).
   virtual void                addLayer ( Usul::Interfaces::ILayer *layer );
+
+  /// Remove a layer (IRemoveLayer).
+  virtual void                removeLayer ( Usul::Interfaces::ILayer * layer );
   
   // Get the number of children (ITreeNode).
   virtual unsigned int        getNumChildNodes() const;

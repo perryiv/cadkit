@@ -15,6 +15,7 @@
 #include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "Usul/Base/Object.h"
 
@@ -29,7 +30,8 @@ namespace Core {
 namespace Layers {
 
 class MINERVA_EXPORT RasterGroup : public RasterLayer,
-                                   public Minerva::Interfaces::IAddLayer
+                                   public Minerva::Interfaces::IAddLayer,
+                                   public Minerva::Interfaces::IRemoveLayer
 {
 public:
 
@@ -54,6 +56,9 @@ public:
   
   // Clone.
   virtual IUnknown*               clone() const;
+
+  /// Deserialize.
+  virtual                         void deserialize ( const XmlTree::Node &node );
 
   void                            append ( IRasterLayer* layer );
   void                            remove ( IRasterLayer* layer );
@@ -99,6 +104,9 @@ protected:
   // Add a layer (IAddLayer).
   virtual void                    addLayer ( Usul::Interfaces::ILayer *layer );
 
+  /// Remove a layer (IRemoveLayer).
+  virtual void                    removeLayer ( Usul::Interfaces::ILayer * layer );
+
 private:
   RasterGroup& operator= ( const RasterGroup& );
 
@@ -106,7 +114,7 @@ private:
   ImageCache _cache;
   bool _useCache;
 
-  SERIALIZE_XML_DEFINE_MEMBERS ( RasterGroup );
+  SERIALIZE_XML_CLASS_NAME( RasterGroup );
 };
 
 } // namespace Layers

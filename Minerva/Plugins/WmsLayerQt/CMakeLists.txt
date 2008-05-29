@@ -46,7 +46,6 @@ SET(MOC_HDRS
   AlphasDialog.h
   EditWmsLayerWidget.h
   OptionsDialog.h
-  OptionWidget.h
 )
 
 # Make .h from .ui

@@ -142,7 +142,7 @@ void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
   // Save the document;
   _document = document;
 
-  _tree->buildTree( document );
+  _tree->buildTree ( document );
   
   // See if the correct interface is implemented.
   Minerva::Interfaces::IAddLayer::QueryPtr add ( document );

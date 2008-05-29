@@ -718,7 +718,7 @@ std::string RasterLayer::_cacheFileExtension() const
 
 void RasterLayer::_checkForCanceledJob ( Usul::Jobs::Job *job )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   if ( ( 0x0 != job ) && ( true == job->canceled() ) )
     job->cancel();
 }
@@ -732,7 +732,7 @@ void RasterLayer::_checkForCanceledJob ( Usul::Jobs::Job *job )
 
 RasterLayer::ImagePtr RasterLayer::_readImageFile ( const std::string &file, ReaderPtr reader )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
 
   // Try to use the given reader.
   if ( reader.valid() )

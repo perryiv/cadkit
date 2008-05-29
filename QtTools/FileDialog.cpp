@@ -46,7 +46,7 @@ namespace Detail
 
 FileDialog::FileResult FileDialog::getLoadFileName  ( QWidget* parent, const std::string &title, const Filters &filters )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   const FilesResult result ( FileDialog::getLoadFileNames ( parent, title, filters ) );
   return ( ( result.first.empty() ) ? FileResult() : FileResult ( result.first.front(), result.second ) );
 }
@@ -60,7 +60,7 @@ FileDialog::FileResult FileDialog::getLoadFileName  ( QWidget* parent, const std
 
 FileDialog::FilesResult FileDialog::getLoadFileNames ( QWidget* parent, const std::string &title, const Filters &filters )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3678389711" );
   
   // Initialize the answer.
@@ -115,7 +115,7 @@ FileDialog::FilesResult FileDialog::getLoadFileNames ( QWidget* parent, const st
 
 FileDialog::FileResult FileDialog::getSaveFileName  ( QWidget* parent, const std::string &title, const Filters &filters )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1901356729" );
   
   // Initialize the answer.
@@ -156,7 +156,7 @@ FileDialog::FileResult FileDialog::getSaveFileName  ( QWidget* parent, const std
 
 std::string FileDialog::_formatFilters ( const Filters &filters ) 
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   
   // Initialize the answer.
   QStringList allFilters;
@@ -187,7 +187,7 @@ std::string FileDialog::_formatFilters ( const Filters &filters )
 
 std::string FileDialog::_lastFileDialogDir ( const std::string &title ) 
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   
   // Copy the title and replace any white space.
   std::string key ( title );
@@ -208,7 +208,7 @@ std::string FileDialog::_lastFileDialogDir ( const std::string &title )
 
 void FileDialog::_lastFileDialogDir ( const std::string &title, const std::string &dir )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   
   // Copy the title and replace any white space.
   std::string key ( title );
@@ -227,7 +227,7 @@ void FileDialog::_lastFileDialogDir ( const std::string &title, const std::strin
 
 std::string FileDialog::_lastFileDialogFilter ( const std::string &title ) 
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   
   // Copy the title and replace any white space.
   std::string key ( title );
@@ -246,7 +246,7 @@ std::string FileDialog::_lastFileDialogFilter ( const std::string &title )
 
 void FileDialog::_lastFileDialogFilter ( const std::string &title, const std::string &filter ) 
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
   
   // Copy the title and replace any white space.
   std::string key ( title );

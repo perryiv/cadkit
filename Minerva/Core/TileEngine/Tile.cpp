@@ -1574,7 +1574,7 @@ void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d
 
 Usul::Math::Vec4d Tile::_textureCoordinatesSubRegion ( const Usul::Math::Vec4d& region, Indices index )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
 
   const double deltaU ( region[1] - region[0] );
   const double deltaV ( region[3] - region[2] );

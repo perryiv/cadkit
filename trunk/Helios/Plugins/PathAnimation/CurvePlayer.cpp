@@ -628,7 +628,7 @@ namespace Helper
 
 osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree, unsigned int steps, Usul::Interfaces::IUnknown * )
 {
-  USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE_STATIC;
 
   // Make new group to hold everything.
   osg::ref_ptr<osg::Group> group ( new osg::Group );

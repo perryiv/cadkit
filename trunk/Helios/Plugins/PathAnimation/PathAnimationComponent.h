@@ -65,6 +65,8 @@ public:
   // Usul::Interfaces::IAnimatePath.
   virtual void                  animatePath ( const IAnimatePath::PackedMatrices & );
   virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, unsigned int steps );
+  virtual bool                  isPlaying() const;
+  virtual void                  stopPlaying();
 
   // Usul::Interfaces::IPlugin
   virtual std::string           getPluginName() const { return "Path Animation"; }
@@ -107,7 +109,6 @@ protected:
   bool                          _isDegree ( unsigned int ) const;
   bool                          _isLooping() const;
   bool                          _isNumSteps ( unsigned int steps ) const;
-  bool                          _isPlaying() const;
   bool                          _isPaused() const;
   bool                          _isShowingPath() const;
 
@@ -128,11 +129,10 @@ protected:
   void                          _setLooping ( bool );
   void                          _setNumSteps ( unsigned int steps );
   void                          _setShowPath ( bool );
-  void                          _stopPlaying();
 
   void                          _updateScene();
 
-  void                          _writeMovieFile( Usul::Interfaces::IUnknown *caller );
+  void                          _writeMovieFile ( Usul::Interfaces::IUnknown *caller );
 
 private:
 

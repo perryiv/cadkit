@@ -35,7 +35,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 ADD_LIBRARY(HeliosQtCore SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
-LINK_CADKIT( HeliosQtCore HeliosQtCommands HeliosQtTools XmlTree MenuKit QtTools
+LINK_CADKIT( HeliosQtCore HeliosQtCommands XmlTree MenuKit QtTools
   Usul
 )
 

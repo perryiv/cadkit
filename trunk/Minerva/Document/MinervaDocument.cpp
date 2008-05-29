@@ -229,10 +229,6 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Minerva::Interfaces::IAnimationControl::IID:
     return static_cast < Minerva::Interfaces::IAnimationControl * > ( this );
-  case Minerva::Interfaces::IAddLayer::IID:
-    return static_cast < Minerva::Interfaces::IAddLayer * > ( this );
-  case Minerva::Interfaces::IRemoveLayer::IID:
-    return static_cast < Minerva::Interfaces::IRemoveLayer * > ( this );
   case Minerva::Interfaces::IDirtyScene::IID:
     return static_cast < Minerva::Interfaces::IDirtyScene * > ( this );
   case Usul::Interfaces::IMenuAdd::IID:
@@ -1107,6 +1103,9 @@ void MinervaDocument::dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller )
   
   if ( body.valid() && rl.valid() )
     body->rasterChanged ( rl.get() );
+
+  // Show we always modify?
+  this->modified ( true );
 }
 
 

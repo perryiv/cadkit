@@ -63,8 +63,6 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IMatrixManipulator,
                                                 public Usul::Interfaces::IUpdateListener,
                                                 public Minerva::Interfaces::IAnimationControl,
-                                                public Minerva::Interfaces::IAddLayer,
-                                                public Minerva::Interfaces::IRemoveLayer,
                                                 public Minerva::Interfaces::IDirtyScene,
                                                 public Usul::Interfaces::IMenuAdd,
                                                 public Usul::Interfaces::ICommandExecuteListener,

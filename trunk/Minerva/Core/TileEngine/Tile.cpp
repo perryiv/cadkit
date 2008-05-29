@@ -841,12 +841,12 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
   // Handle no body.
   if ( false == body.valid() )
     return;
-    
+
   // Width and height for the image.
   const ImageSize imageSize ( Usul::Threads::Safe::get ( this->mutex(), _imageSize ) );
   const unsigned int width ( imageSize[0] );
   const unsigned int height ( imageSize[1] );
-  
+
   // Get the rasters.
   typedef Body::Rasters Rasters;
   Rasters rasters;
@@ -854,44 +854,44 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
 
   // Image.
   osg::ref_ptr<osg::Image> result ( 0x0 );
-  
+
   // Build the list of images to be composited.
   for ( Rasters::iterator iter = rasters.begin(); iter != rasters.end(); ++iter )
   {
     // Have we been cancelled?
     if ( ( 0x0 != job ) && ( true == job->canceled() ) )
       job->cancel();
-    
+
     // The layer.
     IRasterLayer::RefPtr raster ( *iter );
-    
+
     // Image for the layer.
     osg::ref_ptr<osg::Image> image ( 0x0 );
-    
+
     // The texture coordinates to use.
     Usul::Math::Vec4d tCoords ( 0.0, 1.0, 0.0, 1.0 );
 
     // Query for needed interfaces.
     Usul::Interfaces::ILayer::QueryPtr layer ( raster );
     Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
-    
+
     // Get the extents.
     const double minLon ( le.valid() ? le->minLon() : -180.0 );
     const double minLat ( le.valid() ? le->minLat() :  -90.0 );
     const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
     const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
-    
+
     Extents e ( minLon, minLat, maxLon, maxLat );
-    
+
     // Should the layer be shown?
     const bool shown ( layer.valid() ? layer->showLayer() : true );
-    
+
     // Only use this layer if it's shown and intersects our extents.
     if ( shown && this->extents().intersects ( e ) )
     {
       // Get the image for the layer.
       image = Tile::buildRaster ( this->extents(), width, height, this->level(), raster.get(), job.get() );
-      
+
       // If we didn't get an image, use our parents image.
       if ( false == image.valid() )
       {

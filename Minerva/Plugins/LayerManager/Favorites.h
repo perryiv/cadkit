@@ -58,6 +58,12 @@ private:
   /// Add a layer.
   void             _addLayer ( Usul::Interfaces::IUnknown *parent, Usul::Interfaces::IUnknown* layer );
   
+  /// Build the tree.
+  void             _buildTree();
+
+  /// Build the menu.
+  MenuKit::Menu*   _buildMenu ( const FavoritesMap& map, const std::string& name, Usul::Interfaces::IUnknown *caller );
+
   /// Save/Restore state.
   void             _saveState();
   void             _restoreState();
@@ -65,10 +71,11 @@ private:
   /// Get the filename.
   std::string      _filename() const;
   
-  /// Build the tree.
-  void             _buildTree();
-  
+  /// Read from server.
+  void             _readFavoritesFromServer();
+
   Usul::Interfaces::IUnknown::RefPtr _caller;
+  FavoritesMap _serverFavorites;
   FavoritesMap _favoritesMap;
   
   SERIALIZE_XML_DEFINE_MAP;

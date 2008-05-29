@@ -8,6 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _MSC_VER
+#define NOMINMAX
+#endif
+
 #include "Minerva/Plugins/LayerManager/Favorites.h"
 #include "Minerva/Core/Commands/AddLayer.h"
 
@@ -21,6 +25,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Network/Curl.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/User/Directory.h"
 
@@ -59,6 +64,9 @@ Favorites::Favorites(Usul::Interfaces::IUnknown* caller, QWidget* parent ) : Bas
 
   // We want exteneded selection.
   //_favoritesTree->selectionMode ( QAbstractItemView::ExtendedSelection );
+
+  // Read from server.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Favorites::_readFavoritesFromServer ), "2627940728" );
 
   this->_buildTree();
 }
@@ -160,6 +168,28 @@ void Favorites::_removeFavoriteButtonClicked()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add items from map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Map >
+  inline void addItems ( const Map& map, QTreeWidgetItem* parent )
+  {
+    for ( typename Map::const_iterator iter = map.begin(); iter != map.end(); ++iter )
+    {
+      // Make the item.
+      QTreeWidgetItem *item ( new QTreeWidgetItem ( parent ) );
+      item->setText ( 0, iter->first.c_str() );
+      parent->addChild ( item );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the tree.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -168,14 +198,22 @@ void Favorites::_buildTree()
 {
   // Clear anything we may have.
   _favoritesTree->clear();
+
+  // Make the item.
+  QTreeWidgetItem *server ( new QTreeWidgetItem ( _favoritesTree ) );
+  QTreeWidgetItem *user   ( new QTreeWidgetItem ( _favoritesTree ) );
+
+  // Set the text.
+  server->setText ( 0, "Server" );
+  user->setText   ( 0, "User" );
+
+  // Add the items.
+  Helper::addItems ( _serverFavorites, server );
+  Helper::addItems ( _favoritesMap, user );
   
-  for ( FavoritesMap::const_iterator iter = _favoritesMap.begin(); iter != _favoritesMap.end(); ++iter )
-  {
-    // Make the item.
-    QTreeWidgetItem *item ( new QTreeWidgetItem ( _favoritesTree ) );
-    item->setText ( 0, iter->first.c_str() );
-    _favoritesTree->addTopLevelItem ( item );
-  }
+  // Add items to tree.
+  _favoritesTree->addTopLevelItem ( server );
+  _favoritesTree->addTopLevelItem ( user );
 }
 
 
@@ -240,7 +278,23 @@ std::string Favorites::_filename() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuKit::Menu* Favorites::menu( Usul::Interfaces::IUnknown *caller )
+MenuKit::Menu* Favorites::menu ( Usul::Interfaces::IUnknown *caller )
+{
+  // Make the menu.
+  MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
+  menu->append ( this->_buildMenu ( _serverFavorites, "Server", caller ) );
+  menu->append ( this->_buildMenu ( _favoritesMap, "User", caller ) );
+  return menu.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MenuKit::Menu* Favorites::_buildMenu ( const FavoritesMap& map, const std::string& name, Usul::Interfaces::IUnknown *caller )
 {
   // Shorten the lines.
   typedef MenuKit::Menu Menu;
@@ -249,10 +303,10 @@ MenuKit::Menu* Favorites::menu( Usul::Interfaces::IUnknown *caller )
   namespace UC = Usul::Commands;
 
   // Make the menu.
-  Menu::RefPtr menu ( new Menu );
+  Menu::RefPtr menu ( new Menu ( name ) );
 
   // Add buttons to the menu.
-  for ( FavoritesMap::const_iterator iter = _favoritesMap.begin(); iter != _favoritesMap.end(); ++iter )
+  for ( FavoritesMap::const_iterator iter = map.begin(); iter != map.end(); ++iter )
   {
     menu->append ( new Button ( UC::genericCommand ( iter->first, UA::bind2<void> ( caller, iter->second.get(), UA::memberFunction<void> ( this, &Favorites::_addLayer ) ), UC::TrueFunctor() ) ) );
   }
@@ -283,4 +337,38 @@ void Favorites::_onContextMenuShow ( const QPoint& pos )
   menu.addAction ( &action );
 
   menu.exec ( _favoritesTree->mapToGlobal ( pos ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read from server.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Favorites::_readFavoritesFromServer()
+{
+  const std::string server ( "www.minerva-gis.org" );
+  const std::string file ( "gis_favorites.xml" );
+
+  const std::string url ( "http://" + server + "/" + file );
+
+  // File to download to.
+	std::string name ( Usul::File::Temp::file() );
+	Usul::Scope::RemoveFile remove ( name );
+  
+	// Download.
+	{
+		Usul::Network::Curl curl ( url, name );
+		Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "3274576290" );
+	}
+
+  Serialize::XML::DataMemberMap map;
+  map.addMember ( "favorites", _serverFavorites );
+
+  XmlTree::XercesLife life;
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( name );
+
+  map.deserialize ( *document );
 }

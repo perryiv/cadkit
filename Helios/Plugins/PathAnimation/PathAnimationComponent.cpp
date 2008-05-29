@@ -197,7 +197,7 @@ void PathAnimationComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnkn
   menu->append ( new Button ( UC::genericCommand ( "Play &Backward",   UA::memberFunction<void> ( this, &PathAnimationComponent::_playBackward   ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
   menu->append ( new Button ( UC::genericCommand ( "&Next Camera",     UA::memberFunction<void> ( this, &PathAnimationComponent::_goToNextCamera ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
   menu->append ( new Button ( UC::genericCommand ( "Pre&vious Camera", UA::memberFunction<void> ( this, &PathAnimationComponent::_goToPrevCamera ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_canPlay   ) ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "&Stop",            UA::memberFunction<void> ( this, &PathAnimationComponent::_stopPlaying    ), UA::memberFunction<bool> ( this, &PathAnimationComponent::_isPlaying ) ) ) );
+  menu->append ( new Button ( UC::genericCommand ( "&Stop",            UA::memberFunction<void> ( this, &PathAnimationComponent::stopPlaying    ), UA::memberFunction<bool> ( this, &PathAnimationComponent::isPlaying ) ) ) );
 
   menu->addSeparator();
   
@@ -672,7 +672,7 @@ void PathAnimationComponent::_playBackward()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_stopPlaying()
+void PathAnimationComponent::stopPlaying()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -755,7 +755,7 @@ bool PathAnimationComponent::_canPlay() const
   if ( false == _currentPath->canPlay() )
     return false;
 
-  if ( true == this->_isPlaying() )
+  if ( true == this->isPlaying() )
     return false;
 
   return true;
@@ -768,7 +768,7 @@ bool PathAnimationComponent::_canPlay() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PathAnimationComponent::_isPlaying() const
+bool PathAnimationComponent::isPlaying() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -868,7 +868,7 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_updateScene ) );
 
   // Should we update?
-  if ( ( false == _player.valid() ) || ( false == this->_isPlaying() ) )
+  if ( ( false == _player.valid() ) || ( false == this->isPlaying() ) )
     return;
 
   // Update the player.
@@ -878,7 +878,7 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
   if ( false == _player->playing() )
   {
     // This sets "_player" to null.
-    this->_stopPlaying();
+    this->stopPlaying();
 
     // If we are suppose to write a movie.
     this->_writeMovieFile ( caller );
@@ -957,7 +957,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
   typedef IAnimatePath::PackedMatrix Matrix;
 
   // Make sure we are not playing.
-  this->_stopPlaying();
+  this->stopPlaying();
 
   // Make a new path.
   CameraPath::RefPtr path ( new CameraPath );

@@ -22,6 +22,7 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Interfaces/IRenderInfoOSG.h"
 
 #include "OsgTools/Builders/GradientBackground.h"
 
@@ -38,12 +39,16 @@ namespace OsgTools {
 namespace Render {
 
 
-class OSG_TOOLS_EXPORT Renderer : public Usul::Base::Referenced
+class OSG_TOOLS_EXPORT Renderer : public Usul::Base::Referenced,
+                                  public Usul::Interfaces::IRenderInfoOSG
 {
 public:
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Renderer );
+
+  // Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Useful typedefs.
   typedef Usul::Base::Referenced BaseClass;
@@ -53,6 +58,7 @@ public:
   typedef std::vector < std::string > ImageList;
   typedef OsgTools::Builders::GradientBackground GradientBackground;
   typedef GradientBackground::Corners            Corners;
+  typedef osg::RenderInfo RenderInfo;
 
   // Constructor
   Renderer();
@@ -103,6 +109,9 @@ public:
 
   // Render.  Assumes the context is already current.
   void                  render();
+
+  // Get the render info for this Renderer.
+  virtual RenderInfo    getRenderInfo() const;
 
   // Resize the viewer.
   void                  resize ( unsigned int width, unsigned int height );

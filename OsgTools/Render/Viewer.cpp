@@ -2404,6 +2404,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IMouseEventSubject* > ( this );
 	case Usul::Interfaces::IModelsScene::IID:
 		return static_cast< Usul::Interfaces::IModelsScene* > ( this );
+  case Usul::Interfaces::IRenderInfoOSG::IID:
+    return static_cast < Usul::Interfaces::IRenderInfoOSG* > ( this );
   default:
     return 0x0;
   } 
@@ -5179,4 +5181,18 @@ SceneManager * Viewer::sceneManager()
 	USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
 	return _sceneManager.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the render info for this Viewer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::RenderInfo Viewer::getRenderInfo() const
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  return ( _renderer.valid() ? _renderer->getRenderInfo() : osg::RenderInfo() );
 }

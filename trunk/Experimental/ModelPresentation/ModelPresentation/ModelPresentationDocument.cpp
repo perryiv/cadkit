@@ -27,6 +27,8 @@
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCommand.h"
+#include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
 
@@ -108,7 +110,8 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _dynamicNotLoadedTextYPos( 0 ),
   _camera( new osg::Camera ),
   _animationSpeed( 10 ),
-  _compileDisplayLists()
+  _compileDisplayLists(),
+  _animatingSequence( false )
 {
   USUL_TRACE_SCOPE;
   _mpdModels.models = new osg::Switch();
@@ -585,6 +588,19 @@ void ModelPresentationDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
       this->_checkTime( true );
     }
    
+  }
+
+  // If we are supposed to animate through the sequences
+  if( true == Usul::Threads::Safe::get( this->mutex(), _animatingSequence ) )
+  {
+    IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
+    if( true == path.valid() )
+    {
+      if( false == path->isPlaying() )
+      {
+        this->nextSequenceStep();
+      }
+    }
   }
 
   // If we have a timeline or a dynamic set check the steps
@@ -2129,7 +2145,8 @@ void ModelPresentationDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces:
     SequenceMenu->append( new Button ( new MpdNextSequence( me.get() ) ) );
     SequenceMenu->append( new Button ( new MpdPrevSequence( me.get() ) ) );
     SequenceMenu->append( new Button ( new MpdFirstSequence( me.get() ) ) );
-     
+    SequenceMenu->append( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Animate", Usul::Adaptors::memberFunction<void> ( this, &ModelPresentationDocument::_animateSequence ), Usul::Adaptors::memberFunction<bool> ( this, &ModelPresentationDocument::_isAnimatingSequence ) ) ) );
+
   }
 
   if( _locationNames.size() > 0 )
@@ -3060,4 +3077,41 @@ void ModelPresentationDocument::preRenderNotify ( Usul::Interfaces::IUnknown *ca
       _compileDisplayLists.insert ( info.getContextID() );
     }
   }
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Called before a render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::_animateSequence( bool value )
+{
+  Guard guard ( this );
+  if( false == value )
+  {
+    _sequence.current = 0;
+    IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
+    if( true == path.valid() )
+    {
+      path->stopPlaying();
+    }
+
+  }
+  _animatingSequence = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Called before a render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModelPresentationDocument::_isAnimatingSequence()
+{
+  Guard guard ( this );
+  return _animatingSequence;  
 }

@@ -247,6 +247,10 @@ protected:
 
   void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  // Sequence Animation Method
+  void                        _animateSequence( bool value );
+  bool                        _isAnimatingSequence();
+
   /// Use reference counting.
   virtual ~ModelPresentationDocument();
 
@@ -292,6 +296,8 @@ private:
   unsigned int                  _animationSpeed;
 
   CompiledDisplayLists          _compileDisplayLists;
+
+  bool                          _animatingSequence;
 
   
 };

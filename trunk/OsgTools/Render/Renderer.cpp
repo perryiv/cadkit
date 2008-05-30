@@ -41,6 +41,7 @@
 
 using namespace OsgTools::Render;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Renderer, Renderer::BaseClass );
 
 namespace Detail
 {
@@ -914,4 +915,35 @@ void Renderer::resize ( unsigned int w, unsigned int h )
 {
   // Update the gradient background vertices.
   _gradient.update ( w, h );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the render info for this Renderer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::RenderInfo Renderer::getRenderInfo() const
+{
+  return ( 0x0 != _sceneView ? _sceneView->getRenderInfo() : osg::RenderInfo() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *Renderer::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IRenderInfoOSG::IID:
+    return static_cast<Usul::Interfaces::IRenderInfoOSG*> ( this );
+  default:
+    return 0x0;
+  }
 }

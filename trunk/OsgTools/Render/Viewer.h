@@ -46,6 +46,7 @@
 #include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
 #include "Usul/Interfaces/IView.h"
+#include "Usul/Interfaces/IRenderInfoOSG.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRenderNotify.h"
 #include "Usul/Interfaces/IFrameStamp.h"
@@ -75,6 +76,7 @@
 #include "osgUtil/SceneView"
 
 #include "osg/ref_ptr"
+#include "osg/RenderInfo"
 #include "osg/ShadeModel"
 #include "osg/PolygonMode"
 #include "osg/TexEnv"
@@ -135,7 +137,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IRenderLoop,
                                 public Usul::Interfaces::IRenderingPasses,
                                 public Usul::Interfaces::IViewMode,
-																public Usul::Interfaces::IModelsScene
+																public Usul::Interfaces::IModelsScene,
+                                public Usul::Interfaces::IRenderInfoOSG
 {
 public:
 
@@ -184,6 +187,7 @@ public:
   typedef Renderer::Corners            Corners;
   typedef Usul::Interfaces::IViewMode IViewMode;
   typedef IViewMode::ViewMode ViewMode;
+  typedef osg::RenderInfo RenderInfo;
 
   // Construction
   Viewer ( Document *doc, IUnknown* context, IUnknown *caller );
@@ -297,6 +301,9 @@ public:
 
   void                  navigating( bool b ) { this->setViewMode( NAVIGATION ); }
   void                  picking   ( bool b ) { this->setViewMode( PICK       ); }
+
+  // Get the render info for this Viewer.
+  virtual RenderInfo    getRenderInfo() const;
 
   // Set/get the mode
   void                  setViewMode ( ViewMode mode );

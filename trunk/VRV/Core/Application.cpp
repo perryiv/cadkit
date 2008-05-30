@@ -871,8 +871,8 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   // Notify the listeners.
   Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
-      Usul::Adaptors::memberFunction<void> ( this, &Application::_preRenderNotify ), 
-      Usul::Adaptors::memberFunction<void> ( this, &Application::_postRenderNotify ) ) );
+    Usul::Adaptors::bind1<void> ( renderer, Usul::Adaptors::memberFunction<void> ( this, &Application::_preRenderNotify ) ), 
+    Usul::Adaptors::bind1<void> ( renderer, Usul::Adaptors::memberFunction<void> ( this, &Application::_postRenderNotify ) ) ) );
 
   // Do the drawing.
   renderer->render();
@@ -5271,11 +5271,11 @@ void Application::removeRenderListener ( IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_preRenderNotify()
+void Application::_preRenderNotify( Renderer* renderer )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  Usul::Interfaces::IUnknown::QueryPtr me ( renderer );
   std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::preRenderNotify ), me.get() ) );
 }
 
@@ -5286,11 +5286,11 @@ void Application::_preRenderNotify()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_postRenderNotify()
+void Application::_postRenderNotify( Renderer* renderer )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  Usul::Interfaces::IUnknown::QueryPtr me ( renderer );
   std::for_each ( _renderListeners.begin(), _renderListeners.end(), std::bind2nd ( std::mem_fun ( &IRenderListener::postRenderNotify ), me.get() ) );
 }
 

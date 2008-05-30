@@ -48,6 +48,7 @@
 #include "Usul/System/Host.h"
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Convert/Convert.h"
+#include "Usul/Threads/Safe.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -105,7 +106,8 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _dynamicNotLoadedTextXPos( 0 ),
   _dynamicNotLoadedTextYPos( 0 ),
   _camera( new osg::Camera ),
-  _animationSpeed( 10 )
+  _animationSpeed( 10 ),
+  _compileDisplayLists( true )
 {
   USUL_TRACE_SCOPE;
   _mpdModels.models = new osg::Switch();
@@ -373,10 +375,6 @@ osg::Node *ModelPresentationDocument::buildScene ( const BaseClass::Options &opt
   {
     _root->addChild( _dynamicSets.at( i ).models.get() );
   }
-
-  std::cout << "Building Display Lists..." << std::endl;
-  osg::ref_ptr< osgUtil::GLObjectsVisitor > visitor( new osgUtil::GLObjectsVisitor( osgUtil::GLObjectsVisitor::COMPILE_DISPLAY_LISTS ) );
-  visitor->traverse( *(_root.get() ) );
   return _root.get();
 }
 
@@ -3019,4 +3017,31 @@ bool ModelPresentationDocument::getToggleState( unsigned int index ) const
 {
   Guard guard ( this->mutex() );
   return _sets.at( index ).visible;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Called before a render.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModelPresentationDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  {
+    // This only works correctly if there is one draw thread. If running in 
+    // juggler with multiple draw threads this will actually only compile the 
+    // display lists for one of the threads. Should not crash it, but it will 
+    // not be the expected behavior.
+    Guard guard ( this );
+    if ( true == _compileDisplayLists )
+    {
+      _compileDisplayLists = false;
+      // Do compiling here    
+      std::cout << "Building Display Lists..." << std::endl;
+      osg::ref_ptr< osgUtil::GLObjectsVisitor > visitor( new osgUtil::GLObjectsVisitor( osgUtil::GLObjectsVisitor::COMPILE_DISPLAY_LISTS ) );
+      visitor->traverse( *(_root.get() ) );
+
+    }
+  }
 }

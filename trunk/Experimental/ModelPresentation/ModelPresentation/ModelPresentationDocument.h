@@ -38,6 +38,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Policies/Update.h"
+#include "Usul/Interfaces/IRenderListener.h"
 
 #include "OsgTools/Triangles/TriangleSet.h"
 
@@ -100,6 +101,14 @@ public:
 
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
+
+  /// Usul::Interfaces::IRenderListener
+  // Called after a render.
+  virtual void                postRenderNotify ( Usul::Interfaces::IUnknown *caller );
+
+  // Called before a render.
+  virtual void                preRenderNotify ( Usul::Interfaces::IUnknown *caller );
+
 
   /// Return true if this document can do it.
   virtual bool                canExport ( const std::string &file ) const;
@@ -217,9 +226,6 @@ protected:
   void                        _handleSequenceEvent();
   osg::Node*                  _createProxyGeometry( const std::string &message, Usul::Interfaces::IUnknown *caller );
 
-   /// Usul::Interfaces::IRenderListener inherited from base class.
-  virtual void                postRenderNotify ( Unknown *caller );
-
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
@@ -285,6 +291,8 @@ private:
   ModelPresentationLib::RefPtr  _writer;
 
   unsigned int                  _animationSpeed;
+
+  bool                          _compileDisplayLists;
 
   
 };

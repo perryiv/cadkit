@@ -52,8 +52,6 @@ ${CADKIT_INC_DIR}/Minerva/Layers/Kml
 
 # ---- Minerva Plug-ins -------
 ${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
-${CADKIT_INC_DIR}/Minerva/Plugins/ComputeNormals
-${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
 ${CADKIT_INC_DIR}/Minerva/Plugins/Document
 ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage
 )

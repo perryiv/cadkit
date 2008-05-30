@@ -1441,7 +1441,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
   timeGroup.endTime = currentTime + 1;
 
   const std::string startTime (  node.attributes()["startTime"] );
-  const std::string endTime ( node.attributes()["endtime"] );
+  const std::string endTime ( node.attributes()["endTime"] );
   
   if( "" != startTime )
     timeGroup.startTime = Usul::Convert::Type< std::string, unsigned int >::convert( startTime );

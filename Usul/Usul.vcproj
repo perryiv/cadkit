@@ -1280,6 +1280,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IRenderInfoOSG.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IRenderingPasses.h"
 					>
 				</File>

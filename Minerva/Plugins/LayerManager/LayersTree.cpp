@@ -15,6 +15,7 @@
 #include "Minerva/Core/Commands/ShowLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/ILookAtLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "QtTools/Action.h"
@@ -142,6 +143,7 @@ void LayersTree::_connectTreeViewSlots ()
 {
   connect ( _tree, SIGNAL ( onItemChanged ( QTreeWidgetItem*, int ) ), this, SLOT ( _onItemChanged( QTreeWidgetItem*, int ) ) );
   connect ( _tree->treeWidget(), SIGNAL ( itemSelectionChanged() ), this, SLOT ( _onItemSelectionChanged() ) );
+  connect ( _tree->treeWidget(), SIGNAL ( itemDoubleClicked( QTreeWidgetItem*, int ) ), this, SLOT ( _onDoubleClick( QTreeWidgetItem*, int ) ) );
   
   // Notify us when a context menu is requested.
   connect ( _tree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
@@ -157,6 +159,13 @@ void LayersTree::_connectTreeViewSlots ()
 
 void LayersTree::_onDoubleClick ( QTreeWidgetItem * item, int columnNumber )
 {
+  Minerva::Interfaces::ILookAtLayer::QueryPtr lookAt ( _document );
+
+  if ( lookAt.valid() )
+  {
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+    lookAt->lookAtLayer ( unknown.get() );
+  }
 }
 
 

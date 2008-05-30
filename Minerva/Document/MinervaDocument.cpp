@@ -49,17 +49,20 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
+#include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IAxes.h"
-#include "Usul/Interfaces/ICullSceneVisitor.h"
-#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IClippingDistance.h"
-#include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISceneIntersect.h"
+#include "Usul/Interfaces/IViewport.h"
+#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Registry/Constants.h"
@@ -243,6 +246,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IJobFinishedListener* > ( this );
   case Usul::Interfaces::IMouseEventListener::IID:
     return static_cast < Usul::Interfaces::IMouseEventListener* > ( this );
+  case Minerva::Interfaces::ILookAtLayer::IID:
+    return static_cast < Minerva::Interfaces::ILookAtLayer * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -553,18 +558,75 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::viewLayerExtents ( Usul::Interfaces::IUnknown * layer )
+void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
 {
-#if 0
-  Usul::Interfaces::ILayerExtents::QueryPtr extents ( layer );
-  if ( extents.valid() )
-  {
-    double lat ( 0.0 ), lon ( 0.0 ), height ( 0.0 );
+  Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
+  const double minLon ( le.valid() ? le->minLon() : -180.0 );
+  const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+  const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+  const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+  
+  Minerva::Core::Extents<osg::Vec2d> extents ( minLon, minLat, maxLon, maxLat );
 
-    extents->layerExtents( lat, lon, height );
-    _planet->gotoLocation ( lat, lon, height );
+  Body::RefPtr body ( this->activeBody() );
+
+  if ( body.valid() )
+  {
+    // Get the center.
+    osg::Vec2 center ( extents.center() );
+
+    // For now use this formula to get meters per degree.
+    // http://books.google.com/books?id=wu7zHtd2LO4C&pg=PA167&lpg=PA167&dq=meters+per+degree+average+earth&source=web&ots=yF1Q6sp1nP&sig=S8gdbKLvNzrXGKoUn3ha-oqYMaU&hl=en
+    const double lat ( Usul::Math::DEG_TO_RAD * center[1] );
+    const double metersPerDegree ( 111132.09 - 566.05 * Usul::Math::sin ( 2 * lat ) + 120 * Usul::Math::cos ( 4 * lat ) - 0.0002 * Usul::Math::cos ( 6 * lat ) );
+
+    // Calculate an altitude.
+    const double altitude ( ( extents.maximum() - extents.minimum() ).length() * metersPerDegree );
+
+    // Heading, Pitch, and Roll (For future use).
+    osg::Vec3d hpr ( 0.0, 0.0, 0.0 );
+
+    // Convert to x,y,z on the planet.
+    Usul::Math::Vec3d point;
+    body->convertToPlanet ( Usul::Math::Vec3d ( center[0], center[1], altitude ), point );
+
+    // Get the rotation.
+    osg::Matrixd matrix ( body->planetRotationMatrix ( center[1], center[0], altitude, hpr[0] ) );
+
+    // Rotation about x.
+    osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[1], 1, 0, 0 ) );
+
+    osg::Matrixd RY ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[2], 0, 1, 0 ) );
+
+    osg::Matrix M ( matrix * RX * RY );
+    //M.setTrans ( point[0], point[1], point[2] );
+
+    // Look for plugin to play path.
+    typedef Usul::Interfaces::IAnimatePath IAnimatePath;
+    typedef Usul::Components::Manager PluginManager;
+
+    IAnimatePath::QueryPtr animate ( PluginManager::instance().getInterface ( IAnimatePath::IID ) );
+    Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
+
+    if ( animate.valid() )
+    {
+      // Get the first and last matrix.
+      const osg::Matrixd m1 ( vm.valid() ? vm->getViewMatrix() : osg::Matrixd() );
+      const osg::Matrixd m2 ( osg::Matrixd::inverse ( M ) );
+
+      // Prepare path.
+      IAnimatePath::PackedMatrices matrices;
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
+
+      // Animate through the path.
+      animate->animatePath ( matrices, 50 );
+    }
+    else if ( vm.valid() )
+    {
+      vm->setViewMatrix ( M );
+    }
   }
-#endif
 }
 
 

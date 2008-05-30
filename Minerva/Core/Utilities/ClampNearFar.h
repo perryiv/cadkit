@@ -48,6 +48,8 @@ namespace Utilities {
       {
         zNear = 10;
       }
+      
+      zFar *= 1.5;
 
       typedef typename Matrix::value_type value_type;
       

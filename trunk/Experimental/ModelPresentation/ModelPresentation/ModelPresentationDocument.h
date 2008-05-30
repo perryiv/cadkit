@@ -247,13 +247,12 @@ protected:
 
   void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
-  
-  
-
   /// Use reference counting.
   virtual ~ModelPresentationDocument();
 
 private:
+  typedef std::set<unsigned int> CompiledDisplayLists;
+
   GroupPtr                      _root;
   MpdDefinitions::MpdModels     _mpdModels;
   MpdSets                       _sets;
@@ -292,7 +291,7 @@ private:
 
   unsigned int                  _animationSpeed;
 
-  bool                          _compileDisplayLists;
+  CompiledDisplayLists          _compileDisplayLists;
 
   
 };

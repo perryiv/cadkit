@@ -142,6 +142,9 @@ public:
   
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
   virtual osg::Matrixd      planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
+
+  // Get the land model.
+  LandModel*                landModel() const;
   
   // Set/get the log.
   void                      log ( LogPtr );

@@ -838,6 +838,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\ILookAtLayer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IPointLayer.h"
 					>
 				</File>

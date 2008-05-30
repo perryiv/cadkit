@@ -1471,3 +1471,17 @@ Body::LogPtr Body::log()
   Guard guard ( this );
   return LogPtr ( _log );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the land model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LandModel* Body::landModel() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _landModel.get();
+}

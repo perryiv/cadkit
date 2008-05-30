@@ -36,8 +36,9 @@
 #include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
 #include "Minerva/Interfaces/IAddLayer.h"
-#include "Minerva/Interfaces/IRemoveLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
+#include "Minerva/Interfaces/ILookAtLayer.h"
+#include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "MenuKit/Menu.h"
 
@@ -69,7 +70,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IIntersectListener,
                                                 public Usul::Interfaces::ITreeNode,
                                                 public Usul::Interfaces::IJobFinishedListener,
-                                                public Usul::Interfaces::IMouseEventListener
+                                                public Usul::Interfaces::IMouseEventListener,
+                                                public Minerva::Interfaces::ILookAtLayer
 {
 public:
   /// Useful typedefs.
@@ -126,7 +128,7 @@ public:
   /// Clear any existing data.
   virtual void                             clear ( Unknown *caller = 0x0 );
 
-  void                                     viewLayerExtents ( Usul::Interfaces::IUnknown * layer );
+  void                                     lookAtLayer ( Usul::Interfaces::IUnknown * layer );
 
   /// Animation methods.
   void                                     timestepType( IAnimationControl::TimestepType type );

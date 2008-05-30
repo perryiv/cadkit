@@ -477,8 +477,8 @@ protected:
   std::string                   _screenShotDirectory() const;
 
   // Notify of rendering.
-  void                          _preRenderNotify();
-  void                          _postRenderNotify();
+  void                          _preRenderNotify ( Renderer* renderer );
+  void                          _postRenderNotify ( Renderer* renderer );
 
   // Animate between two matrices.
   void                          _animate( const osg::Matrix& m1, const osg::Matrix& m2 );

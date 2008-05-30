@@ -317,16 +317,6 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
       return answer;
   }
 
-  // Now guard.
-  Guard guard ( this );
-
-  // Create the answer.
-  ImagePtr result ( 0x0 );
-
-  // Check state.
-  if ( ( 0x0 == _projection ) || ( 0x0 == _viewInterface ) || ( 0x0 == _renderer ) )
-    return result;
-
   ossimIrect requestRect ( 0, 0, width - 1, height - 1 );
 
   const double deltaX ( extents.maximum()[0] - extents.minimum()[0] );
@@ -335,11 +325,25 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
   const double deltaLat ( deltaY / height );
   const double deltaLon ( deltaX / width );
 
-  _projection->setDecimalDegreesPerPixel ( ossimDpt ( deltaLon, deltaLat ) );
+  // Create the answer.
+  ImagePtr result ( 0x0 );
 
-  _projection->setUlGpt ( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
-  _viewInterface->setView ( _projection, false );
-  ossimRefPtr<ossimImageData> data ( _renderer->getTile ( requestRect ) );
+  ossimRefPtr<ossimImageData> data ( 0x0 );
+
+  {
+    // Now guard.
+    Guard guard ( this );
+
+    // Check state.
+    if ( ( 0x0 == _projection ) || ( 0x0 == _viewInterface ) || ( 0x0 == _renderer ) )
+      return result;
+
+    _projection->setDecimalDegreesPerPixel ( ossimDpt ( deltaLon, deltaLat ) );
+
+    _projection->setUlGpt ( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
+    _viewInterface->setView ( _projection, false );
+    data = _renderer->getTile ( requestRect );
+  }
 
   // Check state and create image.
   if ( ( true == data.valid() ) && 
@@ -532,6 +536,9 @@ void RasterLayerOssim::_updateExtents()
       // Set the geometry.
       _handler->setImageGeometry ( kwl );
       _handler->saveImageGeometry();
+
+      _handler->close();
+      _handler->open();
     }
   }
 }

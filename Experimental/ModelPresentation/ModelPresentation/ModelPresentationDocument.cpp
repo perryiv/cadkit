@@ -33,6 +33,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IMemoryPool.h"
+#include "Usul/Interfaces/IRenderInfoOSG.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Jobs/Manager.h"
@@ -107,7 +108,7 @@ ModelPresentationDocument::ModelPresentationDocument() :
   _dynamicNotLoadedTextYPos( 0 ),
   _camera( new osg::Camera ),
   _animationSpeed( 10 ),
-  _compileDisplayLists( true )
+  _compileDisplayLists()
 {
   USUL_TRACE_SCOPE;
   _mpdModels.models = new osg::Switch();
@@ -283,6 +284,8 @@ void ModelPresentationDocument::read ( const std::string &name, Unknown *caller,
     }
   }
 
+  // Clearing this set will force a recompile of OpenGL objects for each context,
+  _compileDisplayLists.clear();
 }
 
 
@@ -3028,20 +3031,33 @@ bool ModelPresentationDocument::getToggleState( unsigned int index ) const
 
 void ModelPresentationDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
-  {
-    // This only works correctly if there is one draw thread. If running in 
-    // juggler with multiple draw threads this will actually only compile the 
-    // display lists for one of the threads. Should not crash it, but it will 
-    // not be the expected behavior.
-    Guard guard ( this );
-    if ( true == _compileDisplayLists )
-    {
-      _compileDisplayLists = false;
-      // Do compiling here    
-      std::cout << "Building Display Lists..." << std::endl;
-      osg::ref_ptr< osgUtil::GLObjectsVisitor > visitor( new osgUtil::GLObjectsVisitor( osgUtil::GLObjectsVisitor::COMPILE_DISPLAY_LISTS ) );
-      visitor->traverse( *(_root.get() ) );
+  Usul::Interfaces::IRenderInfoOSG::QueryPtr ri ( caller );
 
+  // Only continue if we have the needed interface.
+  if ( ri.valid() )
+  {
+    osg::RenderInfo info ( ri->getRenderInfo() );
+
+    Guard guard ( this );
+
+    // If we haven't already compiled for this context id...
+    if ( _compileDisplayLists.end() != _compileDisplayLists.find ( info.getContextID() ) )
+    {
+      std::cout << "Building Display Lists..." << std::endl;
+
+      const osgUtil::GLObjectsVisitor::Mode mode ( osgUtil::GLObjectsVisitor::COMPILE_DISPLAY_LISTS | osgUtil::GLObjectsVisitor::COMPILE_STATE_ATTRIBUTES );
+
+      // Make the visitor.
+      osg::ref_ptr< osgUtil::GLObjectsVisitor > visitor ( new osgUtil::GLObjectsVisitor ( mode ) );
+
+      // Give the visitor the render info.
+      visitor->setRenderInfo ( info );
+
+      // Visit the scene.
+      _root->accept ( *visitor );
+
+      // We have finished compiling for this context.
+      _compileDisplayLists.insert ( info.getContextID() );
     }
   }
 }

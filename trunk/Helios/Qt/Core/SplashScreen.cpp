@@ -208,8 +208,16 @@ void SplashScreen::show()
     return;
   }
 
+  // Always on top.
+  //const Qt::WindowFlags flags ( Qt::FramelessWindowHint | Qt::SplashScreen | Qt::WindowStaysOnTopHint );
+
+  // The above is too problematic when debugging during startup.
+  const Qt::WindowFlags flags ( Qt::FramelessWindowHint | Qt::SplashScreen );
+
   // Make the top-level window.
-  _window = new QWidget ( 0x0, Qt::FramelessWindowHint | Qt::SplashScreen | Qt::WindowStaysOnTopHint );
+  _window = new QWidget ( 0x0, Qt::FramelessWindowHint | Qt::SplashScreen );
+
+  // Make the image and progress bar.
   _image = new QLabel ( _window );
   _progress = new QProgressBar ( _window );
 

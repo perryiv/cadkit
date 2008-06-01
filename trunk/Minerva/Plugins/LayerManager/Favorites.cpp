@@ -365,7 +365,7 @@ void Favorites::_readFavoritesFromServer()
 	// Download.
 	{
 		Usul::Network::Curl curl ( url, name );
-		Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "3274576290" );
+		Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "3274576290" );
 	}
 
   Serialize::XML::DataMemberMap map;

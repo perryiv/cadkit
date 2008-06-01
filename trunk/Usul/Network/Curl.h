@@ -143,7 +143,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void download ( std::ostream *out = 0x0 )
+  void download ( std::ostream *out = 0x0, const std::string& post = std::string() )
   {
     // Make sure this is set and unset.
     Usul::Scope::Reset<std::ostream*> scopedOutputStream ( _output, out, 0x0 );
@@ -175,7 +175,11 @@ public:
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_PROGRESSFUNCTION, &Curl::_progressCB ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOPROGRESS, false ) );
     this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOSIGNAL, true ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_FOLLOWLOCATION, true ) ); 
+    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_FOLLOWLOCATION, true ) );
+
+    // Add post data if it's there.
+    if ( false == post.empty() )
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_POSTFIELDS, post.c_str() ) );
 
     // Get the data.
     this->_check ( ::curl_easy_perform ( handle.handle() ) );

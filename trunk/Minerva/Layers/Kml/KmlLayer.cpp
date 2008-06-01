@@ -935,7 +935,7 @@ void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
 				if ( boost::filesystem::exists ( filename ) && boost::filesystem::is_directory ( filename ) )
 					boost::filesystem::remove_all ( filename );
         Usul::Network::Curl curl ( href, filename );
-        Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( static_cast<std::ostream*> ( 0x0 ), Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ) ), "1638679894" );
+        Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "1638679894" );
       }
 
       // Check the extension.

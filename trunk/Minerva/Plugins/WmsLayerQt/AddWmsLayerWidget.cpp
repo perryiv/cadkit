@@ -265,7 +265,7 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
 	// Download.
 	{
 		Usul::Network::Curl curl ( request, name );
-		Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "3034499311" );
+		Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "3034499311" );
 	}
 
   // Open the xml document.

@@ -297,6 +297,22 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Layers\RasterLayerArcIMS.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayerArcIMS.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayerNetwork.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\RasterLayerNetwork.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Layers\RasterLayerOssim.cpp"
 						>
 					</File>

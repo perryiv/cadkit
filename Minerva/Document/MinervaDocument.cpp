@@ -596,6 +596,7 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
     // Rotation about x.
     osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[1], 1, 0, 0 ) );
 
+    // Rotation about y.
     osg::Matrixd RY ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[2], 0, 1, 0 ) );
 
     osg::Matrix M ( matrix * RX * RY );

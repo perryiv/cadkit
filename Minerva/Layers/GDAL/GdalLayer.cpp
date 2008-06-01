@@ -388,6 +388,15 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
         this->extents ( extents );
       }
     }
+    else
+    {
+      const int width ( _data->GetRasterXSize() );
+      const int height ( _data->GetRasterYSize() );
+
+      GdalLayer::_createGeoTransform( geoTransform, this->extents(), width, height );
+
+      _data->SetGeoTransform ( &geoTransform[0] );
+    }
   }
 }
 

@@ -285,7 +285,7 @@ void GeoRSSLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
     {
 		  boost::filesystem::remove ( filename );
       Usul::Network::Curl curl ( href, filename );
-      Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( static_cast<std::ostream*> ( 0x0 ), Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ) ), "4264015553" );
+      Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "4264015553" );
     }
 
     // Set the filename.

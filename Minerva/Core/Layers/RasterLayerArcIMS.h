@@ -1,26 +1,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Arizona State University
+//  Copyright (c) 2008, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
+//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  WMS layer class.
+//  ArcIMS layer class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_CORE_RASTER_LAYER_WMS_H__
-#define __MINERVA_CORE_RASTER_LAYER_WMS_H__
+#ifndef __MINERVA_CORE_RASTER_LAYER_ARC_IMS_H__
+#define __MINERVA_CORE_RASTER_LAYER_ARC_IMS_H__
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayerNetwork.h"
 
-#include <map>
 #include <string>
 
 
@@ -29,38 +28,38 @@ namespace Core {
 namespace Layers {
 
 
-class MINERVA_EXPORT RasterLayerWms : public RasterLayerNetwork
+class MINERVA_EXPORT RasterLayerArcIMS : public RasterLayerNetwork
 {
 public:
 
   typedef RasterLayerNetwork BaseClass;
-  typedef std::map < std::string, std::string > Options;
   typedef BaseClass::IReadImageFile IReadImageFile;
 
-  USUL_DECLARE_REF_POINTERS ( RasterLayerWms );
+  USUL_DECLARE_REF_POINTERS ( RasterLayerArcIMS );
 
-  RasterLayerWms ( const Extents &maxExtents = Extents ( -180, -90, 180, 90 ), const std::string &url = std::string(), const Options &options = Options() );
+  RasterLayerArcIMS ();
 
   /// Clone.
   virtual IUnknown*     clone() const;
   
-  /// Deserialize.
-  virtual void          deserialize ( const XmlTree::Node& node );
-  
 protected:
 
-  virtual ~RasterLayerWms();
+  virtual ~RasterLayerArcIMS();
   
-  RasterLayerWms ( const RasterLayerWms& );
+  RasterLayerArcIMS ( const RasterLayerArcIMS& );
 
   virtual void          _download ( const std::string& file, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 
 private:
 
   // Do not use.
-  RasterLayerWms& operator = ( const RasterLayerWms& );
+  RasterLayerArcIMS& operator = ( const RasterLayerArcIMS& );
 
-  SERIALIZE_XML_CLASS_NAME ( RasterLayerWms );
+  virtual std::string   _cacheFileExtension() const;
+
+  std::string           _createRequestXml ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
+
+  SERIALIZE_XML_CLASS_NAME ( RasterLayerArcIMS );
 };
 
 
@@ -69,4 +68,4 @@ private:
 } // namespace Minerva
 
 
-#endif // __MINERVA_CORE_RASTER_LAYER_WMS_H__
+#endif // __MINERVA_CORE_RASTER_LAYER_ARC_IMS_H__

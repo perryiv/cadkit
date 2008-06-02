@@ -152,7 +152,7 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
 
   // Parse the result.  Need a guard here because XercesLife is not thread safe.  Should it contain an internal reference count?
   {
-    Guard guard ( this->mutex() );
+    //Guard guard ( this->mutex() );
     XmlTree::XercesLife life;
     doc = new XmlTree::Document;
     doc->load ( name );

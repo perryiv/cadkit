@@ -63,6 +63,8 @@ SET (SOURCES
 ./Layers/ElevationGroup.cpp
 ./Layers/RasterGroup.cpp
 ./Layers/RasterLayer.cpp
+./Layers/RasterLayerArcIMS.cpp
+./Layers/RasterLayerNetwork.cpp
 ./Layers/RasterLayerOssim.cpp
 ./Layers/RasterLayerWms.cpp
 ./TileEngine/Body.cpp
@@ -100,5 +102,5 @@ TARGET_LINK_LIBRARIES(Minerva
 	${OSG_LIB}
 	${OSG_DB_LIB}
 	${OSSIM_LIB}
-    ${CURL_LIBRARY}
+  ${CURL_LIBRARY}
 )

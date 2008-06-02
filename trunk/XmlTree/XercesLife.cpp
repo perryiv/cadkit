@@ -95,6 +95,8 @@ void XercesLife::initialize()
 
 void XercesLife::terminate()
 {
+  // Not using terminate until a thread-safe way is found.
+#if 0
   try
   {
     xercesc::XMLPlatformUtils::Terminate();
@@ -111,4 +113,5 @@ void XercesLife::terminate()
   {
     throw std::runtime_error ( "Error 2543876004: Unknown exception caught while terminating Xerces" );
   }
+#endif
 }

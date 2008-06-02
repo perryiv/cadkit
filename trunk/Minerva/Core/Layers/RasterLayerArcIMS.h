@@ -20,6 +20,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayerNetwork.h"
 
+#include "Usul/Math/Vector3.h"
+
 #include <string>
 
 
@@ -58,6 +60,12 @@ private:
   virtual std::string   _cacheFileExtension() const;
 
   std::string           _createRequestXml ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
+
+  void                  _registerMembers();
+
+  std::string _type;
+  Usul::Math::Vec3d _background;
+  Usul::Math::Vec3d _transparent;
 
   SERIALIZE_XML_CLASS_NAME ( RasterLayerArcIMS );
 };

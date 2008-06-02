@@ -140,8 +140,11 @@ public:
 
   void download ( unsigned int maxNumAttempts = 10, std::ostream *out = 0x0, Usul::Interfaces::IUnknown *caller = 0x0 )
   {
+		// Get the requested extension.
+		const std::string extension ( Usul::File::extension( _file ) );
+
     // Get file name.
-    const std::string file ( Usul::Strings::format ( _file, '.', this->extension() ) );
+		const std::string file ( ( true == extension.empty() ) ? Usul::Strings::format ( _file, '.', this->extension() ) : _file );
 
     // Get the full url.
     const std::string url ( this->fullUrl() );

@@ -44,9 +44,6 @@ public:
   /// Clone.
   virtual IUnknown*     clone() const;
   
-  /// Deserialize.
-  virtual void          deserialize ( const XmlTree::Node& node );
-  
 protected:
 
   virtual ~RasterLayerWms();

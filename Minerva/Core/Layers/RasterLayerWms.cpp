@@ -57,11 +57,9 @@ USUL_FACTORY_REGISTER_CREATOR ( RasterLayerWms );
 ///////////////////////////////////////////////////////////////////////////////
 
 RasterLayerWms::RasterLayerWms ( const Extents &maxExtents, const std::string &url, const Options &options ) : 
-  BaseClass()
+  BaseClass( maxExtents, url, options )
 {
   USUL_TRACE_SCOPE;
-
-  this->extents ( maxExtents );
 }
 
 
@@ -139,18 +137,4 @@ void RasterLayerWms::_download ( const std::string& file, const Extents& extents
   std::ostream *stream ( 0x0 );
   Usul::Interfaces::IUnknown::QueryPtr caller ( job );
   wms.download ( this->maxNumAttempts(), stream, caller.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Deserialize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayerWms::deserialize ( const XmlTree::Node& node )
-{
-  USUL_TRACE_SCOPE;
-  
-  BaseClass::deserialize ( node );
 }

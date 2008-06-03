@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/GDAL/GdalLayer.h"
+#include "Minerva/Layers/GDAL/RasterLayerGDAL.h"
 #include "Minerva/Layers/GDAL/Convert.h"
 #include "Minerva/Layers/GDAL/Common.h"
 #include "Minerva/Layers/GDAL/MakeImage.h"
@@ -42,15 +42,19 @@
 
 namespace
 {
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_ArcAscii  ( "Arc Ascii (*.asc)", "*.asc" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < GdalLayer > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_ArcAscii  ( "Arc Ascii (*.asc)", "*.asc" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
 }
 
 
-USUL_FACTORY_REGISTER_CREATOR ( GdalLayer );
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS( GdalLayer, GdalLayer::BaseClass );
+// Register creators.  "GdalLayer" is for backwards compatibilty.
+namespace { Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < RasterLayerGDAL > > _creator0 ( "GdalLayer" ); }
+namespace { Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < RasterLayerGDAL > > _creator1 ( "RasterLayerGDAL" ); }
+
+
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS( RasterLayerGDAL, RasterLayerGDAL::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,7 +63,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( GdalLayer, GdalLayer::BaseClass );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-GdalLayer::GdalLayer () : 
+RasterLayerGDAL::RasterLayerGDAL () : 
   BaseClass(),
   _data ( 0x0 ),
   _filename()
@@ -81,7 +85,7 @@ GdalLayer::GdalLayer () :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-GdalLayer::GdalLayer ( const GdalLayer& rhs ) :
+RasterLayerGDAL::RasterLayerGDAL ( const RasterLayerGDAL& rhs ) :
   BaseClass ( rhs ),
   _data ( rhs._data ),
   _filename ( rhs._filename )
@@ -95,7 +99,7 @@ GdalLayer::GdalLayer ( const GdalLayer& rhs ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-GdalLayer::~GdalLayer()
+RasterLayerGDAL::~RasterLayerGDAL()
 {
   // Clean up.
   if ( 0x0 != _data )
@@ -109,7 +113,7 @@ GdalLayer::~GdalLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* GdalLayer::queryInterface ( unsigned long iid )
+Usul::Interfaces::IUnknown* RasterLayerGDAL::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
@@ -127,9 +131,9 @@ Usul::Interfaces::IUnknown* GdalLayer::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* GdalLayer::clone() const
+Usul::Interfaces::IUnknown* RasterLayerGDAL::clone() const
 {
-  Usul::Interfaces::IUnknown::QueryPtr clone ( new GdalLayer( *this ) );
+  Usul::Interfaces::IUnknown::QueryPtr clone ( new RasterLayerGDAL( *this ) );
   return clone.release();
 }
 
@@ -140,7 +144,7 @@ Usul::Interfaces::IUnknown* GdalLayer::clone() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
+RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job * job, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -198,7 +202,7 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
   
   // Create the geo transform.
   std::vector<double> geoTransform ( 6 );
-  GdalLayer::_createGeoTransform ( geoTransform, extents, width, height );
+  RasterLayerGDAL::_createGeoTransform ( geoTransform, extents, width, height );
   
   if ( CE_None != data->SetGeoTransform( &geoTransform[0] ) )
     return 0x0;
@@ -324,7 +328,7 @@ GdalLayer::ImagePtr GdalLayer::texture ( const Extents& extents, unsigned int wi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GdalLayer::deserialize ( const XmlTree::Node &node )
+void RasterLayerGDAL::deserialize ( const XmlTree::Node &node )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -342,7 +346,7 @@ void GdalLayer::deserialize ( const XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
+void RasterLayerGDAL::read ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -393,7 +397,7 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
       const int width ( _data->GetRasterXSize() );
       const int height ( _data->GetRasterYSize() );
 
-      GdalLayer::_createGeoTransform( geoTransform, this->extents(), width, height );
+      RasterLayerGDAL::_createGeoTransform( geoTransform, this->extents(), width, height );
 
       _data->SetGeoTransform ( &geoTransform[0] );
     }
@@ -407,7 +411,7 @@ void GdalLayer::read ( const std::string& filename, Usul::Interfaces::IUnknown *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GdalLayer::_print ( GDALDataset * data )
+void RasterLayerGDAL::_print ( GDALDataset * data )
 {
   if ( 0x0 == data )
     return;
@@ -451,7 +455,7 @@ void GdalLayer::_print ( GDALDataset * data )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string GdalLayer::_cacheDirectory() const
+std::string RasterLayerGDAL::_cacheDirectory() const
 {
   USUL_TRACE_SCOPE;
 
@@ -469,7 +473,7 @@ std::string GdalLayer::_cacheDirectory() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string GdalLayer::_cacheFileExtension() const
+std::string RasterLayerGDAL::_cacheFileExtension() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -485,7 +489,7 @@ std::string GdalLayer::_cacheFileExtension() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GdalLayer::_createGeoTransform ( GeoTransform &transfrom, const Extents& extents, unsigned int width, unsigned int height )
+void RasterLayerGDAL::_createGeoTransform ( GeoTransform &transfrom, const Extents& extents, unsigned int width, unsigned int height )
 {
   USUL_TRACE_SCOPE_STATIC;
 

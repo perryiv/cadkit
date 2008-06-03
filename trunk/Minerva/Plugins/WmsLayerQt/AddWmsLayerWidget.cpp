@@ -135,6 +135,7 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   options[Usul::Network::Names::REQUEST] = "GetMap";
   options[Usul::Network::Names::SRS    ] = "EPSG:4326";
   options[Usul::Network::Names::VERSION] = "1.1.1";
+  options["service"] = "WMS";
   
   _layer->options( options );
 }

@@ -98,6 +98,16 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 
 MinervaDocument::MinervaDocument ( LogPtr log ) : 
   BaseClass( "Minerva Document" ),
+#if USE_DISTRIBUTED == 1
+  _commandsSend ( false ),
+  _commandsReceive ( false ),
+  _sessionName(),
+  _sender ( new CommandSender ),
+  _receiver ( new CommandReceiver ),
+  _connection ( 0x0 ),
+  _commandUpdate ( 5000 ),
+  _commandJob ( 0x0 ),
+#endif
   _dirty ( false ),
   _layersMenu ( new MenuKit::Menu ( "&Layers" ) ),
   _root ( new osg::Group ),
@@ -107,14 +117,6 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   _manager ( 0x0 ),
   _hud(),
   _callback ( 0x0 ),
-  _commandsSend ( false ),
-  _commandsReceive ( false ),
-  _sessionName(),
-  _sender ( new CommandSender ),
-  _receiver ( new CommandReceiver ),
-  _connection ( 0x0 ),
-  _commandUpdate ( 5000 ),
-  _commandJob ( 0x0 ),
   _animateSettings ( new Minerva::Core::Animate::Settings ),
   _datesDirty ( false ),
   _lastDate ( boost::date_time::min_date_time ),
@@ -139,10 +141,12 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
+#if USE_DISTRIBUTED == 1
   this->_addMember ( "commands_send", _commandsSend );
   this->_addMember ( "commands_receive", _commandsReceive );
   this->_addMember ( "session_name", _sessionName );
   this->_addMember ( "connection", _connection );
+#endif
   this->_addMember ( "time_spans", _timeSpans );
   this->_addMember ( "bodies", _bodies );
 
@@ -204,11 +208,13 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
 
 MinervaDocument::~MinervaDocument()
 {
+#if USE_DISTRIBUTED == 1
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _sender, &CommandSender::deleteSession ), "5415547030" );
 
   _sender = 0x0;
   _receiver = 0x0;
-
+#endif
+  
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_clear ), "1582439358" );
 
   _root = 0x0;
@@ -495,7 +501,10 @@ void MinervaDocument::_clear()
 {
   this->_connectToDistributedSession();
   
+#if USE_DISTRIBUTED == 1
   if ( _sender.valid() ) _sender->deleteSession();
+#endif
+  
   if ( _legend.valid() ) _legend->clear();
 
   // Delete the tiles.
@@ -677,6 +686,7 @@ osgGA::MatrixManipulator * MinervaDocument::getMatrixManipulator ()
 
 void MinervaDocument::_connectToDistributedSession()
 {
+#if USE_DISTRIBUTED == 1
   if ( _commandsSend && !_sender->connected() )
   {
     _sender->connection ( _connection.get() );
@@ -688,6 +698,7 @@ void MinervaDocument::_connectToDistributedSession()
     _receiver->connection ( _connection.get() );
     _receiver->connectToSession ( _sessionName );
   }
+#endif
 }
 
 
@@ -823,6 +834,9 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
 void MinervaDocument::commandExecuteNotify ( Usul::Commands::Command* command )
 {
   USUL_TRACE_SCOPE;
+  
+#if USE_DISTRIBUTED == 1
+  
   if ( 0x0 != command )
   { 
     // Send the command to the distributed client.
@@ -832,6 +846,8 @@ void MinervaDocument::commandExecuteNotify ( Usul::Commands::Command* command )
       _sender->sendCommand ( command );
     }
   }
+  
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1048,6 +1064,9 @@ void MinervaDocument::removeView ( Usul::Interfaces::IView *view )
   }
 }
 
+
+#if USE_DISTRIBUTED == 1
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Job to check for new commands.
@@ -1088,6 +1107,7 @@ namespace Detail
     CommandReceiver::RefPtr _receiver;
   };
 }
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1116,6 +1136,7 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   // Build the scene.
   this->_buildScene ( caller );
 
+#if USE_DISTRIBUTED == 1
   const bool jobFinished ( _commandJob.valid() ? _commandJob->isDone () : true );
 
   // Check to see if we should receive commands...
@@ -1125,7 +1146,8 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     Usul::Jobs::Manager::instance().addJob ( job.get () );
     _commandJob = job;
   }
-
+#endif
+  
   // Animate.
   this->_animate ( caller );
   
@@ -1172,6 +1194,7 @@ void MinervaDocument::dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller )
 }
 
 
+#if USE_DISTRIBUTED == 1
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the connection.
@@ -1267,6 +1290,7 @@ bool MinervaDocument::commandsReceive () const
   Guard guard ( this->mutex() );
   return _commandsReceive;
 }
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////

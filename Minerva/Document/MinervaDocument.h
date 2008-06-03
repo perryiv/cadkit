@@ -11,9 +11,13 @@
 #ifndef __MINERVA_DOCUMENT_H__
 #define __MINERVA_DOCUMENT_H__
 
+#include "Minerva/Config.h"
 #include "Minerva/Document/Export.h"
+
+#if USE_DISTRIBUTED == 1
 #include "Minerva/Document/CommandSender.h"
 #include "Minerva/Document/CommandReceiver.h"
+#endif
 
 #include "Usul/Documents/Document.h"
 #include "Usul/File/Log.h"
@@ -134,24 +138,28 @@ public:
   void                                     timestepType( IAnimationControl::TimestepType type );
   IAnimationControl::TimestepType          timestepType( ) const;
 
+  /// Update (Usul::Interfaces::IUpdateListener).
+  virtual void                             updateNotify ( Usul::Interfaces::IUnknown *caller );
+
+#if USE_DISTRIBUTED == 1
+  
   /// Get/Set the connection.
   void                                     connection ( Minerva::DataSources::PG::Connection* connection );
-  Minerva::DataSources::PG::Connection*    connection ();
-
+  Minerva::DataSources::PG::Connection*    connection();
+  
+  /// Connect to the session.
+  void                                     connectToSession();
+  
   /// Get/Set the session.
   void                                     session ( const std::string& session );
   const std::string &                      session () const;
-
-  /// Connect to the session.
-  void                                     connectToSession ();
-
-  /// Update (Usul::Interfaces::IUpdateListener).
-  virtual void                             updateNotify ( Usul::Interfaces::IUnknown *caller );
 
   /// Get/Set the commands receive flag.
   void                                     commandsReceive ( bool b );
   bool                                     commandsReceive () const;
 
+#endif
+  
   /// Start the animation (Minerva::Interfaces::IAnimationControl).
   virtual void                             startAnimation ();
   virtual void                             stopAnimation();
@@ -342,6 +350,18 @@ private:
     MinervaDocument::Body *_body;
   };
   
+  /// Command members.
+#if USE_DISTRIBUTED == 1
+  bool _commandsSend;
+  bool _commandsReceive;
+  std::string _sessionName;
+  CommandSender::RefPtr   _sender;
+  CommandReceiver::RefPtr _receiver;
+  Minerva::DataSources::PG::Connection::RefPtr _connection;
+  Usul::Policies::TimeBased  _commandUpdate;
+  Usul::Jobs::Job::RefPtr    _commandJob;
+#endif
+  
   bool _dirty;
 
   MenuKit::Menu::RefPtr _layersMenu;
@@ -354,17 +374,7 @@ private:
   Usul::Jobs::Manager *      _manager;
   Minerva::Core::Utilities::Hud _hud;
   osg::ref_ptr < Callback >  _callback;
-
-  /// Command members.
-  bool _commandsSend;
-  bool _commandsReceive;
-  std::string _sessionName;
-  CommandSender::RefPtr   _sender;
-  CommandReceiver::RefPtr _receiver;
-  Minerva::DataSources::PG::Connection::RefPtr _connection;
-  Usul::Policies::TimeBased  _commandUpdate;
-  Usul::Jobs::Job::RefPtr    _commandJob;
-
+  
   /// Animation members.
   Minerva::Core::Animate::Settings::RefPtr  _animateSettings;
   Minerva::Core::Animate::Date _lastDate;

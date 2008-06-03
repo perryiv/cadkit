@@ -231,14 +231,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GDALLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GDALLayer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Init.cpp"
 				>
 			</File>
@@ -252,6 +244,14 @@
 			</File>
 			<File
 				RelativePath=".\OGRVectorLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayerGDAL.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RasterLayerGDAL.h"
 				>
 			</File>
 			<File

@@ -35,14 +35,14 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${OSSIM_INC_DIR}
 		     $ENV{PQXX_INC_DIR}
-         ${GDAL_INCLUDE_DIR}
+             ${GDAL_INCLUDE_DIR}
 		     )
 
 
 #List the Sources
 SET (SOURCES
 Init.cpp
-GdalLayer.cpp
+RasterLayerGDAL.cpp
 RasterPolygonLayer.cpp
 )
 

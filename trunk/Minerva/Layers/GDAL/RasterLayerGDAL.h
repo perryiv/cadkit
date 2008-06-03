@@ -18,19 +18,19 @@
 class GDALDataset;
 
 
-class GdalLayer : public Minerva::Core::Layers::RasterLayer,
-                  public Usul::Interfaces::IRead
+class RasterLayerGDAL : public Minerva::Core::Layers::RasterLayer,
+                        public Usul::Interfaces::IRead
 {
 public:
   typedef Minerva::Core::Layers::RasterLayer BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::vector<double> GeoTransform;
   
-  USUL_DECLARE_QUERY_POINTERS ( GdalLayer );
+  USUL_DECLARE_QUERY_POINTERS ( RasterLayerGDAL );
   
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
-  GdalLayer ();
+  RasterLayerGDAL ();
   
   /// Clone.
   virtual IUnknown*     clone() const;
@@ -46,9 +46,9 @@ public:
   
 protected:
   
-  virtual ~GdalLayer();
+  virtual ~RasterLayerGDAL();
   
-  GdalLayer ( const GdalLayer& );
+  RasterLayerGDAL ( const RasterLayerGDAL& );
 
   static void           _createGeoTransform ( GeoTransform &transfrom, const Extents& e, unsigned int width, unsigned int height );
 
@@ -60,12 +60,12 @@ protected:
 private:
   
   // No assignment.
-  GdalLayer& operator= ( const GdalLayer& );
+  RasterLayerGDAL& operator= ( const RasterLayerGDAL& );
   
   GDALDataset *_data;
   std::string _filename;
   
-  SERIALIZE_XML_CLASS_NAME( GdalLayer ) 
+  SERIALIZE_XML_CLASS_NAME( RasterLayerGDAL ) 
   SERIALIZE_XML_SERIALIZE_FUNCTION 
   SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };

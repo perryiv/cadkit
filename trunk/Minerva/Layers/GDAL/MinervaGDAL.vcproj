@@ -247,14 +247,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RasterLayerGDAL.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RasterLayerGDAL.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RasterPolygonLayer.cpp"
 				>
 			</File>

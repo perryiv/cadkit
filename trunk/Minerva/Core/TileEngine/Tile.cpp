@@ -23,6 +23,7 @@
 #include "Minerva/Core/TileEngine/Tile.h"
 #include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/Layers/RasterLayerGDAL.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Utilities/Composite.h"
 #include "Minerva/Core/Utilities/SubRegion.h"
@@ -764,7 +765,11 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     // Use a quarter of the parent's elevation for the child.
     osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
     if ( parentElevation.valid() )
-      elevation = Minerva::Core::Utilities::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
+    {
+      Minerva::Core::Layers::RasterLayerGDAL::RefPtr layer ( new Minerva::Core::Layers::RasterLayerGDAL ( parentElevation.get(), this->extents() ) );
+      elevation = layer->texture ( extents, size[0], size[1], level, job, 0x0 );
+//      elevation = Minerva::Core::Utilities::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
+    }
   }
   
   // Have we been cancelled?

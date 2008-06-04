@@ -12,6 +12,7 @@
 #define _OSG_TOOLS_GLASS_BOUNDING_BOX_H_
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"

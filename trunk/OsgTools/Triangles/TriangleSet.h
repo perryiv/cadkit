@@ -22,6 +22,7 @@
 // #define NOMINMAX                   // Do not define min and max as macros.
 #endif
 
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Triangles/SharedVertex.h"
 #include "OsgTools/Triangles/Triangle.h"
 #include "OsgTools/Triangles/Factory.h"

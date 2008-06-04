@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/SimFlow;$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Rendering"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/SimFlow;$(OSG_INC_DIR);$(OSG_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Rendering"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USRDLL;VTK5;_VTKUTIL_LIBRARY"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/SimFlow;$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Rendering"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/SimFlow;$(OSG_INC_DIR);$(OSG_INC_DIR);$(VTK_INC_DIR);$(VTK_INC_DIR)\Graphics;$(VTK_INC_DIR)\GenericFiltering;$(VTK_INC_DIR)\Filtering;$(VTK_INC_DIR)\Common;$(VTK_INC_DIR)\Rendering"
 				PreprocessorDefinitions="WIN32;_NDEBUG;_CONSOLE;_USRDLL;VTK5;_VTKUTIL_LIBRARY"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

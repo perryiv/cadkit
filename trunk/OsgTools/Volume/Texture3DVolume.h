@@ -12,6 +12,7 @@
 #define __OSGTOOLS_VOLUME_3D_TEXTURE_VOLUME_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Volume/PlanarProxyGeometry.h"
 #include "OsgTools/Volume/TransferFunction.h"
 

@@ -18,6 +18,8 @@
 
 #include "Helios/Plugins/CenterGeometry/CompileGuard.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IMenuAdd.h"

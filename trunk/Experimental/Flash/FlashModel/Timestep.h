@@ -13,6 +13,8 @@
 
 #include "Usul/Base/Object.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "osg/BoundingBox"
 #include "osg/Vec4"
 

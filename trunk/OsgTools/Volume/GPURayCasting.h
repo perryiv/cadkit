@@ -12,6 +12,7 @@
 #define __OSGTOOLS_VOLUME_GPU_RAY_CASTING_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Volume/TransferFunction.h"
 
 #include "osg/Image"

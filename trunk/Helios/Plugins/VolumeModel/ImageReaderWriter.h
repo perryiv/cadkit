@@ -13,6 +13,8 @@
 
 #include "Helios/Plugins/VolumeModel/IReaderWriter.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "Usul/Base/Object.h"
 
 #include "osg/Image"

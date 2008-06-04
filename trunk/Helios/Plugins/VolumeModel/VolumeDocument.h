@@ -18,12 +18,12 @@
 
 #include "Helios/Plugins/VolumeModel/IReaderWriter.h"
 
-#include "Usul/Documents/Document.h"
+#include "OsgTools/Configure/OSG.h"
+#include "OsgTools/Volume/TransferFunction.h"
 
+#include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
-
-#include "OsgTools/Volume/TransferFunction.h"
 
 #include "osg/Group"
 #include "osg/Projection"

@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_TRIANGLES_PARITION_SINGLE_BLOCK_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Triangles/Triangle.h"
 
 #include "Usul/Types/Types.h"

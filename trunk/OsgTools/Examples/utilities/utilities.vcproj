@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSGTOOLS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OSG_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSGTOOLS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -36,7 +36,7 @@
 				AdditionalDependencies="OpenThreadsWin32d.lib Producerd.lib osgUtild.lib osgProducerd.lib osgGAd.lib osgd.lib OsgToolsd.lib"
 				OutputFile="$(OutDir)/utilities.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OSGTOOLS_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OSGTOOLS_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/utilities.pdb"
 				SubSystem="1"
@@ -70,7 +70,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSGTOOLS_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(OSG_INC_DIR)&quot;;&quot;$(PRODUCER_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSGTOOLS_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
@@ -85,7 +85,7 @@
 				AdditionalDependencies="OpenThreadsWin32.lib Producer.lib osgUtil.lib osgProducer.lib osgGA.lib osg.lib OsgTools.lib"
 				OutputFile="$(OutDir)/utilities.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OPENTHREADS_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OSGTOOLS_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(PRODUCER_LIB_DIR)&quot;;&quot;$(OSG_LIB_DIR)&quot;;&quot;$(OSGTOOLS_LIB_DIR)&quot;"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"

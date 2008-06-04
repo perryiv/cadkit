@@ -17,6 +17,7 @@
 #define __OSG_TOOLS_CALLBACKS_BOUNDING_BOX_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osg/Drawable"
 #include "osg/BoundingBox"

@@ -18,6 +18,8 @@
 
 #include "Usul/Errors/Checker.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Vec2d"

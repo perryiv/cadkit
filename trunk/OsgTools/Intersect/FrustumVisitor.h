@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_FRUSTUM_VISITOR_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osg/NodeVisitor"
 #include "osg/Polytope"

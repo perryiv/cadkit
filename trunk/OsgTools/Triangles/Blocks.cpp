@@ -250,9 +250,9 @@ void Blocks::_indices ( const osg::Vec3f &v, Usul::Math::Vec3ui &i ) const
   const Usul::Math::Vec3ui size ( _volume.size(), _volume[0].size(), _volume[0][0].size() );
 
   // Get the indices.
-  i[0] = Helper::index ( v[0], size[0], _bbox.xMin(), _bbox.xMax() );
-  i[1] = Helper::index ( v[1], size[1], _bbox.yMin(), _bbox.yMax() );
-  i[2] = Helper::index ( v[2], size[2], _bbox.zMin(), _bbox.zMax() );
+  i[0] = Helper::index<osg::BoundingBox::value_type> ( v[0], size[0], _bbox.xMin(), _bbox.xMax() );
+  i[1] = Helper::index<osg::BoundingBox::value_type> ( v[1], size[1], _bbox.yMin(), _bbox.yMax() );
+  i[2] = Helper::index<osg::BoundingBox::value_type> ( v[2], size[2], _bbox.zMin(), _bbox.zMax() );
 }
 
 

@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(OSG_INC_DIR);$(OSG_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(OPENTHREADS_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -141,7 +141,7 @@
 				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgGA.lib osgViewer.lib osgText.lib glu32.lib opengl32.lib $(NOINHERIT)"
 				OutputFile="$(CADKIT_INC_DIR)\bin\LabelMaker.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OPENTHREADS_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

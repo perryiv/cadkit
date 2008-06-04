@@ -17,6 +17,7 @@
 #define _VOXEL_MODEL_DRAWABLE_H_
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Matrix44.h"

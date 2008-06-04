@@ -64,6 +64,7 @@ SceneDocument::SceneDocument() : BaseClass ( "Scene Document" ),
 
 SceneDocument::~SceneDocument()
 {
+  _scene = 0x0;
 }
 
 

@@ -12,6 +12,7 @@
 #define __OSGTOOLS_VOLUME_PLANAR_PROXY_GEOMETRY_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osg/Drawable"
 #include "osg/Version"

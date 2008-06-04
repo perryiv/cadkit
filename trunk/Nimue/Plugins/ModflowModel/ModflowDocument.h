@@ -24,6 +24,8 @@
 
 #include "XmlTree/Document.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICoordinateTransform.h"

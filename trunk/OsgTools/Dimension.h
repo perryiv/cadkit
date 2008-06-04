@@ -9,8 +9,12 @@
 #ifndef _osg_tools_dimension_h_
 #define _osg_tools_dimension_h_
 
-#include <functional>
+#include "OsgTools/Configure/OSG.h"
+
 #include "osg/Drawable"
+
+#include <functional>
+
 
 namespace OsgTools
 {

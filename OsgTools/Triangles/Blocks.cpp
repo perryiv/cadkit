@@ -248,11 +248,17 @@ void Blocks::_indices ( const osg::Vec3f &v, Usul::Math::Vec3ui &i ) const
 
   // Get the sizes.
   const Usul::Math::Vec3ui size ( _volume.size(), _volume[0].size(), _volume[0][0].size() );
+  
+#if OPENSCENEGRAPH_MAJOR_VERSION <= 2 && OPENSCENEGRAPH_MINOR_VERSION <= 2
+  typedef float ValueType;
+#else
+  typedef osg::BoundingBox::value_type ValueType;
+#endif
 
   // Get the indices.
-  i[0] = Helper::index<osg::BoundingBox::value_type> ( v[0], size[0], _bbox.xMin(), _bbox.xMax() );
-  i[1] = Helper::index<osg::BoundingBox::value_type> ( v[1], size[1], _bbox.yMin(), _bbox.yMax() );
-  i[2] = Helper::index<osg::BoundingBox::value_type> ( v[2], size[2], _bbox.zMin(), _bbox.zMax() );
+  i[0] = Helper::index<ValueType> ( v[0], size[0], _bbox.xMin(), _bbox.xMax() );
+  i[1] = Helper::index<ValueType> ( v[1], size[1], _bbox.yMin(), _bbox.yMax() );
+  i[2] = Helper::index<ValueType> ( v[2], size[2], _bbox.zMin(), _bbox.zMax() );
 }
 
 

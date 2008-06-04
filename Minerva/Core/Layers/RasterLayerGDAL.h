@@ -11,15 +11,19 @@
 #ifndef __MINERVA_GDAL_LAYER_H__
 #define __MINERVA_GDAL_LAYER_H__
 
+#include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Usul/Interfaces/IRead.h"
 
 class GDALDataset;
 
+namespace Minerva {
+namespace Core {
+namespace Layers {
 
-class RasterLayerGDAL : public Minerva::Core::Layers::RasterLayer,
-                        public Usul::Interfaces::IRead
+class MINERVA_EXPORT RasterLayerGDAL : public Minerva::Core::Layers::RasterLayer,
+                                       public Usul::Interfaces::IRead
 {
 public:
   typedef Minerva::Core::Layers::RasterLayer BaseClass;
@@ -30,7 +34,8 @@ public:
   
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
-  RasterLayerGDAL ();
+  RasterLayerGDAL();
+  RasterLayerGDAL ( ImagePtr image, const Extents& extents );
   
   /// Clone.
   virtual IUnknown*     clone() const;
@@ -50,6 +55,7 @@ protected:
   
   RasterLayerGDAL ( const RasterLayerGDAL& );
 
+  static GDALDataset *  _createDataset ( const Extents& e, unsigned int width, unsigned int height, int bands, unsigned int type );
   static void           _createGeoTransform ( GeoTransform &transfrom, const Extents& e, unsigned int width, unsigned int height );
 
   virtual std::string   _cacheDirectory() const;
@@ -66,9 +72,10 @@ private:
   std::string _filename;
   
   SERIALIZE_XML_CLASS_NAME( RasterLayerGDAL ) 
-  SERIALIZE_XML_SERIALIZE_FUNCTION 
-  SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
+}
+}
+}
 
 #endif // __MINERVA_GDAL_LAYER_H__

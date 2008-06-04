@@ -42,7 +42,6 @@ INCLUDE_DIRECTORIES(
 #List the Sources
 SET (SOURCES
 Init.cpp
-RasterLayerGDAL.cpp
 RasterPolygonLayer.cpp
 )
 

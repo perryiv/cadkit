@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/GDAL/RasterLayerGDAL.h"
+#include "Minerva/Core/Layers/RasterLayerGDAL.h"
 #include "Minerva/Layers/GDAL/Convert.h"
 #include "Minerva/Layers/GDAL/Common.h"
 #include "Minerva/Layers/GDAL/MakeImage.h"
@@ -33,6 +33,8 @@
 #include "ogr_geometry.h"
 #include "ogrsf_frmts.h"
 #include "cpl_error.h"
+
+using namespace Minerva::Core::Layers;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -76,6 +78,38 @@ RasterLayerGDAL::RasterLayerGDAL () :
   USUL_STATIC_ASSERT ( sizeof ( GInt16 )  == sizeof ( short ) );
   USUL_STATIC_ASSERT ( sizeof ( GInt32 )  == sizeof ( int ) );
   USUL_STATIC_ASSERT ( sizeof ( GUInt32 ) == sizeof ( unsigned int ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Construct from an osg Image.  Assume WGS 84.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerGDAL::RasterLayerGDAL ( ImagePtr image, const Extents& extents ) : BaseClass(),
+  _data ( 0x0 ),
+  _filename()
+{
+  if ( image.valid() )
+  {
+    const unsigned int width ( image->s() );
+    const unsigned int height ( image->t() );
+
+    // Create the dataset ( hack for now... )
+    _data = RasterLayerGDAL::_createDataset ( extents, width, height, 1, GDT_Float32 );
+
+    if ( 0x0 != _data )
+    {
+      GDALRasterBand* band ( _data->GetRasterBand ( 1 ) );
+      if ( 0x0 != band )
+      {
+        band->RasterIO( GF_Write, 0, 0, width, height, image->data(), width, height, GDT_Float32, 0, 0 );
+      }
+    }
+  }
+
+  this->extents ( extents );
 }
 
 
@@ -174,46 +208,16 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   // Get the data type.  Assume that all bands have the same type.
   GDALDataType type ( _data->GetRasterBand ( 1 )->GetRasterDataType() );
   
-  // Make an in memory raster.
-  std::string format ( "MEM" );
-  
-  // Find a driver for in memory raster.
-  GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName ( format.c_str() ) );
-  
-  // Return now if we didn't find a driver.
-  if ( 0x0 == driver )
-    return 0x0;
-  
-  Usul::File::Temp temp;
-  
-  // Create the file.
-  GDALDataset *data ( driver->Create( temp.name().c_str(), width, height, bands, type, 0x0 ) );
+  // Create the dataset.
+  GDALDataset *data ( RasterLayerGDAL::_createDataset ( extents, width, height, bands, type ) );
   
   if ( 0x0 == data )
     return 0x0;
   
   // Make sure data set is closed.
   Usul::Scope::Caller::RefPtr closeDataSet ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( data, GDALClose ) ) );
-  
-  // Make the transform.
-  OGRSpatialReference src ( _data->GetProjectionRef() );
-  OGRSpatialReference dst;
-  dst.SetWellKnownGeogCS ( "WGS84" );
-  
-  // Create the geo transform.
-  std::vector<double> geoTransform ( 6 );
-  RasterLayerGDAL::_createGeoTransform ( geoTransform, extents, width, height );
-  
-  if ( CE_None != data->SetGeoTransform( &geoTransform[0] ) )
-    return 0x0;
-  
-  char *wkt ( 0x0 );
-  if ( CE_None != dst.exportToWkt ( &wkt ) )
-    return 0x0;
-    
-  if ( CE_None != data->SetProjection( wkt ) )
-    return 0x0;
-  
+
+  // Set the no data value.  
   const double noDataValue ( _data->GetRasterBand ( 1 )->GetNoDataValue() );
 
   for ( int i = 1; i <= bands; ++i )
@@ -480,6 +484,52 @@ std::string RasterLayerGDAL::_cacheFileExtension() const
 
   const std::string ext ( Usul::File::extension ( _filename ) );
   return ext;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create an in memory dataset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+GDALDataset * RasterLayerGDAL::_createDataset ( const Extents& e, unsigned int width, unsigned int height, int bands, unsigned int type )
+{
+  // Make an in memory raster.
+  std::string format ( "MEM" );
+  
+  // Find a driver for in memory raster.
+  GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName ( format.c_str() ) );
+  
+  // Return now if we didn't find a driver.
+  if ( 0x0 == driver )
+    return 0x0;
+  
+  // Create the file.
+  GDALDataset *data ( driver->Create( Usul::File::Temp::file().c_str(), width, height, bands, static_cast<GDALDataType> ( type ), 0x0 ) );
+  
+  if ( 0x0 == data )
+    return 0x0;
+  
+  // Make the transform.
+  OGRSpatialReference dst;
+  dst.SetWellKnownGeogCS ( "WGS84" );
+  
+  // Create the geo transform.
+  std::vector<double> geoTransform ( 6 );
+  RasterLayerGDAL::_createGeoTransform ( geoTransform, e, width, height );
+  
+  if ( CE_None != data->SetGeoTransform( &geoTransform[0] ) )
+    return 0x0;
+  
+  char *wkt ( 0x0 );
+  if ( CE_None != dst.exportToWkt ( &wkt ) )
+    return 0x0;
+    
+  if ( CE_None != data->SetProjection( wkt ) )
+    return 0x0;
+  
+  return data;
 }
 
 

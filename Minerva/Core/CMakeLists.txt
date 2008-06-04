@@ -15,6 +15,10 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 SET ( Boost_USE_DATE_TIME TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
+# ------------ Find GDAL Library ----------------------
+INCLUDE( ${CMakeModules}/FindGDAL.cmake)
+
+# ------------ Find curl Library ----------------------
 INCLUDE( ${CMakeModules}/FindCURL.cmake)
 
 ADD_DEFINITIONS("-D_COMPILING_MINERVA")
@@ -29,6 +33,7 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${OSSIM_INC_DIR}
 		     ${CURL_INCLUDE_DIR}
+		     ${GDAL_INCLUDE_DIR}
 		     )
 
 
@@ -64,6 +69,7 @@ SET (SOURCES
 ./Layers/RasterGroup.cpp
 ./Layers/RasterLayer.cpp
 ./Layers/RasterLayerArcIMS.cpp
+./Layers/RasterLayerGDAL.cpp
 ./Layers/RasterLayerNetwork.cpp
 ./Layers/RasterLayerOssim.cpp
 ./Layers/RasterLayerWms.cpp
@@ -98,9 +104,10 @@ ADD_LIBRARY(Minerva SHARED ${SOURCES} )
 LINK_CADKIT( Minerva Usul OsgTools SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(Minerva
 	${Boost_LIBRARIES}
+	${GDAL_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}
 	${OSSIM_LIB}
-  ${CURL_LIBRARY}
+    ${CURL_LIBRARY}
 )

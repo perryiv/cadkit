@@ -93,6 +93,8 @@ RasterLayerGDAL::RasterLayerGDAL ( ImagePtr image, const Extents& extents ) : Ba
 {
   if ( image.valid() )
   {
+    image->flipVertical();
+
     const unsigned int width ( image->s() );
     const unsigned int height ( image->t() );
 

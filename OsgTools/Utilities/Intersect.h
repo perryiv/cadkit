@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_BOUNDING_BOX_INTERSECT_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osg/BoundingBox"
 #include "osg/Array"

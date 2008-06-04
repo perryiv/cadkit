@@ -17,6 +17,8 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/Errors/Assert.h"
 
+#include <stdexcept>
+
 using namespace Usul::Threads;
 
 
@@ -65,7 +67,13 @@ Mutex::~Mutex()
 Mutex *Mutex::create()
 {
   USUL_TRACE_SCOPE_STATIC;
-  USUL_ASSERT ( _fun ); // The client needs to set this.
+
+  if ( 0x0 == _fun )
+  {
+    USUL_ASSERT ( _fun ); // The client needs to set this.
+    throw std::runtime_error ( "Error 2514194884: No mutex factory set" );
+  }
+
   return (*_fun)();
 }
 

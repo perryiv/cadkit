@@ -11,6 +11,7 @@
 #define __EDIT_POLYGONS_LOOP_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Triangles/SharedVertex.h"
 
 #include "Usul/Interfaces/IUnknown.h"

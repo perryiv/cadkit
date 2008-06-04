@@ -36,6 +36,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Document );
 
+  // Type id.
+  USUL_DECLARE_TYPE_ID ( Document );
+
   // Construction
   Document();
   Document ( const std::string &name );

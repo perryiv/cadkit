@@ -13,6 +13,8 @@
 
 #include "ui_ClipPlanes.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "Usul/Interfaces/IUnknown.h"
 
 #include "QtGui/QWidget"

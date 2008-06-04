@@ -18,6 +18,7 @@
 #define __OSG_TOOLS_RENDER_VIEWER_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IAxes.h"

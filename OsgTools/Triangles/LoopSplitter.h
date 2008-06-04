@@ -10,9 +10,9 @@
 #ifndef __LOOP_SPLITTER_H__
 #define __LOOP_SPLITTER_H__
 
-#include "OsgTools/Triangles/Loop.h"
-
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
+#include "OsgTools/Triangles/Loop.h"
 #include "OsgTools/Triangles/SharedVertex.h"
 
 #include "Usul/Interfaces/IUnknown.h"

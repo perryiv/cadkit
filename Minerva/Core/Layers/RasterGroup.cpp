@@ -124,6 +124,13 @@ void RasterGroup::append ( IRasterLayer* layer )
 
     // Clear the cache because some or all of the images are now incorrect.
     _cache.clear();
+
+    // Set the log file.
+    RasterLayer::RefPtr rl ( dynamic_cast < RasterLayer * > ( layer ) );
+    if ( true == rl.valid() )
+    {
+      rl->log ( this->log() );
+    }
   }
 }
 
@@ -495,6 +502,20 @@ void RasterGroup::log ( LogPtr lp )
       raster->log ( lp );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the log. Without this function this statement doesn't compile:
+//  this->log()
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterGroup::LogPtr RasterGroup::log()
+{
+  USUL_TRACE_SCOPE;
+  return BaseClass::log();
 }
 
 

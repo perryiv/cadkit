@@ -15,9 +15,11 @@
 #ifndef _OSG_TOOLS_BOX_H_
 #define _OSG_TOOLS_BOX_H_
 
-#include "ColorPolicyFunctor.h"
-#include "ColorSetter.h"
-#include "MaterialSetter.h"
+#include "OsgTools/Configure/OSG.h"
+
+#include "OsgTools/ColorPolicyFunctor.h"
+#include "OsgTools/ColorSetter.h"
+#include "OsgTools/MaterialSetter.h"
 
 #include "osg/Vec4"
 #include "osg/BoundingBox"

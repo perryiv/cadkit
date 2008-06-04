@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="../;$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../;$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OSG_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS;WIN32;NDEBUG;FOXDLL;HAVE_OPENGL"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OPENTHREADS_INC_DIR)"
+				AdditionalIncludeDirectories="../;$(CADKIT_INC_DIR),$(FOX_INC_DIR),$(OSG_INC_DIR),$(OSG_INC_DIR)"
 				PreprocessorDefinitions="_WINDOWS;WIN32;_DEBUG;FOXDLL;HAVE_OPENGL"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="true"

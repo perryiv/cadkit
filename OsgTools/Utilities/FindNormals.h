@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_UTILITIES_FIND_NORMALS_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osg/NodeVisitor"
 #include "osg/Group"
@@ -19,8 +20,10 @@
 #include "osg/PrimitiveSet"
 #include "osg/BoundingBox"
 
+
 namespace OsgTools {
 namespace Utilities {
+
 
 class OSG_TOOLS_EXPORT FindNormals : public osg::NodeVisitor
 {

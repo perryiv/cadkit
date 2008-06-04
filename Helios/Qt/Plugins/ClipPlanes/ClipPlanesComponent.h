@@ -19,6 +19,8 @@
 
 #include "Helios/Qt/Plugins/ClipPlanes/CompileGuard.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/GUI/IAddDockWindow.h"

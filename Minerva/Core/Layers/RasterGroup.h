@@ -69,8 +69,9 @@ public:
   /// Get a copy of the layers.
   void                            layers ( Layers& layers ) const;
 
-  // Set the log.
+  // Get/set the log.
   virtual void                    log ( LogPtr );
+  LogPtr                          log();
 
   unsigned int                    size() const;
 

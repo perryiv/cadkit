@@ -19,6 +19,8 @@
 
 #include "ModflowModel/CompileGuard.h"
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "Usul/Base/Observed.h"
 #include "Usul/Interfaces/IStringGridGet.h"
 #include "Usul/Properties/Attribute.h"

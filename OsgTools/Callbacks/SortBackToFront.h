@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_SORT_BACK_TO_FRONT_CALLBACK_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osg/NodeCallback"
 #include "osg/NodeVisitor"

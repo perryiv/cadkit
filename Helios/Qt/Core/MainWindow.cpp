@@ -1515,7 +1515,7 @@ void MainWindow::initPlugins()
     CadKit::Helios::Commands::NewDocument::RefPtr command ( new CadKit::Helios::Commands::NewDocument ( me, (*iter).get(), name ) );
     _newDocumentMenu->append ( new MenuKit::Button ( command.get() ) );
   }
-  
+
   // Initialize plugins that need to.
   unknowns = PluginManager::instance().getInterfaces ( IPluginInitialize::IID );
   for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )

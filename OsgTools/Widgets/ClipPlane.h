@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_WIDGETS_CLIP_PLANE_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osg/ref_ptr"
 #include "osg/BoundingBox"

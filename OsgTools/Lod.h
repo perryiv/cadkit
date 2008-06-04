@@ -16,6 +16,7 @@
 #define _OSG_TOOLS_LOD_H_
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Declarations.h"
 
 

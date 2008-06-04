@@ -10,6 +10,8 @@
 #ifndef __OSGTOOLS_INTERSECT_FRUSTUM_H__
 #define __OSGTOOLS_INTERSECT_FRUSTUM_H__
 
+#include "OsgTools/Configure/OSG.h"
+
 #include "osg/Referenced"
 #include "osg/Polytope"
 

@@ -42,6 +42,9 @@ public:
   typedef std::map < std::string, std::string > Attributes;
   typedef std::vector < Node::ValidRefPtr > Children;
 
+  // Type id.
+  USUL_DECLARE_TYPE_ID ( Node );
+
   // Construction
   Node ( const std::string &name, const std::string &value = std::string() );
   template < class T > Node ( const std::string &name, T value );

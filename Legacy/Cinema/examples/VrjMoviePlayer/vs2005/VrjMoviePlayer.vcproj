@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(VRJCINEMA_ROOT_DIR)/src;$(VRJCINEMA_ROOT_DIR)/modules/Cinema;$(VJ_DEPS_DIR)/include;$(VJ_BASE_DIR)/include;$(VJ_BASE_DIR)/include/tweek/idl;$(OPENTHREADS_INC_DIR);$(OSG_INC_DIR);$(PRODUCER_INC_DIR);"
+				AdditionalIncludeDirectories="$(VRJCINEMA_ROOT_DIR)/src;$(VRJCINEMA_ROOT_DIR)/modules/Cinema;$(VJ_DEPS_DIR)/include;$(VJ_BASE_DIR)/include;$(VJ_BASE_DIR)/include/tweek/idl;$(OSG_INC_DIR);$(OSG_INC_DIR);$(PRODUCER_INC_DIR);"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

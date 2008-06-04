@@ -17,6 +17,7 @@
 #define _OSG_TOOLS_ENCAPSULATED_POSTSCRIPT_WRITER_H_
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "OsgTools/IO/GLFeedback.h"
 

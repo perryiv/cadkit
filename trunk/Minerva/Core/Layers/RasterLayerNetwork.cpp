@@ -17,10 +17,13 @@
 #include "Minerva/Core/Layers/RasterLayerNetwork.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
+#include "Usul/Exceptions/TimedOut.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Network/Names.h"
@@ -50,7 +53,8 @@ RasterLayerNetwork::RasterLayerNetwork ( const Extents &maxExtents, const std::s
   _useNetwork       ( true ),
   _writeFailedFlags ( false ),
   _readFailedFlags  ( false ),
-  _maxNumAttempts   ( Usul::Registry::Database::instance()["max_num_wms_download_attempts"].get ( 5 ) )
+  _maxNumAttempts   ( Usul::Registry::Database::instance()["network_download"]["raster_layer"]["max_num_attempts"].get<unsigned int> ( 5, true ) ),
+  _timeout          ( Usul::Registry::Database::instance()["network_download"]["raster_layer"]["timeout_milliseconds"].get<unsigned int> ( 5000, true ) )
 {
   USUL_TRACE_SCOPE;
 
@@ -76,7 +80,8 @@ RasterLayerNetwork::RasterLayerNetwork ( const RasterLayerNetwork& rhs ) :
   _useNetwork ( rhs._useNetwork ),
   _writeFailedFlags ( rhs._writeFailedFlags ),
   _readFailedFlags ( rhs._readFailedFlags ),
-  _maxNumAttempts ( rhs._maxNumAttempts )
+  _maxNumAttempts ( rhs._maxNumAttempts ),
+  _timeout ( rhs._timeout )
 {
   this->_registerMembers();
   
@@ -165,6 +170,24 @@ RasterLayerNetwork::ImagePtr RasterLayerNetwork::texture ( const Extents& extent
   if ( true == url.empty() )
     return ImagePtr ( 0x0 );
 
+  // Change the name of the job for better feedback.
+  if ( 0x0 != job )
+  {
+    typedef Usul::Convert::Type<float,std::string> Converter;
+    job->name ( Usul::Strings::format ( "Extents: [", 
+      Converter::convert ( extents.minimum()[0] ), ", ", 
+      Converter::convert ( extents.minimum()[1] ), ", ", 
+      Converter::convert ( extents.maximum()[0] ), ", ", 
+      Converter::convert ( extents.maximum()[1] ), "]",
+      ", level: ", level,
+      ", ", url ) );
+
+    // Ask for a redraw. TODO: this is a hack. Might not be the correct document.
+    Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+    if ( true == document.valid() )
+      document->requestRedraw();
+  }
+
   // Get the cache directory.
   const std::string cachDir ( this->_cacheDirectory() );
 
@@ -182,7 +205,7 @@ RasterLayerNetwork::ImagePtr RasterLayerNetwork::texture ( const Extents& extent
   file = Usul::Strings::format ( file, '.', this->_cacheFileExtension() );
 
   // Needed below a couple of times.
-  const std::string fullUrl ( url + "?" + this->_getAllOptions() );
+  const std::string fullUrl ( this->urlFull ( extents, width, height, level ) );
 
   // Since the directory name was hashed from the url, make sure there is a "read me" file.
   const std::string readMe ( Usul::Strings::format ( cachDir, "ReadMe.txt" ) );
@@ -214,10 +237,22 @@ RasterLayerNetwork::ImagePtr RasterLayerNetwork::texture ( const Extents& extent
   {
     try
     {
+      this->_logEvent ( Usul::Strings::format ( "Message 3507413903: Download started: ", fullUrl ) );
       this->_download ( file, extents, width, height, level, job, caller );
+      this->_logEvent ( Usul::Strings::format ( "Message 1315552899: Download finished: ", fullUrl ) );
     }
     catch ( const Usul::Exceptions::Canceled & )
     {
+      this->_logEvent ( Usul::Strings::format ( "Message 3919893899: Canceling download: ", fullUrl ) );
+      throw;
+    }
+    catch ( const Usul::Exceptions::TimedOut::NetworkDownload &e )
+    {
+      // Increase the timeout amount.
+      this->timeoutMilliSeconds ( this->timeoutMilliSeconds() * Usul::Registry::Database::instance()["network_download"]["raster_layer"]["timed_out_factor"].get<unsigned int> ( 2, true ) );
+
+      // Log and re-throw.
+      this->_logEvent ( Usul::Strings::format ( "Error 1710361995: ", ( ( 0x0 != e.what() ) ? e.what() : "unknown" ) ) );
       throw;
     }
     catch ( const std::exception &e )
@@ -369,11 +404,11 @@ RasterLayerNetwork::Options RasterLayerNetwork::options() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the url.
+//  Set the base url.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterLayerNetwork::url ( const std::string& url )
+void RasterLayerNetwork::urlBase ( const std::string& url )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -383,15 +418,29 @@ void RasterLayerNetwork::url ( const std::string& url )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the url.
+//  Get the base url.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RasterLayerNetwork::url() const
+std::string RasterLayerNetwork::urlBase() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _url;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the full url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerNetwork::urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+  const std::string url ( this->urlBase() + "?" + this->_getAllOptions() );
+  return url;
 }
 
 
@@ -478,4 +527,32 @@ unsigned int RasterLayerNetwork::maxNumAttempts() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _maxNumAttempts;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the timeout in milliseconds.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerNetwork::timeoutMilliSeconds ( unsigned int timeout )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _timeout = timeout;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the timeout in milliseconds.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int RasterLayerNetwork::timeoutMilliSeconds() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _timeout;
 }

@@ -103,8 +103,8 @@ public:
   virtual std::string   guid() const;
 
   // Set/get the log.
-  virtual void          log ( LogPtr );
-  LogPtr                log();
+  virtual void          logSet ( LogPtr );
+  LogPtr                logGet();
 
   /// Get/Set the name.
   virtual std::string   name() const;

@@ -565,3 +565,16 @@ void Job::wait ( std::ostream *out, unsigned int numLoops, unsigned int sleep )
     Usul::System::Sleep::milliseconds ( sleep );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Overload to return an accurate indication of success.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Job::success() const
+{
+  USUL_TRACE_SCOPE;
+  return true;
+}

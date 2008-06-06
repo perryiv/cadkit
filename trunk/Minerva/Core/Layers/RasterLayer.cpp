@@ -25,6 +25,7 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Scope/Caller.h"
+#include "Usul/Strings/Split.h"
 #include "Usul/Threads/ThreadId.h"
 
 #include "osgDB/ReadFile"
@@ -817,12 +818,15 @@ std::string RasterLayer::_mangledURL ( const std::string &url )
 {
   USUL_TRACE_SCOPE_STATIC;
 
-  std::string mangled ( url );
+  // Trim all characters left of the '@' character, if it's found.
+  // This will remove embedded username-password pairs.
+  std::string mangled ( boost::trim_left_copy_if ( url, std::bind2nd ( std::equal_to<char>(), '@' ) ) );
 
   boost::replace_first ( mangled, "http://", " " );
   boost::replace_first ( mangled, "https://", " " );
   boost::trim_left ( mangled );
 
+  std::replace ( mangled.begin(), mangled.end(), '@',  '_' );
   std::replace ( mangled.begin(), mangled.end(), ':',  '_' );
   std::replace ( mangled.begin(), mangled.end(), '/',  '_' );
   std::replace ( mangled.begin(), mangled.end(), '\\', '_' );
@@ -904,7 +908,7 @@ void RasterLayer::_writeImageToCache ( const Extents& extents, unsigned int widt
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterLayer::log ( LogPtr lp )
+void RasterLayer::logSet ( LogPtr lp )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -918,7 +922,7 @@ void RasterLayer::log ( LogPtr lp )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayer::LogPtr RasterLayer::log()
+RasterLayer::LogPtr RasterLayer::logGet()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -936,9 +940,22 @@ void RasterLayer::_logEvent ( const std::string &s )
 {
   USUL_TRACE_SCOPE;
 
-  LogPtr file ( this->log() );
+  // Make the message.
+  const std::string message ( Usul::Strings::format 
+    ( "clock: ", ::clock(), ", system thread: ", Usul::Threads::currentThreadId(), ", event: ", s ) );
+
+  // Get the log.
+  LogPtr file ( this->logGet() );
+
+  // Use the log if it's valid.
   if ( ( false == s.empty() ) && ( true == file.valid() ) )
   {
-    file->write ( Usul::Strings::format ( "clock: ", ::clock(), ", system thread: ", Usul::Threads::currentThreadId(), ", event: ", s ) );
+    file->write ( message );
+  }
+
+  // Otherwise, print to stdout.
+  else
+  {
+    std::cout << Usul::Strings::format ( "Warning 3604300631: layer '", this->name(), "' has a null log file", '\n', message, '\n' ) << std::flush;
   }
 }

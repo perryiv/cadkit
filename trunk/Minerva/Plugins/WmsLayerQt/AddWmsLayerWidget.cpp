@@ -211,8 +211,8 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     // Set the extents.
     _layer->extents ( extents );
     
-    // Set the url.
-    _layer->url ( server );
+    // Set the base url.
+    _layer->urlBase ( server );
     
     // Set the cache directory.
     _layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
@@ -266,7 +266,10 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
 	// Download.
 	{
 		Usul::Network::Curl curl ( request, name );
-		Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "3034499311" );
+		Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction 
+      ( &curl, &Usul::Network::Curl::download ), 
+      Usul::Registry::Database::instance()["network_download"]["wms_get_capabilities"]["timeout_milliseconds"].get<unsigned int> ( 60000, true ),
+      static_cast<std::ostream*> ( 0x0 ), "", "3034499311" );
 	}
 
   // Open the xml document.

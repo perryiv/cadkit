@@ -209,7 +209,7 @@ protected:
   void                      _cull ( osgUtil::CullVisitor &cv );
 
   /// Clear children.
-  void                      _clearChildren ( bool traverse );
+  void                      _clearChildren ( bool traverse, bool cancelJob );
 
   void                      _deleteMe();
 

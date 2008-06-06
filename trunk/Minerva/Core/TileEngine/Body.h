@@ -147,8 +147,8 @@ public:
   LandModel*                landModel() const;
   
   // Set/get the log.
-  void                      log ( LogPtr );
-  LogPtr                    log();
+  void                      logSet ( LogPtr );
+  LogPtr                    logGet();
 
   // Set/get the maximum level.
   void                      maxLevel ( unsigned int level );

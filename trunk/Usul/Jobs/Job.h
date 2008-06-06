@@ -82,6 +82,9 @@ public:
   void                      progress ( IUnknown* progress );
   IUnknown *                progress();
 
+  // Overload to return an accurate indication of success.
+  virtual bool              success() const;
+
   // Return this job's thread.
   const Thread *            thread() const;
 

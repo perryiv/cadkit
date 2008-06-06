@@ -70,8 +70,8 @@ public:
   void                            layers ( Layers& layers ) const;
 
   // Get/set the log.
-  virtual void                    log ( LogPtr );
-  LogPtr                          log();
+  virtual void                    logSet ( LogPtr );
+  LogPtr                          logGet();
 
   unsigned int                    size() const;
 

@@ -429,7 +429,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   if ( Usul::Bits::has ( _flags, Tile::CHILDREN ) )
   {
     // Clear all the children.
-    this->_clearChildren ( false );
+    this->_clearChildren ( false, true );
     this->dirty ( false, Tile::CHILDREN, false );
 
     this->dirtyBound();
@@ -493,7 +493,9 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     }
     // Spilt.
     else
+    {
       this->_cull ( *cv );
+    }
   }
   else
   {
@@ -584,7 +586,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     if ( numChildren > 1 && false == _body->cacheTiles() )
     {
       // Clear all the children.
-      this->_clearChildren ( false );
+      this->_clearChildren ( false, true );
     }
   }
 
@@ -620,12 +622,28 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
       if ( _tileJob.valid() && _tileJob->isDone() )
       {
-        osg::ref_ptr<osg::Group> group ( new osg::Group );
-        group->addChild ( _children[LOWER_LEFT]  );
-        group->addChild ( _children[LOWER_RIGHT] );
-        group->addChild ( _children[UPPER_LEFT]  );
-        group->addChild ( _children[UPPER_RIGHT] );
-        this->addChild ( group.get() );
+        // Did it work?
+        if ( true == _tileJob->success() )
+        {
+          osg::ref_ptr<osg::Group> group ( new osg::Group );
+          group->addChild ( _children[LOWER_LEFT]  );
+          group->addChild ( _children[LOWER_RIGHT] );
+          group->addChild ( _children[UPPER_LEFT]  );
+          group->addChild ( _children[UPPER_RIGHT] );
+          this->addChild ( group.get() );
+        }
+
+        // It did not work.
+        else
+        {
+          // Go low. The next cull will try again unless the user zoomed out.
+          low = true;
+
+          // Some of the children may have been created, so clear them all.
+          // Do not cancel the job since it already finished.
+          this->_clearChildren ( false, false );
+        }
+
         _tileJob = 0x0;
 
         // Turn off the borders.
@@ -710,6 +728,7 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     _children[UPPER_RIGHT] = t3.get();
   }
 
+  // Need to notify vector data so it can re-adjust.
   Minerva::Core::Layers::Container::RefPtr vector ( body->vectorData() );
   if ( vector.valid() )
   {
@@ -718,7 +737,7 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     Extents extents0 ( t0->extents() );
     ImagePtr elevation0 ( t0->elevation() );
 
-    // Since elevation data isn't currently used, just ask once.
+    // Since elevation data isn't currently used -- the triangles are -- just ask once.
     vector->elevationChangedNotify ( extents0, elevation0, unknown.get() );
     //vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
     //vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
@@ -743,6 +762,10 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
 {
   // If our logic is correct, this should be true.
   USUL_ASSERT ( this->referenceCount() >= 1 );
+  
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
 
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
@@ -756,8 +779,16 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   // Elevation data.
   Minerva::Core::Layers::RasterLayer::RefPtr elevationData ( body->elevationData() );
   
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
+
   // Get the data for our elevation.
   osg::ref_ptr < osg::Image > elevation ( Tile::buildRaster ( extents, size[0], size[1], level, elevationData.get(), job ) );
+  
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
 
   // See if we have valid elevation.
   if ( false == elevation.valid() )
@@ -788,6 +819,10 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     // Use the specified region of our image.
     tile->textureData ( this->image().get(), region );
   }
+  
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
 
   tile->updateMesh();
   tile->updateTexture();
@@ -1382,7 +1417,7 @@ void Tile::clear ( bool children )
   // Clear children first if we should.
   if ( true == children )
   {
-    this->_clearChildren ( children );
+    this->_clearChildren ( children, true );
   }
 
   // Cancel job if it's valid.
@@ -1690,7 +1725,7 @@ osg::BoundingSphere Tile::computeBound() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::_clearChildren ( bool traverse )
+void Tile::_clearChildren ( bool traverse, bool cancelJob )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1707,7 +1742,7 @@ void Tile::_clearChildren ( bool traverse )
   _children.assign ( _children.size(), 0x0 );
 
   // Clear the tile job.
-  if ( _tileJob.valid() )
+  if ( ( true == _tileJob.valid() ) && ( true == cancelJob ) )
   {
     // Without this call to cancel we always have to wait for the job to 
     // finish, even if we've already chosen to go down the low path, which 

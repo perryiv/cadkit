@@ -134,7 +134,7 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
   std::string request ( this->_createRequestXml ( extents, width, height, level ) );
 
   // Make the url.
-  std::string url ( this->url() + "?" + this->_getAllOptions() );
+  std::string url ( this->urlBase() + "?" + this->_getAllOptions() );
 
   // File to download to.
 	std::string name ( Usul::File::Temp::file() );
@@ -145,7 +145,7 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
     Usul::Network::Curl curl ( url, name );
 
     std::ostream *stream ( 0x0 );
-    curl.download ( stream, request );
+    curl.download ( this->timeoutMilliSeconds(), stream, request );
   }
 
   XmlTree::Document::RefPtr doc ( 0x0 );
@@ -174,7 +174,7 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
       Usul::Network::Curl curl ( imageUrl, file );
 
       std::ostream *stream ( 0x0 );
-      curl.download ( stream );
+      curl.download ( this->timeoutMilliSeconds(), stream, std::string() );
     }
   }
 }

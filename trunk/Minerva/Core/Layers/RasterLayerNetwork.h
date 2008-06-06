@@ -54,10 +54,17 @@ public:
   /// Set/get the max number of attempts.
   void                  maxNumAttempts ( unsigned int );
   unsigned int          maxNumAttempts() const;
+
+  /// Set/get the timeout in milliseconds.
+  void                  timeoutMilliSeconds ( unsigned int );
+  unsigned int          timeoutMilliSeconds() const;
   
   /// Set/get the url.
-  void                  url ( const std::string& url );
-  std::string           url() const;
+  void                  urlBase ( const std::string& url );
+  std::string           urlBase() const;
+
+  /// Get the full url.
+  virtual std::string   urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
   
 protected:
 
@@ -91,6 +98,7 @@ private:
   bool _writeFailedFlags;
   bool _readFailedFlags;
   unsigned int _maxNumAttempts;
+  unsigned int _timeout;
 
   SERIALIZE_XML_CLASS_NAME ( RasterLayerNetwork );
   SERIALIZE_XML_SERIALIZE_FUNCTION

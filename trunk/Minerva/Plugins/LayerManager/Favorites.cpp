@@ -27,6 +27,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/User/Directory.h"
@@ -365,7 +366,10 @@ void Favorites::_readFavoritesFromServer()
 	// Download.
 	{
 		Usul::Network::Curl curl ( url, name );
-		Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "3274576290" );
+		Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction 
+      ( &curl, &Usul::Network::Curl::download ), 
+      Usul::Registry::Database::instance()["network_download"]["favorites"]["timeout_milliseconds"].get<unsigned int> ( 60000, true ),
+      static_cast<std::ostream*> ( 0x0 ), "", "3274576290" );
 	}
 
   Serialize::XML::DataMemberMap map;

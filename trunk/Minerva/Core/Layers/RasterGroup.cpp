@@ -115,6 +115,7 @@ Usul::Interfaces::IUnknown* RasterGroup::clone() const
 void RasterGroup::append ( IRasterLayer* layer )
 {
   USUL_TRACE_SCOPE;
+  USUL_ASSERT ( true == this->logGet().valid() );
 
   if ( 0x0 != layer )
   {
@@ -129,7 +130,11 @@ void RasterGroup::append ( IRasterLayer* layer )
     RasterLayer::RefPtr rl ( dynamic_cast < RasterLayer * > ( layer ) );
     if ( true == rl.valid() )
     {
-      rl->log ( this->log() );
+      rl->logSet ( this->logGet() );
+    }
+    else
+    {
+      USUL_ASSERT ( 0 ); // FYI...
     }
   }
 }
@@ -486,9 +491,12 @@ void RasterGroup::removeLayer ( Usul::Interfaces::ILayer * layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::log ( LogPtr lp )
+void RasterGroup::logSet ( LogPtr lp )
 {
   USUL_TRACE_SCOPE;
+
+  // Set our member.
+  BaseClass::logSet ( lp );
 
   // Get copy of the layers.
   Layers layers ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
@@ -499,7 +507,7 @@ void RasterGroup::log ( LogPtr lp )
     RasterLayer::RefPtr raster ( dynamic_cast < RasterLayer * > ( i->get() ) );
     if ( true == raster.valid() )
     {
-      raster->log ( lp );
+      raster->logSet ( lp );
     }
   }
 }
@@ -512,10 +520,10 @@ void RasterGroup::log ( LogPtr lp )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterGroup::LogPtr RasterGroup::log()
+RasterGroup::LogPtr RasterGroup::logGet()
 {
   USUL_TRACE_SCOPE;
-  return BaseClass::log();
+  return BaseClass::logGet();
 }
 
 

@@ -177,7 +177,7 @@ void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul:
 	Alphas alphas ( wms->alphas() );
 	Options options ( wms->options() );
   std::string name ( wms->name() );
-  std::string url ( wms->url() );
+  std::string url ( wms->urlBase() );
   
   EditWmsLayerWidget *page ( new EditWmsLayerWidget ( wms ) );
   
@@ -226,7 +226,7 @@ void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul:
 		wms->alphas ( alphas );
 		wms->options ( options );
     wms->name ( name );
-    wms->url ( url );
+    wms->urlBase ( url );
   }  
   
   // Save the window's properties.

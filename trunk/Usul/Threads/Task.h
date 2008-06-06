@@ -44,6 +44,9 @@ public:
   Callback *                finishedCB();
   Callback *                startedCB();
 
+  virtual std::string       name() const;
+  void                      name ( const std::string & );
+
 protected:
 
   // Destructor

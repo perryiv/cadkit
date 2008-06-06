@@ -1447,7 +1447,7 @@ bool Body::keepDetail() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::log ( LogPtr lp )
+void Body::logSet ( LogPtr lp )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1455,7 +1455,10 @@ void Body::log ( LogPtr lp )
   _log = lp;
 
   if ( true == _rasters.valid() )
-    _rasters->log ( lp );
+    _rasters->logSet ( lp );
+
+  if ( true == _elevation.valid() )
+    _elevation->logSet ( lp );
 }
 
 
@@ -1465,7 +1468,7 @@ void Body::log ( LogPtr lp )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::LogPtr Body::log()
+Body::LogPtr Body::logGet()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

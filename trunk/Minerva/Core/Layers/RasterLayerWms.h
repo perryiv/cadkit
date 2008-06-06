@@ -36,6 +36,7 @@ public:
   typedef RasterLayerNetwork BaseClass;
   typedef std::map < std::string, std::string > Options;
   typedef BaseClass::IReadImageFile IReadImageFile;
+  typedef BaseClass::Options Options;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayerWms );
 
@@ -43,7 +44,10 @@ public:
 
   /// Clone.
   virtual IUnknown*     clone() const;
-  
+
+  /// Get the full url.
+  virtual std::string   urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
+
 protected:
 
   virtual ~RasterLayerWms();
@@ -51,6 +55,8 @@ protected:
   RasterLayerWms ( const RasterLayerWms& );
 
   virtual void          _download ( const std::string& file, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
+
+  Options               _options ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
 
 private:
 

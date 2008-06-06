@@ -44,7 +44,7 @@ Hud::Hud() :
   _date ( new osgText::Text ),
   _latLonHeight(),
   _requests ( 0 ),
-  _running ( 0 ),
+  _running (),
   _compass ( new Compass ),
   _flags ( Hud::_ALL )
 {
@@ -81,12 +81,13 @@ Hud::Hud() :
   _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
   _feedback->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   _feedback->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
+  _feedback->setLineSpacing ( 0.1 ); // Doesn't seem to have any effect.
 
   _date->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   _date->setCharacterSize( textSize * 2 );
-  _date->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  _date->setColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   _date->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
-  _date->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+  _date->setBackdropColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   _date->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
 }
 
@@ -141,19 +142,24 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
   geode->addDrawable ( geometry.get() );
 #endif
 
-  // Set the date text's position.
-  _date->setPosition ( osg::Vec3( 5.0, height - 25.0, 0.0 ) );
+  // Set the text's position.
+  _date->setPosition     ( osg::Vec3 ( 5.0, height - 25.0, 0.0 ) );
+  _feedback->setPosition ( osg::Vec3 ( 5.0, height - 50.0, 0.0 ) );
   
-  const unsigned int queued    ( this->requests() );
-  const unsigned int executing ( this->running() );
-  const unsigned int total     ( queued + executing );
+  const unsigned int queued ( this->requests() );
+  const Strings executing   ( this->running() );
+  const unsigned int total  ( queued + executing.size() );
   
-  const std::string out ( ( total > 0 ) ? ( Usul::Strings::format ( "Queued: ", queued, ", Running: ", executing ) ) : "" );
-  
-  _feedback->setText ( out );
+  std::ostringstream out;
+  if ( ( total > 0 ) )
+  {
+    out << "Queued: " << queued << ", Running: " << executing.size();
+    for ( Strings::const_iterator i = executing.begin(); i != executing.end(); ++i )
+      out << '\n' << *i;
+  }
+  _feedback->setText ( out.str() );
   
   typedef Usul::Convert::Type<double,std::string> ToString;
-  
   _position->setText ( Usul::Strings::format ( "Lat: ", ToString::convert ( _latLonHeight[1] ), 
                                                " Lon: ", ToString::convert ( _latLonHeight[0] ), 
                                                " E: ", ToString::convert (  _latLonHeight[2] ) ) );
@@ -221,7 +227,7 @@ unsigned int Hud::requests() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Hud::running ( unsigned int running )
+void Hud::running ( const Strings &running )
 {
   _running = running;
 }
@@ -233,7 +239,7 @@ void Hud::running ( unsigned int running )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Hud::running() const
+Hud::Strings Hud::running() const
 {
   return _running;
 }

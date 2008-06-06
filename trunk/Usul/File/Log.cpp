@@ -116,7 +116,7 @@ void Log::write ( const std::string &s, bool appendNewLine, bool prependEventCou
 
   // Append a new line and flush if we should.
   if ( true == appendNewLine )
-    _out << Usul::File::LINE_ENDING;
+    _out << Usul::File::lineEnding();
 
   // Increment the event count.
   ++_count;

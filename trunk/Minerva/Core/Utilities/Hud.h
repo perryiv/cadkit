@@ -25,6 +25,10 @@
 #include "osg/Vec3d"
 #include "osgText/Text"
 
+#include <string>
+#include <vector>
+
+
 namespace Minerva {
 namespace Core {
 namespace Utilities {
@@ -33,6 +37,9 @@ namespace Utilities {
 class MINERVA_EXPORT Hud
 {
 public:
+
+  typedef std::vector < std::string > Strings;
+
   Hud();
 
   // Build the scene.
@@ -49,8 +56,8 @@ public:
   unsigned int  requests() const;
   
   // Get/Set the number of running tasks.
-  void          running ( unsigned int );
-  unsigned int  running() const;
+  void          running ( const Strings & );
+  Strings       running() const;
   
   // Set the pointer position.
   void          position ( double lat, double lon, double height );
@@ -94,7 +101,7 @@ private:
   osg::ref_ptr < osgText::Text > _date;
   osg::Vec3d _latLonHeight;
   unsigned int _requests;
-  unsigned int _running;
+  Strings _running;
   osg::ref_ptr < Compass > _compass;
   unsigned int _flags;
 };

@@ -16,7 +16,9 @@
 
 #include "Minerva/Core/Jobs/BuildTiles.h"
 
+#include "Usul/Convert/Convert.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace Minerva::Core::Jobs;
@@ -31,7 +33,8 @@ USUL_IMPLEMENT_TYPE_ID ( BuildTiles );
 ///////////////////////////////////////////////////////////////////////////////
 
 BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass ( 0x0, false ),
-  _tile ( tile )
+  _tile ( tile ),
+  _success ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -41,7 +44,14 @@ BuildTiles::BuildTiles ( Tile::RefPtr tile ) : BaseClass ( 0x0, false ),
     this->priority ( -1 * static_cast<int> ( level ) );
   
     const Tile::Extents extents ( _tile->extents() );
-    this->name ( Usul::Strings::format ( "BuildTiles, Extents: [", extents.minimum()[0], ", ", extents.minimum()[1], ", ", extents.maximum()[0], ", ", extents.maximum()[1], "], level: ", level ) );
+    typedef Usul::Convert::Type<float,std::string> Converter;
+    this->name ( Usul::Strings::format ( 
+      "BuildTiles, Extents: [", 
+      Converter::convert ( extents.minimum()[0] ), ", ", 
+      Converter::convert ( extents.minimum()[1] ), ", ", 
+      Converter::convert ( extents.maximum()[0] ), ", ", 
+      Converter::convert ( extents.maximum()[1] ), "], level: ", 
+      level ) );
   }
 }
 
@@ -79,4 +89,21 @@ void BuildTiles::_started()
 
   // Ask the tile to split.
   _tile->split ( Usul::Jobs::Job::RefPtr ( this ) );
+
+  // If we get to here it worked.
+  Usul::Threads::Safe::set ( this->mutex(), true, _success );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Did it work?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool BuildTiles::success() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _success;
 }

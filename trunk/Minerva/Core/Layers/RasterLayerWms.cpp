@@ -111,16 +111,61 @@ void RasterLayerWms::_download ( const std::string& file, const Extents& extents
   USUL_TRACE_SCOPE;
 
   // Get url.
-  std::string url ( this->url() );
-  if ( true == url.empty() )
+  std::string baseUrl ( this->urlBase() );
+  if ( true == baseUrl.empty() )
     return;
 
-  // Get options.
-  Options options ( this->options() );
+  // Get all the options.
+  Options options ( this->_options ( extents, width, height, level ) );
   if ( true == options.empty() )
     return;
 
-  // Add bounding box.  Use Usul convert for full precision.
+  // Make wms object.
+  Usul::Network::WMS wms ( baseUrl, file, options.begin(), options.end() );
+
+  // Download the file.
+  std::ostream *stream ( 0x0 );
+  Usul::Interfaces::IUnknown::QueryPtr caller ( job );
+  wms.download ( this->timeoutMilliSeconds(), this->maxNumAttempts(), stream, caller.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the full url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerWms::urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Get base url.
+  std::string baseUrl ( this->urlBase() );
+
+  // Get all the options.
+  Options options ( this->_options ( extents, width, height, level ) );
+
+  // Ask the WMS class for the full url.
+  const std::string fullUrl ( Usul::Network::WMS::fullUrl ( baseUrl, options ) );
+  return fullUrl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all the options.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerWms::Options RasterLayerWms::_options ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Get the base options.
+  Options options ( this->options() );
+
+  // Add bounding box. Use Usul convert for full precision.
   options[Usul::Network::Names::BBOX] = Usul::Strings::format ( 
     Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.minimum()[0] ), ',', 
     Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.minimum()[1] ), ',', 
@@ -131,10 +176,5 @@ void RasterLayerWms::_download ( const std::string& file, const Extents& extents
   options[Usul::Network::Names::WIDTH]  = Usul::Convert::Type<unsigned int,std::string>::convert ( width  );
   options[Usul::Network::Names::HEIGHT] = Usul::Convert::Type<unsigned int,std::string>::convert ( height );
 
-  // Make wms object and ask it for file extension.
-  Usul::Network::WMS wms ( url, file, options.begin(), options.end() );
-
-  std::ostream *stream ( 0x0 );
-  Usul::Interfaces::IUnknown::QueryPtr caller ( job );
-  wms.download ( this->maxNumAttempts(), stream, caller.get() );
+  return options;
 }

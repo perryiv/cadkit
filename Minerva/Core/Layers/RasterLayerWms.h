@@ -34,7 +34,6 @@ class MINERVA_EXPORT RasterLayerWms : public RasterLayerNetwork
 public:
 
   typedef RasterLayerNetwork BaseClass;
-  typedef std::map < std::string, std::string > Options;
   typedef BaseClass::IReadImageFile IReadImageFile;
   typedef BaseClass::Options Options;
 

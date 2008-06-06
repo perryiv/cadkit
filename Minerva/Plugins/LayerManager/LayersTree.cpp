@@ -330,7 +330,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   // Editor for this layer.
   Usul::Interfaces::IUnknown::QueryPtr editor;
 
-  // Atempt to find an editor.
+  // Attempt to find an editor.
   Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerModifyGUIQt::IID ) );
   for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
   {

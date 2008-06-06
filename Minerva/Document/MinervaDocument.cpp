@@ -407,9 +407,6 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
     // Make a visitor to set the job manager.
     Minerva::Core::Visitors::SetJobManager::RefPtr setter ( new Minerva::Core::Visitors::SetJobManager ( this->_getJobManager() ) );
 
-    // Get the log.
-    LogPtr logFile ( Usul::Threads::Safe::get ( this->mutex(), _log ) );
-
     // Loop through the bodies.
     for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
     {
@@ -418,9 +415,6 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
       {
         // Set the job manager for each body.
         body->accept ( *setter );
-
-        // Set the log.
-        body->log ( logFile );
       }
     }
     
@@ -454,6 +448,9 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
     Usul::Interfaces::ILayer::QueryPtr layer ( read );
     this->addLayer ( layer.get() );
   }
+
+  // Reset all the log pointers.
+  this->_setLog();
 }
 
 
@@ -1776,9 +1773,12 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
   Usul::Jobs::Manager *manager ( this->_getJobManager() );
   const unsigned int queued    ( ( 0x0 == manager ) ? 0 : manager->numJobsQueued() );
   const unsigned int executing ( ( 0x0 == manager ) ? 0 : manager->numJobsExecuting() );
+  Usul::Jobs::Manager::Strings names;
+  if ( 0x0 != manager )
+    manager->executingNames ( names );
   
   _hud.requests ( queued );
-  _hud.running ( executing );
+  _hud.running ( names );
   
   if ( vp.valid() )
     _hud.updateScene( static_cast<unsigned int> ( vp->width() ), static_cast<unsigned int> ( vp->height() ) );
@@ -1828,6 +1828,9 @@ void MinervaDocument::_makePlanet()
   }
 
   this->activeBody ( body.get() );
+
+  // Set the log.
+  this->_setLog();
 }
 
 
@@ -2627,4 +2630,28 @@ void MinervaDocument::showDateFeedback ( bool b )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _hud.showDateFeedback( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reset all the logs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_setLog()
+{
+  // Get the log.
+  LogPtr logFile ( Usul::Threads::Safe::get ( this->mutex(), _log ) );
+
+  // Loop through the bodies.
+  for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
+  {
+    Body::RefPtr body ( *iter );
+    if ( body.valid() )
+    {
+      // Set the log.
+      body->logSet ( logFile );
+    }
+  }
 }

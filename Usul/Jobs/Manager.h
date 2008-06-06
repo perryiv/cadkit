@@ -40,6 +40,7 @@ public:
   typedef Usul::Interfaces::IJobFinishedListener IJobFinishedListener;
   typedef std::vector<IJobFinishedListener::RefPtr> JobFinishedListeners;
   typedef Usul::File::Log::RefPtr LogPtr;
+  typedef ThreadPool::Strings Strings;
 
   // Constructor and destructor. Use as a singleton or as individual objects.
   Manager ( unsigned int poolSize, bool lazyStart );
@@ -60,6 +61,9 @@ public:
 
   // This will delete the singleton instance, if any.
   static void             destroy();
+
+  // Get the names of the executing jobs.
+  void                    executingNames ( Strings & ) const;
 
   // Initialize singleton with given thread-pool size.
   static void             init ( unsigned int poolSize, bool lazyStart );

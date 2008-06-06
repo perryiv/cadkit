@@ -41,16 +41,19 @@ public:
   USUL_DECLARE_REF_POINTERS ( BuildTiles );
   
   BuildTiles ( Tile::RefPtr tile );
-  
+
+  virtual bool        success() const;
+
 protected:
 
   virtual ~BuildTiles();
   
-  virtual void _started();
+  virtual void        _started();
   
 private:
 
   Tile::RefPtr _tile;
+  bool _success;
 };
 
   

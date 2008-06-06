@@ -296,6 +296,9 @@ protected:
   /// Get the job manager.
   Usul::Jobs::Manager *                    _getJobManager();
 
+  /// Set all the children's log.
+  void                                     _setLog();
+
   /// Minerva::Interfaces::IAddLayer
   virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
 

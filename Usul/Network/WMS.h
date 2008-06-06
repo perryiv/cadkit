@@ -138,10 +138,10 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void download ( unsigned int maxNumAttempts = 10, std::ostream *out = 0x0, Usul::Interfaces::IUnknown *caller = 0x0 )
+  void download ( unsigned int timeoutMilliSeconds, unsigned int maxNumAttempts = 10, std::ostream *out = 0x0, Usul::Interfaces::IUnknown *caller = 0x0 )
   {
 		// Get the requested extension.
-		const std::string extension ( Usul::File::extension( _file ) );
+		const std::string extension ( Usul::File::extension ( _file ) );
 
     // Get file name.
 		const std::string file ( ( true == extension.empty() ) ? Usul::Strings::format ( _file, '.', this->extension() ) : _file );
@@ -166,7 +166,7 @@ public:
 
       // Use curl to download the file.
       Usul::Network::Curl curl ( url, file, totalSize, caller );
-      curl.download ( 0x0 );
+      curl.download ( timeoutMilliSeconds, 0x0, std::string() );
 
       // Check for file existance.
       std::ifstream in ( file.c_str(), std::ifstream::binary | std::ifstream::in );
@@ -306,17 +306,29 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  std::string fullUrl() const
+  static std::string fullUrl ( const std::string &baseUrl, const Options &options )
   {
     std::ostringstream url;
-    url << _url;
-    for ( Options::const_iterator i = _options.begin(); i != _options.end(); ++i )
+    url << baseUrl;
+    for ( Options::const_iterator i = options.begin(); i != options.end(); ++i )
     {
       const std::string name  ( i->first  );
       const std::string value ( i->second );
-      url << ( ( _options.begin() == i ) ? '?' : '&' ) << name << '=' << value;
+      url << ( ( options.begin() == i ) ? '?' : '&' ) << name << '=' << value;
     }
     return url.str();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Get the full url.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  std::string fullUrl() const
+  {
+    return Usul::Network::WMS::fullUrl ( _url, _options );
   }
 
 

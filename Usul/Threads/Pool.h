@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 
 
 namespace Usul {
@@ -38,7 +39,9 @@ public:
   typedef std::vector < Thread::RefPtr > ThreadPool;
   typedef Usul::Threads::Callback Callback;
   typedef std::pair < int, unsigned long > TaskHandle;
-  typedef std::map < TaskHandle, Task::RefPtr > TaskQueue;
+  typedef std::map < TaskHandle, Task::RefPtr > TaskMap;
+  typedef std::set < Task::RefPtr > TaskSet;
+  typedef std::vector < std::string > Strings;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Pool );
@@ -68,6 +71,9 @@ public:
 
   // Does the pool have the task?
   bool                    hasQueuedTask ( TaskHandle ) const;
+
+  // Get the names of the executing tasks.
+  void                    executingNames ( Strings & ) const;
 
   // Get the next task id. This will also increment the internal counter.
   unsigned long           nextTaskId();
@@ -121,8 +127,8 @@ private:
 
   // Data members.
   ThreadPool _pool;
-  TaskQueue _queue;
-  unsigned int _executing;
+  TaskMap _queue;
+  TaskSet _executing;
   unsigned long _nextTaskId;
   unsigned long _sleep;
   bool _runThreads;

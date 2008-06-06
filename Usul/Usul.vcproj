@@ -504,11 +504,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Exceptions\Catch.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Exceptions\IO.h"
 					>
 				</File>
 				<File
 					RelativePath="Exceptions\Thrower.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Exceptions\TimedOut.h"
 					>
 				</File>
 			</Filter>

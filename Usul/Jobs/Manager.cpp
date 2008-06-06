@@ -60,9 +60,13 @@ namespace Usul
           _job ( job ),
           _manager ( manager )
         {
-          this->name ( job->name() );
-
+          BaseClass::name ( ( true == _job.valid() ) ? _job->name() : std::string() );
 					_finishedCB = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Task::_taskFinished ) );
+        }
+
+        virtual std::string name() const
+        {
+          return ( ( true == _job.valid() ) ? _job->name() : BaseClass::name() );
         }
 
       protected:
@@ -398,6 +402,19 @@ unsigned int Manager::numJobs() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( this->numJobsQueued() + this->numJobsExecuting() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the names of the executing jobs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::executingNames ( Strings &names ) const
+{
+  if ( true == _pool.valid() )
+    _pool->executingNames ( names );
 }
 
 

@@ -19,6 +19,7 @@
 #define _USUL_NETWORK_CURL_H_
 
 #include "Usul/Exceptions/Canceled.h"
+#include "Usul/Exceptions/TimedOut.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/ICancel.h"
 #include "Usul/Interfaces/ICanceledStateGet.h"
@@ -143,46 +144,53 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  void download ( std::ostream *out = 0x0, const std::string& post = std::string() )
+  void download ( unsigned int timeoutMilliSeconds, std::ostream *out, const std::string& post )
   {
     // Make sure this is set and unset.
     Usul::Scope::Reset<std::ostream*> scopedOutputStream ( _output, out, 0x0 );
 
     CURL_OUTPUT << "Downloading '" << _url << "' to file '" << _file.first << " ... " << std::endl;
 
-    // Get handle.
-    Curl::Handle handle;
-
-    // Open file.
-    std::ofstream stream ( _file.first.c_str(), std::ofstream::binary | std::ofstream::out );
-    if ( false == stream.is_open() )
-    {
-      throw std::runtime_error ( "Error 2742979881: Failed to open file '" + _file.first + "' for writing" );
-    }
-
-    // Make sure this is set and unset.
-    Usul::Scope::Reset<File::second_type> scopedFileHandle ( _file.second, &stream, 0x0 );
-
     // This will remove the file is there's an exception.
     Usul::Scope::RemoveFile removeFile ( _file.first );
 
-    // Set properties.
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_ERRORBUFFER, &_error[0] ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_URL, _url.c_str() ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEDATA, this ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEFUNCTION, &Curl::_writeDataCB ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_PROGRESSDATA, this ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_PROGRESSFUNCTION, &Curl::_progressCB ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOPROGRESS, false ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOSIGNAL, true ) );
-    this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_FOLLOWLOCATION, true ) );
+    // Need local scope.
+    {
+      // Get handle.
+      Curl::Handle handle;
 
-    // Add post data if it's there.
-    if ( false == post.empty() )
-      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_POSTFIELDS, post.c_str() ) );
+      // Open file.
+      std::ofstream stream ( _file.first.c_str(), std::ofstream::binary | std::ofstream::out );
+      if ( false == stream.is_open() )
+      {
+        throw std::runtime_error ( "Error 2742979881: Failed to open file '" + _file.first + "' for writing" );
+      }
 
-    // Get the data.
-    this->_check ( ::curl_easy_perform ( handle.handle() ) );
+      // Make sure this is set and unset.
+      Usul::Scope::Reset<File::second_type> scopedFileHandle ( _file.second, &stream, 0x0 );
+
+      // Set properties.
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_ERRORBUFFER, &_error[0] ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_URL, _url.c_str() ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEDATA, this ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_WRITEFUNCTION, &Curl::_writeDataCB ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_PROGRESSDATA, this ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_PROGRESSFUNCTION, &Curl::_progressCB ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOPROGRESS, false ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_NOSIGNAL, true ) );
+      this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_FOLLOWLOCATION, true ) );
+
+      // Add timeout if it's valid.
+      if ( timeoutMilliSeconds > 0 )
+        this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_TIMEOUT_MS, static_cast<long> ( timeoutMilliSeconds ) ) );
+
+      // Add post data if it's there.
+      if ( false == post.empty() )
+        this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_POSTFIELDS, post.c_str() ) );
+
+      // Get the data.
+      this->_check ( ::curl_easy_perform ( handle.handle() ) );
+    }
 
     // Keep the file.
     removeFile.remove ( false );
@@ -380,13 +388,18 @@ private:
     if ( 0 == code )
       return;
 
-    // Report curl error.
+    // Convert curl error to a message.
     const std::string error ( &_error[0] );
     const std::string message ( Usul::Strings::format ( 
-      "Error 1884185898: ", 
       ( ( error.empty() ) ? Usul::Strings::format ( "curl error code = ", code ) : error ), 
       ", URL = ", _url ) );
-    throw std::runtime_error ( message );
+
+    // Did it time out?
+    if ( CURLE_OPERATION_TIMEDOUT == code )
+      throw Usul::Exceptions::TimedOut::NetworkDownload ( "Error 1884185898: " + message );
+
+    // It didn't time out so throw a standard exception.
+    throw std::runtime_error ( "Error 3886626924: " + message );
   }
 
 

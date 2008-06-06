@@ -46,7 +46,7 @@ USUL_IMPLEMENT_TYPE_ID ( Pool );
 Pool::Pool ( unsigned int numThreads, bool lazyStart ) : BaseClass(),
   _pool       (),
   _queue      (),
-  _executing  ( 0 ),
+  _executing  (),
   _nextTaskId ( 0 ),
   _sleep      ( 100 ),
   _runThreads ( true ),
@@ -111,7 +111,7 @@ void Pool::_destroy()
 
   // Should be true.
   USUL_ASSERT ( true == _queue.empty() );
-  USUL_ASSERT ( 0 == _executing );
+  USUL_ASSERT ( true == _executing.empty() );
 
   // Remove the threads from the pool.
   Usul::Threads::Safe::execute ( this->mutex(), Usul::Adaptors::memberFunction ( &_pool, &Pool::ThreadPool::clear ) );
@@ -190,7 +190,7 @@ bool Pool::hasQueuedTask ( TaskHandle id ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  TaskQueue::const_iterator i ( _queue.find ( id ) );
+  TaskMap::const_iterator i ( _queue.find ( id ) );
   return ( _queue.end() != i );
 }
 
@@ -233,7 +233,27 @@ unsigned int Pool::numTasksExecuting() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _executing;
+  return _executing.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the names of the executing tasks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::executingNames ( Strings &names ) const
+{
+  USUL_TRACE_SCOPE;
+  const TaskSet executing ( Usul::Threads::Safe::get ( this->mutex(), _executing ) );
+  names.clear();
+  names.reserve ( executing.size() );
+  for ( TaskSet::const_iterator i = executing.begin(); i != executing.end(); ++i )
+  {
+    Task::RefPtr task ( *i );
+    names.push_back ( task->name() );
+  }
 }
 
 
@@ -270,7 +290,7 @@ void Pool::removeQueuedTask ( TaskHandle id )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  TaskQueue::iterator i ( _queue.find ( id ) );
+  TaskMap::iterator i ( _queue.find ( id ) );
   if ( _queue.end() != i )
   {
     Task::RefPtr task ( i->second );
@@ -318,8 +338,8 @@ void Pool::_threadStarted ( Usul::Threads::Thread *thread )
       // Always decrement.
       { 
         Guard guard ( this );
-        USUL_ASSERT ( _executing > 0 );
-        _executing = ( ( _executing > 0 ) ? ( _executing - 1 ) : 0 );
+        USUL_ASSERT ( false == _executing.empty() );
+        _executing.erase ( task );
       }
     }
 
@@ -413,8 +433,8 @@ Usul::Threads::Task::RefPtr Pool::_nextTask()
     // Remove the task from the queue.
     _queue.erase ( _queue.begin() );
 
-    // While we have the lock, increment the number of executing tasks.
-    ++_executing;
+    // While we have the lock...
+    _executing.insert ( task );
 
     // Return task.
     return task;

@@ -28,7 +28,7 @@ EditWmsLayerWidget::EditWmsLayerWidget ( RasterLayerWms *layer, QWidget * parent
   if ( _layer.valid() )
   {
     _name->setText( _layer->name().c_str() );
-    _server->setText ( _layer->url().c_str() );
+    _server->setText ( _layer->urlBase().c_str() );
   }
   
   // Connect slots and signals.
@@ -70,7 +70,7 @@ void EditWmsLayerWidget::_nameFinishedEditing()
 void EditWmsLayerWidget::_serverFinishedEditing()
 {
   if ( _layer.valid() )
-    _layer->url ( _server->text().toStdString() );
+    _layer->urlBase ( _server->text().toStdString() );
 }
 
 

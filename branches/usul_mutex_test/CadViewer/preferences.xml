@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<cv>
+  <!--
+    This is the CadViewer user-preference file. This file is
+    NOT necessary for CadViewer to run properly. However, you 
+    should still edit this file with care. Erroneous data may 
+    cause CadViewer to not work properly.
+  -->
+  <preferences>
+    <machine>
+      <!--
+        Specify the machine that will write files. Without this, when the 
+        program runs on a linux cluster, every machine will try to write 
+        the same file at te same time.
+      -->
+      <writer>ptah-4</writer>
+      <head>viz0</head>
+    </machine>
+
+    <!--<grid>
+	    <add_grid>1</add_grid>
+        <num_blocks>40 40</num_blocks>
+        <scale>10 10</scale>
+        <color>1 1 1 1</color>
+	    <rotation_angle_rad>0.0</rotation_angle_rad>
+	    <rotation_vector>1.0 0.0 0.0</rotation_vector>
+	    <offset>true</offset>
+    </grid>-->
+
+    <clipping_plane>
+      <near>0.1</near>
+      <far_multiplier>1</far_multiplier>
+    </clipping_plane>
+    <view_all>
+      <scale>1.5</scale>
+    </view_all>
+    <light>
+      <ambient> 0.2  0.2  0.2  1.0</ambient>
+      <diffuse> 1.0  1.0  1.0  1.0</diffuse>
+      <specular>0.7  0.7  0.7  1.0</specular>
+      <direction> 0    0  -1</direction>
+      <position>  0  100  10 1.0 </position>
+    </light>
+    <background>
+      <color>0.0 0.0 0.0 1.0</color>
+    </background>
+
+    <normalize>
+      <!--
+          Normalizing is necessary when the scene has both lighting and 
+          scaling. Without normalizing the colors look either too bright or 
+          too dark. By setting this flag to true you tell OpenGL to account 
+          for this, which makes the light look correct. However, there can be 
+          a significant performance hit. In order to render the scene with good 
+          lighting, only the global flag has to be true. If you want to make 
+          sure that any exported models also have this flag, then set the 
+          models flag to true.
+        -->
+      <global>false</global>
+      <models>false</models>
+    </normalize>
+
+    <menu>
+      <!--
+        This is the translation and scale of the menu.
+        The results are order-dependent.
+      -->
+      <scale>      0.25  0.25  1.0 </scale>
+      <translate> -2.0   6.0  -4.0 </translate>
+      <color>
+        <!--customizable menu color scheme-->
+
+        <background>
+	        <normal>    0.6 0.6 0.6 1.0</normal>
+	        <highlight> 0.4 0.4 0.4 1.0</highlight>
+	        <disabled>  0.6 0.6 0.6 1.0</disabled>
+        </background>
+
+        <text>
+	        <normal>   0.0 0.0 0.0 1.0</normal>
+	        <highlight>0.0 0.0 0.0 1.0</highlight>
+	        <disabled> 0.3 0.3 0.3 1.0</disabled>
+        </text>
+
+      </color>
+    </menu>
+    <status_bar>
+      <!--
+        This is the translation and scale of the status-bar.
+        The results are order-dependent.
+      -->
+      <scale>      0.25  0.25  1.0 </scale>
+      <translate> -2.0   0.0  -2.0 </translate>
+      <!--Should the status-bar be visible at startup?-->
+      <visible>true</visible>
+      <color>
+        <!--customizable status bar color scheme-->
+        
+        <background> 0.6 0.6 0.6 1.0</background>
+        <text>0.0 0.0 0.0 1.0</text>
+
+      </color>
+    </status_bar>
+    <speed>
+      <translate>  0.05 </translate>
+      <rotate>    30.00 </rotate>
+      <!--
+        The scale-speed is the maximum scale applied per second.
+      -->
+      <scale>      0.75 </scale>
+    </speed>
+    <image>
+      <frame_scale>6.0</frame_scale>
+      <ext>.bmp</ext>
+    </image>
+  </preferences>
+</cv>

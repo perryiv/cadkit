@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<scene> 
+  <group type="polygon" >
+    <source>../Data/Basin</source>
+  </group>
+  <group type="pointtime" size="1.0" primitive="1">
+    <source>../Data/Sand</source>
+  </group>
+</scene>

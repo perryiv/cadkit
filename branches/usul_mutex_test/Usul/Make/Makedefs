@@ -1,0 +1,100 @@
+
+LIB_OS = lib
+OS := $(shell uname)
+
+# ##### default values for INCLUDES and LIBS ###### #
+
+# Fox Includes and Libs
+ifeq ("$(FOX_INC_DIR)","")
+FOX_INC_DIR = /usr/local/include/fox-1.4
+endif
+
+ifeq ("$(FOX_LIB_DIR)","")
+FOX_LIB_DIR = /usr/local/lib
+endif
+
+# OpenThreads Includes and Libs
+ifeq ("$(OPENTHREADS_INC_DIR)","")
+OPENTHREADS_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(OPENTHREADS_LIB_DIR)","")
+OPENTHREADS_LIB_DIR = /usr/local/lib
+endif
+
+# OpenProducer Includes and Libs
+ifeq ("$(PRODUCER_INC_DIR)","")
+PRODUCER_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(PRODUCER_LIB_DIR)","")
+PRODUCER_LIB_DIR = /usr/local/lib
+endif
+
+# Osg Includes and Libs
+ifeq ("$(OSG_BIN_DIR)","")
+OSG_BIN_DIR = /usr/local/bin
+endif
+
+ifeq ("$(OSG_INC_DIR)","")
+OSG_INC_DIR = /usr/local/include
+endif
+
+ifeq ("$(OSG_LIB_DIR)","")
+OSG_LIB_DIR = /usr/local/lib
+endif
+
+# Our Build Libraries all go in ../LIBS
+ifeq ("$(USUL_INC_DIR)","")
+USUL_INC_DIR = $(HOME)/src
+endif
+
+ifeq ("$(USUL_LIB_DIR)","")
+USUL_LIB_DIR = $(HOME)/src/bin
+endif
+
+ifeq ("$(BOOST_INC_DIR)","")
+BOOST_INC_DIR = /usr/local/include/boost
+endif 
+
+ifeq ("$(BOOST_LIB_DIR)","")
+BOOST_LIB_DIR = /usr/local/lib
+endif 
+# ################################################## #
+
+OS_LINK_FLAGS = -shared
+TARGET_PREFIX = lib
+TARGET_DYNAMIC_SUFFIX = .so
+TARGET_STATIC_SUFFIX = .a
+INSTALL = $(CADKIT_ROOT_DIR)/bin
+
+
+flags = -g -D_DEBUG -D_COMPILING_$(COMPILE_GUARD) -Wall -Wno-non-virtual-dtor
+	
+# Platform dependent flags. Do not indent.
+ifeq ($(findstring Darwin,$(OS)),Darwin)
+TARGET_DYNAMIC_SUFFIX := .dylib
+OS_LINK_FLAGS := -dynamiclib -install_name $(TARGET_PREFIX)$(PKG_NAME)$(TARGET_DYNAMIC_SUFFIX)
+CXX:=g++
+flags+=-x c++ -arch ppc -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks \
+-Os -Wreturn-type -Wunused-variable -D_COMPILING_USUL -fmessage-length=0 \
+-mtune=G5 -fvisibility-inlines-hidden -Wno-invalid-offsetof
+endif
+
+ifeq ($(findstring IRIX,$(OS)),IRIX)
+OS := IRIX32
+CXX = g++ #CC -n32 -LANG:std -woff 1682 -mips3
+CXXFLAGS = -mabi=n32 -mips4  
+LIB_OS = -L/usr/freeware/lib32 #lib32
+endif
+
+BUILD = $(OS)
+TARGET      = $(PKG_NAME)
+ARCHIVE_LIB = $(TARGET_PREFIX)$(TARGET)$(TARGET_STATIC_SUFFIX)
+SHARED_LIB  = $(TARGET_PREFIX)$(TARGET)$(TARGET_DYNAMIC_SUFFIX)
+
+OBJS = $(patsubst %.cpp,%.o,$(subst ./,$(OS)/,$(shell find . -type f -name "*.cpp")))
+  
+BUILD_DIRS:= \
+  $(dir $(subst ./,$(OS)/,$(shell find . -type f -name "*.cpp")))
+  

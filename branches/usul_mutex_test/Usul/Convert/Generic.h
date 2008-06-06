@@ -1,0 +1,32 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Perry Miller
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Generic conversion not implemented by design.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _USUL_CONVERT_STRING_GENERIC_H_
+#define _USUL_CONVERT_STRING_GENERIC_H_
+
+
+namespace Usul { 
+namespace Convert {
+
+
+template < class FromType, class ToType > struct Type;
+
+
+} // namespace Convert
+} // namespace Usul
+
+
+#endif // _USUL_CONVERT_STRING_GENERIC_H_

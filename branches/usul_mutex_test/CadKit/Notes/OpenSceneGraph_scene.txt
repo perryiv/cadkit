@@ -1,0 +1,31 @@
+osg::Group (Database)
+  osg::MatrixTransform (Assembly)
+  osg::MatrixTransform (Assembly)
+    osg::MatrixTransform (Part)
+    osg::MatrixTransform (Assembly)
+    osg::MatrixTransform (Part)
+    osg::MatrixTransform (Instance)
+    osg::MatrixTransform (Instance)
+    osg::MatrixTransform (Part)
+      osg::LOD
+      osg::LOD
+        osg::Geode (just one)
+          osg::Geometry (eaiShape)
+            osg::StateSet
+              osg::Material
+              osg::Texture
+            TriStrip (one for each set of the eaiShape).
+              Vertices
+              Normals
+              Colors (optional)
+              Texture Coordinates (optional)
+            TriStrip
+            TriStrip
+          osg::Geometry
+          osg::Geometry
+      osg::LOD
+      osg::LOD
+      osg::LOD
+    osg::MatrixTransform (Part)
+  osg::MatrixTransform (Part)
+  osg::MatrixTransform (Assembly)

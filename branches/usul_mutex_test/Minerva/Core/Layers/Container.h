@@ -1,0 +1,204 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef __MINERVA_LAYERS_CONTAINER_H__
+#define __MINERVA_LAYERS_CONTAINER_H__
+
+#include "Minerva/Core/Export.h"
+#include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IDirtyScene.h"
+#include "Minerva/Interfaces/IElevationChangedListener.h"
+#include "Minerva/Interfaces/IRemoveLayer.h"
+
+#include "Usul/Base/Object.h"
+#include "Usul/Containers/Unknowns.h"
+#include "Usul/Interfaces/IBooleanState.h"
+#include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ISerialize.h"
+#include "Usul/Interfaces/ITreeNode.h"
+#include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Math/Vector2.h"
+
+#include "Serialize/XML/Macros.h"
+
+#include "osg/Group"
+
+#include <vector>
+
+namespace Minerva {
+namespace Core { 
+
+  class Visitor;
+
+namespace Layers {
+
+class MINERVA_EXPORT Container : public Usul::Base::Object,
+                                 public Usul::Interfaces::IBuildScene,
+                                 public Usul::Interfaces::ILayer,
+                                 public Usul::Interfaces::ISerialize,
+                                 public Usul::Interfaces::IUpdateListener,
+                                 public Minerva::Interfaces::IDirtyScene,
+                                 public Usul::Interfaces::ITreeNode,
+                                 public Usul::Interfaces::IBooleanState,
+                                 public Minerva::Interfaces::IElevationChangedListnerer,
+                                 public Minerva::Interfaces::IAddLayer,
+                                 public Minerva::Interfaces::IRemoveLayer
+{
+public:
+
+  /// Typedefs.
+  typedef Usul::Base::Object                        BaseClass;
+  typedef Usul::Interfaces::ILayer                  ILayer;
+  typedef Usul::Interfaces::IUnknown                IUnknown;
+  typedef std::vector<IUnknown::QueryPtr>           Unknowns;
+  
+  /// Smart-pointer definitions.
+  USUL_DECLARE_QUERY_POINTERS ( Container );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
+  
+  enum Flags
+  {
+    DATA_DIRTY    = 0x00000001,
+    EXTENTS_DIRTY = 0x00000002,
+    SCENE_DIRTY   = 0x00000004,
+    ALL           = DATA_DIRTY | EXTENTS_DIRTY | SCENE_DIRTY
+  };
+  
+  Container();
+  
+  /// Get this as an IUnknown.
+	virtual IUnknown*           asUnknown();
+  
+  /// Accept the visitor.
+  virtual void                accept ( Minerva::Core::Visitor& visitor );
+
+  /// Add an object.
+  void                        add ( IUnknown* layer );
+
+  /// Build the scene (IBuildScene).
+  virtual osg::Node *         buildScene ( const Options &options, IUnknown *caller = 0x0 );
+
+  /// Clear objects.
+  void                        clear();
+
+  /// Deserialize.
+  virtual void                deserialize ( const XmlTree::Node &node );
+
+  /// Get/Set the data dirty flag.
+  bool                        dirtyData() const;
+  void                        dirtyData( bool );
+  
+  /// Get/Set the extents dirty flag.
+  bool                        dirtyExtents() const;
+  void                        dirtyExtents( bool );
+  
+  /// Get/Set dirty scene flag.
+  virtual bool                dirtyScene() const;
+  virtual void                dirtyScene( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
+
+  /// Elevation has changed within given extents (IElevationChangedListnerer).
+  virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller = 0x0 );
+  
+  /// Get the extents.
+  void                        extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight );
+
+  /// Get/Set the flags.
+  unsigned int                flags() const;
+  void                        flags( unsigned int );
+
+  /// Get the guid (ILayer).
+  virtual std::string         guid() const;
+
+  /// Get/Set the name (ILayer).
+  virtual void                name( const std::string& name );
+  virtual std::string         name() const;
+  
+  /// Get the number of data objects in this layer.
+  virtual unsigned int        number() const;
+
+  /// Remove an object.
+  void                        remove ( IUnknown* layer );
+
+  /// Get/Set show layer (ILayer).
+  virtual void                showLayer( bool b );
+  virtual bool                showLayer() const;
+
+  /// Traverse all DataObjects.
+  virtual void                traverse ( Minerva::Core::Visitor& visitor );
+  
+  // Update.
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+  
+protected:
+
+  virtual ~Container();
+  
+  Container ( const Container& rhs );
+  
+  /// Get the extents.
+  virtual void                _calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const;
+  
+  /// Build the scene.
+  void                        _buildScene( Usul::Interfaces::IUnknown *caller );
+
+  // Add a layer (IAddLayer).
+  virtual void                addLayer ( Usul::Interfaces::ILayer *layer );
+
+  /// Remove a layer (IRemoveLayer).
+  virtual void                removeLayer ( Usul::Interfaces::ILayer * layer );
+  
+  // Get the number of children (ITreeNode).
+  virtual unsigned int        getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *         getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                setTreeNodeName ( const std::string & );
+  virtual std::string         getTreeNodeName() const;
+  
+  // Set/get the state (IBooleanState).
+  virtual void                setBooleanState ( bool );
+  virtual bool                getBooleanState() const;
+  
+private:
+  // Do not use.
+  Container& operator= ( const Container& rhs );
+
+  // Register members for serialization.
+  void                        _registerMembers();
+
+  typedef Usul::Containers::Unknowns<IUpdateListener> UpdateListeners;
+  typedef Usul::Containers::Unknowns<IBuildScene>     Builders;
+  
+  Unknowns _layers;
+  UpdateListeners _updateListeners;
+  Builders _builders;
+  std::string _name;
+  std::string _guid;
+  bool _shown;
+  unsigned int _flags;
+  Usul::Math::Vec2d _lowerLeft;
+  Usul::Math::Vec2d _upperRight;
+  osg::ref_ptr<osg::Group> _root;
+  
+  SERIALIZE_XML_CLASS_NAME( Container )
+  SERIALIZE_XML_SERIALIZE_FUNCTION
+  SERIALIZE_XML_ADD_MEMBER_FUNCTION
+  SERIALIZE_XML_DEFINE_MAP;
+};
+
+
+}
+}
+}
+
+#endif // __MINERVA_LAYERS_CONTAINER_H__

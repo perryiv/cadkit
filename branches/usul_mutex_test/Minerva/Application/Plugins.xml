@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+  <!-- Sample plugin file for Minerva. -->
+  <plugin file="SceneDelegateQt.plug" />
+  <plugin file="SnapShotQt.plug" />
+  <plugin file="PathAnimation.plug"/>
+  <plugin file="MinervaModel.plug" />
+  <plugin file="ProjectionManager.plug" />
+  <plugin file="LayerManager.plug" />
+  <plugin file="OssimLayerQt.plug" />
+  <plugin file="WmsLayerQt.plug" />
+  <plugin file="PostGISLayerQt.plug" />
+  <plugin file="ResampleLine.plug" />
+
+  <library file="MinervaGdalLayer" />
+
+</plugins>

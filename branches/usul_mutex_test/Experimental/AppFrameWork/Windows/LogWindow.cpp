@@ -1,0 +1,115 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Displays text and icons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "AppFrameWork/Windows/LogWindow.h"
+#include "AppFrameWork/Actions/ToggleVisible.h"
+#include "AppFrameWork/Actions/IfThenElse.h"
+#include "AppFrameWork/Actions/Check.h"
+#include "AppFrameWork/Core/BaseVisitor.h"
+#include "AppFrameWork/Conditions/IsVisible.h"
+#include "AppFrameWork/Menus/Button.h"
+
+using namespace AFW::Windows;
+
+AFW_IMPLEMENT_OBJECT ( LogWindow );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LogWindow::LogWindow() : BaseClass(),
+  _menu ( "Window" )
+{
+  this->title ( "Text Output" );
+  this->icon ( AFW::Core::Icon ( "afw_text_output_16x16" ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LogWindow::~LogWindow()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LogWindow::accept ( AFW::Core::BaseVisitor *v )
+{
+  Guard guard ( this->mutex() );
+  if ( v )
+    v->visit ( this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the menu name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LogWindow::menu ( const std::string &name )
+{
+  Guard guard ( this->mutex() );
+  _menu = name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the menu name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string LogWindow::menu() const
+{
+  Guard guard ( this->mutex() );
+  std::string name ( _menu );
+  return name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make menu button if applicable.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LogWindow::_makeRequestedControls()
+{
+  if ( false == this->menu().empty() )
+  {
+    // Find or create the button in the menu.
+    AFW::Menus::Button::RefPtr button ( AFW::Menus::Button::button 
+      ( this->menu(), this->title(), AFW::Menus::Button::MENU_CHECK, 0, true ) );
+
+    // Add actions to hide/show this window.
+    button->append ( new AFW::Actions::ToggleVisible ( this ) );
+
+    // Add update action to set the check.
+    button->append ( new AFW::Actions::IfThenElse ( new AFW::Conditions::IsVisible ( this ), new AFW::Actions::Check ( 0x0, true ),  new AFW::Actions::Check ( 0x0, false ) ) );
+  }
+}

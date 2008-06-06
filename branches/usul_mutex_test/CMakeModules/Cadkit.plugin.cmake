@@ -1,0 +1,20 @@
+
+INCLUDE(${CMakeModules}/Cadkit.cmake)
+
+# Remove d postfix for plugins
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+SET(CMAKE_DEBUG_POSTFIX )
+ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+# ---- Change the Suffix on the Generated library --------------------------------
+MACRO(CADKIT_PLUGIN)
+IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+ SET_TARGET_PROPERTIES (${PLUGIN_NAME}
+	PROPERTIES PREFIX "" SUFFIX ".plugd"
+ )
+ELSE (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  SET_TARGET_PROPERTIES (${PLUGIN_NAME}
+	PROPERTIES PREFIX "" SUFFIX ".plug"
+ )
+ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+ENDMACRO(CADKIT_PLUGIN)

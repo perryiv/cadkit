@@ -1,0 +1,41 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: GSG Core", "GSG\Core\Core.vcproj", "{9E102E9D-D0B8-4534-8E73-F2E86E798D22}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: GSG Fox Viewer", "Demos\Viewer\FOX\DemoFoxViewer.vcproj", "{42EB2971-371D-4244-8683-05BB89F42B9E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: GSG Fox", "GSG\FOX\Fox.vcproj", "{963A1780-9B57-484A-85A8-60FC11F8889D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: GSG OpenGL", "GSG\OpenGL\OpenGL.vcproj", "{C595956F-8DA7-47A2-970E-048A0616CAFD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: GSG Test 1", "Tests\Test01\Test01.vcproj", "{4249E43E-6C2A-4A3B-B7F7-DAD71CF7F086}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: GSG Test 2", "Tests\Test02\Test02.vcproj", "{2C1292DA-E88C-43E5-B6CB-E3FC2F9AB05C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: GSG Test 3", "Tests\Test03\Test03.vcproj", "{0AEA9633-6A66-4A94-A19E-1CF8222A6D98}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E102E9D-D0B8-4534-8E73-F2E86E798D22}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E102E9D-D0B8-4534-8E73-F2E86E798D22}.Release|Win32.ActiveCfg = Release|Win32
+		{42EB2971-371D-4244-8683-05BB89F42B9E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{42EB2971-371D-4244-8683-05BB89F42B9E}.Release|Win32.ActiveCfg = Release|Win32
+		{963A1780-9B57-484A-85A8-60FC11F8889D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{963A1780-9B57-484A-85A8-60FC11F8889D}.Release|Win32.ActiveCfg = Release|Win32
+		{C595956F-8DA7-47A2-970E-048A0616CAFD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C595956F-8DA7-47A2-970E-048A0616CAFD}.Release|Win32.ActiveCfg = Release|Win32
+		{4249E43E-6C2A-4A3B-B7F7-DAD71CF7F086}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4249E43E-6C2A-4A3B-B7F7-DAD71CF7F086}.Release|Win32.ActiveCfg = Release|Win32
+		{2C1292DA-E88C-43E5-B6CB-E3FC2F9AB05C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2C1292DA-E88C-43E5-B6CB-E3FC2F9AB05C}.Release|Win32.ActiveCfg = Release|Win32
+		{0AEA9633-6A66-4A94-A19E-1CF8222A6D98}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0AEA9633-6A66-4A94-A19E-1CF8222A6D98}.Release|Win32.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

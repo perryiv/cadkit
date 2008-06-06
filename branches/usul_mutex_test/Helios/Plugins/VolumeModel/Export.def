@@ -1,0 +1,4 @@
+LIBRARY	VolumeModel
+EXPORTS
+                usul_is_debug_build      @1 PRIVATE
+                usul_get_class_factory   @2 PRIVATE

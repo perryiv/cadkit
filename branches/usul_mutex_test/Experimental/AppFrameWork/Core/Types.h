@@ -1,0 +1,35 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Type definitions.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef _APP_FRAME_WORK_TYPES_H_
+#define _APP_FRAME_WORK_TYPES_H_
+
+#include "Usul/Math/Vector2.h"
+
+
+namespace AFW
+{
+  namespace Core
+  {
+    namespace Types
+    {
+      typedef Usul::Math::Vec2i       Position;
+      typedef Usul::Math::Vec2ui      Size;
+    }
+  }
+}
+
+
+#endif // _APP_FRAME_WORK_TYPES_H_

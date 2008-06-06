@@ -1,0 +1,205 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2002, Perry L. Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a file into a string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _XML_READER_FILE_CONTENTS_CLASS_H_
+#define _XML_READER_FILE_CONTENTS_CLASS_H_
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fstream>
+
+
+namespace XML {
+
+
+template < class PolicyType > class File
+{
+public:
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Typedefs.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  typedef PolicyType                        Policy;
+  typedef typename Policy::String           String;
+  typedef typename String::iterator         Itr;
+  typedef typename String::const_iterator   ConstItr;
+  typedef typename String::size_type        SizeType;
+  typedef typename Policy::ErrorPolicy      ErrorPolicy;
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Default constructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  explicit File() :
+    _errorPolicy(),
+    _contents()
+  {
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  File ( const String &filename ) :
+    _errorPolicy(),
+    _contents()
+  {
+    this->read ( filename );
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Copy constructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  File ( const File &r ) :
+    _errorPolicy ( r._errorPolicy ),
+    _contents    ( r._contents )
+  {
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Destructor.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  ~File()
+  {
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Assignment.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  File &operator = ( const File &r )
+  {
+    _errorPolicy = r._errorPolicy;
+    _contents    = r._contents;
+    return *this;
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Read the file.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  void read ( const String &filename )
+  {
+    // Initialize.
+    _contents.clear();
+
+    // Structure for holding file info.
+    #ifdef _WIN32
+    #define STAT _stat
+    #else
+    #define STAT stat
+    #endif
+
+    struct STAT buf;
+
+    // Get the size of the file.
+    int result = STAT ( filename.c_str(), &buf );
+    _errorPolicy ( 3245643221u, 0 == result );
+
+    // Open the file. Note: ifstream is deliberately not included above, 
+    // since this function only gets compiled if used.
+    std::ifstream in ( filename.c_str() );
+    _errorPolicy ( 1559159566u, in.is_open() );
+
+    // Make the string big enough to hold the entire file.
+    _contents.resize ( buf.st_size );
+
+    // Read the file into the string.
+    for ( SizeType i = 0; i < _contents.size(); ++i )
+      _contents[i] = in.get();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Forward iterators.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  Itr begin()
+  {
+    return _contents.begin();
+  }
+  ConstItr begin() const
+  {
+    return _contents.begin();
+  }
+  Itr end()
+  {
+    return _contents.end();
+  }
+  ConstItr end() const
+  {
+    return _contents.end();
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Access to the error policy.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const ErrorPolicy &errorPolicy() const
+  {
+    return _errorPolicy;
+  }
+  ErrorPolicy &errorPolicy()
+  {
+    return _errorPolicy;
+  }
+
+
+private:
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Data members.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  ErrorPolicy  _errorPolicy;
+  String       _contents;
+};
+
+
+}; // namespace XML
+
+
+#endif // _XML_READER_FILE_CONTENTS_CLASS_H_

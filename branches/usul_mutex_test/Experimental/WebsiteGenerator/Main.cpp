@@ -1,0 +1,46 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Perry L Miller IV
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Program to generate an html page.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "WebGen.h"
+
+#include "Usul/Functions/SafeCall.h"
+#include "Usul/Threads/Mutex.h"
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Main function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int main ( int argc, char **argv, char **env )
+{
+  try
+  {
+    // Initialize mutex factory.
+    Usul::Threads::Mutex::createFunction ( &Usul::Threads::newSingleThreadedMutexStub );
+
+    // Instantiate the program.
+    WebGen program ( argc, argv, env );
+
+    // Run the program.
+    program.run();
+  }
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "6248437230" );
+
+  // Success.
+  return 0;
+}

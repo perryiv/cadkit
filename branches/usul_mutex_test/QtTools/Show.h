@@ -1,0 +1,37 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Created by: Perry L Miller IV
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Class for showing widgets.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef _QT_TOOLS_SHOW_H_
+#define _QT_TOOLS_SHOW_H_
+
+#include "QtTools/Export.h"
+
+class QWidget;
+
+
+namespace QtTools {
+
+
+struct QT_TOOLS_EXPORT Show
+{
+  static void center ( QWidget *widget );
+};
+
+
+} // namespace QtTools
+
+
+#endif //_QT_TOOLS_SHOW_H_

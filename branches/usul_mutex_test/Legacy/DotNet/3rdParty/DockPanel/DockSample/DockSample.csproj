@@ -1,0 +1,384 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{0A386EC6-40E1-4C5A-BA6B-B483FE89E8E7}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "DockSample"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "WinExe"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "DockSample"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "../bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "../bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "..\..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.dll"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "..\..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "System.Windows.Forms"
+                    AssemblyName = "System.Windows.Forms"
+                    HintPath = "..\..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Windows.Forms.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "..\..\..\..\..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
+                />
+                <Reference
+                    Name = "WinFormsUI"
+                    Project = "{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                    Private = "True"
+                />
+                <Reference
+                    Name = "CrystalDecisions.Windows.Forms"
+                    AssemblyName = "CrystalDecisions.Windows.Forms"
+                    HintPath = "d:\Program Files\Common Files\Crystal Decisions\1.1\Managed\CrystalDecisions.Windows.Forms.dll"
+                    AssemblyFolderKey = "hklm\crystal.net"
+                />
+                <Reference
+                    Name = "CrystalDecisions.Shared"
+                    AssemblyName = "CrystalDecisions.Shared"
+                    HintPath = "d:\Program Files\Common Files\Crystal Decisions\1.1\Managed\CrystalDecisions.Shared.dll"
+                    AssemblyFolderKey = "hklm\crystal.net"
+                />
+                <Reference
+                    Name = "CrystalDecisions.ReportSource"
+                    AssemblyName = "CrystalDecisions.ReportSource"
+                    HintPath = "d:\Program Files\Common Files\Crystal Decisions\1.1\Managed\CrystalDecisions.ReportSource.dll"
+                    AssemblyFolderKey = "hklm\crystal.net"
+                />
+                <Reference
+                    Name = "System.Web.Services"
+                    AssemblyName = "System.Web.Services"
+                    HintPath = "D:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Web.Services.dll"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "AboutDialog.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "AboutDialog.resx"
+                    DependentUpon = "AboutDialog.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "App.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DummyDoc.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DummyDoc.resx"
+                    DependentUpon = "DummyDoc.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DummyOutputWindow.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DummyOutputWindow.resx"
+                    DependentUpon = "DummyOutputWindow.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DummyPropertyWindow.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DummyPropertyWindow.resx"
+                    DependentUpon = "DummyPropertyWindow.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DummySolutionExplorer.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DummySolutionExplorer.resx"
+                    DependentUpon = "DummySolutionExplorer.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DummyTaskList.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DummyTaskList.resx"
+                    DependentUpon = "DummyTaskList.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DummyToolbox.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DummyToolbox.resx"
+                    DependentUpon = "DummyToolbox.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MainForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MainForm.resx"
+                    DependentUpon = "MainForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Extender\Extender.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\AutoHideStripFromBase.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\AutoHideTabFromBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\DockPaneCaptionFromBase.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\DockPaneStripFromBase.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\DockPaneTabFromBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\Helpers\DockHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\Helpers\ResourceHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\Win32\Enums.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\Win32\Gdi32.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\Win32\Structs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\FromBase\Win32\User32.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\Override\AutoHideStripOverride.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Extender\Override\DockPaneStripOverride.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Images\ArrowDown.bmp"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\ArrowUp.bmp"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\Bitmap.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\BlankIcon.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\ClosedFolder.ICO"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\CSFile.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\CSProject.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\File.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\Form.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\Mouse.bmp"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\msenv22.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\New.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\Open.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\OpenFolder.ICO"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\OutputWindow.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\PropertyWindow.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\Reference.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\References.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\SolutionExplorer.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\TaskListWindow.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\ToolboxWindow.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Images\XmlFile.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Resources\DockPanel.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "RtfFiles\DummyDoc.cs.rtf"
+                    BuildAction = "None"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+

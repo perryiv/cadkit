@@ -1,0 +1,184 @@
+<ui version="4.0" >
+ <class>NewGroupDialog</class>
+ <widget class="QDialog" name="NewGroupDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>482</width>
+    <height>539</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Create a new Group</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButton" >
+   <property name="geometry" >
+    <rect>
+     <x>140</x>
+     <y>500</y>
+     <width>161</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="modelsAddButton" >
+   <property name="geometry" >
+    <rect>
+     <x>180</x>
+     <y>240</y>
+     <width>75</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Add</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="modelsLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>170</x>
+     <y>60</y>
+     <width>95</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Available Models</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="_nameText" >
+   <property name="geometry" >
+    <rect>
+     <x>160</x>
+     <y>20</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="nameLabel" >
+   <property name="geometry" >
+    <rect>
+     <x>100</x>
+     <y>20</y>
+     <width>53</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Name</string>
+   </property>
+  </widget>
+  <widget class="QTreeWidget" name="_groupModelsList" >
+   <property name="geometry" >
+    <rect>
+     <x>90</x>
+     <y>300</y>
+     <width>251</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="alternatingRowColors" >
+    <bool>true</bool>
+   </property>
+   <property name="selectionMode" >
+    <enum>QAbstractItemView::MultiSelection</enum>
+   </property>
+   <column>
+    <property name="text" >
+     <string>1</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QPushButton" name="groupsRemoveButton" >
+   <property name="geometry" >
+    <rect>
+     <x>180</x>
+     <y>460</y>
+     <width>75</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Remove</string>
+   </property>
+  </widget>
+  <widget class="QTreeWidget" name="_modelsList" >
+   <property name="geometry" >
+    <rect>
+     <x>90</x>
+     <y>80</y>
+     <width>251</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="alternatingRowColors" >
+    <bool>true</bool>
+   </property>
+   <property name="selectionMode" >
+    <enum>QAbstractItemView::MultiSelection</enum>
+   </property>
+   <column>
+    <property name="text" >
+     <string>1</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QLabel" name="modelsLabel_2" >
+   <property name="geometry" >
+    <rect>
+     <x>140</x>
+     <y>280</y>
+     <width>157</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Visible Models in this Group</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButton</sender>
+   <signal>accepted()</signal>
+   <receiver>NewGroupDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButton</sender>
+   <signal>rejected()</signal>
+   <receiver>NewGroupDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

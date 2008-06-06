@@ -1,0 +1,28 @@
+Group
+  Group
+  Group
+    External Reference (like a Group)
+    External Reference
+    External Reference
+  LOD
+    Object
+    Object
+    Object
+    Object
+    Object
+      Face
+        Vertex
+        Vertex
+        ...
+      Face
+        Vertex
+        Vertex
+        ...
+      Face
+        Vertex
+        Vertex
+        ...
+      Face
+        Vertex
+        Vertex
+        ...

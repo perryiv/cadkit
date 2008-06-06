@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<plugins>
+  <plugin file="CadKit.Plugins.Documents.LargeTriangleDocument.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Delegates.LargeTriangleDelegate.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Documents.SceneDocument.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Delegates.SceneDelegate.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Delegates.SceneDelegate.plug" load="true"/>
+  <plugin file="DT.Minerva.Plugins.Animate.plug" load="true"/>
+  <plugin file="DT.Minerva.Plugins.Document.plug" load="true"/>
+  <plugin file="DT.Minerva.Plugins.Layers.PostGIS.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Ossim.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Documents.SimFlowDocument.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Delegates.SimFlowDelegate.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Options.General.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.OutputWindow.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.JobWindow.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.ColorEditor.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.Properties.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Windows.SnapShot.plug" load="true"/>
+  <plugin file="CadKit.Plugins.Database.Storage.plug" load="true"/>
+</plugins>

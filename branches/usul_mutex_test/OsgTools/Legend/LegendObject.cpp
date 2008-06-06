@@ -1,0 +1,230 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2006, Adam Kubach
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "OsgTools/Legend/LegendObject.h"
+
+#include "osg/ref_ptr"
+#include "osg/Group"
+#include "osg/MatrixTransform"
+
+using namespace OsgTools::Legend;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LegendObject::LegendObject() : BaseClass(),
+  _icon ( 0x0 ),
+  _texts(),
+  _percentages()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LegendObject::~LegendObject()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the icon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LegendObject::icon( Icon* icon )
+{
+  _icon = icon;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the icon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Icon* LegendObject::icon()
+{
+  return _icon.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the icon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Icon* LegendObject::icon() const
+{
+  return _icon.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text at given index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Text* LegendObject::operator[] ( unsigned int i )
+{
+  if( i < _texts.size() )
+    return _texts[i];
+
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text at given index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Text* LegendObject::at ( unsigned int i )
+{
+  if( i < _texts.size() )
+    return _texts[i];
+
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the text at given index.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Text* LegendObject::at ( unsigned int i ) const
+{
+  if( i < _texts.size() )
+    return _texts[i];
+
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a text object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int LegendObject::addText ( Text* text )
+{
+  _texts.push_back( text );
+  _percentages.push_back( 0.0 );
+
+  /// Return the index the text was placed at.
+  return _texts.size() - 1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LegendObject::columns( unsigned int value )
+{
+  unsigned int oldSize ( _texts.size() );
+  _texts.resize( value );
+  for( unsigned int i = oldSize; i < value; ++i )
+    _texts[i] = new Text;
+
+  _percentages.resize( value );
+  for( unsigned int i = 0; i < value; ++i )
+    _percentages.at( i ) = static_cast < float > ( value ) / 100.0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int LegendObject::columns() const
+{
+  return _texts.size();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* LegendObject::buildScene( unsigned int width, unsigned int height )
+{
+  osg::ref_ptr < osg::Group > group ( new osg::Group );
+
+  const unsigned int padding ( 5 );
+  
+  // Width and height for icon.
+  const unsigned int iconWidth  ( static_cast < unsigned int > ( width * 0.10 ) );
+  const unsigned int iconHeight ( height - ( padding * 2 ) );
+  
+  // Width and height for text.
+  const unsigned int textWidth  ( static_cast < unsigned int > ( width * 0.85 ) );
+  const unsigned int textHeight ( height - padding );
+  
+  // Current x position of text item.
+  unsigned int currentTextPosition ( 0 );
+  
+  if( _icon.valid() )
+  {
+    group->addChild( _icon->buildScene( iconWidth, iconHeight ) );
+    
+    currentTextPosition = iconWidth + padding;
+  }
+
+  // Loop over each item.
+  for( unsigned int i = 0; i < _texts.size(); ++i )
+  {
+    const unsigned int columnWidth ( static_cast < unsigned int > ( textWidth * _percentages.at( i ) ) );
+    Text::RefPtr text ( _texts.at ( i ) );
+
+    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+    osg::Matrix m ( osg::Matrix::translate ( currentTextPosition, 0.0, 0.0 ) );
+    mt->setMatrix( m );
+    mt->addChild ( text->buildScene ( columnWidth, textHeight ) );
+    group->addChild( mt.get() );
+
+    currentTextPosition += ( columnWidth + padding );
+  }
+
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get reference to percentage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float& LegendObject::percentage( unsigned int i )
+{
+  return _percentages.at( i );
+}

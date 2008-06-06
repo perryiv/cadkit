@@ -16,6 +16,7 @@
 #include "Minerva/Core/Factory/Readers.h"
 
 #include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Temp.h"
@@ -48,6 +49,7 @@ namespace
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_TIFF      ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
 }
 
 
@@ -191,89 +193,98 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
       return answer;
   }
 
+  Minerva::Detail::PushPopErrorHandler error;
+
+  
   // Now guard.
   Guard guard ( this );
-  
-  Minerva::Detail::PushPopErrorHandler error;
-  
+
+  // Get the data set.
+  GDALDataset *data ( _data );
+
   // Return if no data.
-  if ( 0x0 == _data )
+  if ( 0x0 == data )
     return 0x0;
   
   // Get the number of bands.
-  const int bands ( _data->GetRasterCount() );
+  const int bands ( data->GetRasterCount() );
   
   // Return if we don't have any bands.
   if ( 0 == bands )
     return 0x0;
   
   // Get the data type.  Assume that all bands have the same type.
-  GDALDataType type ( _data->GetRasterBand ( 1 )->GetRasterDataType() );
+  GDALDataType type ( data->GetRasterBand ( 1 )->GetRasterDataType() );
   
   // Create the dataset.
-  GDALDataset *data ( RasterLayerGDAL::_createDataset ( extents, width, height, bands, type ) );
+  GDALDataset *tile ( RasterLayerGDAL::_createDataset ( extents, width, height, bands, type ) );
   
-  if ( 0x0 == data )
+  if ( 0x0 == tile )
     return 0x0;
   
   // Make sure data set is closed.
-  Usul::Scope::Caller::RefPtr closeDataSet ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( data, GDALClose ) ) );
+  Usul::Scope::Caller::RefPtr closeDataSet ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( tile, GDALClose ) ) );
 
-  // Set the no data value.  
-  const double noDataValue ( _data->GetRasterBand ( 1 )->GetNoDataValue() );
-
-  for ( int i = 1; i <= bands; ++i )
-  {
-    GDALRasterBand* band1 (  data->GetRasterBand ( i ) );
-    
-    band1->SetNoDataValue( noDataValue );
-  }
-  
-  // Print info.
-  //this->_print( data );
-  
+  // Create the options.  Make sure the options are destroyed.
   GDALWarpOptions *options ( GDALCreateWarpOptions() );
+  Usul::Scope::Caller::RefPtr destroyOptions ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, ::GDALDestroyWarpOptions ) ) );
 
-  // Initialize with no data.
-  char ** warpOptions = 0x0;
-  warpOptions = ::CSLSetNameValue( warpOptions, "INIT_DEST", "NO_DATA" );
-  options->papszWarpOptions = warpOptions;
+  int hasNoData ( FALSE );
 
-  // We want bilinear interpolation.
-  options->eResampleAlg = GRA_Bilinear;
+  // Get the no data value.
+  const double noDataValue ( data->GetRasterBand ( 1 )->GetNoDataValue( &hasNoData ) );
 
-  // Make sure the options are destroyed.
-  Usul::Scope::Caller::RefPtr destroyOptions     ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, ::GDALDestroyWarpOptions ) ) );
+  if ( TRUE == hasNoData )
+  {
+    // Set the no data value.
+    for ( int i = 1; i <= bands; ++i )
+    {
+      GDALRasterBand* band1 ( tile->GetRasterBand ( i ) );
+      band1->SetNoDataValue( noDataValue );
+    }
+
+    // Initialize with no data.
+    char ** warpOptions = 0x0;
+    warpOptions = ::CSLSetNameValue( warpOptions, "INIT_DEST", "NO_DATA" );
+    options->papszWarpOptions = warpOptions;
+
+    options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
+    options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
+    options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
+    options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
+  }
+
+  // We want cubic B-spline interpolation.
+  options->eResampleAlg = GRA_CubicSpline;
   
-  options->hSrcDS = _data;
-  options->hDstDS = data;
+  options->hSrcDS = data;
+  options->hDstDS = tile;
   
   options->nBandCount = bands;
   options->panSrcBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
   options->panDstBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
-  options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-  options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-  options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-  options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
 
   for ( int i = 0; i < bands; ++i )
   {
     options->panSrcBands[i] = i + 1;
     options->panDstBands[i] = i + 1;
 
-    options->padfSrcNoDataReal[i] = noDataValue;
-    options->padfDstNoDataImag[i] = noDataValue;
-    options->padfDstNoDataReal[i] = noDataValue;
-    options->padfSrcNoDataImag[i] = noDataValue;
+    if ( TRUE == hasNoData )
+    {
+      options->padfSrcNoDataReal[i] = noDataValue;
+      options->padfDstNoDataImag[i] = noDataValue;
+      options->padfDstNoDataReal[i] = noDataValue;
+      options->padfSrcNoDataImag[i] = noDataValue;
+    }
   }
   
   options->pfnProgress = GDALTermProgress;
-  
+
   // Establish reprojection transformer. 
-  options->pTransformerArg = GDALCreateGenImgProjTransformer( _data, 
-                                                              GDALGetProjectionRef( _data ), 
-                                                              data, 
+  options->pTransformerArg = GDALCreateGenImgProjTransformer( data, 
                                                               GDALGetProjectionRef( data ), 
+                                                              tile, 
+                                                              GDALGetProjectionRef( tile ), 
                                                               FALSE, 0.0, 0 );
   
   // Make sure we got a transformer.
@@ -285,12 +296,15 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   
   options->pfnTransformer = GDALGenImgProjTransform;
   
+  // Check for canceled before starting long running task below...
+  BaseClass::_checkForCanceledJob ( job );
+
   // Initialize and execute the warp operation.   
   GDALWarpOperation operation;
-  
   operation.Initialize( options );
   operation.ChunkAndWarpImage( 0, 0, width, height );
 
+  // Make an osg::Image for the number of bands and type.
 	ImagePtr image ( Minerva::GDAL::makeImage ( width, height, bands, type ) );
   
   // Return if we couldn't create the proper image type.
@@ -300,29 +314,34 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   switch ( type )
   {
     case GDT_Byte:
-      Minerva::convert<unsigned char> ( image.get(), data, type );
+      Minerva::convert<unsigned char> ( image.get(), tile, type );
       break;
     case GDT_UInt16:
-      Minerva::convert<unsigned short> ( image.get(), data, type );
+      Minerva::convert<unsigned short> ( image.get(), tile, type );
       break;
     case GDT_Int16:
-      Minerva::convert<short> ( image.get(), data, type );
+      Minerva::convert<short> ( image.get(), tile, type );
       break;
     case GDT_UInt32:
-      Minerva::convert<unsigned int> ( image.get(), data, type );
+      Minerva::convert<unsigned int> ( image.get(), tile, type );
       break;
     case GDT_Int32:
-      Minerva::convert<int> ( image.get(), data, type );
+      Minerva::convert<int> ( image.get(), tile, type );
       break;
     case GDT_Float32:
-      Minerva::convert<float> ( image.get(), data, type );
+      Minerva::convert<float> ( image.get(), tile, type );
       break;
     case GDT_Float64:
-      Minerva::convert<double> ( image.get(), data, type );
+      Minerva::convert<double> ( image.get(), tile, type );
       break;
     default:
       return 0x0; // We don't handle this data type.
   }
+
+  // Save the image to the cache.
+  #ifndef _DEBUG 
+  BaseClass::_writeImageToCache ( extents, width, height, level, image );
+  #endif
   
   return image;
 }

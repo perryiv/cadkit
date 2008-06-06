@@ -37,6 +37,8 @@
 #include "osg/ref_ptr"
 #include "osg/Image"
 
+#include "boost/algorithm/string/trim.hpp"
+
 using namespace Minerva::Core::Layers;
 
 
@@ -173,14 +175,19 @@ RasterLayerNetwork::ImagePtr RasterLayerNetwork::texture ( const Extents& extent
   // Change the name of the job for better feedback.
   if ( 0x0 != job )
   {
+    Options options ( this->options() );
+    std::string layer ( Usul::Strings::format ( options["layers"], ' ', options["LAYERS"], ' ', options["Layers"] ) );
+    boost::trim_left ( layer );
+    boost::trim_right ( layer );
     typedef Usul::Convert::Type<float,std::string> Converter;
     job->name ( Usul::Strings::format ( "Extents: [", 
       Converter::convert ( extents.minimum()[0] ), ", ", 
       Converter::convert ( extents.minimum()[1] ), ", ", 
       Converter::convert ( extents.maximum()[0] ), ", ", 
       Converter::convert ( extents.maximum()[1] ), "]",
-      ", level: ", level,
-      ", ", url ) );
+      ", Level: ", level,
+      ", Server: ", url,
+      ( ( layer.empty() ) ? "" : ( ", Layer: " + layer ) ) ) );
 
     // Ask for a redraw. TODO: this is a hack. Might not be the correct document.
     Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );

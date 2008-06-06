@@ -58,7 +58,7 @@ Mutex::~Mutex()
 #endif
 
 #ifdef __GNUC__
-  ::pthread_mutex_destroy ( _mutex );
+  ::pthread_mutex_destroy ( &_mutex );
 #endif
 }
 

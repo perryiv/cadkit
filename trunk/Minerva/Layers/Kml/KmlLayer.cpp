@@ -716,7 +716,6 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
   Children children ( node.children() );
   
   osg::Vec3 location, orientation, scale;
-  std::string filename;
   
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
@@ -733,16 +732,16 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
       model->altitudeMode ( this->_parseAltitudeMode ( *node ) );
   }
   
-  Children link ( node.find ( "Link", true ) );
-  if ( false == link.empty() )
-  {
-    Link::RefPtr l ( new Link ( *link.front() ) );
-    filename = ( l.valid() ? l->href() : "" );
-  }
+  // Make the link
+  Children links ( node.find ( "Link", true ) );
+  Link::RefPtr link ( false == links.empty() ? new Link ( *links.front() ) : 0x0 );
   
+  // Make the filename.
+  std::string filename ( this->_buildFilename ( link ) );
+
   if ( false == filename.empty() )
   {
-    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( _directory /*Usul::File::directory ( _filename, true )*/ + filename ) );
+    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( filename ) );
     if ( node.valid() )
     {
       model->model ( node.get() );
@@ -914,66 +913,45 @@ void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
   // Get the link.
   Link::RefPtr link ( Usul::Threads::Safe::get ( this->mutex(), _link ) );
   
-  if ( link.valid() )
+  // Make the filename.
+  std::string filename ( this->_buildFilename ( link ) );
+  if ( false == filename.empty() )
   {
-    std::string href ( link->href() );
-    
-    std::string::size_type pos ( href.rfind ( '/' ) );
-    
-    if ( pos != std::string::npos )
+    // Check the extension.
+    const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
+
+    // If there is no extension, attempt to find out what the file is.
+    if ( "kml" != ext && "kmz" != ext )
     {
-      // Build the filename.
-      std::string filename ( href.begin() + pos + 1, href.end() );
-      filename = Usul::File::Temp::directory ( true ) + filename;
+      std::ifstream fin ( filename.c_str() );
 
-      // Replace illegal characters for filename.
-      boost::algorithm::replace_all ( filename, "?", "_" );
-      boost::algorithm::replace_all ( filename, "=", "_" );
-      
-      // Download.
+      if ( fin.is_open() )
       {
-				if ( boost::filesystem::exists ( filename ) && boost::filesystem::is_directory ( filename ) )
-					boost::filesystem::remove_all ( filename );
-        Usul::Network::Curl curl ( href, filename );
-        Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "1638679894" );
+        std::string line;
+        std::getline ( fin, line );
+
+        const std::string ext ( boost::algorithm::find_first ( line, "<?xml" ) ? ".kml" : ".kmz" );
+        const std::string newFilename ( filename + ext );
+
+        fin.close();
+
+        Usul::File::rename ( filename.c_str(), newFilename.c_str(), true );
+        filename = newFilename; 
       }
-
-      // Check the extension.
-      const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
-
-      // If there is no extension, attempt to find out what the file is.
-      if ( "kml" != ext && "kmz" != ext )
-      {
-        std::ifstream fin ( filename.c_str() );
-
-        if ( fin.is_open() )
-        {
-          std::string line;
-          std::getline ( fin, line );
-
-          const std::string ext ( boost::algorithm::find_first ( line, "<?xml" ) ? ".kml" : ".kmz" );
-          const std::string newFilename ( filename + ext );
-
-          fin.close();
-
-          Usul::File::rename ( filename.c_str(), newFilename.c_str(), true );
-          filename = newFilename; 
-        }
-      }
-
-      // Set the filename.
-      Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
-      
-      // Get the current time.
-      Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-      const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
-      
-      // Set the last update time.
-      Usul::Threads::Safe::set ( this->mutex(), time, _lastUpdate );
-      
-      // Our data is dirty.
-      this->dirtyData ( true );
     }
+
+    // Set the filename.
+    Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
+    
+    // Get the current time.
+    Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
+    const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
+    
+    // Set the last update time.
+    Usul::Threads::Safe::set ( this->mutex(), time, _lastUpdate );
+    
+    // Our data is dirty.
+    this->dirtyData ( true );
   }
 }
 
@@ -1053,4 +1031,52 @@ Style* KmlLayer::_style ( const std::string& url )
 	}
 
 	return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Filename from link.  Will download if needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string KmlLayer::_buildFilename ( Link *link ) const
+{
+  if ( 0x0 != link )
+  {
+    const std::string href ( link->href() );
+    const bool hasHttp ( boost::algorithm::find_first ( href, "http://" ) );
+
+    if ( true == hasHttp )
+    {
+      std::string::size_type pos ( href.rfind ( '/' ) );
+    
+      if ( pos != std::string::npos )
+      {
+        // Build the filename.
+        std::string filename ( href.begin() + pos + 1, href.end() );
+        filename = Usul::File::Temp::directory ( true ) + filename;
+
+        // Replace illegal characters for filename.
+        boost::algorithm::replace_all ( filename, "?", "_" );
+        boost::algorithm::replace_all ( filename, "=", "_" );
+        
+        // Download.
+        {
+				  if ( boost::filesystem::exists ( filename ) && boost::filesystem::is_directory ( filename ) )
+					  boost::filesystem::remove_all ( filename );
+          Usul::Network::Curl curl ( href, filename );
+          Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "1638679894" );
+        }
+
+        return filename;
+      }
+    }
+    else
+    {
+      return Usul::Threads::Safe::get ( this->mutex(), _directory ) + href;
+    }
+  }
+
+  return "";
 }

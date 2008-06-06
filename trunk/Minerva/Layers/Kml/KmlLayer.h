@@ -76,6 +76,9 @@ public:
 protected:
 
   virtual ~KmlLayer();
+
+  // Filename from link.  Will download if needed.
+  std::string                 _buildFilename ( Link *link ) const;
   
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );

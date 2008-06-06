@@ -24,18 +24,6 @@ using namespace Usul::Threads;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Note: I could initialize this to Usul::Threads::newMutex but then the 
-//  client may create some single-threaded mutexes accidentally in a 
-//  multi-threaded program. The safest thing is to force the client to set 
-//  it, even if it comes at the expense of convenience.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Mutex::CreateFunction *Mutex::_fun = 0x0;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,6 +31,15 @@ Mutex::CreateFunction *Mutex::_fun = 0x0;
 Mutex::Mutex()
 {
   USUL_TRACE_SCOPE;
+
+#ifdef USUL_WINDOWS
+  ::InitializeCriticalSection( &_cs );
+#endif
+
+#ifdef __GNUC__
+  // This function may return an error.  Should we throw?
+  ::pthread_mutex_init ( &_mutex, 0x0 );
+#endif
 }
 
 
@@ -55,6 +52,14 @@ Mutex::Mutex()
 Mutex::~Mutex()
 {
   USUL_TRACE_SCOPE;
+
+#ifdef USUL_WINDOWS
+  ::DeleteCriticalSection( &_cs );
+#endif
+
+#ifdef __GNUC__
+  ::pthread_mutex_destroy ( _mutex );
+#endif
 }
 
 
@@ -68,66 +73,7 @@ Mutex *Mutex::create()
 {
   USUL_TRACE_SCOPE_STATIC;
 
-  if ( 0x0 == _fun )
-  {
-    USUL_ASSERT ( _fun ); // The client needs to set this.
-    throw std::runtime_error ( "Error 2514194884: No mutex factory set" );
-  }
-
-  return (*_fun)();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the create-function. Return the previous one.
-//  Note: this functions is not thread-safe!
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Mutex::CreateFunction *Mutex::createFunction ( Mutex::CreateFunction *fun )
-{
-  USUL_TRACE_SCOPE_STATIC;
-  CreateFunction *original = _fun;
-  _fun = fun;
-  return original;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the create-function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Mutex::CreateFunction *Mutex::createFunction()
-{
-  USUL_TRACE_SCOPE_STATIC;
-  return _fun;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-SingleThreadedMutex::SingleThreadedMutex()
-{
-  USUL_TRACE_SCOPE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-SingleThreadedMutex::~SingleThreadedMutex()
-{
-  USUL_TRACE_SCOPE;
+  return new Mutex();
 }
 
 
@@ -137,9 +83,18 @@ SingleThreadedMutex::~SingleThreadedMutex()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SingleThreadedMutex::lock()
+void Mutex::lock()
 {
   USUL_TRACE_SCOPE;
+
+#ifdef USUL_WINDOWS
+  ::EnterCriticalSection( &_cs );
+#endif
+
+#ifdef __GNUC__
+  ::pthread_mutex_lock ( &_mutex );
+#endif
+
 }
 
 
@@ -149,26 +104,16 @@ void SingleThreadedMutex::lock()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SingleThreadedMutex::unlock()
+void Mutex::unlock()
 {
   USUL_TRACE_SCOPE;
+
+#ifdef USUL_WINDOWS
+  ::LeaveCriticalSection( &_cs );
+#endif
+
+#ifdef __GNUC__
+  ::pthread_mutex_unlock ( &_mutex );
+#endif
+
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Creation function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Usul
-{
-  namespace Threads
-  {
-    Mutex *newSingleThreadedMutexStub()
-    {
-      USUL_TRACE_SCOPE_STATIC;
-      return new SingleThreadedMutex();
-    }
-  };
-};

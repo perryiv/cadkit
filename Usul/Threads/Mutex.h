@@ -18,6 +18,27 @@
 
 #include "Usul/Export/Export.h"
 
+#ifdef _WIN32
+# define USUL_WINDOWS
+#endif
+
+#ifdef _WIN64
+# define USUL_WINDOWS
+#endif
+
+#ifdef USUL_WINDOWS
+# define WIN32_LEAN_AND_MEAN
+
+# ifndef NOMINMAX
+#  define NOMINMAX
+# endif
+
+# include <windows.h>
+#endif
+
+#ifdef __GNUC__
+# include <pthread.h>
+#endif
 
 namespace Usul {
 namespace Threads {
@@ -35,20 +56,12 @@ public:
 
   virtual ~Mutex();
 
-  // The type of function used to create a mutex.
-  typedef Mutex *CreateFunction();
-
   // Create a mutex. Uses the registered create-function.
   static Mutex *          create();
 
-  // Set the create-function. Return the previous one.
-  // Note: this functions is not thread-safe!
-  static CreateFunction * createFunction ( CreateFunction *fun );
-  static CreateFunction * createFunction();
-
   // Lock/unlock the mutex.
-  virtual void            lock() = 0;
-  virtual void            unlock() = 0;
+  void            lock();
+  void            unlock();
 
 protected:
 
@@ -59,57 +72,13 @@ private:
   Mutex ( const Mutex & );             // No copying
   Mutex &operator = ( const Mutex & ); // No assignment
 
-  static CreateFunction *_fun;
-};
+#ifdef USUL_WINDOWS
+  CRITICAL_SECTION _cs;
+#endif
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Single-threaded mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-class USUL_EXPORT SingleThreadedMutex : public Mutex
-{
-public:
-
-  SingleThreadedMutex();
-  virtual ~SingleThreadedMutex();
-
-  virtual void            lock();
-  virtual void            unlock();
-
-private:
-
-  SingleThreadedMutex ( const SingleThreadedMutex & );             // No copying
-  SingleThreadedMutex &operator = ( const SingleThreadedMutex & ); // No assignment
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Creation function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-USUL_EXPORT Mutex *newSingleThreadedMutexStub();
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper struct. Make a global instance of this if setting in main() is 
-//  too late in the program execution.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct SetMutexFactory
-{
-  template < class FactoryFunction > SetMutexFactory ( FactoryFunction f, bool replace = false )
-  {
-    Usul::Threads::Mutex::CreateFunction *current ( Usul::Threads::Mutex::createFunction() );
-    if ( 0x0 == current || true == replace )
-      Usul::Threads::Mutex::createFunction ( f );
-  }
+#ifdef __GNUC__
+  pthread_mutex_t _mutex;
+#endif
 };
 
 

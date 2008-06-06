@@ -87,9 +87,6 @@ namespace Helper
     // Release all plugins.
     Usul::Components::Manager::instance().clear ( &std::cout );
 
-    // Unset the mutex factory to null so that we can find late uses of it.
-    Usul::Threads::Mutex::createFunction ( 0x0 );
-
     // Destroy the thread manager.
     Usul::Threads::Manager::destroy();
 
@@ -163,7 +160,6 @@ namespace Helper
 ///////////////////////////////////////////////////////////////////////////////
 
 void Program::run ( int argc, char **argv,
-                    Usul::Threads::Mutex::CreateFunction *mutexFactory, 
                     Usul::Threads::Manager::FactoryFunction *threadFactory,
                     const std::string &program, 
                     const std::string &version, 
@@ -181,8 +177,7 @@ void Program::run ( int argc, char **argv,
   Usul::Errors::registerSignalHandlers ( argv[0] );
   #endif
 
-  // Set mutex and thread factories.
-  Usul::Threads::Mutex::createFunction       ( mutexFactory );
+  // Set thread factories.
   Usul::Threads::Manager::instance().factory ( threadFactory );
 
   // Set command-line arguments.

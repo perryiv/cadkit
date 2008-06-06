@@ -14,20 +14,7 @@
 # include "Usul/Errors/Signals.h"
 #endif
 
-#include "Threads/OpenThreads/Mutex.h"
-
-#include "Usul/Threads/Mutex.h"
-
 #include "VRV/Core/Program.h"
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set for multi-threaded. This is global because the sooner we set this, 
-//  the better. Setting in main() may be too late.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Threads::SetMutexFactory factory ( &Threads::OT::newOpenThreadsMutex );
 
 
 ///////////////////////////////////////////////////////////////////////////////

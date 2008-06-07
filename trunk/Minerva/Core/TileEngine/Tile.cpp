@@ -274,7 +274,7 @@ void Tile::updateMesh()
         Mesh::Vector &p ( mesh.point ( i, j ) );
         
         // Get the elevation.
-        const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
+        double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
         _body->latLonHeightToXYZ ( lat, lon, elevation, p );
         
         // Expand the bounding sphere by the point.
@@ -489,6 +489,10 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     if ( 0x0 == cv || cv->isCulled ( *this ) )
       return;
 
+    // See if we should draw skirts and borders.
+    _skirts->setNodeMask  ( ( body->useSkirts() ? 0xffffffff : 0x0 ) );
+    _borders->setNodeMask ( ( body->useBorders() ? 0xffffffff : 0x0 ) );
+
     // See what we are allowed to do.
     const bool allowSplit ( _body->allowSplit() );
     const bool keepDetail ( _body->keepDetail() );
@@ -674,10 +678,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   // Traverse low level of detail.
   if ( low || _tileJob.valid() )
   {
-    // See if we should draw skirts and borders.
-    _skirts->setNodeMask  ( ( _body->useSkirts() ? 0xffffffff : 0x0 ) );
-    _borders->setNodeMask ( ( _body->useBorders() ? 0xffffffff : 0x0 ) );
-
     this->getChild ( 0 )->accept ( cv );
   }
 
@@ -756,8 +756,8 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     Extents extents0 ( t0->extents() );
     ImagePtr elevation0 ( t0->elevation() );
 
-    // Since elevation data isn't currently used -- the triangles are -- just ask once.
-    vector->elevationChangedNotify ( extents0, elevation0, unknown.get() );
+    // Since elevation data that is passed isn't currently used just ask once.
+    vector->elevationChangedNotify ( extents, elevation0, unknown.get() );
     //vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
     //vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
     //vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
@@ -802,8 +802,15 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   if ( job.valid() && true == job->canceled() )
     job->cancel();
 
+  const Extents::Vertex &mn ( extents.minimum() );
+  const Extents::Vertex &mx ( extents.maximum() );
+
+  Usul::Math::Vec2d degreesPerPixel ( ( mx[0] - mn[0] ) / size[0], ( mx[1] - mn[1] ) / size[1] );
+
+  Extents request ( mn[0] - ( degreesPerPixel[0] / 2.0 ), mn[1] - ( degreesPerPixel[1] / 2.0 ), mx[0] + ( degreesPerPixel[0] / 2.0 ), mx[1] + ( degreesPerPixel[1] / 2.0 ) );
+
   // Get the data for our elevation.
-  osg::ref_ptr < osg::Image > elevation ( Tile::buildRaster ( extents, size[0], size[1], level, elevationData.get(), job ) );
+  osg::ref_ptr < osg::Image > elevation ( Tile::buildRaster ( request, size[0], size[1], level, elevationData.get(), job ) );
   
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -816,9 +823,9 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
     if ( parentElevation.valid() )
     {
-      Minerva::Core::Layers::RasterLayerGDAL::RefPtr layer ( new Minerva::Core::Layers::RasterLayerGDAL ( parentElevation.get(), this->extents() ) );
-      elevation = layer->texture ( extents, size[0], size[1], level, job, 0x0 );
-//      elevation = Minerva::Core::Utilities::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
+      //Minerva::Core::Layers::RasterLayerGDAL::RefPtr layer ( new Minerva::Core::Layers::RasterLayerGDAL ( parentElevation.get(), this->extents() ) );
+      //elevation = layer->texture ( request, size[0], size[1], level, job, 0x0 );
+      elevation = Minerva::Core::Utilities::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
     }
   }
   

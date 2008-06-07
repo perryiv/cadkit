@@ -15,6 +15,7 @@
 #include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Usul/Interfaces/IRead.h"
+#include "Usul/Threads/Mutex.h"
 
 class GDALDataset;
 
@@ -70,6 +71,7 @@ private:
   
   GDALDataset *_data;
   std::string _filename;
+  Usul::Threads::Mutex* _warpMutex;
   
   SERIALIZE_XML_CLASS_NAME( RasterLayerGDAL ) 
 };

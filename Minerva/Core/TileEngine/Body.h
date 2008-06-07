@@ -81,6 +81,7 @@ public:
   typedef std::list<Tile::RefPtr> Tiles;
   typedef Minerva::Core::Jobs::BuildRaster BuildRaster;
   typedef Usul::File::Log::RefPtr LogPtr;
+  typedef Usul::Math::Vec2ui ImageSize;
 
   // Helper macro for repeated code.
   MINERVA_DEFINE_NODE_CLASS ( Body );
@@ -298,6 +299,7 @@ private:
   bool _needsRedraw;
   LogPtr _log;
   std::string _name;
+  ImageSize _imageSize;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

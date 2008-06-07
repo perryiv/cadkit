@@ -86,7 +86,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _newTexturesLastFrame ( 0 ),
   _needsRedraw ( false ),
   _log ( 0x0 ),
-  _name( "Body" )
+  _name( "Body" ),
+  _imageSize ( 256, 256 )
 {
   USUL_TRACE_SCOPE;
 
@@ -105,6 +106,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "split_callback", _splitCallback );
   this->_addMember ( "scale", _scale );
   this->_addMember ( "name", _name );
+  this->_addMember ( "image_size", _imageSize );
   
   // Set the names.
   _elevation->name ( "Elevation" );
@@ -207,14 +209,11 @@ void Body::addTile ( const Extents &extents )
 
   // Parameters for the tile.
   const unsigned int level  ( 0 );
-  const unsigned int width  ( 512 );
-  const unsigned int height ( 512 );
   
   // Make the tile.
   const Usul::Math::Vec4d textureCoords ( 0.0, 1.0, 0.0, 1.0 );
   const MeshSize meshSize ( this->meshSize ( extents ) );
-  const Tile::ImageSize imageSize ( width, height );
-  Tile::RefPtr tile ( new Tile ( 0x0, Tile::NONE, level, extents, meshSize, imageSize, _splitDistance, this ) );
+  Tile::RefPtr tile ( new Tile ( 0x0, Tile::NONE, level, extents, meshSize, _imageSize, _splitDistance, this ) );
 
   // Build the raster.
   tile->buildRaster ( 0x0 );

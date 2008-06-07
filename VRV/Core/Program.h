@@ -119,9 +119,6 @@ public:
     // Clear the registry.
     Usul::Registry::Database::destroy();
 
-    // Set the mutex factory to null so that we can find late uses of it.
-    Usul::Threads::Mutex::createFunction ( 0x0 );
-
     // Clean up the thread manager.
     Usul::Threads::Manager::destroy();
 

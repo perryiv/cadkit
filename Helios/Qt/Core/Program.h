@@ -19,7 +19,6 @@
 #include "Helios/Qt/Core/Export.h"
 
 #include "Usul/Threads/Manager.h"
-#include "Usul/Threads/Mutex.h"
 
 
 namespace CadKit {
@@ -30,7 +29,6 @@ namespace Core {
 struct HELIOS_QT_CORE_EXPORT Program
 {
   static void run ( int argc, char **argv, 
-                    Usul::Threads::Mutex::CreateFunction *mutexFactory, 
                     Usul::Threads::Manager::FactoryFunction *threadFactory,
                     const std::string &program, 
                     const std::string &version,

@@ -95,12 +95,7 @@ void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elev
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
-  typedef osg::Vec3d::value_type ValueType;
-
-  double x ( 0 ), y ( 0 ), z ( 0 );
-  _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, x, y, z );
-  point.set ( static_cast<ValueType> ( x ), static_cast<ValueType> ( y ), static_cast<ValueType> ( z ) );
+  _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, point.x(), point.y(), point.z() );
 }
 
 
@@ -114,7 +109,6 @@ void LandModelEllipsoid::xyzToLatLonHeight ( const osg::Vec3d& point, double& la
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
   _ellipsoid->XYZToLatLonHeight ( point.x(), point.y(), point.z(), lat, lon, elevation );
 }
 

@@ -70,7 +70,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( RasterLayerGDAL, RasterLayerGDAL::BaseClass );
 RasterLayerGDAL::RasterLayerGDAL () : 
   BaseClass(),
   _data ( 0x0 ),
-  _filename()
+  _filename(),
+  _warpMutex ( Usul::Threads::Mutex::create() )
 {
   this->_addMember ( "filename", _filename );
   
@@ -91,7 +92,8 @@ RasterLayerGDAL::RasterLayerGDAL () :
 
 RasterLayerGDAL::RasterLayerGDAL ( ImagePtr image, const Extents& extents ) : BaseClass(),
   _data ( 0x0 ),
-  _filename()
+  _filename(),
+  _warpMutex ( Usul::Threads::Mutex::create() )
 {
   if ( image.valid() )
   {
@@ -126,7 +128,8 @@ RasterLayerGDAL::RasterLayerGDAL ( ImagePtr image, const Extents& extents ) : Ba
 RasterLayerGDAL::RasterLayerGDAL ( const RasterLayerGDAL& rhs ) :
   BaseClass ( rhs ),
   _data ( rhs._data ),
-  _filename ( rhs._filename )
+  _filename ( rhs._filename ),
+  _warpMutex ( Usul::Threads::Mutex::create() )
 {
 }
 
@@ -142,6 +145,8 @@ RasterLayerGDAL::~RasterLayerGDAL()
   // Clean up.
   if ( 0x0 != _data )
     ::GDALClose ( _data );
+
+  delete _warpMutex;
 }
 
 
@@ -195,9 +200,8 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
 
   Minerva::Detail::PushPopErrorHandler error;
 
-  
-  // Now guard.
-  Guard guard ( this );
+  // Only one thread can warp at a time.
+  Usul::Threads::Guard<Usul::Threads::Mutex> guard ( *_warpMutex );
 
   // Get the data set.
   GDALDataset *data ( _data );
@@ -248,10 +252,10 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
     warpOptions = ::CSLSetNameValue( warpOptions, "INIT_DEST", "NO_DATA" );
     options->papszWarpOptions = warpOptions;
 
-    options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-    options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-    options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-    options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
+    options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+    options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+    options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+    options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
   }
 
   // We want cubic B-spline interpolation.

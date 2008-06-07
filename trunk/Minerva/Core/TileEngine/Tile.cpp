@@ -418,15 +418,29 @@ void Tile::updateTexture()
 void Tile::traverse ( osg::NodeVisitor &nv )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+
+  // Get needed variables.
+  unsigned int flags ( 0 );
+  Usul::Jobs::Job::RefPtr imageJob ( 0x0 );
+  Usul::Jobs::Job::RefPtr elevationJob ( 0x0 );
+  Usul::Jobs::Job::RefPtr tileJob ( 0x0 );
+  Body::RefPtr body ( 0x0 );
+  {
+    Guard guard ( this );
+    flags = _flags;
+    imageJob = _imageJob;
+    elevationJob = _elevationJob;
+    tileJob = _tileJob;
+    body = _body;
+  }
 
   // Launch the image request if one is needed.
-  if ( ( Usul::Bits::has ( _flags, Tile::IMAGE ) ) && ( false == _imageJob.valid() ) )
+  if ( ( Usul::Bits::has ( flags, Tile::IMAGE ) ) && ( false == imageJob.valid() ) )
   {
     this->_launchImageRequest();
   }
 
-  if ( Usul::Bits::has ( _flags, Tile::CHILDREN ) )
+  if ( Usul::Bits::has ( flags, Tile::CHILDREN ) )
   {
     // Clear all the children.
     this->_clearChildren ( false, true );
@@ -439,21 +453,26 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
   {
     // See if our job is done loading image.
-    if ( _imageJob.valid() && _imageJob->isDone() )
+    if ( imageJob.valid() && imageJob->isDone() )
     {
+      Guard guard ( this );
       _imageJob = 0x0;
+      imageJob = 0x0;
     }
     
     // Not currently using this...
 #if 0
     // Check for new elevation data.
-    if ( _elevationJob.valid() && _elevationJob->isDone() )
+    if ( elevationJob.valid() && elevationJob->isDone() )
     {
+      Guard ( this );
       _elevation = _elevationJob->image();
       _elevationJob = 0x0;
+      elevationJob = 0x0;
       
       // Force vertices to be rebuilt.
       _flags = Usul::Bits::set ( _flags, Tile::VERTICES, true );
+      flags = _flags;
     }
 #endif
     
@@ -484,7 +503,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     const bool checkDetail ( true == allowSplit && true == keepDetail && false == hasDetail );
 
     // Check if we can split.  Don't freeze if we are waiting for a job.
-    const bool splitIfNeeded ( ( false == _tileJob.valid() && this->getNumChildren() == 0 ) || true == defaultMode || true == checkDetail );
+    const bool splitIfNeeded ( ( false == tileJob.valid() && this->getNumChildren() == 0 ) || true == defaultMode || true == checkDetail );
 
     if ( false == splitIfNeeded )
     {

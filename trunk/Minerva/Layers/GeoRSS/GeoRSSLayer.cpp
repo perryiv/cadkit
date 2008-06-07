@@ -39,6 +39,7 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
@@ -285,7 +286,11 @@ void GeoRSSLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
     {
 		  boost::filesystem::remove ( filename );
       Usul::Network::Curl curl ( href, filename );
-      Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &curl, &Usul::Network::Curl::download ), static_cast<std::ostream*> ( 0x0 ), "", "4264015553" );
+
+      Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction 
+            ( &curl, &Usul::Network::Curl::download ), 
+            Usul::Registry::Database::instance()["network_download"]["georss_layer"]["timeout_milliseconds"].get<unsigned int> ( 600000, true ),
+            static_cast<std::ostream*> ( 0x0 ), "", "4264015553" );
     }
 
     // Set the filename.

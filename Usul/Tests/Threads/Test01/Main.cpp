@@ -14,7 +14,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
 
 #include "Usul/Functions/SafeCall.h"
@@ -237,7 +236,6 @@ void _test()
 void _clean()
 {
   Detail::randomNumbers.clear();
-  Usul::Threads::Mutex::createFunction  ( 0x0 );
   Usul::Threads::Manager::destroy();
 }
 
@@ -253,11 +251,10 @@ int main ( int argc, char **argv )
   ::srand ( 10 );
   Detail::randomNumbers.clear();
 
-  Usul::Threads::Mutex::createFunction ( &Threads::OT::newOpenThreadsMutex );
   Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
   std::ofstream trace ( "trace.csv" );
-  Usul::Trace::Print::init ( &trace );
+  Usul::Trace::Print::stream ( &trace );
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
   Usul::Functions::safeCall ( _test,  "7106715220" );

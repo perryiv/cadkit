@@ -9,13 +9,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Mutex classes.
+//  Mutex class.  Should this file be split into 2 implementation files?  MutexWin32.cpp and MutexPThreads.cpp?
+//  For critical section objects see http://msdn.microsoft.com/en-us/library/ms682530.aspx
+//  For pthreads see https://computing.llnl.gov/tutorials/pthreads/
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Exceptions/TimedOut.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/Clock.h"
+#include "Usul/System/Sleep.h"
 
 #include <stdexcept>
 
@@ -28,7 +34,13 @@ using namespace Usul::Threads;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Mutex::Mutex()
+Mutex::Mutex() :
+#ifdef USUL_WINDOWS
+  _cs()
+#endif
+#ifdef __GNUC__
+  _mutex()
+#endif
 {
   USUL_TRACE_SCOPE;
 
@@ -116,4 +128,60 @@ void Mutex::unlock()
   ::pthread_mutex_unlock ( &_mutex );
 #endif
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Try to lock the mutex.  Will return true if the lock has been acquired.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Mutex::trylock()
+{
+  USUL_TRACE_SCOPE;
+
+#ifdef USUL_WINDOWS
+  return 0 != ::TryEnterCriticalSection ( &_cs );
+#endif
+
+#ifdef __GNUC__
+  const int error ( ::pthread_mutex_trylock ( &_mutex );
+
+  // Check for unintilaized mutex and invalid pointer.
+  if ( EINVAL == error || EFAULT == error )
+    throw std::runtime_error ( "Error 4580724080: Mutex is not initialized properly." );
+
+  return ( EBUSY != error );
+#endif
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Lock the mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Mutex::lock ( Usul::Types::Uint64 timeout )
+{
+  USUL_TRACE_SCOPE;
+
+  // Get the current time.
+  const Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
+
+  // Try to acquire the lock...
+  while ( false == this->trylock() )
+  {
+    // Calculate how long have we been trying.
+    const Usul::Types::Uint64 duration ( Usul::System::Clock::milliseconds() - start );
+
+    // If the time is greater than the timeout, throw an exception.
+    if ( duration > timeout )
+      throw Usul::Exceptions::TimedOut::AcquireLock ( Usul::Strings::format ( "Could not acquire lock within ", timeout, " milliseconds." ) );
+
+    // Try again in 500 milliseconds.
+    Usul::System::Sleep::milliseconds ( 500 );
+  }
 }

@@ -40,6 +40,20 @@ struct NetworkDownload : public std::runtime_error
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Exception class timed-out lock acquires.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct AcquireLock : public std::runtime_error
+{
+  typedef std::runtime_error BaseClass;
+  AcquireLock ( const std::string &message ) : BaseClass ( message )
+  {
+  }
+};
+
 } // namespace TimedOut
 } // namespace Exceptions
 } // namespace Usul

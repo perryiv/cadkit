@@ -17,6 +17,7 @@
 #define _USUL_THREADS_MUTEX_CLASSES_H_
 
 #include "Usul/Export/Export.h"
+#include "Usul/Types/Types.h"
 
 #ifdef _WIN32
 # define USUL_WINDOWS
@@ -27,6 +28,7 @@
 #endif
 
 #ifdef USUL_WINDOWS
+# define _WIN32_WINNT 0x0400 // Needed for TryEnterCriticalSection.  See http://msdn.microsoft.com/en-us/library/ms686857(VS.85).aspx
 # define WIN32_LEAN_AND_MEAN
 
 # ifndef NOMINMAX
@@ -56,12 +58,18 @@ public:
 
   virtual ~Mutex();
 
-  // Create a mutex. Uses the registered create-function.
+  // Create a mutex.
   static Mutex *          create();
 
-  // Lock/unlock the mutex.
+  // Lock the mutex.
   void            lock();
+  void            lock ( Usul::Types::Uint64 timeout );
+
+  // Unlock the mutex.
   void            unlock();
+
+  // Try to lock the mutex.  Will return true if the lock has been acquired.
+  bool            trylock();
 
 protected:
 

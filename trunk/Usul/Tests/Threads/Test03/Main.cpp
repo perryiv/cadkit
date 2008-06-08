@@ -16,7 +16,6 @@
 
 #include "TestJob.h"
 
-#include "Threads/OpenThreads/Mutex.h"
 #include "Threads/OpenThreads/Thread.h"
 
 #include "Usul/CommandLine/Arguments.h"
@@ -66,7 +65,7 @@ void _test()
   std::generate ( Detail::randomNumbers.begin(), Detail::randomNumbers.end(), ::rand );
 
   // Set the job manager's thread-pool size.
-  Usul::Jobs::Manager::init ( size );
+  Usul::Jobs::Manager::init ( size, true );
 
   // Start the jobs.
   for ( unsigned int i = 0; i < num; ++i )
@@ -103,9 +102,6 @@ void _clean()
   Usul::Threads::Manager::instance().wait();
   TRACE_AND_PRINT ( "All threads have finished.\n" );
 
-  // Set the mutex factory to null so that we can find late uses of it.
-  Usul::Threads::Mutex::createFunction ( 0x0 );
-
   // Clean up the thread manager.
   Usul::Threads::Manager::destroy();
 }
@@ -122,11 +118,10 @@ int main ( int argc, char **argv )
   ::srand ( 10 );
   Detail::randomNumbers.clear();
 
-  Usul::Threads::Mutex::createFunction ( &Threads::OT::newOpenThreadsMutex );
   Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
   std::ofstream trace ( "trace.csv" );
-  Usul::Trace::Print::init ( &trace );
+  Usul::Trace::Print::stream ( &trace );
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
 
   Usul::Functions::safeCall ( _test,  "3274711482" );

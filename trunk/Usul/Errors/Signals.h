@@ -82,9 +82,11 @@ void handleSIGSEGV ( int num )
 
 
   // Print to file.
-  const std::string file ( Usul::Strings::format ( Usul::File::base ( Detail::_programName ), ".stack" ) );
-  std::ofstream dump ( file.c_str() );
-  dump << out.str();
+  {
+    const std::string file ( Usul::Strings::format ( Usul::File::base ( Detail::_programName ), ".stack" ) );
+    std::ofstream dump ( file.c_str() );
+    dump << out.str();
+  }
 
   // TODO: Throw an exception instead of aborting.
   ::abort();
@@ -99,14 +101,15 @@ void handleSIGSEGV ( int num )
 
 inline void registerSignalHandlers ( const std::string &programName )
 {
-  // TODO: Figure out why this won't compile on apple.
-#ifndef __APPLE__
+#ifndef __APPLE__ // TODO: Figure out why this won't compile on apple.
+
   Detail::_programName = programName;
   struct sigaction sa;
   ::sigemptyset ( &sa.sa_mask );
   sa.sa_flags = 0;
   sa.sa_handler = handleSIGSEGV;
   ::sigaction ( SIGSEGV, &sa, 0 );
+
 #endif
 }
 

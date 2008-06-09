@@ -59,15 +59,20 @@ namespace Detail
 
     void test2()
     {
+      bool timeout ( false );
+
       try
       {
-        // This should through an exception.
+        // This should throw an exception.
         _mutex.lock( 5000 );
       }
       catch ( const Usul::Exceptions::TimedOut::AcquireLock& )
       {
         std::cout << "AcquireLock exception caught.  This is expected. " << std::endl;
+        timeout = true;
       }
+
+      BOOST_CHECK ( timeout );
     }
 
   private:

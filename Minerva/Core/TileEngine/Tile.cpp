@@ -88,7 +88,6 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _level ( level ),
   _flags ( Tile::ALL ),
   _children ( 4 ),
-  _textureUnit ( 0 ),
   _image ( image ),
   _elevation ( elevation ),
   _texture ( new osg::Texture2D ),
@@ -167,7 +166,6 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _level ( tile._level ),
   _flags ( Tile::ALL ),
   _children ( tile._children ),
-  _textureUnit ( tile._textureUnit ),
   _image ( tile._image ),
   _elevation ( tile._elevation ),
   _texCoords ( tile._texCoords ),
@@ -233,11 +231,12 @@ void Tile::_destroy()
 void Tile::updateMesh()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
 
   // Handle not being dirty.
   if ( false == this->verticesDirty() || false == this->texCoordsDirty() )
     return;
+
+  Guard guard ( this );
 
   // Handle bad state.
   if ( ( 0x0 == _body ) || ( 0x0 == _mesh ) )
@@ -377,30 +376,43 @@ void Tile::updateMesh()
 void Tile::updateTexture()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
 
-  // Get the image.
-  if ( ( true == _texture.valid() ) && ( true == this->textureDirty() ) )
+  // Return now if we don't have an image.
+  if ( false == this->textureDirty() )
+    return;
+
+  // Get needed variables.
+  ImagePtr image ( 0x0 );
+  osg::ref_ptr < osg::Texture2D > texture ( 0x0 );
+  Body::RefPtr body ( 0x0 );
+  {
+    Guard guard ( this->mutex() );
+    image = _image;
+    texture = _texture;
+    body = _body;
+  }
+  
+  // Set the image.
+  if ( ( true == texture.valid() ) )
   {
     // Set the image if not null.
-    if ( true == _image.valid() )
-      _texture->setImage ( _image.get() );
+    if ( true == image.valid() )
+      texture->setImage ( image.get() );
 
     // Set the proper texture state. This enables us to get a blank planet.
-    const unsigned int flags ( ( ( true == _image.valid() ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
+    const unsigned int flags ( ( ( true == image.valid() ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
 
     // Get the state set.
     osg::ref_ptr< osg::StateSet > ss ( this->getOrCreateStateSet() );
-    ss->setTextureAttributeAndModes ( _textureUnit, _texture.get(), flags );
+    ss->setTextureAttributeAndModes ( 0, texture.get(), flags );
 
     // Turn lighting on or off, depending on if there is an image.
-    OsgTools::State::StateSet::setLighting ( this, ( false == _image.valid() ) );
+    OsgTools::State::StateSet::setLighting ( this, ( false == image.valid() ) );
     
     // Let the body know we have a new texture.
-    if ( 0x0 != _body )
+    if ( 0x0 != body )
     {
-      _body->_textureAdded();
-      _body->needsRedraw ( true );
+      body->needsRedraw ( true );
     }
 
     // Texture no longer dirty.
@@ -536,21 +548,37 @@ void Tile::traverse ( osg::NodeVisitor &nv )
 void Tile::_cull ( osgUtil::CullVisitor &cv )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+
+  // Get needed variables.
+  Mesh* mesh_ ( 0x0 );
+  Usul::Jobs::Job::RefPtr tileJob ( 0x0 );
+  Body::RefPtr body ( 0x0 );
+  osg::Vec3d lowerLeft;
+  double splitDistance ( 0 );
+  {
+    Guard guard ( this );
+    mesh_ = _mesh;
+    tileJob = _tileJob;
+    body = _body;
+    lowerLeft = _lowerLeft;
+    splitDistance = _splitDistance;
+  }
 
   // Handle bad state.
-  if ( ( 0x0 == _mesh ) || 
-       ( _mesh->rows() < 2 ) || 
-       ( _mesh->columns() < 2 ) ||
-       ( 0x0 == _body ) ||
-       ( 0x0 == _body->jobManager() ) )
+  if ( ( 0x0 == mesh_ ) || 
+       ( mesh_->rows() < 2 ) || 
+       ( mesh_->columns() < 2 ) ||
+       ( 0x0 == body ) ||
+       ( 0x0 == body->jobManager() ) )
   {
     return;
   }
 
   // Four corners and center of the tile.
-  Mesh &mesh ( *_mesh );
+  Mesh &mesh ( *mesh_ );
   const osg::Vec3f &eye ( cv.getViewPointLocal() );
+
+#if 0
   const osg::Vec3f look ( cv.getLookVectorLocal() );
   
   // Get the normals.
@@ -568,11 +596,14 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   const double d4 ( n4 * look );
   
   const bool back ( d0 > 0.0 && d1 > 0.0 && d2 > 0.0 && d3 > 0.0 && d4 > 0.0 );
-  
-  const osg::Vec3f &p00 ( _lowerLeft + mesh.point ( 0, 0 ) );
-  const osg::Vec3f &p0N ( _lowerLeft + mesh.point ( 0, mesh.columns() - 1 ) );
-  const osg::Vec3f &pN0 ( _lowerLeft + mesh.point ( mesh.rows() - 1, 0 ) );
-  const osg::Vec3f &pNN ( _lowerLeft + mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
+#else
+  const bool back ( false );
+#endif
+
+  const osg::Vec3f &p00 ( lowerLeft + mesh.point ( 0, 0 ) );
+  const osg::Vec3f &p0N ( lowerLeft + mesh.point ( 0, mesh.columns() - 1 ) );
+  const osg::Vec3f &pN0 ( lowerLeft + mesh.point ( mesh.rows() - 1, 0 ) );
+  const osg::Vec3f &pNN ( lowerLeft + mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
   const osg::Vec3f &pBC ( this->getBound().center() );
   
   // Squared distances from the eye to the points.
@@ -584,7 +615,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
   // Check with smallest distance.
   const float dist ( Usul::Math::minimum ( dist00, dist0N, distN0, distNN, distBC ) );
-  const bool farAway ( ( dist > ( _splitDistance * _splitDistance ) ) );
+  const bool farAway ( ( dist > ( splitDistance * splitDistance ) ) );
   const unsigned int numChildren ( this->getNumChildren() );
   USUL_ASSERT ( numChildren > 0 );
 
@@ -592,13 +623,13 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   const bool eyeIsNan ( Usul::Math::nan ( eye[0] ) || Usul::Math::nan ( eye[1] ) || Usul::Math::nan ( eye[2] ) );
 
   // Check if we've gone too deep.
-  const bool tooDeep ( this->level() >= _body->maxLevel() );
+  const bool tooDeep ( this->level() >= body->maxLevel() );
 
   // Should we traverse the low lod?
   bool low ( farAway || eyeIsNan || tooDeep || back );
 
   // Finally, ask the callback.
-  low = !( _body->shouldSplit ( !low, this ) );
+  low = !( body->shouldSplit ( !low, this ) );
   
   if ( low )
   {
@@ -606,7 +637,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     OsgTools::Group::removeAllChildren ( _borders.get() );
 
     // Remove high level of detail.
-    if ( numChildren > 1 && false == _body->cacheTiles() )
+    if ( numChildren > 1 && false == body->cacheTiles() )
     {
       // Clear all the children.
       this->_clearChildren ( false, true );
@@ -618,8 +649,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
+      Guard guard ( this->mutex() );
+
       // Make tiles if we are not caching them, or if this is the first time.
-      if ( ( false == _body->cacheTiles() ) || 
+      if ( ( false == body->cacheTiles() ) || 
            ( false == _children[LOWER_LEFT].valid()  ) ||
            ( false == _children[LOWER_RIGHT].valid() ) ||
            ( false == _children[UPPER_LEFT].valid()  ) ||
@@ -676,7 +709,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   }
   
   // Traverse low level of detail.
-  if ( low || _tileJob.valid() )
+  if ( low || tileJob.valid() )
   {
     this->getChild ( 0 )->accept ( cv );
   }
@@ -767,6 +800,45 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the degrees per pixel.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  Usul::Math::Vec2d degreesPerPixel ( const Tile::Extents& extents, const Tile::ImageSize& size )
+  {
+    typedef Tile::Extents Extents;
+    
+    const Extents::Vertex &mn ( extents.minimum() );
+    const Extents::Vertex &mx ( extents.maximum() );
+
+    return Usul::Math::Vec2d ( ( mx[0] - mn[0] ) / size[0], ( mx[1] - mn[1] ) / size[1] );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Expand the extents by the given amount.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  Tile::Extents expandExtents ( const Tile::Extents& extents, const Usul::Math::Vec2d& amount )
+  {
+    typedef Tile::Extents Extents;
+    const Extents::Vertex &mn ( extents.minimum() );
+    const Extents::Vertex &mx ( extents.maximum() );
+
+    return Extents ( mn[0] - ( amount[0] / 2.0 ), mn[1] - ( amount[1] / 2.0 ), mx[0] + ( amount[0] / 2.0 ), mx[1] + ( amount[1] / 2.0 ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build a tile.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -802,12 +874,8 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   if ( job.valid() && true == job->canceled() )
     job->cancel();
 
-  const Extents::Vertex &mn ( extents.minimum() );
-  const Extents::Vertex &mx ( extents.maximum() );
-
-  Usul::Math::Vec2d degreesPerPixel ( ( mx[0] - mn[0] ) / size[0], ( mx[1] - mn[1] ) / size[1] );
-
-  Extents request ( mn[0] - ( degreesPerPixel[0] / 2.0 ), mn[1] - ( degreesPerPixel[1] / 2.0 ), mx[0] + ( degreesPerPixel[0] / 2.0 ), mx[1] + ( degreesPerPixel[1] / 2.0 ) );
+  // Expand the request by degreesPerPixel / 2.0 on each side.
+  const Extents request ( Helper::expandExtents ( extents, Helper::degreesPerPixel ( extents, size ) ) );
 
   // Get the data for our elevation.
   osg::ref_ptr < osg::Image > elevation ( Tile::buildRaster ( request, size[0], size[1], level, elevationData.get(), job ) );
@@ -823,9 +891,15 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
     if ( parentElevation.valid() )
     {
-      //Minerva::Core::Layers::RasterLayerGDAL::RefPtr layer ( new Minerva::Core::Layers::RasterLayerGDAL ( parentElevation.get(), this->extents() ) );
-      //elevation = layer->texture ( request, size[0], size[1], level, job, 0x0 );
+#if 0
+      Extents parentExtents ( Helper::expandExtents ( this->extents(), Helper::degreesPerPixel ( this->extents(), size ) ) );
+
+      typedef Minerva::Core::Layers::RasterLayerGDAL Resampler;
+      Resampler::RefPtr layer ( new Resampler ( parentElevation.get(), parentExtents ) );
+      elevation = layer->texture ( request, size[0], size[1], level, job, 0x0 );
+#else
       elevation = Minerva::Core::Utilities::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
+#endif
     }
   }
   

@@ -56,6 +56,8 @@ class USUL_EXPORT Mutex
 {
 public:
 
+  // Construction/Destruction.
+  Mutex();
   virtual ~Mutex();
 
   // Create a mutex.
@@ -70,10 +72,6 @@ public:
 
   // Try to lock the mutex.  Will return true if the lock has been acquired.
   bool            trylock();
-
-protected:
-
-  Mutex();
 
 private:
 

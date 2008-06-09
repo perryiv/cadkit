@@ -10,17 +10,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Test program for Mutex::trylock.
+//  Test program for Mutex::lock ( timeout ).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Exceptions/TimedOut.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/System/Sleep.h"
 
 //#define BOOST_TEST_MAIN
-#define BOOST_TEST_MODULE "Usul_Thread_Mutex_Try_Lock_Test"
+//#define BOOST_TEST_MODULE "Usul_Thread_Mutex_Try_Lock_Test"
 #include "boost/test/unit_test.hpp"
 
 #include "boost/thread/thread.hpp"
@@ -34,35 +35,21 @@
 typedef Usul::Threads::Mutex Mutex;
 typedef Usul::Threads::Guard<Mutex> Guard;
 
-BOOST_AUTO_TEST_SUITE( Usul_Mutex_TryLock_Suite )
+BOOST_AUTO_TEST_SUITE( Usul_Mutex_TimedLock_Suite )
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Test trylock when mutex is locked by the current thread.
+//  Class to lock a mutex and then make a timed lock request.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-BOOST_AUTO_TEST_CASE( TryLockTest1 )
-{
-  BOOST_TEST_MESSAGE ( "Start Try Lock Test 1." );
-
-  // Make the mutex.
-  Mutex mutex;
-
-  Guard guard ( mutex );
-
-  BOOST_CHECK ( false == mutex.trylock() );
-
-  BOOST_TEST_MESSAGE ( "End Try Lock Test 1." );
-}
 
 namespace Detail
 {
-  class Test2
+  class TimedLockTestClass1
   {
   public:
-    Test2() : _mutex() {}
+    TimedLockTestClass1() : _mutex() {}
 
     void test1()
     {
@@ -72,7 +59,15 @@ namespace Detail
 
     void test2()
     {
-      BOOST_CHECK ( false == _mutex.trylock() );
+      try
+      {
+        // This should through an exception.
+        _mutex.lock( 5000 );
+      }
+      catch ( const Usul::Exceptions::TimedOut::AcquireLock& )
+      {
+        std::cout << "AcquireLock exception caught.  This is expected. " << std::endl;
+      }
     }
 
   private:
@@ -83,23 +78,23 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Test trylock when mutex is locked by another thread.
+//  Test timed lock when mutex is locked by another thread.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BOOST_AUTO_TEST_CASE( TryLockTest2 )
+BOOST_AUTO_TEST_CASE( TimedLockTest1 )
 {
-  BOOST_TEST_MESSAGE ( "Start Try Lock Test 2." );
+  BOOST_TEST_MESSAGE ( "Start Timed Lock Test 1." );
 
-  Detail::Test2 test;
+  Detail::TimedLockTestClass1 test;
 
-  boost::thread thread1 ( Usul::Adaptors::memberFunction ( &test, &Detail::Test2::test1 ) );
-  boost::thread thread2 ( Usul::Adaptors::memberFunction ( &test, &Detail::Test2::test2 ) );
+  boost::thread thread1 ( Usul::Adaptors::memberFunction ( &test, &Detail::TimedLockTestClass1::test1 ) );
+  boost::thread thread2 ( Usul::Adaptors::memberFunction ( &test, &Detail::TimedLockTestClass1::test2 ) );
 
   thread1.join();
   thread2.join();
 
-  BOOST_TEST_MESSAGE ( "End Try Lock Test 2." );
+  BOOST_TEST_MESSAGE ( "End Timed Lock Test 1." );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

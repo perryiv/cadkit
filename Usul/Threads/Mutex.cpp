@@ -179,7 +179,9 @@ void Mutex::lock ( Usul::Types::Uint64 timeout )
 
     // If the time is greater than the timeout, throw an exception.
     if ( duration > timeout )
+    {
       throw Usul::Exceptions::TimedOut::AcquireLock ( Usul::Strings::format ( "Could not acquire lock within ", timeout, " milliseconds." ) );
+    }
 
     // Try again in 500 milliseconds.
     Usul::System::Sleep::milliseconds ( 500 );

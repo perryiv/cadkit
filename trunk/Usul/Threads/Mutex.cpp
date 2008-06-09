@@ -25,6 +25,10 @@
 
 #include <stdexcept>
 
+#ifdef __GNUC__
+# include <errno.h>
+#endif
+
 using namespace Usul::Threads;
 
 
@@ -146,7 +150,7 @@ bool Mutex::trylock()
 #endif
 
 #ifdef __GNUC__
-  const int error ( ::pthread_mutex_trylock ( &_mutex );
+  const int error ( ::pthread_mutex_trylock ( &_mutex ) );
 
   // Check for unintilaized mutex and invalid pointer.
   if ( EINVAL == error || EFAULT == error )

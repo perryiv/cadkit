@@ -250,9 +250,8 @@ private:
   unsigned int _level;
   unsigned int _flags;
   Children _children;
-  unsigned int _textureUnit;
-  osg::ref_ptr < osg::Image > _image;
-  osg::ref_ptr < osg::Image > _elevation;
+  ImagePtr _image;
+  ImagePtr _elevation;
   osg::ref_ptr < osg::Texture2D > _texture;
   Usul::Math::Vec4d _texCoords;
   Usul::Jobs::Job::RefPtr _imageJob;

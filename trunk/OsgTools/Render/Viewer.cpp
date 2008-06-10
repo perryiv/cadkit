@@ -3256,7 +3256,7 @@ bool Viewer::intersect ( float x, float y, osgUtil::Hit &hit )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 Viewer::getCenter()
+osg::Vec3d Viewer::getCenter()
 {
   return this->_trackball()->center();
 }
@@ -3268,7 +3268,7 @@ osg::Vec3 Viewer::getCenter()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setCenter( const osg::Vec3 &c )
+void Viewer::setCenter( const osg::Vec3d &c )
 {
   this->setTrackball( c, this->getDistance(), this->getRotation(), true, true );
 }
@@ -3326,7 +3326,7 @@ void Viewer::setRotation( const osg::Quat &r )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setTrackball ( const osg::Vec3& center, float distance, const osg::Quat& rot, bool makeTrackball, bool setViewerToo )
+void Viewer::setTrackball ( const osg::Vec3d& center, float distance, const osg::Quat& rot, bool makeTrackball, bool setViewerToo )
 {
   if ( !this->viewer() )
     return;
@@ -3827,7 +3827,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
 
   // Make copy of trackball's current rotation
   const osg::Quat rot ( this->getRotation() );
-  const osg::Vec3 center ( this->getCenter() );
+  const osg::Vec3d center ( this->getCenter() );
   const float distance ( this->getDistance() );
 
   // Get the eye position.
@@ -5074,7 +5074,7 @@ void Viewer::stateLoad()
   {
     // Get properties from registry.
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
-    const osg::Vec3   center ( reg["center"].get<osg::Vec3>   ( trackball->center()   ) );
+    const osg::Vec3d  center ( reg["center"].get<osg::Vec3d>  ( trackball->center()   ) );
     const osg::Quat rotation ( reg["rotation"].get<osg::Quat> ( trackball->rotation() ) );
     const float     distance ( reg["distance"].get<float>     ( trackball->distance() ) );
 

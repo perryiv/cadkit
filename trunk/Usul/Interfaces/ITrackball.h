@@ -18,7 +18,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Quat; class Vec3f; typedef Vec3f Vec3; };
+namespace osg { class Quat; class Vec3d; typedef Vec3f Vec3; };
 
 namespace Usul {
 namespace Interfaces {
@@ -31,14 +31,14 @@ struct ITrackball : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1102018737u };
 
-  virtual osg::Vec3  getCenter() = 0;
-  virtual void       setCenter( const osg::Vec3& ) = 0;
+  virtual osg::Vec3d getCenter() = 0;
+  virtual void       setCenter( const osg::Vec3d& ) = 0;
   virtual float      getDistance() = 0;
   virtual void       setDistance( float ) = 0;
   virtual osg::Quat  getRotation() = 0;
   virtual void       setRotation ( const osg::Quat& ) = 0;
 
-  virtual void setTrackball ( const osg::Vec3&, float distance, const osg::Quat&, bool makeTrackball, bool setViewerToo ) = 0;
+  virtual void setTrackball ( const osg::Vec3d&, float distance, const osg::Quat&, bool makeTrackball, bool setViewerToo ) = 0;
 
 }; // class ITrackball
 

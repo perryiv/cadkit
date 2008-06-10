@@ -19,7 +19,7 @@
 
 #include "ui_NewMpdDialog.h"
 #include "MpdDialogDefinitions.h"
-#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentationLib/ModelPresentationLib.h"
 
 #include "QtGui/QDialog"
 

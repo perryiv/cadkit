@@ -17,9 +17,9 @@
 #ifndef _MODEL_PRESENTATION_DOCUMENT_H_
 #define _MODEL_PRESENTATION_DOCUMENT_H_
 
-#include "Experimental/ModelPresentation/ModelPresentation/MpdJob.h"
-#include "Experimental/ModelPresentation/ModelPresentation/MpdDefinitions.h"
-#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
+#include "MpdJob.h"
+#include "MpdDefinitions.h"
+#include "../ModelPresentationLib/ModelPresentationLib.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IAnimatePath.h"

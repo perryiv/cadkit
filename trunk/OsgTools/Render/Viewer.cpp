@@ -3138,7 +3138,7 @@ void Viewer::navManip ( MatrixManip *manip  )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec3 &pt1, bool useWindowCoords )
+bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3d &pt0, osg::Vec3d &pt1, bool useWindowCoords )
 {
   // Handle no viewer.
   if ( !this->viewer() )
@@ -3150,15 +3150,15 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec
   ea->setMouse ( Usul::Math::Vec2f( mouseX, mouseY ) );
 
   // Get the necessary coordinates.
-  float x ( ea->getXnormalized() );
-  float y ( ea->getYnormalized() );
+  const double x ( ea->getXnormalized() );
+  const double y ( ea->getYnormalized() );
 
   // Use window coordinates.  No projection.
   if ( useWindowCoords )
   {
     // Set the two points for our line-segment.
-    pt0 = osg::Vec3 ( x, y, -1 ) * osg::Matrix::inverse( _sceneManager->camera()->getProjectionMatrix() );
-    pt1 = osg::Vec3 ( x, y,  1 ) * osg::Matrix::inverse( _sceneManager->camera()->getProjectionMatrix() );
+    pt0 = osg::Vec3d ( x, y, -1 ) * osg::Matrix::inverse( _sceneManager->camera()->getProjectionMatrix() );
+    pt1 = osg::Vec3d ( x, y,  1 ) * osg::Matrix::inverse( _sceneManager->camera()->getProjectionMatrix() );
   }
 
   // Project into the scene.
@@ -3171,8 +3171,8 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec
     osg::Matrix IMP ( osg::Matrix::inverse ( MP ) );
 
     // Calculate the two points for our line-segment.
-    pt0 = osg::Vec3 ( x, y, -1 ) * IMP;
-    pt1 = osg::Vec3 ( x, y,  1 ) * IMP;
+    pt0 = osg::Vec3d ( x, y, -1 ) * IMP;
+    pt1 = osg::Vec3d ( x, y,  1 ) * IMP;
   }
 
   // Are the numbers valid?
@@ -3198,7 +3198,7 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit,
     return false;
 
   // Calculate the two points for our line-segment.
-  osg::Vec3 pt0, pt1;
+  osg::Vec3d pt0, pt1;
   if ( !this->_lineSegment ( x, y, pt0, pt1, useWindowCoords ) )
     return false;
 

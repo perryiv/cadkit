@@ -199,35 +199,4 @@ if(OMNI_THREAD_LIB)
 endif(OMNI_THREAD_LIB)
 
 
-################################################################
-#
-#  Find cppdom.
-#
-################################################################
-
-FIND_LIBRARY( CPPDOM_LIB cppdom 
-  "$ENV{VJ_DEPS_DIR}/lib64"
-  "$ENV{VJ_DEPS_DIR}/lib"
-  "$ENV{CPPDOM_ROOT}/lib64"
-  "$ENV{CPPDOM_ROOT}/lib"
-  /usr/local/lib64
-  /usr/local/lib
-  /usr/lib64
-  /usr/lib
-)
-
-# Look for a root installation
-FIND_PATH(CPPDOM_ROOT_DIR include/cppdom/cppdom.h
-	/usr
-	/usr/local
-	"$ENV{VJ_DEPS_DIR}"
-	"$ENV{CPPDOM_ROOT}"
-	DOC "The root of an installed cppdom installation"
-)
-
-IF(CPPDOM_ROOT_DIR AND CPPDOM_LIB)
-	MESSAGE (STATUS "Found Cppdom: ${CPPDOM_LIB}")
-	SET(VJ_DEPS_LIBS ${VJ_DEPS_LIBS} ${CPPDOM_LIB})
-	SET(CPPDOM_INC_DIR "{CPPDOM_ROOT_DIR}/include")
-ENDIF(CPPDOM_ROOT_DIR AND CPPDOM_LIB)
 

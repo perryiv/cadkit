@@ -75,6 +75,8 @@ INCLUDE_DIRECTORIES(
 		     "${VRJ_INC_DIR}/tweek/CORBA"
 		     "${VRJ_INC_DIR}/tweek/idl"
 		     "$ENV{VJ_DEPS_DIR}/include"
+		     ${CPPDOM_INC_DIR}
+		     ${GMTL_INC_DIR}
 		     )
 
 #List the Sources

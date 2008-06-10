@@ -649,22 +649,29 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     // Add high level if necessary.
     if ( 1 == numChildren )
     {
-      Guard guard ( this->mutex() );
+      bool hasChildren ( false );
+      {
+        Guard guard ( this->mutex() );
+        hasChildren = ( _children[LOWER_LEFT].valid()  ) &&
+                      ( _children[LOWER_RIGHT].valid() ) &&
+                      ( _children[UPPER_LEFT].valid()  ) &&
+                      ( _children[UPPER_RIGHT].valid() );
+      }
 
       // Make tiles if we are not caching them, or if this is the first time.
       if ( ( false == body->cacheTiles() ) || 
-           ( false == _children[LOWER_LEFT].valid()  ) ||
-           ( false == _children[LOWER_RIGHT].valid() ) ||
-           ( false == _children[UPPER_LEFT].valid()  ) ||
-           ( false == _children[UPPER_RIGHT].valid() ) )
+           ( false == hasChildren ) )
       {
         // Use the low lod while we are waiting for the job.
-        if ( _tileJob.valid() )
+        if ( tileJob.valid() )
         {
           low = true;
         }
         else
         {
+          Guard guard ( this->mutex() );
+
+          // Make a new job to tile the child tiles.
           _tileJob = new Minerva::Core::Jobs::BuildTiles ( Tile::RefPtr ( this ) );
         
           // Add the job to the job manager.
@@ -676,11 +683,14 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         }
       }
 
-      if ( _tileJob.valid() && _tileJob->isDone() )
+      if ( tileJob.valid() && tileJob->isDone() )
       {
         // Did it work?
-        if ( true == _tileJob->success() )
+        if ( true == tileJob->success() )
         {
+          Guard guard ( this->mutex() );
+
+          // Add the children.
           osg::ref_ptr<osg::Group> group ( new osg::Group );
           group->addChild ( _children[LOWER_LEFT]  );
           group->addChild ( _children[LOWER_RIGHT] );
@@ -700,7 +710,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
           this->_clearChildren ( false, false );
         }
 
+        Guard guard ( this->mutex() );
+
         _tileJob = 0x0;
+        tileJob = 0x0;
 
         // Turn off the borders.
         OsgTools::Group::removeAllChildren ( _borders.get() );

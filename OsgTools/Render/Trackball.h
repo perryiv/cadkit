@@ -48,8 +48,8 @@ public:
   const Vec3 &            center() const { return _center; }
 
   // Set/get the distance.
-  void                    distance ( float d ) { _distance = d; }
-  float                   distance() const { return _distance; }
+  void                    distance ( double d ) { _distance = d; }
+  double                  distance() const { return _distance; }
 
   // Get the inverse matrix of the manipulator.
   virtual osg::Matrixd    getInverseMatrix() const;

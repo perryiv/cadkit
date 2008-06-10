@@ -24,6 +24,8 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${VR_JUGGLER_INCLUDES}
 		     "$ENV{VJ_DEPS_DIR}/include"
+		     ${CPPDOM_INC_DIR}
+		     ${GMTL_INC_DIR}
 		     )
 
 

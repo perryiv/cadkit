@@ -3,7 +3,7 @@ project (FlashModel)
 # Set the name.  Needed for the macros to set up plugin properties.
 SET(PLUGIN_NAME "FlashModel")
 
-SET(CMakeModules "$ENV{CADKIT_INC_DIR}/CMakeModules")
+SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 # ------------ Find OpenSceneGraph Libraries ----------------------

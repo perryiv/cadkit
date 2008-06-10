@@ -316,7 +316,7 @@ protected:
   virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );
   
   // Notify the observer of the intersection (IIntersectListener).
-  virtual void                             intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
+  virtual void                             intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller );
   
   // Get the number of children (ITreeNode).
   virtual unsigned int                     getNumChildNodes() const;

@@ -1045,7 +1045,7 @@ bool ModflowDocument::getBooleanState() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
+void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -1064,7 +1064,7 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
 
   // Loop over the node path and collect data.
   StringGrid grid;
-  const osg::NodePath &path ( hit.getNodePath() );
+  const osg::NodePath &path ( hit.nodePath );
   for ( osg::NodePath::const_iterator i = path.begin(); i != path.end(); ++i )
   {
     // Get basic string data.
@@ -1079,10 +1079,10 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hi
     }
 
     // Are there vertices?
-    if ( false == hit.getVecIndexList().empty() )
+    if ( false == hit.indexList.empty() )
     {
       // Get the vertices involved.
-      const unsigned int vertexStart ( hit.getVecIndexList().front() );
+      const unsigned int vertexStart ( hit.indexList.front() );
 
       // Get the attribute.
       Modflow::Attributes::Attribute::RefPtr attr ( ( true == ud.valid() ) ? 

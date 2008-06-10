@@ -34,7 +34,7 @@ struct IDeleteAllConnected : public Usul::Interfaces::IUnknown
   enum { IID = 1313723240u };
 
   // Delete all things connected to the "hit".
-  virtual void deleteAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::Hit &hit ) = 0;
+  virtual void deleteAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::LineSegmentIntersector::Intersection &hit ) = 0;
 };
 
 

@@ -91,7 +91,7 @@ protected:
   void              _addParticle ( const osg::Vec3& position );
 
   // Notify the observer of the intersection.
-  virtual void      intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
+  virtual void      intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller );
 
   // Called when mouse event occurs.
   virtual void      mouseEventNotify ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );

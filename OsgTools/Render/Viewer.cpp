@@ -87,7 +87,6 @@
 
 #include "osgUtil/CullVisitor"
 #include "osgUtil/UpdateVisitor"
-#include "osgUtil/IntersectVisitor"
 
 #include "osgDB/WriteFile"
 #include "osgDB/ReadFile"
@@ -3190,7 +3189,7 @@ bool Viewer::_lineSegment ( float mouseX, float mouseY, osg::Vec3d &pt0, osg::Ve
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords )
+bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegmentIntersector::Intersection &hit, bool useWindowCoords )
 {
   _pointerInfo.reset();
 
@@ -3203,32 +3202,29 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit,
   if ( !this->_lineSegment ( x, y, pt0, pt1, useWindowCoords ) )
     return false;
 
-  // Declare the pick-visitor.
-  typedef osgUtil::IntersectVisitor Visitor;
-  osg::ref_ptr<Visitor> visitor ( new Visitor );
+  // Make the intersector.
+  osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector ( new osgUtil::LineSegmentIntersector ( pt0, pt1 ) );
 
-  // Make the line segment.
-  osg::ref_ptr<osg::LineSegment> ls ( new osg::LineSegment ( pt0, pt1 ) );
-  visitor->addLineSegment ( ls.get() );
+  // Declare the pick-visitor.
+  typedef osgUtil::IntersectionVisitor Visitor;
+  osg::ref_ptr<Visitor> visitor ( new Visitor );
+  visitor->setIntersector ( intersector.get() );
 
   // Intersect the scene.
-  typedef osgUtil::IntersectVisitor::HitList HitList;
+  
   scene->accept ( *visitor );
 
-  // See if there was an intersection.
-  if ( !visitor->hits() )
-    return false;
-
   // Get the hit-list for our line-segment.
-  const HitList &hits = visitor->getHitList ( ls.get() );
+  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+  const Intersections &hits = intersector->getIntersections();
   if ( hits.empty() )
     return false;
 
   // Set the hit.
-  hit = hits.front();
+  hit = intersector->getFirstIntersection();
 
-  for ( HitList::const_iterator iter = hits.begin(); iter != hits.end(); ++iter )
-    _pointerInfo.addIntersection ( iter->getNodePath(), iter->getLocalIntersectPoint() );
+  for ( Intersections::const_iterator iter = hits.begin(); iter != hits.end(); ++iter )
+    _pointerInfo.addIntersection ( iter->nodePath, iter->getLocalIntersectPoint() );
 
   // Not sure what this is for...
   _pointerInfo._hitIter = _pointerInfo._hitList.begin();
@@ -3244,7 +3240,7 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::intersect ( float x, float y, osgUtil::Hit &hit ) 
+bool Viewer::intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit ) 
 { 
   return this->_intersect ( x, y, this->model(), hit ); 
 }
@@ -3371,16 +3367,16 @@ OsgTools::Render::Trackball* Viewer::_trackball()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_editMaterial ( osgUtil::Hit &hit )
+void Viewer::_editMaterial ( osgUtil::LineSegmentIntersector::Intersection &hit )
 {
   //First check the drawable's state set
-  osg::ref_ptr < osg::StateSet > stateset ( hit._drawable->getOrCreateStateSet() );
+  osg::ref_ptr < osg::StateSet > stateset ( hit.drawable->getOrCreateStateSet() );
   osg::ref_ptr < osg::Material > mat ( reinterpret_cast < osg::Material* > ( stateset->getAttribute( osg::StateAttribute::MATERIAL ) ) );
 
   // If no material...
   if ( !mat.valid() )
   {
-    osg::NodePath path ( hit._nodePath );
+    osg::NodePath path ( hit.nodePath );
 
     // Search up the node list
     for ( osg::NodePath::reverse_iterator i = path.rbegin(); i != path.rend(); ++i )
@@ -3462,11 +3458,11 @@ void Viewer::setStatsDisplay ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_findDragger ( const osgUtil::Hit &hit )
+void Viewer::_findDragger ( const osgUtil::LineSegmentIntersector::Intersection &hit )
 {
   // Initialize.
   Dragger *dragger = 0x0;
-  osg::NodePath path ( hit._nodePath );
+  osg::NodePath path ( hit.nodePath );
 
   // Loop through the nodes.
   for ( osg::NodePath::reverse_iterator i = path.rbegin(); i != path.rend(); ++i )
@@ -3717,7 +3713,7 @@ void Viewer::_handlePicking ( EventAdapter *ea )
   const bool left ( Usul::Bits::has ( ea->getButton(), EventAdapter::LEFT_MOUSE_BUTTON ) );
 
   // Intersect the scene.
-  osgUtil::Hit hit;
+  osgUtil::LineSegmentIntersector::Intersection hit;
   if ( !this->_intersect ( x, y, this->scene(), hit, false ) )
   {
     // If we didn't intersect with the scene, try intersecting with the screen projection matrix
@@ -3817,7 +3813,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
 
   // Return if the click didn't intersect the scene
   // Note: switched to use scene so that could seek to camera path points -- 2008-02-21, Perry.
-  osgUtil::Hit hit;
+  osgUtil::LineSegmentIntersector::Intersection hit;
 #if 0
   if ( !this->intersect ( ea->getX(), ea->getY(), hit ) )
 #else
@@ -3895,7 +3891,7 @@ void Viewer::_handleIntersect ( EventAdapter *ea )
   const float y ( ea->getY() );
 
   // Intersect the model. Return if no intersection.
-  osgUtil::Hit hit;
+  osgUtil::LineSegmentIntersector::Intersection hit;
   this->_intersect ( x, y, this->scene(), hit, false );
 
   // Notify the listeners (even if there is no intersection).
@@ -4276,12 +4272,12 @@ void Viewer::_setCenterOfRotation()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Viewer::screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const
+osg::Image* Viewer::screenCapture ( const osg::Vec3d& center, double distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const
 {
   // Get non const pointer to this
   Viewer *me ( const_cast < Viewer * > ( this ) );
 
-  osg::Matrix m ( osg::Matrixd::translate(0.0,0.0,distance)*
+  osg::Matrixd m ( osg::Matrixd::translate(0.0,0.0,distance)*
                   osg::Matrixd::rotate(rotation)*
                   osg::Matrixd::translate(center) );
 
@@ -4710,7 +4706,7 @@ void Viewer::_postRenderNotify()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_intersectNotify ( float x, float y, osgUtil::Hit &hit )
+void Viewer::_intersectNotify ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

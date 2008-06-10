@@ -75,6 +75,7 @@
 #include "OsgTools/Widgets/ClipPlane.h"
 
 #include "osgUtil/SceneView"
+#include "osgUtil/LineSegmentIntersector"
 
 #include "osg/ref_ptr"
 #include "osg/RenderInfo"
@@ -508,14 +509,14 @@ protected:
 
   void                  _dumpFrame();
 
-  void                  _editMaterial  ( osgUtil::Hit &hit );
+  void                  _editMaterial  ( osgUtil::LineSegmentIntersector::Intersection &hit );
 
-  void                  _findDragger ( const osgUtil::Hit &hit );
+  void                  _findDragger ( const osgUtil::LineSegmentIntersector::Intersection &hit );
 
   void                  _hiddenLineRender();
 
-  virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords = false );
-  void                  _intersectNotify ( float x, float y, osgUtil::Hit &hit );
+  virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegmentIntersector::Intersection &hit, bool useWindowCoords = false );
+  void                  _intersectNotify ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit );
   bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3d &pt0, osg::Vec3d &pt1, bool useWindowCoords = false );
 
   void                  _render();
@@ -651,7 +652,7 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual bool               intersect ( float x, float y, osgUtil::Hit &hit );
+  virtual bool               intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -672,7 +673,7 @@ protected:
   virtual Filters               filtersWriteScene() const;
 
   /// Usul::Interfaces::IScreenCapture
-  virtual osg::Image*           screenCapture ( const osg::Vec3f& center, float distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
+  virtual osg::Image*           screenCapture ( const osg::Vec3d& center, double distance, const osg::Quat& rotation, unsigned int height, unsigned int width ) const;
   virtual osg::Image*           screenCapture ( unsigned int height, unsigned int width ) const;
 
   /// Usul::Interfaces::ISnapShot

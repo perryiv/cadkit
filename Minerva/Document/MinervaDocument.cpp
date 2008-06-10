@@ -2157,7 +2157,7 @@ void MinervaDocument::_resizePoints ( double factor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
+void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller )
 {
   Body::RefPtr body ( this->activeBody() );
   
@@ -2364,7 +2364,7 @@ void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* n
         osg::Matrixd invert;
         if ( invert.invert ( localLsr ) )
         {
-          osg::Matrixf matrix ( viewMatrix * invert );
+          osg::Matrixd matrix ( viewMatrix * invert );
           Detail::matrixToHpr( _hpr, matrix );
         }
       }
@@ -2525,12 +2525,12 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
 
   if ( left && si.valid() && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
   {
-    osgUtil::Hit hit;
+    osgUtil::LineSegmentIntersector::Intersection hit;
     if ( si->intersect ( ea.getX(), ea.getY(), hit ) )
     {
       // See if there is user data.
       osg::ref_ptr < Minerva::Core::DataObjects::UserData > userdata ( 0x0 );
-      for( osg::NodePath::reverse_iterator iter = hit._nodePath.rbegin(); iter != hit._nodePath.rend(); ++iter )
+      for( osg::NodePath::reverse_iterator iter = hit.nodePath.rbegin(); iter != hit.nodePath.rend(); ++iter )
       {
         if( Minerva::Core::DataObjects::UserData *ud = dynamic_cast < Minerva::Core::DataObjects::UserData *> ( (*iter)->getUserData() ) )
           userdata = ud;

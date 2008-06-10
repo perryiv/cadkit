@@ -667,9 +667,10 @@ const osg::Vec3f& TriangleDocument::getVertex ( unsigned int index ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleDocument::deletePrimitive ( const osgUtil::Hit& hit )
+void TriangleDocument::deletePrimitive ( const osgUtil::LineSegmentIntersector::Intersection& hit )
 {
-  _triangles->removeTriangle ( hit._geode.get(), hit._drawable.get(), hit._primitiveIndex );
+  const osg::Geode* geode ( dynamic_cast<const osg::Geode*> ( *hit.nodePath.rbegin() ) );
+  _triangles->removeTriangle ( geode, hit.drawable.get(), hit.primitiveIndex );
 }
 
 
@@ -691,7 +692,7 @@ void TriangleDocument::_findAllConnected ( Usul::Interfaces::IUnknown* caller, C
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleDocument::keepAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::Hit &hit )
+void TriangleDocument::keepAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::LineSegmentIntersector::Intersection &hit )
 {
   Connected connected;
   this->_findAllConnected ( caller, connected, _triangles->index ( hit ), true, true );
@@ -706,7 +707,7 @@ void TriangleDocument::keepAllConnected ( Usul::Interfaces::IUnknown *caller, co
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriangleDocument::deleteAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::Hit &hit )
+void TriangleDocument::deleteAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::LineSegmentIntersector::Intersection &hit )
 {
   Connected connected;
   this->_findAllConnected ( caller, connected,  _triangles->index ( hit ), true, true );

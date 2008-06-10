@@ -637,13 +637,13 @@ protected:
   //
   /////////////////////////////////////////////////////////////////////////////
   
-  virtual osg::Vec3          getCenter();
-  virtual void               setCenter( const osg::Vec3& );
+  virtual osg::Vec3d         getCenter();
+  virtual void               setCenter( const osg::Vec3d& );
   virtual float              getDistance();
   virtual void               setDistance ( float );
   virtual osg::Quat          getRotation();
   virtual void               setRotation( const osg::Quat& );
-  virtual void               setTrackball ( const osg::Vec3&, float distance, const osg::Quat&, bool makeTrackball, bool setViewerToo );
+  virtual void               setTrackball ( const osg::Vec3d&, float distance, const osg::Quat&, bool makeTrackball, bool setViewerToo );
 
   /////////////////////////////////////////////////////////////////////////////
   //

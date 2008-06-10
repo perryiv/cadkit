@@ -215,7 +215,7 @@ void Tile::_destroy()
   this->clear ( true );
 
   _body = 0x0; // Don't delete!
-  delete _mesh; _mesh = 0x0;
+  /*delete _mesh; _mesh = 0x0;*/
   delete _mutex; _mutex = 0x0;
   _borders = 0x0;
   _skirts = 0x0;
@@ -236,24 +236,35 @@ void Tile::updateMesh()
   if ( false == this->verticesDirty() || false == this->texCoordsDirty() )
     return;
 
-  Guard guard ( this );
+  // Get needed variables.
+  Extents extents ( this->extents() );
+  MeshSize size ( this->meshSize() );
+  ImagePtr elevation ( 0x0 );
+  Body::RefPtr body ( 0x0 );
+  Usul::Math::Vec4d texCoords;
+  {
+    Guard guard ( this->mutex() );
+    elevation = _elevation;
+    body = _body;
+    texCoords = _texCoords;
+  }
 
   // Handle bad state.
-  if ( ( 0x0 == _body ) || ( 0x0 == _mesh ) )
+  if ( 0x0 == body )
     return;
 
-  // Remove all the children.
-  this->removeChildren ( 0, this->getNumChildren() );
-
   // Shortcuts.
-  const Extents::Vertex &mn ( _extents.minimum() );
-  const Extents::Vertex &mx ( _extents.maximum() );
-  const double deltaU ( _texCoords[1] - _texCoords[0] );
-  const double deltaV ( _texCoords[3] - _texCoords[2] );
-  Mesh &mesh ( *_mesh );
+  const Extents::Vertex &mn ( extents.minimum() );
+  const Extents::Vertex &mx ( extents.maximum() );
+  const double deltaU ( texCoords[1] - texCoords[0] );
+  const double deltaV ( texCoords[3] - texCoords[2] );
 
-  // Clear the bounding sphere.
-  _boundingSphere.init();
+  // Make a new mesh.
+  MeshPtr pMesh ( new Mesh ( size[0], size[1] ) );
+  Mesh &mesh ( *pMesh );
+
+  // Make a new bounding sphere.
+  BSphere boundingSphere;
 
   // Add internal geometry.
   for ( int i = mesh.rows() - 1; i >= 0; --i )
@@ -266,33 +277,25 @@ void Tile::updateMesh()
       const double lon ( mn[0] + u * ( mx[0] - mn[0] ) );
       const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
 
-      // Only set the vertices if they are dirty.
-      if ( this->verticesDirty() )
-      {
-        // Convert lat-lon coordinates to xyz.
-        Mesh::Vector &p ( mesh.point ( i, j ) );
+      // Convert lat-lon coordinates to xyz.
+      Mesh::Vector &p ( mesh.point ( i, j ) );
         
-        // Get the elevation.
-        double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
-        _body->latLonHeightToXYZ ( lat, lon, elevation, p );
+      // Get the elevation.
+      double elevation ( ( elevation.valid() ? ( *reinterpret_cast < const float * > ( elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
+      body->latLonHeightToXYZ ( lat, lon, elevation, p );
         
-        // Expand the bounding sphere by the point.
-        _boundingSphere.expandBy ( p );
+      // Expand the bounding sphere by the point.
+      boundingSphere.expandBy ( p );
 
-        // Assign normal vectors.
-        Mesh::Vector &n ( mesh.normal ( i, j ) );
-        n = p; // Minus the center, which is (0,0,0).
-        n.normalize();
-      }
+      // Assign normal vectors.
+      Mesh::Vector &n ( mesh.normal ( i, j ) );
+      n = p; // Minus the center, which is (0,0,0).
+      n.normalize();
 
-      // Only set the texture coordinates if they are dirty.
-      if ( this->texCoordsDirty() )
-      {
-        // Assign texture coordinate.  Lower left corner should be (0,0).
-        const double s ( ( _texCoords[0] + ( u * deltaU ) ) );
-        const double t ( ( _texCoords[2] + ( v * deltaV ) ) );
-        mesh.texCoord ( i, j ).set ( s, t );
-      }
+      // Assign texture coordinate.  Lower left corner should be (0,0).
+      const double s ( ( texCoords[0] + ( u * deltaU ) ) );
+      const double t ( ( texCoords[2] + ( v * deltaV ) ) );
+      mesh.texCoord ( i, j ).set ( s, t );
     }
   }
 
@@ -312,7 +315,6 @@ void Tile::updateMesh()
       p = p - ll;
     }
   }
-  _lowerLeft = ll;
 
   // Unset these dirty flags.
   this->dirty ( false, Tile::VERTICES, false );
@@ -326,14 +328,14 @@ void Tile::updateMesh()
   // Depth of skirt.  TODO: This function needs to be tweeked.
   const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
     
-  // Remove old skirts.
-  OsgTools::Group::removeAllChildren ( _skirts.get() );
+  // Make new skirts.
+  osg::ref_ptr<osg::Group> skirts ( new osg::Group );
 
   // Add skirts to group.
-  _skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
-  _skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
-  _skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
-  _skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
+  skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
+  skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
+  skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
+  skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
 
 #if 0
 
@@ -352,7 +354,7 @@ void Tile::updateMesh()
 #endif
 
   // Add to the matrix transform.
-  mt->addChild ( _skirts.get() );
+  mt->addChild ( skirts.get() );
 
   // Make the ground.
   mt->addChild ( mesh() );
@@ -360,8 +362,20 @@ void Tile::updateMesh()
   // Add the place-holder for the border.
   mt->addChild ( _borders.get() );
 
+  // Remove all the children.
+  this->removeChildren ( 0, this->getNumChildren() );
+
   // Add the group to us.
   this->addChild ( mt.get() );
+
+  // Set needed variables
+  {
+    Guard guard ( this->mutex() );
+    _lowerLeft = ll;
+    _mesh = pMesh;
+    _boundingSphere = boundingSphere;
+    _skirts = skirts;
+  }
   
   this->dirtyBound();
 }
@@ -550,7 +564,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   USUL_TRACE_SCOPE;
 
   // Get needed variables.
-  Mesh* mesh_ ( 0x0 );
+  MeshPtr mesh_;
   Usul::Jobs::Job::RefPtr tileJob ( 0x0 );
   Body::RefPtr body ( 0x0 );
   osg::Vec3d lowerLeft;
@@ -1126,7 +1140,7 @@ Tile::NodePtr Tile::_buildBorderLine()
   osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
 
   // If we have a mesh...
-  if ( 0x0 != _mesh )
+  if ( 0x0 != _mesh.get() )
   {
     // Shortcut.
     Mesh &mesh ( *_mesh );
@@ -1797,7 +1811,7 @@ Tile::MeshSize Tile::meshSize() const
   Guard guard ( this );
 
   // Set the size.
-  if ( 0x0 != _mesh )
+  if ( 0x0 != _mesh.get() )
     size.set ( _mesh->rows(), _mesh->columns() );
 
   return size;

@@ -36,6 +36,8 @@
 #include "osg/Texture2D"
 #include "osg/Vec3d"
 
+#include "boost/shared_ptr.hpp"
+
 #include <typeinfo>
 
 namespace Usul { namespace Interfaces { struct IRasterLayer; } }
@@ -96,6 +98,7 @@ public:
   typedef osg::BoundingSphere BSphere;
   typedef osg::ref_ptr<osg::Node> NodePtr;
   typedef Mesh<osg::Vec3d> Mesh;
+  typedef boost::shared_ptr<Mesh> MeshPtr;
   typedef std::pair<ImagePtr, Usul::Math::Vec4d> TextureData;
   typedef std::vector<TextureData> Textures;
   typedef Usul::Interfaces::IRasterLayer IRasterLayer;
@@ -245,7 +248,7 @@ private:
   Body *_body;
   Extents _extents;
   double _splitDistance;
-  Mesh *_mesh;
+  MeshPtr _mesh;
   osg::Vec3d _lowerLeft;
   unsigned int _level;
   unsigned int _flags;

@@ -105,7 +105,7 @@ protected:
 
 	Style*                      _style ( const std::string& name );
 
-  osg::Vec3                   _buildVec3         ( const XmlTree::Node& node );
+  osg::Vec3                   _buildVec3         ( const XmlTree::Node& node, osg::Vec3::value_type defaultValue );
 
 private:
   

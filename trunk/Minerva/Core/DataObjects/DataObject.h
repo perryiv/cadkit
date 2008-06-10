@@ -169,6 +169,7 @@ protected:
 private:
 
   bool         _dirty;
+  bool         _visible;
   std::string  _objectId;
   std::string  _label;
   osg::Vec3    _labelPosition;

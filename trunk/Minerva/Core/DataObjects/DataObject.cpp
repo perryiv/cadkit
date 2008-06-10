@@ -42,6 +42,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DataObject, DataObject::BaseClass );
 DataObject::DataObject() :
   BaseClass(),
   _dirty ( true ),
+  _visible ( true ),
   _objectId ( "" ),
   _label(),
   _labelPosition ( 0.0, 0.0, 1000.0 ),
@@ -495,6 +496,8 @@ void DataObject::visibility ( bool b )
     const unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
     _root->setNodeMask ( nodeMask );
   }
+
+  _visible = b;
 }
 
 
@@ -507,7 +510,7 @@ void DataObject::visibility ( bool b )
 bool DataObject::visibility ( ) const
 {
   Guard guard ( this );
-  return _root.valid () ? ( _root->getNodeMask () != 0x0 ) : ( _preBuiltScene.valid() ? _preBuiltScene->getNodeMask() != 0x0 : false );
+  return _visible;
 }
 
 

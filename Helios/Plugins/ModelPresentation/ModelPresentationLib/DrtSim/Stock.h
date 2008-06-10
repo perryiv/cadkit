@@ -19,7 +19,7 @@
 #ifndef	_CLASS_STOCK_H_
 #define	_CLASS_STOCK_H_
 
-#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
+#include "../ModelPresentationLib.h"
 
 #include <osg/Node>
 #include <osg/Switch>

@@ -18,7 +18,7 @@
 
 #include "CompileGuard.h"
 
-#include "Experimental/ModelPresentationLib/ModelPresentationLib.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentationLib/ModelPresentationLib.h"
 #include "MpdDialogDefinitions.h"
 
 #include "Usul/Base/Referenced.h"

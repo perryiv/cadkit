@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: CadKit Helios Qt App", "Application\HeliosQtApp.vcproj", "{4CD7F65F-3E52-4C60-ABC0-D837D5F408B5}"
@@ -242,7 +241,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva LayerManager"
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation", "..\..\Experimental\ModelPresentation\ModelPresentation\ModelPresentationModel.vcproj", "{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation", "..\Plugins\ModelPresentation\ModelPresentation\ModelPresentationModel.vcproj", "{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -255,7 +254,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation", 
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation Delegate Qt", "..\..\Experimental\ModelPresentation\ModelPresentationDelegate\ModelPresentationDelegate.vcproj", "{478E254F-0755-4125-9C0D-38E8DB898732}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation Delegate Qt", "..\Plugins\ModelPresentation\ModelPresentationDelegate\ModelPresentationDelegate.vcproj", "{478E254F-0755-4125-9C0D-38E8DB898732}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -276,7 +275,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Modflow Model", "..\.
 	ProjectSection(ProjectDependencies) = postProject
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Modflow Delegate Qt", "..\..\Nimue\Plugins\ModflowDelegate\ModflowDelegate.vcproj", "{996C1AA0-86B7-44A3-BBA6-DAA24137BA2D}"
@@ -340,7 +338,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva PostGISLayerQ
 		{768EABAD-0721-457D-820D-C0548B1F252A} = {768EABAD-0721-457D-820D-C0548B1F252A}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Generic Nurbs", "..\..\GenericNurbs\GN\gn_library.vcproj", "{1C8F8A43-B135-4301-959A-1ED41708A63F}"
@@ -568,7 +565,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Measure Tool", "..\Pl
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Model Presentation", "..\..\Experimental\ModelPresentationLib\ModelPresentationLib.vcproj", "{040C77E7-E4BD-4858-80F5-3AC607BFBCFA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Model Presentation", "..\Plugins\ModelPresentation\ModelPresentationLib\ModelPresentationLib.vcproj", "{040C77E7-E4BD-4858-80F5-3AC607BFBCFA}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -730,7 +727,7 @@ Global
 		{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}.Release|Win32.ActiveCfg = Release|Win32
 		{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}.Release|Win32.Build.0 = Release|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.Build.0 = Debug|Win32
+		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.Build.0 = De?ug|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Release|Win32.ActiveCfg = Release|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Release|Win32.Build.0 = Release|Win32
 		{F450B90B-6E40-4369-8E9F-996C6301AB13}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -782,7 +779,6 @@ Global
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.ActiveCfg = Release|Win32
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.Build.0 = Release|Win32
 		{4F241186-BE0A-4F1D-BC81-B89E8EBD79C1}.Debug|Win32.ActiveCfg = Debug|Win32
-		{4F241186-BE0A-4F1D-BC81-B89E8EBD79C1}.Debug|Win32.Build.0 = Debug|Win32
 		{4F241186-BE0A-4F1D-BC81-B89E8EBD79C1}.Release|Win32.ActiveCfg = Release|Win32
 		{4F241186-BE0A-4F1D-BC81-B89E8EBD79C1}.Release|Win32.Build.0 = Release|Win32
 		{2C5A6360-DC8A-4C91-B0B4-AEBFB998435D}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -834,7 +830,6 @@ Global
 		{226C849E-90C3-48D8-86BC-19B3252F3FAE}.Release|Win32.ActiveCfg = Release|Win32
 		{226C849E-90C3-48D8-86BC-19B3252F3FAE}.Release|Win32.Build.0 = Release|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Debug|Win32.Build.0 = Debug|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Release|Win32.ActiveCfg = Release|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Release|Win32.Build.0 = Release|Win32
 		{D5BF2795-F1F4-4868-95A9-0ABCCAA3CC63}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -884,9 +879,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Qt) = preSolution
-		Integration = True
 	EndGlobalSection
 	GlobalSection(Qt) = preSolution
 		Integration = True

@@ -580,7 +580,7 @@ void Viewer::camera ( CameraOption option )
 
   // Get the current state. Note: do not use _navManip->getInverseMatrix().
   osg::Matrixd M1 ( viewer->getViewMatrix() );
-  osg::Vec3 T1 ( M1.getTrans() );
+  osg::Vec3d T1 ( M1.getTrans() );
   osg::Quat R1; M1.get ( R1 );
 
   // Make the adapters.
@@ -682,7 +682,7 @@ void Viewer::camera ( CameraOption option )
   LowLods ll ( this );
 
   // Get the translation and rotation.
-  osg::Vec3 T2 ( M2.getTrans() );
+  osg::Vec3d T2 ( M2.getTrans() );
   osg::Quat R2; M2.get ( R2 );
 
   // Animate.
@@ -3831,13 +3831,13 @@ void Viewer::_handleSeek ( EventAdapter *ea )
   const float distance ( this->getDistance() );
 
   // Get the eye position.
-  osg::Vec3 eye, c, up;
+  osg::Vec3d eye, c, up;
   osg::Matrix m ( osg::Matrixd::translate ( 0.0, 0.0, distance ) * osg::Matrixd::rotate ( rot ) * osg::Matrixd::translate ( center ) );
   m.inverse( m ).getLookAt ( eye, c, up );
 
   // Get the new center and distance.
-  const osg::Vec3 c2 ( hit.getWorldIntersectPoint() );
-  osg::Vec3 axis2 ( c2 - eye );
+  const osg::Vec3d c2 ( hit.getWorldIntersectPoint() );
+  osg::Vec3d axis2 ( c2 - eye );
   const float d2 ( axis2.length() );
 
   // Find interface to animate, if one exists.

@@ -457,6 +457,7 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   object->name ( feature->name() );
   object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   object->showLabel ( true );
+  object->visibility ( feature->visiblity() );
   
   if ( TimeSpan *span = dynamic_cast<TimeSpan*> ( feature->timePrimitive() ) )
   {
@@ -724,11 +725,11 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
     std::string name ( node->name() );
     
     if ( "Location" == name )
-      location = this->_buildVec3 ( *node );
+      location = this->_buildVec3 ( *node, 0.0 );
     else if ( "Orientation" == name )
-      orientation = this->_buildVec3 ( *node );
+      orientation = this->_buildVec3 ( *node, 0.0 );
     else if ( "Scale" == name )
-      scale = this->_buildVec3 ( *node );
+      scale = this->_buildVec3 ( *node, 1.0 );
     else if ( "altitudeMode" == name )
       model->altitudeMode ( this->_parseAltitudeMode ( *node ) );
   }
@@ -791,18 +792,15 @@ KmlLayer::Geometry::AltitudeMode KmlLayer::_parseAltitudeMode ( const XmlTree::N
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 KmlLayer::_buildVec3 ( const XmlTree::Node& node )
+osg::Vec3 KmlLayer::_buildVec3 ( const XmlTree::Node& node, osg::Vec3::value_type defaultValue )
 {
   osg::Vec3 v;
   
   Children children ( node.children() );
   
-  if ( 3 == children.size() )
-  {
-    v[0] = ToDouble::convert ( children[0]->value() );
-    v[1] = ToDouble::convert ( children[1]->value() );
-    v[2] = ToDouble::convert ( children[2]->value() );
-  }
+  v[0] = children.size() >= 1 ? ToDouble::convert ( children[0]->value() ) : defaultValue;
+  v[1] = children.size() >= 2 ? ToDouble::convert ( children[1]->value() ) : defaultValue;
+  v[2] = children.size() >= 3 ? ToDouble::convert ( children[2]->value() ) : defaultValue;
   
   return v;
 }

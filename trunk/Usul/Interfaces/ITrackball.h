@@ -33,12 +33,12 @@ struct ITrackball : public Usul::Interfaces::IUnknown
 
   virtual osg::Vec3d getCenter() = 0;
   virtual void       setCenter( const osg::Vec3d& ) = 0;
-  virtual float      getDistance() = 0;
-  virtual void       setDistance( float ) = 0;
+  virtual double     getDistance() = 0;
+  virtual void       setDistance( double ) = 0;
   virtual osg::Quat  getRotation() = 0;
   virtual void       setRotation ( const osg::Quat& ) = 0;
 
-  virtual void setTrackball ( const osg::Vec3d&, float distance, const osg::Quat&, bool makeTrackball, bool setViewerToo ) = 0;
+  virtual void setTrackball ( const osg::Vec3d&, double distance, const osg::Quat&, bool makeTrackball, bool setViewerToo ) = 0;
 
 }; // class ITrackball
 

@@ -25,7 +25,7 @@
 
 #include "osg/Vec3"
 
-#include "osgUtil/IntersectVisitor"
+#include "osgUtil/LineSegmentIntersector"
 
 #include <memory>
 #include <vector>
@@ -45,6 +45,7 @@ public:
   typedef Usul::Functors::Interaction::Common::BaseFunctor BaseFunctor;
   typedef BaseFunctor                                      BaseClass;
   typedef Usul::Functors::Interaction::Navigate::Direction Direction;
+  typedef osgUtil::LineSegmentIntersector::Intersection    Intersection;
 
   Intersect ( Unknown *unknown, Direction *dir, const std::string& name );
 
@@ -55,7 +56,7 @@ public:
   bool                  hasHit() const;
 
   // Get the last hit?
-  osgUtil::Hit          lastHit() const;
+  Intersection          lastHit() const;
 
   // Clone this functor.
   BaseFunctor*          clone();
@@ -82,7 +83,7 @@ protected:
 
   float                 _farClippingDistance() const;
 
-  bool                  _intersect ( osg::Node *scene, osgUtil::Hit & hit, const osg::Vec3& start, const osg::Vec3& end );
+  bool                  _intersect ( osg::Node *scene, osgUtil::LineSegmentIntersector::Intersection & hit, const osg::Vec3d& start, const osg::Vec3d& end );
 
   void                  _rayBounds ( osg::Vec3& start, osg::Vec3& end );
 
@@ -95,7 +96,7 @@ private:
   WandState::ValidQueryPtr _wandState;
   ClippingDistance::ValidQueryPtr _clipDist;
   USUL_VALID_REF_POINTER ( osg::Group ) _rayBranch;
-  osgUtil::Hit _hit;
+  osgUtil::LineSegmentIntersector::Intersection _hit;
   bool _hasHit;
   bool _drawRay;
 };

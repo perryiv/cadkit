@@ -104,35 +104,33 @@ Intersect::~Intersect()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Intersect::_intersect ( osg::Node *scene, osgUtil::Hit& hit, const osg::Vec3& start, const osg::Vec3& end )
+bool Intersect::_intersect ( osg::Node *scene, osgUtil::LineSegmentIntersector::Intersection& hit, const osg::Vec3d& start, const osg::Vec3d& end )
 {
   // Handle bad input.
   if ( 0x0 == scene )
     return false;
 
-  // Make the line segment.
-  osg::ref_ptr < osg::LineSegment > segment ( new osg::LineSegment );
+  // Make the intersector.
+  osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector ( new osgUtil::LineSegmentIntersector ( start, end ) );
 
-  // Set the line segment's bounds.
-  segment->set ( start, end );
-
-  // Make the visitor.
-  osg::ref_ptr < osgUtil::IntersectVisitor > visitor ( new osgUtil::IntersectVisitor );
-
-  visitor->addLineSegment ( segment.get() );
+  // Declare the pick-visitor.
+  typedef osgUtil::IntersectionVisitor Visitor;
+  osg::ref_ptr<Visitor> visitor ( new Visitor );
+  visitor->setIntersector ( intersector.get() );
 
   // Calculate the intersections.
   scene->accept ( *visitor );
 
-  // Save the info if we intersected.
-  osgUtil::IntersectVisitor::HitList &hits = visitor->getHitList ( segment.get() );
-  if ( hits.size() > 0 )
-  {
-    hit = hits.front();
-    return true;
-  }
+  // Get the hit-list for our line-segment.
+  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+  const Intersections &hits = intersector->getIntersections();
+  if ( hits.empty() )
+    return false;
 
-  return false;
+  // Set the hit.
+  hit = intersector->getFirstIntersection();
+
+  return true;
 }
 
 
@@ -272,7 +270,7 @@ void Intersect::operator()()
   _hasHit = false;
 
   // Intersect.
-  osgUtil::Hit hit;
+  osgUtil::LineSegmentIntersector::Intersection hit;
   if ( this->_intersect ( ns->navigationScene(), hit, start, end ) )
   {
     // Set our internal members.
@@ -358,7 +356,7 @@ bool Intersect::hasHit() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osgUtil::Hit Intersect::lastHit() const
+Intersect::Intersection Intersect::lastHit() const
 {
   return _hit;
 }

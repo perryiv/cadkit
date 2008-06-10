@@ -4950,7 +4950,7 @@ bool Application::_handleSeekEvent ( unsigned long id )
     }
 
     // Get the hit.
-    osgUtil::Hit hit ( _intersector->lastHit() );
+    osgUtil::LineSegmentIntersector::Intersection hit ( _intersector->lastHit() );
 
     // Get the matrix.
     osg::Matrix m1 ( this->getViewMatrix() );
@@ -5047,7 +5047,7 @@ void Application::_intersect()
       (*_intersector)();
       if ( _intersector->hasHit() )
       {
-        osgUtil::Hit hit (_intersector->lastHit () );
+        osgUtil::LineSegmentIntersector::Intersection hit (_intersector->lastHit () );
 
         Usul::Interfaces::IUnknown::QueryPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
         for ( IntersectListeners::iterator i = _intersectListeners.begin(); i != _intersectListeners.end(); ++i )

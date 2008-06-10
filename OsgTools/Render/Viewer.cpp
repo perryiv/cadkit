@@ -3279,7 +3279,7 @@ void Viewer::setCenter( const osg::Vec3d &c )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Viewer::getDistance()
+double Viewer::getDistance()
 {
   return this->_trackball()->distance(); 
 }
@@ -3291,7 +3291,7 @@ float Viewer::getDistance()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setDistance( float d )
+void Viewer::setDistance( double d )
 {
   this->setTrackball( this->getCenter(), d, this->getRotation(), true, true );
 }
@@ -3326,7 +3326,7 @@ void Viewer::setRotation( const osg::Quat &r )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setTrackball ( const osg::Vec3d& center, float distance, const osg::Quat& rot, bool makeTrackball, bool setViewerToo )
+void Viewer::setTrackball ( const osg::Vec3d& center, double distance, const osg::Quat& rot, bool makeTrackball, bool setViewerToo )
 {
   if ( !this->viewer() )
     return;
@@ -3828,7 +3828,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
   // Make copy of trackball's current rotation
   const osg::Quat rot ( this->getRotation() );
   const osg::Vec3d center ( this->getCenter() );
-  const float distance ( this->getDistance() );
+  const double distance ( this->getDistance() );
 
   // Get the eye position.
   osg::Vec3d eye, c, up;
@@ -3838,7 +3838,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
   // Get the new center and distance.
   const osg::Vec3d c2 ( hit.getWorldIntersectPoint() );
   osg::Vec3d axis2 ( c2 - eye );
-  const float d2 ( axis2.length() );
+  const double d2 ( axis2.length() );
 
   // Find interface to animate, if one exists.
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
@@ -5076,7 +5076,7 @@ void Viewer::stateLoad()
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::TRACKBALL][doc] );
     const osg::Vec3d  center ( reg["center"].get<osg::Vec3d>  ( trackball->center()   ) );
     const osg::Quat rotation ( reg["rotation"].get<osg::Quat> ( trackball->rotation() ) );
-    const float     distance ( reg["distance"].get<float>     ( trackball->distance() ) );
+    const double    distance ( reg["distance"].get<float>     ( trackball->distance() ) );
 
     // Set trackball's properties.
     this->setTrackball ( center, distance, rotation, false, true );

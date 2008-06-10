@@ -253,6 +253,16 @@ void Tile::updateMesh()
   if ( 0x0 == body )
     return;
 
+  // The number of expected bytes for our elevation data.
+  const unsigned int expectedBytes ( size[0] * size[1] * sizeof ( float ) );
+
+  // Check to make sure our elevation data is valid.
+  const bool elevationValid ( elevation.valid() && 
+                              GL_FLOAT == elevation->getDataType() && 
+                              expectedBytes == elevation->getImageSizeInBytes() &&
+                              size[0] == elevation->s() && 
+                              size[1] == elevation->t() );
+
   // Shortcuts.
   const Extents::Vertex &mn ( extents.minimum() );
   const Extents::Vertex &mx ( extents.maximum() );
@@ -281,7 +291,9 @@ void Tile::updateMesh()
       Mesh::Vector &p ( mesh.point ( i, j ) );
         
       // Get the elevation.
-      double elevation ( ( elevation.valid() ? ( *reinterpret_cast < const float * > ( elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
+      // The osg::Image stores it's data as char*.  However, in this case the data of the image is float.
+      // The data function will calculate and return the pointer to the beginning of the float.  The pointer needs to be cast to a float pointer so the proper value is accessed.
+      const double elevation ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
       body->latLonHeightToXYZ ( lat, lon, elevation, p );
         
       // Expand the bounding sphere by the point.

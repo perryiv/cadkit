@@ -3,7 +3,7 @@ project (ModelPresentation)
 # Set the name.  Needed for the macros to set up plugin properties.
 SET(PLUGIN_NAME "ModelPresentation")
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 # ------------ Find OpenSceneGraph Libraries ----------------------

@@ -1670,9 +1670,10 @@ const osg::Vec3f &TriangleSet::vertex2 ( const osg::Geode* g, const osg::Drawabl
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int TriangleSet::index ( const osgUtil::Hit &hit ) const
+unsigned int TriangleSet::index ( const osgUtil::LineSegmentIntersector::Intersection &hit ) const
 {
-  const Triangle *t ( this->triangle ( hit._geode.get(), hit._drawable.get(), hit._primitiveIndex ) );
+  const osg::Geode* geode ( dynamic_cast<const osg::Geode*> ( *hit.nodePath.rbegin() ) );
+  const Triangle *t ( this->triangle ( geode, hit.drawable.get(), hit.primitiveIndex ) );
   if ( 0x0 == t )
     throw std::runtime_error ( "Error 4259806184: No triangle found for given hit information" );
   return ( t->index() );

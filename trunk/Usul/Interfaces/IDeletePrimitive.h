@@ -33,7 +33,7 @@ struct IDeletePrimitive : public Usul::Interfaces::IUnknown
   enum { IID = 1744889731u };
 
   // Delete primitive at the hit.
-  virtual void deletePrimitive ( const osgUtil::Hit& hit ) = 0;
+  virtual void deletePrimitive ( const osgUtil::LineSegmentIntersector::Intersection& hit ) = 0;
 
 }; // struct IDeletePrimitive
 

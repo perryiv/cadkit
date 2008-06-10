@@ -135,10 +135,10 @@ public:
   virtual void                createDefaultGUI ( Unknown *caller = 0x0 );
 
   // Usul::Interfaces::IDeleteAllConnected
-  virtual void                deleteAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::Hit &hit );
+  virtual void                deleteAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::LineSegmentIntersector::Intersection &hit );
 
   // Usul::Interfaces::IDeletePrimitive
-  virtual void                deletePrimitive ( const osgUtil::Hit& hit );
+  virtual void                deletePrimitive ( const osgUtil::LineSegmentIntersector::Intersection& hit );
   
   // Usul::Interfaces::IDisplaylists
   virtual bool                displayList () const;
@@ -246,7 +246,7 @@ protected:
   void                        _findAllConnected ( Usul::Interfaces::IUnknown* caller, Connected& connected, Uint32 seed, bool showProgress, bool clearFlags );
 
   /// Usul::Interfaces::IKeepAllConnected
-  virtual void                keepAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::Hit &hit );
+  virtual void                keepAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::LineSegmentIntersector::Intersection &hit );
 
   /// Usul::Interfaces::IGroupPrimitives
   virtual void                groupPrimitives ( Usul::Interfaces::IUnknown *caller);

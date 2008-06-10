@@ -827,7 +827,7 @@ void Renderer::viewMatrix ( const osg::Matrixd& matrix )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Matrixf Renderer::viewMatrix ( ) const
+const osg::Matrixd Renderer::viewMatrix() const
 {
   return _sceneView->getViewMatrix();
 }

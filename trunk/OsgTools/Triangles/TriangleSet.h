@@ -43,6 +43,8 @@
 #include "osg/Vec3f"
 #include "osg/Group"
 
+#include "osgUtil/LineSegmentIntersector"
+
 #include <vector>
 #include <map>
 #include <string>
@@ -197,7 +199,7 @@ public:
   void                    groupTriangles ( Usul::Interfaces::IUnknown *caller );
 
   // Convert hit to triangle index.
-  unsigned int            index ( const osgUtil::Hit &hit ) const;
+  unsigned int            index ( const osgUtil::LineSegmentIntersector::Intersection &hit ) const;
 
   // Keep only these triangles.
   void                    keepTriangles ( const Indices &keepers, Usul::Interfaces::IUnknown *caller );

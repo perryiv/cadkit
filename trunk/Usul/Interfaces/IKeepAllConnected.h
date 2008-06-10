@@ -34,7 +34,7 @@ struct IKeepAllConnected : public Usul::Interfaces::IUnknown
   enum { IID = 3312125481u };
 
   // Keep all things connected to the "hit".
-  virtual void keepAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::Hit &hit ) = 0;
+  virtual void keepAllConnected ( Usul::Interfaces::IUnknown *caller, const osgUtil::LineSegmentIntersector::Intersection &hit ) = 0;
 };
 
 

@@ -178,7 +178,7 @@ public:
   Vec2ui                                  gridSize() const;
 
   // Usul::Interfaces::IIntersectListener.
-  virtual void                            intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller );
+  virtual void                            intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller );
 
   // Set/get the layers.
   void                                    layers ( Layers & );

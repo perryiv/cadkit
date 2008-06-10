@@ -276,7 +276,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MeasureToolComponent::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
+void MeasureToolComponent::intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this->mutex() );
 

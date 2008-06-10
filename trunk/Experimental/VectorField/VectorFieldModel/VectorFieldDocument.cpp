@@ -352,7 +352,7 @@ osg::Node *VectorFieldDocument::buildScene ( const BaseClass::Options &options, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VectorFieldDocument::intersectNotify ( float x, float y, const osgUtil::Hit &hit, Usul::Interfaces::IUnknown *caller )
+void VectorFieldDocument::intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller )
 {
 }
 
@@ -413,7 +413,13 @@ bool VectorFieldDocument::isAllowAddParticle() const
   return _allowAddParticles;
 }
 
-// Called when mouse event occurs.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when mouse event occurs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void VectorFieldDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Interfaces::IUnknown * caller )
 {
   // Query for the interface.
@@ -424,7 +430,7 @@ void VectorFieldDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::I
 
   if ( left && si.valid() && osgGA::GUIEventAdapter::PUSH == ea.getEventType() && this->isAllowAddParticle())
   {
-    osgUtil::Hit hit;
+    osgUtil::LineSegmentIntersector::Intersection hit;
     if ( si->intersect ( ea.getX(), ea.getY(), hit ) )
     {
       this->_addParticle ( hit.getLocalIntersectPoint() );

@@ -145,7 +145,7 @@ public:
 
   // Set/Get the view matrix.
   void                  viewMatrix ( const osg::Matrixd& matrix );
-  const osg::Matrixf    viewMatrix ( ) const;
+  const osg::Matrixd    viewMatrix ( ) const;
 
   // Set/get the viewport.
   const Viewport *      viewport() const;

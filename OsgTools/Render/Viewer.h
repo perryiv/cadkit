@@ -516,7 +516,7 @@ protected:
 
   virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::Hit &hit, bool useWindowCoords = false );
   void                  _intersectNotify ( float x, float y, osgUtil::Hit &hit );
-  bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3 &pt0, osg::Vec3 &pt1, bool useWindowCoords = false );
+  bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3d &pt0, osg::Vec3d &pt1, bool useWindowCoords = false );
 
   void                  _render();
 

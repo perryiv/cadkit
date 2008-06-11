@@ -45,8 +45,8 @@ ${PROJECT_SOURCE_DIR}/Plugins/SceneModel
 ${PROJECT_SOURCE_DIR}/Plugins/TriangleModel
 ${PROJECT_SOURCE_DIR}/Plugins/VolumeModel
 ${PROJECT_SOURCE_DIR}/Plugins/PathAnimation
-${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentationLib
-${PROJECT_SOURCE_DIR}/../Experimental/ModelPresentation/ModelPresentation
+${PROJECT_SOURCE_DIR}/Plugins/ModelPresentation/ModelPresentationLib
+${PROJECT_SOURCE_DIR}/Plugins/ModelPresentation/ModelPresentation
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfModel
 ${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfDelegate

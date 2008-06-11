@@ -279,6 +279,7 @@ protected:
   /// Build menus.
   void                                     _buildTimeSpanMenu();
   void                                     _buildLayerMenu();
+  void                                     _buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces::ITreeNode* node );
 
   /// Find first and last date.
   void                                     _findFirstLastDate();

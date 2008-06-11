@@ -73,11 +73,17 @@
 #define USUL_TRACE_10(exp1,exp2,exp3,exp4,exp5,exp6,exp7,exp8,exp9,exp10)\
   Usul::Trace::Print::execute ( Usul::Strings::format ( exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8, exp9, exp10 ) )
 
+#ifdef _MSC_VER
+#define __USUL_FUNCTION__ __FUNCTION__
+#else
+#define __USUL_FUNCTION__ __PRETTY_FUNCTION__
+#endif
+
 #define USUL_TRACE_SCOPE\
-  Usul::Trace::Scope trace_scope ( this, __PRETTY_FUNCTION__ )
+  Usul::Trace::Scope trace_scope ( this, __USUL_FUNCTION__ )
 
 #define USUL_TRACE_SCOPE_STATIC\
-  Usul::Trace::Scope trace_scope ( __PRETTY_FUNCTION__ )
+  Usul::Trace::Scope trace_scope ( __USUL_FUNCTION__ )
 
 #else
 

@@ -290,12 +290,9 @@ void Tile::updateMesh()
       // Convert lat-lon coordinates to xyz.
       Mesh::Vector &p ( mesh.point ( i, j ) );
         
-      // Get the elevation.
       // The osg::Image stores it's data as char*.  However, in this case the data of the image is float.
       // The data function will calculate and return the pointer to the beginning of the float.  The pointer needs to be cast to a float pointer so the proper value is accessed.
-      const double heightAboveSeaLevel ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( mesh.rows() - 
-i - 1, j ) ) 
-) : 0.0 ) );
+      const double heightAboveSeaLevel ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
       body->latLonHeightToXYZ ( lat, lon, heightAboveSeaLevel, p );
         
       // Expand the bounding sphere by the point.

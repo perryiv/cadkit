@@ -34,7 +34,7 @@ public:
 
   typedef Usul::Threads::Thread BaseClass;
 
-  Thread();
+  Thread ( const std::string &name );
 
   virtual bool            isIdle() const;
 
@@ -49,7 +49,7 @@ private:
   Thread ( const Thread & );             // No copying
   Thread &operator = ( const Thread & ); // No assignment
 
-  void              _destroy();
+  void                    _destroy();
 
   friend class Detail::OpenThread;
 
@@ -58,7 +58,7 @@ private:
 
 
 // Creation function.
-OPEN_THREADS_EXTENSIONS_EXPORT Usul::Threads::Thread *newOpenThreadsThread();
+OPEN_THREADS_EXTENSIONS_EXPORT Usul::Threads::Thread::RefPtr newOpenThreadsThread ( const std::string &name );
 
 
 }; // namespace OT

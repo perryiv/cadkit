@@ -140,7 +140,7 @@ void deleteThread ( OpenThreads::Thread *thread )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Thread::Thread() : BaseClass(),
+Thread::Thread ( const std::string &name ) : BaseClass ( name ),
   _thread ( 0x0 )
 {
   USUL_TRACE_SCOPE;
@@ -232,6 +232,7 @@ bool Thread::isIdle() const
   // See if there is a running thread.
   if ( 0x0 != _thread && true == _thread->isRunning() )
   {
+    //std::cout << Usul::Strings::format ( "Thread is still running: ", this->name(), ", ID: ", this->id(), ", Address: ", this ) << std::endl;
     return false;
   }
 
@@ -250,10 +251,11 @@ namespace Threads
 {
   namespace OT
   {
-    Usul::Threads::Thread *newOpenThreadsThread()
+    Usul::Threads::Thread::RefPtr newOpenThreadsThread ( const std::string &name )
     {
       USUL_TRACE_SCOPE_STATIC;
-      return new Thread();
+      Usul::Threads::Thread::RefPtr thread ( new Thread ( name ) );
+      return thread;
     }
   };
 };

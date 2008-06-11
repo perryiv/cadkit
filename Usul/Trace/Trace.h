@@ -74,10 +74,10 @@
   Usul::Trace::Print::execute ( Usul::Strings::format ( exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8, exp9, exp10 ) )
 
 #define USUL_TRACE_SCOPE\
-  Usul::Trace::Scope trace_scope ( this, __FUNCTION__ )
+  Usul::Trace::Scope trace_scope ( this, __PRETTY_FUNCTION__ )
 
 #define USUL_TRACE_SCOPE_STATIC\
-  Usul::Trace::Scope trace_scope ( __FUNCTION__ )
+  Usul::Trace::Scope trace_scope ( __PRETTY_FUNCTION__ )
 
 #else
 

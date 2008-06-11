@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/System/Sleep.h"
+#include "Usul/Math/MinMax.h"
 
 #ifdef _MSC_VER
 # define NOMINMAX
@@ -33,9 +34,20 @@
 void Usul::System::Sleep::milliseconds ( unsigned long duration ) 
 {
 #ifdef _MSC_VER
+
   ::Sleep ( duration );
+
 #else
-  ::usleep ( duration * 1000 ); // Wants microseconds
+
+  // Convert to microseconds
+  duration *= 1000;
+  
+  // Cap just shy of a million.
+  // http://www.opengroup.org/onlinepubs/007908799/xsh/usleep.html
+  duration = Usul::Math::maximum<unsigned long> ( duration, 999999 );
+
+  ::usleep ( duration );
+
 #endif
 }
 

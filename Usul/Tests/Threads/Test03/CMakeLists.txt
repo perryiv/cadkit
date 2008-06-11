@@ -18,6 +18,7 @@ INCLUDE_DIRECTORIES(
 #List the Sources
 SET (SOURCES
     Main.cpp
+    TestJob.cpp
 )
 
 SET ( TARGET ThreadTest03 )

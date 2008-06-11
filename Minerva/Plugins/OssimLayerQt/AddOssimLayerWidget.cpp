@@ -16,8 +16,12 @@
 
 #include "Minerva/Core/Factory/Readers.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
+#include "Usul/Jobs/Job.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Strings/Split.h"
 #include "Usul/User/Directory.h"
@@ -178,7 +182,15 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Inte
       Usul::Interfaces::IRead::QueryPtr read ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
       
       if ( read.valid() )
-        read->read ( filename );
+      {
+        // Create a job to read the file.
+        // Pass the QueryPtr to memberFunction so that if the user removes the layer, there is still a reference until the job finishes.
+        Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ),
+                                      Usul::Adaptors::memberFunction ( read, &Usul::Interfaces::IRead::read ) ), caller ) );
+
+        // Add the job to the manager.
+        Usul::Jobs::Manager::instance().addJob ( job );
+      }
       
       al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( read ) );
     }

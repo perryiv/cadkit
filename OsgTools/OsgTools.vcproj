@@ -1182,6 +1182,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Points"
+				>
+				<File
+					RelativePath=".\Points\PointSet.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Points\PointSet.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

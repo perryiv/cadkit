@@ -9,9 +9,6 @@
 
 
 #include "OsgTools/GlassBoundingBox.h"
-#include <algorithm>
-#include <functional>
-
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/Font.h"
@@ -31,6 +28,8 @@
 
 #include "osgText/Text"
 
+#include <algorithm>
+#include <functional>
 #include <limits>
 #include <iostream>
 

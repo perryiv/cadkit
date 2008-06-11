@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ClipPlaneCallback.h"
+#include "OsgTools/Render/ClipPlaneCallback.h"
 
 #include "OsgTools/Draggers/Dragger.h"
 

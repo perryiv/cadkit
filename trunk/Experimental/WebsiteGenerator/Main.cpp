@@ -17,7 +17,6 @@
 #include "WebGen.h"
 
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Threads/Mutex.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,9 +29,6 @@ int main ( int argc, char **argv, char **env )
 {
   try
   {
-    // Initialize mutex factory.
-    Usul::Threads::Mutex::createFunction ( &Usul::Threads::newSingleThreadedMutexStub );
-
     // Instantiate the program.
     WebGen program ( argc, argv, env );
 

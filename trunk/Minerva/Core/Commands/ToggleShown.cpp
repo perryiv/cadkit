@@ -13,6 +13,7 @@
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Interfaces/ITreeNode.h"
 
 using namespace Minerva::Core::Commands;
 
@@ -40,12 +41,14 @@ ToggleShown::ToggleShown ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ToggleShown::ToggleShown ( Usul::Interfaces::ILayer* layer ) : 
+ToggleShown::ToggleShown ( Usul::Interfaces::IUnknown* layer, const std::string& text ) : 
   BaseClass( 0x0 ),
   _layer ( layer )
 {
   this->_addMember ( "layer", _layer );
-  this->text ( _layer.valid () ? _layer->name () : "" );
+
+  Usul::Interfaces::ITreeNode::QueryPtr tn ( layer );
+  this->text ( tn.valid() && text.empty() ? tn->getTreeNodeName() : text );
 }
 
 
@@ -71,9 +74,10 @@ void ToggleShown::_execute ()
   Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().activeDocument () );
   
   // Toggle shown.
-  if ( _layer.valid () )
+  Usul::Interfaces::IBooleanState::QueryPtr state ( _layer );
+  if ( state.valid () )
   {
-    _layer->showLayer ( !_layer->showLayer ()  );
+    state->setBooleanState ( !state->getBooleanState() );
 
     // Dirty the scene.
     if ( dirty.valid () )
@@ -109,5 +113,6 @@ Usul::Interfaces::IUnknown* ToggleShown::queryInterface( unsigned long iid )
 
 bool ToggleShown::updateCheck () const
 {
-  return _layer.valid () ? _layer->showLayer () : false;
+  Usul::Interfaces::IBooleanState::QueryPtr state ( const_cast<Usul::Interfaces::IUnknown*> ( _layer.get() ) );
+  return state.valid () ? state->getBooleanState() : false;
 }

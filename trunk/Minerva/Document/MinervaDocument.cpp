@@ -2083,36 +2083,37 @@ void MinervaDocument::dirty( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Detail
+void MinervaDocument::_buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces::ITreeNode* node )
 {
-  void buildLayerMenu ( MenuKit::Menu& menu, Usul::Interfaces::ITreeNode* node )
+  // Return now if layer is null.
+  if ( 0x0 == node )
+    return;
+  
   {
-    // Return now if layer is null.
-    if ( 0x0 == node )
-      return;
-    
-    Usul::Interfaces::ILayer::QueryPtr layer ( node );
-    
-    // Add the toggle.
-    if ( layer.valid() )
-      menu.append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( layer ) ) );
-    
+    MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( node->getTreeNodeName() ) );
+
+    namespace UA = Usul::Adaptors;
+    namespace UC = Usul::Commands;
+
+    const unsigned int number ( node->getNumChildNodes() );
+    for ( unsigned int i = 0; i < number; ++i  )
     {
-      MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( node->getTreeNodeName() ) );
+      Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ) );
+      if ( child.valid() )
+        this->_buildLayerSubMenu ( *layerMenu, child.get() );
       
-      const unsigned int number ( node->getNumChildNodes() );
-      for ( unsigned int i = 0; i < number; ++i  )
-      {
-        Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ) );
-        if ( child.valid() )
-          Detail::buildLayerMenu ( *layerMenu, child.get() );
-        
-        Usul::Interfaces::IMenuAdd::QueryPtr ma ( node->getChildNode ( i ) );
-        if ( ma.valid() )
-          ma->menuAdd ( *layerMenu );
-      }
-      menu.append ( layerMenu.get() );
+      Usul::Interfaces::IMenuAdd::QueryPtr ma ( node->getChildNode ( i ) );
+      if ( ma.valid() )
+        ma->menuAdd ( *layerMenu );
     }
+    
+    if ( number > 0 )
+      layerMenu->addSeparator();
+
+    layerMenu->append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( node, "This Layer" ) ) );
+    layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Goto This Layer", UA::bind1<void> ( Usul::Interfaces::IUnknown::QueryPtr ( node ).get(), UA::memberFunction<void> ( this, &MinervaDocument::lookAtLayer ) ), UC::TrueFunctor() ) ) );
+
+    menu.append ( layerMenu.get() );
   }
 }
 
@@ -2132,8 +2133,14 @@ void MinervaDocument::_buildLayerMenu()
   {
     Body::RefPtr body ( *iter );
     if ( body.valid() )
-      Detail::buildLayerMenu ( *_layersMenu, Usul::Interfaces::ITreeNode::QueryPtr ( body ) );
+      this->_buildLayerSubMenu ( *_layersMenu, Usul::Interfaces::ITreeNode::QueryPtr ( body ) );
   }
+
+  namespace UA = Usul::Adaptors;
+  namespace UC = Usul::Commands;
+
+  _layersMenu->addSeparator();
+  _layersMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh Sub-Menu", UA::memberFunction<void> ( this, &MinervaDocument::_buildLayerMenu ), UC::TrueFunctor() ) ) );
 }
 
 

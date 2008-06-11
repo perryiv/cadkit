@@ -15,7 +15,7 @@
 
 #include "Usul/Commands/Command.h"
 #include "Usul/Interfaces/ISerialize.h"
-#include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/IBooleanState.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -34,7 +34,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   ToggleShown ();
-  ToggleShown ( Usul::Interfaces::ILayer* layer );
+  ToggleShown ( Usul::Interfaces::IUnknown* layer, const std::string& text );
 
 protected:
   virtual ~ToggleShown();
@@ -45,7 +45,7 @@ protected:
   virtual bool                updateCheck () const;
 
 private:
-  Usul::Interfaces::ILayer::QueryPtr _layer;
+  Usul::Interfaces::IUnknown::QueryPtr _layer;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS( ToggleShown );

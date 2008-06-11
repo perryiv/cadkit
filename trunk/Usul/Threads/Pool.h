@@ -17,6 +17,7 @@
 #define _USUL_THREADS_POOL_CLASS_H_
 
 #include "Usul/Base/Object.h"
+#include "Usul/File/Log.h"
 #include "Usul/Threads/Task.h"
 #include "Usul/Threads/Thread.h"
 #include "Usul/Pointers/Pointers.h"
@@ -42,6 +43,7 @@ public:
   typedef std::map < TaskHandle, Task::RefPtr > TaskMap;
   typedef std::set < Task::RefPtr > TaskSet;
   typedef std::vector < std::string > Strings;
+  typedef Usul::File::Log::RefPtr LogPtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Pool );
@@ -74,6 +76,10 @@ public:
 
   // Get the names of the executing tasks.
   void                    executingNames ( Strings & ) const;
+
+  // Set/get the log.
+  void                    logSet ( LogPtr );
+  LogPtr                  logGet();
 
   // Get the next task id. This will also increment the internal counter.
   unsigned long           nextTaskId();
@@ -116,6 +122,8 @@ private:
 
   void                    _destroy();
 
+  void                    _logEvent ( const std::string &s, Thread::RefPtr thread = Thread::RefPtr ( 0x0 ), std::ostream *optional = 0x0 );
+
   Task::RefPtr            _nextTask();
 
   void                    _startThreads();
@@ -133,6 +141,7 @@ private:
   unsigned long _sleep;
   bool _runThreads;
   bool _started;
+  LogPtr _log;
 };
 
 

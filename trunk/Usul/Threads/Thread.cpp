@@ -38,10 +38,9 @@ using namespace Usul::Threads;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Thread::Thread() : BaseClass(),
+Thread::Thread ( const std::string &n ) : BaseClass(),
   _state          ( Thread::NOT_RUNNING ),
   _result         ( Thread::NORMAL ),
-  _mutex          (),
   _cancelledCB    ( 0x0 ),
   _destroyedCB    ( 0x0 ),
   _errorCB        ( 0x0 ),
@@ -53,6 +52,7 @@ Thread::Thread() : BaseClass(),
   _creationThread ( Usul::Threads::currentThreadId() )
 {
   USUL_TRACE_SCOPE;
+  this->name ( n );
 }
 
 
@@ -92,19 +92,6 @@ void Thread::_destroy()
   _finishedCB = 0x0;
   _startedCB = 0x0;
   _errorMessage.clear();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the mutex. Use with caution.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Thread::Mutex &Thread::mutex() const
-{
-  USUL_TRACE_SCOPE;
-  return _mutex;
 }
 
 
@@ -543,7 +530,7 @@ void Thread::_notifyError()
   // Should be true.
   USUL_ASSERT ( this->refCount() > 0 );
 
-  // reference this instance here to ensure that it doesn't get purged 
+  // Reference this instance here to ensure that it doesn't get purged 
   // while it's inside a callback. Since the thread manager keeps a 
   // reference this should not deference to zero.
   Thread::RefPtr me ( this );
@@ -566,7 +553,7 @@ void Thread::_notifyFinished()
   // Should be true.
   USUL_ASSERT ( this->refCount() > 0 );
 
-  // reference this instance here to ensure that it doesn't get purged 
+  // Reference this instance here to ensure that it doesn't get purged 
   // while it's inside a callback. Since the thread manager keeps a 
   // reference this should not deference to zero.
   Thread::RefPtr me ( this );
@@ -589,7 +576,7 @@ void Thread::_notifyStarted()
   // Should be true.
   USUL_ASSERT ( this->refCount() > 0 );
 
-  // reference this instance here to ensure that it doesn't get purged 
+  // Reference this instance here to ensure that it doesn't get purged 
   // while it's inside a callback. Since the thread manager keeps a 
   // reference this should not deference to zero.
   Thread::RefPtr me ( this );
@@ -733,5 +720,37 @@ bool Thread::isIdle() const
   const bool notRunning ( Thread::NOT_RUNNING == this->state() );
   const bool zeroSystemThread ( 0 == this->systemId() );
 
+  //std::cout << Usul::Strings::format ( "Thread info: ", this->name(), ", ID: ", this->id(), ", Address: ", this, ", System ID: ", this->systemId(), ", Running: ", notRunning ) << std::endl;
+
   return ( notRunning && zeroSystemThread );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reference this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef _DEBUG
+void Thread::ref()
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::ref();
+}
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef _DEBUG
+void Thread::unref ( bool allowDeletion )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::unref ( allowDeletion );
+}
+#endif

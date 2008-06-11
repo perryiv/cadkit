@@ -16,8 +16,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Mutex.h"
-#include "Usul/Trace/Trace.h"
-#include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/TimedOut.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Clock.h"
@@ -46,8 +44,6 @@ Mutex::Mutex() :
   _mutex()
 #endif
 {
-  USUL_TRACE_SCOPE;
-
 #ifdef USUL_WINDOWS
   ::InitializeCriticalSection( &_cs );
 #endif
@@ -67,8 +63,6 @@ Mutex::Mutex() :
 
 Mutex::~Mutex()
 {
-  USUL_TRACE_SCOPE;
-
 #ifdef USUL_WINDOWS
   ::DeleteCriticalSection( &_cs );
 #endif
@@ -87,8 +81,6 @@ Mutex::~Mutex()
 
 Mutex *Mutex::create()
 {
-  USUL_TRACE_SCOPE_STATIC;
-
   return new Mutex();
 }
 
@@ -101,8 +93,6 @@ Mutex *Mutex::create()
 
 void Mutex::lock()
 {
-  USUL_TRACE_SCOPE;
-
 #ifdef USUL_WINDOWS
   ::EnterCriticalSection( &_cs );
 #endif
@@ -122,8 +112,6 @@ void Mutex::lock()
 
 void Mutex::unlock()
 {
-  USUL_TRACE_SCOPE;
-
 #ifdef USUL_WINDOWS
   ::LeaveCriticalSection( &_cs );
 #endif
@@ -143,13 +131,14 @@ void Mutex::unlock()
 
 bool Mutex::trylock()
 {
-  USUL_TRACE_SCOPE;
-
 #ifdef USUL_WINDOWS
-  return 0 != ::TryEnterCriticalSection ( &_cs );
+
+  return ( 0 != ::TryEnterCriticalSection ( &_cs ) );
+
 #endif
 
 #ifdef __GNUC__
+
   const int error ( ::pthread_mutex_trylock ( &_mutex ) );
 
   // Check for unintilaized mutex and invalid pointer.
@@ -157,8 +146,8 @@ bool Mutex::trylock()
     throw std::runtime_error ( "Error 4580724080: Mutex is not initialized properly." );
 
   return ( EBUSY != error );
-#endif
 
+#endif
 }
 
 
@@ -170,8 +159,6 @@ bool Mutex::trylock()
 
 void Mutex::lock ( Usul::Types::Uint64 timeout )
 {
-  USUL_TRACE_SCOPE;
-
   // Get the current time.
   const Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
 
@@ -184,7 +171,8 @@ void Mutex::lock ( Usul::Types::Uint64 timeout )
     // If the time is greater than the timeout, throw an exception.
     if ( duration > timeout )
     {
-      throw Usul::Exceptions::TimedOut::AcquireLock ( Usul::Strings::format ( "Could not acquire lock within ", timeout, " milliseconds." ) );
+      throw Usul::Exceptions::TimedOut::AcquireLock ( Usul::Strings::format 
+        ( "Warning 1373313702: Could not acquire lock within ", timeout, " milliseconds." ) );
     }
 
     // Try again in 500 milliseconds.

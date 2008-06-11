@@ -16,9 +16,7 @@
 #ifndef _USUL_THREADS_THREAD_CLASS_H_
 #define _USUL_THREADS_THREAD_CLASS_H_
 
-#include "Usul/Base/Referenced.h"
-#include "Usul/Threads/RecursiveMutex.h"
-#include "Usul/Threads/Guard.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Threads/Callback.h"
 #include "Usul/Pointers/Pointers.h"
 
@@ -27,14 +25,14 @@ namespace Usul {
 namespace Threads {
 
 
-class USUL_EXPORT Thread : public Usul::Base::Referenced
+class USUL_EXPORT Thread : public Usul::Base::Object
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef Thread *FactoryFunction();
-  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef BaseClass::Mutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Threads::Mutex StaticMutex;
   typedef Usul::Threads::Guard<StaticMutex> StaticGuard;
@@ -76,9 +74,6 @@ public:
   // See if this thread is idle. When it's idle it is ok to delete.
   virtual bool            isIdle() const;
 
-  // Return the mutex. Use with caution.
-  Mutex &                 mutex() const;
-
   // Get the thread's result-state.
   Result                  result() const;
 
@@ -101,10 +96,16 @@ public:
   void                    finished  ( Callback * );
   void                    started   ( Callback * );
 
+  // Overload for debugging. Remove when no longer needed.
+  #ifdef _DEBUG
+  void                    ref();
+  void                    unref ( bool allowDeletion = true );
+  #endif
+
 protected:
 
   // Use creation function.
-  Thread();
+  Thread ( const std::string &name );
 
   // Use reference counting.
   virtual ~Thread();
@@ -143,7 +144,6 @@ private:
   // Data members.
   State _state;
   Result _result;
-  mutable Mutex _mutex;
   Callback::RefPtr _cancelledCB;
   Callback::RefPtr _destroyedCB;
   Callback::RefPtr _errorCB;

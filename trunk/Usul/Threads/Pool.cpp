@@ -27,10 +27,12 @@
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 
-#include <stdexcept>
-#include <iostream>
 #include <algorithm>
+#include <iterator>
+#include <iostream>
 #include <limits>
+#include <sstream>
+#include <stdexcept>
 
 using namespace Usul::Threads;
 
@@ -50,7 +52,8 @@ Pool::Pool ( unsigned int numThreads, bool lazyStart ) : BaseClass(),
   _nextTaskId ( 0 ),
   _sleep      ( 100 ),
   _runThreads ( true ),
-  _started    ( false )
+  _started    ( false ),
+  _log        ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -59,7 +62,8 @@ Pool::Pool ( unsigned int numThreads, bool lazyStart ) : BaseClass(),
   for ( unsigned int i = 0; i < numThreads; ++i )
   {
     // Make thread.
-    Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create() );
+    const std::string name ( Usul::Strings::format ( "Thread_Pool_", this ) );
+    Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create ( name ) );
 
     // Add to our pool.
     _pool.push_back ( thread );
@@ -559,9 +563,22 @@ void Pool::_waitForThreads()
     pool.assign ( _pool.begin(), _pool.end() );
   }
 
+  Strings names;
+
   // While there are threads...
   while ( false == pool.empty() )
   {
+    // Print the names of the remaining threads.
+    for ( ThreadList::const_iterator i = pool.begin(); i != pool.end(); ++i )
+    {
+      Thread::RefPtr thread ( *i );
+      if ( true == thread.valid() )
+      {
+        std::cout << Usul::Strings::format ( "Waiting for thread:", thread->name() ) << std::endl;
+        this->_logEvent ( "Waiting for thread", thread );
+      }
+    }
+
     // Remove the ones that are idle.
     pool.remove_if ( std::mem_fun ( &Thread::isIdle ) );
 
@@ -602,5 +619,70 @@ void Pool::_startThreads()
   {
     std::for_each ( _pool.begin(), _pool.end(), std::mem_fun ( &Usul::Threads::Thread::start ) );
     _started = true;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::logSet ( LogPtr lp )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _log = lp;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the log.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Pool::LogPtr Pool::logGet()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return LogPtr ( _log );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Log the event.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Pool::_logEvent ( const std::string &s, Thread::RefPtr thread, std::ostream *stream )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( true == s.empty() )
+    return;
+  
+  LogPtr file ( this->logGet() );
+  std::string message;
+
+  if ( true == thread.valid() )
+  {
+    message = Usul::Strings::format ( "clock: ", ::clock(), ", system thread: ", Usul::Threads::currentThreadId(), ", id: ", thread->id(), ", thread system id: ", thread->systemId(), ", address: ", thread.get(), ", pool: ", this, ", event: ", s );
+  }
+  else
+  {
+    message = Usul::Strings::format ( "clock: ", ::clock(), ", system thread: ", Usul::Threads::currentThreadId(), ", event: ", s );
+  }
+
+  if ( 0x0 != stream )
+  {
+    (*stream) << message << std::endl;
+  }
+
+  if ( true == file.valid() ) 
+  {
+    file->write ( message );
   }
 }

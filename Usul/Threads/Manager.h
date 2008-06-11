@@ -32,7 +32,7 @@ class USUL_EXPORT Manager
 public:
 
   // Useful typedefs.
-  typedef Thread *FactoryFunction();
+  typedef Thread::RefPtr FactoryFunction ( const std::string &name );
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef std::list<Thread::RefPtr> ThreadList;
@@ -41,7 +41,7 @@ public:
   void                    cancel();
 
   // Create a thread. Uses the registered factory-function.
-  Thread *                create();
+  Thread::RefPtr          create ( const std::string &name );
 
   // This will delete the previous instance, if any.
   static void             destroy();

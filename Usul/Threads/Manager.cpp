@@ -18,7 +18,9 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/System/Clock.h"
+#include "Usul/System/Sleep.h"
 #include "Usul/Threads/ThreadId.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include <stdexcept>
@@ -116,7 +118,7 @@ void Manager::_destroy()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Threads::Thread *Manager::create()
+Usul::Threads::Thread::RefPtr Manager::create ( const std::string &name )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -127,14 +129,14 @@ Usul::Threads::Thread *Manager::create()
     throw std::runtime_error ( "Error 2149832182: No thread factory set" );
   }
 
-  Usul::Threads::Thread::RefPtr thread ( (*_factory)() );
+  Usul::Threads::Thread::RefPtr thread ( (*_factory) ( name ) );
   if ( false == thread.valid() )
   {
     throw std::runtime_error ( "Error 3505918135: Thread creation failed" );
   }
 
   _threads.push_back ( thread );
-  return thread.get();
+  return thread;
 }
 
 
@@ -296,6 +298,24 @@ void Manager::wait ( unsigned long timeout )
           static_cast<double> ( timeout ) / 1000.0, 
           " seconds while waiting for threads" );
     }
+
+    // Print some feedback about the threads we're waiting on.
+    ThreadList threads ( Usul::Threads::Safe::get ( this->mutex(), _threads ) );
+    if ( false == threads.empty() )
+    {
+      std::cout << "Waiting on these threads:" << std::endl;
+      for ( ThreadList::const_iterator i = threads.begin(); i != threads.end(); ++i )
+      {
+        Usul::Threads::Thread::RefPtr thread ( *i );
+        if ( true == thread.valid() )
+        {
+          std::cout << Usul::Strings::format ( "Name: ", thread->name(), ", ID: ", thread->id(), ", Address: ", thread.get() ) << std::endl;
+        }
+      }
+    }
+
+    // Sleep so that we don't overload the system.
+    Usul::System::Sleep::milliseconds ( 500 );
   }
 }
 

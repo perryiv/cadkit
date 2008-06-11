@@ -9,41 +9,70 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Assert.
+//  Defines assert.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _USUL_ASSERT_H_
 #define _USUL_ASSERT_H_
 
+#include "Usul/Strings/Format.h"
+
+#include <cstdio>
+#include <stdexcept>
+
+
+namespace Usul {
+namespace Errors {
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function to handle assert in debug.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void _assert_debug ( bool state, const char *exp, char *file, int line );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Function to handle assert in release.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void _assert_release ( bool state, const char *, char *, int )
+{
+  // Banking on this being compiled away.
+}
+
+
+} // namespace Errors
+} // namespace Usul
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Macros for easy use of assert.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 #ifdef _MSC_VER
 # ifdef __CLR_VER
 #  define USUL_ASSERT System::Diagnostics::Debug::Assert
 # else
-#  if 1                          // Use this to turn on/off standard assert.
-#   include <crtdbg.h>
-#   define USUL_ASSERT _ASSERT
-#  else
-#   include <assert.h>
-#   define USUL_ASSERT assert
-#  endif
+#  include <crtdbg.h>
+#  define USUL_ASSERT _ASSERT
 # endif
-#elif __sgi
-# include <assert.h>
-# define USUL_ASSERT assert
-#elif __APPLE__
-#include <stdlib.h>
-#include <stdio.h>
-#undef assert
-#undef __assert
-#define assert(e)  \
-    ((void) ((e) ? 0 : __assert (#e, __FILE__, __LINE__)))
-#define __assert(e, file, line) \
-    (printf ("%s:%u: failed assertion `%s'\n", file, line, e), abort (), 0)
-#define USUL_ASSERT assert
 #else
-# include <cassert>
+# ifdef assert
+#  undef assert
+# endif
+# ifdef _DEBUG
+#  define assert(exp) Usul::Errors::_assert_debug ( exp, #exp, __FILE__, __LINE__ )
+# else
+#  define assert(exp) Usul::Errors::_assert_release ( exp, #exp, __FILE__, __LINE__ )
+# endif
 # define USUL_ASSERT assert
 #endif
 

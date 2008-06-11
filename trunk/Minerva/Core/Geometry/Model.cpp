@@ -30,6 +30,7 @@ Model::Model() :
   _heading ( 0.0 ),
   _tilt ( 0.0 ),
   _roll ( 0.0 ),
+  _toMeters ( 0.0254 ),
   _scale ( 1.0, 1.0, 1.0 ),
   _model ( 0x0 )
 {
@@ -74,7 +75,7 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   this->orientation( heading, tilt, roll );
   
   osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
-  osg::Matrix S ( osg::Matrix::scale ( this->scale() * 0.0254 ) );
+  osg::Matrix S ( osg::Matrix::scale ( this->scale() * this->toMeters() ) );
   
   mt->setMatrix ( S *
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
@@ -194,4 +195,31 @@ osg::Node* Model::model() const
 {
   Guard guard ( this->mutex() );
   return _model.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scale to convert to meters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Model::toMeters ( double scale )
+{
+  Guard guard ( this->mutex() );
+  _toMeters = scale;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the scale to convert to meters.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Model::toMeters() const
+{
+  Guard guard ( this->mutex() );
+  return _toMeters;
 }

@@ -52,6 +52,10 @@ public:
   /// Get/Set the model.
   void                  model ( osg::Node* );
   osg::Node*            model() const;
+
+  /// Set/get the scale to convert to meters.
+  void                  toMeters ( double );
+  double                toMeters() const;
   
 protected:
   virtual ~Model();
@@ -63,6 +67,7 @@ private:
   double _heading;
   double _tilt;
   double _roll;
+  double _toMeters;
   osg::Vec3 _scale;
   osg::ref_ptr<osg::Node> _model;
 };

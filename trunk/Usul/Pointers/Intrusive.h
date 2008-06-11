@@ -26,15 +26,24 @@
 
 template < class T > inline void intrusive_ptr_add_ref ( T *ptr )
 {
-  ptr->ref();
+  if ( ptr )
+  {
+    ptr->ref();
+  }
 }
 template < class T > inline void intrusive_ptr_release ( T *ptr )
 {
-  ptr->unref();
+  if ( ptr )
+  {
+    ptr->unref();
+  }
 }
 template < class T > inline void ptr_release_no_delete ( T *ptr )
 {
-  ptr->unref ( false );
+  if ( ptr )
+  {
+    ptr->unref ( false );
+  }
 }
 
 
@@ -51,12 +60,16 @@ namespace Usul
     template < class T > void reference ( T *v )
     {
       if ( v )
+      {
         v->ref();
+      }
     }
     template < class T > void unreference ( T *v )
     {
       if ( v )
+      {
         v->unref();
+      }
     }
   }
 }

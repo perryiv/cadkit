@@ -37,7 +37,6 @@
 #include "Usul/System/DateTime.h"
 #include "Usul/System/Environment.h"
 #include "Usul/System/LastError.h"
-#include "Usul/Threads/Mutex.h"
 
 #include <iostream>
 #include <list>
@@ -157,9 +156,6 @@ WebGen::~WebGen()
     catch ( ... ){}
   }
   catch ( ... ){}
-
-  // Reset the mutex factory.
-  Usul::Threads::Mutex::createFunction ( 0x0 );
 }
 
 

@@ -537,11 +537,15 @@ void Manager::_jobFinished ( Job::RefPtr j )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::log ( LogPtr lp )
+void Manager::logSet ( LogPtr lp )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+
   _log = lp;
+
+  if ( true == _pool.valid() )
+    _pool->logSet ( lp );
 }
 
 
@@ -551,7 +555,7 @@ void Manager::log ( LogPtr lp )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::LogPtr Manager::log()
+Manager::LogPtr Manager::logGet()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -569,7 +573,7 @@ void Manager::_logEvent ( const std::string &s, Job::RefPtr job )
 {
   USUL_TRACE_SCOPE;
 
-  LogPtr file ( this->log() );
+  LogPtr file ( this->logGet() );
   if ( ( false == s.empty() ) && ( true == file.valid() ) )
   {
     if ( true == job.valid() )

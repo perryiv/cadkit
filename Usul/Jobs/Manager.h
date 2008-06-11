@@ -72,8 +72,8 @@ public:
   static Manager &        instance();
 
   // Set/get the log.
-  void                    log ( LogPtr );
-  LogPtr                  log();
+  void                    logSet ( LogPtr );
+  LogPtr                  logGet();
 
   // Get the next job id. This will also increment the internal counter.
   unsigned long           nextJobId();

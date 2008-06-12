@@ -180,7 +180,9 @@ namespace Helper
       // This will likely leave a few mutexes locked...
       ::pthread_exit ( 0x0 );
       #else
-      TODO
+
+      // Exit the thread.  The -1 is the return code.
+      ::ExitThread ( -1 );
       #endif
     }
   }

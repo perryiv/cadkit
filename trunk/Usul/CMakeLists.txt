@@ -122,9 +122,6 @@ SET (SOURCES
 ./Documents/Document.cpp
 ./Documents/Manager.cpp
 ./Components/Manager.cpp
-./Devices/Factory.cpp
-./Devices/State.cpp
-./Devices/BaseDevice.cpp
 )
 
 

@@ -1,5 +1,7 @@
 # This file should be at CadKit/Helios/CMakeLists.txt
 
+cmake_minimum_required(VERSION "2.4")
+
 # Set variables needed below...
 SET ( CADKIT_INC_DIR ${PROJECT_SOURCE_DIR}/../ )
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")

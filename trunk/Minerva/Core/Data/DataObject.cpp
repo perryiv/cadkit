@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/DataObjects/DataObject.h"
-#include "Minerva/Core/DataObjects/UserData.h"
+#include "Minerva/Core/Data/DataObject.h"
+#include "Minerva/Core/Data/UserData.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Font.h"
@@ -28,7 +28,7 @@
 #include "osgText/Text"
 #include "osg/Billboard"
 
-using namespace Minerva::Core::DataObjects;
+using namespace Minerva::Core::Data;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DataObject, DataObject::BaseClass );
 
@@ -416,7 +416,7 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
     Geometry::RefPtr geometry ( *iter );
     
     osg::ref_ptr<osg::Node> node ( geometry->buildScene ( Options(), caller ) );
-    node->setUserData ( new Minerva::Core::DataObjects::UserData( this ) );
+    node->setUserData ( new Minerva::Core::Data::UserData( this ) );
     group->addChild ( node.get() );
   
     // Expand the extents by the geometry's extents.

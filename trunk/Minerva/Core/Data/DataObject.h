@@ -43,7 +43,7 @@ namespace Core {
 
   class Visitor;
 
-namespace DataObjects {
+namespace Data {
 
 class MINERVA_EXPORT DataObject : public Usul::Base::Object,
                                   public Usul::Interfaces::IBuildScene,

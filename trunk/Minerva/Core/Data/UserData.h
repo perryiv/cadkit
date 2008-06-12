@@ -17,7 +17,7 @@
 
 namespace Minerva {
 namespace Core {
-namespace DataObjects {
+namespace Data {
 
 class DataObject;
 

@@ -29,7 +29,7 @@ public:
 
   FindMinMaxDates ( );
 
-  virtual void    visit ( Minerva::Core::DataObjects::DataObject &object );
+  virtual void    visit ( Minerva::Core::Data::DataObject &object );
 
   /// Get the first date.
   const Date &    first () const { return _first; }

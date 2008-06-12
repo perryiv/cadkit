@@ -1,0 +1,33 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Download file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef __MINERVA_LAYERS_KML_DOWNLOAD_H__
+#define __MINERVA_LAYERS_KML_DOWNLOAD_H__
+
+#include <string>
+
+namespace Minerva {
+namespace Layers {
+namespace Kml {
+
+  std::string download ( const std::string& href );
+
+}
+}
+}
+
+
+#endif // __MINERVA_LAYERS_KML_DOWNLOAD_H__

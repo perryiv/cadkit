@@ -21,8 +21,8 @@
 #include "Minerva/Core/Commands/ToggleShown.h"
 #include "Minerva/Core/Commands/ShowPastEvents.h"
 #include "Minerva/Core/Commands/ChangeTimestepType.h"
-#include "Minerva/Core/DataObjects/DataObject.h"
-#include "Minerva/Core/DataObjects/UserData.h"
+#include "Minerva/Core/Data/DataObject.h"
+#include "Minerva/Core/Data/UserData.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
@@ -2536,16 +2536,16 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
     if ( si->intersect ( ea.getX(), ea.getY(), hit ) )
     {
       // See if there is user data.
-      osg::ref_ptr < Minerva::Core::DataObjects::UserData > userdata ( 0x0 );
+      osg::ref_ptr < Minerva::Core::Data::UserData > userdata ( 0x0 );
       for( osg::NodePath::reverse_iterator iter = hit.nodePath.rbegin(); iter != hit.nodePath.rend(); ++iter )
       {
-        if( Minerva::Core::DataObjects::UserData *ud = dynamic_cast < Minerva::Core::DataObjects::UserData *> ( (*iter)->getUserData() ) )
+        if( Minerva::Core::Data::UserData *ud = dynamic_cast < Minerva::Core::Data::UserData *> ( (*iter)->getUserData() ) )
           userdata = ud;
       }
 
       if( userdata.valid() && 0x0 != userdata->_do )
       {
-        Minerva::Core::DataObjects::DataObject::RefPtr dataObject ( userdata->_do );
+        Minerva::Core::Data::DataObject::RefPtr dataObject ( userdata->_do );
         dataObject->clicked();
       }
     }

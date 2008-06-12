@@ -71,7 +71,7 @@ void Visitor::_destroy()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Visitor::visit ( Minerva::Core::DataObjects::DataObject &dataObject )
+void Visitor::visit ( Minerva::Core::Data::DataObject &dataObject )
 {
 }
 

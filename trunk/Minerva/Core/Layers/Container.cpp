@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/Container.h"
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Group.h"
@@ -186,7 +186,7 @@ void Container::traverse ( Minerva::Core::Visitor& visitor )
       Container->accept ( visitor );
     }
 
-    if ( Minerva::Core::DataObjects::DataObject *object = dynamic_cast< Minerva::Core::DataObjects::DataObject*> ( (*iter).get() ) )
+    if ( Minerva::Core::Data::DataObject *object = dynamic_cast< Minerva::Core::Data::DataObject*> ( (*iter).get() ) )
     {
       object->accept ( visitor );
     }

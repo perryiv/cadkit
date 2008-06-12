@@ -246,18 +246,18 @@
 					>
 				</File>
 				<Filter
-					Name="DataObjects"
+					Name="Data"
 					>
 					<File
-						RelativePath=".\DataObjects\DataObject.cpp"
+						RelativePath=".\Data\DataObject.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\DataObjects\DataObject.h"
+						RelativePath=".\Data\DataObject.h"
 						>
 					</File>
 					<File
-						RelativePath=".\DataObjects\UserData.h"
+						RelativePath=".\Data\UserData.h"
 						>
 					</File>
 				</Filter>

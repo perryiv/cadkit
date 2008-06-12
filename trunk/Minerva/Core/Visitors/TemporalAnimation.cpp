@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Data/DataObject.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -44,7 +44,7 @@ TemporalAnimation::~TemporalAnimation ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TemporalAnimation::visit ( Minerva::Core::DataObjects::DataObject &object )
+void TemporalAnimation::visit ( Minerva::Core::Data::DataObject &object )
 {
   // This is [first,last), so for proper animation, make the object's last date one day past the actual last date.
   boost::gregorian::date_period period ( object.firstDate().date(), object.lastDate().date() );

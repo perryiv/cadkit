@@ -8,25 +8,18 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#endif
-
 #include "Minerva/Layers/Kml/KmlLayer.h"
+#include "Minerva/Layers/Kml/Download.h"
 #include "Minerva/Layers/Kml/NetworkLink.h"
 #include "Minerva/Layers/Kml/Feature.h"
 #include "Minerva/Layers/Kml/TimeSpan.h"
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Layers/Kml/LoadModel.h"
+#include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Geometry/Model.h"
 #include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Geometry/Polygon.h"
-
-#include "OsgTools/Visitor.h"
-#include "OsgTools/State/StateSet.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -44,8 +37,6 @@
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
-#include "Usul/Network/Curl.h"
-#include "Usul/Registry/Database.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Scope/Reset.h"
@@ -57,8 +48,6 @@
 #include "Usul/Threads/Safe.h"
 
 #include "osg/Material"
-
-#include "osgDB/ReadFile"
 
 #include "boost/algorithm/string/find.hpp"
 #include "boost/filesystem/operations.hpp"
@@ -672,38 +661,6 @@ void KmlLayer::_parseCoordinates ( const XmlTree::Node& node, Vertices& vertices
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Turn off non-power of two resizing.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  struct ModelPostProcess
-  {
-    void operator () ( osg::Node * node )
-    {
-      if ( 0x0 != node )
-      {
-        osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
-
-        if ( ss.valid() )
-        {
-          if ( osg::Texture* texture = dynamic_cast<osg::Texture*> ( ss->getTextureAttribute ( 0, osg::StateAttribute::TEXTURE ) ) )
-          {
-            texture->setResizeNonPowerOfTwoHint ( false );
-            texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
-            texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-            
-            OsgTools::State::StateSet::setLighting ( ss.get(), false );
-          }
-        }
-      }
-    }
-  };
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -743,20 +700,12 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
 
   if ( false == filename.empty() )
   {
-    osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( filename ) );
+    LoadModel load;
+    osg::ref_ptr<osg::Node> node ( load ( filename ) );
     if ( node.valid() )
     {
       model->model ( node.get() );
-
-      // Post-process.
-      Detail::ModelPostProcess nv;
-      osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Node>::make ( nv ) );
-      node->accept ( *visitor );
-      
-      osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
-      
-      //OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
-      OsgTools::State::StateSet::setNormalize ( ss.get(), true );
+      model->toMeters ( load.toMeters() );
     }
   }
   
@@ -1048,31 +997,7 @@ std::string KmlLayer::_buildFilename ( Link *link ) const
 
     if ( true == hasHttp )
     {
-      std::string::size_type pos ( href.rfind ( '/' ) );
-    
-      if ( pos != std::string::npos )
-      {
-        // Build the filename.
-        std::string filename ( href.begin() + pos + 1, href.end() );
-        filename = Usul::File::Temp::directory ( true ) + filename;
-
-        // Replace illegal characters for filename.
-        boost::algorithm::replace_all ( filename, "?", "_" );
-        boost::algorithm::replace_all ( filename, "=", "_" );
-        
-        // Download.
-        {
-				  if ( boost::filesystem::exists ( filename ) && boost::filesystem::is_directory ( filename ) )
-					  boost::filesystem::remove_all ( filename );
-          Usul::Network::Curl curl ( href, filename );
-          Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction 
-            ( &curl, &Usul::Network::Curl::download ), 
-            Usul::Registry::Database::instance()["network_download"]["kml_layer"]["timeout_milliseconds"].get<unsigned int> ( 600000, true ),
-            static_cast<std::ostream*> ( 0x0 ), "", "1638679894" );
-        }
-
-        return filename;
-      }
+      return Minerva::Layers::Kml::download ( href );
     }
     else
     {

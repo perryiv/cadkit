@@ -23,8 +23,9 @@
 
 #include <vector>
 
-namespace Minerva { namespace Core { namespace DataObjects { class DataObject; } } }
+namespace Minerva { namespace Core { namespace Data { class DataObject; } } }
 namespace XmlTree { class Node; }
+namespace osg { class Node; }
 
 namespace Minerva {
 namespace Layers {
@@ -41,7 +42,7 @@ public:
 
   /// Typedefs.
   typedef Minerva::Core::Layers::Container           BaseClass;
-  typedef Minerva::Core::DataObjects::DataObject     DataObject;
+  typedef Minerva::Core::Data::DataObject     DataObject;
   typedef Minerva::Core::Geometry::Geometry          Geometry;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;

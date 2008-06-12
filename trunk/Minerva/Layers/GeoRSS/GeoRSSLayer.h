@@ -18,7 +18,7 @@
 
 #include <vector>
 
-namespace Minerva { namespace Core { namespace DataObjects { class DataObject; } } }
+namespace Minerva { namespace Core { namespace Data { class DataObject; } } }
 namespace XmlTree { class Node; }
 
 namespace Minerva {
@@ -32,7 +32,7 @@ class GeoRSSLayer : public Minerva::Core::Layers::Container,
 public:
   /// Typedefs.
   typedef Minerva::Core::Layers::Container           BaseClass;
-  typedef Minerva::Core::DataObjects::DataObject     DataObject;
+  typedef Minerva::Core::Data::DataObject           DataObject;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;
   

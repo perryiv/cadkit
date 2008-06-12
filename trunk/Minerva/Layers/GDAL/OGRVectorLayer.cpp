@@ -10,7 +10,7 @@
 
 #include "Minerva/Layers/GDAL/OGRVectorLayer.h"
 
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Geometry/Polygon.h"
@@ -144,7 +144,7 @@ void OGRVectorLayer::_addLayer ( OGRLayer* layer )
     if ( 0x0 != geometry )
     {
       // Make a data object.
-      Minerva::Core::DataObjects::DataObject::RefPtr dataObject ( new Minerva::Core::DataObjects::DataObject );
+      Minerva::Core::Data::DataObject::RefPtr dataObject ( new Minerva::Core::Data::DataObject );
 
       switch ( geometry->getGeometryType() )
       {

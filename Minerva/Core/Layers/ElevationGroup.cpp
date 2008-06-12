@@ -135,7 +135,7 @@ namespace Detail
     for ( unsigned int i = 0; i < size; ++i )
     {
       const SrcType a ( hasAlpha ? src[1] : 0 );
-      const SrcType alpha ( ( 0 == a ) ? 0.0 : 1.0 );
+      const SrcType alpha ( ( 0 == a ) ? 0 : 1 );
 
       SrcType value ( *src );
       dst[0] = static_cast<DstType> ( value );

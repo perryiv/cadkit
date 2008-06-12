@@ -447,7 +447,7 @@ void LayersTree::_onItemSelectionChanged()
   _slider->setEnabled( ra.valid() );
   
   if ( ra.valid() )
-    _slider->setValue ( ra->alpha() * Detail::SLIDER_STEPS );
+    _slider->setValue ( static_cast<int> ( ra->alpha() * Detail::SLIDER_STEPS ) );
 }
 
 

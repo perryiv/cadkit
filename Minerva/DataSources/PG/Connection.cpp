@@ -412,11 +412,11 @@ namespace Helper
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Execute a query.  
-//  Cancel query if it takes longer then given number of seconds.
+//  Cancel query if it takes longer than given number of seconds.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-pqxx::result Connection::executeQuery( const std::string& query, unsigned int timeout ) const
+pqxx::result Connection::executeQuery ( const std::string& query, unsigned int timeout ) const
 {
   USUL_TRACE_SCOPE;
 
@@ -429,7 +429,7 @@ pqxx::result Connection::executeQuery( const std::string& query, unsigned int ti
   // Helper struct.
   Helper::QueryHelper helper ( *_connection, result, query );
 
-  Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create () );
+  Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create ( "Minerva::DataSources::PG::Connection::executeQuery" ) );
   
   typedef void (Helper::QueryHelper::*Function) ( Usul::Threads::Thread *s );
   typedef Usul::Adaptors::MemberFunction < void, Helper::QueryHelper*, Function > MemFun;

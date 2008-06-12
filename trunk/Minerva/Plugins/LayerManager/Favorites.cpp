@@ -65,7 +65,7 @@ Favorites::Favorites(Usul::Interfaces::IUnknown* caller, QWidget* parent ) : Bas
   connect ( _favoritesTree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
             this,  SLOT   ( _onContextMenuShow ( const QPoint& ) ) );
 
-  // We want exteneded selection.
+  // We want extended selection.
   //_favoritesTree->selectionMode ( QAbstractItemView::ExtendedSelection );
 
   // Read from server.

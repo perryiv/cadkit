@@ -2328,7 +2328,7 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
     const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
 
     _manager = new Usul::Jobs::Manager ( poolSize, true );
-    _manager->log ( Usul::Jobs::Manager::instance().log() );
+    _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
     _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
   

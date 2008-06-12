@@ -17,6 +17,20 @@ SET ( Boost_USE_FILESYSTEM TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 
+# try to find the header
+FIND_PATH(COLLADA_INCLUDE_DIR dae.h
+  $ENV{COLLADA_INC_DIR}
+)
+
+# Find the library
+FIND_LIBRARY(COLLADA_LIBRARY
+	NAMES collada14dom
+	PATHS
+    $ENV{COLLADA_LIB_DIR}
+	DOC "The name of the COLLADA library"
+)
+
+
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
@@ -24,21 +38,22 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
-		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
-		     ${OT_INC_DIR} 
-		     ${OSSIM_INC_DIR}
+         ${COLLADA_INCLUDE_DIR} 
+         ${COLLADA_INCLUDE_DIR}/1.4
 		     )
 
 
 #List the Sources
 SET (SOURCES
 ./ColorStyle.cpp
+./Download.cpp
 ./Feature.cpp
 ./IconStyle.cpp
 ./KmlLayer.cpp
 ./LineStyle.cpp
 ./Link.cpp
+./LoadModel.cpp
 ./LookAt.cpp
 ./NetworkLink.cpp
 ./Object.cpp
@@ -57,5 +72,5 @@ TARGET_LINK_LIBRARIES( MinervaLayersKml
 	${Boost_LIBRARIES}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
-	${OSSIM_LIB}
+  ${COLLADA_LIBRARY}
 )

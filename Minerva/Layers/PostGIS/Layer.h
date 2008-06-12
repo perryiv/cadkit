@@ -16,7 +16,7 @@
 #include "Minerva/Core/Animate/Date.h"
 #include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Functors/BaseColorFunctor.h"
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Geometry/Geometry.h"
 #include "Minerva/DataSources/PG/Connection.h"
 #include "Minerva/Interfaces/IVectorLayer.h"
@@ -57,7 +57,7 @@ public:
   
   /// Typedefs.
   typedef Minerva::Core::Layers::Container          BaseClass;
-  typedef Minerva::Core::DataObjects::DataObject    DataObject;
+  typedef Minerva::Core::Data::DataObject           DataObject;
   typedef DataObject::RefPtr                        DataObjectPtr;
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
   typedef Usul::Interfaces::IUnknown                IUnknown;

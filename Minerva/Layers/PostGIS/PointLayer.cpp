@@ -11,7 +11,7 @@
 #include "Minerva/Layers/PostGIS/PointLayer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 
-#include "Minerva/Core/DataObjects/DataObject.h"
+#include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Geometry/Point.h"
 #include "Minerva/Core/Visitor.h"
 

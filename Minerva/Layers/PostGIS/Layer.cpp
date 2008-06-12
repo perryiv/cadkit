@@ -589,7 +589,7 @@ const std::string& Layer::colorColumn() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::_setDataObjectMembers ( Minerva::Core::DataObjects::DataObject* dataObject, Usul::Interfaces::IUnknown* caller )
+void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject, Usul::Interfaces::IUnknown* caller )
 {
   dataObject->dataSource ( Usul::Interfaces::IUnknown::QueryPtr ( this->connection() ) );
 
@@ -1408,7 +1408,7 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
       BinaryParser parser;
       BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
       
-      Minerva::Core::DataObjects::DataObject::RefPtr data ( new Minerva::Core::DataObjects::DataObject );
+      Minerva::Core::Data::DataObject::RefPtr data ( new Minerva::Core::Data::DataObject );
       data->objectId ( Usul::Strings::format ( id ) );
       
       // Set date parameters.

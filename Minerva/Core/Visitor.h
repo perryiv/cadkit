@@ -21,7 +21,7 @@ namespace Minerva
 {
   namespace Core
   {
-    namespace DataObjects 
+    namespace Data 
     { 
       class DataObject;
     }
@@ -45,7 +45,7 @@ namespace Minerva
 
       // Typedefs.
       typedef Usul::Base::Object                      BaseClass;
-      typedef Minerva::Core::DataObjects::DataObject  DataObject;
+      typedef Minerva::Core::Data::DataObject         DataObject;
       typedef Minerva::Core::Layers::Container        Container;
 
       MINERVA_DEFINE_VISITOR_CLASS ( Visitor );

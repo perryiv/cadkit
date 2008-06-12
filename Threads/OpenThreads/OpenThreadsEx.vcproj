@@ -223,14 +223,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Mutex.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Mutex.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Thread.cpp"
 				>
 			</File>

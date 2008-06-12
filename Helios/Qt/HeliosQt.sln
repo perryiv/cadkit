@@ -203,16 +203,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva Model", "..\.
 		{0EC3F7B0-CAEC-47A6-8894-195C7BD09C5A} = {0EC3F7B0-CAEC-47A6-8894-195C7BD09C5A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: WRF Delegate Qt", "..\..\Experimental\WRF\WrfDelegate\WrfDelegate.vcproj", "{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: WRF Model", "..\..\Experimental\WRF\WrfModel\WRFModel.vcproj", "{C6A9E05B-C03A-4445-AC47-32290F1191DD}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -397,17 +387,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: VectorField Model", "
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: VectorField Delegate Qt", "..\..\Experimental\VectorField\VectorFieldDelegate\VectorFieldDelegate.vcproj", "{ABE59004-957E-4F23-AE46-3D3B79741C4C}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-		{D8524F0F-9938-4BFA-820A-924092ED40AD} = {D8524F0F-9938-4BFA-820A-924092ED40AD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Clip Planes Qt", "Plugins\ClipPlanes\ClipPlanesQt.vcproj", "{02D711B4-4688-40E9-B68A-1F1972F4DE05}"
@@ -734,10 +713,6 @@ Global
 		{5C265DE8-237C-4F00-B7FB-546A6F9C595D}.Debug|Win32.Build.0 = Debug|Win32
 		{5C265DE8-237C-4F00-B7FB-546A6F9C595D}.Release|Win32.ActiveCfg = Release|Win32
 		{5C265DE8-237C-4F00-B7FB-546A6F9C595D}.Release|Win32.Build.0 = Release|Win32
-		{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}.Debug|Win32.Build.0 = Debug|Win32
-		{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}.Release|Win32.ActiveCfg = Release|Win32
-		{8F7CFFE4-EB5E-4AB7-ACA5-A418436B2540}.Release|Win32.Build.0 = Release|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Debug|Win32.Build.0 = De?ug|Win32
 		{C6A9E05B-C03A-4445-AC47-32290F1191DD}.Release|Win32.ActiveCfg = Release|Win32
@@ -801,10 +776,6 @@ Global
 		{98B68BC2-A9C9-48D9-826C-498105C9996A}.Debug|Win32.Build.0 = Debug|Win32
 		{98B68BC2-A9C9-48D9-826C-498105C9996A}.Release|Win32.ActiveCfg = Release|Win32
 		{98B68BC2-A9C9-48D9-826C-498105C9996A}.Release|Win32.Build.0 = Release|Win32
-		{ABE59004-957E-4F23-AE46-3D3B79741C4C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{ABE59004-957E-4F23-AE46-3D3B79741C4C}.Debug|Win32.Build.0 = Debug|Win32
-		{ABE59004-957E-4F23-AE46-3D3B79741C4C}.Release|Win32.ActiveCfg = Release|Win32
-		{ABE59004-957E-4F23-AE46-3D3B79741C4C}.Release|Win32.Build.0 = Release|Win32
 		{02D711B4-4688-40E9-B68A-1F1972F4DE05}.Debug|Win32.ActiveCfg = Debug|Win32
 		{02D711B4-4688-40E9-B68A-1F1972F4DE05}.Debug|Win32.Build.0 = Debug|Win32
 		{02D711B4-4688-40E9-B68A-1F1972F4DE05}.Release|Win32.ActiveCfg = Release|Win32

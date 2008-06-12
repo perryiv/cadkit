@@ -53,7 +53,7 @@ SET (SOURCES
 ./Commands/StartAnimation.cpp
 ./Commands/StopAnimation.cpp
 ./Commands/ToggleShown.cpp
-./DataObjects/DataObject.cpp
+./Data/DataObject.cpp
 ./Factory/Readers.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp

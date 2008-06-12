@@ -292,10 +292,13 @@ void MainWindow::_destroy()
   std::cout << "All jobs have finished" << std::endl;
 
   // Wait here until all threads are done.
-  std::cout << "Waiting for all threads to finish..." << std::endl;
+  std::cout << "Purging all finished threads..." << std::endl;
   Usul::Threads::Manager::instance().purge();
+  std::cout << "Canceling all remaining threads..." << std::endl;
   Usul::Threads::Manager::instance().cancel();
+  std::cout << "Waiting for all threads to finish..." << std::endl;
   Usul::Threads::Manager::instance().wait();
+  std::cout << "Destroying thread manager..." << std::endl;
   Usul::Threads::Manager::destroy();
   std::cout << "All threads have finished" << std::endl;
 

@@ -46,6 +46,7 @@
 
 #ifdef __GNUC__
 # include "Usul/Errors/Signals.h"
+# include <pthread.h>
 #endif
 
 #include <fstream>
@@ -95,6 +96,9 @@ namespace Helper
 
     // Clear the registry.
     Usul::Registry::Database::destroy();
+    
+    // Flush the stream sink.
+    Helper::sink = StreamSink::RefPtr ( static_cast<Helper::StreamSink *> ( 0x0 ) );
   }
 }
 
@@ -155,6 +159,36 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Called when there is an unhandled exception.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void _unhandledException()
+  {
+    std::cout << "Error 1098096861: Unhandled exception" << std::endl;
+
+    // Abort if this is the main thread, otherwise just exit the thread.
+    if ( Usul::Threads::Named::instance().is ( Usul::Threads::Names::MAIN ) )
+    {
+      ::abort();
+    }
+    else
+    {
+      #ifdef __GNUC__
+      // This will likely leave a few mutexes locked...
+      ::pthread_exit ( 0x0 );
+      #else
+      TODO
+      #endif
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Run the application.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,10 +206,13 @@ void Program::run ( int argc, char **argv,
                     unsigned int poolSize,
                     int &result )
 {
-  #ifdef __GNUC__
+  // Set the handler for unhandled exceptions.
+  std::set_terminate ( &Helper::_unhandledException );
+
+#ifdef __GNUC__
   // Register the signal handlers.
   Usul::Errors::registerSignalHandlers ( argv[0] );
-  #endif
+#endif
 
   // Set thread factories.
   Usul::Threads::Manager::instance().factory ( threadFactory );
@@ -214,7 +251,7 @@ void Program::run ( int argc, char **argv,
 
   // Set job manager's log file.
   const std::string logFile ( persistantDir + "jobs.csv" );
-  Usul::Jobs::Manager::instance().log ( new Usul::File::Log ( logFile, false ) );
+  Usul::Jobs::Manager::instance().logSet ( new Usul::File::Log ( logFile, false ) );
 
   // Initialize singleton of named threads.
   Usul::Threads::Named::instance().set ( Usul::Threads::Names::MAIN );

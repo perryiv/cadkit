@@ -33,6 +33,7 @@
 #include <limits>
 #include <sstream>
 #include <stdexcept>
+#include <ctime>
 
 using namespace Usul::Threads;
 

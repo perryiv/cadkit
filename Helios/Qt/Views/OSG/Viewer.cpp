@@ -76,7 +76,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnkno
   _viewer ( 0x0 ),
   _refCount ( 0 ),
   _timer ( 0x0 ),
-  _timerRenderLoop ( 0x0 ),
+  _isRenderLooping ( false ),
   _keys(),
   _lastMode ( OsgTools::Render::Viewer::NAVIGATION ),
   _threadId ( Usul::Threads::currentThreadId() ),
@@ -115,9 +115,6 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnkno
 
   // Initialize the timer.
   _timer = new QTimer ( this );
-
-  // Initialize the timer for render loop.
-  _timerRenderLoop = new QTimer ( this );
 
   // Save the mode.
   _lastMode = _viewer->getViewMode();
@@ -162,14 +159,6 @@ Viewer::~Viewer()
     _timer->stop();
     delete _timer;
     _timer = 0x0;
-  }
-
-  // Stop and delete the render-loop timer.
-  if ( 0x0 != _timerRenderLoop )
-  {
-    _timerRenderLoop->stop();
-    delete _timerRenderLoop;
-    _timerRenderLoop = 0x0;
   }
 
   // Clear the keys.
@@ -874,22 +863,28 @@ void Viewer::renderLoop ( bool state )
   if ( state == this->renderLoop() )
     return;
 
-  // Handle bad state.
-  if ( 0x0 == _timerRenderLoop )
-    return;
-
-  // Stop running timer.
-  _timerRenderLoop->stop();
+  // Set the flag.
+  _isRenderLooping = state;
 
   // If we're supposed to start...
   if ( true == state )
   {
-    // Attach the callback.
-    this->connect ( _timerRenderLoop, SIGNAL ( timeout() ), this, SLOT ( _onTimeoutRenderLoop() ) );
-
-    // Set the timer to go off every 15 milliseconds.
-    _timerRenderLoop->start ( static_cast<int> ( 15 ) );
+    // File a single event.
+    this->_oneRenderLoopTimeout();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Fire one render-loop timeout.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_oneRenderLoopTimeout()
+{
+  USUL_TRACE_SCOPE;
+  QTimer::singleShot ( 500, this, SLOT ( _onTimeoutRenderLoop() ) );
 }
 
 
@@ -903,22 +898,31 @@ bool Viewer::renderLoop() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return ( 0x0 != _timerRenderLoop ? _timerRenderLoop->isActive() : false );
+  return _isRenderLooping;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Draw.
+//  Tell the viewer to render.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Viewer::_onTimeoutRenderLoop()
 {
   USUL_TRACE_SCOPE;
+
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( true == viewer.valid() )
-    viewer->render();
+  {
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( viewer, &OsgTools::Render::Viewer::render ), "1600949648" );
+  }
+
+  // Do it again if we should.
+  if ( true == this->renderLoop() )
+  {
+    this->_oneRenderLoopTimeout();
+  }
 }
 
 
@@ -1531,12 +1535,17 @@ std::string Viewer::question ( const std::string &buttons, const std::string &ti
 
 void Viewer::_close()
 {
+  // Stop the timers.
+  this->renderLoop ( false );
+  this->stopSpin();
+
   // Clean up the viewer first.
   {
     Guard guard ( this->mutex() );
   
     if ( _viewer.valid() )
     {
+      
       // Save viewer's state first.
       _viewer->stateSave();
 

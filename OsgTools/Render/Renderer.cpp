@@ -284,10 +284,11 @@ void Renderer::_multiPassRender()
     const osg::Matrixd &proj = _sceneView->getProjectionMatrix();
 
     // Loop through the passes...
-    for ( unsigned int i = 0; i < this->getNumRenderPasses(); ++i )
+    const unsigned int numPasses ( this->getNumRenderPasses() );
+    for ( unsigned int i = 0; i < numPasses; ++i )
     {
       // Set the proper projection matrix.
-      OsgTools::Jitter::instance().perspective ( _numPasses, i, *vp, proj, matrix );
+      OsgTools::Jitter::instance().perspective ( numPasses, i, *vp, proj, matrix );
       _sceneView->setProjectionMatrix ( matrix );
 
       // Render a single pass.
@@ -314,6 +315,8 @@ void Renderer::_multiPassRender()
   // Catch all exceptions and reset the number of passes. Otherwise, you 
   // can get stuck in a loop where the error dialog causes a render, and 
   // the render causes an error dialog, etc.
+  //
+  // 12-Jun-2008 Note: Is the above comment still true?
 
   // Standard exceptions.
   catch ( const std::exception &e )
@@ -321,7 +324,7 @@ void Renderer::_multiPassRender()
     Usul::Errors::Stack::instance().push ( e.what() );
     std::ostringstream message;
     message << "Error 2156758683: Standard exception caught when attempting to render with " << this->getNumRenderPasses() << " passes";
-    this->setNumRenderPasses ( 1 );
+    //this->setNumRenderPasses ( 1 ); // Seeing if this is no longer needed... 12-Jun-2008
     throw std::runtime_error ( message.str() );
   }
 
@@ -330,7 +333,7 @@ void Renderer::_multiPassRender()
   {
     std::ostringstream message;
     message << "Error 3880806891: Unknown exception caught when attempting to render with " << this->getNumRenderPasses() << " passes";
-    this->setNumRenderPasses ( 1 );
+    //this->setNumRenderPasses ( 1 ); // Seeing if this is no longer needed... 12-Jun-2008
     throw std::runtime_error ( message.str() );
   }
 }

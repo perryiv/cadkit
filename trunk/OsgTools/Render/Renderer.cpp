@@ -31,13 +31,13 @@
 #include "Usul/System/Clock.h"
 #include "Usul/Headers/OpenGL.h"
 
+#include "osgUtil/UpdateVisitor"
+
 #include "osg/MatrixTransform"
 #include "osg/Geometry"
 #include "osg/Geode"
 #include "osg/GLU"
 #include "osg/Version"
-
-#include "osgUtil/UpdateVisitor"
 
 using namespace OsgTools::Render;
 
@@ -225,10 +225,18 @@ void Renderer::render()
 #endif
 
   // See if we are supposed to use multiple passes.
-  if ( this->getNumRenderPasses() > 1 )
+  const unsigned int frameCount ( ( 0x0 != _sceneView->getFrameStamp() ) ? _sceneView->getFrameStamp()->getFrameNumber() : 0 );
+  const unsigned int numPasses ( this->getNumRenderPasses() );
+  if ( numPasses > 1 )
+  {
+    //std::cout << Usul::Strings::format ( "Rendering frame " << frameCount << " with " << numPasses << " passes" ) << std::endl;
     this->_multiPassRender();
+  }
   else
+  {
+    //std::cout << Usul::Strings::format ( "Rendering frame " << frameCount << " with " << numPasses << " pass" ) << std::endl;
     this->_singlePassRender();
+  }
 
   // Check for errors.
   Detail::checkForErrors( 2764743220u );
@@ -298,7 +306,7 @@ void Renderer::_multiPassRender()
       Detail::checkForErrors( 2681461970u );
 
       // Accumulate the pixels from the frame buffer.
-      float value ( 1.0f / static_cast < float > ( this->getNumRenderPasses() ) );
+      float value ( 1.0f / static_cast < float > ( numPasses ) );
       ::glAccum ( GL_ACCUM, value );
 
       // Check for errors.

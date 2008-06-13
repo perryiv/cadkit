@@ -29,11 +29,11 @@ class USUL_EXPORT RecursiveMutex
 public:
 
   RecursiveMutex();
-  virtual ~RecursiveMutex();
+  ~RecursiveMutex();
 
   // Lock/unlock the mutex.
-  virtual void            lock();
-  virtual void            unlock();
+  void            lock();
+  void            unlock();
 
 private:
 

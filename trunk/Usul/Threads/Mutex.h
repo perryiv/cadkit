@@ -58,7 +58,7 @@ public:
 
   // Construction/Destruction.
   Mutex();
-  virtual ~Mutex();
+  ~Mutex();
 
   // Create a mutex.
   static Mutex *          create();

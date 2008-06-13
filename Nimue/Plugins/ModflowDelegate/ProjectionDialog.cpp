@@ -11,7 +11,6 @@
 #include "ModflowDelegate/ProjectionDialog.h"
 
 #include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Strings/Format.h"
 
 #include "QtGui/QHeaderView"

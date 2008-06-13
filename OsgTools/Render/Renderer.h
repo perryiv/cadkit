@@ -26,11 +26,11 @@
 
 #include "OsgTools/Builders/GradientBackground.h"
 
+#include "osgUtil/SceneView"
+
 #include "osg/ref_ptr"
 #include "osg/Timer"
 #include "osg/ClearNode"
-
-#include "osgUtil/SceneView"
 
 #include <vector>
 

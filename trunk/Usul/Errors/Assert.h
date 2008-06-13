@@ -16,11 +16,6 @@
 #ifndef _USUL_ASSERT_H_
 #define _USUL_ASSERT_H_
 
-#include "Usul/Strings/Format.h"
-
-#include <cstdio>
-#include <stdexcept>
-
 
 namespace Usul {
 namespace Errors {
@@ -75,6 +70,5 @@ inline void _assert_release ( bool state, const char *, char *, int )
 # endif
 # define USUL_ASSERT assert
 #endif
-
 
 #endif // _USUL_ASSERT_H_

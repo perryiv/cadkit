@@ -36,13 +36,12 @@ std::string Minerva::Layers::Kml::download ( const std::string& href )
   // Make the filename.
   std::string filename ( href );
 
-  boost::replace_first ( filename, "http://", "" );  
-  filename = Usul::File::Temp::directory ( true ) + filename;
-
   // Replace illegal characters for filename.
+  boost::replace_first ( filename, "http://", "" );  
   boost::algorithm::replace_all ( filename, "/", "_" );
   boost::algorithm::replace_all ( filename, "?", "_" );
   boost::algorithm::replace_all ( filename, "=", "_" );
+  filename = Usul::File::Temp::directory ( true ) + filename;
   
   // Download.
   {

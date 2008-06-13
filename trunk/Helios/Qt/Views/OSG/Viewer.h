@@ -142,7 +142,10 @@ protected:
 
   /// Add to the menu.
   virtual void                            _menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
-  
+
+  /// Register a single timeout event.
+  void                                    _oneRenderLoopTimeout();
+
   /// View OpenGL information.
   void                                    _openGLInformation();
 
@@ -180,7 +183,7 @@ private:
   OsgTools::Render::Viewer::RefPtr _viewer;
   unsigned int _refCount;
   QTimer *_timer;
-  QTimer *_timerRenderLoop;
+  bool _isRenderLooping;
   KeyMap _keys;
   ViewMode _lastMode;
   unsigned long _threadId;

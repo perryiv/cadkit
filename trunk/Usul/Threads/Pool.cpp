@@ -575,7 +575,7 @@ void Pool::_waitForThreads()
       Thread::RefPtr thread ( *i );
       if ( true == thread.valid() )
       {
-        std::cout << Usul::Strings::format ( "Waiting for thread:", thread->name() ) << std::endl;
+        std::cout << Usul::Strings::format ( "Waiting for thread: ", thread->name() ) << std::endl;
         this->_logEvent ( "Waiting for thread", thread );
       }
     }

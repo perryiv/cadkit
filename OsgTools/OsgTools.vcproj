@@ -348,11 +348,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ConvertToTriangles.cpp"
+					RelativePath=".\Utilities\ConvertToTriangles.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\ConvertToTriangles.h"
+					RelativePath=".\Utilities\ConvertToTriangles.h"
 					>
 				</File>
 				<File

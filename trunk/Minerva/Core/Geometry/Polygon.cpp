@@ -12,6 +12,7 @@
 
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
+#include "OsgTools/DisplayLists.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Utilities/TranslateGeometry.h"
 
@@ -209,7 +210,7 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
   osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet () );
   
   // Set the render bin.
-  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+  //ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
   
   // Make a polygon offset.
   osg::ref_ptr< osg::PolygonOffset > po ( new osg::PolygonOffset( 1.0f, 4.0f ) );
@@ -264,18 +265,16 @@ osg::Node* Polygon::_buildScene ( Usul::Interfaces::IUnknown* caller )
     group->addChild( BaseClass::_buildScene( this->borderColor(), caller ) );
   }
   
-  // Set the render bin.
-  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-  
   // Set state set modes depending on alpha value.
   if( false == this->transparent() )
   {
-    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::ON  );
+    // Set the render bin.
+    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
   }
-  else
-  {
-    ss->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-  }
+  
+  // Turn off display lists.
+  OsgTools::DisplayLists displayLists ( false );
+  displayLists ( group.get() );
   
   this->dirty( false );
   return group.release();

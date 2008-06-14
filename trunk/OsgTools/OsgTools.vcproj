@@ -348,6 +348,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\ConvertToTriangles.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ConvertToTriangles.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utilities\DeleteHandler.cpp"
 					>
 				</File>

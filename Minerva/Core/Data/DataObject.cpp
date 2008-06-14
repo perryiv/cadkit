@@ -19,10 +19,13 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Font.h"
+#include "OsgTools/Callbacks/SortBackToFront.h"
+#include "OsgTools/Utilities/ConvertToTriangles.h"
 
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Math/Vector3.h"
 
+#include "osg/BlendFunc"
 #include "osg/Geode"
 #include "osg/Group"
 #include "osgText/Text"
@@ -411,6 +414,9 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
   
   Extents extents;
   
+  // Does the scene need to be sorted?
+  bool isTransparent ( false );
+  
   for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
   {
     Geometry::RefPtr geometry ( *iter );
@@ -421,6 +427,33 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
   
     // Expand the extents by the geometry's extents.
     extents.expand ( geometry->extents() );
+    
+    // See if the geometry is transparent.
+    if ( true == geometry->transparent() )
+    {
+      // Convert tri-strips to triangles (For sorting).
+      OsgTools::Utilities::ConvertToTriangles convert;
+      convert ( group.get() );
+      
+      isTransparent = true;
+    }
+  }
+  
+  // If one of the geometries is transparent, set the proper state and add needed callbacks.
+  if ( isTransparent )
+  {
+    // Get the state set.
+    osg::ref_ptr < osg::StateSet > ss ( group->getOrCreateStateSet () );
+    
+    // Add a blend function.
+    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+    ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    
+    ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    ss->setRenderBinDetails ( 1, "DepthSortedBin" );
+    
+    osg::ref_ptr<osg::NodeVisitor> visitor ( new OsgTools::Callbacks::SetSortToFrontCallback );
+    group->accept ( *visitor );
   }
   
   // Set the new extents.

@@ -1195,7 +1195,7 @@ void MainWindow::updateTextWindow ( bool force )
     bool changed ( false );
     
     // Maximum number of iterations.
-    const unsigned int maxIterations ( Reg::instance()[Sections::TEXT_WINDOW][Keys::MAXIMUM_ITERATIONS].get<unsigned int> ( 5 ) );
+    const unsigned int maxIterations ( Reg::instance()[Sections::TEXT_WINDOW][Keys::MAXIMUM_ITERATIONS].get<unsigned int> ( 50, true ) );
     unsigned int iterations ( 0 );
 
     // Loop over all strings in the queue. The queue has an internal mutex.
@@ -1210,7 +1210,9 @@ void MainWindow::updateTextWindow ( bool force )
 
     // Force a GUI update now if we should.
     if ( true == force && true == changed )
+    {
       _textWindow.first->update();
+    }
   }
 
   // Catch all exceptions.

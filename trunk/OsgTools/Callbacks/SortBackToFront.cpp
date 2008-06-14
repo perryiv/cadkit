@@ -14,6 +14,7 @@
 #include "osg/Geometry"
 #include "osgUtil/CullVisitor"
 
+#include <iostream>
 #include <algorithm>
 
 using namespace OsgTools::Callbacks;
@@ -31,14 +32,13 @@ namespace Detail
   struct Triangle
   {
   public:
-    Triangle ( unsigned int i0, unsigned int i1, unsigned int i2, const osg::Vec3Array* vertices ) :
+    Triangle ( unsigned int i0, unsigned int i1, unsigned int i2, const osg::Vec3Array& vertices ) :
       _index0 ( i0 ),
       _index1 ( i1 ),
       _index2 ( i2 ),
-      _center (),
-      _vertices ( vertices )
+      _center ()
     {
-      _center = _vertices->at( _index0 ) + _vertices->at( _index1 ) + _vertices->at( _index2 );
+      _center = vertices.at( _index0 ) + vertices.at( _index1 ) + vertices.at( _index2 );
       _center /= 3;
     }
 
@@ -46,8 +46,7 @@ namespace Detail
       _index0 ( rhs._index0 ),
       _index1 ( rhs._index1 ),
       _index2 ( rhs._index2 ),
-      _center ( rhs._center ),
-      _vertices ( rhs._vertices )
+      _center ( rhs._center )
     {
     }
 
@@ -56,7 +55,6 @@ namespace Detail
       this->_index0 = rhs._index0;
       this->_index1 = rhs._index1;
       this->_index2 = rhs._index2;
-      this->_vertices = rhs._vertices;
       this->_center = rhs._center;
 
       return *this;
@@ -81,8 +79,6 @@ namespace Detail
     unsigned int _index1;
     unsigned int _index2;
     osg::Vec3    _center;
-
-    osg::ref_ptr < const osg::Vec3Array > _vertices;
   };
 
 
@@ -270,7 +266,7 @@ namespace Detail
   //
   ///////////////////////////////////////////////////////////////////////////////
 
-  void sortDrawArrays ( osg::DrawArrays & da, const osg::Vec3& eye, osg::Vec3Array& vertices, osg::Vec3Array& normals, bool bindPerVertex )
+  void sortDrawArrays ( osg::DrawArrays & da, const osg::Vec3& eye, osg::Vec3Array& vertices, osg::Vec3Array& normals, bool bindPerVertex, bool copyNormals )
   {
     switch ( da.getMode() )
     {
@@ -283,7 +279,7 @@ namespace Detail
 
         for ( int i = da.getFirst(); i < da.getCount(); i += 3 )
         {
-          Triangle t ( i, i + 1, i + 2, &vertices );
+          Triangle t ( i, i + 1, i + 2, vertices );
 
           triangles.push_back( t );
         }
@@ -306,15 +302,18 @@ namespace Detail
           vertices.at ( current + 1 ) = vcopy->at ( i->index1() );
           vertices.at ( current + 2 ) = vcopy->at ( i->index2() );
 
-          if ( bindPerVertex )
+          if ( copyNormals )
           {
-            normals.at ( current )     = ncopy->at ( i->index0() );
-            normals.at ( current + 1 ) = ncopy->at ( i->index1() );
-            normals.at ( current + 2 ) = ncopy->at ( i->index2() );
-          }
-          else
-          {
-            normals.at ( current / 3 )     = ncopy->at ( i->index0() / 3 );
+            if ( bindPerVertex )
+            {
+              normals.at ( current )     = ncopy->at ( i->index0() );
+              normals.at ( current + 1 ) = ncopy->at ( i->index1() );
+              normals.at ( current + 2 ) = ncopy->at ( i->index2() );
+            }
+            else
+            {
+              normals.at ( current / 3 )     = ncopy->at ( i->index0() / 3 );
+            }
           }
 
         }
@@ -367,8 +366,6 @@ namespace Detail
         }
       }
       break;
-    default:
-      USUL_ASSERT ( false );
     }
   }
 
@@ -394,8 +391,7 @@ namespace Detail
         // Build the triangle vector to sort
         for ( typename DrawElements::iterator i = de.begin(); i != de.end(); i += 3 )
         {
-          Triangle t ( *i, *(i + 1), *(i + 2 ), &vertices );
-
+          Triangle t ( *i, *(i + 1), *(i + 2 ), vertices );
           triangles.push_back( t );
         }
 
@@ -441,8 +437,6 @@ namespace Detail
         }
       }
       break;
-    default:
-      USUL_ASSERT ( false );
     }
   }
 }
@@ -477,23 +471,48 @@ SortBackToFront::~SortBackToFront()
 
 void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
 {
+  // Return now if we don't have a valid node visitor or if it's not a cull visitor.
+  if ( 0x0 == nv || osg::NodeVisitor::CULL_VISITOR != nv->getVisitorType() )
+    return;
+  
+  // We know it's a cull visitor.
+  osgUtil::CullVisitor *cv ( static_cast< osgUtil::CullVisitor* > ( nv ) );
+  
   // Get the eye position.
-  const osg::Vec3& eye ( nv->getEyePoint() );
-
-  osgUtil::CullVisitor *cv = dynamic_cast< osgUtil::CullVisitor* > ( nv );
+  const osg::Vec3& eye ( cv->getEyePoint() );
+  
+  // is the node a group?
+  if ( osg::Group *group = dynamic_cast<osg::Group*> ( node ) )
+  {
+    const unsigned int number ( group->getNumChildren() );
+    
+    // Make a copy of the children.
+    osg::NodeList children ( number );
+    for ( unsigned int i = 0; i < number; ++i )
+      children.at ( i ) = group->getChild ( i );
+    
+    // Sort back to front.
+    std::sort ( children.begin(), children.end(), Detail::BackToFrontNode ( eye ) );
+    
+    // Set the children back to the group.
+    for ( unsigned int i = 0; i < number; ++i )
+       group->setChild ( i, children.at ( i ).get() );
+  }
 
   // Is the node a geode?
-  if ( osg::Geode *geode = dynamic_cast < osg::Geode* > ( node ) )
+  else if ( osg::Geode *geode = dynamic_cast < osg::Geode* > ( node ) )
   {
+    // Get all the drwables
     osg::Geode::DrawableList& drawables ( const_cast < osg::Geode::DrawableList& > ( geode->getDrawableList() ) );
+    
     // Sort the geometies.
     std::sort ( drawables.begin(), drawables.end(), Detail::BackToFrontGeometry( eye ) );
 
     // For each drawable
-    for ( unsigned int i = 0; i < geode->getNumDrawables(); ++i )
+    for ( unsigned int i = 0; i < drawables.size(); ++i )
     {
       // Is the drawable a geometry?
-      if( osg::Geometry *geometry = geode->getDrawable( i )->asGeometry() )
+      if( osg::Geometry *geometry = drawables.at ( i )->asGeometry() )
       {
         // Don't bother sorting if the geometry is culled.
         if( cv )
@@ -501,7 +520,6 @@ void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
           const osg::BoundingBox &bb = geometry->getBound();
           if ( cv->isCulled( bb ) )
             continue;
-
         }
         typedef osg::Geometry::PrimitiveSetList PrimitiveSetList;
 
@@ -517,8 +535,11 @@ void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
         USUL_ASSERT ( vertices != 0x0 );
 
         osg::ref_ptr< osg::Vec3Array > normals  ( dynamic_cast < osg::Vec3Array * > ( geometry->getNormalArray() ) );
+        const bool copyNoramls ( normals.valid() );
 
-        USUL_ASSERT ( normals != 0x0 );
+        // Create an empty normal array if normals is null.
+        if ( false == copyNoramls )
+          normals = new osg::Vec3Array;
 
         // Go through each primitive set
         for ( PrimitiveSetList::iterator i = prims.begin(); i != prims.end(); ++i )
@@ -528,7 +549,7 @@ void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
           case osg::PrimitiveSet::DrawArraysPrimitiveType:
             {
               osg::DrawArrays *da = static_cast < osg::DrawArrays* > ( i->get() );
-              Detail::sortDrawArrays ( *da, eye, *vertices, *normals, geometry->getNormalBinding() == osg::Geometry::BIND_PER_VERTEX );
+              Detail::sortDrawArrays ( *da, eye, *vertices, *normals, geometry->getNormalBinding() == osg::Geometry::BIND_PER_VERTEX, copyNoramls );
             }
             break;
           case osg::PrimitiveSet::DrawArrayLengthsPrimitiveType:

@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Errors/Assert.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 

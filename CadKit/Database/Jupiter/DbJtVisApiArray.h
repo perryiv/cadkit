@@ -28,6 +28,9 @@
 # endif
 #endif
 
+#ifdef _CADKIT_USE_JTOPEN
+#include "JtTk/JtkEntityFactory.h"
+#endif
 
 namespace CadKit
 {

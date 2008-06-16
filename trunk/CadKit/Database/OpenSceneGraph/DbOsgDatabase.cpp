@@ -37,7 +37,7 @@
 #include "Standard/SlStringFunctions.h"
 #include "Standard/SlMessageIds.h"
 
-#include "../../../Units/Length.h"
+#include "../../../Usul/Units/Length.h"
 
 #include "osg/LOD"             // Keep these in here because they bring in 
 #include "osg/Geode"           // <cmath> which fauls up <math.h> in 
@@ -1229,7 +1229,7 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
       truncDrawable->setVertexArray(truncVertices);
       truncDrawable->setVertexIndices (truncIndices);
       truncDrawable->setNormalArray( truncNormals );
-      truncDrawable->setNormalBinding( osg::Geometry::AttributeBinding::BIND_PER_VERTEX );
+      truncDrawable->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
       osg::Geometry::PrimitiveSetList primitives;
       primitives.resize(3);
@@ -1338,7 +1338,7 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
     (*pyrNormals)[15].set( (*pyrNormals)[12] );
       
     pyrDrawable->setNormalArray( pyrNormals );
-    pyrDrawable->setNormalBinding( osg::Geometry::AttributeBinding::BIND_PER_VERTEX );
+    pyrDrawable->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
     // assign a color
     _addColor( caller, prim, pyrDrawable, set );
@@ -1452,7 +1452,7 @@ bool DbOsgDatabase::_addPrimitiveSet  ( IUnknown *caller, PrimHandle prim, osg::
     (*prismNormals)[17].set( (*prismNormals)[14] );
     
     prismDrawable->setNormalArray( prismNormals );
-    prismDrawable->setNormalBinding( osg::Geometry::AttributeBinding::BIND_PER_VERTEX );
+    prismDrawable->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
     // assign a color
     _addColor( caller, prim, prismDrawable, set );
@@ -1532,7 +1532,7 @@ bool DbOsgDatabase::_addColor ( IUnknown *caller, PrimHandle prim, osg::Geometry
                       setter.getColors()->at(set)[2], setter.getColors()->at(set)[3] );
 
     geometry->setColorArray( colors );
-    geometry->setColorBinding( osg::Geometry::AttributeBinding::BIND_OVERALL );
+    geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
 
     // It worked.
     return true;

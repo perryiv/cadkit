@@ -219,7 +219,7 @@ public:
   DbOsgPrimColorSetter () :  _colors ( new osg::Vec4Array ){}
 
   osg::Vec4Array *      getColors()  { return _colors.get(); }
-  Binding               getBinding() { return osg::Geometry::AttributeBinding::BIND_OVERALL; }
+  Binding               getBinding() { return osg::Geometry::BIND_OVERALL; }
 
   virtual bool          setData ( const unsigned int &index, const SlVec4f &vec );
   virtual bool          setSize ( const unsigned int &size );

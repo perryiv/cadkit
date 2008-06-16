@@ -31,6 +31,7 @@
 #include "osg/Group"
 #include "osg/ref_ptr"
 
+#include <list>
 #include <vector>
 
 
@@ -49,6 +50,7 @@ public:
   typedef Usul::Interfaces::IActiveViewListener IActiveViewListener;
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   typedef std::vector < CameraPath::RefPtr > Paths;
+  typedef std::list < CurvePlayer::RefPtr > Players;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( PathAnimationComponent );
@@ -82,6 +84,8 @@ protected:
   // Use reference counting.
   virtual ~PathAnimationComponent();
 
+  void                          _activateRenderLoop();
+
   void                          _buildPathsMenu();
   void                          _buildCameraMenu();
   osg::Node *                   _buildCurve() const;
@@ -109,13 +113,11 @@ protected:
   bool                          _isDegree ( unsigned int ) const;
   bool                          _isLooping() const;
   bool                          _isNumSteps ( unsigned int steps ) const;
-  bool                          _isPaused() const;
   bool                          _isShowingPath() const;
 
   void                          _newPath();
   void                          _openPath ( Usul::Interfaces::IUnknown::QueryPtr );
 
-  void                          _pause ( bool );
   void                          _playBackward();
   void                          _playForward();
   void                          _playPathBackward ( const CameraPath *path, unsigned int steps, bool loop );
@@ -144,8 +146,7 @@ private:
   MenuKit::Menu::RefPtr _cameraMenu;
   CameraPath::RefPtr _currentPath;
   Paths _paths;
-  CurvePlayer::RefPtr _player;
-  bool _paused;
+  Players _players;
   unsigned int _degree;
   bool _writeMovie;
   std::string _movieFilename;
@@ -157,6 +158,7 @@ private:
   bool _looping;
   bool _dirtyScene;
   unsigned int _currentCamera;
+  bool _renderLoop;
 };
 
 

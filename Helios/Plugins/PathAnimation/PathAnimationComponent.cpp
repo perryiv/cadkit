@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/ILoadFileDialog.h"
+#include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -65,8 +66,7 @@ PathAnimationComponent::PathAnimationComponent() :
   _cameraMenu ( new MenuKit::Menu ( "&Cameras" ) ),
   _currentPath ( 0x0 ),
   _paths(),
-  _player ( 0x0 ),
-  _paused ( false ),
+  _players(),
   _degree ( Reg::instance()[Sections::PATH_ANIMATION]["curve"]["degree"].get<unsigned int> ( 3 ) ),
   _writeMovie ( false ),
   _movieFilename(),
@@ -77,7 +77,8 @@ PathAnimationComponent::PathAnimationComponent() :
   _showPath ( false ),
   _looping ( false ),
   _dirtyScene ( true ),
-  _currentCamera ( 0 )
+  _currentCamera ( 0 ),
+  _renderLoop ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -591,19 +592,19 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned
   if ( 0x0 == path )
     return;
 
-  // Make sure we're not paused.
-  this->_pause ( false );
-
-  // Make sure we have a player.
-  if ( false == _player.valid() )
-    _player = new CurvePlayer;
+  // Make a new player.
+  CurvePlayer::RefPtr player ( new CurvePlayer );
+  _players.push_back ( player );
 
   // Set properties.
-  _player->numStepsPerSpan ( steps );
-  _player->looping ( loop );
+  player->numStepsPerSpan ( steps );
+  player->looping ( loop );
 
   // Play the animation forward.
-  _player->playForward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
+  player->playForward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
+
+  // Turn on render-loop.
+  this->_activateRenderLoop();
 }
 
 
@@ -622,19 +623,19 @@ void PathAnimationComponent::_playPathBackward ( const CameraPath *path, unsigne
   if ( 0x0 == path )
     return;
 
-  // Make sure we're not paused.
-  this->_pause ( false );
-
-  // Make sure we have a player.
-  if ( false == _player.valid() )
-    _player = new CurvePlayer;
+  // Make a new player.
+  CurvePlayer::RefPtr player ( new CurvePlayer );
+  _players.push_back ( player );
 
   // Set properties.
-  _player->numStepsPerSpan ( steps );
-  _player->looping ( loop );
+  player->numStepsPerSpan ( steps );
+  player->looping ( loop );
 
-  // Play the animation forward.
-  _player->playBackward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
+  // Play the animation backward.
+  player->playBackward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
+
+  // Turn on render-loop.
+  this->_activateRenderLoop();
 }
 
 
@@ -677,17 +678,15 @@ void PathAnimationComponent::stopPlaying()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Stop the player.
-  if ( true == _player.valid() )
+  // No more players.
+  _players.clear();
+
+  // Restore the render-loop.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( Usul::Documents::Manager::instance().activeView() );
+  if ( rl.valid() )
   {
-    _player->stopPlaying ( Usul::Documents::Manager::instance().activeView() );
+    rl->renderLoop ( _renderLoop );
   }
-
-  // Make sure we're not paused.
-  this->_pause ( false );
-
-  // No more player.
-  _player = 0x0;
 }
 
 
@@ -772,35 +771,7 @@ bool PathAnimationComponent::isPlaying() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return ( ( true == _player.valid() ) && ( true == _player->playing() ) && ( false == this->_isPaused() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Are we paused?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool PathAnimationComponent::_isPaused() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _paused;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the paused state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PathAnimationComponent::_pause ( bool state )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _paused = state;
+  return ( false == _players.empty() );
 }
 
 
@@ -867,18 +838,21 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
   // Always update the scene.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_updateScene ) );
 
+  // Get the current player.
+  CurvePlayer::RefPtr player ( ( false == _players.empty() ) ? _players.front() : CurvePlayer::RefPtr ( 0x0 ) );
+
   // Should we update?
-  if ( ( false == _player.valid() ) || ( false == this->isPlaying() ) )
+  if ( ( false == player.valid() ) || ( false == this->isPlaying() ) )
     return;
 
   // Update the player.
-  _player->update ( caller );
+  player->update ( caller );
 
   // Did we reach the end?
-  if ( false == _player->playing() )
+  if ( false == player->playing() )
   {
-    // This sets "_player" to null.
-    this->stopPlaying();
+    // Pop this player off the list.
+    _players.pop_front();
 
     // If we are suppose to write a movie.
     this->_writeMovieFile ( caller );
@@ -1504,4 +1478,26 @@ osg::Node *PathAnimationComponent::_buildCurve() const
 
   // Ask the player to build a curve.
   return player->buildCurve ( _currentPath.get(), _degree, _numSteps, Usul::Documents::Manager::instance().activeView() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Turn on the render loop. Save the current state if there is only one player.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_activateRenderLoop()
+{
+  // Turn on render-loop.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( Usul::Documents::Manager::instance().activeView() );
+  if ( true == rl.valid() )
+  {
+    // Save current render-loop state if this is the first player.
+    if ( 1 == _players.size() )
+      _renderLoop = rl->renderLoop();
+
+    // Turn it on.
+    rl->renderLoop ( true );
+  }
 }

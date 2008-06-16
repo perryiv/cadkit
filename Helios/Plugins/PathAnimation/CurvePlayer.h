@@ -77,9 +77,6 @@ public:
   void                          playing ( bool );
   bool                          playing() const;
 
-  // Stop the animation.
-  void                          stopPlaying ( IUnknown *caller );
-
   // Set/get the number of steps per knot span.
   void                          numStepsPerSpan ( unsigned int num );
   unsigned int                  numStepsPerSpan() const;
@@ -104,7 +101,6 @@ private:
   IndependentSequence _pathParams;
   unsigned int _currentStep;
   unsigned int _stepsPerSpan;
-  bool _renderLoop;
   bool _looping;
 };
 

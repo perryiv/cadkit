@@ -173,6 +173,8 @@ public:
 
 protected:
 
+  void                              _appendMacro ( MenuKit::Menu::RefPtr menu, const std::string &file );
+
   void                              _buildMenuKitMenu();
   void                              _initRecentFilesMenu();
   void                              _buildQtMenu();

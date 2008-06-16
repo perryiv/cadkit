@@ -28,11 +28,14 @@
 #include "Helios/Qt/Commands/ToggleView.h"
 #include "Helios/Qt/Commands/OpenManual.h"
 #include "Helios/Qt/Commands/About.h"
+#include "Helios/Qt/Commands/Group.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
 
 #include "MenuKit/Button.h"
+#include "MenuKit/CommandVisitor.h"
+#include "MenuKit/MenuCommands.h"
 
 #include "QtTools/FileDialog.h"
 #include "QtTools/Image.h"
@@ -49,6 +52,7 @@
 #include "Usul/Errors/Stack.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/File/Contents.h"
+#include "Usul/File/Find.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
@@ -474,6 +478,49 @@ void MainWindow::_buildMenuKitMenu()
     ma->menuAdd ( *_menu, me.get() );
   }
 
+  // Build map of commands because the next thing we do is make the macros.
+  // Note: the help menu will not be included.
+  {
+    // Clear the commands we have.
+    MenuKit::MenuCommands::instance().clear();
+
+    // Traverse the menu and build the map of commands
+    MenuKit::CommandVisitor::RefPtr commandVisitor ( new MenuKit::CommandVisitor ( "&" ) );
+    _menu->accept ( *commandVisitor );
+  }
+
+  // Macro menu.
+  {
+    try
+    {
+      // Get macro directory.
+      const std::string dir ( Usul::User::Directory::vendor ( this->vendor(), true ) + this->programName() + "/macros" );
+
+      // Get all macro files.
+      typedef std::list<std::string> Names;
+      Names names;
+      Usul::File::find ( dir, "macro", names );
+
+      // Make the menu.
+      MenuKit::Menu::RefPtr macros ( new MenuKit::Menu ( "&Macros" ) );
+
+      // Loop through the names.
+      for ( Names::const_iterator i = names.begin(); i != names.end(); ++i )
+      {
+        const std::string base ( *i );
+        const std::string path ( Usul::Strings::format ( dir, '/', base ) );
+        this->_appendMacro ( macros, path );
+      }
+
+      // Add the menu if it's not empty.
+      if ( false == macros->empty() )
+      {
+        _menu->append ( macros );
+      }
+    }
+    USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1878677719" );
+  }
+
   // Add help menu.
   {
     MenuKit::Menu::RefPtr help ( new MenuKit::Menu ( "&Help" ) );
@@ -481,6 +528,34 @@ void MainWindow::_buildMenuKitMenu()
     help->addSeparator();
     help->append ( new MenuKit::Button ( new CadKit::Helios::Commands::About ( this, Usul::Strings::format ( "About ", this->programName() ), this->about() ) ) );
     _menu->append ( help );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Append the macro.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_appendMacro ( MenuKit::Menu::RefPtr menu, const std::string &file )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( false == menu.valid() )
+    return;
+
+  // Make a command group.
+  typedef CadKit::Helios::Commands::Group CommandGroup;
+  CommandGroup::RefPtr group ( new CommandGroup ( Usul::Interfaces::IUnknown::QueryPtr ( this ) ) );
+
+  // Read the macro.
+  group->readMacro ( file );
+
+  // Add a button for the command-group if it's not empty.
+  if ( false == group->empty() )
+  {
+    menu->append ( new MenuKit::Button ( group ) );
   }
 }
 

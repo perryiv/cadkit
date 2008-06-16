@@ -19,6 +19,7 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" ${QT_INCLUDE_DIR} )
 SET (SOURCES
 	About.cpp
     Command.cpp
+    Group.cpp
     ExitApplication.cpp
     ExportImage.cpp
     ExportModel.cpp

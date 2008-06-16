@@ -10,6 +10,11 @@
 
 #include "PointSet.h"
 
+#include "osg/BoundingBox"
+
+#include "osgDB/WriteFile"
+
+#include <iostream>
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PointSet, PointSet::BaseClass );
 
 using namespace OsgTools::Points;
@@ -22,9 +27,14 @@ USUL_IMPLEMENT_TYPE_ID ( PointSet );
 ///////////////////////////////////////////////////////////////////////////////
 
 PointSet::PointSet() : BaseClass (),
-_points( new osg::Vec3Array )
+_points( new osg::Vec3Array ),
+_tree( new OctTree() )
 {
- 
+  // Remove this after testing
+#if 1
+  osg::BoundingBox bb ( 1352000.0f, -70900.0f, 4300.0f, 1355000.0f, -70000.0f, 4900.0f );
+  _tree->bounds( bb );
+#endif
 }
 
 
@@ -63,7 +73,11 @@ osg::Node *PointSet::buildScene ( Unknown *caller )
 {
   Guard guard ( this->mutex() );
 
-  
+  GroupPtr group ( new osg::Group );
+
+#if 1 // With spatial partitioning
+  group->addChild( _tree->buildScene( caller ) );
+#else // NO spatial partitioning
   GeometryPtr geometry ( new osg::Geometry ); 
   geometry->setVertexArray( _points.get() );
   geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, _points->size() ) );
@@ -71,8 +85,12 @@ osg::Node *PointSet::buildScene ( Unknown *caller )
   GeodePtr geode ( new osg::Geode );
   geode->addDrawable( geometry.get() );
   
-  GroupPtr group ( new osg::Group );
   group->addChild( geode.get() );
+#endif
+  std::string filename ( "C:/testfile.osg" );
+  //filename = filename + Usul::File::base( name );
+  std::cout << "Writing file " << filename << "..." << std::endl;
+  osgDB::writeNodeFile( *group.get(), filename );
 
   return group.release();
 }
@@ -88,7 +106,7 @@ void PointSet::addPoint( float x, float y, float z )
 {
   Guard guard ( this );
   osg::Vec3d p ( static_cast< double > ( x ), static_cast< double > ( y ), static_cast< double > ( z ) );
-  _points->push_back( p );
+  this->addPoint( p );
 }
 
 
@@ -101,7 +119,7 @@ void PointSet::addPoint( float x, float y, float z )
 void PointSet::addPoint( double x, double y, double z )
 {
   Guard guard ( this );
-  _points->push_back( osg::Vec3d ( x, y, z ) );
+  this->addPoint( osg::Vec3d ( x, y, z ) );
 }
 
 
@@ -115,5 +133,10 @@ void PointSet::addPoint( osg::Vec3 p )
 {
   Guard guard ( this );
   osg::Vec3d point ( static_cast< double > ( p.x() ), static_cast< double > ( p.y() ), static_cast< double > ( p.z() ) );
+  
+#if 1 // With spatial partitioning
+  _tree->insert( point );
+#else // NO spatial partitioning
   _points->push_back( point );
+#endif
 }

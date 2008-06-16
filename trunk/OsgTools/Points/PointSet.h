@@ -17,6 +17,8 @@
 #ifndef _OSGTOOLS_POINTS_POINT_SET_H_
 #define _OSGTOOLS_POINTS_POINT_SET_H_
 
+#include "OctTree.h"
+
 #include "OsgTools/Export.h"
 
 #include "Usul/Base/Object.h"
@@ -87,6 +89,7 @@ protected:
 private:
   GroupPtr                _root;
   Points                  _points;
+  OctTree::RefPtr         _tree;
 
   
 }; // PointSet

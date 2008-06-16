@@ -2551,7 +2551,12 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
     }
   }
   else if ( osgGA::GUIEventAdapter::MOVE == ea.getEventType() )
-    this->requestRedraw();
+  {
+    if ( true == this->isShowLatLonText() )
+    {
+      this->requestRedraw();
+    }
+  }
 }
 
 

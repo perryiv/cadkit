@@ -24,7 +24,8 @@ using namespace Minerva::Layers::Kml;
 Object::Object() : 
   BaseClass(),
   _id(),
-  _targetId()
+  _targetId(),
+  _mutex()
 {
 }
 
@@ -78,6 +79,7 @@ Object::~Object()
 
 const std::string& Object::objectId() const
 {
+  Guard guard ( this->mutex() );
   return _id;
 }
 
@@ -90,6 +92,7 @@ const std::string& Object::objectId() const
 
 void Object::objectId( const std::string& s )
 {
+  Guard guard ( this->mutex() );
   _id = s;
 }
 
@@ -102,6 +105,7 @@ void Object::objectId( const std::string& s )
 
 const std::string& Object::targetId() const
 {
+  Guard guard ( this->mutex() );
   return _targetId;
 }
 
@@ -114,5 +118,18 @@ const std::string& Object::targetId() const
 
 void Object::targetId( const std::string& s )
 {
+  Guard guard ( this->mutex() );
   _targetId = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Object::Mutex& Object::mutex() const
+{
+  return _mutex;
 }

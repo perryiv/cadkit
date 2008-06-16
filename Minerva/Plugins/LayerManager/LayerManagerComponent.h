@@ -23,7 +23,7 @@
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
-#include "Usul/Interfaces/GUI/IAddDockWindow.h"
+#include "Usul/Interfaces/IPluginInitialize.h"
 
 #include <vector>
 
@@ -35,7 +35,7 @@ class LayerManagerComponent : public Usul::Base::Referenced,
                               public Usul::Interfaces::IPlugin,
                               public Usul::Interfaces::IActiveDocumentListener,
                               public Usul::Interfaces::IModifiedObserver,
-                              public Usul::Interfaces::IAddDockWindow
+                              public Usul::Interfaces::IPluginInitialize
 {
 public:
 
@@ -72,7 +72,7 @@ protected:
   virtual void                          subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
   
   /// Add a dock window.
-  virtual void                          addDockWindow ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void                          initializePlugin ( Usul::Interfaces::IUnknown *caller = 0x0 );
   
   Usul::Interfaces::IUnknown::QueryPtr _caller;
 

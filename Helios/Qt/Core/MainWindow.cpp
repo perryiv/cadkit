@@ -55,7 +55,6 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/GUI/IAddDockWindow.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -1085,6 +1084,13 @@ void MainWindow::loadPlugins ( const std::string &config )
 
   typedef Usul::Components::Loader < XmlTree::Document > Loader;
   Loader loader;
+
+  // Set the directory on Apple.  Allow user to over ride by calling this before parse.
+#ifdef __APPLE__
+  const std::string directory ( Usul::CommandLine::Arguments::instance().directory() + "/../Plugins/" );
+  loader.directory ( directory );
+#endif
+
 	loader.parse ( config );
   loader.load ( ( splash.valid() ) ? splash : unknown );
 }
@@ -1500,9 +1506,6 @@ void MainWindow::initPlugins()
   // Query point to this.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
-  // Have the plugins build any dock widgets.
-  this->_buildPluginDockWidgets();
-
   // Look for plugins that create documents.
   Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IDocumentCreate::IID ) );
 
@@ -1528,7 +1531,7 @@ void MainWindow::initPlugins()
     try
     {
       IPluginInitialize::ValidQueryPtr pluginInit ( (*iter).get() );
-      pluginInit->initialize ( me.get() );
+      pluginInit->initializePlugin ( me.get() );
     }
     catch ( const std::exception &e )
     {
@@ -1540,34 +1543,6 @@ void MainWindow::initPlugins()
     }
   }
 
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Have the plugins build any dock widgets.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MainWindow::_buildPluginDockWidgets()
-{
-  USUL_TRACE_SCOPE;
-
-  typedef Usul::Components::Manager Manager;
-  typedef Manager::UnknownSet       Unknowns;
-
-  // Get all the plugins that implement Usul::Interfaces::IAddDockWindow.
-  Unknowns unknowns ( Manager::instance().getInterfaces ( Usul::Interfaces::IAddDockWindow::IID ) );
-
-  // For convienence.
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-
-  // Go through the plugins.
-  for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
-  {
-    Usul::Interfaces::IAddDockWindow::ValidQueryPtr plugin ( (*iter).get() );
-    plugin->addDockWindow ( me );
-  }
 }
 
 

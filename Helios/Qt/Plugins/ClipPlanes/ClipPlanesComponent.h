@@ -23,7 +23,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/GUI/IAddDockWindow.h"
+#include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
 
@@ -31,7 +31,7 @@ class QDockWidget;
 class ClipPlanes;
 
 class ClipPlanesComponent : public Usul::Base::Referenced,
-                           public Usul::Interfaces::IAddDockWindow,
+                           public Usul::Interfaces::IPluginInitialize,
                            public Usul::Interfaces::IPlugin,
                            public Usul::Interfaces::IActiveViewListener
 {
@@ -59,11 +59,11 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Usul::Interfaces::IAddDockWindow
+  //  Usul::Interfaces::IPluginInitialize
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual void addDockWindow ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void initializePlugin ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
 

@@ -21,7 +21,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/GUI/IAddDockWindow.h"
+#include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IPlugin.h"
 
 namespace QtTools { class AnimationControl; }
@@ -29,7 +29,7 @@ namespace QtTools { class AnimationControl; }
 class QDockWidget;
 
 class AnimationControlComponent : public Usul::Base::Referenced,
-                                  public Usul::Interfaces::IAddDockWindow,
+                                  public Usul::Interfaces::IPluginInitialize,
                                   public Usul::Interfaces::IPlugin
 {
 public:
@@ -56,11 +56,11 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
-  //  Usul::Interfaces::IAddDockWindow
+  //  Usul::Interfaces::IPluginInitialize
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  virtual void addDockWindow ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual void initializePlugin ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
 

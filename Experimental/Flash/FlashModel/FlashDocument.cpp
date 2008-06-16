@@ -601,6 +601,7 @@ void FlashDocument::_loadTimestep ( unsigned int i )
   Timestep::RefPtr timestep ( new Timestep ( filename ) );
   timestep->init();
   timestep->loadData ( "temp" );
+  //timestep->loadData ( "dens" );
   
   // Add the timestep.
   Guard guard ( this->mutex() );

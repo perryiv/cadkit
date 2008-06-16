@@ -101,8 +101,8 @@ Usul::Interfaces::IUnknown *LayerManagerComponent::queryInterface ( unsigned lon
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
   case Usul::Interfaces::IActiveDocumentListener::IID:
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
-  case Usul::Interfaces::IAddDockWindow::IID:
-    return static_cast < Usul::Interfaces::IAddDockWindow * > ( this );
+  case Usul::Interfaces::IPluginInitialize::IID:
+    return static_cast < Usul::Interfaces::IPluginInitialize * > ( this );
   case Usul::Interfaces::IModifiedObserver::IID:
     return static_cast < Usul::Interfaces::IModifiedObserver* > ( this );
   default:
@@ -209,7 +209,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayerManagerComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
+void LayerManagerComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
 {
   _caller = caller;
 

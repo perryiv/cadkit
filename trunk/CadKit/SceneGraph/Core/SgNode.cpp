@@ -165,5 +165,5 @@ void SgNode::setName ( const char *name )
     ::free ( _name );
 
   // Assign the new name.
-  _name = ( name ) ? ::_strdup ( name ) : NULL;
+  _name = ( name ) ? ::strdup ( name ) : NULL;
 }

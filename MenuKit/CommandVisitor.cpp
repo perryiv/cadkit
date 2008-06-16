@@ -19,9 +19,10 @@
 #include "Usul/Interfaces/IUpdateEnable.h"
 #include "Usul/Interfaces/IUpdateCheck.h"
 
+#include "boost/algorithm/string/erase.hpp"
+
 using namespace MenuKit;
 
-#include <iostream>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +30,8 @@ using namespace MenuKit;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CommandVisitor::CommandVisitor () : BaseClass ()
+CommandVisitor::CommandVisitor ( const std::string &remove ) : BaseClass(),
+  _remove ( remove )
 {
 }
 
@@ -40,7 +42,7 @@ CommandVisitor::CommandVisitor () : BaseClass ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CommandVisitor::~CommandVisitor ()
+CommandVisitor::~CommandVisitor()
 {
 }
 
@@ -53,7 +55,6 @@ CommandVisitor::~CommandVisitor ()
 
 void CommandVisitor::apply ( Menu &m )
 {
-  
   // Add the menu text to the menu name stack
   _names.push_back( m.text() );
 
@@ -73,18 +74,19 @@ void CommandVisitor::apply ( Menu &m )
 
 void CommandVisitor::apply ( Button &b )
 {
-  Usul::Commands::Command::RefPtr command ( b.command () );
+  Usul::Commands::Command::RefPtr command ( b.command() );
   
-  // Add the command to the Menu command map
- 
-  std::string name;
-  for( unsigned int i = 0; i < _names.size(); ++i )
+  // Determine the key for the command in the map.
+  std::string key;
+  for ( unsigned int i = 0; i < _names.size(); ++i )
   {
-    name += _names.at( i ) + "|";
+    key += _names.at ( i ) + "|";
   }
+  key += b.text();
 
-  name += b.text();
-  std::cout << "Name for this command is: " << name << std::endl;
-  MenuKit::MenuCommands::instance().add( name, command );
+  // Strip out the characters we're supposed to.
+  boost::erase_all ( key, _remove );
 
+  // Add the command to the map.
+  MenuKit::MenuCommands::instance().add ( key, command );
 }

@@ -44,13 +44,11 @@ public:
   // Clear the internal map.
   void                              clear();
 
-  CommandPtr                        find( const std::string& name );
-  void                              add( const std::string& name, CommandPtr command );
+  CommandPtr                        find ( const std::string& name ) const;
+  void                              add ( const std::string& name, CommandPtr command );
 
   // Get the mutex. Use with caution.
-  Mutex&                            mutex() { return *_mutex; }
-
-protected:
+  Mutex&                            mutex() const { return *_mutex; }
 
 private:
 
@@ -66,7 +64,6 @@ private:
   Commands                        _commandMap;
 
   mutable Mutex*                  _mutex;
-
 };
 
 

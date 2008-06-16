@@ -93,10 +93,11 @@ void MenuCommands::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MenuCommands::CommandPtr MenuCommands::find ( const std::string& name )
+MenuCommands::CommandPtr MenuCommands::find ( const std::string& name ) const
 {
   Guard guard ( this->mutex() );
-  return _commandMap[name];
+  Commands::const_iterator i ( _commandMap.find ( name ) );
+  return ( ( _commandMap.end() == i ) ? CommandPtr ( 0x0 ) : i->second );
 }
 
 

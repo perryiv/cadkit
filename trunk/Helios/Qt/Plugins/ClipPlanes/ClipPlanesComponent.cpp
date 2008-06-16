@@ -103,8 +103,8 @@ Usul::Interfaces::IUnknown *ClipPlanesComponent::queryInterface ( unsigned long 
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IAddDockWindow::IID:
-    return static_cast< Usul::Interfaces::IAddDockWindow*>(this);
+  case Usul::Interfaces::IPluginInitialize::IID:
+    return static_cast< Usul::Interfaces::IPluginInitialize*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
   case Usul::Interfaces::IActiveViewListener::IID:
@@ -121,7 +121,7 @@ Usul::Interfaces::IUnknown *ClipPlanesComponent::queryInterface ( unsigned long 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ClipPlanesComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
+void ClipPlanesComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
 {
   _caller = caller;
 

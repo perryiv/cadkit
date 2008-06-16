@@ -87,8 +87,8 @@ Usul::Interfaces::IUnknown *AnimationControlComponent::queryInterface ( unsigned
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IAddDockWindow::IID:
-    return static_cast< Usul::Interfaces::IAddDockWindow*>(this);
+  case Usul::Interfaces::IPluginInitialize::IID:
+    return static_cast< Usul::Interfaces::IPluginInitialize*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
   default:
@@ -103,7 +103,7 @@ Usul::Interfaces::IUnknown *AnimationControlComponent::queryInterface ( unsigned
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AnimationControlComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
+void AnimationControlComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
 {
   _caller = caller;
 

@@ -16,8 +16,8 @@
 #ifndef _USUL_STRINGS_FORMAT_H_
 #define _USUL_STRINGS_FORMAT_H_
 
-#include <sstream>
-
+//#include <sstream>
+#include "Usul/Headers/SStream.h"
 
 namespace Usul {
 namespace Strings {

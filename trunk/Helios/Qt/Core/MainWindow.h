@@ -179,7 +179,6 @@ protected:
   void                              _buildTextWindow();
   void                              _buildProgressBarWindow();
   void                              _buildToolBar();
-  void                              _buildPluginDockWidgets();
 
   void                              _clearDocuments();
   void                              _clearMenuBar ();

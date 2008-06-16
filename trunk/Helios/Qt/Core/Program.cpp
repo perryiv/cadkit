@@ -221,7 +221,7 @@ void Program::run ( int argc, char **argv,
 
   // Set command-line arguments.
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
-
+  
   // Make job manager.
   Usul::Jobs::Manager::init ( poolSize, true );
 
@@ -257,7 +257,7 @@ void Program::run ( int argc, char **argv,
 
   // Initialize singleton of named threads.
   Usul::Threads::Named::instance().set ( Usul::Threads::Names::MAIN );
-
+  
   // We want the above objects to live longer than the application.
   {
     // For cleaning.

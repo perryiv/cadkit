@@ -18,8 +18,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-#include <string>
-
 
 namespace Usul {
 namespace Interfaces {
@@ -33,7 +31,7 @@ struct IPluginInitialize : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3010870509u };
 
-  virtual void initialize( Usul::Interfaces::IUnknown *caller ) = 0;
+  virtual void initializePlugin ( Usul::Interfaces::IUnknown *caller ) = 0;
 
 }; // IPluginInitialize
 

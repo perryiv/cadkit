@@ -82,8 +82,8 @@ Usul::Interfaces::IUnknown *SnapShotComponent::queryInterface ( unsigned long ii
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IAddDockWindow::IID:
-    return static_cast< Usul::Interfaces::IAddDockWindow*>(this);
+  case Usul::Interfaces::IPluginInitialize::IID:
+    return static_cast< Usul::Interfaces::IPluginInitialize*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
   case Usul::Interfaces::IActiveViewListener::IID:
@@ -100,7 +100,7 @@ Usul::Interfaces::IUnknown *SnapShotComponent::queryInterface ( unsigned long ii
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SnapShotComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
+void SnapShotComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
 {
   _caller = caller;
 

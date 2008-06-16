@@ -100,8 +100,8 @@ Usul::Interfaces::IUnknown *SceneTreeComponent::queryInterface ( unsigned long i
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IAddDockWindow::IID:
-    return static_cast< Usul::Interfaces::IAddDockWindow*>(this);
+  case Usul::Interfaces::IPluginInitialize::IID:
+    return static_cast< Usul::Interfaces::IPluginInitialize*>(this);
   case Usul::Interfaces::IUpdateTreeControls::IID:
     return static_cast< Usul::Interfaces::IUpdateTreeControls*> ( this );
   case Usul::Interfaces::IPlugin::IID:
@@ -120,7 +120,7 @@ Usul::Interfaces::IUnknown *SceneTreeComponent::queryInterface ( unsigned long i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void SceneTreeComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
+void SceneTreeComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
 {
   _caller = caller;
 

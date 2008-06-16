@@ -25,7 +25,6 @@
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/ShapeFactory.h"
 
-#include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Math/MinMax.h"
@@ -54,7 +53,6 @@ CurvePlayer::CurvePlayer() : BaseClass(),
   _pathParams(),
   _currentStep ( 0 ),
   _stepsPerSpan ( 100 ),
-  _renderLoop ( false ),
   _looping ( false )
 {
   USUL_TRACE_SCOPE;
@@ -130,15 +128,6 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
 
   // We are now playing.
   this->playing ( true );
-
-  // Check to see if the caller supports render loop.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( caller );
-  if ( true == rl.valid() )
-  {
-    // Save current render-loop state and turn it on.
-    _renderLoop = rl->renderLoop();
-    rl->renderLoop ( true );
-  }
 }
 
 
@@ -167,27 +156,6 @@ void CurvePlayer::playBackward ( const CameraPath *path, unsigned int degree, Us
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   this->_play ( path, degree, caller, true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Stop the animation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void CurvePlayer::stopPlaying ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-
-  this->playing ( false );
-
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( caller );
-  if ( rl.valid ( ) )
-  {
-    Guard guard ( this );
-    rl->renderLoop ( _renderLoop );
-  }
 }
 
 
@@ -394,7 +362,7 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
   // If the curve is bad, stop playing and return.
   if ( false == _curve.first.valid() )
   {
-    this->stopPlaying ( caller );
+    playing ( false );
     return;
   }
 
@@ -405,7 +373,7 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
     if ( false == this->looping() )
     {
       // No longer playing.
-      this->stopPlaying ( caller );
+      this->playing ( false );
       return;
     }
 

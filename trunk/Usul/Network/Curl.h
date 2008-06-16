@@ -140,6 +140,44 @@ public:
 
   /////////////////////////////////////////////////////////////////////////////
   //
+  //  Wrapper around curl handle.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  struct Handle
+  {
+    Handle() : _curl ( ::curl_easy_init() )
+    {
+      if ( 0x0 == _curl )
+      {
+        throw std::runtime_error ( "Error 2234813705: Failed to open curl easy handle" );
+      }
+    }
+    ~Handle()
+    {
+      this->cleanup();
+    }
+    void cleanup()
+    {
+      ::CURL *curlHandle ( _curl );
+      _curl = 0x0;
+
+      if ( 0x0 != curlHandle )
+      {
+        ::curl_easy_cleanup ( curlHandle );
+      }
+    }
+    ::CURL *handle()
+    {
+      return _curl;
+    }
+  private:
+    ::CURL *_curl;
+  };
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
   //  Download the file.
   //
   /////////////////////////////////////////////////////////////////////////////
@@ -229,37 +267,6 @@ private:
       }
     }
   }
-
-
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Wrapper around curl handle.
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
-  struct Handle
-  {
-    Handle() : _curl ( ::curl_easy_init() )
-    {
-      if ( 0x0 == _curl )
-      {
-        throw std::runtime_error ( "Error 2234813705: Failed to open curl easy handle" );
-      }
-    }
-    ~Handle()
-    {
-      if ( 0x0 != _curl )
-      {
-        ::curl_easy_cleanup ( _curl );
-      }
-    }
-    ::CURL *handle()
-    {
-      return _curl;
-    }
-  private:
-    ::CURL *_curl;
-  };
 
 
   /////////////////////////////////////////////////////////////////////////////

@@ -20,7 +20,8 @@
 #include "SlAbsolute.h"
 #include "SlTemplateSupport.h"
 #include "SlConstants.h"
-
+#include "SlClamp.h"
+#include "SlTruncate.h"
 
 namespace CadKit
 {

@@ -266,10 +266,13 @@ template<class String> inline void SlPathname<String>::setPathname ( const Strin
 
 template<class String> inline void SlPathname<String>::setDirectory ( const String &directory )
 {
+  // Convenient typedef.
+  typedef typename String::value_type Char;
+  
   String drive, temp;
   String dirname = directory;
 
-  CadKit::splitAtFirst ( directory, static_cast<String::value_type>(':'), drive, temp );
+  CadKit::splitAtFirst ( directory, static_cast<Char>(':'), drive, temp );
 
   // See if we have a drive at the beginning.
   if ( drive.size() )
@@ -397,7 +400,7 @@ template<class String> inline void SlPathname<String>::getFullpath ( String &ful
   String current = this->getPathname();
 
   // Convert to the full path.
-  const unsigned int bufSize ( SL_PATHNAME_SAFE_BUFFER_SIZE );
+  unsigned int bufSize ( SL_PATHNAME_SAFE_BUFFER_SIZE );
   Char temp[bufSize];
   _getFullPathName ( current.c_str(), bufSize, temp );
 

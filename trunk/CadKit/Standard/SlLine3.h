@@ -150,7 +150,7 @@ template<class T> inline bool SlLine3<T>::getClosestPoint ( const Line3 &line, V
   const Vec3 &pp = p2;
 
   // Intersect the plane and line1.
-  return CadKit::intersectPlaneAndLine ( p1, v1, pp, pn, answer );
+  return CadKit::intersectLineAndPlane ( p1, v1, pp, pn, answer );
 }
 
 
@@ -232,7 +232,7 @@ template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line, cons
 
 template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line, const T &tolerance ) const
 {
-  return ( false == this->isEqual ( vec, tolerance ) );
+  return ( false == this->isEqual ( this->vec, tolerance ) );
 }
 
 
@@ -258,7 +258,7 @@ template<class T> inline bool SlLine3<T>::isEqual ( const SlLine3<T> &line ) con
 
 template<class T> inline bool SlLine3<T>::isNotEqual ( const SlLine3<T> &line ) const
 {
-  return ( false == this->isEqual ( vec ) );
+  return ( false == this->isEqual ( this->vec ) );
 }
 
 

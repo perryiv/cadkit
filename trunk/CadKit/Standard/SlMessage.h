@@ -101,7 +101,7 @@ template<SL_MCA> inline SlMessage<SL_MFA>::SlMessage (
   ClientDataT clientData,
   CallDataT callData )
 {
-  this->setValue ( message._id, message._text, message._clientData, message._callData );
+  this->setValue ( id, text, clientData, callData );
 }
 
 

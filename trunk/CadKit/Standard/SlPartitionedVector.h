@@ -65,8 +65,8 @@ public:
   bool                    isEqual    ( const SlPartitionedVector &pv, const DataType &tolerance ) const;
 
   // Inequality test.
-  bool                    isNotEqual ( const SlPartitionedVector &pv )                            const { return false == this->isEqual ( sd ); }
-  bool                    isNotEqual ( const SlPartitionedVector &pv, const DataType &tolerance ) const { return false == this->isEqual ( sd, tolerance ); }
+  bool                    isNotEqual ( const SlPartitionedVector &pv )                            const { return false == this->isEqual ( this->sd ); }
+  bool                    isNotEqual ( const SlPartitionedVector &pv, const DataType &tolerance ) const { return false == this->isEqual ( this->sd, tolerance ); }
 
   // Assignment operator.
   SlPartitionedVector &   operator = ( const SlPartitionedVector &pv ) { this->setValue ( pv ); return *this; }

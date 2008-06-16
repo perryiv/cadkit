@@ -19,6 +19,7 @@
 #include "SlVec4.h"
 #include "SlTypedefs.h"
 #include "SlDeclareConst.h"
+#include "SlMinMax.h"
 
 // For convenience.
 #define SL_COLOR_CLASS_ARGS class Real, class Integer, Integer MAX_INTEGER, class PackedInteger
@@ -178,10 +179,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::getColor
   // This is similar to what we do in the other getColor(), however we have 
   // to use "PackedInteger" instead of "Integer" for the casts.
   const Real factor ( static_cast<Real> ( MAX_INTEGER ) );
-  PackedInteger c0    = static_cast<PackedInteger> ( _v[0] * factor );
-  PackedInteger c1    = static_cast<PackedInteger> ( _v[1] * factor );
-  PackedInteger c2    = static_cast<PackedInteger> ( _v[2] * factor );
-  PackedInteger alpha = static_cast<PackedInteger> ( _v[3] * factor );
+  PackedInteger c0    = static_cast<PackedInteger> ( this->_v[0] * factor );
+  PackedInteger c1    = static_cast<PackedInteger> ( this->_v[1] * factor );
+  PackedInteger c2    = static_cast<PackedInteger> ( this->_v[2] * factor );
+  PackedInteger alpha = static_cast<PackedInteger> ( this->_v[3] * factor );
 
   // Shift the bits into place.
   switch ( sizeof ( PackedInteger ) )
@@ -230,10 +231,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::getColor
 template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::getColor ( Integer &c0, Integer &c1, Integer &c2, Integer &alpha ) const
 {
   const Real factor ( static_cast<Real> ( MAX_INTEGER ) );
-  c0    = static_cast<Integer> ( _v[0] * factor );
-  c1    = static_cast<Integer> ( _v[1] * factor );
-  c2    = static_cast<Integer> ( _v[2] * factor );
-  alpha = static_cast<Integer> ( _v[3] * factor );
+  c0    = static_cast<Integer> ( this->_v[0] * factor );
+  c1    = static_cast<Integer> ( this->_v[1] * factor );
+  c2    = static_cast<Integer> ( this->_v[2] * factor );
+  alpha = static_cast<Integer> ( this->_v[3] * factor );
 }
 
 
@@ -464,8 +465,8 @@ template<class Real, class Integer> inline void _rgb2hex
 template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::hsv2rgb()
 {
   Real r, g, b;
-  this->_hsv2rgb ( _v[0], _v[1], _v[2], r, g, b );
-  this->setValue ( r, g, b, _v[3] );
+  this->_hsv2rgb ( this->_v[0], this->_v[1], this->_v[2], r, g, b );
+  this->setValue ( r, g, b, this->_v[3] );
 }
 
 
@@ -478,8 +479,8 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::hsv2rgb(
 template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::rgb2hsv()
 {
   Real h, s, v;
-  this->_rgb2hsv ( _v[0], _v[1], _v[2], h, s, v );
-  this->setValue ( h, s, v, _v[3] );
+  this->_rgb2hsv ( this->_v[0], this->_v[1], this->_v[2], h, s, v );
+  this->setValue ( h, s, v, this->_v[3] );
 }
 
 
@@ -492,7 +493,7 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::rgb2hsv(
 template<SL_COLOR_CLASS_ARGS> inline SlUint16 SlColor<SL_COLOR_FUNCT_ARGS>::get15BitHex() const
 {
   SlUint16 color;
-  CadKit::_rgb2hex ( _v[0], _v[1], _v[2], 15, color );
+  CadKit::_rgb2hex ( this->_v[0], this->_v[1], this->_v[2], 15, color );
   return color;
 }
 
@@ -506,7 +507,7 @@ template<SL_COLOR_CLASS_ARGS> inline SlUint16 SlColor<SL_COLOR_FUNCT_ARGS>::get1
 template<SL_COLOR_CLASS_ARGS> inline SlUint16 SlColor<SL_COLOR_FUNCT_ARGS>::get16BitHex() const
 {
   SlUint16 color;
-  CadKit::_rgb2hex ( _v[0], _v[1], _v[2], 16, color );
+  CadKit::_rgb2hex ( this->_v[0], this->_v[1], this->_v[2], 16, color );
   return color;
 }
 
@@ -520,7 +521,7 @@ template<SL_COLOR_CLASS_ARGS> inline SlUint16 SlColor<SL_COLOR_FUNCT_ARGS>::get1
 template<SL_COLOR_CLASS_ARGS> inline SlUint32 SlColor<SL_COLOR_FUNCT_ARGS>::get24BitHex() const
 {
   SlUint32 color;
-  CadKit::_rgb2hex ( _v[0], _v[1], _v[2], 24, color );
+  CadKit::_rgb2hex ( this->_v[0], this->_v[1], this->_v[2], 24, color );
   return color;
 }
 
@@ -534,7 +535,7 @@ template<SL_COLOR_CLASS_ARGS> inline SlUint32 SlColor<SL_COLOR_FUNCT_ARGS>::get2
 template<SL_COLOR_CLASS_ARGS> inline SlUint32 SlColor<SL_COLOR_FUNCT_ARGS>::get32BitHex() const
 {
   SlUint32 color;
-  CadKit::_rgb2hex ( _v[0], _v[1], _v[2], 32, color );
+  CadKit::_rgb2hex ( this->_v[0], this->_v[1], this->_v[2], 32, color );
   return color;
 }
 
@@ -560,10 +561,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::normaliz
 template<SL_COLOR_CLASS_ARGS> inline bool SlColor<SL_COLOR_FUNCT_ARGS>::isValid() const
 {
   return (
-    _v[0] >= 0 && _v[0] <= 1 &&
-    _v[1] >= 0 && _v[1] <= 1 &&
-    _v[2] >= 0 && _v[2] <= 1 &&
-    _v[3] >= 0 && _v[3] <= 1 );
+    this->_v[0] >= 0 && this->_v[0] <= 1 &&
+    this->_v[1] >= 0 && this->_v[1] <= 1 &&
+    this->_v[2] >= 0 && this->_v[2] <= 1 &&
+    this->_v[3] >= 0 && this->_v[3] <= 1 );
 }
 
 
@@ -577,10 +578,10 @@ template<SL_COLOR_CLASS_ARGS> inline void SlColor<SL_COLOR_FUNCT_ARGS>::truncate
 {
   const Real CONST_1 ( static_cast<Real> ( 1 ) );
   const Real CONST_0 ( static_cast<Real> ( 0 ) );
-  _v[0] = std::max ( CONST_0, std::min ( CONST_1, _v[0] ) );
-  _v[1] = std::max ( CONST_0, std::min ( CONST_1, _v[1] ) );
-  _v[2] = std::max ( CONST_0, std::min ( CONST_1, _v[2] ) );
-  _v[3] = std::max ( CONST_0, std::min ( CONST_1, _v[3] ) );
+  this->_v[0] = std::max ( CONST_0, std::min ( CONST_1, this->_v[0] ) );
+  this->_v[1] = std::max ( CONST_0, std::min ( CONST_1, this->_v[1] ) );
+  this->_v[2] = std::max ( CONST_0, std::min ( CONST_1, this->_v[2] ) );
+  this->_v[3] = std::max ( CONST_0, std::min ( CONST_1, this->_v[3] ) );
 }
 
 

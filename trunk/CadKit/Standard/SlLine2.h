@@ -188,7 +188,7 @@ template<class T> inline bool SlLine2<T>::isEqual ( const SlLine2<T> &line, cons
 
 template<class T> inline bool SlLine2<T>::isNotEqual ( const SlLine2<T> &line, const T &tolerance ) const
 {
-  return ( false == this->isEqual ( vec, tolerance ) );
+  return ( false == this->isEqual ( this->vec, tolerance ) );
 }
 
 
@@ -214,7 +214,7 @@ template<class T> inline bool SlLine2<T>::isEqual ( const SlLine2<T> &line ) con
 
 template<class T> inline bool SlLine2<T>::isNotEqual ( const SlLine2<T> &line ) const
 {
-  return ( false == this->isEqual ( vec ) );
+  return ( false == this->isEqual ( this->vec ) );
 }
 
 
@@ -288,7 +288,7 @@ template<class T> inline bool SlLine2<T>::isPerpendicularTo ( const SlLine2 &lin
 
 template<class T> inline bool SlLine2<T>::intersect ( const Vec2 &linePoint, const Vec2 &lineDir, Vec2 &answer ) const
 {
-  if ( this->isParallelTo ( line ) ) 
+  if ( this->isParallelTo ( this->line ) ) 
     return false;
 
   Real dx, dy, A, B, C, x, y, m, a[2][2], b[2], X[2], denom, factor;
@@ -329,22 +329,22 @@ template<class T> inline bool SlLine2<T>::intersect ( const Vec2 &linePoint, con
   // Do the same for the other point and vector.
   //
 
-  dx = line._vec[0];
+  dx = this->line._vec[0];
 
   if ( 0 == dx )
   {
     A = 1.0;
     B = 0.0;
-    C = line._pt[0];
+    C = this->line._pt[0];
   }
 
   else
   {
-    dy = line._vec[1];
+    dy = this->line._vec[1];
     A = -dy;
     B = dx;
-    y = line._pt[1];
-    x = line._pt[0];
+    y = this->line._pt[1];
+    x = this->line._pt[0];
     m = dy / dx;
     C = ( y - m * x ) * B;
   }

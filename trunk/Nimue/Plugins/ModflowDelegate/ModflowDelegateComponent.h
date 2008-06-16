@@ -22,11 +22,11 @@
 #include "ModflowModel/Interfaces/IModflowModel.h"
 
 #include "Usul/Base/Object.h"
-#include "Usul/Interfaces/GUI/IAddDockWindow.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IStringGridSet.h"
 
 #include <map>
@@ -44,7 +44,7 @@ class ModflowDelegateComponent : public Usul::Base::Object,
                                  public Usul::Interfaces::IPlugin,
                                  public Usul::Interfaces::IGUIDelegate,
                                  public Usul::Interfaces::IActiveDocumentListener,
-                                 public Usul::Interfaces::IAddDockWindow,
+																 public Usul::Interfaces::IPluginInitialize,
                                  public Usul::Interfaces::IStringGridSet,
                                  public Usul::Interfaces::IInitNewDocument
 {
@@ -78,8 +78,8 @@ public:
   // The active document has changed (IActiveDocumentListener).
   virtual void                activeDocumentChanged ( Unknown *oldDoc, Unknown *newDoc );
 
-  /// Add a dock window (IAddDockWindow).
-  virtual void                addDockWindow ( Unknown *caller = 0x0 );
+  /// Add a dock window (IPluginInitialize).
+  virtual void                initializePlugin ( Unknown *caller = 0x0 );
 
   // Usul::Interfaces::IStringGridSet.
   virtual void                setStringGrid ( const StringGrid &grid );

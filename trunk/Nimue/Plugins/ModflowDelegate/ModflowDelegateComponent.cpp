@@ -163,8 +163,8 @@ Usul::Interfaces::IUnknown *ModflowDelegateComponent::queryInterface ( unsigned 
     return static_cast < Usul::Interfaces::IGUIDelegate * > ( this );
   case Usul::Interfaces::IActiveDocumentListener::IID:
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
-  case Usul::Interfaces::IAddDockWindow::IID:
-    return static_cast < Usul::Interfaces::IAddDockWindow * > ( this );
+  case Usul::Interfaces::IPluginInitialize::IID:
+    return static_cast < Usul::Interfaces::IPluginInitialize * > ( this );
   case Usul::Interfaces::IStringGridSet::IID:
     return static_cast < Usul::Interfaces::IStringGridSet * > ( this );
   case Usul::Interfaces::IInitNewDocument::IID:
@@ -260,7 +260,7 @@ void ModflowDelegateComponent::activeDocumentChanged ( Usul::Interfaces::IUnknow
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDelegateComponent::addDockWindow ( Usul::Interfaces::IUnknown *caller )
+void ModflowDelegateComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
 {
   // Make sure this is only called once.
   if ( false == _docked.empty() )

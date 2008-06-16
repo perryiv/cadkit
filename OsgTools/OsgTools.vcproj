@@ -1194,6 +1194,22 @@
 				Name="Points"
 				>
 				<File
+					RelativePath=".\Points\OctTree.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Points\OctTree.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Points\OctTreeNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Points\OctTreeNode.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Points\PointSet.cpp"
 					>
 				</File>

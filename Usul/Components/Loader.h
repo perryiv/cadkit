@@ -55,6 +55,9 @@ public:
 
   // Add a library to load.
   void                      addLibrary ( const std::string &file );
+  
+  // Set the directory.
+  void                      directory ( const std::string& dir );
 
   // Get the mutex.
   Mutex &                   mutex() const { return _mutex; }
@@ -378,6 +381,10 @@ inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
     // Load.
     try
     {
+      // Prepend the directory if we have one...
+      if( false == _directory.empty() )
+	      name = _directory + name;
+      
       Usul::DLL::Library::RefPtr library ( Usul::DLL::Loader::load ( name ) );
       
       // Add to our cache.
@@ -392,6 +399,21 @@ inline void Loader< Document >::load ( Usul::Interfaces::IUnknown *caller )
       std::cout << "Error 1001727732: Unknown exception caught while trying to load library " << name << "." << std::endl;
     }
   }
+}
+  
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Document >
+inline void Loader< Document >::directory ( const std::string& dir )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _directory = dir;
 }
 
 

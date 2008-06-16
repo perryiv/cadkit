@@ -155,8 +155,11 @@ void Command::execute ( Usul::Interfaces::IUnknown * caller )
   // No need to guard, should be re-entrant.
 
   // If we don't already have a caller, and we are given a valid one, set our internal caller.
-  if( false == _caller.valid() && 0x0 != caller )
-    _caller = caller;
+  {
+    Guard guard ( this );
+    if ( false == _caller.valid() && 0x0 != caller )
+      _caller = caller;
+  }
 
   // Notify that we are executing.
   Usul::Interfaces::ICommandExecuteListener::QueryPtr cel ( this->caller () );

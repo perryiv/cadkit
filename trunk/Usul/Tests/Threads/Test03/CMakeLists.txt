@@ -1,4 +1,6 @@
 
+cmake_minimum_required(VERSION "2.4")
+
 PROJECT(ThreadTest03)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../../CMakeModules")

@@ -13,9 +13,11 @@
 
 #include "MenuKit/Visitor.h"
 
+#include <string>
 #include <vector>
 
 namespace MenuKit {
+
 
 class MENUKIT_EXPORT CommandVisitor : public MenuKit::Visitor
 {
@@ -23,7 +25,7 @@ public:
   typedef MenuKit::Visitor BaseClass;
   USUL_DECLARE_REF_POINTERS ( CommandVisitor );
 
-  CommandVisitor ();
+  CommandVisitor ( const std::string &remove = std::string() );
 
   // Apply this visitor to the items.
   virtual void        apply ( Menu &m );
@@ -36,8 +38,11 @@ protected:
 
 private:
   std::vector< std::string > _names;
+  std::string _remove;
 };
 
+
 }
+
 
 #endif // __MENU_KIT_UPDATE_VISITOR_H__

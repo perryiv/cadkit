@@ -13,6 +13,8 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include <string>
 
@@ -26,11 +28,16 @@ class Object : public Usul::Base::Referenced
 {
 public:
   typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard<Mutex> Guard;
   
   USUL_DECLARE_REF_POINTERS ( Object );
   
   Object();
   Object ( const XmlTree::Node& node );
+  
+  /// Get the mutex.
+  Mutex &                mutex() const;
   
   /// Get/set the id.
   const std::string&     objectId() const;
@@ -48,6 +55,7 @@ private:
   
   std::string _id;
   std::string _targetId;
+  mutable Mutex _mutex;
 };
 
 

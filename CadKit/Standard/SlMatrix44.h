@@ -916,7 +916,7 @@ template<class T> inline bool SlMatrix44<T>::isOrthogonal() const
   // then it is orthogonal.
   SlMatrix44 M;
   this->_getOrthogonalCandidate ( M );
-  return M2.isIdentity();
+  return this->M2.isIdentity();
 }
 
 
@@ -932,7 +932,7 @@ template<class T> inline bool SlMatrix44<T>::isOrthogonal ( const Real &toleranc
   // then it is orthogonal.
   SlMatrix44 M;
   this->_getOrthogonalCandidate ( M );
-  return M2.isIdentity ( tolerance );
+  return this->M2.isIdentity ( tolerance );
 }
 
 

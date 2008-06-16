@@ -22,6 +22,23 @@
 
 namespace CadKit
 {
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  These are for class SlRefPtr. The client can overload these functions to
+//  use SlRefPtr with another kind of pointer (like IUnknown). By making 
+//  SlRefPtr call these functions instead of it's contained pointer's
+//  ref/unref (or perhaps AddRef/Release) functions, we decouple it from the 
+//  API of it's contained pointer. To use SlRefPtr with a pointer type 
+//  that does not have "ref/unref" members, make a specific (non-template) 
+//  overload of these functions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> inline void _incrementPointerReferenceCount ( T *p ) { p->ref(); }
+template <class T> inline void _decrementPointerReferenceCount ( T *p ) { p->unref(); }
+
+
 template<class T> class SlRefPtr
 {
 public:
@@ -188,22 +205,6 @@ template <class T> inline void SlRefPtr<T>::setValue ( const SlRefPtr<T> &p )
   // Call the other one.
   this->setValue ( p._p );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  These are for class SlRefPtr. The client can overload these functions to
-//  use SlRefPtr with another kind of pointer (like IUnknown). By making 
-//  SlRefPtr call these functions instead of it's contained pointer's
-//  ref/unref (or perhaps AddRef/Release) functions, we decouple it from the 
-//  API of it's contained pointer. To use SlRefPtr with a pointer type 
-//  that does not have "ref/unref" members, make a specific (non-template) 
-//  overload of these functions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template <class T> inline void _incrementPointerReferenceCount ( T *p ) { p->ref(); }
-template <class T> inline void _decrementPointerReferenceCount ( T *p ) { p->unref(); }
 
 
 ///////////////////////////////////////////////////////////////////////////////

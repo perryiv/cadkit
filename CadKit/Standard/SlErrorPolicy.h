@@ -16,6 +16,10 @@
 #ifndef _CADKIT_STANDARD_LIBRARY_ERROR_POLICIES_H_
 #define _CADKIT_STANDARD_LIBRARY_ERROR_POLICIES_H_
 
+// Fix for gcc 4.1 compile error
+#ifndef _WIN32
+#include <cassert>
+#endif
 
 namespace CadKit {
 namespace ErrorPolicy {

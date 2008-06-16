@@ -126,10 +126,10 @@ template<class T> inline void SlViewport<T>::setValue ( const SlViewport<T> &vp 
 template<class T> inline bool SlViewport<T>::isEqual ( const SlViewport<T> &v ) const
 {
   return ( 
-    vpA._x == vpB._x && 
-    vpA._y == vpB._y &&
-    vpA._width == vpB._width &&
-    vpA._height == vpB._height );
+    this->vpA._x == this->vpB._x && 
+    this->vpA._y == this->vpB._y &&
+    this->vpA._width == this->vpB._width &&
+    this->vpA._height == this->vpB._height );
 }
 
 

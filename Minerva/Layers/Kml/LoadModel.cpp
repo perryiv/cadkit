@@ -54,6 +54,9 @@ namespace Detail
 
         if ( ss.valid() )
         {
+          // Turn off back face culling.
+          OsgTools::State::StateSet::setBackFaceCulling ( ss.get(), false );
+
           if ( osg::Texture* texture = dynamic_cast<osg::Texture*> ( ss->getTextureAttribute ( 0, osg::StateAttribute::TEXTURE ) ) )
           {
             texture->setResizeNonPowerOfTwoHint ( false );

@@ -29,6 +29,7 @@
 #include "Usul/Strings/Format.h"
 
 #include "curl/curl.h"
+#include "curl/curlver.h"
 
 #include <string>
 #include <fstream>
@@ -219,8 +220,11 @@ public:
       this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_FOLLOWLOCATION, true ) );
 
       // Add timeout if it's valid.
+      // I'm not sure when CURLOPT_TIMEOUT_MS was introduced, but it's not in 7.16.
+#if LIBCURL_VERSION_MAJOR >= 7 && LIBCURL_VERSION_MINOR > 16
       if ( timeoutMilliSeconds > 0 )
         this->_check ( ::curl_easy_setopt ( handle.handle(), CURLOPT_TIMEOUT_MS, static_cast<long> ( timeoutMilliSeconds ) ) );
+#endif
 
       // Add post data if it's there.
       if ( false == post.empty() )

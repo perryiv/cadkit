@@ -4,6 +4,7 @@
 #include "Usul/Math/Vector3.h"
 
 #include "OsgTools/Lod.h"
+#include "OsgTools/State/StateSet.h"
 
 #include "osg/Vec3d"
 #include "osg/Plane"
@@ -218,6 +219,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
         GeometryPtr geometry ( new osg::Geometry ); 
         geometry->setVertexArray( _points.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, _points->size() ) );
+        OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 3 );
 
         GeodePtr geode ( new osg::Geode );
         geode->addDrawable( geometry.get() );
@@ -229,6 +231,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
       // Medium Distance LOD
       {
         Points vertices ( new osg::Vec3Array );
+        vertices->reserve( static_cast< unsigned int > ( (_points->size() / 3 ) ) + 1  );
         for( unsigned int i = 0; i < _points->size(); i+=3 )
         {
           vertices->push_back( _points->at( i ) );
@@ -236,6 +239,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
         GeometryPtr geometry ( new osg::Geometry ); 
         geometry->setVertexArray( _points.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
+        OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 2 );
 
         GeodePtr geode ( new osg::Geode );
         geode->addDrawable( geometry.get() );
@@ -247,6 +251,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
       // Low Detail LOD
       {
         Points vertices ( new osg::Vec3Array );
+        vertices->reserve( static_cast< unsigned int > ( (_points->size() / 6 ) ) + 1  );
         for( unsigned int i = 0; i < _points->size(); i+=6 )
         {
           vertices->push_back( _points->at( i ) );
@@ -254,6 +259,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
         GeometryPtr geometry ( new osg::Geometry ); 
         geometry->setVertexArray( _points.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
+
 
         GeodePtr geode ( new osg::Geode );
         geode->addDrawable( geometry.get() );

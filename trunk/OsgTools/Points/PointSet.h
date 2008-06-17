@@ -74,6 +74,11 @@ public:
   void                    addPoint( double x, double y, double z );
   void                    addPoint( osg::Vec3 p );
 
+  void                    allocate( unsigned int num );
+  void                    bounds( osg::Vec3f min, osg::Vec3f max );
+
+  void                    tolerance( unsigned int t );
+
 
  
 protected:

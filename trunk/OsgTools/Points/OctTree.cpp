@@ -10,7 +10,7 @@
 
 OctTree::OctTree():
 _tree( new OctTreeNode ),
-_tolerance( 100 )
+_tolerance( 1000 )
 {
   _tree->tolerance( _tolerance );
 }
@@ -74,6 +74,33 @@ osg::Node* OctTree::buildScene( Unknown *caller, Unknown *progress )
   return group.release();
 }
 
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the tolerance level
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTree::tolerance( unsigned int t )
+{ 
+  Guard guard ( this->mutex() );
+  _tolerance = t; 
+  _tree->tolerance( t );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the tolerance level
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int OctTree::tolerance()
+{ 
+  Guard guard ( this->mutex() );
+  return _tolerance; 
+}
 
 /////////////////
 //  PROTECTED

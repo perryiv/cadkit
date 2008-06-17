@@ -52,7 +52,7 @@ public:
   
   // Get/Set tolerance level
   void                tolerance( unsigned int level );
-  unsigned int        tolerance(){ return _tolerance; };
+  unsigned int        tolerance();
 
 protected:
   

@@ -31,7 +31,7 @@ _points( new osg::Vec3Array ),
 _tree( new OctTree() )
 {
   // Remove this after testing
-#if 1
+#if 0
   osg::BoundingBox bb ( 1352000.0f, -70900.0f, 4300.0f, 1355000.0f, -70000.0f, 4900.0f );
   _tree->bounds( bb );
 #endif
@@ -87,11 +87,12 @@ osg::Node *PointSet::buildScene ( Unknown *caller )
   
   group->addChild( geode.get() );
 #endif
+#if 0
   std::string filename ( "C:/testfile.osg" );
   //filename = filename + Usul::File::base( name );
   std::cout << "Writing file " << filename << "..." << std::endl;
   osgDB::writeNodeFile( *group.get(), filename );
-
+#endif
   return group.release();
 }
 
@@ -139,4 +140,45 @@ void PointSet::addPoint( osg::Vec3 p )
 #else // NO spatial partitioning
   _points->push_back( point );
 #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Allocate space for this point set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::allocate( unsigned int num )
+{
+  Guard guard ( this );
+  //_points->reserve( num );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the bounds of the data
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::bounds( osg::Vec3f min, osg::Vec3f max )
+{
+  Guard guard ( this );
+  osg::BoundingBox bb ( min.x(), min.y(), min.z(), max.x(), max.y(), max.z() );
+  _tree->bounds( bb );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the tolerance level for the octree
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::tolerance( unsigned int t )
+{
+  Guard guard ( this );
+  _tree->tolerance( t );
 }

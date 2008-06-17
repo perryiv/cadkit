@@ -31,7 +31,7 @@ _bb(),
 _children( 0 ),
 _points( new osg::Vec3Array ),
 _type( POINT_HOLDER ),
-_tolerance( 100 ),
+_tolerance( 1000 ),
 _useLOD( true )
 {
 
@@ -135,6 +135,13 @@ void OctTreeNode::tolerance( unsigned int level )
 {
   Guard guard ( this->mutex() );
   _tolerance = level;
+  if( _children.size() != 0 )
+  {
+    for( unsigned int i = 0; i < _children.size(); ++i )
+    {
+      _children.at( i )->tolerance( level );
+    }
+  }
 }
 
 
@@ -378,6 +385,7 @@ void OctTreeNode::_createChildren()
     _children.at( i )->distance( _distance );
     _children.at( i )->boundingBox( b.at( i ) );
     _children.at( i )->type( POINT_HOLDER );
+    _children.at( i )->tolerance( _tolerance );
 
   }
 }

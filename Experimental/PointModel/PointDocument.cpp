@@ -18,6 +18,7 @@
 #include "Usul/Strings/Split.h"
 #include "Usul/File/Path.h"
 #include "Usul/Convert/Convert.h"
+#include "Usul/Math/MinMax.h"
 
 #include <fstream>
 #include <algorithm>
@@ -36,7 +37,7 @@ USUL_IMPLEMENT_TYPE_ID ( PointDocument );
 ///////////////////////////////////////////////////////////////////////////////
 
 PointDocument::PointDocument() : BaseClass ( "Point Document" ),
-_points( new PointSet() )
+_pointSet( new PointSet() )
 {
 
 }
@@ -132,6 +133,7 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 
   if ( "point3d" == ext )
   {
+    this->_readAndSetBounds( name, caller, progress );
     this->_readPoint3DFile( name, caller, progress );
   }
   
@@ -151,7 +153,7 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 
 void PointDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
- 
+
 }
 
 
@@ -227,8 +229,9 @@ PointDocument::Filters PointDocument::filtersExport() const
 
 osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *caller )
 {
-  // Redirect to triangle set
-  return _points->buildScene ( caller );
+  // Redirect to point set
+  
+  return _pointSet->buildScene ( caller );
 }
 
 
@@ -240,6 +243,9 @@ osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *c
 
 void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *caller, Unknown *progress )
 {
+  osg::Vec3f min( 0.0, 0.0, 0.0 );
+  osg::Vec3f max( 0.0, 0.0, 0.0 );
+
   // Open a stream with a large buffer.
   const unsigned long int bufSize ( 4095 );
   std::ifstream in;
@@ -251,6 +257,7 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
   // Check to make sure the first line is the header.
   // Check to see which column is X, Y, and Z
   unsigned int x_index = 0, y_index = 0, z_index = 0;
+  
   bool foundX = false, foundY = false, foundZ = false;
   {
     char buffer[bufSize+1];
@@ -283,6 +290,42 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
       }
     }
   }
+  // Read the first line to establisht the min and max values
+  // to be used to compare against remaining points in order
+  // to determine the bounds of the data
+  
+  {
+    char buffer[bufSize+1];
+    in.getline ( buffer, bufSize );
+    std::string temp ( buffer );
+    temp = Usul::Strings::lowerCase( temp );
+
+    std::replace( temp.begin(), temp.end(), ' ', ',' );
+    
+    typedef std::vector< std::string > StringVec;
+    StringVec sv;
+    Usul::Strings::split( temp, ",", false, sv );
+    if( sv.size() > 0 )
+    {
+      osg::Vec3d p ( 0.0, 0.0, 0.0 );
+      if( true == foundX )
+      {
+        p.x() = Usul::Convert::Type< std::string, double >::convert( sv.at( x_index ) );
+      }
+      if( true == foundY )
+      {
+        p.y() = Usul::Convert::Type< std::string, double >::convert( sv.at( y_index ) );
+      }
+      if( true == foundZ )
+      {
+        p.z() = Usul::Convert::Type< std::string, double >::convert( sv.at( z_index ) );
+      }
+      min = osg::Vec3f( static_cast< float > ( p.x() ), static_cast< float > ( p.y() ), static_cast< float > ( p.z() ) );
+      max = osg::Vec3f( static_cast< float > ( p.x() ), static_cast< float > ( p.y() ), static_cast< float > ( p.z() ) );
+      _pointSet->addPoint( p );
+    }
+
+  }
 
   // Read the rest of the file.
   // If the x, y, or z header wasn't found then set
@@ -314,8 +357,159 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
       {
         p.z() = Usul::Convert::Type< std::string, double >::convert( sv.at( z_index ) );
       }
+      
+      min.x() = Usul::Math::minimum( static_cast< float > ( p.x() ), min.x() );
+      min.y() = Usul::Math::minimum( static_cast< float > ( p.y() ), min.y() );
+      min.z() = Usul::Math::minimum( static_cast< float > ( p.z() ), min.z() );
 
-      _points->addPoint( p );
+      max.x() = Usul::Math::maximum( static_cast< float > ( p.x() ), max.x() );
+      max.y() = Usul::Math::maximum( static_cast< float > ( p.y() ), max.y() );
+      max.z() = Usul::Math::maximum( static_cast< float > ( p.z() ), max.z() );
+
+      _pointSet->addPoint( p );
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read a .point3d file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::_readAndSetBounds( const std::string &filename, Unknown *caller, Unknown *progress )
+{
+  osg::Vec3f min( 0.0, 0.0, 0.0 );
+  osg::Vec3f max( 0.0, 0.0, 0.0 );
+  unsigned int numPoints = 0;
+  // Open a stream with a large buffer.
+  const unsigned long int bufSize ( 4095 );
+  std::ifstream in;
+  in.open ( filename.c_str() );
+  if ( !in.is_open() )
+    throw std::runtime_error ( "Error 2265042350: Failed to open file: " + filename );
+
+  // Get the first line.  This should be the header of the file.
+  // Check to make sure the first line is the header.
+  // Check to see which column is X, Y, and Z
+  unsigned int x_index = 0, y_index = 0, z_index = 0;
+  
+  bool foundX = false, foundY = false, foundZ = false;
+  {
+    char buffer[bufSize+1];
+    in.getline ( buffer, bufSize );
+    std::string temp ( buffer );
+    temp = Usul::Strings::lowerCase( temp );
+
+    std::replace( temp.begin(), temp.end(), ' ', ',' );
+    
+    typedef std::vector< std::string > StringVec;
+    StringVec sv;
+    Usul::Strings::split( temp, ",", false, sv );
+    
+    for( unsigned int i = 0; i < sv.size(); ++i )
+    {
+      if( "x" == sv.at( i ) )
+      {
+        x_index = i;
+        foundX = true;
+      }
+      if( "y" == sv.at( i ) )
+      {
+        y_index = i;
+        foundY = true;
+      }
+      if( "z" == sv.at( i ) )
+      {
+        z_index = i;
+        foundZ = true;
+      }
+    }
+  }
+  // Read the first line to establisht the min and max values
+  // to be used to compare against remaining points in order
+  // to determine the bounds of the data
+  
+  {
+    char buffer[bufSize+1];
+    in.getline ( buffer, bufSize );
+    std::string temp ( buffer );
+    temp = Usul::Strings::lowerCase( temp );
+
+    std::replace( temp.begin(), temp.end(), ' ', ',' );
+    
+    typedef std::vector< std::string > StringVec;
+    StringVec sv;
+    Usul::Strings::split( temp, ",", false, sv );
+    if( sv.size() > 0 )
+    {
+      osg::Vec3d p ( 0.0, 0.0, 0.0 );
+      if( true == foundX )
+      {
+        p.x() = Usul::Convert::Type< std::string, double >::convert( sv.at( x_index ) );
+      }
+      if( true == foundY )
+      {
+        p.y() = Usul::Convert::Type< std::string, double >::convert( sv.at( y_index ) );
+      }
+      if( true == foundZ )
+      {
+        p.z() = Usul::Convert::Type< std::string, double >::convert( sv.at( z_index ) );
+      }
+      min = osg::Vec3f( static_cast< float > ( p.x() ), static_cast< float > ( p.y() ), static_cast< float > ( p.z() ) );
+      max = osg::Vec3f( static_cast< float > ( p.x() ), static_cast< float > ( p.y() ), static_cast< float > ( p.z() ) );
+
+      ++numPoints;
+    }
+
+  }
+
+  // Read the rest of the file.
+  // If the x, y, or z header wasn't found then set
+  // their corresponding values to 0  
+  while( false == in.eof() )
+  {
+    char buffer[bufSize+1];
+    in.getline ( buffer, bufSize );
+    std::string temp ( buffer );
+    temp = Usul::Strings::lowerCase( temp );
+
+    std::replace( temp.begin(), temp.end(), ' ', ',' );
+    
+    typedef std::vector< std::string > StringVec;
+    StringVec sv;
+    Usul::Strings::split( temp, ",", false, sv );
+    if( sv.size() > 0 )
+    {
+      osg::Vec3d p ( 0.0, 0.0, 0.0 );
+      if( true == foundX )
+      {
+        p.x() = Usul::Convert::Type< std::string, double >::convert( sv.at( x_index ) );
+      }
+      if( true == foundY )
+      {
+        p.y() = Usul::Convert::Type< std::string, double >::convert( sv.at( y_index ) );
+      }
+      if( true == foundZ )
+      {
+        p.z() = Usul::Convert::Type< std::string, double >::convert( sv.at( z_index ) );
+      }
+      
+      min.x() = Usul::Math::minimum( static_cast< float > ( p.x() ), min.x() );
+      min.y() = Usul::Math::minimum( static_cast< float > ( p.y() ), min.y() );
+      min.z() = Usul::Math::minimum( static_cast< float > ( p.z() ), min.z() );
+
+      max.x() = Usul::Math::maximum( static_cast< float > ( p.x() ), max.x() );
+      max.y() = Usul::Math::maximum( static_cast< float > ( p.y() ), max.y() );
+      max.z() = Usul::Math::maximum( static_cast< float > ( p.z() ), max.z() );
+
+    }
+    ++numPoints;
+  }
+  _pointSet->bounds( min, max );
+  _pointSet->allocate( numPoints );
+  unsigned int tolerance = numPoints / 200;
+  _pointSet->tolerance( tolerance );
+}
+

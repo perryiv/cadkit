@@ -85,11 +85,12 @@ protected:
   virtual ~PointDocument();
 
   void                        _readPoint3DFile( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
-
+  void                        _readAndSetBounds( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
 private:
 
-  PointSet::ValidRefPtr _points;
+  PointSet::ValidRefPtr _pointSet;
+
   
 };
 

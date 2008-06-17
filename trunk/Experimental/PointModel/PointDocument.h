@@ -36,6 +36,7 @@ public:
   typedef Usul::Documents::Document BaseClass;
   typedef OsgTools::Points::PointSet PointSet;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef std::pair < unsigned int, unsigned int > Progress;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( PointDocument );
@@ -85,11 +86,14 @@ protected:
   virtual ~PointDocument();
 
   void                        _readPoint3DFile( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
-  void                        _readAndSetBounds( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                        _readAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                        _incrementProgress ( bool state, Unknown *caller = 0x0 );
 
 private:
 
   PointSet::ValidRefPtr _pointSet;
+  unsigned int          _numPoints;
+  Progress              _progress;
 
   
 };

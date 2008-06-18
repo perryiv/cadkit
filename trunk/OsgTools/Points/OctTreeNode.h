@@ -26,7 +26,10 @@
 #include "osg/BoundingBox"
 #include "osg/Vec3"
 #include "osg/Node"
+#include "osg/PrimitiveSet"
+
 #include <vector>
+#include <list>
 
 #define UNDEFINED_NODE 0
 #define NODE_HOLDER 1
@@ -49,6 +52,10 @@ public:
   typedef std::vector< OctTreeNodePtr > Children;
   typedef std::vector< osg::BoundingBox > BoundingBoxVec;
   typedef Usul::Math::Vec3d Vec3d;
+  typedef std::list< osg::Vec3f > LinkedList;
+  typedef osg::ref_ptr< osg::PrimitiveSet > PrimitiveSetPtr;
+  typedef osg::DrawElementsUShort Elements;
+  typedef osg::ref_ptr < Elements > ElementsPtr;
 
   OctTreeNode();
   virtual ~OctTreeNode();
@@ -64,6 +71,8 @@ public:
   void                              type( unsigned int type );
   void                              tolerance( unsigned int level );
   bool                              add( Point p );
+
+  void                              buildVectors();
 
   osg::Node*                        buildScene( Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
@@ -92,6 +101,11 @@ private:
     unsigned int                    _tolerance;
 
     bool                            _useLOD;
+    LinkedList*                     _list; 
+
+    unsigned int                    _numLODs;
+
+    
 };
 
 #endif // __EXPERIMENTAL_OCTTREENODE_H__

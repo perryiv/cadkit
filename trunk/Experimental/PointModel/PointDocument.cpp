@@ -29,6 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <limits>
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PointDocument, PointDocument::BaseClass );
 USUL_IMPLEMENT_TYPE_ID ( PointDocument );
@@ -150,6 +151,9 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 
     // Read binary file.
     this->_readPoint3DFile( temp, caller, progress );
+
+    // Build the vectors from the linked lists
+    this->_buildVectors( caller, progress );
   }
   
   else
@@ -405,9 +409,10 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
     // Feedback.
     this->setProgressBar ( update(), in, fileSize * 2, progress );
   }
-  _pointSet->bounds( bounds.corner( 0 ), bounds.corner( 7 ) );
-  _pointSet->allocate( _numPoints );
-  unsigned int tolerance = _numPoints / 400;
+  osg::Vec3f minCorner ( bounds.xMin(), bounds.yMin(), bounds.zMin() );
+  osg::Vec3f maxCorner ( bounds.xMax(), bounds.yMax(), bounds.zMax() );
+  _pointSet->bounds( minCorner, maxCorner );
+  unsigned int tolerance = Usul::Math::minimum( static_cast< unsigned int > ( _numPoints / 400 ), static_cast< unsigned int > ( std::numeric_limits< short >::max() ) );
   _pointSet->tolerance( tolerance );
 }
 
@@ -415,16 +420,12 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read a .point3d file.
+//  Build the vectors from the linked lists
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_incrementProgress ( bool state, Unknown *caller )
+void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 {
-
-  unsigned int &numerator   ( _progress.first  );
-  unsigned int &denominator ( _progress.second );
-  this->setProgressBar ( state, numerator, denominator, caller );
-  ++numerator;
-  USUL_ASSERT ( numerator <= denominator );
+  this->setStatusBar ( "Building Points...", progress );
+  _pointSet->buildVectors();
 }

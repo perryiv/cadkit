@@ -130,12 +130,15 @@ void LoadModel::_preProcessCollada ( const std::string& filename )
     daeSmartRef<domImage> image ( daeSafeCast<domImage> ( *iter ) );
     if ( 0x0 != image )
     {
-      const std::string protocol ( image->getInit_from()->getValue().getProtocol() );
-      if ( "http" == protocol )
+      if ( 0x0 != image->getInit_from() )
       {
-        const std::string uri ( image->getInit_from()->getValue().str() );
-        const std::string filename ( "file:///" + Minerva::Layers::Kml::download ( uri ) );
-        image->getInit_from()->getValue().set ( filename );
+        const std::string protocol ( image->getInit_from()->getValue().getProtocol() );
+        if ( "http" == protocol )
+        {
+          const std::string uri ( image->getInit_from()->getValue().str() );
+          const std::string filename ( "file:" + cdom::nativePathToUri ( Minerva::Layers::Kml::download ( uri ) ) ) ;
+          image->getInit_from()->getValue().set ( filename );
+        }
       }
     }
   }

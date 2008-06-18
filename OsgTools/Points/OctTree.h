@@ -48,6 +48,8 @@ public:
   
   osg::Node*          buildScene( Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  void                buildVectors();
+
   void                bounds( osg::BoundingBox bb );
   
   // Get/Set tolerance level

@@ -13,9 +13,8 @@
 #include "osg/Geode"
 #include "osg/LOD"
 
-
-
 #include <limits>
+#include <iostream>
 
 #include <Math.h>
 
@@ -33,7 +32,9 @@ _children( 0 ),
 _points( new osg::Vec3Array ),
 _type( POINT_HOLDER ),
 _tolerance( 1000 ),
-_useLOD( true )
+_useLOD( true ),
+_list( new std::list< osg::Vec3f > ),
+_numLODs( 6 )
 {
 
 }
@@ -107,10 +108,11 @@ bool OctTreeNode::add( Point p )
   if( true == this->_contains( p ) )
   {
 
-    if( _type == POINT_HOLDER && _points->size() < _tolerance )
+    if( _type == POINT_HOLDER && _list->size() < _tolerance )
     {
       //insert node into _cells 
-      _points->push_back( p );
+      //_points->push_back( p );
+      _list->push_back( p );
     }
     else
     {
@@ -209,6 +211,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 
   if( POINT_HOLDER == this->type() )
   {
+#if 0 // set 3 lod system
     if( _points->size() > 0 )
     {
       float highLODMax = Usul::Math::maximum( ( 0.33f * _distance ), this->getBoundingRadius() );
@@ -219,7 +222,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
         GeometryPtr geometry ( new osg::Geometry ); 
         geometry->setVertexArray( _points.get() );
         geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, _points->size() ) );
-        OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 3 );
+        //OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 1 );
 
         GeodePtr geode ( new osg::Geode );
         geode->addDrawable( geometry.get() );
@@ -230,16 +233,17 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 
       // Medium Distance LOD
       {
-        Points vertices ( new osg::Vec3Array );
-        vertices->reserve( static_cast< unsigned int > ( (_points->size() / 3 ) ) + 1  );
-        for( unsigned int i = 0; i < _points->size(); i+=3 )
+        //Points vertices ( new osg::Vec3Array );
+        ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
+        indices->reserve( static_cast< unsigned int > ( (_points->size() / 3 ) ) + 1  );
+        for( unsigned short i = 0; i < _points->size(); i+=3 )
         {
-          vertices->push_back( _points->at( i ) );
+          indices->push_back( i );
         }
         GeometryPtr geometry ( new osg::Geometry ); 
         geometry->setVertexArray( _points.get() );
-        geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
-        OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 2 );
+        geometry->addPrimitiveSet( indices.get() );
+        //OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 1 );
 
         GeodePtr geode ( new osg::Geode );
         geode->addDrawable( geometry.get() );
@@ -250,17 +254,15 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 
       // Low Detail LOD
       {
-        Points vertices ( new osg::Vec3Array );
-        vertices->reserve( static_cast< unsigned int > ( (_points->size() / 6 ) ) + 1  );
-        for( unsigned int i = 0; i < _points->size(); i+=6 )
+        ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
+        indices->reserve( static_cast< unsigned int > ( (_points->size() / 6 ) ) + 1  );
+        for( unsigned short i = 0; i < _points->size(); i+=6 )
         {
-          vertices->push_back( _points->at( i ) );
+          indices->push_back( i );
         }
         GeometryPtr geometry ( new osg::Geometry ); 
         geometry->setVertexArray( _points.get() );
-        geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, vertices->size() ) );
-
-
+        geometry->addPrimitiveSet( indices.get() );
         GeodePtr geode ( new osg::Geode );
         geode->addDrawable( geometry.get() );
         
@@ -270,6 +272,45 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
       // add the lods to the main group
       group->addChild( lod.get() );
     }
+#else
+    // LOds
+    if( _points->size() > 0 )
+    {
+      for( unsigned int lodLevel = 0; lodLevel < _numLODs; ++lodLevel )
+      {
+        //Points vertices ( new osg::Vec3Array );
+        ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
+        unsigned int lodMultiplier = ( lodLevel * 2 ) + 1;
+        indices->reserve( static_cast< unsigned int > ( ( _points->size() / lodMultiplier ) ) + 1  );
+        for( unsigned short i = 0; i < _points->size(); i += lodMultiplier )
+        {
+          indices->push_back( i );
+        }
+        GeometryPtr geometry ( new osg::Geometry ); 
+        geometry->setVertexArray( _points.get() );
+        geometry->addPrimitiveSet( indices.get() );
+      
+        GeodePtr geode ( new osg::Geode );
+        geode->addDrawable( geometry.get() );
+        
+        // High level LODs
+        float minLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( _numLODs ) );
+        float maxLevel ( ( static_cast< float > ( lodLevel ) + 1.0f ) / static_cast< float > ( _numLODs ) );
+        float minDistance = Usul::Math::maximum( ( minLevel * _distance ), this->getBoundingRadius() * minLevel );
+        float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
+        if( lodLevel == _numLODs - 1 )
+        {
+          maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), std::numeric_limits< float >::max() );
+        }
+
+        lod->addChild( geode.get(), minDistance, maxDistance );
+      }
+
+      // add the lods to the main group
+      group->addChild( lod.get() );
+    }
+     
+#endif
   }
   else if( NODE_HOLDER == this->type() )
   { 
@@ -313,7 +354,34 @@ float OctTreeNode::getBoundingRadius()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the vector of points from the linked list
+//
+///////////////////////////////////////////////////////////////////////////////
 
+void OctTreeNode::buildVectors()
+{
+  Guard guard ( this->mutex() );
+  if( true == _children.empty() )
+  {
+    _points->reserve( _list->size() );
+    for( LinkedList::iterator iter = _list->begin(); iter != _list->end(); ++iter )
+    {
+      _points->push_back( (*iter) );
+    }
+    _list->clear();
+    delete _list;
+    _list = 0x0;
+  }
+  else
+  {
+    for( unsigned int i = 0; i < _children.size(); ++i )
+    {
+      _children.at( i )->buildVectors();
+    }
+  }
+}
 /////////////////
 //  PROTECTED
 /////////////////
@@ -347,7 +415,9 @@ void OctTreeNode::_insertOrCreateChildren( Point p )
   {
     this->_createChildren();
     this->_reorder();
-    _points->clear();
+    _list->clear();
+    delete _list;
+    _list = 0x0;
   }
 
   this->_addCellToChild( p );
@@ -363,10 +433,17 @@ void OctTreeNode::_insertOrCreateChildren( Point p )
 void OctTreeNode::_reorder()
 {
   Guard guard ( this->mutex() );
+#if 0
   for( unsigned int i = 0; i < _points->size(); ++i )
   {
     this->_addCellToChild( _points->at( i ) );
   }
+#else
+  for( LinkedList::iterator iter = _list->begin(); iter != _list->end(); ++iter )
+  {
+    this->_addCellToChild( (*iter) );
+  }
+#endif
 }
 
 

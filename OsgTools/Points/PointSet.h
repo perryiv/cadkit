@@ -79,6 +79,8 @@ public:
 
   void                    tolerance( unsigned int t );
 
+  void                    buildVectors();
+
 
  
 protected:

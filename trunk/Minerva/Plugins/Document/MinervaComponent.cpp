@@ -17,6 +17,8 @@
 #include "Minerva/Document/MinervaDocument.h"
 
 #include "Usul/User/Directory.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/Host.h"
 
 #include <algorithm>
 
@@ -30,8 +32,10 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( MinervaComponent, MinervaComponent::BaseClass 
 ///////////////////////////////////////////////////////////////////////////////
 
 MinervaComponent::MinervaComponent() : BaseClass(),
-  _log ( new Usul::File::Log ( Usul::User::Directory::program ( true ) + "log.txt", true ) )
+  _log ( 0x0 )
 {
+  _log = new Usul::File::Log ( Usul::Strings::format ( 
+    Usul::User::Directory::program ( true ), Usul::System::Host::name(), "_log.txt" ), true );
 }
 
 

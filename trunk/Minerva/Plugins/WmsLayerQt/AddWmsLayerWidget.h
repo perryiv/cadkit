@@ -23,7 +23,7 @@
 
 class QLineEdit;
 class QButtonGroup;
-class QTreeWidget;
+class QTreeWidgetItem;
 class QStringListModel;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
@@ -51,11 +51,13 @@ protected slots:
   void _onServerTextChanged ( const QString& text );
 
 private:
-  typedef Minerva::Core::Layers::RasterLayerWms Layer;
+  typedef Minerva::Core::Layers::RasterLayer Layer;
   typedef Minerva::Core::Layers::RasterLayerWms::Extents Extents;
   typedef Minerva::Core::Layers::RasterLayerWms::Options Options;
+  typedef QList<QTreeWidgetItem *> Items;
   
-  Layer* _addLayer ( const Extents& e, const std::string& format, const std::string& layers, const std::string& styles ) const;
+  Layer* _makeGroup ( const Items& items, const std::string& format ) const;
+  Layer* _makeLayer ( const Extents& e, const std::string& format, const std::string& layers, const std::string& styles ) const;
   
   QButtonGroup *_imageTypes;
   QStringListModel *_recentServers;

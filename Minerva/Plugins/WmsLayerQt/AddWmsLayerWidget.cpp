@@ -17,6 +17,8 @@
 #include "Minerva/Plugins/WmsLayerQt/OptionsDialog.h"
 #include "Minerva/Plugins/WmsLayerQt/WmsLayerItem.h"
 
+#include "Minerva/Core/Layers/RasterGroup.h"
+
 #include "Minerva/Interfaces/IAddLayer.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -76,7 +78,7 @@ namespace Detail
 AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   _imageTypes ( 0x0 ),
   _recentServers ( new QStringListModel ),
-  _layer ( new Minerva::Core::Layers::RasterLayerWms )
+  _options()
 {
   this->setupUi ( this );
 
@@ -130,15 +132,11 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
   // Set the completer.
   _server->setCompleter( completer );
   
-  // Set the default options.
-  Options options;
-  
-  options[Usul::Network::Names::REQUEST] = "GetMap";
-  options[Usul::Network::Names::SRS    ] = "EPSG:4326";
-  options[Usul::Network::Names::VERSION] = "1.1.1";
-  options["service"] = "WMS";
-  
-  _layer->options( options );
+  // Set the default options. 
+  _options[Usul::Network::Names::REQUEST] = "GetMap";
+  _options[Usul::Network::Names::SRS    ] = "EPSG:4326";
+  _options[Usul::Network::Names::VERSION] = "1.1.1";
+  _options["service"] = "WMS";
 }
 
 
@@ -162,28 +160,56 @@ AddWmsLayerWidget::~AddWmsLayerWidget()
 void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller )
 {
   Minerva::Interfaces::IAddLayer::QueryPtr al ( parent );
-
-  // Check for valid state...
-  if ( false == al.valid () || false == _layer.valid() )
+  
+  // Make sure we have a valid interface.
+  if ( false == al.valid() )
     return;
-
+  
   std::string server ( _server->text().toStdString() );
   std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
-  std::string name ( _name->text().toStdString() );
-
+  
+  // Check for valid state...
+  if ( true == server.empty () || true == cacheDirectory.empty() )
+    return;
+  // Get the name
+  const std::string name ( _name->text().toStdString() );
+  
   // Get the checked button.
   QAbstractButton *button ( _imageTypes->checkedButton () );
   std::string format ( 0x0 != button ? button->text().toStdString() : "image/jpeg" );
   
-  // Make sure we have a server and cache directory.
-  if ( false == server.empty () && false == cacheDirectory.empty() )
+  const bool makeGroup ( Qt::Checked == _addAllAsGroup->checkState() );
+  
+  typedef QList<QTreeWidgetItem *> Items;
+  
+  if ( makeGroup )
+  {
+    // Make a group.
+    Minerva::Core::Layers::RasterGroup::RefPtr group ( new Minerva::Core::Layers::RasterGroup );
+    group->name ( false == name.empty() ? name : server );
+    
+    // Get all the items.
+    Items items ( _layersTree->findItems ( "*", Qt::MatchWildcard ) );
+    
+    for ( Items::const_iterator iter = items.begin(); iter != items.end(); ++iter )
+    {
+      if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
+      {
+        Layer::ValidRefPtr layer ( this->_addLayer ( item->extents(), format, item->name().c_str(), item->style().c_str()  ) );
+        layer->name ( group->name() + ":" + item->name() );
+       
+        layer->showLayer ( false );
+        
+        group->append ( layer.get() );
+      }
+    }
+    
+    al->addLayer ( group.get () );
+  }
+  else
   {
     Extents extents ( 0, 0, 0, 0 );
     
-    // Get the current options.
-    Options options ( _layer->options() );
-    
-    typedef QList<QTreeWidgetItem *> Items;
     Items items ( _layersTree->selectedItems() );
 
     QStringList layers;
@@ -200,35 +226,19 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
       }
     }
     
-    options[Usul::Network::Names::LAYERS] = layers.join(",").toStdString();
-    options[Usul::Network::Names::STYLES] = styles.join(",").toStdString();
-    
-    // Set the format.
-    options[Usul::Network::Names::FORMAT] = format;
-    
-    // Set the options.
-    _layer->options ( options );
-    
-    // Set the extents.
-    _layer->extents ( extents );
-    
-    // Set the base url.
-    _layer->urlBase ( server );
-    
-    // Set the cache directory.
-    _layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
+    Layer::ValidRefPtr layer ( this->_addLayer ( extents, format, layers.join(",").toStdString(), styles.join(",").toStdString() ) );
     
     // Set the name.
-    _layer->name ( false == name.empty() ? name : server );
+    layer->name ( false == name.empty() ? name : server );
     
-    al->addLayer ( _layer.get () );
-
-    // Save the server names.
-    QStringList recent ( _recentServers->stringList() );
-    recent.push_back ( server.c_str() );
-    recent.erase ( std::unique ( recent.begin(), recent.end() ), recent.end() );
-    Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = recent;
+    al->addLayer ( layer.get () );
   }
+  
+  // Save the server names.
+  QStringList recent ( _recentServers->stringList() );
+  recent.push_back ( server.c_str() );
+  recent.erase ( std::unique ( recent.begin(), recent.end() ), recent.end() );
+  Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = recent;
 }
 
 
@@ -318,18 +328,46 @@ void AddWmsLayerWidget::_onServerTextChanged ( const QString& text )
 
 void AddWmsLayerWidget::on_viewOptionsButton_clicked()
 {
-  if ( false == _layer.valid() )
-    return;
-  
-  OptionsDialog dialog ( _layer->options(), this );
+  OptionsDialog dialog ( _options, this );
   
   if ( QDialog::Accepted == dialog.exec() )
-    _layer->options ( dialog.options() );
+    _options = dialog.options();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a layer to the parent.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AddWmsLayerWidget::Layer* AddWmsLayerWidget::_addLayer ( const Extents& extents, const std::string& format, const std::string& layers, const std::string& styles ) const
+{
+  const std::string server ( _server->text().toStdString() );
+  const std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
   
-  //OptionWidget::Names names;
-  //names.push_back ( Usul::Network::Names::REQUEST );
-  //names.push_back ( Usul::Network::Names::SRS     );
-  //names.push_back ( Usul::Network::Names::STYLES  );
-  //names.push_back ( Usul::Network::Names::LAYERS  );
-  //names.push_back ( Usul::Network::Names::VERSION );
+  Minerva::Core::Layers::RasterLayerWms::RefPtr layer ( new Minerva::Core::Layers::RasterLayerWms );
+  
+  // Get the current options.
+  Options options ( _options );
+  
+  options[Usul::Network::Names::LAYERS] = layers;
+  options[Usul::Network::Names::STYLES] = styles;
+  
+  // Set the format.
+  options[Usul::Network::Names::FORMAT] = format;
+  
+  // Set the options.
+  layer->options ( options );
+  
+  // Set the extents.
+  layer->extents ( extents );
+  
+  // Set the base url.
+  layer->urlBase ( server );
+  
+  // Set the cache directory.
+  layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
+  
+  return layer.release();
 }

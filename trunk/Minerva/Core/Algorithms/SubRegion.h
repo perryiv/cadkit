@@ -7,14 +7,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_CORE_UTILITIES_SUB_REGION_H__
-#define __MINERVA_CORE_UTILITIES_SUB_REGION_H__
+#ifndef __MINERVA_CORE_ALGORITHMS_SUB_REGION_H__
+#define __MINERVA_CORE_ALGORITHMS_SUB_REGION_H__
 
 #include "osg/Image"
 
 namespace Minerva {
 namespace Core {
-namespace Utilities {
+namespace Algorithms {
 
   ///////////////////////////////////////////////////////////////////////////////
   //
@@ -83,4 +83,4 @@ namespace Utilities {
 }
 }
 
-#endif // __MINERVA_CORE_UTILITIES_SUB_REGION_H__
+#endif // __MINERVA_CORE_ALGORITHMS_SUB_REGION_H__

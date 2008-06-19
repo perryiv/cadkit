@@ -71,8 +71,8 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   // Get the height.
   const double height ( this->_elevation ( location, elevation.get() ) );
 
-  double heading ( 0.0 ), tilt ( 0.0 ), roll ( 0.0 );
-  this->orientation( heading, tilt, roll );
+  osg::Vec3d hpr ( this->orientation() );
+  const double heading ( hpr[0] ), tilt ( hpr[1] ), roll ( hpr[2] );
   
   osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
   osg::Matrix S ( osg::Matrix::scale ( this->scale() * this->toMeters() ) );
@@ -135,12 +135,16 @@ void Model::orientation( double  heading, double  tilt, double  roll )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Model::orientation( double& heading, double& tilt, double &roll ) const
+osg::Vec3d Model::orientation() const
 {
-  Guard guard ( this->mutex() );
-  heading = _heading;
-  tilt = _tilt;
-  roll = _roll;
+  osg::Vec3d v;
+  {
+    Guard guard ( this->mutex() );
+    v[0] = _heading;
+    v[1] = _tilt;
+    v[2] = _roll;
+  }
+  return v;
 }
 
 

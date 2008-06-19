@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_RESAMPLE_H__
-#define __MINERVA_RESAMPLE_H__
+#ifndef __MINERVA_CORE_ALGORITHMS_RESAMPLE_H__
+#define __MINERVA_CORE_ALGORITHMS_RESAMPLE_H__
 
 #include "Usul/Math/Absolute.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
@@ -18,7 +18,7 @@
 
 namespace Minerva {
 namespace Core {
-namespace Utilities {
+namespace Algorithms {
 namespace Detail
 {
   template < typename Point >
@@ -134,4 +134,4 @@ namespace Detail
 }
 }
 
-#endif //__MINERVA_RESAMPLE_H__
+#endif //__MINERVA_CORE_ALGORITHMS_RESAMPLE_H__

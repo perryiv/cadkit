@@ -25,8 +25,8 @@
 #include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Layers/RasterLayerGDAL.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
-#include "Minerva/Core/Utilities/Composite.h"
-#include "Minerva/Core/Utilities/SubRegion.h"
+#include "Minerva/Core/Algorithms/Composite.h"
+#include "Minerva/Core/Algorithms/SubRegion.h"
 
 #include "OsgTools/Group.h"
 #include "OsgTools/Utilities/FindNormals.h"
@@ -260,8 +260,8 @@ void Tile::updateMesh()
   const bool elevationValid ( elevation.valid() && 
                               GL_FLOAT == elevation->getDataType() && 
                               expectedBytes == elevation->getImageSizeInBytes() &&
-                              size[0] == elevation->s() && 
-                              size[1] == elevation->t() );
+                              static_cast<int> ( size[0] ) == elevation->s() && 
+                              static_cast<int> ( size[1] ) == elevation->t() );
 
   // Shortcuts.
   const Extents::Vertex &mn ( extents.minimum() );
@@ -936,7 +936,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
       Resampler::RefPtr layer ( new Resampler ( parentElevation.get(), parentExtents ) );
       elevation = layer->texture ( request, size[0], size[1], level, job, 0x0 );
 #else
-      elevation = Minerva::Core::Utilities::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
+      elevation = Minerva::Core::Algorithms::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
 #endif
     }
   }
@@ -1111,7 +1111,7 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
       }
       
       // Composite.
-      Minerva::Core::Utilities::Composite::raster ( *result, *image, tCoords, alphas, alpha, 1.0f, job );
+      Minerva::Core::Algorithms::Composite::raster ( *result, *image, tCoords, alphas, alpha, 1.0f, job );
     }
   }
 

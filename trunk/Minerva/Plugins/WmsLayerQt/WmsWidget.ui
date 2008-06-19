@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>747</width>
-    <height>887</height>
+    <width>491</width>
+    <height>672</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -67,7 +67,21 @@
      <property name="title" >
       <string>Image Type</string>
      </property>
-     <layout class="QVBoxLayout" >
+     <layout class="QHBoxLayout" >
+      <item>
+       <widget class="QRadioButton" name="_pngButton" >
+        <property name="text" >
+         <string>image/png</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="_tifButton" >
+        <property name="text" >
+         <string>image/tif</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QRadioButton" name="_jpegButton" >
         <property name="text" >
@@ -75,13 +89,6 @@
         </property>
         <property name="checked" >
          <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="_pngButton" >
-        <property name="text" >
-         <string>image/png</string>
         </property>
        </widget>
       </item>

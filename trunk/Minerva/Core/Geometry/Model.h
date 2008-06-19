@@ -43,7 +43,7 @@ public:
   
   /// Get/Set the orientation.
   void                  orientation( double  heading, double  tilt, double  roll );
-  void                  orientation( double& heading, double& tilt, double &roll ) const;
+  osg::Vec3d            orientation() const;
   
   /// Get/Set the scale.
   void                  scale ( const osg::Vec3& );

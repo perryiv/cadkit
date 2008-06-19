@@ -10,11 +10,12 @@
 
 #include "Minerva/Core/Geometry/Polygon.h"
 
-#include "Usul/Interfaces/IPlanetCoordinates.h"
-
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Utilities/TranslateGeometry.h"
+
+#include "Usul/Interfaces/IPlanetCoordinates.h"
 
 #include "osg/Material"
 #include "osg/MatrixTransform"

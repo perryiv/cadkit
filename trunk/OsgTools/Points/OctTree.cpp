@@ -1,4 +1,14 @@
-#include "OctTree.h"
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "OsgTools/Points/OctTree.h"
 
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OctTree, OctTree::BaseClass );
 

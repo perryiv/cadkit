@@ -34,7 +34,7 @@ _type( POINT_HOLDER ),
 _tolerance( 1000 ),
 _useLOD( true ),
 _list( new std::list< osg::Vec3f > ),
-_numLODs( 6 )
+_numLODs( 10 )
 {
 
 }
@@ -211,68 +211,6 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 
   if( POINT_HOLDER == this->type() )
   {
-#if 0 // set 3 lod system
-    if( _points->size() > 0 )
-    {
-      float highLODMax = Usul::Math::maximum( ( 0.33f * _distance ), this->getBoundingRadius() );
-      float medLODMax = Usul::Math::maximum( ( 0.66f * _distance ), highLODMax * 2 );
-
-      // Highest detail LOD
-      {
-        GeometryPtr geometry ( new osg::Geometry ); 
-        geometry->setVertexArray( _points.get() );
-        geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, _points->size() ) );
-        //OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 1 );
-
-        GeodePtr geode ( new osg::Geode );
-        geode->addDrawable( geometry.get() );
-        
-        // High level LODs
-        lod->addChild( geode.get(), 0, highLODMax );
-      }
-
-      // Medium Distance LOD
-      {
-        //Points vertices ( new osg::Vec3Array );
-        ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
-        indices->reserve( static_cast< unsigned int > ( (_points->size() / 3 ) ) + 1  );
-        for( unsigned short i = 0; i < _points->size(); i+=3 )
-        {
-          indices->push_back( i );
-        }
-        GeometryPtr geometry ( new osg::Geometry ); 
-        geometry->setVertexArray( _points.get() );
-        geometry->addPrimitiveSet( indices.get() );
-        //OsgTools::State::StateSet::setPointSize( geometry->getOrCreateStateSet(), 1 );
-
-        GeodePtr geode ( new osg::Geode );
-        geode->addDrawable( geometry.get() );
-        
-        // High level LODs
-        lod->addChild( geode.get(), highLODMax, medLODMax );
-      }
-
-      // Low Detail LOD
-      {
-        ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
-        indices->reserve( static_cast< unsigned int > ( (_points->size() / 6 ) ) + 1  );
-        for( unsigned short i = 0; i < _points->size(); i+=6 )
-        {
-          indices->push_back( i );
-        }
-        GeometryPtr geometry ( new osg::Geometry ); 
-        geometry->setVertexArray( _points.get() );
-        geometry->addPrimitiveSet( indices.get() );
-        GeodePtr geode ( new osg::Geode );
-        geode->addDrawable( geometry.get() );
-        
-        // High level LODs
-        lod->addChild( geode.get(), medLODMax, std::numeric_limits< float >::max() );
-      }
-      // add the lods to the main group
-      group->addChild( lod.get() );
-    }
-#else
     // LOds
     if( _points->size() > 0 )
     {
@@ -309,8 +247,6 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
       // add the lods to the main group
       group->addChild( lod.get() );
     }
-     
-#endif
   }
   else if( NODE_HOLDER == this->type() )
   { 

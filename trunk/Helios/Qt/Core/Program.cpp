@@ -44,6 +44,8 @@
 #include "Usul/Trace/Print.h"
 #include "Usul/User/Directory.h"
 
+#include "boost/concept_check.hpp"
+
 #ifdef __GNUC__
 # include "Usul/Errors/Signals.h"
 # include <pthread.h>
@@ -261,7 +263,7 @@ void Program::run ( int argc, char **argv,
   // We want the above objects to live longer than the application.
   {
     // For cleaning.
-    Helper::Clean clean;
+    Helper::Clean clean; boost::ignore_unused_variable_warning ( clean );
 
     // Declare application.
     CadKit::Helios::Core::Application app ( argc, argv );

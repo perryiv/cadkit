@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdMenuCommand.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdMenuCommand.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"

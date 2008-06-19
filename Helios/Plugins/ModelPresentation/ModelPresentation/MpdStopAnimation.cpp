@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdStopAnimation.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdStopAnimation.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"

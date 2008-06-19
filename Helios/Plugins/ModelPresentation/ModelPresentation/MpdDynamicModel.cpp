@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdDynamicModel.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdDynamicModel.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"

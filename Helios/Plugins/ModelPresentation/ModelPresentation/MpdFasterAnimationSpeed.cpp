@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdFasterAnimationSpeed.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdFasterAnimationSpeed.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"

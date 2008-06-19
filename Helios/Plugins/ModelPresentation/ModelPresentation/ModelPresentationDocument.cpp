@@ -8,22 +8,22 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ModelPresentationDocument.h"
-#include "MpdMenuCommand.h"
-#include "MpdPrevTimestep.h"
-#include "MpdAnimation.h"
-#include "MpdFirstTimestep.h"
-#include "MpdNextCommand.h"
-#include "MpdLocation.h"
-#include "MpdTools.h"
-#include "MpdDynamicModel.h"
-#include "MpdNextSequence.h"
-#include "MpdPrevSequence.h"
-#include "MpdFirstSequence.h"
-#include "MpdAnimationSpeed.h"
-#include "MpdSlowerAnimationSpeed.h"
-#include "MpdFasterAnimationSpeed.h"
-#include "GenericIndexToggle.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/ModelPresentationDocument.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdMenuCommand.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdPrevTimestep.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdAnimation.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdFirstTimestep.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdNextCommand.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdLocation.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdTools.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdDynamicModel.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdNextSequence.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdPrevSequence.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdFirstSequence.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdAnimationSpeed.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdSlowerAnimationSpeed.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdFasterAnimationSpeed.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/GenericIndexToggle.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -1194,10 +1194,8 @@ void ModelPresentationDocument::_parseLocation( XmlTree::Node &node, Unknown *ca
 
 void ModelPresentationDocument::_parseMatrix( XmlTree::Node &node, Unknown *caller, Unknown *progress, const std::string& name, MpdDefinitions::Location &location, MpdDefinitions::LocationNames &names )
 {
-   USUL_TRACE_SCOPE;
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-
-  Children& children ( node.children() );
 
   const std::string type ( node.attributes()["type"] );
   const std::string value ( node.attributes()["value"] );
@@ -1451,8 +1449,7 @@ osg::Node* ModelPresentationDocument::_parseTimeGroup( XmlTree::Node &node, Unkn
 { 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-   
-  Attributes& attributes ( node.attributes() );
+
   Children& children ( node.children() );
   
   MpdDefinitions::MpdTimeGroup timeGroup;
@@ -1517,8 +1514,7 @@ void ModelPresentationDocument::_parseDynamic( XmlTree::Node &node, Unknown *cal
 
   // Enable Dynamic Features
   _useDynamic = true;
-
-  Attributes& attributes ( node.attributes() );
+  
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
   // Create a new MpdDynamicSet
@@ -2005,8 +2001,6 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
 
   typedef IAnimatePath::PackedMatrices PackedMatrices;
   typedef IAnimatePath::PackedMatrix PackedMatrix;
-
-  bool useSequence = false;
 
   // Get needed interfaces.
   IAnimatePath::QueryPtr path ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );

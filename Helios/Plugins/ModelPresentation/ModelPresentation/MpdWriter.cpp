@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdWriter.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdWriter.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Components/Manager.h"

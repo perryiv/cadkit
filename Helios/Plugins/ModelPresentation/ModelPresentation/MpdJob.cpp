@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdJob.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdJob.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Components/Manager.h"

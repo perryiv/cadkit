@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdPrevSequence.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdPrevSequence.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"

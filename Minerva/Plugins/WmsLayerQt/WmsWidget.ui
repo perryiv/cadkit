@@ -71,6 +71,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="_addSelectedAsGroup" >
+       <property name="text" >
+        <string>Add Selected As Group</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

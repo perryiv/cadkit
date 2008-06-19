@@ -165,46 +165,26 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
   if ( false == al.valid() )
     return;
   
-  std::string server ( _server->text().toStdString() );
-  std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
+  const std::string server ( _server->text().toStdString() );
+  const std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
   
   // Check for valid state...
   if ( true == server.empty () || true == cacheDirectory.empty() )
     return;
-  // Get the name
-  const std::string name ( _name->text().toStdString() );
   
   // Get the checked button.
   QAbstractButton *button ( _imageTypes->checkedButton () );
   std::string format ( 0x0 != button ? button->text().toStdString() : "image/jpeg" );
   
-  const bool makeGroup ( Qt::Checked == _addAllAsGroup->checkState() );
+  const bool addAllAsGroup      ( Qt::Checked == _addAllAsGroup->checkState() );
+  const bool addSelectedAsGroup ( Qt::Checked == _addSelectedAsGroup->checkState() );
   
-  typedef QList<QTreeWidgetItem *> Items;
-  
-  if ( makeGroup )
-  {
-    // Make a group.
-    Minerva::Core::Layers::RasterGroup::RefPtr group ( new Minerva::Core::Layers::RasterGroup );
-    group->name ( false == name.empty() ? name : server );
-    
+  if ( addAllAsGroup || addSelectedAsGroup )
+  {    
     // Get all the items.
-    Items items ( _layersTree->findItems ( "*", Qt::MatchWildcard ) );
-    
-    for ( Items::const_iterator iter = items.begin(); iter != items.end(); ++iter )
-    {
-      if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
-      {
-        Layer::ValidRefPtr layer ( this->_addLayer ( item->extents(), format, item->name().c_str(), item->style().c_str()  ) );
-        layer->name ( group->name() + ":" + item->name() );
-       
-        layer->showLayer ( false );
-        
-        group->append ( layer.get() );
-      }
-    }
-    
-    al->addLayer ( group.get () );
+    Items items ( addAllAsGroup ? _layersTree->findItems ( "*", Qt::MatchWildcard ) : _layersTree->selectedItems() );
+
+    al->addLayer ( this->_makeGroup ( items, format ) );
   }
   else
   {
@@ -226,7 +206,10 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
       }
     }
     
-    Layer::ValidRefPtr layer ( this->_addLayer ( extents, format, layers.join(",").toStdString(), styles.join(",").toStdString() ) );
+    Layer::ValidRefPtr layer ( this->_makeLayer ( extents, format, layers.join(",").toStdString(), styles.join(",").toStdString() ) );
+    
+    // Get the name
+    const std::string name ( _name->text().toStdString() );
     
     // Set the name.
     layer->name ( false == name.empty() ? name : server );
@@ -337,11 +320,11 @@ void AddWmsLayerWidget::on_viewOptionsButton_clicked()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a layer to the parent.
+//  Make a WMS layer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddWmsLayerWidget::Layer* AddWmsLayerWidget::_addLayer ( const Extents& extents, const std::string& format, const std::string& layers, const std::string& styles ) const
+AddWmsLayerWidget::Layer* AddWmsLayerWidget::_makeLayer ( const Extents& extents, const std::string& format, const std::string& layers, const std::string& styles ) const
 {
   const std::string server ( _server->text().toStdString() );
   const std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
@@ -370,4 +353,39 @@ AddWmsLayerWidget::Layer* AddWmsLayerWidget::_addLayer ( const Extents& extents,
   layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
   
   return layer.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a raster group.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+AddWmsLayerWidget::Layer* AddWmsLayerWidget::_makeGroup ( const Items& items, const std::string& format ) const
+{
+  // Get the name
+  const std::string name ( _name->text().toStdString() );
+  
+  // Get the server.
+  const std::string server ( _server->text().toStdString() );
+  
+  // Make a group.
+  Minerva::Core::Layers::RasterGroup::RefPtr group ( new Minerva::Core::Layers::RasterGroup );
+  group->name ( false == name.empty() ? name : server );
+
+  for ( Items::const_iterator iter = items.begin(); iter != items.end(); ++iter )
+  {
+    if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
+    {
+      Layer::ValidRefPtr layer ( this->_makeLayer ( item->extents(), format, item->name().c_str(), item->style().c_str()  ) );
+      layer->name ( group->name() + ":" + item->name() );
+      
+      layer->showLayer ( false );
+      
+      group->append ( layer.get() );
+    }
+  }
+  
+  return group.release();
 }

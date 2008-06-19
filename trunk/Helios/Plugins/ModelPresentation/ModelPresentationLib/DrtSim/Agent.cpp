@@ -527,7 +527,7 @@ bool Agent::_AgentDetailsLoader( )
 	int		numSteps	= 0;
 	int		count		= 0;		// used to count how many agents in one step
 
-#if debug
+#if 0
 	clock_t		startTime		= ::clock();
 	clock_t		updateDuration	= 1000;		// 1 second
 #endif
@@ -562,7 +562,7 @@ bool Agent::_AgentDetailsLoader( )
 		_agentDetails.push_back(tmp);
 
 
-		if( tmp.agentStep == numSteps)				// steps of agent are continuous
+		if( static_cast<int> ( tmp.agentStep ) == numSteps )				// steps of agent are continuous
 		{
 			++count;
 		}

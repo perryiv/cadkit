@@ -177,7 +177,6 @@ osg::Geode*		Spore::_createSporeDetails( )
 	osg::ref_ptr< osg::Geode >		geode ( new osg::Geode );
 
 	float zValue = 5.0f;
-	float radius = 4.0f;
 	unsigned int n = 256;		// ( 0 to 255 )
 
 	srand( static_cast< unsigned int > ( time( NULL ) ) );

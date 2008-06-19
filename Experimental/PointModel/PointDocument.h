@@ -37,6 +37,7 @@ public:
   typedef OsgTools::Points::PointSet PointSet;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::pair < unsigned int, unsigned int > Progress;
+  typedef std::pair < bool, Usul::Math::Vec3ui > HeaderResult;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( PointDocument );
@@ -85,6 +86,8 @@ protected:
   /// Use reference counting.
   virtual ~PointDocument();
 
+  bool                        _parseHeader( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                        _fastReadAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _readPoint3DFile( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _readAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _buildVectors( Unknown *caller = 0x0, Unknown *progress = 0x0 );

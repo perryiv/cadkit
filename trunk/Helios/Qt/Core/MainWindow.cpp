@@ -269,6 +269,9 @@ void MainWindow::_destroy()
   // Clear the factory before releasing the plugins (some of them may 
   // populate it but not clean up).
   Usul::Factory::ObjectFactory::instance().clear();
+  
+  // Clear the map of commands.  Do this before the plugins are released.
+  MenuKit::MenuCommands::instance().clear();
 
   // Clear the menu bar. Do this before plugins are released.
   this->_clearMenuBar();
@@ -313,9 +316,6 @@ void MainWindow::_destroy()
 
   // Clear the resources.
   Usul::Resources::Manager::instance().clear();
-
-  // Clear the map of commands.
-  MenuKit::MenuCommands::instance().clear();
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );

@@ -17,9 +17,8 @@
 #ifndef _OSGTOOLS_POINTS_POINT_SET_H_
 #define _OSGTOOLS_POINTS_POINT_SET_H_
 
-#include "OctTree.h"
-
 #include "OsgTools/Export.h"
+#include "OsgTools/Points/OctTree.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"

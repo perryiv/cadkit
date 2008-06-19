@@ -17,7 +17,9 @@
 #ifndef __EXPERIMENTAL_OCTTREE_H__
 #define __EXPERIMENTAL_OCTTREE_H__
 
-#include "OctTreeNode.h"
+#include "OsgTools/Points/OctTreeNode.h"
+
+#include "OsgTools/Configure/OSG.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"

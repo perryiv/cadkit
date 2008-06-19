@@ -8,13 +8,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "PointSet.h"
-
-#include "osg/BoundingBox"
+#include "OsgTools/Points/PointSet.h"
+#include "OsgTools/Configure/OSG.h"
 
 #include "osgDB/WriteFile"
 
+#include "osg/BoundingBox"
+
 #include <iostream>
+
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PointSet, PointSet::BaseClass );
 
 using namespace OsgTools::Points;

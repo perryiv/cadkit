@@ -11,6 +11,7 @@
 #include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Utilities/Resample.h"
 
+#include "OsgTools/Configure/OSG.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
 #include "OsgTools/Utilities/TranslateGeometry.h"

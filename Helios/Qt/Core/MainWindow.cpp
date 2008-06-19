@@ -314,6 +314,9 @@ void MainWindow::_destroy()
   // Clear the resources.
   Usul::Resources::Manager::instance().clear();
 
+  // Clear the map of commands.
+  MenuKit::MenuCommands::instance().clear();
+
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
 

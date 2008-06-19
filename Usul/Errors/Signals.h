@@ -76,15 +76,19 @@ void handleSIGSEGV ( int num )
   const int maxStackLevels ( 100 );
   void * array[maxStackLevels];
   const int actualStackSize ( ::backtrace ( array, maxStackLevels - 1 ) );
-  char **symbols ( ::backtrace_symbols ( array, actualStackSize ) );
   
-  for ( unsigned int i = 0; i < actualStackSize; ++i )
+  // If there is a stack...
+  if ( actualStackSize >= 1 )
   {
-    out << symbols[i] << std::endl;
+    char **symbols ( ::backtrace_symbols ( array, actualStackSize ) );
+  
+    for ( int i = 0; i < actualStackSize; ++i )
+    {
+      out << symbols[i] << std::endl;
+    }
+
+    ::free ( symbols );
   }
-
-  ::free ( symbols );
-
 #endif
 
   out << "--------------------------------------------" << std::endl;

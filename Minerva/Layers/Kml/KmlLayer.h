@@ -103,6 +103,8 @@ protected:
   void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object );
   Geometry::AltitudeMode      _parseAltitudeMode ( const XmlTree::Node& node );
   void                        _parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices );
+  
+  static osg::Vec3d           _parseOrientation ( const XmlTree::Node& );
 
 	Style*                      _style ( const std::string& name );
 

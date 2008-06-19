@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Geometry/Line.h"
-#include "Minerva/Core/Utilities/Resample.h"
+#include "Minerva/Core/Algorithms/Resample.h"
 
 #include "OsgTools/Configure/OSG.h"
 #include "OsgTools/State/StateSet.h"
@@ -208,7 +208,7 @@ osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown
   
   Vertices sampledPoints;
   if ( this->tessellate() && Geometry::CLAMP_TO_GROUND == this->altitudeMode() )
-    Minerva::Core::Utilities::resample( data, sampledPoints, 5, caller );
+    Minerva::Core::Algorithms::resample( data, sampledPoints, 5, caller );
   else
     sampledPoints = data;
   

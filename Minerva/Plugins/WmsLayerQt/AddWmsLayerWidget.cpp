@@ -84,6 +84,7 @@ AddWmsLayerWidget::AddWmsLayerWidget( QWidget *parent ) : BaseClass ( parent ),
 
   _imageTypes->addButton ( _jpegButton );
   _imageTypes->addButton ( _pngButton );
+  _imageTypes->addButton ( _tifButton );
   
   _layersTree->setColumnCount( 2 );
   

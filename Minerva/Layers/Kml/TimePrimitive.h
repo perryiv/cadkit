@@ -19,8 +19,8 @@ namespace Minerva { namespace Core { namespace Animate { class Date; } } }
 namespace Minerva {
 namespace Layers {
 namespace Kml {
-      
-      
+
+
 class TimePrimitive : public Minerva::Layers::Kml::Object
 {
 public:

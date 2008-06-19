@@ -8,10 +8,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_CORE_UTILITIES_COMPOSITE_H__
-#define __MINERVA_CORE_UTILITIES_COMPOSITE_H__
+#ifndef __MINERVA_CORE_ALGORITHMS_COMPOSITE_H__
+#define __MINERVA_CORE_ALGORITHMS_COMPOSITE_H__
 
-#include "Minerva/Core/Utilities/SubRegion.h"
+#include "Minerva/Core/Algorithms/SubRegion.h"
 
 #include "Usul/Functions/Color.h"
 #include "Usul/Jobs/Job.h"
@@ -23,7 +23,7 @@
 
 namespace Minerva {
 namespace Core {
-namespace Utilities {
+namespace Algorithms {
 namespace Composite {
 
   
@@ -119,74 +119,21 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
   }
 }
 
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the region the whole image?
+//
+///////////////////////////////////////////////////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Get sub-region of image.
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-  
-  namespace Detail
+namespace Detail
+{
+  inline bool regionIsWholeImage ( const Usul::Math::Vec4d& region )
   {
-    inline osg::Image* subRegion ( const osg::Image& image, const Usul::Math::Vec4d& region )
-    {
-      osg::ref_ptr < osg::Image > result ( new osg::Image );
-      result->allocateImage ( image.s(), image.t(), 1, GL_RGBA, GL_UNSIGNED_BYTE );
-      ::memset ( result->data(), 0, result->getImageSizeInBytes() );
-      
-      const bool hasAlpha ( GL_RGBA == image.getPixelFormat() );
-      
-      // Width and height.
-      const int width ( image.s() );
-      const int height ( image.t() );
-      
-      const double du ( region[1] - region[0] );
-      const double dv ( region[3] - region[2] );
-      
-      const int sMin ( static_cast<int> ( region[0] * width  ) );
-      const int tMin ( static_cast<int> ( region[2] * height ) );
-      
-      for ( int s = 0; s < width; ++s )
-      {
-        const double u ( static_cast<double> ( s ) / ( width ) );
-        
-        for ( int t = 0; t < height; ++t )
-        {
-          const double v ( static_cast<double> ( t ) / ( height ) );
-          
-          const double up ( ( region[0] + ( u * du ) ) );
-          const double vp ( ( region[2] + ( v * dv ) ) );
-          
-          const int sp ( Usul::Math::maximum ( sMin, Usul::Math::minimum ( width,  static_cast<int> ( static_cast<int> ( up * width  ) + 0.5 ) ) ) );
-          const int tp ( Usul::Math::maximum ( tMin, Usul::Math::minimum ( height, static_cast<int> ( static_cast<int> ( vp * height ) + 0.5 ) ) ) );
+    return ( 0.0 == region[0] && 1.0 == region[1] && 0.0 == region[2] && 1.0 == region[3] );
+  }
+}
 
-          unsigned char *dst ( result->data ( s, t ) );
-          const unsigned char* src ( image.data ( sp, tp  ) );
-          
-          dst[0] = src[0];
-          dst[1] = src[1];
-          dst[2] = src[2];
-          dst[3] = ( hasAlpha ? src[3] : 255 );
-        }
-      }
-      
-      return result.release();
-    }
-  }
-  
-  ///////////////////////////////////////////////////////////////////////////////
-  //
-  //  Is the region the whole image?
-  //
-  ///////////////////////////////////////////////////////////////////////////////
-  
-  namespace Detail
-  {
-    inline bool regionIsWholeImage ( const Usul::Math::Vec4d& region )
-    {
-      return ( 0.0 == region[0] && 1.0 == region[1] && 0.0 == region[2] && 1.0 == region[3] );
-    }
-  }
   
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -203,7 +150,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Usul::Ma
     raster ( result, image, alphas, alpha, brightness, job );
   else
   {
-    osg::ref_ptr<osg::Image> sub ( Minerva::Core::Utilities::subRegion<unsigned char> ( image, region, GL_RGBA, GL_UNSIGNED_BYTE ) );
+    osg::ref_ptr<osg::Image> sub ( Minerva::Core::Algorithms::subRegion<unsigned char> ( image, region, GL_RGBA, GL_UNSIGNED_BYTE ) );
     if ( sub.valid() )
       raster ( result, *sub, alphas, alpha, brightness, job );
   }
@@ -215,4 +162,4 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Usul::Ma
 }
 }
 
-#endif // __MINERVA_CORE_UTILITIES_COMPOSITE_H__
+#endif // __MINERVA_CORE_ALGORITHMS_COMPOSITE_H__

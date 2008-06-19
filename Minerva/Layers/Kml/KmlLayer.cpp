@@ -684,7 +684,7 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
     if ( "Location" == name )
       location = this->_buildVec3 ( *node, 0.0 );
     else if ( "Orientation" == name )
-      orientation = this->_buildVec3 ( *node, 0.0 );
+      orientation = KmlLayer::_parseOrientation ( *node );
     else if ( "Scale" == name )
       scale = this->_buildVec3 ( *node, 1.0 );
     else if ( "altitudeMode" == name )
@@ -714,6 +714,26 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
   model->scale ( scale );
   
   return model.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse orientation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3d KmlLayer::_parseOrientation ( const XmlTree::Node& node )
+{
+  Children heading ( node.find ( "heading", false ) );
+  Children tilt    ( node.find ( "tilt", false ) );
+  Children roll    ( node.find ( "roll", false ) );
+  
+  const double h ( heading.empty() ? 0.0 : ToDouble::convert ( heading.front()->value() ) );
+  const double t ( tilt.empty()    ? 0.0 : ToDouble::convert ( tilt.front()->value() ) );
+  const double r ( roll.empty()    ? 0.0 : ToDouble::convert ( roll.front()->value() ) );
+  
+  return osg::Vec3d ( h, t, r );
 }
 
 

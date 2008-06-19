@@ -448,9 +448,6 @@
 		662568C10DCB8F91001E94FB /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
 		662568C20DCB8F91001E94FB /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
 		662568C30DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
-		662568C40DCB8F91001E94FB /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
-		662568C50DCB8F91001E94FB /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
-		662568C60DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
 		662568C70DCB8F91001E94FB /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
 		662568C80DCB8F91001E94FB /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
 		662568C90DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
@@ -598,15 +595,6 @@
 		6667658D0D12340B002F40C6 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		666765930D12342F002F40C6 /* Make.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666765910D12342F002F40C6 /* Make.cpp */; };
 		666765EC0D12362E002F40C6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666765B10D1234E2002F40C6 /* main.cpp */; };
-		666765ED0D123636002F40C6 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
-		666765EE0D123636002F40C6 /* libOpenThreadsEx.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */; };
-		666765EF0D123636002F40C6 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
-		666765F00D123636002F40C6 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
-		666765F10D123636002F40C6 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
-		666765F20D123636002F40C6 /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
-		666765F30D123636002F40C6 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
-		666765F40D123636002F40C6 /* libHeliosQtCommands.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */; };
-		666765F60D123636002F40C6 /* libHeliosQtCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */; };
 		6667663F0D1237B3002F40C6 /* Print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6667663A0D1237B3002F40C6 /* Print.cpp */; };
 		666766400D1237B3002F40C6 /* Scope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6667663C0D1237B3002F40C6 /* Scope.cpp */; };
 		6667665C0D12426B002F40C6 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
@@ -878,6 +866,91 @@
 		669271FB0E0AD83200E35E8B /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		669272010E0AD84800E35E8B /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		669272070E0AD87600E35E8B /* ModelPresentation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669271BB0E0AD58400E35E8B /* ModelPresentation.plug */; };
+		669272290E0AE36400E35E8B /* osgdb_3dc.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */; };
+		6692722A0E0AE36400E35E8B /* osgdb_3ds.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */; };
+		6692722B0E0AE36400E35E8B /* osgdb_ac.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05740D143B2B00B4B1AA /* osgdb_ac.so */; };
+		6692722C0E0AE36400E35E8B /* osgdb_bmp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05750D143B2B00B4B1AA /* osgdb_bmp.so */; };
+		6692722D0E0AE36400E35E8B /* osgdb_bsp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05760D143B2B00B4B1AA /* osgdb_bsp.so */; };
+		6692722E0E0AE36400E35E8B /* osgdb_dds.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05770D143B2B00B4B1AA /* osgdb_dds.so */; };
+		6692722F0E0AE36400E35E8B /* osgdb_dw.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05780D143B2B00B4B1AA /* osgdb_dw.so */; };
+		669272300E0AE36400E35E8B /* osgdb_dxf.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05790D143B2B00B4B1AA /* osgdb_dxf.so */; };
+		669272310E0AE36400E35E8B /* osgdb_freetype.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057A0D143B2B00B4B1AA /* osgdb_freetype.so */; };
+		669272320E0AE36400E35E8B /* osgdb_geo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057B0D143B2B00B4B1AA /* osgdb_geo.so */; };
+		669272330E0AE36400E35E8B /* osgdb_hdr.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057C0D143B2B00B4B1AA /* osgdb_hdr.so */; };
+		669272340E0AE36400E35E8B /* osgdb_ive.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057D0D143B2B00B4B1AA /* osgdb_ive.so */; };
+		669272350E0AE36400E35E8B /* osgdb_logo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057E0D143B2B00B4B1AA /* osgdb_logo.so */; };
+		669272360E0AE36400E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */; };
+		669272370E0AE36400E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05800D143B2B00B4B1AA /* osgdb_lws.so */; };
+		669272380E0AE36400E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05810D143B2B00B4B1AA /* osgdb_md2.so */; };
+		669272390E0AE36400E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05820D143B2B00B4B1AA /* osgdb_net.so */; };
+		6692723A0E0AE36400E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05830D143B2B00B4B1AA /* osgdb_normals.so */; };
+		6692723B0E0AE36400E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05840D143B2B00B4B1AA /* osgdb_obj.so */; };
+		6692723C0E0AE36400E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */; };
+		6692723D0E0AE36400E35E8B /* osgdb_osg.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05860D143B2B00B4B1AA /* osgdb_osg.so */; };
+		6692723E0E0AE36400E35E8B /* osgdb_osga.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05870D143B2B00B4B1AA /* osgdb_osga.so */; };
+		6692723F0E0AE36400E35E8B /* osgdb_osgFX.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05880D143B2B00B4B1AA /* osgdb_osgFX.so */; };
+		669272400E0AE36400E35E8B /* osgdb_osgParticle.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05890D143B2B00B4B1AA /* osgdb_osgParticle.so */; };
+		669272410E0AE36400E35E8B /* osgdb_osgSim.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058A0D143B2B00B4B1AA /* osgdb_osgSim.so */; };
+		669272420E0AE36400E35E8B /* osgdb_osgText.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058B0D143B2B00B4B1AA /* osgdb_osgText.so */; };
+		669272430E0AE36400E35E8B /* osgdb_osgtgz.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058C0D143B2B00B4B1AA /* osgdb_osgtgz.so */; };
+		669272440E0AE36400E35E8B /* osgdb_pic.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058D0D143B2B00B4B1AA /* osgdb_pic.so */; };
+		669272450E0AE36400E35E8B /* osgdb_pnm.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058E0D143B2B00B4B1AA /* osgdb_pnm.so */; };
+		669272460E0AE36400E35E8B /* osgdb_qt.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058F0D143B2B00B4B1AA /* osgdb_qt.so */; };
+		669272470E0AE36400E35E8B /* osgdb_rgb.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05900D143B2B00B4B1AA /* osgdb_rgb.so */; };
+		669272480E0AE36400E35E8B /* osgdb_rot.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05910D143B2B00B4B1AA /* osgdb_rot.so */; };
+		669272490E0AE36400E35E8B /* osgdb_scale.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05920D143B2B00B4B1AA /* osgdb_scale.so */; };
+		6692724A0E0AE36400E35E8B /* osgdb_shp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05930D143B2B00B4B1AA /* osgdb_shp.so */; };
+		6692724B0E0AE36400E35E8B /* osgdb_stl.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05940D143B2B00B4B1AA /* osgdb_stl.so */; };
+		6692724C0E0AE36400E35E8B /* osgdb_tga.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05950D143B2B00B4B1AA /* osgdb_tga.so */; };
+		6692724D0E0AE36400E35E8B /* osgdb_tgz.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05960D143B2B00B4B1AA /* osgdb_tgz.so */; };
+		6692724E0E0AE36400E35E8B /* osgdb_trans.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05970D143B2B00B4B1AA /* osgdb_trans.so */; };
+		6692724F0E0AE36400E35E8B /* osgdb_txp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05980D143B2B00B4B1AA /* osgdb_txp.so */; };
+		669272500E0AE36400E35E8B /* osgdb_x.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05990D143B2B00B4B1AA /* osgdb_x.so */; };
+		669272510E0AE36400E35E8B /* osgdb_zip.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF059A0D143B2B00B4B1AA /* osgdb_zip.so */; };
+		669272540E0AE42000E35E8B /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		669272550E0AE42700E35E8B /* libHeliosQtCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */; };
+		669272570E0AE44600E35E8B /* osgdb_3dc.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */; };
+		669272580E0AE44600E35E8B /* osgdb_3ds.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */; };
+		669272590E0AE44600E35E8B /* osgdb_ac.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05740D143B2B00B4B1AA /* osgdb_ac.so */; };
+		6692725A0E0AE44600E35E8B /* osgdb_bmp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05750D143B2B00B4B1AA /* osgdb_bmp.so */; };
+		6692725B0E0AE44600E35E8B /* osgdb_bsp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05760D143B2B00B4B1AA /* osgdb_bsp.so */; };
+		6692725C0E0AE44600E35E8B /* osgdb_dds.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05770D143B2B00B4B1AA /* osgdb_dds.so */; };
+		6692725D0E0AE44600E35E8B /* osgdb_dw.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05780D143B2B00B4B1AA /* osgdb_dw.so */; };
+		6692725E0E0AE44600E35E8B /* osgdb_dxf.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05790D143B2B00B4B1AA /* osgdb_dxf.so */; };
+		6692725F0E0AE44600E35E8B /* osgdb_freetype.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057A0D143B2B00B4B1AA /* osgdb_freetype.so */; };
+		669272600E0AE44600E35E8B /* osgdb_geo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057B0D143B2B00B4B1AA /* osgdb_geo.so */; };
+		669272610E0AE44600E35E8B /* osgdb_hdr.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057C0D143B2B00B4B1AA /* osgdb_hdr.so */; };
+		669272620E0AE44600E35E8B /* osgdb_ive.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057D0D143B2B00B4B1AA /* osgdb_ive.so */; };
+		669272630E0AE44600E35E8B /* osgdb_logo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057E0D143B2B00B4B1AA /* osgdb_logo.so */; };
+		669272640E0AE44600E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */; };
+		669272650E0AE44600E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05800D143B2B00B4B1AA /* osgdb_lws.so */; };
+		669272660E0AE44600E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05810D143B2B00B4B1AA /* osgdb_md2.so */; };
+		669272670E0AE44600E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05820D143B2B00B4B1AA /* osgdb_net.so */; };
+		669272680E0AE44600E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05830D143B2B00B4B1AA /* osgdb_normals.so */; };
+		669272690E0AE44600E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05840D143B2B00B4B1AA /* osgdb_obj.so */; };
+		6692726A0E0AE44600E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */; };
+		6692726B0E0AE44600E35E8B /* osgdb_osg.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05860D143B2B00B4B1AA /* osgdb_osg.so */; };
+		6692726C0E0AE44600E35E8B /* osgdb_osga.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05870D143B2B00B4B1AA /* osgdb_osga.so */; };
+		6692726D0E0AE44600E35E8B /* osgdb_osgFX.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05880D143B2B00B4B1AA /* osgdb_osgFX.so */; };
+		6692726E0E0AE44600E35E8B /* osgdb_osgParticle.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05890D143B2B00B4B1AA /* osgdb_osgParticle.so */; };
+		6692726F0E0AE44600E35E8B /* osgdb_osgSim.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058A0D143B2B00B4B1AA /* osgdb_osgSim.so */; };
+		669272700E0AE44600E35E8B /* osgdb_osgText.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058B0D143B2B00B4B1AA /* osgdb_osgText.so */; };
+		669272710E0AE44600E35E8B /* osgdb_osgtgz.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058C0D143B2B00B4B1AA /* osgdb_osgtgz.so */; };
+		669272720E0AE44600E35E8B /* osgdb_pic.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058D0D143B2B00B4B1AA /* osgdb_pic.so */; };
+		669272730E0AE44600E35E8B /* osgdb_pnm.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058E0D143B2B00B4B1AA /* osgdb_pnm.so */; };
+		669272740E0AE44600E35E8B /* osgdb_qt.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058F0D143B2B00B4B1AA /* osgdb_qt.so */; };
+		669272750E0AE44600E35E8B /* osgdb_rgb.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05900D143B2B00B4B1AA /* osgdb_rgb.so */; };
+		669272760E0AE44600E35E8B /* osgdb_rot.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05910D143B2B00B4B1AA /* osgdb_rot.so */; };
+		669272770E0AE44600E35E8B /* osgdb_scale.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05920D143B2B00B4B1AA /* osgdb_scale.so */; };
+		669272780E0AE44600E35E8B /* osgdb_shp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05930D143B2B00B4B1AA /* osgdb_shp.so */; };
+		669272790E0AE44600E35E8B /* osgdb_stl.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05940D143B2B00B4B1AA /* osgdb_stl.so */; };
+		6692727A0E0AE44600E35E8B /* osgdb_tga.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05950D143B2B00B4B1AA /* osgdb_tga.so */; };
+		6692727B0E0AE44600E35E8B /* osgdb_tgz.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05960D143B2B00B4B1AA /* osgdb_tgz.so */; };
+		6692727C0E0AE44600E35E8B /* osgdb_trans.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05970D143B2B00B4B1AA /* osgdb_trans.so */; };
+		6692727D0E0AE44600E35E8B /* osgdb_txp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05980D143B2B00B4B1AA /* osgdb_txp.so */; };
+		6692727E0E0AE44600E35E8B /* osgdb_x.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05990D143B2B00B4B1AA /* osgdb_x.so */; };
+		6692727F0E0AE44600E35E8B /* osgdb_zip.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF059A0D143B2B00B4B1AA /* osgdb_zip.so */; };
+		669272810E0AE46300E35E8B /* libOpenThreadsEx.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */; };
 		6693572A0D9AD0CA0066DEDC /* OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357280D9AD0CA0066DEDC /* OptionsDialog.cpp */; };
 		6693572B0D9AD0CA0066DEDC /* OptionsDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 669357290D9AD0CA0066DEDC /* OptionsDialog.h */; };
 		669357410D9AD2A90066DEDC /* moc_OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357400D9AD2A90066DEDC /* moc_OptionsDialog.cpp */; };
@@ -2774,6 +2847,108 @@
 				667E0D870D131D3700157E5D /* SceneDocumentBundle.bundle in Copy Bundles */,
 			);
 			name = "Copy Bundles";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		669272280E0AE35B00E35E8B /* Copy OpenSceneGraph Plugins */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				669272290E0AE36400E35E8B /* osgdb_3dc.so in Copy OpenSceneGraph Plugins */,
+				6692722A0E0AE36400E35E8B /* osgdb_3ds.so in Copy OpenSceneGraph Plugins */,
+				6692722B0E0AE36400E35E8B /* osgdb_ac.so in Copy OpenSceneGraph Plugins */,
+				6692722C0E0AE36400E35E8B /* osgdb_bmp.so in Copy OpenSceneGraph Plugins */,
+				6692722D0E0AE36400E35E8B /* osgdb_bsp.so in Copy OpenSceneGraph Plugins */,
+				6692722E0E0AE36400E35E8B /* osgdb_dds.so in Copy OpenSceneGraph Plugins */,
+				6692722F0E0AE36400E35E8B /* osgdb_dw.so in Copy OpenSceneGraph Plugins */,
+				669272300E0AE36400E35E8B /* osgdb_dxf.so in Copy OpenSceneGraph Plugins */,
+				669272310E0AE36400E35E8B /* osgdb_freetype.so in Copy OpenSceneGraph Plugins */,
+				669272320E0AE36400E35E8B /* osgdb_geo.so in Copy OpenSceneGraph Plugins */,
+				669272330E0AE36400E35E8B /* osgdb_hdr.so in Copy OpenSceneGraph Plugins */,
+				669272340E0AE36400E35E8B /* osgdb_ive.so in Copy OpenSceneGraph Plugins */,
+				669272350E0AE36400E35E8B /* osgdb_logo.so in Copy OpenSceneGraph Plugins */,
+				669272360E0AE36400E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */,
+				669272370E0AE36400E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */,
+				669272380E0AE36400E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */,
+				669272390E0AE36400E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */,
+				6692723A0E0AE36400E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */,
+				6692723B0E0AE36400E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */,
+				6692723C0E0AE36400E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */,
+				6692723D0E0AE36400E35E8B /* osgdb_osg.so in Copy OpenSceneGraph Plugins */,
+				6692723E0E0AE36400E35E8B /* osgdb_osga.so in Copy OpenSceneGraph Plugins */,
+				6692723F0E0AE36400E35E8B /* osgdb_osgFX.so in Copy OpenSceneGraph Plugins */,
+				669272400E0AE36400E35E8B /* osgdb_osgParticle.so in Copy OpenSceneGraph Plugins */,
+				669272410E0AE36400E35E8B /* osgdb_osgSim.so in Copy OpenSceneGraph Plugins */,
+				669272420E0AE36400E35E8B /* osgdb_osgText.so in Copy OpenSceneGraph Plugins */,
+				669272430E0AE36400E35E8B /* osgdb_osgtgz.so in Copy OpenSceneGraph Plugins */,
+				669272440E0AE36400E35E8B /* osgdb_pic.so in Copy OpenSceneGraph Plugins */,
+				669272450E0AE36400E35E8B /* osgdb_pnm.so in Copy OpenSceneGraph Plugins */,
+				669272460E0AE36400E35E8B /* osgdb_qt.so in Copy OpenSceneGraph Plugins */,
+				669272470E0AE36400E35E8B /* osgdb_rgb.so in Copy OpenSceneGraph Plugins */,
+				669272480E0AE36400E35E8B /* osgdb_rot.so in Copy OpenSceneGraph Plugins */,
+				669272490E0AE36400E35E8B /* osgdb_scale.so in Copy OpenSceneGraph Plugins */,
+				6692724A0E0AE36400E35E8B /* osgdb_shp.so in Copy OpenSceneGraph Plugins */,
+				6692724B0E0AE36400E35E8B /* osgdb_stl.so in Copy OpenSceneGraph Plugins */,
+				6692724C0E0AE36400E35E8B /* osgdb_tga.so in Copy OpenSceneGraph Plugins */,
+				6692724D0E0AE36400E35E8B /* osgdb_tgz.so in Copy OpenSceneGraph Plugins */,
+				6692724E0E0AE36400E35E8B /* osgdb_trans.so in Copy OpenSceneGraph Plugins */,
+				6692724F0E0AE36400E35E8B /* osgdb_txp.so in Copy OpenSceneGraph Plugins */,
+				669272500E0AE36400E35E8B /* osgdb_x.so in Copy OpenSceneGraph Plugins */,
+				669272510E0AE36400E35E8B /* osgdb_zip.so in Copy OpenSceneGraph Plugins */,
+			);
+			name = "Copy OpenSceneGraph Plugins";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		669272840E0AE46C00E35E8B /* Copy OpenSceneGraph Plugins */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				669272570E0AE44600E35E8B /* osgdb_3dc.so in Copy OpenSceneGraph Plugins */,
+				669272580E0AE44600E35E8B /* osgdb_3ds.so in Copy OpenSceneGraph Plugins */,
+				669272590E0AE44600E35E8B /* osgdb_ac.so in Copy OpenSceneGraph Plugins */,
+				6692725A0E0AE44600E35E8B /* osgdb_bmp.so in Copy OpenSceneGraph Plugins */,
+				6692725B0E0AE44600E35E8B /* osgdb_bsp.so in Copy OpenSceneGraph Plugins */,
+				6692725C0E0AE44600E35E8B /* osgdb_dds.so in Copy OpenSceneGraph Plugins */,
+				6692725D0E0AE44600E35E8B /* osgdb_dw.so in Copy OpenSceneGraph Plugins */,
+				6692725E0E0AE44600E35E8B /* osgdb_dxf.so in Copy OpenSceneGraph Plugins */,
+				6692725F0E0AE44600E35E8B /* osgdb_freetype.so in Copy OpenSceneGraph Plugins */,
+				669272600E0AE44600E35E8B /* osgdb_geo.so in Copy OpenSceneGraph Plugins */,
+				669272610E0AE44600E35E8B /* osgdb_hdr.so in Copy OpenSceneGraph Plugins */,
+				669272620E0AE44600E35E8B /* osgdb_ive.so in Copy OpenSceneGraph Plugins */,
+				669272630E0AE44600E35E8B /* osgdb_logo.so in Copy OpenSceneGraph Plugins */,
+				669272640E0AE44600E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */,
+				669272650E0AE44600E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */,
+				669272660E0AE44600E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */,
+				669272670E0AE44600E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */,
+				669272680E0AE44600E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */,
+				669272690E0AE44600E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */,
+				6692726A0E0AE44600E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */,
+				6692726B0E0AE44600E35E8B /* osgdb_osg.so in Copy OpenSceneGraph Plugins */,
+				6692726C0E0AE44600E35E8B /* osgdb_osga.so in Copy OpenSceneGraph Plugins */,
+				6692726D0E0AE44600E35E8B /* osgdb_osgFX.so in Copy OpenSceneGraph Plugins */,
+				6692726E0E0AE44600E35E8B /* osgdb_osgParticle.so in Copy OpenSceneGraph Plugins */,
+				6692726F0E0AE44600E35E8B /* osgdb_osgSim.so in Copy OpenSceneGraph Plugins */,
+				669272700E0AE44600E35E8B /* osgdb_osgText.so in Copy OpenSceneGraph Plugins */,
+				669272710E0AE44600E35E8B /* osgdb_osgtgz.so in Copy OpenSceneGraph Plugins */,
+				669272720E0AE44600E35E8B /* osgdb_pic.so in Copy OpenSceneGraph Plugins */,
+				669272730E0AE44600E35E8B /* osgdb_pnm.so in Copy OpenSceneGraph Plugins */,
+				669272740E0AE44600E35E8B /* osgdb_qt.so in Copy OpenSceneGraph Plugins */,
+				669272750E0AE44600E35E8B /* osgdb_rgb.so in Copy OpenSceneGraph Plugins */,
+				669272760E0AE44600E35E8B /* osgdb_rot.so in Copy OpenSceneGraph Plugins */,
+				669272770E0AE44600E35E8B /* osgdb_scale.so in Copy OpenSceneGraph Plugins */,
+				669272780E0AE44600E35E8B /* osgdb_shp.so in Copy OpenSceneGraph Plugins */,
+				669272790E0AE44600E35E8B /* osgdb_stl.so in Copy OpenSceneGraph Plugins */,
+				6692727A0E0AE44600E35E8B /* osgdb_tga.so in Copy OpenSceneGraph Plugins */,
+				6692727B0E0AE44600E35E8B /* osgdb_tgz.so in Copy OpenSceneGraph Plugins */,
+				6692727C0E0AE44600E35E8B /* osgdb_trans.so in Copy OpenSceneGraph Plugins */,
+				6692727D0E0AE44600E35E8B /* osgdb_txp.so in Copy OpenSceneGraph Plugins */,
+				6692727E0E0AE44600E35E8B /* osgdb_x.so in Copy OpenSceneGraph Plugins */,
+				6692727F0E0AE44600E35E8B /* osgdb_zip.so in Copy OpenSceneGraph Plugins */,
+			);
+			name = "Copy OpenSceneGraph Plugins";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		66C4E97D0DAAE47D00A3B1FB /* Copy Files to Plugins */ = {
@@ -4807,25 +4982,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		666765E40D1235EC002F40C6 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				666765ED0D123636002F40C6 /* libUsul.dylib in Frameworks */,
-				666765EE0D123636002F40C6 /* libOpenThreadsEx.dylib in Frameworks */,
-				666765EF0D123636002F40C6 /* libOsgTools.dylib in Frameworks */,
-				666765F00D123636002F40C6 /* libXmlTree.dylib in Frameworks */,
-				666765F10D123636002F40C6 /* libSerializeXML.dylib in Frameworks */,
-				666765F20D123636002F40C6 /* libQtTools.dylib in Frameworks */,
-				666765F30D123636002F40C6 /* libMenuKit.dylib in Frameworks */,
-				666765F40D123636002F40C6 /* libHeliosQtCommands.dylib in Frameworks */,
-				666765F60D123636002F40C6 /* libHeliosQtCore.dylib in Frameworks */,
-				662568C40DCB8F91001E94FB /* QtCore.framework in Frameworks */,
-				662568C50DCB8F91001E94FB /* QtGui.framework in Frameworks */,
-				662568C60DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		666766D10D12F282002F40C6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4988,6 +5144,16 @@
 				669271B50E0AD58400E35E8B /* osgGA.framework in Frameworks */,
 				669271B60E0AD58400E35E8B /* osgText.framework in Frameworks */,
 				669271B70E0AD58400E35E8B /* osgUtil.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		669272830E0AE46C00E35E8B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				669272810E0AE46300E35E8B /* libOpenThreadsEx.dylib in Frameworks */,
+				669272550E0AE42700E35E8B /* libHeliosQtCore.dylib in Frameworks */,
+				669272540E0AE42000E35E8B /* libUsul.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9492,12 +9658,13 @@
 			buildPhases = (
 				666765E20D1235EC002F40C6 /* Resources */,
 				666765E30D1235EC002F40C6 /* Sources */,
-				666765E40D1235EC002F40C6 /* Frameworks */,
 				666766620D12433F002F40C6 /* Copy Files to Plugins */,
 				6667669C0D124CE3002F40C6 /* Copy Icons */,
 				66CFB1FC0D134FB200F93E67 /* Copy Fonts */,
 				66EF19170D15C36000B4B1AA /* Copy Frameworks */,
 				66EF19600D16141F00B4B1AA /* Copy Cadkit Libraries */,
+				669272830E0AE46C00E35E8B /* Frameworks */,
+				669272840E0AE46C00E35E8B /* Copy OpenSceneGraph Plugins */,
 			);
 			buildRules = (
 			);
@@ -9990,6 +10157,7 @@
 				66C4E97F0DAAE47D00A3B1FB /* Copy Files Icons */,
 				66C4E98D0DAAE54E00A3B1FB /* Copy Fonts */,
 				66E1E0820DE4D4D10005073C /* Change Install Path */,
+				669272280E0AE35B00E35E8B /* Copy OpenSceneGraph Plugins */,
 			);
 			buildRules = (
 			);

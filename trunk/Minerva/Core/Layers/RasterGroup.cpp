@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/RasterGroup.h"
-#include "Minerva/Core/Utilities/Composite.h"
+#include "Minerva/Core/Algorithms/Composite.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
@@ -297,7 +297,7 @@ void RasterGroup::_compositeImages ( osg::Image& result, const osg::Image& image
   USUL_TRACE_SCOPE;
 
   // Composite.
-  Minerva::Core::Utilities::Composite::raster ( result, image, alphas, alpha, 1.0f, job );
+  Minerva::Core::Algorithms::Composite::raster ( result, image, alphas, alpha, 1.0f, job );
 }
 
 

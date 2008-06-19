@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "MpdLocation.h"
+#include "Helios/Plugins/ModelPresentation/ModelPresentation/MpdLocation.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Interfaces/IMpdNavigator.h"

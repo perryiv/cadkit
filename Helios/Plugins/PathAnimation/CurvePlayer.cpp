@@ -385,7 +385,10 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
   const Parameter u ( _pathParams.at ( _currentStep ) );
 
   // Feedback.
-  std::cout << Usul::Strings::format ( "Rendering step ", _currentStep, " of ", _pathParams.size() ) << std::endl;
+  if ( ( _currentStep > 0 ) && ( 0 == ( _currentStep % 100 ) ) )
+  {
+    std::cout << Usul::Strings::format ( "Rendering step ", _currentStep, " of ", _pathParams.size() ) << std::endl;
+  }
 
   // Go to the parametric position.
   this->go ( u, caller );

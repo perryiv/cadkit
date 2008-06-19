@@ -224,8 +224,6 @@ osg::Sequence*	Transhipment::createTranshipmentSequence( )
 
 osg::Geode*		Transhipment::_createTranshipmentDetailsbyStep( unsigned int step, unsigned int sId, unsigned int eId )
 {
-
-	float delta = 1.0f;
 	float characterSize = 10.0f;
 	float linewidth = 2.0f;
 	osg::Vec3 v;

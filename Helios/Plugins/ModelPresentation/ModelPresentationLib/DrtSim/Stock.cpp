@@ -734,7 +734,7 @@ bool			Stock::_StockDetailsLoader( )
 	const Usul::Types::Uint64 numStocks ( fileSize / rowBytes );
 	USUL_ASSERT ( fileSize == numStocks * rowBytes );
 
-#if debug
+#if 0
 	clock_t		startTime		= ::clock();
 	clock_t		updateDuration	= 1000;			// 1 second
 #endif
@@ -800,7 +800,7 @@ bool			Stock::_StockDetailsLoader( )
 
 
 		// put number of stockSteps
-		if( tmp.stockStep == numSteps)
+		if( static_cast<int> ( tmp.stockStep ) == numSteps)
 		{
 			++count;
 		}

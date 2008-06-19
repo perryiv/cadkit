@@ -159,7 +159,6 @@ osg::Geode*	Area::buildAreaScene ( )
 		// draw hospital dots ( points )
 		{
 			float zValue = 3.0f;
-			float pSize  = 6.0f;
 
 			osg::Vec4	color( 0.0f, 102.0/255.0f, 1.0f, 1.0f );
 			float radius ( 3.0f );

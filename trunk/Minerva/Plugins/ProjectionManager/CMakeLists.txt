@@ -18,7 +18,6 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSSIM_INC_DIR} ${OT_INC_DIR} )
 
 set (SOURCES
-    ProjectionManagerFactory.cpp
     ProjectionManagerComponent.cpp
 )
 

@@ -234,10 +234,6 @@
 					RelativePath=".\ProjectionManagerComponent.h"
 					>
 				</File>
-				<File
-					RelativePath=".\ProjectionManagerFactory.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

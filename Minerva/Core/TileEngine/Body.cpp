@@ -18,6 +18,7 @@
 #include "Minerva/Core/Utilities/DirtyTiles.h"
 #include "Minerva/Core/Utilities/Atmosphere.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Core/Data/Transform.h"
 
 #include "OsgTools/Convert/MatrixTransform.h"
 #include "OsgTools/Group.h"
@@ -441,6 +442,24 @@ void Body::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon
 
     _landModel->xyzToLatLonHeight ( p, lat, lon, elevation );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert to planet coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec3d Body::convertToPlanet ( const Usul::Math::Vec3d& orginal, const std::string& wkt ) const
+{
+  USUL_TRACE_SCOPE;
+  typedef Minerva::Core::Data::Transform Transform;
+  Transform transform ( wkt, Transform::wgs84AsWellKnownText() );
+  
+  Usul::Math::Vec3d latLonPoint ( transform ( orginal ) ), planetPoint;
+  this->convertToPlanet ( latLonPoint, planetPoint );
+  return planetPoint;
 }
 
 

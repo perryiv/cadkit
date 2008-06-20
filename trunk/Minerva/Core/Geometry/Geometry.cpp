@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Transform.h"
 
 #include "Usul/Trace/Trace.h"
 
@@ -29,7 +30,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 Geometry::Geometry() : 
   BaseClass(),
   _altitudeMode ( CLAMP_TO_GROUND ),
-  _srid ( 4326 ), // By default, use lat,lon (WGS 84).
+  _wkt ( Minerva::Core::Data::Transform::wgs84AsWellKnownText() ), // By default, use WGS 84.
   _color ( 0.0, 0.0, 0.0, 1.0 ),
   _offset( 0.0, 0.0, 0.0 ),
   _dirty ( false ),
@@ -349,18 +350,6 @@ const osg::Vec3f& Geometry::spatialOffset( ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Is it valid?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Geometry::valid() const
-{
-  return ( this->srid() > 0 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the dirty flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -391,10 +380,10 @@ bool Geometry::dirty () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Geometry::srid () const
+std::string Geometry::wellKnownText () const
 {
   Guard guard ( this->mutex() );
-  return _srid;
+  return _wkt;
 }
 
 
@@ -404,8 +393,8 @@ unsigned int Geometry::srid () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Geometry::srid ( unsigned int srid )
+void Geometry::wellKnownText ( const std::string& wkt )
 {
   Guard guard ( this->mutex() );
-  _srid = srid;
+  _wkt = wkt;
 }

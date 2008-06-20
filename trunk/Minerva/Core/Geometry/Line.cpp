@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Geometry/Line.h"
 #include "Minerva/Core/Algorithms/Resample.h"
+#include "Minerva/Core/Data/Transform.h"
 
 #include "OsgTools/Configure/OSG.h"
 #include "OsgTools/State/StateSet.h"
@@ -17,7 +18,6 @@
 #include "OsgTools/Utilities/TranslateGeometry.h"
 
 #include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
@@ -67,17 +67,14 @@ Line::~Line()
 
 void Line::_convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints )
 {
-  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
+  latLongPoints.reserve ( vertices.size() );
 
-  if ( project.valid() )
+  Minerva::Core::Data::Transform transform ( this->wellKnownText(),  "WGS84" );
+  
+  for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
   {
-    latLongPoints.reserve ( vertices.size() );
-    for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
-    {
-      Usul::Math::Vec3d point;
-      project->projectToSpherical( *iter, this->srid(), point );     
-      latLongPoints.push_back( point );
-    }
+    Usul::Math::Vec2d point ( transform ( Usul::Math::Vec2d ( (*iter)[0], (*iter)[1] ) ) );
+    latLongPoints.push_back( Vertices::value_type ( point[0], point[1], (*iter)[2] ) );
   }
 }
 

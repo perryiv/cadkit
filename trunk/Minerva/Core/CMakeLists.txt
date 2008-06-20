@@ -54,6 +54,7 @@ SET (SOURCES
 ./Commands/StopAnimation.cpp
 ./Commands/ToggleShown.cpp
 ./Data/DataObject.cpp
+./Data/Transform.cpp
 ./Factory/Readers.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp

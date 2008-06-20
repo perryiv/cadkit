@@ -35,8 +35,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AddLayer ();
-  AddLayer ( Usul::Interfaces::IUnknown * caller, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* progress = 0x0 );
-  AddLayer ( Usul::Interfaces::ILayer* layer );
+  AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* progress = 0x0 );
 
 protected:
   virtual ~AddLayer();
@@ -48,7 +47,7 @@ protected:
   public:
     typedef Usul::Jobs::Job BaseClass;
 
-    AddLayerJob ( Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown *caller );
+    AddLayerJob ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown *caller );
 
   protected:
     // Use reference counting.
@@ -61,12 +60,13 @@ protected:
     virtual void       _finished();
 
   private:
+    Usul::Interfaces::IUnknown::QueryPtr _parent;
     Usul::Interfaces::ILayer::QueryPtr _layer;
     Usul::Interfaces::IUnknown::QueryPtr _caller;
-    Usul::Interfaces::IUnknown::QueryPtr _document;
   };
 
 private:
+  Usul::Interfaces::IUnknown::QueryPtr _parent;
   Usul::Interfaces::IUnknown::QueryPtr _progressBar;
   Usul::Interfaces::ILayer::QueryPtr _layer;
 

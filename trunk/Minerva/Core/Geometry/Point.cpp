@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Data/Transform.h"
 
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/State/StateSet.h"
@@ -16,7 +17,6 @@
 #include "OsgTools/Ray.h"
 
 #include "Usul/Components/Manager.h"
-#include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Trace/Trace.h"
@@ -93,22 +93,15 @@ Point::~Point()
 Usul::Math::Vec3d Point::pointData() const
 {
   Usul::Math::Vec3d point ( this->point() );
-
-  Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-
-  if( project.valid() )
-  {
-    osg::Vec3f offset ( this->spatialOffset() );
-    int srid ( this->srid() );
+  osg::Vec3f offset ( this->spatialOffset() );
+  
+  point.set( point[0] + offset[0], point[1] + offset[1], point[2] + offset[2] );
+  
+  // Transform the point to wgs 84.
+  Minerva::Core::Data::Transform transform ( this->wellKnownText(),  "WGS84" );
+  Usul::Math::Vec2d p ( transform ( Usul::Math::Vec2d ( point[0], point[1] ) ) );
     
-    point.set( point[0] + offset[0], point[1] + offset[1], point[2] + offset[2] );
-
-    Usul::Math::Vec3d latLongPoint;
-    project->projectToSpherical( point, srid, latLongPoint );
-    return latLongPoint;
-  }
-
-  return _point;
+  return Usul::Math::Vec3d ( p[0], p[1], point[2] );
 }
 
 

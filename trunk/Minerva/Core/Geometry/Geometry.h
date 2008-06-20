@@ -87,14 +87,11 @@ public:
   void                  renderBin ( unsigned int );
 
   /// Get/Set the spatial reference id.
-  unsigned int          srid () const;
-  void                  srid ( unsigned int srid );
+  std::string           wellKnownText() const;
+  void                  wellKnownText ( const std::string& wkt );
   
   /// Is this geometry transparent?
   bool                  transparent() const;
-  
-  // Is it valid?
-  bool                  valid() const;
 
   virtual const osg::Vec3f&   spatialOffset () const;
   virtual void                spatialOffset ( const osg::Vec3f& );
@@ -122,7 +119,7 @@ protected:
   
 private:
   AltitudeMode _altitudeMode;
-  int          _srid;
+  std::string  _wkt;
   osg::Vec4    _color;
   osg::Vec3f   _offset;
   bool         _dirty;

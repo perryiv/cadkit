@@ -10,6 +10,7 @@
 
 #include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
+#include "Minerva/Core/Data/Transform.h"
 
 #include "Minerva/Core/Visitor.h"
 
@@ -19,7 +20,6 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Vector2.h"
 #include "Usul/Functions/GUID.h"
-#include "Usul/Interfaces/IProjectCoordinates.h"
 #include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Jobs/Job.h"
@@ -609,14 +609,11 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
 
     dataObject->label( value );
 
-    // Get the srid.
-    unsigned int srid ( this->srid() );
-    
     // Build the query.
     std::ostringstream os;
-    os << "SELECT x(centroid(" << tablename << ".geom)) as x_c, y(centroid(" << tablename << ".geom)) as y_c, srid(geom) as srid FROM " << tablename << " WHERE id = " << id;
+    os << "SELECT x(centroid(" << tablename << ".geom)) as x_c, y(centroid(" << tablename << ".geom)) as y_c, FROM " << tablename << " WHERE id = " << id;
     
-    osg::Vec3f center ( 0.0, 0.0, 0.0 );
+    osg::Vec3d center ( 0.0, 0.0, 0.0 );
     
     if( 0x0 != _connection.get() )
     {
@@ -624,26 +621,17 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
       
       if( !r.empty() && !r[0][0].is_null() && !r[0][1].is_null() )
       {
-        Usul::Types::Float64 x ( r[0][0].as< float > () );
-        Usul::Types::Float64 y ( r[0][1].as< float > () );
+        Usul::Types::Float64 x ( r[0][0].as<double>() );
+        Usul::Types::Float64 y ( r[0][1].as<double>() );
         
-        center.set( static_cast<osg::Vec3f::value_type> ( this->xOffset() + x ), static_cast<osg::Vec3f::value_type> ( this->yOffset() + y ), this->zOffset() );
+        center.set( static_cast<osg::Vec3d::value_type> ( this->xOffset() + x ), static_cast<osg::Vec3d::value_type> ( this->yOffset() + y ), this->zOffset() );
       }
     }
     
-    Usul::Interfaces::IProjectCoordinates::QueryPtr project ( Usul::Components::Manager::instance().getInterface( Usul::Interfaces::IProjectCoordinates::IID ) );
-    
-    if( project.valid() )
-    {
-      Usul::Math::Vec3d orginal;
-      orginal[0] = center[0];
-      orginal[1] = center[1];
-      orginal[2] = this->labelZOffset();
-      Usul::Math::Vec3d point;
-      project->projectToSpherical( orginal, srid, point );
-      
-      center.set ( point[0], point[1], point[2] );
-    }
+    // Transform the point to wgs 84.
+    Minerva::Core::Data::Transform transform ( this->projectionWKT(),  "WGS84" );
+    Usul::Math::Vec2d p ( transform ( Usul::Math::Vec2d ( center[0], center[1] ) ) );
+    center.set ( p[0], p[1], this->labelZOffset() );
     
     dataObject->labelPosition( center );
   }
@@ -1395,6 +1383,9 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
   // The data table.
   std::string dataTable ( this->tablename() );
   
+  // Get the Well Known Text for the projection.
+  const std::string wkt ( this->projectionWKT() );
+  
   // Loop through the results.
   for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
   {
@@ -1402,7 +1393,6 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
     {
       // Get the id.
       const int id ( iter["id"].as < int > () );
-      const int srid ( iter["srid"].as < int > () );
       
       pqxx::binarystring buffer ( iter["geom"] );
       BinaryParser parser;
@@ -1438,7 +1428,7 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         Minerva::Core::Geometry::Geometry::RefPtr geometry ( *geom );
         
         // Set the geometry's data.
-        geometry->srid( srid );
+        geometry->wellKnownText( wkt );
         geometry->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
         geometry->color( this->_color ( iter ) );
         geometry->renderBin ( this->renderBin() );
@@ -1449,12 +1439,12 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         // Add the geometry to the data object.
         data->addGeometry( geometry );
       }
-      
+
       /// Set the common members.
       this->_setDataObjectMembers( data.get(), caller );
       
       // Pre build the scene.
-      data->preBuildScene( caller );
+      //data->preBuildScene( caller );
       
       this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
     }

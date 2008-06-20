@@ -487,7 +487,6 @@ KmlLayer::Geometry * KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *s
       this->_parseCoordinates( *node, vertices );
       if ( false == vertices.empty() )
       {
-        point->srid ( 4326 );
         point->point ( vertices.front() );
       }
     }
@@ -596,7 +595,6 @@ KmlLayer::Geometry* KmlLayer::_parseLineString ( const XmlTree::Node& node, Styl
       if ( false == vertices.empty() )
       {
         Minerva::Core::Geometry::Line::RefPtr data ( new Minerva::Core::Geometry::Line );
-        line->srid ( 4326 );
         line->line ( vertices );
       }
     }

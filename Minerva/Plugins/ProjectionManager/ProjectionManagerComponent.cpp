@@ -16,6 +16,7 @@
 
 #include "Minerva/Plugins/ProjectionManager/ProjectionManagerComponent.h"
 
+#include "Usul/Components/Factory.h"
 #include "Usul/Strings/Format.h"
 
 #include "ossim/base/ossimKeywordNames.h"
@@ -25,6 +26,7 @@
 #include "ossim/projection/ossimMapProjection.h"
 #include "ossim/base/ossimGpt.h"
 
+USUL_DECLARE_COMPONENT_FACTORY ( ProjectionManagerComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ProjectionManagerComponent, ProjectionManagerComponent::BaseClass );
 
 

@@ -99,8 +99,8 @@ void AddPostGISLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::In
   }
   
   // Add the layer.
-  Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, layer.get() ) );
-  addLayer->execute ( parent );
+  Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( parent, layer.get() ) );
+  addLayer->execute ( caller );
 }
 
 

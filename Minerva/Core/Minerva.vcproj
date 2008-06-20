@@ -257,6 +257,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\Transform.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Transform.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\UserData.h"
 						>
 					</File>

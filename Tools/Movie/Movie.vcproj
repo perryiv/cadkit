@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(FOX_INC_DIR);$(OSG_INC_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(OSG_INC_DIR);"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,10 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgDBd.lib osgUtild.lib osgd.lib foxdlld-1.4.lib opengl32.lib"
+				AdditionalDependencies="osgDBd.lib osgUtild.lib osgd.lib opengl32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/$(ProjectName)d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(FOX_LIB_DIR);"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(FOX_INC_DIR);$(OSG_INC_DIR);$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(OSG_INC_DIR);"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -138,10 +138,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgDB.lib osgUtil.lib osg.lib foxdll-1.4.lib opengl32.lib"
+				AdditionalDependencies="osgDB.lib osgUtil.lib osg.lib opengl32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(FOX_LIB_DIR);"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

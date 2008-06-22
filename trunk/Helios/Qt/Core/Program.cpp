@@ -26,6 +26,7 @@
 #include "Usul/Errors/ThrowingPolicy.h"
 #include "Usul/Errors/InvalidParameter.h"
 #include "Usul/Errors/PureVirtualCall.h"
+#include "Usul/Exceptions/Exception.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Contents.h"
 #include "Usul/File/Make.h"
@@ -35,6 +36,8 @@
 #include "Usul/IO/Redirect.h"
 #include "Usul/IO/StreamSink.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Signals/Actions.h"
+#include "Usul/Signals/Handler.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Environment.h"
@@ -74,6 +77,16 @@ namespace Helper
   typedef Usul::Errors::CompositePolicy < Usul::Errors::AssertPolicy, ThrowingPolicy > CompositePolicy;
   Usul::Errors::PureVirtualCall < CompositePolicy > pureCallAction;
   Usul::Errors::InvalidParameter < CompositePolicy > invalidParameterAction;
+
+  // Trapping signals.
+  typedef Usul::Signals::Actions::PrintMessage PrintMessage;
+  typedef Usul::Signals::Actions::PrintStackTrace PrintStackTrace;
+  typedef Usul::Signals::Actions::Pair<PrintMessage,PrintStackTrace> PrintPair;
+  typedef Usul::Signals::Actions::Throw<Usul::Exceptions::Exception> Throw;
+  typedef Usul::Signals::Actions::Pair<PrintPair,Throw> SignalAction;
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SIGSEGV );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SIGABRT );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SIGFPE  );
 }
 
 
@@ -215,7 +228,7 @@ void Program::run ( int argc, char **argv,
 
 #ifdef __GNUC__
   // Register the signal handlers.
-  Usul::Errors::registerSignalHandlers ( argv[0] );
+  Usul::Errors::Signals::registerHandlers ( argv[0] );
 #endif
 
   // Set thread factories.

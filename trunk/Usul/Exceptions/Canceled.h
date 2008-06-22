@@ -34,10 +34,10 @@ public:
   typedef std::exception BaseClass;
 
   // Constructors.
-  Canceled() : BaseClass ( ), _message ( CANCELED_MESSAGE_STRING )
+  Canceled() : BaseClass(), _message ( CANCELED_MESSAGE_STRING )
   {
   }
-  Canceled ( const std::string &message ) : BaseClass (), _message ( message.empty() ? CANCELED_MESSAGE_STRING : message.c_str() )
+  Canceled ( const std::string &message ) : BaseClass(), _message ( message.empty() ? CANCELED_MESSAGE_STRING : message.c_str() )
   {
   }
   Canceled ( const Canceled &e ) : BaseClass ( e )

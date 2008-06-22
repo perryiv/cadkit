@@ -28,6 +28,7 @@
 
 namespace Usul {
 namespace Errors {
+namespace Signals {
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -132,7 +133,7 @@ void handleSIGSEGV ( int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline void registerSignalHandlers ( const std::string &programName )
+inline void registerHandlers ( const std::string &programName )
 {
 #ifndef __APPLE__ // TODO: Figure out why this won't compile on apple.
 
@@ -147,6 +148,7 @@ inline void registerSignalHandlers ( const std::string &programName )
 }
 
 
+} // namespace Signals
 } // namespace Errors
 } // namespace Usul
 

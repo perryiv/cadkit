@@ -18,6 +18,9 @@
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
 
+#include "osg/BlendFunc"
+#include "osg/TexEnvCombine"
+
 #include "osgDB/ReadFile"
 
 #include "dae.h"
@@ -54,6 +57,17 @@ namespace Detail
 
         if ( ss.valid() )
         {
+          // Add a blend function.
+          osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+          ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+          
+          ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+          
+          osg::ref_ptr<osg::TexEnvCombine> combine ( new osg::TexEnvCombine );
+          combine->setCombine_Alpha ( GL_REPLACE );
+          ss->setTextureAttributeAndModes ( 0, combine.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+          ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+          
           // Turn off back face culling.
           OsgTools::State::StateSet::setBackFaceCulling ( ss.get(), false );
 

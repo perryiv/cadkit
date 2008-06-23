@@ -19,12 +19,12 @@
 
 #ifdef __GNUC__
 # include <execinfo.h>
+# include <unistd.h>
 #endif
 #include <sstream>
 #include <stdio.h>
 #include <string>
 #include <vector>
-#include <unistd.h>
 
 
 namespace Usul {

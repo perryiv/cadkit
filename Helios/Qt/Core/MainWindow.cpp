@@ -283,6 +283,10 @@ void MainWindow::_destroy()
   // Clear the progress bars.
   _progressBars = 0x0;
 
+  // Clear the map of commands. This has to come before we release the plugins 
+  // because the NewDocument command hangs on to a component.
+  MenuKit::MenuCommands::instance().clear();
+
   // Release all the plugins.
   this->releasePlugins();
   

@@ -41,6 +41,7 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Environment.h"
+#include "Usul/System/Host.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
@@ -84,9 +85,9 @@ namespace Helper
   typedef Usul::Signals::Actions::Pair<PrintMessage,PrintStackTrace> PrintPair;
   typedef Usul::Signals::Actions::Throw<Usul::Exceptions::Exception> Throw;
   typedef Usul::Signals::Actions::Pair<PrintPair,Throw> SignalAction;
-  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SIGSEGV );
-  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SIGABRT );
-  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SIGFPE  );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SegmentationViolation );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, AbortSignal );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, FloatingPointException  );
 }
 
 
@@ -195,7 +196,6 @@ namespace Helper
       // This will likely leave a few mutexes locked...
       ::pthread_exit ( 0x0 );
       #else
-
       // Exit the thread.  The -1 is the return code.
       ::ExitThread ( -1 );
       #endif
@@ -226,11 +226,6 @@ void Program::run ( int argc, char **argv,
   // Set the handler for unhandled exceptions.
   std::set_terminate ( &Helper::_unhandledException );
 
-#ifdef __GNUC__
-  // Register the signal handlers.
-  Usul::Errors::Signals::registerHandlers ( argv[0] );
-#endif
-
   // Set thread factories.
   Usul::Threads::Manager::instance().factory ( threadFactory );
 
@@ -251,8 +246,11 @@ void Program::run ( int argc, char **argv,
   const std::string persistantDir ( Usul::User::Directory::vendor ( vendor, true ) + program + "/" );
   Usul::File::make ( persistantDir );
 
+  // Get the machine name.
+  const std::string machine ( Usul::System::Host::name() );
+
   // Redirect standard out and error to a file.
-  const std::string output ( persistantDir + "stdout.txt" );
+  const std::string output ( persistantDir + machine + "_stdout.txt" );
   Usul::File::remove ( output, false );
   Helper::sink = Helper::StreamSink::RefPtr ( new Usul::IO::StreamSink ( output ) );
 
@@ -262,12 +260,12 @@ void Program::run ( int argc, char **argv,
   out << "Built on " << Usul::Strings::formatDate ( __DATE__ ) << " at " << __TIME__ << std::endl;
 
   // Send trace output here.
-  const std::string traceFile ( persistantDir + "trace.csv" );
+  const std::string traceFile ( persistantDir + machine + "_trace.csv" );
   std::ofstream traceStream ( traceFile.c_str() );
   Usul::Trace::Print::stream ( &traceStream );
 
   // Set job manager's log file.
-  const std::string logFile ( persistantDir + "jobs.csv" );
+  const std::string logFile ( persistantDir + machine + "_jobs.csv" );
   Usul::Jobs::Manager::instance().logSet ( new Usul::File::Log ( logFile, false ) );
 
   // Initialize singleton of named threads.

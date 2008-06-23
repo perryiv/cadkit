@@ -54,6 +54,7 @@
 #include "osg/PolygonOffset"
 #include "osg/Material"
 #include "osg/Texture2D"
+#include "osg/TexEnvCombine"
 
 #include "osgDB/ReadFile"
 
@@ -111,7 +112,7 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   // Set the image.
   if ( true == _image.valid() )
     _texture->setImage ( _image.get() );
-  
+
 #if USE_MIP_MAPS == 1
   // Set filter parameters.
   _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_NEAREST );
@@ -132,10 +133,27 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 #endif
 
+#if 1
+
+  // Seeing if this makes the world disapear when the raster layer is 
+  // transparent (rather than see the underlying polygon).
+  {
+    osg::ref_ptr<osg::StateSet> ss ( this->getOrCreateStateSet() );
+    ss->setMode ( GL_BLEND, osg::StateAttribute::ON );
+
+    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );    ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
+    osg::ref_ptr<osg::TexEnvCombine> combine ( new osg::TexEnvCombine );
+    combine->setCombine_Alpha ( GL_REPLACE );
+    ss->setTextureAttributeAndModes ( 0, combine.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  }
+
+#endif
+
   // Turn off back-face culling.
   this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
 
-   // Get the state set.
+  // Get the state set.
   osg::ref_ptr<osg::StateSet > ss ( this->getOrCreateStateSet() );
 
   // Need an offset.

@@ -1,0 +1,211 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Perry L Miller IV
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Canvas class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Display/View/Canvas.h"
+
+#include "OsgTools/Group.h"
+
+#include "Usul/Adaptors/Bind.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Bits/Bits.h"
+#include "Usul/Functions/SafeCall.h"
+#include "Usul/Scope/Caller.h"
+#include "Usul/Threads/Safe.h"
+#include "Usul/Trace/Trace.h"
+
+using namespace Display::View;
+
+USUL_IMPLEMENT_TYPE_ID ( Canvas );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Canvas::Canvas() : BaseClass(),
+  _flags ( 0 ),
+  _renderer ( 0x0 ),
+  _scene ( new osg::Group ),
+  _models ( new osg::Group ),
+  _document ( Usul::Interfaces::IDocument::RefPtr ( 0x0 ) )
+{
+  _scene->addChild ( _models.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Canvas::~Canvas()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Canvas::_destroy ), "4278674688" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::_destroy()
+{
+  USUL_TRACE_SCOPE;
+  _renderer = 0x0;
+  _scene = 0x0;
+  _models = 0x0;
+  _document = Usul::Interfaces::IDocument::RefPtr ( 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Canvas::flags() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _flags;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we rendering?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Canvas::isRendering() const
+{
+  USUL_TRACE_SCOPE;
+  return ( true == Usul::Bits::has ( this->flags(), Canvas::RENDERING ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::modelAdd ( NodePtr model )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( true == model.valid() )
+  {
+    _models->addChild ( model.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the new renderer and return the old one.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Canvas::RendererPtr Canvas::renderer ( RendererPtr newRenderer )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  RendererPtr oldRenderer ( _renderer );
+  _renderer = newRenderer;
+
+  return oldRenderer;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Render the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::render()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Always set and reset this state.
+  Usul::Scope::Caller::RefPtr resetFlag ( Usul::Scope::makeCaller ( 
+    Usul::Adaptors::bind2 ( Canvas::RENDERING, true,  Usul::Adaptors::memberFunction ( this, &Canvas::_setFlag ) ),
+    Usul::Adaptors::bind2 ( Canvas::RENDERING, false, Usul::Adaptors::memberFunction ( this, &Canvas::_setFlag ) ) ) );
+
+  // Handle no scene.
+  if ( false == _scene.valid() )
+    return;
+
+  // Handle no renderer.
+  if ( false == _renderer.valid() )
+    return;
+
+  // Render the scene.
+  _renderer->render ( _scene.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::_setFlag ( unsigned int bit, bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _flags = Usul::Bits::set ( _flags, bit, state );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::document ( Usul::Interfaces::IUnknown *unknown )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _document = unknown;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IDocument::RefPtr Canvas::document() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return Usul::Interfaces::IDocument::RefPtr ( _document.get() );
+}

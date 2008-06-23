@@ -444,6 +444,10 @@
 				Name="Errors"
 				>
 				<File
+					RelativePath=".\Errors\Assert.cpp"
+					>
+				</File>
+				<File
 					RelativePath="Errors\Assert.h"
 					>
 				</File>
@@ -481,6 +485,10 @@
 				</File>
 				<File
 					RelativePath=".\Errors\PureVirtualCall.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Errors\Signals.h"
 					>
 				</File>
 				<File
@@ -2809,6 +2817,26 @@
 				>
 				<File
 					RelativePath=".\Preprocess\UniqueName.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Diagnostics"
+				>
+				<File
+					RelativePath=".\Diagnostics\StackTrace.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Signals"
+				>
+				<File
+					RelativePath=".\Signals\Actions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Signals\Handler.h"
 					>
 				</File>
 			</Filter>

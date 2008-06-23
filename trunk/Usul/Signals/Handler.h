@@ -25,6 +25,31 @@ namespace Signals {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Possible signal ids.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace ID
+{
+#ifdef __GNUC__
+
+  const int SegmentationViolation  ( SIGSEGV );
+  const int AbortSignal            ( SIGABRT );
+  const int FloatingPointException ( SIGFPE  );
+
+#else
+
+  // Meaningless values to satisfy the compiler.
+  const int SegmentationViolation  ( 0 );
+  const int AbortSignal            ( 1 );
+  const int FloatingPointException ( 2 );
+
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Signal handler.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,6 +98,8 @@ private:
 
   static std::string _getDescription ( int num )
   {
+    #ifdef __GNUC__
+
     switch ( num )
     {
     case SIGSEGV:
@@ -84,6 +111,12 @@ private:
     default:
       return Usul::Strings::format ( "signal ", num );
     }
+
+    #else
+
+    return std::string();
+
+    #endif
   }
 
 
@@ -94,12 +127,16 @@ private:
   //
   /////////////////////////////////////////////////////////////////////////////
 
+  #ifdef __GNUC__
+
   static void _handle ( int num, siginfo_t *info, void *secret )
   {
     const std::string message ( Usul::Strings::format ( "Error 1598305946: ", _getDescription ( num ), " caught in thread ", Usul::Threads::currentThreadId() ) );
     ActionType action;
     action ( message );
   }
+
+  #endif
 
   int _id;
 };
@@ -111,8 +148,8 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define USUL_DECLARE_SIGNAL_HANDLER(action_type,id)    \
-  Usul::Signals::Handler<action_type> signal_handler_for_##id ( id );
+#define USUL_DECLARE_SIGNAL_HANDLER(action_type,signal_id) \
+  Usul::Signals::Handler<action_type> signal_handler_for_##signal_id ( Usul::Signals::ID::##signal_id );
 
 
 } // namespace Signals

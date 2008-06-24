@@ -10,6 +10,8 @@
 #ifndef _USUL_SIGNALS_ACTIONS_H_
 #define _USUL_SIGNALS_ACTIONS_H_
 
+#include "Usul/Diagnostics/StackTrace.h"
+
 #include <iostream>
 #include <string>
 

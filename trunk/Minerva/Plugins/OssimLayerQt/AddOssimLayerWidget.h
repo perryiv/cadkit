@@ -13,6 +13,8 @@
 
 #include "Minerva/Plugins/OssimLayerQt/CompileGuard.h"
 
+#include "Minerva/Core/Layers/RasterGroup.h"
+
 #include "Usul/Interfaces/IUnknown.h"
 
 #include "QtGui/QWidget"
@@ -21,7 +23,6 @@
 #include <string>
 
 class QListWidget;
-
 
 class AddOssimLayerWidget : public QWidget
 {
@@ -43,6 +44,9 @@ private slots:
   void             _removeSelectedFiles();
   
 private:
+  
+  static void _searchDirectory ( Minerva::Core::Layers::RasterGroup::RefPtr, const std::string directory );
+
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   QListWidget *_listView;
 };

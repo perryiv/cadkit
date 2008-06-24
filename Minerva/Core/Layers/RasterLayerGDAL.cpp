@@ -248,10 +248,10 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
     warpOptions = ::CSLSetNameValue( warpOptions, "INIT_DEST", "NO_DATA" );
     options->papszWarpOptions = warpOptions;
 
-    options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-    options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-    options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
-    options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * options->nBandCount ) );
+    options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+    options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+    options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+    options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
   }
 
   // We want cubic B-spline interpolation.
@@ -259,7 +259,7 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   
   options->hSrcDS = data;
   options->hDstDS = tile;
-  
+
   options->nBandCount = bands;
   options->panSrcBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
   options->panDstBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );

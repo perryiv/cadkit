@@ -38,6 +38,7 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
 ${CADKIT_INC_DIR}/Helios/Plugins/SceneModel
 ${CADKIT_INC_DIR}/Helios/Plugins/TriangleModel
 ${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
+
 ${CADKIT_INC_DIR}/Helios/Plugins/ModelPresentation/ModelPresentation
 ${CADKIT_INC_DIR}/Helios/Plugins/ModelPresentation/ModelPresentationLib
 

@@ -91,8 +91,15 @@
         <component input="vertical joystick2"   transform="Rotate Global X"/>
         <component input="horizontal joystick3" transform="Rotate Global Z"/>
         <component input="vertical joystick3"   transform="Translate Global Y"/>
-        
       </favorite>
+
+      <favorite type="sequence" name="Rotate">
+        <component input="horizontal joystick" transform="Translate Global X"/>
+        <component input="vertical joystick"   transform="Rotate Global Z"/>
+        <component input="horizontal joystick2" transform="Rotate Global Y"/>
+        <component input="vertical joystick2"   transform="Rotate Global X"/>
+      </favorite>
+
     </favorites>
     <Mappings>
       <Mapping button_id="0x00000400" command="menu" />

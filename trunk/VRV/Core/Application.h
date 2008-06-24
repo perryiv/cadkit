@@ -116,7 +116,6 @@ class VRV_EXPORT Application : public vrj::GlApp,
                                public Usul::Interfaces::IFrameInfo,
                                public Usul::Interfaces::IWorldInfo,
                                public Usul::Interfaces::IMatrixMultiplyDouble,
-                               public Usul::Interfaces::IJoystickFloat,
                                public Usul::Interfaces::IWandStateDouble,
                                public Usul::Interfaces::ITranslationSpeed,
                                public Usul::Interfaces::IProgressBarFactory,
@@ -263,10 +262,6 @@ public:
   /// Get the tracker.
   Tracker *               tracker ();
   const Tracker *         tracker () const;
-
-  /// Get the joystick.
-  Joystick *              joystick ();
-  const Joystick *        joystick () const;
 
   /// Get/Set the analog trim.
   const Usul::Math::Vec2f&    analogTrim () const;
@@ -528,11 +523,6 @@ protected:
   /// Usul::Interfaces::IProgressBarFactory
   virtual Usul::Interfaces::IUnknown*   createProgressBar ( bool waitIfNotGuiThread = false );
 
-  //  VRV::Interfaces::IJoystickFloat
-  // Get the joystick value in the range [-1,1].
-  virtual float                 joystickHorizontal() const;
-  virtual float                 joystickVertical()   const;
-
   // Get the wand's position (VRV::Interfaces::IWandStateFloat).
   virtual void                  wandPosition ( Usul::Math::Vec3d &p ) const;
 
@@ -726,7 +716,6 @@ private:
   Preferences::RefPtr                    _preferences;
   ButtonsPtr                             _buttons;
   TrackerPtr                             _tracker;
-  JoystickPtr                            _joystick;
   Analogs                                _analogs;
   Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3d                      _wandOffset;

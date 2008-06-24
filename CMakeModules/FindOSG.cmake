@@ -18,47 +18,43 @@ FIND_PATH(OT_INC_DIR  OpenThreads/Mutex
  set(OSG_LIB_DIR "$ENV{OSG_LIB_DIR}")
  set(OSG_INC_DIR "$ENV{OSG_INC_DIR}")
  
+#########################################################
+#
+#  Find OpenThread libraries.
+#
+#########################################################
 
-# ------------ Find OpenThreads Library ----------------------
 FIND_LIBRARY(OPENTHREADS_LIB OpenThreads
  ${OT_LIB_DIR}
  ${OSG_LIB_DIR}
 )
 
-# ------------ Find osg Library ----------------------
-FIND_LIBRARY(OSG_LIB osg
+FIND_LIBRARY(OPENTHREADS_LIB_DEBUG OpenThreadsd
+ ${OT_LIB_DIR}
  ${OSG_LIB_DIR}
 )
 
-# ------------ Find osgDB Library ----------------------
-FIND_LIBRARY(OSG_DB_LIB osgDB
- ${OSG_LIB_DIR}
-)
+#########################################################
+#
+#  Find OpenSceneGraph libraries.
+#
+#########################################################
 
-# ------------ Find osgGA Library ----------------------
-FIND_LIBRARY(OSG_GA_LIB osgGA
- ${OSG_LIB_DIR}
-)
+FIND_LIBRARY ( OSG_LIB         osg            ${OSG_LIB_DIR} )
+FIND_LIBRARY ( OSG_DB_LIB      osgDB          ${OSG_LIB_DIR} )
+FIND_LIBRARY ( OSG_GA_LIB      osgGA          ${OSG_LIB_DIR} )
+FIND_LIBRARY ( OSG_TEXT_LIB    osgText        ${OSG_LIB_DIR} )
+FIND_LIBRARY ( OSG_UTIL_LIB    osgUtil        ${OSG_LIB_DIR} )
+FIND_LIBRARY ( OSG_FX_LIB      osgFX          ${OSG_LIB_DIR} )
+FIND_LIBRARY ( OSG_MANIPULATOR osgManipulator ${OSG_LIB_DIR} )
+FIND_LIBRARY ( OSG_VIEWER      osgViewer      ${OSG_LIB_DIR} )
 
-# ------------ Find osgText Library ----------------------
-FIND_LIBRARY(OSG_TEXT_LIB osgText
- ${OSG_LIB_DIR}
-)
 
-# ------------ Find osgUtil Library ----------------------
-FIND_LIBRARY(OSG_UTIL_LIB osgUtil
- ${OSG_LIB_DIR}
-)
-
-# ------------ Find osgFX Library ----------------------
-FIND_LIBRARY(OSG_FX_LIB osgFX
- ${OSG_LIB_DIR}
-)
-
-FIND_LIBRARY(OSG_MANIPULATOR osgManipulator
- ${OSG_LIB_DIR}
-)
-
+#########################################################
+#
+#  Mark these are advanced.
+#
+#########################################################
 
 MARK_AS_ADVANCED(
   OT_INC_DIR

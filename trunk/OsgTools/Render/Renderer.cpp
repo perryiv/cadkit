@@ -225,7 +225,7 @@ void Renderer::render()
 #endif
 
   // See if we are supposed to use multiple passes.
-  const unsigned int frameCount ( ( 0x0 != _sceneView->getFrameStamp() ) ? _sceneView->getFrameStamp()->getFrameNumber() : 0 );
+  //const unsigned int frameCount ( ( 0x0 != _sceneView->getFrameStamp() ) ? _sceneView->getFrameStamp()->getFrameNumber() : 0 );
   const unsigned int numPasses ( this->getNumRenderPasses() );
   if ( numPasses > 1 )
   {

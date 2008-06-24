@@ -224,11 +224,13 @@ namespace Helper
         {
           const std::string name ( node->name() );
           const std::string transformName ( node->attributes()["transform"] );
-          TransformFunctor::RefPtr transform ( static_cast < TransformFunctor* > ( _transforms[transformName]->clone() ) );
+          TransformFunctors::iterator transformIter ( _transforms.find ( transformName ) );
+          TransformFunctor::RefPtr transform ( _transforms.end() != transformIter ? static_cast <TransformFunctor*> ( transformIter->second->clone() ) : 0x0 );
           if ( true == transform.valid() )
           {
             const std::string inputName ( node->attributes()["input"] );
-            AnalogInput::RefPtr analog ( static_cast < AnalogInput* > ( _inputs[inputName]->clone() ) );
+            AnalogInputs::iterator analogIter ( _inputs.find ( inputName ) );
+            AnalogInput::RefPtr analog ( _inputs.end() != analogIter ? static_cast <AnalogInput*> ( analogIter->second->clone() ) : 0x0 );
             if ( true == analog.valid() )
             {
               transform->analog ( analog.get() );

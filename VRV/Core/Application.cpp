@@ -148,7 +148,6 @@ Application::Application() :
   _preferences       ( new Preferences ),
   _buttons           ( new VRV::Devices::ButtonGroup ),
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
-  _joystick          ( new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" ) ),
   _analogs           (),
   _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4). Move to preference file.
@@ -174,7 +173,7 @@ Application::Application() :
   _allowUpdate       ( true ),
   _intersector       ( 0x0 ),
   _auxiliary         ( new osg::MatrixTransform ),
-  _allowIntersections ( true ),
+  _allowIntersections ( false ),
   _deleteHandler     ( new DeleteHandler ),
   _rotCenter         ( 0, 0, 0 ),
   _flags             ( 0 ),
@@ -202,7 +201,7 @@ Application::Application() :
   osg::Referenced::setThreadSafeReferenceCounting ( true );
 
   // Set the delete handler.
-  osg::Referenced::setDeleteHandler ( _deleteHandler );
+  //osg::Referenced::setDeleteHandler ( _deleteHandler );
 
   // Parse the command-line arguments.
   this->_parseCommandLine();
@@ -227,15 +226,6 @@ Application::Application() :
   _colorMap["Grey"]   = Usul::Math::Vec4f ( 0.5,0.5,0.5,1.0 );
   _colorMap["Black"]  = Usul::Math::Vec4f ( 0.0,0.0,0.0,1.0 );
   _colorMap["Sky Blue"] = Usul::Math::Vec4f ( 0.592156, 0.713725, 1.0, 1.0 );
-
-  _joystick->name ( "Joystick" );
-
-  // Set the callback.
-  JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-  _joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
 }
 
 
@@ -505,8 +495,6 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < VRV::Interfaces::INavigationScene* > ( this );
   case Usul::Interfaces::IMatrixMultiplyDouble::IID:
     return static_cast < Usul::Interfaces::IMatrixMultiplyDouble * > ( this );
-  case Usul::Interfaces::IJoystickFloat::IID:
-    return static_cast< Usul::Interfaces::IJoystickFloat * > ( this );
   case Usul::Interfaces::IWandStateDouble::IID:
     return static_cast< Usul::Interfaces::IWandStateDouble * > ( this );
   case Usul::Interfaces::ITranslationSpeed::IID:
@@ -1155,7 +1143,7 @@ void Application::_init()
     try
     {
       IPluginInitialize::ValidQueryPtr pluginInit ( (*iter).get() );
-      pluginInit->initialize ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+      pluginInit->initializePlugin ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
     }
     catch ( const std::exception &e )
     {
@@ -1264,12 +1252,7 @@ void Application::_preFrame()
   _buttons->notify();
   _tracker->update();
 
-  // update all the joystick.
-  _joystick->update();
-
-  // Send any notifications.
-  _joystick->notify();
-
+  // Update all the analog inputs.
   for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
   {
     Joystick::RefPtr joystick ( iter->second );
@@ -2276,57 +2259,6 @@ const VRV::Devices::TrackerDevice * Application::tracker () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the joystick.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-VRV::Devices::JoystickDevice * Application::joystick ()
-{
-  USUL_TRACE_SCOPE;
-  return _joystick.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the joystick.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const VRV::Devices::JoystickDevice *  Application::joystick () const
-{
-  USUL_TRACE_SCOPE;
-  return _joystick.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the analog input in the range [-1,1].
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Application::joystickHorizontal() const
-{
-  USUL_TRACE_SCOPE;
-  return 2.0f * ( this->joystick()->horizontal() + _analogTrim[0] ) - 1.0f;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the analog input in the range [-1,1].
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float Application::joystickVertical() const
-{
-  USUL_TRACE_SCOPE;
-  return 2.0f * ( this->joystick()->vertical() + _analogTrim[1] ) - 1.0f;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the wand's position.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2474,12 +2406,6 @@ const Usul::Math::Vec2f& Application::analogTrim () const
 void Application::analogTrim ( )
 {
   USUL_TRACE_SCOPE;
-
-  float x ( 0.5f - this->joystick()->horizontal() );
-  float y ( 0.5f - this->joystick()->vertical() );
-  
-  Guard guard ( this->mutex() );
-  _analogTrim.set ( x, y );
 
   for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
   {

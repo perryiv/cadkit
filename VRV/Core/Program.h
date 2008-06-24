@@ -27,6 +27,7 @@
 #include "Usul/Errors/ThrowingPolicy.h"
 #include "Usul/Errors/InvalidParameter.h"
 #include "Usul/Errors/PureVirtualCall.h"
+#include "Usul/Exceptions/Exception.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/File/Path.h"
@@ -35,8 +36,14 @@
 #include "Usul/Registry/Database.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Signals/Actions.h"
+#include "Usul/Signals/Handler.h"
 #include "Usul/System/Host.h"
 #include "Usul/User/Directory.h"
+
+#ifdef __GNUC__
+# include "Usul/Errors/Signals.h"
+#endif
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
@@ -60,6 +67,16 @@ namespace Helper
   typedef Usul::Errors::CompositePolicy < Usul::Errors::AssertPolicy, ThrowingPolicy > CompositePolicy;
   Usul::Errors::PureVirtualCall < CompositePolicy > pureCallAction;
   Usul::Errors::InvalidParameter < CompositePolicy > invalidParameterAction;
+ 
+  // Trapping signals.
+  typedef Usul::Signals::Actions::PrintMessage PrintMessage;
+  typedef Usul::Signals::Actions::PrintStackTrace PrintStackTrace;
+  typedef Usul::Signals::Actions::Pair<PrintMessage,PrintStackTrace> PrintPair;
+  typedef Usul::Signals::Actions::Throw<Usul::Exceptions::Exception> Throw;
+  typedef Usul::Signals::Actions::Pair<PrintPair,Throw> SignalAction;
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SegmentationViolation );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, AbortSignal );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, FloatingPointException  );
 }
 
 

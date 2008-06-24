@@ -541,6 +541,7 @@ void Application::_updateAnalogText()
 {
   ErrorChecker ( 1071563205, isAppThread(), CV::NOT_APP_THREAD );
 
+#if 0
   // Compose the string. Note: std::setprecision() doesn't 
   // work with std::ostringstream.
   const size_t size ( 128 );
@@ -551,6 +552,7 @@ void Application::_updateAnalogText()
 
   // Set the text.
   this->_update ( *_navText, std::string ( buffer ) );
+#endif
 }
 
 

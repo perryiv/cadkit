@@ -133,7 +133,7 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 #endif
 
-#if 1
+#if 0
 
   // Seeing if this makes the world disapear when the raster layer is 
   // transparent (rather than see the underlying polygon).
@@ -232,8 +232,12 @@ void Tile::_destroy()
   // Clear this tile and all it's children.
   this->clear ( true );
 
-  _body = 0x0; // Don't delete!
-  /*delete _mesh; _mesh = 0x0;*/
+  // Don't delete!
+  _body = 0x0;
+
+  // Reset the boost shared pointer.
+  _mesh = MeshPtr ( static_cast < Mesh * > ( 0x0 ) );
+
   delete _mutex; _mutex = 0x0;
   _borders = 0x0;
   _skirts = 0x0;
@@ -386,7 +390,11 @@ void Tile::updateMesh()
   mt->addChild ( skirts.get() );
 
   // Make the ground.
-  mt->addChild ( mesh() );
+  osg::ref_ptr<osg::Node> ground ( mesh() );
+  mt->addChild ( ground.get() );
+
+  // Make the ground completely transparent.
+  //OsgTools::State::StateSet::setAlpha ( ground.get(), 0.0f );
 
   // Add the place-holder for the border.
   mt->addChild ( _borders.get() );

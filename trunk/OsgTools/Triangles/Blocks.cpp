@@ -249,7 +249,7 @@ void Blocks::_indices ( const osg::Vec3f &v, Usul::Math::Vec3ui &i ) const
   // Get the sizes.
   const Usul::Math::Vec3ui size ( _volume.size(), _volume[0].size(), _volume[0][0].size() );
   
-#if OPENSCENEGRAPH_MAJOR_VERSION <= 2 && OPENSCENEGRAPH_MINOR_VERSION <= 2
+#if OPENSCENEGRAPH_MAJOR_VERSION <= 2 && OPENSCENEGRAPH_MINOR_VERSION < 4
   typedef float ValueType;
 #else
   typedef osg::BoundingBox::value_type ValueType;

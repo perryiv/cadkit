@@ -242,7 +242,7 @@ public:
 
   /// Hide/Show the center of rotation.
   void                  showCenterOfRotation ( bool b );
-  bool                  showCenterOfRotation ( ) const;
+  bool                  showCenterOfRotation() const;
 
   /// Set the context.
   void                  context ( Usul::Interfaces::IUnknown* context );
@@ -277,9 +277,6 @@ public:
 
   // Is there an accumulation buffer?
   bool                  hasAccumBuffer() const;
-
-  // Is it created?
-  bool                  isCreated() const;
 
   // Set/get the navigation manipulator.
   const MatrixManip *   navManip() const;
@@ -527,10 +524,6 @@ protected:
 
   void                  _setDisplayListsGeode ( osg::Geode *geode );
   void                  _setLodCullCallback ( osg::NodeCallback *cb );
-
-  // Add/Remove selection box from the scene.
-  void                  _drawSelectionBox ( const osg::Vec3&, const osg::Vec3& );
-  void                  _removeSelectionBox ();
 
   // Return the view all time.
   double                _animationTime();

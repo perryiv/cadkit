@@ -60,7 +60,8 @@ template < class ActionType > struct Handler
     _id ( id )
   {
     #ifdef __GNUC__
-
+    #ifndef __APPLE__
+    
     struct sigaction sa;
     ::sigemptyset ( &sa.sa_mask );
     sa.sa_flags = SA_RESTART | SA_SIGINFO;
@@ -68,18 +69,21 @@ template < class ActionType > struct Handler
     ::sigaction ( _id, &sa, 0x0 );
 
     #endif
+    #endif
   }
 
   ~Handler()
   {
     #ifdef __GNUC__
-
+    #ifndef __APPLE__
+    
     struct sigaction sa;
     ::sigemptyset ( &sa.sa_mask );
     sa.sa_flags = 0;
     sa.sa_handler = SIG_DFL; // Restore default handler.
     ::sigaction ( _id, &sa, 0x0 );
 
+    #endif
     #endif
   }
 
@@ -150,7 +154,6 @@ private:
 
 #define USUL_DECLARE_SIGNAL_HANDLER(action_type,signal_id) \
   Usul::Signals::Handler<action_type> signal_handler_for_##signal_id ( Usul::Signals::ID::signal_id );
-#endif
 
 } // namespace Signals
 } // namespace Usul

@@ -88,13 +88,18 @@ struct OSG_TOOLS_EXPORT StateSet
 
   // Materials.
   static void               setMaterial ( osg::Node *node, osg::Material *mat );
+  static void               setMaterial ( osg::StateSet *ss, osg::Material *mat );
   static void               setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const osg::Vec4f &diffuse, float alpha );
   static void               setMaterialRandom ( osg::Node *node );
   static void               setMaterialDefault ( osg::Node *node );
   static osg::Material *    getMaterialDefault();
   static void               removeMaterial ( osg::Node *node );
   static void               removeMaterial ( osg::StateSet *ss );
-  
+
+  // Set the alpha value. Adds default material if needed.
+  static void               setAlpha ( osg::Node *node, float );
+  static void               setAlpha ( osg::StateSet *ss, float );
+
   // Back face culling.
   static void               setBackFaceCulling ( osg::StateSet* ss, bool b );
   static bool               getBackFaceCulling ( const osg::StateSet* ss );

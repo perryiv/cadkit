@@ -1,22 +1,14 @@
 
+#########################################################
+#
+#  CMakeLists for OsgTools..
+#
+#########################################################
+
 PROJECT(OsgTools)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
-
-# setup output Directories
-SET (LIBRARY_OUTPUT_PATH
-	${CADKIT_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Libraries"
-)
-
-# setup the Executable output Directory
-SET (EXECUTABLE_OUTPUT_PATH
-	${CADKIT_BIN_DIR}
-	CACHE PATH
-	"Single Directory for all Executables."
-)
 
 ADD_DEFINITIONS("-D_COMPILING_OSG_TOOLS")
 
@@ -85,6 +77,7 @@ SET (SOURCES
   Render/EventAdapter.cpp
   Render/FBOScreenCapture.cpp
   Render/FrameDump.cpp
+  Render/OffScreenRenderer.cpp
   Render/Renderer.cpp
   Render/SceneManager.cpp
   Render/TiledScreenCapture.cpp
@@ -139,6 +132,7 @@ TARGET_LINK_LIBRARIES(OsgTools
 	${OSG_TEXT_LIB}
 	${OSG_UTIL_LIB}
   ${OSG_MANIPULATOR}
+  ${OSG_VIEWER}
 )
 
 

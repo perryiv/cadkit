@@ -793,8 +793,23 @@ void StateSet::setMaterial ( osg::Node *node, osg::Material *mat )
   if ( 0x0 == node || 0x0 == mat )
     return;
 
-  node->getOrCreateStateSet()->setAttributeAndModes 
-    ( mat, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  OsgTools::State::StateSet::setMaterial ( node->getOrCreateStateSet(), mat );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the material.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setMaterial ( osg::StateSet *ss, osg::Material *mat )
+{
+  // Handle bad input.
+  if ( 0x0 == ss || 0x0 == mat )
+    return;
+
+  ss->setAttributeAndModes ( mat, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 }
 
 
@@ -825,6 +840,61 @@ void StateSet::setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const o
   }
 
   OsgTools::State::StateSet::setMaterial ( node, mat.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the alpha. Add default material if needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setAlpha ( osg::Node *node, float alpha )
+{
+  // Handle bad input.
+  if ( 0x0 == node )
+    return;
+
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
+  OsgTools::State::StateSet::setAlpha ( ss.get(), alpha );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the alpha. Add default material if needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void StateSet::setAlpha ( osg::StateSet *ss, float alpha )
+{
+  // Handle bad input.
+  if ( 0x0 == ss )
+    return;
+
+  // Get the material attribute.
+  osg::ref_ptr<osg::Material> mat ( dynamic_cast < osg::Material * > ( ss->getAttribute ( osg::StateAttribute::MATERIAL ) ) );
+
+  // Set a default material if there isn't one.
+  if ( false == mat.valid() )
+  {
+    OsgTools::State::StateSet::setMaterial ( ss, OsgTools::State::StateSet::getMaterialDefault() );
+    mat = dynamic_cast < osg::Material * > ( ss->getAttribute ( osg::StateAttribute::MATERIAL ) );
+  }
+
+  // Check.
+  if ( false == mat.valid() )
+    return;
+
+  // Set these other properties if it's not completely opaque.
+  if ( alpha < 1 )
+  {
+    ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+  }
+
+  // Set the alpha.
+  mat->setAlpha ( osg::Material::FRONT_AND_BACK, alpha );
 }
 
 

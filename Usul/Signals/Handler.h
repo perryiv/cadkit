@@ -145,18 +145,11 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Convenient macros to help declare a signal handler.
-//  I add to add a special case to get this to compile with gcc 3.4
-//  See: http://pari.math.u-bordeaux.fr/archives/pari-dev-0210/msg00056.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if __GNUC__ <= 3 && __GNUC_MINOR__ <= 4
 #define USUL_DECLARE_SIGNAL_HANDLER(action_type,signal_id) \
-  using namespace Usul::Signals::ID; \
   Usul::Signals::Handler<action_type> signal_handler_for_##signal_id ( Usul::Signals::ID::signal_id );
-#else
-#define USUL_DECLARE_SIGNAL_HANDLER(action_type,signal_id) \
-  Usul::Signals::Handler<action_type> signal_handler_for_##signal_id ( Usul::Signals::ID::##signal_id );
 #endif
 
 } // namespace Signals

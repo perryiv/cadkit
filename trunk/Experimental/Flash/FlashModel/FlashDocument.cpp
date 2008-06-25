@@ -32,6 +32,7 @@
 #include "MenuKit/ToggleButton.h"
 
 #include "osg/BlendFunc"
+#include "osg/LOD"
 
 #include "hdf5.h"
 
@@ -50,6 +51,7 @@ FlashDocument::FlashDocument() :
   _filenames(),
   _scale ( 1.0 / 1e+20f ),
   _currentTimestep ( 0 ),
+  _dataSet ( "temp" ),
   _root ( new osg::Group ),
   _dirty ( true ),
   _drawBBox ( false ),
@@ -63,6 +65,7 @@ FlashDocument::FlashDocument() :
 {
   this->_addMember ( "filenames", _filenames );
   this->_addMember ( "current_time_step", _currentTimestep );
+  this->_addMember ( "data_set", _dataSet );
   
   this->_buildDefaultTransferFunctions();
   
@@ -332,44 +335,11 @@ void FlashDocument::_buildScene()
       colors[3] = osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 );
       colors[4] = osg::Vec4 ( 1.0, 0.0, 1.0, 1.0 );
       colors[5] = osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 );
-      
-      // Get min and max from the data set.
-      const double minimum ( timestep->minimum() );
-      const double maximum ( timestep->maximum() );
-      
+
       // Typedefs.
-      typedef OsgTools::Volume::TransferFunction1D TransferFunction1D;
-      typedef TransferFunction1D::Colors           Colors;
-      
-      const unsigned int size ( 256 );
-      Colors hsv       ( size );
-      
-      {
-        const double tmin ( ::log10 ( minimum * 5 ) + 3.0 );
-        const double tmax ( ::log10 ( maximum * 5 ) + 3.0 );
-        
-        const double range ( maximum - minimum );
-        
-        for ( unsigned int i = 0; i < size; ++i )
-        {
-          const float u ( static_cast < float > ( i ) / ( size - 1 ) );
-          const unsigned char alpha ( 35 );
-          
-          float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-          
-          const double value ( minimum + ( u * range ) );
-          double temp ( ( ( ::log10 ( value * 5 ) + 3.0 ) - tmin ) / ( tmax - tmin ) );
-          
-          Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - static_cast<float> ( temp * 300.0f ), 1.0f, 1.0f );
-          hsv.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
-          hsv.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
-          hsv.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
-          hsv.at ( i ) [ 3 ] = static_cast < unsigned char > ( u * alpha );
-        }
-      }
-      
-      TransferFunction1D::RefPtr tf ( new TransferFunction1D ( hsv ) );
-      
+      typedef OsgTools::Volume::TransferFunction TransferFunction;
+      TransferFunction::RefPtr tf ( _transferFunctions.at ( _currentTransferFunction ) );
+
       const unsigned int numNodes ( timestep->numNodes() );
       
       // Make bounding boxes.
@@ -379,45 +349,47 @@ void FlashDocument::_buildScene()
         const bool isLeaf ( timestep->isLeaf ( num ) );
         const int level ( timestep->level ( num ) );
         
-        if ( isLeaf && 5 == level )
-          //if ( isLeaf )
+        if ( isLeaf /*&& 5 == level*/ )
         {      
           bb._min =  bb._min * _scale;
           bb._max =  bb._max * _scale;
           
+          // Groups for the lod.
+          osg::ref_ptr<osg::Group> low ( new osg::Group );
+          osg::ref_ptr<osg::Group> high ( new osg::Group );
+
           // Add the bounding box.
           if ( _drawBBox )
-            _root->addChild ( timestep->buildBoundingBox ( bb, colors.at ( level - 1 ) ) );
+          {
+            osg::ref_ptr<osg::Node> node ( timestep->buildBoundingBox ( bb, colors.at ( level - 1 ) ) );
+            low->addChild ( node.get() );
+            high->addChild ( node.get() );
+          }
           
           // Add the points.
           if ( _drawPoints )
           {
-            _root->addChild ( timestep->buildPoints ( bb, num ) );
+            osg::ref_ptr<osg::Node> node ( timestep->buildPoints ( bb, num ) );
+            low->addChild ( node.get() );
+            high->addChild ( node.get() );
           }
           
           if ( _drawVolume )
           {
-            //osg::ref_ptr<OsgTools::Volume::Texture3DVolume> volumeNode ( this->_volume ( num ) );
-            osg::ref_ptr<Volume> volumeNode ( new Volume ( _program.get() ) );
-            
-            // Set the volume nodes bounding box.
-            volumeNode->boundingBox ( bb );
-            
-            // Set the transfer function.
-            volumeNode->transferFunction ( tf.get() );
-            
-#if USE_RAY_CASTING
-            volumeNode->samplingRate ( 0.001f ); 
-#else
-            volumeNode->numPlanes ( 64 );
-#endif
-
-            volumeNode->image ( timestep->buildVolume ( num ) );
-            
-            volumeNode->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
-            
-            _root->addChild ( volumeNode.get() );
+            osg::ref_ptr<osg::Image> image ( timestep->buildVolume ( num ) );
+            low->addChild  ( this->_buildVolume ( *timestep, image.get(), 8,  bb, tf.get() ) );
+            high->addChild ( this->_buildVolume ( *timestep, image.get(), 64, bb, tf.get() ) );
           }
+          
+          // Make a lod.
+          osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
+          lod->setCenter ( bb.center() );
+          
+          lod->addChild ( high.get(), 0, std::numeric_limits<double>::max() );
+          lod->addChild ( low.get(), -std::numeric_limits<double>::max(), -std::numeric_limits<double>::min() );
+          
+          // Add the lod to the scene.
+          _root->addChild ( lod.get() );
         }
       }
     }
@@ -426,6 +398,36 @@ void FlashDocument::_buildScene()
   }
   
   this->dirty ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build a volume.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* FlashDocument::_buildVolume ( const Timestep& timestep, osg::Image* image, unsigned int numPlanes, const osg::BoundingBox& bb, TransferFunction::RefPtr tf )
+{
+  osg::ref_ptr<Volume> volumeNode ( new Volume ( Usul::Threads::Safe::get ( this->mutex(), _program.get() ) ) );
+  
+  // Set the volume nodes bounding box.
+  volumeNode->boundingBox ( bb );
+  
+  // Set the transfer function.
+  volumeNode->transferFunction ( tf.get() );
+  
+#if USE_RAY_CASTING
+  volumeNode->samplingRate ( 1.0f / numPlanes ); 
+#else
+  volumeNode->numPlanes ( numPlanes );
+#endif
+  
+  volumeNode->image ( image );
+  
+  volumeNode->getOrCreateStateSet()->setRenderBinDetails ( 1, "DepthSortedBin" );
+  
+  return volumeNode.release();
 }
 
 
@@ -444,7 +446,7 @@ void FlashDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   {
     const unsigned int timestep  ( Usul::Threads::Safe::get ( this->mutex(), _currentTimestep ) );
     const unsigned int total ( Usul::Threads::Safe::get ( this->mutex(), _filenames.size() ) );
-    tm->setText ( 15, 15, Usul::Strings::format ( "Timestep ", timestep, " of ",  total ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+    tm->setText ( 15, 15, Usul::Strings::format ( "Timestep ", timestep + 1, " of ",  total ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   }
   
   // Buid the scene if we need to.
@@ -509,32 +511,23 @@ void FlashDocument::_buildDefaultTransferFunctions ()
   typedef OsgTools::Volume::TransferFunction1D TransferFunction1D;
   typedef TransferFunction1D::Colors           Colors;
   
-  const unsigned int size ( 256 );
-  
+  const unsigned int size ( 256 );  
   Colors hsv       ( size );
-  
-  // Don't draw voxels with a value of zero.
-  hsv.at ( 0 ) [ 3 ] = 0;
-  
-  const double tmin ( ::log10 ( 1.0 / ( size - 1 ) ) + 3.0 );
-  const double tmax ( ::log10 ( 5.0 ) + 3.0 );
-  
-  for ( unsigned int i = 1; i < size; ++i )
+
+  for ( unsigned int i = 0; i < size; ++i )
   {
-    float value ( static_cast < float > ( i ) / ( size - 1 ) );
-    const unsigned char alpha ( 35 );
+    float u ( static_cast < float > ( i ) / ( size - 1 ) );
+    const unsigned char alpha ( 50 );
     
     float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
-    
-    double temp ( ( ( ::log10 ( value * 5 ) + 3.0 ) - tmin ) / ( tmax - tmin ) );
-    
-    Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - static_cast<float> ( temp * 300.0f ), 1.0f, 1.0f );
-    //Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - static_cast<float> ( value * 300.0f ), 1.0f, 1.0f );
+    Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - static_cast<float> ( u * 300.0f ), 1.0f, 1.0f );
     hsv.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
     hsv.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
     hsv.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
-    hsv.at ( i ) [ 3 ] = static_cast < unsigned char > ( value * alpha );
-    //hsv.at ( i ) [ 3 ] = static_cast < unsigned char > ( 127 );
+    hsv.at ( i ) [ 3 ] = static_cast < unsigned char > ( u < 0.5 ? 0 : u * alpha );
+    
+    if ( ( g > 0.75 || b > 0.5 ) && u >= 0.5)
+      hsv.at( i )[3] = 5;
   }
   
   _transferFunctions.push_back ( new TransferFunction1D ( hsv ) );
@@ -600,8 +593,7 @@ void FlashDocument::_loadTimestep ( unsigned int i )
   // Make the timestep.
   Timestep::RefPtr timestep ( new Timestep ( filename ) );
   timestep->init();
-  timestep->loadData ( "temp" );
-  //timestep->loadData ( "dens" );
+  timestep->loadData ( this->dataSet() );
   
   // Add the timestep.
   Guard guard ( this->mutex() );
@@ -756,4 +748,32 @@ void FlashDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
                                                                 UA::memberFunction<void> ( this, &FlashDocument::drawVolume ), 
                                                                 UA::memberFunction<bool> ( this, &FlashDocument::isDrawVolume ) ) ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the dataset name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::dataSet ( const std::string& s )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _dataSet = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the dataset name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string FlashDocument::dataSet() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _dataSet;
 }

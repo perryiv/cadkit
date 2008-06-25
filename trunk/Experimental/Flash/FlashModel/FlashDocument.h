@@ -53,7 +53,10 @@ class FlashDocument : public Usul::Documents::Document,
 public:
 
   /// Useful typedefs.
-  typedef Usul::Documents::Document      BaseClass;
+  typedef Usul::Documents::Document           BaseClass;
+  typedef OsgTools::Volume::TransferFunction  TransferFunction;
+  typedef TransferFunction::RefPtr            TransferFunctionPtr;
+  typedef std::vector<TransferFunctionPtr>    TransferFunctions;
   
 #if USE_RAY_CASTING
   typedef OsgTools::Volume::GPURayCasting Volume;
@@ -82,6 +85,10 @@ public:
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
   
+  /// Set/get the dataset name.
+  void                        dataSet ( const std::string& );
+  std::string                 dataSet() const;
+  
   // Deserialize.
   virtual void                deserialize ( const XmlTree::Node &node );
   
@@ -101,6 +108,11 @@ public:
   void                        drawVolume ( bool b );
   bool                        isDrawVolume() const;
 
+  /// Usul::Interfaces::ITimeVaryingData
+  virtual void                setCurrentTimeStep ( unsigned int current );
+  virtual unsigned int        getCurrentTimeStep () const;
+  
+  virtual unsigned int        getNumberOfTimeSteps () const;
   
   /// Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersOpen()   const;
@@ -128,21 +140,16 @@ protected:
   
   /// Build the scene.
   void                        _buildScene();
+  osg::Node*                  _buildVolume ( const Timestep& timestep, osg::Image* image, unsigned int numPlanes, const osg::BoundingBox& bb, TransferFunction::RefPtr tf );
 
   /// Build the default transfer functions.
-  void                        _buildDefaultTransferFunctions ();
+  void                        _buildDefaultTransferFunctions();
   
   /// Is the i'th timestep loaded?
   bool                        _hasTimestep ( unsigned int i ) const;
   
   /// Load the i'th timestep.
   void                        _loadTimestep ( unsigned int i );
-
-  /// Usul::Interfaces::ITimeVaryingData
-  virtual void                setCurrentTimeStep ( unsigned int current );
-  virtual unsigned int        getCurrentTimeStep () const;
-  
-  virtual unsigned int        getNumberOfTimeSteps () const;
   
   /// Add to the menu (IMenuAdd).
   virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
@@ -150,14 +157,12 @@ protected:
 private:
   
   typedef std::vector<std::string> Filenames;
-  typedef OsgTools::Volume::TransferFunction                    TransferFunction;
-  typedef TransferFunction::RefPtr                              TransferFunctionPtr;
-  typedef std::vector < TransferFunctionPtr >                   TransferFunctions;
   typedef std::map <unsigned int, Timestep::RefPtr>             Timesteps;
   
   Filenames _filenames;
   double _scale;
   unsigned int _currentTimestep;
+  std::string _dataSet;
   osg::ref_ptr < osg::Group > _root;
   bool _dirty;
   bool _drawBBox;

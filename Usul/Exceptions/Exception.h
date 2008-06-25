@@ -52,6 +52,7 @@ public:
     _message = e._message;
     _stackTrace = e._stackTrace;
     _nested = e._nested;
+    return *this;
   }
 
   ~Exception() throw()

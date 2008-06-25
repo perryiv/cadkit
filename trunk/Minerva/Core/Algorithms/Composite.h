@@ -91,6 +91,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
       dst[0] = r;
       dst[1] = g;
       dst[2] = b;
+      dst[3] = 255;
     }
     else
     {

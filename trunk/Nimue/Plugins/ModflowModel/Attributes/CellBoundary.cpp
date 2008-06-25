@@ -180,7 +180,7 @@ void CellBoundary::setBooleanState ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *CellBoundary::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer )
+osg::Group *CellBoundary::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -207,14 +207,14 @@ osg::Group *CellBoundary::buildScene ( Modflow::ModflowDocument *document, Modfl
       Quads::RefPtr quads ( sides.at(i) );
       if ( true == quads.valid() )
       {
-        _group->addChild ( quads->buildScene ( document, layer ) );
+        _group->addChild ( quads->buildScene ( document, layer, caller ) );
       }
     }
   }
 
   // Set new scene and return it.
   this->_setScene ( _group.get() );
-  return BaseClass::buildScene ( document, layer );
+  return BaseClass::buildScene ( document, layer, caller );
 }
 
 

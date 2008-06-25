@@ -43,7 +43,7 @@ using namespace Usul::File;
 ///////////////////////////////////////////////////////////////////////////////
 
 Temp::Temp ( Format f ) : 
-_name ( Temp::file() ),
+  _name ( Temp::file() ),
   _stream ( 0x0 ),
   _remove ( true )
 {

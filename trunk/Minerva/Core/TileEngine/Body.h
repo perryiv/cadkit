@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Vector2.h"
@@ -58,7 +59,8 @@ class MINERVA_EXPORT Body : public Node,
                             public Usul::Interfaces::IPlanetCoordinates,
                             public Usul::Interfaces::IElevationDatabase,
                             public Usul::Interfaces::IFrameStamp,
-                            public Usul::Interfaces::ITreeNode
+                            public Usul::Interfaces::ITreeNode,
+                            public Usul::Interfaces::IRasterAlphas
 {
 public:
 
@@ -99,6 +101,14 @@ public:
   void                      allowSplit ( bool );
   bool                      allowSplit() const;
 
+  // Add an alpha value.
+  virtual void              alpha ( float );
+  virtual void              alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha );
+
+  // Get the alpha values.
+  virtual float             alpha() const;
+  virtual Alphas            alphas() const;
+  
   // Set/get the flag that says to cache the tiles.
   bool                      cacheTiles() const;
   void                      cacheTiles ( bool );
@@ -110,8 +120,9 @@ public:
   // Deserialize this instance.
   virtual void              deserialize ( const XmlTree::Node &node );
 
-  // Dirty textures.
+  // Dirty textures and vertices.
   void                      dirtyTextures ( const Extents& e );
+  void                      dirtyVertices();
 
   // Get the elevation data.
   RasterLayer::RefPtr       elevationData();
@@ -124,6 +135,9 @@ public:
   
   // Append elevation data.
   void                      elevationAppend ( Usul::Interfaces::IRasterLayer * );
+
+  // Return overall extents of the body.
+  Extents                   extents() const;
 
   // Set/get the job manager for this body.
   void                      jobManager ( Usul::Jobs::Manager * );
@@ -301,6 +315,7 @@ private:
   LogPtr _log;
   std::string _name;
   ImageSize _imageSize;
+  float _alpha;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

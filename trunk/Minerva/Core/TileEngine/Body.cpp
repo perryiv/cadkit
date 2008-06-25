@@ -88,7 +88,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _needsRedraw ( false ),
   _log ( 0x0 ),
   _name( "Body" ),
-  _imageSize ( 256, 256 )
+  _imageSize ( 256, 256 ),
+  _alpha ( 1.0f )
 {
   USUL_TRACE_SCOPE;
 
@@ -108,6 +109,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "scale", _scale );
   this->_addMember ( "name", _name );
   this->_addMember ( "image_size", _imageSize );
+  this->_addMember ( "alpha", _alpha );
   
   // Set the names.
   _elevation->name ( "Elevation" );
@@ -191,6 +193,8 @@ Usul::Interfaces::IUnknown *Body::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IFrameStamp* > ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
+  case Usul::Interfaces::IRasterAlphas::IID:
+    return static_cast < Usul::Interfaces::IRasterAlphas * > ( this );
   default:
     return 0x0;
   }
@@ -381,6 +385,21 @@ void Body::dirtyTextures ( const Extents& e )
 {
   // Dirty the tiles.
   Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::IMAGE, e );
+  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
+  _transform->accept ( *visitor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  dirty vertices.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::dirtyVertices()
+{
+  // Dirty the tiles.
+  Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::VERTICES );
   osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
   _transform->accept ( *visitor );
 }
@@ -1505,4 +1524,81 @@ LandModel* Body::landModel() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _landModel.get();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the alpha value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::alpha ( float a )
+{
+  USUL_TRACE_SCOPE;
+  Usul::Threads::Safe::set ( this->mutex(), a, _alpha );
+  this->dirtyVertices();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add an alpha value (Currently a no-op).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::alpha ( unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the alpha value. 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Body::alpha() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _alpha;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the alpha values (Currenlty empty map). 
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Body::Alphas Body::alphas() const
+{
+  USUL_TRACE_SCOPE;
+  return Alphas();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Return overall extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Body::Extents Body::extents() const
+{
+  USUL_TRACE_SCOPE;
+  Extents e ( 0, 0, 0, 0 );
+  Tiles tiles ( Usul::Threads::Safe::get ( this->mutex(), _topTiles ) );
+  for ( Tiles::const_iterator i = tiles.begin(); i != tiles.end(); ++i )
+  {
+    Tile::RefPtr tile ( *i );
+    if ( true == tile.valid() )
+    {
+      e.expand ( tile->extents() );
+    }
+  }
+  return e;
 }

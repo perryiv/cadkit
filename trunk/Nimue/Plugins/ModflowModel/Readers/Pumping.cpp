@@ -28,6 +28,7 @@
 #include "Usul/Trace/Trace.h"
 
 #include <algorithm>
+#include <functional>
 #include <list>
 #include <string>
 
@@ -126,7 +127,12 @@ void Pumping::read ( Modflow::ModflowDocument *doc, const std::string &file, Unk
   // Make the vectors. We re-use them below.
   typedef std::vector < GridData > AllLayersGridData;
   AllLayersGridData data ( numLayers );
-  std::for_each ( data.begin(), data.end(), std::bind2nd ( std::mem_fun_ref ( &GridData::resize ), numCells ) );
+  {
+    for ( AllLayersGridData::iterator i = data.begin(); i != data.end(); ++i )
+    {
+      i->resize ( numCells );
+    }
+  }
 
   // Make the attributes. Need one per layer.
   typedef Modflow::Attributes::Cylinders::RefPtr CylindersPtr;

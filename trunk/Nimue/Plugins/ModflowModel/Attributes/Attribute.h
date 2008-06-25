@@ -70,7 +70,7 @@ public:
   Attribute ( const std::string &name, IUnknown *parent, const RegistryPath & );
 
   // Build the scene.
-  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer * );
+  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer *, IUnknown *caller );
 
   // Clear the attribute.
   virtual void                clear();

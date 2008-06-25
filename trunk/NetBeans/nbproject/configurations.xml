@@ -2525,6 +2525,11 @@
           <itemPath>../Minerva/Application/main.cpp</itemPath>
         </logicalFolder>
         <logicalFolder name="Core" displayName="Core" projectFiles="true">
+          <logicalFolder name="Algorithms" displayName="Algorithms" projectFiles="true">
+            <itemPath>../Minerva/Core/Algorithms/Composite.h</itemPath>
+            <itemPath>../Minerva/Core/Algorithms/Resample.h</itemPath>
+            <itemPath>../Minerva/Core/Algorithms/SubRegion.h</itemPath>
+          </logicalFolder>
           <logicalFolder name="Animate" displayName="Animate" projectFiles="true">
             <itemPath>../Minerva/Core/Animate/Date.cpp</itemPath>
             <itemPath>../Minerva/Core/Animate/Date.h</itemPath>
@@ -11271,6 +11276,15 @@
       </item>
       <item path="../Minerva/Config.h">
         <itemExcluded>true</itemExcluded>
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../Minerva/Core/Algorithms/Composite.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../Minerva/Core/Algorithms/Resample.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="../Minerva/Core/Algorithms/SubRegion.h">
         <itemTool>3</itemTool>
       </item>
       <item path="../Minerva/Core/Animate/Date.cpp">

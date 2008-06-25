@@ -72,7 +72,7 @@ public:
   void                        sortTriangles ( bool );
 
   // Build the scene.
-  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer * );
+  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer *, IUnknown *caller );
 
   // Clear the attribute.
   virtual void                clear();

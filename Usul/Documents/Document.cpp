@@ -27,6 +27,7 @@
 #include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/GUI/IUpdateGUI.h"
+#include "Usul/Jobs/Job.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/EventQueue.h"
@@ -1063,4 +1064,17 @@ unsigned int Document::numViews() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( static_cast<unsigned int> ( _views.size() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the job to close this document. Default is null.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Jobs::Job *Document::closeJob()
+{
+  USUL_TRACE_SCOPE;
+  return 0x0;
 }

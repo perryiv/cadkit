@@ -43,6 +43,8 @@
 #include <iosfwd>
 #include <set>
 
+namespace Usul { namespace Jobs { class Job; } }
+
 
 namespace Usul {
 namespace Documents {
@@ -91,6 +93,9 @@ public:
 
   /// The application is about to close.
   virtual void                applicationClosing ( Unknown *caller = 0x0 );
+
+  /// Return the job to close this document. Default is null.
+  virtual Usul::Jobs::Job *   closeJob();
 
   /// The given window is closing
   virtual void                closing     ( Window *window );

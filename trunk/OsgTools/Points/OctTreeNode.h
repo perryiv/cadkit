@@ -28,8 +28,11 @@
 #include "osg/Node"
 #include "osg/PrimitiveSet"
 
+#include "boost/shared_ptr.hpp"
+
 #include <vector>
 #include <list>
+#include <iosfwd>
 
 #define UNDEFINED_NODE 0
 #define NODE_HOLDER 1
@@ -45,7 +48,7 @@ public:
 
   typedef Usul::Interfaces::IUnknown Unknown;
  
-  typedef osg::Vec3 Point;
+  typedef osg::Vec3f Point;
   typedef osg::ref_ptr< osg::Vec3Array > Points;
   typedef Usul::Base::Object BaseClass;
   typedef OctTreeNode::RefPtr OctTreeNodePtr;
@@ -56,20 +59,22 @@ public:
   typedef osg::ref_ptr< osg::PrimitiveSet > PrimitiveSetPtr;
   typedef osg::DrawElementsUShort Elements;
   typedef osg::ref_ptr < Elements > ElementsPtr;
+  typedef std::vector<char> StreamBuffer;
+  typedef boost::shared_ptr<StreamBuffer> StreamBufferPtr;
 
-  OctTreeNode();
+  OctTreeNode ( StreamBufferPtr, const std::string &tempPath );
   virtual ~OctTreeNode();
 
   // Getters
   osg::BoundingBox                  boundingBox();
   Children                          children();
   unsigned int                      type();
-  unsigned int                      tolerance();
+  unsigned int                      capacity();
  
   // Setters
   void                              boundingBox( const osg::BoundingBox &bb );
   void                              type( unsigned int type );
-  void                              tolerance( unsigned int level );
+  void                              capacity( unsigned int level );
   bool                              add( Point p );
 
   void                              buildVectors();
@@ -82,30 +87,47 @@ public:
   float                             getBoundingRadius();
 
 protected:
-  bool                              _contains( Point p );
-  void                              _insertOrCreateChildren( Point p );
+
+  bool                              _contains( OctTreeNode::Point p );
+  void                              _insertOrCreateChildren( OctTreeNode::Point p );
   void                              _reorder();
   void                              _createChildren();
   BoundingBoxVec                    _split();
-  bool                              _addCellToChild( Point p );
+  bool                              _addCellToChild( OctTreeNode::Point p );
   bool                              _rayQuadIntersect( Vec3d a, Vec3d b, Vec3d c, Vec3d d, Vec3d p );
   
   float                             _distance;
-  
+
+  void                              _openTempFileForRead();
+  void                              _openTempFileForWrite();
+
+  std::ifstream&                    _getInputStream();
+  std::ofstream&                    _getOutputStream();
+
+  void                              _closeInputStream();
+  void                              _closeOutputStream();
 
 private:
-    osg::BoundingBox                _bb;
-    Children                        _children;
-    Points                          _points;
-    unsigned int                    _type;
-    unsigned int                    _tolerance;
 
-    bool                            _useLOD;
-    LinkedList*                     _list; 
+  osg::BoundingBox                _bb;
+  Children                        _children;
+  Points                          _points;
+  unsigned int                    _type;
+  unsigned int                    _capacity;
 
-    unsigned int                    _numLODs;
+  bool                            _useLOD;
+  LinkedList*                     _list; 
 
-    
+  unsigned int                    _numLODs;
+
+  std::ifstream*                  _infile;
+  std::ofstream*                  _outfile;
+  std::string                     _tempFilename;
+  unsigned short                  _numPoints;
+  StreamBufferPtr                 _streamBuffer;
+  std::string                     _tempPath;
+
+  static long                     _streamCount;
 };
 
 #endif // __EXPERIMENTAL_OCTTREENODE_H__

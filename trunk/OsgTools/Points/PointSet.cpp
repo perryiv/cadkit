@@ -74,27 +74,8 @@ void PointSet::clear ( Unknown *caller )
 osg::Node *PointSet::buildScene ( Unknown *caller )
 {
   Guard guard ( this->mutex() );
-
   GroupPtr group ( new osg::Group );
-
-#if 1 // With spatial partitioning
   group->addChild( _tree->buildScene( caller ) );
-#else // NO spatial partitioning
-  GeometryPtr geometry ( new osg::Geometry ); 
-  geometry->setVertexArray( _points.get() );
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POINTS, 0, _points->size() ) );
-
-  GeodePtr geode ( new osg::Geode );
-  geode->addDrawable( geometry.get() );
-  
-  group->addChild( geode.get() );
-#endif
-#if 0
-  std::string filename ( "C:/testfile.osg" );
-  //filename = filename + Usul::File::base( name );
-  std::cout << "Writing file " << filename << "..." << std::endl;
-  osgDB::writeNodeFile( *group.get(), filename );
-#endif
   return group.release();
 }
 
@@ -188,12 +169,12 @@ void PointSet::bounds( osg::Vec3f min, osg::Vec3f max )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the tolerance level for the octree
+//  Set the capacity level for the octree
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointSet::tolerance( unsigned int t )
+void PointSet::capacity( unsigned int t )
 {
   Guard guard ( this );
-  _tree->tolerance( t );
+  _tree->capacity( t );
 }

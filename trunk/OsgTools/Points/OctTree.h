@@ -29,6 +29,8 @@
 #include "osg/BoundingBox"
 #include "osg/Group"
 
+#include "boost/shared_ptr.hpp"
+
 #include <vector>
 
 class OctTree : public Usul::Base::Object
@@ -38,7 +40,8 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef osg::Vec3 Point;
   typedef Usul::Interfaces::IUnknown Unknown;
-  
+  typedef std::vector<char> StreamBuffer;
+  typedef boost::shared_ptr<StreamBuffer> StreamBufferPtr;
 
   USUL_DECLARE_REF_POINTERS ( OctTree );
 
@@ -54,20 +57,22 @@ public:
 
   void                bounds( osg::BoundingBox bb );
   
-  // Get/Set tolerance level
-  void                tolerance( unsigned int level );
-  unsigned int        tolerance();
+  // Get/Set capacity level
+  void                capacity( unsigned int level );
+  unsigned int        capacity();
 
 protected:
   
   void                _partition();
+  osg::Node*          _buildTransparentPlane();
   
 
 private:
   
   OctTreeNode::RefPtr          _tree;
-  unsigned int                 _tolerance;
-
+  unsigned int                 _capacity;
+  StreamBufferPtr              _buffer;
+  std::string                  _tempPath;
 
 
 };

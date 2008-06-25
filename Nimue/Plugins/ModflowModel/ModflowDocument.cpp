@@ -1859,6 +1859,14 @@ void ModflowDocument::_transformCoordinates ( osg::Geode *geode, Usul::Interface
 
   // Needed in the loop below.
   const std::string projection ( this->_wellKnownText() );
+  ::OGRSpatialReference source ( projection.c_str() );
+  ::OGRSpatialReference destination;
+  destination.SetWellKnownGeogCS ( "WGS84" );
+  
+  Usul::Math::Vec3d to;
+  
+  ::OGRCoordinateTransformation* transform ( ::OGRCreateCoordinateTransformation( &source, &destination ) );
+  Usul::Scope::Caller::RefPtr clean ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( transform, ::OCTDestroyCoordinateTransformation ) ) );
 
   // Loop through the geometries.
   const unsigned int numDrawables ( geode->getNumDrawables() );
@@ -1873,8 +1881,12 @@ void ModflowDocument::_transformCoordinates ( osg::Geode *geode, Usul::Interface
         // Loop through the vertices.
         for ( osg::Vec3Array::iterator v = vertices->begin(); v != vertices->end(); ++v )
         {
-          const Usul::Math::Vec3d from ( v->x(), v->y(), v->z() );
-          const Usul::Math::Vec3d to ( planetCoordinates->convertToPlanet ( from, projection ) );
+          Usul::Math::Vec3d from ( v->x(), v->y(), v->z() );
+          
+          if ( 0x0 != transform )
+            transform->Transform ( 1, &from[0], &from[1] );
+          
+          planetCoordinates->convertToPlanet ( from, to );
           v->set ( to[0], to[1], to[2] );
         }
 

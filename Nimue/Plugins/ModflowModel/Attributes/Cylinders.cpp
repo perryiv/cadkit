@@ -279,9 +279,6 @@ osg::Node *Cylinders::_buildTimeStep ( unsigned int timeStep, Modflow::ModflowDo
   // The number of sides on the cylinder.
   const unsigned int sides ( document->numCylinderSides() );
 
-  // Precision used below.
-  const unsigned int unitsInLastPlace ( 20 );
-
   // Needed to offset the cylinders.
   const double maxY ( cellSize[1] * numRows );
 

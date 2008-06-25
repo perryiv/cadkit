@@ -332,9 +332,6 @@ osg::Node* Timestep::buildPoints ( const osg::BoundingBox& bb, unsigned int num 
   // One normal.
   normals->at ( 0 ) = osg::Vec3 ( 0.0, 0.0, 1.0 );
   
-  const double tmin ( ::log10 ( minimum * 5 ) + 3.0 );
-  const double tmax ( ::log10 ( maximum * 5 ) + 3.0 );
-  
   for ( unsigned int i = 0; i < x; ++i )
   {
     for ( unsigned int j = 0; j < y; ++j )
@@ -345,7 +342,7 @@ osg::Node* Timestep::buildPoints ( const osg::BoundingBox& bb, unsigned int num 
         
         float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
         
-        double temp ( ( ( ::log10 ( value * 5 ) + 3.0 ) - tmin ) / ( tmax - tmin ) );
+        double temp ( ( value - minimum ) / ( maximum - minimum ) );
         
         Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - static_cast<float> ( temp * 300.0f ), 1.0f, 1.0f );
         

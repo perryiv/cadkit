@@ -385,8 +385,8 @@ void FlashDocument::_buildScene()
           osg::ref_ptr<osg::LOD> lod ( new osg::LOD );
           lod->setCenter ( bb.center() );
           
-          lod->addChild ( high.get(), 0, std::numeric_limits<double>::max() );
-          lod->addChild ( low.get(), -std::numeric_limits<double>::max(), -std::numeric_limits<double>::min() );
+          lod->addChild ( high.get(), 0, std::numeric_limits<float>::max() );
+          lod->addChild ( low.get(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::min() );
           
           // Add the lod to the scene.
           _root->addChild ( lod.get() );

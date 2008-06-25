@@ -1066,6 +1066,23 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     shading->append ( new RadioButton ( new ShadeModel ( "&Smooth", IShadeModel::SMOOTH, unknown.get() ) ) );
     shading->append ( new RadioButton ( new ShadeModel ( "&Flat",   IShadeModel::FLAT, unknown.get() ) ) );
   }
+  
+  // Lods menu.
+  {
+    MenuKit::Menu::RefPtr lods ( new MenuKit::Menu ( "&Lods" ) );
+    menu.append ( lods.get() );
+    
+    lods->append ( new ToggleButton ( 
+                          UC::genericToggleCommand ( 
+                                                    "&Low Lods", 
+                                                    UA::memberFunction<void> ( viewer.get(), &OsgViewer::useLowLodsSet ), 
+                                                    UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useLowLodsGet ) ) ) );
+    lods->append ( new ToggleButton ( 
+                          UC::genericToggleCommand ( 
+                                                    "&High Lods", 
+                                                    UA::memberFunction<void> ( viewer.get(), &OsgViewer::useHighLodsSet ), 
+                                                    UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useHighLodsGet ) ) ) );
+  }
 
   // Add common window sizes.
   // From http://en.wikipedia.org/wiki/Image:Standard_video_res.svg

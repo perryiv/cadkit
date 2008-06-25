@@ -22,9 +22,9 @@
 #include "Usul/Threads/Thread.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include <vector>
 #include <map>
 #include <set>
+#include <vector>
 
 
 namespace Usul {

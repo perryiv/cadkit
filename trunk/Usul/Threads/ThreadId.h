@@ -20,7 +20,9 @@
 #include "Usul/Errors/Assert.h"
 
 #ifdef _WIN32
-# define NOMINMAX
+# ifndef NOMINMAX
+#  define NOMINMAX
+# endif
 # include <windows.h>
 #elif __GNUC__
 # include "Usul/Cast/Cast.h"
@@ -54,5 +56,5 @@ inline unsigned long currentThreadId()
 } // namespace Threads
 } // namespace Usul
 
-
 #endif // _USUL_THREADS_THREAD_ID_CLASS_H_
+

@@ -61,7 +61,6 @@
 
 #include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
-#include "Usul/Interfaces/GUI/IReportErrors.h"
 #include "Usul/Interfaces/GUI/IMaterialEditor.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IAnimatePath.h"
@@ -1218,11 +1217,7 @@ void Viewer::lighting ( bool on )
 {
   // Get the state set, or make one.
   osg::ref_ptr<osg::StateSet> ss ( _renderer->getGlobalStateSet() );
-
-  if( on )
-    ss->setMode ( GL_LIGHTING, osg::StateAttribute::ON );
-  else
-    ss->setMode ( GL_LIGHTING, osg::StateAttribute::OFF );
+  ss->setMode ( GL_LIGHTING, on ? osg::StateAttribute::ON : osg::StateAttribute::OFF );
 }
 
 

@@ -165,5 +165,9 @@ void SgNode::setName ( const char *name )
     ::free ( _name );
 
   // Assign the new name.
+#ifdef _WIN32
+  _name = ( name ) ? ::_strdup ( name ) : NULL;
+#else
   _name = ( name ) ? ::strdup ( name ) : NULL;
+#endif
 }

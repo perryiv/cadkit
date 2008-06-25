@@ -71,11 +71,9 @@ void BlockCenteredFlow::read ( Modflow::ModflowDocument *doc, const std::string 
 
   // Get layers.
   Modflow::ModflowDocument::Guard ( _document->mutex() );
-  Layers &layers = _document->layers();
 
   // Determine grid size and number of layers.
   const Vec2ui gridSize ( _document->gridSize() );
-  const unsigned int numCells ( gridSize[0] * gridSize[1] );
   const unsigned int numLayers ( _document->numLayers() );
 
   // For each layer...

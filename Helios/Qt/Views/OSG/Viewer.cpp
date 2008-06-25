@@ -23,6 +23,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
@@ -884,7 +885,7 @@ void Viewer::renderLoop ( bool state )
 void Viewer::_oneRenderLoopTimeout()
 {
   USUL_TRACE_SCOPE;
-  QTimer::singleShot ( 500, this, SLOT ( _onTimeoutRenderLoop() ) );
+  QTimer::singleShot ( 100, this, SLOT ( _onTimeoutRenderLoop() ) );
 }
 
 
@@ -1575,21 +1576,35 @@ void Viewer::_close()
 
   // Get the document.
   Viewer::Document::RefPtr document ( this->document() );
+
+  // Remove ourselves as a modified listener.
+  Usul::Interfaces::IModifiedSubject::QueryPtr subject ( document );
+  if ( true == subject.valid() )
+  {
+    subject->removeModifiedObserver ( this );
+  }
+
+  // If the document is valid...
   if ( true == document.valid() )
   {
     // Remove this window from the document's sets.
     document->removeWindow ( this );
 
     // Tell the document this is closing.  
-    // Make sure function is called after removeWindow is called.
-    document->closing ( this );
-  }
+    // Make sure removeWindow is called called first.
 
-  // Remove ourselves as a modified listener.
-  Usul::Interfaces::IModifiedSubject::QueryPtr subject ( this->document() );
-  if ( true == subject.valid() )
-  {
-    subject->removeModifiedObserver ( this );
+    // Ask document if it has a job to close it.
+    Usul::Jobs::Job::RefPtr job ( document->closeJob() );
+    if ( true == job.valid() )
+    {
+      Usul::Jobs::Manager::instance().addJob ( job );
+    }
+
+    // No job, just close here.
+    else
+    {
+      document->closing ( this );
+    }
   }
 
   // Clear the document.

@@ -270,7 +270,8 @@ void MainWindow::_destroy()
   // populate it but not clean up).
   Usul::Factory::ObjectFactory::instance().clear();
   
-  // Clear the map of commands.  Do this before the plugins are released.
+  // Clear the map of commands. This has to come before we release the plugins 
+  // because the NewDocument command hangs on to a component.
   MenuKit::MenuCommands::instance().clear();
 
   // Clear the menu bar. Do this before plugins are released.
@@ -282,10 +283,6 @@ void MainWindow::_destroy()
 
   // Clear the progress bars.
   _progressBars = 0x0;
-
-  // Clear the map of commands. This has to come before we release the plugins 
-  // because the NewDocument command hangs on to a component.
-  MenuKit::MenuCommands::instance().clear();
 
   // Release all the plugins.
   this->releasePlugins();

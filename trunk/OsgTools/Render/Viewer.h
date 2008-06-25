@@ -266,10 +266,6 @@ public:
 
   EventAdapter *        eventAdaptor ( float x, float y, bool left, bool middle, bool right, EventAdapter::EventType type );
 
-  // Get/Set the field of view
-  void                  fovSet ( double fov );
-  double                fovGet () const;
-
   // Set/get the frame-dump data.
   void                  frameDump ( const FrameDump &fd ) { _frameDump = fd; }
   const FrameDump &     frameDump() const { return _frameDump; }
@@ -454,6 +450,14 @@ public:
   // Set/get the flags that says to update the recorded times.
   void                  updateTimes ( bool state );
   bool                  updateTimes() const;
+  
+  /// Set/get the use low lods state.
+  void                  useLowLodsSet ( bool b );
+  bool                  useLowLodsGet() const;
+  
+  /// Set/get the use high lods state.
+  void                  useHighLodsSet ( bool b );
+  bool                  useHighLodsGet() const;
 
   /// Set/Get the view matrix
   void                  viewMatrix ( const osg::Matrixf& );
@@ -486,10 +490,10 @@ public:
   // Helper class to save and restore the lod-callback.
   struct LowLods
   {
-    LowLods ( Viewer *c );
+    LowLods ( Viewer &c );
     ~LowLods();
   private:
-    Viewer *_c;
+    Viewer &_c;
   };
 
   /// Add/Remove group from projection node
@@ -524,9 +528,6 @@ protected:
 
   void                  _setDisplayListsGeode ( osg::Geode *geode );
   void                  _setLodCullCallback ( osg::NodeCallback *cb );
-
-  // Return the view all time.
-  double                _animationTime();
 
   // Get the trackball.
   Trackball*            _trackball();
@@ -735,7 +736,9 @@ private:
     _SHOW_AXES          = 0x00000010,
     _SHOW_LIGHTS        = 0x00000020,
     _SHOW_COR           = 0x00000080,
-    _SHOW_TEXT          = 0x00000100
+    _SHOW_TEXT          = 0x00000100,
+    _USE_LOW_LODS       = 0x00000200,
+    _USE_HIGH_LODS      = 0x00000400
   };
 
   // Local integer constants.

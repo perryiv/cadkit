@@ -73,7 +73,6 @@
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/ReportErrors.h"
 #include "Usul/Resources/TextWindow.h"
-#include "Usul/Shared/Preferences.h"
 #include "Usul/System/Clock.h"
 #include "Usul/Predicates/Tolerance.h"
 #include "Usul/Scope/Caller.h"
@@ -182,7 +181,7 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _lods                (),
   _document            ( doc ),
   _frameDump           (),
-  _flags               ( _UPDATE_TIMES | _SHOW_AXES | _SHOW_TEXT ),
+  _flags               ( _UPDATE_TIMES | _SHOW_AXES | _SHOW_TEXT | _USE_LOW_LODS ),
   _animation           (),
   _navManip            ( 0x0 ),
   _currentMode         ( NAVIGATION ),
@@ -220,9 +219,6 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   osg::ref_ptr< osg::StateSet > ss ( _sceneManager->projection()->getOrCreateStateSet() );
   ss->setAttribute ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
 #endif
-
-  // Set the default fov
-  Usul::Shared::Preferences::instance().setDouble( Keys::FOV, OsgTools::Render::Defaults::CAMERA_FOV_Y );
 
   // Unique context id to identify this viewer in OSG.
   static unsigned int count ( 0 );
@@ -422,7 +418,7 @@ void Viewer::render()
     this->_setCenterOfRotation();
 
     // Set high lod callbacks if we should
-    if ( Usul::Shared::Preferences::instance().getBool( Keys::HIGH_LODS ) )
+    if ( this->useHighLodsGet() )
       this->_setLodCullCallback ( new OsgTools::Render::HighLodCallback );
 
     // Check for errors.
@@ -677,8 +673,9 @@ void Viewer::camera ( CameraOption option )
     return;
   }
 
-  // Use low lods until this function returns.
-  LowLods ll ( this );
+  // Use low lods, if we are suppose to.
+  if ( this->useLowLodsGet() )
+    this->_setLodCullCallback ( new OsgTools::Render::LowLodCallback );
 
   // Get the translation and rotation.
   osg::Vec3d T2 ( M2.getTrans() );
@@ -767,7 +764,7 @@ void Viewer::resize ( unsigned int w, unsigned int h )
   this->viewport ( 0, 0, (int) w, (int) h );
 
   // Set the viewer's projection matrix.
-  double fovy  ( Usul::Shared::Preferences::instance().getDouble ( Keys::FOV ) );
+  const double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
   double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
   double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
   double width ( w ), height ( h );
@@ -1252,6 +1249,14 @@ bool Viewer::lighting() const
 
 void Viewer::_setLodCullCallback ( osg::NodeCallback *cb )
 {
+  // Since the document may change the scene in an update callback, we cannot cache the lods we found.
+  // Should the document let the viewer know that it has been updated an to clear any cache?
+  if ( 0x0 != cb )
+  {
+    _lods.second.clear();
+    _lods.first = false;
+  }
+  
   OsgTools::Render::setLodCullCallback ( cb, this->scene(), _lods );
 }
 
@@ -1365,12 +1370,10 @@ void Viewer::rotate ( const osg::Vec3 &axis, float radians )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::LowLods::LowLods ( Viewer *c ) : _c ( c )
+Viewer::LowLods::LowLods ( Viewer &c ) : _c ( c )
 {
-  USUL_ERROR_CHECKER ( 0x0 != _c );
-
-  if ( Usul::Shared::Preferences::instance().getBool( Keys::LOW_LODS ) )
-    OsgTools::Render::setLodCullCallback ( new OsgTools::Render::LowLodCallback, _c->scene(), _c->_lods );
+  if ( _c.useLowLodsGet() )
+    _c._setLodCullCallback ( new OsgTools::Render::LowLodCallback );
 }
 
 
@@ -1382,9 +1385,7 @@ Viewer::LowLods::LowLods ( Viewer *c ) : _c ( c )
 
 Viewer::LowLods::~LowLods()
 {
-  USUL_ERROR_CHECKER ( 0x0 != _c );
-
-  OsgTools::Render::setLodCullCallback ( static_cast<OsgTools::Render::LowLodCallback *> ( 0x0 ), _c->scene(), _c->_lods );
+  _c._setLodCullCallback ( static_cast<OsgTools::Render::LowLodCallback *> ( 0x0 ) );
 }
 
 
@@ -1477,19 +1478,6 @@ void Viewer::setStatusBarText ( const std::string &text, bool force )
   Usul::Interfaces::IStatusBar::QueryPtr status ( Usul::Resources::statusBar() );
   if( status.valid() )
     status->setStatusBarText( text, force );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get animation time
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Viewer::_animationTime()
-{ 
-  double animation ( Usul::Shared::Preferences::instance().getDouble ( Keys::ANIMATION_TIME, _ANIMATION_TIMER_MILLISECONDS ) );
-  return animation * OsgTools::Render::Defaults::TO_MILLISECONDS; 
 }
 
 
@@ -3457,7 +3445,7 @@ void Viewer::buttonPress ( EventAdapter *ea )
   this->spin ( false );
 
   // Set the lod-callbacks if we are suppose to.
-  if ( Usul::Shared::Preferences::instance().getBool( Keys::LOW_LODS ) )
+  if ( this->useLowLodsGet() )
     this->_setLodCullCallback ( new OsgTools::Render::LowLodCallback );
 
   // Handle the navigation event.
@@ -3830,8 +3818,8 @@ void Viewer::spin ( bool state )
     this->spin ( false );
 
     // Set a new timeout event if we are allowed.
-    if ( Usul::Shared::Preferences::instance().getBool ( Keys::ALLOW_SPIN ) )
-      _timeoutSpin->startSpin ( _ANIMATION_TIMER_MILLISECONDS );
+    //if ( Usul::Shared::Preferences::instance().getBool ( Keys::ALLOW_SPIN ) )
+    _timeoutSpin->startSpin ( _ANIMATION_TIMER_MILLISECONDS );
   }
 
   // Otherwise, stop it.
@@ -3851,8 +3839,8 @@ void Viewer::spin ( bool state )
 void Viewer::timeoutSpin()
 {
   // Punt if we should.
-  if ( false == Usul::Shared::Preferences::instance().getBool ( Keys::ALLOW_SPIN ) )
-    return;
+  //if ( false == Usul::Shared::Preferences::instance().getBool ( Keys::ALLOW_SPIN ) )
+  //  return;
 
   // Handle bad cases.
   if ( !this->navManip() || !this->navigating() || !this->viewer() )
@@ -3979,34 +3967,6 @@ void Viewer::setAllMaterialsAlpha( float alpha )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the FOV.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::fovSet ( double fov )
-{
-  Usul::Shared::Preferences::instance().setDouble( Keys::FOV, fov );
-
-  unsigned int width  ( static_cast < unsigned int > ( this->width()  ) );
-  unsigned int height ( static_cast < unsigned int > ( this->height() ) );
-  this->resize ( width, height );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the fov.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Viewer::fovGet() const
-{
-  return Usul::Shared::Preferences::instance().getDouble( Keys::FOV );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Edit the background.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -4015,11 +3975,14 @@ bool Viewer::timeoutAnimate()
 {
   // Get the matrix and see if we should continue.
   osg::Matrixd mat;
-  bool animate ( _animation.matrix ( mat ) ) ;
+  const bool animate ( _animation.matrix ( mat ) ) ;
 
   // Set the viewer's matrix.
   this->viewer()->setViewMatrix ( mat );
   this->render();
+  
+  if ( false == animate )
+    this->_setLodCullCallback ( 0x0 );
 
   return animate;
 }
@@ -4665,7 +4628,7 @@ void Viewer::updateTimes ( bool state )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _flags = Usul::Bits::add < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES );
+  _flags = Usul::Bits::set < unsigned int, unsigned int > ( _flags, _UPDATE_TIMES, state );
 }
 
 
@@ -4954,6 +4917,11 @@ void Viewer::stateSave() const
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
     reg["state"] = this->renderLoop();
   }
+  {
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS] );
+    reg[Keys::LOW_LODS ][doc] = this->useLowLodsGet();
+    reg[Keys::HIGH_LODS][doc] = this->useHighLodsGet();
+  }
 }
 
 
@@ -4998,6 +4966,11 @@ void Viewer::stateLoad()
     // Get properties from registry.
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
     this->renderLoop ( reg["state"].get<bool> ( this->renderLoop() ) );
+  }
+  {
+    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS] );
+    this->useLowLodsSet  ( reg[Keys::LOW_LODS ][doc].get<bool> ( this->useLowLodsGet()  ) );
+    this->useHighLodsSet ( reg[Keys::HIGH_LODS][doc].get<bool> ( this->useHighLodsGet() ) );
   }
 }
 
@@ -5101,4 +5074,61 @@ osg::RenderInfo Viewer::getRenderInfo() const
   USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
   return ( _renderer.valid() ? _renderer->getRenderInfo() : osg::RenderInfo() );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use low lods state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::useLowLodsSet ( bool b )
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  _flags = Usul::Bits::set < unsigned int, unsigned int > ( _flags, _USE_LOW_LODS, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the use low lods state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::useLowLodsGet() const
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_LOW_LODS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use high lods state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::useHighLodsSet ( bool b )
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  _flags = Usul::Bits::set < unsigned int, unsigned int > ( _flags, _USE_HIGH_LODS, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the use high lods state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::useHighLodsGet() const
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_HIGH_LODS );
 }

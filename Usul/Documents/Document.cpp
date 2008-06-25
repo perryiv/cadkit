@@ -559,7 +559,7 @@ void Document::flushEvents()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Usul::Interfaces::IUnknown *caller )
+void Document::setProgressBar ( bool state, float fraction, Usul::Interfaces::IUnknown *caller )
 {
   // If we should...
   if ( state )
@@ -568,14 +568,29 @@ void Document::setProgressBar ( bool state, unsigned int numerator, unsigned int
     Usul::Interfaces::IProgressBar::QueryPtr progress ( ( 0x0 == caller ) ? Usul::Resources::progressBar() : caller );
     if ( progress.valid() )
     {
-      const float n ( static_cast < float > ( numerator ) );
-      const float d ( static_cast < float > ( denominator ) );
-      const float fraction ( n / d );
       progress->updateProgressBar ( static_cast < unsigned int > ( fraction * 100 ) );
     }
 
     // Give user opportunity to cancel.
     this->flushEvents();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience function to show progress and flush events.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Usul::Interfaces::IUnknown *caller )
+{
+  if ( state )
+  {
+    const float n ( static_cast < float > ( numerator ) );
+    const float d ( static_cast < float > ( denominator ) );
+    const float fraction ( n / d );
+    this->setProgressBar ( state, fraction, caller );
   }
 }
 

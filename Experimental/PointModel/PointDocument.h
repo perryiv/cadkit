@@ -94,10 +94,8 @@ protected:
 
 private:
 
-  PointSet::ValidRefPtr _pointSet;
-  unsigned int          _numPoints;
-  Progress              _progress;
-
+  PointSet::ValidRefPtr       _pointSet;
+  Usul::Types::Uint64         _numPoints;
   
 };
 

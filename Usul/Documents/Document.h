@@ -208,6 +208,7 @@ public:
   void                        setOption ( const std::string &key, const std::string &value );
 
   /// Convenience function to set progress bar and flush events.
+  void                        setProgressBar ( bool state, float fraction, Unknown *caller = 0x0 );
   void                        setProgressBar ( bool state, unsigned int numerator, unsigned int denominator, Unknown *caller = 0x0 );
   void                        setProgressBar ( bool state, std::istream &in, unsigned int fileSize, Unknown *caller = 0x0 );
 

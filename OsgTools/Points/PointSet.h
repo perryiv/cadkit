@@ -76,7 +76,7 @@ public:
   void                    allocate( unsigned int num );
   void                    bounds( osg::Vec3f min, osg::Vec3f max );
 
-  void                    tolerance( unsigned int t );
+  void                    capacity( unsigned int t );
 
   void                    buildVectors();
 

@@ -36,7 +36,9 @@
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Group.h"
+#include "OsgTools/Visitor.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
 #include "Usul/Errors/Assert.h"
@@ -45,10 +47,12 @@
 #include "Usul/Factory/TypeCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/Execute.h"
+#include "Usul/Functions/GUID.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Interfaces/IStringGridGet.h"
 #include "Usul/Interfaces/IStringGridSet.h"
 #include "Usul/Interfaces/ITextMatrix.h"
@@ -57,6 +61,7 @@
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Format.h"
@@ -237,6 +242,8 @@ Usul::Interfaces::IUnknown *ModflowDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IGetBoundingBox * > ( this );
   case Usul::Interfaces::ICoordinateTransformOSG::IID:
     return static_cast < Usul::Interfaces::ICoordinateTransformOSG * > ( this );
+  case Usul::Interfaces::ILayer::IID:
+    return static_cast < Usul::Interfaces::ILayer* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -432,7 +439,7 @@ void ModflowDocument::_read ( Factory &factory, const std::string &type, const s
   // Is there a "no data" value?
   if ( false == noData.empty() )
   {
-    reader->noDataSet ( this, Modflow::Constants::NO_DATA_MULTIPLIER * Usul::Strings::fromString<double> ( noData ) );
+    reader->noDataSet ( this, static_cast < long > ( Modflow::Constants::NO_DATA_MULTIPLIER * Usul::Strings::fromString<double> ( noData ) ) );
   }
 
   // Set the attributes.
@@ -624,8 +631,17 @@ void ModflowDocument::_buildScene ( Unknown *caller )
     for ( unsigned int i = 0; i < num; ++i )
     {
       Attribute::RefPtr attribute ( attributes.at(i) );
-      group->addChild ( attribute->buildScene ( this, 0x0 ) );
+      group->addChild ( attribute->buildScene ( this, 0x0, caller ) );
     }
+  }
+
+  // Transform coordinates.
+  {
+    osg::ref_ptr<osg::NodeVisitor> visitor ( 
+      OsgTools::MakeVisitor<osg::Geode>::make ( 
+        Usul::Adaptors::bind1 ( caller, Usul::Adaptors::memberFunction ( 
+          this, &ModflowDocument::_transformCoordinates ) ) ) );
+    group->accept ( *visitor );
   }
 
   // Assign the new group to our staging area.
@@ -1365,24 +1381,26 @@ void ModflowDocument::_setCoordinateSystem ( XmlTree::Node *node )
   if ( true == coordinateSystem.valid() )
   {
     // Make a new spatial reference system.
-    CoordinateSystemPtr srs ( new OGRSpatialReference );
+    CoordinateSystemPtr spatialReference ( new OGRSpatialReference );
 
     XmlTree::Node::Attributes &attr ( coordinateSystem->attributes() );
     const std::string code ( attr["numeric_code"] );
     const std::string wkt  ( attr["well_known_text"] );
+
     if ( false == code.empty() )
     {
       const unsigned int value ( Usul::Strings::fromString<unsigned int> ( code ) );
-      if ( CE_None == srs->importFromEPSG ( value ) )
-        this->destinationCoordinateSystem ( srs.release() );
+      if ( CE_None == spatialReference->importFromEPSG ( value ) )
+        this->destinationCoordinateSystem ( spatialReference.release() );
     }
+
     else if ( false == wkt.empty() )
     {
       std::vector<char> text ( wkt.size() + 1, '\0' );
       std::copy ( wkt.begin(), wkt.end(), text.begin() );
       char *ptr ( &text[0] );
-      if ( CE_None == srs->importFromWkt ( &ptr ) )
-        this->destinationCoordinateSystem ( srs.release() );
+      if ( CE_None == spatialReference->importFromWkt ( &ptr ) )
+        this->destinationCoordinateSystem ( spatialReference.release() );
     }
   }
 }
@@ -1816,4 +1834,146 @@ void ModflowDocument::transformCoordinates ( osg::Vec3Array& vertices ) const
       }
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Transform a geode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::_transformCoordinates ( osg::Geode *geode, Usul::Interfaces::IUnknown *caller ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Check input.
+  if ( 0x0 == geode )
+    return;
+
+  // Get the needed interface.
+  typedef Usul::Interfaces::IPlanetCoordinates IPlanetCoordinates;
+  IPlanetCoordinates::QueryPtr planetCoordinates ( caller );
+  if ( false == planetCoordinates.valid() )
+    return;
+
+  // Needed in the loop below.
+  const std::string projection ( this->_wellKnownText() );
+
+  // Loop through the geometries.
+  const unsigned int numDrawables ( geode->getNumDrawables() );
+  for ( unsigned int i = 0; i < numDrawables; ++i )
+  {
+    osg::ref_ptr<osg::Geometry> geometry ( dynamic_cast < osg::Geometry * > ( geode->getDrawable ( i ) ) );
+    if ( true == geometry.valid() )
+    {
+      osg::ref_ptr<osg::Vec3Array> vertices ( dynamic_cast < osg::Vec3Array * > ( geometry->getVertexArray() ) );
+      if ( true == vertices.valid() )
+      {
+        // Loop through the vertices.
+        for ( osg::Vec3Array::iterator v = vertices->begin(); v != vertices->end(); ++v )
+        {
+          const Usul::Math::Vec3d from ( v->x(), v->y(), v->z() );
+          const Usul::Math::Vec3d to ( planetCoordinates->convertToPlanet ( from, projection ) );
+          v->set ( to[0], to[1], to[2] );
+        }
+
+        // Dirty the geometry.
+        geometry->dirtyBound();
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the well-known-text from the document's coordinate system.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string ModflowDocument::_wellKnownText() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( 0x0 != _destinationCoordinateSystem.get() )
+  {
+    char *wkt ( 0x0 );
+    Usul::Scope::Caller::RefPtr clean ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( wkt, ::OGRFree ) ) );
+    if ( CE_None == _destinationCoordinateSystem->exportToWkt ( &wkt ) )
+    {
+      if ( 0x0 != wkt )
+      {
+        std::string result ( wkt );
+        return result;
+      }
+    }
+  }
+
+  return std::string ( "" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the guid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string ModflowDocument::guid() const
+{
+  USUL_TRACE_SCOPE;
+  return Usul::Functions::GUID::generate();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string ModflowDocument::name() const
+{
+  USUL_TRACE_SCOPE;
+  return BaseClass::name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::name ( const std::string &s )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::name ( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show or hide the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ModflowDocument::showLayer ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  this->setBooleanState ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the layer shown?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModflowDocument::showLayer() const
+{
+  USUL_TRACE_SCOPE;
+  return this->getBooleanState();
 }

@@ -15,6 +15,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
@@ -276,7 +277,16 @@ void AddOssimLayerWidget::_searchDirectory ( Minerva::Core::Layers::RasterGroup:
       
       try
       {
-        Usul::Interfaces::IRead::QueryPtr read ( Minerva::Core::Factory::Readers::instance().create ( extension ) );
+        // Check the registered readers first.
+        Usul::Interfaces::IUnknown::QueryPtr unknown ( Minerva::Core::Factory::Readers::instance().create ( extension ) );
+
+        // If we didn't find one, ask the document manager.
+        if ( false == unknown.valid() )
+        {
+          unknown = Usul::Interfaces::IUnknown::QueryPtr ( Usul::Documents::Manager::instance().find ( name ).document.get() );
+        }
+        
+        Usul::Interfaces::IRead::QueryPtr read ( unknown );
         
         if ( read.valid() )
         {

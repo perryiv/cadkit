@@ -134,7 +134,7 @@ void HeadLevels::init ( Modflow::ModflowDocument *document, Modflow::Model::Laye
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *HeadLevels::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer )
+osg::Group *HeadLevels::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -162,7 +162,7 @@ osg::Group *HeadLevels::buildScene ( Modflow::ModflowDocument *document, Modflow
 
   // Set new scene and return it.
   this->_setScene ( _switch.get() );
-  return BaseClass::buildScene ( document, layer );
+  return BaseClass::buildScene ( document, layer, caller );
 }
 
 

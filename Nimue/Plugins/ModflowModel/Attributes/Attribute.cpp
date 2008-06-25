@@ -261,7 +261,7 @@ void Attribute::_setScene ( osg::Group *group )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *Attribute::buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer * )
+osg::Group *Attribute::buildScene ( Modflow::ModflowDocument *, Modflow::Model::Layer *, IUnknown * )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

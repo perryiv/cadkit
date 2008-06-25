@@ -27,15 +27,16 @@
 #include "OsgTools/Configure/OSG.h"
 
 #include "Usul/Documents/Document.h"
+#include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ICoordinateTransform.h"
 #include "Usul/Interfaces/IDirtyState.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
-#include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
 #include "Usul/Interfaces/ITreeNode.h"
-#include "Usul/Interfaces/IBooleanState.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
@@ -68,7 +69,8 @@ class ModflowDocument : public Usul::Documents::Document,
                         public Modflow::Interfaces::IModflowModel,
                         public Usul::Interfaces::ITimeVaryingData,
                         public Usul::Interfaces::IGetBoundingBox,
-                        public Usul::Interfaces::ICoordinateTransformOSG
+                        public Usul::Interfaces::ICoordinateTransformOSG,
+                        public Usul::Interfaces::ILayer
 {
 public:
 
@@ -266,9 +268,28 @@ public:
   void                                    setNumberOfTimeSteps ( unsigned int );
   unsigned int                            getNumberOfTimeSteps() const;
 
-  /// Get the bounding-box (Usul::Interfaces::IGetBoundingBox).
+  //
+  // Usul::Interfaces::IGetBoundingBox
+  //
+
+  // Get the bounding-box.
   virtual osg::BoundingBox                getBoundingBox() const;
-  
+
+  //
+  // Usul::Interfaces::ILayer
+  //
+
+  // Get the guid.
+  virtual std::string                     guid() const;
+
+  // Get/Set the name.
+  virtual std::string                     name() const;
+  virtual void                            name ( const std::string & );
+
+  // Get/Set show layer
+  virtual void                            showLayer ( bool b );
+  virtual bool                            showLayer() const;
+
 protected:
 
   void                                    _buildScene ( Unknown *caller );
@@ -283,6 +304,10 @@ protected:
   void                                    _read ( Factory &, const std::string &type, const std::string &file, const std::string &noData, const FileAttributes &, Unknown *progress );
 
   void                                    _setCoordinateSystem ( XmlTree::Node * );
+
+  void                                    _transformCoordinates ( osg::Geode *geode, Usul::Interfaces::IUnknown *caller ) const;
+
+  std::string                             _wellKnownText() const;
 
   // Do not copy.
   ModflowDocument ( const ModflowDocument & );

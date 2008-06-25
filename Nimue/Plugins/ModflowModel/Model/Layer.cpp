@@ -268,7 +268,7 @@ void Layer::_buildScene ( Modflow::ModflowDocument *document, Unknown *caller )
     if ( true == a.valid() )
     {
       // Add the scene to the root.
-      _root->addChild ( a->buildScene ( document, this ) );
+      _root->addChild ( a->buildScene ( document, this, caller ) );
     }
   }
 

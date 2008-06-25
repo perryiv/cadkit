@@ -43,7 +43,7 @@ public:
   Quads ( const std::string &name, IUnknown *parent, Modflow::Geometry::ID geometry, const RegistryPath & );
 
   // Build the scene.
-  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer * );
+  virtual osg::Group *        buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *, IUnknown *caller );
 
   // Clear the attribute.
   virtual void                clear();

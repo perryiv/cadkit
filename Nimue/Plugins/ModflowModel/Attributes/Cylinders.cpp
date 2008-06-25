@@ -128,7 +128,7 @@ void Cylinders::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *Cylinders::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer * )
+osg::Group *Cylinders::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -199,7 +199,7 @@ osg::Group *Cylinders::buildScene ( Modflow::ModflowDocument *document, Modflow:
 
   // Set new scene and return it.
   this->_setScene ( _switch.get() );
-  return BaseClass::buildScene ( document, 0x0 );
+  return BaseClass::buildScene ( document, 0x0, caller );
 }
 
 

@@ -141,7 +141,8 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
     osg::ref_ptr<osg::StateSet> ss ( this->getOrCreateStateSet() );
     ss->setMode ( GL_BLEND, osg::StateAttribute::ON );
 
-    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );    ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+    ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 
     osg::ref_ptr<osg::TexEnvCombine> combine ( new osg::TexEnvCombine );
     combine->setCombine_Alpha ( GL_REPLACE );
@@ -254,8 +255,8 @@ void Tile::updateMesh()
 {
   USUL_TRACE_SCOPE;
 
-  // Handle not being dirty.
-  if ( false == this->verticesDirty() || false == this->texCoordsDirty() )
+  // If they are both not dirty then return.
+  if ( ( false == this->verticesDirty() ) && ( false == this->texCoordsDirty() ) )
     return;
 
   // Get needed variables.
@@ -393,8 +394,9 @@ void Tile::updateMesh()
   osg::ref_ptr<osg::Node> ground ( mesh() );
   mt->addChild ( ground.get() );
 
-  // Make the ground completely transparent.
-  //OsgTools::State::StateSet::setAlpha ( ground.get(), 0.0f );
+  // Set the ground's alpha.
+  OsgTools::State::StateSet::setAlpha ( ground.get(), body->alpha() );
+  OsgTools::State::StateSet::setAlpha ( skirts.get(), body->alpha() );
 
   // Add the place-holder for the border.
   mt->addChild ( _borders.get() );

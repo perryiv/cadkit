@@ -100,7 +100,7 @@ void Quads::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Group *Quads::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer )
+osg::Group *Quads::buildScene ( Modflow::ModflowDocument *document, Modflow::Model::Layer *layer, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 
@@ -224,7 +224,7 @@ osg::Group *Quads::buildScene ( Modflow::ModflowDocument *document, Modflow::Mod
 
   // Set new scene and return it.
   this->_setScene ( _root.get() );
-  return BaseClass::buildScene ( document, layer );
+  return BaseClass::buildScene ( document, layer, caller );
 }
 
 

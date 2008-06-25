@@ -23,7 +23,7 @@
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/State/StateSet.h"
 
-#include "Usul/Adaptors/memberFunction.h"
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Path.h"

@@ -189,10 +189,9 @@ public:
   // Split the tile.
   void                      split ( Usul::Jobs::Job::RefPtr );
   
-  // Update mesh.
+  // Update stuff.
+  void                      updateAlpha();
   void                      updateMesh();
-  
-  // Update texture.
   void                      updateTexture();
 
 protected:

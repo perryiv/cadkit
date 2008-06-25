@@ -115,6 +115,9 @@ public:
   virtual bool                             canOpen   ( const std::string &ext ) const;
   virtual bool                             canSave   ( const std::string &ext ) const;
 
+  /// Return the job to close this document. Default is null.
+  virtual Usul::Jobs::Job *                closeJob();
+
   /// Get the filters that correspond to what this document can do.
   virtual Filters                          filtersExport() const;
   virtual Filters                          filtersInsert() const;
@@ -353,7 +356,42 @@ private:
     osg::Vec3d _eye;
     MinervaDocument::Body *_body;
   };
-  
+
+  // Nested class for closing this document.
+  struct CloseJob : public Usul::Jobs::Job
+  {
+    typedef Usul::Jobs::Job BaseClass;
+    
+    // Type information.
+    USUL_IMPLEMENT_INLINE_TYPE_ID ( CloseJob );
+
+    // Smart-pointer definitions.
+    USUL_DECLARE_REF_POINTERS ( CloseJob );
+
+    CloseJob ( MinervaDocument::RefPtr doc ) : BaseClass(), _doc ( doc )
+    {
+    }
+
+  protected:
+
+    virtual ~CloseJob()
+    {
+    }
+
+    virtual void _started()
+    {
+      if ( true == _doc.valid() )
+      {
+        _doc->closing ( 0x0 );
+      }
+      _doc = 0x0;
+    }
+
+  private:
+
+    MinervaDocument::RefPtr _doc;
+  };
+
   /// Command members.
 #if USE_DISTRIBUTED == 1
   bool _commandsSend;

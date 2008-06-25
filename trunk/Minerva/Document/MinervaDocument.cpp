@@ -517,7 +517,7 @@ void MinervaDocument::_clear()
     
     // Wait for remaining jobs to finish.
     _manager->wait();
-    
+
     // Delete the manager.
     delete _manager; _manager = 0x0;
   }
@@ -2666,4 +2666,17 @@ void MinervaDocument::_setLog()
       body->logSet ( logFile );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the job to close this document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Jobs::Job *MinervaDocument::closeJob()
+{
+  USUL_TRACE_SCOPE;
+  return new MinervaDocument::CloseJob ( MinervaDocument::RefPtr ( this ) );
 }

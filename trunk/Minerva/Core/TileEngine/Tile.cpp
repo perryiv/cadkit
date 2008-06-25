@@ -395,8 +395,8 @@ void Tile::updateMesh()
   mt->addChild ( ground.get() );
 
   // Set the ground's alpha.
-  OsgTools::State::StateSet::setAlpha ( ground.get(), body->alpha() );
-  OsgTools::State::StateSet::setAlpha ( skirts.get(), body->alpha() );
+  //OsgTools::State::StateSet::setAlpha ( ground.get(), body->alpha() );
+  //OsgTools::State::StateSet::setAlpha ( skirts.get(), body->alpha() );
 
   // Add the place-holder for the border.
   mt->addChild ( _borders.get() );
@@ -2018,4 +2018,21 @@ Tile::ImagePtr Tile::elevation()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _elevation;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the overall alpha.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::updateAlpha()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  if ( 0x0 != _body )
+  {
+    OsgTools::State::StateSet::setAlpha ( this, _body->alpha() );
+  }
 }

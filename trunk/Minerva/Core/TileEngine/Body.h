@@ -235,9 +235,12 @@ public:
   void                      useSkirts ( bool );
   bool                      useSkirts() const;
 
+  // Update the tile's alpha.
+  void                      updateTilesAlpha();
+
   /// Update (Usul::Interfaces::IUpdateListener).
   virtual void              updateNotify ( Usul::Interfaces::IUnknown *caller );
-  
+
   /// Get the vector data.
   VectorGroup::RefPtr       vectorData();
   
@@ -258,7 +261,9 @@ protected:
 
   void                      _addUpdateListener ( IUnknown *caller );
   void                      _removeUpdateListener ( IUnknown *caller );
-  
+
+  void                      _updateTileAlpha ( osg::Group *group );
+
   // Get the frame stamp (IFrameStamp). (This is a hack for layers that need to update every n seconds.)
   virtual osg::FrameStamp *                frameStamp();
   virtual const osg::FrameStamp *          frameStamp() const;

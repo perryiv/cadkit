@@ -407,6 +407,36 @@ void Body::dirtyVertices()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Update the mesh's alpha.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::updateTilesAlpha()
+{
+  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make 
+    ( Usul::Adaptors::memberFunction ( this, &Body::_updateTileAlpha ) ) );
+  _transform->accept ( *visitor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the tile's alpha.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::_updateTileAlpha ( osg::Group *group )
+{
+  Tile::RefPtr tile ( dynamic_cast < Tile * > ( group ) );
+  if ( true == tile.valid() )
+  {
+    tile->updateAlpha();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the raster data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1538,7 +1568,7 @@ void Body::alpha ( float a )
 {
   USUL_TRACE_SCOPE;
   Usul::Threads::Safe::set ( this->mutex(), a, _alpha );
-  this->dirtyVertices();
+  this->updateTilesAlpha();
 }
 
 

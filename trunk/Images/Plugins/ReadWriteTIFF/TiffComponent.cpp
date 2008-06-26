@@ -309,7 +309,7 @@ void TiffComponent::readProperties ( const std::string &filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TiffComponent::read ( const std::string &filename, Unknown *caller )
+void TiffComponent::read ( const std::string &filename, Unknown *caller, Unknown *progress )
 {
   // Set/reset error and warning handlers. Default ones pop up a dialog.
   Detail::SetErrorHandlers reset;

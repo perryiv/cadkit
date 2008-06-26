@@ -16,8 +16,6 @@
 
 #include "OsgTools/HasOption.h"
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Group, Group::BaseClass );
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -26,15 +24,15 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Group, Group::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Group::Group( Vertices *vertices, Normals *normalsT, Normals *normalsV, Elements *indices ) :
-_vertices ( vertices ),
-_normalsT ( normalsT ),
-_normalsV ( normalsV ),
-_indices ( indices ),
-_group ( new osg::Group ),
-_mt ( new osg::MatrixTransform ),
-_geode ( new osg::Geode ),
-_geometry ( new osg::Geometry ),
-_material ( new osg::Material )
+	_vertices ( vertices ),
+	_normalsT ( normalsT ),
+	_normalsV ( normalsV ),
+	_indices ( indices ),
+	_group ( new osg::Group ),
+	_mt ( new osg::MatrixTransform ),
+	_geode ( new osg::Geode ),
+	_geometry ( new osg::Geometry ),
+	_material ( new osg::Material )
 {
   this->_init();
 }
@@ -47,15 +45,15 @@ _material ( new osg::Material )
 ///////////////////////////////////////////////////////////////////////////////
 
 Group::Group() :
-_vertices ( new Vertices ),
-_normalsT ( new Normals ),
-_normalsV ( new Normals ),
-_indices ( new Elements ),
-_group ( new osg::Group ),
-_mt ( new osg::MatrixTransform ),
-_geode ( new osg::Geode ),
-_geometry ( new osg::Geometry ),
-_material ( new osg::Material )
+	_vertices ( new Vertices ),
+	_normalsT ( new Normals ),
+	_normalsV ( new Normals ),
+	_indices ( new Elements ),
+	_group ( new osg::Group ),
+	_mt ( new osg::MatrixTransform ),
+	_geode ( new osg::Geode ),
+	_geometry ( new osg::Geometry ),
+	_material ( new osg::Material )
 {
   this->_init();
 }
@@ -69,25 +67,6 @@ _material ( new osg::Material )
 
 Group::~Group()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query the interfaces
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown *Group::queryInterface ( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ISceneElement::IID:
-    return static_cast < Usul::Interfaces::ISceneElement* > ( this );
-  default:
-    return 0x0;
-  }
 }
 
 

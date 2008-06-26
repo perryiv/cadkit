@@ -145,8 +145,6 @@ Usul::Interfaces::IUnknown *TriangleDocument::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::ITriangle* > ( this );
   case Usul::Interfaces::ITriangleSV::IID:
     return static_cast < Usul::Interfaces::ITriangleSV* > ( this );
-  case Usul::Interfaces::IShowNewPrimitives::IID:
-    return static_cast < Usul::Interfaces::IShowNewPrimitives* > ( this );
   case Usul::Interfaces::IVertices::IID:
     return static_cast < Usul::Interfaces::IVertices* > ( this );
   case Usul::Interfaces::IColorsPerVertex::IID:

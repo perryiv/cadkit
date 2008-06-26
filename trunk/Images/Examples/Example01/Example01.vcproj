@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="app: Images Test 1"
-	ProjectGUID="{7f4eccd4-e4d3-4650-a2e4-036b9cd0bab9}"
+	ProjectGUID="{7F4ECCD4-E4D3-4650-A2E4-036B9CD0BAB9}"
 	>
 	<Platforms>
 		<Platform

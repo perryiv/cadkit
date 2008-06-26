@@ -38,7 +38,6 @@
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IAddSharedVertex.h"
 #include "Usul/Interfaces/IGroupPrimitives.h"
-#include "Usul/Interfaces/IShowNewPrimitives.h"
 #include "Usul/Interfaces/IVertices.h"
 #include "Usul/Interfaces/IMaterials.h"
 #include "Usul/Interfaces/IDisplaylists.h"
@@ -72,7 +71,6 @@ class TriangleDocument : public Usul::Documents::Document,
                          public Usul::Interfaces::IGetBoundingBox,
                          public Usul::Interfaces::IAddSharedVertex,
                          public Usul::Interfaces::IGroupPrimitives,
-                         public Usul::Interfaces::IShowNewPrimitives,
                          public Usul::Interfaces::IVertices,
                          public Usul::Interfaces::IColorsPerVertex,
                          public Usul::Interfaces::IMemoryPool,

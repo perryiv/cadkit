@@ -23,9 +23,6 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/IGroupPrimitives.h"
-#include "Usul/Interfaces/ISmoothModel.h"
-#include "Usul/Interfaces/IDecimateModel.h"
-#include "Usul/Interfaces/ISubdivideModel.h"
 
 #include "Usul/Types/Types.h"
 
@@ -37,10 +34,7 @@ using namespace Usul::Types;
 class ParadisDocument : public Usul::Documents::Document,
                         public Usul::Interfaces::IBuildScene,
                         public Usul::Interfaces::IGetBoundingBox,
-                        public Usul::Interfaces::IGroupPrimitives,
-                        public Usul::Interfaces::ISmoothModel,
-                        public Usul::Interfaces::IDecimateModel,
-                        public Usul::Interfaces::ISubdivideModel
+                        public Usul::Interfaces::IGroupPrimitives
 {
 public:
 
@@ -88,14 +82,11 @@ public:
   /// Get the bounding-box.
   virtual osg::BoundingBox    getBoundingBox() const;
 
-  /// Notify this document of the message.
-  virtual void                notify ( unsigned short message );
-
   /// Read the file and add it to document's data.
-  virtual void                read ( const std::string &filename, Unknown *caller = 0x0 );
+  virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Write the document to given file name.
-  virtual void                write ( const std::string &filename,  Unknown *caller = 0x0  ) const;
+  virtual void                write ( const std::string &filename,  Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
   
 protected:
 

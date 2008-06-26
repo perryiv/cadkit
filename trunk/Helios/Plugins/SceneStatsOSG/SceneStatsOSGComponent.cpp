@@ -17,9 +17,9 @@
 #include "SceneStatsOSGComponent.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IOpenSceneGraph.h"
 #include "Usul/Interfaces/INotify.h"
-#include "Usul/Interfaces/IActiveView.h"
 
 #include "OsgTools/Visitor.h"
 
@@ -97,8 +97,8 @@ Usul::Interfaces::IUnknown *SceneStatsOSGComponent::queryInterface ( unsigned lo
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IMenuEntry::IID:
-    return static_cast<Usul::Interfaces::IMenuEntry*>(this);
+  case Usul::Interfaces::IMenuAdd::IID:
+    return static_cast<Usul::Interfaces::IMenuAdd*>(this);
   case ICommand::IID:
     return static_cast<ICommand*>(this);
   case Usul::Interfaces::IUnknown::IID:
@@ -120,8 +120,7 @@ Usul::Interfaces::IUnknown *SceneStatsOSGComponent::queryInterface ( unsigned lo
 void SceneStatsOSGComponent::execute ( Usul::Interfaces::IUnknown *caller )
 {
   // Get the interface we need.
-  Usul::Interfaces::IActiveView::ValidQueryPtr activeView ( caller );
-  Usul::Interfaces::IOpenSceneGraph::ValidQueryPtr osg ( activeView->getActiveView() );
+	Usul::Interfaces::IOpenSceneGraph::ValidQueryPtr osg ( Usul::Documents::Manager::instance().activeView() );
   Usul::Interfaces::INotifyString::ValidQueryPtr hello ( caller );
 
   // Get the scene.
@@ -158,49 +157,13 @@ void SceneStatsOSGComponent::execute ( Usul::Interfaces::IUnknown *caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the menu text.
+//  Add to the menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string SceneStatsOSGComponent::menuText() const
+void SceneStatsOSGComponent::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* caller )
 {
-  return "Scene Stats";
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the hot-key text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string SceneStatsOSGComponent::hotKeyText() const
-{
-  return "";
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the status-bar text.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string SceneStatsOSGComponent::statusBarText() const
-{
-  return "Calculate statistics for the current selection or scene";
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get Group for the menu.  "" means no group
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string SceneStatsOSGComponent::menuGroup() const
-{
-  return "";
+	// TODO.
 }
 
 

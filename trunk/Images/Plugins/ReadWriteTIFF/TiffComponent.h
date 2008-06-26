@@ -85,7 +85,7 @@ public:
   virtual bool                  isValueInteger() const;
 
   // Read the file.
-  virtual void                  read ( const std::string &filename, Unknown *caller = 0x0 );
+  virtual void                  read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   // Read the image properties.
   virtual void                  readProperties ( const std::string &filename );

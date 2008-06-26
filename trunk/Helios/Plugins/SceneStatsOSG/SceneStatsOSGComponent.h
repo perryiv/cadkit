@@ -19,7 +19,7 @@
 #include "CompileGuard.h"
 
 #include "Usul/Base/Referenced.h"
-#include "Usul/Interfaces/GUI/IMenuEntry.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IPlugin.h"
 
@@ -35,7 +35,7 @@ namespace OSG {
 
 
 class SceneStatsOSGComponent : public Usul::Base::Referenced,
-                               public Usul::Interfaces::IMenuEntry,
+                               public Usul::Interfaces::IMenuAdd,
                                public Usul::Interfaces::ICommand,
                                public Usul::Interfaces::IPlugin
 {
@@ -70,11 +70,8 @@ protected:
   ///  Usul::Interfaces::IPlugin
   virtual std::string getPluginName() const { return "Scene Stats";  }
 
-  ///  Usul::Interfaces::IMenuEntry
-  virtual std::string     menuText() const;
-  virtual std::string     hotKeyText() const;
-  virtual std::string     statusBarText() const;
-  virtual std::string     menuGroup() const;
+  ///  Usul::Interfaces::IMenuAdd
+	virtual void            menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   ///  Usul::Interfaces::ICommand
   virtual void            execute ( Usul::Interfaces::IUnknown *caller );

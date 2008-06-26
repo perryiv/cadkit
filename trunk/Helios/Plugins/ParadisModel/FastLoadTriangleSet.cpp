@@ -72,7 +72,8 @@ unsigned int FastLoadTriangleSet::numberOfGroups () const
 
 Usul::Interfaces::IUnknown* FastLoadTriangleSet::getPrimitiveGroup ( unsigned int i )
 {
-  return _groups.at( i )->queryInterface ( Usul::Interfaces::ISceneElement::IID );
+  //return _groups.at( i )->queryInterface ( Usul::Interfaces::ISceneElement::IID );
+	return 0x0;
 }
 
 

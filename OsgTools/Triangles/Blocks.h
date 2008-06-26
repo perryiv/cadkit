@@ -15,9 +15,8 @@
 #include "OsgTools/Triangles/Block.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector3.h"
-
-#include "Usul/Interfaces/ISceneElement.h"
 
 #include "osg/BoundingBox"
 #include "osg/Geode"
@@ -30,8 +29,7 @@ namespace Triangles {
 
 class TriangleSet;
 
-class OSG_TOOLS_EXPORT Blocks : public Usul::Base::Referenced,
-                                public Usul::Interfaces::ISceneElement
+class OSG_TOOLS_EXPORT Blocks : public Usul::Base::Referenced
 {
 public:
 

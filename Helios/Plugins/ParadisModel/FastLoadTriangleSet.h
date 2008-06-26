@@ -97,7 +97,7 @@ protected:
 
 private:
 
-  typedef std::vector< Group::ValidQueryPtr > Groups;
+  typedef std::vector< Group::RefPtr > Groups;
 
   osg::BoundingBox _bb;
   Groups _groups;

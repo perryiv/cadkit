@@ -304,14 +304,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Builders\Sign.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Builders\Sign.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Sphere.h"
 					>
 				</File>

@@ -13,8 +13,6 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "Usul/Interfaces/ISceneElement.h"
-
 #include "osg/Array"
 #include "osg/ref_ptr"
 #include "osg/Geode"
@@ -35,8 +33,7 @@ namespace Usul
   } 
 }
 
-class Group : public Usul::Base::Referenced,
-              public Usul::Interfaces::ISceneElement
+class Group : public Usul::Base::Referenced
 {
 public:
   /// Typedefs
@@ -59,10 +56,7 @@ public:
   USUL_IMPLEMENT_INLINE_TYPE_ID ( Group );
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( Group );
-
-  /// Usul::Interfaces::IUnknown members.
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
+  USUL_DECLARE_REF_POINTERS ( Group );
 
   Group ( Vertices *vertices, Normals *normalsT, Normals *normalsV, Elements *indices );
 

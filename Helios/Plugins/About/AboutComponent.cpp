@@ -15,11 +15,8 @@
 
 #include "AboutComponent.h"
 
-#include "Usul/App/Controller.h"
 #include "Usul/Headers/OpenGL.h"
 #include "Usul/Cast/Cast.h"
-
-#include "Usul/Interfaces/IActiveView.h"
 
 #include <sstream>
 #include <algorithm>
@@ -99,7 +96,7 @@ std::string AboutComponent::aboutString() const
   std::ostringstream message;
   message << "3D viewer application based on:";
   message << "\n  -- CAD Toolkit (cadkit.sourceforge.net)";
-  message << "\n  -- FOX-Toolkit (www.fox-toolkit.org)";
+  message << "\n  -- Qt (www.trolltech.com)";
   message << "\n  -- Open Scene Graph (www.openscenegraph.org)";
   message << "\n  -- OpenGL (www.opengl.org)";
   message << '\n';
@@ -107,7 +104,7 @@ std::string AboutComponent::aboutString() const
   message << "\n  -- Perry L Miller IV";
   message << "\n  -- Adam Kubach";
   message << "\n  -- Mike Jackson";
-
+#if 0
   // If there is an active view...
   if ( Usul::App::Controller::instance().activeView() )
   {
@@ -136,7 +133,7 @@ std::string AboutComponent::aboutString() const
 
     #endif
   }
-
+#endif
   message << "\n\nBuilt on " << day << ' ' << month << ' ' << year << " at " << __TIME__;
 
   return message.str();

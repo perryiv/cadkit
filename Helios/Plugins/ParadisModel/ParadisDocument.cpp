@@ -16,7 +16,6 @@
 #include "ParadisDocument.h"
 #include "ParadisReader.h"
 
-#include "Usul/Interfaces/IActiveView.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
@@ -87,12 +86,6 @@ Usul::Interfaces::IUnknown *ParadisDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IGetBoundingBox::IID:
     return static_cast < Usul::Interfaces::IGetBoundingBox* > ( this );
-  case Usul::Interfaces::ISmoothModel::IID:
-    return static_cast < Usul::Interfaces::ISmoothModel* > ( this );
-  case Usul::Interfaces::IDecimateModel::IID:
-    return static_cast < Usul::Interfaces::IDecimateModel* > ( this );
-  case Usul::Interfaces::ISubdivideModel::IID:
-    return static_cast < Usul::Interfaces::ISubdivideModel* > ( this );
   case Usul::Interfaces::IGroupPrimitives::IID:
     return static_cast < Usul::Interfaces::IGroupPrimitives* > ( this );
   default:
@@ -158,7 +151,7 @@ bool ParadisDocument::canSave ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ParadisDocument::read ( const std::string &name, Unknown *caller )
+void ParadisDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
 
@@ -182,7 +175,7 @@ void ParadisDocument::read ( const std::string &name, Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ParadisDocument::write ( const std::string &name, Unknown *caller ) const
+void ParadisDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
 }
 
@@ -280,18 +273,6 @@ void ParadisDocument::createDefaultGUI ( Unknown *caller )
     options["colors"]  = "per-vertex";
     this->delegate()->createDefaultGUI ( this, caller );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Notify this document of the message.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ParadisDocument::notify ( unsigned short message )
-{
-  BaseClass::notify ( message );
 }
 
 

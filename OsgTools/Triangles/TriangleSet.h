@@ -82,7 +82,7 @@ public:
   typedef osg::ref_ptr < osg::Vec3Array > VerticesPtr;
   typedef osg::ref_ptr < osg::Vec3Array > NormalsPtr;
   typedef osg::ref_ptr < osg::Vec4Array > ColorsPtr;
-  typedef Blocks::ValidAccessQueryPtr BlocksPtr;
+  typedef Blocks::ValidAccessRefPtr BlocksPtr;
   typedef std::vector < BlocksPtr > BlocksVector;
   typedef BlocksVector::iterator    BlocksIterator;
   typedef BlocksVector::const_iterator    BlocksConstIterator;

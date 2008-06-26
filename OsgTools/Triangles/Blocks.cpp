@@ -88,14 +88,7 @@ Blocks::~Blocks()
 
 Usul::Interfaces::IUnknown *Blocks::queryInterface ( unsigned long iid )
 {
-  switch ( iid )
-  {
-  case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::ISceneElement::IID:
-    return static_cast < Usul::Interfaces::ISceneElement* > ( this );
-  default:
-    return 0x0;
-  }
+  return 0x0;
 }
 
 

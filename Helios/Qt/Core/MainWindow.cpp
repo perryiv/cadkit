@@ -29,11 +29,13 @@
 #include "Helios/Qt/Commands/OpenManual.h"
 #include "Helios/Qt/Commands/About.h"
 #include "Helios/Qt/Commands/Group.h"
+#include "Helios/Qt/Commands/WorkOffline.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/RegistryIO.h"
 
 #include "MenuKit/Button.h"
+#include "MenuKit/ToggleButton.h"
 #include "MenuKit/CommandVisitor.h"
 #include "MenuKit/MenuCommands.h"
 
@@ -429,6 +431,9 @@ void MainWindow::_buildMenuKitMenu()
 
     // Add the recent file menu.
     menu->append ( _recentFilesMenu );
+
+		menu->addSeparator();
+		menu->append ( new MenuKit::ToggleButton ( new CadKit::Helios::Commands::WorkOffline ) );
 
     // On mac Qt automatically adds a quit item in the application menu.
 #ifndef __APPLE__

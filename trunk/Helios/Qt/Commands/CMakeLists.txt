@@ -31,6 +31,7 @@ SET (SOURCES
     SaveAsDocument.cpp
     SaveDocument.cpp
     ToggleView.cpp
+	WorkOffline.cpp
 )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )

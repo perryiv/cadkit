@@ -284,6 +284,14 @@
 				RelativePath=".\ToggleView.h"
 				>
 			</File>
+			<File
+				RelativePath=".\WorkOffline.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WorkOffline.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -173,6 +173,9 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
     // Read binary file.
     this->_readPoint3DFile( binaryFilename, caller, progress );
 
+    // Create the octree
+    this->_split( caller, progress );
+
     // Build the vectors from the linked lists
     this->_buildVectors( caller, progress );
 
@@ -184,6 +187,9 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
   {
      // Read binary file.
     this->_readPoint3DFile( name, caller, progress );
+
+    // Create the octree
+    this->_split( caller, progress );
 
     // Build the vectors from the linked lists
     this->_buildVectors( caller, progress );
@@ -350,7 +356,10 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
 
       in.read ( reinterpret_cast<char *> ( &value ), sizeof ( osg::Vec3f ) );
     
-      _pointSet->addPoint( value );
+      if( false == _pointSet->addPoint( value ) )
+      {
+        std::cout << "Failed to insert point in PointDocument! " << std::endl;
+      }
 
       ++count;
       // Feedback.
@@ -358,7 +367,7 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
     }
   }
   USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1302438923" );
-
+  --count;
   // Give proper feedback.
   if ( count != _numPoints )
   {
@@ -675,3 +684,16 @@ void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
   this->setStatusBar ( "Building Points...", progress );
   _pointSet->buildVectors();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the octree
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::_split( Unknown *caller, Unknown *progress )
+{
+  _pointSet->split();
+}
+

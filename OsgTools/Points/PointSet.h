@@ -69,9 +69,9 @@ public:
   /// Clear any existing data.
   virtual void            clear ( Unknown *caller = 0x0 );
   
-  void                    addPoint( float x, float y, float z );
-  void                    addPoint( double x, double y, double z );
-  void                    addPoint( osg::Vec3 p );
+  bool                    addPoint( float x, float y, float z );
+  bool                    addPoint( double x, double y, double z );
+  bool                    addPoint( osg::Vec3 p );
 
   void                    allocate( unsigned int num );
   void                    bounds( osg::Vec3f min, osg::Vec3f max );
@@ -79,6 +79,8 @@ public:
   void                    capacity( unsigned int t );
 
   void                    buildVectors();
+
+  void                    split();
 
 
  

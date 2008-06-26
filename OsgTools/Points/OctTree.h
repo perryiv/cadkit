@@ -49,7 +49,7 @@ public:
   virtual ~OctTree();
 
   void                add( OctTreeNode * node );
-  void                insert( Point p );
+  bool                insert( Point p );
   
   osg::Node*          buildScene( Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
@@ -60,6 +60,8 @@ public:
   // Get/Set capacity level
   void                capacity( unsigned int level );
   unsigned int        capacity();
+
+  void                split();
 
 protected:
   

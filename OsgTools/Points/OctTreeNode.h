@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 #include "Usul/Math/Vector3.h"
+#include "Usul/Types/Types.h"
 
 #include "osg/BoundingBox"
 #include "osg/Vec3"
@@ -37,8 +38,6 @@
 #define UNDEFINED_NODE 0
 #define NODE_HOLDER 1
 #define POINT_HOLDER 2
-
-
 
 class OctTreeNode : public Usul::Base::Object
 {
@@ -86,13 +85,20 @@ public:
   void                              distance( float d );
   float                             getBoundingRadius();
 
+  void                              closeInputStream();
+  void                              closeOutputStream();
+
+  
+
+  bool                              split();
+
 protected:
 
   bool                              _contains( OctTreeNode::Point p );
   void                              _insertOrCreateChildren( OctTreeNode::Point p );
   void                              _reorder();
   void                              _createChildren();
-  BoundingBoxVec                    _split();
+  void                              _split();
   bool                              _addCellToChild( OctTreeNode::Point p );
   bool                              _rayQuadIntersect( Vec3d a, Vec3d b, Vec3d c, Vec3d d, Vec3d p );
   
@@ -106,6 +112,8 @@ protected:
 
   void                              _closeInputStream();
   void                              _closeOutputStream();
+
+  void                              _closeChildrenStreams();
 
 private:
 
@@ -123,7 +131,7 @@ private:
   std::ifstream*                  _infile;
   std::ofstream*                  _outfile;
   std::string                     _tempFilename;
-  unsigned short                  _numPoints;
+  Usul::Types::Uint64             _numPoints;
   StreamBufferPtr                 _streamBuffer;
   std::string                     _tempPath;
 

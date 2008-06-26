@@ -941,7 +941,7 @@ namespace Helper
                                AttributesType &attributes, 
                                const ModflowDocument &doc )
   {
-    USUL_TRACE_SCOPE;
+    USUL_TRACE_SCOPE_STATIC;
 
     if ( i < layers.size() )
     {

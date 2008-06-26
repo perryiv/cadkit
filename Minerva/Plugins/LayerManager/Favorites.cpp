@@ -354,6 +354,13 @@ void Favorites::_onContextMenuShow ( const QPoint& pos )
 
 void Favorites::_readFavoritesFromServer()
 {
+  // See if we can use the network.
+  const bool workOffline ( Usul::Registry::Database::instance()["work_offline"].get<bool> ( false, true ) );
+  
+  // Return now if we are suppose to work offline.
+  if ( true == workOffline )
+    return;
+  
   const std::string server ( "www.minerva-gis.org" );
   const std::string file ( "gis_favorites.xml" );
 

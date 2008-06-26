@@ -240,7 +240,7 @@ RasterLayerNetwork::ImagePtr RasterLayerNetwork::texture ( const Extents& extent
   _checkForCanceledJob ( job );
 
   // Pull it down if we should...
-  if ( ( false == Usul::Predicates::FileExists::test ( file ) ) && ( true == Usul::Threads::Safe::get ( this->mutex(), _useNetwork ) ) )
+	if ( ( false == Usul::Predicates::FileExists::test ( file ) ) && ( true == this->useNetwork() ) )
   {
     try
     {
@@ -562,4 +562,21 @@ unsigned int RasterLayerNetwork::timeoutMilliSeconds() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _timeout;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should this layer use the network?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool RasterLayerNetwork::useNetwork() const
+{
+	USUL_TRACE_SCOPE;
+	const bool workOffline ( Usul::Registry::Database::instance()["work_offline"].get<bool> ( false, true ) );
+	if ( true == workOffline )
+		return false;
+
+	return Usul::Threads::Safe::get ( this->mutex(), _useNetwork );
 }

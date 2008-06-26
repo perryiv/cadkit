@@ -65,6 +65,9 @@ public:
 
   /// Get the full url.
   virtual std::string   urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
+
+	/// Should this layer use the network?
+	bool                  useNetwork() const;
   
 protected:
 

@@ -10,6 +10,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -43,7 +44,10 @@ namespace
       ::OGRRegisterAll();
       
       // Set the callback to create a full path for given filename.
+      // Linux works fine, so don't do it there.
+      #ifndef __GNUC__
       ::SetCSVFilenameHook ( buildFilename );
+      #endif
     }
     
     ///  Destructor.
@@ -63,17 +67,15 @@ namespace
       Filenames::iterator iter ( _filenames.begin() );
       if ( iter == _filenames.end() )
       {
-        const unsigned int size ( 2047 );
-        String filename ( size + 1, '\0' );
-        
         // Build the filename.
 #if __APPLE__
-        const std::string directory ( Usul::CommandLine::Arguments::instance().directory() );
-        ::snprintf ( &filename[0], size, "%s/../Frameworks/GDAL.framework/Resources/gdal/%s", directory.c_str(), base );
-#else
-        const char* name ( ::GDALDefaultCSVFilename ( base ) );
-        std::copy ( filename, name, name + ::strlen ( name ) );
+        const std::string path ( "/../Frameworks/GDAL.framework/Resources/gdal/" );
+#elif _MSC_VER
+        const std::string path ( "/proj4/" );
 #endif
+        const std::string directory ( Usul::Strings::format ( Usul::CommandLine::Arguments::instance().directory(), path, base ) );
+        String filename ( directory.begin(), directory.end() );
+        filename.push_back ( '\0' );
         
         // Insert the result into the map.
         typedef std::pair<Filenames::iterator, bool> Result;

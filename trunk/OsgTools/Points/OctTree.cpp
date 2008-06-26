@@ -77,10 +77,10 @@ OctTree::~OctTree()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OctTree::insert( Point p )
+bool OctTree::insert( Point p )
 {
   Guard guard ( this->mutex() );
-  _tree->add( p );
+  return _tree->add( p );
 }
 
 
@@ -155,6 +155,20 @@ unsigned int OctTree::capacity()
   Guard guard ( this->mutex() );
   return _capacity; 
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the octree
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTree::split()
+{
+  Guard guard ( this );
+  _tree->split();
+}
+
 
 /////////////////
 //  PROTECTED

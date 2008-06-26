@@ -99,11 +99,11 @@ void PointSet::buildVectors()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointSet::addPoint( float x, float y, float z )
+bool PointSet::addPoint( float x, float y, float z )
 {
   Guard guard ( this );
   osg::Vec3d p ( static_cast< double > ( x ), static_cast< double > ( y ), static_cast< double > ( z ) );
-  this->addPoint( p );
+  return this->addPoint( p );
 }
 
 
@@ -113,10 +113,10 @@ void PointSet::addPoint( float x, float y, float z )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointSet::addPoint( double x, double y, double z )
+bool PointSet::addPoint( double x, double y, double z )
 {
   Guard guard ( this );
-  this->addPoint( osg::Vec3d ( x, y, z ) );
+  return this->addPoint( osg::Vec3d ( x, y, z ) );
 }
 
 
@@ -126,16 +126,18 @@ void PointSet::addPoint( double x, double y, double z )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointSet::addPoint( osg::Vec3 p )
+bool PointSet::addPoint( osg::Vec3 p )
 {
   Guard guard ( this );
   osg::Vec3d point ( static_cast< double > ( p.x() ), static_cast< double > ( p.y() ), static_cast< double > ( p.z() ) );
   
 #if 1 // With spatial partitioning
-  _tree->insert( point );
+  return _tree->insert( point );
 #else // NO spatial partitioning
   _points->push_back( point );
 #endif
+
+  
 }
 
 
@@ -178,3 +180,17 @@ void PointSet::capacity( unsigned int t )
   Guard guard ( this );
   _tree->capacity( t );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the octree
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::split()
+{
+  Guard guard ( this );
+  _tree->split();
+}
+

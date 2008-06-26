@@ -137,36 +137,38 @@ bool OctTreeNode::add ( OctTreeNode::Point p )
     {
       _list->push_back( p );
     }
-#else
-
-    if( _type == POINT_HOLDER && _numPoints < _capacity )
-
-    {
-      // Get the output stream.
-      std::ofstream &outfile ( this->_getOutputStream() );
-
-      // Write the point.
-      outfile.write ( reinterpret_cast<char *> ( &p ), sizeof ( OctTreeNode::Point ) ); 
-
-      // Increment the count.
-      ++_numPoints;
-
-      //this->_closeInputStream();
-      //this->_closeOutputStream();
-    }
-#endif
-    
     else
     {
       //find the bounds of the child that contains the cell
       this->_insertOrCreateChildren( p );
     }
+#else
+    
+    // Get the output stream.
+    std::ofstream &outfile ( this->_getOutputStream() );
+
+    // Write the point.
+    outfile.write ( reinterpret_cast<char *> ( &p ), sizeof ( OctTreeNode::Point ) ); 
+
+    // Increment the count.
+    ++_numPoints;
+
+    return true;
+    
+#endif    
 
   }
   else
-    return false;
+  {
 
-  return true;
+    std::cout << "Failed to add point: ( " << p.x() << ", " << p.y() << ", " << p.z() << " ) in OctTreeNode with bounds"
+              << " min( " << _bb.xMin() << ", " << _bb.yMin() << ", " << _bb.zMin() 
+              << " ) max( " << _bb.xMax() << ", " << _bb.yMax() << ", " << _bb.zMax() << " )" << std::endl;
+    
+    return false;
+  }
+
+  
 }
 
 
@@ -263,7 +265,13 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
         {
           //Points vertices ( new osg::Vec3Array );
           ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
+
+#if 1
+          double lm = ( static_cast< double >( lodLevel ) / static_cast< double > ( _numLODs ) ) * static_cast< double > ( _capacity );
+          unsigned int lodMultiplier = static_cast< unsigned int > ( lm ) + 1;
+#else
           unsigned int lodMultiplier = ( lodLevel * lodLevel ) + 1;
+#endif
           indices->reserve( static_cast< unsigned int > ( ( _points->size() / lodMultiplier ) ) + 1  );
           for( unsigned short i = 0; i < _points->size(); i += lodMultiplier )
           {
@@ -365,7 +373,7 @@ void OctTreeNode::buildVectors()
     }
   }
 #else
-  if( _numPoints > 0 )
+  if( POINT_HOLDER == this->type() && _numPoints > 0 )
   {
     
     //this->_openTempFileForRead();
@@ -378,7 +386,15 @@ void OctTreeNode::buildVectors()
     }
 
     unsigned int size = _points->size() * sizeof( OctTreeNode::Point );
+
+    // Sanity check.
+    USUL_ASSERT ( size == Usul::File::size ( _tempFilename ) );
+
     infile.read( reinterpret_cast<char *> ( &((*_points)[0]) ), size );
+
+    // Close the streams
+    this->_closeInputStream();
+    this->_closeOutputStream();
 
   }
   else
@@ -390,6 +406,72 @@ void OctTreeNode::buildVectors()
   }
 #endif
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Close the stream
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::closeInputStream()
+{
+  this->_closeInputStream();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Close the stream
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::closeOutputStream()
+{
+  this->_closeOutputStream();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Populate the octree.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool OctTreeNode::split()
+{
+  Guard guard ( this->mutex() );
+
+  // Debug info
+  //std::cout << "Number of points before split is: " << _numPoints << std::endl;
+
+  if( _numPoints > _capacity )
+  {
+    // Create children and populate them with my points
+    this->_split();
+
+    // Close all the open streams for each child
+    this->_closeChildrenStreams();
+
+    // Safely close and delete streams.
+    this->_closeInputStream();
+    this->_closeOutputStream();
+
+    // Remove the file if it exists.
+    Usul::File::remove ( _tempFilename, false, 0x0 );
+
+    // Tell my children to split if needed
+    for( unsigned int i = 0; i < _children.size(); ++i )
+    {
+      _children.at( i )->split();
+    }
+    return true;
+  }
+  return false;
+}
+
 
 
 /////////////////
@@ -443,8 +525,6 @@ void OctTreeNode::_insertOrCreateChildren( OctTreeNode::Point p )
 #endif
   }
 
-
-  
   this->_addCellToChild( p );
 }
 
@@ -458,24 +538,10 @@ void OctTreeNode::_insertOrCreateChildren( OctTreeNode::Point p )
 void OctTreeNode::_reorder()
 {
   Guard guard ( this->mutex() );
-  if( 0x0 == _list )
-    return;
 
-#if 0
-  while( false == _list->empty() )
-  {
-
-    this->_addCellToChild( _list->back() );
-    _list->pop_back();
-  }
-#else
-  
   // Make sure the streams are both closed.
   this->_closeInputStream();
   this->_closeOutputStream();
-
-  // Output the open stream count
-  std::cout << "Number of open streams: " << _streamCount << std::endl;
 
   // Sanity check.
   USUL_ASSERT ( ( _numPoints * sizeof ( OctTreeNode::Point ) ) == Usul::File::size ( _tempFilename ) );
@@ -494,9 +560,11 @@ void OctTreeNode::_reorder()
   }
 
   // Sanity check.
-  //USUL_ASSERT ( EOF == infile.peek() );
-  
-#endif
+  USUL_ASSERT ( EOF == infile.peek() );
+
+  // close the input stream
+  this->_closeInputStream();
+
 }
 
 
@@ -509,21 +577,7 @@ void OctTreeNode::_reorder()
 void OctTreeNode::_createChildren()
 {
   Guard guard ( this->mutex() );
-  this->type( NODE_HOLDER );
-  _children.resize( 8 );
   
-  // split my bounding boxes
-  BoundingBoxVec b = this->_split();
-
-  for( unsigned int i = 0; i < 8; i ++ )
-  {
-    _children.at( i ) = new OctTreeNode ( _streamBuffer, _tempPath );
-    _children.at( i )->distance( _distance );
-    _children.at( i )->boundingBox( b.at( i ) );
-    _children.at( i )->type( POINT_HOLDER );
-    _children.at( i )->capacity( _capacity );
-
-  }
 }
 
 
@@ -533,9 +587,11 @@ void OctTreeNode::_createChildren()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OctTreeNode::BoundingBoxVec OctTreeNode::_split()
+void OctTreeNode::_split()
 {
   Guard guard ( this->mutex() );
+
+
   BoundingBoxVec b ( 0 );
   osg::Vec3d min = _bb.corner( 0 );
   osg::Vec3d max = _bb.corner( 7 );
@@ -561,7 +617,27 @@ OctTreeNode::BoundingBoxVec OctTreeNode::_split()
   b.push_back( osg::BoundingBox( b4.corner( 1 ),  b7.corner( 5 ) ) );
   b.push_back( osg::BoundingBox( b4.corner( 2 ),  b7.corner( 6 ) ) );
   b.push_back( b7 );
-  return b;
+
+  // Create the children and set the appropriate bounds for each
+  this->type( NODE_HOLDER );
+  _children.resize( 8 );
+
+  for( unsigned int i = 0; i < 8; i ++ )
+  {
+    _children.at( i ) = new OctTreeNode ( _streamBuffer, _tempPath );
+    _children.at( i )->distance( _distance );
+    _children.at( i )->boundingBox( b.at( i ) );
+    _children.at( i )->type( POINT_HOLDER );
+    _children.at( i )->capacity( _capacity );
+
+  }
+
+  // send the points to the children
+  this->_reorder();
+
+  // Reset the number of points
+  _numPoints = 0;
+
 }
 
 
@@ -578,7 +654,6 @@ bool OctTreeNode::_addCellToChild( OctTreeNode::Point p )
   const unsigned int size = _children.size();
   for( unsigned int c = 0; c < size; ++c )
   {
-    
     if( true == _children.at( c )->boundingBox().contains( p ) )
     {
       _children.at( c )->add( p );
@@ -589,10 +664,6 @@ bool OctTreeNode::_addCellToChild( OctTreeNode::Point p )
   return found;
 }
 
-
-/////////////////
-//  PRIVATE
-/////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -676,7 +747,7 @@ std::ofstream& OctTreeNode::_getOutputStream()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Clost the stream
+//  Close the stream
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -699,7 +770,7 @@ void  OctTreeNode::_closeInputStream()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Clost the stream
+//  Close the stream
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -715,5 +786,21 @@ void  OctTreeNode::_closeOutputStream()
 
     --_streamCount;
     //USUL_ASSERT ( _streamCount >= 0 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Close the streams of all children
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::_closeChildrenStreams()
+{
+  for( unsigned int i = 0; i < _children.size(); ++i )
+  {
+    _children.at( i )->closeInputStream();
+    _children.at( i )->closeOutputStream();
   }
 }

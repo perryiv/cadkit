@@ -72,6 +72,8 @@ namespace
         const std::string path ( "/../Frameworks/GDAL.framework/Resources/gdal/" );
 #elif _MSC_VER
         const std::string path ( "/proj4/" );
+#else 
+        const std::string path ( "/" );
 #endif
         const std::string directory ( Usul::Strings::format ( Usul::CommandLine::Arguments::instance().directory(), path, base ) );
         String filename ( directory.begin(), directory.end() );

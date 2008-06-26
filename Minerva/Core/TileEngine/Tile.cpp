@@ -395,8 +395,7 @@ void Tile::updateMesh()
   mt->addChild ( ground.get() );
 
   // Set the ground's alpha.
-  //OsgTools::State::StateSet::setAlpha ( ground.get(), body->alpha() );
-  //OsgTools::State::StateSet::setAlpha ( skirts.get(), body->alpha() );
+  OsgTools::State::StateSet::setAlpha ( this, body->alpha() );
 
   // Add the place-holder for the border.
   mt->addChild ( _borders.get() );

@@ -374,12 +374,15 @@ AddWmsLayerWidget::Layer* AddWmsLayerWidget::_makeGroup ( const Items& items, co
   Minerva::Core::Layers::RasterGroup::RefPtr group ( new Minerva::Core::Layers::RasterGroup );
   group->name ( false == name.empty() ? name : server );
 
+  // Possibly used below in the loop.
+  unsigned int count ( 0 );
+
   for ( Items::const_iterator iter = items.begin(); iter != items.end(); ++iter )
   {
     if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
     {
       Layer::ValidRefPtr layer ( this->_makeLayer ( item->extents(), format, item->name().c_str(), item->style().c_str()  ) );
-      layer->name ( group->name() + ":" + item->name() );
+      layer->name ( ( false == item->name().empty() ) ? item->name() : Usul::Strings::format ( group->name(), ": ", ++count ) );
       
       layer->showLayer ( false );
       

@@ -13,9 +13,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Item.h"
-#include "Visitor.h"
-#include "Errors.h"
+#include "MenuKit/Item.h"
+#include "MenuKit/Visitor.h"
+#include "MenuKit/Errors.h"
 
 #include "Usul/Bits/Bits.h"
 
@@ -87,6 +87,7 @@ Item& Item::operator = ( const Item &i )
 
 unsigned int Item::flags() const
 {
+  Guard guard ( this->mutex() );
   return _flags;
 }
 
@@ -99,6 +100,7 @@ unsigned int Item::flags() const
 
 void Item::flags ( unsigned int f )
 {
+  Guard guard ( this->mutex() );
   _flags = f;
 }
 
@@ -123,10 +125,7 @@ bool Item::enabled() const
 
 void Item::enabled ( bool e )
 {
-  if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::ENABLED ) );
-  else
-    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::ENABLED ) );
+  this->flags ( Usul::Bits::set<unsigned int, unsigned int> ( this->flags(), Item::ENABLED, e ) );
 }
 
 
@@ -150,10 +149,7 @@ bool Item::expanded() const
 
 void Item::expanded ( bool e )
 {
-  if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::EXPANDED ) );
-  else
-    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::EXPANDED ) );
+  this->flags ( Usul::Bits::set<unsigned int, unsigned int> ( this->flags(), Item::EXPANDED, e ) );
 }
 
 
@@ -177,8 +173,5 @@ bool Item::marked() const
 
 void Item::marked ( bool e )
 {
-  if ( e )
-    this->flags ( Usul::Bits::add    <unsigned int, unsigned int> ( this->flags(), Item::MARKED ) );
-  else
-    this->flags ( Usul::Bits::remove <unsigned int, unsigned int> ( this->flags(), Item::MARKED ) );
+  this->flags ( Usul::Bits::set<unsigned int, unsigned int> ( this->flags(), Item::MARKED, e ) );
 }

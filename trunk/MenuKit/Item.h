@@ -18,7 +18,10 @@
 
 #include "MenuKit/Export.h"
 
-#include "Usul/Base/Object.h"
+#include "Usul/Base/Referenced.h"
+#include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include <string>
 #include <map>
@@ -29,12 +32,15 @@ namespace MenuKit {
 class Visitor;
 class Menu;
 
-class MENUKIT_EXPORT Item : public Usul::Base::Object
+class MENUKIT_EXPORT Item : public Usul::Base::Referenced
 {
 public:
 
   // Typedefs and smart-pointers.
-  typedef Usul::Base::Object       BaseClass;
+  typedef Usul::Base::Referenced        BaseClass;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard<Mutex>   Guard;
+  
   USUL_DECLARE_REF_POINTERS ( Item );
 
   // Possible flags.
@@ -72,6 +78,9 @@ public:
   // Set/get the current flag.
   bool                  marked() const;
   void                  marked ( bool e );
+  
+  /// Get the mutex.
+  Mutex&                mutex() const { return _mutex; }
 
   // Is this item a separator?
   virtual bool          separator () const { return false; }
@@ -88,6 +97,7 @@ protected:
 
 private:
 
+  mutable Mutex _mutex;
   Menu *_parent;
   unsigned int _flags;
 };

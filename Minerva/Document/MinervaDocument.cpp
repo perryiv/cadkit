@@ -1809,7 +1809,7 @@ void MinervaDocument::_makePlanet()
   Land::RefPtr land ( new Land ( radii ) );
   
   // Make a good split distance.
-  const double splitDistance ( land->size() * 2.5 );
+  const double splitDistance ( land->size() * 3.0 ); // Was 2.5
   
   // Size of the mesh.
   Body::MeshSize meshSize ( 17, 17 );

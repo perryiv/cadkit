@@ -2299,8 +2299,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IRenderInfoOSG::IID:
     return static_cast < Usul::Interfaces::IRenderInfoOSG* > ( this );
   default:
-    return 0x0;
-  } 
+      return ( _caller.valid() ? _caller->queryInterface ( iid ) : 0x0 );
+  }
 }
 
 
@@ -5070,7 +5070,6 @@ osg::RenderInfo Viewer::getRenderInfo() const
 	Guard guard ( this->mutex() );
   return ( _renderer.valid() ? _renderer->getRenderInfo() : osg::RenderInfo() );
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////

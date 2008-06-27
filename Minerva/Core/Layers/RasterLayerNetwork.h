@@ -104,8 +104,6 @@ private:
   unsigned int _timeout;
 
   SERIALIZE_XML_CLASS_NAME ( RasterLayerNetwork );
-  SERIALIZE_XML_SERIALIZE_FUNCTION
-  SERIALIZE_XML_ADD_MEMBER_FUNCTION
 };
 
 

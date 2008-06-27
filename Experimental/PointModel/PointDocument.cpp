@@ -171,7 +171,7 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
     }
  
     // Read binary file.
-    this->_readPoint3DFile( binaryFilename, caller, progress );
+    this->_readPoint3DFile( binaryFilename, 0, caller, progress );
 
     // Create the octree
     this->_split( caller, progress );
@@ -186,7 +186,7 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
   else if( "bp3d" == ext )
   {
      // Read binary file.
-    this->_readPoint3DFile( name, caller, progress );
+    this->_readPoint3DFile( name, 1, caller, progress );
 
     // Create the octree
     this->_split( caller, progress );
@@ -298,10 +298,10 @@ osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *caller, Unknown *progress )
+void PointDocument::_readPoint3DFile( const std::string &filename, unsigned int progressPath, Unknown *caller, Unknown *progress )
 {
  
-  this->setStatusBar ( "Building octree...", progress );
+  this->setStatusBar ( "Step 1/2: Parsing point data...", progress );
 
   // Open a stream with a large buffer.
   const unsigned long int bufSize ( 4095 );
@@ -320,8 +320,8 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
   const bool same ( id == std::string ( header.begin(), header.end() ) );
   if( false == same )
   {
-    std::cout << "Error: should throw here" << std::endl;
-    return;
+    throw std::runtime_error ( "Error 2348749452: Invalid binary file format: " + filename );
+   
   }
 
   // Get the min/max bounds and the number of points
@@ -363,7 +363,10 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
 
       ++count;
       // Feedback.
-      this->setProgressBar ( update(), _numPoints + count, _numPoints * 2, progress );
+      if( 0 == progressPath )
+        this->setProgressBar( update(), _numPoints + count, _numPoints * 2, progress );
+      if( 1 == progressPath )
+        this->setProgressBar( update(), count, _numPoints, progress );
     }
   }
   USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1302438923" );
@@ -384,7 +387,7 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
 
 bool PointDocument::_parseHeader( const std::string &filename, Unknown *caller, Unknown *progress )
 {
-  this->setStatusBar ( "Examining header file...", progress );
+  this->setStatusBar ( "Step 1/2: Examining header file...", progress );
 
   // Open a stream with a large buffer for ascii reading.
   const unsigned long int bufSize ( 4095 );
@@ -414,7 +417,7 @@ void PointDocument::_fastReadAndSetBounds( const std::string &filename, const st
 {
   osg::BoundingBox bounds;
 
-  this->setStatusBar ( "Examining file...", progress );
+  this->setStatusBar ( "Step 1/2: Examining file...", progress );
 
   // Update progress bar every second.
   Usul::Policies::TimeBased update ( 1000 );
@@ -530,7 +533,7 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 {
   osg::BoundingBox bounds;
 
-  this->setStatusBar ( "Examining file...", progress );
+  this->setStatusBar ( "Step 1/2: Examining file...", progress );
 
   // Update progress bar every second.
   Usul::Policies::TimeBased update ( 1000 );
@@ -681,7 +684,7 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 
 void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 {
-  this->setStatusBar ( "Building Points...", progress );
+  this->setStatusBar ( "Step 2/2: Building Points...", progress );
   _pointSet->buildVectors();
 }
 
@@ -694,6 +697,6 @@ void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 
 void PointDocument::_split( Unknown *caller, Unknown *progress )
 {
-  _pointSet->split();
+  _pointSet->split( this, caller, progress );
 }
 

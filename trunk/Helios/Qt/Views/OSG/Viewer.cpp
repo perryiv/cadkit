@@ -1812,7 +1812,7 @@ void Viewer::toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* calle
   // Camera menu.
   MenuKit::Menu::RefPtr toolBar ( new MenuKit::Menu ( "view_toolbar" ) );
 
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Fit",    "eye.png",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Fit",    "eye.gif",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
   toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Home",   "home.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::RESET ) ) );
   toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Front",  "Front.gif",  viewer.get(), &OsgViewer::camera, OsgViewer::FRONT ) ) );
   toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Back",   "Back.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::BACK ) ) );

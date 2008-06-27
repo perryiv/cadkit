@@ -122,7 +122,23 @@ GenericCommand < ExecuteFunctor, EnableFunctor > *genericCommand ( const std::st
   return new Cmd ( name, f, e, caller );
 }
 
+// Helper function.
+template < class ExecuteFunctor, class EnableFunctor >
+GenericCommand < ExecuteFunctor, EnableFunctor > *genericCommand ( const std::string &name, const std::string& icon, ExecuteFunctor f, EnableFunctor e, Usul::Interfaces::IUnknown * caller = 0x0 )
+{
+  typedef GenericCommand < ExecuteFunctor, EnableFunctor > Cmd;
+  typename Cmd::RefPtr cmd ( new Cmd ( name, f, e, caller ) );
+  cmd->iconPath ( icon );
+  return cmd.release();
+}
+  
 }
 }
+
+#define USUL_MAKE_COMMAND(name,icon,object,fun) \
+Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::memberFunction<void> ( object, fun ), Usul::Commands::TrueFunctor() )
+
+#define USUL_MAKE_COMMAND_ARG0(name,icon,object,fun,arg0) \
+  Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::bind1<void> ( arg0, Usul::Adaptors::memberFunction<void> ( object, fun ) ), Usul::Commands::TrueFunctor() )
 
 #endif // __USUL_COMMANDS_GENERIC_COMMAND_H__

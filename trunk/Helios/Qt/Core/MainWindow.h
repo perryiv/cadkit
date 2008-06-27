@@ -181,6 +181,7 @@ protected:
   void                              _buildTextWindow();
   void                              _buildProgressBarWindow();
   void                              _buildToolBar();
+  void                              _buildQtToolBar( const MenuKit::Menu& toolBar );
 
   void                              _clearDocuments();
   void                              _clearMenuBar ();

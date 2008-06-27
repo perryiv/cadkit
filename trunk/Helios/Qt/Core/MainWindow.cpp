@@ -64,6 +64,7 @@
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IToolBarAdd.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
@@ -704,8 +705,12 @@ void MainWindow::_buildToolBar()
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "6391763130" );
 
   // Handle repeated calls.
+  for ( ToolBars::const_iterator iter = _toolBars.begin(); iter != _toolBars.end(); ++iter )
+    this->removeToolBar ( iter->second );
+  _toolBars.clear();
+  
+  // Make the standard toolbar.
   const char *standardToolBarName ( "standard_tool_bar" );
-  this->removeToolBar ( _toolBars[standardToolBarName] );
   QToolBar *toolBar ( this->addToolBar ( standardToolBarName ) );
   _toolBars.insert ( ToolBars::value_type ( standardToolBarName, toolBar ) );
 
@@ -725,6 +730,84 @@ void MainWindow::_buildToolBar()
     Action::RefPtr action ( new Action ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
     _actions.insert ( action );
     toolBar->addAction ( action.get() );
+  }
+  
+  {
+    MenuKit::Menu::RefPtr toolBar ( new MenuKit::Menu );
+    
+    // Check the active document.
+    {
+      Usul::Interfaces::IToolBarAdd::QueryPtr ta ( Usul::Documents::Manager::instance().activeDocument() );
+      if ( ta.valid() )
+      {
+        ta->toolBarAdd ( *toolBar, me.get() );
+      }
+    }
+    
+    // Check the active view.
+    {
+      Usul::Interfaces::IToolBarAdd::QueryPtr ta ( Usul::Documents::Manager::instance().activeView() );
+      if ( ta.valid() )
+      {
+        ta->toolBarAdd ( *toolBar, me.get() );
+      }
+    }
+    
+    // Check all plugins.
+    typedef Usul::Components::Manager PluginManager;
+    typedef PluginManager::UnknownSet Unknowns;
+    
+    Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::IToolBarAdd::IID ) );
+    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++ iter )
+    {
+      // Should be true.
+      Usul::Interfaces::IToolBarAdd::ValidQueryPtr ta ( (*iter).get() );
+      ta->toolBarAdd ( *toolBar, me.get() );
+    }
+    
+    // There are a few issues to work out, only use in debug mode.
+#ifdef _DEBUG
+    // Make the Qt tool bars.
+    this->_buildQtToolBar ( *toolBar );
+#endif
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the Qt tool bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_buildQtToolBar( const MenuKit::Menu& toolBar )
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4595687620" );
+  
+  // Make the toolbars.
+  for ( MenuKit::Menu::const_iterator iter = toolBar.begin(); iter != toolBar.end(); ++iter )
+  {
+    // We only have top level items that are menus.
+    if ( MenuKit::Menu *menu = dynamic_cast < MenuKit::Menu* > ( iter->get() ) )
+    {
+      QToolBar *tb ( this->addToolBar ( menu->text().c_str() ) );
+      _toolBars.insert ( ToolBars::value_type ( menu->text().c_str(), tb ) );
+      
+      // Set standard size.
+      tb->setIconSize ( QSize ( 16, 16 ) );
+      tb->setObjectName ( menu->text().c_str() );
+      
+      for ( MenuKit::Menu::const_iterator item = menu->begin(); item != menu->end(); ++item )
+      {
+        if ( MenuKit::Button* button = dynamic_cast<MenuKit::Button*> ( (*item).get() ) )
+        {
+          Action::RefPtr action ( new Action ( button->command() ) );
+          _actions.insert ( action );
+          tb->addAction ( action.get() );
+        }
+      }
+    }
   }
 }
 
@@ -1811,8 +1894,8 @@ void MainWindow::dropEvent ( QDropEvent *event )
 void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc )
 {
   USUL_TRACE_SCOPE;
-  this->_buildMenuKitMenu();
-  this->_buildQtMenu();
+  //this->_buildMenuKitMenu();
+  //this->_buildQtMenu();
 }
 
 
@@ -1825,6 +1908,7 @@ void MainWindow::activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usu
 void MainWindow::activeViewChanged ( Usul::Interfaces::IUnknown *oldView, Usul::Interfaces::IUnknown *newView )
 {
   USUL_TRACE_SCOPE;
+  this->_buildToolBar();
   this->_buildMenuKitMenu();
   this->_buildQtMenu();
 }

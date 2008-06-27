@@ -765,10 +765,12 @@ void MainWindow::_buildToolBar()
       ta->toolBarAdd ( *toolBar, me.get() );
     }
     
-    // There are a few issues to work out, only use in debug mode.
+    // There are a few issues on OS X to work out, only use in debug mode.
+#ifndef __APPLE__
 #ifdef _DEBUG
     // Make the Qt tool bars.
     this->_buildQtToolBar ( *toolBar );
+#endif
 #endif
   }
 }

@@ -29,6 +29,9 @@
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OctTreeNode, OctTreeNode::BaseClass );
 
  long OctTreeNode::_streamCount( 0 );
+ unsigned long OctTreeNode::_numerator( 0 );
+ unsigned long OctTreeNode::_denominator( 0 );
+ unsigned int OctTreeNode::_numLeafNodes( 0 );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -43,17 +46,21 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
   _type( POINT_HOLDER ),
   _capacity( 1000 ),
   _useLOD( true ),
-  _list( new std::list< OctTreeNode::Point > ),
-  _numLODs( 10 ),
   _infile( 0x0 ),
   _outfile( 0x0 ),
-  _tempFilename( Usul::File::Temp::file() ),
+  _tempFilename(),
   _numPoints( 0 ),
   _streamBuffer ( buffer ),
   _tempPath( tempPath )
 {
   
   _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
+#if 1
+  for( unsigned short i = 0; i < 6; ++i )
+  {
+    _lodDefinitions.push_back( i * i + 1 );
+  }
+#endif
 }
 
 
@@ -253,6 +260,8 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
   osg::ref_ptr< osg::LOD > lod ( new osg::LOD );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
+  unsigned int numLODs ( _lodDefinitions.size() );
+
   if( POINT_HOLDER == this->type() )
   {
     // Make sure the points are valid
@@ -261,19 +270,19 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
       // LOds
       if( _points->size() > 0 )
       {
-        for( unsigned int lodLevel = 0; lodLevel < _numLODs; ++lodLevel )
+        for( unsigned int lodLevel = 0; lodLevel < numLODs; ++lodLevel )
         {
           //Points vertices ( new osg::Vec3Array );
           ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
 
-#if 1
-          double lm = ( static_cast< double >( lodLevel ) / static_cast< double > ( _numLODs ) ) * static_cast< double > ( _capacity );
-          unsigned int lodMultiplier = static_cast< unsigned int > ( lm ) + 1;
+#if 0
+          double lm ( static_cast< double >( _capacity - 1 ) / static_cast< double > ( _numLODs ) );
+          unsigned short lodMultiplier = static_cast< unsigned short > ( lm * lodLevel ) + 1;
 #else
-          unsigned int lodMultiplier = ( lodLevel * lodLevel ) + 1;
+          unsigned int lodMultiplier ( _lodDefinitions.at( lodLevel ) );
 #endif
-          indices->reserve( static_cast< unsigned int > ( ( _points->size() / lodMultiplier ) ) + 1  );
-          for( unsigned short i = 0; i < _points->size(); i += lodMultiplier )
+          indices->reserve( static_cast< unsigned int > ( ( _points->size() / lodMultiplier ) ) );
+          for( unsigned int i = 0; i < _points->size(); i += lodMultiplier )
           {
             indices->push_back( i );
           }
@@ -285,11 +294,11 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
           geode->addDrawable( geometry.get() );
           
           // High level LODs
-          float minLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( _numLODs ) );
-          float maxLevel ( ( static_cast< float > ( lodLevel ) + 1.0f ) / static_cast< float > ( _numLODs ) );
+          float minLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( numLODs ) );
+          float maxLevel ( ( static_cast< float > ( lodLevel ) + 1.0f ) / static_cast< float > ( numLODs ) );
           float minDistance = Usul::Math::maximum( ( minLevel * _distance ), this->getBoundingRadius() * minLevel );
           float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
-          if( lodLevel == _numLODs - 1 )
+          if( lodLevel == numLODs - 1 )
           {
             maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), std::numeric_limits< float >::max() );
           }
@@ -396,6 +405,9 @@ void OctTreeNode::buildVectors()
     this->_closeInputStream();
     this->_closeOutputStream();
 
+    // Increment the leaf node count
+    ++_numLeafNodes;
+
   }
   else
   {
@@ -440,7 +452,7 @@ void OctTreeNode::closeOutputStream()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool OctTreeNode::split()
+bool OctTreeNode::split( Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
 {
   Guard guard ( this->mutex() );
 
@@ -449,6 +461,12 @@ bool OctTreeNode::split()
 
   if( _numPoints > _capacity )
   {
+   
+    // Update progress
+    ++_numerator;
+    document->setProgressBar( true, _numerator, _denominator, progress );
+    //std::cout << "Splitting... numerator is: " << _numerator << " denominator is: " << _denominator << std::endl;
+
     // Create children and populate them with my points
     this->_split();
 
@@ -465,13 +483,39 @@ bool OctTreeNode::split()
     // Tell my children to split if needed
     for( unsigned int i = 0; i < _children.size(); ++i )
     {
-      _children.at( i )->split();
+      _children.at( i )->split( document, caller, progress );
     }
     return true;
   }
   return false;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the progress for the split function
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::initSplitProgress( unsigned long n, unsigned long d )
+{
+  Guard guard ( this->mutex() );
+  _numerator = n;
+  _denominator = d;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of points in this node
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Types::Uint64 OctTreeNode::getNumPoints()
+{
+  Guard guard ( this->mutex() );  
+  return _numPoints;
+}
 
 
 /////////////////

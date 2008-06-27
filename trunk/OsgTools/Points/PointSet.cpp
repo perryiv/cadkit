@@ -188,9 +188,9 @@ void PointSet::capacity( unsigned int t )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointSet::split()
+void PointSet::split( Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
 {
   Guard guard ( this );
-  _tree->split();
+  _tree->split( document, caller, progress );
 }
 

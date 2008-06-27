@@ -163,10 +163,14 @@ unsigned int OctTree::capacity()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OctTree::split()
+void OctTree::split(  Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
 {
   Guard guard ( this );
-  _tree->split();
+  Usul::Types::Uint64 numPoints ( _tree->getNumPoints() );
+  document->setStatusBar( "Step 2/2: Building Octree...", progress );
+  unsigned int d ( static_cast< unsigned int > ( static_cast< double > ( numPoints ) / static_cast< double > ( _tree->capacity() ) ) );
+  _tree->initSplitProgress( 0, d );
+  _tree->split( document, caller, progress );
 }
 
 
@@ -196,23 +200,27 @@ osg::Node* OctTree::_buildTransparentPlane()
 
   vertices->push_back( minCorner );
   vertices->push_back( osg::Vec3d ( maxCorner.x(), minCorner.y(), minCorner.z() ) );
+  vertices->push_back( maxCorner );
   vertices->push_back( osg::Vec3d ( minCorner.x(), maxCorner.y(), minCorner.z() ) );
 
-  vertices->push_back( osg::Vec3d ( minCorner.x(), maxCorner.y(), minCorner.z() ) );
-  vertices->push_back( osg::Vec3d ( maxCorner.x(), minCorner.y(), minCorner.z() ) );
-  vertices->push_back( maxCorner );
-  
   // set the vertices
   geometry->setVertexArray( vertices.get() );
-  geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLES ) );
+  geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
+
+  // Set the normals
+  osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
+  normals->push_back( osg::Vec3 ( 0.0, 0.0, 1.0 ) );
+  geometry->setNormalArray( normals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_PRIMITIVE );
 
   //set the color array
-  osg::ref_ptr< osg::Vec4Array > color ( new osg::Vec4Array );
-  color->push_back( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
-  geometry->setColorArray( color.get() );
-  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+  osg::Vec4 color( osg::Vec4 ( 1.0, 1.0, 1.0, 0.0 ) );
 
+  // add the geometry to the geode
   geode->addDrawable( geometry.get() );
+
+  // Set the material properties
+  OsgTools::State::StateSet::setMaterial( geode.get(), color, color, 0.0f );
 
   // Set the node to be transparent
   OsgTools::State::StateSet::setAlpha ( geode.get(), 0.0f );

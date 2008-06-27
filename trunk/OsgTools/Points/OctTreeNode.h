@@ -20,6 +20,7 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Documents/Document.h"
 
 #include "Usul/Math/Vector3.h"
 #include "Usul/Types/Types.h"
@@ -60,6 +61,7 @@ public:
   typedef osg::ref_ptr < Elements > ElementsPtr;
   typedef std::vector<char> StreamBuffer;
   typedef boost::shared_ptr<StreamBuffer> StreamBufferPtr;
+  typedef std::vector< unsigned short > LodDefinitions;
 
   OctTreeNode ( StreamBufferPtr, const std::string &tempPath );
   virtual ~OctTreeNode();
@@ -88,9 +90,12 @@ public:
   void                              closeInputStream();
   void                              closeOutputStream();
 
+  void                              initSplitProgress( unsigned long n, unsigned long d );
+  Usul::Types::Uint64               getNumPoints();
+
   
 
-  bool                              split();
+  bool                              split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
 protected:
 
@@ -124,9 +129,8 @@ private:
   unsigned int                    _capacity;
 
   bool                            _useLOD;
-  LinkedList*                     _list; 
 
-  unsigned int                    _numLODs;
+  LodDefinitions                  _lodDefinitions;
 
   std::ifstream*                  _infile;
   std::ofstream*                  _outfile;
@@ -134,8 +138,12 @@ private:
   Usul::Types::Uint64             _numPoints;
   StreamBufferPtr                 _streamBuffer;
   std::string                     _tempPath;
-
+  
+  
   static long                     _streamCount;
+  static unsigned long            _numerator;
+  static unsigned long            _denominator;
+  static unsigned int             _numLeafNodes;
 };
 
 #endif // __EXPERIMENTAL_OCTTREENODE_H__

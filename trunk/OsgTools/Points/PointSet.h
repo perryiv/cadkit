@@ -22,6 +22,7 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Documents/Document.h"
 
 #include "osg/Vec3"
 #include "osg/Group"
@@ -80,7 +81,7 @@ public:
 
   void                    buildVectors();
 
-  void                    split();
+  void                    split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
 
  

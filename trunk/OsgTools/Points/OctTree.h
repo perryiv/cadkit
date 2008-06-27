@@ -25,6 +25,7 @@
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Documents/Document.h"
 
 #include "osg/BoundingBox"
 #include "osg/Group"
@@ -61,7 +62,7 @@ public:
   void                capacity( unsigned int level );
   unsigned int        capacity();
 
-  void                split();
+  void                split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
 protected:
   

@@ -3866,6 +3866,31 @@ void Application::_initMenu()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Help macros to shorten lines below.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define VRV_MAKE_COMMAND(text,func_name)\
+  USUL_MAKE_COMMAND(text,"",this,&Application::func_name)
+
+#define VRV_MAKE_COMMAND_ARG0(text,func_name,arg0)\
+  USUL_MAKE_COMMAND_ARG0(text,"",this,&Application::func_name,arg0)
+
+#define VRV_MAKE_TOGGLE_COMMAND(text,set_func,check_func)\
+ Usul::Commands::genericToggleCommand (text,\
+                                       Usul::Adaptors::memberFunction<void> ( this, &Application::set_func ), \
+                                       Usul::Adaptors::memberFunction<bool> ( this, &Application::check_func ) )
+
+#define VRV_MAKE_CHECK_COMMAND(text,set_func,set_arg,check_func,check_arg)\
+ Usul::Commands::genericCheckCommand (text,\
+                                       Usul::Adaptors::bind1<void> ( set_arg,  \
+                                                                     Usul::Adaptors::memberFunction<void> ( this, &Application::set_func ) ), \
+                                       Usul::Adaptors::bind1<bool> ( check_arg, \
+                                                                     Usul::Adaptors::memberFunction<bool> ( this, &Application::check_func ) ) )
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Initialize the file menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3880,11 +3905,11 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
   MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export", MenuKit::Menu::VERTICAL ) );
   menu->append ( exportMenu.get() );
 
-  exportMenu->append ( new Button ( new BasicCommand ( "Image", Usul::Adaptors::memberFunction<void> ( this, &Application::exportNextFrame ) ) ) );
-  exportMenu->append ( new Button ( new BasicCommand ( "Models ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorld ) ) ) );
-  exportMenu->append ( new Button ( new BasicCommand ( "Models Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportWorldBinary ) ) ) );
-  exportMenu->append ( new Button ( new BasicCommand ( "Scene ASCII", Usul::Adaptors::memberFunction<void> ( this, &Application::exportScene ) ) ) );
-  exportMenu->append ( new Button ( new BasicCommand ( "Scene Binary", Usul::Adaptors::memberFunction<void> ( this, &Application::exportSceneBinary ) ) ) );
+  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Image", exportNextFrame ) ) );
+  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Models ASCII", exportWorld ) ) );
+  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Models Binary", exportWorldBinary ) ) );
+  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Scene ASCII", exportScene ) ) );
+  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Scene Binary", exportSceneBinary ) ) );
 
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
   if ( document.valid() )
@@ -3896,20 +3921,18 @@ void Application::_initFileMenu     ( MenuKit::Menu* menu )
 
     for ( Filters::const_iterator iter = exportFilters.begin(); iter != exportFilters.end(); ++iter )
     {
-      std::string ext ( iter->second );
+      const std::string ext ( Usul::File::extension ( iter->second ) );
   
 			if ( false == ext.empty() )
 			{
-				exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Export " + iter->first, 
-                                                         Usul::Adaptors::bind1<void> ( Usul::File::extension ( ext ), 
-                                                         Usul::Adaptors::memberFunction<void> ( this, &Application::exportDocument ) ), 
-                                                         Usul::Commands::TrueFunctor() ) ) );
+        const std::string name ( Usul::Strings::format ( "Export ", iter->first ) );
+				exportMenu->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, exportDocument, ext ) ) );
       }
     }
   }
 
   menu->addSeparator();
-  menu->append ( new Button ( new BasicCommand ( "Exit", Usul::Adaptors::memberFunction<void> ( this, &Application::quit ) ) ) );
+  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Exit", quit ) ) );
 }
 
 
@@ -3953,29 +3976,16 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
   namespace UA = Usul::Adaptors;
 
   menu->append ( new ToggleButton ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Reset Clipping", UA::memberFunction<void> ( this, &Application::_setNearAndFarClippingPlanes ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "Set Home", UA::memberFunction<void> ( this, &Application::_setHome ) ) ) );
-  menu->append ( new Button       ( new BasicCommand ( "View All", UA::memberFunction<void> ( this, &Application::viewScene ) ) ) );
-  menu->append ( new ToggleButton ( 
-                                   Usul::Commands::genericToggleCommand ( "Seek", 
-                                   UA::memberFunction<void> ( this, &Application::seekMode ), 
-                                   UA::memberFunction<bool> ( this, &Application::isSeekMode ) ) ) );
+  menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Reset Clipping", _setNearAndFarClippingPlanes ) ) );
+  menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Set Home",       _setHome ) ) );
+  menu->append ( new Button       ( VRV_MAKE_COMMAND ( "View All",       viewScene ) ) );
+  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Seek", seekMode, isSeekMode ) ) );
 
   MenuKit::Menu::RefPtr nearFar ( new MenuKit::Menu ( "Compute Near Far" ) );
   menu->append ( nearFar );
 
-  nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "On", 
-                        UA::bind1<void> ( true, 
-                                          UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
-                        UA::bind1<bool> ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES,
-                                          UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
-
-  nearFar->append ( new RadioButton ( Usul::Commands::genericCheckCommand ( "Off", 
-                        UA::bind1<void> ( false, 
-                                          UA::memberFunction<void> ( this, &Application::setComputeNearFar ) ), 
-                        UA::bind1<bool> ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR, 
-                                          UA::memberFunction<bool> ( this, &Application::isComputeNearFar ) ) ) ) );
-
+  nearFar->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "On",  setComputeNearFar, true,  isComputeNearFar, osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES ) ) );
+  nearFar->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "Off", setComputeNearFar, false, isComputeNearFar, osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR ) ) );
 
   menu->addSeparator();
 
@@ -4037,10 +4047,7 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );
   }
 
-  menu->append ( new ToggleButton ( 
-                                   Usul::Commands::genericToggleCommand ( "Show Back Faces", 
-                                   UA::memberFunction<void> ( this, &Application::showBackFaces ), 
-                                   UA::memberFunction<bool> ( this, &Application::isBackFacesShowing ) ) ) );
+  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Show Back Faces", showBackFaces, isBackFacesShowing ) ) );
 }
 
 
@@ -4083,10 +4090,10 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 	menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Body Centered Rotation", UA::memberFunction<void> ( this, &Application::bodyCenteredRotation ), UA::memberFunction<bool> ( this, &Application::isBodyCenteredRotation ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
 
-	menu->append ( new Button ( UC::genericCommand ( "Translate Speed x 10", UA::memberFunction<void> ( this, &Application::_increaseSpeedTen ), UC::TrueFunctor() ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Translate Speed x 2", UA::memberFunction<void> ( this, &Application::_increaseSpeed ), UC::TrueFunctor() ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Translate Speed / 2", UA::memberFunction<void> ( this, &Application::_decreaseSpeed ), UC::TrueFunctor() ) ) );
-  menu->append ( new Button ( UC::genericCommand ( "Translate Speed / 10", UA::memberFunction<void> ( this, &Application::_decreaseSpeedTen ), UC::TrueFunctor() ) ) );
+	menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 10", _increaseSpeedTen ) ) );
+  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 2",  _increaseSpeed    ) ) );
+  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed / 2",  _decreaseSpeed    ) ) );
+  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed / 10", _decreaseSpeedTen ) ) );
 }
 
 
@@ -4121,33 +4128,21 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   for ( ColorMap::const_iterator iter = _colorMap.begin(); iter != _colorMap.end(); ++iter )
     colors->append ( new Button ( new BackgroundColor ( iter->first, iter->second, me ) ) );
 
-  MenuKit::Menu::RefPtr corners ( new MenuKit::Menu ( "Corners" ) );
-  typedef OsgTools::Render::Renderer::Corners Corners;
-  corners->append ( new RadioButton ( 
-                    Usul::Commands::genericCheckCommand ( "All", 
-                                    UA::bind1<void> ( static_cast<unsigned int> ( Corners::ALL ), 
-                                                      UA::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
-                                    UA::bind1<bool> ( static_cast<unsigned int> ( Corners::ALL ), 
-                                                      UA::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
-  corners->append ( new RadioButton ( 
-                    Usul::Commands::genericCheckCommand ( "Top", 
-                                    UA::bind1<void> ( static_cast<unsigned int> ( Corners::TOP ), 
-                                                      UA::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
-                                    UA::bind1<bool> ( static_cast<unsigned int> (Corners::TOP ), 
-                                                      UA::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
-  corners->append ( new RadioButton ( 
-                    Usul::Commands::genericCheckCommand ( "Bottom", 
-                                    UA::bind1<void> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
-                                                      UA::memberFunction<void> ( this, &Application::setBackgroundCorners ) ), 
-                                    UA::bind1<bool> ( static_cast<unsigned int> ( Corners::BOTTOM ), 
-                                                      UA::memberFunction<bool> ( this, &Application::isBackgroundCorners ) ) ) ) );
-
-  background->append ( corners.get() );
+  {
+    MenuKit::Menu::RefPtr corners ( new MenuKit::Menu ( "Corners" ) );
+    typedef OsgTools::Render::Renderer::Corners Corners;
+    const unsigned int ALL    ( static_cast<unsigned int> ( Corners::ALL ) );
+    const unsigned int TOP    ( static_cast<unsigned int> ( Corners::TOP ) );
+    const unsigned int BOTTOM ( static_cast<unsigned int> ( Corners::BOTTOM ) );
+    corners->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "All", setBackgroundCorners, ALL, isBackgroundCorners, ALL ) ) );
+    corners->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "Top", setBackgroundCorners, TOP, isBackgroundCorners, TOP ) ) );
+    corners->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "Bottom", setBackgroundCorners, BOTTOM, isBackgroundCorners, BOTTOM ) ) );
+    background->append ( corners.get() );
+  }
 
   // Create a sub-menu for buttons.
   {
     MenuKit::Menu::RefPtr buttons ( new MenuKit::Menu ( "Buttons" ) );
-
     MenuKit::Menu::RefPtr assign ( new MenuKit::Menu ( "Assign" ) );
 
     for( Buttons::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
@@ -4156,19 +4151,16 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
 			if ( true == button.valid() )
 			{
-				std::string name ( button->getButtonName() );
-				unsigned long id ( button->buttonID() );
+				const std::string name ( button->getButtonName() );
+				const unsigned long id ( button->buttonID() );
 
-				assign->append ( new Button ( Usul::Commands::genericCommand ( name, 
-											 UA::bind1<void> ( id, 
-											 UA::memberFunction<void> ( this, &Application::_assignNextMenuSelection ) ), Usul::Commands::TrueFunctor() ) ) );
+				assign->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, _assignNextMenuSelection, id ) ) );
 			}
     }
     
     buttons->append ( assign );
 
-    buttons->append ( new Button ( new BasicCommand ( "Clear button assignments", UA::memberFunction<void> ( this, &Application::_clearAssignedButtonCommands ) ) ) );
-
+    buttons->append ( new Button ( VRV_MAKE_COMMAND ( "Clear button assignments", _clearAssignedButtonCommands ) ) );
 
     menu->append ( buttons );
   }
@@ -4176,15 +4168,13 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
   menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 
-  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Update", UA::memberFunction<void> ( this, &Application::_setAllowUpdate ), UA::memberFunction<bool> ( this, &Application::_isUpdateOn ) ) ) );
-
-  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Intersect", UA::memberFunction<void> ( this, &Application::allowIntersections ), UA::memberFunction<bool> ( this, &Application::isAllowIntersections ) ) ) );
-
-  menu->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "Memory Usage", UA::memberFunction<void> ( this, &Application::setShowMemory ), UA::memberFunction<bool> ( this, &Application::getShowMemory ) ) ) );
+  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Update", _setAllowUpdate, _isUpdateOn ) ) );
+  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Intersect", allowIntersections, isAllowIntersections ) ) );
+  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Memory Usage", setShowMemory, getShowMemory ) ) );
 
   menu->append ( new MenuKit::Separator );
 
-  menu->append ( new Button ( new BasicCommand ( "Reinitialize", UA::memberFunction<void> ( this, &Application::reinitialize ) ) ) );
+  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Reinitialize", reinitialize ) ) );
 }
 
 

@@ -13,6 +13,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
+#include "Usul/App/Application.h"
 #include "Usul/Cast/Cast.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
@@ -23,6 +24,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IKeyListener.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Convert.h"
@@ -262,6 +264,8 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IQuestion * > ( this );
   case Usul::Interfaces::ISaveFileDialog::IID:
     return static_cast < Usul::Interfaces::ISaveFileDialog * > ( this );
+  case Usul::Interfaces::IToolBarAdd::IID:
+    return static_cast < Usul::Interfaces::IToolBarAdd * > ( this );
   default:
     return 0x0;
   }
@@ -1781,4 +1785,41 @@ void Viewer::_openGLInformation()
   message << "Stereo: " << ( format.stereo() ? "Enabled" : "Disabled" ) << std::endl;
   
   QMessageBox::information ( this, "OpenGL information", message.str().c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the toolbar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* caller )
+{
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  
+  // Return now if no viewer.
+  if ( false == viewer.valid() )
+    return;
+  
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( this->viewer() );
+  
+  // Typedefs.
+  typedef MenuKit::Button Button;
+  typedef OsgTools::Render::Viewer OsgViewer;
+  
+  // Camera menu.
+  MenuKit::Menu::RefPtr toolBar ( new MenuKit::Menu ( "view_toolbar" ) );
+
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Fit",    "eye.png",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Home",   "home.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::RESET ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Front",  "Front.gif",  viewer.get(), &OsgViewer::camera, OsgViewer::FRONT ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Back",   "Back.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::BACK ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Left",   "Left.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::LEFT ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Right",  "Right.gif",  viewer.get(), &OsgViewer::camera, OsgViewer::RIGHT ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Top",    "Top.gif",    viewer.get(), &OsgViewer::camera, OsgViewer::TOP ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Bottom", "Bottom.gif", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
+  
+  menu.append ( toolBar.get() );
 }

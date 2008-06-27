@@ -24,7 +24,7 @@
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMenuAdd.h"
-#include "Usul/Interfaces/IKeyListener.h"
+#include "Usul/Interfaces/IToolBarAdd.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -53,7 +53,8 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::IRedraw,
                                           public Usul::Interfaces::IMenuAdd,
                                           public Usul::Interfaces::IQuestion,
-                                          public Usul::Interfaces::ISaveFileDialog
+                                          public Usul::Interfaces::ISaveFileDialog,
+                                          public Usul::Interfaces::IToolBarAdd
 {
   Q_OBJECT
 
@@ -122,6 +123,9 @@ public:
 
   /// Add to the menu (IMenuAdd).
   virtual void                            menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+  
+  /// Add to the toolbar.
+  virtual void                            toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Update the cursor.
   void                                    updateCursor();

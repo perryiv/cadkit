@@ -198,6 +198,8 @@ protected:
   void                              _parseCommandLine ( int argc, char **argv );
 
   void                              _saveSettings();
+  
+  static void                       _waitForJobs();
  
   // Usul::Interfaces::Qt::IMainWindow
   virtual QMainWindow *             mainWindow();
@@ -227,6 +229,7 @@ protected:
 
   /// Prompt the user (IQuestion).
   virtual std::string               question ( const std::string &buttons, const std::string &title, const std::string &text );
+  
 private slots:
 
   void                              _idleProcess();

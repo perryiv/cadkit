@@ -287,6 +287,10 @@ void MainWindow::_destroy()
   // Clear the progress bars.
   _progressBars = 0x0;
 
+  // Wait for jobs before plugins are released.
+  // At least on OS X, using a pointer created in a shared object after it is released causes a crash.
+  MainWindow::_waitForJobs();
+  
   // Release all the plugins.
   this->releasePlugins();
   
@@ -294,12 +298,9 @@ void MainWindow::_destroy()
   Usul::DLL::LibraryPool::instance().clear ( &std::cout );
 
   // Wait here until all jobs are done.
-  std::cout << "Waiting for all jobs to finish..." << std::endl;
-  //Usul::Jobs::Manager::instance().purge();
-  Usul::Jobs::Manager::instance().cancel();
-  Usul::Jobs::Manager::instance().wait();
+  // It is unlikely that a plugin will create a job in it's destructor, but leaving this here to make sure.
+  MainWindow::_waitForJobs();
   Usul::Jobs::Manager::destroy();
-  std::cout << "All jobs have finished" << std::endl;
 
   // Wait here until all threads are done.
   std::cout << "Purging all finished threads..." << std::endl;
@@ -340,6 +341,21 @@ void MainWindow::_destroy()
 
   // Delete the mutex last.
   delete _mutex; _mutex = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Wait for all jobs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_waitForJobs()
+{
+  std::cout << "Waiting for all jobs to finish..." << std::endl;
+  Usul::Jobs::Manager::instance().cancel();
+  Usul::Jobs::Manager::instance().wait();
+  std::cout << "All jobs have finished" << std::endl;
 }
 
 

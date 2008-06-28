@@ -56,10 +56,15 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
   
   _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
 #if 1
-  for( unsigned short i = 0; i < 6; ++i )
-  {
-    _lodDefinitions.push_back( i * i + 1 );
-  }
+   _lodDefinitions.push_back( 1 );
+   _lodDefinitions.push_back( 10 );
+   _lodDefinitions.push_back( 25 );
+   _lodDefinitions.push_back( 50 );
+   _lodDefinitions.push_back( 75 );
+   _lodDefinitions.push_back( 100 );
+   _lodDefinitions.push_back( 150 );
+   _lodDefinitions.push_back( 300 );
+   _lodDefinitions.push_back( 600 );
 #endif
 }
 

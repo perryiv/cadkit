@@ -366,10 +366,10 @@ void Tile::updateMesh()
   osg::ref_ptr<osg::Group> skirts ( new osg::Group );
 
   // Add skirts to group.
-  skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], _texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
-  skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], _texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
-  skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], _texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
-  skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], _texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
+  skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
+  skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
+  skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
+  skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
 
 #if 0
 
@@ -1652,9 +1652,12 @@ void Tile::texCoords ( const Usul::Math::Vec4d& t )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _texCoords = t;
-
-  this->dirty ( true, Tile::TEX_COORDS, false );
+  
+  if ( false == t.equal ( _texCoords ) )
+  {
+    _texCoords = t;
+    this->dirty ( true, Tile::TEX_COORDS, false );
+  }
 }
 
 

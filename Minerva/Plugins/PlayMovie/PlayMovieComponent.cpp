@@ -141,14 +141,8 @@ Usul::Interfaces::IUnknown *PlayMovieComponent::queryInterface ( unsigned long i
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IPlayMovie::IID:
-    return static_cast < Usul::Interfaces::IPlayMovie*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin* > ( this );
-  case Usul::Interfaces::ITool::IID:
-    return static_cast < Usul::Interfaces::ITool* >( this );
-  case Usul::Interfaces::IToolLifeTime::IID:
-    return static_cast< Usul::Interfaces::IToolLifeTime* >( this );
   default:
     return 0x0;
   }

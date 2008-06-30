@@ -23,19 +23,13 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IPlayMovie.h"
-#include "Usul/Interfaces/ITool.h"
-#include "Usul/Interfaces/IToolLifeTime.h"
 
 #include "Cinema/Core/Movie.h"
 
 namespace osg{ class Node; }
 
 class PlayMovieComponent : public Usul::Base::Referenced,
-                           public Usul::Interfaces::IPlayMovie,
-                           public Usul::Interfaces::IPlugin, 
-                           public Usul::Interfaces::ITool, 
-                           public Usul::Interfaces::IToolLifeTime
+                           public Usul::Interfaces::IPlugin
 {
 public:
 

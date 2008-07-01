@@ -16,6 +16,8 @@
 
 #include "hdf5.h"
 
+//#define USE_HDF5_LITE 1
+
 #include <string>
 #include <vector>
 
@@ -53,8 +55,13 @@ protected:
   
 private:
   
+#ifdef USE_HDF5_LITE
+  std::string _name;
+  hid_t _handle;
+#else
   hid_t _dataset;
   hid_t _space;
+#endif
   Dimensions _dimensions;
 };
 

@@ -83,6 +83,8 @@ public:
 
   void                    split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  void                    write( std::ofstream* ofs, Usul::Documents::Document* document = 0x0, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
+  void                    read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
  
 protected:

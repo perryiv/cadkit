@@ -25,6 +25,8 @@
 #include "osg/Vec4"
 #include "osg/BoundingBox"
 
+#include <fstream>
+
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OctTree, OctTree::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,6 +72,48 @@ OctTree::~OctTree()
 /////////////////
 //  PUBLIC
 /////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the binary restart file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTree::read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+{
+  Guard guard ( this->mutex() );
+
+   // Read and set the number of leaf nodes
+  unsigned long long numLeafNodes ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( unsigned long long ) );
+  _tree->numLeafNodes( numLeafNodes );
+
+  // Read the number of lods
+  unsigned long long numLods ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &numLods ), sizeof( unsigned long long ) );
+
+  // Read and set the lods
+  std::vector< unsigned short > lodDefinitions ( numLods );
+  ifs->read ( reinterpret_cast< char* > ( &lodDefinitions[0] ), sizeof( lodDefinitions ) );
+  _tree->lodDefinitions( lodDefinitions );
+
+  // Read the lod max distance
+  double d ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &d ), sizeof( double ) );
+  _tree->distance( d );
+
+  // Initialize progress
+  _tree->initSplitProgress( 0, numLeafNodes );
+
+  // Set progress message
+  document->setStatusBar( "Reading Binary Restart File...", progress );
+  
+  _tree->read( ifs, document, caller, progress );
+
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -167,10 +211,45 @@ void OctTree::split(  Usul::Documents::Document* document, Unknown *caller, Unkn
 {
   Guard guard ( this );
   Usul::Types::Uint64 numPoints ( _tree->getNumPoints() );
-  document->setStatusBar( "Step 2/2: Building Octree...", progress );
+  document->setStatusBar( "Step 2/2: Building Spatial Parameters...", progress );
   unsigned int d ( static_cast< unsigned int > ( static_cast< double > ( numPoints ) / static_cast< double > ( _tree->capacity() ) ) );
   _tree->initSplitProgress( 0, d );
   _tree->split( document, caller, progress );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the binary restart file for this octree
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTree::write( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
+{
+  Guard guard ( this );
+  
+  // Write the number of leaf nodes
+  unsigned long long numLeafNodes ( _tree->numLeafNodes() );
+  ofs->write ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( unsigned long long ) );
+
+  // Write the lod definitions
+  std::vector< unsigned short > lodDefinitions ( _tree->getLodDefinitions() );
+  unsigned long long numLods ( lodDefinitions.size() );
+
+  // Write the number of lods
+  ofs->write ( reinterpret_cast< char* > ( &numLods ), sizeof( unsigned long long ) );
+
+  // Write the lods
+  ofs->write ( reinterpret_cast< char* > ( &lodDefinitions[0] ), sizeof( lodDefinitions ) );
+
+  // Write the lod max distance
+  double d ( _tree->getBoundingRadius() );
+  ofs->write ( reinterpret_cast< char* > ( &d ), sizeof( double ) );
+
+  // Set progress message
+  document->setStatusBar( "Writing Binary Restart File...", progress );
+
+  _tree->write( ofs, 0, numLeafNodes, document, caller, progress );
 }
 
 

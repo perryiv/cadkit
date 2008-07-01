@@ -63,14 +63,14 @@ public:
   typedef boost::shared_ptr<StreamBuffer> StreamBufferPtr;
   typedef std::vector< unsigned short > LodDefinitions;
 
-  OctTreeNode ( StreamBufferPtr, const std::string &tempPath );
+  OctTreeNode ( StreamBufferPtr, const std::string &tempPath ); 
   virtual ~OctTreeNode();
 
   // Getters
-  osg::BoundingBox                  boundingBox();
-  Children                          children();
-  unsigned int                      type();
-  unsigned int                      capacity();
+  osg::BoundingBox                  boundingBox() const;
+  Children                          children() const;
+  unsigned int                      type() const;
+  unsigned int                      capacity() const;
  
   // Setters
   void                              boundingBox( const osg::BoundingBox &bb );
@@ -84,20 +84,33 @@ public:
 
   void                              useLOD( bool value );
 
-  void                              distance( float d );
-  float                             getBoundingRadius();
+  void                              distance( double d );
+  double                            getBoundingRadius() const;
 
   void                              closeInputStream();
   void                              closeOutputStream();
 
   void                              initSplitProgress( unsigned long n, unsigned long d );
   Usul::Types::Uint64               getNumPoints();
-
-  
+  Usul::Types::Uint64               numLeafNodes() const;
+  LodDefinitions                    getLodDefinitions() const;
+  void                              numLeafNodes( Usul::Types::Uint64 num );
+  void                              lodDefinitions( LodDefinitions lods );
 
   bool                              split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  void                              write( std::ofstream* ofs, unsigned int numerator, unsigned int denominator, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
+  void                              read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+
+  
+
 protected:
+
+  void                              _writePoints( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
+  void                              _writeNodeHeader( std::ofstream* ofs ) const;
+
+  void                              _readHeader( std::ifstream* ifs );
+  void                              _readPoints( std::ifstream* ifs );
 
   bool                              _contains( OctTreeNode::Point p );
   void                              _insertOrCreateChildren( OctTreeNode::Point p );
@@ -107,7 +120,7 @@ protected:
   bool                              _addCellToChild( OctTreeNode::Point p );
   bool                              _rayQuadIntersect( Vec3d a, Vec3d b, Vec3d c, Vec3d d, Vec3d p );
   
-  float                             _distance;
+  
 
   void                              _openTempFileForRead();
   void                              _openTempFileForWrite();
@@ -128,6 +141,8 @@ private:
   unsigned int                    _type;
   unsigned int                    _capacity;
 
+  
+
   bool                            _useLOD;
 
   LodDefinitions                  _lodDefinitions;
@@ -138,12 +153,15 @@ private:
   Usul::Types::Uint64             _numPoints;
   StreamBufferPtr                 _streamBuffer;
   std::string                     _tempPath;
-  
+  double                          _distance;
   
   static long                     _streamCount;
   static unsigned long            _numerator;
   static unsigned long            _denominator;
-  static unsigned int             _numLeafNodes;
+  static Usul::Types::Uint64      _numLeafNodes;
+
+  
+
 };
 
 #endif // __EXPERIMENTAL_OCTTREENODE_H__

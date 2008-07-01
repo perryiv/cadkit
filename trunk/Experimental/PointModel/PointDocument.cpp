@@ -122,7 +122,7 @@ bool PointDocument::canInsert ( const std::string &file ) const
 bool PointDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "point3d" || ext == "bp3d" );
+  return ( ext == "point3d" || ext == "bp3d" || ext == "p3dbf" );
 }
 
 
@@ -134,7 +134,8 @@ bool PointDocument::canOpen ( const std::string &file ) const
 
 bool PointDocument::canSave ( const std::string &file ) const
 {
-  return ( false );
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
+  return ( ext == "p3dbrf" );
 }
 
 
@@ -194,6 +195,11 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
     // Build the vectors from the linked lists
     this->_buildVectors( caller, progress );
   }
+  else if( "p3dbf" == ext )
+  {
+    // read the binary restart file
+    this->_readBinaryRestartFile( name, caller, progress );
+  }
   else
   {
     throw std::runtime_error("Error: 4144590656 Invalid file extension for Point Document:" + name);
@@ -210,6 +216,27 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 
 void PointDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
+  std::ofstream* ofs ( new std::ofstream );
+  ofs->open( name.c_str(), std::ofstream::out | std::ifstream::binary );
+
+  if( false == ofs->is_open() )
+    throw std::runtime_error ( "Error 2024821453: Failed to open file: " + name );
+
+  {
+    // Write binary header
+    const std::string id ( "CDBEF2DA-CCD4-4c30-844C-22A988DFE37C" ); 
+    ofs->write ( &id[0], id.size() );
+
+    // write the number of points
+    unsigned long long numPoints ( _numPoints );
+    ofs->write ( reinterpret_cast< char* > ( &numPoints ), sizeof( unsigned long long ) );
+  }
+
+  _pointSet->write( ofs, 0x0, caller, progress );
+
+  ofs->close();
+  delete ofs;
+  ofs = 0x0;
 
 }
 
@@ -247,7 +274,9 @@ PointDocument::Filters PointDocument::filtersInsert() const
 PointDocument::Filters PointDocument::filtersOpen() const
 {
   Filters filters;
-  filters.push_back ( Filter ( "3D Point Files (*.point3d )", "*.point3d" ) );
+  filters.push_back ( Filter ( "Ascii 3D Point Files (*.point3d )", "*.point3d" ) );
+  filters.push_back ( Filter ( "Binary 3D Point Files (*.bp3d )", "*.bp3d" ) );
+  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
   return filters;
 }
 
@@ -261,6 +290,7 @@ PointDocument::Filters PointDocument::filtersOpen() const
 PointDocument::Filters PointDocument::filtersSave() const
 {
   Filters filters;
+  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
   return filters;
 }
 
@@ -301,7 +331,7 @@ osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *c
 void PointDocument::_readPoint3DFile( const std::string &filename, unsigned int progressPath, Unknown *caller, Unknown *progress )
 {
  
-  this->setStatusBar ( "Step 1/2: Parsing point data...", progress );
+  this->setStatusBar ( "Step 1/2: Reading file...", progress );
 
   // Open a stream with a large buffer.
   const unsigned long int bufSize ( 4095 );
@@ -387,7 +417,7 @@ void PointDocument::_readPoint3DFile( const std::string &filename, unsigned int 
 
 bool PointDocument::_parseHeader( const std::string &filename, Unknown *caller, Unknown *progress )
 {
-  this->setStatusBar ( "Step 1/2: Examining header file...", progress );
+  this->setStatusBar ( "Step 1/2: Reading File...", progress );
 
   // Open a stream with a large buffer for ascii reading.
   const unsigned long int bufSize ( 4095 );
@@ -417,7 +447,7 @@ void PointDocument::_fastReadAndSetBounds( const std::string &filename, const st
 {
   osg::BoundingBox bounds;
 
-  this->setStatusBar ( "Step 1/2: Examining file...", progress );
+  this->setStatusBar ( "Step 1/2: Reading File...", progress );
 
   // Update progress bar every second.
   Usul::Policies::TimeBased update ( 1000 );
@@ -533,7 +563,7 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 {
   osg::BoundingBox bounds;
 
-  this->setStatusBar ( "Step 1/2: Examining file...", progress );
+  this->setStatusBar ( "Step 1/2: Reading File...", progress );
 
   // Update progress bar every second.
   Usul::Policies::TimeBased update ( 1000 );
@@ -684,7 +714,7 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 
 void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 {
-  this->setStatusBar ( "Step 2/2: Building Points...", progress );
+  this->setStatusBar ( "Step 2/2: Building Spatial Parameters...", progress );
   _pointSet->buildVectors();
 }
 
@@ -700,3 +730,35 @@ void PointDocument::_split( Unknown *caller, Unknown *progress )
   _pointSet->split( this, caller, progress );
 }
 
+
+void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown *caller, Unknown *progress )
+{
+  std::ifstream* ifs ( new std::ifstream );
+  ifs->open( filename.c_str(), std::ifstream::out | std::ifstream::binary );
+
+  if( false == ifs->is_open() )
+    throw std::runtime_error ( "Error 3339602607: Failed to open file: " + filename );
+
+
+  // Read binary header
+  const std::string id ( "CDBEF2DA-CCD4-4c30-844C-22A988DFE37C" );
+  std::vector<char> header ( id.size() );
+  ifs->read ( &header[0], header.size() );
+  const bool same ( id == std::string ( header.begin(), header.end() ) );
+  if( false == same )
+  {
+    throw std::runtime_error ( "Error 2348749452: Invalid binary file format: " + filename );
+   
+  }
+
+  // read the number of points
+  unsigned long long numPoints ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &numPoints ), sizeof( unsigned long long ) );
+  _numPoints = numPoints;
+
+  _pointSet->read( ifs, this, caller, progress );
+
+  ifs->close();
+  delete ifs;
+  ifs = 0x0;
+}

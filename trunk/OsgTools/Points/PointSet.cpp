@@ -194,3 +194,29 @@ void PointSet::split( Usul::Documents::Document* document, Unknown *caller, Unkn
   _tree->split( document, caller, progress );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the binary restart file for this point set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::write( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
+{
+  Guard guard ( this );
+  _tree->write( ofs, document, caller, progress );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the binary restart file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::read( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+{
+  Guard guard ( this );
+  _tree->read( ifs, document, caller, progress );
+}
+

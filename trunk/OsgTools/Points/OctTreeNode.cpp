@@ -28,10 +28,10 @@
 
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OctTreeNode, OctTreeNode::BaseClass );
 
- long OctTreeNode::_streamCount( 0 );
- unsigned long OctTreeNode::_numerator( 0 );
- unsigned long OctTreeNode::_denominator( 0 );
- unsigned int OctTreeNode::_numLeafNodes( 0 );
+ long                OctTreeNode::_streamCount  ( 0 );
+ unsigned long       OctTreeNode::_numerator    ( 0 );
+ unsigned long       OctTreeNode::_denominator  ( 0 );
+ Usul::Types::Uint64 OctTreeNode::_numLeafNodes ( 0 );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -51,7 +51,8 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
   _tempFilename(),
   _numPoints( 0 ),
   _streamBuffer ( buffer ),
-  _tempPath( tempPath )
+  _tempPath( tempPath ),
+  _distance( 0 )
 {
   
   _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
@@ -65,6 +66,14 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
    _lodDefinitions.push_back( 150 );
    _lodDefinitions.push_back( 300 );
    _lodDefinitions.push_back( 600 );
+#endif
+
+#if 0
+   _lodDefinitions.push_back( 1 );
+   _lodDefinitions.push_back( 3 );
+   _lodDefinitions.push_back( 5 );
+   _lodDefinitions.push_back( 7 );
+   _lodDefinitions.push_back( 9 );
 #endif
 }
 
@@ -211,7 +220,7 @@ void OctTreeNode::capacity( unsigned int level )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::BoundingBox OctTreeNode::boundingBox()
+osg::BoundingBox OctTreeNode::boundingBox() const
 { 
   Guard guard ( this->mutex() );
   return _bb; 
@@ -224,7 +233,7 @@ osg::BoundingBox OctTreeNode::boundingBox()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OctTreeNode::Children OctTreeNode::children()
+OctTreeNode::Children OctTreeNode::children() const
 { 
   Guard guard ( this->mutex() );
   return _children; 
@@ -237,7 +246,7 @@ OctTreeNode::Children OctTreeNode::children()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int OctTreeNode::type()
+unsigned int OctTreeNode::type() const
 { 
   Guard guard ( this->mutex() );
   return _type; 
@@ -250,7 +259,7 @@ unsigned int OctTreeNode::type()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int OctTreeNode::capacity()
+unsigned int OctTreeNode::capacity() const
 { 
   Guard guard ( this->mutex() );
   return _capacity; 
@@ -305,7 +314,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
           float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
           if( lodLevel == numLODs - 1 )
           {
-            maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), std::numeric_limits< float >::max() );
+            maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), std::numeric_limits< double >::max() );
           }
 
           lod->addChild( geode.get(), minDistance, maxDistance );
@@ -334,7 +343,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OctTreeNode::distance( float d )
+void OctTreeNode::distance( double d )
 {
   Guard guard ( this->mutex() );
   _distance = d;
@@ -347,12 +356,12 @@ void OctTreeNode::distance( float d )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float OctTreeNode::getBoundingRadius()
+double OctTreeNode::getBoundingRadius() const
 {
   Guard guard ( this->mutex() );
   Usul::Math::Vec3f min ( _bb.xMin(), _bb.yMin(), _bb.zMin() );
   Usul::Math::Vec3f max ( _bb.xMax(), _bb.yMax(), _bb.zMax() );
-  float d = max.distanceSquared( min );
+  double d = max.distanceSquared( min );
   d = sqrt( d );
   return d;
 }
@@ -470,7 +479,6 @@ bool OctTreeNode::split( Usul::Documents::Document* document, Unknown *caller, U
     // Update progress
     ++_numerator;
     document->setProgressBar( true, _numerator, _denominator, progress );
-    //std::cout << "Splitting... numerator is: " << _numerator << " denominator is: " << _denominator << std::endl;
 
     // Create children and populate them with my points
     this->_split();
@@ -523,9 +531,259 @@ Usul::Types::Uint64 OctTreeNode::getNumPoints()
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the number of leaf nodes in this octree
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Types::Uint64 OctTreeNode::numLeafNodes() const
+{
+  Guard guard ( this->mutex() );  
+  return _numLeafNodes;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the LOD level definitions in this octree
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OctTreeNode::LodDefinitions OctTreeNode::getLodDefinitions() const
+{
+  Guard guard ( this->mutex() );  
+  return _lodDefinitions;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write this node and/or children to a binary restart file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned int denominator, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
+{
+  Guard guard ( this->mutex() );
+  
+  // write the node header information
+  this->_writeNodeHeader( ofs );
+
+  if( POINT_HOLDER == this->type() )
+  {
+    // write the node points
+    this->_writePoints( ofs, document, caller, progress );
+
+    // Update progress
+    ++numerator;
+    document->setProgressBar( true, numerator, denominator, progress );
+  }
+  else if( NODE_HOLDER == this->type() )
+  {
+    // tell children to write their information
+    for( unsigned int i = 0; i < _children.size(); ++i )
+    {
+      _children.at( i )->write( ofs, numerator, denominator, document, caller, progress );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read from the binary restart file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+{
+  Guard guard ( this->mutex() );
+
+  // write the node header information
+  this->_readHeader( ifs );
+
+  
+
+  if( POINT_HOLDER == this->type() )
+  {
+    // write the node points
+    this->_readPoints( ifs );
+
+    // Update progress
+    ++_numerator;
+    document->setProgressBar( true, _numerator, _denominator, progress );
+
+  }
+  else if( NODE_HOLDER == this->type() )
+  {
+    // tell children to read
+   
+    _children.resize( 8 );
+    for( unsigned int i = 0; i < _children.size(); ++i )
+    {
+      _children.at( i ) = new OctTreeNode( _streamBuffer, _tempPath );
+      _children.at( i )->distance( _distance );
+      _children.at( i )->read( ifs, document, caller, progress );
+    }
+  }
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the number of lead nodes
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::numLeafNodes( Usul::Types::Uint64 num )
+{
+  Guard guard ( this->mutex() );
+  _numLeafNodes = num;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the lod definitions
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::lodDefinitions( LodDefinitions lods )
+{
+  Guard guard ( this->mutex() );
+  _lodDefinitions = lods;
+}
+
+
 /////////////////
 //  PROTECTED
 /////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the header information
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::_readHeader( std::ifstream* ifs )
+{
+  Guard guard ( this->mutex() );
+  // read the node type
+  unsigned int type ( 0 );
+  ifs->read( reinterpret_cast< char* > ( &type ), sizeof( unsigned int ) );
+  this->type( type );
+
+  // read the node bounding box parameters
+  osg::Vec3f minBB ( 0.0, 0.0, 0.0 );
+  osg::Vec3f maxBB ( 0.0, 0.0, 0.0 );
+  ifs->read( reinterpret_cast< char* > ( &minBB ), sizeof( osg::Vec3f ) );
+  ifs->read( reinterpret_cast< char* > ( &maxBB ), sizeof( osg::Vec3f ) );
+  osg::BoundingBox bb ( minBB.x(), minBB.y(), minBB.z(), maxBB.x(), maxBB.y(), maxBB.z() );
+  this->boundingBox( bb );
+
+  // read the node capacity
+  unsigned int capacity( 0 );
+  ifs->read( reinterpret_cast< char* > ( &capacity ), sizeof( unsigned int ) );
+  this->capacity( capacity );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::_readPoints( std::ifstream* ifs )
+{
+  Guard guard ( this->mutex() );
+  unsigned int numPoints( 0 );
+
+  // read the number of points
+  ifs->read( reinterpret_cast< char * > ( &numPoints ), sizeof( unsigned int ) );
+ 
+  // read the points
+  if( numPoints > 0 )
+  {
+    if( false == _points.valid() )
+    {
+      _points = new osg::Vec3Array( numPoints );
+    }
+    else
+    {
+      _points->reserve( numPoints );
+    }
+
+    unsigned long long pointsSize ( sizeof( osg::Vec3f ) * numPoints );
+    ifs->read( reinterpret_cast< char * > ( &((*_points)[0]) ), pointsSize );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write this node's header information
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::_writeNodeHeader( std::ofstream* ofs ) const
+{
+  Guard guard ( this->mutex() );
+
+  // write the node type
+  unsigned int type ( _type );
+  ofs->write( reinterpret_cast< char* > ( &type ), sizeof( unsigned int ) );
+
+  // write the node bounding box parameters
+  osg::Vec3f minBB ( _bb.xMin(), _bb.yMin(), _bb.zMin() );
+  osg::Vec3f maxBB ( _bb.xMax(), _bb.yMax(), _bb.zMax() );
+  ofs->write( reinterpret_cast< char* > ( &minBB ), sizeof( osg::Vec3f ) );
+  ofs->write( reinterpret_cast< char* > ( &maxBB ), sizeof( osg::Vec3f ) );
+
+  // write the node capacity
+  unsigned int capacity( _capacity );
+  ofs->write( reinterpret_cast< char* > ( &capacity ), sizeof( unsigned int ) );
+
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write this node and/or children to a binary restart file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::_writePoints( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
+{
+  Guard guard ( this->mutex() );
+
+  unsigned int numPoints ( 0 );
+
+  if( true == _points.valid() )
+  {
+    Points points( _points );
+
+    numPoints = _points->size();
+  
+    // write the number of points
+    ofs->write( reinterpret_cast< char * > ( &numPoints ), sizeof( unsigned int ) );
+
+    // write the points
+    unsigned long long pointsSize ( numPoints * sizeof( osg::Vec3f ) );
+    ofs->write( reinterpret_cast< char * > ( &((*_points)[0]) ), pointsSize );
+  }
+  else
+  {
+    // write the number of points
+    ofs->write( reinterpret_cast< char * > ( &numPoints ), sizeof( unsigned int ) );
+  }
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

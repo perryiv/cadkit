@@ -39,15 +39,27 @@ H5File::H5File ( const std::string& file ) :
 
 H5File::~H5File()
 {
+  // Get the number of open objects.  This includes the file.
   const int numOpenObjects ( ::H5Fget_obj_count ( _handle, H5F_OBJ_ALL ) );
-  if ( 0 != numOpenObjects )
+  if ( 1 < numOpenObjects )
   {
     const std::string message
       ( Usul::Strings::format ( "Warning 1403446461: Closing HDF5 file '", 
                                 _file, "' while ", numOpenObjects, 
                                 " of its objects are still open" ) );
     std::cout << message << std::endl;
+    
+    // Get the object id's.
+    std::vector<hid_t> ids ( numOpenObjects );
+    ::H5Fget_obj_ids ( _handle, H5F_OBJ_ALL, numOpenObjects, &ids[0] );
+    
+    std::cout << "Ids open for file " << _handle << ":" << std::endl;
+    for ( unsigned int i = 0; i < ids.size(); ++i )
+      std::cout << "Id: " << ids[i] << std::endl;
   }
+  
+  // Flush the file.
+  ::H5Fflush ( _handle, H5F_SCOPE_LOCAL );
 
   // Close the file.
   ::H5Fclose ( _handle );

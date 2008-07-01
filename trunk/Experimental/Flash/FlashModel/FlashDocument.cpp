@@ -17,8 +17,12 @@
 #include "Usul/Functions/Color.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/IRenderInfoOSG.h"
+#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Math/Absolute.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/Clock.h"
 #include "Usul/Threads/Safe.h"
 
 #include "OsgTools/State/StateSet.h"
@@ -32,7 +36,14 @@
 #include "MenuKit/ToggleButton.h"
 
 #include "osg/BlendFunc"
+#include "osg/Camera"
+#include "osg/GLObjects"
 #include "osg/LOD"
+#include "osg/Texture1D"
+
+#include "osgText/Text"
+
+#include "osgUtil/GLObjectsVisitor"
 
 #include "hdf5.h"
 
@@ -295,7 +306,7 @@ FlashDocument::Filters FlashDocument::filtersInsert() const
 osg::Node *FlashDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), "3960901428" );
+  //Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), caller, "3960901428" );
   return _root.get();
 }
 
@@ -306,13 +317,25 @@ osg::Node *FlashDocument::buildScene ( const BaseClass::Options &options, Unknow
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FlashDocument::_buildScene()
+void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   
+  Usul::Interfaces::IRenderInfoOSG::QueryPtr ri ( caller );
+  osg::RenderInfo info ( ri.valid() ? ri->getRenderInfo() : osg::RenderInfo() );
+  
+  osg::ref_ptr<osgUtil::GLObjectsVisitor> visitor ( new osgUtil::GLObjectsVisitor ( osgUtil::GLObjectsVisitor::RELEASE_STATE_ATTRIBUTES | osgUtil::GLObjectsVisitor::RELEASE_DISPLAY_LISTS ) );
+  visitor->setRenderInfo ( info );
+  _root->accept ( *visitor );
+  
   // Remove what we have.
   _root->removeChild ( 0, _root->getNumChildren() );
+  
+  osg::flushAllDeletedGLObjects ( info.getContextID() );
+  
+  double maxtime ( std::numeric_limits<double>::max() );
+  osg::Texture::flushDeletedTextureObjects ( info.getContextID(), Usul::System::Clock::milliseconds(), maxtime );
   
   // Make sure we are in range...
   if ( _currentTimestep < _filenames.size() )
@@ -349,7 +372,8 @@ void FlashDocument::_buildScene()
         const bool isLeaf ( timestep->isLeaf ( num ) );
         const int level ( timestep->level ( num ) );
         
-        if ( isLeaf /*&& 5 == level*/ )
+        //if ( isLeaf /*&& 5 == level*/ )
+        if ( isLeaf && 5 == level )
         {      
           bb._min =  bb._min * _scale;
           bb._max =  bb._max * _scale;
@@ -392,6 +416,8 @@ void FlashDocument::_buildScene()
           _root->addChild ( lod.get() );
         }
       }
+      
+      _root->addChild ( this->_buildLegend ( *timestep, tf.get(), caller ) );
     }
     
     _timesteps.clear();
@@ -433,6 +459,109 @@ osg::Node* FlashDocument::_buildVolume ( const Timestep& timestep, osg::Image* i
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build a legend.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* FlashDocument::_buildLegend ( const Timestep& timestep, TransferFunction::RefPtr tf, Usul::Interfaces::IUnknown* caller ) const
+{
+  Usul::Interfaces::IViewport::QueryPtr vp ( caller );
+  
+  osg::ref_ptr<osg::Image> image ( tf.valid() ? tf->image() : 0x0 );
+  
+  if ( vp.valid() && image.valid() )
+  {
+    // Add transfer function key.
+    osg::ref_ptr<osg::Camera> camera ( new osg::Camera );
+    camera->setRenderOrder ( osg::Camera::POST_RENDER );
+    camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
+    camera->setClearMask( GL_DEPTH_BUFFER_BIT );
+    camera->setViewMatrix( osg::Matrix::identity() );
+    camera->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
+    camera->setCullingMode ( osg::CullSettings::NO_CULLING );
+    
+    camera->setViewport ( 0, 0, vp->width(), vp->height() );
+    camera->setProjectionMatrixAsOrtho ( 0, vp->width(), 0, vp->height(), -1000.0, 1000.0 );
+    
+    osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+    
+    const unsigned int xPadding ( 4 );
+    const unsigned int yPadding ( 4 );
+    const unsigned int width ( vp->width() - xPadding );
+    const unsigned int height ( 20 );
+    const unsigned int yStart ( vp->height() - yPadding - height );
+    
+    osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+    vertices->push_back ( osg::Vec3 ( xPadding,   yStart,          -1.0 ) );
+    vertices->push_back ( osg::Vec3 ( width,      yStart,          -1.0 ) );
+    vertices->push_back ( osg::Vec3 ( width,      yStart + height, -1.0 ) );
+    vertices->push_back ( osg::Vec3 ( xPadding,   yStart + height, -1.0 ) );
+    
+    osg::ref_ptr<osg::Vec2Array> tCoords ( new osg::Vec2Array );
+    tCoords->push_back ( osg::Vec2 ( 0.0, 0.0 ) );
+    tCoords->push_back ( osg::Vec2 ( 1.0, 0.0 ) );
+    tCoords->push_back ( osg::Vec2 ( 1.0, 1.0 ) );
+    tCoords->push_back ( osg::Vec2 ( 0.0, 1.0 ) );
+    
+    osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
+    geometry->setVertexArray ( vertices.get() );
+    geometry->setTexCoordArray ( 0, tCoords.get() );
+    
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, vertices->size() ) );
+    
+    osg::ref_ptr<osg::Image> copy ( static_cast<osg::Image*> ( image->clone ( osg::CopyOp::DEEP_COPY_ALL ) ) );
+    for ( int i = 0; i < copy->s(); ++i )
+    {
+      copy->data ( i )[3] = 255;
+    }
+    
+    osg::ref_ptr<osg::Texture1D> texture ( new osg::Texture1D );
+    texture->setImage( copy.get () );
+    
+    texture->setFilter( osg::Texture::MIN_FILTER, osg::Texture::NEAREST );
+    texture->setFilter( osg::Texture::MAG_FILTER, osg::Texture::NEAREST );
+    texture->setWrap  ( osg::Texture::WRAP_S, osg::Texture::CLAMP );
+    texture->setInternalFormatMode ( osg::Texture::USE_IMAGE_DATA_FORMAT );
+    
+    geometry->getOrCreateStateSet()->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    
+    geode->addDrawable ( geometry.get() );
+    
+    {
+      osg::ref_ptr<osgText::Text> text ( new osgText::Text );
+      text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
+      text->setCharacterSize( 25.0 );
+      text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+      text->setPosition ( osg::Vec3 ( xPadding, yStart - yPadding - 15.0, 0.0 ) );
+      text->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+      text->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
+      text->setText ( Usul::Strings::format ( timestep.minimum() ) );
+      geode->addDrawable ( text.get() );
+    }
+
+    {
+      osg::ref_ptr<osgText::Text> text ( new osgText::Text );
+      text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
+      text->setCharacterSize( 25.0 );
+      text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+      text->setPosition ( osg::Vec3 ( xPadding + width - 90, yStart - yPadding - 15.0, 0.0 ) );
+      text->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+      text->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
+      text->setText ( Usul::Strings::format ( timestep.maximum() ) );
+      geode->addDrawable ( text.get() );
+    }
+    
+    camera->addChild ( geode.get() );
+    
+    return camera.release();
+  }
+
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Update.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -452,7 +581,7 @@ void FlashDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   // Buid the scene if we need to.
   if ( this->dirty () )
   {  
-    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), "3279281359" );
+    Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &FlashDocument::_buildScene ), caller, "3279281359" );
   }
 }
 
@@ -527,7 +656,7 @@ void FlashDocument::_buildDefaultTransferFunctions ()
     hsv.at ( i ) [ 3 ] = static_cast < unsigned char > ( u < 0.5 ? 0 : u * alpha );
     
     if ( ( g > 0.75 || b > 0.5 ) && u >= 0.5)
-      hsv.at( i )[3] = 5;
+      hsv.at( i )[3] = 1;
   }
   
   _transferFunctions.push_back ( new TransferFunction1D ( hsv ) );

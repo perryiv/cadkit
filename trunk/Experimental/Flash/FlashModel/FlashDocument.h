@@ -139,8 +139,9 @@ protected:
   virtual ~FlashDocument();
   
   /// Build the scene.
-  void                        _buildScene();
+  void                        _buildScene ( Usul::Interfaces::IUnknown* caller );
   osg::Node*                  _buildVolume ( const Timestep& timestep, osg::Image* image, unsigned int numPlanes, const osg::BoundingBox& bb, TransferFunction::RefPtr tf );
+  osg::Node*                  _buildLegend ( const Timestep& timestep, TransferFunction::RefPtr tf, Usul::Interfaces::IUnknown* caller ) const;
 
   /// Build the default transfer functions.
   void                        _buildDefaultTransferFunctions();

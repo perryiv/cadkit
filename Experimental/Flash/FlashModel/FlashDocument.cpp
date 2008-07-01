@@ -372,8 +372,8 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
         const bool isLeaf ( timestep->isLeaf ( num ) );
         const int level ( timestep->level ( num ) );
         
-        //if ( isLeaf /*&& 5 == level*/ )
-        if ( isLeaf && 5 == level )
+        if ( isLeaf /*&& 5 == level*/ )
+        //if ( isLeaf && 5 == level )
         {      
           bb._min =  bb._min * _scale;
           bb._max =  bb._max * _scale;

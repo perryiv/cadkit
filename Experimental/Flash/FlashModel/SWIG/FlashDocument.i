@@ -1,25 +1,58 @@
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2007, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Adam Kubach
+//
+///////////////////////////////////////////////////////////////////////////////
+
 %module FlashDocument
 %{
 #include "FlashDocument.h"
 %}
 
-//%include "std/std_string.i"
+#ifdef SWIGPYTHON
+%include "python/std_string.i"
+%include "python/std_map.i"
+#else
+%include "std_string.i"
+#endif
+
+%template(Options) std::map<std::string,std::string>;
 
 class FlashDocument
 {
 public:
   FlashDocument();
   
-  void read ( const std::string&, Usul::Interfaces::IUnknown*, Usul::Interfaces::IUnknown* );
+  // Read/Write.
+  void                read  ( const std::string& filename, Usul::Interfaces::IUnknown*, Usul::Interfaces::IUnknown* );
+  void                write ( const std::string& filename, Usul::Interfaces::IUnknown *, Usul::Interfaces::IUnknown * ) const;
   
-  //virtual osg::Node *         buildScene ( const FlashDocument::Options &options, Usul::Interfaces::IUnknown* caller );
+  /// Build the scene.
+  osg::Node *         buildScene ( const std::map<std::string,std::string> &options, Usul::Interfaces::IUnknown* caller );
+  
+  /// Set/get the draw bounding box flag.
+  void                drawBBox ( bool b );
+  bool                isDrawBBox() const;
+  
+  /// Set/get the draw points flag.
+  void                drawPoints ( bool b );
+  bool                isDrawPoints() const;
+  
+  /// Set/get the draw volume flag.
+  void                drawVolume ( bool b );
+  bool                isDrawVolume() const;
   
   /// Usul::Interfaces::ITimeVaryingData
   void                setCurrentTimeStep ( unsigned int current );
   unsigned int        getCurrentTimeStep () const;
   
   unsigned int        getNumberOfTimeSteps () const;
+  
+  void                updateNotify ( Usul::Interfaces::IUnknown* );
   
 protected:
   virtual ~FlashDocument();
@@ -39,30 +72,23 @@ namespace Usul {
     public:
       SmartPointer();
       ~SmartPointer();
+      
+      T* operator->();
     };
   }
 }
 
 %template(FlashDocumentPtr) Usul::Pointers::SmartPointer<FlashDocument,Usul::Pointers::Configs::RefCountingNullOk>;
+//%template(FlashDocumentPtr) FlashDocument::RefPtr;
 
 %{
 
-static FlashDocument* createDocument( char* filename )
+static  Usul::Pointers::SmartPointer<FlashDocument,Usul::Pointers::Configs::RefCountingNullOk> createDocument()
 {
   FlashDocument::RefPtr doc ( new FlashDocument );
-  doc->read ( filename, 0x0, 0x0 );
-	return doc.release();
-}
-
-static osg::Node* buildScene ( FlashDocument* doc )
-{
-  if ( 0x0 != doc )
-  	return doc->buildScene( FlashDocument::BaseClass::Options() );
-  
-  return 0x0;
+	return doc;
 }
 
 %}
 
-FlashDocument* createDocument( char* filename );
-osg::Node* buildScene ( FlashDocument* );
+Usul::Pointers::SmartPointer<FlashDocument,Usul::Pointers::Configs::RefCountingNullOk> createDocument();

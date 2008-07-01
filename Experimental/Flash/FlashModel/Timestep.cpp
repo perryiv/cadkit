@@ -13,6 +13,7 @@
 #include "Experimental/Flash/FlashModel/Dataset.h"
 
 #include "Usul/Functions/Color.h"
+#include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Box.h"
@@ -388,7 +389,7 @@ osg::Image* Timestep:: buildVolume ( unsigned int num, double minimum, double ma
     {
       for ( unsigned int k = 0; k < z; ++k )
       {
-        double value ( _data[num][k][j][i] );
+        double value ( Usul::Math::clamp ( _data[num][k][j][i], minimum, maximum ) );
 #if 1
         value = ( value - minimum ) / ( maximum - minimum );
         const unsigned char pixel ( static_cast < unsigned char > ( value * 255 ) );

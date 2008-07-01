@@ -37,9 +37,9 @@ _caller ()
   this->setupUi ( this );
 
   // Hide advanced button in release.  Still has kinks to work out.
-#ifdef NDEBUG
-  _advancedButton->setVisible ( false );
-#endif
+//#ifdef NDEBUG
+//  _advancedButton->setVisible ( false );
+//#endif
 
   // Set the inital state
   _advancedOptions->setVisible ( Qt::Checked == _advancedButton->checkState() );
@@ -86,7 +86,10 @@ void ClipPlanes::_addClipPlaneClicked()
 
   if ( cp.valid () )
   {
-    cp->addClippingPlane();
+    osg::Plane::Vec3_type normal ( _normalX->value(), _normalY->value(), _normalZ->value() );
+    normal.normalize();
+    osg::Plane plane ( normal, _distanceSpinBox->value() );
+    cp->addClippingPlane ( plane );
     unsigned int num ( cp->numClippingPlanes() );
     _clipPlaneList->addItem ( Usul::Strings::format ( "Clip Plane ", num - 1 ).c_str() );
 

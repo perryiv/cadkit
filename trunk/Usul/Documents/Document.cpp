@@ -379,9 +379,15 @@ void Document::insert ( Unknown *caller )
 
   // Ask for file names.
   const FilesResult result ( fileDialog->getLoadFileNames ( "Insert", this->filtersInsert() ) );
-  const FileNames files ( result.first );
+  FileNames files ( result.first );
   if ( files.empty() )
     return;
+
+  // Should we sort the file?
+  if ( this->_sortFilesBeforeInserting() )
+  {
+    std::sort ( files.begin(), files.end() );
+  }
 
   // Set this up here in case we throw below.
   this->modified ( true );
@@ -394,13 +400,14 @@ void Document::insert ( Unknown *caller )
   Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0, 1, Usul::Resources::progressBar() );
 
   // Loop through the files.
+  unsigned int count ( 0 );
   for ( FileNames::const_iterator i = files.begin(); i != files.end(); ++i )
   {
     std::cout << "Inserting document: " << *i << Usul::Resources::TextWindow::endl;
     this->read ( *i, caller );
 
     // Show overall progress.
-    progress ( static_cast < unsigned int > ( std::distance ( files.begin(), i ) ), files.size() );
+    progress ( ++count, files.size() );
 
     // Flush events. This lets the user cancel.
     this->flushEvents();
@@ -1092,4 +1099,18 @@ Usul::Jobs::Job *Document::closeJob()
 {
   USUL_TRACE_SCOPE;
   return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return whether or not to sort the files after the user has selected them 
+//  with the file dialog, but before they are sent to the document's read().
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Document::_sortFilesBeforeInserting() const
+{
+  USUL_TRACE_SCOPE;
+  return false;
 }

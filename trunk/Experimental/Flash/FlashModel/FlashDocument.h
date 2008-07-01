@@ -152,6 +152,9 @@ protected:
   /// Load the i'th timestep.
   void                        _loadTimestep ( unsigned int i );
   
+  /// Sort the files before reading.
+  virtual bool                _sortFilesBeforeInserting() const;
+
   /// Add to the menu (IMenuAdd).
   virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 

@@ -906,3 +906,17 @@ std::string FlashDocument::dataSet() const
   Guard guard ( this->mutex() );
   return _dataSet;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return whether or not to sort the files after the user has selected them 
+//  with the file dialog, but before they are sent to the document's read().
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool FlashDocument::_sortFilesBeforeInserting() const
+{
+  USUL_TRACE_SCOPE;
+  return true;
+}

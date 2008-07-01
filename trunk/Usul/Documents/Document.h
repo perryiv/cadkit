@@ -246,6 +246,9 @@ protected:
 
   void                        _save ( const std::string &filename, Unknown *caller, Unknown *progress, std::ostream *out = 0x0 );
 
+  // Overload to sort the files before reading.
+  virtual bool                _sortFilesBeforeInserting() const;
+
   // Notify the observers.
   void                        _notifyModifiedObservers();
 

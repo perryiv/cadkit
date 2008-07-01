@@ -62,8 +62,6 @@ public:
   /// Get the number of nodes.
   unsigned int numNodes() const;
   
-  osg::Node* buildScene ( bool drawBBox, bool drawPoints, bool drawVolume );
-  
 protected:
   
   virtual ~Timestep();

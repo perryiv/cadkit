@@ -150,7 +150,7 @@ protected:
   /// Build the scene.
   void                        _buildScene ( Usul::Interfaces::IUnknown* caller );
   osg::Node*                  _buildVolume ( const Timestep& timestep, osg::Image* image, unsigned int numPlanes, const osg::BoundingBox& bb, TransferFunction::RefPtr tf );
-  osg::Node*                  _buildLegend ( const Timestep& timestep, TransferFunction::RefPtr tf, Usul::Interfaces::IUnknown* caller ) const;
+  osg::Node*                  _buildLegend ( double minimum, double maximum, TransferFunction::RefPtr tf, Usul::Interfaces::IUnknown* caller ) const;
 
   /// Build the default transfer functions.
   void                        _buildDefaultTransferFunctions();
@@ -170,6 +170,8 @@ private:
   double _scale;
   unsigned int _currentTimestep;
   std::string _dataSet;
+  double _minimum;
+  double _maximum;
   osg::ref_ptr < osg::Group > _root;
   bool _dirty;
   bool _drawBBox;

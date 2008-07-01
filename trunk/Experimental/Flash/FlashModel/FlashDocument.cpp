@@ -63,6 +63,8 @@ FlashDocument::FlashDocument() :
   _scale ( 1.0 / 1e+20f ),
   _currentTimestep ( 0 ),
   _dataSet ( "temp" ),
+  _minimum ( 0.0 ),
+  _maximum ( 0.0 ),
   _root ( new osg::Group ),
   _dirty ( true ),
   _drawBBox ( false ),
@@ -77,6 +79,8 @@ FlashDocument::FlashDocument() :
   this->_addMember ( "filenames", _filenames );
   this->_addMember ( "current_time_step", _currentTimestep );
   this->_addMember ( "data_set", _dataSet );
+  this->_addMember ( "minimum", _minimum );
+  this->_addMember ( "maximum", _maximum );
   
   this->_buildDefaultTransferFunctions();
   
@@ -320,6 +324,12 @@ osg::Node *FlashDocument::buildScene ( const BaseClass::Options &options, Unknow
 void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
 {
   USUL_TRACE_SCOPE;
+  
+  const double minimum ( Usul::Threads::Safe::get ( this->mutex(), _minimum ) );
+  const double maximum ( Usul::Threads::Safe::get ( this->mutex(), _maximum ) );
+  const bool validMinMax ( 0.0 != minimum && 0.0 != maximum );
+  
+  
   Guard guard ( this->mutex() );
   
   Usul::Interfaces::IRenderInfoOSG::QueryPtr ri ( caller );
@@ -346,6 +356,10 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
     // Add the child to the scene.
     if ( timestep.valid() )
     {
+      // Use this min and max.
+      const double useMin ( validMinMax ? minimum : timestep->minimum() );
+      const double useMax ( validMinMax ? maximum : timestep->maximum() );
+      
       // Colors.
       std::vector<osg::Vec4> colors ( 6 );
       colors[0] = osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 );
@@ -396,7 +410,7 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
           
           if ( _drawVolume )
           {
-            osg::ref_ptr<osg::Image> image ( timestep->buildVolume ( num, timestep->minimum(), timestep->maximum() ) );
+            osg::ref_ptr<osg::Image> image ( timestep->buildVolume ( num, useMin, useMax ) );
             low->addChild  ( this->_buildVolume ( *timestep, image.get(), 8,  bb, tf.get() ) );
             high->addChild ( this->_buildVolume ( *timestep, image.get(), 64, bb, tf.get() ) );
           }
@@ -413,7 +427,7 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
         }
       }
       
-      _root->addChild ( this->_buildLegend ( *timestep, tf.get(), caller ) );
+      _root->addChild ( this->_buildLegend ( useMin, useMax, tf.get(), caller ) );
     }
   }
   
@@ -457,7 +471,7 @@ osg::Node* FlashDocument::_buildVolume ( const Timestep& timestep, osg::Image* i
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* FlashDocument::_buildLegend ( const Timestep& timestep, TransferFunction::RefPtr tf, Usul::Interfaces::IUnknown* caller ) const
+osg::Node* FlashDocument::_buildLegend ( double minimum, double maximum, TransferFunction::RefPtr tf, Usul::Interfaces::IUnknown* caller ) const
 {
   Usul::Interfaces::IViewport::QueryPtr vp ( caller );
   
@@ -529,7 +543,7 @@ osg::Node* FlashDocument::_buildLegend ( const Timestep& timestep, TransferFunct
       text->setPosition ( osg::Vec3 ( xPadding, yStart - yPadding - 15.0, 0.0 ) );
       text->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
       text->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
-      text->setText ( Usul::Strings::format ( timestep.minimum() ) );
+      text->setText ( Usul::Strings::format ( minimum ) );
       geode->addDrawable ( text.get() );
     }
 
@@ -541,7 +555,7 @@ osg::Node* FlashDocument::_buildLegend ( const Timestep& timestep, TransferFunct
       text->setPosition ( osg::Vec3 ( xPadding + width - 90, yStart - yPadding - 15.0, 0.0 ) );
       text->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
       text->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
-      text->setText ( Usul::Strings::format ( timestep.maximum() ) );
+      text->setText ( Usul::Strings::format ( maximum ) );
       geode->addDrawable ( text.get() );
     }
     

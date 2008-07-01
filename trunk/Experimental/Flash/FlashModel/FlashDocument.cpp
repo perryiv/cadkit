@@ -340,12 +340,8 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
   // Make sure we are in range...
   if ( _currentTimestep < _filenames.size() )
   {
-    // Do we need to load the data?
-    if ( false == this->_hasTimestep( _currentTimestep ) )
-      this->_loadTimestep ( _currentTimestep );
-    
-    // Get the timestep.
-    Timestep::RefPtr timestep ( _timesteps[_currentTimestep] );
+    // Get the timestep.  Do not cache for now.
+    Timestep::RefPtr timestep ( this->loadTimestep ( _currentTimestep, false ) );
 
     // Add the child to the scene.
     if ( timestep.valid() )
@@ -400,7 +396,7 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
           
           if ( _drawVolume )
           {
-            osg::ref_ptr<osg::Image> image ( timestep->buildVolume ( num ) );
+            osg::ref_ptr<osg::Image> image ( timestep->buildVolume ( num, timestep->minimum(), timestep->maximum() ) );
             low->addChild  ( this->_buildVolume ( *timestep, image.get(), 8,  bb, tf.get() ) );
             high->addChild ( this->_buildVolume ( *timestep, image.get(), 64, bb, tf.get() ) );
           }
@@ -419,8 +415,6 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
       
       _root->addChild ( this->_buildLegend ( *timestep, tf.get(), caller ) );
     }
-    
-    _timesteps.clear();
   }
   
   this->dirty ( false );
@@ -620,7 +614,7 @@ void FlashDocument::dirty ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FlashDocument::dirty () const
+bool FlashDocument::dirty() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -712,12 +706,12 @@ unsigned int FlashDocument::getNumberOfTimeSteps () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FlashDocument::_loadTimestep ( unsigned int i )
+Timestep::RefPtr FlashDocument::loadTimestep ( unsigned int i, bool cache )
 {
   USUL_TRACE_SCOPE;
   
   // Get the filename for the timestep.
-  std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filenames.at ( i ) ) );
+  const std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filenames.at ( i ) ) );
   
   // Make the timestep.
   Timestep::RefPtr timestep ( new Timestep ( filename ) );
@@ -725,8 +719,13 @@ void FlashDocument::_loadTimestep ( unsigned int i )
   timestep->loadData ( this->dataSet() );
   
   // Add the timestep.
-  Guard guard ( this->mutex() );
-  _timesteps[i] = timestep;
+  if ( true == cache )
+  {
+    Guard guard ( this->mutex() );
+    _timesteps[i] = timestep;
+  }
+  
+  return timestep;
 }
 
 
@@ -736,7 +735,7 @@ void FlashDocument::_loadTimestep ( unsigned int i )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool FlashDocument::_hasTimestep ( unsigned int i ) const
+bool FlashDocument::hasTimestep ( unsigned int i ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -890,7 +889,11 @@ void FlashDocument::dataSet ( const std::string& s )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  _dataSet = s;
+  if ( s != _dataSet )
+  {
+    _dataSet = s;
+    this->clearCache();
+  }
 }
 
 
@@ -919,4 +922,17 @@ bool FlashDocument::_sortFilesBeforeInserting() const
 {
   USUL_TRACE_SCOPE;
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::clearCache()
+{
+  USUL_TRACE_SCOPE;
+  _timesteps.clear();
 }

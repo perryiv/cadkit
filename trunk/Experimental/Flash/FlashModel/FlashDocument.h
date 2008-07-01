@@ -85,6 +85,9 @@ public:
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
   
+  /// Clear the cache.
+  void                        clearCache();
+  
   /// Set/get the dataset name.
   void                        dataSet ( const std::string& );
   std::string                 dataSet() const;
@@ -122,6 +125,12 @@ public:
 
   /// Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  
+  /// Is the i'th timestep loaded?
+  bool                        hasTimestep ( unsigned int i ) const;
+  
+  /// Load the i'th timestep.
+  Timestep::RefPtr            loadTimestep ( unsigned int i, bool cache );
 
   /// Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
@@ -145,12 +154,6 @@ protected:
 
   /// Build the default transfer functions.
   void                        _buildDefaultTransferFunctions();
-  
-  /// Is the i'th timestep loaded?
-  bool                        _hasTimestep ( unsigned int i ) const;
-  
-  /// Load the i'th timestep.
-  void                        _loadTimestep ( unsigned int i );
   
   /// Sort the files before reading.
   virtual bool                _sortFilesBeforeInserting() const;

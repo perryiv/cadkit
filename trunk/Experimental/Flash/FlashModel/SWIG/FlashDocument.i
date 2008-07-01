@@ -13,6 +13,8 @@
 #include "FlashDocument.h"
 %}
 
+%include "Timestep.i"
+
 #ifdef SWIGPYTHON
 %include "python/std_string.i"
 %include "python/std_map.i"
@@ -52,38 +54,23 @@ public:
   
   unsigned int        getNumberOfTimeSteps () const;
   
+  /// Load the i'th timestep.
+  Usul::Pointers::SmartPointer<Timestep,Usul::Pointers::Configs::RefCountingNullOk>         loadTimestep ( unsigned int i, bool cache );
+  
   void                updateNotify ( Usul::Interfaces::IUnknown* );
   
 protected:
   virtual ~FlashDocument();
 };
 
-namespace Usul {
-  namespace Pointers {
-    
-    
-    template
-    <
-    class T,
-    class Config_
-    >
-    struct SmartPointer
-    {
-    public:
-      SmartPointer();
-      ~SmartPointer();
-      
-      T* operator->();
-    };
-  }
-}
+%include "Usul/SWIG/SmartPointer.i"
 
 %template(FlashDocumentPtr) Usul::Pointers::SmartPointer<FlashDocument,Usul::Pointers::Configs::RefCountingNullOk>;
 //%template(FlashDocumentPtr) FlashDocument::RefPtr;
 
 %{
 
-static  Usul::Pointers::SmartPointer<FlashDocument,Usul::Pointers::Configs::RefCountingNullOk> createDocument()
+static Usul::Pointers::SmartPointer<FlashDocument,Usul::Pointers::Configs::RefCountingNullOk> createDocument()
 {
   FlashDocument::RefPtr doc ( new FlashDocument );
 	return doc;

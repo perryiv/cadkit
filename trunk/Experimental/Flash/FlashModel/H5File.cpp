@@ -59,7 +59,7 @@ H5File::~H5File()
   }
   
   // Flush the file.
-  ::H5Fflush ( _handle, H5F_SCOPE_LOCAL );
+  ::H5Fflush ( _handle, H5F_SCOPE_GLOBAL );
 
   // Close the file.
   ::H5Fclose ( _handle );

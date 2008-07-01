@@ -369,17 +369,13 @@ osg::Node* Timestep::buildPoints ( const osg::BoundingBox& bb, unsigned int num 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Timestep:: buildVolume ( unsigned int num ) const
+osg::Image* Timestep:: buildVolume ( unsigned int num, double minimum, double maximum ) const
 {
   // Get the dimensions in each direction.
   const unsigned int x ( _data.shape()[1] );
   const unsigned int y ( _data.shape()[2] );
   const unsigned int z ( _data.shape()[3] );
-  
-  // Get min and max from the data set.
-  const double minimum ( _minimum );
-  const double maximum ( _maximum );
-  
+
   // Get the 3D image for the volume.
   osg::ref_ptr<osg::Image> image ( new osg::Image );
   

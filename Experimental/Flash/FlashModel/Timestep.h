@@ -41,7 +41,7 @@ public:
   /// Build functions.
   osg::Node*     buildBoundingBox ( const osg::BoundingBox& bb, const osg::Vec4f& color ) const;
   osg::Node*     buildPoints      ( const osg::BoundingBox& bb, unsigned int i ) const;
-  osg::Image*    buildVolume      ( unsigned int i ) const;
+  osg::Image*    buildVolume      ( unsigned int i, double minimum, double maximum ) const;
   
   /// Initialize.
   void init();

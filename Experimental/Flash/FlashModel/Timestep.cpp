@@ -211,24 +211,6 @@ void Timestep::_initHierarchy ( H5File& file )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Timestep::buildScene( bool drawBBox, bool drawPoints, bool drawVolume )
-{
-  Guard guard ( this->mutex() );
-   
-  osg::ref_ptr<osg::Group> root ( new osg::Group );
-  
-  
-
-  return root.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Load the data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -245,7 +227,7 @@ void Timestep::loadData ( const std::string& name )
     throw std::runtime_error ( "Error 1747059583: Could not open file: " + _filename );
   
   // Read the density.
-  Dataset::RefPtr data ( file.openDataset( name ) );
+  Dataset::RefPtr data ( file.openDataset ( name ) );
   
   // Make sure it's valid.
   if ( false == data.valid() || false == data->isOpen() )

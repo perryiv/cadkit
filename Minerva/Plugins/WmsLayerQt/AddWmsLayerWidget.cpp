@@ -51,6 +51,7 @@
 #include "QtGui/QScrollArea"
 #include "QtGui/QStringListModel"
 #include "QtGui/QCompleter"
+#include "QtGui/QMessageBox"		
 
 #include <iostream>
 #include <fstream>
@@ -250,8 +251,13 @@ void AddWmsLayerWidget::on_browseDirectory_clicked ()
 
 void AddWmsLayerWidget::on_capabilitiesButton_clicked()
 {
+  const std::string server ( _server->text().toStdString() );
+  
+  const std::string::size_type pos ( server.find_first_of ( '?' ) );
+  const std::string prefix ( ( std::string::npos == pos ) ? "?" : "&" );
+  
   // Url request.
-  std::string request ( _server->text().toStdString() + "?request=GetCapabilities&Service=WMS&Version=1.1.1" );
+  const std::string request ( Usul::Strings::format ( server, prefix, "request=GetCapabilities&Service=WMS&Version=1.1.1" ) );
   
   // File to download to.
 	std::string name ( Usul::File::Temp::file() );
@@ -273,6 +279,21 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
   
   typedef XmlTree::Node::Children    Children;
   
+  // Look for errors first.
+  Children exceptions ( document->find ( "ServiceException", true ) );
+  
+  if ( false == exceptions.empty() )
+  {
+    std::string message ( Usul::Strings::format ( "Could not retrieve capabilities using request: ", request ) );
+    for ( Children::const_iterator iter = exceptions.begin(); iter != exceptions.end(); ++iter )
+    {
+      message = Usul::Strings::format ( "  Reason: ", (*iter)->value() );
+    }
+    
+    QMessageBox::critical ( this, "Error trying to retrieve capabilities", message.c_str() );
+    return;
+  }
+         
   Children layers ( document->find ( "Layer", true ) );
 
   _layersTree->clear();

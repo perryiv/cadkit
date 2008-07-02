@@ -32,7 +32,7 @@
 
 #include "OsgTools/Volume/GPURayCasting.h"
 #include "OsgTools/Volume/Texture3DVolume.h"
-#include "OsgTools/Volume/TransferFunction.h"
+#include "OsgTools/Volume/TransferFunction1D.h"
 
 #include "osg/BoundingBox"
 #include "osg/Group"
@@ -53,10 +53,12 @@ class FlashDocument : public Usul::Documents::Document,
 public:
 
   /// Useful typedefs.
-  typedef Usul::Documents::Document           BaseClass;
-  typedef OsgTools::Volume::TransferFunction  TransferFunction;
-  typedef TransferFunction::RefPtr            TransferFunctionPtr;
-  typedef std::vector<TransferFunctionPtr>    TransferFunctions;
+  typedef Usul::Documents::Document            BaseClass;
+  typedef OsgTools::Volume::TransferFunction   TransferFunction;
+  typedef OsgTools::Volume::TransferFunction1D TransferFunction1D;
+  typedef TransferFunction1D::Colors           Colors;
+  typedef TransferFunction::RefPtr             TransferFunctionPtr;
+  typedef std::vector<Colors>                  TransferFunctions;
   
 #if USE_RAY_CASTING
   typedef OsgTools::Volume::GPURayCasting Volume;
@@ -132,6 +134,10 @@ public:
   /// Load the i'th timestep.
   Timestep::RefPtr            loadTimestep ( unsigned int i, bool cache );
 
+  /// Set the transfer function.
+  void                        transferFunction ( unsigned int i );
+  bool                        isTransferFunction ( unsigned int i ) const;
+  
   /// Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
   

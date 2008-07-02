@@ -9,9 +9,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Experimental/Flash/FlashModel/FlashDocument.h"
+#include "Experimental/Flash/FlashModel/TypeWrapper.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Convert/Vector4.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/Color.h"
@@ -26,14 +29,13 @@
 #include "Usul/Threads/Safe.h"
 
 #include "OsgTools/State/StateSet.h"
-#include "OsgTools/Volume/Texture3DVolume.h"
-#include "OsgTools/Volume/TransferFunction1D.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/ToggleButton.h"
+#include "MenuKit/RadioButton.h"
 
 #include "osg/BlendFunc"
 #include "osg/Camera"
@@ -44,8 +46,6 @@
 #include "osgText/Text"
 
 #include "osgUtil/GLObjectsVisitor"
-
-#include "hdf5.h"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( FlashDocument, FlashDocument::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( FlashDocument );
@@ -81,6 +81,7 @@ FlashDocument::FlashDocument() :
   this->_addMember ( "data_set", _dataSet );
   this->_addMember ( "minimum", _minimum );
   this->_addMember ( "maximum", _maximum );
+  this->_addMember ( "transfer_functions", _transferFunctions );
   
   this->_buildDefaultTransferFunctions();
   
@@ -370,8 +371,7 @@ void FlashDocument::_buildScene ( Usul::Interfaces::IUnknown* caller )
       colors[5] = osg::Vec4 ( 0.0, 1.0, 1.0, 1.0 );
 
       // Typedefs.
-      typedef OsgTools::Volume::TransferFunction TransferFunction;
-      TransferFunction::RefPtr tf ( _transferFunctions.at ( _currentTransferFunction ) );
+      TransferFunction1D::RefPtr tf ( new TransferFunction1D ( _transferFunctions.at ( _currentTransferFunction ) ) );
 
       const unsigned int numNodes ( timestep->numNodes() );
       
@@ -642,12 +642,8 @@ bool FlashDocument::dirty() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FlashDocument::_buildDefaultTransferFunctions ()
+void FlashDocument::_buildDefaultTransferFunctions()
 {
-  // Typedefs.
-  typedef OsgTools::Volume::TransferFunction1D TransferFunction1D;
-  typedef TransferFunction1D::Colors           Colors;
-  
   const unsigned int size ( 256 );  
   Colors hsv       ( size );
 
@@ -667,7 +663,7 @@ void FlashDocument::_buildDefaultTransferFunctions ()
       hsv.at( i )[3] = 1;
   }
   
-  _transferFunctions.push_back ( new TransferFunction1D ( hsv ) );
+  _transferFunctions.push_back ( hsv );
 }
 
 
@@ -889,6 +885,19 @@ void FlashDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
                                      UC::genericToggleCommand ( "Draw Volume", 
                                                                 UA::memberFunction<void> ( this, &FlashDocument::drawVolume ), 
                                                                 UA::memberFunction<bool> ( this, &FlashDocument::isDrawVolume ) ) ) );
+    
+    MenuKit::Menu::RefPtr tf ( new MenuKit::Menu ( "Transfer Functions" ) );
+    view->append ( tf.get() );
+    typedef TransferFunctions::const_iterator ConstIterator;
+    Guard guard ( this );
+    for ( ConstIterator iter = _transferFunctions.begin(); iter != _transferFunctions.end(); ++iter )
+    {
+      const long num ( std::distance<ConstIterator> ( _transferFunctions.begin(), iter ) );
+      tf->append ( new MenuKit::RadioButton ( 
+                                    Usul::Commands::genericCheckCommand ( Usul::Strings::format ( num ), 
+                                                                         Usul::Adaptors::bind1<void> ( num, Usul::Adaptors::memberFunction<void> ( this, &FlashDocument::transferFunction ) ), 
+                                                                         Usul::Adaptors::bind1<bool> ( num, Usul::Adaptors::memberFunction<bool> ( this, &FlashDocument::isTransferFunction ) ) ) ) );
+    }
   }
 }
 
@@ -949,4 +958,31 @@ void FlashDocument::clearCache()
 {
   USUL_TRACE_SCOPE;
   _timesteps.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the transfer function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::transferFunction ( unsigned int i )
+{
+  Guard guard ( this );
+  _currentTransferFunction = i;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this the current  transfer function?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool FlashDocument::isTransferFunction ( unsigned int i ) const
+{
+  Guard guard ( this );
+  return i == _currentTransferFunction;
 }

@@ -1217,6 +1217,10 @@
 					RelativePath=".\Points\PointSet.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Points\PointSetRecords.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

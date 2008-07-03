@@ -19,6 +19,7 @@
 
 #include "OsgTools/Export.h"
 #include "OsgTools/Points/OctTree.h"
+#include "OsgTools/Points/PointSetRecords.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -48,7 +49,6 @@ public:
 
   // Data Structor Typedefs
   
-
   // OSG typedefs
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef osg::ref_ptr< osg::Geode > GeodePtr;
@@ -66,6 +66,7 @@ public:
 
   /// Build the scene.
   osg::Node *             buildScene ( Unknown *caller = 0x0 );
+  void                    preBuildScene( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   /// Clear any existing data.
   virtual void            clear ( Unknown *caller = 0x0 );
@@ -83,8 +84,8 @@ public:
 
   void                    split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
-  void                    write( std::ofstream* ofs, Usul::Documents::Document* document = 0x0, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
-  void                    read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                    write( std::ofstream* ofs, Usul::Types::Uint64  numPoints, Usul::Documents::Document* document = 0x0, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
+  void                    read ( std::ifstream* ifs, Usul::Types::Uint64 &numPoints,Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
  
 protected:
@@ -92,6 +93,8 @@ protected:
   /// Do not copy.
   PointSet ( const PointSet & );
   PointSet &operator = ( const PointSet & );
+
+  
 
   
   /// Use reference counting.

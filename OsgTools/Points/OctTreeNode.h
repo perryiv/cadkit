@@ -17,6 +17,9 @@
 #ifndef __EXPERIMENTAL_OCTTREENODE_H__
 #define __EXPERIMENTAL_OCTTREENODE_H__
 
+#include "OsgTools/Export.h"
+#include "OsgTools/Points/PointSetRecords.h"
+
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -40,7 +43,10 @@
 #define NODE_HOLDER 1
 #define POINT_HOLDER 2
 
-class OctTreeNode : public Usul::Base::Object
+namespace OsgTools {
+namespace Points {
+
+class OSG_TOOLS_EXPORT OctTreeNode : public Usul::Base::Object
 {
 public:
 
@@ -61,7 +67,11 @@ public:
   typedef osg::ref_ptr < Elements > ElementsPtr;
   typedef std::vector<char> StreamBuffer;
   typedef boost::shared_ptr<StreamBuffer> StreamBufferPtr;
-  typedef std::vector< unsigned short > LodDefinitions;
+  typedef std::vector< Usul::Types::Uint16 > LodDefinitions;
+  typedef osg::ref_ptr< osg::Group > GroupPtr;
+
+   // Type information.
+  USUL_DECLARE_TYPE_ID ( OctTreeNode );
 
   OctTreeNode ( StreamBufferPtr, const std::string &tempPath ); 
   virtual ~OctTreeNode();
@@ -81,6 +91,7 @@ public:
   void                              buildVectors();
 
   osg::Node*                        buildScene( Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                              preBuildScene( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   void                              useLOD( bool value );
 
@@ -107,10 +118,14 @@ public:
 protected:
 
   void                              _writePoints( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
-  void                              _writeNodeHeader( std::ofstream* ofs ) const;
+  void                              _writeNodeInfo( std::ofstream* ofs ) const;
+  void                              _writeRecord( std::ofstream* ofs, Usul::Types::Uint32 type, Usul::Types::Uint64 size ) const;
 
-  void                              _readHeader( std::ifstream* ifs );
+  void                              _readNodeInfo( std::ifstream* ifs );
   void                              _readPoints( std::ifstream* ifs );
+  Usul::Types::Uint64               _readToRecord( std::ifstream* ifs, Usul::Types::Uint32 type );
+  void                              _readOctreeRecord ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+
 
   bool                              _contains( OctTreeNode::Point p );
   void                              _insertOrCreateChildren( OctTreeNode::Point p );
@@ -132,6 +147,7 @@ protected:
   void                              _closeOutputStream();
 
   void                              _closeChildrenStreams();
+  Usul::Types::Uint32               _headerSize() const;
 
 private:
 
@@ -154,6 +170,7 @@ private:
   StreamBufferPtr                 _streamBuffer;
   std::string                     _tempPath;
   double                          _distance;
+  GroupPtr                        _root;
   
   static long                     _streamCount;
   static unsigned long            _numerator;
@@ -162,6 +179,8 @@ private:
 
   
 
-};
+}; // OctTreeNode
+}; // namespace Points
+}; // namespace OsgTools
 
 #endif // __EXPERIMENTAL_OCTTREENODE_H__

@@ -26,6 +26,9 @@
 
 #include <Math.h>
 
+using namespace OsgTools::Points;
+USUL_IMPLEMENT_TYPE_ID ( OctTreeNode );
+
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OctTreeNode, OctTreeNode::BaseClass );
 
  long                OctTreeNode::_streamCount  ( 0 );
@@ -58,14 +61,14 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
   _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
 #if 1
    _lodDefinitions.push_back( 1 );
+   _lodDefinitions.push_back( 3 );
    _lodDefinitions.push_back( 10 );
    _lodDefinitions.push_back( 25 );
    _lodDefinitions.push_back( 50 );
    _lodDefinitions.push_back( 75 );
    _lodDefinitions.push_back( 100 );
-   _lodDefinitions.push_back( 150 );
-   _lodDefinitions.push_back( 300 );
-   _lodDefinitions.push_back( 600 );
+   _lodDefinitions.push_back( 500 );
+   _lodDefinitions.push_back( 1000 );
 #endif
 
 #if 0
@@ -266,6 +269,12 @@ unsigned int OctTreeNode::capacity() const
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
 osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 {
   Guard guard ( this->mutex() );
@@ -273,10 +282,9 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
   typedef osg::ref_ptr< osg::Geode > GeodePtr;
   osg::ref_ptr< osg::LOD > lod ( new osg::LOD );
   osg::ref_ptr< osg::Group > group ( new osg::Group );
-
   unsigned int numLODs ( _lodDefinitions.size() );
 
-  if( POINT_HOLDER == this->type() )
+  if( true == _children.empty() )
   {
     // Make sure the points are valid
     if( true == _points.valid() )
@@ -325,15 +333,30 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
       }
     }
   }
-  else if( NODE_HOLDER == this->type() )
+  else
   { 
     for( unsigned int i = 0; i < _children.size(); ++i )
     {
-      group->addChild( _children.at( i )->buildScene() );
+      if( true == _children.at( i ).valid() )
+      {
+        group->addChild( _children.at( i )->buildScene() );
+      }
     } 
-  }
+  } 
 
   return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::preBuildScene( Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+{
+
 }
 
 
@@ -566,12 +589,24 @@ OctTreeNode::LodDefinitions OctTreeNode::getLodDefinitions() const
 void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned int denominator, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
 {
   Guard guard ( this->mutex() );
-  
-  // write the node header information
-  this->_writeNodeHeader( ofs );
 
-  if( POINT_HOLDER == this->type() )
+  Usul::Types::Uint64 size ( this->_headerSize() );
+  this->_writeRecord( ofs, PointSetRecords::Record::OCTREE_NODE, size );
+
+  // write the node header information
+  this->_writeNodeInfo( ofs );
+
+  if( true == _children.empty() )
   {
+    // write the record information
+    unsigned int numPoints ( 0 );
+    if( true == _points.valid() )
+    {
+      numPoints = _points->size();
+    }
+    Usul::Types::Uint64 size ( numPoints * sizeof( osg::Vec3f ) + sizeof( Usul::Types::Uint64 ) );
+    this->_writeRecord( ofs, PointSetRecords::Record::POINTS, size );
+
     // write the node points
     this->_writePoints( ofs, document, caller, progress );
 
@@ -579,8 +614,11 @@ void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned in
     ++numerator;
     document->setProgressBar( true, numerator, denominator, progress );
   }
-  else if( NODE_HOLDER == this->type() )
+  else 
   {
+    // write the record information    
+    this->_writeRecord( ofs, PointSetRecords::Record::CHILDREN, 0 );
+
     // tell children to write their information
     for( unsigned int i = 0; i < _children.size(); ++i )
     {
@@ -600,34 +638,71 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
 {
   Guard guard ( this->mutex() );
 
+  // Read the records until we find an appropriate match
+  const Usul::Types::Uint64 recordSize ( this->_readToRecord( ifs, PointSetRecords::Record::OCTREE_NODE ) );
+
+  // Get the current position.
+  const Usul::Types::Uint64 currentPosition ( ifs->tellg() );
+
   // write the node header information
-  this->_readHeader( ifs );
+  this->_readNodeInfo( ifs );
 
-  
-
-  if( POINT_HOLDER == this->type() )
+  while ( ( EOF != ifs->peek() ) && ( ifs->tellg() < ( currentPosition + recordSize ) ) )
   {
-    // write the node points
-    this->_readPoints( ifs );
+    unsigned int pos ( ifs->tellg() );
 
-    // Update progress
-    ++_numerator;
-    document->setProgressBar( true, _numerator, _denominator, progress );
+    // read the record type
+    Usul::Types::Uint32 recordType ( 0 );
+    ifs->read( reinterpret_cast< char* > ( &recordType ), sizeof( Usul::Types::Uint32 ) );
 
-  }
-  else if( NODE_HOLDER == this->type() )
-  {
-    // tell children to read
-   
-    _children.resize( 8 );
-    for( unsigned int i = 0; i < _children.size(); ++i )
+    // read the record size
+    Usul::Types::Uint64 rs ( 0 );
+    ifs->read( reinterpret_cast< char* > ( &rs ), sizeof( Usul::Types::Uint64 ) );
+
+    switch ( recordType )
     {
-      _children.at( i ) = new OctTreeNode( _streamBuffer, _tempPath );
-      _children.at( i )->distance( _distance );
-      _children.at( i )->read( ifs, document, caller, progress );
+      case PointSetRecords::Record::POINTS:
+      {
+        // write the node points
+        this->_readPoints( ifs );
+
+        // Update progress
+        ++_numerator;
+        document->setProgressBar( true, _numerator, _denominator, progress );
+        break;
+      }
+      case PointSetRecords::Record::COLORS:
+      {
+        // Skip it.
+        // Print feedback.
+        break;
+      }
+      case PointSetRecords::Record::CHILDREN:
+      {
+        // Hey, I already read points!
+        //if ( _points.valid() )
+          //punt
+
+        // This better be the last thing in the oct-tree record.
+        // USUL_ASSERT ( ( currentPosition + recordSize ) == ifs->tellg() );
+
+        // tell children to read
+        _children.resize( 8 );
+        for( unsigned int i = 0; i < _children.size(); ++i )
+        {
+          _children.at( i ) = new OctTreeNode( _streamBuffer, _tempPath );
+          _children.at( i )->distance( _distance );
+          _children.at( i )->read( ifs, document, caller, progress );
+        }
+        break;
+      }
+      default:
+      {
+        // Skip.
+        break;
+      }
     }
   }
-
 }
 
 
@@ -661,6 +736,70 @@ void OctTreeNode::lodDefinitions( LodDefinitions lods )
 //  PROTECTED
 /////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the header size
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Types::Uint32 OctTreeNode::_headerSize() const
+{
+  Guard guard ( this->mutex() );
+  Usul::Types::Uint32 size ( ( sizeof( osg::Vec3f ) * 2 ) + ( sizeof( Usul::Types::Uint32 ) * 2 ) + sizeof( Usul::Types::Uint64 ) );
+  return size;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the record
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTreeNode::_writeRecord( std::ofstream* ofs, Usul::Types::Uint32 type, Usul::Types::Uint64 size ) const
+{
+  Guard guard ( this->mutex() );
+  
+  // write the record type
+  Usul::Types::Uint32 recordType ( type );
+  ofs->write( reinterpret_cast< char* > ( &recordType ), sizeof( Usul::Types::Uint32 ) );
+
+  // write the record size
+  Usul::Types::Uint64 recordSize ( size );
+  ofs->write( reinterpret_cast< char* > ( &recordSize ), sizeof( Usul::Types::Uint64 ) );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the record
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Types::Uint64 OctTreeNode::_readToRecord( std::ifstream* ifs, Usul::Types::Uint32 type )
+{
+  Guard guard ( this->mutex() );
+
+  // read the record type
+  Usul::Types::Uint32 recordType ( 0 );
+  ifs->read( reinterpret_cast< char* > ( &recordType ), sizeof( Usul::Types::Uint32 ) );
+
+  // read the record size
+  Usul::Types::Uint64 recordSize ( 0 );
+  ifs->read( reinterpret_cast< char* > ( &recordSize ), sizeof( Usul::Types::Uint64 ) );
+
+  // check to see if we have an octree node
+  if( type != recordType )
+  {
+    ifs->seekg( recordSize, std::ifstream::cur );
+
+    // check for end of file
+    this->_readToRecord( ifs, type );
+  }  
+
+  return recordSize;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -668,14 +807,10 @@ void OctTreeNode::lodDefinitions( LodDefinitions lods )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OctTreeNode::_readHeader( std::ifstream* ifs )
+void OctTreeNode::_readNodeInfo( std::ifstream* ifs )
 {
   Guard guard ( this->mutex() );
-  // read the node type
-  unsigned int type ( 0 );
-  ifs->read( reinterpret_cast< char* > ( &type ), sizeof( unsigned int ) );
-  this->type( type );
-
+  
   // read the node bounding box parameters
   osg::Vec3f minBB ( 0.0, 0.0, 0.0 );
   osg::Vec3f maxBB ( 0.0, 0.0, 0.0 );
@@ -685,8 +820,8 @@ void OctTreeNode::_readHeader( std::ifstream* ifs )
   this->boundingBox( bb );
 
   // read the node capacity
-  unsigned int capacity( 0 );
-  ifs->read( reinterpret_cast< char* > ( &capacity ), sizeof( unsigned int ) );
+  Usul::Types::Uint32 capacity( 0 );
+  ifs->read( reinterpret_cast< char* > ( &capacity ), sizeof( Usul::Types::Uint32 ) );
   this->capacity( capacity );
 
 }
@@ -701,10 +836,10 @@ void OctTreeNode::_readHeader( std::ifstream* ifs )
 void OctTreeNode::_readPoints( std::ifstream* ifs )
 {
   Guard guard ( this->mutex() );
-  unsigned int numPoints( 0 );
+  Usul::Types::Uint64 numPoints( 0 );
 
   // read the number of points
-  ifs->read( reinterpret_cast< char * > ( &numPoints ), sizeof( unsigned int ) );
+  ifs->read( reinterpret_cast< char * > ( &numPoints ), sizeof( Usul::Types::Uint64 ) );
  
   // read the points
   if( numPoints > 0 )
@@ -718,7 +853,7 @@ void OctTreeNode::_readPoints( std::ifstream* ifs )
       _points->reserve( numPoints );
     }
 
-    unsigned long long pointsSize ( sizeof( osg::Vec3f ) * numPoints );
+    Usul::Types::Uint64 pointsSize ( sizeof( osg::Vec3f ) * numPoints );
     ifs->read( reinterpret_cast< char * > ( &((*_points)[0]) ), pointsSize );
   }
 }
@@ -730,13 +865,9 @@ void OctTreeNode::_readPoints( std::ifstream* ifs )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OctTreeNode::_writeNodeHeader( std::ofstream* ofs ) const
+void OctTreeNode::_writeNodeInfo( std::ofstream* ofs ) const
 {
   Guard guard ( this->mutex() );
-
-  // write the node type
-  unsigned int type ( _type );
-  ofs->write( reinterpret_cast< char* > ( &type ), sizeof( unsigned int ) );
 
   // write the node bounding box parameters
   osg::Vec3f minBB ( _bb.xMin(), _bb.yMin(), _bb.zMin() );
@@ -745,9 +876,8 @@ void OctTreeNode::_writeNodeHeader( std::ofstream* ofs ) const
   ofs->write( reinterpret_cast< char* > ( &maxBB ), sizeof( osg::Vec3f ) );
 
   // write the node capacity
-  unsigned int capacity( _capacity );
-  ofs->write( reinterpret_cast< char* > ( &capacity ), sizeof( unsigned int ) );
-
+  Usul::Types::Uint32 capacity( _capacity );
+  ofs->write( reinterpret_cast< char* > ( &capacity ), sizeof( Usul::Types::Uint32 ) );
 
 }
 
@@ -762,7 +892,7 @@ void OctTreeNode::_writePoints( std::ofstream* ofs, Usul::Documents::Document* d
 {
   Guard guard ( this->mutex() );
 
-  unsigned int numPoints ( 0 );
+  Usul::Types::Uint64 numPoints ( 0 );
 
   if( true == _points.valid() )
   {
@@ -771,16 +901,16 @@ void OctTreeNode::_writePoints( std::ofstream* ofs, Usul::Documents::Document* d
     numPoints = _points->size();
   
     // write the number of points
-    ofs->write( reinterpret_cast< char * > ( &numPoints ), sizeof( unsigned int ) );
+    ofs->write( reinterpret_cast< char * > ( &numPoints ), sizeof( Usul::Types::Uint64 ) );
 
     // write the points
-    unsigned long long pointsSize ( numPoints * sizeof( osg::Vec3f ) );
+    Usul::Types::Uint64 pointsSize ( numPoints * sizeof( osg::Vec3f ) );
     ofs->write( reinterpret_cast< char * > ( &((*_points)[0]) ), pointsSize );
   }
   else
   {
     // write the number of points
-    ofs->write( reinterpret_cast< char * > ( &numPoints ), sizeof( unsigned int ) );
+    ofs->write( reinterpret_cast< char * > ( &numPoints ), sizeof( Usul::Types::Uint64 ) );
   }
 
 }

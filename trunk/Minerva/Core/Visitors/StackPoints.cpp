@@ -78,9 +78,9 @@ void StackPoints::visit ( Minerva::Core::Data::DataObject &dataObject )
         const bool autotransform ( point->autotransform() );
         const float size ( point->size() );
 
-        const osg::Vec3& o ( point->spatialOffset() );
+        Usul::Math::Vec3d o ( point->spatialOffset() );
         const double distance ( count * _multiplier * ( autotransform ? 20 : size ) );
-        point->spatialOffset ( osg::Vec3f ( o.x(), o.y(), /*o.z() +*/ ( distance ) ) );
+        point->spatialOffset ( Usul::Math::Vec3d ( o[0], o[1], /*o.z() +*/ ( distance ) ) );
         dataObject.dirty( true );
 
         countIter->second = count + 1;

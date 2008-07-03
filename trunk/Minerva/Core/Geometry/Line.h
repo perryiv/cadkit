@@ -51,7 +51,7 @@ protected:
   void                  _buildLatLongPoints();
 
   virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
-  osg::Node*            _buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller );
+  osg::Node*            _buildScene( const Color& color, Usul::Interfaces::IUnknown* caller );
   
   /// Get the line data as WGS 84.
   const Vertices&       _lineDataWgs84();

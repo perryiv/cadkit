@@ -471,7 +471,7 @@ KmlLayer::Geometry * KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *s
   point->autotransform ( true );
   point->size ( 5 );
   point->primitiveId ( 2 );
-  point->color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+  point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
   
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -521,8 +521,8 @@ KmlLayer::Geometry* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *
 
   // Make the data object.
   Minerva::Core::Geometry::Polygon::RefPtr polygon ( new Minerva::Core::Geometry::Polygon );
-  polygon->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
-  polygon->borderColor ( osg::Vec4 ( borderColor[0], borderColor[1], borderColor[2], borderColor[3] ) );
+  polygon->color ( color );
+  polygon->borderColor ( borderColor );
   polygon->width ( width );
   polygon->showBorder ( outline );
   polygon->showInterior ( fill );
@@ -578,7 +578,7 @@ KmlLayer::Geometry* KmlLayer::_parseLineString ( const XmlTree::Node& node, Styl
 
   Minerva::Core::Geometry::Line::RefPtr line ( new Minerva::Core::Geometry::Line );
   line->width ( width );
-  line->color ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
+  line->color ( color );
   
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )

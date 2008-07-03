@@ -42,7 +42,7 @@ public:
 
   /// Typedefs.
   typedef Minerva::Core::Layers::Container           BaseClass;
-  typedef Minerva::Core::Data::DataObject     DataObject;
+  typedef Minerva::Core::Data::DataObject            DataObject;
   typedef Minerva::Core::Geometry::Geometry          Geometry;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;

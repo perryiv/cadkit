@@ -142,7 +142,7 @@ osg::Node* Geometry::buildScene( const Options& options, Usul::Interfaces::IUnkn
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& Geometry::color () const
+Usul::Math::Vec4f Geometry::color() const
 {
   Guard guard ( this );
   return _color;
@@ -155,13 +155,16 @@ const osg::Vec4& Geometry::color () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Geometry::color ( const osg::Vec4& color )
+void Geometry::color ( const Color& color )
 {
   Guard guard ( this );
   
-  // Set the internal color.
-  _color = color;
-  this->dirty( true );
+  if ( false == color.equal ( _color ) )
+  {
+    // Set the internal color.
+    _color = color;
+    this->dirty( true );
+  }
 }
 
 
@@ -314,7 +317,7 @@ void Geometry::renderBin( unsigned int renderBin )
 
 bool Geometry::transparent() const
 {
-  return 1.0f != this->color().w();
+  return 1.0f != this->color()[3];
 }
 
 
@@ -324,10 +327,10 @@ bool Geometry::transparent() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Geometry::spatialOffset( const osg::Vec3f& value )
+void Geometry::spatialOffset( const Point& value )
 {
   Guard guard ( this->mutex() );
-  if( _offset != value )
+  if( false == _offset.equal ( value ) )
   {
     _offset = value;
     this->dirty( true );
@@ -341,7 +344,7 @@ void Geometry::spatialOffset( const osg::Vec3f& value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec3f& Geometry::spatialOffset( ) const
+Usul::Math::Vec3d Geometry::spatialOffset( ) const
 {
   Guard guard ( this->mutex() );
   return _offset;

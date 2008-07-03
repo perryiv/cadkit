@@ -39,6 +39,7 @@ LoadModel::LoadModel() : _toMeters ( 0.0254 )
 {
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Turn off non-power of two resizing.
@@ -103,7 +104,6 @@ osg::Node* LoadModel::operator() ( const std::string& filename )
   }
 
   osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( filename ) );
-
   if ( node.valid() )
   {
     // Post-process.

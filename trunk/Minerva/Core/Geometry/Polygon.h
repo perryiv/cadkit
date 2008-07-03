@@ -44,8 +44,8 @@ public:
   const Boundaries&     innerBoundaries() const;
 
   /// Set/get the border color flag.
-  void                  borderColor ( const osg::Vec4& color );
-  const osg::Vec4&      borderColor() const;
+  void                  borderColor ( const Color& color );
+  Color                 borderColor() const;
   
   /// Set/get draw border flag.
   void                  showBorder( bool b );
@@ -70,7 +70,7 @@ private:
   Boundaries _boundaries;
   bool _showBorder;
   bool _showInterior;
-  osg::Vec4 _borderColor;
+  Color _borderColor;
 };
 
 }

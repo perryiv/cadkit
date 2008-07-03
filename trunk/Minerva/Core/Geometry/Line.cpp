@@ -183,9 +183,9 @@ osg::Node* Line::_buildScene( Usul::Interfaces::IUnknown* caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown* caller )
+osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* caller )
 {
-  //Guard guard ( this ); Was causing desdlock!
+  //Guard guard ( this ); Was causing deadlock!
 
   osg::ref_ptr < osg::Group > node ( new osg::Group );
   osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
@@ -242,7 +242,7 @@ osg::Node* Line::_buildScene( const osg::Vec4& color, Usul::Interfaces::IUnknown
   
   // Set the colors.
   osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-  colors->push_back( color );
+  colors->push_back( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   geometry->setColorArray( colors.get() );
   geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
   

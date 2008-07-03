@@ -181,8 +181,8 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
     point->autotransform ( true );
     point->size ( 5 );
     point->primitiveId ( 2 );
-    point->color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
-    point->point (  Usul::Math::Vec3d ( lon, lat, 0.0 ) );
+    point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
+    point->point ( Usul::Math::Vec3d ( lon, lat, 0.0 ) );
 
     DataObject::RefPtr object ( new DataObject );
     

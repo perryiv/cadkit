@@ -11,6 +11,7 @@
 #include "Minerva/Core/Geometry/Polygon.h"
 
 #include "OsgTools/Configure/OSG.h"
+#include "OsgTools/Convert.h"
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Utilities/TranslateGeometry.h"
@@ -144,7 +145,8 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec4Array> colors  ( new osg::Vec4Array ( inVertices.size() ) );
-  std::fill ( colors->begin(), colors->end(), this->color() );
+  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
+  std::fill ( colors->begin(), colors->end(), color );
   
   // Reserve enough rooms.
   vertices->reserve( inVertices.size() );
@@ -341,7 +343,7 @@ bool Polygon::showInterior() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Polygon::borderColor ( const osg::Vec4& color )
+void Polygon::borderColor ( const Color& color )
 {
   Guard guard ( this );
   _borderColor = color;
@@ -354,7 +356,7 @@ void Polygon::borderColor ( const osg::Vec4& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& Polygon::borderColor() const
+Usul::Math::Vec4f Polygon::borderColor() const
 {
   Guard guard ( this );
   return _borderColor;

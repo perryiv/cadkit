@@ -18,6 +18,7 @@
 
 #include "osg/Matrix"
 
+#include "Usul/Convert/Convert.h"
 #include "Usul/Math/Matrix44.h"
 
 
@@ -97,5 +98,48 @@ void vector ( const F& from, T& to, unsigned int size )
 } // namespace Convert
 } // namespace OsgTools
 
+#define OSGTOOLS_CONVERT_VEC4(from_type,to_type) \
+namespace Usul{ namespace Convert  { \
+template <> struct Type < from_type, to_type > \
+{ \
+typedef Type < from_type, to_type > ThisType; \
+static void convert ( const from_type& from, to_type &to ) \
+{ \
+  to.set ( from[0], from[1], from[2], from[3] ); \
+} \
+static to_type convert ( const from_type& from )\
+{\
+  to_type to;\
+  ThisType::convert ( from, to ); \
+  return to;\
+} }; } }
+
+#define OSGTOOLS_CONVERT_VEC3(from_type,to_type) \
+namespace Usul{ namespace Convert  { \
+template <> struct Type < from_type, to_type > \
+{ \
+typedef Type < from_type, to_type > ThisType; \
+static void convert ( const from_type& from, to_type &to ) \
+{ \
+  to.set ( from[0], from[1], from[2] ); \
+} \
+static to_type convert ( const from_type& from )\
+{\
+  to_type to;\
+  ThisType::convert ( from, to ); \
+  return to;\
+} }; } }
+
+OSGTOOLS_CONVERT_VEC4(Usul::Math::Vec4f,osg::Vec4f)
+OSGTOOLS_CONVERT_VEC4(osg::Vec4f,Usul::Math::Vec4f)
+
+OSGTOOLS_CONVERT_VEC4(Usul::Math::Vec4d,osg::Vec4d)
+OSGTOOLS_CONVERT_VEC4(osg::Vec4d,Usul::Math::Vec4d)
+
+OSGTOOLS_CONVERT_VEC3(Usul::Math::Vec3f,osg::Vec3f)
+OSGTOOLS_CONVERT_VEC3(osg::Vec3f,Usul::Math::Vec3f)
+
+OSGTOOLS_CONVERT_VEC3(Usul::Math::Vec3d,osg::Vec3d)
+OSGTOOLS_CONVERT_VEC3(osg::Vec3d,Usul::Math::Vec3d)
 
 #endif // _OSG_TOOLS_CONVERTERS_H_

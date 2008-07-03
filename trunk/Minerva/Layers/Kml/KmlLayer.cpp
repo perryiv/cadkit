@@ -672,7 +672,7 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
   
   Children children ( node.children() );
   
-  osg::Vec3 location, orientation, scale;
+  osg::Vec3 location, orientation, scale ( 1.0, 1.0, 1.0 );
   
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {

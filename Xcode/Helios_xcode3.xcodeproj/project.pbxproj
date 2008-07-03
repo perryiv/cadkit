@@ -11185,8 +11185,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#/usr/bin/python $SRCROOT/../Experimental/QtTools/PreBuild.py --dir=$SRCROOT/../Experimental/QtTools/\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/QtTools/Action.h -o /Users/adam/src/cadkit/QtTools/moc_Action.cpp\n\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/uic /Users/adam/src/cadkit/QtTools/AnimationControl.ui -o /Users/adam/src/cadkit/QtTools/ui_AnimationControl.h\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/QtTools/AnimationControl.h -o /Users/adam/src/cadkit/QtTools/moc_AnimationControl.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/QtTools/ColorButton.h -o /Users/adam/src/cadkit/QtTools/moc_ColorButton.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/QtTools/Menu.h -o /Users/adam/src/cadkit/QtTools/moc_Menu.cpp\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/QtTools/PropertyBrowser.h -o /Users/adam/src/cadkit/QtTools/moc_PropertyBrowser.cpp\n\n\n/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc /Users/adam/src/cadkit/QtTools/TreeControl.h -o /Users/adam/src/cadkit/QtTools/moc_TreeControl.cpp\n";
+			shellPath = /bin/tcsh;
+			shellScript = "source ${HOME}/.cshrc\n\nmoc ${HOME}/src/cadkit/QtTools/Action.h -o ${HOME}/src/cadkit/QtTools/moc_Action.cpp\nuic ${HOME}/src/cadkit/QtTools/AnimationControl.ui -o ${HOME}/src/cadkit/QtTools/ui_AnimationControl.h\nmoc ${HOME}/src/cadkit/QtTools/AnimationControl.h -o ${HOME}/src/cadkit/QtTools/moc_AnimationControl.cpp\nmoc ${HOME}/src/cadkit/QtTools/ColorButton.h -o ${HOME}/src/cadkit/QtTools/moc_ColorButton.cpp\nmoc ${HOME}/src/cadkit/QtTools/Menu.h -o ${HOME}/src/cadkit/QtTools/moc_Menu.cpp\nmoc ${HOME}/src/cadkit/QtTools/PropertyBrowser.h -o ${HOME}/src/cadkit/QtTools/moc_PropertyBrowser.cpp\nmoc ${HOME}/src/cadkit/QtTools/TreeControl.h -o ${HOME}/src/cadkit/QtTools/moc_TreeControl.cpp\n";
 		};
 		66E1E0820DE4D4D10005073C /* Change Install Path */ = {
 			isa = PBXShellScriptBuildPhase;

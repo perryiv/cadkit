@@ -15,11 +15,9 @@
 #endif
 
 #include "Minerva/Layers/GeoRSS/GeoRSSLayer.h"
+#include "Minerva/Core/Data/DataObject.h"
 
-#include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Geometry/Point.h"
-#include "Minerva/Core/Geometry/Line.h"
-#include "Minerva/Core/Geometry/Polygon.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -90,10 +88,12 @@ GeoRSSLayer::GeoRSSLayer() :
   _href(),
   _refreshInterval ( 0.0 ),
   _lastUpdate( 0.0 ),
-  _flags ( 0 )
+  _flags ()
 {
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
+  
+  this->dirtyData ( true );
 }
 
 
@@ -159,6 +159,40 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( UA::bind1 ( true,  UA::memberFunction ( this, &GeoRSSLayer::reading ) ), 
                                                                 UA::bind1 ( false, UA::memberFunction ( this, &GeoRSSLayer::reading ) ) ) );
   
+  XmlTree::XercesLife life;
+  XmlTree::Document::RefPtr doc ( new XmlTree::Document );
+  doc->load ( filename );
+  
+  // Clear what we have.
+  this->clear();
+  
+  // Get all the items.
+  Children children ( doc->find ( "item", true ) );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::ValidRefPtr node ( *iter );
+    Children latNode ( node->find ( "geo:lat", true ) );
+    Children lonNode ( node->find ( "geo:long", true ) );
+    
+    const double lat ( latNode.empty() ? 0.0 : ToDouble::convert ( latNode.front()->value() ) );
+    const double lon ( lonNode.empty() ? 0.0 : ToDouble::convert ( lonNode.front()->value() ) );
+    
+    Minerva::Core::Geometry::Point::RefPtr point ( new Minerva::Core::Geometry::Point );
+    point->autotransform ( true );
+    point->size ( 5 );
+    point->primitiveId ( 2 );
+    point->color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+    point->point (  Usul::Math::Vec3d ( lon, lat, 0.0 ) );
+
+    DataObject::RefPtr object ( new DataObject );
+    
+    // Add the geometry.
+    object->addGeometry ( point );
+    
+    // Add the data object.
+    this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+  }
+  
   // Our data is no longer dirty.
   this->dirtyData ( false );
   
@@ -177,7 +211,7 @@ void GeoRSSLayer::deserialize( const XmlTree::Node &node )
 {
   BaseClass::deserialize ( node );
   
-
+  this->_updateLink ( 0x0 );
 }
 
 
@@ -197,7 +231,8 @@ void GeoRSSLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
     return;
 
   Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-  const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
+  osg::ref_ptr<osg::FrameStamp> frameStamp ( fs.valid () ? fs->frameStamp() : 0x0 );
+  const double time ( frameStamp.valid () ? frameStamp->getReferenceTime () : 0.0 );
   
   // Get variables needed below.
   const double refreshInterval ( Usul::Threads::Safe::get ( this->mutex(), _refreshInterval ) );

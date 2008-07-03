@@ -27,6 +27,9 @@
 
 #include <fstream>
 
+using namespace OsgTools::Points;
+USUL_IMPLEMENT_TYPE_ID ( OctTree );
+
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OctTree, OctTree::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,43 +79,15 @@ OctTree::~OctTree()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the binary restart file
+//  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OctTree::read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+void OctTree::preBuildScene( Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
 {
   Guard guard ( this->mutex() );
-
-   // Read and set the number of leaf nodes
-  unsigned long long numLeafNodes ( 0 );
-  ifs->read ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( unsigned long long ) );
-  _tree->numLeafNodes( numLeafNodes );
-
-  // Read the number of lods
-  unsigned long long numLods ( 0 );
-  ifs->read ( reinterpret_cast< char* > ( &numLods ), sizeof( unsigned long long ) );
-
-  // Read and set the lods
-  std::vector< unsigned short > lodDefinitions ( numLods );
-  ifs->read ( reinterpret_cast< char* > ( &lodDefinitions[0] ), sizeof( lodDefinitions ) );
-  _tree->lodDefinitions( lodDefinitions );
-
-  // Read the lod max distance
-  double d ( 0 );
-  ifs->read ( reinterpret_cast< char* > ( &d ), sizeof( double ) );
-  _tree->distance( d );
-
-  // Initialize progress
-  _tree->initSplitProgress( 0, numLeafNodes );
-
-  // Set progress message
-  document->setStatusBar( "Reading Binary Restart File...", progress );
-  
-  _tree->read( ifs, document, caller, progress );
-
+  _tree->preBuildScene( document, caller, progress );
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,6 +193,44 @@ void OctTree::split(  Usul::Documents::Document* document, Unknown *caller, Unkn
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the binary restart file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTree::read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+{
+  Guard guard ( this->mutex() );
+
+   // Read and set the number of leaf nodes
+  Usul::Types::Uint64 numLeafNodes ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( Usul::Types::Uint64 ) );
+  _tree->numLeafNodes( numLeafNodes );
+
+  // Read the number of lods
+  Usul::Types::Uint64 numLods ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &numLods ), sizeof( Usul::Types::Uint64 ) );
+
+  // Read and set the lods
+  std::vector< Usul::Types::Uint16 > lodDefinitions ( numLods );
+  ifs->read ( reinterpret_cast< char* > ( &lodDefinitions[0] ), sizeof( lodDefinitions ) );
+  _tree->lodDefinitions( lodDefinitions );
+
+  // Read the lod max distance
+  Usul::Types::Float64 d ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &d ), sizeof( Usul::Types::Float64 ) );
+  _tree->distance( static_cast< double > ( d ) );
+
+  // Initialize progress
+  _tree->initSplitProgress( 0, numLeafNodes * 2 );
+ 
+  _tree->read( ifs, document, caller, progress );
+
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Write the binary restart file for this octree
@@ -229,25 +242,22 @@ void OctTree::write( std::ofstream* ofs, Usul::Documents::Document* document, Un
   Guard guard ( this );
   
   // Write the number of leaf nodes
-  unsigned long long numLeafNodes ( _tree->numLeafNodes() );
-  ofs->write ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( unsigned long long ) );
+  Usul::Types::Uint64 numLeafNodes ( _tree->numLeafNodes() );
+  ofs->write ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( Usul::Types::Uint64 ) );
 
   // Write the lod definitions
-  std::vector< unsigned short > lodDefinitions ( _tree->getLodDefinitions() );
-  unsigned long long numLods ( lodDefinitions.size() );
+  std::vector< Usul::Types::Uint16 > lodDefinitions ( _tree->getLodDefinitions() );
+  Usul::Types::Uint64 numLods ( lodDefinitions.size() );
 
   // Write the number of lods
-  ofs->write ( reinterpret_cast< char* > ( &numLods ), sizeof( unsigned long long ) );
+  ofs->write ( reinterpret_cast< char* > ( &numLods ), sizeof( Usul::Types::Uint64 ) );
 
   // Write the lods
   ofs->write ( reinterpret_cast< char* > ( &lodDefinitions[0] ), sizeof( lodDefinitions ) );
 
   // Write the lod max distance
-  double d ( _tree->getBoundingRadius() );
-  ofs->write ( reinterpret_cast< char* > ( &d ), sizeof( double ) );
-
-  // Set progress message
-  document->setStatusBar( "Writing Binary Restart File...", progress );
+  Usul::Types::Float64 d ( _tree->getBoundingRadius() );
+  ofs->write ( reinterpret_cast< char* > ( &d ), sizeof( Usul::Types::Float64 ) );
 
   _tree->write( ofs, 0, numLeafNodes, document, caller, progress );
 }
@@ -259,7 +269,7 @@ void OctTree::write( std::ofstream* ofs, Usul::Documents::Document* document, Un
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Create a transparent plane to enable seeking
 //
 ///////////////////////////////////////////////////////////////////////////////
 

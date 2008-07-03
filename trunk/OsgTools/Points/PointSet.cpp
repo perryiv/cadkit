@@ -79,6 +79,18 @@ osg::Node *PointSet::buildScene ( Unknown *caller )
   return group.release();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::preBuildScene( Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+{
+  Guard guard ( this->mutex() );
+  _tree->preBuildScene( document, caller, progress );
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -201,9 +213,30 @@ void PointSet::split( Usul::Documents::Document* document, Unknown *caller, Unkn
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointSet::write( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
+void PointSet::write( std::ofstream* ofs, Usul::Types::Uint64 numPoints, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
 {
   Guard guard ( this );
+
+  // Check the size of a float value to ensure it is 4 bytes
+  if( 4 != sizeof( float ) )
+  {
+     throw std::runtime_error ( "Error 1250760804: Size of float is not 4 bytes. " ); 
+  }
+
+  // Check to see if the file was opened
+  if( false == ofs->is_open() )
+    throw std::runtime_error ( "Error 2024821453: Failed to open file: " );
+
+  // Set progress message
+  document->setStatusBar( "Writing Binary Restart File...", progress );
+
+  // Write binary header
+  const std::string id ( "CDBEF2DA-CCD4-4c30-844C-22A988DFE37C" ); 
+  ofs->write ( &id[0], id.size() );
+
+  // write the number of points
+  ofs->write ( reinterpret_cast< char* > ( &numPoints ), sizeof( Usul::Types::Uint64 ) );
+
   _tree->write( ofs, document, caller, progress );
 }
 
@@ -214,9 +247,32 @@ void PointSet::write( std::ofstream* ofs, Usul::Documents::Document* document, U
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointSet::read( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
+void PointSet::read( std::ifstream* ifs, Usul::Types::Uint64 &numPoints, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
 {
   Guard guard ( this );
+
+  // Check the size of a float value to ensure it is 4 bytes
+  if( 4 != sizeof( float ) )
+  {
+     throw std::runtime_error ( "Error 4995251770: Size of float is not 4 bytes. " ); 
+  }
+
+  // Set progress message
+  document->setStatusBar( "Reading Binary Restart File...", progress );
+
+  // Read binary header
+  const std::string id ( "CDBEF2DA-CCD4-4c30-844C-22A988DFE37C" );
+  std::vector<char> header ( id.size() );
+  ifs->read ( &header[0], header.size() );
+  const bool same ( id == std::string ( header.begin(), header.end() ) );
+  if( false == same )
+  {
+    throw std::runtime_error ( "Error 2348749452: Invalid binary file format! " );
+  }
+
+  // read the number of points
+  ifs->read ( reinterpret_cast< char* > ( &numPoints ), sizeof( Usul::Types::Uint64 ) );
+
   _tree->read( ifs, document, caller, progress );
 }
 

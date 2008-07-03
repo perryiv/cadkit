@@ -182,7 +182,7 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 
     // Everything worked so keep the binary file
     remove.remove( false );
-    
+ 
   }
   else if( "bp3d" == ext )
   {
@@ -194,11 +194,13 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 
     // Build the vectors from the linked lists
     this->_buildVectors( caller, progress );
+   
   }
   else if( "p3dbf" == ext )
   {
     // read the binary restart file
     this->_readBinaryRestartFile( name, caller, progress );
+
   }
   else
   {
@@ -219,21 +221,10 @@ void PointDocument::write ( const std::string &name, Unknown *caller, Unknown *p
   std::ofstream* ofs ( new std::ofstream );
   ofs->open( name.c_str(), std::ofstream::out | std::ifstream::binary );
 
-  if( false == ofs->is_open() )
-    throw std::runtime_error ( "Error 2024821453: Failed to open file: " + name );
+  // write the binary restart file
+  _pointSet->write( ofs, _numPoints, 0x0, caller, progress );
 
-  {
-    // Write binary header
-    const std::string id ( "CDBEF2DA-CCD4-4c30-844C-22A988DFE37C" ); 
-    ofs->write ( &id[0], id.size() );
-
-    // write the number of points
-    unsigned long long numPoints ( _numPoints );
-    ofs->write ( reinterpret_cast< char* > ( &numPoints ), sizeof( unsigned long long ) );
-  }
-
-  _pointSet->write( ofs, 0x0, caller, progress );
-
+  // close the stream and clean up memory
   ofs->close();
   delete ofs;
   ofs = 0x0;
@@ -731,6 +722,12 @@ void PointDocument::_split( Unknown *caller, Unknown *progress )
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the binary restart file format
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown *caller, Unknown *progress )
 {
   std::ifstream* ifs ( new std::ifstream );
@@ -739,24 +736,11 @@ void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown
   if( false == ifs->is_open() )
     throw std::runtime_error ( "Error 3339602607: Failed to open file: " + filename );
 
+  Usul::Types::Uint64 numPoints ( 0 );
 
-  // Read binary header
-  const std::string id ( "CDBEF2DA-CCD4-4c30-844C-22A988DFE37C" );
-  std::vector<char> header ( id.size() );
-  ifs->read ( &header[0], header.size() );
-  const bool same ( id == std::string ( header.begin(), header.end() ) );
-  if( false == same )
-  {
-    throw std::runtime_error ( "Error 2348749452: Invalid binary file format: " + filename );
-   
-  }
+  _pointSet->read( ifs, numPoints, this, caller, progress );
 
-  // read the number of points
-  unsigned long long numPoints ( 0 );
-  ifs->read ( reinterpret_cast< char* > ( &numPoints ), sizeof( unsigned long long ) );
   _numPoints = numPoints;
-
-  _pointSet->read( ifs, this, caller, progress );
 
   ifs->close();
   delete ifs;

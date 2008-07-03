@@ -18,6 +18,8 @@
 #define __EXPERIMENTAL_OCTTREE_H__
 
 #include "OsgTools/Points/OctTreeNode.h"
+#include "OsgTools/Points/PointSetRecords.h"
+#include "OsgTools/Export.h"
 
 #include "OsgTools/Configure/OSG.h"
 
@@ -34,7 +36,10 @@
 
 #include <vector>
 
-class OctTree : public Usul::Base::Object
+namespace OsgTools {
+namespace Points {
+
+class OSG_TOOLS_EXPORT OctTree : public Usul::Base::Object
 {
 public:
   
@@ -44,43 +49,49 @@ public:
   typedef std::vector<char> StreamBuffer;
   typedef boost::shared_ptr<StreamBuffer> StreamBufferPtr;
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( OctTree );
+
   USUL_DECLARE_REF_POINTERS ( OctTree );
 
   OctTree();
   virtual ~OctTree();
 
-  void                add( OctTreeNode * node );
-  bool                insert( Point p );
+  void                          add( OctTreeNode * node );
+  bool                          insert( Point p );
   
-  osg::Node*          buildScene( Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  osg::Node*                    buildScene( Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
-  void                buildVectors();
+  void                          buildVectors();
 
-  void                bounds( osg::BoundingBox bb );
+  void                          bounds( osg::BoundingBox bb );
   
   // Get/Set capacity level
-  void                capacity( unsigned int level );
-  unsigned int        capacity();
+  void                          capacity( unsigned int level );
+  unsigned int                  capacity();
 
-  void                split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                          split( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
-  void                write( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
-  void                read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                          write( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
+  void                          read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                          preBuildScene( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
 protected:
   
-  void                _partition();
-  osg::Node*          _buildTransparentPlane();
+  void                          _partition();
+  osg::Node*                    _buildTransparentPlane();
+  
   
 
 private:
   
-  OctTreeNode::RefPtr          _tree;
-  unsigned int                 _capacity;
-  StreamBufferPtr              _buffer;
-  std::string                  _tempPath;
+  OctTreeNode::RefPtr           _tree;
+  unsigned int                  _capacity;
+  StreamBufferPtr               _buffer;
+  std::string                   _tempPath;
 
 
-};
-
+}; // OctTree
+}; // namespace Points
+}; // namespace OsgTools
 #endif // __EXPERIMENTAL_OCTTREE_H__

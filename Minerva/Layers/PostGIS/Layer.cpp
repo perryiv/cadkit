@@ -14,6 +14,10 @@
 
 #include "Minerva/Core/Visitor.h"
 
+#include "OsgTools/Convert.h"
+#include "OsgTools/Legend/Text.h"
+#include "OsgTools/Legend/LegendObject.h"
+
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
@@ -31,9 +35,6 @@
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Split.h"
-
-#include "OsgTools/Legend/Text.h"
-#include "OsgTools/Legend/LegendObject.h"
 
 #include "osg/Group"
 #include "osg/MatrixTransform"
@@ -1429,8 +1430,8 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         
         // Set the geometry's data.
         geometry->wellKnownText( wkt );
-        geometry->spatialOffset( osg::Vec3f ( this->xOffset(), this->yOffset(), this->zOffset() ) );
-        geometry->color( this->_color ( iter ) );
+        geometry->spatialOffset( Usul::Math::Vec3d ( this->xOffset(), this->yOffset(), this->zOffset() ) );
+        geometry->color( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
         geometry->renderBin ( this->renderBin() );
         
         // Set primitive specific data members.

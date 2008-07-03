@@ -15,6 +15,7 @@
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
 #include "OsgTools/Ray.h"
+#include "OsgTools/Convert.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
@@ -93,7 +94,7 @@ Point::~Point()
 Usul::Math::Vec3d Point::pointData() const
 {
   Usul::Math::Vec3d point ( this->point() );
-  osg::Vec3f offset ( this->spatialOffset() );
+  Usul::Math::Vec3d offset ( this->spatialOffset() );
   
   point.set( point[0] + offset[0], point[1] + offset[1], point[2] + offset[2] );
   
@@ -309,17 +310,18 @@ osg::Node* Point::_buildScene( Usul::Interfaces::IUnknown * caller )
   material->setShininess( osg::Material::FRONT_AND_BACK, 50 );
   
   // Set the material's diffuse color
-  material->setDiffuse ( osg::Material::FRONT_AND_BACK, this->color() );
-  material->setAmbient ( osg::Material::FRONT_AND_BACK, this->color() );
+  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
+  material->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
+  material->setAmbient ( osg::Material::FRONT_AND_BACK, color );
   
   // Set proper state for transparency
-  if( 1.0f == this->color().w() )
+  if( 1.0f == color.w() )
   {
     ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
   }
   else
   {
-    material->setAlpha( osg::Material::FRONT_AND_BACK, this->color().w() );
+    material->setAlpha( osg::Material::FRONT_AND_BACK, color.w() );
     ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
     
     // If we don't have a render bin assigned, use the transparent bin.
@@ -406,7 +408,7 @@ osg::Node* Point::_buildPoint( const osg::Vec3d& earthLocation )
   geometry->setVertexArray( vertices.get() );
   
   osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-  colors->push_back( this->color() );
+  colors->push_back( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
   
   geometry->setColorArray ( colors.get() );
   geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );

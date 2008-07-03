@@ -22,9 +22,9 @@
 
 #include <algorithm>
 
-USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
-USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4 );
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
+//USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
+//USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4 );
+//SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 using namespace Minerva::Layers::PostGIS;
 
@@ -166,7 +166,7 @@ bool PolygonLayer::showBorder() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolygonLayer::borderColor( const osg::Vec4& color )
+void PolygonLayer::borderColor( const Color& color )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -180,7 +180,7 @@ void PolygonLayer::borderColor( const osg::Vec4& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& PolygonLayer::borderColor() const
+Usul::Math::Vec4f PolygonLayer::borderColor() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

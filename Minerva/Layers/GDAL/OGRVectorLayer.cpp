@@ -265,7 +265,7 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createPoint ( OGRPoint* geometry, OGR
 
     // Set reasonable defaults.
     point->size ( 5 );
-    point->color ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+    point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
   }
 
   return point.release();
@@ -294,7 +294,7 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry,
   }
 
   line->width ( 2.0f );
-  line->color ( osg::Vec4 ( 1.0, 1.0, 0.0, 1.0 ) );
+  line->color ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
 
   return line.release();
 }
@@ -338,8 +338,8 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createPolygon ( OGRPolygon* geometry,
     }
   }
 
-  polygon->borderColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-  polygon->color ( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
+  polygon->borderColor ( Usul::Math::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
+  polygon->color ( Usul::Math::Vec4f ( 0.8, 0.8, 0.8, 1.0 ) );
 
   return polygon.release();
 }

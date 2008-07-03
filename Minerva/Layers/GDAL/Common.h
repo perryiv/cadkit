@@ -18,6 +18,7 @@
 #include "cpl_error.h"
 
 #include <iostream>
+#include <stdexcept>
 
 namespace Minerva {
 
@@ -29,9 +30,12 @@ namespace Minerva {
 
 namespace Detail
 {
-  inline void errorHandler ( CPLErr, int, const char* text )
+  static void errorHandler ( CPLErr errorType, int, const char* text )
   {
-    std::cout << text << std::endl;
+    if ( CE_Fatal == errorType )
+      throw std::runtime_error ( text );
+    else
+      std::cout << text << std::endl;
   }
 }
 

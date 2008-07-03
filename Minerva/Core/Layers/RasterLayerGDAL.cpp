@@ -373,6 +373,9 @@ void RasterLayerGDAL::deserialize ( const XmlTree::Node &node )
 
 void RasterLayerGDAL::read ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
+  // Add an error handler.
+  Minerva::Detail::PushPopErrorHandler error;
+  
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _filename = filename;

@@ -14,6 +14,8 @@
 #include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Interfaces/IPolygonLayer.h"
 
+#include "Usul/Math/Vector4.h"
+
 namespace Minerva {
 namespace Layers {
 namespace PostGIS {
@@ -23,6 +25,7 @@ class MINERVA_POSTGIS_EXPORT PolygonLayer : public Minerva::Layers::PostGIS::Lay
 {
 public:
   typedef Minerva::Layers::PostGIS::Layer BaseClass;
+  typedef Usul::Math::Vec4f Color;
 
   USUL_DECLARE_QUERY_POINTERS ( PolygonLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -38,8 +41,8 @@ public:
   bool                    showBorder() const;
 
   /// Get/Set the border color.
-  void                    borderColor( const osg::Vec4& color );
-  const osg::Vec4&        borderColor() const;
+  void                    borderColor( const Color& color );
+  Color                   borderColor() const;
 
   /// Get/Set the border width.
   void                    borderWidth ( float width );
@@ -62,7 +65,7 @@ private:
   std::string _format;
   bool        _showInterior;
   bool        _showBorder;
-  osg::Vec4   _borderColor;
+  Color       _borderColor;
   float       _borderWidth;
 
   SERIALIZE_XML_CLASS_NAME ( PolygonLayer );

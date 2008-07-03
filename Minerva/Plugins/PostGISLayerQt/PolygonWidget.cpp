@@ -29,7 +29,7 @@ _layer ( layer )
     _drawBorder->setChecked ( _layer->showBorder() );
     _drawInterior->setChecked ( _layer->showInterior () );
     _borderWidth->setValue ( static_cast<int> ( _layer->borderWidth () ) );
-    _borderColor->color ( QtTools::Color< osg::Vec4 >::convert ( _layer->borderColor() ) );
+    _borderColor->color ( QtTools::Color< Usul::Math::Vec4f >::convert ( _layer->borderColor() ) );
   }
 
   connect ( _drawBorder, SIGNAL ( stateChanged ( int ) ), this, SLOT ( _drawBorderChanged ( int ) ) );
@@ -87,7 +87,7 @@ void PolygonWidget::_borderWidthChanged ( int value )
 void PolygonWidget::_borderColorChanged ()
 {
   if ( _layer.valid() )
-    _layer->borderColor ( QtTools::Color< osg::Vec4 >::convert ( _borderColor->color() ) );
+    _layer->borderColor ( QtTools::Color< Usul::Math::Vec4f >::convert ( _borderColor->color() ) );
 }
 
 

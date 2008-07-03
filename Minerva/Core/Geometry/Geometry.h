@@ -18,6 +18,8 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
+#include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector4.h"
 
 #include "osg/Vec2d"
 #include "osg/Vec3f"
@@ -37,6 +39,8 @@ public:
   typedef Usul::Base::Object                  BaseClass;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Usul::Interfaces::IUnknown          Unknown;
+  typedef Usul::Math::Vec4f                   Color;
+  typedef Usul::Math::Vec3d                   Point;
   
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -59,8 +63,8 @@ public:
   virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
   
   /// Get/Set the color.
-  const osg::Vec4&      color () const;
-  void                  color ( const osg::Vec4& );
+  Color                 color () const;
+  void                  color ( const Color& );
   
   /// Get/Set the dirty flag.
   void                  dirty ( bool b );
@@ -93,8 +97,8 @@ public:
   /// Is this geometry transparent?
   bool                  transparent() const;
 
-  virtual const osg::Vec3f&   spatialOffset () const;
-  virtual void                spatialOffset ( const osg::Vec3f& );
+  Point                 spatialOffset () const;
+  void                  spatialOffset ( const Point& );
   
 protected:
   virtual ~Geometry();
@@ -120,8 +124,8 @@ protected:
 private:
   AltitudeMode _altitudeMode;
   std::string  _wkt;
-  osg::Vec4    _color;
-  osg::Vec3f   _offset;
+  Color        _color;
+  Point        _offset;
   bool         _dirty;
   bool         _extrude;
   unsigned int _renderBin;

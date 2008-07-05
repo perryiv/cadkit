@@ -116,7 +116,7 @@ Texture3DVolume::~Texture3DVolume()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Texture3DVolume::image ()
+osg::Image* Texture3DVolume::image()
 {
   return _volume.first.get();
 }
@@ -128,7 +128,7 @@ osg::Image* Texture3DVolume::image ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Image* Texture3DVolume::image () const
+const osg::Image* Texture3DVolume::image() const
 {
   return _volume.first.get();
 }
@@ -147,7 +147,9 @@ void Texture3DVolume::image ( osg::Image* image, TextureUnit unit )
 
   // Create the 3D texture.
   osg::ref_ptr < osg::Texture3D > texture3D ( new osg::Texture3D() );
-  texture3D->setImage( image );    
+  texture3D->setImage( image );
+  
+  //texture3D->setUnRefImageDataAfterApply ( true );
 
   texture3D->setFilter( osg::Texture3D::MIN_FILTER, osg::Texture3D::LINEAR );
   texture3D->setFilter( osg::Texture3D::MAG_FILTER, osg::Texture3D::LINEAR );
@@ -173,7 +175,7 @@ void Texture3DVolume::image ( osg::Image* image, TextureUnit unit )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Texture3DVolume::numPlanes () const
+unsigned int Texture3DVolume::numPlanes() const
 {
   return _geometry->numPlanes();
 }
@@ -197,6 +199,9 @@ void Texture3DVolume::numPlanes ( unsigned int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+// Define this to test work around for clipping planes not working on OS X with NVIDIA drivers.
+//#define CLIP_PLANE_WORKAROUND 1
+
 namespace Detail
 {
 # if 0
@@ -206,7 +211,8 @@ namespace Detail
     "void main(void)\n"
     "{\n"
     "   gl_TexCoord[0] =  ( gl_Vertex.xyzw + 1.0 ) / 2.0;\n"
-    "   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+    "   gl_Position = ftransform();\n"
+    "   gl_ClipVertex = glModelViewMatrix * gl_Vertex;\n"
     "}\n"
   };
 #endif
@@ -217,6 +223,9 @@ namespace Detail
 
     os << "uniform vec3 bb;\n";
     os << "uniform vec3 bbMin;\n";
+#ifdef CLIP_PLANE_WORKAROUND
+    os << "varying vec4 vertex;\n";
+#endif
     os << "void main(void)\n";
     os << "{\n";
     os << "   gl_TexCoord[0].x =  ( ( gl_Vertex.x - bbMin.x ) ) / bb.x;\n";
@@ -225,6 +234,9 @@ namespace Detail
     os << "   gl_TexCoord[0].w =  ( gl_Vertex.w + 1.0 ) / 2.0;\n";
     os << "   gl_Position = ftransform();\n";
     os << "   gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;\n";
+#ifdef CLIP_PLANE_WORKAROUND
+    os << "   vertex = gl_ClipVertex;\n";
+#endif
     os << "}\n";
 
     return os.str();
@@ -284,10 +296,28 @@ namespace Detail
   {
     "uniform sampler3D Volume;\n"
     "uniform sampler1D TransferFunction;\n"
+#ifdef CLIP_PLANE_WORKAROUND
+    "varying vec4 vertex;\n"
+    //"uniform int numClipPlanes;\n"
+#endif
     "void main(void)\n"
     "{\n"    
     "   float index = vec4( texture3D( Volume, gl_TexCoord[0].xyz ) ).x;\n"
     "   vec4 color = vec4( texture1D( TransferFunction, index ) );\n"
+    
+#ifdef CLIP_PLANE_WORKAROUND
+#if 0
+    "   for ( int i = 0; i < numClipPlanes; i++ )\n"
+    "   {\n"
+    "   if ( dot( vertex, vec3 ( gl_ClipPlane[i].xyz ) ) < gl_ClipPlane[i].w );\n"
+    "     discard;\n"
+    "   }"
+#else
+    "   if ( dot( vertex, gl_ClipPlane[0] ) < 0.0 );\n"
+    "     discard;\n"
+#endif
+#endif
+    
     #if 0
     "   vec3 camera = vec3 ( gl_ModelViewMatrixInverse[0][3], gl_ModelViewMatrixInverse[1][3], gl_ModelViewMatrixInverse[2][3] );\n"
     "   vec3 lightPosition = vec3 ( 0.0, 0.0, 1.0 );\n"
@@ -344,7 +374,7 @@ osg::Program* Texture3DVolume::createProgram ( bool useTransferFunction )
 	osg::ref_ptr< osg::Shader > vertShader( new osg::Shader( osg::Shader::VERTEX ) );
 	osg::ref_ptr< osg::Shader > fragShader( new osg::Shader( osg::Shader::FRAGMENT ) );
 
-  vertShader->setShaderSource( Detail::buildVertexShader (  ) );
+  vertShader->setShaderSource( Detail::buildVertexShader() );
   fragShader->setShaderSource( Detail::buildFagmentShader ( useTransferFunction ) );
 
 	program->addShader( vertShader.get() );
@@ -384,7 +414,7 @@ void Texture3DVolume::boundingBox ( const osg::BoundingBox& bb )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::BoundingBox& Texture3DVolume::boundingBox () const
+const osg::BoundingBox& Texture3DVolume::boundingBox() const
 {
   return _geometry->boundingBox();
 }
@@ -408,7 +438,7 @@ void Texture3DVolume::useTransferFunction ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Texture3DVolume::useTransferFunction () const
+bool Texture3DVolume::useTransferFunction() const
 {
   return Usul::Bits::has ( _flags, _USE_TRANSFER_FUNCTION );
 }
@@ -432,7 +462,7 @@ void Texture3DVolume::resizePowerTwo ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Texture3DVolume::resizePowerTwo () const
+bool Texture3DVolume::resizePowerTwo() const
 {
   return Usul::Bits::has ( _flags, _RESIZE_POWER_TWO );
 }
@@ -468,7 +498,7 @@ void Texture3DVolume::transferFunction ( TransferFunction* tf, TextureUnit unit 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Volume::TransferFunction* Texture3DVolume::transferFunction () const
+OsgTools::Volume::TransferFunction* Texture3DVolume::transferFunction() const
 {
   return _transferFunction.get();
 }

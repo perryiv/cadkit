@@ -60,8 +60,6 @@ protected:
 
   /// Use reference counting.
   virtual ~SceneDelegateComponent();
-
-
 };
 
 

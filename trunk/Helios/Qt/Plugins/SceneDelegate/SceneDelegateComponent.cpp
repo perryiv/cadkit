@@ -15,6 +15,9 @@
 
 #include "SceneDelegateComponent.h"
 
+#include "Usul/Components/Factory.h"
+
+USUL_DECLARE_COMPONENT_FACTORY ( SceneDelegateComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( SceneDelegateComponent, SceneDelegateComponent::BaseClass );
 
 

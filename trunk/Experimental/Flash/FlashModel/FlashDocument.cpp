@@ -122,6 +122,8 @@ Usul::Interfaces::IUnknown *FlashDocument::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ITimeVaryingData*> ( this );
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast<Usul::Interfaces::IMenuAdd*> ( this );
+  case Flash::IFlashDocument::IID:
+    return static_cast<Flash::IFlashDocument*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -969,6 +971,7 @@ void FlashDocument::clearCache()
 
 void FlashDocument::transferFunction ( unsigned int i )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   _currentTransferFunction = i;
   this->dirty ( true );
@@ -983,6 +986,75 @@ void FlashDocument::transferFunction ( unsigned int i )
 
 bool FlashDocument::isTransferFunction ( unsigned int i ) const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return i == _currentTransferFunction;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the minimum value to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::minimumSet ( double m )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  if ( m != _minimum )
+  {
+    _minimum = m;
+    this->dirty ( true );
+    this->requestRedraw();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the minimum value to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double FlashDocument::minimumGet() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _minimum;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the maximum value to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FlashDocument::maximumSet ( double m )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  if ( m != _maximum )
+  {
+    _maximum = m;
+    this->dirty ( true );
+    this->requestRedraw();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the maximum value to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double FlashDocument::maximumGet() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _maximum;
 }

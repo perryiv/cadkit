@@ -18,6 +18,7 @@
 #define _FLASH_MODEL_DOCUMENT_H_
 
 #include "Experimental/Flash/FlashModel/Timestep.h"
+#include "Experimental/Flash/FlashModel/IFlashDocument.h"
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Jobs/Job.h"
@@ -48,7 +49,8 @@ class FlashDocument : public Usul::Documents::Document,
                       public Usul::Interfaces::IBuildScene,
                       public Usul::Interfaces::ITimeVaryingData,
                       public Usul::Interfaces::IUpdateListener,
-                      public Usul::Interfaces::IMenuAdd
+                      public Usul::Interfaces::IMenuAdd,
+                      public Flash::IFlashDocument
 {
 public:
 
@@ -124,7 +126,15 @@ public:
   virtual Filters             filtersSave()   const;
   virtual Filters             filtersInsert() const;
   virtual Filters             filtersExport() const;
+  
+  /// Set/get the minimum value to show.
+  virtual void                minimumSet ( double );
+  virtual double              minimumGet() const;
 
+  /// Set/get the maximum value to show.
+  virtual void                maximumSet ( double );
+  virtual double              maximumGet() const;
+  
   /// Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   
@@ -194,7 +204,6 @@ private:
   SERIALIZE_XML_SERIALIZE_FUNCTION;
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
-
 
 
 #endif // _FLASH_MODEL_DOCUMENT_H_

@@ -296,6 +296,9 @@
 						RelativePath=".\Data\Point.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Data\Polygon.cpp"
+						>
 					</File>
 					<File
 						RelativePath=".\Data\Polygon.h"

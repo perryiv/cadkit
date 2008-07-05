@@ -20,7 +20,6 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 
 set (SOURCES
   SceneDelegateComponent.cpp
-  SceneDelegateFactory.cpp
 )
 
 

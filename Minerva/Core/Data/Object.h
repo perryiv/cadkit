@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_KML_OBJECT_H__
-#define __MINERVA_LAYERS_KML_OBJECT_H__
+#ifndef __MINERVA_CORE_DATA_OBJECT_H__
+#define __MINERVA_CORE_DATA_OBJECT_H__
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -21,8 +21,8 @@
 namespace XmlTree { class Node; }
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
 
 class Object : public Usul::Base::Referenced
 {
@@ -32,9 +32,6 @@ public:
   typedef Usul::Threads::Guard<Mutex> Guard;
   
   USUL_DECLARE_REF_POINTERS ( Object );
-  
-  Object();
-  Object ( const XmlTree::Node& node );
   
   /// Get the mutex.
   Mutex &                mutex() const;
@@ -49,6 +46,8 @@ public:
   
 protected:
   
+  Object();
+  Object ( const XmlTree::Node& node );
   virtual ~Object();
   
 private:
@@ -63,4 +62,4 @@ private:
 }
 }
 
-#endif // __MINERVA_LAYERS_KML_OBJECT_H__
+#endif // __MINERVA_CORE_DATA_OBJECT_H__

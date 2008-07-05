@@ -12,7 +12,7 @@
 #define __MINERVA_POSTGIS_POLYGON_GEOMETRY_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/Geometry/Line.h"
+#include "Minerva/Core/Data/Line.h"
 
 #include "Usul/Math/Vector3.h"
 
@@ -22,7 +22,7 @@ namespace osg { class Geometry; }
 
 namespace Minerva {
 namespace Core {
-namespace Geometry {
+namespace Data {
 
 
 class MINERVA_EXPORT Polygon : public Line

@@ -11,7 +11,7 @@
 #ifndef __MINERVA_LAYERS_KML_FEATURE_H__
 #define __MINERVA_LAYERS_KML_FEATURE_H__
 
-#include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Core/Data/Object.h"
 #include "Minerva/Layers/Kml/LookAt.h"
 #include "Minerva/Layers/Kml/TimePrimitive.h"
 
@@ -20,10 +20,10 @@ namespace Layers {
 namespace Kml {
       
 
-class Feature : public Minerva::Layers::Kml::Object
+class Feature : public Minerva::Core::Data::Object
 {
 public:
-  typedef Minerva::Layers::Kml::Object BaseClass;
+  typedef Minerva::Core::Data::Object BaseClass;
   
   USUL_DECLARE_REF_POINTERS ( Feature );
   

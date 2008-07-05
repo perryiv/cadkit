@@ -12,7 +12,7 @@
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 
 #include "Minerva/Core/Data/DataObject.h"
-#include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Factory/RegisterCreator.h"
@@ -126,7 +126,7 @@ PointLayer::~PointLayer()
 void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
   USUL_TRACE_SCOPE;
-  typedef Minerva::Core::Geometry::Point Point;
+  typedef Minerva::Core::Data::Point Point;
   
   // Set the point style.
   if ( Point* point = dynamic_cast<Point*> ( geometry ) )

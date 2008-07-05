@@ -11,7 +11,7 @@
 #ifndef __MINERVA_LAYERS_KML_LINK_H__
 #define __MINERVA_LAYERS_KML_LINK_H__
 
-#include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Core/Data/Object.h"
 
 #include <string>
 
@@ -20,7 +20,7 @@ namespace Layers {
 namespace Kml {
       
       
-class Link : public Object
+class Link : public Minerva::Core::Data::Object
 {
 public:
   // Typedefs.

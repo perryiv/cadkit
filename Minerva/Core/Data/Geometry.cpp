@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Core/Data/Transform.h"
 
 #include "Usul/Trace/Trace.h"
@@ -16,7 +16,7 @@
 #include "osg/Node"
 #include "osg/StateSet"
 
-using namespace Minerva::Core::Geometry;
+using namespace Minerva::Core::Data;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 

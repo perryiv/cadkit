@@ -17,20 +17,20 @@
 #ifndef __MINERVA_CORE_DATA_OBJECTS_MODEL_H__
 #define __MINERVA_CORE_DATA_OBJECTS_MODEL_H__
 
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 
 #include "osg/Vec3"
 #include "osg/Node"
 
 namespace Minerva {
 namespace Core {
-namespace Geometry {
+namespace Data {
       
 
-class MINERVA_EXPORT Model : public Minerva::Core::Geometry::Geometry
+class MINERVA_EXPORT Model : public Minerva::Core::Data::Geometry
 {
 public:
-  typedef Minerva::Core::Geometry::Geometry BaseClass;
+  typedef Minerva::Core::Data::Geometry BaseClass;
   
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Model );

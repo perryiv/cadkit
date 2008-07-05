@@ -11,7 +11,7 @@
 #include "Minerva/Core/Visitors/StackPoints.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Layers/Container.h"
-#include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Data/Point.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -48,7 +48,7 @@ StackPoints::~StackPoints()
 
 void StackPoints::visit ( Minerva::Core::Data::DataObject &dataObject )
 {
-  typedef Minerva::Core::Geometry::Point Point;
+  typedef Minerva::Core::Data::Point Point;
   typedef Minerva::Core::Data::DataObject::Geometries Geometries;
   Geometries geometries ( dataObject.geometries() );
 
@@ -71,7 +71,7 @@ void StackPoints::visit ( Minerva::Core::Data::DataObject &dataObject )
       else
       {
         // Make sure it's using the right altitude mode.
-        point->altitudeMode ( Minerva::Core::Geometry::Geometry::RELATIVE_TO_GROUND );
+        point->altitudeMode ( Minerva::Core::Data::Geometry::RELATIVE_TO_GROUND );
 
         unsigned int count ( countIter->second );
 

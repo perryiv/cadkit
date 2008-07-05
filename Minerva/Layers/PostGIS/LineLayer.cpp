@@ -11,7 +11,7 @@
 #include "Minerva/Layers/PostGIS/LineLayer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 
-#include "Minerva/Core/Geometry/Line.h"
+#include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "Usul/Factory/RegisterCreator.h"
@@ -121,7 +121,7 @@ float LineLayer::lineWidth() const
 
 void LineLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
-  typedef Minerva::Core::Geometry::Line Line;
+  typedef Minerva::Core::Data::Line Line;
 
   if ( Line* line = dynamic_cast<Line*> ( geometry ) )
   {

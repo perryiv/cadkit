@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Geometry/Line.h"
+#include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Algorithms/Resample.h"
 #include "Minerva/Core/Data/Transform.h"
 
@@ -28,7 +28,7 @@
 #include "osg/MatrixTransform"
 #include "osg/Version"
 
-using namespace Minerva::Core::Geometry;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////

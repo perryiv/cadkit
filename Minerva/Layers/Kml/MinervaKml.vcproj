@@ -235,6 +235,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Factory.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Factory.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Feature.cpp"
 				>
 			</File>
@@ -296,14 +304,6 @@
 			</File>
 			<File
 				RelativePath=".\NetworkLink.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Object.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Object.h"
 				>
 			</File>
 			<File

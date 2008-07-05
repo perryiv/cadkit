@@ -15,11 +15,10 @@
 #include "Minerva/Layers/Kml/Style.h"
 
 #include "Minerva/Core/Layers/Container.h"
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IRead.h"
-#include "Usul/Math/Vector3.h"
 
 #include <vector>
 
@@ -43,9 +42,7 @@ public:
   /// Typedefs.
   typedef Minerva::Core::Layers::Container           BaseClass;
   typedef Minerva::Core::Data::DataObject            DataObject;
-  typedef Minerva::Core::Geometry::Geometry          Geometry;
-  typedef Usul::Math::Vec3d                          Vertex;
-  typedef std::vector < Vertex >                     Vertices;
+  typedef Minerva::Core::Data::Geometry              Geometry;
   typedef std::map<std::string,Style::RefPtr>        Styles;
   
   /// Smart-pointer definitions.
@@ -101,14 +98,8 @@ protected:
   Geometry*                   _parseLineString   ( const XmlTree::Node& node, Style *style );
   Geometry*                   _parseLineRing     ( const XmlTree::Node& node, Style *style );
   void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object );
-  Geometry::AltitudeMode      _parseAltitudeMode ( const XmlTree::Node& node );
-  void                        _parseCoordinates  ( const XmlTree::Node& node, Vertices& vertices );
-  
-  static osg::Vec3d           _parseOrientation ( const XmlTree::Node& );
 
 	Style*                      _style ( const std::string& name );
-
-  osg::Vec3                   _buildVec3         ( const XmlTree::Node& node, osg::Vec3::value_type defaultValue );
 
 private:
   

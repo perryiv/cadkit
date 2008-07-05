@@ -10,7 +10,7 @@
 #ifndef __MINERVA_LAYERS_KML_TIME_PRIMITIVE_H__
 #define __MINERVA_LAYERS_KML_TIME_PRIMITIVE_H__
 
-#include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Core/Data/Object.h"
 
 #include <string>
 
@@ -21,10 +21,10 @@ namespace Layers {
 namespace Kml {
 
 
-class TimePrimitive : public Minerva::Layers::Kml::Object
+class TimePrimitive : public Minerva::Core::Data::Object
 {
 public:
-  typedef Minerva::Layers::Kml::Object BaseClass;
+  typedef Minerva::Core::Data::Object BaseClass;
   typedef Minerva::Core::Animate::Date Date;
   
   USUL_DECLARE_REF_POINTERS ( TimePrimitive );

@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
+#include "Minerva/Core/Data/Object.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -29,14 +30,14 @@
 
 namespace Minerva {
 namespace Core {
-namespace Geometry {
+namespace Data {
 
-class MINERVA_EXPORT Geometry : public Usul::Base::Object,
+class MINERVA_EXPORT Geometry : public Minerva::Core::Data::Object,
                                 public Usul::Interfaces::IBuildScene,
                                 public Usul::Interfaces::ILayerExtents
 {
 public:
-  typedef Usul::Base::Object                  BaseClass;
+  typedef Minerva::Core::Data::Object         BaseClass;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Usul::Math::Vec4f                   Color;

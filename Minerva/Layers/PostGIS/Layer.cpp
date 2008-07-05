@@ -1426,7 +1426,7 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
       
       for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
-        Minerva::Core::Geometry::Geometry::RefPtr geometry ( *geom );
+        Minerva::Core::Data::Geometry::RefPtr geometry ( *geom );
         
         // Set the geometry's data.
         geometry->wellKnownText( wkt );

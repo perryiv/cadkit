@@ -12,7 +12,7 @@
 #define __MINERVA_LAYERS_GDAL_SHAPE_FILE_LAYER_H__
 
 #include "Minerva/Core/Layers/Container.h"
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 
 #include "Usul/Interfaces/IRead.h"
 
@@ -34,7 +34,7 @@ public:
 
   /// Typedefs.
   typedef Minerva::Core::Layers::Container              BaseClass;
-  typedef Minerva::Core::Geometry::Geometry          Geometry;
+  typedef Minerva::Core::Data::Geometry                 Geometry;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( OGRVectorLayer );

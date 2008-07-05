@@ -11,9 +11,9 @@
 #include "Minerva/Layers/GDAL/OGRVectorLayer.h"
 
 #include "Minerva/Core/Data/DataObject.h"
-#include "Minerva/Core/Geometry/Point.h"
-#include "Minerva/Core/Geometry/Line.h"
-#include "Minerva/Core/Geometry/Polygon.h"
+#include "Minerva/Core/Data/Point.h"
+#include "Minerva/Core/Data/Line.h"
+#include "Minerva/Core/Data/Polygon.h"
 #include "Minerva/Core/Factory/Readers.h"
 
 #include "Usul/Adaptors/Bind.h"
@@ -256,7 +256,7 @@ namespace Helper
 
 OGRVectorLayer::Geometry* OGRVectorLayer::_createPoint ( OGRPoint* geometry, OGRCoordinateTransformation *transform ) const
 {
-  Minerva::Core::Geometry::Point::RefPtr point ( new Minerva::Core::Geometry::Point );
+  Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
   
   if ( 0x0 != geometry )
   {
@@ -280,7 +280,7 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createPoint ( OGRPoint* geometry, OGR
 
 OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry, OGRCoordinateTransformation *transform ) const
 {
-  typedef Minerva::Core::Geometry::Line Line;
+  typedef Minerva::Core::Data::Line Line;
   typedef Line::Vertices Vertices;
 
   Line::RefPtr line ( new Line );
@@ -308,7 +308,7 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry,
 
 OGRVectorLayer::Geometry* OGRVectorLayer::_createPolygon ( OGRPolygon* geometry, OGRCoordinateTransformation *transform ) const
 {
-  typedef Minerva::Core::Geometry::Polygon Polygon;
+  typedef Minerva::Core::Data::Polygon Polygon;
   typedef Polygon::Vertices Vertices;
 
   Polygon::RefPtr polygon ( new Polygon );

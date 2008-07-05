@@ -48,6 +48,7 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
 ./ColorStyle.cpp
 ./Download.cpp
+./Factory.cpp
 ./Feature.cpp
 ./IconStyle.cpp
 ./KmlLayer.cpp
@@ -56,7 +57,6 @@ SET (SOURCES
 ./LoadModel.cpp
 ./LookAt.cpp
 ./NetworkLink.cpp
-./Object.cpp
 ./PolyStyle.cpp
 ./Style.cpp
 ./TimePrimitive.cpp

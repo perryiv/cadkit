@@ -11,6 +11,8 @@
 #ifndef __MINERVA_CORE_DATA_OBJECT_H__
 #define __MINERVA_CORE_DATA_OBJECT_H__
 
+#include "Minerva/Core/Export.h"
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
@@ -24,7 +26,7 @@ namespace Minerva {
 namespace Core {
 namespace Data {
 
-class Object : public Usul::Base::Referenced
+class MINERVA_EXPORT Object : public Usul::Base::Referenced
 {
 public:
   typedef Usul::Base::Referenced BaseClass;

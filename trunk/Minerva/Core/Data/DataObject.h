@@ -20,7 +20,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Animate/Date.h"
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
 #include "Usul/Base/Object.h"
@@ -57,7 +57,7 @@ public:
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Minerva::Core::Animate::Date        Date;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
-  typedef Minerva::Core::Geometry::Geometry   Geometry;
+  typedef Minerva::Core::Data::Geometry       Geometry;
   typedef std::vector<Geometry::RefPtr>       Geometries;
 
   // Smart-pointer definitions.

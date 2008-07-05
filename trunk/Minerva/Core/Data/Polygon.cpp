@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Geometry/Polygon.h"
+#include "Minerva/Core/Data/Polygon.h"
 
 #include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Convert.h"
@@ -27,7 +27,7 @@
 #include "osgUtil/Tessellator"
 #include "osgUtil/SmoothingVisitor"
 
-using namespace Minerva::Core::Geometry;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////

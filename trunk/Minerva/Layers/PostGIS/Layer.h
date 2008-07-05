@@ -17,7 +17,7 @@
 #include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Functors/BaseColorFunctor.h"
 #include "Minerva/Core/Data/DataObject.h"
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/DataSources/PG/Connection.h"
 #include "Minerva/Interfaces/IVectorLayer.h"
 
@@ -62,7 +62,7 @@ public:
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef Minerva::DataSources::PG::Connection      Connection;
-  typedef Minerva::Core::Geometry::Geometry         Geometry;
+  typedef Minerva::Core::Data::Geometry             Geometry;
   typedef Minerva::Core::Animate::Date              Date;
 
   /// Smart-pointer definitions.

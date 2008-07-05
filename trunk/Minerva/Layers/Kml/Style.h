@@ -10,7 +10,7 @@
 #ifndef __MINERVA_LAYERS_KML_STYLE_H__
 #define __MINERVA_LAYERS_KML_STYLE_H__
 
-#include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Core/Data/Object.h"
 #include "Minerva/Layers/Kml/LineStyle.h"
 #include "Minerva/Layers/Kml/PolyStyle.h"
 #include "Minerva/Layers/Kml/IconStyle.h"
@@ -20,10 +20,10 @@ namespace Layers {
 namespace Kml {
       
 
-class Style : public Minerva::Layers::Kml::Object
+class Style : public Minerva::Core::Data::Object
 {
 public:
-  typedef Minerva::Layers::Kml::Object BaseClass;
+  typedef Minerva::Core::Data::Object BaseClass;
   
   USUL_DECLARE_REF_POINTERS ( Style );
   

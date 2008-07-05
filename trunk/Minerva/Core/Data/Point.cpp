@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/Transform.h"
 
 #include "OsgTools/Callbacks/SortBackToFront.h"
@@ -32,7 +32,7 @@
 #include "osg/AutoTransform"
 #include "osgText/Text"
 
-using namespace Minerva::Core::Geometry;
+using namespace Minerva::Core::Data;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

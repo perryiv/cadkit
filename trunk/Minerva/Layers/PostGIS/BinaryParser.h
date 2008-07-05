@@ -19,7 +19,7 @@
 
 #include "Minerva/Layers/PostGIS/Export.h"
 
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Types/Types.h"
@@ -38,7 +38,7 @@ public:
   BinaryParser();
   ~BinaryParser();
 
-  typedef Minerva::Core::Geometry::Geometry Geometry;
+  typedef Minerva::Core::Data::Geometry Geometry;
   typedef std::vector < Geometry::RefPtr > Geometries;
 
   enum wkbGeometryType 

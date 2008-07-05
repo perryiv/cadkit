@@ -12,7 +12,7 @@
 #define __MINERVA_POSTGIS_POINT_GEOMETRY_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 
 #include "OsgTools/ShapeFactory.h"
 
@@ -20,7 +20,7 @@
 
 namespace Minerva {
 namespace Core {
-namespace Geometry {
+namespace Data {
 
 
 class MINERVA_EXPORT Point : public Geometry

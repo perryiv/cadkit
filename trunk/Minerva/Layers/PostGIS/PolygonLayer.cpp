@@ -12,7 +12,7 @@
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 
 #include "Minerva/Core/Visitor.h"
-#include "Minerva/Core/Geometry/Polygon.h"
+#include "Minerva/Core/Data/Polygon.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Factory/RegisterCreator.h"
@@ -117,7 +117,7 @@ PolygonLayer::~PolygonLayer()
 void PolygonLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
   USUL_TRACE_SCOPE;
-  typedef Minerva::Core::Geometry::Polygon Polygon;
+  typedef Minerva::Core::Data::Polygon Polygon;
 
   if ( Polygon* polygon = dynamic_cast<Polygon*> ( geometry ) )
   {

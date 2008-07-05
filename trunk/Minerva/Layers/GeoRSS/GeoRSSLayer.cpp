@@ -17,7 +17,7 @@
 #include "Minerva/Layers/GeoRSS/GeoRSSLayer.h"
 #include "Minerva/Core/Data/DataObject.h"
 
-#include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Data/Point.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -177,7 +177,7 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
     const double lat ( latNode.empty() ? 0.0 : ToDouble::convert ( latNode.front()->value() ) );
     const double lon ( lonNode.empty() ? 0.0 : ToDouble::convert ( lonNode.front()->value() ) );
     
-    Minerva::Core::Geometry::Point::RefPtr point ( new Minerva::Core::Geometry::Point );
+    Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
     point->autotransform ( true );
     point->size ( 5 );
     point->primitiveId ( 2 );

@@ -8,14 +8,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Geometry/Model.h"
+#include "Minerva/Core/Data/Model.h"
 
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
 #include "osg/MatrixTransform"
 
-using namespace Minerva::Core::Geometry;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////

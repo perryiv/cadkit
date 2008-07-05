@@ -11,7 +11,7 @@
 #ifndef __MINERVA_LAYERS_KML_LOOK_AT_H__
 #define __MINERVA_LAYERS_KML_LOOK_AT_H__
 
-#include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Core/Data/Object.h"
 
 namespace XmlTree { class Node; }
 
@@ -20,10 +20,10 @@ namespace Layers {
 namespace Kml {
 
 
-class LookAt : public Minerva::Layers::Kml::Object
+class LookAt : public Minerva::Core::Data::Object
 {
 public:
-  typedef Minerva::Layers::Kml::Object BaseClass;
+  typedef Minerva::Core::Data::Object BaseClass;
 
   USUL_DECLARE_REF_POINTERS ( LookAt );
 

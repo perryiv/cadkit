@@ -12,13 +12,13 @@
 #define __MINERVA_CORE_GEOMETRY_LINE_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/Geometry/Geometry.h"
+#include "Minerva/Core/Data/Geometry.h"
 
 #include "Usul/Math/Vector3.h"
 
 namespace Minerva {
 namespace Core {
-namespace Geometry {
+namespace Data {
 
 
 class MINERVA_EXPORT Line : public Geometry

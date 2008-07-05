@@ -10,7 +10,7 @@
 #ifndef __MINERVA_LAYERS_KML_COLOR_STYLE_H__
 #define __MINERVA_LAYERS_KML_COLOR_STYLE_H__
 
-#include "Minerva/Layers/Kml/Object.h"
+#include "Minerva/Core/Data/Object.h"
 
 #include "Usul/Math/Vector4.h"
 
@@ -19,10 +19,10 @@ namespace Layers {
 namespace Kml {
       
 
-class ColorStyle : public Minerva::Layers::Kml::Object
+class ColorStyle : public Minerva::Core::Data::Object
 {
 public:
-  typedef Minerva::Layers::Kml::Object BaseClass;
+  typedef Minerva::Core::Data::Object BaseClass;
 	typedef Usul::Math::Vec4f Color;
 
   enum ColorMode

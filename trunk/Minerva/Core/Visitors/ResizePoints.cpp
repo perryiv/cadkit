@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/Visitors/ResizePoints.h"
 #include "Minerva/Core/Data/DataObject.h"
-#include "Minerva/Core/Geometry/Point.h"
+#include "Minerva/Core/Data/Point.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -46,7 +46,7 @@ ResizePoints::~ResizePoints()
 
 void ResizePoints::visit ( Minerva::Core::Data::DataObject &dataObject )
 {
-  typedef Minerva::Core::Geometry::Point Point;
+  typedef Minerva::Core::Data::Point Point;
   typedef Minerva::Core::Data::DataObject::Geometries Geometries;
   Geometries geometries ( dataObject.geometries() );
   

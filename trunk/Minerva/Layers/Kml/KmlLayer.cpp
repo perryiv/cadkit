@@ -14,12 +14,13 @@
 #include "Minerva/Layers/Kml/Feature.h"
 #include "Minerva/Layers/Kml/TimeSpan.h"
 #include "Minerva/Layers/Kml/LoadModel.h"
+#include "Minerva/Layers/Kml/Factory.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Factory/Readers.h"
-#include "Minerva/Core/Geometry/Line.h"
-#include "Minerva/Core/Geometry/Model.h"
-#include "Minerva/Core/Geometry/Point.h"
-#include "Minerva/Core/Geometry/Polygon.h"
+#include "Minerva/Core/Data/Line.h"
+#include "Minerva/Core/Data/Model.h"
+#include "Minerva/Core/Data/Point.h"
+#include "Minerva/Core/Data/Polygon.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -41,7 +42,6 @@
 #include "Usul/Scope/Caller.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
-#include "Usul/Strings/Split.h"
 #include "Usul/Strings/Trim.h"
 #include "Usul/System/Directory.h"
 #include "Usul/System/Host.h"
@@ -467,37 +467,7 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 
 KmlLayer::Geometry * KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *style )
 {
-  Minerva::Core::Geometry::Point::RefPtr point ( new Minerva::Core::Geometry::Point );
-  point->autotransform ( true );
-  point->size ( 5 );
-  point->primitiveId ( 2 );
-  point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
-  
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "altitudeMode" == name )
-      point->altitudeMode ( this->_parseAltitudeMode ( *node ) );
-    else if ( "coordinates" == name )
-    {
-      Vertices vertices;
-      this->_parseCoordinates( *node, vertices );
-      if ( false == vertices.empty() )
-      {
-        point->point ( vertices.front() );
-      }
-    }
-    else if ( "extrude" == name )
-    {
-      bool extrude ( "1" == node->value() );
-      point->extrude ( extrude );
-    }
-  }
-  
-  return point.release();
+  return Factory::instance().createPoint ( node );
 }
 
 
@@ -520,47 +490,20 @@ KmlLayer::Geometry* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *
   const bool outline ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->outline() : true ) : true );
 
   // Make the data object.
-  Minerva::Core::Geometry::Polygon::RefPtr polygon ( new Minerva::Core::Geometry::Polygon );
-  polygon->color ( color );
-  polygon->borderColor ( borderColor );
-  polygon->width ( width );
-  polygon->showBorder ( outline );
-  polygon->showInterior ( fill );
-  
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  Minerva::Core::Data::Polygon::RefPtr polygon ( Factory::instance().createPolygon ( node ) );
+
+  if ( polygon.valid() )
   {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "altitudeMode" == name )
-      polygon->altitudeMode ( this->_parseAltitudeMode ( *node ) );
-    else if ( "outerBoundaryIs" == name )
-    {
-      XmlTree::Node::RefPtr linearRing ( node->children().front() );
-      XmlTree::Node::RefPtr coordinates ( linearRing.valid() ? linearRing->children().front() : 0x0 );
-      if ( coordinates.valid() )
-      {
-        Vertices vertices;
-        this->_parseCoordinates( *coordinates, vertices );
-        polygon->outerBoundary ( vertices );
-      }
-    }
-    else if ( "innerBoundaryIs" == name )
-    {
-      XmlTree::Node::RefPtr linearRing ( node->children().front() );
-      XmlTree::Node::RefPtr coordinates ( linearRing.valid() ? linearRing->children().front() : 0x0 );
-      if ( coordinates.valid() )
-      {
-        Vertices vertices;
-        this->_parseCoordinates( *coordinates, vertices );
-        polygon->addInnerBoundary ( vertices );
-      }
-    }
+    polygon->color ( color );
+    polygon->borderColor ( borderColor );
+    polygon->width ( width );
+    polygon->showBorder ( outline );
+    polygon->showInterior ( fill );
   }
-  
+
   return polygon.release();
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -576,28 +519,12 @@ KmlLayer::Geometry* KmlLayer::_parseLineString ( const XmlTree::Node& node, Styl
 
   const float width ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->width() : 1.0f ) : 1.0f );
 
-  Minerva::Core::Geometry::Line::RefPtr line ( new Minerva::Core::Geometry::Line );
-  line->width ( width );
-  line->color ( color );
+  Minerva::Core::Data::Line::RefPtr line ( Factory::instance().createLine ( node ) );
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  if ( line.valid() )
   {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "altitudeMode" == name )
-      line->altitudeMode ( this->_parseAltitudeMode ( *node ) );
-    else if ( "coordinates" == name )
-    {
-      Vertices vertices;
-      this->_parseCoordinates( *node, vertices );
-      if ( false == vertices.empty() )
-      {
-        Minerva::Core::Geometry::Line::RefPtr data ( new Minerva::Core::Geometry::Line );
-        line->line ( vertices );
-      }
-    }
+    line->width ( width );
+    line->color ( color );
   }
   
   return line.release();
@@ -634,142 +561,36 @@ void KmlLayer::_parseMultiGeometry ( const XmlTree::Node& node, Style *style, Da
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse coordinates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void KmlLayer::_parseCoordinates ( const XmlTree::Node& node, Vertices& vertices )
-{
-  std::istringstream in ( node.value() );
-  std::string vertex;
-  
-  while ( in >> vertex )
-  {
-    Vertex v;
-
-    std::vector<std::string> strings;
-    Usul::Strings::split ( vertex, ",", false, strings );
-    
-    // Convert vertex.
-    for ( unsigned int i = 0; i < strings.size(); ++i )
-      v[i] = ToDouble::convert ( strings[i] );
-    
-    vertices.push_back ( v );
-  }
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Parse a model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
 {
-  Minerva::Core::Geometry::Model::RefPtr model ( new Minerva::Core::Geometry::Model );
+  Minerva::Core::Data::Model::RefPtr model ( Factory::instance().createModel ( node ) );
   
-  Children children ( node.children() );
-  
-  osg::Vec3 location, orientation, scale ( 1.0, 1.0, 1.0 );
-  
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  if ( model.valid() )
   {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
+    // Make the link
+    Children links ( node.find ( "Link", true ) );
+    Link::RefPtr link ( false == links.empty() ? new Link ( *links.front() ) : 0x0 );
     
-    if ( "Location" == name )
-      location = this->_buildVec3 ( *node, 0.0 );
-    else if ( "Orientation" == name )
-      orientation = KmlLayer::_parseOrientation ( *node );
-    else if ( "Scale" == name )
-      scale = this->_buildVec3 ( *node, 1.0 );
-    else if ( "altitudeMode" == name )
-      model->altitudeMode ( this->_parseAltitudeMode ( *node ) );
-  }
-  
-  // Make the link
-  Children links ( node.find ( "Link", true ) );
-  Link::RefPtr link ( false == links.empty() ? new Link ( *links.front() ) : 0x0 );
-  
-  // Make the filename.
-  std::string filename ( this->_buildFilename ( link ) );
+    // Make the filename.
+    std::string filename ( this->_buildFilename ( link ) );
 
-  if ( false == filename.empty() )
-  {
-    LoadModel load;
-    osg::ref_ptr<osg::Node> node ( load ( filename ) );
-    if ( node.valid() )
+    if ( false == filename.empty() )
     {
-      model->model ( node.get() );
-      model->toMeters ( load.toMeters() );
+      LoadModel load;
+      osg::ref_ptr<osg::Node> node ( load ( filename ) );
+      if ( node.valid() )
+      {
+        model->model ( node.get() );
+        model->toMeters ( load.toMeters() );
+      }
     }
   }
-  
-  model->location ( location );
-  model->orientation ( orientation[0], orientation[1], orientation[2] );
-  model->scale ( scale );
-  
+
   return model.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse orientation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3d KmlLayer::_parseOrientation ( const XmlTree::Node& node )
-{
-  Children heading ( node.find ( "heading", false ) );
-  Children tilt    ( node.find ( "tilt", false ) );
-  Children roll    ( node.find ( "roll", false ) );
-  
-  const double h ( heading.empty() ? 0.0 : ToDouble::convert ( heading.front()->value() ) );
-  const double t ( tilt.empty()    ? 0.0 : ToDouble::convert ( tilt.front()->value() ) );
-  const double r ( roll.empty()    ? 0.0 : ToDouble::convert ( roll.front()->value() ) );
-  
-  return osg::Vec3d ( h, t, r );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a Vec3.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-KmlLayer::Geometry::AltitudeMode KmlLayer::_parseAltitudeMode ( const XmlTree::Node& node )
-{
-  Geometry::AltitudeMode mode ( Geometry::CLAMP_TO_GROUND );
-  if ( "relativeToGround" == node.value() )
-    mode = Geometry::RELATIVE_TO_GROUND;
-  if ( "absolute" == node.value() )
-    mode = Geometry::ABSOLUTE_MODE;
-  
-  return mode;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a Vec3.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3 KmlLayer::_buildVec3 ( const XmlTree::Node& node, osg::Vec3::value_type defaultValue )
-{
-  osg::Vec3 v;
-  
-  Children children ( node.children() );
-  
-  v[0] = children.size() >= 1 ? ToDouble::convert ( children[0]->value() ) : defaultValue;
-  v[1] = children.size() >= 2 ? ToDouble::convert ( children[1]->value() ) : defaultValue;
-  v[2] = children.size() >= 3 ? ToDouble::convert ( children[2]->value() ) : defaultValue;
-  
-  return v;
 }
 
 

@@ -1009,16 +1009,17 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
     if( 0x0 != row )
     {
       if( 0x0 != this->colorFunctor() )
-        row->icon ( this->colorFunctor()->icon( this->queryInterface( Usul::Interfaces::IUnknown::IID ) ) );
+        row->addItem ( this->colorFunctor()->icon( this->queryInterface( Usul::Interfaces::IUnknown::IID ) ) );
 
       // One columns for the text
-      row->columns ( 1 );
-      row->at ( 0 )->text ( this->legendText() );
+      row->addItem ( new OsgTools::Legend::Text ( this->legendText() ) );
       
       if( this->showCountLegend() )
       {
-        unsigned int index ( row->addText ( new OsgTools::Legend::Text ( Usul::Strings::format( this->number() ) ) ) );
-	      row->at ( index )->alignment ( OsgTools::Legend::Text::RIGHT );
+        OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text ( Usul::Strings::format ( this->number() ) ) );
+        text->alignment ( OsgTools::Legend::Text::RIGHT );
+        unsigned int index ( row->addItem ( text ) );
+	      
         row->percentage( index ) = 0.20;
       }
 
@@ -1029,7 +1030,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         
         std::string text ( valid ? Usul::Strings::format( min ) : "NA" );
         
-        row->addText ( new OsgTools::Legend::Text ( text ) );
+        row->addItem ( new OsgTools::Legend::Text ( text ) );
       }
 
       if( this->showMaxLegend() )
@@ -1039,7 +1040,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         
         std::string text ( valid ? Usul::Strings::format( max ) : "NA" );
         
-        row->addText ( new OsgTools::Legend::Text ( text ) );
+        row->addItem ( new OsgTools::Legend::Text ( text ) );
       }
 
       /// Find out how many columns we have.

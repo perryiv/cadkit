@@ -11,7 +11,7 @@
 #define __OSG_TOOLS_LEGEND_SOLID_ICON_H__
 
 #include "OsgTools/Export.h"
-#include "OsgTools/Legend/Icon.h"
+#include "OsgTools/Legend/Item.h"
 #include "OsgTools/Legend/LineFunctor.h"
 #include "OsgTools/Legend/QuadFunctor.h"
 #include "OsgTools/Legend/SphereFunctor.h"
@@ -29,10 +29,10 @@ namespace OsgTools {
 namespace Legend {
 
 template < class ColorPolicy, class GeometryFunctor >
-class SolidIcon : public OsgTools::Legend::Icon
+class SolidIcon : public OsgTools::Legend::Item
 {
 public:
-  typedef OsgTools::Legend::Icon BaseClass;
+  typedef OsgTools::Legend::Item BaseClass;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( SolidIcon );
@@ -53,7 +53,7 @@ public:
   ColorPolicy&            colorPolicy()       { return _policy; }
   const ColorPolicy&      colorPolicy() const { return _policy; }
 
-  virtual osg::Node*      buildScene( unsigned int width, unsigned int height );
+  virtual osg::Node*      buildScene();
 
 protected:
   virtual ~SolidIcon() { }
@@ -71,8 +71,11 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class ColorPolicy, class GeometryFunctor >
-osg::Node* SolidIcon < ColorPolicy, GeometryFunctor >::buildScene( unsigned int width, unsigned int height )
+osg::Node* SolidIcon < ColorPolicy, GeometryFunctor >::buildScene()
 {
+  const SizeType width  ( this->size()[0] );
+  const SizeType height ( this->size()[1] );
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   geode->setName( "SolidIcon" );
   osg::ref_ptr < osg::Geometry > geometry ( this->geometryFunctor() ( width, height ) );

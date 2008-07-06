@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_LEGEND_TEXT_H__
 
 #include "OsgTools/Export.h"
+#include "OsgTools/Legend/Item.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -22,10 +23,10 @@ namespace osg { class Node; }
 namespace OsgTools {
 namespace Legend {
 
-class OSG_TOOLS_EXPORT Text : public Usul::Base::Referenced
+class OSG_TOOLS_EXPORT Text : public OsgTools::Legend::Item
 {
 public:
-  typedef Usul::Base::Referenced BaseClass;
+  typedef OsgTools::Legend::Item BaseClass;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Text );
@@ -45,19 +46,29 @@ public:
   void                    alignment ( Alignment type );
   Alignment               alignment () const;
 
+  /// Build the scene.
+  osg::Node*              buildScene();
+  
+  /// Set/get the font size.
+  void                    fontSize ( double size );
+  double                  fontSize() const;
+  
   /// Get/Set the text.
   void                    text( const std::string& text );
   const std::string &     text () const;
 
-  /// Build the scene.
-  osg::Node*              buildScene( unsigned int width, unsigned int height );
-
+  /// Set/get the line wrap state.
+  void                    wrapLine ( bool b );
+  bool                    wrapLine() const;
+  
 protected:
   virtual ~Text();
 
 private:
   std::string _text;
   Alignment _alignment;
+  bool _wrapLine;
+  double _fontSize;
 };
 
 }

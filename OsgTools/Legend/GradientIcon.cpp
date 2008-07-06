@@ -45,8 +45,11 @@ const osg::Vec4 & GradientIcon::maxColor() const
 }
 
 
-osg::Node* GradientIcon::buildScene( unsigned int width, unsigned int height )
+osg::Node* GradientIcon::buildScene()
 {
+  const SizeType width  ( this->size()[0] );
+  const SizeType height ( this->size()[1] );
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
   osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
 

@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __OSG_TOOLS_LEGEND_GRADIENT_ICON_H__
-#define __OSG_TOOLS_LEGEND_GRADIENT_ICON_H__
+#ifndef __OSG_TOOLS_LEGEND_IMAGE_H__
+#define __OSG_TOOLS_LEGEND_IMAGE_H__
 
 #include "OsgTools/Export.h"
 #include "OsgTools/Legend/Item.h"
@@ -16,41 +16,41 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 
-#include "osg/Material"
+#include <string>
 
 namespace osg { class Node; }
 
 namespace OsgTools {
 namespace Legend {
 
-class OSG_TOOLS_EXPORT GradientIcon : public OsgTools::Legend::Item
+class OSG_TOOLS_EXPORT Image : public OsgTools::Legend::Item
 {
 public:
   typedef OsgTools::Legend::Item BaseClass;
-
+  
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( GradientIcon );
-
-  GradientIcon();
-
-  void                    minColor( const osg::Vec4& min );
-  const osg::Vec4 &       minColor() const;
-
-  void                    maxColor( const osg::Vec4& max );
-  const osg::Vec4 &       maxColor() const;
-
-  virtual osg::Node*      buildScene();
-
+  USUL_DECLARE_REF_POINTERS ( Image );
+  
+  /// Constructors.
+  Image();
+  Image( const std::string& filename );
+  
+  /// Get/Set the text.
+  void                    filename ( const std::string& filename );
+  const std::string &     filename() const;
+  
+  /// Build the scene.
+  osg::Node*              buildScene();
+  
 protected:
-  virtual ~GradientIcon();
-
+  virtual ~Image();
+  
 private:
-  osg::Vec4 _minColor;
-  osg::Vec4 _maxColor;
+  std::string _filename;
 };
 
 }
 }
 
 
-#endif //__OSG_TOOLS_LEGEND_GRADIENT_ICON_H__
+#endif //__OSG_TOOLS_LEGEND_IMAGE_H__

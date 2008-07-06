@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Legend/Legend.h"
+#include "OsgTools/Legend/Text.h"
 #include "OsgTools/State/StateSet.h"
 
 #include "osg/Material"
@@ -88,13 +89,28 @@ namespace Detail
 {
   struct SortLegend
   {
+    SortLegend ( unsigned int column ) : _column ( column )
+    {
+    }
+    
     template < class T >
     bool operator () ( const T& rhs, const T& lhs ) const
     {
-      // Greater than because the first item is drawn on the bottom of the legend.
-      // Sorting from Z to A will display A to Z on the legend.
-      return rhs->at( 0 )->text() > lhs->at( 0 )->text();
+      const Text* text0 ( dynamic_cast<const Text*> ( rhs->at( _column ) ) );
+      const Text* text1 ( dynamic_cast<const Text*> ( lhs->at( _column ) ) );
+      
+      if ( 0x0 != text0 && 0x0 != text1 )
+      {
+        // Greater than because the first item is drawn on the bottom of the legend.
+        // Sorting from Z to A will display A to Z on the legend.
+        return text0->text() > text1->text();
+      }
+      
+      return false;
     }
+    
+  private:
+    unsigned int _column;
   };
 }
 
@@ -107,8 +123,11 @@ namespace Detail
 
 osg::Node* Legend::buildScene()
 {
+  //const SizeType width  ( this->size()[0] );
+  //const SizeType height ( this->size()[1] );
+  
   // Sort the legend by name.
-  std::sort( _legendObjects.begin(), _legendObjects.end(), Detail::SortLegend() );
+  std::sort( _legendObjects.begin(), _legendObjects.end(), Detail::SortLegend ( 1 ) );
 
   // Create the root for the legend.
   osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
@@ -150,8 +169,8 @@ osg::Node* Legend::buildScene()
       osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
       
       // Width and height of the row.
-      const unsigned int width ( _width - ( padding * 2 ) );
-      const unsigned int height ( heightPerObject );
+      const unsigned int rowWidth ( _width - ( padding * 2 ) );
+      const unsigned int rowHeight ( heightPerObject );
       
       const unsigned int num ( iter - _legendObjects.begin() );
 
@@ -166,7 +185,8 @@ osg::Node* Legend::buildScene()
       mt->setMatrix( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
 
       // Build the row.
-      mt->addChild( (*iter)->buildScene( width, height ) );
+      (*iter)->size ( rowWidth, rowHeight );
+      mt->addChild( (*iter)->buildScene() );
 
       // Turn off depth testing.
       osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
@@ -246,7 +266,8 @@ osg::Node* Legend::_buildBackground( unsigned int width, unsigned int height )
     ss->setMode( GL_BLEND, on );
     ss->setMode( GL_POLYGON_OFFSET_FILL, on );
 
-    //osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset ( -1.0, -1.0 ) );
+    osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset ( 1.0, 4.0 ) );
+    ss->setAttributeAndModes ( offset.get(), on );
   }
 
   // Make the outline.

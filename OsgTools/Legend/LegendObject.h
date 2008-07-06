@@ -11,8 +11,7 @@
 #define __OSG_TOOLS_LEGEND_OBJECT_H__
 
 #include "OsgTools/Export.h"
-#include "OsgTools/Legend/Icon.h"
-#include "OsgTools/Legend/Text.h"
+#include "OsgTools/Legend/Item.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
@@ -22,29 +21,27 @@
 namespace OsgTools {
 namespace Legend {
 
-class OSG_TOOLS_EXPORT LegendObject : public Usul::Base::Referenced
+class OSG_TOOLS_EXPORT LegendObject : public Item
 {
 public:
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Item BaseClass;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( LegendObject );
 
   LegendObject();
 
-  /// Get/Set the icon.
-  void                   icon( Icon* );
-  Icon*                  icon();
-  const Icon*            icon() const;
-
-  /// Get the text.
-  Text*                  operator[] ( unsigned int i );
-  Text*                  at ( unsigned int i );
-  const Text*            at ( unsigned int i ) const;
+  /// Get the item.
+  Item*                  operator[] ( unsigned int i );
+  Item*                  at ( unsigned int i );
+  const Item*            at ( unsigned int i ) const;
 
   /// Add a text item.
-  unsigned int           addText ( Text* );
+  unsigned int           addItem ( Item* );
 
+  /// Build the scene.
+  osg::Node*             buildScene();
+  
   /// Get/Set the number of columns.
   void                   columns( unsigned int value );
   unsigned int           columns() const;
@@ -52,16 +49,12 @@ public:
   /// Get the percentage at given column.
   float&                 percentage( unsigned int i );
 
-  /// Build the scene.
-  osg::Node*             buildScene ( unsigned int width, unsigned int height );
-
 protected:
   virtual ~LegendObject();
 
 private:
-  Icon::RefPtr _icon;
 
-  typedef std::vector < Text::RefPtr > TextVector;
+  typedef std::vector < Item::RefPtr > TextVector;
   TextVector _texts;
 
   std::vector< float > _percentages;

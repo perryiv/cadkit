@@ -23,7 +23,6 @@ using namespace OsgTools::Legend;
 ///////////////////////////////////////////////////////////////////////////////
 
 LegendObject::LegendObject() : BaseClass(),
-  _icon ( 0x0 ),
   _texts(),
   _percentages()
 {
@@ -43,47 +42,11 @@ LegendObject::~LegendObject()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the icon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LegendObject::icon( Icon* icon )
-{
-  _icon = icon;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the icon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Icon* LegendObject::icon()
-{
-  return _icon.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the icon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Icon* LegendObject::icon() const
-{
-  return _icon.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the text at given index.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Text* LegendObject::operator[] ( unsigned int i )
+Item* LegendObject::operator[] ( unsigned int i )
 {
   if( i < _texts.size() )
     return _texts[i];
@@ -98,7 +61,7 @@ Text* LegendObject::operator[] ( unsigned int i )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Text* LegendObject::at ( unsigned int i )
+Item* LegendObject::at ( unsigned int i )
 {
   if( i < _texts.size() )
     return _texts[i];
@@ -113,7 +76,7 @@ Text* LegendObject::at ( unsigned int i )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Text* LegendObject::at ( unsigned int i ) const
+const Item* LegendObject::at ( unsigned int i ) const
 {
   if( i < _texts.size() )
     return _texts[i];
@@ -128,7 +91,7 @@ const Text* LegendObject::at ( unsigned int i ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int LegendObject::addText ( Text* text )
+unsigned int LegendObject::addItem ( Item* text )
 {
   _texts.push_back( text );
   _percentages.push_back( 0.0 );
@@ -140,16 +103,13 @@ unsigned int LegendObject::addText ( Text* text )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the number of rows.
+//  Set the number of columns.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void LegendObject::columns( unsigned int value )
 {
-  unsigned int oldSize ( _texts.size() );
   _texts.resize( value );
-  for( unsigned int i = oldSize; i < value; ++i )
-    _texts[i] = new Text;
 
   _percentages.resize( value );
   for( unsigned int i = 0; i < value; ++i )
@@ -175,43 +135,36 @@ unsigned int LegendObject::columns() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* LegendObject::buildScene( unsigned int width, unsigned int height )
+osg::Node* LegendObject::buildScene()
 {
+  const SizeType width  ( this->size()[0] );
+  const SizeType height ( this->size()[1] );
+  
   osg::ref_ptr < osg::Group > group ( new osg::Group );
 
   const unsigned int padding ( 5 );
   
-  // Width and height for icon.
-  const unsigned int iconWidth  ( static_cast < unsigned int > ( width * 0.10 ) );
-  const unsigned int iconHeight ( height - ( padding * 2 ) );
+  // Maximum width and height for the row.
+  const unsigned int maxWidth  ( static_cast < unsigned int > ( width ) );
+  const unsigned int maxHeight ( height - ( padding * 2 ) );
   
-  // Width and height for text.
-  const unsigned int textWidth  ( static_cast < unsigned int > ( width * 0.85 ) );
-  const unsigned int textHeight ( height - padding );
+  // Current x position of item.
+  unsigned int currentPosition ( padding );
   
-  // Current x position of text item.
-  unsigned int currentTextPosition ( 0 );
-  
-  if( _icon.valid() )
-  {
-    group->addChild( _icon->buildScene( iconWidth, iconHeight ) );
-    
-    currentTextPosition = iconWidth + padding;
-  }
-
   // Loop over each item.
   for( unsigned int i = 0; i < _texts.size(); ++i )
   {
-    const unsigned int columnWidth ( static_cast < unsigned int > ( textWidth * _percentages.at( i ) ) );
-    Text::RefPtr text ( _texts.at ( i ) );
+    const unsigned int columnWidth ( static_cast < unsigned int > ( maxWidth * _percentages.at( i ) ) );
+    Item::RefPtr text ( _texts.at ( i ) );
 
     osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    osg::Matrix m ( osg::Matrix::translate ( currentTextPosition, 0.0, 0.0 ) );
+    osg::Matrix m ( osg::Matrix::translate ( currentPosition, 0.0, 0.0 ) );
     mt->setMatrix( m );
-    mt->addChild ( text->buildScene ( columnWidth, textHeight ) );
+    text->size ( columnWidth, maxHeight );
+    mt->addChild ( text->buildScene() );
     group->addChild( mt.get() );
 
-    currentTextPosition += ( columnWidth + padding );
+    currentPosition += ( columnWidth + padding );
   }
 
   return group.release();

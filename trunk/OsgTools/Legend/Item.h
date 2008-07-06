@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __OSG_TOOLS_LEGEND_ICON_H__
-#define __OSG_TOOLS_LEGEND_ICON_H__
+#ifndef __OSG_TOOLS_LEGEND_ITEM_H__
+#define __OSG_TOOLS_LEGEND_ITEM_H__
 
 #include "OsgTools/Export.h"
 
@@ -21,25 +21,27 @@ namespace osg { class Node; }
 namespace OsgTools {
 namespace Legend {
 
-class OSG_TOOLS_EXPORT Icon : public Usul::Base::Referenced
+class OSG_TOOLS_EXPORT Item : public Usul::Base::Referenced
 {
 public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Math::Vec2ui Size;
+  typedef Size::value_type SizeType;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Icon );
+  USUL_DECLARE_REF_POINTERS ( Item );
 
-  Icon();
+  /// Set/get the suggested size.
+  void                    size ( SizeType width, SizeType height );
+  void                    size ( const Size& s );
+  Size                    size () const;
 
-  /// Get/Set the suggested size.
-  void                    sizeHint ( const Size& s );
-  Size                    sizeHint () const;
-
-  virtual osg::Node*      buildScene ( unsigned int width, unsigned int height ) = 0;
+  virtual osg::Node*      buildScene() = 0;
 
 protected:
-  virtual ~Icon();
+  
+  Item();
+  virtual ~Item();
 
 private:
   Size _size;
@@ -49,4 +51,4 @@ private:
 }
 
 
-#endif //__OSG_TOOLS_LEGEND_ICON_H__
+#endif //__OSG_TOOLS_LEGEND_ITEM_H__

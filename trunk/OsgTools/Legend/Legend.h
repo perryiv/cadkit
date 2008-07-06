@@ -12,6 +12,7 @@
 
 #include "OsgTools/Export.h"
 
+#include "OsgTools/Legend/Item.h"
 #include "OsgTools/Legend/LegendObject.h"
 
 #include "Usul/Base/Referenced.h"
@@ -22,10 +23,10 @@
 namespace OsgTools {
 namespace Legend {
 
-class OSG_TOOLS_EXPORT Legend : public Usul::Base::Referenced
+class OSG_TOOLS_EXPORT Legend : public OsgTools::Legend::Item
 {
 public:
-  typedef Usul::Base::Referenced BaseClass;
+  typedef OsgTools::Legend::Item BaseClass;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Legend );
@@ -51,7 +52,7 @@ public:
   void                 position ( unsigned int x, unsigned int y );
 
   /// Set the maximium size.
-  void                 maximiumSize( unsigned int width, unsigned int height );
+  void                 maximiumSize ( unsigned int width, unsigned int height );
 
   /// Get the height.
   unsigned int         height () const;

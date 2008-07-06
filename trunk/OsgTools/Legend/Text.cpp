@@ -15,6 +15,8 @@
 #include "osg/Geode"
 #include "osgText/Text"
 
+#include <iostream>
+
 using namespace OsgTools::Legend;
 
 
@@ -27,7 +29,9 @@ using namespace OsgTools::Legend;
 Text::Text() : 
   BaseClass(), 
   _text(),
-  _alignment ( LEFT )
+  _alignment ( LEFT ),
+  _wrapLine ( false ),
+  _fontSize ( 25.0 )
 {
 }
 
@@ -41,7 +45,9 @@ Text::Text() :
 Text::Text( const std::string& text ) : 
   BaseClass(), 
   _text( text ),
-  _alignment ( LEFT )
+  _alignment ( LEFT ),
+  _wrapLine ( false ),
+  _fontSize ( 25.0 )
 {
 }
 
@@ -87,8 +93,11 @@ const std::string& Text::text() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Text::buildScene( unsigned int width, unsigned int height )
+osg::Node* Text::buildScene()
 {
+  const SizeType width  ( this->size()[0] );
+  SizeType height ( this->size()[1] );
+  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
 
   osg::ref_ptr < osgText::Text > text ( new osgText::Text );
@@ -104,19 +113,32 @@ osg::Node* Text::buildScene( unsigned int width, unsigned int height )
     text->setAlignment ( osgText::Text::RIGHT_BASE_LINE );
   }
 
-  text->setAutoRotateToScreen( true );
-  text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-  //text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  text->setCharacterSize( height );
+  //text->setAutoRotateToScreen( true );
+  //text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
+  text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
+  text->setCharacterSize( this->fontSize() );
   text->setText ( this->text() );
 
-  while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > width )
+  if ( this->wrapLine() )
   {
-    height -= 2;
-    text->setCharacterSize ( height );
+    text->setPosition ( osg::Vec3( 0.0, height - ( this->fontSize() / 2.0 ), 0.0 ) );
+    text->setMaximumWidth ( width );
+  }
+  else
+  {
+    // Resize the fit on the line.
+    while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > width )
+    {
+      height -= 2;
+      text->setCharacterSize ( height );
+    }
   }
 
   geode->addDrawable( text.get() );
+  
+  osg::ref_ptr<osg::StateSet> ss ( geode->getOrCreateStateSet() );
+  //ss->setRenderBinDetails ( 11, "RenderBin" );
+  ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
   // Turn off lighting.
   OsgTools::State::StateSet::setLighting ( geode.get(), false );
@@ -146,4 +168,52 @@ void Text::alignment ( Alignment type )
 Text::Alignment Text::alignment () const
 {
   return _alignment;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the line wrap state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Text::wrapLine ( bool b )
+{
+  _wrapLine = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the line wrap state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Text::wrapLine() const
+{
+  return _wrapLine;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the font size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Text::fontSize ( double size )
+{
+  _fontSize = size;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the font size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Text::fontSize() const
+{
+  return _fontSize;
 }

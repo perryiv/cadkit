@@ -43,7 +43,7 @@ struct MINERVA_EXPORT SingleColorFunctor : public Minerva::Core::Functors::BaseC
   /// Get the color.
   virtual osg::Vec4  operator() ( double value ) const;
 
-  virtual OsgTools::Legend::Icon * icon ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  virtual OsgTools::Legend::Item * icon ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
 private:
 

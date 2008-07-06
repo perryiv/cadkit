@@ -110,7 +110,7 @@ osg::Vec4 SingleColorFunctor::operator() ( double value ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Legend::Icon * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown *caller )
+OsgTools::Legend::Item * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown *caller )
 {
 #if 0 // For now... always return quad for legend
   Minerva::Interfaces::ILineLayer::QueryPtr lineLayer ( caller );

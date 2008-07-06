@@ -999,11 +999,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Icon.cpp"
+					RelativePath=".\Legend\Item.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Icon.h"
+					RelativePath=".\Legend\Item.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\Image.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Legend\Image.h"
 					>
 				</File>
 				<File

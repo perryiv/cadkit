@@ -990,8 +990,8 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   // Background menu.
   {
     MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "&Background" ) );
-    background->append ( new Button ( UC::genericCommand ( "&Edit...", UA::memberFunction<void> ( this, &Viewer::editBackground ), UC::TrueFunctor() ) ) );
-    background->append ( new Button ( UC::genericCommand ( "&Default", UA::memberFunction<void> ( viewer.get(), &OsgViewer::defaultBackground ), UC::TrueFunctor() ) ) );
+    background->append ( new Button ( USUL_MAKE_COMMAND ( "&Edit...", "", this, &Viewer::editBackground ) ) );
+    background->append ( new Button ( USUL_MAKE_COMMAND ( "&Default", "", viewer.get(), &OsgViewer::defaultBackground ) ) );
     menu.append ( background.get() );
   }
   
@@ -999,28 +999,15 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   {
     MenuKit::Menu::RefPtr gotoMenu ( new MenuKit::Menu ( "&Camera" ) );
     
-    gotoMenu->append ( new Button ( UC::genericCommand ( "&Fit", 
-                                                         UA::bind1<void> ( OsgViewer::FIT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
-                                                         UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "F&ront", 
-                                                        UA::bind1<void> ( OsgViewer::FRONT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
-                                                        UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "&Back", 
-                                                        UA::bind1<void> ( OsgViewer::BACK, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
-                                                        UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "&Left", 
-                                                        UA::bind1<void> ( OsgViewer::LEFT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
-                                                        UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "&Right", 
-                                                        UA::bind1<void> ( OsgViewer::RIGHT, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
-                                                        UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "&Top", 
-                                                        UA::bind1<void> ( OsgViewer::TOP, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
-                                                        UC::TrueFunctor() ) ) );
-    gotoMenu->append ( new Button ( UC::genericCommand ( "B&ottom", 
-                                                        UA::bind1<void> ( OsgViewer::BOTTOM, UA::memberFunction<void> ( viewer.get(), &OsgViewer::camera ) ), 
-                                                        UC::TrueFunctor() ) ) );
-    
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Fit",    "eye.png",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Home",   "home.png",   viewer.get(), &OsgViewer::camera, OsgViewer::RESET ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Front",  "Front.png",  viewer.get(), &OsgViewer::camera, OsgViewer::FRONT ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Back",   "Back.png",   viewer.get(), &OsgViewer::camera, OsgViewer::BACK ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Left",   "Left.png",   viewer.get(), &OsgViewer::camera, OsgViewer::LEFT ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Right",  "Right.png",  viewer.get(), &OsgViewer::camera, OsgViewer::RIGHT ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Top",    "Top.png",    viewer.get(), &OsgViewer::camera, OsgViewer::TOP ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "B&ottom", "Bottom.png", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
+
     menu.append ( gotoMenu.get() );
   }
 
@@ -1482,12 +1469,7 @@ void Viewer::_onContextMenuShow ( const QPoint& pos )
   this->_menuAdd ( *menu );
   
   typedef MenuKit::Button Button;
-  namespace UC = Usul::Commands;
-  namespace UA = Usul::Adaptors;
-  menu->append ( new Button ( UC::genericCommand ( "OpenGL information", 
-                                                  UA::memberFunction<void> ( this, &Viewer::_openGLInformation ), 
-                                                  UC::TrueFunctor() ) ) );
-  
+  menu->append ( new Button ( USUL_MAKE_COMMAND ( "OpenGL information", "", this, &Viewer::_openGLInformation ) ) );
 
   QtTools::Menu qMenu;
   qMenu.menu ( menu.get() );
@@ -1813,14 +1795,14 @@ void Viewer::toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* calle
   // Camera menu.
   MenuKit::Menu::RefPtr toolBar ( new MenuKit::Menu ( "view_toolbar" ) );
 
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Fit",    "eye.gif",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Home",   "home.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::RESET ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Front",  "Front.gif",  viewer.get(), &OsgViewer::camera, OsgViewer::FRONT ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Back",   "Back.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::BACK ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Left",   "Left.gif",   viewer.get(), &OsgViewer::camera, OsgViewer::LEFT ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Right",  "Right.gif",  viewer.get(), &OsgViewer::camera, OsgViewer::RIGHT ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Top",    "Top.gif",    viewer.get(), &OsgViewer::camera, OsgViewer::TOP ) ) );
-  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Bottom", "Bottom.gif", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Fit",    "eye.png",    viewer.get(), &OsgViewer::camera, OsgViewer::FIT   ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Home",   "home.png",   viewer.get(), &OsgViewer::camera, OsgViewer::RESET ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Front",  "Front.png",  viewer.get(), &OsgViewer::camera, OsgViewer::FRONT ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Back",   "Back.png",   viewer.get(), &OsgViewer::camera, OsgViewer::BACK ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Left",   "Left.png",   viewer.get(), &OsgViewer::camera, OsgViewer::LEFT ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Right",  "Right.png",  viewer.get(), &OsgViewer::camera, OsgViewer::RIGHT ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Top",    "Top.png",    viewer.get(), &OsgViewer::camera, OsgViewer::TOP ) ) );
+  toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Bottom", "Bottom.png", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
   
   menu.append ( toolBar.get() );
 }

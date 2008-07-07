@@ -61,10 +61,10 @@ SET (SOURCES
   IO/WriteEPS.cpp
   Jitter.cpp
   Legend/GradientIcon.cpp
-  Legend/Icon.cpp
+  Legend/Item.cpp
+  Legend/Image.cpp
   Legend/Legend.cpp
   Legend/LegendObject.cpp
-  Legend/SolidIcon.cpp
   Legend/Text.cpp
   Lod.cpp
   MaterialFactory.cpp

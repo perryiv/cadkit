@@ -30,6 +30,7 @@
 
 #include "osg/BoundingBox"
 #include "osg/Vec3"
+#include "osg/Vec4"
 #include "osg/Node"
 #include "osg/PrimitiveSet"
 
@@ -171,6 +172,7 @@ private:
   std::string                     _tempPath;
   double                          _distance;
   GroupPtr                        _root;
+  osg::Vec4f                      _material;
   
   static long                     _streamCount;
   static unsigned long            _numerator;

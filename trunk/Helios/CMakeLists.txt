@@ -2,6 +2,10 @@
 
 cmake_minimum_required(VERSION "2.4")
 
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 OLD)
+endif(COMMAND cmake_policy)
+
 # Set variables needed below...
 SET ( CADKIT_INC_DIR ${PROJECT_SOURCE_DIR}/../ )
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
@@ -51,7 +55,6 @@ ${PROJECT_SOURCE_DIR}/Plugins/ModelPresentation/ModelPresentationLib
 ${PROJECT_SOURCE_DIR}/Plugins/ModelPresentation/ModelPresentation
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfModel
 ${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel
-${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfDelegate
 ${CADKIT_INC_DIR}/Helios/Plugins/MeasureTool
 ${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry
 ${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile

@@ -57,7 +57,7 @@ SET (SOURCES
 ./Data/Transform.cpp
 ./Data/Geometry.cpp
 ./Data/Line.cpp
-./Dagta/Model.cpp
+./Data/Model.cpp
 ./Data/Object.cpp
 ./Data/Point.cpp
 ./Data/Polygon.cpp

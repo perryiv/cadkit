@@ -55,7 +55,8 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
   _numPoints( 0 ),
   _streamBuffer ( buffer ),
   _tempPath( tempPath ),
-  _distance( 0 )
+  _distance( 0 ),
+  _material( 1.0f, 0.0f, 0.0f, 1.0f )
 {
   
   _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
@@ -330,6 +331,9 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 
         // add the lods to the main group
         group->addChild( lod.get() );
+
+        // Set the default material
+        // OsgTools::State::StateSet::setMaterial( group.get(), _material, _material, 1.0f ); 
       }
     }
   }

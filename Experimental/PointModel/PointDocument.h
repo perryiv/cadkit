@@ -18,9 +18,13 @@
 
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Types/Types.h"
 
 #include "OsgTools/Points/PointSet.h"
+
+#include "osg/Material"
+#include "osg/Vec4"
 
 #include <string>
 
@@ -28,7 +32,8 @@ using namespace Usul::Types;
 
 
 class PointDocument : public Usul::Documents::Document,
-                      public Usul::Interfaces::IBuildScene
+                      public Usul::Interfaces::IBuildScene,
+                      public Usul::Interfaces::IMenuAdd
 {
 public:
 
@@ -74,6 +79,9 @@ public:
 
    /// Write the document to given file name.
   virtual void                write ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
+
+  //Usul::Interfaces::IMenuAdd
+  void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
   
 protected:
 
@@ -93,12 +101,15 @@ protected:
   void                        _readBinaryRestartFile( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _buildVectors( Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _split( Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                        _editPointColor();
 
 
 private:
 
-  PointSet::ValidRefPtr       _pointSet;
-  Usul::Types::Uint64         _numPoints;
+  PointSet::ValidRefPtr           _pointSet;
+  Usul::Types::Uint64             _numPoints;
+  osg::ref_ptr< osg::Material >   _material;
+  osg::Vec4f                      _color;
   
 };
 

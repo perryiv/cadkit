@@ -14,6 +14,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PointDocument.h"
+
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
+
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 #include "Usul/Scope/RemoveFile.h"
@@ -25,6 +29,12 @@
 #include "Usul/Math/MinMax.h"
 #include "Usul/Policies/Update.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/Interfaces/IColorEditor.h"
+#include "Usul/Documents/Manager.h"
+
+#include "OsgTools/State/StateSet.h"
 
 #include <fstream>
 #include <algorithm>
@@ -54,9 +64,13 @@ TODO: Look at WRF document for how to use 64-bit fopen
 
 PointDocument::PointDocument() : BaseClass ( "Point Document" ),
 _pointSet( new PointSet() ),
-_numPoints( 0 )
+_numPoints( 0 ),
+_material( new osg::Material() ),
+_color( 1.0f, 0.0f, 0.0f, 1.0f )
 {
-
+  // Set the default material ambient and diffuse
+  _material->setAmbient( osg::Material::FRONT_AND_BACK, _color );
+  _material->setDiffuse( osg::Material::FRONT_AND_BACK, _color );
 }
 
 
@@ -83,6 +97,8 @@ Usul::Interfaces::IUnknown *PointDocument::queryInterface ( unsigned long iid )
   {
     case Usul::Interfaces::IBuildScene::IID:
       return static_cast < Usul::Interfaces::IBuildScene* > ( this );
+    case Usul::Interfaces::IMenuAdd::IID:
+      return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
     default:
       return BaseClass::queryInterface ( iid );
   }
@@ -308,8 +324,10 @@ PointDocument::Filters PointDocument::filtersExport() const
 osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *caller )
 {
   // Redirect to point set
-  
-  return _pointSet->buildScene ( caller );
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
+  group->addChild( _pointSet->buildScene ( caller ) );
+  OsgTools::State::StateSet::setMaterial( group.get(), _material.get() );
+  return group.release();
 }
 
 
@@ -745,4 +763,44 @@ void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown
   ifs->close();
   delete ifs;
   ifs = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Change the point color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::_editPointColor()
+{
+  Usul::Interfaces::IColorEditor::QueryPtr colorEditor ( Usul::Documents::Manager::instance().activeView() );
+  if( false == colorEditor.valid() )
+    return;
+  Usul::Math::Vec4f color ( 0.0f, 1.0f, 0.0f, 1.0f );
+  if( true == colorEditor->editColor( color ) )
+  {
+    // Set the material color in PointSet
+    osg::Vec4f c ( color[0], color[1], color[2], color[3] );
+    _material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+    _material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
+{
+  typedef MenuKit::Button       Button;
+
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+
+  MenuKit::Menu::RefPtr pointMenu ( menu.find ( "&Points", true ) );
+
+  pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &PointDocument::_editPointColor ), Usul::Commands::TrueFunctor() ) ) );
 }

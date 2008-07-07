@@ -25,7 +25,6 @@
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IToolBarAdd.h"
-#include "Usul/Interfaces/IColorEditor.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -55,8 +54,7 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::IMenuAdd,
                                           public Usul::Interfaces::IQuestion,
                                           public Usul::Interfaces::ISaveFileDialog,
-                                          public Usul::Interfaces::IToolBarAdd,
-                                          public Usul::Interfaces::IColorEditor
+                                          public Usul::Interfaces::IToolBarAdd
 {
   Q_OBJECT
 
@@ -132,10 +130,6 @@ public:
   /// Update the cursor.
   void                                    updateCursor();
   void                                    updateCursor( bool left, bool middle, bool right );
-
-  // Usul::Interfaces::IColorEditor
-  // Get the color.
-  virtual bool                            editColor ( Usul::Math::Vec4f& color );
 
 protected:
 

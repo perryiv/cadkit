@@ -22,7 +22,10 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 
+#include "QtTools/Color.h"
+
 #include "QtGui/QWorkspace"
+#include "QtGui/QColorDialog"
 
 using namespace CadKit::Helios::Views::OSG;
 
@@ -64,6 +67,8 @@ Usul::Interfaces::IUnknown *Delegate::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IGUIDelegate::IID:
     return static_cast < Usul::Interfaces::IGUIDelegate*>(this);
+  case Usul::Interfaces::IColorEditor::IID:
+    return static_cast < Usul::Interfaces::IColorEditor * > ( this );
   default:
     return 0x0;
   }
@@ -108,4 +113,33 @@ void Delegate::createDefaultGUI ( Usul::Documents::Document *document, Usul::Int
     // Set the focus.
     viewer->setFocus();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Change a color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Delegate::editColor ( Usul::Math::Vec4f& c )
+{
+  // Create and set the color to the value of c
+  QColor color;
+  QtTools::Color< Usul::Math::Vec4f >::convert( c, color );
+  color = QColorDialog::getColor ( color );
+
+  // If the user didn't press cancel
+  if ( color.isValid() )
+  {
+    // Set the return color to the value of "color" selected 
+    // in the color dialog.
+    QtTools::Color< Usul::Math::Vec4f >::convert( color, c );
+
+    // User pressed the OK button
+    return true;
+  }
+
+  // User pressed the cancel button
+  return false;
 }

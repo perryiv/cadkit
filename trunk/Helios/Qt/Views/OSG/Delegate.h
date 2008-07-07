@@ -21,6 +21,7 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
+#include "Usul/Interfaces/IColorEditor.h"
 
 #include <string>
 
@@ -30,7 +31,8 @@ namespace Views {
 namespace OSG {
 
 class HELIOS_QT_VIEWS_OSG_EXPORT Delegate : public Usul::Base::Referenced,
-                                            public Usul::Interfaces::IGUIDelegate
+                                            public Usul::Interfaces::IGUIDelegate,
+                                            public Usul::Interfaces::IColorEditor
 {
 public:
 
@@ -49,6 +51,10 @@ public:
 
   /// Usul::Interfaces::IGUIDelegate
   virtual void                createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
+
+  // Usul::Interfaces::IColorEditor
+  // Get the color.
+  virtual bool                editColor ( Usul::Math::Vec4f& color );
 
 protected: 
 

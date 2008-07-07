@@ -57,7 +57,6 @@
 #include "QtGui/QLabel"
 #include "QtGui/QFileDialog"
 #include "QtGui/QMessageBox"
-#include "QtGui/QColorDialog"
 
 #include <ctime>
 
@@ -267,8 +266,7 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ISaveFileDialog * > ( this );
   case Usul::Interfaces::IToolBarAdd::IID:
     return static_cast < Usul::Interfaces::IToolBarAdd * > ( this );
-  case Usul::Interfaces::IColorEditor::IID:
-    return static_cast < Usul::Interfaces::IColorEditor * > ( this );
+  
   default:
     return 0x0;
   }
@@ -1825,32 +1823,4 @@ void Viewer::toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* calle
   toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Bottom", "Bottom.gif", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
   
   menu.append ( toolBar.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add to the toolbar.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::editColor ( Usul::Math::Vec4f& c )
-{
-  QColor color ( static_cast< unsigned char> ( c[0] * 255 ), 
-                 static_cast< unsigned char> ( c[1] * 255 ),
-                 static_cast< unsigned char> ( c[2] * 255 ),
-                 static_cast< unsigned char> ( c[3] * 255 ) );
-
-  color = QColorDialog::getColor ( color );
-
-  if ( color.isValid() )
-  {
-    c[0] = static_cast< float > ( color.red()   ) / 255.0f;
-    c[1] = static_cast< float > ( color.green() ) / 255.0f;
-    c[2] = static_cast< float > ( color.blue()  ) / 255.0f;
-    c[3] = static_cast< float > ( color.alpha() ) / 255.0f;
-    return true;
-  }
-
-  return false;
 }

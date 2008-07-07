@@ -781,13 +781,8 @@ void MainWindow::_buildToolBar()
       ta->toolBarAdd ( *toolBar, me.get() );
     }
     
-    // There are a few issues on OS X to work out, only use in debug mode.
-#ifndef __APPLE__
-#ifdef _DEBUG
     // Make the Qt tool bars.
     this->_buildQtToolBar ( *toolBar );
-#endif
-#endif
   }
 }
 
@@ -1008,7 +1003,6 @@ MainWindow::FilesResult MainWindow::getLoadFileNames ( const std::string &title,
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "4159638088" );
-
   return QtTools::FileDialog::getLoadFileNames ( this, title, filters );
 }
 
@@ -1023,7 +1017,6 @@ MainWindow::FileResult MainWindow::getSaveFileName  ( const std::string &title, 
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1215213562" );
-
   return QtTools::FileDialog::getSaveFileName ( this, title, filters );
 }
 

@@ -30,7 +30,9 @@ Text::Text() :
   BaseClass(), 
   _text(),
   _alignment ( LEFT ),
+  _alignmentVertical ( CENTER ),
   _wrapLine ( false ),
+  _autoSize ( true ),
   _fontSize ( 25.0 )
 {
 }
@@ -46,7 +48,9 @@ Text::Text( const std::string& text ) :
   BaseClass(), 
   _text( text ),
   _alignment ( LEFT ),
+  _alignmentVertical ( CENTER ),
   _wrapLine ( false ),
+  _autoSize ( true ),
   _fontSize ( 25.0 )
 {
 }
@@ -104,12 +108,12 @@ osg::Node* Text::buildScene()
 
   osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
   text->setFont( font.get() );
+  
+  // Set the position.
+  text->setPosition ( osg::Vec3 ( this->_xTextPosition ( width ), this->_yTextPosition ( height ), 0.0 ) );
 
-  if ( LEFT == _alignment )
-    text->setPosition ( osg::Vec3( 0.0, height / 4, 0.0 ) );
-  else if ( RIGHT == _alignment )
+  if ( RIGHT == this->alignmentHorizontal() )
   {
-    text->setPosition ( osg::Vec3 ( width, height / 4, 0.0 ) );
     text->setAlignment ( osgText::Text::RIGHT_BASE_LINE );
   }
 
@@ -121,10 +125,9 @@ osg::Node* Text::buildScene()
 
   if ( this->wrapLine() )
   {
-    text->setPosition ( osg::Vec3( 0.0, height - ( this->fontSize() / 2.0 ), 0.0 ) );
     text->setMaximumWidth ( width );
   }
-  else
+  else if ( this->autoSize() )
   {
     // Resize the fit on the line.
     while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > width )
@@ -153,7 +156,7 @@ osg::Node* Text::buildScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Text::alignment ( Alignment type )
+void Text::alignmentHorizontal ( Alignment type )
 {
   _alignment = type;
 }
@@ -165,9 +168,33 @@ void Text::alignment ( Alignment type )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Text::Alignment Text::alignment () const
+Text::Alignment Text::alignmentHorizontal () const
 {
   return _alignment;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the vertical alignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Text::alignmentVertical ( VAlignment type )
+{
+  _alignmentVertical = type;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the vertical alignment.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Text::VAlignment Text::alignmentVertical() const
+{
+  return _alignmentVertical;
 }
 
 
@@ -216,4 +243,70 @@ void Text::fontSize ( double size )
 double Text::fontSize() const
 {
   return _fontSize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the auto size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Text::autoSize ( bool b )
+{
+  _autoSize = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the auto size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Text::autoSize() const
+{
+  return _autoSize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get x position on text based on alignment settings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Text::ValueType Text::_xTextPosition( unsigned int width ) const
+{
+  switch ( this->alignmentHorizontal() )
+  {
+  case Text::LEFT:
+    return 0.0;
+  case Text::RIGHT:
+    return width;
+  }
+  
+  return 0.0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get y position on text based on alignment settings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Text::ValueType Text::_yTextPosition( unsigned int height ) const
+{
+  switch ( this->alignmentVertical() )
+  {
+    case Text::TOP:
+      return static_cast<ValueType> ( height ) - ( this->fontSize() / 2.0 );
+    case Text::CENTER:
+      return static_cast<ValueType> ( height ) / 4;
+    case Text::BOTTOM:
+      return this->fontSize() / 2.0;
+  }
+  
+  return 0.0;
 }

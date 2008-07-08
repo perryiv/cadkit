@@ -31,14 +31,12 @@ using namespace OsgTools::Legend;
 ///////////////////////////////////////////////////////////////////////////////
 
 Legend::Legend() : 
-BaseClass(),
-_legendObjects(),
-_x ( 0 ),
-_y ( 0 ),
-_width ( 0 ),
-_height ( 0 ),
-_heightPerItem ( 0 ),
-_growDirection ( UP )
+  BaseClass(),
+  _legendObjects(),
+  _width ( 0 ),
+  _height ( 0 ),
+  _heightPerItem ( 0 ),
+  _growDirection ( UP )
 {
 }
 
@@ -133,7 +131,7 @@ osg::Node* Legend::buildScene()
   osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
   root->setName( "Legend" );
   root->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-  root->setMatrix ( osg::Matrix::translate ( _x, _y, 0.0 ) );
+  root->setMatrix ( osg::Matrix::translate ( this->x(), this->y(), 0.0 ) );
 
   osg::ref_ptr < osg::StateSet > ss ( root->getOrCreateStateSet () );
   ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
@@ -355,19 +353,6 @@ void Legend::heightPerItem( unsigned int height )
 unsigned int Legend::heightPerItem () const
 {
   return _heightPerItem;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the position of the legend.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Legend::position( unsigned int x, unsigned int y )
-{
-  _x = x;
-  _y = y;
 }
 
 

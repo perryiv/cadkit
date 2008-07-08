@@ -184,8 +184,9 @@ protected:
   void                              _buildQtToolBar( const MenuKit::Menu& toolBar );
 
   void                              _clearDocuments();
-  void                              _clearMenuBar ();
-  void                              _clearRecentFiles ();
+  void                              _clearMenuBar();
+  void                              _clearRecentFiles();
+	void                              _clearToolBar();
   virtual void                      closeEvent ( QCloseEvent *event );
   virtual void                      _closeEvent ( QCloseEvent* event );
 

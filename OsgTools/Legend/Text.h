@@ -27,6 +27,7 @@ class OSG_TOOLS_EXPORT Text : public OsgTools::Legend::Item
 {
 public:
   typedef OsgTools::Legend::Item BaseClass;
+  typedef float ValueType;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Text );
@@ -35,16 +36,32 @@ public:
   Text();
   Text( const std::string& text );
 
-  /// Alignment.
+  /// Horizontal Alignment.
   enum Alignment
   {
     LEFT,
     RIGHT
   };
+  
+  /// Vertical Alignment.
+  enum VAlignment
+  {
+    TOP,
+    CENTER,
+    BOTTOM
+  };
 
-  /// Get/Set the alignment.
-  void                    alignment ( Alignment type );
-  Alignment               alignment () const;
+  /// Set/get the horizontal alignment.
+  void                    alignmentHorizontal ( Alignment type );
+  Alignment               alignmentHorizontal () const;
+  
+  /// Set/get the vertical alignment.
+  void                    alignmentVertical ( VAlignment type );
+  VAlignment              alignmentVertical () const;
+  
+  /// Set/get the auto size.
+  void                    autoSize ( bool b );
+  bool                    autoSize() const;
 
   /// Build the scene.
   osg::Node*              buildScene();
@@ -62,12 +79,19 @@ public:
   bool                    wrapLine() const;
   
 protected:
+  
   virtual ~Text();
 
+  /// Get x and y position on text based on alignment settings.
+  ValueType               _xTextPosition ( unsigned int width ) const;
+  ValueType               _yTextPosition ( unsigned int height ) const;
+  
 private:
   std::string _text;
   Alignment _alignment;
+  VAlignment _alignmentVertical;
   bool _wrapLine;
+  bool _autoSize;
   double _fontSize;
 };
 

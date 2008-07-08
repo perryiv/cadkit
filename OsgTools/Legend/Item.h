@@ -31,13 +31,20 @@ public:
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Item );
 
+  virtual osg::Node*      buildScene() = 0;
+  
+  /// Set the position.
+  void                    position ( SizeType x, SizeType y );
+  
   /// Set/get the suggested size.
   void                    size ( SizeType width, SizeType height );
   void                    size ( const Size& s );
   Size                    size () const;
 
-  virtual osg::Node*      buildScene() = 0;
-
+  /// Get x and y position.
+  SizeType                x() const;
+  SizeType                y() const;
+  
 protected:
   
   Item();
@@ -45,6 +52,7 @@ protected:
 
 private:
   Size _size;
+  Size _position;
 };
 
 }

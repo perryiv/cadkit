@@ -20,6 +20,9 @@
 
 #include "OsgTools/Font.h"
 #include "OsgTools/Callbacks/SortBackToFront.h"
+#include "OsgTools/Legend/Legend.h"
+#include "OsgTools/Legend/LegendObject.h"
+#include "OsgTools/Legend/Text.h"
 #include "OsgTools/Utilities/ConvertToTriangles.h"
 
 #include "Usul/Interfaces/IPlanetCoordinates.h"
@@ -56,7 +59,8 @@ DataObject::DataObject() :
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _firstDate ( boost::date_time::min_date_time ),
   _lastDate ( boost::date_time::max_date_time ),
-  _geometries()
+  _geometries(),
+  _clickedCallback ( 0x0 )
 {
 }
 
@@ -657,8 +661,39 @@ std::string DataObject::getTreeNodeName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::clicked() const
+OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller ) const
 {
+  ClickedCallback::RefPtr cb ( this->clickedCallback() );
+  
+  // Use the callback if we have one.
+  if ( cb.valid() )
+    return (*cb)( *this, caller );
+  
+  OsgTools::Legend::Legend::RefPtr legend ( new OsgTools::Legend::Legend );
+  legend->maximiumSize ( 300, 300 );
+  legend->heightPerItem ( 256 );
+  legend->position ( 10, 10 );
+  legend->growDirection ( OsgTools::Legend::Legend::UP );
+  
+  OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
+  
+  // Make some text.
+  OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text );
+  text->text ( this->name() );
+  text->wrapLine ( false );
+  text->autoSize ( false );
+  text->alignmentVertical ( OsgTools::Legend::Text::TOP );
+  text->fontSize ( 15 );
+  
+  // Add the items.
+  row->addItem ( text.get() );
+  
+  // Set the percentage of the row.
+  row->percentage ( 0 ) = 1.00;
+  
+  legend->addLegendObject ( row.get() );
+  
+  return legend.release();
 }
 
 
@@ -789,3 +824,32 @@ bool DataObject::getBooleanState() const
 {
   return this->visibility();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the clicked callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::clickedCallback ( ClickedCallback* cb )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _clickedCallback = cb;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the clicked callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ClickedCallback* DataObject::clickedCallback() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _clickedCallback.get();
+}
+

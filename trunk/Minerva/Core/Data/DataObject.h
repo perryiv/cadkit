@@ -38,12 +38,26 @@
 
 #include <map>
 
+namespace OsgTools { namespace Legend { class Item; } }
+
 namespace Minerva {
 namespace Core {
 
   class Visitor;
 
 namespace Data {
+  
+  class DataObject;
+  
+  struct ClickedCallback : public Usul::Base::Referenced
+  {
+    typedef OsgTools::Legend::Item Item;
+    
+    // Smart-pointer definitions.
+    USUL_DECLARE_REF_POINTERS ( ClickedCallback );
+    
+    virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const;
+  };
 
 class MINERVA_EXPORT DataObject : public Usul::Base::Object,
                                   public Usul::Interfaces::IBuildScene,
@@ -59,6 +73,7 @@ public:
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Minerva::Core::Data::Geometry       Geometry;
   typedef std::vector<Geometry::RefPtr>       Geometries;
+  typedef OsgTools::Legend::Item              Item;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
@@ -76,7 +91,11 @@ public:
   void                  addGeometry ( Geometry* geometry );
 
   /// DataObject has been clicked.
-  virtual void          clicked() const;
+  Item*                 clicked ( Usul::Interfaces::IUnknown* caller = 0x0 ) const;
+  
+  /// Set/get the clicked callback.
+  void                  clickedCallback ( ClickedCallback* );
+  ClickedCallback*      clickedCallback() const;
 
   /// Build the scene branch for the data object.
   virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
@@ -184,6 +203,7 @@ private:
   Minerva::Core::Animate::Date _lastDate;
   Extents _extents;
   Geometries _geometries;
+  ClickedCallback::RefPtr _clickedCallback;
 };
 
 }

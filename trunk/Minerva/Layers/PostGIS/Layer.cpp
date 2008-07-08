@@ -1017,7 +1017,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
       if( this->showCountLegend() )
       {
         OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text ( Usul::Strings::format ( this->number() ) ) );
-        text->alignment ( OsgTools::Legend::Text::RIGHT );
+        text->alignmentHorizontal ( OsgTools::Legend::Text::RIGHT );
         unsigned int index ( row->addItem ( text ) );
 	      
         row->percentage( index ) = 0.20;

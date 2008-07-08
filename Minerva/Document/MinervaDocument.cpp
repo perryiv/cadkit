@@ -112,6 +112,7 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   _layersMenu ( new MenuKit::Menu ( "&Layers" ) ),
   _root ( new osg::Group ),
   _camera ( new osg::Camera ),
+  _balloon ( 0x0 ),
   _bodies (),
   _activeBody ( 0x0 ),
   _manager ( 0x0 ),
@@ -2532,6 +2533,12 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
 
   if ( left && si.valid() && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
   {
+    osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
+    osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
+    
+    if ( camera.valid() && balloon.valid() )
+      camera->removeChild ( balloon.get() );
+    
     osgUtil::LineSegmentIntersector::Intersection hit;
     if ( si->intersect ( ea.getX(), ea.getY(), hit ) )
     {
@@ -2546,7 +2553,15 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
       if( userdata.valid() && 0x0 != userdata->_do )
       {
         Minerva::Core::Data::DataObject::RefPtr dataObject ( userdata->_do );
-        dataObject->clicked();
+        
+        OsgTools::Legend::Item::RefPtr item ( dataObject->clicked() );
+        if ( item.valid() )
+        {
+          balloon = item->buildScene();
+          camera->addChild ( balloon.get() );
+          
+          Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
+        }
       }
     }
   }

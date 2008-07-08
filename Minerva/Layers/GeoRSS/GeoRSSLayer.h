@@ -15,6 +15,7 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IRead.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector4.h"
 
 #include <vector>
 
@@ -32,29 +33,29 @@ class GeoRSSLayer : public Minerva::Core::Layers::Container,
 public:
   /// Typedefs.
   typedef Minerva::Core::Layers::Container           BaseClass;
-  typedef Minerva::Core::Data::DataObject           DataObject;
+  typedef Minerva::Core::Data::DataObject            DataObject;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;
-  
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( GeoRSSLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
-  
+
   GeoRSSLayer();
-  
+
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
-  
+
   // Update.
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
-  
+
   // Deserialize.
   virtual void                deserialize( const XmlTree::Node &node );
-  
+
   // Get/Set downloading flag.
   bool                        isDownloading() const;
   void                        downloading( bool b );
-  
+
   // Get/Set reading flag.
   bool                        isReading() const;
   void                        reading( bool b );
@@ -64,6 +65,9 @@ protected:
   
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
+  
+  // Parse the item.
+  void                        _parseItem ( const XmlTree::Node& );
   
   // Update link.
   void                        _updateLink( Usul::Interfaces::IUnknown* caller = 0x0 );
@@ -81,6 +85,7 @@ private:
   double _refreshInterval;
   double _lastUpdate;
   unsigned int _flags;
+  Usul::Math::Vec4f _color;
   
   SERIALIZE_XML_CLASS_NAME ( GeoRSSLayer );
 };

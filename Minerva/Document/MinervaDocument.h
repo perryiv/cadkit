@@ -408,8 +408,9 @@ private:
 
   MenuKit::Menu::RefPtr _layersMenu;
 
-  osg::ref_ptr < osg::Group >      _root;
-  osg::ref_ptr < osg::Camera >     _camera;
+  osg::ref_ptr<osg::Group>      _root;
+  osg::ref_ptr<osg::Camera>     _camera;
+  osg::ref_ptr<osg::Node>       _balloon;
 
   Bodies                     _bodies;
   Body::RefPtr               _activeBody;

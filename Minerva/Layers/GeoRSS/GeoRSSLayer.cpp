@@ -88,10 +88,12 @@ GeoRSSLayer::GeoRSSLayer() :
   _href(),
   _refreshInterval ( 0.0 ),
   _lastUpdate( 0.0 ),
-  _flags ()
+  _flags(),
+  _color ( 1.0, 0.0, 0.0, 1.0 )
 {
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
+  this->_addMember ( "color", _color );
   
   this->dirtyData ( true );
 }
@@ -171,26 +173,8 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::ValidRefPtr node ( *iter );
-    Children latNode ( node->find ( "geo:lat", true ) );
-    Children lonNode ( node->find ( "geo:long", true ) );
     
-    const double lat ( latNode.empty() ? 0.0 : ToDouble::convert ( latNode.front()->value() ) );
-    const double lon ( lonNode.empty() ? 0.0 : ToDouble::convert ( lonNode.front()->value() ) );
-    
-    Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
-    point->autotransform ( true );
-    point->size ( 5 );
-    point->primitiveId ( 2 );
-    point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
-    point->point ( Usul::Math::Vec3d ( lon, lat, 0.0 ) );
-
-    DataObject::RefPtr object ( new DataObject );
-    
-    // Add the geometry.
-    object->addGeometry ( point );
-    
-    // Add the data object.
-    this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+    this->_parseItem( *node );
   }
   
   // Our data is no longer dirty.
@@ -198,6 +182,46 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
+{
+  // Get the color.
+  Usul::Math::Vec4f color ( Usul::Threads::Safe::get ( this->mutex(), _color ) );
+  
+  // Get the title.
+  Children titleNode ( node.find ( "title", false ) );
+  const std::string title ( titleNode.empty() ? "" : titleNode.front()->value() );
+  
+  // Look for the geo tag information.  TODO: Handle gml in geoRSS.
+  Children latNode ( node.find ( "geo:lat", true ) );
+  Children lonNode ( node.find ( "geo:long", true ) );
+  
+  const double lat ( latNode.empty() ? 0.0 : ToDouble::convert ( latNode.front()->value() ) );
+  const double lon ( lonNode.empty() ? 0.0 : ToDouble::convert ( lonNode.front()->value() ) );
+  
+  Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
+  point->autotransform ( true );
+  point->size ( 5 );
+  point->primitiveId ( 2 );
+  point->color ( color );
+  point->point ( Usul::Math::Vec3d ( lon, lat, 0.0 ) );
+  
+  DataObject::RefPtr object ( new DataObject );
+  object->name ( title );
+  
+  // Add the geometry.
+  object->addGeometry ( point );
+  
+  // Add the data object.
+  this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
 }
 
 

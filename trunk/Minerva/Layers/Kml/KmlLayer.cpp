@@ -121,6 +121,7 @@ KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename, cons
   this->_addMember ( "filename", _filename );
   this->_parseFolder ( node );
   this->dirtyData ( false );
+  this->dirtyScene ( true );
 }
 
 
@@ -198,7 +199,10 @@ void KmlLayer::read ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnk
 
 void KmlLayer::read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
-  this->name ( filename );
+  // Set our name to the filename if it's empty.
+  const std::string name ( this->name() );
+  if ( true == name.empty() )
+    this->name ( filename );
   
   // Set our filename.
   Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
@@ -326,6 +330,8 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
     
     // Add the layer to the parent.
     this->add ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
+    
+    this->dirtyScene ( true );
   }
   else if ( "NetworkLink" == name )
   {

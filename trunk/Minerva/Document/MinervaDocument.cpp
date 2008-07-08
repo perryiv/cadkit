@@ -68,6 +68,7 @@
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/System/Directory.h"
 #include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -403,7 +404,12 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
     XmlTree::XercesLife life;
     XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
     document->load ( filename );
-    this->deserialize ( *document );
+    
+    // Change the current working directory to where the file lives.
+    {
+      Usul::System::Directory::ScopedCwd cwd ( Usul::File::directory ( filename, true ) );
+      this->deserialize ( *document );
+    }
 
     // Make a visitor to set the job manager.
     Minerva::Core::Visitors::SetJobManager::RefPtr setter ( new Minerva::Core::Visitors::SetJobManager ( this->_getJobManager() ) );

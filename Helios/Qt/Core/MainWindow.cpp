@@ -284,6 +284,9 @@ void MainWindow::_destroy()
   _recentFilesMenu = 0x0;
   _newDocumentMenu = 0x0;
 
+	// Clear the tool bar.
+	this->_clearToolBar();
+
   // Clear the progress bars.
   _progressBars = 0x0;
 
@@ -721,9 +724,7 @@ void MainWindow::_buildToolBar()
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "6391763130" );
 
   // Handle repeated calls.
-  for ( ToolBars::const_iterator iter = _toolBars.begin(); iter != _toolBars.end(); ++iter )
-    this->removeToolBar ( iter->second );
-  _toolBars.clear();
+  this->_clearToolBar();
   
   // Make the standard toolbar.
   const char *standardToolBarName ( "standard_tool_bar" );
@@ -822,6 +823,23 @@ void MainWindow::_buildQtToolBar( const MenuKit::Menu& toolBar )
       }
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the tool bar.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_clearToolBar()
+{
+	USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1988270626" );
+
+	for ( ToolBars::const_iterator iter = _toolBars.begin(); iter != _toolBars.end(); ++iter )
+    this->removeToolBar ( iter->second );
+  _toolBars.clear();
 }
 
 

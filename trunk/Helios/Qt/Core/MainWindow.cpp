@@ -284,6 +284,9 @@ void MainWindow::_destroy()
   _recentFilesMenu = 0x0;
   _newDocumentMenu = 0x0;
 
+  // This will delete the actions and set their callers to null.
+  _actions.clear();
+
 	// Clear the tool bar.
 	this->_clearToolBar();
 
@@ -315,9 +318,6 @@ void MainWindow::_destroy()
   std::cout << "Destroying thread manager..." << std::endl;
   Usul::Threads::Manager::destroy();
   std::cout << "All threads have finished" << std::endl;
-
-  // This will delete the actions and set their callers to null.
-  _actions.clear();
 
   // Unset the text window resource.
   Usul::Resources::textWindow ( 0x0 );

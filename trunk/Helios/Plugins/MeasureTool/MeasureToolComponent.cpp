@@ -61,7 +61,7 @@
 #include <algorithm>
 #include <iostream>
 
-#define COMPILE_FOR_VRV 1
+//#define COMPILE_FOR_VRV 1
 
 ///////////////////////////////////////////////////////////////////////////////
 //

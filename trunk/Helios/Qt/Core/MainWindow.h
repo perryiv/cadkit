@@ -255,7 +255,7 @@ private:
   void                              _notifyFinishedLoading ( Usul::Documents::Document * );
 
   mutable Mutex *_mutex;
-  Actions _actions;
+  Actions _toolBarActions;
   ToolBars _toolBars;
   unsigned long _refCount;
   PluginFiles _pluginFiles;

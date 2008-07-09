@@ -129,7 +129,7 @@ MainWindow::MainWindow ( const std::string &vendor,
                          const std::string& about,
                          bool showSplash ) : BaseClass(),
   _mutex        ( new MainWindow::Mutex ),
-  _actions      (),
+  _toolBarActions (),
   _toolBars     (),
   _refCount     ( 0 ),
   _pluginFiles  (),
@@ -282,10 +282,7 @@ void MainWindow::_destroy()
   _menu = 0x0;
   _dockMenu = 0x0;
   _recentFilesMenu = 0x0;
-  _newDocumentMenu = 0x0;
-
-  // This will delete the actions and set their callers to null.
-  _actions.clear();
+  _newDocumentMenu = 0x0;  
 
 	// Clear the tool bar.
 	this->_clearToolBar();
@@ -740,12 +737,12 @@ void MainWindow::_buildToolBar()
   // Add buttons.
   {
     Action::RefPtr action ( new Action ( new CadKit::Helios::Commands::OpenDocument ( me ) ) );
-    _actions.insert ( action );
+    _toolBarActions.insert ( action );
     toolBar->addAction ( action.get() );
   }
   {
     Action::RefPtr action ( new Action ( new CadKit::Helios::Commands::SaveDocument ( me ) ) );
-    _actions.insert ( action );
+    _toolBarActions.insert ( action );
     toolBar->addAction ( action.get() );
   }
   
@@ -817,7 +814,7 @@ void MainWindow::_buildQtToolBar( const MenuKit::Menu& toolBar )
         if ( MenuKit::Button* button = dynamic_cast<MenuKit::Button*> ( (*item).get() ) )
         {
           Action::RefPtr action ( new Action ( button->command() ) );
-          _actions.insert ( action );
+          _toolBarActions.insert ( action );
           tb->addAction ( action.get() );
         }
       }
@@ -837,6 +834,10 @@ void MainWindow::_clearToolBar()
 	USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1988270626" );
 
+	// This will delete the actions and set their callers to null.
+  _toolBarActions.clear();
+
+	// Remove the tool bars.
 	for ( ToolBars::const_iterator iter = _toolBars.begin(); iter != _toolBars.end(); ++iter )
     this->removeToolBar ( iter->second );
   _toolBars.clear();

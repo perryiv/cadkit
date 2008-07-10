@@ -84,6 +84,7 @@ SET (SOURCES
 ./TileEngine/System.cpp
 ./TileEngine/Tile.cpp
 ./Utilities/Atmosphere.cpp
+./Utilities/Download.cpp
 ./Utilities/Compass.cpp
 ./Utilities/DirtyTiles.cpp
 ./Utilities/Hud.cpp

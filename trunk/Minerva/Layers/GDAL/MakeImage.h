@@ -26,8 +26,8 @@ namespace GDAL {
 
 osg::Image* makeImage ( unsigned int width, unsigned int height, int bands, GDALDataType type, bool hasColorTable = false )
 {
-  // Only handle 1, 3, and 4 bands.
-  if ( 1 != bands && 3 != bands && 4 != bands )
+  // Only handle 1, 2, 3, and 4 bands.
+  if ( bands < 1 || bands > 4 )
     return 0x0;
   
   osg::ref_ptr<osg::Image> result ( new osg::Image );

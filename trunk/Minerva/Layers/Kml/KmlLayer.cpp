@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/KmlLayer.h"
-#include "Minerva/Layers/Kml/Download.h"
 #include "Minerva/Layers/Kml/NetworkLink.h"
 #include "Minerva/Layers/Kml/Feature.h"
 #include "Minerva/Layers/Kml/TimeSpan.h"
@@ -21,6 +20,7 @@
 #include "Minerva/Core/Data/Model.h"
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/Polygon.h"
+#include "Minerva/Core/Utilities/Download.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -843,7 +843,9 @@ std::string KmlLayer::_buildFilename ( Link *link ) const
 
     if ( true == hasHttp )
     {
-      return Minerva::Layers::Kml::download ( href );
+      std::string filename;
+      if ( Minerva::Core::Utilities::download ( href, filename ) )
+        return filename;
     }
     else
     {

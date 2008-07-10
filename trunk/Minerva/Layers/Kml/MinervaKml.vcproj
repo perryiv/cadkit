@@ -227,14 +227,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Download.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Download.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Factory.cpp"
 				>
 			</File>

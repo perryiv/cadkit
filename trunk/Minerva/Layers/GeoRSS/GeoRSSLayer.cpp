@@ -16,8 +16,8 @@
 
 #include "Minerva/Layers/GeoRSS/GeoRSSLayer.h"
 #include "Minerva/Core/Data/DataObject.h"
-
 #include "Minerva/Core/Data/Point.h"
+#include "Minerva/Core/Utilities/Download.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -47,6 +47,10 @@
 #include "Usul/Threads/Safe.h"
 
 #include "OsgTools/Visitor.h"
+#include "OsgTools/Legend/Image.h"
+#include "OsgTools/Legend/Legend.h"
+#include "OsgTools/Legend/LegendObject.h"
+#include "OsgTools/Legend/Text.h"
 #include "OsgTools/State/StateSet.h"
 
 #include "osg/Material"
@@ -68,6 +72,7 @@ using namespace Minerva::Layers::GeoRSS;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+typedef XmlTree::Node::Attributes Attributes;
 typedef XmlTree::Node::Children    Children;
 typedef Usul::Convert::Type<std::string,double> ToDouble;
 
@@ -187,6 +192,83 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Callback to display the meta data for item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  
+  class GeoRSSCallback : public Minerva::Core::Data::ClickedCallback
+  {
+  public:
+    typedef Minerva::Core::Data::ClickedCallback BaseClass;
+    typedef Minerva::Core::Data::DataObject DataObject;
+    typedef OsgTools::Legend::Item Item;
+    
+    // Smart-pointer definitions.
+    USUL_DECLARE_REF_POINTERS ( GeoRSSCallback );
+    
+    GeoRSSCallback() : BaseClass()
+    {
+    }
+    
+    virtual Item* operator() ( const DataObject& object, Usul::Interfaces::IUnknown* caller ) const
+    {
+      OsgTools::Legend::Legend::RefPtr legend ( new OsgTools::Legend::Legend );
+      legend->maximiumSize ( 300, 300 );
+      legend->heightPerItem ( 256 );
+      legend->position ( 10, 10 );
+      legend->growDirection ( OsgTools::Legend::Legend::UP );
+      
+      OsgTools::Legend::LegendObject::RefPtr row0 ( new OsgTools::Legend::LegendObject );
+      
+      // Make some text.
+      OsgTools::Legend::Text::RefPtr text0 ( new OsgTools::Legend::Text );
+      text0->text ( object.name() );
+      text0->wrapLine ( false );
+      text0->autoSize ( false );
+      text0->alignmentVertical ( OsgTools::Legend::Text::TOP );
+      text0->fontSize ( 15 );
+      
+      // Add the items.
+      row0->addItem ( text0.get() );
+      
+      // Set the percentage of the row.
+      row0->percentage ( 0 ) = 1.00;
+      
+      const std::string description ( object.description() );
+      if ( false == description.empty() )
+      {
+        OsgTools::Legend::LegendObject::RefPtr row1 ( new OsgTools::Legend::LegendObject );
+        
+        // Make some text.
+        OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text );
+        text->text ( description );
+        text->wrapLine ( true );
+        text->alignmentVertical ( OsgTools::Legend::Text::TOP );
+        text->fontSize ( 15 );
+        
+        // Add the items.
+        row1->addItem ( text.get() );
+        
+        // Set the percentage of the row.
+        row1->percentage ( 0 ) = 1.00;
+        
+        legend->addRow ( row1.get() );
+      }
+      
+      legend->addRow ( row0.get() );
+      
+      return legend.release();
+    }
+  };
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Parse the item.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -199,6 +281,17 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   // Get the title.
   Children titleNode ( node.find ( "title", false ) );
   const std::string title ( titleNode.empty() ? "" : titleNode.front()->value() );
+  
+  // Look for an image.
+  Children imageNode ( node.find ( "media:content", false ) );
+  if ( false == imageNode.empty() )
+  {
+    XmlTree::Node::RefPtr node ( imageNode.front() );
+    const std::string url    ( node->attributes()["url"] );
+    const std::string type   ( node->attributes()["type"] );
+    const std::string width  ( node->attributes()["width"] );
+    const std::string height ( node->attributes()["height"] );
+  }
   
   // Look for the geo tag information.  TODO: Handle gml in geoRSS.
   Children latNode ( node.find ( "geo:lat", true ) );
@@ -328,30 +421,9 @@ void GeoRSSLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
   
   // Get the link.
   const std::string href ( Usul::Threads::Safe::get ( this->mutex(), _href ) );
-  
-  std::string::size_type pos ( href.rfind ( '/' ) );
-  
-  if ( pos != std::string::npos )
+  std::string filename;
+  if ( Minerva::Core::Utilities::download ( href, filename ) )
   {
-    // Build the filename.
-    std::string filename ( href.begin() + pos + 1, href.end() );
-    filename = Usul::File::Temp::directory ( true ) + filename;
-
-    // Replace illegal characters for filename.
-    boost::algorithm::replace_all ( filename, "?", "_" );
-    boost::algorithm::replace_all ( filename, "=", "_" );
-    
-    // Download.
-    {
-		  boost::filesystem::remove ( filename );
-      Usul::Network::Curl curl ( href, filename );
-
-      Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction 
-            ( &curl, &Usul::Network::Curl::download ), 
-            Usul::Registry::Database::instance()["network_download"]["georss_layer"]["timeout_milliseconds"].get<unsigned int> ( 600000, true ),
-            static_cast<std::ostream*> ( 0x0 ), "", "4264015553" );
-    }
-
     // Set the filename.
     Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
     

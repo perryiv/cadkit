@@ -55,7 +55,7 @@ void BuildLegend::visit ( Minerva::Core::Layers::Container &layer )
     addRow->addLegendRow( row.get() );
     
     if ( _legend.valid() )
-      _legend->addLegendObject( row.get() );
+      _legend->addRow ( row.get() );
   }
 
 }

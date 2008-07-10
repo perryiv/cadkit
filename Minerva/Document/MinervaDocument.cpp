@@ -596,15 +596,21 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
     // Calculate an altitude.
     const double altitude ( ( extents.maximum() - extents.minimum() ).length() * metersPerDegree );
 
+    // Get the elevation.
+    const double elevation ( body->elevationAtLatLong ( center[1], center[0] ) );
+    
+    // The height above sea level.
+    const double heightAboveSeaLevel ( elevation + static_cast<double> ( Usul::Math::maximum ( 2500.0, altitude ) ) );
+
     // Heading, Pitch, and Roll (For future use).
     osg::Vec3d hpr ( 0.0, 0.0, 0.0 );
 
-    // Convert to x,y,z on the planet.
-    Usul::Math::Vec3d point;
-    body->convertToPlanet ( Usul::Math::Vec3d ( center[0], center[1], altitude ), point );
+    // Convert to x,y,z on the planet.  Is this still needed?
+    //Usul::Math::Vec3d point;
+    //body->convertToPlanet ( Usul::Math::Vec3d ( center[0], center[1], heightAboveSeaLevel ), point );
 
     // Get the rotation.
-    osg::Matrixd matrix ( body->planetRotationMatrix ( center[1], center[0], altitude, hpr[0] ) );
+    osg::Matrixd matrix ( body->planetRotationMatrix ( center[1], center[0], heightAboveSeaLevel, hpr[0] ) );
 
     // Rotation about x.
     osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[1], 1, 0, 0 ) );

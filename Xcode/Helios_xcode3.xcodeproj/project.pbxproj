@@ -435,7 +435,6 @@
 		661B8AF80E1ED884005FC8CA /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661B8ADC0E1ECB41005FC8CA /* Object.cpp */; };
 		661B8AF90E1ED88B005FC8CA /* Point.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661B8ADE0E1ECB41005FC8CA /* Point.cpp */; };
 		661B8AFA0E1ED892005FC8CA /* Polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661B8AE00E1ECB41005FC8CA /* Polygon.cpp */; };
-		661B8C370E1F54A1005FC8CA /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661B8C100E1F5495005FC8CA /* Main.cpp */; };
 		661B8C390E1F54E6005FC8CA /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
 		661B8C450E1F54EA005FC8CA /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		661B8CE50E1F54F0005FC8CA /* osgViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 669BD29C0E0EF9DF00E598FF /* osgViewer.framework */; };
@@ -498,6 +497,8 @@
 		66256C3E0DCB8FA9001E94FB /* QtCore.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
 		66256C3F0DCB8FA9001E94FB /* QtGui.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
 		66256C400DCB8FA9001E94FB /* QtOpenGL.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
+		662638A50E2677A700442B4D /* Download.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 662638A30E2677A700442B4D /* Download.cpp */; };
+		662638A60E2677A700442B4D /* Download.h in Headers */ = {isa = PBXBuildFile; fileRef = 662638A40E2677A700442B4D /* Download.h */; };
 		662674D60DD2C71900BE8C5D /* TimePrimitive.h in Headers */ = {isa = PBXBuildFile; fileRef = 662674D40DD2C71900BE8C5D /* TimePrimitive.h */; };
 		662674D70DD2C71900BE8C5D /* TimePrimitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 662674D50DD2C71900BE8C5D /* TimePrimitive.cpp */; };
 		662674DA0DD2C76E00BE8C5D /* TimeSpan.h in Headers */ = {isa = PBXBuildFile; fileRef = 662674D80DD2C76E00BE8C5D /* TimeSpan.h */; };
@@ -576,9 +577,7 @@
 		664E33F60D89E22E006031B5 /* About.h in Headers */ = {isa = PBXBuildFile; fileRef = 664E33F40D89E22E006031B5 /* About.h */; };
 		664E33F70D89E22E006031B5 /* About.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 664E33F50D89E22E006031B5 /* About.cpp */; };
 		664EBB2B0DD4938400F78E21 /* QtAnimationControl.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plugd */; };
-		666304670E030827004C2914 /* Download.h in Headers */ = {isa = PBXBuildFile; fileRef = 666304630E030827004C2914 /* Download.h */; };
 		666304690E030827004C2914 /* LoadModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 666304650E030827004C2914 /* LoadModel.h */; };
-		666304990E030E87004C2914 /* Download.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666304620E030827004C2914 /* Download.cpp */; };
 		6663049A0E030E90004C2914 /* LoadModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666304640E030827004C2914 /* LoadModel.cpp */; };
 		666309BB0E0442CF004C2914 /* ConvertToTriangles.h in Headers */ = {isa = PBXBuildFile; fileRef = 666309B90E0442CF004C2914 /* ConvertToTriangles.h */; };
 		666309BC0E0442CF004C2914 /* ConvertToTriangles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666309BA0E0442CF004C2914 /* ConvertToTriangles.cpp */; };
@@ -1043,20 +1042,16 @@
 		669BD3F60E0F740A00E598FF /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A8B81E0E06F7DC001C436C /* Python.framework */; };
 		669C28DA0D57E51900A5D1D3 /* GradientIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */; };
 		669C28DB0D57E51900A5D1D3 /* GradientIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28CC0D57E51900A5D1D3 /* GradientIcon.h */; };
-		669C28DC0D57E51900A5D1D3 /* Icon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CD0D57E51900A5D1D3 /* Icon.cpp */; };
-		669C28DD0D57E51900A5D1D3 /* Icon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28CE0D57E51900A5D1D3 /* Icon.h */; };
 		669C28DE0D57E51900A5D1D3 /* Legend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28CF0D57E51900A5D1D3 /* Legend.cpp */; };
 		669C28DF0D57E51900A5D1D3 /* Legend.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D00D57E51900A5D1D3 /* Legend.h */; };
 		669C28E00D57E51900A5D1D3 /* LegendObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28D10D57E51900A5D1D3 /* LegendObject.cpp */; };
 		669C28E10D57E51900A5D1D3 /* LegendObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D20D57E51900A5D1D3 /* LegendObject.h */; };
 		669C28E20D57E51900A5D1D3 /* LineFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D30D57E51900A5D1D3 /* LineFunctor.h */; };
 		669C28E30D57E51900A5D1D3 /* QuadFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D40D57E51900A5D1D3 /* QuadFunctor.h */; };
-		669C28E40D57E51900A5D1D3 /* SolidIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28D50D57E51900A5D1D3 /* SolidIcon.cpp */; };
 		669C28E50D57E51900A5D1D3 /* SolidIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D60D57E51900A5D1D3 /* SolidIcon.h */; };
 		669C28E60D57E51900A5D1D3 /* SphereFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D70D57E51900A5D1D3 /* SphereFunctor.h */; };
 		669C28E70D57E51900A5D1D3 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669C28D80D57E51900A5D1D3 /* Text.cpp */; };
 		669C28E80D57E51900A5D1D3 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28D90D57E51900A5D1D3 /* Text.h */; };
-		669C28EA0D57E52400A5D1D3 /* ConeFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 669C28E90D57E52400A5D1D3 /* ConeFunctor.h */; };
 		669F239D0DBC14D400EC89B0 /* IconStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669F23990DBC14D400EC89B0 /* IconStyle.cpp */; };
 		669F239E0DBC14D400EC89B0 /* IconStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 669F239A0DBC14D400EC89B0 /* IconStyle.h */; };
 		669F239F0DBC14D400EC89B0 /* LineStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669F239B0DBC14D400EC89B0 /* LineStyle.cpp */; };
@@ -1139,27 +1134,11 @@
 		66A1C5120E09B321001DB3F8 /* Composite.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A1C50F0E09B321001DB3F8 /* Composite.h */; };
 		66A1C5130E09B321001DB3F8 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A1C5100E09B321001DB3F8 /* Resample.h */; };
 		66A1C5140E09B321001DB3F8 /* SubRegion.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A1C5110E09B321001DB3F8 /* SubRegion.h */; };
-		66A342070E14BB2000F36EA7 /* Back.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A341FF0E14BADF00F36EA7 /* Back.gif */; };
-		66A342080E14BB2000F36EA7 /* Bottom.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A342000E14BADF00F36EA7 /* Bottom.gif */; };
-		66A342090E14BB2000F36EA7 /* eye.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A342010E14BADF00F36EA7 /* eye.gif */; };
-		66A3420A0E14BB2000F36EA7 /* Front.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A342020E14BADF00F36EA7 /* Front.gif */; };
-		66A3420B0E14BB2000F36EA7 /* home.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A342030E14BADF00F36EA7 /* home.gif */; };
-		66A3420C0E14BB2000F36EA7 /* Left.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A342040E14BADF00F36EA7 /* Left.gif */; };
-		66A3420D0E14BB2000F36EA7 /* Right.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A342050E14BADF00F36EA7 /* Right.gif */; };
-		66A3420E0E14BB2000F36EA7 /* Top.gif in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66A342060E14BADF00F36EA7 /* Top.gif */; };
 		66A342170E14BC9800F36EA7 /* libqgif.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342120E14BC8A00F36EA7 /* libqgif.dylib */; };
 		66A342180E14BC9800F36EA7 /* libqjpeg.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342130E14BC8A00F36EA7 /* libqjpeg.dylib */; };
 		66A342190E14BC9800F36EA7 /* libqmng.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342140E14BC8A00F36EA7 /* libqmng.dylib */; };
 		66A3421A0E14BC9800F36EA7 /* libqsvg.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342150E14BC8A00F36EA7 /* libqsvg.dylib */; };
 		66A3421B0E14BC9800F36EA7 /* libqtiff.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342160E14BC8A00F36EA7 /* libqtiff.dylib */; };
-		66A342480E14BDDA00F36EA7 /* Back.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A341FF0E14BADF00F36EA7 /* Back.gif */; };
-		66A342490E14BDDA00F36EA7 /* Bottom.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342000E14BADF00F36EA7 /* Bottom.gif */; };
-		66A3424A0E14BDDA00F36EA7 /* eye.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342010E14BADF00F36EA7 /* eye.gif */; };
-		66A3424B0E14BDDA00F36EA7 /* Front.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342020E14BADF00F36EA7 /* Front.gif */; };
-		66A3424C0E14BDDA00F36EA7 /* home.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342030E14BADF00F36EA7 /* home.gif */; };
-		66A3424D0E14BDDA00F36EA7 /* Left.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342040E14BADF00F36EA7 /* Left.gif */; };
-		66A3424E0E14BDDA00F36EA7 /* Right.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342050E14BADF00F36EA7 /* Right.gif */; };
-		66A3424F0E14BDDA00F36EA7 /* Top.gif in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342060E14BADF00F36EA7 /* Top.gif */; };
 		66A342590E14BE1200F36EA7 /* libqgif.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342120E14BC8A00F36EA7 /* libqgif.dylib */; };
 		66A3425A0E14BE1200F36EA7 /* libqjpeg.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342130E14BC8A00F36EA7 /* libqjpeg.dylib */; };
 		66A3425B0E14BE1200F36EA7 /* libqmng.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342140E14BC8A00F36EA7 /* libqmng.dylib */; };
@@ -1417,6 +1396,17 @@
 		66DCF9460DAD837A008E6F4A /* H5File.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DCF9440DAD837A008E6F4A /* H5File.h */; };
 		66DCF9490DAD83A2008E6F4A /* Dataset.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DCF9470DAD83A2008E6F4A /* Dataset.h */; };
 		66DCF94A0DAD83A2008E6F4A /* Dataset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DCF9480DAD83A2008E6F4A /* Dataset.cpp */; };
+		66E1A3710E1FF21D00D3E219 /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1A36F0E1FF21D00D3E219 /* Item.cpp */; };
+		66E1A3720E1FF21D00D3E219 /* Item.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E1A3700E1FF21D00D3E219 /* Item.h */; };
+		66E1A49A0E20354300D3E219 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1A4980E20354300D3E219 /* Image.cpp */; };
+		66E1A49B0E20354300D3E219 /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E1A4990E20354300D3E219 /* Image.h */; };
+		66E1A4D50E207CE200D3E219 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66E1A4D60E207CE200D3E219 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66E1A4D70E207CE200D3E219 /* osgViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 669BD29C0E0EF9DF00E598FF /* osgViewer.framework */; };
+		66E1A4D80E207CE200D3E219 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66E1A4D90E207CE200D3E219 /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
+		66E1A5150E207F9E00D3E219 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1A50E0E207F2A00D3E219 /* Main.cpp */; };
+		66E1A5160E207FA500D3E219 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1A4FC0E207CFB00D3E219 /* Main.cpp */; };
 		66E1D7220D8C375D00732EE0 /* Atmosphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E1D7200D8C375D00732EE0 /* Atmosphere.h */; };
 		66E1D7230D8C375D00732EE0 /* Atmosphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1D7210D8C375D00732EE0 /* Atmosphere.cpp */; };
 		66E1D98B0D8DC26600732EE0 /* SkyDome.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1D9890D8DC26600732EE0 /* SkyDome.cpp */; };
@@ -1610,6 +1600,20 @@
 		66F523F50E0D7F3B001D0057 /* H5File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DCF9430DAD837A008E6F4A /* H5File.cpp */; };
 		66F523F60E0D7F3B001D0057 /* Timestep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C5A6A40DB524DA0029ABDF /* Timestep.cpp */; };
 		66F523F70E0D7F45001D0057 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		66FA872D0E22C5950059B2E5 /* Back.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87260E22C57D0059B2E5 /* Back.png */; };
+		66FA872E0E22C5950059B2E5 /* Bottom.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87270E22C57D0059B2E5 /* Bottom.png */; };
+		66FA872F0E22C5950059B2E5 /* Front.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87280E22C57D0059B2E5 /* Front.png */; };
+		66FA87300E22C5950059B2E5 /* home.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87290E22C57D0059B2E5 /* home.png */; };
+		66FA87310E22C5950059B2E5 /* Left.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA872A0E22C57D0059B2E5 /* Left.png */; };
+		66FA87320E22C5950059B2E5 /* Right.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA872B0E22C57D0059B2E5 /* Right.png */; };
+		66FA87330E22C5950059B2E5 /* Top.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA872C0E22C57D0059B2E5 /* Top.png */; };
+		66FA87340E22C5A00059B2E5 /* Back.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66FA87260E22C57D0059B2E5 /* Back.png */; };
+		66FA87350E22C5A00059B2E5 /* Bottom.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66FA87270E22C57D0059B2E5 /* Bottom.png */; };
+		66FA87360E22C5A00059B2E5 /* Front.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66FA87280E22C57D0059B2E5 /* Front.png */; };
+		66FA87370E22C5A00059B2E5 /* home.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66FA87290E22C57D0059B2E5 /* home.png */; };
+		66FA87380E22C5A00059B2E5 /* Left.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66FA872A0E22C57D0059B2E5 /* Left.png */; };
+		66FA87390E22C5A00059B2E5 /* Right.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66FA872B0E22C57D0059B2E5 /* Right.png */; };
+		66FA873A0E22C5A00059B2E5 /* Top.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 66FA872C0E22C57D0059B2E5 /* Top.png */; };
 		66FF45360D10FF57003A0AC1 /* RootImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66FF451C0D10FF57003A0AC1 /* RootImpl.cpp */; };
 		66FF45370D10FF57003A0AC1 /* RootImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FF451D0D10FF57003A0AC1 /* RootImpl.h */; };
 		66FF45380D10FF57003A0AC1 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66FF451E0D10FF57003A0AC1 /* Document.cpp */; };
@@ -2697,6 +2701,34 @@
 			remoteGlobalIDString = 431BAD5B09245A4600ED2131;
 			remoteInfo = OsgTools;
 		};
+		66E1A3870E1FF4B400D3E219 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		66E1A3890E1FF4B800D3E219 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 431BAD5B09245A4600ED2131;
+			remoteInfo = OsgTools;
+		};
+		66E1A4CE0E207CE200D3E219 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 431BAD5B09245A4600ED2131;
+			remoteInfo = OsgTools;
+		};
+		66E1A4D00E207CE200D3E219 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
 		66E5AC7B0E11D72A0089769F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -2963,15 +2995,14 @@
 			dstPath = icons;
 			dstSubfolderSpec = 7;
 			files = (
+				66FA872D0E22C5950059B2E5 /* Back.png in Copy Icons */,
+				66FA872E0E22C5950059B2E5 /* Bottom.png in Copy Icons */,
+				66FA872F0E22C5950059B2E5 /* Front.png in Copy Icons */,
+				66FA87300E22C5950059B2E5 /* home.png in Copy Icons */,
+				66FA87310E22C5950059B2E5 /* Left.png in Copy Icons */,
+				66FA87320E22C5950059B2E5 /* Right.png in Copy Icons */,
+				66FA87330E22C5950059B2E5 /* Top.png in Copy Icons */,
 				66A342690E14BEB800F36EA7 /* eye.png in Copy Icons */,
-				66A342480E14BDDA00F36EA7 /* Back.gif in Copy Icons */,
-				66A342490E14BDDA00F36EA7 /* Bottom.gif in Copy Icons */,
-				66A3424A0E14BDDA00F36EA7 /* eye.gif in Copy Icons */,
-				66A3424B0E14BDDA00F36EA7 /* Front.gif in Copy Icons */,
-				66A3424C0E14BDDA00F36EA7 /* home.gif in Copy Icons */,
-				66A3424D0E14BDDA00F36EA7 /* Left.gif in Copy Icons */,
-				66A3424E0E14BDDA00F36EA7 /* Right.gif in Copy Icons */,
-				66A3424F0E14BDDA00F36EA7 /* Top.gif in Copy Icons */,
 				66B7C62D0DC995A80071939F /* animation_control_play_backward.png in Copy Icons */,
 				66B7C62E0DC995A80071939F /* animation_control_play_forward.png in Copy Icons */,
 				66B7C62F0DC995A80071939F /* animation_control_step_backward.png in Copy Icons */,
@@ -3184,14 +3215,13 @@
 			dstPath = icons;
 			dstSubfolderSpec = 7;
 			files = (
-				66A342070E14BB2000F36EA7 /* Back.gif in Copy Files Icons */,
-				66A342080E14BB2000F36EA7 /* Bottom.gif in Copy Files Icons */,
-				66A342090E14BB2000F36EA7 /* eye.gif in Copy Files Icons */,
-				66A3420A0E14BB2000F36EA7 /* Front.gif in Copy Files Icons */,
-				66A3420B0E14BB2000F36EA7 /* home.gif in Copy Files Icons */,
-				66A3420C0E14BB2000F36EA7 /* Left.gif in Copy Files Icons */,
-				66A3420D0E14BB2000F36EA7 /* Right.gif in Copy Files Icons */,
-				66A3420E0E14BB2000F36EA7 /* Top.gif in Copy Files Icons */,
+				66FA87340E22C5A00059B2E5 /* Back.png in Copy Files Icons */,
+				66FA87350E22C5A00059B2E5 /* Bottom.png in Copy Files Icons */,
+				66FA87360E22C5A00059B2E5 /* Front.png in Copy Files Icons */,
+				66FA87370E22C5A00059B2E5 /* home.png in Copy Files Icons */,
+				66FA87380E22C5A00059B2E5 /* Left.png in Copy Files Icons */,
+				66FA87390E22C5A00059B2E5 /* Right.png in Copy Files Icons */,
+				66FA873A0E22C5A00059B2E5 /* Top.png in Copy Files Icons */,
 				6603BD3F0DCBC6CD00FE0D89 /* newDocument.png in Copy Files Icons */,
 				6603BD400DCBC6CD00FE0D89 /* openDocument.png in Copy Files Icons */,
 				6603BD410DCBC6CD00FE0D89 /* saveDocument.png in Copy Files Icons */,
@@ -3811,28 +3841,11 @@
 		661B8ADF0E1ECB41005FC8CA /* Point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Point.h; sourceTree = "<group>"; };
 		661B8AE00E1ECB41005FC8CA /* Polygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Polygon.cpp; sourceTree = "<group>"; };
 		661B8AE10E1ECB41005FC8CA /* Polygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Polygon.h; sourceTree = "<group>"; };
-		661B8BEF0E1F544B005FC8CA /* TestLegend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLegend.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		661B8BF10E1F544B005FC8CA /* TestLegend-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TestLegend-Info.plist"; sourceTree = "<group>"; };
-		661B8C070E1F5495005FC8CA /* Compass.sln */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Compass.sln; sourceTree = "<group>"; };
-		661B8C080E1F5495005FC8CA /* Compass.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Compass.vcproj; sourceTree = "<group>"; };
-		661B8C090E1F5495005FC8CA /* CompassEventHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompassEventHandler.cpp; sourceTree = "<group>"; };
-		661B8C0A0E1F5495005FC8CA /* CompassEventHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompassEventHandler.h; sourceTree = "<group>"; };
-		661B8C0B0E1F5495005FC8CA /* driver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = driver.cpp; sourceTree = "<group>"; };
-		661B8C0C0E1F5495005FC8CA /* terrain_coords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terrain_coords.h; sourceTree = "<group>"; };
-		661B8C0D0E1F5495005FC8CA /* terrain_normals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terrain_normals.h; sourceTree = "<group>"; };
-		661B8C0E0E1F5495005FC8CA /* terrain_texcoords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terrain_texcoords.h; sourceTree = "<group>"; };
-		661B8C100E1F5495005FC8CA /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
-		661B8C130E1F5495005FC8CA /* background.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = background.tga; sourceTree = "<group>"; };
-		661B8C140E1F5495005FC8CA /* bar.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = bar.tga; sourceTree = "<group>"; };
-		661B8C150E1F5495005FC8CA /* barborder.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = barborder.tga; sourceTree = "<group>"; };
-		661B8C160E1F5495005FC8CA /* border.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = border.tga; sourceTree = "<group>"; };
-		661B8C170E1F5495005FC8CA /* borderGroup.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = borderGroup.tga; sourceTree = "<group>"; };
+		661B8BEF0E1F544B005FC8CA /* TestLegend01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLegend01.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		661B8BF10E1F544B005FC8CA /* TestLegend-Info01.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "TestLegend-Info01.plist"; path = "TestLegend-Info.plist"; sourceTree = "<group>"; };
 		661B8C180E1F5495005FC8CA /* ProgressBar.sln */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ProgressBar.sln; sourceTree = "<group>"; };
 		661B8C1A0E1F5495005FC8CA /* driver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = driver.cpp; sourceTree = "<group>"; };
 		661B8C1B0E1F5495005FC8CA /* ProgressBar.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ProgressBar.vcproj; sourceTree = "<group>"; };
-		661B8C1C0E1F5495005FC8CA /* terrain_coords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terrain_coords.h; sourceTree = "<group>"; };
-		661B8C1D0E1F5495005FC8CA /* terrain_normals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terrain_normals.h; sourceTree = "<group>"; };
-		661B8C1E0E1F5495005FC8CA /* terrain_texcoords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = terrain_texcoords.h; sourceTree = "<group>"; };
 		661B8C200E1F5495005FC8CA /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		661B8C210E1F5495005FC8CA /* Test02.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Test02.vcproj; sourceTree = "<group>"; };
 		661B8C220E1F5495005FC8CA /* TestJob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestJob.cpp; sourceTree = "<group>"; };
@@ -3861,6 +3874,8 @@
 		6625689D0DCB8F91001E94FB /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = ../../../Library/Frameworks/QtCore.framework; sourceTree = SOURCE_ROOT; };
 		6625689E0DCB8F91001E94FB /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = ../../../Library/Frameworks/QtGui.framework; sourceTree = SOURCE_ROOT; };
 		6625689F0DCB8F91001E94FB /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = ../../../Library/Frameworks/QtOpenGL.framework; sourceTree = SOURCE_ROOT; };
+		662638A30E2677A700442B4D /* Download.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Download.cpp; sourceTree = "<group>"; };
+		662638A40E2677A700442B4D /* Download.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Download.h; sourceTree = "<group>"; };
 		662674D40DD2C71900BE8C5D /* TimePrimitive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimePrimitive.h; sourceTree = "<group>"; };
 		662674D50DD2C71900BE8C5D /* TimePrimitive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimePrimitive.cpp; sourceTree = "<group>"; };
 		662674D80DD2C76E00BE8C5D /* TimeSpan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeSpan.h; sourceTree = "<group>"; };
@@ -3956,8 +3971,6 @@
 		664B43500D54EE8C0080DF60 /* IRemoveLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRemoveLayer.h; sourceTree = "<group>"; };
 		664E33F40D89E22E006031B5 /* About.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = About.h; path = Qt/Commands/About.h; sourceTree = "<group>"; };
 		664E33F50D89E22E006031B5 /* About.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = About.cpp; path = Qt/Commands/About.cpp; sourceTree = "<group>"; };
-		666304620E030827004C2914 /* Download.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Download.cpp; sourceTree = "<group>"; };
-		666304630E030827004C2914 /* Download.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Download.h; sourceTree = "<group>"; };
 		666304640E030827004C2914 /* LoadModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LoadModel.cpp; sourceTree = "<group>"; };
 		666304650E030827004C2914 /* LoadModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadModel.h; sourceTree = "<group>"; };
 		666304920E030DC1004C2914 /* Collada14Dom.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Collada14Dom.framework; path = ../../../Library/Frameworks/Collada14Dom.framework; sourceTree = SOURCE_ROOT; };
@@ -4567,20 +4580,16 @@
 		669BD3FC0E0F740A00E598FF /* _PathAnimation.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = _PathAnimation.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GradientIcon.cpp; sourceTree = "<group>"; };
 		669C28CC0D57E51900A5D1D3 /* GradientIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientIcon.h; sourceTree = "<group>"; };
-		669C28CD0D57E51900A5D1D3 /* Icon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Icon.cpp; sourceTree = "<group>"; };
-		669C28CE0D57E51900A5D1D3 /* Icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Icon.h; sourceTree = "<group>"; };
 		669C28CF0D57E51900A5D1D3 /* Legend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Legend.cpp; sourceTree = "<group>"; };
 		669C28D00D57E51900A5D1D3 /* Legend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Legend.h; sourceTree = "<group>"; };
 		669C28D10D57E51900A5D1D3 /* LegendObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LegendObject.cpp; sourceTree = "<group>"; };
 		669C28D20D57E51900A5D1D3 /* LegendObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegendObject.h; sourceTree = "<group>"; };
 		669C28D30D57E51900A5D1D3 /* LineFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineFunctor.h; sourceTree = "<group>"; };
 		669C28D40D57E51900A5D1D3 /* QuadFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadFunctor.h; sourceTree = "<group>"; };
-		669C28D50D57E51900A5D1D3 /* SolidIcon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SolidIcon.cpp; sourceTree = "<group>"; };
 		669C28D60D57E51900A5D1D3 /* SolidIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SolidIcon.h; sourceTree = "<group>"; };
 		669C28D70D57E51900A5D1D3 /* SphereFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SphereFunctor.h; sourceTree = "<group>"; };
 		669C28D80D57E51900A5D1D3 /* Text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Text.cpp; sourceTree = "<group>"; };
 		669C28D90D57E51900A5D1D3 /* Text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Text.h; sourceTree = "<group>"; };
-		669C28E90D57E52400A5D1D3 /* ConeFunctor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConeFunctor.h; sourceTree = "<group>"; };
 		669F23990DBC14D400EC89B0 /* IconStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IconStyle.cpp; sourceTree = "<group>"; };
 		669F239A0DBC14D400EC89B0 /* IconStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconStyle.h; sourceTree = "<group>"; };
 		669F239B0DBC14D400EC89B0 /* LineStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineStyle.cpp; sourceTree = "<group>"; };
@@ -4662,14 +4671,6 @@
 		66A1E45A0D4E9582002DA987 /* DoNothingPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoNothingPolicy.h; sourceTree = "<group>"; };
 		66A1E45B0D4E9582002DA987 /* WeakPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeakPointer.h; sourceTree = "<group>"; };
 		66A3412A0E14A27700F36EA7 /* IToolBarAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IToolBarAdd.h; path = IToolbarAdd.h; sourceTree = "<group>"; };
-		66A341FF0E14BADF00F36EA7 /* Back.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Back.gif; path = Images/Back.gif; sourceTree = "<group>"; };
-		66A342000E14BADF00F36EA7 /* Bottom.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Bottom.gif; path = Images/Bottom.gif; sourceTree = "<group>"; };
-		66A342010E14BADF00F36EA7 /* eye.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = eye.gif; path = Images/eye.gif; sourceTree = "<group>"; };
-		66A342020E14BADF00F36EA7 /* Front.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Front.gif; path = Images/Front.gif; sourceTree = "<group>"; };
-		66A342030E14BADF00F36EA7 /* home.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = home.gif; path = Images/home.gif; sourceTree = "<group>"; };
-		66A342040E14BADF00F36EA7 /* Left.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Left.gif; path = Images/Left.gif; sourceTree = "<group>"; };
-		66A342050E14BADF00F36EA7 /* Right.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Right.gif; path = Images/Right.gif; sourceTree = "<group>"; };
-		66A342060E14BADF00F36EA7 /* Top.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Top.gif; path = Images/Top.gif; sourceTree = "<group>"; };
 		66A342120E14BC8A00F36EA7 /* libqgif.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqgif.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqgif.dylib"; sourceTree = SOURCE_ROOT; };
 		66A342130E14BC8A00F36EA7 /* libqjpeg.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqjpeg.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqjpeg.dylib"; sourceTree = SOURCE_ROOT; };
 		66A342140E14BC8A00F36EA7 /* libqmng.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqmng.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqmng.dylib"; sourceTree = SOURCE_ROOT; };
@@ -4874,6 +4875,14 @@
 		66DCF9440DAD837A008E6F4A /* H5File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = H5File.h; path = ../Experimental/Flash/FlashModel/H5File.h; sourceTree = SOURCE_ROOT; };
 		66DCF9470DAD83A2008E6F4A /* Dataset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dataset.h; path = ../Experimental/Flash/FlashModel/Dataset.h; sourceTree = SOURCE_ROOT; };
 		66DCF9480DAD83A2008E6F4A /* Dataset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dataset.cpp; path = ../Experimental/Flash/FlashModel/Dataset.cpp; sourceTree = SOURCE_ROOT; };
+		66E1A36F0E1FF21D00D3E219 /* Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
+		66E1A3700E1FF21D00D3E219 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
+		66E1A4980E20354300D3E219 /* Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Image.cpp; sourceTree = "<group>"; };
+		66E1A4990E20354300D3E219 /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
+		66E1A4DD0E207CE200D3E219 /* TestLegend02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLegend02.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		66E1A4FA0E207CE300D3E219 /* TestLegend-Info02.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "TestLegend-Info02.plist"; path = "TestLegend-Info copy.plist"; sourceTree = "<group>"; };
+		66E1A4FC0E207CFB00D3E219 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		66E1A50E0E207F2A00D3E219 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		66E1D7200D8C375D00732EE0 /* Atmosphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Atmosphere.h; sourceTree = "<group>"; };
 		66E1D7210D8C375D00732EE0 /* Atmosphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Atmosphere.cpp; sourceTree = "<group>"; };
 		66E1D9890D8DC26600732EE0 /* SkyDome.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyDome.cpp; sourceTree = "<group>"; };
@@ -5033,6 +5042,13 @@
 		66F523C60E0D77FA001D0057 /* _FlashDocument.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = _FlashDocument.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		66F523CE0E0D793B001D0057 /* FlashDocument.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = FlashDocument.i; sourceTree = "<group>"; };
 		66F523DA0E0D7D1F001D0057 /* FlashDocument_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlashDocument_wrap.cpp; sourceTree = "<group>"; };
+		66FA87260E22C57D0059B2E5 /* Back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Back.png; path = Images/Back.png; sourceTree = "<group>"; };
+		66FA87270E22C57D0059B2E5 /* Bottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Bottom.png; path = Images/Bottom.png; sourceTree = "<group>"; };
+		66FA87280E22C57D0059B2E5 /* Front.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Front.png; path = Images/Front.png; sourceTree = "<group>"; };
+		66FA87290E22C57D0059B2E5 /* home.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = home.png; path = Images/home.png; sourceTree = "<group>"; };
+		66FA872A0E22C57D0059B2E5 /* Left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Left.png; path = Images/Left.png; sourceTree = "<group>"; };
+		66FA872B0E22C57D0059B2E5 /* Right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Right.png; path = Images/Right.png; sourceTree = "<group>"; };
+		66FA872C0E22C57D0059B2E5 /* Top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Top.png; path = Images/Top.png; sourceTree = "<group>"; };
 		66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libXmlTree.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66FF451C0D10FF57003A0AC1 /* RootImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RootImpl.cpp; sourceTree = "<group>"; };
 		66FF451D0D10FF57003A0AC1 /* RootImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootImpl.h; sourceTree = "<group>"; };
@@ -5650,6 +5666,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66E1A4D40E207CE200D3E219 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66E1A4D50E207CE200D3E219 /* libOsgTools.dylib in Frameworks */,
+				66E1A4D60E207CE200D3E219 /* libUsul.dylib in Frameworks */,
+				66E1A4D70E207CE200D3E219 /* osgViewer.framework in Frameworks */,
+				66E1A4D80E207CE200D3E219 /* osg.framework in Frameworks */,
+				66E1A4D90E207CE200D3E219 /* OpenThreads.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66EF05AA0D143DF100B4B1AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -5806,7 +5834,8 @@
 				668E0CB60D40221E0030649B /* WRF */,
 				43887E750945DA6B00B519D0 /* X-Window */,
 				66FF45180D10FF18003A0AC1 /* XmlTree */,
-				661B8BF10E1F544B005FC8CA /* TestLegend-Info.plist */,
+				661B8BF10E1F544B005FC8CA /* TestLegend-Info01.plist */,
+				66E1A4FA0E207CE300D3E219 /* TestLegend-Info02.plist */,
 			);
 			name = Helios;
 			sourceTree = "<group>";
@@ -6355,7 +6384,6 @@
 				431BAD8A09245AB600ED2131 /* Box.h */,
 				6673DD280BC5F2F800C0131F /* GradientBackground.cpp */,
 				6673DD290BC5F2F800C0131F /* GradientBackground.h */,
-				6691517B0D52642A00C2BF8D /* Images */,
 				431BADCD09245AB700ED2131 /* Mesh.cpp */,
 				431BADCE09245AB700ED2131 /* Mesh.h */,
 				431BADD209245AB700ED2131 /* Ray.cpp */,
@@ -6677,7 +6705,8 @@
 				669BD2C60E0EFCB400E598FF /* _OsgTools.so */,
 				669BD3FC0E0F740A00E598FF /* _PathAnimation.so */,
 				66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayerd.dylib */,
-				661B8BEF0E1F544B005FC8CA /* TestLegend.app */,
+				661B8BEF0E1F544B005FC8CA /* TestLegend01.app */,
+				66E1A4DD0E207CE200D3E219 /* TestLegend02.app */,
 			);
 			name = "Cadkit Libraries";
 			sourceTree = "<group>";
@@ -7372,14 +7401,6 @@
 		661B8C060E1F5495005FC8CA /* Compass */ = {
 			isa = PBXGroup;
 			children = (
-				661B8C070E1F5495005FC8CA /* Compass.sln */,
-				661B8C080E1F5495005FC8CA /* Compass.vcproj */,
-				661B8C090E1F5495005FC8CA /* CompassEventHandler.cpp */,
-				661B8C0A0E1F5495005FC8CA /* CompassEventHandler.h */,
-				661B8C0B0E1F5495005FC8CA /* driver.cpp */,
-				661B8C0C0E1F5495005FC8CA /* terrain_coords.h */,
-				661B8C0D0E1F5495005FC8CA /* terrain_normals.h */,
-				661B8C0E0E1F5495005FC8CA /* terrain_texcoords.h */,
 			);
 			path = Compass;
 			sourceTree = "<group>";
@@ -7387,7 +7408,8 @@
 		661B8C0F0E1F5495005FC8CA /* Legend */ = {
 			isa = PBXGroup;
 			children = (
-				661B8C100E1F5495005FC8CA /* Main.cpp */,
+				66E1A50D0E207F2A00D3E219 /* Test01 */,
+				66E1A4FB0E207CFB00D3E219 /* Test02 */,
 			);
 			path = Legend;
 			sourceTree = "<group>";
@@ -7406,11 +7428,6 @@
 		661B8C120E1F5495005FC8CA /* icons */ = {
 			isa = PBXGroup;
 			children = (
-				661B8C130E1F5495005FC8CA /* background.tga */,
-				661B8C140E1F5495005FC8CA /* bar.tga */,
-				661B8C150E1F5495005FC8CA /* barborder.tga */,
-				661B8C160E1F5495005FC8CA /* border.tga */,
-				661B8C170E1F5495005FC8CA /* borderGroup.tga */,
 			);
 			path = icons;
 			sourceTree = "<group>";
@@ -7420,9 +7437,6 @@
 			children = (
 				661B8C1A0E1F5495005FC8CA /* driver.cpp */,
 				661B8C1B0E1F5495005FC8CA /* ProgressBar.vcproj */,
-				661B8C1C0E1F5495005FC8CA /* terrain_coords.h */,
-				661B8C1D0E1F5495005FC8CA /* terrain_normals.h */,
-				661B8C1E0E1F5495005FC8CA /* terrain_texcoords.h */,
 			);
 			path = Test01;
 			sourceTree = "<group>";
@@ -7546,6 +7560,8 @@
 		66481B550E01935600DD75A2 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				66481B560E01935600DD75A2 /* DataObject.cpp */,
+				66481B570E01935600DD75A2 /* DataObject.h */,
 				661B8AD60E1ECB41005FC8CA /* Geometry.cpp */,
 				661B8AD70E1ECB41005FC8CA /* Geometry.h */,
 				661B8AD80E1ECB41005FC8CA /* Line.cpp */,
@@ -7558,11 +7574,9 @@
 				661B8ADF0E1ECB41005FC8CA /* Point.h */,
 				661B8AE00E1ECB41005FC8CA /* Polygon.cpp */,
 				661B8AE10E1ECB41005FC8CA /* Polygon.h */,
-				66481B560E01935600DD75A2 /* DataObject.cpp */,
-				66481B570E01935600DD75A2 /* DataObject.h */,
-				66481B580E01935600DD75A2 /* UserData.h */,
-				669273950E0B1F4900E35E8B /* Transform.h */,
 				669273960E0B1F4900E35E8B /* Transform.cpp */,
+				669273950E0B1F4900E35E8B /* Transform.h */,
+				66481B580E01935600DD75A2 /* UserData.h */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -7725,15 +7739,14 @@
 		6667669F0D124CEF002F40C6 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				66FA87260E22C57D0059B2E5 /* Back.png */,
+				66FA87270E22C57D0059B2E5 /* Bottom.png */,
+				66FA87280E22C57D0059B2E5 /* Front.png */,
+				66FA87290E22C57D0059B2E5 /* home.png */,
+				66FA872A0E22C57D0059B2E5 /* Left.png */,
+				66FA872B0E22C57D0059B2E5 /* Right.png */,
+				66FA872C0E22C57D0059B2E5 /* Top.png */,
 				66A342680E14BEAF00F36EA7 /* eye.png */,
-				66A341FF0E14BADF00F36EA7 /* Back.gif */,
-				66A342000E14BADF00F36EA7 /* Bottom.gif */,
-				66A342010E14BADF00F36EA7 /* eye.gif */,
-				66A342020E14BADF00F36EA7 /* Front.gif */,
-				66A342030E14BADF00F36EA7 /* home.gif */,
-				66A342040E14BADF00F36EA7 /* Left.gif */,
-				66A342050E14BADF00F36EA7 /* Right.gif */,
-				66A342060E14BADF00F36EA7 /* Top.gif */,
 				666766A20D124D2C002F40C6 /* helios_sun.png */,
 				666766A30D124D2C002F40C6 /* newDocument.png */,
 				666766A40D124D2C002F40C6 /* openDocument.png */,
@@ -7952,6 +7965,8 @@
 				668DB5AE0D78A74E00EA4DCD /* Compass.h */,
 				668DB5B00D78A74E00EA4DCD /* DirtyTiles.cpp */,
 				668DB5B10D78A74E00EA4DCD /* DirtyTiles.h */,
+				662638A30E2677A700442B4D /* Download.cpp */,
+				662638A40E2677A700442B4D /* Download.h */,
 				668DB5B20D78A74E00EA4DCD /* Hud.cpp */,
 				668DB5B30D78A74E00EA4DCD /* Hud.h */,
 				66E1D9890D8DC26600732EE0 /* SkyDome.cpp */,
@@ -8035,45 +8050,36 @@
 		668E0DDD0D4063AB0030649B /* Kml */ = {
 			isa = PBXGroup;
 			children = (
-				666304620E030827004C2914 /* Download.cpp */,
-				666304630E030827004C2914 /* Download.h */,
-				666304640E030827004C2914 /* LoadModel.cpp */,
-				666304650E030827004C2914 /* LoadModel.h */,
-				669F23990DBC14D400EC89B0 /* IconStyle.cpp */,
-				669F239A0DBC14D400EC89B0 /* IconStyle.h */,
-				669F239B0DBC14D400EC89B0 /* LineStyle.cpp */,
-				669F239C0DBC14D400EC89B0 /* LineStyle.h */,
 				66C5A6C10DB57A2E0029ABDF /* ColorStyle.cpp */,
 				66C5A6C20DB57A2E0029ABDF /* ColorStyle.h */,
+				661B8AD10E1EB4B7005FC8CA /* Factory.cpp */,
+				661B8AD00E1EB4B7005FC8CA /* Factory.h */,
+				66CA7A390D552790004909C6 /* Feature.cpp */,
+				66CA7A380D552790004909C6 /* Feature.h */,
+				669F23990DBC14D400EC89B0 /* IconStyle.cpp */,
+				669F239A0DBC14D400EC89B0 /* IconStyle.h */,
+				668E0DE60D406F400030649B /* KmlLayer.cpp */,
+				668E0DE70D406F400030649B /* KmlLayer.h */,
+				669F239B0DBC14D400EC89B0 /* LineStyle.cpp */,
+				669F239C0DBC14D400EC89B0 /* LineStyle.h */,
+				66B0F3180D4C51510045BC40 /* Link.cpp */,
+				66B0F3170D4C51510045BC40 /* Link.h */,
+				666304640E030827004C2914 /* LoadModel.cpp */,
+				666304650E030827004C2914 /* LoadModel.h */,
+				66AFF3110D6E96200062CDB9 /* LookAt.cpp */,
+				66AFF3100D6E96200062CDB9 /* LookAt.h */,
+				66B0F31C0D4C515F0045BC40 /* NetworkLink.cpp */,
+				66B0F31B0D4C515F0045BC40 /* NetworkLink.h */,
 				66C5A6C30DB57A2E0029ABDF /* PolyStyle.cpp */,
 				66C5A6C40DB57A2E0029ABDF /* PolyStyle.h */,
 				66C5A6C50DB57A2E0029ABDF /* Style.cpp */,
 				66C5A6C60DB57A2E0029ABDF /* Style.h */,
-				66CA7A390D552790004909C6 /* Feature.cpp */,
-				66CA7A380D552790004909C6 /* Feature.h */,
-				668E0DE60D406F400030649B /* KmlLayer.cpp */,
-				668E0DE70D406F400030649B /* KmlLayer.h */,
-				66B0F3180D4C51510045BC40 /* Link.cpp */,
-				66B0F3170D4C51510045BC40 /* Link.h */,
-				66B0F31C0D4C515F0045BC40 /* NetworkLink.cpp */,
-				66B0F31B0D4C515F0045BC40 /* NetworkLink.h */,
-				66AFF3100D6E96200062CDB9 /* LookAt.h */,
-				66AFF3110D6E96200062CDB9 /* LookAt.cpp */,
-				662674D40DD2C71900BE8C5D /* TimePrimitive.h */,
 				662674D50DD2C71900BE8C5D /* TimePrimitive.cpp */,
-				662674D80DD2C76E00BE8C5D /* TimeSpan.h */,
+				662674D40DD2C71900BE8C5D /* TimePrimitive.h */,
 				662674D90DD2C76E00BE8C5D /* TimeSpan.cpp */,
-				661B8AD00E1EB4B7005FC8CA /* Factory.h */,
-				661B8AD10E1EB4B7005FC8CA /* Factory.cpp */,
+				662674D80DD2C76E00BE8C5D /* TimeSpan.h */,
 			);
 			path = Kml;
-			sourceTree = "<group>";
-		};
-		6691517B0D52642A00C2BF8D /* Images */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Images;
 			sourceTree = "<group>";
 		};
 		669271310E0AD36F00E35E8B /* ModelPresentation */ = {
@@ -8546,20 +8552,20 @@
 			children = (
 				669C28CB0D57E51900A5D1D3 /* GradientIcon.cpp */,
 				669C28CC0D57E51900A5D1D3 /* GradientIcon.h */,
-				669C28CD0D57E51900A5D1D3 /* Icon.cpp */,
-				669C28CE0D57E51900A5D1D3 /* Icon.h */,
+				66E1A4980E20354300D3E219 /* Image.cpp */,
+				66E1A4990E20354300D3E219 /* Image.h */,
+				66E1A36F0E1FF21D00D3E219 /* Item.cpp */,
+				66E1A3700E1FF21D00D3E219 /* Item.h */,
 				669C28CF0D57E51900A5D1D3 /* Legend.cpp */,
 				669C28D00D57E51900A5D1D3 /* Legend.h */,
 				669C28D10D57E51900A5D1D3 /* LegendObject.cpp */,
 				669C28D20D57E51900A5D1D3 /* LegendObject.h */,
 				669C28D30D57E51900A5D1D3 /* LineFunctor.h */,
 				669C28D40D57E51900A5D1D3 /* QuadFunctor.h */,
-				669C28D50D57E51900A5D1D3 /* SolidIcon.cpp */,
 				669C28D60D57E51900A5D1D3 /* SolidIcon.h */,
 				669C28D70D57E51900A5D1D3 /* SphereFunctor.h */,
 				669C28D80D57E51900A5D1D3 /* Text.cpp */,
 				669C28D90D57E51900A5D1D3 /* Text.h */,
-				669C28E90D57E52400A5D1D3 /* ConeFunctor.h */,
 			);
 			path = Legend;
 			sourceTree = "<group>";
@@ -8939,6 +8945,22 @@
 			);
 			name = Commands;
 			path = ../Xcode;
+			sourceTree = "<group>";
+		};
+		66E1A4FB0E207CFB00D3E219 /* Test02 */ = {
+			isa = PBXGroup;
+			children = (
+				66E1A4FC0E207CFB00D3E219 /* Main.cpp */,
+			);
+			path = Test02;
+			sourceTree = "<group>";
+		};
+		66E1A50D0E207F2A00D3E219 /* Test01 */ = {
+			isa = PBXGroup;
+			children = (
+				66E1A50E0E207F2A00D3E219 /* Main.cpp */,
+			);
+			path = Test01;
 			sourceTree = "<group>";
 		};
 		66EF05B20D143ED400B4B1AA /* SnapShot */ = {
@@ -9344,7 +9366,6 @@
 				668E0DA50D4022F70030649B /* TransferFunction.h in Headers */,
 				668E0DA70D4022F70030649B /* TransferFunction1D.h in Headers */,
 				669C28DB0D57E51900A5D1D3 /* GradientIcon.h in Headers */,
-				669C28DD0D57E51900A5D1D3 /* Icon.h in Headers */,
 				669C28DF0D57E51900A5D1D3 /* Legend.h in Headers */,
 				669C28E10D57E51900A5D1D3 /* LegendObject.h in Headers */,
 				669C28E20D57E51900A5D1D3 /* LineFunctor.h in Headers */,
@@ -9352,11 +9373,12 @@
 				669C28E50D57E51900A5D1D3 /* SolidIcon.h in Headers */,
 				669C28E60D57E51900A5D1D3 /* SphereFunctor.h in Headers */,
 				669C28E80D57E51900A5D1D3 /* Text.h in Headers */,
-				669C28EA0D57E52400A5D1D3 /* ConeFunctor.h in Headers */,
 				66C5A5240DB3D9590029ABDF /* DeleteHandler.h in Headers */,
 				66C5A5260DB3D9590029ABDF /* TranslateGeometry.h in Headers */,
 				666309BB0E0442CF004C2914 /* ConvertToTriangles.h in Headers */,
 				669BD29B0E0EF99A00E598FF /* OffScreenRenderer.h in Headers */,
+				66E1A3720E1FF21D00D3E219 /* Item.h in Headers */,
+				66E1A49B0E20354300D3E219 /* Image.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -9941,12 +9963,12 @@
 				6636BB9B0DF6644F006937AD /* RasterLayerGDAL.h in Headers */,
 				66481B5A0E01935600DD75A2 /* DataObject.h in Headers */,
 				66481B5B0E01935600DD75A2 /* UserData.h in Headers */,
-				666304670E030827004C2914 /* Download.h in Headers */,
 				666304690E030827004C2914 /* LoadModel.h in Headers */,
 				66A1C5120E09B321001DB3F8 /* Composite.h in Headers */,
 				66A1C5130E09B321001DB3F8 /* Resample.h in Headers */,
 				66A1C5140E09B321001DB3F8 /* SubRegion.h in Headers */,
 				669273970E0B1F4900E35E8B /* Transform.h in Headers */,
+				662638A60E2677A700442B4D /* Download.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10230,9 +10252,9 @@
 			productReference = 66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayerd.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		661B8BEE0E1F544B005FC8CA /* TestLegend */ = {
+		661B8BEE0E1F544B005FC8CA /* TestLegend01 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 661B8BF40E1F544C005FC8CA /* Build configuration list for PBXNativeTarget "TestLegend" */;
+			buildConfigurationList = 661B8BF40E1F544C005FC8CA /* Build configuration list for PBXNativeTarget "TestLegend01" */;
 			buildPhases = (
 				661B8BEB0E1F544B005FC8CA /* Resources */,
 				661B8BEC0E1F544B005FC8CA /* Sources */,
@@ -10241,10 +10263,12 @@
 			buildRules = (
 			);
 			dependencies = (
+				66E1A38A0E1FF4B800D3E219 /* PBXTargetDependency */,
+				66E1A3880E1FF4B400D3E219 /* PBXTargetDependency */,
 			);
-			name = TestLegend;
+			name = TestLegend01;
 			productName = TestLegend;
-			productReference = 661B8BEF0E1F544B005FC8CA /* TestLegend.app */;
+			productReference = 661B8BEF0E1F544B005FC8CA /* TestLegend01.app */;
 			productType = "com.apple.product-type.application";
 		};
 		661C119B0DCA718E00DE43D4 /* GDALReadImage */ = {
@@ -10957,6 +10981,25 @@
 			productReference = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		66E1A4CC0E207CE200D3E219 /* TestLegend02 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66E1A4DA0E207CE200D3E219 /* Build configuration list for PBXNativeTarget "TestLegend02" */;
+			buildPhases = (
+				66E1A4D10E207CE200D3E219 /* Resources */,
+				66E1A4D20E207CE200D3E219 /* Sources */,
+				66E1A4D40E207CE200D3E219 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66E1A4CD0E207CE200D3E219 /* PBXTargetDependency */,
+				66E1A4CF0E207CE200D3E219 /* PBXTargetDependency */,
+			);
+			name = TestLegend02;
+			productName = TestLegend;
+			productReference = 66E1A4DD0E207CE200D3E219 /* TestLegend02.app */;
+			productType = "com.apple.product-type.application";
+		};
 		66EF05AB0D143DF100B4B1AA /* QtSnapShot */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66EF05AF0D143E2000B4B1AA /* Build configuration list for PBXNativeTarget "QtSnapShot" */;
@@ -11225,7 +11268,8 @@
 				431BB8E009246BD700ED2131 /* VolumeModel */,
 				668E0C910D4021F50030649B /* WRFModel */,
 				66FF450E0D10FED2003A0AC1 /* XmlTree */,
-				661B8BEE0E1F544B005FC8CA /* TestLegend */,
+				661B8BEE0E1F544B005FC8CA /* TestLegend01 */,
+				66E1A4CC0E207CE200D3E219 /* TestLegend02 */,
 			);
 		};
 /* End PBXProject section */
@@ -11290,6 +11334,13 @@
 			files = (
 				66C4E9910DAAE5C100A3B1FB /* MinervaQt-Info.plist in Resources */,
 				66C4E9240DAAE3E800A3B1FB /* Minerva.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66E1A4D10E207CE200D3E219 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11446,7 +11497,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\nif [ ${BUILD_STYLE} = \"Release\" ]; then\n\n\tcd  ${BUILT_PRODUCTS_DIR}/HeliosQtApp.app/Contents/Plugins\n\n\t# Change the install names in the .so\n\tinstall_name_tool -id @executable_path/../Plugins/libsz.2.0.0.dylib libsz.2.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5.0.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\t# Change the paths where the .so looks for it's dependencies.\n\tinstall_name_tool -change /Users/adam/sdk/szip-2.1/szip/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -change /Users/adam/sdk/szip-2.1/szip/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\tinstall_name_tool -change /Users/adam/sdk/hdf5-1.6.7/hdf5/lib/libhdf5.0.dylib @executable_path/../Plugins/libhdf5.0.0.0.dylib FlashModel.plug\n\tinstall_name_tool -change /Users/adam/sdk/hdf5-1.6.7/hdf5/lib/libhdf5_hl.0.dylib @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib FlashModel.plug\n\nfi\n";
+			shellScript = "\nif [ ${BUILD_STYLE} = \"Release\" ]; then\n\n\tcd  ${BUILT_PRODUCTS_DIR}/HeliosQtApp.app/Contents/Plugins\n\n\t# Change the install names in the .so\n\tinstall_name_tool -id @executable_path/../Plugins/libsz.2.0.0.dylib libsz.2.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5.0.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\t# Change the paths where the .so looks for it's dependencies.\n\tinstall_name_tool -change ${HOME}/sdk/szip-2.1/szip/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -change ${HOME}/sdk/szip-2.1/szip/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\tinstall_name_tool -change ${HOME}/sdk/hdf5-1.6.7/hdf5/lib/libhdf5.0.dylib @executable_path/../Plugins/libhdf5.0.0.0.dylib FlashModel.plug\n\tinstall_name_tool -change ${HOME}/sdk/hdf5-1.6.7/hdf5/lib/libhdf5_hl.0.dylib @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib FlashModel.plug\n\nfi\n";
 		};
 		66A119790D2EC115009B29ED /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11528,7 +11579,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\nif [ ${BUILD_STYLE} = \"Release\" ]; then\n\n\tcd  ${BUILT_PRODUCTS_DIR}/MinervaQt.app/Contents/Frameworks\n\n\tcp /usr/local/lib/libproj.0.dylib .\n\tcp /Users/adam/sdk/3rdParty/lib/libpq.5.dylib .\n\n\tinstall_name_tool -id @executable_path/../Frameworks/libproj.0.dylib libproj.0.dylib\n\tinstall_name_tool -id @executable_path/../Frameworks/libpq.5.dylib libpq.5.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libproj.0.dylib @executable_path/../Frameworks/libproj.0.dylib GDAL.framework/Versions/1.5/GDAL\n\tinstall_name_tool -change /Users/adam/sdk/3rdParty/lib/libpq.5.dylib @executable_path/../Frameworks/libpq.5.dylib GDAL.framework/Versions/1.5/GDAL\n\n\tcd  ${BUILT_PRODUCTS_DIR}/MinervaQt.app/Contents/Plugins\n\n\tinstall_name_tool -id @executable_path/../Plugins/libpqxx-2.6.9.dylib libpqxx-2.6.9.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libpq.5.0.dylib libpq.5.0.dylib\n\n\tinstall_name_tool -change /Users/adam/sdk/3rdParty/lib/libpq.5.dylib @executable_path/../Plugins/libpq.5.0.dylib libpqxx-2.6.9.dylib\n\n\tinstall_name_tool -change /Users/adam/sdk/3rdParty/lib/libpqxx-2.6.9.dylib @executable_path/../Plugins/libpqxx-2.6.9.dylib libMinervaDocument.dylib\n\n\tinstall_name_tool -change /Users/adam/sdk/3rdParty/lib/libpqxx-2.6.9.dylib @executable_path/../Plugins/libpqxx-2.6.9.dylib libMinervaPostgres.dylib\n\tinstall_name_tool -change /Users/adam/sdk/3rdParty/lib/libpq.5.dylib @executable_path/../Plugins/libpq.5.0.dylib libMinervaPostgres.dylib\n\nfi\n";
+			shellScript = "#source ${HOME}/.cshrc\n\nif [ ${BUILD_STYLE} = \"Release\" ]; then\n\n\tcd  ${BUILT_PRODUCTS_DIR}/MinervaQt.app/Contents/Frameworks\n\n\tcp /usr/local/lib/libproj.0.dylib .\n\tcp ${HOME}/sdk/3rdParty/lib/libpq.5.dylib .\n\n\tinstall_name_tool -id @executable_path/../Frameworks/libproj.0.dylib libproj.0.dylib\n\tinstall_name_tool -id @executable_path/../Frameworks/libpq.5.dylib libpq.5.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libproj.0.dylib @executable_path/../Frameworks/libproj.0.dylib GDAL.framework/Versions/1.5/GDAL\n\tinstall_name_tool -change ${HOME}/sdk/3rdParty/lib/libpq.5.dylib @executable_path/../Frameworks/libpq.5.dylib GDAL.framework/Versions/1.5/GDAL\n\n\tcd  ${BUILT_PRODUCTS_DIR}/MinervaQt.app/Contents/Plugins\n\n\tinstall_name_tool -id @executable_path/../Plugins/libpqxx-2.6.9.dylib libpqxx-2.6.9.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libpq.5.0.dylib libpq.5.0.dylib\n\n\tinstall_name_tool -change ${HOME}/sdk/3rdParty/lib/libpq.5.dylib @executable_path/../Plugins/libpq.5.0.dylib libpqxx-2.6.9.dylib\n\n\tinstall_name_tool -change ${HOME}/sdk/3rdParty/lib/libpqxx-2.6.9.dylib @executable_path/../Plugins/libpqxx-2.6.9.dylib libMinervaDocument.dylib\n\n\tinstall_name_tool -change ${HOME}/sdk/3rdParty/lib/libpqxx-2.6.9.dylib @executable_path/../Plugins/libpqxx-2.6.9.dylib libMinervaPostgres.dylib\n\tinstall_name_tool -change ${HOME}/sdk/3rdParty/lib/libpq.5.dylib @executable_path/../Plugins/libpq.5.0.dylib libMinervaPostgres.dylib\n\nfi\n";
 		};
 		66EF05D10D143F8000B4B1AA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11694,15 +11745,15 @@
 				668E0DA40D4022F70030649B /* TransferFunction.cpp in Sources */,
 				668E0DA60D4022F70030649B /* TransferFunction1D.cpp in Sources */,
 				669C28DA0D57E51900A5D1D3 /* GradientIcon.cpp in Sources */,
-				669C28DC0D57E51900A5D1D3 /* Icon.cpp in Sources */,
 				669C28DE0D57E51900A5D1D3 /* Legend.cpp in Sources */,
 				669C28E00D57E51900A5D1D3 /* LegendObject.cpp in Sources */,
-				669C28E40D57E51900A5D1D3 /* SolidIcon.cpp in Sources */,
 				669C28E70D57E51900A5D1D3 /* Text.cpp in Sources */,
 				66C5A5230DB3D9590029ABDF /* DeleteHandler.cpp in Sources */,
 				66C5A5250DB3D9590029ABDF /* TranslateGeometry.cpp in Sources */,
 				666309BC0E0442CF004C2914 /* ConvertToTriangles.cpp in Sources */,
 				669BD29A0E0EF99A00E598FF /* OffScreenRenderer.cpp in Sources */,
+				66E1A3710E1FF21D00D3E219 /* Item.cpp in Sources */,
+				66E1A49A0E20354300D3E219 /* Image.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11918,7 +11969,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				661B8C370E1F54A1005FC8CA /* Main.cpp in Sources */,
+				66E1A5150E207F9E00D3E219 /* Main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12090,7 +12141,6 @@
 				669F239F0DBC14D400EC89B0 /* LineStyle.cpp in Sources */,
 				662674D70DD2C71900BE8C5D /* TimePrimitive.cpp in Sources */,
 				662674DB0DD2C76E00BE8C5D /* TimeSpan.cpp in Sources */,
-				666304990E030E87004C2914 /* Download.cpp in Sources */,
 				6663049A0E030E90004C2914 /* LoadModel.cpp in Sources */,
 				661B8AD30E1EB4B7005FC8CA /* Factory.cpp in Sources */,
 			);
@@ -12343,6 +12393,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66E1A4D20E207CE200D3E219 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66E1A5160E207FA500D3E219 /* Main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66EF05A90D143DF100B4B1AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -12450,6 +12508,7 @@
 				661B8AF80E1ED884005FC8CA /* Object.cpp in Sources */,
 				661B8AF90E1ED88B005FC8CA /* Point.cpp in Sources */,
 				661B8AFA0E1ED892005FC8CA /* Polygon.cpp in Sources */,
+				662638A50E2677A700442B4D /* Download.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13278,6 +13337,26 @@
 			isa = PBXTargetDependency;
 			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
 			targetProxy = 66DCF8A80DAD5C00008E6F4A /* PBXContainerItemProxy */;
+		};
+		66E1A3880E1FF4B400D3E219 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66E1A3870E1FF4B400D3E219 /* PBXContainerItemProxy */;
+		};
+		66E1A38A0E1FF4B800D3E219 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			targetProxy = 66E1A3890E1FF4B800D3E219 /* PBXContainerItemProxy */;
+		};
+		66E1A4CD0E207CE200D3E219 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			targetProxy = 66E1A4CE0E207CE200D3E219 /* PBXContainerItemProxy */;
+		};
+		66E1A4CF0E207CE200D3E219 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66E1A4D00E207CE200D3E219 /* PBXContainerItemProxy */;
 		};
 		66E5AC7C0E11D72A0089769F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -14244,14 +14323,14 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				INFOPLIST_FILE = "TestLegend-Info.plist";
+				INFOPLIST_FILE = "TestLegend-Info01.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = TestLegend;
+				PRODUCT_NAME = TestLegend01;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -14271,14 +14350,14 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				INFOPLIST_FILE = "TestLegend-Info.plist";
+				INFOPLIST_FILE = "TestLegend-Info01.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = TestLegend;
+				PRODUCT_NAME = TestLegend01;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
@@ -16198,6 +16277,61 @@
 			};
 			name = Release;
 		};
+		66E1A4DB0E207CE200D3E219 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/TestLegend-Info02.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = TestLegend02;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66E1A4DC0E207CE200D3E219 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/TestLegend-Info02.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Carbon,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = TestLegend02;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		66EF05AD0D143DF100B4B1AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -16920,7 +17054,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		661B8BF40E1F544C005FC8CA /* Build configuration list for PBXNativeTarget "TestLegend" */ = {
+		661B8BF40E1F544C005FC8CA /* Build configuration list for PBXNativeTarget "TestLegend01" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				661B8BF20E1F544C005FC8CA /* Debug */,
@@ -17240,6 +17374,15 @@
 			buildConfigurations = (
 				66C8FE760D12084C003F6A58 /* Debug */,
 				66C8FE770D12084C003F6A58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66E1A4DA0E207CE200D3E219 /* Build configuration list for PBXNativeTarget "TestLegend02" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66E1A4DB0E207CE200D3E219 /* Debug */,
+				66E1A4DC0E207CE200D3E219 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

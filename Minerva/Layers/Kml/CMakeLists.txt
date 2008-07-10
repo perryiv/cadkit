@@ -47,7 +47,6 @@ INCLUDE_DIRECTORIES(
 #List the Sources
 SET (SOURCES
 ./ColorStyle.cpp
-./Download.cpp
 ./Factory.cpp
 ./Feature.cpp
 ./IconStyle.cpp

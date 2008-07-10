@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/LoadModel.h"
-#include "Minerva/Layers/Kml/Download.h"
+#include "Minerva/Core/Utilities/Download.h"
 
 #include "OsgTools/Visitor.h"
 #include "OsgTools/State/StateSet.h"
@@ -150,8 +150,12 @@ void LoadModel::_preProcessCollada ( const std::string& filename )
         if ( "http" == protocol )
         {
           const std::string uri ( image->getInit_from()->getValue().str() );
-          const std::string filename ( "file:" + cdom::nativePathToUri ( Minerva::Layers::Kml::download ( uri ) ) ) ;
-          image->getInit_from()->getValue().set ( filename );
+          std::string filename;
+          if ( Minerva::Core::Utilities::download ( uri, filename ) )
+          {
+            filename = "file:" + cdom::nativePathToUri ( filename );
+            image->getInit_from()->getValue().set ( filename );
+          }
         }
       }
     }

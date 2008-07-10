@@ -725,6 +725,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Utilities\Download.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Download.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Utilities\ClampNearFar.h"
 						>
 					</File>

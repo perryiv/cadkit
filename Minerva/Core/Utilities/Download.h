@@ -14,20 +14,22 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_KML_DOWNLOAD_H__
-#define __MINERVA_LAYERS_KML_DOWNLOAD_H__
+#ifndef __MINERVA_CORE_UTILITIES_DOWNLOAD_H__
+#define __MINERVA_CORE_UTILITIES_DOWNLOAD_H__
+
+#include "Minerva/Core/Export.h"
 
 #include <string>
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Utilities {
 
-  std::string download ( const std::string& href );
+  MINERVA_EXPORT bool download ( const std::string& href, std::string& filename );
 
 }
 }
 }
 
 
-#endif // __MINERVA_LAYERS_KML_DOWNLOAD_H__
+#endif // __MINERVA_CORE_UTILITIES_DOWNLOAD_H__

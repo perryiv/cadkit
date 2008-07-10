@@ -676,20 +676,18 @@ OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller
   OsgTools::Legend::LegendObject::RefPtr row0 ( new OsgTools::Legend::LegendObject );
   
   // Make some text.
-  OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text );
-  text->text ( this->name() );
-  text->wrapLine ( false );
-  text->autoSize ( false );
-  text->alignmentVertical ( OsgTools::Legend::Text::TOP );
-  text->fontSize ( 15 );
+  OsgTools::Legend::Text::RefPtr text0 ( new OsgTools::Legend::Text );
+  text0->text ( this->name() );
+  text0->wrapLine ( false );
+  text0->autoSize ( false );
+  text0->alignmentVertical ( OsgTools::Legend::Text::TOP );
+  text0->fontSize ( 15 );
   
   // Add the items.
-  row0->addItem ( text.get() );
+  row0->addItem ( text0.get() );
   
   // Set the percentage of the row.
   row0->percentage ( 0 ) = 1.00;
-  
-  legend->addRow ( row0.get() );
   
   const std::string description ( this->description() );
   if ( false == description.empty() )
@@ -711,6 +709,8 @@ OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller
     
     legend->addRow ( row1.get() );
   }
+  
+  legend->addRow ( row0.get() );
   
   return legend.release();
 }

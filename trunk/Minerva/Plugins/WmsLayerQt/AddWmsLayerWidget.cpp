@@ -251,13 +251,36 @@ void AddWmsLayerWidget::on_browseDirectory_clicked ()
 
 void AddWmsLayerWidget::on_capabilitiesButton_clicked()
 {
+  try
+  {
+    this->_getCapabilities();
+  }
+  catch ( const std::exception& e )
+  {
+    QMessageBox::critical ( this, "Error trying to retrieve capabilities", e.what() );
+  }
+  catch ( ... )
+  {
+    QMessageBox::critical ( this, "Unknown error", "An unknown error was encountered." );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the capabilities.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddWmsLayerWidget::_getCapabilities()
+{
   const std::string server ( _server->text().toStdString() );
   
   const std::string::size_type pos ( server.find_first_of ( '?' ) );
   const std::string prefix ( ( std::string::npos == pos ) ? "?" : "&" );
   
   // Url request.
-  const std::string request ( Usul::Strings::format ( server, prefix, "request=GetCapabilities&Service=WMS&Version=1.1.1" ) );
+  const std::string request ( Usul::Strings::format ( server, prefix, "request=GetCapabilities&service=WMS&version=1.1.1" ) );
   
   // File to download to.
 	std::string name ( Usul::File::Temp::file() );
@@ -265,13 +288,12 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
   
 	// Download.
 	{
+    // Get the timeout.
+    const unsigned int timeout ( Usul::Registry::Database::instance()["network_download"]["wms_get_capabilities"]["timeout_milliseconds"].get<unsigned int> ( 60000, true ) );
 		Usul::Network::Curl curl ( request, name );
-		Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction 
-      ( &curl, &Usul::Network::Curl::download ), 
-      Usul::Registry::Database::instance()["network_download"]["wms_get_capabilities"]["timeout_milliseconds"].get<unsigned int> ( 60000, true ),
-      static_cast<std::ostream*> ( 0x0 ), "", "3034499311" );
+		curl.download( timeout, static_cast<std::ostream*> ( 0x0 ), "" );
 	}
-
+  
   // Open the xml document.
 	XmlTree::XercesLife life;
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
@@ -287,15 +309,14 @@ void AddWmsLayerWidget::on_capabilitiesButton_clicked()
     std::string message ( Usul::Strings::format ( "Could not retrieve capabilities using request: ", request ) );
     for ( Children::const_iterator iter = exceptions.begin(); iter != exceptions.end(); ++iter )
     {
-      message = Usul::Strings::format ( "  Reason: ", (*iter)->value() );
+      message += Usul::Strings::format ( "  Reason: ", (*iter)->value() );
     }
     
-    QMessageBox::critical ( this, "Error trying to retrieve capabilities", message.c_str() );
-    return;
+    throw std::runtime_error ( message.c_str() );
   }
-         
+  
   Children layers ( document->find ( "Layer", true ) );
-
+  
   _layersTree->clear();
   
   // Return now if we don't have any layers.

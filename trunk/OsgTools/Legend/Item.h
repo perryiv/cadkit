@@ -65,7 +65,7 @@ protected:
   Item();
   virtual ~Item();
 
-  osg::Node*          _buildBackground( unsigned int width, unsigned int height );
+  osg::Node*              _buildBackground ( unsigned int width, unsigned int height );
   
 private:
   Size _size;

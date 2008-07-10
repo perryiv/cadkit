@@ -24,6 +24,7 @@ using namespace Minerva::Layers::Kml;
 
 Feature::Feature() : 
   BaseClass(),
+  _description(),
   _name(),
 	_styleUrl(),
   _visiblity ( true ),
@@ -75,6 +76,10 @@ Feature::Feature( const XmlTree::Node& node ) :
     else if ( "TimeSpan" == name )
     {
       _timePrimitive = new TimeSpan ( *node );
+    }
+    else if ( "description" == name )
+    {
+      _description = node->value();
     }
   }
 }
@@ -184,4 +189,28 @@ void Feature::timePrimitive ( TimePrimitive* timePrimitive )
 TimePrimitive* Feature::timePrimitive() const
 {
   return _timePrimitive.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the description.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::description ( const std::string& s )
+{
+  _description = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the description.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& Feature::description() const
+{
+  return _description;
 }

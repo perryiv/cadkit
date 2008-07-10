@@ -450,6 +450,7 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   
   // Set the data object members.
   object->name ( feature->name() );
+  object->description ( feature->description() );
   object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   object->showLabel ( true );
   object->visibility ( feature->visiblity() );

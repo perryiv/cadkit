@@ -30,6 +30,10 @@ public:
   Feature();
   Feature ( const XmlTree::Node& node );
   
+  /// Set/get the description.
+  void                   description ( const std::string& );
+  const std::string&     description() const;
+  
   /// Set/get the name.
 	void                   name ( const std::string& );
   const std::string&     name() const;
@@ -52,6 +56,7 @@ protected:
   
 private:
   
+  std::string _description;
   std::string _name;
 	std::string _styleUrl;
   bool _visiblity;

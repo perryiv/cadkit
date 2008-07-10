@@ -66,6 +66,9 @@ public:
   /// Build the scene.
   osg::Node*              buildScene();
   
+  /// Estimate the needed size for the item.
+  virtual Size            estimateSize() const;
+  
   /// Set/get the font size.
   void                    fontSize ( double size );
   double                  fontSize() const;

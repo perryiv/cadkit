@@ -105,9 +105,7 @@ osg::Node* Text::buildScene()
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
 
   osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
-  text->setFont( font.get() );
+  text->setFont( OsgTools::Font::defaultFont() );
   
   // Set the position.
   text->setPosition ( osg::Vec3 ( this->_xTextPosition ( width ), this->_yTextPosition ( height ), 0.0 ) );
@@ -117,8 +115,6 @@ osg::Node* Text::buildScene()
     text->setAlignment ( osgText::Text::RIGHT_BASE_LINE );
   }
 
-  //text->setAutoRotateToScreen( true );
-  //text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
   text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
   text->setCharacterSize( this->fontSize() );
   text->setText ( this->text() );
@@ -140,7 +136,6 @@ osg::Node* Text::buildScene()
   geode->addDrawable( text.get() );
   
   osg::ref_ptr<osg::StateSet> ss ( geode->getOrCreateStateSet() );
-  //ss->setRenderBinDetails ( 11, "RenderBin" );
   ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
   // Turn off lighting.
@@ -309,4 +304,16 @@ Text::ValueType Text::_yTextPosition( unsigned int height ) const
   }
   
   return 0.0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Estimate the needed size for the item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Text::Size Text::estimateSize() const
+{
+  return BaseClass::size();
 }

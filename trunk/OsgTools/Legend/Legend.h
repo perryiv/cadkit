@@ -43,7 +43,7 @@ public:
   void                 clear();
 
   /// Add a legend object.
-  void                 addLegendObject ( LegendObject * );
+  void                 addRow ( LegendObject * );
 
   /// Build the scene.
   osg::Node*           buildScene();
@@ -64,8 +64,6 @@ public:
   
 protected:
   virtual ~Legend();
-
-  osg::Node*          _buildBackground( unsigned int width, unsigned int height );
 
 private:
   typedef std::vector < LegendObject::RefPtr > LegendObjects;

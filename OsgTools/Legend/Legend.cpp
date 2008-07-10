@@ -11,13 +11,8 @@
 #include "OsgTools/Legend/Text.h"
 #include "OsgTools/State/StateSet.h"
 
-#include "osg/Material"
-#include "osg/Geode"
 #include "osg/Group"
 #include "osg/MatrixTransform"
-#include "osg/Geometry"
-#include "osg/PolygonMode"
-#include "osg/PolygonOffset"
 
 #include <algorithm>
 
@@ -71,7 +66,7 @@ void Legend::clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Legend::addLegendObject( OsgTools::Legend::LegendObject *legendObject )
+void Legend::addRow( OsgTools::Legend::LegendObject *legendObject )
 {
   _legendObjects.push_back( legendObject );
 }
@@ -140,13 +135,13 @@ osg::Node* Legend::buildScene()
 
   osg::ref_ptr< osg::Group > group ( new osg::Group );
 
-  root->addChild( group.get() );
+  root->addChild ( group.get() );
 
   // Only build the legend if we have something...
   if( _legendObjects.size() > 0 )
   {
     // Calculate needed height values.
-    unsigned int heightPerObject ( _heightPerItem );
+    unsigned int heightPerObject ( this->heightPerItem() );
     unsigned int height ( heightPerObject * _legendObjects.size() );
 
     // Change the height per object to fit in the size paramaters given.
@@ -157,141 +152,50 @@ osg::Node* Legend::buildScene()
     }
 
     // Build the background
-    group->addChild( this->_buildBackground( _width, height ) );
+    group->addChild ( this->_buildBackground( _width, height ) );
 
-    unsigned int padding ( 5 );
+    const unsigned int padding ( 5 );
 
     for( LegendObjects::iterator iter = _legendObjects.begin(); iter != _legendObjects.end(); ++iter )
     {
-      // Transform for the row.
-      osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+      Item::RefPtr item ( *iter );
       
-      // Width and height of the row.
-      const unsigned int rowWidth ( _width - ( padding * 2 ) );
-      const unsigned int rowHeight ( heightPerObject );
-      
-      const unsigned int num ( iter - _legendObjects.begin() );
+      if ( item.valid() )
+      {
+        // Transform for the row.
+        osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+        
+        // Width and height of the row.
+        const unsigned int rowWidth ( _width - ( padding * 2 ) );
+        const unsigned int rowHeight ( heightPerObject );
+        
+        const unsigned int num ( iter - _legendObjects.begin() );
 
-      /// Y position (Needs to be signed).
-      int yTranslate ( heightPerObject * num + padding );
+        /// Y position (Needs to be signed).
+        int yTranslate ( heightPerObject * num + padding );
 
-      // Invert the y translation if we are growing down.
-      if( this->growDirection() == DOWN )
-        yTranslate *= -1;
+        // Invert the y translation if we are growing down.
+        if( this->growDirection() == DOWN )
+          yTranslate *= -1;
 
-      // Position the row.
-      mt->setMatrix( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
+        // Position the row.
+        mt->setMatrix( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
 
-      // Build the row.
-      (*iter)->size ( rowWidth, rowHeight );
-      mt->addChild( (*iter)->buildScene() );
+        // Build the row.
+        item->size ( rowWidth, rowHeight );
+        mt->addChild( item->buildScene() );
 
-      // Turn off depth testing.
-      osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
-      ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+        // Turn off depth testing.
+        osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
+        ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
 
-      // Add to the scene.
-      group->addChild( mt.get() );
+        // Add to the scene.
+        group->addChild( mt.get() );
+      }
     }
   }
 
   return root.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a quad.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  inline osg::Geometry* buildQuad ( unsigned int width, unsigned int height )
-  {
-    osg::ref_ptr < osg::Geometry > geometry ( new osg::Geometry );
-
-    osg::ref_ptr < osg::Vec3Array > vertices ( new osg::Vec3Array );
-    vertices->push_back( osg::Vec3 ( 0.0, 0.0, 0.0 ) );
-    vertices->push_back( osg::Vec3 ( 0.0, height, 0.0 ) );
-    vertices->push_back( osg::Vec3 ( width, height, 0.0 ) );
-    vertices->push_back( osg::Vec3 ( width, 0.0, 0.0 ) );
-
-    geometry->setVertexArray ( vertices.get() );
-
-    osg::ref_ptr < osg::Vec3Array > normals ( new osg::Vec3Array );
-    normals->push_back ( osg::Vec3 ( 0.0, 0.0, 1.0 ) );
-
-    geometry->setNormalArray ( normals.get() );
-    geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
-
-    geometry->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, vertices->size() ) );
-    return geometry.release();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the background.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Legend::_buildBackground( unsigned int width, unsigned int height )
-{
-  // For readabilty.
-  const unsigned int on  ( osg::StateAttribute::ON  | osg::StateAttribute::PROTECTED );
-  const unsigned int off ( osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-
-  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-
-  // Make the background.
-  {
-    osg::ref_ptr < osg::Geometry > geometry ( Detail::buildQuad ( width, height ) );
-    geode->addDrawable( geometry.get() );
-
-    // Get the state set.
-    osg::ref_ptr< osg::StateSet > ss ( geometry->getOrCreateStateSet() );
-
-    // Set the color.
-    osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
-    colors->push_back ( osg::Vec4( 0.5, 0.5, 0.5, 0.3 ) );
-    geometry->setColorArray ( colors.get() );
-    geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
-    
-    // Set the needed modes.
-    ss->setMode( GL_DEPTH_TEST, off );
-    ss->setMode( GL_BLEND, on );
-    ss->setMode( GL_POLYGON_OFFSET_FILL, on );
-
-    osg::ref_ptr< osg::PolygonOffset > offset ( new osg::PolygonOffset ( 1.0, 4.0 ) );
-    ss->setAttributeAndModes ( offset.get(), on );
-  }
-
-  // Make the outline.
-  {
-    osg::ref_ptr < osg::Geometry > geometry ( Detail::buildQuad ( width, height ) );
-    geode->addDrawable( geometry.get() );
-
-    // Get the state set.
-    osg::ref_ptr< osg::StateSet > ss ( geometry->getOrCreateStateSet() );
-
-    // Set the color.
-    osg::ref_ptr<osg::Vec4Array> colors ( new osg::Vec4Array );
-    colors->push_back ( osg::Vec4( 0.5, 0.5, 0.8, 1.0 ) );
-    geometry->setColorArray ( colors.get() );
-    geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
-
-    // Turn on wire frame.
-    osg::ref_ptr< osg::PolygonMode > mode ( new osg::PolygonMode( osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE ) );
-    ss->setAttribute( mode.get(), on );
-  }
-
-  // Turn off lighting.
-  OsgTools::State::StateSet::setLighting ( geode.get(), false );
-
-  // Return the background.
-  return geode.release();
 }
 
 
@@ -338,7 +242,7 @@ OsgTools::Legend::Legend::GrowDirectionMode Legend::growDirection() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Legend::heightPerItem( unsigned int height )
+void Legend::heightPerItem ( unsigned int height )
 {
   _heightPerItem = height;
 }
@@ -350,7 +254,7 @@ void Legend::heightPerItem( unsigned int height )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Legend::heightPerItem () const
+unsigned int Legend::heightPerItem() const
 {
   return _heightPerItem;
 }

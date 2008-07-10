@@ -16,6 +16,8 @@
 #include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
 
+#include "osg/Vec4"
+
 namespace osg { class Node; }
 
 namespace OsgTools {
@@ -27,11 +29,24 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Math::Vec2ui Size;
   typedef Size::value_type SizeType;
+  typedef osg::Vec4 Color;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Item );
+  
+  /// Set/get the background color.
+  void                    backgroundColor ( const Color& );
+  Color                   backgroundColor() const;
+  
+  /// Set/get the border color.
+  void                    borderColor ( const Color& );
+  Color                   borderColor() const;
 
+  /// Build the scene.
   virtual osg::Node*      buildScene() = 0;
+  
+  /// Estimate the needed size for the item.  By default it returns the suggested size.
+  virtual Size            estimateSize() const;
   
   /// Set the position.
   void                    position ( SizeType x, SizeType y );
@@ -50,9 +65,13 @@ protected:
   Item();
   virtual ~Item();
 
+  osg::Node*          _buildBackground( unsigned int width, unsigned int height );
+  
 private:
   Size _size;
   Size _position;
+  Color _backgroundColor;
+  Color _borderColor;
 };
 
 }

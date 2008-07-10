@@ -51,6 +51,7 @@ DataObject::DataObject() :
   _visible ( true ),
   _objectId ( "" ),
   _label(),
+  _description(),
   _labelPosition ( 0.0, 0.0, 1000.0 ),
   _labelColor ( 1.0, 1.0, 1.0, 1.0 ),
   _labelSize ( 25.0f ),
@@ -359,10 +360,7 @@ osg::Node* DataObject::_buildLabel( const osg::Vec3& position )
   if ( this->showLabel () && false == label.empty() )
   {
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-
-    osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
-    text->setFont( font.get() );
-
+    text->setFont( OsgTools::Font::defaultFont() );
     text->setColor( this->labelColor() );
     text->setPosition ( position );
     text->setAutoRotateToScreen( true );
@@ -675,7 +673,7 @@ OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller
   legend->position ( 10, 10 );
   legend->growDirection ( OsgTools::Legend::Legend::UP );
   
-  OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
+  OsgTools::Legend::LegendObject::RefPtr row0 ( new OsgTools::Legend::LegendObject );
   
   // Make some text.
   OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text );
@@ -686,12 +684,33 @@ OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller
   text->fontSize ( 15 );
   
   // Add the items.
-  row->addItem ( text.get() );
+  row0->addItem ( text.get() );
   
   // Set the percentage of the row.
-  row->percentage ( 0 ) = 1.00;
+  row0->percentage ( 0 ) = 1.00;
   
-  legend->addLegendObject ( row.get() );
+  legend->addRow ( row0.get() );
+  
+  const std::string description ( this->description() );
+  if ( false == description.empty() )
+  {
+    OsgTools::Legend::LegendObject::RefPtr row1 ( new OsgTools::Legend::LegendObject );
+    
+    // Make some text.
+    OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text );
+    text->text ( description );
+    text->wrapLine ( true );
+    text->alignmentVertical ( OsgTools::Legend::Text::TOP );
+    text->fontSize ( 15 );
+    
+    // Add the items.
+    row1->addItem ( text.get() );
+    
+    // Set the percentage of the row.
+    row1->percentage ( 0 ) = 1.00;
+    
+    legend->addRow ( row1.get() );
+  }
   
   return legend.release();
 }
@@ -853,3 +872,30 @@ ClickedCallback* DataObject::clickedCallback() const
   return _clickedCallback.get();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the description.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::description ( const std::string& s )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _description = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the description.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const std::string& DataObject::description() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _description;
+}

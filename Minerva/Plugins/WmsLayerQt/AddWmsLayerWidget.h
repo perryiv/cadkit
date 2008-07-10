@@ -56,6 +56,7 @@ private:
   typedef Minerva::Core::Layers::RasterLayerWms::Options Options;
   typedef QList<QTreeWidgetItem *> Items;
   
+  void   _getCapabilities();
   Layer* _makeGroup ( const Items& items, const std::string& format ) const;
   Layer* _makeLayer ( const Extents& e, const std::string& format, const std::string& layers, const std::string& styles ) const;
   

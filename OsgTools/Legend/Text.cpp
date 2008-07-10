@@ -99,40 +99,9 @@ const std::string& Text::text() const
 
 osg::Node* Text::buildScene()
 {
-  const SizeType width  ( this->size()[0] );
-  SizeType height ( this->size()[1] );
-  
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
 
-  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
-  text->setFont( OsgTools::Font::defaultFont() );
-  
-  // Set the position.
-  text->setPosition ( osg::Vec3 ( this->_xTextPosition ( width ), this->_yTextPosition ( height ), 0.0 ) );
-
-  if ( RIGHT == this->alignmentHorizontal() )
-  {
-    text->setAlignment ( osgText::Text::RIGHT_BASE_LINE );
-  }
-
-  text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  text->setCharacterSize( this->fontSize() );
-  text->setText ( this->text() );
-
-  if ( this->wrapLine() )
-  {
-    text->setMaximumWidth ( width );
-  }
-  else if ( this->autoSize() )
-  {
-    // Resize the fit on the line.
-    while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > width )
-    {
-      height -= 2;
-      text->setCharacterSize ( height );
-    }
-  }
-
+  osg::ref_ptr<osgText::Text> text ( this->_makeText() );
   geode->addDrawable( text.get() );
   
   osg::ref_ptr<osg::StateSet> ss ( geode->getOrCreateStateSet() );
@@ -141,7 +110,17 @@ osg::Node* Text::buildScene()
   // Turn off lighting.
   OsgTools::State::StateSet::setLighting ( geode.get(), false );
 
+  // For debuging placements...
+#if 0
+  this->backgroundColor ( osg::Vec4 ( 1.0, 0.0, 0.0, 1.0 ) );
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+  group->addChild ( this->_buildBackground ( this->size()[0], this->size()[1] ) );
+  group->addChild ( geode.get() );
+  
+  return group.release();
+#else
   return geode.release();
+#endif
 }
 
 
@@ -315,5 +294,58 @@ Text::ValueType Text::_yTextPosition( unsigned int height ) const
 
 Text::Size Text::estimateSize() const
 {
-  return BaseClass::size();
+  osg::ref_ptr<osgText::Text> text ( this->_makeText() );
+  text->update();
+  osg::BoundingBox bb ( text->computeBound() );
+  
+  //SizeType height ( text->getLineCount() * this->fontSize() );
+  //SizeType width ( this->size()[0] );
+  
+  SizeType height ( bb.yMax() - bb.yMin() );
+  SizeType width ( bb.xMax() - bb.xMin() );
+  return Size ( width, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make an osgText::Text object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osgText::Text* Text::_makeText() const
+{
+  const SizeType width  ( this->size()[0] );
+  SizeType height ( this->size()[1] );
+  
+  osg::ref_ptr < osgText::Text > text ( new osgText::Text );
+  text->setFont( OsgTools::Font::defaultFont() );
+  
+  // Set the position.
+  text->setPosition ( osg::Vec3 ( this->_xTextPosition ( width ), this->_yTextPosition ( height ), 0.0 ) );
+  
+  if ( RIGHT == this->alignmentHorizontal() )
+  {
+    text->setAlignment ( osgText::Text::RIGHT_BASE_LINE );
+  }
+  
+  text->setCharacterSizeMode ( osgText::Text::OBJECT_COORDS );
+  text->setCharacterSize ( this->fontSize() );
+  text->setText ( this->text() );
+  
+  if ( this->wrapLine() )
+  {
+    text->setMaximumWidth ( width );
+  }
+  else if ( this->autoSize() )
+  {
+    // Resize the fit on the line.
+    while ( ( OsgTools::Font::estimateTextWidth( text.get() ) * .75 ) > width )
+    {
+      height -= 2;
+      text->setCharacterSize ( height );
+    }
+  }
+  
+  return text.release();
 }

@@ -140,12 +140,37 @@ osg::Node* Legend::buildScene()
   // Only build the legend if we have something...
   if( _legendObjects.size() > 0 )
   {
+    // Padding around legend.
+    const unsigned int padding ( 5 );
+    
+    // Constant row width.
+    const unsigned int rowWidth ( _width - ( padding * 2 ) );
+    
     // Calculate needed height values.
+    SizeType totalHeight ( 0 );
+    std::vector<SizeType> heights;
+    heights.reserve ( _legendObjects.size() );
+    
+    for ( LegendObjects::iterator iter = _legendObjects.begin(); iter != _legendObjects.end(); ++iter )
+    {
+      Item::RefPtr item ( *iter );
+      
+      if ( item.valid() )
+      {
+        item->size ( rowWidth, static_cast<double> ( _height ) / _legendObjects.size() );
+        Size s ( item->estimateSize() );
+        heights.push_back( s[1] );
+        totalHeight += s[1];
+      }
+      else
+        heights.push_back( 0 );
+    }
+    
     unsigned int heightPerObject ( this->heightPerItem() );
-    unsigned int height ( heightPerObject * _legendObjects.size() );
+    unsigned int height ( totalHeight /*heightPerObject * _legendObjects.size()*/ );
 
     // Change the height per object to fit in the size paramaters given.
-    if( height > _height )
+    if( totalHeight > _height )
     {
       heightPerObject = this->_height / _legendObjects.size();
       height = _height;
@@ -154,8 +179,9 @@ osg::Node* Legend::buildScene()
     // Build the background
     group->addChild ( this->_buildBackground( _width, height ) );
 
-    const unsigned int padding ( 5 );
-
+    // The current height.
+    unsigned int currentHeight ( padding );
+    
     for( LegendObjects::iterator iter = _legendObjects.begin(); iter != _legendObjects.end(); ++iter )
     {
       Item::RefPtr item ( *iter );
@@ -165,14 +191,12 @@ osg::Node* Legend::buildScene()
         // Transform for the row.
         osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
         
-        // Width and height of the row.
-        const unsigned int rowWidth ( _width - ( padding * 2 ) );
-        const unsigned int rowHeight ( heightPerObject );
+        // Height of the row.
+        const unsigned int num ( std::distance ( _legendObjects.begin(), iter ) );
+        const unsigned int rowHeight ( heights.at ( num ) );
         
-        const unsigned int num ( iter - _legendObjects.begin() );
-
         /// Y position (Needs to be signed).
-        int yTranslate ( heightPerObject * num + padding );
+        int yTranslate ( currentHeight );
 
         // Invert the y translation if we are growing down.
         if( this->growDirection() == DOWN )
@@ -191,6 +215,9 @@ osg::Node* Legend::buildScene()
 
         // Add to the scene.
         group->addChild( mt.get() );
+        
+        // Increment the current height.
+        currentHeight += rowHeight;
       }
     }
   }

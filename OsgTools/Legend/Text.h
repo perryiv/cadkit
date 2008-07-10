@@ -19,6 +19,7 @@
 #include <string>
 
 namespace osg { class Node; }
+namespace osgText { class Text; }
 
 namespace OsgTools {
 namespace Legend {
@@ -53,11 +54,11 @@ public:
 
   /// Set/get the horizontal alignment.
   void                    alignmentHorizontal ( Alignment type );
-  Alignment               alignmentHorizontal () const;
+  Alignment               alignmentHorizontal() const;
   
   /// Set/get the vertical alignment.
   void                    alignmentVertical ( VAlignment type );
-  VAlignment              alignmentVertical () const;
+  VAlignment              alignmentVertical() const;
   
   /// Set/get the auto size.
   void                    autoSize ( bool b );
@@ -84,6 +85,8 @@ public:
 protected:
   
   virtual ~Text();
+  
+  osgText::Text*          _makeText() const;
 
   /// Get x and y position on text based on alignment settings.
   ValueType               _xTextPosition ( unsigned int width ) const;

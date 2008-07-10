@@ -9,6 +9,8 @@
 
 #include "OsgTools/Legend/LegendObject.h"
 
+#include "Usul/Math/MinMax.h"
+
 #include "osg/ref_ptr"
 #include "osg/Group"
 #include "osg/MatrixTransform"
@@ -157,14 +159,17 @@ osg::Node* LegendObject::buildScene()
     const unsigned int columnWidth ( static_cast < unsigned int > ( maxWidth * _percentages.at( i ) ) );
     Item::RefPtr text ( _texts.at ( i ) );
 
-    osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-    osg::Matrix m ( osg::Matrix::translate ( currentPosition, 0.0, 0.0 ) );
-    mt->setMatrix( m );
-    text->size ( columnWidth, maxHeight );
-    mt->addChild ( text->buildScene() );
-    group->addChild( mt.get() );
+    if ( text.valid() )
+    {
+      osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+      osg::Matrix m ( osg::Matrix::translate ( currentPosition, 0.0, 0.0 ) );
+      mt->setMatrix( m );
+      text->size ( columnWidth, maxHeight );
+      mt->addChild ( text->buildScene() );
+      group->addChild( mt.get() );
 
-    currentPosition += ( columnWidth + padding );
+      currentPosition += ( columnWidth + padding );
+    }
   }
 
   return group.release();
@@ -180,4 +185,32 @@ osg::Node* LegendObject::buildScene()
 float& LegendObject::percentage( unsigned int i )
 {
   return _percentages.at( i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Estimate the needed size for the item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LegendObject::Size LegendObject::estimateSize() const
+{
+  Size size ( 0, 0 );
+  
+  // Loop over each item.
+  for( unsigned int i = 0; i < _texts.size(); ++i )
+  {
+    Item::RefPtr text ( _texts.at ( i ) );
+    
+    if ( text.valid() )
+    {
+      text->size ( this->size() );
+      Size s ( text->estimateSize() );
+      size[0] += s[0];
+      size[1] = Usul::Math::maximum ( size[1], s[1] );
+    }
+  }
+  
+  return size;
 }

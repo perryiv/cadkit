@@ -45,6 +45,9 @@ public:
   /// Get/Set the number of columns.
   void                   columns( unsigned int value );
   unsigned int           columns() const;
+  
+  /// Estimate the needed size for the item.
+  virtual Size            estimateSize() const;
 
   /// Get the percentage at given column.
   float&                 percentage( unsigned int i );

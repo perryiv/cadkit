@@ -47,17 +47,17 @@ namespace Core {
 
 namespace Data {
   
-  class DataObject;
+class DataObject;
+
+struct ClickedCallback : public Usul::Base::Referenced
+{
+  typedef OsgTools::Legend::Item Item;
   
-  struct ClickedCallback : public Usul::Base::Referenced
-  {
-    typedef OsgTools::Legend::Item Item;
-    
-    // Smart-pointer definitions.
-    USUL_DECLARE_REF_POINTERS ( ClickedCallback );
-    
-    virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const;
-  };
+  // Smart-pointer definitions.
+  USUL_DECLARE_REF_POINTERS ( ClickedCallback );
+  
+  virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const;
+};
 
 class MINERVA_EXPORT DataObject : public Usul::Base::Object,
                                   public Usul::Interfaces::IBuildScene,
@@ -105,6 +105,10 @@ public:
   void                  dataSource( Unknown* );
   Unknown *             dataSource();
   const Unknown *       dataSource() const;
+  
+  /// Set/get the description.
+  void                  description ( const std::string& );
+  const std::string&    description() const;
 
   /// Get/Set the dirty flag.
   bool                  dirty() const;
@@ -191,6 +195,7 @@ private:
   bool         _visible;
   std::string  _objectId;
   std::string  _label;
+  std::string  _description;
   osg::Vec3    _labelPosition;
   osg::Vec4    _labelColor;
   float        _labelSize;

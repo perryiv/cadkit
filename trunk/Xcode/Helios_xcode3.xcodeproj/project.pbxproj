@@ -582,7 +582,6 @@
 		666309BB0E0442CF004C2914 /* ConvertToTriangles.h in Headers */ = {isa = PBXBuildFile; fileRef = 666309B90E0442CF004C2914 /* ConvertToTriangles.h */; };
 		666309BC0E0442CF004C2914 /* ConvertToTriangles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666309BA0E0442CF004C2914 /* ConvertToTriangles.cpp */; };
 		666723E40D11B36000453D37 /* Boost.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
-		666734CE0D11B36A00453D37 /* Xerces.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 66FF45540D11012C003A0AC1 /* Xerces.framework */; };
 		666735830D11B37100453D37 /* osg.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		666735870D11B3D000453D37 /* libXmlTree.dylib in Copy Libs */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		666735890D11B65400453D37 /* osgManipulator.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 664308DE0D10B05700984C94 /* osgManipulator.framework */; };
@@ -666,6 +665,9 @@
 		666767720D12FF7C002F40C6 /* QtSceneDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */; };
 		666BB6A40E13641D006A51E4 /* OsgTools_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666BB6A30E13641D006A51E4 /* OsgTools_wrap.cpp */; };
 		666BB6A90E136484006A51E4 /* PathAnimation_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666BB6A80E136484006A51E4 /* PathAnimation_wrap.cpp */; };
+		6672C5170E26DEC30013A6F3 /* xercesc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6672C5160E26DEC30013A6F3 /* xercesc.framework */; };
+		6672D6030E26DEE70013A6F3 /* xercesc.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 6672C5160E26DEC30013A6F3 /* xercesc.framework */; };
+		6672D8FE0E26DF060013A6F3 /* xercesc.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 6672C5160E26DEC30013A6F3 /* xercesc.framework */; };
 		6673DD2A0BC5F2F800C0131F /* GradientBackground.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6673DD280BC5F2F800C0131F /* GradientBackground.cpp */; };
 		6673DD2B0BC5F2F800C0131F /* GradientBackground.h in Headers */ = {isa = PBXBuildFile; fileRef = 6673DD290BC5F2F800C0131F /* GradientBackground.h */; };
 		6673DD550BC5F96700C0131F /* SceneDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6673DD540BC5F96700C0131F /* SceneDocument.mm */; };
@@ -1266,7 +1268,6 @@
 		66C4E93C0DAAE44A00A3B1FB /* osgText.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
 		66C4E93D0DAAE44A00A3B1FB /* osgUtil.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
 		66C4E93E0DAAE44A00A3B1FB /* ossim.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A40D15177F00B4B1AA /* ossim.framework */; };
-		66C4E9420DAAE44A00A3B1FB /* Xerces.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF45540D11012C003A0AC1 /* Xerces.framework */; };
 		66C4E9540DAAE45B00A3B1FB /* LayerManager.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66892DD00D283D61005CB399 /* LayerManager.plug */; };
 		66C4E9550DAAE45B00A3B1FB /* MeasureTool.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plug */; };
 		66C4E9560DAAE45B00A3B1FB /* MinervaModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF18E20D15C0E600B4B1AA /* MinervaModel.plug */; };
@@ -1463,7 +1464,6 @@
 		66EF05E40D14597200B4B1AA /* TriangleReaderFieldViewAscii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430C330D10C23800984C94 /* TriangleReaderFieldViewAscii.cpp */; };
 		66EF05E50D14597200B4B1AA /* TriangleReaderGrassRaster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430C350D10C23800984C94 /* TriangleReaderGrassRaster.cpp */; };
 		66EF05E60D14597200B4B1AA /* TriangleReaderOFF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430C370D10C23800984C94 /* TriangleReaderOFF.cpp */; };
-		66EF05E90D14598900B4B1AA /* Xerces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF45540D11012C003A0AC1 /* Xerces.framework */; };
 		66EF05EA0D14598900B4B1AA /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		66EF05EE0D1459AD00B4B1AA /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		66EF05F00D1459C300B4B1AA /* TriangleModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB8D409246B9A00ED2131 /* TriangleModel.plug */; };
@@ -1558,7 +1558,6 @@
 		66EF191D0D15C36A00B4B1AA /* osgManipulator.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 664308DE0D10B05700984C94 /* osgManipulator.framework */; };
 		66EF191E0D15C36A00B4B1AA /* osgText.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
 		66EF191F0D15C36A00B4B1AA /* osgUtil.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
-		66EF19260D15C36A00B4B1AA /* Xerces.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF45540D11012C003A0AC1 /* Xerces.framework */; };
 		66EF193E0D1610ED00B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF193A0D1610ED00B4B1AA /* CompileGuard.h */; };
 		66EF193F0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF193B0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp */; };
 		66EF19400D1610ED00B4B1AA /* ProjectionManagerComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF193C0D1610ED00B4B1AA /* ProjectionManagerComponent.h */; };
@@ -1640,7 +1639,6 @@
 		66FF454D0D10FF57003A0AC1 /* XercesLife.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66FF45330D10FF57003A0AC1 /* XercesLife.cpp */; };
 		66FF454E0D10FF57003A0AC1 /* XercesLife.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FF45340D10FF57003A0AC1 /* XercesLife.h */; };
 		66FF454F0D10FF57003A0AC1 /* XercesString.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FF45350D10FF57003A0AC1 /* XercesString.h */; };
-		66FF45550D11012C003A0AC1 /* Xerces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF45540D11012C003A0AC1 /* Xerces.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2915,7 +2913,6 @@
 			files = (
 				666735890D11B65400453D37 /* osgManipulator.framework in Copy Frameworks (8) */,
 				666735830D11B37100453D37 /* osg.framework in Copy Frameworks (8) */,
-				666734CE0D11B36A00453D37 /* Xerces.framework in Copy Frameworks (8) */,
 				43A005600960D21300F3BC07 /* OpenThreads.framework in Copy Frameworks (8) */,
 				666723E40D11B36000453D37 /* Boost.framework in Copy Frameworks (8) */,
 				43A005620960D21300F3BC07 /* osgDB.framework in Copy Frameworks (8) */,
@@ -3187,6 +3184,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				6672D6030E26DEE70013A6F3 /* xercesc.framework in Copy Files to Frameworks */,
 				66BCB1E40E146EA1008375CE /* Collada14Dom.framework in Copy Files to Frameworks */,
 				66BCB1D20E146E98008375CE /* osgViewer.framework in Copy Files to Frameworks */,
 				66256C3E0DCB8FA9001E94FB /* QtCore.framework in Copy Files to Frameworks */,
@@ -3204,7 +3202,6 @@
 				66C4E93C0DAAE44A00A3B1FB /* osgText.framework in Copy Files to Frameworks */,
 				66C4E93D0DAAE44A00A3B1FB /* osgUtil.framework in Copy Files to Frameworks */,
 				66C4E93E0DAAE44A00A3B1FB /* ossim.framework in Copy Files to Frameworks */,
-				66C4E9420DAAE44A00A3B1FB /* Xerces.framework in Copy Files to Frameworks */,
 			);
 			name = "Copy Files to Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3278,6 +3275,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				6672D8FE0E26DF060013A6F3 /* xercesc.framework in Copy Frameworks */,
 				669B09540E10412A00365B5F /* osgViewer.framework in Copy Frameworks */,
 				662568D60DCB8F9F001E94FB /* QtCore.framework in Copy Frameworks */,
 				662568D70DCB8F9F001E94FB /* QtGui.framework in Copy Frameworks */,
@@ -3291,7 +3289,6 @@
 				66EF191D0D15C36A00B4B1AA /* osgManipulator.framework in Copy Frameworks */,
 				66EF191E0D15C36A00B4B1AA /* osgText.framework in Copy Frameworks */,
 				66EF191F0D15C36A00B4B1AA /* osgUtil.framework in Copy Frameworks */,
-				66EF19260D15C36A00B4B1AA /* Xerces.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4054,6 +4051,7 @@
 		666767660D12FE59002F40C6 /* SceneDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneDelegateComponent.h; path = Qt/Plugins/SceneDelegate/SceneDelegateComponent.h; sourceTree = "<group>"; };
 		666BB6A30E13641D006A51E4 /* OsgTools_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OsgTools_wrap.cpp; path = SWIG/OsgTools_wrap.cpp; sourceTree = "<group>"; };
 		666BB6A80E136484006A51E4 /* PathAnimation_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathAnimation_wrap.cpp; path = ../Helios/Plugins/PathAnimation/SWIG/PathAnimation_wrap.cpp; sourceTree = SOURCE_ROOT; };
+		6672C5160E26DEC30013A6F3 /* xercesc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = xercesc.framework; path = ../../../Library/Frameworks/xercesc.framework; sourceTree = SOURCE_ROOT; };
 		6673DD280BC5F2F800C0131F /* GradientBackground.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GradientBackground.cpp; sourceTree = "<group>"; };
 		6673DD290BC5F2F800C0131F /* GradientBackground.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GradientBackground.h; sourceTree = "<group>"; };
 		6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SceneDocumentBundle.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5076,7 +5074,6 @@
 		66FF45330D10FF57003A0AC1 /* XercesLife.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = XercesLife.cpp; path = ../XmlTree/XercesLife.cpp; sourceTree = SOURCE_ROOT; };
 		66FF45340D10FF57003A0AC1 /* XercesLife.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XercesLife.h; path = ../XmlTree/XercesLife.h; sourceTree = SOURCE_ROOT; };
 		66FF45350D10FF57003A0AC1 /* XercesString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XercesString.h; path = ../XmlTree/XercesString.h; sourceTree = SOURCE_ROOT; };
-		66FF45540D11012C003A0AC1 /* Xerces.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Xerces.framework; path = ../../../Library/Frameworks/Xerces.framework; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -5117,7 +5114,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				66EF05EE0D1459AD00B4B1AA /* libXmlTree.dylib in Frameworks */,
-				66EF05E90D14598900B4B1AA /* Xerces.framework in Frameworks */,
 				66EF05EA0D14598900B4B1AA /* osg.framework in Frameworks */,
 				431BBB480924781A00ED2131 /* libOsgTools.dylib in Frameworks */,
 				431BB8D009246B9A00ED2131 /* libUsul.dylib in Frameworks */,
@@ -5806,8 +5802,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				663C5FBB0D110B6700949515 /* libUsul.dylib in Frameworks */,
-				66FF45550D11012C003A0AC1 /* Xerces.framework in Frameworks */,
 				663C4EC90D110AFE00949515 /* Boost.framework in Frameworks */,
+				6672C5170E26DEC30013A6F3 /* xercesc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6399,6 +6395,7 @@
 		43E1AAF3094619B7007F0715 /* Frameworks/Libs */ = {
 			isa = PBXGroup;
 			children = (
+				6672C5160E26DEC30013A6F3 /* xercesc.framework */,
 				669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */,
 				669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */,
 				66A342120E14BC8A00F36EA7 /* libqgif.dylib */,
@@ -6419,7 +6416,6 @@
 				66430AE70D10B61900984C94 /* osg.framework */,
 				66EF13A40D15177F00B4B1AA /* ossim.framework */,
 				663C4EC80D110AFE00949515 /* Boost.framework */,
-				66FF45540D11012C003A0AC1 /* Xerces.framework */,
 				664308DE0D10B05700984C94 /* osgManipulator.framework */,
 				4358F6A8095B3210008F7E5E /* Other Frameworks */,
 				4358F6A5095B3210008F7E5E /* Linked Frameworks */,
@@ -16904,17 +16900,18 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = ../../../Library/Frameworks;
+				FRAMEWORK_SEARCH_PATHS = (
+					../../../Library/Frameworks,
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"/**";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = (
-					"${XERCES_INC_DIR}",
-					../,
-				);
+				HEADER_SEARCH_PATHS = ../;
 				INSTALL_PATH = "@executable_path/../Plugins";
 				PREBINDING = NO;
 				PRODUCT_NAME = XmlTree;
@@ -16928,14 +16925,15 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = ../../../Library/Frameworks;
+				FRAMEWORK_SEARCH_PATHS = (
+					../../../Library/Frameworks,
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = (
-					"${XERCES_INC_DIR}",
-					../,
-				);
+				HEADER_SEARCH_PATHS = ../;
 				INSTALL_PATH = "@executable_path/../Plugins";
 				PREBINDING = NO;
 				PRODUCT_NAME = XmlTree;

@@ -13,7 +13,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/GeoRSS/ClickedCallback.h"
+#include "Minerva/Layers/GeoRSS/GeoRSSCallback.h"
 
 #include "OsgTools/Legend/Image.h"
 #include "OsgTools/Legend/Legend.h"

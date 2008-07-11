@@ -1301,7 +1301,7 @@
 		66C4E9CB0DAAE91100A3B1FB /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		66C4E9CC0DAAE91100A3B1FB /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66C4E9CD0DAAE91100A3B1FB /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
-		66C4E9D20DAAEAEB00A3B1FB /* MinervaPlugins.xml in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66C4E9100DAABF4D00A3B1FB /* MinervaPlugins.xml */; };
+		66C4E9D20DAAEAEB00A3B1FB /* Minerva.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66C4E9100DAABF4D00A3B1FB /* Minerva.plugins */; };
 		66C5A51D0DB3D7100029ABDF /* Rename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C5A51A0DB3D7100029ABDF /* Rename.cpp */; };
 		66C5A5230DB3D9590029ABDF /* DeleteHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C5A51F0DB3D9590029ABDF /* DeleteHandler.cpp */; };
 		66C5A5240DB3D9590029ABDF /* DeleteHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66C5A5200DB3D9590029ABDF /* DeleteHandler.h */; };
@@ -3129,7 +3129,7 @@
 				6603BBEA0DCBB04D00FE0D89 /* QtPasswordPrompt.plug in Copy Files to Plugins */,
 				661C12B50DCA79DA00DE43D4 /* GDALReadImage.plug in Copy Files to Plugins */,
 				66A8B1930DAC1AEE00088B3B /* WRFModel.plug in Copy Files to Plugins */,
-				66C4E9D20DAAEAEB00A3B1FB /* MinervaPlugins.xml in Copy Files to Plugins */,
+				66C4E9D20DAAEAEB00A3B1FB /* Minerva.plugins in Copy Files to Plugins */,
 				66C4E9660DAAE46500A3B1FB /* libHeliosQtCommands.dylib in Copy Files to Plugins */,
 				66C4E9670DAAE46500A3B1FB /* libHeliosQtCore.dylib in Copy Files to Plugins */,
 				66C4E9690DAAE46500A3B1FB /* libHeliosQtViewOSG.dylib in Copy Files to Plugins */,
@@ -4753,7 +4753,7 @@
 		66C4D80B0DAABEC200A3B1FB /* minerva_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = minerva_icon.png; sourceTree = "<group>"; };
 		66C4D80C0DAABEC200A3B1FB /* minerva_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = minerva_splash.png; sourceTree = "<group>"; };
 		66C4D80D0DAABEC200A3B1FB /* Readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.txt; sourceTree = "<group>"; };
-		66C4E9100DAABF4D00A3B1FB /* MinervaPlugins.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = MinervaPlugins.xml; sourceTree = "<group>"; };
+		66C4E9100DAABF4D00A3B1FB /* Minerva.plugins */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Minerva.plugins; sourceTree = "<group>"; };
 		66C4E91C0DAAE3B400A3B1FB /* MinervaQt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinervaQt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C4E91E0DAAE3B400A3B1FB /* MinervaQt-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "MinervaQt-Info.plist"; path = "../../Xcode/MinervaQt-Info.plist"; sourceTree = "<group>"; };
 		66C4E9230DAAE3E800A3B1FB /* Minerva.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Minerva.icns; sourceTree = "<group>"; };
@@ -8802,7 +8802,7 @@
 		66C4D0080DAA9CB500A3B1FB /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				66C4E9100DAABF4D00A3B1FB /* MinervaPlugins.xml */,
+				66C4E9100DAABF4D00A3B1FB /* Minerva.plugins */,
 				66C4E91E0DAAE3B400A3B1FB /* MinervaQt-Info.plist */,
 				66C4D0090DAA9CB500A3B1FB /* CMakeLists.txt */,
 				66C4D00A0DAA9CB500A3B1FB /* main.cpp */,
@@ -10861,6 +10861,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66C4E9210DAAE3B500A3B1FB /* Build configuration list for PBXNativeTarget "MinervaQt" */;
 			buildPhases = (
+				66FA0E3B0E280E9100D0BE82 /* Copy Minerva.plugins */,
 				66C4E9180DAAE3B400A3B1FB /* Resources */,
 				66C4E9190DAAE3B400A3B1FB /* Sources */,
 				66C4E91A0DAAE3B400A3B1FB /* Frameworks */,
@@ -11633,6 +11634,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\nTARGET_LIB_DIR=/Library/Python/2.5/site-packages\nTARGET_PY_DIR=/Library/Python/2.5/site-packages\n\n# Copy dependencies to ${TARGET_LIB_DIR} and change the install name.\ncp ${BUILT_PRODUCTS_DIR}/libUsul.dylib ${TARGET_LIB_DIR}\ncp ${BUILT_PRODUCTS_DIR}/libXmlTree.dylib ${TARGET_LIB_DIR}\ncp ${BUILT_PRODUCTS_DIR}/libSerializeXml.dylib ${TARGET_LIB_DIR}\ncp ${BUILT_PRODUCTS_DIR}/libOsgTools.dylib ${TARGET_LIB_DIR}\ncp ${BUILT_PRODUCTS_DIR}/libMenuKit.dylib ${TARGET_LIB_DIR}\n\ninstall_name_tool -id ${TARGET_LIB_DIR}/libUsul.dylib ${TARGET_LIB_DIR}/libUsul.dylib\ninstall_name_tool -id ${TARGET_LIB_DIR}/libXmlTree.dylib ${TARGET_LIB_DIR}/libXmlTree.dylib\ninstall_name_tool -id ${TARGET_LIB_DIR}/libSerializeXML.dylib ${TARGET_LIB_DIR}/libSerializeXml.dylib\ninstall_name_tool -id ${TARGET_LIB_DIR}/libOsgTools.dylib ${TARGET_LIB_DIR}/libOsgTools.dylib\ninstall_name_tool -id ${TARGET_LIB_DIR}/libMenuKit.dylib ${TARGET_LIB_DIR}/libMenuKit.dylib\n\ninstall_name_tool -change  @executable_path/../Plugins/libUsul.dylib ${TARGET_LIB_DIR}/libUsul.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}\ninstall_name_tool -change  @executable_path/../Plugins/libXmlTree.dylib ${TARGET_LIB_DIR}/libXmlTree.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}\ninstall_name_tool -change  @executable_path/../Plugins/libSerializeXML.dylib ${TARGET_LIB_DIR}/libSerializeXml.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}\ninstall_name_tool -change  @executable_path/../Plugins/libOsgTools.dylib ${TARGET_LIB_DIR}/libOsgTools.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}\ninstall_name_tool -change  @executable_path/../Plugins/libMenuKit.dylib ${TARGET_LIB_DIR}/libMenuKit.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}\n\n# SerializeXML\ninstall_name_tool -change  @executable_path/../Plugins/libUsul.dylib ${TARGET_LIB_DIR}/libUsul.dylib ${TARGET_LIB_DIR}/libSerializeXml.dylib\ninstall_name_tool -change  @executable_path/../Plugins/libXmlTree.dylib ${TARGET_LIB_DIR}/libXmlTree.dylib ${TARGET_LIB_DIR}/libSerializeXml.dylib\n\n# MenuKit\ninstall_name_tool -change  @executable_path/../Plugins/libUsul.dylib ${TARGET_LIB_DIR}/libUsul.dylib ${TARGET_LIB_DIR}/libMenuKit.dylib\n\n# XmlTree\ninstall_name_tool -change  @executable_path/../Plugins/libUsul.dylib ${TARGET_LIB_DIR}/libUsul.dylib ${TARGET_LIB_DIR}/libXmlTree.dylib\n\n# OsgTools\ninstall_name_tool -change  @executable_path/../Plugins/libUsul.dylib ${TARGET_LIB_DIR}/libUsul.dylib ${TARGET_LIB_DIR}/libOsgTools.dylib\n\n# Copy .so and python file to site-packages directory.\ncp ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME} ${TARGET_PY_DIR}\ncp $SRCROOT/../Experimental/Flash/FlashModel/SWIG/FlashDocument.py ${TARGET_PY_DIR}\n\n";
+		};
+		66FA0E3B0E280E9100D0BE82 /* Copy Minerva.plugins */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Minerva.plugins";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f $SRCROOT/../Minerva/Application/Minerva.plugins ]; then\n  cp $SRCROOT/../Minerva/Application/Plugins.xml $SRCROOT/../Minerva/Application/Minerva.plugins\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

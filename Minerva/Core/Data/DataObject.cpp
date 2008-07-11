@@ -899,3 +899,12 @@ const std::string& DataObject::description() const
   Guard guard ( this->mutex() );
   return _description;
 }
+
+
+ClickedCallback::ClickedCallback()
+{
+}
+
+ClickedCallback::~ClickedCallback()
+{
+}

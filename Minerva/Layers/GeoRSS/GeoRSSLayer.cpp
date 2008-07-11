@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2008, Arizona State University
+//  Copyright (c) 2008, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -15,6 +14,7 @@
 #endif
 
 #include "Minerva/Layers/GeoRSS/GeoRSSLayer.h"
+#include "Minerva/Layers/GeoRSS/GeoRSSCallback.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Utilities/Download.h"
@@ -47,10 +47,6 @@
 #include "Usul/Threads/Safe.h"
 
 #include "OsgTools/Visitor.h"
-#include "OsgTools/Legend/Image.h"
-#include "OsgTools/Legend/Legend.h"
-#include "OsgTools/Legend/LegendObject.h"
-#include "OsgTools/Legend/Text.h"
 #include "OsgTools/State/StateSet.h"
 
 #include "osg/Material"
@@ -192,83 +188,6 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Callback to display the meta data for item.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  
-  class GeoRSSCallback : public Minerva::Core::Data::ClickedCallback
-  {
-  public:
-    typedef Minerva::Core::Data::ClickedCallback BaseClass;
-    typedef Minerva::Core::Data::DataObject DataObject;
-    typedef OsgTools::Legend::Item Item;
-    
-    // Smart-pointer definitions.
-    USUL_DECLARE_REF_POINTERS ( GeoRSSCallback );
-    
-    GeoRSSCallback() : BaseClass()
-    {
-    }
-    
-    virtual Item* operator() ( const DataObject& object, Usul::Interfaces::IUnknown* caller ) const
-    {
-      OsgTools::Legend::Legend::RefPtr legend ( new OsgTools::Legend::Legend );
-      legend->maximiumSize ( 300, 300 );
-      legend->heightPerItem ( 256 );
-      legend->position ( 10, 10 );
-      legend->growDirection ( OsgTools::Legend::Legend::UP );
-      
-      OsgTools::Legend::LegendObject::RefPtr row0 ( new OsgTools::Legend::LegendObject );
-      
-      // Make some text.
-      OsgTools::Legend::Text::RefPtr text0 ( new OsgTools::Legend::Text );
-      text0->text ( object.name() );
-      text0->wrapLine ( false );
-      text0->autoSize ( false );
-      text0->alignmentVertical ( OsgTools::Legend::Text::TOP );
-      text0->fontSize ( 15 );
-      
-      // Add the items.
-      row0->addItem ( text0.get() );
-      
-      // Set the percentage of the row.
-      row0->percentage ( 0 ) = 1.00;
-      
-      const std::string description ( object.description() );
-      if ( false == description.empty() )
-      {
-        OsgTools::Legend::LegendObject::RefPtr row1 ( new OsgTools::Legend::LegendObject );
-        
-        // Make some text.
-        OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text );
-        text->text ( description );
-        text->wrapLine ( true );
-        text->alignmentVertical ( OsgTools::Legend::Text::TOP );
-        text->fontSize ( 15 );
-        
-        // Add the items.
-        row1->addItem ( text.get() );
-        
-        // Set the percentage of the row.
-        row1->percentage ( 0 ) = 1.00;
-        
-        legend->addRow ( row1.get() );
-      }
-      
-      legend->addRow ( row0.get() );
-      
-      return legend.release();
-    }
-  };
-  
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Parse the item.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -277,6 +196,9 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
 {
   // Get the color.
   Usul::Math::Vec4f color ( Usul::Threads::Safe::get ( this->mutex(), _color ) );
+  
+  // Make a new callback.
+  GeoRSSCallback::RefPtr cb ( new GeoRSSCallback );
   
   // Get the title.
   Children titleNode ( node.find ( "title", false ) );
@@ -291,6 +213,15 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
     const std::string type   ( node->attributes()["type"] );
     const std::string width  ( node->attributes()["width"] );
     const std::string height ( node->attributes()["height"] );
+    
+    std::string filename;
+    if ( Minerva::Core::Utilities::download ( url, filename ) )
+    {
+      cb->imageFilename ( filename );
+      unsigned int w ( Usul::Convert::Type<std::string, unsigned int>::convert ( width ) );
+      unsigned int h ( Usul::Convert::Type<std::string, unsigned int>::convert ( height ) );
+      cb->imageSize ( w, h );
+    }
   }
   
   // Look for the geo tag information.  TODO: Handle gml in geoRSS.
@@ -301,20 +232,24 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   const double lon ( lonNode.empty() ? 0.0 : ToDouble::convert ( lonNode.front()->value() ) );
   
   Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
-  point->autotransform ( true );
-  point->size ( 5 );
+  point->autotransform ( false );
+  point->size ( 100 );
   point->primitiveId ( 2 );
   point->color ( color );
   point->point ( Usul::Math::Vec3d ( lon, lat, 0.0 ) );
   
   DataObject::RefPtr object ( new DataObject );
   object->name ( title );
+  object->clickedCallback ( cb.get() );
   
   // Add the geometry.
   object->addGeometry ( point );
   
   // Add the data object.
   this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+  
+  // Our scene needs rebuilt.
+  this->dirtyScene ( true );
 }
 
 
@@ -390,7 +325,7 @@ void GeoRSSLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
                           
     // Create a job to read the file.
     Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ),
-                                                                               Usul::Adaptors::memberFunction ( this, &GeoRSSLayer::_read ) ) ) );
+                                                                              Usul::Adaptors::memberFunction ( GeoRSSLayer::RefPtr ( this ), &GeoRSSLayer::_read ) ) ) );
     
     if ( true == job.valid() )
     {

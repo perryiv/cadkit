@@ -49,14 +49,18 @@ namespace Data {
   
 class DataObject;
 
-struct ClickedCallback : public Usul::Base::Referenced
+class ClickedCallback : public Usul::Base::Referenced
 {
+public:
   typedef OsgTools::Legend::Item Item;
   
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ClickedCallback );
   
-  virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const;
+  ClickedCallback();
+  virtual ~ClickedCallback();
+  
+  virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const = 0;
 };
 
 class MINERVA_EXPORT DataObject : public Usul::Base::Object,

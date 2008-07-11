@@ -1189,6 +1189,8 @@
 		66A8B83C0E071810001C436C /* Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8B83A0E071810001C436C /* Group.cpp */; };
 		66A8B83D0E071810001C436C /* Group.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8B83B0E071810001C436C /* Group.h */; };
 		66A8B8410E071829001C436C /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
+		66A91DBA0E2723360048613C /* GeoRSSCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A91DB80E2723360048613C /* GeoRSSCallback.h */; };
+		66A91DBB0E2723360048613C /* GeoRSSCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A91DB90E2723360048613C /* GeoRSSCallback.cpp */; };
 		66A959580DB7E3E600943BA4 /* AnimationControlComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A959520DB7E3E600943BA4 /* AnimationControlComponent.cpp */; };
 		66A959590DB7E3E600943BA4 /* AnimationControlComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A959530DB7E3E600943BA4 /* AnimationControlComponent.h */; };
 		66A9595A0DB7E3E600943BA4 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A959560DB7E3E600943BA4 /* CompileGuard.h */; };
@@ -4573,8 +4575,8 @@
 		669F239C0DBC14D400EC89B0 /* LineStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineStyle.h; sourceTree = "<group>"; };
 		669F45D20D5B87BB00BFA6C6 /* Functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Functions.h; sourceTree = "<group>"; };
 		669F46350D5BD9CD00BFA6C6 /* Execute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Execute.h; sourceTree = "<group>"; };
-		669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5.0.0.0.dylib; path = /usr/local/lib/libhdf5.0.0.0.dylib; sourceTree = SOURCE_ROOT; };
-		669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_hl.0.0.0.dylib; path = /usr/local/lib/libhdf5_hl.0.0.0.dylib; sourceTree = SOURCE_ROOT; };
+		669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5.0.0.0.dylib; path = /usr/local/lib/libhdf5.0.0.0.dylib; sourceTree = "<absolute>"; };
+		669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_hl.0.0.0.dylib; path = /usr/local/lib/libhdf5_hl.0.0.0.dylib; sourceTree = "<absolute>"; };
 		669F72E20E19915A005EE92C /* libsz.2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsz.2.0.0.dylib; path = "../../../sdk/szip-2.1/szip/lib/libsz.2.0.0.dylib"; sourceTree = SOURCE_ROOT; };
 		669FAF970D7F3E27007B5B8B /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		669FCA250E1A8FDB00DFE682 /* osgdb_dae.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_dae.so; sourceTree = "<group>"; };
@@ -4707,6 +4709,8 @@
 		66A8B8340E0717EB001C436C /* MenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuCommands.h; path = ../MenuKit/MenuCommands.h; sourceTree = SOURCE_ROOT; };
 		66A8B83A0E071810001C436C /* Group.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Group.cpp; path = Qt/Commands/Group.cpp; sourceTree = "<group>"; };
 		66A8B83B0E071810001C436C /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Group.h; path = Qt/Commands/Group.h; sourceTree = "<group>"; };
+		66A91DB80E2723360048613C /* GeoRSSCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoRSSCallback.h; sourceTree = "<group>"; };
+		66A91DB90E2723360048613C /* GeoRSSCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoRSSCallback.cpp; sourceTree = "<group>"; };
 		66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtAnimationControl.plug; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A959520DB7E3E600943BA4 /* AnimationControlComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationControlComponent.cpp; sourceTree = "<group>"; };
 		66A959530DB7E3E600943BA4 /* AnimationControlComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationControlComponent.h; sourceTree = "<group>"; };
@@ -7347,6 +7351,8 @@
 				66190FD10E1C8ABC004CE994 /* GeoRSSLayer.cpp */,
 				66190FD20E1C8ABC004CE994 /* GeoRSSLayer.h */,
 				66190FD30E1C8ABC004CE994 /* MinervaGeoRSS.vcproj */,
+				66A91DB80E2723360048613C /* GeoRSSCallback.h */,
+				66A91DB90E2723360048613C /* GeoRSSCallback.cpp */,
 			);
 			path = GeoRSS;
 			sourceTree = "<group>";
@@ -9442,6 +9448,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66190FD50E1C8ABC004CE994 /* GeoRSSLayer.h in Headers */,
+				66A91DBA0E2723360048613C /* GeoRSSCallback.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11927,6 +11934,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66190FD40E1C8ABC004CE994 /* GeoRSSLayer.cpp in Sources */,
+				66A91DBB0E2723360048613C /* GeoRSSCallback.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

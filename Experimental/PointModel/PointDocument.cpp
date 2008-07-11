@@ -643,6 +643,11 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
     }
   }
   
+  // If we didn't find x, y, and z, punt.
+  if ( ( false == foundX ) || ( false == foundY ) || ( false == foundZ ) )
+  {
+    throw std::runtime_error ( "Error 4396772640: Failed to find x, y, and z columns in file: " + filename );
+  }
 
   // Read the rest of the file.
   // If the x, y, or z header wasn't found then set

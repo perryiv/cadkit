@@ -1136,16 +1136,6 @@
 		66A1C5120E09B321001DB3F8 /* Composite.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A1C50F0E09B321001DB3F8 /* Composite.h */; };
 		66A1C5130E09B321001DB3F8 /* Resample.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A1C5100E09B321001DB3F8 /* Resample.h */; };
 		66A1C5140E09B321001DB3F8 /* SubRegion.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A1C5110E09B321001DB3F8 /* SubRegion.h */; };
-		66A342170E14BC9800F36EA7 /* libqgif.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342120E14BC8A00F36EA7 /* libqgif.dylib */; };
-		66A342180E14BC9800F36EA7 /* libqjpeg.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342130E14BC8A00F36EA7 /* libqjpeg.dylib */; };
-		66A342190E14BC9800F36EA7 /* libqmng.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342140E14BC8A00F36EA7 /* libqmng.dylib */; };
-		66A3421A0E14BC9800F36EA7 /* libqsvg.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342150E14BC8A00F36EA7 /* libqsvg.dylib */; };
-		66A3421B0E14BC9800F36EA7 /* libqtiff.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342160E14BC8A00F36EA7 /* libqtiff.dylib */; };
-		66A342590E14BE1200F36EA7 /* libqgif.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342120E14BC8A00F36EA7 /* libqgif.dylib */; };
-		66A3425A0E14BE1200F36EA7 /* libqjpeg.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342130E14BC8A00F36EA7 /* libqjpeg.dylib */; };
-		66A3425B0E14BE1200F36EA7 /* libqmng.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342140E14BC8A00F36EA7 /* libqmng.dylib */; };
-		66A3425C0E14BE1200F36EA7 /* libqsvg.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342150E14BC8A00F36EA7 /* libqsvg.dylib */; };
-		66A3425D0E14BE1200F36EA7 /* libqtiff.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A342160E14BC8A00F36EA7 /* libqtiff.dylib */; };
 		66A342690E14BEB800F36EA7 /* eye.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342680E14BEAF00F36EA7 /* eye.png */; };
 		66A35C3A0DD81A480026BA66 /* Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A35C380DD81A480026BA66 /* Manager.cpp */; };
 		66A4CE680DC0FF2B006DEE5E /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A4CE480DC0FF2B006DEE5E /* Action.cpp */; };
@@ -1442,7 +1432,6 @@
 		66E5C06B0D91902400C858B7 /* Init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E5C06A0D91902400C858B7 /* Init.cpp */; };
 		66E5C0700D91908100C858B7 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E5C06F0D91908100C858B7 /* Common.h */; };
 		66E5C0760D9190EA00C858B7 /* libMinervaPostGISLayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */; };
-		66E5C08A0D9191C300C858B7 /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E5C0890D9191C300C858B7 /* Common.cpp */; };
 		66E5C0920D91929D00C858B7 /* libMinervaGdalLayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayer.dylib */; };
 		66E7B0BF0B17617300E3D682 /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BB0B17617300E3D682 /* Renderer.cpp */; };
 		66E7B0C00B17617300E3D682 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BC0B17617300E3D682 /* Renderer.h */; };
@@ -2964,11 +2953,6 @@
 				669F72E30E19916F005EE92C /* libsz.2.0.0.dylib in Copy Files to Plugins */,
 				669F72DF0E199060005EE92C /* libhdf5.0.0.0.dylib in Copy Files to Plugins */,
 				669F72E00E199060005EE92C /* libhdf5_hl.0.0.0.dylib in Copy Files to Plugins */,
-				66A342590E14BE1200F36EA7 /* libqgif.dylib in Copy Files to Plugins */,
-				66A3425A0E14BE1200F36EA7 /* libqjpeg.dylib in Copy Files to Plugins */,
-				66A3425B0E14BE1200F36EA7 /* libqmng.dylib in Copy Files to Plugins */,
-				66A3425C0E14BE1200F36EA7 /* libqsvg.dylib in Copy Files to Plugins */,
-				66A3425D0E14BE1200F36EA7 /* libqtiff.dylib in Copy Files to Plugins */,
 				669272070E0AD87600E35E8B /* ModelPresentation.plug in Copy Files to Plugins */,
 				664EBB2B0DD4938400F78E21 /* QtAnimationControl.plug in Copy Files to Plugins */,
 				66A8B1230DAC0A7200088B3B /* WRFModel.plug in Copy Files to Plugins */,
@@ -3136,11 +3120,6 @@
 			dstSubfolderSpec = 13;
 			files = (
 				66190FFE0E1C98C8004CE994 /* libMinervaGeoRSSLayer.dylib in Copy Files to Plugins */,
-				66A342170E14BC9800F36EA7 /* libqgif.dylib in Copy Files to Plugins */,
-				66A342180E14BC9800F36EA7 /* libqjpeg.dylib in Copy Files to Plugins */,
-				66A342190E14BC9800F36EA7 /* libqmng.dylib in Copy Files to Plugins */,
-				66A3421A0E14BC9800F36EA7 /* libqsvg.dylib in Copy Files to Plugins */,
-				66A3421B0E14BC9800F36EA7 /* libqtiff.dylib in Copy Files to Plugins */,
 				6647DBED0E12ED92009BD3C7 /* ModflowModel.plug in Copy Files to Plugins */,
 				66E1F5530DE4E7EA0005073C /* libpq.5.0.dylib in Copy Files to Plugins */,
 				66E1E07D0DE4D3ED0005073C /* libpqxx-2.6.9.dylib in Copy Files to Plugins */,
@@ -4594,8 +4573,8 @@
 		669F239C0DBC14D400EC89B0 /* LineStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineStyle.h; sourceTree = "<group>"; };
 		669F45D20D5B87BB00BFA6C6 /* Functions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Functions.h; sourceTree = "<group>"; };
 		669F46350D5BD9CD00BFA6C6 /* Execute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Execute.h; sourceTree = "<group>"; };
-		669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5.0.0.0.dylib; path = ../../../sdk/3rdParty/lib/libhdf5.0.0.0.dylib; sourceTree = SOURCE_ROOT; };
-		669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_hl.0.0.0.dylib; path = ../../../sdk/3rdParty/lib/libhdf5_hl.0.0.0.dylib; sourceTree = SOURCE_ROOT; };
+		669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5.0.0.0.dylib; path = /usr/local/lib/libhdf5.0.0.0.dylib; sourceTree = SOURCE_ROOT; };
+		669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_hl.0.0.0.dylib; path = /usr/local/lib/libhdf5_hl.0.0.0.dylib; sourceTree = SOURCE_ROOT; };
 		669F72E20E19915A005EE92C /* libsz.2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsz.2.0.0.dylib; path = "../../../sdk/szip-2.1/szip/lib/libsz.2.0.0.dylib"; sourceTree = SOURCE_ROOT; };
 		669FAF970D7F3E27007B5B8B /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		669FCA250E1A8FDB00DFE682 /* osgdb_dae.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_dae.so; sourceTree = "<group>"; };
@@ -4669,11 +4648,6 @@
 		66A1E45A0D4E9582002DA987 /* DoNothingPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoNothingPolicy.h; sourceTree = "<group>"; };
 		66A1E45B0D4E9582002DA987 /* WeakPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeakPointer.h; sourceTree = "<group>"; };
 		66A3412A0E14A27700F36EA7 /* IToolBarAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IToolBarAdd.h; path = IToolbarAdd.h; sourceTree = "<group>"; };
-		66A342120E14BC8A00F36EA7 /* libqgif.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqgif.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqgif.dylib"; sourceTree = SOURCE_ROOT; };
-		66A342130E14BC8A00F36EA7 /* libqjpeg.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqjpeg.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqjpeg.dylib"; sourceTree = SOURCE_ROOT; };
-		66A342140E14BC8A00F36EA7 /* libqmng.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqmng.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqmng.dylib"; sourceTree = SOURCE_ROOT; };
-		66A342150E14BC8A00F36EA7 /* libqsvg.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqsvg.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqsvg.dylib"; sourceTree = SOURCE_ROOT; };
-		66A342160E14BC8A00F36EA7 /* libqtiff.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqtiff.dylib; path = "../../../sdk/qt-mac-opensource-src-4.3.3/plugins/imageformats/libqtiff.dylib"; sourceTree = SOURCE_ROOT; };
 		66A342680E14BEAF00F36EA7 /* eye.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = eye.png; path = Images/eye.png; sourceTree = "<group>"; };
 		66A35C370DD81A480026BA66 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		66A35C380DD81A480026BA66 /* Manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cpp; sourceTree = "<group>"; };
@@ -4887,8 +4861,8 @@
 		66E1D98A0D8DC26600732EE0 /* SkyDome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyDome.h; sourceTree = "<group>"; };
 		66E1E0400DE4CA490005073C /* OGRVectorLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OGRVectorLayer.cpp; sourceTree = "<group>"; };
 		66E1E0410DE4CA490005073C /* OGRVectorLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OGRVectorLayer.h; sourceTree = "<group>"; };
-		66E1E07C0DE4D3E40005073C /* libpqxx-2.6.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpqxx-2.6.9.dylib"; path = "../../../sdk/3rdParty/lib/libpqxx-2.6.9.dylib"; sourceTree = SOURCE_ROOT; };
-		66E1F54F0DE4E73D0005073C /* libpq.5.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpq.5.0.dylib; path = ../../../sdk/3rdParty/lib/libpq.5.0.dylib; sourceTree = SOURCE_ROOT; };
+		66E1E07C0DE4D3E40005073C /* libpqxx-2.6.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libpqxx-2.6.9.dylib"; path = "/usr/local/lib/libpqxx-2.6.9.dylib"; sourceTree = "<absolute>"; };
+		66E1F54F0DE4E73D0005073C /* libpq.5.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpq.5.0.dylib; path = /usr/local/lib/libpq.5.0.dylib; sourceTree = "<absolute>"; };
 		66E5C0650D91900000C858B7 /* RasterPolygonLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RasterPolygonLayer.cpp; sourceTree = "<group>"; };
 		66E5C0660D91900000C858B7 /* RasterPolygonLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RasterPolygonLayer.h; sourceTree = "<group>"; };
 		66E5C06A0D91902400C858B7 /* Init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Init.cpp; sourceTree = "<group>"; };
@@ -6398,11 +6372,6 @@
 				6672C5160E26DEC30013A6F3 /* xercesc.framework */,
 				669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */,
 				669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */,
-				66A342120E14BC8A00F36EA7 /* libqgif.dylib */,
-				66A342130E14BC8A00F36EA7 /* libqjpeg.dylib */,
-				66A342140E14BC8A00F36EA7 /* libqmng.dylib */,
-				66A342150E14BC8A00F36EA7 /* libqsvg.dylib */,
-				66A342160E14BC8A00F36EA7 /* libqtiff.dylib */,
 				669BD29C0E0EF9DF00E598FF /* osgViewer.framework */,
 				66A8B81E0E06F7DC001C436C /* Python.framework */,
 				666304920E030DC1004C2914 /* Collada14Dom.framework */,
@@ -11368,7 +11337,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/Users/adam/sdk/qt-mac-opensource-src-4.3.3/bin/moc $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/PasswordPromptComponent.h -o $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/moc_PasswordPromptComponent.cpp";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/PasswordPromptComponent.h -o $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/moc_PasswordPromptComponent.cpp";
 		};
 		666765700D1232A1002F40C6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11381,7 +11350,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/MainWindow.h -o $SRCROOT/../Helios/Qt/Core/moc_MainWindow.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/ProgressBarDock.h -o $SRCROOT/../Helios/Qt/Core/moc_ProgressBarDock.cpp\n";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/MainWindow.h -o $SRCROOT/../Helios/Qt/Core/moc_MainWindow.cpp\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/ProgressBarDock.h -o $SRCROOT/../Helios/Qt/Core/moc_ProgressBarDock.cpp\n";
 		};
 		666766F70D12FBB7002F40C6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11394,7 +11363,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Views/OSG/EditBackground.h -o $SRCROOT/../Helios/Qt/Views/OSG/moc_EditBackground.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Views/OSG/Viewer.h -o $SRCROOT/../Helios/Qt/Views/OSG/moc_Viewer.cpp\n";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Views/OSG/EditBackground.h -o $SRCROOT/../Helios/Qt/Views/OSG/moc_EditBackground.cpp\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Views/OSG/Viewer.h -o $SRCROOT/../Helios/Qt/Views/OSG/moc_Viewer.cpp\n";
 		};
 		667E35990E05E0FE009732FE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11560,8 +11529,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/tcsh;
-			shellScript = "source ${HOME}/.cshrc\n\nmoc ${HOME}/src/cadkit/QtTools/Action.h -o ${HOME}/src/cadkit/QtTools/moc_Action.cpp\nuic ${HOME}/src/cadkit/QtTools/AnimationControl.ui -o ${HOME}/src/cadkit/QtTools/ui_AnimationControl.h\nmoc ${HOME}/src/cadkit/QtTools/AnimationControl.h -o ${HOME}/src/cadkit/QtTools/moc_AnimationControl.cpp\nmoc ${HOME}/src/cadkit/QtTools/ColorButton.h -o ${HOME}/src/cadkit/QtTools/moc_ColorButton.cpp\nmoc ${HOME}/src/cadkit/QtTools/Menu.h -o ${HOME}/src/cadkit/QtTools/moc_Menu.cpp\nmoc ${HOME}/src/cadkit/QtTools/PropertyBrowser.h -o ${HOME}/src/cadkit/QtTools/moc_PropertyBrowser.cpp\nmoc ${HOME}/src/cadkit/QtTools/TreeControl.h -o ${HOME}/src/cadkit/QtTools/moc_TreeControl.cpp\n";
+			shellPath = /bin/sh;
+			shellScript = "$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Action.h -o ${HOME}/src/cadkit/QtTools/moc_Action.cpp\n$QTDIR/bin/uic ${HOME}/src/cadkit/QtTools/AnimationControl.ui -o ${HOME}/src/cadkit/QtTools/ui_AnimationControl.h\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/AnimationControl.h -o ${HOME}/src/cadkit/QtTools/moc_AnimationControl.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/ColorButton.h -o ${HOME}/src/cadkit/QtTools/moc_ColorButton.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Menu.h -o ${HOME}/src/cadkit/QtTools/moc_Menu.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/PropertyBrowser.h -o ${HOME}/src/cadkit/QtTools/moc_PropertyBrowser.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/TreeControl.h -o ${HOME}/src/cadkit/QtTools/moc_TreeControl.cpp\n";
 		};
 		66E1E0820DE4D4D10005073C /* Change Install Path */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12212,7 +12181,6 @@
 			files = (
 				66E5C0670D91900000C858B7 /* RasterPolygonLayer.cpp in Sources */,
 				66E5C06B0D91902400C858B7 /* Init.cpp in Sources */,
-				66E5C08A0D9191C300C858B7 /* Common.cpp in Sources */,
 				66E1E0420DE4CA490005073C /* OGRVectorLayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -13533,7 +13501,7 @@
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
@@ -13556,7 +13524,7 @@
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
@@ -14380,7 +14348,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../../../Library/Frameworks/GDAL.framework/Headers,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -14410,7 +14378,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../../../Library/Frameworks/GDAL.framework/Headers,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -14824,7 +14792,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -14860,7 +14828,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -14893,7 +14861,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -14925,7 +14893,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -14976,7 +14944,7 @@
 					_DEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../GenericNurbs,
 					../,
 				);
@@ -15006,7 +14974,7 @@
 					NDEBUG,
 				);
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../GenericNurbs,
 					../,
 				);
@@ -15073,7 +15041,7 @@
 					_DEBUG,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-flat_namespace",
 					"-lCGAL",
@@ -15098,7 +15066,7 @@
 					NDEBUG,
 				);
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = "-lCGAL";
 				PREBINDING = NO;
 				PRODUCT_NAME = TriangulateCGAL;
@@ -15127,7 +15095,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -15180,7 +15148,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = (
 					../../../Library/Frameworks/Collada14Dom.framework/Headers,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -15207,7 +15175,7 @@
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
 					../../../Library/Frameworks/Collada14Dom.framework/Headers,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -15396,7 +15364,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-flat_namespace",
 					"-lpq.5.0",
@@ -15417,10 +15385,10 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-flat_namespace",
-					"-lpq.5.0",
+					"-lpq.5",
 					"-lpqxx-2.6.9",
 				);
 				PREBINDING = NO;
@@ -15445,7 +15413,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = (
 					../../../Library/Frameworks/GDAL.framework/Headers,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -15470,7 +15438,7 @@
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
 					../../../Library/Frameworks/GDAL.framework/Headers,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -15496,7 +15464,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/Python.framework/Headers/,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "/Library/Python/2.5/site-packages/";
@@ -15504,7 +15472,7 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = OsgTools;
 				ZERO_LINK = YES;
@@ -15526,7 +15494,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/Python.framework/Headers/,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "/Library/Python/2.5/site-packages/";
@@ -15534,7 +15502,7 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = OsgTools;
 				ZERO_LINK = NO;
@@ -15580,7 +15548,7 @@
 					../Helios/Plugins/,
 					../GenericNurbs,
 					/System/Library/Frameworks/Python.framework/Headers/,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "/Library/Python/2.5/site-packages/";
@@ -15588,7 +15556,7 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = PathAnimation;
 				ZERO_LINK = YES;
@@ -15612,7 +15580,7 @@
 					../Helios/Plugins/,
 					../GenericNurbs,
 					/System/Library/Frameworks/Python.framework/Headers/,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "/Library/Python/2.5/site-packages/";
@@ -15620,7 +15588,7 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = PathAnimation;
 				ZERO_LINK = NO;
@@ -15654,7 +15622,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -15690,7 +15658,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -15727,7 +15695,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -15763,7 +15731,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -15798,7 +15766,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 					../../../Library/Frameworks/GDAL.framework/Headers,
 				);
@@ -15833,7 +15801,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 					../../../Library/Frameworks/GDAL.framework/Headers,
 				);
@@ -15859,21 +15827,21 @@
 					_COMPILING_FLASH_MODEL,
 				);
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				LIBRARY_SEARCH_PATHS = (
-					../../../sdk/3rdParty/lib,
+					/usr/local/lib,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"/usr/local/lib\"";
 				OTHER_LDFLAGS = "-flat_namespace";
 				PREBINDING = NO;
 				PRODUCT_NAME = FlashModel;
@@ -15896,18 +15864,18 @@
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
 				LIBRARY_SEARCH_PATHS = (
-					../../../sdk/3rdParty/lib,
+					/usr/local/lib,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"/usr/local/lib\"";
 				OTHER_LDFLAGS = (
 					"-flat_namespace",
-					"-L../../../sdk/3rdParty/include/libhdf5.a",
+					"-L/usr/local/include/libhdf5.a",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = FlashModel;
@@ -15938,7 +15906,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -15970,7 +15938,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -15996,7 +15964,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -16021,7 +15989,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -16113,7 +16081,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"/usr/local/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../bin/Debug\"";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
@@ -16145,7 +16113,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../bin/Debug\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"/usr/local/lib\"";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = MinervaQt;
@@ -16543,10 +16511,10 @@
 				INSTALL_PATH = "@executable_path/../Plugins";
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/lib,
-					../../../sdk/3rdParty/lib,
+					/usr/local/lib,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = Minerva;
@@ -16586,10 +16554,10 @@
 				INSTALL_PATH = "@executable_path/../Plugins";
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/lib,
-					../../../sdk/3rdParty/lib,
+					/usr/local/lib,
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = Minerva;
@@ -16620,12 +16588,12 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../Experimental,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = MinervaDocument;
@@ -16655,12 +16623,12 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../Experimental,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
-				LIBRARY_SEARCH_PATHS = ../../../sdk/3rdParty/lib;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = MinervaDocument;
@@ -16683,7 +16651,7 @@
 					_COMPILING_MINERVA_MODEL,
 				);
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 					../Experimental,
 				);
@@ -16705,7 +16673,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_MINERVA_MODEL;
 				HEADER_SEARCH_PATHS = (
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 					../Experimental,
 				);
@@ -16787,7 +16755,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -16816,7 +16784,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_CLIP_PLANES;
 				HEADER_SEARCH_PATHS = (
 					../Experimental,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -16842,7 +16810,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/Python.framework/Headers/,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "/Library/Python/2.5/site-packages/";
@@ -16852,9 +16820,9 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"/usr/local/lib\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = FlashDocument;
 				ZERO_LINK = YES;
@@ -16876,7 +16844,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/Python.framework/Headers/,
-					../../../sdk/3rdParty/include,
+					/usr/local/include,
 					../,
 				);
 				INSTALL_PATH = "/Library/Python/2.5/site-packages/";
@@ -16886,9 +16854,9 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../sdk/3rdParty/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"/usr/local/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"/usr/local/lib\"";
 				PREBINDING = NO;
 				PRODUCT_NAME = FlashDocument;
 				ZERO_LINK = NO;

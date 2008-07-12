@@ -11351,12 +11351,15 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/PasswordPromptComponent.h,
 			);
 			outputPaths = (
+				$SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/moc_PasswordPromptComponent.cpp,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/PasswordPromptComponent.h -o $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/moc_PasswordPromptComponent.cpp";
+			showEnvVarsInLog = 0;
 		};
 		666765700D1232A1002F40C6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11377,12 +11380,17 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../Helios/Qt/Views/OSG/EditBackground.h,
+				$SRCROOT/../Helios/Qt/Views/OSG/Viewer.h,
 			);
 			outputPaths = (
+				$SRCROOT/../Helios/Qt/Views/OSG/moc_EditBackground.cpp,
+				$SRCROOT/../Helios/Qt/Views/OSG/moc_Viewer.cpp,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Views/OSG/EditBackground.h -o $SRCROOT/../Helios/Qt/Views/OSG/moc_EditBackground.cpp\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Views/OSG/Viewer.h -o $SRCROOT/../Helios/Qt/Views/OSG/moc_Viewer.cpp\n";
+			showEnvVarsInLog = 0;
 		};
 		667E35990E05E0FE009732FE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11489,12 +11497,15 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h,
 			);
 			outputPaths = (
+				$SRCROOT/../Minerva/Plugins/OssimLayerQt/moc_AddOssimLayerWidget.cpp,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/OssimLayerQt/AddOssimLayerWidget.h -o $SRCROOT/../Minerva/Plugins/OssimLayerQt/moc_AddOssimLayerWidget.cpp";
+			showEnvVarsInLog = 0;
 		};
 		66A119850D2EC22E009B29ED /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11524,6 +11535,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionsDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_OptionsDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AlphasDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_AlphasDialog.h\n";
+			showEnvVarsInLog = 0;
 		};
 		66A1198A0D2EC239009B29ED /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11537,6 +11549,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LayerProperties.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_LayerProperties.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PropertyPage.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PropertyPage.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LineWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_LineWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LineWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_LineWidget.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PointWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_PointWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PointWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PointWidget.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PolygonWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_PolygonWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PolygonWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PolygonWidget.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/SingleColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_SingleColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/GradientColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_GradientColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/UniqueColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_UniqueColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/DatabasePage.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_DatabasePage.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ConnectToDatabase.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_ConnectToDatabase.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_AddPostGISLayerWidget.cpp\n";
+			showEnvVarsInLog = 0;
 		};
 		66C8FAB70D1204EA003F6A58 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11585,12 +11598,17 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../Helios/Qt/Plugins/SnapShot/SnapShotWidget.h,
+				$SRCROOT/../Helios/Qt/Plugins/SnapShot/SnapShot.ui,
 			);
 			outputPaths = (
+				$SRCROOT/../Helios/Qt/Plugins/SnapShot/moc_SnapShotWidget.cpp,
+				$SRCROOT/../Helios/Qt/Plugins/SnapShot/ui_SnapShot.h,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Plugins/SnapShot/SnapShotWidget.h -o $SRCROOT/../Helios/Qt/Plugins/SnapShot/moc_SnapShotWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Helios/Qt/Plugins/SnapShot/SnapShot.ui -o $SRCROOT/../Helios/Qt/Plugins/SnapShot/ui_SnapShot.h";
+			showEnvVarsInLog = 0;
 		};
 		66EF06900D14638000B4B1AA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -11627,12 +11645,17 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../Helios/Qt/Plugins/ClipPlanes/ClipPlanes.h,
+				$SRCROOT/../Helios/Qt/Plugins/ClipPlanes/ClipPlanes.ui,
 			);
 			outputPaths = (
+				$SRCROOT/../Helios/Qt/Plugins/ClipPlanes/moc_ClipPlanes.cpp,
+				$SRCROOT/../Helios/Qt/Plugins/ClipPlanes/ui_ClipPlanes.h,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Plugins/ClipPlanes/ClipPlanes.h -o $SRCROOT/../Helios/Qt/Plugins/ClipPlanes/moc_ClipPlanes.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Helios/Qt/Plugins/ClipPlanes/ClipPlanes.ui -o $SRCROOT/../Helios/Qt/Plugins/ClipPlanes/ui_ClipPlanes.h";
+			showEnvVarsInLog = 0;
 		};
 		66F523CB0E0D7898001D0057 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -15,6 +15,8 @@
 
 #include "Font.h"
 
+#include "Usul/Threads/Guard.h"
+
 #include "osg/Version"
 
 #include "osgText/Font"
@@ -27,6 +29,16 @@
 #include <fstream>
 
 using namespace OsgTools;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize static data members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Threads::Mutex Font::_mutex;
+osg::ref_ptr<osgText::Font> Font::_font;
+
 
 #ifdef __APPLE__
 
@@ -81,17 +93,37 @@ std::string Font::fontfile ( const std::string &name )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Read the font file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  Font::FontPtr readFontFile()
+  {
+#ifdef __APPLE__
+    return osgText::readRefFontFile( "fudd.ttf" );
+#else
+    return osgText::readRefFontFile( "arial.ttf" );
+#endif
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Return the default font for the platform.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Font::FontPtr Font::defaultFont() 
 {
-  #ifdef __APPLE__
-    return osgText::readFontFile( "fudd.ttf" );
-  #else
-    return osgText::readFontFile( "arial.ttf" );
-  #endif
+  Usul::Threads::Guard<Usul::Threads::Mutex> guard ( _mutex );
+
+  if ( false == _font.valid() )
+    _font = Detail::readFontFile();
+  
+  return _font;
 }
 
 
@@ -107,11 +139,6 @@ unsigned int Font::estimateTextWidth( osgText::Text* text )
   if ( 0x0 == text )
     return 0;
 
-  osg::ref_ptr < osgText::Font > font ( const_cast < osgText::Font *> ( text->getFont() ) );
-
-  if( false == font.valid() )
-    return 0;
-
 #if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
   
   typedef osgText::Text::TextureGlyphQuadMap TextureGlyphQuadMap;
@@ -122,16 +149,16 @@ unsigned int Font::estimateTextWidth( osgText::Text* text )
   unsigned int number ( 0 );
   
   for( TextureGlyphQuadMap::const_iterator iter = map.begin(); iter != map.end(); ++iter )
-    {
-        const GlyphQuads& glyphquad ( iter->second );
-        const GlyphQuads::Coords2& coords2 = glyphquad._coords;
+  {
+    const GlyphQuads& glyphquad ( iter->second );
+    const GlyphQuads::Coords2& coords2 = glyphquad._coords;
 
-        for( unsigned int i = 0; i < coords2.size(); i += 4 )
-        {
-          width += coords2[i+2].x() - coords2[i].x();
-          ++number;
-        }
+    for( unsigned int i = 0; i < coords2.size(); i += 4 )
+    {
+      width += coords2[i+2].x() - coords2[i].x();
+      ++number;
     }
+  }
 
   if ( number > 0 )
     return static_cast<unsigned int> ( ( width / static_cast<double> ( number ) ) * text->getText().size() );
@@ -139,6 +166,11 @@ unsigned int Font::estimateTextWidth( osgText::Text* text )
   return 0;
 
 #else
+  osg::ref_ptr < osgText::Font > font ( const_cast < osgText::Font *> ( text->getFont() ) );
+  
+  if( false == font.valid() )
+    return 0;
+  
   float characterHeight       ( text->getCharacterHeight() );
   float characterAspectRatio  ( text->getCharacterAspectRatio() );
 

@@ -352,6 +352,8 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   // Move up and down actions.
   QtTools::Action moveUp   ( USUL_MAKE_COMMAND_ARG0 ( "Move up",   "", this, &LayersTree::_moveLayerUp,   currentItem ) );
   QtTools::Action moveDown ( USUL_MAKE_COMMAND_ARG0 ( "Move down", "", this, &LayersTree::_moveLayerDown, currentItem ) );
+  moveUp.setEnabled   ( this->_canMoveLayerUp   ( currentItem ) );
+  moveDown.setEnabled ( this->_canMoveLayerDown ( currentItem ) );
   
   // Add the actions to the menu.
   menu.addAction ( &add );
@@ -519,16 +521,7 @@ void LayersTree::_moveLayerUp ( QTreeWidgetItem *item )
   QTreeWidgetItemIterator iter ( item ); --iter;
   QTreeWidgetItem *sibling ( *iter );
 
-  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
-  Usul::Interfaces::IUnknown::QueryPtr unknown0 ( _tree->unknown ( item ) );
-  Usul::Interfaces::IUnknown::QueryPtr unknown1 ( _tree->unknown ( sibling ) );
-  
-  if ( swap.valid() && unknown0.valid() && unknown1.valid() )
-  {
-    swap->swapLayers ( unknown0, unknown1 );
-    this->_dirtyAndRedraw ( unknown0 );
-    this->_dirtyAndRedraw ( unknown1 );
-  }
+  this->_swapLayers( item, sibling, parent );
 }
 
 
@@ -540,7 +533,7 @@ void LayersTree::_moveLayerUp ( QTreeWidgetItem *item )
 
 void LayersTree::_moveLayerDown ( QTreeWidgetItem *item )
 {
-  if ( 0x0 == item )
+  if ( 0x0 == item || 0x0 == _tree )
     return;
   
   // Get the parent and the sibling.
@@ -549,14 +542,81 @@ void LayersTree::_moveLayerDown ( QTreeWidgetItem *item )
   QTreeWidgetItemIterator iter ( item ); ++iter;
   QTreeWidgetItem *sibling ( *iter );
   
+  this->_swapLayers( item, sibling, parent );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Swap two layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_swapLayers ( QTreeWidgetItem *item0, QTreeWidgetItem *item1, QTreeWidgetItem *parent )
+{
+  // Check input.
+  if ( 0x0 == item0 || 0x0 == item1 || 0x0 == parent || 0x0 == _tree )
+    return;
+  
   Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
-  Usul::Interfaces::IUnknown::QueryPtr unknown0 ( _tree->unknown ( item ) );
-  Usul::Interfaces::IUnknown::QueryPtr unknown1 ( _tree->unknown ( sibling ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown0 ( _tree->unknown ( item0 ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown1 ( _tree->unknown ( item1 ) );
   
   if ( swap.valid() && unknown0.valid() && unknown1.valid() )
   {
     swap->swapLayers ( unknown0, unknown1 );
+    
+    const int index0 ( parent->indexOfChild ( item0 ) );
+    const int index1 ( parent->indexOfChild ( item1 ) );
+    
+    typedef QList<QTreeWidgetItem*> Children;
+    Children children ( parent->takeChildren() );
+    children[index0] = item1;
+    children[index1] = item0;
+    
+    parent->addChildren ( children );
+    
     this->_dirtyAndRedraw ( unknown0 );
     this->_dirtyAndRedraw ( unknown1 );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Can the layer be moved up?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool LayersTree::_canMoveLayerUp ( QTreeWidgetItem *item ) const
+{
+  if ( 0x0 == item || 0x0 == _tree )
+    return false;
+  
+  // Get the parent.
+  QTreeWidgetItem *parent ( item->parent() );
+  
+  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
+  const int index ( 0x0 != parent ? parent->indexOfChild ( item ) : -1 );
+  return swap.valid() && index > 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Can the layer be moved down?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool LayersTree::_canMoveLayerDown ( QTreeWidgetItem *item ) const
+{
+  if ( 0x0 == item || 0x0 == _tree )
+    return false;
+  
+  // Get the parent.
+  QTreeWidgetItem *parent ( item->parent() );
+  
+  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
+  const int index ( 0x0 != parent ? parent->indexOfChild ( item ) : -1 );
+  return swap.valid() && ( index + 1 ) < parent->childCount();
 }

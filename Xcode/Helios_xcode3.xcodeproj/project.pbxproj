@@ -631,7 +631,7 @@
 		6667663F0D1237B3002F40C6 /* Print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6667663A0D1237B3002F40C6 /* Print.cpp */; };
 		666766400D1237B3002F40C6 /* Scope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6667663C0D1237B3002F40C6 /* Scope.cpp */; };
 		6667665C0D12426B002F40C6 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
-		666766680D1243A9002F40C6 /* HeliosPlugins.xml in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666766660D12437A002F40C6 /* HeliosPlugins.xml */; };
+		666766680D1243A9002F40C6 /* Helios.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666766660D12437A002F40C6 /* Helios.plugins */; };
 		666766A70D124D34002F40C6 /* helios_sun.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A20D124D2C002F40C6 /* helios_sun.png */; };
 		666766A80D124D34002F40C6 /* newDocument.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A30D124D2C002F40C6 /* newDocument.png */; };
 		666766A90D124D34002F40C6 /* openDocument.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A40D124D2C002F40C6 /* openDocument.png */; };
@@ -675,6 +675,7 @@
 		6676A6570D136BC200B95C16 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 6676A6530D136BC200B95C16 /* CompileGuard.h */; };
 		6676A6580D136BC200B95C16 /* SceneTreeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6676A6540D136BC200B95C16 /* SceneTreeComponent.cpp */; };
 		6676A6590D136BC200B95C16 /* SceneTreeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 6676A6550D136BC200B95C16 /* SceneTreeComponent.h */; };
+		667A27D20E282C670047A376 /* ISwapLayers.h in Headers */ = {isa = PBXBuildFile; fileRef = 667A27D10E282C670047A376 /* ISwapLayers.h */; };
 		667E0D870D131D3700157E5D /* SceneDocumentBundle.bundle in Copy Bundles */ = {isa = PBXBuildFile; fileRef = 6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */; };
 		667E35A40E05E0FE009732FE /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
 		667E35A90E05E0FE009732FE /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
@@ -2967,7 +2968,7 @@
 				66EFF30C0D1370AF00B4B1AA /* QtSceneTree.plug in Copy Files to Plugins */,
 				66CFB21B0D13597B00F93E67 /* SceneModel.plug in Copy Files to Plugins */,
 				666767720D12FF7C002F40C6 /* QtSceneDelegate.plug in Copy Files to Plugins */,
-				666766680D1243A9002F40C6 /* HeliosPlugins.xml in Copy Files to Plugins */,
+				666766680D1243A9002F40C6 /* Helios.plugins in Copy Files to Plugins */,
 			);
 			name = "Copy Files to Plugins";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4003,7 +4004,7 @@
 		6667663C0D1237B3002F40C6 /* Scope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scope.cpp; path = Trace/Scope.cpp; sourceTree = "<group>"; };
 		6667663D0D1237B3002F40C6 /* Scope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scope.h; path = Trace/Scope.h; sourceTree = "<group>"; };
 		6667663E0D1237B3002F40C6 /* Trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Trace.h; path = Trace/Trace.h; sourceTree = "<group>"; };
-		666766660D12437A002F40C6 /* HeliosPlugins.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = HeliosPlugins.xml; path = Qt/Application/HeliosPlugins.xml; sourceTree = "<group>"; };
+		666766660D12437A002F40C6 /* Helios.plugins */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Helios.plugins; path = Qt/Application/Helios.plugins; sourceTree = "<group>"; };
 		666766A20D124D2C002F40C6 /* helios_sun.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = helios_sun.png; path = Images/helios_sun.png; sourceTree = "<group>"; };
 		666766A30D124D2C002F40C6 /* newDocument.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = newDocument.png; path = Images/newDocument.png; sourceTree = "<group>"; };
 		666766A40D124D2C002F40C6 /* openDocument.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = openDocument.png; path = Images/openDocument.png; sourceTree = "<group>"; };
@@ -4045,6 +4046,9 @@
 		6676A6530D136BC200B95C16 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = Qt/Plugins/SceneTree/CompileGuard.h; sourceTree = "<group>"; };
 		6676A6540D136BC200B95C16 /* SceneTreeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = SceneTreeComponent.cpp; path = Qt/Plugins/SceneTree/SceneTreeComponent.cpp; sourceTree = "<group>"; };
 		6676A6550D136BC200B95C16 /* SceneTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneTreeComponent.h; path = Qt/Plugins/SceneTree/SceneTreeComponent.h; sourceTree = "<group>"; };
+		667A27CF0E282C460047A376 /* IElevationChangedListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IElevationChangedListener.h; sourceTree = "<group>"; };
+		667A27D00E282C460047A376 /* ILookAtLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILookAtLayer.h; sourceTree = "<group>"; };
+		667A27D10E282C670047A376 /* ISwapLayers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISwapLayers.h; sourceTree = "<group>"; };
 		667E0D610D131BE000157E5D /* ICreateDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICreateDocument.h; path = Protocol/ICreateDocument.h; sourceTree = "<group>"; };
 		667E35B10E05E0FE009732FE /* PythonQt.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PythonQt.plug; sourceTree = BUILT_PRODUCTS_DIR; };
 		667E3CB50E05E1CB009732FE /* PythonComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PythonComponent.cpp; sourceTree = "<group>"; };
@@ -4836,6 +4840,7 @@
 		66C8FEFE0D120C64003F6A58 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		66CA7A380D552790004909C6 /* Feature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Feature.h; sourceTree = "<group>"; };
 		66CA7A390D552790004909C6 /* Feature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Feature.cpp; sourceTree = "<group>"; };
+		66CCC22A0E2882A600DDFE55 /* plugins.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = plugins.xml; path = Qt/Application/plugins.xml; sourceTree = "<group>"; };
 		66CCE88D0D2F60600084E49D /* IElevationDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IElevationDatabase.h; sourceTree = "<group>"; };
 		66CCE9C80D3186630084E49D /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		66CFF1500D38A19700ED0216 /* GDAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GDAL.framework; path = ../../../Library/Frameworks/GDAL.framework; sourceTree = SOURCE_ROOT; };
@@ -7555,16 +7560,19 @@
 		664B434C0D54EE8C0080DF60 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				664B434D0D54EE8C0080DF60 /* IAddLayer.h */,
+				664B434E0D54EE8C0080DF60 /* IAnimationControl.h */,
 				668E3AA60D8A33FC00FD7F58 /* IDatabaseConnection.h */,
+				664B434F0D54EE8C0080DF60 /* IDirtyScene.h */,
+				667A27CF0E282C460047A376 /* IElevationChangedListener.h */,
 				668E3AAA0D8A33FC00FD7F58 /* ILineLayer.h */,
+				667A27D00E282C460047A376 /* ILookAtLayer.h */,
 				668E3AB10D8A33FC00FD7F58 /* IPointLayer.h */,
 				668E3AB30D8A33FC00FD7F58 /* IPolygonLayer.h */,
 				668E3AB40D8A33FC00FD7F58 /* IPostgresqlConnection.h */,
-				668E3AB60D8A33FC00FD7F58 /* IVectorLayer.h */,
-				664B434D0D54EE8C0080DF60 /* IAddLayer.h */,
-				664B434E0D54EE8C0080DF60 /* IAnimationControl.h */,
-				664B434F0D54EE8C0080DF60 /* IDirtyScene.h */,
 				664B43500D54EE8C0080DF60 /* IRemoveLayer.h */,
+				667A27D10E282C670047A376 /* ISwapLayers.h */,
+				668E3AB60D8A33FC00FD7F58 /* IVectorLayer.h */,
 			);
 			path = Interfaces;
 			sourceTree = "<group>";
@@ -7622,8 +7630,9 @@
 		6667619C0D122DB0002F40C6 /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				66CCC22A0E2882A600DDFE55 /* plugins.xml */,
 				666765E80D1235EC002F40C6 /* HeliosQtApp-Info.plist */,
-				666766660D12437A002F40C6 /* HeliosPlugins.xml */,
+				666766660D12437A002F40C6 /* Helios.plugins */,
 				666765B10D1234E2002F40C6 /* main.cpp */,
 			);
 			name = Application;
@@ -9941,6 +9950,7 @@
 				66A1C5140E09B321001DB3F8 /* SubRegion.h in Headers */,
 				669273970E0B1F4900E35E8B /* Transform.h in Headers */,
 				662638A60E2677A700442B4D /* Download.h in Headers */,
+				667A27D20E282C670047A376 /* ISwapLayers.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10307,6 +10317,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 666765EB0D1235ED002F40C6 /* Build configuration list for PBXNativeTarget "HeliosQtApp" */;
 			buildPhases = (
+				66CCC2270E28824E00DDFE55 /* Copy Helios.plugins */,
 				666765E20D1235EC002F40C6 /* Resources */,
 				666765E30D1235EC002F40C6 /* Sources */,
 				666766620D12433F002F40C6 /* Copy Files to Plugins */,
@@ -11539,6 +11550,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Action.h -o ${HOME}/src/cadkit/QtTools/moc_Action.cpp\n$QTDIR/bin/uic ${HOME}/src/cadkit/QtTools/AnimationControl.ui -o ${HOME}/src/cadkit/QtTools/ui_AnimationControl.h\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/AnimationControl.h -o ${HOME}/src/cadkit/QtTools/moc_AnimationControl.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/ColorButton.h -o ${HOME}/src/cadkit/QtTools/moc_ColorButton.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Menu.h -o ${HOME}/src/cadkit/QtTools/moc_Menu.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/PropertyBrowser.h -o ${HOME}/src/cadkit/QtTools/moc_PropertyBrowser.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/TreeControl.h -o ${HOME}/src/cadkit/QtTools/moc_TreeControl.cpp\n";
+		};
+		66CCC2270E28824E00DDFE55 /* Copy Helios.plugins */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Helios.plugins";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f $SRCROOT/../Helios/Qt/Application/Helios.plugins ]; then\n  cp $SRCROOT/../Helios/Qt/Application/plugins.xml $SRCROOT/../Helios/Qt/Application/Helios.plugins\nfi\n";
 		};
 		66E1E0820DE4D4D10005073C /* Change Install Path */ = {
 			isa = PBXShellScriptBuildPhase;

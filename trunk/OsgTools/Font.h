@@ -18,6 +18,8 @@
 
 #include "OsgTools/Export.h"
 
+#include "Usul/Threads/Mutex.h"
+
 #include "osg/ref_ptr"
 #include "osgText/Font"
 
@@ -34,6 +36,10 @@ struct OSG_TOOLS_EXPORT Font
   static FontPtr             defaultFont();
 
   static unsigned int        estimateTextWidth ( osgText::Text* text );
+  
+private:
+  static Usul::Threads::Mutex _mutex;
+  static FontPtr _font;
 };
 
 } // namespace OsgTools

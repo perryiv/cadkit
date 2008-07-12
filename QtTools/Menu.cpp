@@ -38,7 +38,13 @@ _menu ( 0x0 ),
 _actions()
 {
   USUL_TRACE_SCOPE;
+
+  // Set the context-menu policy.
+  this->setContextMenuPolicy ( Qt::CustomContextMenu );
+
+  // Set up slots.
   connect ( this, SIGNAL ( aboutToShow() ), SLOT ( _showMenu() ) );
+  connect ( this, SIGNAL ( customContextMenuRequested ( const QPoint & ) ), SLOT ( _showContextMenu ( const QPoint & ) ) );
 }
 
 
@@ -224,4 +230,40 @@ void Menu::_showMenu()
     MenuKit::Visitor::RefPtr visitor ( new Detail::QtMenuBuilder ( this, _actions ) );
     _menu->traverse ( *visitor );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the mouse is pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Menu::mousePressEvent ( QMouseEvent * event )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the mouse is released.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Menu::mouseReleaseEvent ( QMouseEvent * event )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the context menu is requested.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Menu::_showContextMenu ( const QPoint & )
+{
+  USUL_TRACE_SCOPE;
 }

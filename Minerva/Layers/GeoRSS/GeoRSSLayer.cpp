@@ -7,12 +7,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#endif
-
 #include "Minerva/Layers/GeoRSS/GeoRSSLayer.h"
 #include "Minerva/Layers/GeoRSS/GeoRSSCallback.h"
 #include "Minerva/Core/Data/DataObject.h"
@@ -27,38 +21,11 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
-#include "Usul/File/Path.h"
-#include "Usul/File/Remove.h"
-#include "Usul/File/Rename.h"
-#include "Usul/File/Temp.h"
-#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
-#include "Usul/Network/Curl.h"
-#include "Usul/Predicates/FileExists.h"
-#include "Usul/Registry/Database.h"
 #include "Usul/Scope/Caller.h"
-#include "Usul/Scope/Reset.h"
-#include "Usul/Strings/Case.h"
-#include "Usul/Strings/Split.h"
-#include "Usul/System/Directory.h"
-#include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
-
-#include "OsgTools/Visitor.h"
-#include "OsgTools/State/StateSet.h"
-
-#include "osg/Material"
-
-#include "osgDB/ReadFile"
-
-#include "boost/algorithm/string/find.hpp"
-#include "boost/algorithm/string/replace.hpp"
-#include "boost/filesystem/operations.hpp"
-#include "Usul/File/Boost.h"
-
-#include <sstream>
 
 using namespace Minerva::Layers::GeoRSS;
 

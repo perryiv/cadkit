@@ -4577,7 +4577,7 @@
 		669F46350D5BD9CD00BFA6C6 /* Execute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Execute.h; sourceTree = "<group>"; };
 		669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5.0.0.0.dylib; path = /usr/local/lib/libhdf5.0.0.0.dylib; sourceTree = "<absolute>"; };
 		669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_hl.0.0.0.dylib; path = /usr/local/lib/libhdf5_hl.0.0.0.dylib; sourceTree = "<absolute>"; };
-		669F72E20E19915A005EE92C /* libsz.2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsz.2.0.0.dylib; path = "../../../sdk/szip-2.1/szip/lib/libsz.2.0.0.dylib"; sourceTree = SOURCE_ROOT; };
+		669F72E20E19915A005EE92C /* libsz.2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libsz.2.0.0.dylib; path = /usr/local/lib; sourceTree = "<absolute>"; };
 		669FAF970D7F3E27007B5B8B /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		669FCA250E1A8FDB00DFE682 /* osgdb_dae.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_dae.so; sourceTree = "<group>"; };
 		669FCAED0E1AF65D00DFE682 /* TypeWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TypeWrapper.h; path = ../Experimental/Flash/FlashModel/TypeWrapper.h; sourceTree = SOURCE_ROOT; };

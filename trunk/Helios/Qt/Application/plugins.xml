@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <plugins>
-  <plugin file="TriangulateCGAL.plug" />
-  <plugin file="ComputeNormals.plug" />
-  <plugin file="ProjectionManager.plug" />
-  <plugin file="SceneModel.plug" />
+  <plugin file="QtAnimationControl.plug" />
   <plugin file="QtSceneDelegate.plug" />
-  <plugin file="VolumeModel.plug" />
-  <plugin file="SceneTreeQt.plug" />
-  <plugin file="SnapShotQt.plug" />
-  <plugin file="MinervaModel.plug" />
-  <plugin file="ProjectionManager.plug" />
+  <plugin file="QtSceneTree.plug" />
+  <plugin file="QtClipPlanes.plug" />
+  <plugin file="QtSnapShot.plug" />
+  <plugin file="QtFlashDelegate.plug" />
+  
+  <plugin file="SceneModel.plug" />
+  <plugin file="PathAnimation.plug"/>
+  <plugin file="FlashModel.plug" />
+  <plugin file="WRFModel.plug" />
+  <plugin file="ModelPresentation.plug" />
 </plugins>

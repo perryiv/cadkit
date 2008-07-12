@@ -49,7 +49,7 @@ namespace Data {
   
 class DataObject;
 
-class ClickedCallback : public Usul::Base::Referenced
+class MINERVA_EXPORT ClickedCallback : public Usul::Base::Referenced
 {
 public:
   typedef OsgTools::Legend::Item Item;

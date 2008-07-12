@@ -403,7 +403,6 @@ void Cinema::Core::Movie::buildScene()
         return;
       }
 
-      osgDB::DynamicLibrary::loadLibrary( "osgdb_qtd.dll" );
       osg::ref_ptr< osg::Image > image = osgDB::readImageFile( mFileName );
       if( image.valid() )
       {        

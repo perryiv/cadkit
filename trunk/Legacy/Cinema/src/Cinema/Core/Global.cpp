@@ -15,6 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "osgDB/DynamicLibrary"
+#include "osgDB/Registry"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -28,6 +29,8 @@ struct XineLife
 {
   XineLife()
   {
+		osgDB::Registry::instance()->addFileExtensionAlias ( "mov", "qt" );
+
     #ifdef _WIN32   
       #ifdef _DEBUG
         osgDB::DynamicLibrary::loadLibrary( "osgdb_qtd.dll" );

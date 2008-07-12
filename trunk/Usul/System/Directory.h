@@ -28,7 +28,7 @@ public:
   static std::string   cwd ();
 
   /// Helper struct the change and restore current working directory.
-  struct ScopedCwd
+  struct USUL_EXPORT ScopedCwd
   {
     typedef Usul::Threads::Mutex Mutex;
     

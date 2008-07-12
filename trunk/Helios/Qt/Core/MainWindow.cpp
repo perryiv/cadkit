@@ -1850,7 +1850,7 @@ void MainWindow::addDockWidgetMenu ( QDockWidget * dock )
 
   if ( _dockMenu.valid() )
   {
-    MenuKit::Button::RefPtr button ( new MenuKit::Button ( new CadKit::Helios::Commands::ToggleView ( dock ) ) );
+    MenuKit::Button::RefPtr button ( new MenuKit::ToggleButton ( new CadKit::Helios::Commands::ToggleView ( dock ) ) );
     button->toggle ( true );
     _dockMenu->append ( button.get() );
   }

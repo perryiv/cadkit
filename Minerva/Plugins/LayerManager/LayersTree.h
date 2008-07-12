@@ -54,6 +54,9 @@ protected:
   void     _dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown );
   void     _moveLayerUp ( QTreeWidgetItem *item );
   void     _moveLayerDown ( QTreeWidgetItem *item );
+  void     _swapLayers ( QTreeWidgetItem *item0, QTreeWidgetItem *item1, QTreeWidgetItem *parent );
+  bool     _canMoveLayerUp ( QTreeWidgetItem *item ) const;
+  bool     _canMoveLayerDown ( QTreeWidgetItem *item ) const;
 
 protected slots:
   void _onDoubleClick ( QTreeWidgetItem * item, int columnNumber );

@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(CURL_INC_DIR)"
+				AdditionalIncludeDirectories="&quot;$(OSG_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_GEO_RSS;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib curld.lib osgDBd.lib"
+				AdditionalDependencies="curld.lib osgd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGeoRSSd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;$(CURL_LIB_DIR)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(CURL_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MinervaGeoRSSd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGeoRSSd.lib"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;$(CURL_INC_DIR)"
+				AdditionalIncludeDirectories="&quot;$(OSG_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_GEO_RSS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib curl.lib osgDB.lib"
+				AdditionalDependencies="curl.lib osg.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGeoRSS.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;$(CURL_LIB_DIR)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(CURL_LIB_DIR)&quot;"
 				ProgramDatabaseFile=".\Release/MinervaGeoRSS.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGeoRSS.lib"
 			/>
@@ -218,6 +218,14 @@
 		<Filter
 			Name="Source"
 			>
+			<File
+				RelativePath=".\GeoRSSCallback.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GeoRSSCallback.h"
+				>
+			</File>
 			<File
 				RelativePath=".\GeoRSSLayer.cpp"
 				>

@@ -87,6 +87,8 @@ Usul::Interfaces::IUnknown * RasterGroup::queryInterface ( unsigned long iid )
     return static_cast<Minerva::Interfaces::IAddLayer* > ( this );
   case Minerva::Interfaces::IRemoveLayer::IID:
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
+  case Minerva::Interfaces::ISwapLayers::IID:
+    return static_cast < Minerva::Interfaces::ISwapLayers* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -535,6 +537,7 @@ RasterGroup::LogPtr RasterGroup::logGet()
 
 void RasterGroup::deserialize ( const XmlTree::Node &node )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
   // Call the base class.
@@ -546,4 +549,45 @@ void RasterGroup::deserialize ( const XmlTree::Node &node )
   // Update the extents.
   for ( Layers::const_iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
     this->_updateExtents ( (*iter).get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Swap layers (ISwapLayers).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::swapLayers ( Usul::Interfaces::IUnknown *layer0, Usul::Interfaces::IUnknown* layer1 )
+{
+  USUL_TRACE_SCOPE;
+  this->swap ( Usul::Interfaces::IRasterLayer::QueryPtr ( layer0 ), Usul::Interfaces::IRasterLayer::QueryPtr ( layer1 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Swap layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::swap ( IRasterLayer* layer0, IRasterLayer* layer1 )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  
+  Layers::iterator iter0 ( std::find_if ( _layers.begin(), 
+                                         _layers.end(), 
+                                         Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer0 ) ) );
+  
+  Layers::iterator iter1 ( std::find_if ( _layers.begin(), 
+                                         _layers.end(), 
+                                         Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer1 ) ) );
+  
+  if ( _layers.end() != iter0 && _layers.end() != iter1 )
+  {
+    IRasterLayer::RefPtr temp ( *iter0 );
+    *iter0 = *iter1;
+    *iter1 = temp;
+  }
 }

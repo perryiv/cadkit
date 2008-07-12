@@ -16,6 +16,7 @@
 
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
+#include "Minerva/Interfaces/ISwapLayers.h"
 
 #include "Usul/Base/Object.h"
 
@@ -31,7 +32,8 @@ namespace Layers {
 
 class MINERVA_EXPORT RasterGroup : public RasterLayer,
                                    public Minerva::Interfaces::IAddLayer,
-                                   public Minerva::Interfaces::IRemoveLayer
+                                   public Minerva::Interfaces::IRemoveLayer,
+                                   public Minerva::Interfaces::ISwapLayers
 {
 public:
 
@@ -62,6 +64,7 @@ public:
 
   void                            append ( IRasterLayer* layer );
   void                            remove ( IRasterLayer* layer );
+  void                            swap   ( IRasterLayer* layer0, IRasterLayer* layer1 );
   
   /// Get the i'th layer.
   virtual ILayer*                 layer ( unsigned int i );
@@ -107,6 +110,9 @@ protected:
 
   /// Remove a layer (IRemoveLayer).
   virtual void                    removeLayer ( Usul::Interfaces::ILayer * layer );
+  
+  /// Swap layers (ISwapLayers).
+  virtual void                    swapLayers ( Usul::Interfaces::IUnknown *layer0, Usul::Interfaces::IUnknown* layer1 );
 
 private:
   RasterGroup& operator= ( const RasterGroup& );

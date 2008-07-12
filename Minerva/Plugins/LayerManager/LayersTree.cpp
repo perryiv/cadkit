@@ -17,6 +17,7 @@
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/ILookAtLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
+#include "Minerva/Interfaces/ISwapLayers.h"
 
 #include "QtTools/Action.h"
 #include "QtTools/Menu.h"
@@ -35,6 +36,7 @@
 
 #include "QtGui/QHeaderView"
 #include "QtGui/QTreeWidget"
+#include "QtGui/QTreeWidgetItemIterator"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"
@@ -302,6 +304,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   if ( 0x0 == _tree )
     return;
 
+  QTreeWidgetItem *currentItem ( _tree->currentItem() );
   Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
   Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
 
@@ -346,9 +349,15 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
   properties.setEnabled ( layer.valid() && editor.valid() );
   
+  // Move up and down actions.
+  QtTools::Action moveUp   ( USUL_MAKE_COMMAND_ARG0 ( "Move up",   "", this, &LayersTree::_moveLayerUp,   currentItem ) );
+  QtTools::Action moveDown ( USUL_MAKE_COMMAND_ARG0 ( "Move down", "", this, &LayersTree::_moveLayerDown, currentItem ) );
+  
   // Add the actions to the menu.
   menu.addAction ( &add );
   menu.addAction ( &remove );
+  menu.addAction ( &moveUp );
+  menu.addAction ( &moveDown );
   menu.addAction ( &favorites );
 
   QtTools::Menu addFromFavorites ( "Add From Favorites" );
@@ -490,4 +499,64 @@ void LayersTree::favorites ( Favorites* favorites )
 Favorites* LayersTree::favorites() const
 {
   return _favorites;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Move the given layer up.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_moveLayerUp ( QTreeWidgetItem *item )
+{
+  if ( 0x0 == item || 0x0 == _tree )
+    return;
+  
+  // Get the parent and the sibling.
+  QTreeWidgetItem *parent ( item->parent() );
+  
+  QTreeWidgetItemIterator iter ( item ); --iter;
+  QTreeWidgetItem *sibling ( *iter );
+
+  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown0 ( _tree->unknown ( item ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown1 ( _tree->unknown ( sibling ) );
+  
+  if ( swap.valid() && unknown0.valid() && unknown1.valid() )
+  {
+    swap->swapLayers ( unknown0, unknown1 );
+    this->_dirtyAndRedraw ( unknown0 );
+    this->_dirtyAndRedraw ( unknown1 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Move the given layer down.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_moveLayerDown ( QTreeWidgetItem *item )
+{
+  if ( 0x0 == item )
+    return;
+  
+  // Get the parent and the sibling.
+  QTreeWidgetItem *parent ( item->parent() );
+  
+  QTreeWidgetItemIterator iter ( item ); ++iter;
+  QTreeWidgetItem *sibling ( *iter );
+  
+  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown0 ( _tree->unknown ( item ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown1 ( _tree->unknown ( sibling ) );
+  
+  if ( swap.valid() && unknown0.valid() && unknown1.valid() )
+  {
+    swap->swapLayers ( unknown0, unknown1 );
+    this->_dirtyAndRedraw ( unknown0 );
+    this->_dirtyAndRedraw ( unknown1 );
+  }
 }

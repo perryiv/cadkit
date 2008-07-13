@@ -399,7 +399,9 @@ void Viewer::render()
   ::glGetError();
   
   // Set the multisample state.
+#ifdef __APPLE__ // Not compiling on windows.
   this->useMultisampleGet() ? ::glEnable ( GL_MULTISAMPLE_ARB ) : ::glDisable ( GL_MULTISAMPLE_ARB );
+#endif
 
   // Check for errors.
   Detail::checkForErrors ( 1491085606 );

@@ -242,6 +242,7 @@ void Menu::_showMenu()
 void Menu::mousePressEvent ( QMouseEvent * event )
 {
   USUL_TRACE_SCOPE;
+	BaseClass::mousePressEvent ( event );
 }
 
 
@@ -254,6 +255,7 @@ void Menu::mousePressEvent ( QMouseEvent * event )
 void Menu::mouseReleaseEvent ( QMouseEvent * event )
 {
   USUL_TRACE_SCOPE;
+	BaseClass::mouseReleaseEvent ( event );
 }
 
 

@@ -1037,10 +1037,12 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     passes->append ( new RadioButton ( new RenderingPasses ( "1&2", 12, unknown.get() ) ) );
   }
   
+#ifdef __APPLE__
   menu.append ( new ToggleButton ( UC::genericToggleCommand ( 
                                                             "&Mutli-Sample", 
                                                              UA::memberFunction<void> ( viewer.get(), &OsgViewer::useMultisampleSet ), 
                                                              UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useMultisampleGet ) ) ) );
+#endif
 
   MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new UC::RenderLoop ( "Render &Loop", unknown.get() ) ) );
   menu.append ( rl );

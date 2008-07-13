@@ -458,6 +458,10 @@ public:
   /// Set/get the use high lods state.
   void                  useHighLodsSet ( bool b );
   bool                  useHighLodsGet() const;
+  
+  /// Set/get the use multisamle state.
+  void                  useMultisampleSet ( bool b );
+  bool                  useMultisampleGet() const;
 
   /// Set/Get the view matrix
   void                  viewMatrix ( const osg::Matrixf& );
@@ -738,7 +742,8 @@ private:
     _SHOW_COR           = 0x00000080,
     _SHOW_TEXT          = 0x00000100,
     _USE_LOW_LODS       = 0x00000200,
-    _USE_HIGH_LODS      = 0x00000400
+    _USE_HIGH_LODS      = 0x00000400,
+    _USE_MULTISAMPLE    = 0x00000800
   };
 
   // Local integer constants.

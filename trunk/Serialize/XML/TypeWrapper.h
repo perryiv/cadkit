@@ -210,7 +210,7 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::SmartPointer 
     }
   }
 };
-
+  
 
 } // namespace Serialize
 } // namespace XML
@@ -441,5 +441,68 @@ inline std::istream &operator >> ( std::istream &in, the_type &m )\
 
 #endif
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Specialization for container.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define SERIALIZE_XML_DECLARE_TYPE_WRAPPER_CONTAINER(the_container,the_type)\
+namespace Serialize {\
+namespace XML {\
+template < > struct TypeWrapper < the_container < the_type > >\
+{\
+  typedef TypeWrapper < the_container < the_type > > ThisType;\
+  static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )\
+  {\
+  }\
+  static const char *className ( const the_container < the_type > &value )\
+  {\
+    return #the_container;\
+  }\
+  static the_container<the_type> create ( const std::string &typeName )\
+  {\
+    return the_container<the_type>();\
+  }\
+  static void deserialize ( const XmlTree::Node &node, the_container < the_type >  &value )\
+  {\
+    typedef XmlTree::Node::Children::const_iterator Itr;\
+    \
+    value.clear();\
+    \
+    for ( Itr i = node.children().begin(); i != node.children().end(); ++i )\
+    {\
+      XmlTree::Node::RefPtr element ( i->get() );\
+      if ( true == element.valid() && element->name() == "element" )\
+      {\
+        the_type object ( Usul::Convert::Type<std::string,the_type>::convert ( element->value() ) );\
+        value.push_back ( object );\
+      }\
+    }\
+  }\
+  static void getAttribute ( const std::string &name, const XmlTree::Node &node, std::string &value )\
+  {\
+    value.clear();\
+  }\
+  static bool isValid ( const the_container < the_type >  &value )\
+  {\
+    return true;\
+  }\
+  static void set ( const std::string &s, the_container < the_type > &value )\
+  {\
+  }\
+  static void serialize ( const the_container<the_type> &value, XmlTree::Node &node )\
+  {\
+    for ( the_container<the_type>::const_iterator iter = value.begin(); iter != value.end(); ++iter )\
+    {\
+      XmlTree::Node::RefPtr child ( new XmlTree::Node ( "element" ) );\
+      child->value ( Usul::Convert::Type<the_type,std::string>::convert ( *iter ) );\
+      node.append ( child.get() );\
+    }\
+  }\
+};\
+}\
+}
 
 #endif // _SERIALIZE_XML_SET_VALUE_H_

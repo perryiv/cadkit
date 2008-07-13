@@ -38,7 +38,7 @@
 
 #include <map>
 
-namespace OsgTools { namespace Legend { class Item; } }
+namespace OsgTools { namespace Widgets { class Item; } }
 
 namespace Minerva {
 namespace Core {
@@ -52,7 +52,7 @@ class DataObject;
 class MINERVA_EXPORT ClickedCallback : public Usul::Base::Referenced
 {
 public:
-  typedef OsgTools::Legend::Item Item;
+  typedef OsgTools::Widgets::Item Item;
   
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ClickedCallback );
@@ -77,7 +77,7 @@ public:
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Minerva::Core::Data::Geometry       Geometry;
   typedef std::vector<Geometry::RefPtr>       Geometries;
-  typedef OsgTools::Legend::Item              Item;
+  typedef OsgTools::Widgets::Item              Item;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );

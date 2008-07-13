@@ -14,7 +14,7 @@
 #include "Minerva/Interfaces/ILineLayer.h"
 #include "Minerva/Interfaces/IPolygonLayer.h"
 
-#include "OsgTools/Legend/SolidIcon.h"
+#include "OsgTools/Widgets/SolidIcon.h"
 
 #include "Usul/Factory/RegisterCreator.h"
 
@@ -110,13 +110,13 @@ osg::Vec4 SingleColorFunctor::operator() ( double value ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Legend::Item * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown *caller )
+OsgTools::Widgets::Item * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown *caller )
 {
 #if 0 // For now... always return quad for legend
   Minerva::Interfaces::ILineLayer::QueryPtr lineLayer ( caller );
   if( lineLayer.valid() )
   {
-    OsgTools::Legend::SolidColorLineIcon::RefPtr icon ( new OsgTools::Legend::SolidColorLineIcon );
+    OsgTools::Widgets::SolidColorLineIcon::RefPtr icon ( new OsgTools::Widgets::SolidColorLineIcon );
     icon->geometryFunctor().lineWidth ( lineLayer->lineWidth() );
     icon->colorPolicy().color( this->color() );
     return icon.release();
@@ -127,7 +127,7 @@ OsgTools::Legend::Item * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
   {
     if ( polygonLayer->showBorder() )
     {
-      OsgTools::Legend::SolidColorLineIcon::RefPtr icon ( new OsgTools::Legend::SolidColorLineIcon );
+      OsgTools::Widgets::SolidColorLineIcon::RefPtr icon ( new OsgTools::Widgets::SolidColorLineIcon );
       icon->geometryFunctor().lineWidth ( polygonLayer->borderWidth() );
       icon->colorPolicy().color( this->color() );
       return icon.release();
@@ -143,7 +143,7 @@ OsgTools::Legend::Item * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
     {
     case IPointLayer::SPHERE:
       {
-        OsgTools::Legend::SolidMaterialSphereIcon::RefPtr icon ( new OsgTools::Legend::SolidMaterialSphereIcon );
+        OsgTools::Widgets::SolidMaterialSphereIcon::RefPtr icon ( new OsgTools::Widgets::SolidMaterialSphereIcon );
         icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
         icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );
         return icon.release();
@@ -151,7 +151,7 @@ OsgTools::Legend::Item * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown 
     }
   }
   //#endif
-  OsgTools::Legend::SolidColorQuadIcon::RefPtr icon ( new OsgTools::Legend::SolidColorQuadIcon );
+  OsgTools::Widgets::SolidColorQuadIcon::RefPtr icon ( new OsgTools::Widgets::SolidColorQuadIcon );
   icon->colorPolicy().color ( this->color() );
   //icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
   //icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );

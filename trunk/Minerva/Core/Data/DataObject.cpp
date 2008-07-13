@@ -20,9 +20,9 @@
 
 #include "OsgTools/Font.h"
 #include "OsgTools/Callbacks/SortBackToFront.h"
-#include "OsgTools/Legend/Legend.h"
-#include "OsgTools/Legend/LegendObject.h"
-#include "OsgTools/Legend/Text.h"
+#include "OsgTools/Widgets/Legend.h"
+#include "OsgTools/Widgets/LegendObject.h"
+#include "OsgTools/Widgets/Text.h"
 #include "OsgTools/Utilities/ConvertToTriangles.h"
 
 #include "Usul/Interfaces/IPlanetCoordinates.h"
@@ -659,7 +659,7 @@ std::string DataObject::getTreeNodeName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller ) const
+OsgTools::Widgets::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller ) const
 {
   ClickedCallback::RefPtr cb ( this->clickedCallback() );
   
@@ -667,20 +667,20 @@ OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller
   if ( cb.valid() )
     return (*cb)( *this, caller );
   
-  OsgTools::Legend::Legend::RefPtr legend ( new OsgTools::Legend::Legend );
+  OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
   legend->maximiumSize ( 300, 300 );
   legend->heightPerItem ( 256 );
   legend->position ( 10, 10 );
-  legend->growDirection ( OsgTools::Legend::Legend::UP );
+  legend->growDirection ( OsgTools::Widgets::Legend::UP );
   
-  OsgTools::Legend::LegendObject::RefPtr row0 ( new OsgTools::Legend::LegendObject );
+  OsgTools::Widgets::LegendObject::RefPtr row0 ( new OsgTools::Widgets::LegendObject );
   
   // Make some text.
-  OsgTools::Legend::Text::RefPtr text0 ( new OsgTools::Legend::Text );
+  OsgTools::Widgets::Text::RefPtr text0 ( new OsgTools::Widgets::Text );
   text0->text ( this->name() );
   text0->wrapLine ( false );
   text0->autoSize ( false );
-  text0->alignmentVertical ( OsgTools::Legend::Text::TOP );
+  text0->alignmentVertical ( OsgTools::Widgets::Text::TOP );
   text0->fontSize ( 15 );
   
   // Add the items.
@@ -692,13 +692,13 @@ OsgTools::Legend::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* caller
   const std::string description ( this->description() );
   if ( false == description.empty() )
   {
-    OsgTools::Legend::LegendObject::RefPtr row1 ( new OsgTools::Legend::LegendObject );
+    OsgTools::Widgets::LegendObject::RefPtr row1 ( new OsgTools::Widgets::LegendObject );
     
     // Make some text.
-    OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text );
+    OsgTools::Widgets::Text::RefPtr text ( new OsgTools::Widgets::Text );
     text->text ( description );
     text->wrapLine ( true );
-    text->alignmentVertical ( OsgTools::Legend::Text::TOP );
+    text->alignmentVertical ( OsgTools::Widgets::Text::TOP );
     text->fontSize ( 15 );
     
     // Add the items.

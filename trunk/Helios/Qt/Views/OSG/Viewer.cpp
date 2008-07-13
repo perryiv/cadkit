@@ -1036,6 +1036,11 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     passes->append ( new RadioButton ( new RenderingPasses ( "&9",   9, unknown.get() ) ) );
     passes->append ( new RadioButton ( new RenderingPasses ( "1&2", 12, unknown.get() ) ) );
   }
+  
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( 
+                                                            "&Mutli-Sample", 
+                                                             UA::memberFunction<void> ( viewer.get(), &OsgViewer::useMultisampleSet ), 
+                                                             UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useMultisampleGet ) ) ) );
 
   MenuKit::Button::RefPtr rl ( new MenuKit::ToggleButton ( new UC::RenderLoop ( "Render &Loop", unknown.get() ) ) );
   menu.append ( rl );

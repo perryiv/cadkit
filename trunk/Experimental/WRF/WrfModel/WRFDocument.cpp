@@ -1101,7 +1101,7 @@ void WRFDocument::animating ( bool b )
 osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int channel0, unsigned int channel1 )
 {
   USUL_TRACE_SCOPE;
-
+#if 0
   // Check the first channel.
   if ( false == this->_dataCached ( timestep, channel0 ) )
   {
@@ -1153,7 +1153,7 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
 
   // Group to return.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
-#if 0
+
   Usul::Predicates::CloseFloat < float > close ( 10 );
 
   double min ( Usul::Math::minimum ( _channelInfo.at ( channel0 )->min (), _channelInfo.at ( channel1 )->min () ) );
@@ -1229,8 +1229,11 @@ osg::Node * WRFDocument::_buildVectorField ( unsigned int timestep, unsigned int
     Guard guard ( this->mutex () );
     _vectorCache.at ( timestep ) = group.get();
   }
-#endif
+
   return group.get();
+#else
+  return 0x0;
+#endif
 }
 
 

@@ -14,7 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Visitor.h"
 
-#include "OsgTools/Legend/Legend.h"
+#include "OsgTools/Widgets/Legend.h"
 
 #include <map>
 
@@ -29,7 +29,7 @@ public:
   
   USUL_DECLARE_REF_POINTERS ( BuildLegend );
   
-  BuildLegend ( OsgTools::Legend::Legend *legend );
+  BuildLegend ( OsgTools::Widgets::Legend *legend );
   
   virtual void visit ( Minerva::Core::Layers::Container &layer );
   
@@ -39,7 +39,7 @@ protected:
   virtual ~BuildLegend();
   
 private:
-  OsgTools::Legend::Legend::RefPtr _legend;
+  OsgTools::Widgets::Legend::RefPtr _legend;
 };
 
 

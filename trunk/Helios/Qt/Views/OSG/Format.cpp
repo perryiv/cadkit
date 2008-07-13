@@ -45,6 +45,10 @@ QGLFormat CadKit::Helios::Views::OSG::defaultFormat ()
 
     // We want 8 bits per channel.
     Detail::_format->setAccumBufferSize ( 8 );
+    
+    // Ask for multisample.
+    Detail::_format->setSampleBuffers ( true );
+    Detail::_format->setSamples ( 4 );
 
     // Other than stereo, the rest of the QGLFormat defaults should be ok.
     // Do we need a way to change the pixel format on the fly?

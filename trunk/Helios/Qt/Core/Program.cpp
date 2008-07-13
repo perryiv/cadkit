@@ -55,6 +55,8 @@
 # include <pthread.h>
 #endif
 
+#include "QtCore/QDir"
+
 #include <fstream>
 #include <sstream>
 
@@ -278,6 +280,15 @@ void Program::run ( int argc, char **argv,
 
     // Declare application.
     CadKit::Helios::Core::Application app ( argc, argv );
+    
+#ifdef __APPLE__
+    QDir dir(QApplication::applicationDirPath());
+    dir.cdUp();
+    dir.cd("PlugIns");
+    const std::string path ( dir.absolutePath().toStdString() );
+    std::cout << path << std::endl;
+    QApplication::addLibraryPath ( path.c_str() );
+#endif
 
     // Call quit when the last window closes. (Not sure if this is needed...)
     app.connect ( &app, SIGNAL ( lastWindowClosed() ), &app, SLOT ( quit() ) );

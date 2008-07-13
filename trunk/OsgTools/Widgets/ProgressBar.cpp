@@ -10,24 +10,21 @@
 
 #include "OsgTools/Widgets/ProgressBar.h"
 
-#include "Usul/CommandLine/Arguments.h"
+#include "OsgTools/State/StateSet.h"
+
+#include "Usul/App/Application.h"
 #include "Usul/Trace/Trace.h"
 
-#include "osgDB/ReadFile"
 #include "osg/MatrixTransform"
 #include "osg/Texture2D"
 #include "osg/Image"
 #include "osg/Geometry"
 #include "osg/Geode"
+
+#include "osgDB/ReadFile"
+
 #include "osgText/Font"
 #include "osgText/Text"
-
-//Debug
-#ifdef _MSC_VER 
-# ifdef _DEBUG
-#  include <windows.h>
-# endif
-#endif
 
 using namespace OsgTools::Widgets;
 
@@ -101,26 +98,38 @@ private:
 
 namespace Detail 
 {
-  osg::Node* buildThreadSafeQuad ( unsigned int render_level, const std::string& filename, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth, osg::Geometry& geometry  )
+  osg::Node* buildQuad ( unsigned int render_level, const std::string& filename, const osg::Vec2f& ul, const osg::Vec2f& lr, float depth, const osg::Vec4& color )
   {
-    std::string directory ( Usul::CommandLine::Arguments::instance().directory() + "/" + filename );
+    std::string directory ( Usul::App::Application::instance().iconDirectory() + "/" + filename );
 
-    osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
+    osg::ref_ptr< osg::Geode > geode ( new osg::Geode);
+    osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
 
-    osg::ref_ptr< osg::StateSet > stateset ( geometry.getOrCreateStateSet() );
+    osg::ref_ptr< osg::StateSet > stateset ( geometry->getOrCreateStateSet() );
     osg::ref_ptr< osg::Image > image = osgDB::readImageFile( directory );
 
     if ( image.get() )
     {
-      
 	    osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
 	    texture->setImage ( image.get() );
       texture->setWrap( osg::Texture2D::WRAP_S, osg::Texture2D::REPEAT );
 	    stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+      
+      osg::Vec2 texCoords[] =
+      {
+        osg::Vec2(0.0f, 0.0f),
+        osg::Vec2(1.0f, 0.0f),
+        osg::Vec2(1.0f, 1.0f),
+        osg::Vec2(0.0f, 1.0f),            
+      };
+      
+      osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array ( 4, texCoords ) );
+      
+      geometry->setTexCoordArray ( 0, uvcoords.get() );
     }
 
-    osg::ref_ptr< osg::Vec4Array > white ( new osg::Vec4Array() );  
-    white->push_back ( osg::Vec4 ( 1.0f, 1.0f, 1.0f, 1.0f ) );
+    osg::ref_ptr< osg::Vec4Array > white ( new osg::Vec4Array );
+    white->push_back ( color );
 
     osg::ref_ptr< osg::Vec3Array > normal ( new osg::Vec3Array() );
     normal->push_back ( osg::Vec3 ( 0.0f, 0.0f, 1.0f ) );
@@ -132,31 +141,19 @@ namespace Detail
     vertices->push_back ( osg::Vec3f ( lr.x(), ul.y(), depth ) );
     vertices->push_back ( osg::Vec3f ( ul.x(), ul.y(), depth ) );
 
-    osg::Vec2 texCoords[] =
-    {
-      osg::Vec2(0.0f, 0.0f),
-      osg::Vec2(1.0f, 0.0f),
-      osg::Vec2(1.0f, 1.0f),
-      osg::Vec2(0.0f, 1.0f),            
-    };
+    geometry->setVertexArray ( vertices.get() );
 
-    osg::ref_ptr< osg::Vec2Array > uvcoords ( new osg::Vec2Array ( 4, texCoords ) );
-
-    geometry.setTexCoordArray ( 0, uvcoords.get() );
-
-    geometry.setVertexArray ( vertices.get() );
-
-    geometry.setColorArray ( white.get() );
-    geometry.setColorBinding ( osg::Geometry::BIND_OVERALL );
+    geometry->setColorArray ( white.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
           
-    geometry.setNormalArray ( normal.get() );
-    geometry.setNormalBinding ( osg::Geometry::BIND_OVERALL );
+    geometry->setNormalArray ( normal.get() );
+    geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
 
-    geometry.addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
+    geometry->addPrimitiveSet ( new osg::DrawArrays( osg::PrimitiveSet::QUADS, 0, 4 ) );
 
     geode->getOrCreateStateSet()->setRenderBinDetails ( render_level, "RenderBin" );
 
-    geode->addDrawable ( &geometry );
+    geode->addDrawable ( geometry.get() );
 
     return geode.release();
   }
@@ -170,10 +167,10 @@ namespace Detail
 
 namespace Detail
 {
-  Helper::ThreadSafeText* drawThreadSafeTextAtPosition( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size )
+  osgText::Text* drawTextAtPosition( const osg::Vec3f & p, const std::string & s, const osg::Vec4f& color, float size )
   { 
-    osg::ref_ptr< osgText::Font > font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
-    osg::ref_ptr < Helper::ThreadSafeText > text ( new Helper::ThreadSafeText );
+    osg::ref_ptr<osgText::Font> font ( osgText::readFontFile ( "fonts/arial.ttf" ) );
+    osg::ref_ptr<osgText::Text> text ( new osgText::Text );
 
     text->setFont( font.get() );
     text->setColor( color );
@@ -230,9 +227,6 @@ ProgressBar::~ProgressBar()
 {
 }
 
-////////////////////
-//  Inherited     
-////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -659,9 +653,7 @@ void ProgressBar::clear()
   _root->removeChild ( 0, _root->getNumChildren() );
   _root = 0x0;
 }
-////////////////////
-// Protected
-////////////////////
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -708,16 +700,6 @@ void ProgressBar::_layout()
   _percentPos = ( Usul::Math::Vec3f ( this->_barPos[0] + ( this->_barLH[0] * 0.45f ) ,
                                       this->_barPos[1] + ( this->_barLH[1] * 0.25f ) ,
                                       0.0f ) );
- //std::ostringstream os;
- //  os << "pos: " << _pos[0] << " " << _pos[1] << ","
- //  << "borPos: " << _borderPos[0] << " " << _borderPos[1] << ","
- //  << "bbPos: " << _barBorderPos[0] << " " << _barBorderPos[1] << ","
- //  << "size: " << _size[0] << " " << _size[1] << ","
- //  << "bbLH: " << _barBorderLH[0] << " " << _barBorderLH[1] << ","
- //  << "barLH: " << _barLH[0] << " " << _barLH[1] << ","
- //  << std::endl;
- //  ::OutputDebugStringA ( os.str().c_str() ); 
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -798,13 +780,6 @@ osg::Node * ProgressBar::_buildScene()
   }
   else
   {
-    /*{
-      Guard guard ( this->mutex() );
-      double value ( this->value() );
-      std::string text ( this->text() );
-      Usul::Math::Vec2f size ( this->size() );
-      Usul::Math::Vec2f padding ( this->padding() );
-    }*/
     Guard guard ( this->mutex() );
     
     osg::ref_ptr<osg::MatrixTransform> anim ( new osg::MatrixTransform );
@@ -813,52 +788,41 @@ osg::Node * ProgressBar::_buildScene()
     
     anim->getOrCreateStateSet()->setMode ( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
 
-    //this->_layout();
-    {
-      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
-      anim->addChild ( (  Detail::buildThreadSafeQuad( 1000,
-                                                 "icons/background.tga",
-                                                 osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] + _barLH[1] ),
-                                                 osg::Vec2f( _barPos[0] + _barLH[0], _barPos[1] ),
-                                                 0.0f, *geometry ) ) );
-    }
-    {
-      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
-      anim->addChild ( ( Detail::buildThreadSafeQuad( 1001,
-                                        "icons/border.tga",
-                                        osg::Vec2f ( _borderPos[0], _borderPos[1] + _size[1] ),
-                                        osg::Vec2f ( _borderPos[0] + _size[0], _borderPos[1] ),
-                                        _borderPos[2], *geometry ) ) );
-    }
-    {
-      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
-      anim->addChild ( ( Detail::buildThreadSafeQuad( 1003,
-                                           "icons/barborder.tga",
-                                           osg::Vec2f ( _barBorderPos[0], _barBorderPos[1] + _barBorderLH[1] ),
-                                           osg::Vec2f( _barBorderPos[0] + _barBorderLH[0], _barBorderPos[1] ),
-                                           _barBorderPos[2], *geometry ) ) );
-    }
-    {
-      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() );
-      anim->addChild (  ( Detail::buildThreadSafeQuad( 1004,
-                                               "icons/bar.tga",
-                                               osg::Vec2f ( _barPos[0], _barPos[1] + _barLH[1] ),
-                                               osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] ),
-                                               0.0f, *geometry ) ) );
-    }
+    
+    anim->addChild ( Detail::buildQuad ( 1000, 
+                                        "background.tga", 
+                                        osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] + _barLH[1] ), 
+                                        osg::Vec2f( _barPos[0] + _barLH[0], _barPos[1] ), 
+                                        0.0f, osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) ) );
 
+    anim->addChild ( Detail::buildQuad( 1001,
+                                       "border.tga",
+                                       osg::Vec2f ( _borderPos[0], _borderPos[1] + _size[1] ),
+                                       osg::Vec2f ( _borderPos[0] + _size[0], _borderPos[1] ),
+                                       _borderPos[2], osg::Vec4 ( 0.58, 0.58, 0.58, 1.0 ) ) );
+
+    anim->addChild ( Detail::buildQuad( 1003,
+                                        "barborder.tga",
+                                        osg::Vec2f ( _barBorderPos[0], _barBorderPos[1] + _barBorderLH[1] ),
+                                        osg::Vec2f( _barBorderPos[0] + _barBorderLH[0], _barBorderPos[1] ),
+                                        _barBorderPos[2], osg::Vec4 ( 0.75, 0.75, 0.75, 1.0 ) ) );
+
+    anim->addChild ( Detail::buildQuad( 1004,
+                                        "bar.tga",
+                                        osg::Vec2f ( _barPos[0], _barPos[1] + _barLH[1] ),
+                                        osg::Vec2f ( _barPos[0] + _barSize, _barPos[1] ),
+                                        0.0f, osg::Vec4 ( 0.0, 0.0, 1.0, 1.0 ) ) );
 
     osg::Vec4f white ( osg::Vec4f ( 1.0f, 1.0f, 1.0f, 1.0f ) );
-    //osg::Vec4f black ( osg::Vec4f ( 0.0f, 0.0f, 0.0f, 1.0f ) );
 
     // Create a label above the progress bar.
     {
       osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-      geode->addDrawable ( Detail::drawThreadSafeTextAtPosition 
+      geode->addDrawable ( Detail::drawTextAtPosition 
                             ( osg::Vec3f ( _labelPos[0], _labelPos[1], _labelPos[2] ),
                               this->_text,
                               white,
-                              0.024 ) 
+                              0.3 * _size[1] ) 
                           );
       geode->getOrCreateStateSet()->setRenderBinDetails ( 1005, "RenderBin" );
       anim->addChild ( geode.get() );
@@ -867,11 +831,11 @@ osg::Node * ProgressBar::_buildScene()
     // Draw percentage at the midpoint of the progress bar.
     { 
       osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-      geode->addDrawable ( Detail::drawThreadSafeTextAtPosition 
+      geode->addDrawable ( Detail::drawTextAtPosition 
                             ( osg::Vec3f ( _percentPos[0], _percentPos[1], _percentPos[2] ),
                               this->_getPercentComplete(),
                               white,
-                              0.024 ) 
+                              0.3 * _size[1] ) 
                           );
       geode->getOrCreateStateSet()->setRenderBinDetails ( 1006, "RenderBin" );
       anim->addChild ( geode.get() );
@@ -885,6 +849,9 @@ osg::Node * ProgressBar::_buildScene()
 
     osg::ref_ptr<osg::Group> root ( new osg::Group );
     root->addChild( matrix.get() );
+    
+    // Turn off lighting
+    OsgTools::State::StateSet::setLighting ( root.get(), false );
 
     {
       Guard guard ( this->mutex() );

@@ -129,9 +129,12 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( UA::bind1 ( true,  UA::memberFunction ( this, &GeoRSSLayer::reading ) ), 
                                                                 UA::bind1 ( false, UA::memberFunction ( this, &GeoRSSLayer::reading ) ) ) );
   
+  // TODO: I think a SAX parser is more appropraite here, because we can stop the parsing if there isn't new data.
   XmlTree::XercesLife life;
   XmlTree::Document::RefPtr doc ( new XmlTree::Document );
   doc->load ( filename );
+  
+  // TODO: Check the lastPubDate against a last update data member before proceeding.
   
   // Clear what we have.
   this->clear();

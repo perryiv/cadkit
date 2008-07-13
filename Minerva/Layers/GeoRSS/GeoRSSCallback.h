@@ -30,7 +30,7 @@ class GeoRSSCallback : public Minerva::Core::Data::ClickedCallback
 public:
   typedef Minerva::Core::Data::ClickedCallback BaseClass;
   typedef Minerva::Core::Data::DataObject DataObject;
-  typedef OsgTools::Legend::Item Item;
+  typedef OsgTools::Widgets::Item Item;
   typedef Usul::Math::Vec2ui Size;
   
   // Smart-pointer definitions.

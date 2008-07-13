@@ -24,6 +24,7 @@
 #include "QtGui/QAbstractButton"
 #include "QtGui/QAction"
 #include "QtGui/QIcon"
+#include "QtGui/QImageReader"
 #include "QtGui/QWidget"
 #include "QtGui/QLabel"
 
@@ -106,8 +107,23 @@ namespace Detail
         return;
       }
     }
+    
+    // Make the reader.
+    QImageReader reader ( path.c_str() );
 
-    QIcon icon ( path.c_str() );
+    // Read the image.
+    QImage image ( reader.read() );
+    
+    // Check to see if the image was read correctly.
+    if ( image.isNull() )
+    {
+      std::cout << "Warning 3786892950: Could not read file " << path << std::endl;
+      std::cout << "Reason: " << reader.errorString().toStdString() << std::endl;
+      return;
+    }
+
+    // Make the icon.
+    QIcon icon ( QPixmap::fromImage ( image ) );
     if ( icon.isNull() )
     {
       return;

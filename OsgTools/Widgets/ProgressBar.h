@@ -14,7 +14,7 @@
 #include <string>
 
 #include "OsgTools/Export.h"
-#include "OsgTools/Widgets/Helper/ThreadSafeText.h"
+//#include "OsgTools/Widgets/Helper/ThreadSafeText.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
@@ -42,7 +42,6 @@ class OSG_TOOLS_EXPORT ProgressBar : public Usul::Base::Object,
 public:
   
   typedef Usul::Base::Object BaseClass;
-  typedef OsgTools::Widgets::Helper::ThreadSafeText      ThreadSafeText;
 
   USUL_DECLARE_QUERY_POINTERS ( ProgressBar );
 	USUL_DECLARE_IUNKNOWN_MEMBERS;

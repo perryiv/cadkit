@@ -22,7 +22,7 @@ using namespace Minerva::Core::Visitors;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BuildLegend::BuildLegend ( OsgTools::Legend::Legend *legend ) :
+BuildLegend::BuildLegend ( OsgTools::Widgets::Legend *legend ) :
   BaseClass (),
   _legend ( legend )
 {
@@ -51,7 +51,7 @@ void BuildLegend::visit ( Minerva::Core::Layers::Container &layer )
   Usul::Interfaces::IAddRowLegend::QueryPtr addRow ( &layer );
   if( layer.showLayer() && addRow.valid() && addRow->showInLegend() )
   {
-    OsgTools::Legend::LegendObject::RefPtr row ( new OsgTools::Legend::LegendObject );
+    OsgTools::Widgets::LegendObject::RefPtr row ( new OsgTools::Widgets::LegendObject );
     addRow->addLegendRow( row.get() );
     
     if ( _legend.valid() )

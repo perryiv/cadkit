@@ -46,7 +46,7 @@
 
 #include "MenuKit/Menu.h"
 
-#include "OsgTools/Legend/Legend.h"
+#include "OsgTools/Widgets/Legend.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -430,7 +430,7 @@ private:
   MenuKit::Menu::RefPtr _timeSpanMenu;
   
   /// Legend members.
-  OsgTools::Legend::Legend::RefPtr _legend;
+  OsgTools::Widgets::Legend::RefPtr _legend;
   bool _showLegend;
   float _legendWidth;
   unsigned int _legendHeightPerItem;

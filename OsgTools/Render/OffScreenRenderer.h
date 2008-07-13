@@ -47,14 +47,17 @@ public:
   void           init ( unsigned int width, unsigned int height );
 
   // Set/get the frame dump class.
-  void          frameDump ( FrameDumpPtr frameDump );
-  FrameDumpPtr  frameDump() const;
+  void           frameDump ( FrameDumpPtr frameDump );
+  FrameDumpPtr   frameDump() const;
+  
+  // Set look at.
+  void           lookAt ( double ex, double ey, double ez, double cx, double cy, double cz, double ux, double uy, double uz );
 
   // Set the model.
-  void          model ( osg::Node* );
+  void           model ( osg::Node* );
 
   // Render.
-  void          render() const;
+  void           render() const;
 
 protected:
   
@@ -66,6 +69,7 @@ private:
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
   FrameDumpPtr _frameDump;
   Usul::Math::Vec2ui _size;
+  osg::ref_ptr<osg::Image> _image;
 };
 
 

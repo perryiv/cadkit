@@ -21,6 +21,10 @@
 #undef check
 #endif
 
+#ifdef __CARBON__
+#undef check
+#endif
+
 
 namespace Usul {
 namespace Pointers {

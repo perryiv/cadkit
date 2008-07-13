@@ -128,7 +128,7 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   _lastTime ( -1.0 ),
   _animationSpeed ( 0.1f ),
   _timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
-  _legend( new OsgTools::Legend::Legend ),
+  _legend( new OsgTools::Widgets::Legend ),
   _showLegend( true ),
   _legendWidth ( 0.40f ),
   _legendHeightPerItem ( 30 ),
@@ -2034,28 +2034,28 @@ void MinervaDocument::_setLegendPosition ( unsigned int legendWidth )
     {
       x = static_cast < unsigned int > ( _legendPadding.x() );
       y = static_cast < unsigned int > ( _height - legendHeight -_legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
+      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
     case LEGEND_TOP_RIGHT:
     {
       x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
       y = static_cast < unsigned int > ( _height - legendHeight - _legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
+      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
     case LEGEND_BOTTOM_RIGHT:
     {
       x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
       y = static_cast < unsigned int > ( _legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
+      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
     case LEGEND_BOTTOM_LEFT:
     {
       x = static_cast < unsigned int > ( _legendPadding.x() );
       y = static_cast < unsigned int > ( _legendPadding.y() );
-      _legend->growDirection( OsgTools::Legend::Legend::UP );
+      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
   }
@@ -2566,7 +2566,7 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
       {
         Minerva::Core::Data::DataObject::RefPtr dataObject ( userdata->_do );
         
-        OsgTools::Legend::Item::RefPtr item ( dataObject->clicked() );
+        OsgTools::Widgets::Item::RefPtr item ( dataObject->clicked() );
         if ( item.valid() )
         {
           balloon = item->buildScene();

@@ -397,6 +397,9 @@ void Viewer::render()
 
   // Initialize the error.
   ::glGetError();
+  
+  // Set the multisample state.
+  this->useMultisampleGet() ? ::glEnable ( GL_MULTISAMPLE_ARB ) : ::glDisable ( GL_MULTISAMPLE_ARB );
 
   // Check for errors.
   Detail::checkForErrors ( 1491085606 );
@@ -1244,15 +1247,12 @@ bool Viewer::lighting() const
 
 void Viewer::_setLodCullCallback ( osg::NodeCallback *cb )
 {
+  OsgTools::Render::setLodCullCallback ( cb, this->scene(), _lods );
+  
   // Since the document may change the scene in an update callback, we cannot cache the lods we found.
   // Should the document let the viewer know that it has been updated an to clear any cache?
-  if ( 0x0 != cb )
-  {
-    _lods.second.clear();
-    _lods.first = false;
-  }
-  
-  OsgTools::Render::setLodCullCallback ( cb, this->scene(), _lods );
+  _lods.second.clear();
+  _lods.first = false;
 }
 
 
@@ -5125,4 +5125,32 @@ bool Viewer::useHighLodsGet() const
   USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
   return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_HIGH_LODS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use multisamle state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::useMultisampleSet ( bool b )
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  _flags = Usul::Bits::set < unsigned int, unsigned int > ( _flags, _USE_MULTISAMPLE, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the use multisamle state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::useMultisampleGet() const
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_MULTISAMPLE );
 }

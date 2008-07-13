@@ -15,8 +15,8 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Convert.h"
-#include "OsgTools/Legend/Text.h"
-#include "OsgTools/Legend/LegendObject.h"
+#include "OsgTools/Widgets/Text.h"
+#include "OsgTools/Widgets/LegendObject.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -1002,7 +1002,7 @@ void Layer::updateNotify ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
+void Layer::addLegendRow ( OsgTools::Widgets::LegendObject* row )
 {
   try
   {
@@ -1012,12 +1012,12 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         row->addItem ( this->colorFunctor()->icon( this->queryInterface( Usul::Interfaces::IUnknown::IID ) ) );
 
       // One columns for the text
-      row->addItem ( new OsgTools::Legend::Text ( this->legendText() ) );
+      row->addItem ( new OsgTools::Widgets::Text ( this->legendText() ) );
       
       if( this->showCountLegend() )
       {
-        OsgTools::Legend::Text::RefPtr text ( new OsgTools::Legend::Text ( Usul::Strings::format ( this->number() ) ) );
-        text->alignmentHorizontal ( OsgTools::Legend::Text::RIGHT );
+        OsgTools::Widgets::Text::RefPtr text ( new OsgTools::Widgets::Text ( Usul::Strings::format ( this->number() ) ) );
+        text->alignmentHorizontal ( OsgTools::Widgets::Text::RIGHT );
         unsigned int index ( row->addItem ( text ) );
 	      
         row->percentage( index ) = 0.20;
@@ -1030,7 +1030,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         
         std::string text ( valid ? Usul::Strings::format( min ) : "NA" );
         
-        row->addItem ( new OsgTools::Legend::Text ( text ) );
+        row->addItem ( new OsgTools::Widgets::Text ( text ) );
       }
 
       if( this->showMaxLegend() )
@@ -1040,7 +1040,7 @@ void Layer::addLegendRow ( OsgTools::Legend::LegendObject* row )
         
         std::string text ( valid ? Usul::Strings::format( max ) : "NA" );
         
-        row->addItem ( new OsgTools::Legend::Text ( text ) );
+        row->addItem ( new OsgTools::Widgets::Text ( text ) );
       }
 
       /// Find out how many columns we have.

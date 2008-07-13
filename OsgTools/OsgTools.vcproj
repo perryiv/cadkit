@@ -966,88 +966,64 @@
 					RelativePath=".\Widgets\ProgressBarGroup.h"
 					>
 				</File>
-				<Filter
-					Name="Helper"
-					>
-					<File
-						RelativePath=".\Widgets\Helper\ThreadSafeText.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Widgets\Helper\ThreadSafeText.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Widgets\Helper\UpdateProgress.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Widgets\Helper\UpdateProgress.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="Legend"
-				>
 				<File
-					RelativePath=".\Legend\GradientIcon.cpp"
+					RelativePath=".\Widgets\GradientIcon.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\GradientIcon.h"
+					RelativePath=".\Widgets\GradientIcon.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Item.cpp"
+					RelativePath=".\Widgets\Item.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Item.h"
+					RelativePath=".\Widgets\Item.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Image.cpp"
+					RelativePath=".\Widgets\Image.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Image.h"
+					RelativePath=".\Widgets\Image.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Legend.cpp"
+					RelativePath=".\Widgets\Legend.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Legend.h"
+					RelativePath=".\Widgets\Legend.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\LegendObject.cpp"
+					RelativePath=".\Widgets\LegendObject.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\LegendObject.h"
+					RelativePath=".\Widgets\LegendObject.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\LineFunctor.h"
+					RelativePath=".\Widgets\LineFunctor.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\QuadFunctor.h"
+					RelativePath=".\Widgets\QuadFunctor.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\SolidIcon.h"
+					RelativePath=".\Widgets\SolidIcon.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\SphereFunctor.h"
+					RelativePath=".\Widgets\SphereFunctor.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Legend\Text.cpp"
+					RelativePath=".\Widgets\Text.cpp"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -1078,7 +1054,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Legend\Text.h"
+					RelativePath=".\Widgets\Text.h"
 					>
 				</File>
 			</Filter>

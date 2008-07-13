@@ -24,10 +24,12 @@ namespace OsgTools {
       //void frameDump ( OsgTools::Render::OffScreenRenderer::FrameDumpPtr );
       void frameDump ( OsgTools::Render::OffScreenRenderer::FrameDumpPtr );
 
+      void lookAt ( double ex, double ey, double ez, double cx, double cy, double cz, double ux, double uy, double uz );
+    
       void model ( osg::Node* );
 
       void render();
-      
+
     protected:
       virtual ~OffScreenRenderer();
   };
@@ -48,4 +50,3 @@ void setFrameDump( OsgTools::Render::OffScreenRenderer* viewer, OsgTools::Render
 %}
 
 void setFrameDump( OsgTools::Render::OffScreenRenderer* viewer, OsgTools::Render::FrameDump* frameDump );
-

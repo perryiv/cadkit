@@ -60,12 +60,6 @@ SET (SOURCES
   IO/STLWriter.cpp
   IO/WriteEPS.cpp
   Jitter.cpp
-  Legend/GradientIcon.cpp
-  Legend/Item.cpp
-  Legend/Image.cpp
-  Legend/Legend.cpp
-  Legend/LegendObject.cpp
-  Legend/Text.cpp
   Lod.cpp
   MaterialFactory.cpp
   MaterialSetter.cpp
@@ -108,8 +102,12 @@ SET (SOURCES
   Widgets/ClipPlane.cpp
   Widgets/ProgressBar.cpp
   Widgets/ProgressBarGroup.cpp
-  Widgets/Helper/ThreadSafeText.cpp
-  Widgets/Helper/UpdateProgress.cpp
+  Widgets/GradientIcon.cpp
+  Widgets/Item.cpp
+  Widgets/Image.cpp
+  Widgets/Legend.cpp
+  Widgets/LegendObject.cpp
+  Widgets/Text.cpp
   Volume/PlanarProxyGeometry.cpp
   Volume/Texture3DVolume.cpp
   Volume/TransferFunction.cpp

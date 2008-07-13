@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/Functors/GradientColorFunctor.h"
 
-#include "OsgTools/Legend/GradientIcon.h"
+#include "OsgTools/Widgets/GradientIcon.h"
 
 #include "Usul/Factory/RegisterCreator.h"
 
@@ -198,9 +198,9 @@ osg::Vec4 GradientColorFunctor::operator() ( double value ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OsgTools::Legend::Item * GradientColorFunctor::icon ( Usul::Interfaces::IUnknown *caller )
+OsgTools::Widgets::Item * GradientColorFunctor::icon ( Usul::Interfaces::IUnknown *caller )
 {
-  OsgTools::Legend::GradientIcon::RefPtr icon ( new OsgTools::Legend::GradientIcon );
+  OsgTools::Widgets::GradientIcon::RefPtr icon ( new OsgTools::Widgets::GradientIcon );
   icon->minColor( _minColor );
   icon->maxColor( _maxColor );
 

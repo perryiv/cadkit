@@ -13,7 +13,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace OsgTools { namespace Legend { class LegendObject; } }
+namespace OsgTools { namespace Widgets { class LegendObject; } }
 
 namespace Usul {
 namespace Interfaces {
@@ -30,7 +30,7 @@ struct IAddRowLegend : public Usul::Interfaces::IUnknown
   /// Set flag to show row in legend.
   virtual bool                         showInLegend () const = 0;
 
-  virtual void                         addLegendRow ( OsgTools::Legend::LegendObject* row ) = 0;
+  virtual void                         addLegendRow ( OsgTools::Widgets::LegendObject* row ) = 0;
 
 }; // struct IAddRowLegend
 

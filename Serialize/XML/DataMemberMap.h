@@ -91,7 +91,13 @@ public:
     typedef std::vector<T> VectorType;
     this->addMember ( new Serialize::XML::SequenceMember<VectorType> ( name, value ) );
   }
-
+/*  
+  template < class T > void addMember ( const std::string &name, std::vector<std::vector<T> > &value )
+  {
+    typedef std::vector<T> VectorType;
+    this->addMember ( new Serialize::XML::SequenceMember<Serialize::XML::SequenceMember< < T > > ( name, value ) );
+  }
+*/
   template < class T > void addMember ( const std::string &name, std::list<T> &value )
   {
     typedef std::list<T> ListType;

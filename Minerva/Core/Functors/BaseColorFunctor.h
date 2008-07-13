@@ -21,7 +21,7 @@
 #include "Serialize/XML/Macros.h"
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
-namespace OsgTools { namespace Legend { class Item; } }
+namespace OsgTools { namespace Widgets { class Item; } }
 
 namespace Minerva {
 namespace Core {
@@ -41,7 +41,7 @@ struct MINERVA_EXPORT BaseColorFunctor : public Usul::Base::Referenced
 
   virtual osg::Vec4 operator() ( double value ) const = 0;
 
-  virtual OsgTools::Legend::Item * icon ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
+  virtual OsgTools::Widgets::Item * icon ( Usul::Interfaces::IUnknown *caller = 0x0 ) = 0;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( BaseColorFunctor );

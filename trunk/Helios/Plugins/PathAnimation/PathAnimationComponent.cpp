@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IWriteMovieFile.h"
+#include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Strings/Format.h"
@@ -85,6 +86,7 @@ PathAnimationComponent::PathAnimationComponent() :
   // Add ourself as a listener. Do not use smart pointer on "this" 
   // inside constructor, the dereference will delete this object!
   Usul::Documents::Manager::instance().addActiveViewListener ( this );
+  Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 
   // Start with a new path.
   this->_newPath();
@@ -103,6 +105,7 @@ PathAnimationComponent::~PathAnimationComponent()
 
   // Remove ourself as a listener. Do not use smart pointer!
   Usul::Documents::Manager::instance().removeActiveViewListener ( this );
+  Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
 
   // Remove scene.
   _root = 0x0;
@@ -130,6 +133,8 @@ Usul::Interfaces::IUnknown *PathAnimationComponent::queryInterface ( unsigned lo
     return static_cast < Usul::Interfaces::IAnimatePath * > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+  case Usul::Interfaces::IActiveDocumentListener::IID:
+    return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   default:
     return 0x0;
   }
@@ -1017,23 +1022,8 @@ void PathAnimationComponent::_openPath ( Usul::Interfaces::IUnknown::QueryPtr ca
   // Loop through each file...
   for ( Filenames::const_iterator iter = names.begin(); iter != names.end(); ++iter )
   {
-    CameraPath::RefPtr path ( new CameraPath );
-    if ( path->canOpen ( *iter ) )
-    {
-      // Open the file.
-      path->open ( *iter, caller );
-      path->fileName ( *iter );
-      path->name ( path->fileName() );
-
-      // Append new path.
-      {
-        Guard guard ( this );
-        _paths.push_back ( path );
-      }
-
-      // Make the new path current.
-      this->_setCurrentPath ( path.get() );
-    }
+    // Load the path.
+    this->_loadPath ( *iter, caller );
   }
 
   // Rebuild the path menu.
@@ -1049,6 +1039,36 @@ void PathAnimationComponent::_openPath ( Usul::Interfaces::IUnknown::QueryPtr ca
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Open a path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_loadPath ( const std::string& name, Usul::Interfaces::IUnknown::QueryPtr caller )
+{
+  USUL_TRACE_SCOPE;
+
+  CameraPath::RefPtr path ( new CameraPath );
+  if ( path->canOpen ( name ) )
+  {
+    // Open the file.
+    path->open ( name, caller );
+    path->fileName ( name );
+    path->name ( path->fileName() );
+
+    // Append new path.
+    {
+      Guard guard ( this );
+      _paths.push_back ( path );
+    }
+
+    // Make the new path current.
+    this->_setCurrentPath ( path.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Save the current path.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1058,11 +1078,7 @@ void PathAnimationComponent::_saveCurrentPath ( Usul::Interfaces::IUnknown::Quer
   USUL_TRACE_SCOPE;
 
   // Get the current path.
-  CameraPath::RefPtr path ( 0x0 );
-  {
-    Guard guard ( this );
-    path = _currentPath;
-  }
+  CameraPath::RefPtr path ( Usul::Threads::Safe::get ( this->mutex(), _currentPath ) );
 
   // Return if we don't have a current path.
   if ( false == path.valid() )
@@ -1073,6 +1089,27 @@ void PathAnimationComponent::_saveCurrentPath ( Usul::Interfaces::IUnknown::Quer
     path->save( caller );
   else
     this->_saveAsCurrentPath ( caller );
+
+  // Get the filename of the path.
+  const std::string name ( path->fileName() );
+
+  // Get the current document.
+  Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Get string key for document.
+  std::string doc ( ( ( true == document.valid() ) ? document->registryTagName() : "" ) );
+  if ( true == doc.empty() )
+    return;
+
+  // Save properties in registry.
+  Usul::Registry::Node &reg ( Reg::instance()[Sections::PATH_ANIMATION][doc]["paths"] );
+
+  typedef std::list<std::string> Strings;
+
+  Strings strings;
+  strings = reg.get<Strings> ( strings );
+  strings.push_back ( name );
+  reg = strings;
 }
 
 
@@ -1483,6 +1520,44 @@ osg::Node *PathAnimationComponent::_buildCurve() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  The active document has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown *newDoc )
+{
+  // Get the current document.
+  Usul::Interfaces::IDocument::QueryPtr document ( newDoc );
+
+  // Get string key for document.
+  std::string doc ( ( ( true == document.valid() ) ? document->registryTagName() : "" ) );
+  if ( true == doc.empty() )
+    return;
+
+  // Save properties in registry.
+  Usul::Registry::Node &reg ( Reg::instance()[Sections::PATH_ANIMATION][doc]["paths"] );
+
+  typedef std::list<std::string> Strings;
+
+  Strings strings;
+  strings = reg.get<Strings> ( strings );
+
+  for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
+  {
+    this->_loadPath ( *iter, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) );
+  }
+
+  // Rebuild the path menu.
+  this->_buildPathsMenu();
+  
+  // Rebuild the camera menu.
+  this->_buildCameraMenu();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Turn on the render loop. Save the current state if there is only one player.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1501,3 +1576,4 @@ void PathAnimationComponent::_activateRenderLoop()
     rl->renderLoop ( true );
   }
 }
+

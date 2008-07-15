@@ -20,6 +20,7 @@
 #include "PathAnimation/CurvePlayer.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
 #include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -38,6 +39,7 @@
 class PathAnimationComponent : public Usul::Base::Object,
                                public Usul::Interfaces::IPlugin,
                                public Usul::Interfaces::IMenuAdd,
+                               public Usul::Interfaces::IActiveDocumentListener,
                                public Usul::Interfaces::IActiveViewListener,
                                public Usul::Interfaces::IAnimatePath,
                                public Usul::Interfaces::IUpdateListener
@@ -60,6 +62,9 @@ public:
 
   // Default construction.
   PathAnimationComponent();
+
+  // Usul::Interfaces::IActiveDocumentListener
+  virtual void                  activeDocumentChanged ( IUnknown *oldDoc, IUnknown *newDoc );
 
   // Usul::Interfaces::IActiveViewListener
   virtual void                  activeViewChanged ( IUnknown *oldView, IUnknown *newView );
@@ -114,6 +119,8 @@ protected:
   bool                          _isLooping() const;
   bool                          _isNumSteps ( unsigned int steps ) const;
   bool                          _isShowingPath() const;
+
+  void                          _loadPath ( const std::string& name, Usul::Interfaces::IUnknown::QueryPtr caller );
 
   void                          _newPath();
   void                          _openPath ( Usul::Interfaces::IUnknown::QueryPtr );

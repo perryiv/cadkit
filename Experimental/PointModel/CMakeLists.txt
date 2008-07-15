@@ -1,32 +1,27 @@
 project (PointModel)
 
+# Set the name.  Needed for the macros to set up plugin properties.
 SET(PLUGIN_NAME "PointModel")
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
+SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
+# ------------ Find OpenSceneGraph Libraries ----------------------
+INCLUDE ( ${CMakeModules}/FindOSG.cmake)
+
 # Set the compile guard.
-set(COMPILE_GUARD "_COMPILING_TRIANGLE_MODEL")
+set(COMPILE_GUARD "_COMPILING_POINT_MODEL")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${OSG_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${CADKIT_INC_DIR}/Experimental" "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
 
+# Set the sources to compile.
 set (SOURCES
-	ParadisReader.cpp
-	PointComponent.cpp
-	PointDocument.cpp
-	PointFactory.cpp
-	PointReaderArcAsciiGrid.cpp
-	PointReaderFieldViewAscii.cpp
-	PointReaderGrassRaster.cpp
-	PointReaderOFF.cpp
-	PointReaderR3D.cpp
-	PointReaderSTL.cpp
-	PointReaderTDF.cpp
-	PointWriterSTL.cpp
-	PointWriterTDF.cpp
+PointComponent.cpp
+PointDocument.cpp
+PointFactory.cpp
 )
 
 # ---------- Create a Shared Library
@@ -39,7 +34,9 @@ CADKIT_PLUGIN()
 LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools )
 
 # Link the Library	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-	${OSG_LIB}
+TARGET_LINK_LIBRARIES( 
+  ${PLUGIN_NAME}
+  ${OPENTHREADS_LIB}
+  ${OSG_LIB}
 )
 

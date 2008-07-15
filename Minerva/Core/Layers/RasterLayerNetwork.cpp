@@ -159,6 +159,10 @@ namespace Helper
 RasterLayerNetwork::ImagePtr RasterLayerNetwork::texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
+  
+  // Check to make sure we have sane extents.
+  if ( extents.minimum()[0] < -180.0 || extents.minimum()[1] < -90.0 || extents.maximum()[0] > 180.0 || extents.maximum()[1] > 90.0 )
+    return ImagePtr ( 0x0 );
 
   // Let the base class go first.
   {

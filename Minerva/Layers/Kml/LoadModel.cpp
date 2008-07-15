@@ -17,6 +17,8 @@
 #include "Usul/Convert/Convert.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Threads/Mutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include "osg/BlendFunc"
 #include "osg/TexEnvCombine"
@@ -27,6 +29,28 @@
 #include "dom/domCOLLADA.h"
 
 using namespace Minerva::Layers::Kml;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef Usul::Threads::Mutex Mutex;
+typedef Usul::Threads::Guard<Mutex> Guard;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Mutex to guard reading of collada files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  Mutex _readMutex;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,6 +127,7 @@ osg::Node* LoadModel::operator() ( const std::string& filename )
     this->_preProcessCollada ( filename );
   }
 
+  Guard guard ( Detail::_readMutex );
   osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( filename ) );
   if ( node.valid() )
   {
@@ -129,6 +154,8 @@ osg::Node* LoadModel::operator() ( const std::string& filename )
 
 void LoadModel::_preProcessCollada ( const std::string& filename )
 {
+  Guard guard ( Detail::_readMutex );
+  
   DAE dae;
 
   // Open the file.

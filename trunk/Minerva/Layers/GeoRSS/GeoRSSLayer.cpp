@@ -54,7 +54,7 @@ GeoRSSLayer::GeoRSSLayer() :
   BaseClass(),
   _filename(),
   _href(),
-  _refreshInterval ( 0.0 ),
+  _refreshInterval ( 300.0 ),
   _lastUpdate( 0.0 ),
   _flags(),
   _color ( 1.0, 0.0, 0.0, 1.0 )
@@ -394,4 +394,30 @@ void GeoRSSLayer::reading( bool b )
 {
   Guard guard ( this );
   _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, GeoRSSLayer::READING, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::url ( const std::string& s )
+{
+  Guard guard ( this );
+  _href = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string GeoRSSLayer::url() const
+{
+  Guard guard ( this );
+  return _href;
 }

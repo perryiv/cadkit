@@ -45,11 +45,13 @@ using namespace Minerva::Core::Layers;
 
 namespace
 {
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_ArcAscii  ( "Arc Ascii (*.asc)", "*.asc" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerGDAL > > _creator_for_TIFF      ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
+  namespace MF = Minerva::Core::Factory;
+  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_ArcAscii  ( "Arc Ascii (*.asc)", "*.asc" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_TIFF      ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_VRT       ( "GDAL Virtual Format (*.vrt)", ".vrt" );
 }
 
 
@@ -194,7 +196,6 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   }
 
   Minerva::Detail::PushPopErrorHandler error;
-
   
   // Now guard.
   Guard guard ( this );

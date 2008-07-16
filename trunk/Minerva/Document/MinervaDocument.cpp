@@ -567,6 +567,90 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make a matrix from lat, lon, and altitude.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  inline osg::Matrixd makeLookAtMatrix ( double lat, double lon, double altitude, Minerva::Core::TileEngine::Body& body )
+  {
+    // Get the elevation.
+    const double elevation ( body.elevationAtLatLong ( lat, lon ) );
+    
+    // The height above sea level.
+    const double heightAboveSeaLevel ( elevation + static_cast<double> ( Usul::Math::maximum ( 2500.0, altitude ) ) );
+    
+    // Heading, Pitch, and Roll (For future use).
+    osg::Vec3d hpr ( 0.0, 0.0, 0.0 );
+    
+    // Get the rotation.
+    osg::Matrixd matrix ( body.planetRotationMatrix ( lat, lon, heightAboveSeaLevel, hpr[0] ) );
+    
+    // Rotation about x.
+    osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[1], 1, 0, 0 ) );
+    
+    // Rotation about y.
+    osg::Matrixd RY ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[2], 0, 1, 0 ) );
+    
+    osg::Matrix M ( matrix * RX * RY );
+    return M;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a matrix from lat, lon, and altitude.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  inline void animatePath ( const Usul::Math::Vec3d& from, const Usul::Math::Vec3d& to, Minerva::Core::TileEngine::Body& body )
+  {
+    // Get the final look at matrix.
+    osg::Matrix M0 ( Detail::makeLookAtMatrix ( to[1], to[0], to[2], body ) );
+    
+    // The half way point.
+    Usul::Math::Vec3d half ( from[0] + to[0], from[1] + to[1], from[2] + to[2] );
+    half /= 2.0; half[2] *= 1.5;
+    
+    osg::Matrix M1 ( Detail::makeLookAtMatrix ( half[1], half[0], half[2], body ) );
+    
+    // Look for plugin to play path.
+    typedef Usul::Interfaces::IAnimatePath IAnimatePath;
+    typedef Usul::Components::Manager PluginManager;
+    
+    IAnimatePath::QueryPtr animate ( PluginManager::instance().getInterface ( IAnimatePath::IID ) );
+    Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
+    
+    if ( animate.valid() )
+    {
+      // Get the first and last matrix.
+      const osg::Matrixd m1 ( vm.valid() ? vm->getViewMatrix() : osg::Matrixd() );
+      const osg::Matrixd m2 ( osg::Matrixd::inverse ( M1 ) );
+      const osg::Matrixd m3 ( osg::Matrixd::inverse ( M0 ) );
+      
+      // Prepare path.
+      IAnimatePath::PackedMatrices matrices;
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m3.ptr(), m3.ptr() + 16 ) );
+      
+      // Animate through the path.
+      animate->animatePath ( matrices, 30 );
+    }
+    else if ( vm.valid() )
+    {
+      vm->setViewMatrix ( M0 );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  View the layer extents.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -595,57 +679,47 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
 
     // Calculate an altitude.
     const double altitude ( ( extents.maximum() - extents.minimum() ).length() * metersPerDegree );
-
-    // Get the elevation.
-    const double elevation ( body->elevationAtLatLong ( center[1], center[0] ) );
     
-    // The height above sea level.
-    const double heightAboveSeaLevel ( elevation + static_cast<double> ( Usul::Math::maximum ( 2500.0, altitude ) ) );
+    // Make an itermediate point.
+    osg::Vec3d eye ( _callback.valid() ? _callback->_eye : osg::Vec3d() );
+    
+    // Convert the eye to lat,lon, height.
+    Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
+    Usul::Math::Vec3d from;
+    body->convertFromPlanet( point, from );
+    
+    // Point we want to go to.
+    Usul::Math::Vec3d to ( center[0], center[1], altitude );
+    
+    Detail::animatePath ( from, to, *body );
+  }
+}
 
-    // Heading, Pitch, and Roll (For future use).
-    osg::Vec3d hpr ( 0.0, 0.0, 0.0 );
 
-    // Convert to x,y,z on the planet.  Is this still needed?
-    //Usul::Math::Vec3d point;
-    //body->convertToPlanet ( Usul::Math::Vec3d ( center[0], center[1], heightAboveSeaLevel ), point );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Go to a point.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-    // Get the rotation.
-    osg::Matrixd matrix ( body->planetRotationMatrix ( center[1], center[0], heightAboveSeaLevel, hpr[0] ) );
-
-    // Rotation about x.
-    osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[1], 1, 0, 0 ) );
-
-    // Rotation about y.
-    osg::Matrixd RY ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[2], 0, 1, 0 ) );
-
-    osg::Matrix M ( matrix * RX * RY );
-    //M.setTrans ( point[0], point[1], point[2] );
-
-    // Look for plugin to play path.
-    typedef Usul::Interfaces::IAnimatePath IAnimatePath;
-    typedef Usul::Components::Manager PluginManager;
-
-    IAnimatePath::QueryPtr animate ( PluginManager::instance().getInterface ( IAnimatePath::IID ) );
-    Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
-
-    if ( animate.valid() )
-    {
-      // Get the first and last matrix.
-      const osg::Matrixd m1 ( vm.valid() ? vm->getViewMatrix() : osg::Matrixd() );
-      const osg::Matrixd m2 ( osg::Matrixd::inverse ( M ) );
-
-      // Prepare path.
-      IAnimatePath::PackedMatrices matrices;
-      matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
-      matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
-
-      // Animate through the path.
-      animate->animatePath ( matrices, 50 );
-    }
-    else if ( vm.valid() )
-    {
-      vm->setViewMatrix ( M );
-    }
+void MinervaDocument::lookAtPoint ( const Usul::Math::Vec2d& location )
+{
+  Body::RefPtr body ( this->activeBody() );
+  
+  if ( body.valid() )
+  {
+    // Make an itermediate point.
+    osg::Vec3d eye ( _callback.valid() ? _callback->_eye : osg::Vec3d() );
+    
+    // Convert the eye to lat,lon, height.
+    Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
+    Usul::Math::Vec3d from;
+    body->convertFromPlanet( point, from );
+    
+    // Point we want to go to.
+    Usul::Math::Vec3d to ( location[0], location[1], 2500.0 /*altitude*/ );
+    
+    Detail::animatePath ( from, to, *body );
   }
 }
 

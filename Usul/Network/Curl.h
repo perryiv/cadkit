@@ -20,6 +20,7 @@
 
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Exceptions/TimedOut.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Interfaces/ICancel.h"
 #include "Usul/Interfaces/ICanceledStateGet.h"
@@ -175,7 +176,33 @@ public:
   private:
     ::CURL *_curl;
   };
+  
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Encode a url.
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
+  static std::string encode ( const std::string& url )
+  {
+#if LIBCURL_VERSION_MAJOR >= 7 && LIBCURL_VERSION_MINOR >= 15 && LIBCURL_VERSION_PATCH >= 4
+    Curl::Handle handle;
+    char *encodedUrl ( ::cury_easy_escape ( handle(), url.c_str(), url.size() ) );
+#else
+    char *encodedUrl ( ::curl_escape ( url.c_str(), url.size() ) );
+#endif
+    
+    std::string result;
+    
+    try
+    {
+      result.assign ( encodedUrl, encodedUrl + ::strlen ( encodedUrl ) );
+      ::curl_free ( encodedUrl );
+    }
+    USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1112159745" );
+    
+    return result;
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   //

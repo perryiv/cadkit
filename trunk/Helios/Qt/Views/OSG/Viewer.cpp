@@ -875,7 +875,7 @@ void Viewer::renderLoop ( bool state )
   // If we're supposed to start...
   if ( true == state )
   {
-    // File a single event.
+    // Fire a single event.
     this->_oneRenderLoopTimeout();
   }
 }

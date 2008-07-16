@@ -609,7 +609,7 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned
   player->playForward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
 
   // Turn on render-loop.
-  this->_activateRenderLoop();
+  this->_renderLoopActivate();
 }
 
 
@@ -640,7 +640,7 @@ void PathAnimationComponent::_playPathBackward ( const CameraPath *path, unsigne
   player->playBackward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
 
   // Turn on render-loop.
-  this->_activateRenderLoop();
+  this->_renderLoopActivate();
 }
 
 
@@ -687,11 +687,7 @@ void PathAnimationComponent::stopPlaying()
   _players.clear();
 
   // Restore the render-loop.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( Usul::Documents::Manager::instance().activeView() );
-  if ( rl.valid() )
-  {
-    rl->renderLoop ( _renderLoop );
-  }
+  this->_renderLoopRestore();
 }
 
 
@@ -858,6 +854,9 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
   {
     // Pop this player off the list.
     _players.pop_front();
+
+    // Restore the render-loop state.
+    this->_renderLoopRestore();
 
     // If we are suppose to write a movie.
     this->_writeMovieFile ( caller );
@@ -1526,6 +1525,8 @@ osg::Node *PathAnimationComponent::_buildCurve() const
 
 void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown *newDoc )
 {
+  USUL_TRACE_SCOPE;
+
   // Get the current document.
   Usul::Interfaces::IDocument::QueryPtr document ( newDoc );
 
@@ -1562,8 +1563,10 @@ void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_activateRenderLoop()
+void PathAnimationComponent::_renderLoopActivate()
 {
+  USUL_TRACE_SCOPE;
+
   // Turn on render-loop.
   Usul::Interfaces::IRenderLoop::QueryPtr rl ( Usul::Documents::Manager::instance().activeView() );
   if ( true == rl.valid() )
@@ -1577,3 +1580,21 @@ void PathAnimationComponent::_activateRenderLoop()
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Restore the render loop.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_renderLoopRestore()
+{
+  USUL_TRACE_SCOPE;
+
+  // Restore the render-loop.
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( Usul::Documents::Manager::instance().activeView() );
+  if ( rl.valid() )
+  {
+    rl->renderLoop ( _renderLoop );
+  }
+}

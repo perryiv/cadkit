@@ -89,8 +89,6 @@ protected:
   // Use reference counting.
   virtual ~PathAnimationComponent();
 
-  void                          _activateRenderLoop();
-
   void                          _buildPathsMenu();
   void                          _buildCameraMenu();
   osg::Node *                   _buildCurve() const;
@@ -129,6 +127,9 @@ protected:
   void                          _playForward();
   void                          _playPathBackward ( const CameraPath *path, unsigned int steps, bool loop );
   void                          _playPathForward ( const CameraPath *path, unsigned int steps, bool loop );
+
+  void                          _renderLoopActivate();
+  void                          _renderLoopRestore();
 
   void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );

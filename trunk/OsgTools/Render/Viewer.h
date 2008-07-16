@@ -554,6 +554,10 @@ protected:
   // Notify of mouse event.
   void                  _mouseEventNotify ( EventAdapter *ea );
 
+  // Set the LOD state.
+  void                  _useLowLodsSet ( bool b );
+  void                  _useHighLodsSet ( bool b );
+
   /// Usul::Interfaces::IViewMatrix
   virtual void                      setViewMatrix ( const osg::Matrixf& );
   virtual void                      setViewMatrix ( const osg::Matrixd& );

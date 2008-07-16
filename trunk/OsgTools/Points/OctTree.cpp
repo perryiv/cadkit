@@ -51,7 +51,6 @@ _buffer ( new StreamBuffer ( 4096 ) )
 
   // set the temp directory member variable so it can be deleted later
   _tempPath = path;
-  std::cout << "Temp directory location is: " << _tempPath << std::endl;
 
   // create the root octree node
   _tree = new OctTreeNode ( _buffer, path );

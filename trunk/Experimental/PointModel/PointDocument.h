@@ -21,6 +21,8 @@
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Types/Types.h"
 
+#include "XmlTree/Document.h"
+
 #include "OsgTools/Points/PointSet.h"
 
 #include "osg/Material"
@@ -43,6 +45,9 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef std::pair < unsigned int, unsigned int > Progress;
   typedef std::pair < bool, Usul::Math::Vec3ui > HeaderResult;
+  typedef XmlTree::Document::Attributes Attributes;
+  typedef XmlTree::Document::Children Children;
+  typedef std::list< PointSet::ValidRefPtr > PointSets;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( PointDocument );
@@ -94,9 +99,12 @@ protected:
   /// Use reference counting.
   virtual ~PointDocument();
 
+  void                        _read( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+
+  void                        _parseXML( XmlTree::Node &node, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   bool                        _parseHeader( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _fastReadAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
-  void                        _readPoint3DFile( const std::string &filename, unsigned int progressPath, Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  void                        _readPoint3DFile( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _readAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _readBinaryRestartFile( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _buildVectors( Unknown *caller = 0x0, Unknown *progress = 0x0 );
@@ -106,10 +114,12 @@ protected:
 
 private:
 
+  PointSets                       _pointSets;
   PointSet::ValidRefPtr           _pointSet;
   Usul::Types::Uint64             _numPoints;
   osg::ref_ptr< osg::Material >   _material;
   osg::Vec4f                      _color;
+  std::string                     _workingDir;
   
 };
 

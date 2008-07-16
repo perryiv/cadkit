@@ -29,7 +29,8 @@ FlyTo::FlyTo ( QWidget* parent ) : BaseClass ( parent ),
 {
   QPushButton *go ( new QPushButton ( "Go" ) );
   
-  connect ( go, SIGNAL ( clicked() ), this, SLOT ( _onFlyToClicked() ) );
+  connect ( go,        SIGNAL ( clicked() ),       this, SLOT ( _onFlyToClicked() ) );
+  connect ( _lineEdit, SIGNAL ( returnPressed() ), this, SLOT ( _onFlyToClicked() ) );
   
   QHBoxLayout *topLayout ( new QHBoxLayout );
   this->setLayout ( topLayout );

@@ -27,6 +27,8 @@ struct ILookAtLayer : public Usul::Interfaces::IUnknown
   /// Add a layer.
   virtual void                  lookAtLayer ( Usul::Interfaces::IUnknown* layer ) = 0;
 
+  virtual void                  lookAtPoint ( const Usul::Math::Vec2d& point ) = 0;
+  
 }; // struct ILookAtLayer
 
 } // end namespace Interfaces

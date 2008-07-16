@@ -59,7 +59,7 @@ int main ( int argc, char **argv )
 
     // Run the application.
     CadKit::Helios::Core::Program::run (
-      argc, argv, 
+      argc, argv,
       &Threads::OT::newOpenThreadsThread, 
       program, version, vendor, url, icon, splash, plugins, manual,
       jobManagerThreadPoolSize,

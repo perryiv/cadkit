@@ -60,6 +60,10 @@ public:
   bool                        isReading() const;
   void                        reading( bool b );
   
+  /// Set/get the url.
+  void                        url ( const std::string& );
+  std::string                 url() const;
+  
 protected:
   virtual ~GeoRSSLayer();
   

@@ -11,6 +11,7 @@
 #include "Minerva/Plugins/LayerManager/LayerManagerComponent.h"
 #include "Minerva/Plugins/LayerManager/LayersTree.h"
 #include "Minerva/Plugins/LayerManager/Favorites.h"
+#include "Minerva/Plugins/LayerManager/FlyTo.h"
 
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
@@ -213,6 +214,20 @@ void LayerManagerComponent::initializePlugin ( Usul::Interfaces::IUnknown *calle
 {
   _caller = caller;
 
+  {
+    // Build the docking window.
+    std::auto_ptr<QDockWidget> dock ( Detail::makeDockWindow ( "Fly To Location", "FlyToLocation", caller ) );
+    
+    // Create the tree for the favorites.
+    QWidget *flyTo ( new FlyTo ( dock.get() ) );
+    
+    // Add the dock to the main window.
+    dock->setWidget( flyTo );
+    
+    // Add to our list.
+    _docks.push_back ( dock.release() );
+  }
+  
   {
     // Build the docking window.
     std::auto_ptr<QDockWidget> dock ( Detail::makeDockWindow ( "GIS Layers", "GISLayersDockWidget", caller ) );

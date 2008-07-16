@@ -1128,6 +1128,7 @@ double Body::elevation ( double lat, double lon ) const
 #endif
   
   // Should we use a geoid here?  Keeping this for reference.
+  // http://en.wikipedia.org/wiki/Geoid
 #if 0
   ossimGpt point ( lat, lon );
   double height (  ossimElevManager::instance()->getHeightAboveMSL( point ) );

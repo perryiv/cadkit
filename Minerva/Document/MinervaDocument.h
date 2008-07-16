@@ -135,8 +135,9 @@ public:
   /// Clear any existing data.
   virtual void                             clear ( Unknown *caller = 0x0 );
 
-  void                                     lookAtLayer ( Usul::Interfaces::IUnknown * layer );
-
+  virtual void                             lookAtLayer ( Usul::Interfaces::IUnknown * layer );
+  virtual void                             lookAtPoint ( const Usul::Math::Vec2d& point );
+  
   /// Animation methods.
   void                                     timestepType( IAnimationControl::TimestepType type );
   IAnimationControl::TimestepType          timestepType( ) const;

@@ -1069,17 +1069,17 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   
   // Lods menu.
   {
-    MenuKit::Menu::RefPtr lods ( new MenuKit::Menu ( "&Lods" ) );
+    MenuKit::Menu::RefPtr lods ( new MenuKit::Menu ( "&LODs" ) );
     menu.append ( lods.get() );
     
     lods->append ( new ToggleButton ( 
                           UC::genericToggleCommand ( 
-                                                    "&Low Lods", 
+                                                    "&Use Low LOD When Navigating", 
                                                     UA::memberFunction<void> ( viewer.get(), &OsgViewer::useLowLodsSet ), 
                                                     UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useLowLodsGet ) ) ) );
     lods->append ( new ToggleButton ( 
                           UC::genericToggleCommand ( 
-                                                    "&High Lods", 
+                                                    "&Always Use High LOD", 
                                                     UA::memberFunction<void> ( viewer.get(), &OsgViewer::useHighLodsSet ), 
                                                     UA::memberFunction<bool> ( viewer.get(), &OsgViewer::useHighLodsGet ) ) ) );
   }

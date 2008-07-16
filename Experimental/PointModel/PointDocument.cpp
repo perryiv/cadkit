@@ -24,6 +24,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
+#include "Usul/File/Find.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Math/MinMax.h"
@@ -66,7 +67,8 @@ PointDocument::PointDocument() : BaseClass ( "Point Document" ),
 _pointSet( new PointSet() ),
 _numPoints( 0 ),
 _material( new osg::Material() ),
-_color( 1.0f, 0.0f, 0.0f, 1.0f )
+_color( 1.0f, 0.0f, 0.0f, 1.0f ),
+_workingDir()
 {
   // Set the default material ambient and diffuse
   _material->setAmbient( osg::Material::FRONT_AND_BACK, _color );
@@ -125,7 +127,8 @@ bool PointDocument::canExport ( const std::string &file ) const
 
 bool PointDocument::canInsert ( const std::string &file ) const
 {
-  return this->canOpen ( file );
+  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
+  return ( ext == "point3d" || ext == "p3dbf" );
 }
 
 
@@ -138,7 +141,7 @@ bool PointDocument::canInsert ( const std::string &file ) const
 bool PointDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "point3d" || ext == "bp3d" || ext == "p3dbf" );
+  return ( ext == "psxml" || ext == "point3d" || ext == "p3dbf" );
 }
 
 
@@ -151,9 +154,42 @@ bool PointDocument::canOpen ( const std::string &file ) const
 bool PointDocument::canSave ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "p3dbrf" );
+  return ( ext == "p3dbf" );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the xml file and parse elements.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::_parseXML( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+{
+  Guard guard ( this->mutex() );
+  
+
+  Attributes& attributes ( node.attributes() );
+  for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  {
+    if ( "usetools" == iter->first )
+    {
+      
+    }
+  }
+
+  Children& children ( node.children() );
+	unsigned int set = 0;
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "set" == node->name() )
+    {
+     
+    }
+
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -163,6 +199,45 @@ bool PointDocument::canSave ( const std::string &file ) const
 
 void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
+
+  // XML Parsing
+  /*
+  XmlTree::Document::RefPtr document ( new XmlTree::Document );
+  _workingDir = Usul::File::directory( name, true );
+  
+  document->load ( name );
+  if ( "mpd" == document->name() )
+  {
+    
+    this->_readParameterFile( *document, caller, progress );
+    this->updateGlobalEndtime();
+  }
+  */
+
+  this->_read( name, caller, progress );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the file and add it to existing data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void PointDocument::_read ( const std::string &name, Unknown *caller, Unknown *progress )
+{
+
+  // Binary restart filename
+  std::string restartFilename ( Usul::Strings::format ( Usul::File::directory( name, true ), Usul::File::base( name ), ".p3dbf" ) );
+
+  // TODO:
+  // Check to see if the binary restart file exists.  
+  // If it does and the date is greater than the ASCII data
+  // read that file instead.
+
+  // Get the extension of the file to load
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
 
   if ( "point3d" == ext )
@@ -188,35 +263,28 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
     }
  
     // Read binary file.
-    this->_readPoint3DFile( binaryFilename, 0, caller, progress );
+    this->_readPoint3DFile( binaryFilename, caller, progress );
 
     // Create the octree
     this->_split( caller, progress );
 
     // Build the vectors from the linked lists
     this->_buildVectors( caller, progress );
+
+    // debug info
+    std::cout << Usul::Strings::format( "Writing binary restart file: ", restartFilename ) << std::endl;
+
+    // Write restart file
+    this->write( restartFilename, caller, progress );
 
     // Everything worked so keep the binary file
-    remove.remove( false );
+    // remove.remove( false );
  
-  }
-  else if( "bp3d" == ext )
-  {
-     // Read binary file.
-    this->_readPoint3DFile( name, 1, caller, progress );
-
-    // Create the octree
-    this->_split( caller, progress );
-
-    // Build the vectors from the linked lists
-    this->_buildVectors( caller, progress );
-   
   }
   else if( "p3dbf" == ext )
   {
     // read the binary restart file
     this->_readBinaryRestartFile( name, caller, progress );
-
   }
   else
   {
@@ -224,8 +292,6 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
   }
 
 }
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Write the document to the given file name.
@@ -235,7 +301,7 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 void PointDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
   std::ofstream* ofs ( new std::ofstream );
-  ofs->open( name.c_str(), std::ofstream::out | std::ifstream::binary );
+  ofs->open( name.c_str(), std::ofstream::out | std::ifstream::binary ); 
 
   // write the binary restart file
   _pointSet->write( ofs, _numPoints, 0x0, caller, progress );
@@ -268,7 +334,10 @@ void PointDocument::clear ( Usul::Interfaces::IUnknown *caller )
 
 PointDocument::Filters PointDocument::filtersInsert() const
 {
-  return this->filtersOpen();
+  Filters filters;
+  filters.push_back ( Filter ( "Ascii 3D Point Files (*.point3d )", "*.point3d" ) );
+  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
+  return filters;
 }
 
 
@@ -282,8 +351,8 @@ PointDocument::Filters PointDocument::filtersOpen() const
 {
   Filters filters;
   filters.push_back ( Filter ( "Ascii 3D Point Files (*.point3d )", "*.point3d" ) );
-  filters.push_back ( Filter ( "Binary 3D Point Files (*.bp3d )", "*.bp3d" ) );
   filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
+  filters.push_back ( Filter ( "Point Set Document XML (*.psxml )", "*.psxml" ) );
   return filters;
 }
 
@@ -337,7 +406,7 @@ osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_readPoint3DFile( const std::string &filename, unsigned int progressPath, Unknown *caller, Unknown *progress )
+void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *caller, Unknown *progress )
 {
  
   this->setStatusBar ( "Step 1/2: Reading file...", progress );
@@ -401,11 +470,10 @@ void PointDocument::_readPoint3DFile( const std::string &filename, unsigned int 
       }
 
       ++count;
+
       // Feedback.
-      if( 0 == progressPath )
-        this->setProgressBar( update(), _numPoints + count, _numPoints * 2, progress );
-      if( 1 == progressPath )
-        this->setProgressBar( update(), count, _numPoints, progress );
+      this->setProgressBar( update(), _numPoints + count, _numPoints * 2, progress );
+      
     }
   }
   USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1302438923" );
@@ -533,8 +601,6 @@ void PointDocument::_fastReadAndSetBounds( const std::string &filename, const st
       std::string floatValues (  Usul::Convert::Type< float, std::string >::convert ( p.x() ) + " " +
                                  Usul::Convert::Type< float, std::string >::convert ( p.y() ) + " " +
                                  Usul::Convert::Type< float, std::string >::convert ( p.z() ) );
-      std::cout << "Double Values: " << doubleValues << std::endl;
-      std::cout << "Float  Values: " << floatValues << std::endl;
     }
   }
   

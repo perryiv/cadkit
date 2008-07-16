@@ -5084,21 +5084,13 @@ void Viewer::useLowLodsSet ( bool b )
 {
   USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
-  _flags = Usul::Bits::set < unsigned int, unsigned int > ( _flags, _USE_LOW_LODS, b );
-}
 
+  // Set this state.
+  this->_useLowLodsSet ( b );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the use low lods state.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::useLowLodsGet() const
-{
-  USUL_TRACE_SCOPE;
-	Guard guard ( this->mutex() );
-  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_LOW_LODS );
+  // Don't allow both to be on.
+  if ( true == b )
+    this->_useHighLodsSet ( false );
 }
 
 
@@ -5109,6 +5101,40 @@ bool Viewer::useLowLodsGet() const
 ///////////////////////////////////////////////////////////////////////////////
 
 void Viewer::useHighLodsSet ( bool b )
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+
+  // Set this state.
+  this->_useHighLodsSet ( b );
+
+  // Don't allow both to be on.
+  if ( true == b )
+    this->_useLowLodsSet ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use low lods state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_useLowLodsSet ( bool b )
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  _flags = Usul::Bits::set < unsigned int, unsigned int > ( _flags, _USE_LOW_LODS, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use high lods state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::_useHighLodsSet ( bool b )
 {
   USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
@@ -5127,6 +5153,20 @@ bool Viewer::useHighLodsGet() const
   USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
   return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_HIGH_LODS );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the use low lods state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::useLowLodsGet() const
+{
+  USUL_TRACE_SCOPE;
+	Guard guard ( this->mutex() );
+  return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_LOW_LODS );
 }
 
 

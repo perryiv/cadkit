@@ -15,8 +15,10 @@
 
 #include "Manager.h"
 
-#include "Usul/Errors/Assert.h"
+#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Components/Manager.h"
+#include "Usul/Errors/Assert.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IDefaultGUIDelegate.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
@@ -239,7 +241,7 @@ void Manager::activeDocument ( IDocument* document )
   IDocument::RefPtr oldDoc ( this->activeDocument() );
 
   // Return now if document is already active
-  if( document == oldDoc.get() )
+  if ( document == oldDoc.get() )
     return;
 
   // Set the active document
@@ -257,7 +259,15 @@ void Manager::activeDocument ( IDocument* document )
 
   // Notify any listeners we may have.
   for ( ActiveDocumentListeners::iterator iter = listeners.begin(); iter != listeners.end(); ++iter )
-    (*iter)->activeDocumentChanged ( Usul::Interfaces::IUnknown::QueryPtr ( oldDoc.get() ), Usul::Interfaces::IUnknown::QueryPtr ( document ) );
+  {
+    ActiveDocumentListener::RefPtr listener ( *iter );
+    if ( true == listener.valid() )
+    {
+      Usul::Interfaces::IUnknown::QueryPtr oldUnknown ( oldDoc.get() );
+      Usul::Interfaces::IUnknown::QueryPtr newUnknown ( document );
+      Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( listener.get(), &ActiveDocumentListener::activeDocumentChanged ), oldUnknown.get(), newUnknown.get() );
+    }
+  }
 }
 
 

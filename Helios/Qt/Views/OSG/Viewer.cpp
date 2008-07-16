@@ -1007,6 +1007,11 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Right",  "Right.png",  viewer.get(), &OsgViewer::camera, OsgViewer::RIGHT ) ) );
     gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "&Top",    "Top.png",    viewer.get(), &OsgViewer::camera, OsgViewer::TOP ) ) );
     gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "B&ottom", "Bottom.png", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
+    gotoMenu->addSeparator();
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate Y +45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_Y_P45 ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate Y -45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_Y_N45 ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate X +45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_X_N45 ) ) );
+    gotoMenu->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Rotate X -45", "", viewer.get(), &OsgViewer::camera, OsgViewer::ROTATE_X_N45 ) ) );
 
     menu.append ( gotoMenu.get() );
   }

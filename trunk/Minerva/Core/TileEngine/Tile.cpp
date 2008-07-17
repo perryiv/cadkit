@@ -72,6 +72,31 @@ USUL_IMPLEMENT_TYPE_ID ( Tile );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to remove job from queue and cancel it.
+//  Make sure needed mutexes are locked before calling.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline void removeAndCancelJob ( Body* body, Usul::Jobs::Job::RefPtr& job )
+  {
+    if ( true == job.valid() )
+    {
+      // Remove the job from the queue.
+      if ( 0x0 != body && 0x0 != body->jobManager() )
+        body->jobManager()->removeQueuedJob ( job );
+      
+      // Cancel the job and set to null.
+      job->cancel();
+      job = 0x0;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1585,24 +1610,11 @@ void Tile::clear ( bool children )
     this->_clearChildren ( children, true );
   }
 
-  // Cancel job if it's valid.
+  // Cancel jobs.
   {
     Guard guard ( this );
-    if ( true == _imageJob.valid() )
-    {
-      _imageJob->cancel();
-      _imageJob = 0x0;
-    }
-  }
-
-  // Cancel job if it's valid.
-  {
-    Guard guard ( this );
-    if ( true == _tileJob.valid() )
-    {
-      _tileJob->cancel();
-      _tileJob = 0x0;
-    }
+    Helper::removeAndCancelJob ( _body, _imageJob );
+    Helper::removeAndCancelJob ( _body, _tileJob );
   }
 
   // Set the body to null. We have to do this because the tiles 
@@ -1673,11 +1685,7 @@ void Tile::_launchImageRequest()
   Guard guard ( this );
 
   // Cancel the one we have, if any.
-  if ( true == _imageJob.valid() )
-  {
-    _imageJob->cancel();
-    _imageJob = 0x0;
-  }
+  Helper::removeAndCancelJob ( _body, _imageJob );
   
   // Start the request to pull in texture.
   if ( 0x0 != _body )
@@ -1910,13 +1918,12 @@ void Tile::_clearChildren ( bool traverse, bool cancelJob )
   _children.assign ( _children.size(), 0x0 );
 
   // Clear the tile job.
-  if ( ( true == _tileJob.valid() ) && ( true == cancelJob ) )
+  if ( true == cancelJob )
   {
     // Without this call to cancel we always have to wait for the job to 
     // finish, even if we've already chosen to go down the low path, which 
     // happens when we are zoomed in and then "view all".
-    _tileJob->cancel();
-    _tileJob = 0x0;
+    Helper::removeAndCancelJob ( _body, _tileJob );
   }
 }
 

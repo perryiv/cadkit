@@ -129,9 +129,6 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnkno
     subject->addModifiedObserver ( this );
   }
 
-  // Load state. Do this after setting document.
-  _viewer->stateLoad();
-
   // We have a custom context menu.
   this->setContextMenuPolicy ( Qt::CustomContextMenu );
 
@@ -990,9 +987,20 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   // Background menu.
   {
     MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "&Background" ) );
-    background->append ( new Button ( USUL_MAKE_COMMAND ( "&Edit...", "", this, &Viewer::editBackground ) ) );
+    background->append ( new Button ( USUL_MAKE_COMMAND ( "&Edit...", "", this, &Viewer::editClippingDistances ) ) );
     background->append ( new Button ( USUL_MAKE_COMMAND ( "&Default", "", viewer.get(), &OsgViewer::defaultBackground ) ) );
     menu.append ( background.get() );
+  }
+  
+  // Clip distances.
+  {
+    MenuKit::Menu::RefPtr clip ( new MenuKit::Menu ( "&Clip Distances" ) );
+    clip->append ( new ToggleButton ( UC::genericToggleCommand ( 
+                                                                "&Auto", 
+                                                                UA::memberFunction<void> ( viewer.get(), &OsgViewer::computeNearFarSet ), 
+                                                                UA::memberFunction<bool> ( viewer.get(), &OsgViewer::computeNearFarGet ) ) ));
+    clip->append ( new Button ( USUL_MAKE_COMMAND ( "&Edit...", "", this, &Viewer::editClippingDistances ) ) );
+    menu.append ( clip.get() );
   }
   
   // Camera menu.
@@ -1817,4 +1825,90 @@ void Viewer::toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* calle
   toolBar->append ( new Button ( USUL_MAKE_COMMAND_ARG0 ( "Bottom", "Bottom.png", viewer.get(), &OsgViewer::camera, OsgViewer::BOTTOM ) ) );
   
   menu.append ( toolBar.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the saved state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::stateLoad()
+{
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  
+  if ( true == viewer.valid() )
+  {
+    // Load state.
+    viewer->stateLoad();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the clipping distances.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::editClippingDistances()
+{
+  // Get the viewer.
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  
+  // Return if we don't have a viewer.
+  if ( false == viewer.valid() )
+    return;
+  
+  QDialog dialog;
+  dialog.setWindowTitle ( "Enter Custom Clipping Distances" );
+  
+  QVBoxLayout *topLayout ( new QVBoxLayout );
+  dialog.setLayout ( topLayout );
+  
+  QDoubleSpinBox *zNear ( new QDoubleSpinBox );
+  QDoubleSpinBox *zFar ( new QDoubleSpinBox );
+  
+  zNear->setRange ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
+  zFar->setRange  ( std::numeric_limits<double>::min(), std::numeric_limits<double>::max() );
+  
+  double nearValue ( 0.0 ), farValue ( 0.0 );
+  viewer->getClippingDistances ( nearValue, farValue );
+  
+  zNear->setValue ( nearValue );
+  zFar->setValue  ( farValue );
+  
+  {
+    QHBoxLayout *layout ( new QHBoxLayout );
+    layout->addWidget ( new QLabel ( "Near:" ) );
+    layout->addWidget ( zNear );
+    layout->addWidget ( new QLabel ( "Far:" ) );
+    layout->addWidget ( zFar );
+    topLayout->addLayout ( layout );
+  }
+  
+  {
+    QPushButton *ok ( new QPushButton ( "Ok" ) );
+    QPushButton *cancel ( new QPushButton ( "Cancel" ) );
+    
+    QObject::connect ( ok, SIGNAL ( clicked() ), &dialog, SLOT ( accept() ) );
+    QObject::connect ( cancel, SIGNAL ( clicked() ), &dialog, SLOT ( reject() ) );
+    
+    QHBoxLayout *layout ( new QHBoxLayout );
+    layout->addStretch();
+    layout->addWidget( ok );
+    layout->addWidget( cancel );
+    topLayout->addLayout ( layout );
+  }
+  
+  if ( QDialog::Accepted == dialog.exec() )
+  {
+    nearValue = zNear->value();
+    farValue  = zFar->value();
+    
+    viewer->computeNearFarSet ( false );
+    viewer->setClippingDistances ( nearValue, farValue );
+  }
 }

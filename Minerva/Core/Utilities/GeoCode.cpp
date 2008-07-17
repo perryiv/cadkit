@@ -119,7 +119,7 @@ Usul::Math::Vec2d GeoCode::operator() ( const std::string& location ) const
     const double lat ( latNode.valid() ? Usul::Convert::Type<std::string,double>::convert ( latNode->value() ) : 0.0 );
     const double lon ( lonNode.valid() ? Usul::Convert::Type<std::string,double>::convert ( lonNode->value() ) : 0.0 );
     
-    std::cout << "Geocoded " << location << " to " << lat << ", " << lon << std::endl;
+    //std::cout << "Geocoded " << location << " to " << lat << ", " << lon << std::endl;
     
     return Usul::Math::Vec2d ( lon, lat );
   }

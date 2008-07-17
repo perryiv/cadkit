@@ -30,6 +30,8 @@ namespace Helios {
 namespace Views {
 namespace OSG {
 
+  class Viewer;
+  
 class HELIOS_QT_VIEWS_OSG_EXPORT Delegate : public Usul::Base::Referenced,
                                             public Usul::Interfaces::IGUIDelegate,
                                             public Usul::Interfaces::IColorEditor
@@ -39,6 +41,11 @@ public:
   /// Typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
+  typedef CadKit::Helios::Views::OSG::Viewer QtViewer;
+  
+  // Non-ref'ing smart-pointers that throw if given null.
+  typedef Usul::Pointers::Configs::NoRefCountingNullThrows Policy;
+  typedef Usul::Pointers::SmartPointer < QtViewer, Policy > QtViewerPtr;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Delegate );
@@ -65,7 +72,14 @@ protected:
   /// Use reference counting.
   virtual ~Delegate();
 
-
+  // Make the viewer.
+  QtViewer*                   _makeViewer ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
+  
+  // Build the scene.
+  void                        _buildScene ( QtViewer &viewer, Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
+  
+  // Show the viewer.
+  void                        _restoreStateAndShow ( QtViewer &viewer );
 };
 
 }

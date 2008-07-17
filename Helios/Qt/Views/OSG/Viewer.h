@@ -85,6 +85,9 @@ public:
 
   /// Edit the background.
   void                                    editBackground();
+  
+  /// Edit the clipping distances.
+  void                                    editClippingDistances();
 
   // Get the mutex.
   Mutex &                                 mutex() const;
@@ -123,6 +126,9 @@ public:
 
   /// Add to the menu (IMenuAdd).
   virtual void                            menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+  
+  /// Load the saved state.
+  void                                    stateLoad();
   
   /// Add to the toolbar.
   virtual void                            toolBarAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown* caller = 0x0 );

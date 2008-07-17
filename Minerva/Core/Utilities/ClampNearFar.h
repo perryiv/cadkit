@@ -43,7 +43,7 @@ namespace Utilities {
   protected:
     
     template < class Matrix > bool _common ( Matrix &projection, double &zNear, double &zFar ) const
-    {     
+    {
       if ( zNear <= 0 )
       {
         zNear = 10;

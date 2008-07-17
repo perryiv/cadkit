@@ -13,6 +13,8 @@
 #include "Minerva/Plugins/LayerManager/Favorites.h"
 #include "Minerva/Plugins/LayerManager/FlyTo.h"
 
+#include "Helios/Qt/Views/OSG/Viewer.h"
+
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
 #include "Usul/Interfaces/IModifiedSubject.h"
@@ -107,7 +109,7 @@ Usul::Interfaces::IUnknown *LayerManagerComponent::queryInterface ( unsigned lon
   case Usul::Interfaces::IModifiedObserver::IID:
     return static_cast < Usul::Interfaces::IModifiedObserver* > ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 
@@ -261,4 +263,60 @@ void LayerManagerComponent::initializePlugin ( Usul::Interfaces::IUnknown *calle
   
   QObject::connect ( _layers,    SIGNAL ( addLayerFavorites ( Usul::Interfaces::IUnknown * ) ), _favorites, SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
   QObject::connect ( _favorites, SIGNAL ( layerAdded ( Usul::Interfaces::IUnknown * ) ),        _layers,    SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does this delegate handle this document type?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool LayerManagerComponent::doesHandle( const std::string& token ) const
+{
+  return token == "Minerva Document";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Default equator size for Minerva.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Constants
+{
+  const double WGS_84_RADIUS_EQUATOR = 6378137.0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the default GUI.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayerManagerComponent::createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller )
+{
+  // Make the viewer.
+  QtViewerPtr viewer ( this->_makeViewer ( document, caller ) );
+  
+  // Make sure we got a viewer.
+  if ( false == viewer.valid() )
+    return;
+  
+  // We want mouse-move events even when there are no mouse buttons pressed.
+  viewer->setMouseTracking ( true );
+  
+  // Build the window.
+  this->_buildScene ( *viewer, document, caller );
+  
+  // Make a reasonable default trackball.  Any saved state will override this.
+  if ( 0x0 != viewer->viewer() )
+  {
+    viewer->viewer()->setTrackball ( osg::Vec3 ( 0.0, 0.0, 0.0 ), Constants::WGS_84_RADIUS_EQUATOR * 3.0, osg::Quat(), true, true );
+  }
+  
+  // Show the window.
+  this->_restoreStateAndShow ( *viewer );
 }

@@ -83,36 +83,81 @@ Usul::Interfaces::IUnknown *Delegate::queryInterface ( unsigned long iid )
 
 void Delegate::createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller )
 {
-  typedef CadKit::Helios::Views::OSG::Viewer QtViewer;
+  // Make the viewer.
+  QtViewerPtr viewer ( this->_makeViewer ( document, caller ) );
+  
+  // Make sure we got a viewer.
+  if ( false == viewer.valid() )
+    return;
+  
+  // We want mouse-move events even when there are no mouse buttons pressed.
+  viewer->setMouseTracking ( true );
 
-  // Non-ref'ing smart-pointers that throw if given null.
-  typedef Usul::Pointers::Configs::NoRefCountingNullThrows Policy;
-  typedef Usul::Pointers::SmartPointer < QtViewer, Policy > QtViewerPtr;
+  // Build the window.
+  this->_buildScene ( *viewer, document, caller );
+  
+  // Show the window.
+  this->_restoreStateAndShow ( *viewer );
+  
+}
 
-  Usul::Interfaces::Qt::IWorkspace::QueryPtr workspace ( caller );
 
-  if ( workspace.valid() )
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Make the viewer.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+Delegate::QtViewer* Delegate::_makeViewer ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller )
+{
+  Usul::Interfaces::Qt::IWorkspace::QueryPtr ws ( caller );
+  
+  QWorkspace *workspace ( ws.valid() ? ws->workspace() : 0x0 );
+  
+  QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), workspace, caller ) );
+  
+  if ( 0x0 != workspace )
   {
-    QWorkspace *parent ( workspace->workspace() );
-    QtViewerPtr viewer ( new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller ) );
-    parent->addWindow ( viewer.get() );
-
-    // We want mouse-move events even when there are no mouse buttons pressed.
-    viewer->setMouseTracking ( true );
-
-    // Build the scene.
-    Usul::Interfaces::IBuildScene::QueryPtr build ( document );
-    if ( build.valid () )
-    {
-      viewer->viewer()->scene ( build->buildScene ( document->options(), caller ) );
-    }
-
-    // Show the window.
-    viewer->show();
-
-    // Set the focus.
-    viewer->setFocus();
+    workspace->addWindow ( viewer.get() );
   }
+  
+  return viewer.release();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Delegate::_buildScene ( QtViewer &viewer, Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller )
+{
+  // Build the scene.
+  Usul::Interfaces::IBuildScene::QueryPtr build ( document );
+  if ( 0x0 != viewer.viewer() && build.valid () && 0x0 != document )
+  {
+    viewer.viewer()->scene ( build->buildScene ( document->options(), caller ) );
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Show the viewer.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Delegate::_restoreStateAndShow ( QtViewer &viewer )
+{
+  // Load the saved state.
+  viewer.stateLoad();
+  
+  // Show the window.
+  viewer.show();
+  
+  // Set the focus.
+  viewer.setFocus();
 }
 
 

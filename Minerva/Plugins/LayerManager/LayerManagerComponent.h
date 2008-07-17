@@ -19,11 +19,14 @@
 
 #include "Minerva/Plugins/LayerManager/CompileGuard.h"
 
+#include "Helios/Qt/Views/OSG/Delegate.h"
+
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
+#include "Usul/Interfaces/IDefaultGUIDelegate.h"
 
 #include <vector>
 
@@ -31,18 +34,19 @@ class QDockWidget;
 class LayersTree;
 class Favorites;
 
-class LayerManagerComponent : public Usul::Base::Referenced,
+class LayerManagerComponent : public CadKit::Helios::Views::OSG::Delegate,
                               public Usul::Interfaces::IPlugin,
                               public Usul::Interfaces::IActiveDocumentListener,
                               public Usul::Interfaces::IModifiedObserver,
-                              public Usul::Interfaces::IPluginInitialize
+                              public Usul::Interfaces::IPluginInitialize,
+                              public Usul::Interfaces::IDefaultGUIDelegate
 {
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Referenced                                   BaseClass;
-  typedef Usul::Interfaces::IUnknown                               Unknown;
-  typedef std::vector<QDockWidget*>                                Docks;
+  typedef CadKit::Helios::Views::OSG::Delegate   BaseClass;
+  typedef Usul::Interfaces::IUnknown             Unknown;
+  typedef std::vector<QDockWidget*>              Docks;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( LayerManagerComponent );
@@ -55,15 +59,17 @@ public:
   
 protected:
 
-  /// Return name of plugin.
-  virtual std::string           getPluginName() const;
-
-  // Do not copy.
-  LayerManagerComponent ( const LayerManagerComponent & );
-  LayerManagerComponent &operator = ( const LayerManagerComponent & );
-
   /// Use reference counting.
   virtual ~LayerManagerComponent();
+  
+  /// Return name of plugin.
+  virtual std::string                   getPluginName() const;
+
+  /// Usul::Interfaces::IGUIDelegate
+  virtual void                          createDefaultGUI ( Usul::Documents::Document *document, Usul::Interfaces::IUnknown* caller );
+  
+  /// Usul::Interfaces::IGUIDelegate
+  virtual bool                          doesHandle( const std::string& token ) const;
   
   /// The active document has changed (IActiveDocumentListener).
   virtual void                          activeDocumentChanged ( Usul::Interfaces::IUnknown *oldDoc, Usul::Interfaces::IUnknown *newDoc );
@@ -73,6 +79,12 @@ protected:
   
   /// Add a dock window.
   virtual void                          initializePlugin ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  
+private:
+  
+  // Do not copy.
+  LayerManagerComponent ( const LayerManagerComponent & );
+  LayerManagerComponent &operator = ( const LayerManagerComponent & );
   
   Usul::Interfaces::IUnknown::QueryPtr _caller;
 

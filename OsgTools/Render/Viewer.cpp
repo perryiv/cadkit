@@ -192,7 +192,8 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   _mouseEventListeners (),
   _activeDragger       ( 0x0 ),
   _pointerInfo         (),
-  _clipPlaneWidgets    ()
+  _clipPlaneWidgets    (),
+  _clampProjectionMatrixCallback ( 0x0 )
 {
   // Initialize the clock.
   Usul::System::Clock::milliseconds();
@@ -564,7 +565,7 @@ const Viewer::SceneView *Viewer::viewer() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  View everything.
+//  Go to given camera.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2286,8 +2287,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IClippingDistance * > ( this );
   case Usul::Interfaces::IViewport::IID:
     return static_cast < Usul::Interfaces::IViewport * > ( this );
-  case Usul::Interfaces::IMenuAdd::IID:
-    return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
   case Usul::Interfaces::IRenderLoop::IID:
     return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
   case Usul::Interfaces::IRenderingPasses::IID:
@@ -4326,28 +4325,64 @@ const osg::Light *Viewer::light() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::computeNearFar ( bool b )
+void Viewer::computeNearFarSet ( bool b )
 {
+  // Return now if state is the same.
+  if ( this->computeNearFarGet() == b )
+    return;
+  
   // Return now if no viewer.
   if ( 0x0 == this->viewer() )
     return;
   
+  osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
+  
+  if ( 0x0 == cv )
+    return;
+  
   if ( b )
   {
-    osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
-    cv->setClampProjectionMatrixCallback ( new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::Defaults::CAMERA_Z_NEAR, OsgTools::Render::Defaults::CAMERA_Z_FAR ) );
+    // Get the last callback.  Make a new one if null.
+    osg::ref_ptr<osg::CullSettings::ClampProjectionMatrixCallback> cb ( 
+      _clampProjectionMatrixCallback.valid() ? _clampProjectionMatrixCallback : 
+        new OsgTools::Render::ClampProjection ( *cv, OsgTools::Render::Defaults::CAMERA_Z_NEAR, OsgTools::Render::Defaults::CAMERA_Z_FAR ) );
+    
+    cv->setClampProjectionMatrixCallback ( cb.get() );
     cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
     cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
     this->viewer()->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
   }
   else
   {
-    osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
+    // Save the current callback.
+    _clampProjectionMatrixCallback = cv->getClampProjectionMatrixCallback();
+    
     cv->setClampProjectionMatrixCallback ( 0x0 );
     //cv->setInheritanceMask ( Usul::Bits::add ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
     cv->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
     this->viewer()->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get compute near far mode.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::computeNearFarGet() const
+{
+  // Return now if no viewer.
+  if ( 0x0 == this->viewer() )
+    return false;
+  
+  const osgUtil::CullVisitor *cv ( this->viewer()->getCullVisitor() );
+  
+  if ( 0x0 == cv )
+    return false;
+  
+  return osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR != cv->getComputeNearFarMode();
 }
 
 
@@ -4762,7 +4797,7 @@ void Viewer::_clearUpdateListeners()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::getClippingDistances ( float &nearDist, float &farDist ) const
+void Viewer::getClippingDistances ( double &nearDist, double &farDist ) const
 {
   USUL_TRACE_SCOPE;
   
@@ -4775,8 +4810,8 @@ void Viewer::getClippingDistances ( float &nearDist, float &farDist ) const
       _renderer->nearFar ( n, f );
   }
   
-  nearDist = static_cast<float> ( n );
-  farDist  = static_cast<float> ( f );
+  nearDist = n;
+  farDist  = f;
 }
 
 
@@ -4786,7 +4821,7 @@ void Viewer::getClippingDistances ( float &nearDist, float &farDist ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setClippingDistances ( float nearDist, float farDist )
+void Viewer::setClippingDistances ( double nearDist, double farDist )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -4795,28 +4830,22 @@ void Viewer::setClippingDistances ( float nearDist, float farDist )
     return;
 
   // No longer compute near far.
-  this->computeNearFar ( false );
+  this->computeNearFarSet ( false );
+  
+  const double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
+  const double width ( this->width() ), height ( this->height() );
+  const double aspect ( width / height );
+  
+  if ( this->viewer() )
+    this->viewer()->setProjectionMatrixAsPerspective ( fovy, aspect, nearDist, farDist );
 
+#if 0
   double left ( 0.0 ), right ( 0.0 ), top ( 0.0 ), bottom ( 0.0 ), zNear ( 0.0 ), zFar ( 0.0 );
   if ( this->viewer()->getProjectionMatrixAsFrustum ( left, right, bottom, top, zNear, zFar ) )
   {
     this->viewer()->setProjectionMatrixAsFrustum ( left, right, bottom, top, nearDist, farDist );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add to the menu.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::menuAdd ( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller )
-{
-  // Redirect to the caller.
-  Usul::Interfaces::IMenuAdd::QueryPtr ma ( _caller );
-  if ( ma.valid() )
-    ma->menuAdd ( menu, caller );
+#endif
 }
 
 

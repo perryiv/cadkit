@@ -41,6 +41,10 @@ public:
   
   virtual Item*       operator() ( const DataObject& object, Usul::Interfaces::IUnknown* caller ) const;
   
+  /// Set/get the date.
+  void                date ( const std::string& );
+  const std::string&  date() const;
+  
   /// Set/get the image filename.
   void                imageFilename ( const std::string& );
   const std::string&  imageFilename() const;
@@ -50,6 +54,7 @@ public:
   Size                imageSize() const;
   
 private:
+  std::string _date;
   std::string _imageFilename;
   Size _imageSize;
 };

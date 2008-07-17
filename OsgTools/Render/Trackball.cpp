@@ -73,7 +73,7 @@ osg::Matrixd Trackball::matrix ( const osg::Vec3d &center, const osg::Quat &rota
   osg::Matrixd IR ( osg::Matrixd::rotate ( rotation.inverse() ) );
   osg::Matrixd TD ( osg::Matrixd::translate ( 0, 0, -distance ) );
   osg::Matrixd M ( TC * IR * TD );
-  std::cout << "Center = " << center[0] << ' ' << center[1] << ' ' << center[2] << ", Distance = " << distance << std::endl;
+  //std::cout << "Center = " << center[0] << ' ' << center[1] << ' ' << center[2] << ", Distance = " << distance << std::endl;
   return M;
 }
 

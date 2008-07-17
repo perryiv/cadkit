@@ -20,6 +20,8 @@
 
 #include "osg/Quat"
 
+#include <iostream>
+
 using namespace OsgTools::Render;
 
 
@@ -71,6 +73,7 @@ osg::Matrixd Trackball::matrix ( const osg::Vec3d &center, const osg::Quat &rota
   osg::Matrixd IR ( osg::Matrixd::rotate ( rotation.inverse() ) );
   osg::Matrixd TD ( osg::Matrixd::translate ( 0, 0, -distance ) );
   osg::Matrixd M ( TC * IR * TD );
+  std::cout << "Center = " << center[0] << ' ' << center[1] << ' ' << center[2] << ", Distance = " << distance << std::endl;
   return M;
 }
 
@@ -84,7 +87,7 @@ osg::Matrixd Trackball::matrix ( const osg::Vec3d &center, const osg::Quat &rota
 
 osg::Matrixd Trackball::getInverseMatrix() const
 {
-  return Trackball::matrix ( _center, _rotation, _distance );
+  return Trackball::matrix ( this->center(), this->rotation(), this->distance() );
 }
 
 
@@ -105,7 +108,7 @@ void Trackball::home ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter
   BaseClass::home ( ea, aa );
 
   // The base class uses a rotated coordinate system. Undo that.
-  _rotation.set ( osg::Vec4 ( 0, 0, 0, 1 ) );
+  this->rotation ( osg::Quat ( 0, 0, 0, 1 ) );
 }
 
 
@@ -117,6 +120,9 @@ void Trackball::home ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter
 
 bool Trackball::handle ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa )
 {
+  // Update the model's scale.
+  this->modelScale ( ( 0x0 != this->getNode() ) ? this->getNode()->getBound().radius() : this->modelScale() );
+
   // If we released the mouse...
   if ( osgGA::GUIEventAdapter::RELEASE == ea.getEventType() )
   {
@@ -149,4 +155,100 @@ bool Trackball::handle ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
 
   // Call the base class's function.
   return BaseClass::handle ( ea, aa );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the distance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Trackball::distance ( double d )
+{
+  _distance = d;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the distance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Trackball::distance() const
+{
+  return _distance;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the center.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Trackball::center ( const osg::Vec3 &c )
+{
+  _center = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the center.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3 Trackball::center() const
+{
+  return _center;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Trackball::rotation ( const osg::Quat &r )
+{
+  _rotation = r;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the rotation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Quat Trackball::rotation() const
+{
+  return _rotation;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the model's scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Trackball::modelScale ( double ms )
+{
+  _modelScale = ms;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the model's scale.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Trackball::modelScale() const
+{
+  return _modelScale;
 }

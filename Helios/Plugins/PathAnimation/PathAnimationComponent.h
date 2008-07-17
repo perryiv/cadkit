@@ -22,6 +22,7 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
+#include "Usul/Interfaces/IAnimateNurbsCurve.h"
 #include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -42,6 +43,7 @@ class PathAnimationComponent : public Usul::Base::Object,
                                public Usul::Interfaces::IActiveDocumentListener,
                                public Usul::Interfaces::IActiveViewListener,
                                public Usul::Interfaces::IAnimatePath,
+                               public Usul::Interfaces::IAnimateNurbsCurve,
                                public Usul::Interfaces::IUpdateListener
 {
 public:
@@ -53,6 +55,10 @@ public:
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   typedef std::vector < CameraPath::RefPtr > Paths;
   typedef std::list < CurvePlayer::RefPtr > Players;
+  typedef Usul::Interfaces::IAnimateNurbsCurve::DependentType DependentType;
+  typedef Usul::Interfaces::IAnimateNurbsCurve::ControlPoints ControlPoints;
+  typedef Usul::Interfaces::IAnimateNurbsCurve::KnotVector KnotVector;
+  typedef Usul::Interfaces::IAnimateNurbsCurve::Parameters Parameters;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( PathAnimationComponent );
@@ -68,6 +74,10 @@ public:
 
   // Usul::Interfaces::IActiveViewListener
   virtual void                  activeViewChanged ( IUnknown *oldView, IUnknown *newView );
+
+  // Usul::Interfaces::IAnimateNurbsCurve.
+  virtual void                  animateNurbsCurve ( const ControlPoints &, const KnotVector &, unsigned int degree, const Parameters & );
+  virtual void                  animateNurbsCurve ( const ControlPoints &, const KnotVector &, unsigned int degree, unsigned int steps );
 
   // Usul::Interfaces::IAnimatePath.
   virtual void                  animatePath ( const IAnimatePath::PackedMatrices & );

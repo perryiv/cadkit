@@ -45,6 +45,8 @@
 #include "MenuKit/RadioButton.h"
 #include "MenuKit/ToggleButton.h"
 
+#include "GN/Algorithms/Fill.h"
+
 #include "osg/Matrixd"
 #include "osg/Vec3d"
 
@@ -130,9 +132,11 @@ Usul::Interfaces::IUnknown *PathAnimationComponent::queryInterface ( unsigned lo
   case Usul::Interfaces::IActiveViewListener::IID:
     return static_cast < Usul::Interfaces::IActiveViewListener * > ( this );
   case Usul::Interfaces::IAnimatePath::IID:
-    return static_cast < Usul::Interfaces::IAnimatePath * > ( this );
+      return static_cast < Usul::Interfaces::IAnimatePath * > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
-    return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+      return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+  case Usul::Interfaces::IAnimateNurbsCurve::IID:
+      return static_cast < Usul::Interfaces::IAnimateNurbsCurve * > ( this );
   case Usul::Interfaces::IActiveDocumentListener::IID:
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   default:
@@ -958,6 +962,37 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
 
   // Play this path forward.
   this->_playPathForward ( path.get(), steps, false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate through the given curve.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::animateNurbsCurve ( const ControlPoints &ctrPts, const KnotVector &knots, unsigned int degree, unsigned int steps )
+{
+  USUL_TRACE_SCOPE;
+  
+  // Make the parameters as even steps.
+  Parameters params ( steps );
+  GN::Algorithms::fill ( params, 0, 1 );
+
+  // Animate the curve with the even parameters.
+  this->animateNurbsCurve ( ctrPts, knots, degree, params );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate through the given curve.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::animateNurbsCurve ( const ControlPoints &ctrPts, const KnotVector &knots, unsigned int degree, const Parameters &params )
+{
+  USUL_TRACE_SCOPE;
 }
 
 

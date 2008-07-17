@@ -4,7 +4,7 @@
 //  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +77,7 @@ public:
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Minerva::Core::Data::Geometry       Geometry;
   typedef std::vector<Geometry::RefPtr>       Geometries;
-  typedef OsgTools::Widgets::Item              Item;
+  typedef OsgTools::Widgets::Item             Item;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );

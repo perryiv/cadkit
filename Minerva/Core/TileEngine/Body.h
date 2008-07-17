@@ -116,6 +116,9 @@ public:
   // Set/get the center.
   void                      center ( const Vec3d & );
   Vec3d                     center() const;
+  
+  // Clear the body.
+  void                      clear();
 
   // Deserialize this instance.
   virtual void              deserialize ( const XmlTree::Node &node );

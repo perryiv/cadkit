@@ -510,6 +510,9 @@ void MinervaDocument::_clear()
 #endif
   
   if ( _legend.valid() ) _legend->clear();
+  
+  // Clear the bodies.
+  std::for_each ( _bodies.begin(), _bodies.end(), std::mem_fun ( &Minerva::Core::TileEngine::Body::clear ) );
 
   // Delete the tiles.
   OsgTools::Group::removeAllChildren ( _root.get() );

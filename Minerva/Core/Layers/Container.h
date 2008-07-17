@@ -4,7 +4,7 @@
 //  Copyright (c) 2008, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -12,6 +12,7 @@
 #define __MINERVA_LAYERS_CONTAINER_H__
 
 #include "Minerva/Core/Export.h"
+#include "Minerva/Core/Extents.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
@@ -22,6 +23,7 @@
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
@@ -46,6 +48,7 @@ class MINERVA_EXPORT Container : public Usul::Base::Object,
                                  public Usul::Interfaces::ISerialize,
                                  public Usul::Interfaces::IUpdateListener,
                                  public Usul::Interfaces::ITreeNode,
+                                 public Usul::Interfaces::ILayerExtents,
                                  public Usul::Interfaces::IBooleanState,
                                  public Minerva::Interfaces::IDirtyScene,
                                  public Minerva::Interfaces::IElevationChangedListnerer,
@@ -59,6 +62,7 @@ public:
   typedef Usul::Interfaces::ILayer                  ILayer;
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef std::vector<IUnknown::QueryPtr>           Unknowns;
+  typedef Minerva::Core::Extents<osg::Vec2d>        Extents;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Container );
@@ -107,8 +111,11 @@ public:
   /// Elevation has changed within given extents (IElevationChangedListnerer).
   virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller = 0x0 );
   
-  /// Get the extents.
+  /// Set/get the extents.
+  void                        extents ( const Extents& e );
+  Extents                     extents() const;
   void                        extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight );
+  
 
   /// Get/Set the flags.
   unsigned int                flags() const;
@@ -116,6 +123,14 @@ public:
 
   /// Get the guid (ILayer).
   virtual std::string         guid() const;
+  
+  /// Get the min latitude and min longitude (ILayerExtents).
+  virtual double              minLon() const;
+  virtual double              minLat() const;
+  
+  /// Get the max latitude and max longitude (ILayerExtents).
+  virtual double              maxLon() const;
+  virtual double              maxLat() const;
 
   /// Get/Set the name (ILayer).
   virtual void                name( const std::string& name );
@@ -186,8 +201,7 @@ private:
   std::string _guid;
   bool _shown;
   unsigned int _flags;
-  Usul::Math::Vec2d _lowerLeft;
-  Usul::Math::Vec2d _upperRight;
+  mutable Extents _extents;
   osg::ref_ptr<osg::Group> _root;
   
   SERIALIZE_XML_CLASS_NAME( Container )

@@ -1633,3 +1633,17 @@ Body::Extents Body::extents() const
   }
   return e;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the body.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::clear()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Usul::Functions::executeMemberFunctions ( _topTiles, &Tile::clear, true );
+}

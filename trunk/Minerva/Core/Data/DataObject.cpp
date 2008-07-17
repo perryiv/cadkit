@@ -4,7 +4,7 @@
 //  Copyright (c) 2006, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -60,6 +60,7 @@ DataObject::DataObject() :
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _firstDate ( boost::date_time::min_date_time ),
   _lastDate ( boost::date_time::max_date_time ),
+  _extents(),
   _geometries(),
   _clickedCallback ( 0x0 )
 {

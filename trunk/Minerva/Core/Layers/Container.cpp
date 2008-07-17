@@ -4,7 +4,7 @@
 //  Copyright (c) 2008, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
+//  Author: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -52,11 +52,10 @@ Container::Container() :
   _updateListeners(),
   _builders(),
   _name(),
-  _guid( Usul::Functions::GUID::generate() ),
+  _guid ( Usul::Functions::GUID::generate() ),
   _shown ( true ),
   _flags ( Container::ALL ),
-  _lowerLeft ( -180.0, -90.0 ),
-  _upperRight ( 180.0, 90.0 ),
+  _extents(),
   _root ( new osg::Group ),
 SERIALIZE_XML_INITIALIZER_LIST
 {
@@ -80,8 +79,7 @@ Container::Container( const Container& rhs ) :
   _guid( Usul::Functions::GUID::generate() ),
   _shown ( rhs._shown ),
   _flags ( rhs._flags | Container::SCENE_DIRTY ), // Make sure scene gets rebuilt.
-  _lowerLeft ( rhs._lowerLeft ),
-  _upperRight ( rhs._upperRight ),
+  _extents ( rhs._extents ),
   _root ( new osg::Group ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
@@ -150,6 +148,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IAddLayer* > ( this );
   case Minerva::Interfaces::IRemoveLayer::IID:
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
+  case Usul::Interfaces::ILayerExtents::IID:
+    return static_cast < Usul::Interfaces::ILayerExtents* > ( this );
   default:
     return 0x0;
   };
@@ -521,13 +521,29 @@ void Container::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::extents ( const Extents& e )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _extents = e;
+  this->dirtyExtents ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the extents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight )
+Container::Extents Container::extents() const
 {
   USUL_TRACE_SCOPE;
+  
   if ( this->dirtyExtents() )
   {
     Usul::Math::Vec2d ll, ur;
@@ -535,18 +551,27 @@ void Container::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upper
     // Calculate new extents.
     this->_calculateExtents ( ll, ur );
     
-    // Assign our data members.
-    Guard guard ( this->mutex() );
-    _lowerLeft = ll;
-    _upperRight = ur;
-    
-    // Extents are no longer dirty.
-    this->dirtyExtents( false );
+    Extents extents ( ll[0], ll[1], ur[0], ur[1] );
+    Usul::Threads::Safe::set ( this->mutex(), extents, _extents );
   }
   
-  Guard guard ( this->mutex() );
-  lowerLeft = _lowerLeft;
-  upperRight = _upperRight;
+  // Return the extents.
+  return Usul::Threads::Safe::get ( this->mutex(), _extents );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight )
+{
+  USUL_TRACE_SCOPE;
+  Extents e ( this->extents() );
+  lowerLeft.set  ( e.minLon(), e.minLat() );
+  upperRight.set ( e.maxLon(), e.maxLat() );
 }
 
 
@@ -559,8 +584,21 @@ void Container::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upper
 void Container::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
 {
   USUL_TRACE_SCOPE;
-  lowerLeft.set ( -180.0, -90.0 );
-  upperRight.set ( 180.0, 90.0 );
+  Guard guard ( this->mutex() );
+  
+  Extents extents;
+  for ( Unknowns::const_iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+  {
+    Usul::Interfaces::ILayerExtents::QueryPtr le ( (*iter).get() );
+    if ( le.valid() )
+    {
+      Extents e ( le->minLon(), le->minLat(), le->maxLon(), le->maxLat() );
+      extents.expand ( e );
+    }
+  }
+  
+  lowerLeft.set  ( extents.minLon(), extents.minLat() );
+  upperRight.set ( extents.maxLon(), extents.maxLat() );
 }
 
 
@@ -766,4 +804,56 @@ void Container::removeLayer ( Usul::Interfaces::ILayer * layer )
 {
   USUL_TRACE_SCOPE;
   this->remove ( layer );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Container::minLon() const
+{
+  USUL_TRACE_SCOPE;
+  return this->extents().minLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Container::minLat() const
+{
+  USUL_TRACE_SCOPE;
+  return this->extents().minLat();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Container::maxLon() const
+{
+  USUL_TRACE_SCOPE;
+  return this->extents().maxLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Container::maxLat() const
+{
+  USUL_TRACE_SCOPE;
+  return this->extents().maxLat();
 }

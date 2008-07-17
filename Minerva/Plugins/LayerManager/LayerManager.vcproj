@@ -232,6 +232,36 @@
 					>
 				</File>
 				<File
+					RelativePath=".\FlyTo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FlyTo.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing FlyTo.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\FlyTo.h&quot; -o &quot;.\GeneratedFiles\moc_FlyTo.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\FlyTo.h"
+							Outputs=".\GeneratedFiles\moc_FlyTo.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing FlyTo.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\FlyTo.h&quot; -o &quot;.\GeneratedFiles\moc_FlyTo.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\FlyTo.h"
+							Outputs=".\GeneratedFiles\moc_FlyTo.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\Favorites.h"
 					>
 					<FileConfiguration
@@ -309,6 +339,10 @@
 				>
 				<File
 					RelativePath=".\GeneratedFiles\moc_Favorites.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GeneratedFiles\moc_FlyTo.cpp"
 					>
 				</File>
 				<File

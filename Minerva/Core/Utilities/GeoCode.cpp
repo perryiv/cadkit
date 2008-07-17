@@ -13,6 +13,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#endif
+
 #include "Minerva/Core/Utilities/GeoCode.h"
 #include "Minerva/Core/Utilities/Download.h"
 

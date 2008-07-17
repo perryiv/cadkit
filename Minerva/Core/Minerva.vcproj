@@ -725,14 +725,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Utilities\Download.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utilities\Download.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Utilities\ClampNearFar.h"
 						>
 					</File>
@@ -754,6 +746,22 @@
 					</File>
 					<File
 						RelativePath=".\Utilities\DirtyTiles.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Download.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\Download.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\GeoCode.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\GeoCode.h"
 						>
 					</File>
 					<File

@@ -32,12 +32,12 @@ using namespace CadKit::Helios::Views::OSG;
 ///////////////////////////////////////////////////////////////////////////////
 
 EditBackground::EditBackground ( OsgTools::Render::Viewer* viewer, QWidget* parent ) :
-BaseClass ( parent ),
-_viewer      ( viewer ),
-_topLeft     ( new QCheckBox ( "Top Left"     ) ),
-_topRight    ( new QCheckBox ( "Top Right"    ) ),
-_bottomLeft  ( new QCheckBox ( "Bottom Left"  ) ),
-_bottomRight ( new QCheckBox ( "Bottom Right" ) )
+  BaseClass ( parent ),
+  _viewer      ( viewer ),
+  _topLeft     ( new QCheckBox ( "Top Left"     ) ),
+  _topRight    ( new QCheckBox ( "Top Right"    ) ),
+  _bottomLeft  ( new QCheckBox ( "Bottom Left"  ) ),
+  _bottomRight ( new QCheckBox ( "Bottom Right" ) )
 {
   this->setWindowTitle ( "Edit Background Color" );
   QPushButton *ok ( new QPushButton ( "Ok" ) );

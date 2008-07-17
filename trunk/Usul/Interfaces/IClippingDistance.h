@@ -32,8 +32,8 @@ struct IClippingDistance : public Usul::Interfaces::IUnknown
   enum { IID = 1961562116u };
 
   /// Get/set the clipping distances.
-  virtual void            getClippingDistances ( float &nearDist, float &farDist ) const = 0;
-  virtual void            setClippingDistances ( float nearDist, float farDist ) = 0;
+  virtual void            getClippingDistances ( double &nearDist, double &farDist ) const = 0;
+  virtual void            setClippingDistances ( double nearDist, double farDist ) = 0;
 };
 
 

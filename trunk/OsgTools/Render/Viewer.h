@@ -57,7 +57,6 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/IViewport.h"
-#include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
 #include "Usul/Interfaces/IIntersectListener.h"
@@ -135,7 +134,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IMouseEventSubject,
                                 public Usul::Interfaces::IClippingDistance,
                                 public Usul::Interfaces::IViewport,
-                                public Usul::Interfaces::IMenuAdd,
                                 public Usul::Interfaces::IRenderLoop,
                                 public Usul::Interfaces::IRenderingPasses,
                                 public Usul::Interfaces::IViewMode,
@@ -237,6 +235,10 @@ public:
   // Set the camera.
   virtual void          camera ( CameraOption option );
 
+  /// Get/set the clipping distances (Usul::Interfaces::IClippingDistance).
+  virtual void          getClippingDistances ( double &nearDist, double &farDist ) const;
+  virtual void          setClippingDistances ( double nearDist, double farDist );
+  
   // Tell the canvas that the scene changed.
   virtual void          changedScene();
 
@@ -247,8 +249,9 @@ public:
   /// Set the context.
   void                  context ( Usul::Interfaces::IUnknown* context );
 
-  /// Set compute near far mode.
-  void                  computeNearFar( bool b );
+  /// Set/get compute near far mode.
+  void                  computeNearFarSet ( bool b );
+  bool                  computeNearFarGet() const;
 
   // Create.
   void                  create();
@@ -378,6 +381,9 @@ public:
   // Set the status bar text.  TODO Is this needed here?
   void                  setStatusBarText ( const std::string &text, bool force );
 
+  // Set the trackball state (ITrackball).
+  virtual void          setTrackball ( const osg::Vec3d&, double distance, const osg::Quat&, bool makeTrackball, bool setViewerToo );
+  
   // Set/get the scene.
   virtual void          scene ( Node * );
   virtual const Node *  scene() const;
@@ -646,7 +652,6 @@ protected:
   virtual void               setDistance ( double );
   virtual osg::Quat          getRotation();
   virtual void               setRotation( const osg::Quat& );
-  virtual void               setTrackball ( const osg::Vec3d&, double distance, const osg::Quat&, bool makeTrackball, bool setViewerToo );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -708,13 +713,6 @@ protected:
 
   // Usul::Interfaces::IUpdateSceneVisitor.
   virtual NodeVisitor *         getUpdateSceneVisitor ( Usul::Interfaces::IUnknown *caller );
-
-  /// Get/set the clipping distances (Usul::Interfaces::IClippingDistance).
-  virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
-  virtual void                  setClippingDistances ( float nearDist, float farDist );
-
-  /// Add to the menu.
-  virtual void                  menuAdd ( MenuKit::Menu &menu, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Get/Set render loop flag (IRenderLoop).
   virtual void                  renderLoop ( bool b );
@@ -792,6 +790,7 @@ private:
   DraggerPtr _activeDragger;
   osgManipulator::PointerInfo _pointerInfo;
   ClipPlaneWidgets _clipPlaneWidgets;
+  osg::ref_ptr<osg::CullSettings::ClampProjectionMatrixCallback> _clampProjectionMatrixCallback;
 };
 
 }

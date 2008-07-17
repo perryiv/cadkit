@@ -1143,8 +1143,14 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
   if ( csv.valid() )
   {
     osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
+    
+#if 1
+    //cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
     cv->setClampProjectionMatrixCallback ( new Minerva::Core::Utilities::ClampNearFar ( *cv ) );
     cv->setInheritanceMask ( Usul::Bits::remove ( cv->getInheritanceMask(), osg::CullSettings::CLAMP_PROJECTION_MATRIX_CALLBACK ) );
+#else
+    cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
+#endif
   }
 }
 

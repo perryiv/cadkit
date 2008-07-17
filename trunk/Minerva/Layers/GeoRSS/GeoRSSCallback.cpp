@@ -30,6 +30,7 @@ using namespace Minerva::Layers::GeoRSS;
 ///////////////////////////////////////////////////////////////////////////////
 
 GeoRSSCallback::GeoRSSCallback() : BaseClass(),
+  _date(),
   _imageFilename(),
   _imageSize()
 {
@@ -49,6 +50,28 @@ GeoRSSCallback::~GeoRSSCallback()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to make text.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  OsgTools::Widgets::Text* makeText ( const std::string& s, bool wrap, bool autoSize )
+  {
+    OsgTools::Widgets::Text::RefPtr text ( new OsgTools::Widgets::Text );
+    text->text ( s );
+    text->wrapLine ( wrap );
+    text->autoSize ( autoSize );
+    text->alignmentVertical ( OsgTools::Widgets::Text::TOP );
+    text->fontSize ( 15 );
+    
+    return text.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Object has been clicked.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,7 +81,7 @@ GeoRSSCallback::Item* GeoRSSCallback::operator() ( const DataObject& object, Usu
   Size size ( this->imageSize() );
   
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
-  legend->maximiumSize ( size[0], 100 + size[1] );
+  legend->maximiumSize ( 300, 600 );
   legend->heightPerItem ( 256 );
   legend->position ( 20, 20 );
   legend->growDirection ( OsgTools::Widgets::Legend::UP );
@@ -66,12 +89,7 @@ GeoRSSCallback::Item* GeoRSSCallback::operator() ( const DataObject& object, Usu
   OsgTools::Widgets::LegendObject::RefPtr row0 ( new OsgTools::Widgets::LegendObject );
   
   // Make some text.
-  OsgTools::Widgets::Text::RefPtr text0 ( new OsgTools::Widgets::Text );
-  text0->text ( object.name() );
-  text0->wrapLine ( false );
-  text0->autoSize ( false );
-  text0->alignmentVertical ( OsgTools::Widgets::Text::TOP );
-  text0->fontSize ( 15 );
+  OsgTools::Widgets::Text::RefPtr text0 ( Helper::makeText ( object.name(), false, false ) );
   
   // Add the items.
   row0->addItem ( text0.get() );
@@ -79,20 +97,13 @@ GeoRSSCallback::Item* GeoRSSCallback::operator() ( const DataObject& object, Usu
   // Set the percentage of the row.
   row0->percentage ( 0 ) = 1.00;
   
-  const std::string description ( object.description() );
-  if ( false == description.empty() )
+  const std::string date ( this->date() );
+  if ( false == date.empty() )
   {
     OsgTools::Widgets::LegendObject::RefPtr row1 ( new OsgTools::Widgets::LegendObject );
-    
-    // Make some text.
-    OsgTools::Widgets::Text::RefPtr text ( new OsgTools::Widgets::Text );
-    text->text ( description );
-    text->wrapLine ( true );
-    text->alignmentVertical ( OsgTools::Widgets::Text::TOP );
-    text->fontSize ( 15 );
-    
+
     // Add the items.
-    row1->addItem ( text.get() );
+    row1->addItem ( Helper::makeText ( date, true, false ) );
     
     // Set the percentage of the row.
     row1->percentage ( 0 ) = 1.00;
@@ -115,6 +126,23 @@ GeoRSSCallback::Item* GeoRSSCallback::operator() ( const DataObject& object, Usu
     row->percentage ( 0 ) = 1.00;
     
     legend->addRow ( row.get() );
+  }
+  
+  const std::string description ( object.description() );
+  if ( false == description.empty() )
+  {
+    OsgTools::Widgets::LegendObject::RefPtr row1 ( new OsgTools::Widgets::LegendObject );
+    
+    // Make some text.
+    OsgTools::Widgets::Text::RefPtr text ( Helper::makeText ( description, true, true ) );
+    
+    // Add the items.
+    row1->addItem ( text.get() );
+    
+    // Set the percentage of the row.
+    row1->percentage ( 0 ) = 1.00;
+    
+    legend->addRow ( row1.get() );
   }
   
   legend->addRow ( row0.get() );
@@ -168,4 +196,15 @@ void GeoRSSCallback::imageSize ( unsigned int width, unsigned int height )
 GeoRSSCallback::Size GeoRSSCallback::imageSize() const
 {
   return _imageSize;
+}
+
+/// Set/get the date.
+void GeoRSSCallback::date ( const std::string& s )
+{
+  _date = s;
+}
+
+const std::string& GeoRSSCallback::date() const
+{
+  return _date;
 }

@@ -174,6 +174,11 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   Children titleNode ( node.find ( "title", false ) );
   const std::string title ( titleNode.empty() ? "" : titleNode.front()->value() );
   
+  // Look for the publication date.
+  Children pubDateNode ( node.find ( "pubDate", false ) );
+  const std::string pubDate ( pubDateNode.empty() ? "" : pubDateNode.front()->value() );
+  cb->date ( pubDate );
+  
   // Look for an image.
   Children imageNode ( node.find ( "media:content", false ) );
   if ( false == imageNode.empty() )
@@ -201,6 +206,10 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   const double lat ( latNode.empty() ? 0.0 : ToDouble::convert ( latNode.front()->value() ) );
   const double lon ( lonNode.empty() ? 0.0 : ToDouble::convert ( lonNode.front()->value() ) );
   
+  // Look for a description.
+  Children descriptionNode ( node.find ( "media:description", false ) );
+  const std::string description ( descriptionNode.empty() ? "" : descriptionNode.front()->value() );
+  
   Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
   point->autotransform ( false );
   point->size ( 100 );
@@ -210,6 +219,7 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   
   DataObject::RefPtr object ( new DataObject );
   object->name ( title );
+  object->description ( description );
   object->clickedCallback ( cb.get() );
   
   // Add the geometry.

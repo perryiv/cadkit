@@ -1189,6 +1189,7 @@
 		66A4CF660DC12208006DEE5E /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		66A6259D0E2C702800795F3D /* GeoCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A6259B0E2C702800795F3D /* GeoCode.h */; };
 		66A6259E0E2C702800795F3D /* GeoCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A6259C0E2C702800795F3D /* GeoCode.cpp */; };
+		66A8670E0E2EA73F0081848E /* libHeliosQtViewOSG.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */; };
 		66A8B0990DABED4500088B3B /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8B0940DABED4500088B3B /* CompileGuard.h */; };
 		66A8B09A0DABED4500088B3B /* FlashComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8B0950DABED4500088B3B /* FlashComponent.cpp */; };
 		66A8B09B0DABED4500088B3B /* FlashComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8B0960DABED4500088B3B /* FlashComponent.h */; };
@@ -2412,6 +2413,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 66C8FE740D12084C003F6A58;
 			remoteInfo = MenuKit;
+		};
+		66A866FD0E2EA72F0081848E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 666766D20D12F282002F40C6;
+			remoteInfo = HeliosQtViewOSG;
 		};
 		66A8B0A70DABF4CE00088B3B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -5525,6 +5533,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66A8670E0E2EA73F0081848E /* libHeliosQtViewOSG.dylib in Frameworks */,
 				66C024FD0D7797BC00371AB4 /* libQtTools.dylib in Frameworks */,
 				66AC8A680D2B58B900762CC7 /* libXmlTree.dylib in Frameworks */,
 				66AC8A670D2B58B400762CC7 /* libSerializeXML.dylib in Frameworks */,
@@ -11038,6 +11047,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66A866FE0E2EA72F0081848E /* PBXTargetDependency */,
 				66C024FB0D7797AE00371AB4 /* PBXTargetDependency */,
 				66AC8A6C0D2B58C700762CC7 /* PBXTargetDependency */,
 				66AC8A6A0D2B58C300762CC7 /* PBXTargetDependency */,
@@ -13812,6 +13822,11 @@
 			isa = PBXTargetDependency;
 			target = 66C8FE740D12084C003F6A58 /* MenuKit */;
 			targetProxy = 66A4CF640DC12201006DEE5E /* PBXContainerItemProxy */;
+		};
+		66A866FE0E2EA72F0081848E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 666766D20D12F282002F40C6 /* HeliosQtViewOSG */;
+			targetProxy = 66A866FD0E2EA72F0081848E /* PBXContainerItemProxy */;
 		};
 		66A8B0A80DABF4CE00088B3B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

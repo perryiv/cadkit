@@ -41,7 +41,7 @@ public:
 
   // Notification of every event.
   virtual bool          notify ( QObject *, QEvent * );
-
+  
 protected:
 
   // Notification of every event.

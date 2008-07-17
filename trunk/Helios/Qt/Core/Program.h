@@ -28,7 +28,7 @@ namespace Core {
 
 struct HELIOS_QT_CORE_EXPORT Program
 {
-  static void run ( int argc, char **argv, 
+  static void run ( int argc, char **argv,
                     Usul::Threads::Manager::FactoryFunction *threadFactory,
                     const std::string &program, 
                     const std::string &version,

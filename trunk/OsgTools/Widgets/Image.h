@@ -18,7 +18,7 @@
 
 #include <string>
 
-namespace osg { class Node; }
+namespace osg { class Node; class Image; }
 
 namespace OsgTools {
 namespace Widgets {
@@ -43,7 +43,10 @@ public:
   osg::Node*              buildScene();
   
 protected:
+  
   virtual ~Image();
+  
+  static Size             _fitImageToSize ( const Size& size, const osg::Image& image );
   
 private:
   std::string _filename;

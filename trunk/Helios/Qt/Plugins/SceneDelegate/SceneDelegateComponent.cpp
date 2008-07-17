@@ -66,18 +66,11 @@ Usul::Interfaces::IUnknown *SceneDelegateComponent::queryInterface ( unsigned lo
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Does this delegate handle the given token
+//  Does this delegate handle the given token?
 //
 /////////////////////////////////////////////////////////////////////////////
 
 bool SceneDelegateComponent::doesHandle ( const std::string& token ) const
 {
-  return ( token ==    "Scene Document" || 
-           token == "Molecule Document" ||
-           token ==    "Voxel Document" ||
-           token ==   "Volume Document" ||
-           token ==  "Minerva Document" ||
-           token == "Triangle Document" ||
-           token ==     "Show Document" ||
-           token == "Model Presentation Document" );
+  return token == "Scene Document";
 }

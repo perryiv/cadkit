@@ -573,7 +573,7 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 
 namespace Detail
 {
-  inline osg::Matrixd makeLookAtMatrix ( double lat, double lon, double altitude, Minerva::Core::TileEngine::Body& body )
+  osg::Matrixd makeLookAtMatrix ( double lat, double lon, double altitude, Minerva::Core::TileEngine::Body& body )
   {
     // Get the elevation.
     const double elevation ( body.elevationAtLatLong ( lat, lon ) );
@@ -601,22 +601,42 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get the distance in meters between two points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  double distance ( const Usul::Math::Vec3d& from, const Usul::Math::Vec3d& to, Minerva::Core::TileEngine::Body& body )
+  {
+    Usul::Math::Vec3d p0, p1;
+    body.convertToPlanet ( from, p0 );
+    body.convertToPlanet ( to, p1 );
+    const double d ( p0.distance ( p1 ) );
+    return d;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Make a matrix from lat, lon, and altitude.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Detail
 {
-  inline void animatePath ( const Usul::Math::Vec3d& from, const Usul::Math::Vec3d& to, Minerva::Core::TileEngine::Body& body )
+  void animatePath ( const Usul::Math::Vec3d& from, const Usul::Math::Vec3d& to, Minerva::Core::TileEngine::Body& body )
   {
     // Get the final look at matrix.
-    osg::Matrix M0 ( Detail::makeLookAtMatrix ( to[1], to[0], to[2], body ) );
+    const osg::Matrixd M3 ( Detail::makeLookAtMatrix ( to[1], to[0], to[2], body ) );
     
     // The half way point.
-    Usul::Math::Vec3d half ( from[0] + to[0], from[1] + to[1], from[2] + to[2] );
-    half /= 2.0; half[2] *= 1.5;
-    
-    osg::Matrix M1 ( Detail::makeLookAtMatrix ( half[1], half[0], half[2], body ) );
+    const double distance ( Detail::distance ( from, to, body ) );
+    const Usul::Math::Vec3d half (  ( from[0] + to[0] ) / 2.0, ( from[1] + to[1] ) / 2.0, distance / 2.0 );
+
+    // Make lookat for half-way point.
+    const osg::Matrixd M2 ( Detail::makeLookAtMatrix ( half[1], half[0], half[2], body ) );
     
     // Look for plugin to play path.
     typedef Usul::Interfaces::IAnimatePath IAnimatePath;
@@ -629,8 +649,8 @@ namespace Detail
     {
       // Get the first and last matrix.
       const osg::Matrixd m1 ( vm.valid() ? vm->getViewMatrix() : osg::Matrixd() );
-      const osg::Matrixd m2 ( osg::Matrixd::inverse ( M1 ) );
-      const osg::Matrixd m3 ( osg::Matrixd::inverse ( M0 ) );
+      const osg::Matrixd m2 ( osg::Matrixd::inverse ( M2 ) );
+      const osg::Matrixd m3 ( osg::Matrixd::inverse ( M3 ) );
       
       // Prepare path.
       IAnimatePath::PackedMatrices matrices;
@@ -643,7 +663,7 @@ namespace Detail
     }
     else if ( vm.valid() )
     {
-      vm->setViewMatrix ( M0 );
+      vm->setViewMatrix ( M3 );
     }
   }
 }

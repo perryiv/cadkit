@@ -3716,13 +3716,13 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     return;
 
   // Make copy of trackball's current rotation
-  const osg::Quat rot ( this->getRotation() );
-  const osg::Vec3d center ( this->getCenter() );
-  const double distance ( this->getDistance() );
+  const osg::Quat r1 ( this->getRotation() );
+  const osg::Vec3d c1 ( this->getCenter() );
+  const double d1 ( this->getDistance() );
 
   // Get the eye position.
   osg::Vec3d eye, c, up;
-  osg::Matrix m ( osg::Matrixd::translate ( 0.0, 0.0, distance ) * osg::Matrixd::rotate ( rot ) * osg::Matrixd::translate ( center ) );
+  osg::Matrix m ( osg::Matrixd::translate ( 0.0, 0.0, d1 ) * osg::Matrixd::rotate ( r1 ) * osg::Matrixd::translate ( c1 ) );
   m.inverse( m ).getLookAt ( eye, c, up );
 
   // Get the new center and distance.
@@ -3740,7 +3740,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     // Prepare path.
     IAnimatePath::PackedMatrices matrices;
     const osg::Matrixd m1 ( this->getViewMatrix() );
-    const osg::Matrixd m2 ( Trackball::matrix ( c2, rot, d2 ) );
+    const osg::Matrixd m2 ( Trackball::matrix ( c2, r1, d2 ) );
     matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
     matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
 
@@ -3751,13 +3751,13 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     animate->animatePath ( matrices, steps );
 
     // We do this also so that the trackball behaves well.
-    this->setTrackball ( c2, d2, rot, true, true );
+    this->setTrackball ( c2, d2, r1, true, true );
   }
 
   // If no animation interface exists, just set the trackball
   else
   {
-    this->setTrackball ( c2, d2, rot, true, true );
+    this->setTrackball ( c2, d2, r1, true, true );
     this->render();
   }
 }

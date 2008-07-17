@@ -34,7 +34,6 @@ public:
   // Useful typedefs.
   typedef osgGA::TrackballManipulator BaseClass;
   typedef osg::ref_ptr<Trackball> Ptr;
-  typedef osg::Vec3d Vec3;
 
   // Constructor.
   Trackball();
@@ -44,12 +43,12 @@ public:
   META_Object ( OsgTools, Trackball );
 
   // Set/get the center.
-  void                    center ( const osg::Vec3 &c ) { _center = c; }
-  const Vec3 &            center() const { return _center; }
+  void                    center ( const osg::Vec3 &c );
+  osg::Vec3               center() const;
 
   // Set/get the distance.
-  void                    distance ( double d ) { _distance = d; }
-  double                  distance() const { return _distance; }
+  void                    distance ( double d );
+  double                  distance() const;
 
   // Get the inverse matrix of the manipulator.
   virtual osg::Matrixd    getInverseMatrix() const;
@@ -63,12 +62,16 @@ public:
   // Move the camera to the default position. 
   virtual void            home ( const osgGA::GUIEventAdapter &, osgGA::GUIActionAdapter & );
 
+  // Get/set the model's scale.
+  double                  modelScale() const;
+  void                    modelScale ( double ms );
+
   // See if the geometry was "thrown". (This is not about C++ exceptions.)
   bool                    thrown() const { return _thrown; }
 
   // Set/get the rotation.
-  void                    rotation ( const osg::Quat &r ) { _rotation = r; }
-  const osg::Quat &       rotation() const { return _rotation; }
+  void                    rotation ( const osg::Quat &r );
+  osg::Quat               rotation() const;
 
 protected:
 

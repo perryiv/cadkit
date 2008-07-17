@@ -352,7 +352,7 @@ public:
 
   value_type distance ( const Vector4 &v ) const
   {
-    return Usul::Math::sqrt ( this->distanceSquared ( *this ) );
+    return Usul::Math::sqrt ( this->distanceSquared ( v ) );
   }
 
 

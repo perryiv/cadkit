@@ -151,7 +151,7 @@ osg::Node* LegendObject::buildScene()
   const unsigned int maxHeight ( height - ( padding * 2 ) );
   
   // Current x position of item.
-  unsigned int currentPosition ( padding );
+  unsigned int currentPosition ( padding / 2.0 );
   
   // Loop over each item.
   for( unsigned int i = 0; i < _texts.size(); ++i )
@@ -164,7 +164,7 @@ osg::Node* LegendObject::buildScene()
       osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
       osg::Matrix m ( osg::Matrix::translate ( currentPosition, 0.0, 0.0 ) );
       mt->setMatrix( m );
-      text->size ( columnWidth, maxHeight );
+      text->size ( columnWidth - padding, maxHeight );
       mt->addChild ( text->buildScene() );
       group->addChild( mt.get() );
 
@@ -194,7 +194,7 @@ float& LegendObject::percentage( unsigned int i )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LegendObject::Size LegendObject::estimateSize() const
+LegendObject::Size LegendObject::estimateSizeForWidth ( unsigned int w ) const
 {
   Size size ( 0, 0 );
   
@@ -206,11 +206,11 @@ LegendObject::Size LegendObject::estimateSize() const
     if ( text.valid() )
     {
       text->size ( this->size() );
-      Size s ( text->estimateSize() );
+      Size s ( text->estimateSizeForWidth ( w ) );
       size[0] += s[0];
       size[1] = Usul::Math::maximum ( size[1], s[1] );
     }
   }
   
-  return size;
+  return Size ( w, size[1] );
 }

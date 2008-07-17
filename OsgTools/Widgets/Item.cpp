@@ -267,7 +267,7 @@ osg::Node* Item::_buildBackground ( unsigned int width, unsigned int height )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Item::Size Item::estimateSize() const
+Item::Size Item::estimateSizeForWidth ( unsigned int w ) const
 {
   return this->size();
 }

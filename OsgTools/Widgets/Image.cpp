@@ -149,3 +149,18 @@ Image::Size Image::_fitImageToSize ( const Size& size, const osg::Image& image )
   
   return newSize;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Estimate the needed size for the item.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Image::Size Image::estimateSizeForWidth ( unsigned int w ) const
+{
+  // Read the image
+  osg::ref_ptr<osg::Image> image ( osgDB::readImageFile ( this->filename() ) );
+  
+  return ( image.valid() ? Image::_fitImageToSize ( Size ( w, image->t() ), *image ) : this->size() );
+}

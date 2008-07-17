@@ -158,7 +158,7 @@ osg::Node* Legend::buildScene()
       if ( item.valid() )
       {
         item->size ( rowWidth, static_cast<double> ( _height ) / _legendObjects.size() );
-        Size s ( item->estimateSize() );
+        Size s ( item->estimateSizeForWidth( rowWidth ) );
         heights.push_back( s[1] );
         totalHeight += s[1];
       }

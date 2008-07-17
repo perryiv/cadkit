@@ -68,7 +68,7 @@ public:
   osg::Node*              buildScene();
   
   /// Estimate the needed size for the item.
-  virtual Size            estimateSize() const;
+  virtual Size            estimateSizeForWidth ( unsigned int w ) const;
   
   /// Set/get the font size.
   void                    fontSize ( double size );
@@ -77,6 +77,10 @@ public:
   /// Get/Set the text.
   void                    text( const std::string& text );
   const std::string &     text () const;
+  
+  /// Set/get the border color.
+  void                    textColor ( const Color& );
+  Color                   textColor() const;
 
   /// Set/get the line wrap state.
   void                    wrapLine ( bool b );
@@ -99,6 +103,7 @@ private:
   bool _wrapLine;
   bool _autoSize;
   double _fontSize;
+  Color _textColor;
 };
 
 }

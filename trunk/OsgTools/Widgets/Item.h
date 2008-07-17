@@ -45,8 +45,9 @@ public:
   /// Build the scene.
   virtual osg::Node*      buildScene() = 0;
   
-  /// Estimate the needed size for the item.  By default it returns the suggested size.
-  virtual Size            estimateSize() const;
+  /// Estimate the needed size for the item to fit in given width.
+  /// By default it returns the suggested size.
+  virtual Size            estimateSizeForWidth ( unsigned int w ) const;
   
   /// Set the position.
   void                    position ( SizeType x, SizeType y );

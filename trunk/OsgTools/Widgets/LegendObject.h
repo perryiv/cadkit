@@ -47,7 +47,7 @@ public:
   unsigned int           columns() const;
   
   /// Estimate the needed size for the item.
-  virtual Size            estimateSize() const;
+  virtual Size           estimateSizeForWidth ( unsigned int w ) const;
 
   /// Get the percentage at given column.
   float&                 percentage( unsigned int i );

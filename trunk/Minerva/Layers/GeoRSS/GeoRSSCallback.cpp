@@ -64,6 +64,7 @@ namespace Helper
     text->autoSize ( autoSize );
     text->alignmentVertical ( OsgTools::Widgets::Text::TOP );
     text->fontSize ( 15 );
+    text->textColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
     
     return text.release();
   }
@@ -79,23 +80,59 @@ namespace Helper
 GeoRSSCallback::Item* GeoRSSCallback::operator() ( const DataObject& object, Usul::Interfaces::IUnknown* caller ) const
 {
   Size size ( this->imageSize() );
-  
+
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
-  legend->maximiumSize ( 300, 600 );
+  legend->maximiumSize ( 350, 750 );
   legend->heightPerItem ( 256 );
-  legend->position ( 20, 20 );
+  legend->position ( 20, 40 );
   legend->growDirection ( OsgTools::Widgets::Legend::UP );
-  
+  legend->backgroundColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  legend->borderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+
   OsgTools::Widgets::LegendObject::RefPtr row0 ( new OsgTools::Widgets::LegendObject );
-  
+
   // Make some text.
   OsgTools::Widgets::Text::RefPtr text0 ( Helper::makeText ( object.name(), false, false ) );
-  
+
   // Add the items.
   row0->addItem ( text0.get() );
-  
+
   // Set the percentage of the row.
   row0->percentage ( 0 ) = 1.00;
+
+  const std::string description ( object.description() );
+  if ( false == description.empty() )
+  {
+    OsgTools::Widgets::LegendObject::RefPtr row1 ( new OsgTools::Widgets::LegendObject );
+
+    // Make some text.
+    OsgTools::Widgets::Text::RefPtr text ( Helper::makeText ( description, true, true ) );
+
+    // Add the items.
+    row1->addItem ( text.get() );
+
+    // Set the percentage of the row.
+    row1->percentage ( 0 ) = 1.00;
+
+    legend->addRow ( row1.get() );
+  }
+
+  // Add the image.
+  if ( false == _imageFilename.empty() )
+  {
+    OsgTools::Widgets::LegendObject::RefPtr row ( new OsgTools::Widgets::LegendObject );
+
+    // Make the image.
+    OsgTools::Widgets::Image::RefPtr image ( new OsgTools::Widgets::Image ( _imageFilename ) );
+    image->size ( this->imageSize() );
+
+    row->addItem ( image.get() );
+
+    // Set the percentage of the row.
+    row->percentage ( 0 ) = 1.00;
+
+    legend->addRow ( row.get() );
+  }
   
   const std::string date ( this->date() );
   if ( false == date.empty() )
@@ -104,49 +141,15 @@ GeoRSSCallback::Item* GeoRSSCallback::operator() ( const DataObject& object, Usu
 
     // Add the items.
     row1->addItem ( Helper::makeText ( date, true, false ) );
-    
+
     // Set the percentage of the row.
     row1->percentage ( 0 ) = 1.00;
-    
+
     legend->addRow ( row1.get() );
   }
-  
-  // Add the image.
-  if ( false == _imageFilename.empty() )
-  {
-    OsgTools::Widgets::LegendObject::RefPtr row ( new OsgTools::Widgets::LegendObject );
-    
-    // Make the image.
-    OsgTools::Widgets::Image::RefPtr image ( new OsgTools::Widgets::Image ( _imageFilename ) );
-    image->size ( this->imageSize() );
-    
-    row->addItem ( image.get() );
-    
-    // Set the percentage of the row.
-    row->percentage ( 0 ) = 1.00;
-    
-    legend->addRow ( row.get() );
-  }
-  
-  const std::string description ( object.description() );
-  if ( false == description.empty() )
-  {
-    OsgTools::Widgets::LegendObject::RefPtr row1 ( new OsgTools::Widgets::LegendObject );
-    
-    // Make some text.
-    OsgTools::Widgets::Text::RefPtr text ( Helper::makeText ( description, true, true ) );
-    
-    // Add the items.
-    row1->addItem ( text.get() );
-    
-    // Set the percentage of the row.
-    row1->percentage ( 0 ) = 1.00;
-    
-    legend->addRow ( row1.get() );
-  }
-  
+
   legend->addRow ( row0.get() );
-  
+
   return legend.release();
 }
 

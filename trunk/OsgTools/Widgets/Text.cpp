@@ -33,7 +33,8 @@ Text::Text() :
   _alignmentVertical ( CENTER ),
   _wrapLine ( false ),
   _autoSize ( true ),
-  _fontSize ( 25.0 )
+  _fontSize ( 25.0 ),
+  _textColor ( 1.0, 1.0, 1.0, 1.0 )
 {
 }
 
@@ -51,7 +52,8 @@ Text::Text( const std::string& text ) :
   _alignmentVertical ( CENTER ),
   _wrapLine ( false ),
   _autoSize ( true ),
-  _fontSize ( 25.0 )
+  _fontSize ( 25.0 ),
+  _textColor ( 1.0, 1.0, 1.0, 1.0 )
 {
 }
 
@@ -292,7 +294,7 @@ Text::ValueType Text::_yTextPosition( unsigned int height ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Text::Size Text::estimateSize() const
+Text::Size Text::estimateSizeForWidth ( unsigned int w ) const
 {
   osg::ref_ptr<osgText::Text> text ( this->_makeText() );
   text->update();
@@ -321,6 +323,9 @@ osgText::Text* Text::_makeText() const
   osg::ref_ptr < osgText::Text > text ( new osgText::Text );
   text->setFont( OsgTools::Font::defaultFont() );
   
+  // Set the color.
+  text->setColor ( this->textColor() );
+  
   // Set the position.
   text->setPosition ( osg::Vec3 ( this->_xTextPosition ( width ), this->_yTextPosition ( height ), 0.0 ) );
   
@@ -348,4 +353,28 @@ osgText::Text* Text::_makeText() const
   }
   
   return text.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the border color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Text::textColor ( const Color& c )
+{
+  _textColor = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the border color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Text::Color Text::textColor() const
+{
+  return _textColor;
 }

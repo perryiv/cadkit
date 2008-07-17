@@ -35,6 +35,9 @@ public:
   Image();
   Image( const std::string& filename );
   
+  /// Estimate the needed size for the item.
+  virtual Size            estimateSizeForWidth ( unsigned int w ) const;
+  
   /// Get/Set the text.
   void                    filename ( const std::string& filename );
   const std::string &     filename() const;

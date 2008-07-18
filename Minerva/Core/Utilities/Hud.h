@@ -48,8 +48,14 @@ public:
   // Set the date text.
   void          dateFeedback ( const std::string& text );
   
-  // Update scene.
-  void          updateScene( unsigned int width, unsigned int height );
+  // Set the eye altitude.
+  void          eyeAltitude ( double altitude );
+  
+  // Set heading, pitch, roll.
+  void          hpr ( double heading, double pitch, double roll );
+  
+  // Set the pointer position.
+  void          position ( double lat, double lon, double height );
   
   // Get/Set the number of requests.
   void          requests ( unsigned int );
@@ -58,10 +64,7 @@ public:
   // Get/Set the number of running tasks.
   void          running ( const Strings & );
   Strings       running() const;
-  
-  // Set the pointer position.
-  void          position ( double lat, double lon, double height );
-  
+    
   // Show the compass be shown?
   void          showCompass ( bool b );
   bool          showCompass() const;
@@ -78,8 +81,12 @@ public:
   void          showDateFeedback ( bool b );
   bool          showDateFeedback() const;
   
-  // Set heading, pitch, roll.
-  void          hpr ( double heading, double pitch, double roll );
+  // Show the eye altitude.
+  void          showEyeAltitude ( bool b );
+  bool          showEyeAltitude() const;
+  
+  // Update scene.
+  void          updateScene ( unsigned int width, unsigned int height );
   
 private:
   
@@ -89,21 +96,25 @@ private:
     _SHOW_POINTER_POSITION = 0x00000002,
     _SHOW_JOB_FEEDBACK     = 0x00000004,
     _SHOW_DATE_FEEDBACK    = 0x00000008,
+    _SHOW_EYE_ALTITUDE     = 0x00000010,
     _ALL                   = _SHOW_COMPASS | 
                              _SHOW_POINTER_POSITION | 
                              _SHOW_JOB_FEEDBACK | 
-                             _SHOW_DATE_FEEDBACK
+                             _SHOW_DATE_FEEDBACK |
+                             _SHOW_EYE_ALTITUDE
   };
   
   osg::ref_ptr < osg::Camera > _camera;
   osg::ref_ptr < osgText::Text > _feedback;
   osg::ref_ptr < osgText::Text > _position;
   osg::ref_ptr < osgText::Text > _date;
+  osg::ref_ptr < osgText::Text > _eyeAltitudeText;
   osg::Vec3d _latLonHeight;
   unsigned int _requests;
   Strings _running;
   osg::ref_ptr < Compass > _compass;
   unsigned int _flags;
+  double _eyeAltitude;
 };
 
   

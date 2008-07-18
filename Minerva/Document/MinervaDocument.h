@@ -252,6 +252,10 @@ public:
   bool                                     isShowDateFeedback() const;
   void                                     showDateFeedback ( bool b );
   
+  /// Toggle showing of eye altitude feedback.
+  bool                                     isShowEyeAltitude() const;
+  void                                     showEyeAltitude ( bool b );
+  
 protected:
 
   virtual ~MinervaDocument();
@@ -347,7 +351,7 @@ private:
   public:
     typedef osg::NodeCallback BaseClass;
     
-    Callback () : BaseClass(), _hpr(), _eye(), _body ( 0x0 )
+    Callback () : BaseClass(), _hpr(), _eye(), _eyePosition(), _body ( 0x0 )
     {
     }
     
@@ -355,6 +359,7 @@ private:
     
     osg::Vec3d _hpr;
     osg::Vec3d _eye;
+    Usul::Math::Vec3d _eyePosition;
     MinervaDocument::Body *_body;
   };
 

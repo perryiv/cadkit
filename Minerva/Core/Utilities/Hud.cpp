@@ -30,6 +30,40 @@
 
 using namespace Minerva::Core::Utilities;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a osgText::Text object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  osgText::Text* makeText ( const osg::Vec3& position )
+  {   
+#if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
+    unsigned int textSize ( 20 );
+#else
+    unsigned int textSize ( 15 );
+#endif
+    
+    osg::ref_ptr<osgText::Text> text ( new osgText::Text );
+    
+#ifndef _MSC_VER
+    osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
+    text->setFont ( font.get() );
+#endif
+    
+    text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
+    text->setCharacterSize( textSize );
+    text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+    text->setPosition ( position );
+    text->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
+    text->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
+  
+    return text.release();
+  }
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,14 +73,16 @@ using namespace Minerva::Core::Utilities;
 
 Hud::Hud() :
   _camera ( new osg::Camera ),
-  _feedback ( new osgText::Text ),
-  _position ( new osgText::Text ),
-  _date ( new osgText::Text ),
+  _feedback ( Detail::makeText ( osg::Vec3 ( 5.0, 23, 0.0 ) ) ),
+  _position ( Detail::makeText ( osg::Vec3 ( 5.0, 7.5, 0.0 ) ) ),
+  _date ( Detail::makeText ( osg::Vec3 ( 5.0, 23, 0.0 ) ) ),
+  _eyeAltitudeText ( Detail::makeText ( osg::Vec3 ( 0.0, 0.0, 0.0 ) ) ),
   _latLonHeight(),
   _requests ( 0 ),
   _running (),
   _compass ( new Compass ),
-  _flags ( Hud::_ALL )
+  _flags ( Hud::_ALL ),
+  _eyeAltitude ( 0.0 )
 {
   _camera->setRenderOrder ( osg::Camera::POST_RENDER );
   _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
@@ -54,41 +90,6 @@ Hud::Hud() :
   _camera->setViewMatrix( osg::Matrix::identity() );
   _camera->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
   _camera->setCullingMode ( osg::CullSettings::NO_CULLING );
-  
-#ifndef _MSC_VER
-  osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
-  _feedback->setFont ( font.get() );
-  _position->setFont ( font.get() );
-  _date->setFont( font.get() );
-#endif
-
-#if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 3
-	unsigned int textSize ( 25 );
-#else
-	unsigned int textSize ( 15 );
-#endif
-
-  _position->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  _position->setCharacterSize( textSize );
-  _position->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-  _position->setPosition ( osg::Vec3 ( 5.0, 7.5, 0.0 ) );
-  _position->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
-  _position->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
-  
-  _feedback->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
-  _feedback->setCharacterSize( textSize );
-  _feedback->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-  _feedback->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
-  _feedback->setBackdropColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
-  _feedback->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
-  _feedback->setLineSpacing ( 0.1 ); // Doesn't seem to have any effect.
-
-  _date->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
-  _date->setCharacterSize( textSize * 2 );
-  _date->setColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
-  _date->setPosition ( osg::Vec3 ( 5.0, 23, 0.0 ) );
-  _date->setBackdropColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-  _date->setBackdropType ( osgText::Text::DROP_SHADOW_BOTTOM_LEFT );
 }
 
 
@@ -181,6 +182,22 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
 
   if ( this->showDateFeedback() )
     geode->addDrawable ( _date.get() );
+  
+  if ( this->showEyeAltitude() )
+  {
+    const bool showKilometers ( _eyeAltitude >= 1000.0 );
+    const double display ( _eyeAltitude / ( showKilometers ? 1000.0 : 1.0 ) );
+    const std::string units ( showKilometers ? "km" : "meters" );
+    _eyeAltitudeText->setText ( Usul::Strings::format ( "Eye: ", display, " ", units ) );
+    _eyeAltitudeText->update();
+
+    osg::BoundingBox bb ( _eyeAltitudeText->computeBound() );
+    const float h ( bb.yMax() - bb.yMin() );
+    const float w ( bb.xMax() - bb.xMin() );
+    
+    _eyeAltitudeText->setPosition ( osg::Vec3 ( width - w - 1, h / 2.0, 0 ) );
+    geode->addDrawable ( _eyeAltitudeText.get() );
+  }
   
   // Turn off lighting.
   geode->getOrCreateStateSet()->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
@@ -380,4 +397,40 @@ void Hud::dateFeedback ( const std::string& text )
 {
   if ( _date.valid() )
     _date->setText ( text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the eye altitude shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::showEyeAltitude ( bool b )
+{
+  _flags = Usul::Bits::set ( _flags, _SHOW_EYE_ALTITUDE, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the eye altitude shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Hud::showEyeAltitude() const
+{
+  return Usul::Bits::has ( _flags, _SHOW_EYE_ALTITUDE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the eye altitude.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::eyeAltitude ( double altitude )
+{
+  _eyeAltitude = altitude;
 }

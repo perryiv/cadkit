@@ -39,6 +39,7 @@
 #include "MenuKit/ToggleButton.h"
 #include "MenuKit/RadioButton.h"
 
+#include "OsgTools/Convert.h"
 #include "OsgTools/Font.h"
 #include "OsgTools/Group.h"
 
@@ -61,6 +62,7 @@
 #include "Usul/Interfaces/ICullSceneVisitor.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISceneIntersect.h"
+#include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Jobs/Manager.h"
@@ -667,6 +669,27 @@ namespace Detail
     else if ( vm.valid() )
     {
       vm->setViewMatrix ( M3 );
+    }
+    
+    // Simulate a seek.
+    Usul::Interfaces::ITrackball::QueryPtr tb ( vm );
+    if ( tb.valid() )
+    {
+      // The translate portion of the matrix is where the eye position will be.
+      Usul::Math::Vec3d point0 ( M3 ( 3, 0 ), M3 ( 3, 1 ), M3 ( 3, 2 ) );
+      
+      // Find the intersection point from the eye to the center of the body.  This will become the new center of the trackball.
+      Usul::Math::Vec3d center;
+      if ( body.intersectWithTiles ( point0, Usul::Math::Vec3d ( 0.0, 0.0, 0.0 ), center ) )
+      {
+        // Get the distance between the eye and the center.
+        const double D ( center.distance ( point0 ) );
+        
+        // Get the rotation and set the trackball.
+        osg::Quat R; M3.get ( R );
+        osg::Vec3d C ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( center ) );
+        tb->setTrackball ( C, D, R, true, true );
+      }
     }
   }
 }

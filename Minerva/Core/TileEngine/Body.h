@@ -141,6 +141,9 @@ public:
 
   // Return overall extents of the body.
   Extents                   extents() const;
+  
+  // Intersect only with the tiles (no vector data).
+  bool                      intersectWithTiles ( const Usul::Math::Vec3d& pt0, const Usul::Math::Vec3d& pt1, Usul::Math::Vec3d& point );
 
   // Set/get the job manager for this body.
   void                      jobManager ( Usul::Jobs::Manager * );

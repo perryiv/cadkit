@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib curld.lib"
+				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib curld.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/LayerManager.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib curl.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib curl.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/LayerManager.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -232,6 +232,32 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Favorites.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_Favorites.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\Favorites.ui -o .\ui_Favorites.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\Favorites.h&quot; -o &quot;.\GeneratedFiles\moc_Favorites.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\Favorites.ui;$(QTDIR)\bin\moc.exe;.\Favorites.h"
+							Outputs=".\ui_Favorites.h;.\GeneratedFiles\moc_Favorites.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_Favorites.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\Favorites.ui -o .\ui_Favorites.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\Favorites.h&quot; -o &quot;.\GeneratedFiles\moc_Favorites.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\Favorites.ui;$(QTDIR)\bin\moc.exe;.\Favorites.h"
+							Outputs=".\ui_Favorites.h;.\GeneratedFiles\moc_Favorites.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\FlyTo.cpp"
 					>
 				</File>
@@ -258,32 +284,6 @@
 							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\FlyTo.h&quot; -o &quot;.\GeneratedFiles\moc_FlyTo.cpp&quot;&#x0D;&#x0A;"
 							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\FlyTo.h"
 							Outputs=".\GeneratedFiles\moc_FlyTo.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\Favorites.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Creating ui_Favorites.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\Favorites.ui -o .\ui_Favorites.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\Favorites.h&quot; -o &quot;.\GeneratedFiles\moc_Favorites.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\Favorites.ui;$(QTDIR)\bin\moc.exe;.\Favorites.h"
-							Outputs=".\ui_Favorites.h;.\GeneratedFiles\moc_Favorites.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Creating ui_Favorites.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\Favorites.ui -o .\ui_Favorites.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\Favorites.h&quot; -o &quot;.\GeneratedFiles\moc_Favorites.cpp&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\Favorites.ui;$(QTDIR)\bin\moc.exe;.\Favorites.h"
-							Outputs=".\ui_Favorites.h;.\GeneratedFiles\moc_Favorites.cpp"
 						/>
 					</FileConfiguration>
 				</File>

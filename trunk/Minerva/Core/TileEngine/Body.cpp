@@ -20,6 +20,7 @@
 #include "Minerva/Core/Visitor.h"
 #include "Minerva/Core/Data/Transform.h"
 
+#include "OsgTools/Convert.h"
 #include "OsgTools/Convert/MatrixTransform.h"
 #include "OsgTools/Group.h"
 #include "OsgTools/Visitor.h"
@@ -36,6 +37,8 @@
 #include "Usul/Trace/Trace.h"
 
 #include "osg/MatrixTransform"
+
+#include "osgUtil/LineSegmentIntersector"
 
 #include <limits>
 #include <stdexcept>
@@ -1091,27 +1094,6 @@ double Body::elevation ( double lat, double lon ) const
 {
   USUL_TRACE_SCOPE;
 
-#if 0
-  Guard guard ( this );
-
-  RasterGroup::RefPtr elevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation.get() ) );
-
-  // Get the number of layers.
-  const int number ( elevation->size() );
-
-  // Loop through the elevation data sets from last to first.
-  for ( int i = number - 1; i >= 0; --i )
-  {
-    Usul::Interfaces::IElevationDatabase::QueryPtr data ( elevation->layer ( i ) );
-    if ( data.valid() )
-    {
-      // Get the height for this layer.
-      const double h ( data->elevationAtLatLong ( lat, lon ) );
-      if ( h > 0.0 )
-        return h;
-    }
-  }
-#else
   Tiles tiles ( Usul::Threads::Safe::get ( this->mutex(), _topTiles ) );
   
   Extents::Vertex v ( lon, lat );
@@ -1124,8 +1106,6 @@ double Body::elevation ( double lat, double lon ) const
   }
 
   return elevation;
-
-#endif
   
   // Should we use a geoid here?  Keeping this for reference.
   // http://en.wikipedia.org/wiki/Geoid
@@ -1138,7 +1118,6 @@ double Body::elevation ( double lat, double lon ) const
   return height + ossimGeoidManager::instance()->offsetFromEllipsoid( point );
 #endif
 
-  return 0.0;
 }
 
 
@@ -1646,4 +1625,51 @@ void Body::clear()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   Usul::Functions::executeMemberFunctions ( _topTiles, &Tile::clear, true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Intersect only with the tiles (no vector data).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Body::intersectWithTiles ( const Usul::Math::Vec3d& point0, const Usul::Math::Vec3d& point1, Usul::Math::Vec3d& point )
+{
+  Tiles tiles ( Usul::Threads::Safe::get ( this->mutex(), _topTiles ) );
+
+  // Make a temporary group to hold the tiles.
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+  for ( Tiles::iterator iter = tiles.begin(); iter != tiles.end(); ++iter )
+  {
+    group->addChild ( (*iter).get() );
+  }
+  
+  // Points to intersect with.
+  osg::Vec3d pt0 ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( point0 ) );
+  osg::Vec3d pt1 ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( point1 ) );
+  
+  // Make the intersector.
+  typedef osgUtil::LineSegmentIntersector Intersector;
+  osg::ref_ptr<Intersector> intersector ( new Intersector ( pt0, pt1 ) );
+  
+  // Declare the pick-visitor.
+  typedef osgUtil::IntersectionVisitor Visitor;
+  osg::ref_ptr<Visitor> visitor ( new Visitor );
+  visitor->setIntersector ( intersector.get() );
+  
+  // Intersect the scene.
+  group->accept ( *visitor );
+  
+  // Get the hit-list for our line-segment.
+  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+  const Intersections &hits = intersector->getIntersections();
+  if ( hits.empty() )
+    return false;
+  
+  // Set the hit.
+  osg::Vec3d hit ( intersector->getFirstIntersection().getWorldIntersectPoint() );
+  point = Usul::Convert::Type<osg::Vec3d,Usul::Math::Vec3d>::convert ( hit );
+  
+  return true;
 }

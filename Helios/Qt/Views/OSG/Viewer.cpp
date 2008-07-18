@@ -59,6 +59,7 @@
 #include "QtGui/QMessageBox"
 
 #include <ctime>
+#include <limits>
 
 using namespace CadKit::Helios::Views::OSG;
 namespace Sections = Usul::Registry::Sections;

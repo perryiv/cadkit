@@ -33,6 +33,7 @@
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IWriteMovieFile.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Constants.h"
@@ -1580,7 +1581,12 @@ void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown 
 
   for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
   {
-    this->_loadPath ( *iter, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) );
+    // Get the path of the camera file.
+    const std::string path ( *iter );
+    
+    // Make sure the file exists before opening.
+    if ( true == Usul::Predicates::FileExists::test ( path ) )
+      this->_loadPath ( *iter, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ) );
   }
 
   // Rebuild the path menu.

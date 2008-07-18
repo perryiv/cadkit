@@ -1579,6 +1579,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showLatLonText ), 
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowLatLonText ) ) ) );
 
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Eye Altitude", 
+                                                           UA::memberFunction<void> ( this, &MinervaDocument::showEyeAltitude ), 
+                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isShowEyeAltitude ) ) ) );
+  
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Job Feedback", 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ), 
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) ) );
@@ -1884,6 +1888,9 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
   {
     osg::Vec3d hpr ( _callback->_hpr );
     _hud.hpr (  hpr[0], hpr[1], hpr[2] );
+    
+    Usul::Math::Vec3d eye ( _callback->_eyePosition );
+    _hud.eyeAltitude( eye[2] );
   }
   
   Usul::Jobs::Manager *manager ( this->_getJobManager() );
@@ -2472,8 +2479,7 @@ void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* n
       {
         // Convert the eye to lat,lon, height.
         Usul::Math::Vec3d point ( _eye[0], _eye[1], _eye[2] );
-        Usul::Math::Vec3d latLonPoint;
-        _body->convertFromPlanet( point, latLonPoint );
+        _body->convertFromPlanet( point, _eyePosition );
         
         // Get the model view matrix from the cull visitor.
         osg::ref_ptr<osg::RefMatrix> m ( cullVisitor->getModelViewMatrix() );
@@ -2482,7 +2488,7 @@ void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* n
         osg::Matrixd viewMatrix ( 0x0 != m.get() ? osg::Matrixd::inverse ( *m ) : osg::Matrixd() );
         
         // Get the matrix to point north at the eye position.
-        osg::Matrixd localLsr ( _body->planetRotationMatrix( latLonPoint[1], latLonPoint[0], latLonPoint[2], 0.0 ) ); 
+        osg::Matrixd localLsr ( _body->planetRotationMatrix( _eyePosition[1], _eyePosition[0], _eyePosition[2], 0.0 ) ); 
         
         osg::Matrixd invert;
         if ( invert.invert ( localLsr ) )
@@ -2490,6 +2496,10 @@ void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* n
           osg::Matrixd matrix ( viewMatrix * invert );
           Detail::matrixToHpr( _hpr, matrix );
         }
+        
+        // Set the eye altitude to above sea level.
+        const double elevationAtEye ( _body->elevationAtLatLong ( _eyePosition[1], _eyePosition[0] ) );
+        _eyePosition[2] -= elevationAtEye;
       }
     }
   }
@@ -2809,4 +2819,32 @@ Usul::Jobs::Job *MinervaDocument::closeJob()
 {
   USUL_TRACE_SCOPE;
   return new MinervaDocument::CloseJob ( MinervaDocument::RefPtr ( this ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get showing of eye altitude feedback state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isShowEyeAltitude() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _hud.showEyeAltitude();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set showing of eye altitude feedback state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showEyeAltitude ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _hud.showEyeAltitude ( b );
 }

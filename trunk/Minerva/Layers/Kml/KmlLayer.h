@@ -50,8 +50,10 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   KmlLayer();
-  KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles );
-  KmlLayer( Link* link, const Styles& styles );
+  
+  // Creation functions.
+  static KmlLayer*            create ( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles );
+  static KmlLayer*            create ( Link* link, const Styles& styles );
   
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
@@ -71,8 +73,12 @@ public:
   bool                        isReading() const;
   void                        reading( bool b );
   
+  void                        parseFolder ( const XmlTree::Node& node );
+  
 protected:
 
+  KmlLayer( Link* link, const Styles& styles );
+  KmlLayer( const std::string& filename, const std::string& directory, const Styles& styles );
   virtual ~KmlLayer();
 
   // Filename from link.  Will download if needed.
@@ -90,7 +96,6 @@ protected:
   // Parse xml nodes.
   void                        _parseNode         ( const XmlTree::Node& node );
   void                        _parseStyle        ( const XmlTree::Node& node );
-  void                        _parseFolder       ( const XmlTree::Node& node );
   void                        _parsePlacemark    ( const XmlTree::Node& node );
   Geometry*                   _parseModel        ( const XmlTree::Node& node, Style *style );
   Geometry*                   _parsePoint        ( const XmlTree::Node& node, Style *style );

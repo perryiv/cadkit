@@ -109,7 +109,7 @@ KmlLayer::KmlLayer() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles ) :
+KmlLayer::KmlLayer( const std::string& filename, const std::string& directory, const Styles& styles ) :
   BaseClass(),
   _filename( filename ),
   _directory( directory ),
@@ -119,9 +119,6 @@ KmlLayer::KmlLayer( const XmlTree::Node& node, const std::string& filename, cons
 	_styles( styles )
 {
   this->_addMember ( "filename", _filename );
-  this->_parseFolder ( node );
-  this->dirtyData ( false );
-  this->dirtyScene ( true );
 }
 
 
@@ -144,6 +141,35 @@ KmlLayer::KmlLayer( Link* link, const Styles& styles ) :
 
   // Update the link.
   this->_updateLink();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a kml from a node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer* KmlLayer::create ( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles )
+{
+  KmlLayer::RefPtr kml ( new KmlLayer ( filename, directory, styles ) );
+  kml->parseFolder ( node );
+  kml->dirtyData ( false );
+  kml->dirtyScene ( true );
+  return kml.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a kml layer a link.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer* KmlLayer::create ( Link* link, const Styles& styles )
+{
+  KmlLayer::RefPtr kml ( new KmlLayer ( link, styles ) );
+  return kml.release();
 }
 
 
@@ -290,7 +316,7 @@ void KmlLayer::_parseKml ( const std::string& filename, Usul::Interfaces::IUnkno
       
       // Handle folders or documents at the top level.
       if ( "Folder" == name || "Document" == name )
-        this->_parseFolder( *node );
+        this->parseFolder( *node );
       else
         this->_parseNode( *node );
     }
@@ -323,7 +349,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
     Styles styles ( Usul::Threads::Safe::get ( this->mutex(), _styles ) );
 
     // Make a new layer.
-    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( new Minerva::Layers::Kml::KmlLayer ( node, filename, directory, styles ) );
+    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( KmlLayer::create ( node, filename, directory, styles ) );
     
     // Make sure the scene gets built.
     layer->dirtyScene ( true );
@@ -345,7 +371,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
         Styles styles ( Usul::Threads::Safe::get ( this->mutex(), _styles ) );
 
         // Make a new layer.
-        KmlLayer::RefPtr layer ( new KmlLayer ( link.get(), styles ) );
+        KmlLayer::RefPtr layer ( KmlLayer::create ( link.get(), styles ) );
         layer->name( networkLink->name() );
         layer->read ( 0x0, 0x0 );
         this->add ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
@@ -378,7 +404,7 @@ void KmlLayer::_parseStyle ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlLayer::_parseFolder ( const XmlTree::Node& node )
+void KmlLayer::parseFolder ( const XmlTree::Node& node )
 {
   // Get the children.
   Children children ( node.children() );

@@ -29,23 +29,25 @@ class MINERVA_EXPORT StackPoints : public Minerva::Core::Visitor
 public:
   typedef Minerva::Core::Visitor BaseClass;
   typedef Minerva::Core::Animate::Date Date;
-        
+
   USUL_DECLARE_REF_POINTERS ( StackPoints );
-        
+
   StackPoints ( double mutliplier = 1.0 );
-        
+
   virtual void visit ( Minerva::Core::Data::DataObject &object );
   virtual void visit ( Minerva::Core::Layers::Container &layer );
 
 protected:
-  
+
   /// Use reference counting.
   virtual ~StackPoints ();
-        
+
 private:
+
   typedef std::equal_to<unsigned int> EqualPredicate;
   typedef Usul::Predicates::LessVector < EqualPredicate, 3 > LessVector;
   typedef std::map< Usul::Math::Vec3ui, unsigned int, LessVector > Counts;
+  
   Counts _counts;
   double _multiplier;
 };

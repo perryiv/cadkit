@@ -4813,7 +4813,6 @@
 		66A959560DB7E3E600943BA4 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		66A959570DB7E3E600943BA4 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
 		66AC8A330D2B4F0100762CC7 /* moc_Favorites.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_Favorites.cpp; sourceTree = "<group>"; };
-		66AEC0010DBFF9A9001DB52F /* IGLObjectsVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGLObjectsVisitor.h; sourceTree = "<group>"; };
 		66AFF3100D6E96200062CDB9 /* LookAt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LookAt.h; sourceTree = "<group>"; };
 		66AFF3110D6E96200062CDB9 /* LookAt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LookAt.cpp; sourceTree = "<group>"; };
 		66AFF78A0E0C52E400AF0239 /* InvalidParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InvalidParameter.h; sourceTree = "<group>"; };
@@ -4958,6 +4957,8 @@
 		66CCC31F0E2971ED00DDFE55 /* Text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Text.h; sourceTree = "<group>"; };
 		66CCE88D0D2F60600084E49D /* IElevationDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IElevationDatabase.h; sourceTree = "<group>"; };
 		66CCE9C80D3186630084E49D /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		66CF184D0E2FEF0100D74A48 /* IDataChangedNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDataChangedNotify.h; sourceTree = "<group>"; };
+		66CF184E0E2FEF0F00D74A48 /* IDataChangedListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDataChangedListener.h; sourceTree = "<group>"; };
 		66CFF1500D38A19700ED0216 /* GDAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GDAL.framework; path = ../../../Library/Frameworks/GDAL.framework; sourceTree = SOURCE_ROOT; };
 		66CFF1D60D39EE5E00ED0216 /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
 		66CFF1D70D39EE5E00ED0216 /* Format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
@@ -6664,13 +6665,13 @@
 		43E9AF4709F6B98D00444335 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
-				C26F87970E2EA4890030ED9D /* IAnimateNurbsCurve.h */,
 				6699A0680D1EFC7200A9AE47 /* GUI */,
 				6699A07F0D1EFC7200A9AE47 /* IActiveDocumentListener.h */,
 				6699A0800D1EFC7200A9AE47 /* IActiveViewListener.h */,
 				6699A0810D1EFC7200A9AE47 /* IAddRowLegend.h */,
 				43E9AF6F09F6B98D00444335 /* IAddSharedVertex.h */,
 				43E9AF7009F6B98D00444335 /* IAddTriangle.h */,
+				C26F87970E2EA4890030ED9D /* IAnimateNurbsCurve.h */,
 				6699A0820D1EFC7200A9AE47 /* IAnimatePath.h */,
 				66E5C0940D91965C00C858B7 /* IArcGenReaderWriter.h */,
 				43E9AF7209F6B98D00444335 /* IAxes.h */,
@@ -6708,6 +6709,7 @@
 				6699A0980D1EFC7300A9AE47 /* IDatabasePager.h */,
 				6699A0990D1EFC7300A9AE47 /* IDataSync.h */,
 				43E9AF8409F6B98D00444335 /* IDecimateTriangles.h */,
+				66A8B0E40DAC02CA00088B3B /* IDefaultGUIDelegate.h */,
 				43E9AF8509F6B98D00444335 /* IDeleteAllConnected.h */,
 				43E9AF8609F6B98D00444335 /* IDeletePrimitive.h */,
 				6699A09A0D1EFC7300A9AE47 /* IDirtyState.h */,
@@ -6802,6 +6804,7 @@
 				43E9AFC409F6B98D00444335 /* ITimeoutSpin.h */,
 				6699A0DB0D1EFC7300A9AE47 /* ITimestepAnimation.h */,
 				6699A0DC0D1EFC7300A9AE47 /* ITimeVaryingData.h */,
+				66A3412A0E14A27700F36EA7 /* IToolBarAdd.h */,
 				43E9AFC609F6B98D00444335 /* ITrackball.h */,
 				6699A0DE0D1EFC7300A9AE47 /* ITranslationSpeed.h */,
 				6699A0DF0D1EFC7300A9AE47 /* ITreeNode.h */,
@@ -6826,9 +6829,8 @@
 				6699A0EB0D1EFC7300A9AE47 /* IWorldInfo.h */,
 				43E9AFCE09F6B98D00444335 /* IWriteMovieFile.h */,
 				6699A0EC0D1EFC7300A9AE47 /* Qt */,
-				66A8B0E40DAC02CA00088B3B /* IDefaultGUIDelegate.h */,
-				66AEC0010DBFF9A9001DB52F /* IGLObjectsVisitor.h */,
-				66A3412A0E14A27700F36EA7 /* IToolBarAdd.h */,
+				66CF184D0E2FEF0100D74A48 /* IDataChangedNotify.h */,
+				66CF184E0E2FEF0F00D74A48 /* IDataChangedListener.h */,
 			);
 			name = Interfaces;
 			path = ../Usul/Interfaces;

@@ -51,6 +51,7 @@ Container::Container() :
   _layers(),
   _updateListeners(),
   _builders(),
+  _dataChangedListeners(),
   _name(),
   _guid ( Usul::Functions::GUID::generate() ),
   _shown ( true ),
@@ -75,6 +76,7 @@ Container::Container( const Container& rhs ) :
   _layers( rhs._layers ),
   _updateListeners ( rhs._updateListeners ),
   _builders ( rhs._builders ),
+  _dataChangedListeners ( rhs._dataChangedListeners ),
   _name( rhs._name ),
   _guid( Usul::Functions::GUID::generate() ),
   _shown ( rhs._shown ),
@@ -150,6 +152,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
   case Usul::Interfaces::ILayerExtents::IID:
     return static_cast < Usul::Interfaces::ILayerExtents* > ( this );
+  case Usul::Interfaces::IDataChangedNotify::IID:
+    return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   default:
     return 0x0;
   };
@@ -287,7 +291,11 @@ void Container::add ( Usul::Interfaces::IUnknown* unknown )
   // Add the builder.
   _builders.add ( unknown );
 
+  // Our scene needs rebuilt.
   this->dirtyScene ( true );
+  
+  // Notify any listeners that the data has changed.
+  this->_notifyDataChnagedListeners();
 }
 
 
@@ -312,7 +320,11 @@ void Container::remove ( Usul::Interfaces::IUnknown* unknown )
   // Remove the builder.
   _builders.remove ( unknown );
   
+  // Our scene needs rebuilt.
   this->dirtyScene( true );
+  
+  // Notify any listeners that the data has changed.
+  this->_notifyDataChnagedListeners();
 }
 
 
@@ -331,7 +343,11 @@ void Container::clear ()
   _builders.clear();
   _updateListeners.clear();
 
+  // Our scene needs rebuilt.
   this->dirtyScene ( true );
+  
+  // Notify any listeners that the data has changed.
+  this->_notifyDataChnagedListeners();
 }
 
 
@@ -856,4 +872,43 @@ double Container::maxLat() const
 {
   USUL_TRACE_SCOPE;
   return this->extents().maxLat();
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::addDataChangedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _dataChangedListeners.add ( caller );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::removeDataChangedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _dataChangedListeners.remove ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Notify data changed listeners.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::_notifyDataChnagedListeners()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  _dataChangedListeners.for_each ( std::bind2nd ( std::mem_fun ( &IDataChangedListener::dataChangedNotify ), me.get() ) );
 }

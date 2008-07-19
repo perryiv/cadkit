@@ -22,6 +22,8 @@
 #include "Usul/Containers/Unknowns.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IDataChangedListener.h"
+#include "Usul/Interfaces/IDataChangedNotify.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISerialize.h"
@@ -50,6 +52,7 @@ class MINERVA_EXPORT Container : public Usul::Base::Object,
                                  public Usul::Interfaces::ITreeNode,
                                  public Usul::Interfaces::ILayerExtents,
                                  public Usul::Interfaces::IBooleanState,
+                                 public Usul::Interfaces::IDataChangedNotify,
                                  public Minerva::Interfaces::IDirtyScene,
                                  public Minerva::Interfaces::IElevationChangedListnerer,
                                  public Minerva::Interfaces::IAddLayer,
@@ -115,7 +118,6 @@ public:
   void                        extents ( const Extents& e );
   Extents                     extents() const;
   void                        extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight );
-  
 
   /// Get/Set the flags.
   unsigned int                flags() const;
@@ -163,12 +165,21 @@ protected:
   
   /// Build the scene.
   void                        _buildScene( Usul::Interfaces::IUnknown *caller );
+  
+  /// Notify data changed listeners.
+  void                        _notifyDataChnagedListeners();
 
   // Add a layer (IAddLayer).
   virtual void                addLayer ( Usul::Interfaces::ILayer *layer );
 
   /// Remove a layer (IRemoveLayer).
   virtual void                removeLayer ( Usul::Interfaces::ILayer * layer );
+  
+  // Add the listener.
+  virtual void                addDataChangedListener ( Usul::Interfaces::IUnknown *caller );
+  
+  // Remove the listener.
+  virtual void                removeDataChangedListener ( Usul::Interfaces::IUnknown *caller );
   
   // Get the number of children (ITreeNode).
   virtual unsigned int        getNumChildNodes() const;
@@ -193,10 +204,13 @@ private:
 
   typedef Usul::Containers::Unknowns<IUpdateListener> UpdateListeners;
   typedef Usul::Containers::Unknowns<IBuildScene>     Builders;
+  typedef Usul::Interfaces::IDataChangedListener      IDataChangedListener;
+  typedef Usul::Containers::Unknowns<IDataChangedListener> DataChangedListeners;
   
   Unknowns _layers;
   UpdateListeners _updateListeners;
   Builders _builders;
+  DataChangedListeners _dataChangedListeners;
   std::string _name;
   std::string _guid;
   bool _shown;

@@ -17,6 +17,8 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
 
+#include "boost/date_time/posix_time/posix_time.hpp"
+
 #include <vector>
 
 namespace Minerva { namespace Core { namespace Data { class DataObject; } } }
@@ -84,12 +86,14 @@ private:
     READING     = 0x00000002
   };
   
+  boost::posix_time::ptime _lastDataUpdate;
   std::string _filename;
   std::string _href;
   double _refreshInterval;
   double _lastUpdate;
   unsigned int _flags;
   Usul::Math::Vec4f _color;
+  
   
   SERIALIZE_XML_CLASS_NAME ( GeoRSSLayer );
 };

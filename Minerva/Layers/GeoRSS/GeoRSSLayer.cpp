@@ -12,6 +12,7 @@
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Utilities/Download.h"
+#include "Minerva/Core/Visitors/StackPoints.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -26,6 +27,10 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Threads/Safe.h"
+
+#include "boost/foreach.hpp"
+#include "boost/date_time/gregorian/gregorian.hpp"
+#include "boost/date_time/local_time/local_time.hpp"
 
 using namespace Minerva::Layers::GeoRSS;
 
@@ -52,6 +57,7 @@ USUL_FACTORY_REGISTER_CREATOR ( GeoRSSLayer );
 
 GeoRSSLayer::GeoRSSLayer() :
   BaseClass(),
+  _lastDataUpdate( boost::posix_time::not_a_date_time ),
   _filename(),
   _href(),
   _refreshInterval ( 300.0 ),
@@ -134,25 +140,88 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   XmlTree::Document::RefPtr doc ( new XmlTree::Document );
   doc->load ( filename );
   
-  // TODO: Check the lastPubDate against a last update data member before proceeding.
+  // TODO: Check the lastPubDate against a last update data member before proceeding.  I will have to convert both times to the same time zone.
+  Children lastPubDateNode ( doc->find ( "lastBuildDate", true ) );
+  if ( false == _lastDataUpdate.is_not_a_date_time() && false == lastPubDateNode.empty() )
+  {
+    const std::string lastPubDate ( lastPubDateNode.front()->value() );
+    const std::string dayOfWeek ( lastPubDate, 0, 3 );
+    const std::string day ( lastPubDate, 5, 2 );
+    const std::string month ( lastPubDate, 8, 3 );
+    const std::string year ( lastPubDate, 12, 4 );
+    const std::string hours ( lastPubDate, 17, 2 );
+    const std::string minutes ( lastPubDate, 20, 2 );
+    const std::string seconds ( lastPubDate, 23, 2 );
+    const std::string zone ( lastPubDate, 26 ); // Get the remaining characters.
+    
+    // The timezone.
+    boost::local_time::time_zone_ptr timeZone;
+    
+    typedef Usul::Convert::Type<std::string,int> ToInt;
+    
+    // See if the zone is an offset.
+    if ( false == zone.empty() && ( '-' == zone[0] || '+' == zone[1] ) )
+    {
+      int offset ( ToInt::convert ( zone ) );
+      int hourOffset ( offset / 100 );
+      
+      // Offset from UTC.
+      boost::posix_time::time_duration utcOffset ( hourOffset, 0, 0 );
+      
+      // Daylight savings offsets.  TODO: Find out if the RSS feed will have accounted for dst.
+      boost::local_time::dst_adjustment_offsets dstOffsets ( boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                             boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                             boost::posix_time::time_duration ( 0, 0, 0 ) );
+      
+      boost::shared_ptr<boost::local_time::dst_calc_rule> rules;
+      boost::local_time::time_zone_names names ( "", "", "", "" );
+      
+      timeZone = boost::local_time::time_zone_ptr ( new boost::local_time::custom_time_zone ( names, utcOffset, dstOffsets, rules ) );
+    }
+    
+    
+    //namespace time = boost::posix_time;
+
+    boost::posix_time::time_duration time ( ToInt::convert ( hours ), ToInt::convert ( minutes ), ToInt::convert ( seconds ) );
+    boost::gregorian::date date ( boost::gregorian::from_simple_string ( year + "-" + month + "-" + day ) );
+    boost::posix_time::ptime lastUpdate ( date, time );
+    
+    boost::posix_time::ptime utcTime ( boost::local_time::local_date_time ( date, time, timeZone, true ).utc_time() );
+    //std::cout << "The stream was last updated on " << utcTime << std::endl;
+    
+    // Return now if the feed has not been updated.
+    if ( _lastDataUpdate >= utcTime )
+    {
+      // Our data doesn't need to be updated.
+      this->dirtyData ( false );
+      return;
+    }
+  }
   
   // Clear what we have.
   this->clear();
   
   // Get all the items.
   Children children ( doc->find ( "item", true ) );
-  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+  BOOST_FOREACH ( XmlTree::Node::ValidRefPtr node, children )
   {
-    XmlTree::Node::ValidRefPtr node ( *iter );
-    
     this->_parseItem( *node );
   }
+  
+  // Stack the points.
+  Minerva::Core::Visitors::StackPoints::RefPtr stack ( new Minerva::Core::Visitors::StackPoints );
+  this->accept ( *stack );
   
   // Our data is no longer dirty.
   this->dirtyData ( false );
   
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
+  
+  // Update last time.
+  boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
+  //std::cout << "The data layer was last updated at " << now << std::endl;
+  _lastDataUpdate = now;
 }
 
 
@@ -180,7 +249,8 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   cb->date ( pubDate );
   
   // Look for an image.
-  Children imageNode ( node.find ( "media:content", false ) );
+  //Children imageNode ( node.find ( "media:content", false ) );
+  Children imageNode ( node.find ( "media:thumbnail", false ) );
   if ( false == imageNode.empty() )
   {
     XmlTree::Node::RefPtr node ( imageNode.front() );
@@ -189,6 +259,7 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
     const std::string width  ( node->attributes()["width"] );
     const std::string height ( node->attributes()["height"] );
     
+    // TODO: Download the thumbnail here and download the larger image when clicked on.
     std::string filename;
     if ( Minerva::Core::Utilities::download ( url, filename ) )
     {
@@ -285,7 +356,7 @@ void GeoRSSLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
   {
     // Create a job to update the file.
     Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( caller, 
-                                                                                Usul::Adaptors::memberFunction ( this, &GeoRSSLayer::_updateLink ) ) ) );
+                                                                                Usul::Adaptors::memberFunction ( GeoRSSLayer::RefPtr ( this ), &GeoRSSLayer::_updateLink ) ) ) );
 
     if ( true == job.valid() )
     {

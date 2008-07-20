@@ -5262,6 +5262,19 @@
 		C26F88440E2EB6F50030ED9D /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		C26F88460E2EB6F50030ED9D /* XML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XML.h; sourceTree = "<group>"; };
 		C26F88470E2EB6F50030ED9D /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		C2EB96020E32CA4C00642403 /* IColorEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IColorEditor.h; path = ../Usul/Interfaces/IColorEditor.h; sourceTree = SOURCE_ROOT; };
+		C2EB96030E32CA4C00642403 /* IGeneralShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IGeneralShader.h; path = ../Usul/Interfaces/IGeneralShader.h; sourceTree = SOURCE_ROOT; };
+		C2EB96040E32CA4C00642403 /* IKeyListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IKeyListener.h; path = ../Usul/Interfaces/IKeyListener.h; sourceTree = SOURCE_ROOT; };
+		C2EB96050E32CA4C00642403 /* ILoadFileDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ILoadFileDialog.h; path = ../Usul/Interfaces/ILoadFileDialog.h; sourceTree = SOURCE_ROOT; };
+		C2EB96060E32CA4C00642403 /* IModelsScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IModelsScene.h; path = ../Usul/Interfaces/IModelsScene.h; sourceTree = SOURCE_ROOT; };
+		C2EB96070E32CA4C00642403 /* IMpdWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMpdWriter.h; path = ../Usul/Interfaces/IMpdWriter.h; sourceTree = SOURCE_ROOT; };
+		C2EB96080E32CA4C00642403 /* IPasswordPrompt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IPasswordPrompt.h; path = ../Usul/Interfaces/IPasswordPrompt.h; sourceTree = SOURCE_ROOT; };
+		C2EB96090E32CA4C00642403 /* IReadImageFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IReadImageFile.h; path = ../Usul/Interfaces/IReadImageFile.h; sourceTree = SOURCE_ROOT; };
+		C2EB960A0E32CA4C00642403 /* IRenderInfoOSG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRenderInfoOSG.h; path = ../Usul/Interfaces/IRenderInfoOSG.h; sourceTree = SOURCE_ROOT; };
+		C2EB960B0E32CA4C00642403 /* ISaveFileDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISaveFileDialog.h; path = ../Usul/Interfaces/ISaveFileDialog.h; sourceTree = SOURCE_ROOT; };
+		C2EB960C0E32CA4C00642403 /* ITimerService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ITimerService.h; path = ../Usul/Interfaces/ITimerService.h; sourceTree = SOURCE_ROOT; };
+		C2EB960D0E32CA4C00642403 /* IToolBarAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IToolBarAdd.h; path = ../Usul/Interfaces/IToolBarAdd.h; sourceTree = SOURCE_ROOT; };
+		C2EB960E0E32CA4C00642403 /* IWriteImageFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IWriteImageFile.h; path = ../Usul/Interfaces/IWriteImageFile.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -8726,6 +8739,19 @@
 		6699A0680D1EFC7200A9AE47 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				C2EB96020E32CA4C00642403 /* IColorEditor.h */,
+				C2EB96030E32CA4C00642403 /* IGeneralShader.h */,
+				C2EB96040E32CA4C00642403 /* IKeyListener.h */,
+				C2EB96050E32CA4C00642403 /* ILoadFileDialog.h */,
+				C2EB96060E32CA4C00642403 /* IModelsScene.h */,
+				C2EB96070E32CA4C00642403 /* IMpdWriter.h */,
+				C2EB96080E32CA4C00642403 /* IPasswordPrompt.h */,
+				C2EB96090E32CA4C00642403 /* IReadImageFile.h */,
+				C2EB960A0E32CA4C00642403 /* IRenderInfoOSG.h */,
+				C2EB960B0E32CA4C00642403 /* ISaveFileDialog.h */,
+				C2EB960C0E32CA4C00642403 /* ITimerService.h */,
+				C2EB960D0E32CA4C00642403 /* IToolBarAdd.h */,
+				C2EB960E0E32CA4C00642403 /* IWriteImageFile.h */,
 				6699A0690D1EFC7200A9AE47 /* IAboutString.h */,
 				6699A06B0D1EFC7200A9AE47 /* ICancelButton.h */,
 				6699A06C0D1EFC7200A9AE47 /* IFlushEvents.h */,

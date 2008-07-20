@@ -1597,7 +1597,6 @@ void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown 
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Turn on the render loop. Save the current state if there is only one player.

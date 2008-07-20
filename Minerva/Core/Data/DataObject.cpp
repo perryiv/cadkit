@@ -670,7 +670,6 @@ OsgTools::Widgets::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* calle
   
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
   legend->maximiumSize ( 300, 300 );
-  legend->heightPerItem ( 256 );
   legend->position ( 10, 10 );
   legend->growDirection ( OsgTools::Widgets::Legend::UP );
   

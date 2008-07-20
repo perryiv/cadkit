@@ -5272,7 +5272,7 @@
 		C2EB96090E32CA4C00642403 /* IReadImageFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IReadImageFile.h; path = ../Usul/Interfaces/IReadImageFile.h; sourceTree = SOURCE_ROOT; };
 		C2EB960A0E32CA4C00642403 /* IRenderInfoOSG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRenderInfoOSG.h; path = ../Usul/Interfaces/IRenderInfoOSG.h; sourceTree = SOURCE_ROOT; };
 		C2EB960B0E32CA4C00642403 /* ISaveFileDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISaveFileDialog.h; path = ../Usul/Interfaces/ISaveFileDialog.h; sourceTree = SOURCE_ROOT; };
-		C2EB960C0E32CA4C00642403 /* ITimerService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ITimerService.h; path = ../Usul/Interfaces/ITimerService.h; sourceTree = SOURCE_ROOT; };
+		C2EB960C0E32CA4C00642403 /* ITimerService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITimerService.h; sourceTree = "<group>"; };
 		C2EB960D0E32CA4C00642403 /* IToolBarAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IToolBarAdd.h; path = ../Usul/Interfaces/IToolBarAdd.h; sourceTree = SOURCE_ROOT; };
 		C2EB960E0E32CA4C00642403 /* IWriteImageFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IWriteImageFile.h; path = ../Usul/Interfaces/IWriteImageFile.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -6720,6 +6720,8 @@
 				4358FB770A1A4BAC008F482D /* ICreateTriangleDocument.h */,
 				6699A0960D1EFC7300A9AE47 /* ICullSceneVisitor.h */,
 				6699A0980D1EFC7300A9AE47 /* IDatabasePager.h */,
+				66CF184E0E2FEF0F00D74A48 /* IDataChangedListener.h */,
+				66CF184D0E2FEF0100D74A48 /* IDataChangedNotify.h */,
 				6699A0990D1EFC7300A9AE47 /* IDataSync.h */,
 				43E9AF8409F6B98D00444335 /* IDecimateTriangles.h */,
 				66A8B0E40DAC02CA00088B3B /* IDefaultGUIDelegate.h */,
@@ -6815,6 +6817,7 @@
 				43E9AFC209F6B98D00444335 /* ITextMatrix.h */,
 				43E9AFC309F6B98D00444335 /* ITimeoutAnimate.h */,
 				43E9AFC409F6B98D00444335 /* ITimeoutSpin.h */,
+				C2EB960C0E32CA4C00642403 /* ITimerService.h */,
 				6699A0DB0D1EFC7300A9AE47 /* ITimestepAnimation.h */,
 				6699A0DC0D1EFC7300A9AE47 /* ITimeVaryingData.h */,
 				66A3412A0E14A27700F36EA7 /* IToolBarAdd.h */,
@@ -6842,8 +6845,6 @@
 				6699A0EB0D1EFC7300A9AE47 /* IWorldInfo.h */,
 				43E9AFCE09F6B98D00444335 /* IWriteMovieFile.h */,
 				6699A0EC0D1EFC7300A9AE47 /* Qt */,
-				66CF184D0E2FEF0100D74A48 /* IDataChangedNotify.h */,
-				66CF184E0E2FEF0F00D74A48 /* IDataChangedListener.h */,
 			);
 			name = Interfaces;
 			path = ../Usul/Interfaces;
@@ -8749,7 +8750,6 @@
 				C2EB96090E32CA4C00642403 /* IReadImageFile.h */,
 				C2EB960A0E32CA4C00642403 /* IRenderInfoOSG.h */,
 				C2EB960B0E32CA4C00642403 /* ISaveFileDialog.h */,
-				C2EB960C0E32CA4C00642403 /* ITimerService.h */,
 				C2EB960D0E32CA4C00642403 /* IToolBarAdd.h */,
 				C2EB960E0E32CA4C00642403 /* IWriteImageFile.h */,
 				6699A0690D1EFC7200A9AE47 /* IAboutString.h */,

@@ -98,7 +98,7 @@ osg::Node* Image::buildScene()
   if ( false == image.valid() )
     return 0x0;
   
-  const Size size ( Image::_fitImageToSize ( this->size(), *image ) );
+  const Size size ( this->size() /*Image::_fitImageToSize ( this->size(), *image )*/ );
   const SizeType width  ( size[0] );
   const SizeType height ( size[1] );
   
@@ -132,14 +132,19 @@ osg::Node* Image::buildScene()
 
 Image::Size Image::_fitImageToSize ( const Size& size, const osg::Image& image )
 {
-  Size newSize ( size );
-  
   const int s ( image.s() );
   const int t ( image.t() );
   
+  // Check to see if the image size is smaller than given size.
+  if ( s <= static_cast<int> ( size[0] ) && t <= static_cast<int> ( size[1] ) )
+    return Size ( s, t );
+  
+  Size newSize ( size );
+  
   const double aspect ( static_cast<double> ( s ) / static_cast<double> ( t ) );
   
-  const SizeType width ( size[0] );
+  const SizeType width  ( size[0] );
+  const SizeType height ( size[1] );
   
   if ( s > static_cast<int> ( width ) )
   {
@@ -147,7 +152,32 @@ Image::Size Image::_fitImageToSize ( const Size& size, const osg::Image& image )
     newSize[1] = width * ( aspect < 1.0 ? ( 1.0 / aspect ) : aspect );
   }
   
+  if ( t > static_cast<int> ( height ) )
+  {
+    newSize[0] = height * ( aspect < 1.0 ? ( 1.0 / aspect ) : aspect );
+    newSize[1] = height;
+  }
+  
   return newSize;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Calculate height needed to preserve aspect ratio if image is resized to width.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  int calculateHeight ( Item::SizeType width, const osg::Image& image )
+  {
+    const int s ( image.s() );
+    const int t ( image.t() );
+    
+    const double aspect ( static_cast<double> ( t ) / static_cast<double> ( s ) );
+    return aspect * width;
+  }
 }
 
 
@@ -162,5 +192,5 @@ Image::Size Image::estimateSizeForWidth ( unsigned int w ) const
   // Read the image
   osg::ref_ptr<osg::Image> image ( osgDB::readImageFile ( this->filename() ) );
   
-  return ( image.valid() ? Image::_fitImageToSize ( Size ( w, image->t() ), *image ) : this->size() );
+  return ( image.valid() ? Size ( w, Detail::calculateHeight ( w, *image ) ) : this->size() );
 }

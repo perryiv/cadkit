@@ -83,7 +83,6 @@ GeoRSSCallback::Item* GeoRSSCallback::operator() ( const DataObject& object, Usu
 
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
   legend->maximiumSize ( 350, 750 );
-  legend->heightPerItem ( 256 );
   legend->position ( 20, 40 );
   legend->growDirection ( OsgTools::Widgets::Legend::UP );
   legend->backgroundColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );

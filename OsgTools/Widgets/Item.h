@@ -49,6 +49,16 @@ public:
   /// By default it returns the suggested size.
   virtual Size            estimateSizeForWidth ( unsigned int w ) const;
   
+  /// Set/get the maximium size.
+  void                    maximiumSize ( unsigned int width, unsigned int height );
+  void                    maximiumSize ( const Size& size );
+  Size                    maximiumSize() const;
+  
+  /// Set/get the minimium size.
+  void                    minimiumSize ( unsigned int width, unsigned int height );
+  void                    minimiumSize ( const Size& size );
+  Size                    minimiumSize() const;
+  
   /// Set the position.
   void                    position ( SizeType x, SizeType y );
   
@@ -70,6 +80,8 @@ protected:
   
 private:
   Size _size;
+  Size _maximiumSize;
+  Size _minimiumSize;
   Size _position;
   Color _backgroundColor;
   Color _borderColor;

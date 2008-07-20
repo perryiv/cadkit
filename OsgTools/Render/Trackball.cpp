@@ -80,7 +80,7 @@ osg::Matrixd Trackball::matrix ( const osg::Vec3d &center, const osg::Quat &rota
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the inverse matrix of the manipulator. Does the same thing as the 
+//  Get the inverse matrix of the manipulator. Does the same thing as the
 //  base class's version, but I think this is easier to follow.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ osg::Matrixd Trackball::getInverseMatrix() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Move the camera to the default position. Not sure if checking the scene 
+//  Move the camera to the default position. Not sure if checking the scene
 //  is important. Keeping this because it is easier to debug this way.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,7 +146,7 @@ bool Trackball::handle ( const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
   {
     if ( _thrown )
     {
-      if ( this->calcMovement() ) 
+      if ( this->calcMovement() )
         aa.requestRedraw();
       return true;
     }

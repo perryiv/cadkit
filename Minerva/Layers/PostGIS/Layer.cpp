@@ -970,14 +970,16 @@ void Layer::updateNotify ( Usul::Interfaces::IUnknown *caller )
   if ( true == this->dirtyData() && false == this->isUpdating() )
   {
     // Get the progress bar factory.
-    Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( Usul::Resources::Manager::instance().find ( Usul::Resources::Contants::PROGRESS_BAR_FACTORY ) );
+    Usul::Interfaces::IProgressBarFactory::QueryPtr factory 
+      ( Usul::Resources::Manager::instance().find ( Usul::Resources::Contants::PROGRESS_BAR_FACTORY ) );
 
     // Make the progress bar.
     Usul::Interfaces::IUnknown::QueryPtr progress ( factory.valid() ? factory->createProgressBar() : 0x0 );
 
     // Create a job to update the file.
-    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind2 ( caller, progress.get(),
-                                                                               Usul::Adaptors::memberFunction ( this, &Layer::modifyVectorData ) ) ) );
+    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create 
+      ( Usul::Adaptors::bind2 ( caller, progress.get(),
+        Usul::Adaptors::memberFunction ( this, &Layer::modifyVectorData ) ) ) );
 
     if ( true == job.valid() )
     {

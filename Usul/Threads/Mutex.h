@@ -65,7 +65,7 @@ public:
 
   // Lock the mutex.
   void            lock();
-  void            lock ( Usul::Types::Uint64 timeout );
+  void            lock ( Usul::Types::Uint64 timeout, unsigned long millisecondPause = 500 );
 
   // Unlock the mutex.
   void            unlock();

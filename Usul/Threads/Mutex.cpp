@@ -94,7 +94,7 @@ Mutex *Mutex::create()
 void Mutex::lock()
 {
 #ifdef USUL_WINDOWS
-  ::EnterCriticalSection( &_cs );
+  ::EnterCriticalSection ( &_cs );
 #endif
 
 #ifdef __GNUC__
@@ -113,7 +113,7 @@ void Mutex::lock()
 void Mutex::unlock()
 {
 #ifdef USUL_WINDOWS
-  ::LeaveCriticalSection( &_cs );
+  ::LeaveCriticalSection ( &_cs );
 #endif
 
 #ifdef __GNUC__
@@ -157,7 +157,7 @@ bool Mutex::trylock()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Mutex::lock ( Usul::Types::Uint64 timeout )
+void Mutex::lock ( Usul::Types::Uint64 timeout, unsigned long pause )
 {
   // Get the current time.
   const Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
@@ -175,7 +175,7 @@ void Mutex::lock ( Usul::Types::Uint64 timeout )
         ( "Warning 1373313702: Could not acquire lock within ", timeout, " milliseconds." ) );
     }
 
-    // Try again in 500 milliseconds.
-    Usul::System::Sleep::milliseconds ( 500 );
+    // Try again in "pause" milliseconds.
+    Usul::System::Sleep::milliseconds ( pause );
   }
 }

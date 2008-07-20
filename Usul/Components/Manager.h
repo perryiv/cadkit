@@ -43,6 +43,10 @@ public:
 
   static Manager& instance();
 
+  // Add a plugin.
+  void                          addPlugin ( IUnknown::RefPtr );
+
+  // Clear the list of plugins.
   void                          clear ( std::ostream *out );
 
   // Add/remove/clear extensions for plugins.

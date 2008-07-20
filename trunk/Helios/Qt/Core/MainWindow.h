@@ -34,6 +34,7 @@
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
+#include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
@@ -79,7 +80,8 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
   public Usul::Interfaces::IQtDockWidgetMenu,
   public Usul::Interfaces::IActiveDocumentListener,
   public Usul::Interfaces::IActiveViewListener,
-  public Usul::Interfaces::IQuestion
+  public Usul::Interfaces::IQuestion,
+  public Usul::Interfaces::ITimerService
 {
   Q_OBJECT
 

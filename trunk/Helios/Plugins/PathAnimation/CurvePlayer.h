@@ -73,7 +73,7 @@ public:
   void                          playBackward ( const CameraPath *, unsigned int degree, IUnknown *caller );
   void                          playForward  ( const CameraPath *, unsigned int degree, IUnknown *caller );
 
-  // Get/Set flag.
+  // Get/set flag.
   void                          playing ( bool );
   bool                          playing() const;
 

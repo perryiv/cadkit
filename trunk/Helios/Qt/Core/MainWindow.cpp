@@ -229,7 +229,11 @@ MainWindow::MainWindow ( const std::string &vendor,
   qRegisterMetaType<DocumentProxy>();
 
   // Set resources.
-  Usul::Resources::Manager::instance().add ( Usul::Resources::Contants::PROGRESS_BAR_FACTORY, Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  Usul::Resources::Manager::instance().add ( Usul::Resources::Contants::PROGRESS_BAR_FACTORY, me );
+
+  // Add our self as a plugin.
+  Usul::Components::Manager::instance().addPlugin ( me );
 }
 
 
@@ -970,11 +974,11 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILoadFileDialog::IID:
-    return static_cast<Usul::Interfaces::ILoadFileDialog*>(this);
+    return static_cast<Usul::Interfaces::ILoadFileDialog*> ( this );
   case Usul::Interfaces::ISaveFileDialog::IID:
     return static_cast < Usul::Interfaces::ISaveFileDialog * > ( this );
   case Usul::Interfaces::IUpdateTextWindow::IID:
-    return static_cast<Usul::Interfaces::IUpdateTextWindow*>(this);
+    return static_cast<Usul::Interfaces::IUpdateTextWindow*> ( this );
   case Usul::Interfaces::Qt::IMainWindow::IID:
     return static_cast < Usul::Interfaces::Qt::IMainWindow* > ( this );
   case Usul::Interfaces::Qt::IWorkspace::IID:
@@ -993,6 +997,8 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IActiveViewListener * > ( this );
   case Usul::Interfaces::IQuestion::IID:
     return static_cast < Usul::Interfaces::IQuestion * > ( this );
+  case Usul::Interfaces::ITimerService::IID:
+    return static_cast < Usul::Interfaces::ITimerService * > ( this );
   default:
     return 0x0;
   }

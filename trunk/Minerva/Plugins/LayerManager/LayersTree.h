@@ -31,6 +31,7 @@ public:
   typedef QWidget                                        BaseClass;
   typedef Usul::Interfaces::ILayer                       Layer;
   typedef std::map < QTreeWidgetItem *, Layer::RefPtr >  LayerMap;
+  typedef Usul::Interfaces::IUnknown                     IUnknown;
 
   LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget *parent = 0x0 );
   virtual ~LayersTree ();
@@ -42,31 +43,33 @@ public:
   Favorites*  favorites() const;
 
 signals:
-  void addLayerFavorites ( Usul::Interfaces::IUnknown * layer );
+  void        addLayerFavorites ( Usul::Interfaces::IUnknown * layer );
 
 public slots:
-  void addLayer ( Usul::Interfaces::IUnknown * layer );
+  void        addLayer ( Usul::Interfaces::IUnknown * layer );
   
 protected:
-  void     _connectTreeViewSlots ();
-  void     _addLayer ( Usul::Interfaces::IUnknown *parent );
-  void     _editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usul::Interfaces::IUnknown *editor );
-  void     _dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown );
-  void     _moveLayerUp ( QTreeWidgetItem *item );
-  void     _moveLayerDown ( QTreeWidgetItem *item );
-  void     _swapLayers ( QTreeWidgetItem *item0, QTreeWidgetItem *item1, QTreeWidgetItem *parent );
-  bool     _canMoveLayerUp ( QTreeWidgetItem *item ) const;
-  bool     _canMoveLayerDown ( QTreeWidgetItem *item ) const;
+  bool        _canMoveLayerUp ( QTreeWidgetItem *item ) const;
+  bool        _canMoveLayerDown ( QTreeWidgetItem *item ) const;
+  bool        _canRefreshLayer ( Usul::Interfaces::IUnknown *unknown ) const;
+  void        _connectTreeViewSlots ();
+  void        _addLayer ( Usul::Interfaces::IUnknown *parent );
+  void        _editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usul::Interfaces::IUnknown *editor );
+  void        _dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown );
+  IUnknown*   _findEditor ( Usul::Interfaces::IUnknown* unknown );
+  void        _moveLayerUp ( QTreeWidgetItem *item );
+  void        _moveLayerDown ( QTreeWidgetItem *item );
+  void        _refreshLayer ( Usul::Interfaces::IUnknown *unknown );
+  void        _swapLayers ( QTreeWidgetItem *item0, QTreeWidgetItem *item1, QTreeWidgetItem *parent );
 
 protected slots:
-  void _onDoubleClick ( QTreeWidgetItem * item, int columnNumber );
-  void _onItemChanged ( QTreeWidgetItem * item, int columnNumber );
-  void _onAddLayerClick ();
-  void _onRemoveLayerClick ();
-  void _onContextMenuShow ( const QPoint& pos );
-  void _onAddLayerFavorites();
-  void _onSliderReleased();
-  void _onItemSelectionChanged();
+  void        _onDoubleClick ( QTreeWidgetItem * item, int columnNumber );
+  void        _onItemChanged ( QTreeWidgetItem * item, int columnNumber );
+  void        _onRemoveLayerClick();
+  void        _onContextMenuShow ( const QPoint& pos );
+  void        _onAddLayerFavorites();
+  void        _onSliderReleased();
+  void        _onItemSelectionChanged();
   
 private:
   QtTools::TreeControl *_tree;

@@ -3870,6 +3870,7 @@
 		43FED859092452F700EBB610 /* Types.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Types.cpp; path = ../Usul/Types/Types.cpp; sourceTree = SOURCE_ROOT; };
 		43FED85A092452F700EBB610 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Types.h; path = ../Usul/Types/Types.h; sourceTree = SOURCE_ROOT; };
 		43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOpenThreadsEx.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		66004AE20E33A4EA00CF3B0A /* IDirtyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDirtyData.h; sourceTree = "<group>"; };
 		6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtPasswordPrompt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		6603B87D0DCBAFEE00FE0D89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		6603B87E0DCBAFEE00FE0D89 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
@@ -7768,6 +7769,7 @@
 				664B434D0D54EE8C0080DF60 /* IAddLayer.h */,
 				664B434E0D54EE8C0080DF60 /* IAnimationControl.h */,
 				668E3AA60D8A33FC00FD7F58 /* IDatabaseConnection.h */,
+				66004AE20E33A4EA00CF3B0A /* IDirtyData.h */,
 				664B434F0D54EE8C0080DF60 /* IDirtyScene.h */,
 				667A27CF0E282C460047A376 /* IElevationChangedListener.h */,
 				668E3AAA0D8A33FC00FD7F58 /* ILineLayer.h */,

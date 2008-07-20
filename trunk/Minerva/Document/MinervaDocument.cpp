@@ -2132,7 +2132,6 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
     unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
     
     _legend->maximiumSize( legendWidth, legendHeight );
-    _legend->heightPerItem( _legendHeightPerItem );
 
     // Add items to the legend.
     Minerva::Core::Visitors::BuildLegend::RefPtr visitor ( new Minerva::Core::Visitors::BuildLegend ( _legend.get() ) );
@@ -2159,7 +2158,7 @@ void MinervaDocument::_setLegendPosition ( unsigned int legendWidth )
   unsigned int x ( 0 );
   unsigned int y ( 0 );
   
-  unsigned legendHeight ( _legend->height() );
+  unsigned legendHeight ( _legend->maximiumSize()[1] );
   
   switch ( _legendPosition )
   {

@@ -122,6 +122,65 @@ void GeoRSSLayer::read ( const std::string &filename, Usul::Interfaces::IUnknown
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Parse the date.  Time is returned in UTC.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  boost::posix_time::ptime parseDate ( const std::string& sDate )
+  {
+    if ( false == sDate.empty() && sDate.size() > 27 )
+    {
+      const std::string dayOfWeek ( sDate, 0, 3 );
+      const std::string day ( sDate, 5, 2 );
+      const std::string month ( sDate, 8, 3 );
+      const std::string year ( sDate, 12, 4 );
+      const std::string hours ( sDate, 17, 2 );
+      const std::string minutes ( sDate, 20, 2 );
+      const std::string seconds ( sDate, 23, 2 );
+      const std::string zone ( sDate, 26 ); // Get the remaining characters.
+      
+      // The timezone.
+      boost::local_time::time_zone_ptr timeZone;
+      
+      typedef Usul::Convert::Type<std::string,int> ToInt;
+      
+      // See if the zone is an offset.
+      if ( false == zone.empty() && ( '-' == zone[0] || '+' == zone[1] ) )
+      {
+        int offset ( ToInt::convert ( zone ) );
+        int hourOffset ( offset / 100 );
+        
+        // Offset from UTC.
+        boost::posix_time::time_duration utcOffset ( hourOffset, 0, 0 );
+        
+        // Daylight savings offsets.  TODO: Find out if the RSS feed will have accounted for dst.
+        boost::local_time::dst_adjustment_offsets dstOffsets ( boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                               boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                               boost::posix_time::time_duration ( 0, 0, 0 ) );
+        
+        boost::shared_ptr<boost::local_time::dst_calc_rule> rules;
+        boost::local_time::time_zone_names names ( "", "", "", "" );
+        
+        timeZone = boost::local_time::time_zone_ptr ( new boost::local_time::custom_time_zone ( names, utcOffset, dstOffsets, rules ) );
+      }
+      
+      boost::posix_time::time_duration time ( ToInt::convert ( hours ), ToInt::convert ( minutes ), ToInt::convert ( seconds ) );
+      boost::gregorian::date date ( boost::gregorian::from_simple_string ( year + "-" + month + "-" + day ) );
+      boost::posix_time::ptime lastUpdate ( date, time );
+      
+      boost::posix_time::ptime utcTime ( boost::local_time::local_date_time ( date, time, timeZone, true ).utc_time() );
+      return utcTime;
+    }
+    
+    return boost::posix_time::not_a_date_time;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Read the file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -142,53 +201,11 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   
   // TODO: Check the lastPubDate against a last update data member before proceeding.  I will have to convert both times to the same time zone.
   Children lastPubDateNode ( doc->find ( "lastBuildDate", true ) );
-  if ( false == _lastDataUpdate.is_not_a_date_time() && false == lastPubDateNode.empty() )
+  const std::string date ( false == lastPubDateNode.empty() ? lastPubDateNode.front()->value() : "" );
+  boost::posix_time::ptime utcTime ( Detail::parseDate ( date ) );
+  
+  if ( false == _lastDataUpdate.is_not_a_date_time() && false == utcTime.is_not_a_date_time() )
   {
-    const std::string lastPubDate ( lastPubDateNode.front()->value() );
-    const std::string dayOfWeek ( lastPubDate, 0, 3 );
-    const std::string day ( lastPubDate, 5, 2 );
-    const std::string month ( lastPubDate, 8, 3 );
-    const std::string year ( lastPubDate, 12, 4 );
-    const std::string hours ( lastPubDate, 17, 2 );
-    const std::string minutes ( lastPubDate, 20, 2 );
-    const std::string seconds ( lastPubDate, 23, 2 );
-    const std::string zone ( lastPubDate, 26 ); // Get the remaining characters.
-    
-    // The timezone.
-    boost::local_time::time_zone_ptr timeZone;
-    
-    typedef Usul::Convert::Type<std::string,int> ToInt;
-    
-    // See if the zone is an offset.
-    if ( false == zone.empty() && ( '-' == zone[0] || '+' == zone[1] ) )
-    {
-      int offset ( ToInt::convert ( zone ) );
-      int hourOffset ( offset / 100 );
-      
-      // Offset from UTC.
-      boost::posix_time::time_duration utcOffset ( hourOffset, 0, 0 );
-      
-      // Daylight savings offsets.  TODO: Find out if the RSS feed will have accounted for dst.
-      boost::local_time::dst_adjustment_offsets dstOffsets ( boost::posix_time::time_duration ( 0, 0, 0 ),
-                                                             boost::posix_time::time_duration ( 0, 0, 0 ),
-                                                             boost::posix_time::time_duration ( 0, 0, 0 ) );
-      
-      boost::shared_ptr<boost::local_time::dst_calc_rule> rules;
-      boost::local_time::time_zone_names names ( "", "", "", "" );
-      
-      timeZone = boost::local_time::time_zone_ptr ( new boost::local_time::custom_time_zone ( names, utcOffset, dstOffsets, rules ) );
-    }
-    
-    
-    //namespace time = boost::posix_time;
-
-    boost::posix_time::time_duration time ( ToInt::convert ( hours ), ToInt::convert ( minutes ), ToInt::convert ( seconds ) );
-    boost::gregorian::date date ( boost::gregorian::from_simple_string ( year + "-" + month + "-" + day ) );
-    boost::posix_time::ptime lastUpdate ( date, time );
-    
-    boost::posix_time::ptime utcTime ( boost::local_time::local_date_time ( date, time, timeZone, true ).utc_time() );
-    //std::cout << "The stream was last updated on " << utcTime << std::endl;
-    
     // Return now if the feed has not been updated.
     if ( _lastDataUpdate >= utcTime )
     {
@@ -220,7 +237,6 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   
   // Update last time.
   boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
-  //std::cout << "The data layer was last updated at " << now << std::endl;
   _lastDataUpdate = now;
 }
 
@@ -249,8 +265,8 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   cb->date ( pubDate );
   
   // Look for an image.
-  //Children imageNode ( node.find ( "media:content", false ) );
-  Children imageNode ( node.find ( "media:thumbnail", false ) );
+  Children imageNode ( node.find ( "media:content", false ) );
+  //Children imageNode ( node.find ( "media:thumbnail", false ) );
   if ( false == imageNode.empty() )
   {
     XmlTree::Node::RefPtr node ( imageNode.front() );

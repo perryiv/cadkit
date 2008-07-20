@@ -28,9 +28,6 @@ using namespace OsgTools::Widgets;
 Legend::Legend() : 
   BaseClass(),
   _legendObjects(),
-  _width ( 0 ),
-  _height ( 0 ),
-  _heightPerItem ( 0 ),
   _growDirection ( UP )
 {
 }
@@ -116,8 +113,8 @@ namespace Detail
 
 osg::Node* Legend::buildScene()
 {
-  //const SizeType width  ( this->size()[0] );
-  //const SizeType height ( this->size()[1] );
+  const SizeType maxWidth  ( this->maximiumSize()[0] );
+  const SizeType maxHeight ( this->maximiumSize()[1] );
   
   // Sort the legend by name.
   std::sort( _legendObjects.begin(), _legendObjects.end(), Detail::SortLegend ( 1 ) );
@@ -144,7 +141,7 @@ osg::Node* Legend::buildScene()
     const unsigned int padding ( 5 );
     
     // Constant row width.
-    const unsigned int rowWidth ( _width - ( padding * 2 ) );
+    const unsigned int rowWidth ( maxWidth - ( padding * 2 ) );
     
     // Calculate needed height values.
     SizeType totalHeight ( 0 );
@@ -157,7 +154,7 @@ osg::Node* Legend::buildScene()
       
       if ( item.valid() )
       {
-        item->size ( rowWidth, static_cast<double> ( _height ) / _legendObjects.size() );
+        item->size ( rowWidth, static_cast<double> ( maxHeight ) / _legendObjects.size() );
         Size s ( item->estimateSizeForWidth( rowWidth ) );
         heights.push_back( s[1] );
         totalHeight += s[1];
@@ -166,18 +163,22 @@ osg::Node* Legend::buildScene()
         heights.push_back( 0 );
     }
     
-    unsigned int heightPerObject ( this->heightPerItem() );
-    unsigned int height ( totalHeight /*heightPerObject * _legendObjects.size()*/ );
+    unsigned int height ( totalHeight );
 
     // Change the height per object to fit in the size paramaters given.
-    if( totalHeight > _height )
+    if( totalHeight > maxHeight )
     {
-      heightPerObject = this->_height / _legendObjects.size();
-      height = _height;
+      const double tooBig ( static_cast<double> ( height ) / maxHeight );
+      for ( unsigned int i = 0; i < heights.size(); ++i )
+      {
+        heights[i] /= tooBig;
+      }
+      
+      height = maxHeight;
     }
 
     // Build the background
-    group->addChild ( this->_buildBackground( _width, height ) );
+    group->addChild ( this->_buildBackground( maxWidth, height ) );
 
     // The current height.
     unsigned int currentHeight ( padding );
@@ -226,18 +227,6 @@ osg::Node* Legend::buildScene()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the size of the legend.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Legend::maximiumSize( unsigned int width, unsigned int height )
-{
-  _width = width;
-  _height = height;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -260,42 +249,4 @@ void Legend::growDirection( OsgTools::Widgets::Legend::GrowDirectionMode mode )
 OsgTools::Widgets::Legend::GrowDirectionMode Legend::growDirection() const
 {
   return _growDirection;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the height per item.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Legend::heightPerItem ( unsigned int height )
-{
-  _heightPerItem = height;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the height per item.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Legend::heightPerItem() const
-{
-  return _heightPerItem;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the height.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Legend::height() const
-{
-  unsigned int height ( _heightPerItem * _legendObjects.size() );
-
-  return ( ( height > _height ) ? _height : height );
 }

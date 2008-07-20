@@ -14,6 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IDirtyData.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
@@ -53,6 +54,7 @@ class MINERVA_EXPORT Container : public Usul::Base::Object,
                                  public Usul::Interfaces::ILayerExtents,
                                  public Usul::Interfaces::IBooleanState,
                                  public Usul::Interfaces::IDataChangedNotify,
+                                 public Minerva::Interfaces::IDirtyData,
                                  public Minerva::Interfaces::IDirtyScene,
                                  public Minerva::Interfaces::IElevationChangedListnerer,
                                  public Minerva::Interfaces::IAddLayer,
@@ -99,15 +101,15 @@ public:
   /// Deserialize.
   virtual void                deserialize ( const XmlTree::Node &node );
 
-  /// Get/Set the data dirty flag.
-  bool                        dirtyData() const;
-  void                        dirtyData( bool );
+  /// Get/Set the data dirty flag (IDirtyData).
+  virtual bool                dirtyData() const;
+  virtual void                dirtyData( bool );
   
   /// Get/Set the extents dirty flag.
   bool                        dirtyExtents() const;
   void                        dirtyExtents( bool );
   
-  /// Get/Set dirty scene flag.
+  /// Get/Set dirty scene flag (IDirtyScene).
   virtual bool                dirtyScene() const;
   virtual void                dirtyScene( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
 

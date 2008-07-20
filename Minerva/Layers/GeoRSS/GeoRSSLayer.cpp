@@ -199,15 +199,18 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   XmlTree::Document::RefPtr doc ( new XmlTree::Document );
   doc->load ( filename );
   
-  // TODO: Check the lastPubDate against a last update data member before proceeding.  I will have to convert both times to the same time zone.
+  // Get the date the stream was modified.
   Children lastPubDateNode ( doc->find ( "lastBuildDate", true ) );
   const std::string date ( false == lastPubDateNode.empty() ? lastPubDateNode.front()->value() : "" );
   boost::posix_time::ptime utcTime ( Detail::parseDate ( date ) );
   
-  if ( false == _lastDataUpdate.is_not_a_date_time() && false == utcTime.is_not_a_date_time() )
+  boost::posix_time::ptime lastDataUpdate ( Usul::Threads::Safe::get ( this->mutex(), _lastDataUpdate ) );
+  
+  // Check the date against the time time we updated.
+  if ( false == lastDataUpdate.is_not_a_date_time() && false == utcTime.is_not_a_date_time() )
   {
     // Return now if the feed has not been updated.
-    if ( _lastDataUpdate >= utcTime )
+    if ( lastDataUpdate >= utcTime )
     {
       // Our data doesn't need to be updated.
       this->dirtyData ( false );
@@ -236,8 +239,8 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   this->dirtyScene ( true );
   
   // Update last time.
-  boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
-  _lastDataUpdate = now;
+  const boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
+  Usul::Threads::Safe::set ( this->mutex(), now, _lastDataUpdate );
 }
 
 

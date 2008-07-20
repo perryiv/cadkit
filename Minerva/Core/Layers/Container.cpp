@@ -138,6 +138,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ISerialize* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
+  case Minerva::Interfaces::IDirtyData::IID:
+    return static_cast < Minerva::Interfaces::IDirtyData* > ( this );
   case Minerva::Interfaces::IDirtyScene::IID:
     return static_cast < Minerva::Interfaces::IDirtyScene* > ( this );
   case Usul::Interfaces::ITreeNode::IID:

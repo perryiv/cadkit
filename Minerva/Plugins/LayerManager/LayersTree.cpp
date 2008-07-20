@@ -13,6 +13,7 @@
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
+#include "Minerva/Interfaces/IDirtyData.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/ILookAtLayer.h"
@@ -190,18 +191,6 @@ void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_onAddLayerClick ()
-{
-  this->_addLayer ( _document );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void LayersTree::_addLayer ( Usul::Interfaces::IUnknown *parent )
 {
   Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerAddGUIQt::IID ) );
@@ -309,11 +298,9 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
 
   QMenu menu;
-  
-  Usul::Commands::Command::RefPtr command ( Usul::Commands::genericCommand ( "Add...", Usul::Adaptors::bind1 ( unknown.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_addLayer ) ), Usul::Commands::TrueFunctor() ) );
-  
+
   // Add button.
-  QtTools::Action add ( command.get() );
+  QtTools::Action add ( USUL_MAKE_COMMAND_ARG0 ( "Add...", "", this, &LayersTree::_addLayer, unknown.get() ) );
   
   Minerva::Interfaces::IAddLayer::QueryPtr al ( unknown );
   add.setEnabled( al.valid() );
@@ -329,25 +316,6 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   favorites.setToolTip( "Add layer to favorites" );
   favorites.setEnabled ( layer.valid() );
   QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
-
-  // Editor for this layer.
-  Usul::Interfaces::IUnknown::QueryPtr editor;
-
-  // Attempt to find an editor.
-  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerModifyGUIQt::IID ) );
-  for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
-  {
-    Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
-    if ( gui->handle ( layer.get() ) )
-    {
-      editor = gui.get();
-      break;
-    }
-  }
-  
-  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind2 ( unknown.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
-  properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
-  properties.setEnabled ( layer.valid() && editor.valid() );
   
   // Move up and down actions.
   QtTools::Action moveUp   ( USUL_MAKE_COMMAND_ARG0 ( "Move up",   "", this, &LayersTree::_moveLayerUp,   currentItem ) );
@@ -355,11 +323,27 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   moveUp.setEnabled   ( this->_canMoveLayerUp   ( currentItem ) );
   moveDown.setEnabled ( this->_canMoveLayerDown ( currentItem ) );
   
+  // Add refresh button.
+  QtTools::Action refresh ( USUL_MAKE_COMMAND_ARG0 ( "Refresh", "", this, &LayersTree::_refreshLayer, unknown.get() ) );
+  
+  // Editor for this layer.
+  Usul::Interfaces::IUnknown::QueryPtr editor ( this->_findEditor ( layer.get() ) );
+  
+  // Properties button.
+  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind2 ( unknown.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
+  properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
+  properties.setEnabled ( layer.valid() && editor.valid() );
+  
   // Add the actions to the menu.
   menu.addAction ( &add );
   menu.addAction ( &remove );
   menu.addAction ( &moveUp );
   menu.addAction ( &moveDown );
+  
+  // Add the refresh button if we can.
+  if ( this->_canRefreshLayer ( unknown.get() ) )
+    menu.addAction( &refresh );
+  
   menu.addAction ( &favorites );
 
   QtTools::Menu addFromFavorites ( "Add From Favorites" );
@@ -374,6 +358,29 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   menu.addAction ( &properties );
   
   menu.exec ( _tree->mapToGlobal ( pos ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find an editor for the unknown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* LayersTree::_findEditor ( Usul::Interfaces::IUnknown* unknown )
+{
+  // Attempt to find an editor.
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( Usul::Interfaces::ILayerModifyGUIQt::IID ) );
+  for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
+  {
+    Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
+    if ( gui->handle ( Usul::Interfaces::ILayer::QueryPtr ( unknown ) ) )
+    {
+      return gui.get();
+    }
+  }
+  
+  return 0x0;
 }
 
 
@@ -619,4 +626,34 @@ bool LayersTree::_canMoveLayerDown ( QTreeWidgetItem *item ) const
   Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
   const int index ( 0x0 != parent ? parent->indexOfChild ( item ) : -1 );
   return swap.valid() && ( index + 1 ) < parent->childCount();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Can the layer be refreshed?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool LayersTree::_canRefreshLayer ( Usul::Interfaces::IUnknown *unknown ) const
+{
+  Minerva::Interfaces::IDirtyData::QueryPtr dd ( unknown );
+  return dd.valid();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Refresh the layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_refreshLayer ( Usul::Interfaces::IUnknown *unknown )
+{
+  Minerva::Interfaces::IDirtyData::QueryPtr dd ( unknown );
+  if ( dd.valid() )
+    dd->dirtyData ( true );
+  
+  // Force a render.
+  this->_dirtyAndRedraw ( unknown );
 }

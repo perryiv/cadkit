@@ -25,7 +25,7 @@ struct IAnimateNurbsCurve : public Usul::Interfaces::IUnknown
 {
   /// Typedefs.
   typedef Usul::Math::Vec3d Vec3d;
-  typedef Usul::Math::Vector3<Vec3d> DependentType;
+  typedef Usul::Math::Vector3<Vec3d> DependentType; // eye, center, up
   typedef std::vector<DependentType> ControlPoints;
   typedef std::vector<double> KnotVector;
   typedef std::vector<double> Parameters;

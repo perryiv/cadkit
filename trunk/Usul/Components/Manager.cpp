@@ -227,8 +227,7 @@ void Manager::load ( unsigned long iid, const Strings &plugins, bool keepGoingIf
       Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance ( iid ) );
 
       // Insert into set of plugins.
-      if ( unknown.valid() )
-        _unknowns.insert ( unknown.get() );
+      this->addPlugin ( unknown.get() );
     }
 
     catch ( const std::exception &e )
@@ -275,11 +274,8 @@ void Manager::load ( unsigned long iid, const std::string& file )
     Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createInstance ( iid ) );
 
     // Insert into set of plugins.
-    if ( unknown.valid() )
-    {
-    	_unknowns.insert ( unknown.get() );
-    }
-	}
+    this->addPlugin ( unknown.get() );
+  }
 	catch ( const std::exception& e )
 	{
 		std::cout << "Error 4241786283: Exception caught while trying to load " << file << std::endl;
@@ -289,6 +285,23 @@ void Manager::load ( unsigned long iid, const std::string& file )
 	{
 		std::cout << "Error 7167132960: Unknown exception caught while trying to load. " << std::endl;
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the plugin.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Manager::addPlugin ( Usul::Interfaces::IUnknown::RefPtr unknown )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( true == unknown.valid() )
+  {
+    _unknowns.insert ( unknown.get() );
+  }
 }
 
 

@@ -10,6 +10,8 @@
 #ifndef __MINERVA_LAYERS_GEO_RSS_H__
 #define __MINERVA_LAYERS_GEO_RSS_H__
 
+#include "Minerva/Layers/GeoRSS/Export.h"
+
 #include "Minerva/Core/Layers/Container.h"
 
 #include "Usul/Base/Object.h"
@@ -28,8 +30,8 @@ namespace Minerva {
 namespace Layers {
 namespace GeoRSS {  
 
-class GeoRSSLayer : public Minerva::Core::Layers::Container,
-                    public Usul::Interfaces::IRead
+class MINERVA_GEORSS_EXPORT GeoRSSLayer : public Minerva::Core::Layers::Container,
+                                          public Usul::Interfaces::IRead
                  
 {
 public:

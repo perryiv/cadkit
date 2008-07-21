@@ -224,7 +224,9 @@ void Body::addTile ( const Extents &extents )
   Tile::RefPtr tile ( new Tile ( 0x0, Tile::NONE, level, extents, meshSize, _imageSize, _splitDistance, this ) );
 
   // Build the raster.
-  tile->buildRaster ( 0x0 );
+	Minerva::Core::Jobs::BuildRaster::RefPtr job ( new Minerva::Core::Jobs::BuildRaster ( tile ) );
+	if ( 0x0 != this->jobManager() )
+		this->jobManager()->addJob ( job.get() );
 
   // Add tile to the transform.
   _transform->addChild ( tile.get() );

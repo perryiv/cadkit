@@ -486,8 +486,8 @@ protected:
   void                          _clearAssignedButtonCommands();
 
   /// Get/set the clipping distances (VRV::Interfaces::IClippingDistanceFloat).
-  virtual void                  getClippingDistances ( float &nearDist, float &farDist ) const;
-  virtual void                  setClippingDistances ( float nearDist, float farDist );
+  virtual void                  getClippingDistances ( double &nearDist, double &farDist ) const;
+  virtual void                  setClippingDistances ( double nearDist, double farDist );
 
   /// VRV::Interfaces::IModelAdd
   virtual void                  addModel ( osg::Node *model, const std::string& filename );
@@ -711,7 +711,7 @@ private:
   Renderers                              _renderers;
   OsgTools::Render::SceneManager::RefPtr _sceneManager;
   ProgressBars::RefPtr                   _progressBars;
-  osg::Vec2                              _clipDist;
+  osg::Vec2d                             _clipDist;
   bool                                   _exportImage;
   Preferences::RefPtr                    _preferences;
   ButtonsPtr                             _buttons;

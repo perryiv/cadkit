@@ -36,7 +36,8 @@ RasterGroup::RasterGroup() :
   BaseClass (),
   _layers   (),
   _cache    (),
-  _useCache ( false )
+  _useCache ( false ),
+  _dataChangedListeners()
 {
   USUL_TRACE_SCOPE;
 
@@ -56,7 +57,8 @@ RasterGroup::RasterGroup ( const RasterGroup& rhs ) :
   BaseClass ( rhs ),
   _layers ( rhs._layers ),
   _cache ( rhs._cache ),
-  _useCache ( rhs._useCache )
+  _useCache ( rhs._useCache ), 
+  _dataChangedListeners ( rhs._dataChangedListeners )
 {
 }
 
@@ -89,6 +91,8 @@ Usul::Interfaces::IUnknown * RasterGroup::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
   case Minerva::Interfaces::ISwapLayers::IID:
     return static_cast < Minerva::Interfaces::ISwapLayers* > ( this );
+  case Usul::Interfaces::IDataChangedNotify::IID:
+    return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -121,23 +125,27 @@ void RasterGroup::append ( IRasterLayer* layer )
 
   if ( 0x0 != layer )
   {
-    Guard guard ( this );
-    _layers.push_back ( layer );
-    this->_updateExtents ( layer );
-
-    // Clear the cache because some or all of the images are now incorrect.
-    _cache.clear();
-
-    // Set the log file.
-    RasterLayer::RefPtr rl ( dynamic_cast < RasterLayer * > ( layer ) );
-    if ( true == rl.valid() )
     {
-      rl->logSet ( this->logGet() );
+      Guard guard ( this );
+      _layers.push_back ( layer );
+      this->_updateExtents ( layer );
+
+      // Clear the cache because some or all of the images are now incorrect.
+      _cache.clear();
+
+      // Set the log file.
+      RasterLayer::RefPtr rl ( dynamic_cast < RasterLayer * > ( layer ) );
+      if ( true == rl.valid() )
+      {
+        rl->logSet ( this->logGet() );
+      }
+      else
+      {
+        USUL_ASSERT ( 0 ); // FYI...
+      }
     }
-    else
-    {
-      USUL_ASSERT ( 0 ); // FYI...
-    }
+    
+    this->_notifyDataChnagedListeners();
   }
 }
 
@@ -154,17 +162,21 @@ void RasterGroup::remove ( IRasterLayer* layer )
   
   if ( 0x0 != layer )
   {
-    Guard guard ( this );
+    {
+      Guard guard ( this );
+      
+      // Remove the layer.
+      _layers.erase ( 
+                     std::remove_if ( _layers.begin(), 
+                                      _layers.end(), 
+                                      Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer ) ),
+                     _layers.end() );
+      
+      // Clear the cache because some or all of the images are now incorrect.
+      _cache.clear();
+    }
     
-    // Remove the layer.
-    _layers.erase ( 
-                   std::remove_if ( _layers.begin(), 
-                                    _layers.end(), 
-                                    Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer ) ),
-                   _layers.end() );
-    
-    // Clear the cache because some or all of the images are now incorrect.
-    _cache.clear();
+    this->_notifyDataChnagedListeners();
   }
 }
 
@@ -574,20 +586,85 @@ void RasterGroup::swapLayers ( Usul::Interfaces::IUnknown *layer0, Usul::Interfa
 void RasterGroup::swap ( IRasterLayer* layer0, IRasterLayer* layer1 )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  
-  Layers::iterator iter0 ( std::find_if ( _layers.begin(), 
-                                         _layers.end(), 
-                                         Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer0 ) ) );
-  
-  Layers::iterator iter1 ( std::find_if ( _layers.begin(), 
-                                         _layers.end(), 
-                                         Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer1 ) ) );
-  
-  if ( _layers.end() != iter0 && _layers.end() != iter1 )
   {
-    IRasterLayer::RefPtr temp ( *iter0 );
-    *iter0 = *iter1;
-    *iter1 = temp;
+    Guard guard ( this->mutex() );
+    
+    Layers::iterator iter0 ( std::find_if ( _layers.begin(), 
+                                           _layers.end(), 
+                                           Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer0 ) ) );
+    
+    Layers::iterator iter1 ( std::find_if ( _layers.begin(), 
+                                           _layers.end(), 
+                                           Usul::Interfaces::IRasterLayer::QueryPtr::IsEqual ( layer1 ) ) );
+    
+    if ( _layers.end() != iter0 && _layers.end() != iter1 )
+    {
+      IRasterLayer::RefPtr temp ( *iter0 );
+      *iter0 = *iter1;
+      *iter1 = temp;
+    }
+  }
+  
+  this->_notifyDataChnagedListeners();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::addDataChangedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _dataChangedListeners.add ( caller );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::removeDataChangedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _dataChangedListeners.remove ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Notify data changed listeners.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::_notifyDataChnagedListeners()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  _dataChangedListeners.for_each ( std::bind2nd ( std::mem_fun ( &IDataChangedListener::dataChangedNotify ), me.get() ) );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::setBooleanState ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::setBooleanState ( b );
+  
+  // Set the state of our children.
+  Layers unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+  for ( Layers::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+  {
+    Usul::Interfaces::IBooleanState::QueryPtr state ( *iter );
+    if ( state.valid() )
+      state->setBooleanState ( b );
   }
 }

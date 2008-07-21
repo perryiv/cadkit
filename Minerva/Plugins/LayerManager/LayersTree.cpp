@@ -236,17 +236,17 @@ void LayersTree::_addLayer ( Usul::Interfaces::IUnknown *parent )
     }
   }
   
-  this->buildTree ( _document );
+  //this->buildTree ( _document );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Remove selected layers.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_onRemoveLayerClick ()
+void LayersTree::_removeSelectedLayers()
 {
   // Get all selected items.
   typedef QtTools::TreeControl::TreeWidgetItems Items;
@@ -306,10 +306,9 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   add.setEnabled( al.valid() );
 
   // Remove button.
-  QAction remove ( 0x0 );
+  QtTools::Action remove ( USUL_MAKE_COMMAND ( "Remove", "", this, &LayersTree::_removeSelectedLayers ) );
   remove.setText ( "Remove" );
   remove.setToolTip ( "Remove selected layers." );
-  QObject::connect ( &remove, SIGNAL ( triggered() ), this, SLOT ( _onRemoveLayerClick() ) );
   
   QAction favorites ( 0x0 );
   favorites.setText( "Add to favorites" );
@@ -405,7 +404,7 @@ void LayersTree::_onAddLayerFavorites()
 
 void LayersTree::addLayer ( Usul::Interfaces::IUnknown * unknown )
 {
-  this->buildTree( _document );
+  //this->buildTree( _document );
 }
 
 

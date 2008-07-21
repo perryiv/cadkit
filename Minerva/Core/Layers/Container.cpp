@@ -206,11 +206,18 @@ void Container::traverse ( Minerva::Core::Visitor& visitor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::name( const std::string& name )
+void Container::name ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _name = name;
+  
+  // Set the name.
+  Usul::Threads::Safe::set ( this->mutex(), name, _name );
+  
+  // Notify any listeners that the data has changed.
+  this->_notifyDataChnagedListeners();
+  
+  //Guard guard ( this->mutex() );
+  //_name = name;
 }
 
 
@@ -875,6 +882,7 @@ double Container::maxLat() const
   USUL_TRACE_SCOPE;
   return this->extents().maxLat();
 }
+
 
 /////////////////////////////////////////////////////////////////////////////////
 //

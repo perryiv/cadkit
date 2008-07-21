@@ -19,6 +19,9 @@
 #include "Minerva/Interfaces/ISwapLayers.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Containers/Unknowns.h"
+#include "Usul/Interfaces/IDataChangedListener.h"
+#include "Usul/Interfaces/IDataChangedNotify.h"
 
 #include "osg/Image"
 #include "osg/ref_ptr"
@@ -33,7 +36,8 @@ namespace Layers {
 class MINERVA_EXPORT RasterGroup : public RasterLayer,
                                    public Minerva::Interfaces::IAddLayer,
                                    public Minerva::Interfaces::IRemoveLayer,
-                                   public Minerva::Interfaces::ISwapLayers
+                                   public Minerva::Interfaces::ISwapLayers,
+                                   public Usul::Interfaces::IDataChangedNotify
 {
 public:
 
@@ -95,6 +99,9 @@ protected:
 
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
 
+  /// Notify data changed listeners.
+  void                            _notifyDataChnagedListeners();
+  
   // Get the number of children (ITreeNode).
   virtual unsigned int            getNumChildNodes() const;
 
@@ -105,6 +112,9 @@ protected:
   virtual void                    setTreeNodeName ( const std::string & );
   virtual std::string             getTreeNodeName() const;
 
+  // Set the state (IBooleanState).
+  virtual void                    setBooleanState ( bool );
+  
   // Add a layer (IAddLayer).
   virtual void                    addLayer ( Usul::Interfaces::ILayer *layer );
 
@@ -114,13 +124,23 @@ protected:
   /// Swap layers (ISwapLayers).
   virtual void                    swapLayers ( Usul::Interfaces::IUnknown *layer0, Usul::Interfaces::IUnknown* layer1 );
 
+  // Add the listener.
+  virtual void                    addDataChangedListener ( Usul::Interfaces::IUnknown *caller );
+  
+  // Remove the listener.
+  virtual void                    removeDataChangedListener ( Usul::Interfaces::IUnknown *caller );
+  
 private:
   RasterGroup& operator= ( const RasterGroup& );
 
+  typedef Usul::Interfaces::IDataChangedListener      IDataChangedListener;
+  typedef Usul::Containers::Unknowns<IDataChangedListener> DataChangedListeners;
+  
   Layers _layers;
   ImageCache _cache;
   bool _useCache;
-
+  DataChangedListeners _dataChangedListeners;
+  
   SERIALIZE_XML_CLASS_NAME( RasterGroup );
 };
 

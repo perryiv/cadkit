@@ -60,12 +60,12 @@ protected:
   void        _moveLayerUp ( QTreeWidgetItem *item );
   void        _moveLayerDown ( QTreeWidgetItem *item );
   void        _refreshLayer ( Usul::Interfaces::IUnknown *unknown );
+  void        _removeSelectedLayers();
   void        _swapLayers ( QTreeWidgetItem *item0, QTreeWidgetItem *item1, QTreeWidgetItem *parent );
 
 protected slots:
   void        _onDoubleClick ( QTreeWidgetItem * item, int columnNumber );
   void        _onItemChanged ( QTreeWidgetItem * item, int columnNumber );
-  void        _onRemoveLayerClick();
   void        _onContextMenuShow ( const QPoint& pos );
   void        _onAddLayerFavorites();
   void        _onSliderReleased();

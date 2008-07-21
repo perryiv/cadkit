@@ -13,6 +13,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IDataChangedNotify.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Scope/Reset.h"
 
@@ -35,7 +36,8 @@ TreeControl::TreeControl ( Usul::Interfaces::IUnknown *caller, QWidget *parent )
   _nodeMap(),
   _caller ( caller ),
   _document(),
-  _processingItem ( false )
+  _processingItem ( false ),
+  _refCount ( 0 )
 {
   // Make the top-level layout.
   QVBoxLayout *layout ( new QVBoxLayout ( parent ) );
@@ -68,6 +70,9 @@ TreeControl::~TreeControl()
   // Not necessary but good practice.
   _caller   = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
   _document = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
+  
+  // Better be zero
+  USUL_ASSERT ( _refCount == 0 );
 }
 
 
@@ -104,7 +109,7 @@ namespace Helper
 
 namespace Helper
 {
-  template < class MapType, class WidgetType > void addTreeNode ( MapType &items, WidgetType *widget, Usul::Interfaces::IUnknown *unknown )
+  template < class MapType, class WidgetType > void addTreeNode ( MapType &items, WidgetType *widget, Usul::Interfaces::IUnknown *unknown, Usul::Interfaces::IUnknown *caller )
   {
     // Handle bad input.
     if ( 0x0 == widget )
@@ -134,6 +139,11 @@ namespace Helper
         {
           item->setCheckState ( 0, ( ( boolean->getBooleanState() ) ? Qt::Checked : Qt::Unchecked ) );
         }
+        
+        // See if the item will notify us when data has changed.
+        Usul::Interfaces::IDataChangedNotify::QueryPtr notify ( child );
+        if ( notify.valid() )
+          notify->addDataChangedListener ( caller );
 
         // Add the item to the tree.
         Helper::addItem ( widget, item );
@@ -142,7 +152,7 @@ namespace Helper
         items[item] = child.get();
 
         // Build sub-tree.
-        Helper::addTreeNode ( items, item, child.get() );
+        Helper::addTreeNode ( items, item, child.get(), caller );
       }
     }
   }
@@ -161,14 +171,13 @@ void TreeControl::buildTree ( Usul::Interfaces::IUnknown *unknown )
   _document = unknown;
 
   // Clear anything we may have.
-  _tree->clear();
-  _nodeMap.clear();
+  this->_clear();
 
   // Disconnect signal while adding to tree.
   _tree->disconnect ( this );
 
   // Add the tree node.
-  Helper::addTreeNode ( _nodeMap, _tree, unknown );
+  Helper::addTreeNode ( _nodeMap, _tree, unknown, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
 
   // Re-connect slots.
   this->_connectTreeViewSlots();
@@ -209,7 +218,7 @@ void TreeControl::_onItemChanged ( QTreeWidgetItem *item, int column )
 
 namespace Helper
 {
-  unsigned int countVisibleChildren ( const QTreeWidgetItem *item )
+  unsigned int countVisibleChildren ( const QTreeWidgetItem *item, Qt::CheckState state )
   {
     unsigned int count ( 0 );
     if ( 0x0 != item )
@@ -218,7 +227,7 @@ namespace Helper
       for ( int i = 0; i < numChildren; ++i )
       {
         const QTreeWidgetItem *child ( item->child ( i ) );
-        if ( ( 0x0 != child ) && ( Qt::Checked == child->checkState ( 0 ) ) )
+        if ( ( 0x0 != child ) && ( state == child->checkState ( 0 ) ) )
         {
           ++count;
         }
@@ -254,9 +263,6 @@ namespace Helper
       Helper::setChecks ( child, items );
     }
 
-    // Get the number of visible children.
-    const unsigned int numVisibleChildren ( Helper::countVisibleChildren ( item ) );
-
     // Special case num children.
     if ( 0 == numChildren )
     {
@@ -265,11 +271,21 @@ namespace Helper
       item->setCheckState ( 0, check );
       return;
     }
+    
+    // Get the number of visible children.
+    const unsigned int numVisibleChildren ( Helper::countVisibleChildren ( item, Qt::Checked ) );
+    const unsigned int numPartiallyVisibleChildren ( Helper::countVisibleChildren ( item, Qt::PartiallyChecked ) );
 
     // Are all the children visible?
     if ( static_cast<int> ( numVisibleChildren ) == numChildren )
     {
       item->setCheckState ( 0, Qt::Checked );
+    }
+    
+    // If anly children are partially visible, then this item is also.
+    else if ( numPartiallyVisibleChildren > 0 )
+    {
+      item->setCheckState ( 0, Qt::PartiallyChecked );
     }
 
     // Are none of the chldren visible?
@@ -473,4 +489,159 @@ QList<QTreeWidgetItem*> TreeControl::selectedItems() const
 QTreeWidget* TreeControl::treeWidget()
 {
   return _tree;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reference.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::ref()
+{
+  ++_refCount;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference.  Qt handles deletion.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::unref ( bool )
+{
+  --_refCount;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* TreeControl::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IDataChangedListener::IID:
+    return static_cast<Usul::Interfaces::IDataChangedListener*> ( this );
+  default:
+    return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when data has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::dataChangedNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  Usul::Pointers::reference ( caller );
+  
+  // Need to reinterpret_cast to get Qt to pass the pointer to the slot.
+  // Qt mechanism for passing custom types, but I have had mixed results in the past (See DocumentProxy).
+  QMetaObject::invokeMethod ( this, "_onDataChanged", Qt::QueuedConnection, 
+                             Q_ARG ( unsigned long, reinterpret_cast<unsigned long> ( caller ) ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when data has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::_onDataChanged ( unsigned long pointer )
+{
+  Usul::Interfaces::IUnknown* caller ( reinterpret_cast<Usul::Interfaces::IUnknown*> ( pointer ) );
+  
+  // Rebuild the tree.
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &TreeControl::_rebuildTree ), caller, "1646245025" );
+  
+  Usul::Pointers::unreference ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::_clear()
+{
+  for ( NodeMap::iterator iter = _nodeMap.begin(); iter != _nodeMap.end(); ++iter )
+  {
+    Usul::Interfaces::IDataChangedNotify::QueryPtr notify ( iter->second );
+    if ( notify.valid() )
+      notify->removeDataChangedListener ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  }
+  
+  _tree->clear();
+  _nodeMap.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Rebuild the tree node for the unknown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TreeControl::_rebuildTree ( Unknown* unknown )
+{
+  QTreeWidgetItem *item ( this->_treeItem ( unknown ) );
+  
+  if ( 0x0 == item || 0x0 == unknown )
+    return;
+  
+  typedef QList<QTreeWidgetItem *> Items;
+  Items children ( item->takeChildren() );
+  for ( Items::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    _nodeMap.erase ( *iter );
+    delete *iter;
+  }
+  children.clear();
+  
+  // Set the name.
+  Usul::Interfaces::ITreeNode::QueryPtr node ( unknown );
+  if ( node.valid() )
+    item->setText( 0, node->getTreeNodeName().c_str() );
+  
+  // Build sub-tree.
+  Helper::addTreeNode ( _nodeMap, item, unknown, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+  
+  // Make sure the checks are set.  This doesn't seem to be working properly.  It turns off layers that should be turned off.
+  //Helper::setChecks ( _tree, _nodeMap );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the tree item that corresponds to the unknown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QTreeWidgetItem * TreeControl::_treeItem ( Unknown* unknown ) const
+{
+  Usul::Interfaces::ITreeNode::QueryPtr node ( unknown );
+  
+  if ( false == node.valid() )
+    return 0x0;
+  
+  for ( NodeMap::const_iterator iter = _nodeMap.begin(); iter != _nodeMap.end(); ++iter )
+  {
+    if ( iter->second.get() == node.get() )
+      return iter->first;
+  }
+  
+  return 0x0;
 }

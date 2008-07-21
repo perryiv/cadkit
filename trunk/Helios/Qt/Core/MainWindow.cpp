@@ -1392,11 +1392,15 @@ void MainWindow::updateTextWindow ( bool force )
     return;
   
   // Return now if the window is hidden.
+  // With Minerva printing to a log file, I don't think this is needed anymore.
+  // Commenting out to see if text window still affects preformance.
+#if 0
   if ( false == _textWindow.first->isVisible() )
   {
     _textWindow.second->clear();
     return;
   }
+#endif
 
   // Don't allow this to throw because it may create an infinite loop.
   try

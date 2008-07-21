@@ -72,7 +72,7 @@ namespace Helper
   typedef Usul::Signals::Actions::PrintMessage PrintMessage;
   typedef Usul::Signals::Actions::PrintStackTrace PrintStackTrace;
   typedef Usul::Signals::Actions::Pair<PrintMessage,PrintStackTrace> PrintPair;
-  typedef Usul::Signals::Actions::Throw<Usul::Exceptions::Exception> Throw;
+  typedef Usul::Signals::Actions::Abort Throw;
   typedef Usul::Signals::Actions::Pair<PrintPair,Throw> SignalAction;
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SegmentationViolation );
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, AbortSignal );

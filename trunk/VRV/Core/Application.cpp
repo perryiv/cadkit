@@ -1785,7 +1785,7 @@ void Application::_setNearAndFarClippingPlanes()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::getClippingDistances ( float &nearDist, float &farDist ) const
+void Application::getClippingDistances ( double &nearDist, double &farDist ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -1801,7 +1801,7 @@ void Application::getClippingDistances ( float &nearDist, float &farDist ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::setClippingDistances ( float nearDist, float farDist )
+void Application::setClippingDistances ( double nearDist, double farDist )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );

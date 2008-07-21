@@ -150,7 +150,7 @@ void Intersect::_rayBounds ( osg::Vec3& start, osg::Vec3& end )
 
   Usul::Interfaces::IWorldInfo::QueryPtr wi ( this->caller() );
 
-  float zFar ( wi.valid() ? wi->worldRadius() * 2 : this->_farClippingDistance() );
+  double zFar ( wi.valid() ? wi->worldRadius() * 2 : this->_farClippingDistance() );
   end = start + ( dir * zFar );
 
 #if 0
@@ -218,10 +218,10 @@ void Intersect::_wandPosition ( osg::Vec3 &p ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Intersect::_farClippingDistance() const
+double Intersect::_farClippingDistance() const
 {
 #if 1
-  float nearDist, farDist;
+  double nearDist, farDist;
   _clipDist->getClippingDistances ( nearDist, farDist );
   return farDist;
 #else

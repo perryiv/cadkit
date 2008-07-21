@@ -81,7 +81,7 @@ protected:
   const osg::Group *    _auxiliaryScene() const;
   osg::Group *          _auxiliaryScene();
 
-  float                 _farClippingDistance() const;
+  double                _farClippingDistance() const;
 
   bool                  _intersect ( osg::Node *scene, osgUtil::LineSegmentIntersector::Intersection & hit, const osg::Vec3d& start, const osg::Vec3d& end );
 

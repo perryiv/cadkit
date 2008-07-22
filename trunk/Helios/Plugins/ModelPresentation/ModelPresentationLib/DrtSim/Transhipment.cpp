@@ -24,7 +24,7 @@
 #include "Usul/File/Stats.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Strings/Format.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/File/Path.h"
 
 #include "Transhipment.h"
@@ -375,7 +375,7 @@ bool		Transhipment::_TranDetailsLoader ( )
 {
 
 	//std::cout << "Transhipment filename: " << _filename << std::endl;
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary );
 	

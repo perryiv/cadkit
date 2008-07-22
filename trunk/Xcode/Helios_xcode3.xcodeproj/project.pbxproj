@@ -1662,6 +1662,7 @@
 		66FF454D0D10FF57003A0AC1 /* XercesLife.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66FF45330D10FF57003A0AC1 /* XercesLife.cpp */; };
 		66FF454E0D10FF57003A0AC1 /* XercesLife.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FF45340D10FF57003A0AC1 /* XercesLife.h */; };
 		66FF454F0D10FF57003A0AC1 /* XercesString.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FF45350D10FF57003A0AC1 /* XercesString.h */; };
+		C25FFB0F0E35477000DEEF41 /* CurrentDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C25FFB0D0E35474300DEEF41 /* CurrentDirectory.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -5168,6 +5169,8 @@
 		66FF45330D10FF57003A0AC1 /* XercesLife.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = XercesLife.cpp; path = ../XmlTree/XercesLife.cpp; sourceTree = SOURCE_ROOT; };
 		66FF45340D10FF57003A0AC1 /* XercesLife.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XercesLife.h; path = ../XmlTree/XercesLife.h; sourceTree = SOURCE_ROOT; };
 		66FF45350D10FF57003A0AC1 /* XercesString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XercesString.h; path = ../XmlTree/XercesString.h; sourceTree = SOURCE_ROOT; };
+		C25FFB0D0E35474300DEEF41 /* CurrentDirectory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurrentDirectory.cpp; sourceTree = "<group>"; };
+		C25FFB0E0E35474300DEEF41 /* CurrentDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentDirectory.h; sourceTree = "<group>"; };
 		C26F87970E2EA4890030ED9D /* IAnimateNurbsCurve.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAnimateNurbsCurve.h; sourceTree = "<group>"; };
 		C26F87D00E2EB6F40030ED9D /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		C26F87D10E2EB6F40030ED9D /* CurveDouble.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurveDouble.cpp; sourceTree = "<group>"; };
@@ -7466,6 +7469,8 @@
 		43FED831092452F700EBB610 /* Scope */ = {
 			isa = PBXGroup;
 			children = (
+				C25FFB0D0E35474300DEEF41 /* CurrentDirectory.cpp */,
+				C25FFB0E0E35474300DEEF41 /* CurrentDirectory.h */,
 				43FED832092452F700EBB610 /* Caller.h */,
 				43FED833092452F700EBB610 /* GLBeginEnd.h */,
 				43FED834092452F700EBB610 /* GLPushPopAttrib.h */,
@@ -12560,6 +12565,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C25FFB0F0E35477000DEEF41 /* CurrentDirectory.cpp in Sources */,
 				43FED868092452F800EBB610 /* Referenced.cpp in Sources */,
 				663C5FBE0D1110D100949515 /* Database.cpp in Sources */,
 				663C5FBF0D1110DB00949515 /* Visitor.cpp in Sources */,

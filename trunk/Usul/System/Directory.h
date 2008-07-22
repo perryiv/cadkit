@@ -26,7 +26,7 @@ public:
   /// Get/Set the current working directory.
   static void          cwd ( const std::string& directory, bool allowThrow = true );
   static std::string   cwd ();
-
+#if 0
   /// Helper struct the change and restore current working directory.
   struct USUL_EXPORT ScopedCwd
   {
@@ -50,6 +50,7 @@ public:
     bool _allowThrow;
     static Mutex _mutex;
   };
+#endif
 };
 
 }

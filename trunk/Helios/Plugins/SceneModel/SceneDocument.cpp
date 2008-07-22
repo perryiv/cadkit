@@ -25,7 +25,7 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/Adaptors/MemberFunction.h"
 
 #include "Usul/Interfaces/GUI/IProgressBar.h"
@@ -254,11 +254,11 @@ void SceneDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
   // Add to the scene.
   else
   {
-    _scene->addChild( node.get() );
+    _scene->addChild ( node.get() );
   }
 
-  osg::Material *mat ( new osg::Material );
-  _scene->getOrCreateStateSet()->setAttribute( mat, osg::StateAttribute::ON );
+  // Give it a default material to work around the bug where it "inherits" the background color.
+  _scene->getOrCreateStateSet()->setAttribute ( new osg::Material, osg::StateAttribute::ON );
 }
 
 
@@ -279,7 +279,7 @@ osg::Node* SceneDocument::_loadModel ( const std::string& filename, Unknown* cal
   std::string directory ( Usul::File::directory ( filename, false ) );
 
   // Scope the directory change.
-  Usul::System::Directory::ScopedCwd cwd ( directory );
+  Usul::Scope::CurrentDirectory cwd ( directory );
 
   // Node to return.
   osg::ref_ptr < osg::Node > node ( 0x0 );

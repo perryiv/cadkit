@@ -15,7 +15,7 @@
 #include "Usul/File/Stats.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Strings/Format.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/File/Path.h"
 
 #include "OsgTools/State/StateSet.h"
@@ -303,7 +303,7 @@ bool	Area::_AreaDetailsLoader ( )
 {
 	
 	const unsigned int zoom = 3;
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 	const Usul::Types::Uint64 fileSize ( Usul::File::size ( _filename ) );
 	std::ifstream infile( _filename.c_str(), std::ios::in | std::ios::binary );
         

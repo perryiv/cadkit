@@ -2101,6 +2101,14 @@
 					RelativePath=".\Scope\Timer.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Scope\CurrentDirectory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scope\CurrentDirectory.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Endian"

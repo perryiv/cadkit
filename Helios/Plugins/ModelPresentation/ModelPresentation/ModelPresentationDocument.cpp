@@ -47,7 +47,7 @@
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/Functions.h"
 #include "Usul/Math/MinMax.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/System/Host.h"
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Convert/Convert.h"
@@ -1761,7 +1761,7 @@ osg::Node* ModelPresentationDocument::_loadFile( const std::string& filename, Un
       // Ask the document to open the file.
       try
       {
-        Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+        Usul::Scope::CurrentDirectory cwd ( _workingDir );
         
         this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, 0x0 );
 
@@ -1819,7 +1819,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
  
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   //std::cout << dir << " directory loading..." << std::endl;
   Files files;
@@ -1849,7 +1849,7 @@ osg::Node* ModelPresentationDocument::_loadDirectory( const std::string& dir, Un
         // Ask the document to open the file.
         try
         {
-          Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+          Usul::Scope::CurrentDirectory cwd ( _workingDir );
           this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
 
           // Disable Memory pools

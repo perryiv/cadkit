@@ -16,7 +16,7 @@
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/Functions.h"
 #include "Usul/Math/MinMax.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 
 #include "Usul/Interfaces/IMemoryPool.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
@@ -295,7 +295,7 @@ osg::Node* MpdJob::_loadFile( const std::string& filename, IUnknown *caller, IUn
       // Ask the document to open the file.
       try
       {
-        Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+        Usul::Scope::CurrentDirectory cwd ( _workingDir );
         
         //this->_openDocument ( Usul::File::fullPath( filename ), info.document.get(), caller, progress );
         //this->_openDocument ( Usul::Strings::format ( _searchDir, '/', filename ), info.document.get(), caller, progress );

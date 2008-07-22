@@ -18,7 +18,7 @@
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/System/Host.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
@@ -145,7 +145,7 @@ void DrtSimReader::_read ( const std::string &filename, Unknown *caller, Unknown
   _stock.setWorkingDir( _workingDir );
   _trans.setWorkingDir( _workingDir );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   std::ifstream infile( filename.c_str(), std::ios::in );
   if( !infile ) 

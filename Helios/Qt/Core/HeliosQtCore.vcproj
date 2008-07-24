@@ -280,6 +280,22 @@
 				RelativePath=".\SplashScreen.h"
 				>
 			</File>
+			<File
+				RelativePath=".\TimerCallback.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimerCallback.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimerServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimerServer.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

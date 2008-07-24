@@ -15,7 +15,7 @@
 #include "Usul/Convert/Vector4.h"
 #include "Usul/File/Path.h"
 #include "Usul/Strings/Case.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/Registry/Convert.h"
 
 #include "XmlTree/Document.h"
@@ -77,12 +77,12 @@ void RawReaderWriter::read ( const std::string &name, VolumeDocument &doc, Unkno
     Usul::Convert::Type < std::string, Usul::Math::Vec3ui >::convert ( size.front()->value(), _size );
 
     //std::string directory ( Usul::File::directory ( _filename, false ) );
-    //Usul::System::Directory::ScopedCwd cwd ( directory );
+    //Usul::System::CurrentDirectory cwd ( directory );
 
     // Read the file.
     FILE *fp ( fopen( _filename.c_str(), "rb" ) );
 
-    if ( 0x0 != fp ) 
+    if ( 0x0 != fp )
     {
 	    unsigned int size ( _size[0] * _size[1] * _size[2] );
 
@@ -93,7 +93,7 @@ void RawReaderWriter::read ( const std::string &name, VolumeDocument &doc, Unkno
       fclose( fp );
 
       doc.image3D ( image.get() );
-      
+
       double xHalf ( _size[0] / 2.0 );
       double yHalf ( _size[1] / 2.0 );
       double zHalf ( _size[2] / 2.0 );
@@ -149,7 +149,7 @@ void RawReaderWriter::_addTransferFunction ( VolumeDocument& doc, XmlTree::Node&
     Color c ( color [0], color[1], color[2], color[3] );
     tf->value ( value, c );
   }
-  
+
   tf->textureUnit ( 1 );
 
   doc.addTransferFunction ( tf.get() );

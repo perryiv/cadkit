@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTERFACES_TIMER_SERVICE_H_
-#define _USUL_INTERFACES_TIMER_SERVICE_H_
+#ifndef _USUL_INTERFACES_TIMER_NOTIFY_H_
+#define _USUL_INTERFACES_TIMER_NOTIFY_H_
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -17,22 +17,19 @@ namespace Usul {
 namespace Interfaces {
 
 
-struct ITimerService : public Usul::Interfaces::IUnknown
+struct ITimerNotify : public Usul::Interfaces::IUnknown
 {
   // Typedefs.
   typedef unsigned long TimerID;
 
   // Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( ITimerService );
+  USUL_DECLARE_QUERY_POINTERS ( ITimerNotify );
 
   // Id for this interface.
-  enum { IID = 2221836210u };
+  enum { IID = 2615516348u };
 
-  // Add a timer.
-  virtual TimerID                     timerAdd ( unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr ) = 0;
-
-  // Remove a timer.
-  virtual void                        timerRemove ( TimerID ) = 0;
+  // Called when the timer fires.
+  virtual void                        timerNotify ( TimerID ) = 0;
 };
 
 
@@ -40,5 +37,5 @@ struct ITimerService : public Usul::Interfaces::IUnknown
 } // namespace Interfaces
 
 
-#endif // _USUL_INTERFACES_TIMER_SERVICE_H_
+#endif // _USUL_INTERFACES_TIMER_NOTIFY_H_
 

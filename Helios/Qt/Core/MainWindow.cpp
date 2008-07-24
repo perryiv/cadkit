@@ -150,7 +150,8 @@ MainWindow::MainWindow ( const std::string &vendor,
   _menus        (),
   _recentFiles  (),
   _recentFilesMenu ( 0x0 ),
-  _newDocumentMenu ( new MenuKit::Menu ( "New" ) )
+  _newDocumentMenu ( new MenuKit::Menu ( "New" ) ),
+  _timerServer  ( new TimerServer )
 {
   USUL_TRACE_SCOPE;
 
@@ -266,6 +267,13 @@ void MainWindow::_destroy()
   // Stop the idle timer.
   if ( 0x0 != _idleTimer )
     _idleTimer->stop();
+
+  // Stop all the timers.
+  if ( true == _timerServer.valid() )
+  {
+    _timerServer->clear();
+    _timerServer = 0x0;
+  }
 
   // Remove this as an active view listener.
   Usul::Documents::Manager::instance().removeActiveViewListener ( this );
@@ -997,8 +1005,6 @@ Usul::Interfaces::IUnknown *MainWindow::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IActiveViewListener * > ( this );
   case Usul::Interfaces::IQuestion::IID:
     return static_cast < Usul::Interfaces::IQuestion * > ( this );
-  case Usul::Interfaces::ITimerService::IID:
-    return static_cast < Usul::Interfaces::ITimerService * > ( this );
   default:
     return 0x0;
   }

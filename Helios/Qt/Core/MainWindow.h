@@ -18,9 +18,10 @@
 #define _CADKIT_HELIOS_QT_CORE_MAIN_WINDOW_H_
 
 #include "Helios/Qt/Core/Export.h"
-#include "Helios/Qt/Core/SplashScreen.h"
 #include "Helios/Qt/Core/DocumentProxy.h"
 #include "Helios/Qt/Core/ProgressBarDock.h"
+#include "Helios/Qt/Core/SplashScreen.h"
+#include "Helios/Qt/Core/TimerServer.h"
 
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IActiveViewListener.h"
@@ -34,7 +35,6 @@
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
 #include "Usul/Interfaces/IQtDockWidgetMenu.h"
-#include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Queue.h"
@@ -80,8 +80,7 @@ class HELIOS_QT_CORE_EXPORT MainWindow :
   public Usul::Interfaces::IQtDockWidgetMenu,
   public Usul::Interfaces::IActiveDocumentListener,
   public Usul::Interfaces::IActiveViewListener,
-  public Usul::Interfaces::IQuestion,
-  public Usul::Interfaces::ITimerService
+  public Usul::Interfaces::IQuestion
 {
   Q_OBJECT
 
@@ -279,6 +278,7 @@ private:
   StringList _recentFiles;
   MenuKit::Menu::RefPtr _recentFilesMenu;
   MenuKit::Menu::RefPtr _newDocumentMenu;
+  TimerServer::RefPtr _timerServer;
 };
 
 

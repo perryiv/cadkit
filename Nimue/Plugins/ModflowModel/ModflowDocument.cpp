@@ -65,7 +65,7 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Format.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/System/LastError.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Safe.h"
@@ -333,7 +333,7 @@ void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *
   typedef XmlTree::Node::Children Children;
 
   // Scope the directory change.
-  Usul::System::Directory::ScopedCwd cwd ( Usul::File::directory ( file, false ), false );
+  Usul::Scope::CurrentDirectory cwd ( Usul::File::directory ( file, false ), false );
 
   // Add readers to a factory.
   Usul::Factory::ObjectFactory factory;
@@ -357,7 +357,7 @@ void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *
 
   // Find all important files.
   Children files ( document->find ( "file", true ) );
-  
+
   // Find discretization file.
   Children::iterator discretization ( std::find_if ( files.begin(), files.end(), XmlTree::HasAttribute ( "type", "discretization" ) ) );
   if ( files.end() == discretization )
@@ -428,7 +428,7 @@ void ModflowDocument::_read ( Factory &factory, const std::string &type, const s
     return;
 
   // Scope the directory change.
-  Usul::System::Directory::ScopedCwd cwd ( Usul::File::directory ( file, false ), false );
+  Usul::Scope::CurrentDirectory cwd ( Usul::File::directory ( file, false ), false );
 
   // Feedback.
   const std::string base ( Usul::File::base ( file ) );
@@ -637,9 +637,9 @@ void ModflowDocument::_buildScene ( Unknown *caller )
 
   // Transform coordinates.
   {
-    osg::ref_ptr<osg::NodeVisitor> visitor ( 
-      OsgTools::MakeVisitor<osg::Geode>::make ( 
-        Usul::Adaptors::bind1 ( caller, Usul::Adaptors::memberFunction ( 
+    osg::ref_ptr<osg::NodeVisitor> visitor (
+      OsgTools::MakeVisitor<osg::Geode>::make (
+        Usul::Adaptors::bind1 ( caller, Usul::Adaptors::memberFunction (
           this, &ModflowDocument::_transformCoordinates ) ) ) );
     group->accept ( *visitor );
   }
@@ -656,7 +656,7 @@ void ModflowDocument::_buildScene ( Unknown *caller )
 //
 //  Called when the viewer is about to render.
 //
-//  Note: more then one viewer for this document will still work as long as 
+//  Note: more then one viewer for this document will still work as long as
 //  they all render in the same thread.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -932,13 +932,13 @@ namespace Helper
 {
   template
   <
-    class TreeNodeType, 
-    class LayersType, 
+    class TreeNodeType,
+    class LayersType,
     class AttributesType
   >
-  TreeNodeType *getChildNode ( unsigned int i, 
-                               LayersType &layers, 
-                               AttributesType &attributes, 
+  TreeNodeType *getChildNode ( unsigned int i,
+                               LayersType &layers,
+                               AttributesType &attributes,
                                const ModflowDocument &doc )
   {
     USUL_TRACE_SCOPE_STATIC;
@@ -1101,7 +1101,7 @@ void ModflowDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
       const unsigned int vertexStart ( hit.indexList.front() );
 
       // Get the attribute.
-      Modflow::Attributes::Attribute::RefPtr attr ( ( true == ud.valid() ) ? 
+      Modflow::Attributes::Attribute::RefPtr attr ( ( true == ud.valid() ) ?
         dynamic_cast < Modflow::Attributes::Attribute * > ( ud->value().get() ) : 0x0 );
       if ( true == attr.valid() )
       {
@@ -1731,7 +1731,7 @@ void ModflowDocument::destinationCoordinateSystem( CoordinateSystem* coordinateS
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   _destinationCoordinateSystem.reset ( coordinateSystem );
 
   if ( 0x0 != _destinationCoordinateSystem.get() && 0x0 != this->sourceCoordinateSystem() )
@@ -1763,7 +1763,7 @@ void ModflowDocument::sourceCoordinateSystem( CoordinateSystem* coordinateSystem
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   _sourceCoordinateSystem.reset ( coordinateSystem );
 
   if ( 0x0 != this->destinationCoordinateSystem() && 0x0 != _sourceCoordinateSystem.get() )
@@ -1780,7 +1780,7 @@ void ModflowDocument::sourceCoordinateSystem( CoordinateSystem* coordinateSystem
 void ModflowDocument::transformCoordinate ( osg::Vec3f& v ) const
 {
   USUL_TRACE_SCOPE;
-  
+
   // Typedef.
   typedef osg::Vec3f::value_type ValueType;
 
@@ -1808,14 +1808,14 @@ void ModflowDocument::transformCoordinate ( osg::Vec3f& v ) const
 void ModflowDocument::transformCoordinates ( osg::Vec3Array& vertices ) const
 {
   USUL_TRACE_SCOPE;
-  
+
   // Typedefs.
   typedef osg::Vec3Array::value_type VertexType;
   typedef VertexType::value_type FloatType;
 
   // Get the transform.
   CoordinateTransformation* transform ( Usul::Threads::Safe::get ( this->mutex(), _coordinateTransformation.get() ) );
-  
+
   // Make sure we have a valid transform.
   if ( 0x0 != transform )
   {
@@ -1823,7 +1823,7 @@ void ModflowDocument::transformCoordinates ( osg::Vec3Array& vertices ) const
     {
       osg::Vec3Array::reference v ( *iter );
       double x ( v[0] ), y ( v[1] ), z ( v[2] );
-      
+
       if ( false == transform->Transform ( 1, &x, &y, &z ) )
       {
         std::cout << "Warning 1425477964: Failed to transform coordinate " << v[0] << " " << v[1] << " " << v[2] << std::endl;
@@ -1862,9 +1862,9 @@ void ModflowDocument::_transformCoordinates ( osg::Geode *geode, Usul::Interface
   ::OGRSpatialReference source ( projection.c_str() );
   ::OGRSpatialReference destination;
   destination.SetWellKnownGeogCS ( "WGS84" );
-  
+
   Usul::Math::Vec3d to;
-  
+
   ::OGRCoordinateTransformation* transform ( ::OGRCreateCoordinateTransformation( &source, &destination ) );
   Usul::Scope::Caller::RefPtr clean ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( transform, ::OCTDestroyCoordinateTransformation ) ) );
 
@@ -1882,10 +1882,10 @@ void ModflowDocument::_transformCoordinates ( osg::Geode *geode, Usul::Interface
         for ( osg::Vec3Array::iterator v = vertices->begin(); v != vertices->end(); ++v )
         {
           Usul::Math::Vec3d from ( v->x(), v->y(), v->z() );
-          
+
           if ( 0x0 != transform )
             transform->Transform ( 1, &from[0], &from[1] );
-          
+
           planetCoordinates->convertToPlanet ( from, to );
           v->set ( to[0], to[1], to[2] );
         }

@@ -28,7 +28,7 @@
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Split.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/Threads/Mutex.h"
 
 #include <cstdlib>
@@ -48,7 +48,7 @@
 struct UsageException : public std::invalid_argument
 {
   typedef std::invalid_argument BaseClass;
-  
+
   UsageException ( const std::string &s ) : BaseClass ( s )
   {
   }
@@ -73,12 +73,12 @@ public:
   typedef std::pair<Files::iterator,bool> InsertResult;
   typedef std::set<std::string> Links;
   typedef std::set<std::string> Skip;
-  
+
   Program ( int argc, char **argv );
   ~Program();
 
   void        run();
-  
+
 protected:
 
   void        _addFile ( const std::string &file );
@@ -86,17 +86,17 @@ protected:
 
   void        _copyFile ( const std::string &file ) const;
   void        _copyFiles() const;
-  
+
   void        _execute ( const std::string &command ) const;
   void        _execute ( const std::string &command, Lines &lines ) const;
 
   void        _makeLink ( const std::string &file ) const;
   void        _makeLinks() const;
-  
+
   void        _parseCommandLine();
   void        _processLinkedFiles ( const Lines &lines );
   void        _processLine ( const std::string &line );
-  
+
   std::string _rootFileName ( const std::string &file ) const;
 
   void        _throwUsageException() const;
@@ -116,7 +116,7 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Program::Program ( int argc, char **argv ) : 
+Program::Program ( int argc, char **argv ) :
   _target(),
   _files(),
   _links(),
@@ -200,7 +200,7 @@ void Program::_copyFile ( const std::string &file ) const
 
   // Feedback.
   std::cout << command << std::endl;
-  
+
   // Execute the command.
   this->_execute ( command );
 }
@@ -215,8 +215,8 @@ void Program::_copyFile ( const std::string &file ) const
 void Program::_makeLinks() const
 {
   // Make the target directory current.
-  Usul::System::Directory::ScopedCwd scope ( _target );
-  
+  Usul::System::CurrentDirectory scope ( _target );
+
   // Loop through the links.
   for ( Links::const_iterator i = _links.begin(); i != _links.end(); ++i )
   {
@@ -241,7 +241,7 @@ void Program::_makeLink ( const std::string &name ) const
 
   // Feedback.
   std::cout << command << std::endl;
-  
+
   // Execute the command.
   this->_execute ( command );
 }
@@ -271,7 +271,7 @@ void Program::_parseCommandLine()
 
   // Copy the source.
   this->_addFile ( source );
-  
+
   // Get output from command.
   Lines lines;
   this->_execute ( Usul::Strings::format ( "ldd ", source ), lines );
@@ -290,7 +290,7 @@ void Program::_parseCommandLine()
 void Program::_processLinkedFiles ( const Lines &lines )
 {
   typedef std::vector<std::string> Strings;
-  
+
   // Loop through the lines.
   for ( Lines::const_iterator i = lines.begin(); i != lines.end(); ++i )
   {
@@ -401,7 +401,7 @@ void Program::_execute ( const std::string &cmd, Lines &lines ) const
 
   // Make the full command line. Append the file to redirect to.
   const std::string command ( Usul::Strings::format ( cmd, " > ", output ) );
-  
+
   // Execute the command.
   this->_execute ( command );
 
@@ -426,7 +426,7 @@ void Program::_execute ( const std::string &command ) const
   // Execute the command.
   if ( 0 != ::system ( command.c_str() ) )
   {
-    Usul::Exceptions::Thrower<std::runtime_error> 
+    Usul::Exceptions::Thrower<std::runtime_error>
       ( "Error 1420716083: Command '", command, "' failed to execute" );
   }
 }
@@ -485,7 +485,7 @@ int main ( int argc, char **argv )
   {
     std::cout << e.what() << std::endl;
   }
-  
+
   catch ( const std::exception &e )
   {
     const std::string what ( e.what() );

@@ -70,7 +70,7 @@
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Strings/Case.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -99,7 +99,7 @@ USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-MinervaDocument::MinervaDocument ( LogPtr log ) : 
+MinervaDocument::MinervaDocument ( LogPtr log ) :
   BaseClass( "Minerva Document" ),
 #if USE_DISTRIBUTED == 1
   _commandsSend ( false ),
@@ -161,32 +161,32 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   _camera->setViewMatrix( osg::Matrix::identity() );
   _camera->setComputeNearFarMode ( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
   _camera->setCullingMode ( osg::CullSettings::NO_CULLING );
-  
+
   osg::ref_ptr<osg::StateSet> ss ( _camera->getOrCreateStateSet() );
-  
+
   {
     osg::ref_ptr< osg::Light > light ( new osg::Light );
     light->setLightNum ( 1 );
     light->setDiffuse( osg::Vec4 ( 0.8, 0.8, 0.8, 1.0 ) );
     light->setDirection( osg::Vec3 ( 0.0, 0.0, -1.0f ) );
     light->setPosition ( osg::Vec4 ( 0.0, 0.0, 1.0f, 0.0 ) );
-    
+
     ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   }
-  
+
   {
     osg::ref_ptr< osg::Light > light ( new osg::Light );
     light->setLightNum ( 0 );
-    
+
     ss->setAttributeAndModes ( light.get(), osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
   }
-  
+
 #ifndef _MSC_VER
 #ifndef __APPLE__
 
   this->showLegend ( false );
   this->showCompass ( false );
-    
+
   if( Usul::System::Host::name() == "viz4" )
   {
     this->showLegend ( true );
@@ -198,7 +198,7 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
 
   if ( Usul::System::Host::name() == "viz0" )
     this->showCompass ( true );
-    
+
 #endif
 #endif
 }
@@ -218,7 +218,7 @@ MinervaDocument::~MinervaDocument()
   _sender = 0x0;
   _receiver = 0x0;
 #endif
-  
+
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_clear ), "1582439358" );
 
   _root = 0x0;
@@ -286,14 +286,14 @@ bool MinervaDocument::canExport ( const std::string &file ) const
 bool MinervaDocument::canInsert ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  
+
   Filters filters ( this->filtersInsert() );
   for ( Filters::const_iterator iter = filters.begin(); iter != filters.end(); ++iter )
   {
     if ( Usul::Strings::lowerCase ( Usul::File::extension ( iter->second ) ) == ext )
       return true;
   }
-  
+
   return false;
 }
 
@@ -351,13 +351,13 @@ MinervaDocument::Filters MinervaDocument::filtersInsert() const
   Filters filters ( Minerva::Core::Factory::Readers::instance().filters() );
   Filters open ( Usul::Documents::Manager::instance().filtersOpen() );
   filters.insert ( filters.end(), open.begin(), open.end() );
-  
+
   // Remove our filter until inserting is tested.
-  filters.erase ( std::remove ( filters.begin(), 
-                                filters.end(), 
+  filters.erase ( std::remove ( filters.begin(),
+                                filters.end(),
                                 Filter ( "Minerva (*.minerva)", "*.minerva" ) ),
                   filters.end() );
-  
+
   return filters;
 }
 
@@ -406,10 +406,10 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
     XmlTree::XercesLife life;
     XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
     document->load ( filename );
-    
+
     // Change the current working directory to where the file lives.
     {
-      Usul::System::Directory::ScopedCwd cwd ( Usul::File::directory ( filename, true ) );
+      Usul::Scope::CurrentDirectory cwd ( Usul::File::directory ( filename, true ) );
       this->deserialize ( *document );
     }
 
@@ -426,7 +426,7 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
         body->accept ( *setter );
       }
     }
-    
+
     if ( false == _bodies.empty() )
       this->activeBody ( _bodies.front() );
   }
@@ -434,15 +434,15 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
   {
     // Check the registered readers first.
     Usul::Interfaces::IUnknown::QueryPtr unknown ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
-    
+
     // If we didn't find one, ask the document manager.
     if ( false == unknown.valid() )
     {
       unknown = Usul::Interfaces::IUnknown::QueryPtr ( Usul::Documents::Manager::instance().find ( filename ).document.get() );
     }
-    
+
     Usul::Interfaces::IRead::QueryPtr read ( unknown );
-    
+
     if ( read.valid() )
     {
       // Create a job to read the file.
@@ -453,7 +453,7 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
       // Add the job to the manager.
       Usul::Jobs::Manager::instance().addJob ( job );
     }
-    
+
     Usul::Interfaces::ILayer::QueryPtr layer ( read );
     this->addLayer ( layer.get() );
   }
@@ -506,13 +506,13 @@ void MinervaDocument::clear ( Unknown *caller )
 void MinervaDocument::_clear()
 {
   this->_connectToDistributedSession();
-  
+
 #if USE_DISTRIBUTED == 1
   if ( _sender.valid() ) _sender->deleteSession();
 #endif
-  
+
   if ( _legend.valid() ) _legend->clear();
-  
+
   // Clear the bodies.
   std::for_each ( _bodies.begin(), _bodies.end(), std::mem_fun ( &Minerva::Core::TileEngine::Body::clear ) );
 
@@ -520,13 +520,13 @@ void MinervaDocument::_clear()
   OsgTools::Group::removeAllChildren ( _root.get() );
   if ( 1 != _root->referenceCount() )
     std::cout << "Warning 3380491951: Dangling reference to Minerva's scene root, memory leak?" << std::endl;
-  
+
   // Clean up job manager.
   if ( 0x0 != _manager )
   {
     // Remove all queued jobs and cancel running jobs.
     _manager->cancel();
-    
+
     // Wait for remaining jobs to finish.
     _manager->wait();
 
@@ -549,23 +549,23 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   // Make sure we have at least one body.
   this->_makePlanet();
-  
+
   osg::ref_ptr<osg::Group> group ( new osg::Group );
   group->setName ( "Minerva document" );
   for ( Bodies::const_iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );
-    
+
     if ( body.valid () )
       group->addChild ( body->scene() );
   }
-  
+
   group->addChild ( _root.get() );
   group->addChild ( _hud.buildScene() );
-  
+
   return group.release();
 }
 
@@ -582,22 +582,22 @@ namespace Detail
   {
     // Get the elevation.
     const double elevation ( body.elevationAtLatLong ( lat, lon ) );
-    
+
     // The height above sea level.
     const double heightAboveSeaLevel ( elevation + static_cast<double> ( Usul::Math::maximum ( 2500.0, altitude ) ) );
-    
+
     // Heading, Pitch, and Roll (For future use).
     osg::Vec3d hpr ( 0.0, 0.0, 0.0 );
-    
+
     // Get the rotation.
     osg::Matrixd matrix ( body.planetRotationMatrix ( lat, lon, heightAboveSeaLevel, hpr[0] ) );
-    
+
     // Rotation about x.
     osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[1], 1, 0, 0 ) );
-    
+
     // Rotation about y.
     osg::Matrixd RY ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[2], 0, 1, 0 ) );
-    
+
     osg::Matrix M ( matrix * RX * RY );
     return M;
   }
@@ -635,34 +635,34 @@ namespace Detail
   {
     // Get the final look at matrix.
     const osg::Matrixd M3 ( Detail::makeLookAtMatrix ( to[1], to[0], to[2], body ) );
-    
+
     // The half way point.
     const double distance ( Detail::distance ( from, to, body ) );
     const Usul::Math::Vec3d half (  ( from[0] + to[0] ) / 2.0, ( from[1] + to[1] ) / 2.0, distance / 2.0 );
 
     // Make lookat for half-way point.
     const osg::Matrixd M2 ( Detail::makeLookAtMatrix ( half[1], half[0], half[2], body ) );
-    
+
     // Look for plugin to play path.
     typedef Usul::Interfaces::IAnimatePath IAnimatePath;
     typedef Usul::Components::Manager PluginManager;
-    
+
     IAnimatePath::QueryPtr animate ( PluginManager::instance().getInterface ( IAnimatePath::IID ) );
     Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
-    
+
     if ( animate.valid() )
     {
       // Get the first and last matrix.
       const osg::Matrixd m1 ( vm.valid() ? vm->getViewMatrix() : osg::Matrixd() );
       const osg::Matrixd m2 ( osg::Matrixd::inverse ( M2 ) );
       const osg::Matrixd m3 ( osg::Matrixd::inverse ( M3 ) );
-      
+
       // Prepare path.
       IAnimatePath::PackedMatrices matrices;
       matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
       matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
       matrices.push_back ( IAnimatePath::PackedMatrix ( m3.ptr(), m3.ptr() + 16 ) );
-      
+
       // Animate through the path.
       animate->animatePath ( matrices, 30 );
     }
@@ -670,21 +670,21 @@ namespace Detail
     {
       vm->setViewMatrix ( M3 );
     }
-    
+
     // Simulate a seek.
     Usul::Interfaces::ITrackball::QueryPtr tb ( vm );
     if ( tb.valid() )
     {
       // The translate portion of the matrix is where the eye position will be.
       Usul::Math::Vec3d point0 ( M3 ( 3, 0 ), M3 ( 3, 1 ), M3 ( 3, 2 ) );
-      
+
       // Find the intersection point from the eye to the center of the body.  This will become the new center of the trackball.
       Usul::Math::Vec3d center;
       if ( body.intersectWithTiles ( point0, Usul::Math::Vec3d ( 0.0, 0.0, 0.0 ), center ) )
       {
         // Get the distance between the eye and the center.
         const double D ( center.distance ( point0 ) );
-        
+
         // Get the rotation and set the trackball.
         osg::Quat R; M3.get ( R );
         osg::Vec3d C ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( center ) );
@@ -708,7 +708,7 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
   const double minLat ( le.valid() ? le->minLat() :  -90.0 );
   const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
   const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
-  
+
   Minerva::Core::Extents<osg::Vec2d> extents ( minLon, minLat, maxLon, maxLat );
 
   Body::RefPtr body ( this->activeBody() );
@@ -725,18 +725,18 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
 
     // Calculate an altitude.
     const double altitude ( ( extents.maximum() - extents.minimum() ).length() * metersPerDegree );
-    
+
     // Make an itermediate point.
     osg::Vec3d eye ( _callback.valid() ? _callback->_eye : osg::Vec3d() );
-    
+
     // Convert the eye to lat,lon, height.
     Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
     Usul::Math::Vec3d from;
     body->convertFromPlanet( point, from );
-    
+
     // Point we want to go to.
     Usul::Math::Vec3d to ( center[0], center[1], altitude );
-    
+
     Detail::animatePath ( from, to, *body );
   }
 }
@@ -751,20 +751,20 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
 void MinervaDocument::lookAtPoint ( const Usul::Math::Vec2d& location )
 {
   Body::RefPtr body ( this->activeBody() );
-  
+
   if ( body.valid() )
   {
     // Make an itermediate point.
     osg::Vec3d eye ( _callback.valid() ? _callback->_eye : osg::Vec3d() );
-    
+
     // Convert the eye to lat,lon, height.
     Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
     Usul::Math::Vec3d from;
     body->convertFromPlanet( point, from );
-    
+
     // Point we want to go to.
     Usul::Math::Vec3d to ( location[0], location[1], 2500.0 /*altitude*/ );
-    
+
     Detail::animatePath ( from, to, *body );
   }
 }
@@ -849,14 +849,14 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 
   // Get the active body.
   Body::RefPtr body ( this->activeBody() );
-  
+
   if ( body.valid () )
   {
     Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
     body->rasterRemove ( rl.get() );
     body->vectorRemove ( layer );
   }
-  
+
   // Find the min and max dates again.
   Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
 
@@ -883,7 +883,7 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
   {
     // Get the active body.
     Body::RefPtr body ( this->activeBody() );
-    
+
     if ( body.valid() )
     {
       Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( layer );
@@ -895,16 +895,16 @@ void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
         else
           body->rasterAppend ( rl.get() );
       }
-      
+
       body->vectorAppend ( layer );
     }
-    
+
     // Find the min and max dates again.
     Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
 
     // We are modified.
     this->modified ( true );
-    this->dirty( true );  
+    this->dirty( true );
   }
   catch ( const std::exception& e )
   {
@@ -932,7 +932,7 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 
   // Connect.
   this->_connectToDistributedSession ();
-  
+
   // The dates are dirty.
   Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
 }
@@ -948,7 +948,7 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
 {
   USUL_TRACE_SCOPE;
   if ( 0x0 != command )
-  { 
+  {
     // Execute the command.
     command->execute( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
   }
@@ -964,11 +964,11 @@ void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
 void MinervaDocument::commandExecuteNotify ( Usul::Commands::Command* command )
 {
   USUL_TRACE_SCOPE;
-  
+
 #if USE_DISTRIBUTED == 1
-  
+
   if ( 0x0 != command )
-  { 
+  {
     // Send the command to the distributed client.
     if ( _sender.valid() && _commandsSend )
     {
@@ -976,7 +976,7 @@ void MinervaDocument::commandExecuteNotify ( Usul::Commands::Command* command )
       _sender->sendCommand ( command );
     }
   }
-  
+
 #endif
 }
 
@@ -1003,7 +1003,7 @@ void MinervaDocument::startAnimation()
 void MinervaDocument::stopAnimation()
 {
   USUL_TRACE_SCOPE;
-  
+
   {
     Guard guard ( this->mutex () );
     _animateSettings->animate ( false );
@@ -1133,11 +1133,11 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
     if ( body.valid() )
     {
       body->postRender ( caller );
-      
+
       // Draw again if a new texture has been added.
       if ( body->newTexturesLastFrame() > 0 || body->needsRedraw() )
         this->requestRedraw();
-      
+
       // Request has been made.  Reset state.
       body->needsRedraw ( false );
     }
@@ -1159,7 +1159,7 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 
   // Call the base class' on first.
   BaseClass::addView ( view );
-  
+
   // Hide the axes.
   Usul::Interfaces::IAxes::QueryPtr axes ( view );
   if ( axes.valid() )
@@ -1169,7 +1169,7 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
   if ( csv.valid() )
   {
     osg::ref_ptr<osgUtil::CullVisitor> cv ( csv->getCullSceneVisitor( 0x0 ) );
-    
+
 #if 1
     //cv->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
     cv->setClampProjectionMatrixCallback ( new Minerva::Core::Utilities::ClampNearFar ( *cv ) );
@@ -1191,7 +1191,7 @@ void MinervaDocument::removeView ( Usul::Interfaces::IView *view )
 {
   // Call the base class' first.
   BaseClass::removeView ( view );
-  
+
   // If there are no more views, remove the job finished listener.
   if ( 0 == this->numViews() )
   {
@@ -1216,7 +1216,7 @@ namespace Detail
   public:
     typedef Usul::Jobs::Job BaseClass;
 
-    CheckForCommands ( Usul::Interfaces::IUnknown* caller, CommandReceiver *receiver ) : 
+    CheckForCommands ( Usul::Interfaces::IUnknown* caller, CommandReceiver *receiver ) :
       BaseClass ( caller, false ),
       _caller ( caller ),
       _receiver ( receiver )
@@ -1256,7 +1256,7 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   if ( this->dirty() )
   {
     Minerva::Core::Visitors::StackPoints::RefPtr visitor ( new Minerva::Core::Visitors::StackPoints );
@@ -1264,7 +1264,7 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
     this->_buildLayerMenu();
   }
-  
+
   // Update.
   Usul::Interfaces::IUnknown::QueryPtr unknown ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   std::for_each ( _bodies.begin(), _bodies.end(), std::bind2nd ( std::mem_fun ( &Body::updateNotify ), unknown.get() ) );
@@ -1283,10 +1283,10 @@ void MinervaDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     _commandJob = job;
   }
 #endif
-  
+
   // Animate.
   this->_animate ( caller );
-  
+
   this->dirty ( false );
 }
 
@@ -1315,13 +1315,13 @@ void MinervaDocument::dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   _dirty = b;
-  
+
   // Get the active body.
   Body::RefPtr body ( this->activeBody() );
   Usul::Interfaces::IRasterLayer::QueryPtr rl ( caller );
-  
+
   if ( body.valid() && rl.valid() )
     body->rasterChanged ( rl.get() );
 
@@ -1399,7 +1399,7 @@ void MinervaDocument::connectToSession ()
   this->_connectToDistributedSession ();
 }
 
- 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the commands receive flag.
@@ -1538,16 +1538,16 @@ void MinervaDocument::accept ( Minerva::Core::Visitor& visitor )
 void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  
+
   // Typedefs to help shorten lines.
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::Button       Button;
   typedef MenuKit::RadioButton  RadioButton;
-  
+
   // Namespace aliases to help shorten lines.
   namespace UA = Usul::Adaptors;
   namespace UC = Usul::Commands;
-  
+
   MenuKit::Menu::RefPtr m ( menu.find ( "&Options", true ) );
 	MenuKit::Menu::RefPtr animate ( menu.find ( "&Animate", true ) );
 
@@ -1581,7 +1581,7 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   // Points sub menu.
   MenuKit::Menu::RefPtr points ( new MenuKit::Menu ( "Points" ) );
   points->append ( new Button ( UC::genericCommand ( "Size * 2", UA::bind1<void> ( 2.0, UA::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), UC::TrueFunctor() ) ) );
-  points->append ( new Button ( UC::genericCommand ( "Size / 2", UA::bind1<void> ( 0.5, UA::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), UC::TrueFunctor() ) ) ); 
+  points->append ( new Button ( UC::genericCommand ( "Size / 2", UA::bind1<void> ( 0.5, UA::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), UC::TrueFunctor() ) ) );
   m->append ( points.get() );
 
   MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split" ) );
@@ -1589,45 +1589,45 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   split->append ( new Button ( UC::genericCommand ( "Decrease Split", UA::memberFunction<void> ( this, &MinervaDocument::_decreaseSplitDistance ), UC::TrueFunctor() ) ) );
 
   m->append ( split.get() );
-  
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Legend", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::showLegend ), 
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Legend",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showLegend ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowLegend ) ) ) );
-  
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Compass", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::showCompass ), 
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Compass",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showCompass ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowCompass ) ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Position", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::showLatLonText ), 
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Position",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showLatLonText ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowLatLonText ) ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Eye Altitude", 
-                                                           UA::memberFunction<void> ( this, &MinervaDocument::showEyeAltitude ), 
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Eye Altitude",
+                                                           UA::memberFunction<void> ( this, &MinervaDocument::showEyeAltitude ),
                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowEyeAltitude ) ) ) );
-  
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Job Feedback", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ), 
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Job Feedback",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Date Feedback", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::showDateFeedback ), 
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Date Feedback",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showDateFeedback ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowDateFeedback ) ) ) );
-  
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Borders", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::showBorders ), 
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Borders",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showBorders ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowBorders ) ) ) );
-  
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Skirts", 
-                                                            UA::memberFunction<void> ( this, &MinervaDocument::showSkirts ), 
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Skirts",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showSkirts ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowSkirts ) ) ) );
-  
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Allow Splitting", 
-                                                           UA::memberFunction<void> ( this, &MinervaDocument::allowSplit ), 
+
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Allow Splitting",
+                                                           UA::memberFunction<void> ( this, &MinervaDocument::allowSplit ),
                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isAllowSplit ) ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Keep Detail", 
-                                                           UA::memberFunction<void> ( this, &MinervaDocument::keepDetail ), 
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Keep Detail",
+                                                           UA::memberFunction<void> ( this, &MinervaDocument::keepDetail ),
                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isKeepDetail ) ) ) );
 
 	this->_buildLayerMenu();
@@ -1644,24 +1644,24 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
 void MinervaDocument::_buildTimeSpanMenu()
 {
   USUL_TRACE_SCOPE;
-  
+
   typedef MenuKit::RadioButton  RadioButton;
 
   // Namespace aliases to help shorten lines.
   namespace UA = Usul::Adaptors;
   namespace UC = Usul::Commands;
-  
+
   _timeSpanMenu->clear();
 
   if ( _global.valid() )
-    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( _global->name(), 
-                                                                        UA::bind1<void> ( _global, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ), 
+    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( _global->name(),
+                                                                        UA::bind1<void> ( _global, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ),
                                                                         UA::bind1<bool> ( _global, UA::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
 
   for ( TimeSpans::iterator iter = _timeSpans.begin(); iter != _timeSpans.end(); ++iter )
   {
-    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( (*iter)->name(), 
-                                                                        UA::bind1<void> ( *iter, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ), 
+    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( (*iter)->name(),
+                                                                        UA::bind1<void> ( *iter, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ),
                                                                         UA::bind1<bool> ( *iter, UA::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
   }
 }
@@ -1720,7 +1720,7 @@ void MinervaDocument::_findFirstLastDate()
   // Set the current to the new global.
   if ( _current == _global )
     _current = global;
-  
+
   _lastDate = findMinMax->first();
 
   _global = global;
@@ -1737,7 +1737,7 @@ void MinervaDocument::_increaseSplitDistance()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );
@@ -1757,7 +1757,7 @@ void MinervaDocument::_decreaseSplitDistance()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );
@@ -1784,38 +1784,38 @@ namespace Detail
   {
     // Initialize answer.
     hpr.set ( 0.0, 0.0, 0.0 );
-    
+
     osg::Matrixd mat;
-    
+
     // I'm not really sure what the following code inside {} is about.
     {
       osg::Vec3d col1 ( rotation( 0, 0 ), rotation( 0, 1 ), rotation( 0, 2 ) );
       const double s ( col1.length() );
-      
+
       if ( s <= 0.00001 )
       {
         hpr.set(0.0f, 0.0f, 0.0f);
         return;
       }
-      
+
       const double oneOverS ( 1.0f / s );
       for( int i = 0; i < 3; i++ )
         for( int j = 0; j < 3; j++ )
           mat(i, j) = rotation(i, j) * oneOverS;
     }
-    
+
     // Set the pitch
     hpr[1] = ::asin ( Usul::Math::clamp ( mat ( 1, 2 ), -1.0, 1.0 ) );
-    
+
     double cp ( ::cos( hpr[1] ) );
-    
+
     // See if the cosine of the pitch is close to zero.
     // This is for singularities at the north and south poles.
     if ( cp > -0.00001 && cp < 0.00001 )
     {
       const double cr ( Usul::Math::clamp (  mat( 0, 1 ), -1.0, 1.0 ) );
       const double sr ( Usul::Math::clamp ( -mat( 2, 1 ), -1.0, 1.0 ) );
-      
+
       hpr[0] = 0.0f;
       hpr[2] = ::atan2 ( sr, cr );
     }
@@ -1827,30 +1827,30 @@ namespace Detail
       double cr ( Usul::Math::clamp ( (  mat( 2, 2 ) * cp ), -1.0, 1.0 ) );
       double sh ( Usul::Math::clamp ( ( -mat( 1, 0 ) * cp ), -1.0, 1.0 ) );
       double ch ( Usul::Math::clamp ( (  mat( 1, 1 ) * cp ), -1.0, 1.0 ) );
-      
+
       if ( ( sh == 0.0f && ch == 0.0f ) || ( sr == 0.0f && cr == 0.0f ) )
       {
         cr = Usul::Math::clamp (  mat( 0, 1 ), -1.0, 1.0 );
         sr = Usul::Math::clamp ( -mat( 2, 1 ), -1.0, 1.0 );
-        
+
         hpr[0] = 0.0f;
       }
       else
       {
         hpr[0] = ::atan2 ( sh, ch );
       }
-      
+
       hpr[2] = ::atan2 ( sr, cr );
     }
-    
+
     // Convert to degress.
     hpr[0] *= Usul::Math::RAD_TO_DEG;
     hpr[1] *= Usul::Math::RAD_TO_DEG;
     hpr[2] *= Usul::Math::RAD_TO_DEG;
-    
+
     // Sign flip.
     hpr[0] *= -1.0;
-  }  
+  }
 }
 
 
@@ -1864,68 +1864,68 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   // Clear what we have.
   _root->removeChild( 0, _root->getNumChildren() );
-  
+
   bool viewportChanged ( false );
   bool buildLegend ( false );
-  
+
   Usul::Interfaces::IViewport::QueryPtr vp ( caller );
   if ( vp.valid () )
   {
     const unsigned int width  ( static_cast < unsigned int > ( vp->width() ) );
     const unsigned int height ( static_cast < unsigned int > ( vp->height() ) );
-    
+
     if ( width > 0 && height > 0 && ( width != _width || height != _height ) )
     {
       _width = width;
       _height = height;
       viewportChanged = true;
-      
+
       // Set the build legend flag.
       buildLegend = true;
     }
   }
-  
+
   if ( viewportChanged )
   {
     _camera->setViewport ( 0, 0, _width, _height );
     _camera->setProjectionMatrixAsOrtho ( 0, _width, 0, _height, -100.0, 100.0 );
-    
+
     // Set the build legend flag.
     buildLegend = true;
   }
-  
+
   if ( buildLegend || this->dirty() )
   {
     _camera->removeChild ( 0, _camera->getNumChildren() );
-    
+
     // Build the legend.
     this->_buildLegend( caller );
   }
-  
+
   _root->addChild ( _camera.get() );
 
   if ( _callback.valid() )
   {
     osg::Vec3d hpr ( _callback->_hpr );
     _hud.hpr (  hpr[0], hpr[1], hpr[2] );
-    
+
     Usul::Math::Vec3d eye ( _callback->_eyePosition );
     _hud.eyeAltitude( eye[2] );
   }
-  
+
   Usul::Jobs::Manager *manager ( this->_getJobManager() );
   const unsigned int queued    ( ( 0x0 == manager ) ? 0 : manager->numJobsQueued() );
-  
+
   Usul::Jobs::Manager::Strings names;
   if ( 0x0 != manager )
     manager->executingNames ( names );
-  
+
   _hud.requests ( queued );
   _hud.running ( names );
-  
+
   if ( vp.valid() )
     _hud.updateScene( static_cast<unsigned int> ( vp->width() ), static_cast<unsigned int> ( vp->height() ) );
 }
@@ -1945,25 +1945,25 @@ void MinervaDocument::_makePlanet()
     if ( false == _bodies.empty() )
       return;
   }
-  
+
   // Local typedefs to shorten the lines.
   typedef Body::Extents Extents;
-  
+
   // Make the land model.
   typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
   Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
   Land::RefPtr land ( new Land ( radii ) );
-  
+
   // Make a good split distance.
   const double splitDistance ( land->size() * 3.0 ); // Was 2.5
-  
+
   // Size of the mesh.
   Body::MeshSize meshSize ( 17, 17 );
-  
+
   // Add the body.
   Body::RefPtr body ( new Body ( land, this->_getJobManager(), meshSize, splitDistance ) );
   body->useSkirts ( true );
-  
+
   // Add tiles to the body.
   body->addTile ( Extents ( -180, -90,    0,   90 ) );
   body->addTile ( Extents (    0, -90,  180,   90 ) );
@@ -2130,13 +2130,13 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
     // Set the legend size.
     unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
     unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
-    
+
     _legend->maximiumSize( legendWidth, legendHeight );
 
     // Add items to the legend.
     Minerva::Core::Visitors::BuildLegend::RefPtr visitor ( new Minerva::Core::Visitors::BuildLegend ( _legend.get() ) );
     this->accept( *visitor );
-    
+
     // Must be called after rows are added to the legend.
     this->_setLegendPosition( legendWidth );
   }
@@ -2157,9 +2157,9 @@ void MinervaDocument::_setLegendPosition ( unsigned int legendWidth )
   // Translate legend to correct location.
   unsigned int x ( 0 );
   unsigned int y ( 0 );
-  
+
   unsigned legendHeight ( _legend->maximiumSize()[1] );
-  
+
   switch ( _legendPosition )
   {
     case LEGEND_TOP_LEFT:
@@ -2191,7 +2191,7 @@ void MinervaDocument::_setLegendPosition ( unsigned int legendWidth )
     }
       break;
   }
-  
+
   _legend->position( x, y );
 }
 
@@ -2233,7 +2233,7 @@ void MinervaDocument::_buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces
   // Return now if layer is null.
   if ( 0x0 == node )
     return;
-  
+
   {
     MenuKit::Menu::RefPtr layerMenu ( new MenuKit::Menu ( node->getTreeNodeName() ) );
 
@@ -2246,12 +2246,12 @@ void MinervaDocument::_buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces
       Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ) );
       if ( child.valid() )
         this->_buildLayerSubMenu ( *layerMenu, child.get() );
-      
+
       Usul::Interfaces::IMenuAdd::QueryPtr ma ( node->getChildNode ( i ) );
       if ( ma.valid() )
         ma->menuAdd ( *layerMenu );
     }
-    
+
     if ( number > 0 )
       layerMenu->addSeparator();
 
@@ -2273,7 +2273,7 @@ void MinervaDocument::_buildLayerMenu()
 {
   Guard guard ( this );
   _layersMenu->clear();
-  
+
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );
@@ -2312,7 +2312,7 @@ void MinervaDocument::_resizePoints ( double factor )
 void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller )
 {
   Body::RefPtr body ( this->activeBody() );
-  
+
   // Set the intersection point.
   if ( body.valid() )
   {
@@ -2329,7 +2329,7 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set show compass state.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 void MinervaDocument::showCompass( bool b )
@@ -2343,7 +2343,7 @@ void MinervaDocument::showCompass( bool b )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get show compass state.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 bool MinervaDocument::isShowCompass() const
@@ -2357,7 +2357,7 @@ bool MinervaDocument::isShowCompass() const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set use skirts state.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 bool MinervaDocument::isShowSkirts() const
@@ -2372,7 +2372,7 @@ bool MinervaDocument::isShowSkirts() const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Toggle the skirts on and off.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 void MinervaDocument::showSkirts ( bool b )
@@ -2388,7 +2388,7 @@ void MinervaDocument::showSkirts ( bool b )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set use borders state.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 bool MinervaDocument::isShowBorders() const
@@ -2403,7 +2403,7 @@ bool MinervaDocument::isShowBorders() const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Toggle the borders on and off.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 void MinervaDocument::showBorders ( bool b )
@@ -2419,7 +2419,7 @@ void MinervaDocument::showBorders ( bool b )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Set the active body.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 void MinervaDocument::activeBody ( Body* body )
@@ -2427,7 +2427,7 @@ void MinervaDocument::activeBody ( Body* body )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _activeBody = body;
-  
+
   if ( _activeBody.valid () )
   {
     _callback = new Callback;
@@ -2440,7 +2440,7 @@ void MinervaDocument::activeBody ( Body* body )
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the active body.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 MinervaDocument::Body* MinervaDocument::activeBody() const
@@ -2454,14 +2454,14 @@ MinervaDocument::Body* MinervaDocument::activeBody() const
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the job manager.
-//  
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 Usul::Jobs::Manager * MinervaDocument::_getJobManager()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  
+
   // Only make it once.
   if ( 0x0 == _manager )
   {
@@ -2476,7 +2476,7 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
     _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
     _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
-  
+
   return _manager;
 }
 
@@ -2488,7 +2488,7 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
 ///////////////////////////////////////////////////////////////////////////////
 
 void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* nv )
-{ 
+{
   if ( osg::NodeVisitor::CULL_VISITOR ==  nv->getVisitorType() )
   {
     osgUtil::CullVisitor* cullVisitor = dynamic_cast<osgUtil::CullVisitor*>( nv );
@@ -2496,36 +2496,36 @@ void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* n
     {
       // Set the eye position.
       _eye = cullVisitor->getEyePoint();
-      
+
       if ( 0x0 != _body )
       {
         // Convert the eye to lat,lon, height.
         Usul::Math::Vec3d point ( _eye[0], _eye[1], _eye[2] );
         _body->convertFromPlanet( point, _eyePosition );
-        
+
         // Get the model view matrix from the cull visitor.
         osg::ref_ptr<osg::RefMatrix> m ( cullVisitor->getModelViewMatrix() );
-        
+
         // Get the inverse of the view matrix.
         osg::Matrixd viewMatrix ( 0x0 != m.get() ? osg::Matrixd::inverse ( *m ) : osg::Matrixd() );
-        
+
         // Get the matrix to point north at the eye position.
-        osg::Matrixd localLsr ( _body->planetRotationMatrix( _eyePosition[1], _eyePosition[0], _eyePosition[2], 0.0 ) ); 
-        
+        osg::Matrixd localLsr ( _body->planetRotationMatrix( _eyePosition[1], _eyePosition[0], _eyePosition[2], 0.0 ) );
+
         osg::Matrixd invert;
         if ( invert.invert ( localLsr ) )
         {
           osg::Matrixd matrix ( viewMatrix * invert );
           Detail::matrixToHpr( _hpr, matrix );
         }
-        
+
         // Set the eye altitude to above sea level.
         const double elevationAtEye ( _body->elevationAtLatLong ( _eyePosition[1], _eyePosition[0] ) );
         _eyePosition[2] -= elevationAtEye;
       }
     }
   }
-  
+
   this->traverse( node, nv );
 }
 
@@ -2607,7 +2607,7 @@ void MinervaDocument::allowSplit( bool b )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _allowSplit = b;
-  
+
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );
@@ -2642,7 +2642,7 @@ void MinervaDocument::keepDetail( bool b )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _keepDetail = b;
-  
+
   for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
   {
     Body::RefPtr body ( *iter );
@@ -2682,10 +2682,10 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
   {
     osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
     osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
-    
+
     if ( camera.valid() && balloon.valid() )
       camera->removeChild ( balloon.get() );
-    
+
     osgUtil::LineSegmentIntersector::Intersection hit;
     if ( si->intersect ( ea.getX(), ea.getY(), hit ) )
     {
@@ -2700,13 +2700,13 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
       if( userdata.valid() && 0x0 != userdata->_do )
       {
         Minerva::Core::Data::DataObject::RefPtr dataObject ( userdata->_do );
-        
+
         OsgTools::Widgets::Item::RefPtr item ( dataObject->clicked() );
         if ( item.valid() )
         {
           balloon = item->buildScene();
           camera->addChild ( balloon.get() );
-          
+
           Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
         }
       }

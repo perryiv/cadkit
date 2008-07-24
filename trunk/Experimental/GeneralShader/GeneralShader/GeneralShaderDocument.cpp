@@ -32,7 +32,7 @@
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/Constants.h"
-#include "Usul/System/Directory.h"
+#include "Usul/Scope/CurrentDirectory.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -89,9 +89,9 @@ class ViewMatrixCallback : public osg::NodeCallback
       ViewMatrixCallback(  )  :
             _eye( 0.0, 0.0, 0.0 )
 		  {
-  			
+
 		  }
-      ~ViewMatrixCallback()         
+      ~ViewMatrixCallback()
 		  {
 		  }
       virtual void operator()(osg::Node *node, osg::NodeVisitor *nv)
@@ -109,14 +109,14 @@ class ViewMatrixCallback : public osg::NodeCallback
           }
           traverse( node, nv );
       }
-		  
+
       osg::Vec3d getEyePosition()
       {
         return _eye;
       }
 	 protected:
      osg::Vec3d _eye;
-}; 
+};
 
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( GeneralShaderDocument, GeneralShaderDocument::BaseClass );
@@ -127,7 +127,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( GeneralShaderDocument, GeneralShaderDocument::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-GeneralShaderDocument::GeneralShaderDocument() : 
+GeneralShaderDocument::GeneralShaderDocument() :
   BaseClass ( "General Shader Document" ),
   _root( new osg::Group ),
   _scene( new osg::Group ),
@@ -147,7 +147,7 @@ GeneralShaderDocument::GeneralShaderDocument() :
   _etaRatio( 1.01, 1.02, 1.03 )
 {
   USUL_TRACE_SCOPE;
-   
+
 }
 
 
@@ -165,29 +165,29 @@ GeneralShaderDocument::~GeneralShaderDocument()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::vector< std::string > split_string( const std::string& str, const std::string& split_str ) 
+inline std::vector< std::string > split_string( const std::string& str, const std::string& split_str )
 {
 	std::vector< std::string > stlv_string;
 	std::string part_string("");
 	std::string::size_type i;
-	
+
 	i=0;
-	while( i < str.size() ) 
+	while( i < str.size() )
 	{
-		if( split_str.find( str[i] ) != std::string::npos ) 
+		if( split_str.find( str[i] ) != std::string::npos )
 		{
 			stlv_string.push_back( part_string );
 			part_string = "";
-			while( split_str.find( str[i] ) != std::string::npos ) 
+			while( split_str.find( str[i] ) != std::string::npos )
 			{
 				++i;
 			}
 		}
-		else 
+		else
 		{
 			part_string += str[i];
 			++i;
@@ -424,12 +424,12 @@ void GeneralShaderDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
   {
     Guard guard ( this->mutex() );
     osg::ref_ptr< ViewMatrixCallback > vm ( dynamic_cast< ViewMatrixCallback* > ( _root->getCullCallback() ) );
-    
+
     if( 0x0 != vm )
-    {  
-      _eye = vm->getEyePosition();   
+    {
+      _eye = vm->getEyePosition();
       _eyePosition->set( _eye );
-          
+
     }
 
 #if 0
@@ -456,7 +456,7 @@ void GeneralShaderDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
     //  clip->setClippingDistances( n, f );
     //}
 #endif
-    
+
   }
 }
 
@@ -498,8 +498,8 @@ void GeneralShaderDocument::_openDocument ( const std::string &file, Usul::Docum
     document->open ( file, caller );
 #endif
   std::cout << "Done" << std::endl;
-  
-	
+
+
 }
 
 
@@ -530,7 +530,7 @@ void GeneralShaderDocument::_parseXML( XmlTree::Node &node, Unknown *caller, Unk
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  
+
 
   Attributes& attributes ( node.attributes() );
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
@@ -563,7 +563,7 @@ void GeneralShaderDocument::_parseXML( XmlTree::Node &node, Unknown *caller, Unk
       this->_parseBMShaders( *node, caller, progress );
 
     }
-   
+
   }
   this->_updateScene();
  }
@@ -571,7 +571,7 @@ void GeneralShaderDocument::_parseXML( XmlTree::Node &node, Unknown *caller, Unk
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -580,7 +580,7 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   Attributes& attributes ( node.attributes() );
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
@@ -589,7 +589,7 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
     //{
 
     //  //Usul::Strings::fromString ( iter->second, value );
- 
+
     //}
   }
 
@@ -599,7 +599,7 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
-   
+
     if ( "model" == node->name() )
     {
       Attributes& att ( node->attributes() );
@@ -607,7 +607,7 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
       std::string path = "";
       for ( Attributes::iterator att_iter = att.begin(); att_iter != att.end(); ++att_iter )
       {
-        
+
         if ( "type" == att_iter->first )
         {
           Usul::Strings::fromString ( att_iter->second, type );
@@ -627,15 +627,15 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
           {
             geode = this->_createPlaneModel();
           }
-          
+
         }
         if( "name" == att_iter->first )
         {
-          Usul::Strings::fromString ( att_iter->second, name ); 
+          Usul::Strings::fromString ( att_iter->second, name );
         }
         if( "path" == att_iter->first )
         {
-          Usul::Strings::fromString ( att_iter->second, path ); 
+          Usul::Strings::fromString ( att_iter->second, path );
         }
 
       }
@@ -643,7 +643,7 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
       {
         geode = this->_createMeshModel( path );
       }
-    }  
+    }
    _modelList[ name ] = _models.size();
    _modelNames.push_back( name );
    _models.push_back( geode );
@@ -653,7 +653,7 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -661,11 +661,11 @@ void GeneralShaderDocument::_parseSimpleShaders( XmlTree::Node &node, Unknown *c
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   Attributes& attributes ( node.attributes() );
-  
+
   std::string vertex = "", fragment = "";
   ShaderGroup shaderGroup;
   shaderGroup.name = "unknown";
@@ -678,7 +678,7 @@ void GeneralShaderDocument::_parseSimpleShaders( XmlTree::Node &node, Unknown *c
   {
     if ( "name" == iter->first )
     {
-      std::string name = ""; 
+      std::string name = "";
       Usul::Strings::fromString ( iter->second, name );
       _shaderNames.push_back( name );
       _shaderList[ name ] = _shaders.size();
@@ -708,19 +708,19 @@ void GeneralShaderDocument::_parseSimpleShaders( XmlTree::Node &node, Unknown *c
       UniformPtr uniform ( this->_parseUniform( *node, caller, progress ) );
       shaderGroup.uniforms.push_back( uniform );
     }
-   
+
   }
 
   unsigned int index = _shaderGroups.size();
   _shaderGroups.push_back( shaderGroup );
   this->_createSimpleShader( index, caller, progress );
-  
+
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -728,13 +728,13 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
 {
  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   Attributes& attributes ( node.attributes() );
 
-  
+
   ShaderGroup shaderGroup;
   shaderGroup.name = "unknown";
   shaderGroup.vertex = "";
@@ -749,7 +749,7 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
   {
     if ( "name" == iter->first )
     {
-      std::string name = ""; 
+      std::string name = "";
       Usul::Strings::fromString ( iter->second, name );
       _shaderNames.push_back( name );
       _shaderList[ name ] = _shaders.size();
@@ -827,12 +827,12 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
       std::string texName = "";
       Usul::Strings::fromString ( iter->second, texName );
       shaderGroup.normalMapPath = texName;
-      
+
     }
 
-  
+
   }
- 
+
 
   Children& children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
@@ -843,7 +843,7 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
       UniformPtr uniform ( this->_parseUniform( *node, caller, progress ) );
       shaderGroup.uniforms.push_back( uniform );
     }
-   
+
   }
 
   unsigned int index = _shaderGroups.size();
@@ -855,7 +855,7 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -864,8 +864,8 @@ void GeneralShaderDocument::_parseEMShaders( XmlTree::Node &node, Unknown *calle
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
-  
+  Usul::System::CurrentDirectory cwd ( _workingDir );
+
   Attributes& attributes ( node.attributes() );
 
   std::string vertex = "", fragment = "";
@@ -884,7 +884,7 @@ void GeneralShaderDocument::_parseEMShaders( XmlTree::Node &node, Unknown *calle
   {
     if ( "name" == iter->first )
     {
-      std::string name = ""; 
+      std::string name = "";
       Usul::Strings::fromString ( iter->second, name );
       _shaderNames.push_back( name );
       _shaderList[ name ] = _shaders.size();
@@ -947,12 +947,12 @@ void GeneralShaderDocument::_parseEMShaders( XmlTree::Node &node, Unknown *calle
       UniformPtr uniform ( this->_parseUniform( *node, caller, progress ) );
       shaderGroup.uniforms.push_back( uniform );
     }
-   
+
   }
 
   unsigned int index = _shaderGroups.size();
   _shaderGroups.push_back( shaderGroup );
-  
+
   this->_createEMShader( index, caller, progress );
 }
 
@@ -968,7 +968,7 @@ osg::Uniform* GeneralShaderDocument::_parseUniform( XmlTree::Node &node, General
 {
   UniformPtr uniform ( new osg::Uniform );
 
-  
+
   Attributes& attributes ( node.attributes() );
   std::string type = "";
   std::string name = "unknown";
@@ -990,7 +990,7 @@ osg::Uniform* GeneralShaderDocument::_parseUniform( XmlTree::Node &node, General
   }
 
   // Parse the string representation of the value based upon the type
-  std::istringstream is( value ); 
+  std::istringstream is( value );
   if ( "float" == type )
   {
     float f = 0;
@@ -1015,16 +1015,16 @@ osg::Uniform* GeneralShaderDocument::_parseUniform( XmlTree::Node &node, General
   }
   if ( "sampler2D" == type )
   {
-    
+
   }
-  
+
   return uniform.release();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1033,7 +1033,7 @@ void GeneralShaderDocument::_createSimpleShader( unsigned int index, Unknown *ca
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   GroupPtr group ( new osg::Group );
   osg::ref_ptr< osg::PositionAttitudeTransform > posAttXform ( new osg::PositionAttitudeTransform );
@@ -1048,14 +1048,14 @@ void GeneralShaderDocument::_createSimpleShader( unsigned int index, Unknown *ca
 #if 1
   vertShader->loadShaderSourceFromFile( _shaderGroups.at( index ).vertex );
   fragShader->loadShaderSourceFromFile( _shaderGroups.at( index ).fragment );
-  
+
   // load shaders into program
   program->addShader( vertShader.get() );
   program->addShader( fragShader.get() );
 
   // Add the eye position
   stateset->addUniform( _eyePosition.get() );
-  
+
   for( unsigned int i = 0; i < _shaderGroups.at( index ).uniforms.size(); ++i )
   {
     stateset->addUniform( _shaderGroups.at( index ).uniforms.at( i ).get() );
@@ -1071,7 +1071,7 @@ void GeneralShaderDocument::_createSimpleShader( unsigned int index, Unknown *ca
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1080,7 +1080,7 @@ void GeneralShaderDocument::_createEMShader( unsigned int index, Unknown *caller
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   GroupPtr group ( new osg::Group );
   osg::ref_ptr< osg::PositionAttitudeTransform > posAttXform ( new osg::PositionAttitudeTransform );
@@ -1102,7 +1102,7 @@ void GeneralShaderDocument::_createEMShader( unsigned int index, Unknown *caller
   program->addShader( fragShader.get() );
 
   // Add the eye position
-  stateset->addUniform( _eyePosition.get() );  
+  stateset->addUniform( _eyePosition.get() );
 
   // Add Environment map textures
   osg::ref_ptr< osg::TextureCubeMap > map ( new osg::TextureCubeMap );
@@ -1110,7 +1110,7 @@ void GeneralShaderDocument::_createEMShader( unsigned int index, Unknown *caller
   map->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
   map->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
   map->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-  map->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);    
+  map->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
 
   // assign the six images to the texture object
   ImagePtr pos_x = osgDB::readImageFile( _shaderGroups.at( index ).cubeList.at( 0 ) );
@@ -1129,7 +1129,7 @@ void GeneralShaderDocument::_createEMShader( unsigned int index, Unknown *caller
 
   // enable texturing, replacing any textures in the subgraphs
   stateset->setTextureAttributeAndModes(0, map.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
-  
+
   // add cube map to stateset
   stateset->addUniform( new osg::Uniform( "map", 0 ) );
   for( unsigned int i = 0; i < _shaderGroups.at( index ).uniforms.size(); ++i )
@@ -1148,7 +1148,7 @@ void GeneralShaderDocument::_createEMShader( unsigned int index, Unknown *caller
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1157,7 +1157,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   if( "" == _shaderGroups.at( index ).normalMapPath )
   {
@@ -1186,7 +1186,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
   program->addShader( fragShader.get() );
 
   // Add the eye position
-  stateset->addUniform( _eyePosition.get() );  
+  stateset->addUniform( _eyePosition.get() );
 
 
   ImagePtr image = osgDB::readImageFile( normalMapPath.c_str() );
@@ -1194,12 +1194,12 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
   {
     osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
 
-    tex->setDataVariance( osg::Object::DYNAMIC ); 
+    tex->setDataVariance( osg::Object::DYNAMIC );
     tex->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT );
     tex->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT );
     tex->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT );
 /*    tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR); */   
+    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR); */
     tex->setImage( image.get() );
 
     stateset->setTextureAttributeAndModes( 0, tex.get(), osg::StateAttribute::ON );
@@ -1215,7 +1215,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
   // Bump Map has an environment map so add proper uniforms and variables
   if( true == _shaderGroups.at( index ).hasSkyBox )
   {
-    Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+    Usul::System::CurrentDirectory cwd ( _workingDir );
 
     // Add Environment map textures
     osg::ref_ptr< osg::TextureCubeMap > map ( new osg::TextureCubeMap );
@@ -1223,8 +1223,8 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     map->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
     map->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
     map->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-    map->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR); 
-    
+    map->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
+
 
     // assign the six images to the texture object
     ImagePtr pos_x = osgDB::readImageFile( _shaderGroups.at( index ).cubeList.at( 0 ) );
@@ -1243,7 +1243,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
 
     // enable texturing, replacing any textures in the subgraphs
     stateset->setTextureAttributeAndModes( 1, map.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-    
+
     // add cube map to stateset
     stateset->addUniform( new osg::Uniform( "map", 1 ) );
     _shaderGroups.at( index ).emMap = map;
@@ -1260,7 +1260,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
       tex->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT );
       //tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
       //tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-      //tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
+      //tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
       tex->setImage( image.get() );
 
       stateset->setTextureAttributeAndModes( 2, tex.get(), osg::StateAttribute::ON );
@@ -1268,7 +1268,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     // add bump map to stateset
     stateset->addUniform( new osg::Uniform( "texture", 2 ) );
   }
-  
+
   {
     std::string heightMapPath = _shaderGroups.at( index ).heightMapPath;
     ImagePtr image = osgDB::readImageFile( heightMapPath.c_str() );
@@ -1276,12 +1276,12 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
     {
       osg::ref_ptr< osg::Texture2D > tex ( new osg::Texture2D );
 
-      tex->setDataVariance( osg::Object::DYNAMIC ); 
+      tex->setDataVariance( osg::Object::DYNAMIC );
       //tex->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
       //tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
       //tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
       //tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-      //tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
+      //tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
       tex->setImage( image.get() );
 
       stateset->setTextureAttributeAndModes( 3, tex.get(), osg::StateAttribute::ON );
@@ -1304,7 +1304,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1355,7 +1355,7 @@ osg::Geode* GeneralShaderDocument::_createSphereModel()
       Usul::Math::Vec3d tangent00( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal00( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal00( 0.0, 0.0, 0.0 );
-      
+
       tangent00[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s0 );
       tangent00[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s0 );
       tangent00[2] = 0;
@@ -1370,7 +1370,7 @@ osg::Geode* GeneralShaderDocument::_createSphereModel()
       Usul::Math::Vec3d tangent10( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal10( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal10( 0.0, 0.0, 0.0 );
-      
+
       tangent10[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s1 );
       tangent10[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t0 ) * sin ( Usul::Math::PIE * s1 );
       tangent10[2] = 0;
@@ -1385,7 +1385,7 @@ osg::Geode* GeneralShaderDocument::_createSphereModel()
       Usul::Math::Vec3d tangent01( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal01( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal01( 0.0, 0.0, 0.0 );
-      
+
       tangent01[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s0 );
       tangent01[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s0 );
       tangent01[2] = 0;
@@ -1400,7 +1400,7 @@ osg::Geode* GeneralShaderDocument::_createSphereModel()
       Usul::Math::Vec3d tangent11( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal11( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal11( 0.0, 0.0, 0.0 );
-      
+
       tangent11[0] = -2.0 * Usul::Math::PIE * radius * sin( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s1 );
       tangent11[1] = 2.0 * Usul::Math::PIE *radius * cos( 2.0 * Usul::Math::PIE * t1 ) * sin ( Usul::Math::PIE * s1 );
       tangent11[2] = 0;
@@ -1473,7 +1473,7 @@ osg::Geode* GeneralShaderDocument::_createSphereModel()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1485,13 +1485,13 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   GeodePtr geode( new osg::Geode );
 #if 1
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-  
+
   // Vertices and faceNormals
 	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
 	osg::ref_ptr< osg::Vec3Array > faceNormals ( new osg::Vec3Array );
 	osg::ref_ptr< osg::Vec3Array > vertexNormals ( new osg::Vec3Array );
   osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
-  
+
   // Vertices of the cube
   osg::Vec3d p0( -0.5, -0.5, -0.5 );
 	osg::Vec3d p1( 0.5, -0.5, -0.5 );
@@ -1549,9 +1549,9 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   //N11
 	vertices->push_back( p7 ); vertices->push_back( p1 ); vertices->push_back( p3 );
 	faceNormals->push_back( ( p3 - p1 ) ^ ( p7 - p1 ) );
-  
+
 #if 1
-  // normal and tex coords for v0 is fn[2], fn[1], fn[4] 
+  // normal and tex coords for v0 is fn[2], fn[1], fn[4]
   vertexNormals->push_back( ( faceNormals->at( 4 ) - faceNormals->at( 1 ) ) ^ ( faceNormals->at( 2 ) - faceNormals->at( 1 ) ) );
   // normal and tex coords for v1 is fn[0], fn[11], fn[4]
   vertexNormals->push_back( ( faceNormals->at( 4 ) - faceNormals->at( 11 ) ) ^ ( faceNormals->at( 0 ) - faceNormals->at( 11 ) ) );
@@ -1580,7 +1580,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
 
 //--------------------------------------------------------------------------
   // +Z face
-  
+
   tex->push_back( t10 ); tex->push_back( t01 ); tex->push_back( t00 );
 #if 0
   normals->push_back( vertexNormals->at( 0 ) );normals->push_back( vertexNormals->at( 3 ) );normals->push_back( vertexNormals->at( 1 ) );
@@ -1599,8 +1599,8 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   tangent->push_back( osg::Vec4( 0.0, 0.5, 0.5, 1.0 ) );
 #endif
 
-  
-  tex->push_back( t10 ); tex->push_back( t11 ); tex->push_back( t01 ); 
+
+  tex->push_back( t10 ); tex->push_back( t11 ); tex->push_back( t01 );
 #if 0
   normals->push_back( vertexNormals->at( 0 ) );normals->push_back( vertexNormals->at( 2 ) );normals->push_back( vertexNormals->at( 3 ) );
   tangent->push_back( p0 - p2 ); tangent->push_back( p2 - p3 ); tangent->push_back( p3 - p0 );
@@ -1620,7 +1620,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   //--------------------------------------------------------------------------
 
   // -X Face
-  
+
   tex->push_back( t00 ); tex->push_back( t11 ); tex->push_back( t01 );
 
 #if 0
@@ -1638,7 +1638,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   tangent->push_back( osg::Vec4( 0.5, 0.5, 1.0, 1.0 ) );
 #endif
 
-  
+
   tex->push_back( t00 ); tex->push_back( t10 ); tex->push_back( t11 );
 
 #if 0
@@ -1659,7 +1659,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   //--------------------------------------------------------------------------
 
   // -Y Face
-  
+
   tex->push_back( t00 ); tex->push_back( t10 ); tex->push_back( t11 );
 
 #if 0
@@ -1677,7 +1677,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   tangent->push_back( osg::Vec4( 1.0, 0.5, 0.5, 1.0 ) );
 #endif
 
-  
+
   tex->push_back( t00 ); tex->push_back( t11 ); tex->push_back( t01 );
 
 #if 0
@@ -1698,7 +1698,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   //--------------------------------------------------------------------------
 
   // +Y Face
-  
+
   tex->push_back( t10 ); tex->push_back( t11 ); tex->push_back( t01 );
 
 #if 0
@@ -1718,7 +1718,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   tangent->push_back( osg::Vec4( 1.0, 0.5, 0.5, 1.0 ) );
 #endif
 
-  
+
   tex->push_back( t10 ); tex->push_back( t01 ); tex->push_back( t00 );
 
 #if 0
@@ -1737,11 +1737,11 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   tangent->push_back( osg::Vec4( 1.0, 0.5, 0.5, 1.0 ) );
   tangent->push_back( osg::Vec4( 1.0, 0.5, 0.5, 1.0 ) );
 #endif
-  
+
   //--------------------------------------------------------------------------
 
   // -Z Face
-  
+
   tex->push_back( t11 ); tex->push_back( t01 ); tex->push_back( t00 );
 
 #if 0
@@ -1759,7 +1759,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   tangent->push_back( osg::Vec4( 1.0, 0.5, 0.5, 1.0 ) );
 #endif
 
-  
+
   tex->push_back( t11 ); tex->push_back( t00 ); tex->push_back( t10 );
 
 #if 0
@@ -1782,7 +1782,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   //--------------------------------------------------------------------------
 
   // +x Face
-  
+
   tex->push_back( t01 ); tex->push_back( t00 ); tex->push_back( t10 );
 
 #if 0
@@ -1834,7 +1834,7 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
   //geometry->setVertexAttribBinding( 0, osg::Geometry::BIND_PER_VERTEX );
   geometry->setColorArray( tangent.get() );
   geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
-  
+
 	geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
 
 #if 1
@@ -1847,19 +1847,19 @@ osg::Geode* GeneralShaderDocument::_createCubeModel()
 #endif
   geode->addDrawable( geometry.get() );
 #else
-  osg::ref_ptr< osg::ShapeDrawable > box ( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) ); 
+  osg::ref_ptr< osg::ShapeDrawable > box ( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) );
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
 
   geometry = dynamic_cast< osg::Geometry* >( box.get() );
   geode->addDrawable( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) );
- 
+
 #endif
   return geode.release();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1871,13 +1871,13 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
   GeodePtr geode( new osg::Geode );
 #if 1
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-  
+
   // Vertices and faceNormals
 	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
 	osg::ref_ptr< osg::Vec3Array > faceNormals ( new osg::Vec3Array );
 	osg::ref_ptr< osg::Vec3Array > vertexNormals ( new osg::Vec3Array );
   osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
-  
+
   // Vertices of the cube
   //osg::Vec3d p0( -0.5, -0.5, -0.5 );
 	//osg::Vec3d p1( 0.5, -0.5, -0.5 );
@@ -1935,9 +1935,9 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
   //N11
 	//vertices->push_back( p7 ); vertices->push_back( p1 ); vertices->push_back( p3 );
 	//faceNormals->push_back( ( p3 - p1 ) ^ ( p7 - p1 ) );
-  
+
 #if 0
-  // normal and tex coords for v0 is fn[2], fn[1], fn[4] 
+  // normal and tex coords for v0 is fn[2], fn[1], fn[4]
   vertexNormals->push_back( ( faceNormals->at( 4 ) - faceNormals->at( 1 ) ) ^ ( faceNormals->at( 2 ) - faceNormals->at( 1 ) ) );
   // normal and tex coords for v1 is fn[0], fn[11], fn[4]
   vertexNormals->push_back( ( faceNormals->at( 4 ) - faceNormals->at( 11 ) ) ^ ( faceNormals->at( 0 ) - faceNormals->at( 11 ) ) );
@@ -1988,7 +1988,7 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
     tangent->push_back( tng );
     tangent->push_back( tng );
   #else
-    
+
     //v = vertex
     osg::Vec3 v1 = vertices->at( 0 );
     osg::Vec3 v2 = vertices->at( 1 );
@@ -1998,14 +1998,14 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
     osg::Vec2 w1 = tex->at( 0 );
     osg::Vec2 w2 = tex->at( 1 );
     osg::Vec2 w3 = tex->at( 2 );
-    
+
     float x1 = v2.x() - v1.x();
     float x2 = v3.x() - v1.x();
     float y1 = v2.y() - v1.y();
     float y2 = v3.y() - v1.y();
     float z1 = v2.z() - v1.z();
     float z2 = v3.z() - v1.z();
-        
+
     float s1 = w2.x() - w1.x();
     float s2 = w3.x() - w1.x();
     float t1 = w2.y() - w1.y();
@@ -2014,7 +2014,7 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
     float r = 1.0f / ( s1 * t2 - s2 * t1 );
 
     osg::Vec3 sdir( ( t2 * x1 - t1 * x2 ) * r,
-                    ( t2 * y1 - t1 * y2 ) * r, 
+                    ( t2 * y1 - t1 * y2 ) * r,
                     ( t2 * z1 - t1 * z2 ) * r );
 
     osg::Vec3 tdir( ( s1 * x2 - s2 * x1 ) * r,
@@ -2022,7 +2022,7 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
                     ( s1 * z2 - s2 * z1 ) * r );
 
     //osg::Vec3 n = normals->at( 0 );
-        
+
     // Gram-Schmidt orthogonalize
     //osg::Vec3 tng = ( sdir - n * ( n, sdir ) ).Normalize();
     Usul::Math::Vec3f n ( normals->at( 0 ).x(), normals->at( 0 ).y(), normals->at( 0 ).z() );
@@ -2034,12 +2034,12 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
     tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
     tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
     tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
-    
+
   #endif
 
 #endif
 
-  
+
   tex->push_back( t11 ); tex->push_back( t00 ); tex->push_back( t10 );
 
 #if 0
@@ -2059,11 +2059,11 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
     tangent->push_back( tng );
     tangent->push_back( tng );
   #else
-    
+
     tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
     tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
     tangent->push_back( osg::Vec4( t.x(), t.y(), t.z(), 1.0 ) );
-    
+
   #endif
 
 #endif
@@ -2074,7 +2074,7 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
   geometry->setTexCoordArray( 0, tex.get() );
   geometry->setColorArray( tangent.get() );
   geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
-  
+
 	geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
 
 #if 1
@@ -2087,12 +2087,12 @@ osg::Geode* GeneralShaderDocument::_createPlaneModel()
 #endif
   geode->addDrawable( geometry.get() );
 #else
-  osg::ref_ptr< osg::ShapeDrawable > box ( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) ); 
+  osg::ref_ptr< osg::ShapeDrawable > box ( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) );
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
 
   geometry = dynamic_cast< osg::Geometry* >( box.get() );
   geode->addDrawable( new osg::ShapeDrawable( new osg::Box( osg::Vec3(0.0f,0.0f,0.0f),1.0f ) ) );
- 
+
 #endif
   return geode.release();
 }
@@ -2103,11 +2103,11 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   // Vertices and faceNormals
 	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
- 
+
 	// set the vertices of the cube
   osg::Vec3d p0( -0.5, -0.5, -0.5 );
 	osg::Vec3d p1( 0.5, -0.5, -0.5 );
@@ -2140,10 +2140,10 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
 	vertices->push_back( p0 ); vertices->push_back( p2 ); vertices->push_back( p3 );
 #if 0
   tex->push_back( t00 ); tex->push_back( t11 ); tex->push_back( t10 );
-  tex->push_back( t00 ); tex->push_back( t01 ); tex->push_back( t11 ); 
+  tex->push_back( t00 ); tex->push_back( t01 ); tex->push_back( t11 );
 #else
   tex->push_back( t11 ); tex->push_back( t00 ); tex->push_back( t01 );
-  tex->push_back( t11 ); tex->push_back( t10 ); tex->push_back( t00 ); 
+  tex->push_back( t11 ); tex->push_back( t10 ); tex->push_back( t00 );
 #endif
 
   //Neg X
@@ -2227,14 +2227,14 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
     tex->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP_TO_EDGE);
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
-    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);  
+    tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSposx->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-    
+
     // set tex env combine
     osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
     texCombine->setCombine_RGB( GL_REPLACE );
 
-    
+
   }
   Gposx->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vposx->size() ) );
 
@@ -2266,15 +2266,15 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSposy->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-     
-    
+
+
 
     //SSposy->setAttributeAndModes( texCombine.get() );
   }
   Gposy->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vposy->size() ) );
 
    //---------------------------------------------------------------------------------------------------
-  
+
   // create PosZ face of the skybox
   osg::ref_ptr< osg::Vec3Array > Vposz ( new osg::Vec3Array );
   osg::ref_ptr< osg::Vec2Array > Tposz ( new osg::Vec2Array );
@@ -2301,7 +2301,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSposz->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-     
+
     // set tex env combine
     osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
     texCombine->setCombine_RGB( GL_REPLACE );
@@ -2338,7 +2338,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSnegx->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-     
+
     // set tex env combine
     osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
     texCombine->setCombine_RGB( GL_REPLACE );
@@ -2348,7 +2348,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
   Gnegx->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, Vnegx->size() ) );
 
    //---------------------------------------------------------------------------------------------------
- 
+
   // create NegY face of the skybox
   osg::ref_ptr< osg::Vec3Array > Vnegy ( new osg::Vec3Array );
   osg::ref_ptr< osg::Vec2Array > Tnegy ( new osg::Vec2Array );
@@ -2375,7 +2375,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSnegy->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-     
+
     // set tex env combine
     osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
     texCombine->setCombine_RGB( GL_REPLACE );
@@ -2412,7 +2412,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
     tex->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR);
     tex->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
     SSnegz->setTextureAttributeAndModes ( 0, tex.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-     
+
     // set tex env combine
     osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
     texCombine->setCombine_RGB( GL_REPLACE );
@@ -2439,7 +2439,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
   osg::ref_ptr< osg::TexEnvCombine > texCombine ( new osg::TexEnvCombine );
   texCombine->setCombine_RGB( GL_REPLACE );
   group->getOrCreateStateSet()->setTextureAttributeAndModes( 0, texCombine.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-  
+
   group->addChild( geode.get() );
   group->setCullingActive( false );
   _skyBoxes.push_back( group.get() );
@@ -2448,7 +2448,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -2496,7 +2496,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
       Usul::Math::Vec3d tangent00( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal00( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal00( 0.0, 0.0, 0.0 );
-      
+
       tangent00[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
       tangent00[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
       tangent00[2] = 0;
@@ -2511,7 +2511,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
       Usul::Math::Vec3d tangent10( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal10( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal10( 0.0, 0.0, 0.0 );
-      
+
       tangent10[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
       tangent10[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
       tangent10[2] = 0;
@@ -2526,7 +2526,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
       Usul::Math::Vec3d tangent01( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal01( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal01( 0.0, 0.0, 0.0 );
-      
+
       tangent01[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
       tangent01[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
       tangent01[2] = 0;
@@ -2541,7 +2541,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
       Usul::Math::Vec3d tangent11( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d binormal11( 0.0, 0.0, 0.0 );
       Usul::Math::Vec3d normal11( 0.0, 0.0, 0.0 );
-      
+
       tangent11[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
       tangent11[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
       tangent11[2] = 0;
@@ -2619,7 +2619,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
     Usul::Math::Vec3d tangent00( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d binormal00( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d normal00( 0.0, 0.0, 0.0 );
-    
+
     tangent00[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
     tangent00[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
     tangent00[2] = 0;
@@ -2634,7 +2634,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
     Usul::Math::Vec3d tangent10( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d binormal10( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d normal10( 0.0, 0.0, 0.0 );
-    
+
     tangent10[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
     tangent10[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t0 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
     tangent10[2] = 0;
@@ -2649,7 +2649,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
     Usul::Math::Vec3d tangent01( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d binormal01( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d normal01( 0.0, 0.0, 0.0 );
-    
+
     tangent01[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s0 ) );
     tangent01[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s0 ) );
     tangent01[2] = 0;
@@ -2664,7 +2664,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
     Usul::Math::Vec3d tangent11( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d binormal11( 0.0, 0.0, 0.0 );
     Usul::Math::Vec3d normal11( 0.0, 0.0, 0.0 );
-    
+
     tangent11[0] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( sin( 2.0 * Usul::Math::PIE * s1 ) );
     tangent11[1] = -2.0 * Usul::Math::PIE * ( mRadius + nRadius * ( cos( 2.0 * Usul::Math::PIE * t1 ) ) ) * ( cos( 2.0 * Usul::Math::PIE * s1 ) );
     tangent11[2] = 0;
@@ -2711,7 +2711,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
 
   geometry->setVertexArray( vertices.get() );
-  
+
   geometry->setNormalArray( normals.get() );
   geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
@@ -2720,7 +2720,7 @@ osg::Geode* GeneralShaderDocument::_createTorusModel()
   geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
 
   geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, vertices->size() ) );
-  
+
   geode->addDrawable( geometry.get() );
   return geode.release();
 }
@@ -2749,13 +2749,13 @@ void GeneralShaderDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUn
     {
       const std::string menuName ( "Models" );
       MenuKit::Menu::RefPtr ModelMenu ( menu.find ( menuName, true ) );
-      
+
       ModelMenu->append ( new Radio ( new SetModelCommand( me.get(), (*i).first ) ) );
-     
-    
+
+
       //ModelMenu->append( ModelSubMenu.get() );
     }
-    
+
   }
   // Add the shaders menu
   {
@@ -2769,7 +2769,7 @@ void GeneralShaderDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUn
 
     for( IndexList::iterator i = _shaderList.begin(); i != _shaderList.end(); ++i )
     {
-  
+
       if( "Simple" == _shaderGroups.at( (*i).second ).type )
       {
         simpleMenu->append( new Radio ( new SetShaderCommand( me.get(), (*i).first ) ) );
@@ -2777,7 +2777,7 @@ void GeneralShaderDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUn
       if( "EnvironmentMap" == _shaderGroups.at( (*i).second ).type )
       {
         emMenu->append( new Radio ( new SetShaderCommand( me.get(), (*i).first ) ) );
-      }      
+      }
       if( "BumpMap" == _shaderGroups.at( (*i).second ).type )
       {
         bmMenu->append( new Radio ( new SetShaderCommand( me.get(), (*i).first ) ) );
@@ -2786,13 +2786,13 @@ void GeneralShaderDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUn
       ModelMenu->append( simpleMenu.get() );
       ModelMenu->append( emMenu.get() );
       ModelMenu->append( bmMenu.get() );
-    
+
   }
   // add the tools menu
   {
     const std::string menuName ( "Tools" );
       MenuKit::Menu::RefPtr ModelMenu ( menu.find ( menuName, true ) );
-      
+
       ModelMenu->append ( new Button ( new ReadSettingsCommand( me.get(), "Reset", _workingDir ) ) );
   }
 
@@ -2874,7 +2874,7 @@ void GeneralShaderDocument::_updateScene()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   try
   {
@@ -2910,12 +2910,12 @@ void GeneralShaderDocument::_updateScene()
     osg::Matrixd matrix = _modelMatrixTransform->getMatrix();
     Usul::Math::Matrix44f m;
     OsgTools::Convert::matrix ( matrix, m );
-    
+
     ss->addUniform( new osg::Uniform( "modelMatrix", matrix ) );
 
     _light.x() = static_cast< double > ( ( _radius * sin( ( Usul::Math::PIE / 180 ) * _theta.x() ) * cos( ( Usul::Math::PIE / 180 ) * _theta.y() ) ) );
 	  _light.y() = static_cast< double > ( ( _radius * sin( ( Usul::Math::PIE / 180 ) * _theta.x() ) * sin( ( Usul::Math::PIE / 180 ) * _theta.y() ) ) );
-	  _light.z() = static_cast< double > ( ( _radius * cos( ( Usul::Math::PIE / 180 ) * _theta.x() ) ) );	
+	  _light.z() = static_cast< double > ( ( _radius * cos( ( Usul::Math::PIE / 180 ) * _theta.x() ) ) );
 
     UniformPtr lightPos = ss->getOrCreateUniform( "lightPosition", osg::Uniform::FLOAT_VEC3 );
     lightPos->set( _light );
@@ -2927,7 +2927,7 @@ void GeneralShaderDocument::_updateScene()
 
     if( true == _shaderGroups.at( _currentShader ).hasSkyBox )
     {
-      _scene->addChild( _skyBoxes.at( _shaderGroups.at( _currentShader ).skyBoxIndex ).get() ); 
+      _scene->addChild( _skyBoxes.at( _shaderGroups.at( _currentShader ).skyBoxIndex ).get() );
     }
 
     // Add additional uniforms read from settings file
@@ -2945,23 +2945,23 @@ void GeneralShaderDocument::_updateScene()
     // add the etaRatio vec3
     UniformPtr eta = ss->getOrCreateUniform( "etaRatio", osg::Uniform::FLOAT_VEC3 );
     eta->set( _etaRatio );
-    ss->addUniform( eta.get() ); 
+    ss->addUniform( eta.get() );
 
     // add the near/far plane uniform
     UniformPtr nearfar = ss->getOrCreateUniform( "planes", osg::Uniform::FLOAT_VEC2 );
     nearfar->set( _nearFarClipPlane );
-    ss->addUniform( nearfar.get() );   
+    ss->addUniform( nearfar.get() );
 
     //update the depth
     UniformPtr tile = ss->getOrCreateUniform( "tile", osg::Uniform::FLOAT );
     tile->set( _tile );
-    ss->addUniform( tile.get() );   
+    ss->addUniform( tile.get() );
 
     //update the tile
     UniformPtr depth = ss->getOrCreateUniform( "depth", osg::Uniform::FLOAT );
     depth->set( _depth );
-    ss->addUniform( depth.get() );   
-    
+    ss->addUniform( depth.get() );
+
   }
   catch( ... )
   {
@@ -3033,7 +3033,7 @@ bool GeneralShaderDocument::keyPressed ( int code )
     this->_updateScene();
     return true;
   }
- 
+
   if( ',' == code || '<' == code )
   {
     _modelMatrixTransform->postMult( osg::Matrix::rotate( .1, 0, 0, 1 ) );
@@ -3075,7 +3075,7 @@ bool GeneralShaderDocument::keyPressed ( int code )
   if( 'r' == code || 'R' == code )
   {
     _modelMatrixTransform->setMatrix( osg::Matrix::identity() );
-    _theta.x() = 45.0; 
+    _theta.x() = 45.0;
     _theta.y() = 0.0;
     _depth = 0.04;
     _tile = 1.0;
@@ -3137,8 +3137,8 @@ bool GeneralShaderDocument::keyReleased ( int code )
   Guard guard ( this->mutex() );
 
 
-  
-  
+
+
   return false;
 }
 
@@ -3154,18 +3154,18 @@ osg::Image* GeneralShaderDocument::_createNormalMap( const std::string &name, un
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   osg::ref_ptr< osg::Image > normalMap ( new osg::Image );
   std::vector< unsigned char > texture;
-  
+
   for( int i = 0; i < _shaderGroups.at( index ).heightMap->s(); i ++ )
   {
     for( int j = 0; j < _shaderGroups.at( index ).heightMap->t(); j++ )
     {
       osg::ref_ptr< osg::Image > hm = _shaderGroups.at( index ).heightMap.get();
       osg::Vec3d normal ( 0.0, 0.0, 1.0 );
-      
+
       if( i < _shaderGroups.at( index ).heightMap->s() && j < _shaderGroups.at( index ).heightMap->t() )
       {
         double IJ          = static_cast< double > ( this->_getHeightFromImageAt( i + 0, j + 0, index ) );
@@ -3230,7 +3230,7 @@ osg::Image* GeneralShaderDocument::_createNormalMap( const std::string &name, un
 
       // Alpha chanel
       //unsigned char alpha = this->_getHeightFromImageAt( i, j, index );
-      
+
       texture.push_back( red );
       texture.push_back( green );
       texture.push_back( blue );
@@ -3242,7 +3242,7 @@ osg::Image* GeneralShaderDocument::_createNormalMap( const std::string &name, un
     //unsigned int i = 0, j = 0;
     unsigned int s = static_cast< unsigned int > ( _shaderGroups.at( index ).heightMap->s() );
     unsigned int t = static_cast< unsigned int > ( _shaderGroups.at( index ).heightMap->t() );
-  
+
     unsigned int ceiling = 0;
     for( unsigned int i = 0; i < t; ++i )
     {
@@ -3252,29 +3252,29 @@ osg::Image* GeneralShaderDocument::_createNormalMap( const std::string &name, un
         unsigned int index = ( j * s ) + ceiling;
         tex.push_back( texture.at( index ) );
       }
-      
+
     }
-  
+
   }
-  
+
   normalMap->allocateImage ( _shaderGroups.at( index ).heightMap->s(),
-                       _shaderGroups.at( index ).heightMap->t(), 
-                       1, 
-                       GL_RGB, 
+                       _shaderGroups.at( index ).heightMap->t(),
+                       1,
+                       GL_RGB,
                        GL_UNSIGNED_BYTE );
 
   /*normalMap->setImage( _shaderGroups.at( index ).heightMap->s(),
-                       _shaderGroups.at( index ).heightMap->t(), 
-                       1, 
-                       GL_RGB, 
-                       GL_RGB, 
-                       GL_UNSIGNED_BYTE, 
-                       &tex[0], 
+                       _shaderGroups.at( index ).heightMap->t(),
+                       1,
+                       GL_RGB,
+                       GL_RGB,
+                       GL_UNSIGNED_BYTE,
+                       &tex[0],
                        osg::Image::NO_DELETE );*/
 
   std::copy ( tex.begin(), tex.end(), normalMap->data() );
   normalMap->dirty();
-  
+
   osgDB::writeImageFile( *normalMap.get(), name.c_str() );
   return normalMap.release();
 
@@ -3339,7 +3339,7 @@ GeneralShaderDocument::Mesh GeneralShaderDocument::_loadMesh( const std::string 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   std::ifstream ifs;
   ifs.open( filename.c_str() );
@@ -3358,7 +3358,7 @@ GeneralShaderDocument::Mesh GeneralShaderDocument::_loadMesh( const std::string 
 		ifs.getline(current_line, 1024);
 
 		switch (current_line[0])
-		{		
+		{
 		case 'v':
 			{
 				float x, y, z;
@@ -3447,7 +3447,7 @@ GeneralShaderDocument::Mesh GeneralShaderDocument::_loadMesh( const std::string 
 				}
 			}
 			break;
-			
+
 		default: break;
 		}
 	}
@@ -3467,7 +3467,7 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::Directory::ScopedCwd cwd ( _workingDir );
+  Usul::System::CurrentDirectory cwd ( _workingDir );
 
   GeodePtr geode ( new osg::Geode );
   GeometryPtr geometry ( new osg::Geometry );
@@ -3536,18 +3536,18 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
       fn.vi1 = mesh.indices.at( i + 0 );
       fn.vi2 = mesh.indices.at( i + 1 );
       fn.vi3 = mesh.indices.at( i + 2 );
-      
+
 #if 0
       fn.normal = ( v3 - v2 ) ^ ( v1 - v2 );
       fn.vi1 = mesh.indices.at( i + 0 );
       fn.vi2 = mesh.indices.at( i + 1 );
       fn.vi3 = mesh.indices.at( i + 2 );
-      faceNormalsPerVertex.at( fn.vi1 ).push_back( fn.normal ); 
-      faceNormalsPerVertex.at( fn.vi2 ).push_back( fn.normal ); 
-      faceNormalsPerVertex.at( fn.vi3 ).push_back( fn.normal ); 
+      faceNormalsPerVertex.at( fn.vi1 ).push_back( fn.normal );
+      faceNormalsPerVertex.at( fn.vi2 ).push_back( fn.normal );
+      faceNormalsPerVertex.at( fn.vi3 ).push_back( fn.normal );
 #endif
       /// tangent calculations per face
-#if 0 
+#if 0
       float x1 = v2.x() - v1.x();
       float x2 = v3.x() - v1.x();
       float y1 = v2.y() - v1.y();
@@ -3566,7 +3566,7 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
 
       //// Gram-Schmidt orthogonalize
       //tangent[a] = (t - n * Dot(n, t)).Normalize();
-      //  
+      //
       //// Calculate handedness
       //tangent[a].w = (Dot(Cross(n, t), tan2[a]) < 0.0F) ? -1.0F : 1.0F;
 
@@ -3576,9 +3576,9 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
       temp_tan.normalize();
 
       osg::Vec3 tangent ( temp_tan[0], temp_tan[1], temp_tan[2] );
-      faceTangentsPerVertex.at( fn.vi1 ).push_back( tangent ); 
-      faceTangentsPerVertex.at( fn.vi2 ).push_back( tangent ); 
-      faceTangentsPerVertex.at( fn.vi3 ).push_back( tangent ); 
+      faceTangentsPerVertex.at( fn.vi1 ).push_back( tangent );
+      faceTangentsPerVertex.at( fn.vi2 ).push_back( tangent );
+      faceTangentsPerVertex.at( fn.vi3 ).push_back( tangent );
 #else
       Usul::Math::Vec3f xst0 ( v1.x(), t1.x(), t1.y() );
       Usul::Math::Vec3f xst1 ( v2.x(), t2.x(), t2.y() );
@@ -3605,26 +3605,26 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
       Usul::Math::Vec3f ABC1 ( yst01.cross( yst02 ) );
       Usul::Math::Vec3f ABC2 ( zst01.cross( zst02 ) );
 
-      Usul::Math::Vec3f ut ( - ( ABC0[1] / ABC0[0] ), 
+      Usul::Math::Vec3f ut ( - ( ABC0[1] / ABC0[0] ),
                              - ( ABC1[1] / ABC1[0] ),
                              - ( ABC2[1] / ABC2[0] ) );
-      Usul::Math::Vec3f ub ( - ( ABC0[2] / ABC0[0] ), 
+      Usul::Math::Vec3f ub ( - ( ABC0[2] / ABC0[0] ),
                              - ( ABC1[2] / ABC1[0] ),
                              - ( ABC2[2] / ABC2[0] ) );
 
       osg::Vec3f tangent ( ut[0], ut[1], ut[2] );
 
-      faceTangentsPerVertex.at( fn.vi1 ).push_back( tangent ); 
-      faceTangentsPerVertex.at( fn.vi2 ).push_back( tangent ); 
-      faceTangentsPerVertex.at( fn.vi3 ).push_back( tangent ); 
+      faceTangentsPerVertex.at( fn.vi1 ).push_back( tangent );
+      faceTangentsPerVertex.at( fn.vi2 ).push_back( tangent );
+      faceTangentsPerVertex.at( fn.vi3 ).push_back( tangent );
 
       Usul::Math::Vec3f tn ( ut.cross( ub ) );
 
       fn.normal = osg::Vec3f( tn[0], tn[1], tn[2] );
-      
-      faceNormalsPerVertex.at( fn.vi1 ).push_back( fn.normal ); 
-      faceNormalsPerVertex.at( fn.vi2 ).push_back( fn.normal ); 
-      faceNormalsPerVertex.at( fn.vi3 ).push_back( fn.normal ); 
+
+      faceNormalsPerVertex.at( fn.vi1 ).push_back( fn.normal );
+      faceNormalsPerVertex.at( fn.vi2 ).push_back( fn.normal );
+      faceNormalsPerVertex.at( fn.vi3 ).push_back( fn.normal );
 
 
 #endif
@@ -3632,7 +3632,7 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
       /// ---------------------------------------------------------------
     }
 
-    
+
   }
 
 
@@ -3660,7 +3660,7 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
       unsigned int size = faceNormalsPerVertex.at( i ).size();
 #if 0
       switch( size )
-      { 
+      {
         case 0:
           {
             perVertexNormals->push_back( osg::Vec3( 0.0, 0.0, 1.0 ) );
@@ -3720,7 +3720,7 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
 
 #endif
     } // end for loop
-    for( unsigned int i = 0; i < mesh.indices.size(); ++i ) 
+    for( unsigned int i = 0; i < mesh.indices.size(); ++i )
     {
       normals->push_back( perVertexNormals->at( mesh.indices.at( i ) ) );
       tangents->push_back( perVertexTangents->at( mesh.indices.at( i ) ) );
@@ -3794,9 +3794,9 @@ void GeneralShaderDocument::_parseSettings( XmlTree::Node &node, Unknown *caller
       UniformPtr uniform ( this->_parseUniform( *node, caller, progress ) );
       _additionalUniforms.push_back( uniform.get() );
     }
-    
-   
+
+
   }
- 
+
   this->_updateScene();
 }

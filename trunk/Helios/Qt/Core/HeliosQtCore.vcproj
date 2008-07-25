@@ -287,6 +287,28 @@
 			<File
 				RelativePath=".\TimerCallback.h"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing... TimerCallback.h"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TimerCallback.h&quot; -o &quot;.\GeneratedFiles\moc_TimerCallback.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TimerCallback.h"
+						Outputs=".\GeneratedFiles\moc_TimerCallback.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing... TimerCallback.h"
+						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TimerCallback.h&quot; -o &quot;.\GeneratedFiles\moc_TimerCallback.cpp&quot;&#x0D;&#x0A;"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TimerCallback.h"
+						Outputs=".\GeneratedFiles\moc_TimerCallback.cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\TimerServer.cpp"
@@ -315,6 +337,10 @@
 			</File>
 			<File
 				RelativePath=".\GeneratedFiles\moc_ProgressBarDock.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\moc_TimerCallback.cpp"
 				>
 			</File>
 		</Filter>

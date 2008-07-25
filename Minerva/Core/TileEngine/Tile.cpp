@@ -146,8 +146,8 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _texture->setUseHardwareMipMapGeneration ( true );
   
   // Set texture coordinate wrapping parameters.
-  _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::MIRROR );
-  _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::MIRROR );
+  _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+  _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 #else
   // Set filter parameters.
   _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
@@ -157,6 +157,9 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
 #endif
+  
+  _texture->setBorderWidth ( 0.0 );
+  _texture->setBorderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
 
 #if 0
 
@@ -337,7 +340,7 @@ void Tile::updateMesh()
 
       // Convert lat-lon coordinates to xyz.
       Mesh::Vector &p ( mesh.point ( i, j ) );
-        
+
       // The osg::Image stores it's data as char*.  However, in this case the data of the image is float.
       // The data function will calculate and return the pointer to the beginning of the float.  The pointer needs to be cast to a float pointer so the proper value is accessed.
       const double heightAboveSeaLevel ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
@@ -352,9 +355,9 @@ void Tile::updateMesh()
       n.normalize();
 
       // Assign texture coordinate.  Lower left corner should be (0,0).
-      const double s ( ( texCoords[0] + ( u * deltaU ) ) );
-      const double t ( ( texCoords[2] + ( v * deltaV ) ) );
-      mesh.texCoord ( i, j ).set ( s, t );
+      const float s ( static_cast<float> ( texCoords[0] + ( u * deltaU ) ) );
+      const float t ( ( texCoords[2] + ( v * deltaV ) ) );
+      mesh.texCoord ( i, j ).set ( Usul::Math::clamp<float> ( s, 0.0f, 1.0f ), Usul::Math::clamp<float> ( t, 0.0f, 1.0f ) );
     }
   }
 

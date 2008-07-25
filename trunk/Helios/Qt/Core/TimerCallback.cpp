@@ -99,7 +99,7 @@ void TimerCallback::start()
   if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
   {
     if ( false == QMetaObject::invokeMethod ( this, "_start", Qt::QueuedConnection ) )
-      std::cout << "Error: could not start the timer." << std::endl;
+      std::cout << "Warning 7474543440: could not start the timer." << std::endl;
   }
   else
     this->_start();

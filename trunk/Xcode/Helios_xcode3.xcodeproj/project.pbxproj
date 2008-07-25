@@ -1011,6 +1011,7 @@
 		66953AC80D34052B006EF4DC /* WandMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66953AB20D34052B006EF4DC /* WandMatrix.cpp */; };
 		66953AC90D34052B006EF4DC /* WandPosition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66953AB40D34052B006EF4DC /* WandPosition.cpp */; };
 		66953ACA0D34052B006EF4DC /* WandRotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66953AB60D34052B006EF4DC /* WandRotation.cpp */; };
+		6695B44B0E3A267100C3D2FB /* moc_TimerCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6695B44A0E3A267100C3D2FB /* moc_TimerCallback.cpp */; };
 		6695C7750D19F8C600E78878 /* ExportScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6695C7730D19F8C600E78878 /* ExportScene.cpp */; };
 		6695C7760D19F8C600E78878 /* ExportScene.h in Headers */ = {isa = PBXBuildFile; fileRef = 6695C7740D19F8C600E78878 /* ExportScene.h */; };
 		66990D550D8876FD0099FDAA /* LibraryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66990D540D8876FD0099FDAA /* LibraryPool.cpp */; };
@@ -4525,6 +4526,8 @@
 		66953ACC0D34053D006EF4DC /* If.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = If.h; sourceTree = "<group>"; };
 		66953ACD0D34053D006EF4DC /* Increment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Increment.h; sourceTree = "<group>"; };
 		66953ACE0D34053D006EF4DC /* Pair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pair.h; sourceTree = "<group>"; };
+		6695B3C30E39A1E700C3D2FB /* Unknowns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unknowns.h; sourceTree = "<group>"; };
+		6695B44A0E3A267100C3D2FB /* moc_TimerCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_TimerCallback.cpp; path = Qt/Core/moc_TimerCallback.cpp; sourceTree = "<group>"; };
 		6695C6240D19AACE00E78878 /* Interpolate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interpolate.h; sourceTree = "<group>"; };
 		6695C6FF0D19EDA600E78878 /* Array2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Array2D.h; sourceTree = "<group>"; };
 		6695C7730D19F8C600E78878 /* ExportScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExportScene.cpp; path = Qt/Commands/ExportScene.cpp; sourceTree = "<group>"; };
@@ -7119,6 +7122,7 @@
 		43FED717092452F700EBB610 /* Containers */ = {
 			isa = PBXGroup;
 			children = (
+				6695B3C30E39A1E700C3D2FB /* Unknowns.h */,
 				6695C6FF0D19EDA600E78878 /* Array2D.h */,
 				43FED718092452F700EBB610 /* Array.h */,
 				43FED719092452F700EBB610 /* DynamicArray.h */,
@@ -7861,6 +7865,7 @@
 		6667619F0D122DD2002F40C6 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				6695B44A0E3A267100C3D2FB /* moc_TimerCallback.cpp */,
 				C2BD0D2E0E37DE1A00137A5B /* TimerCallback.cpp */,
 				C2BD0D2D0E37DE0800137A5B /* TimerCallback.h */,
 				C21B9E690E37894100ED7433 /* TimerServer.cpp */,
@@ -12044,12 +12049,18 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../Helios/Qt/Core/MainWindow.h,
+				$SRCROOT/../Helios/Qt/Core/ProgressBarDock.h,
+				$SRCROOT/../Helios/Qt/Core/TimerCallback.h,
 			);
 			outputPaths = (
+				$SRCROOT/../Helios/Qt/Core/moc_MainWindow.cpp,
+				$SRCROOT/../Helios/Qt/Core/moc_ProgressBarDock.cpp,
+				$SRCROOT/../Helios/Qt/Core/moc_TimerCallback.cpp,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/MainWindow.h -o $SRCROOT/../Helios/Qt/Core/moc_MainWindow.cpp\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/ProgressBarDock.h -o $SRCROOT/../Helios/Qt/Core/moc_ProgressBarDock.cpp\n";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/MainWindow.h -o $SRCROOT/../Helios/Qt/Core/moc_MainWindow.cpp\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/ProgressBarDock.h -o $SRCROOT/../Helios/Qt/Core/moc_ProgressBarDock.cpp\n$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Core/TimerCallback.h -o $SRCROOT/../Helios/Qt/Core/moc_TimerCallback.cpp";
 		};
 		666766F70D12FBB7002F40C6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12750,6 +12761,7 @@
 				668918700D281B53005CB399 /* Program.cpp in Sources */,
 				C21B9E6A0E37894100ED7433 /* TimerServer.cpp in Sources */,
 				C2BD0D2F0E37DE1A00137A5B /* TimerCallback.cpp in Sources */,
+				6695B44B0E3A267100C3D2FB /* moc_TimerCallback.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

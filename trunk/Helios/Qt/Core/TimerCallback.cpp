@@ -16,8 +16,10 @@
 #include "Helios/Qt/Core/TimerCallback.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Base/Referenced.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/ITimerNotify.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
@@ -93,18 +95,14 @@ void TimerCallback::_destroy()
 void TimerCallback::start()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( _mutex );
-
-  // Make sure the timer is valid.
-  if ( 0x0 == _timer.get() )
-    return;
-
-  // Is the timer already running?
-  if ( true == _timer->isActive() )
-    return;
-
-  // Start the timer.
-  _timer->start ( _milliseconds );
+  
+  if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
+  {
+    if ( false == QMetaObject::invokeMethod ( this, "_start", Qt::QueuedConnection ) )
+      std::cout << "Error: could not start the timer." << std::endl;
+  }
+  else
+    this->_start();
 }
 
 
@@ -117,18 +115,11 @@ void TimerCallback::start()
 void TimerCallback::stop()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( _mutex );
   
-  // Make sure the timer is valid.
-  if ( 0x0 == _timer.get() )
-    return;
-  
-  // Is the timer running?
-  if ( false == _timer->isActive() )
-    return;
-  
-  // Stop the timer.
-  _timer->stop();
+  if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
+    QMetaObject::invokeMethod ( this, "_stop", Qt::QueuedConnection );
+  else
+    this->_stop();
 }
 
 
@@ -148,4 +139,69 @@ void TimerCallback::_onTimeout()
   {
     notify->timerNotify ( _id );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Can this timer callback be purged?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool TimerCallback::canPurge() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( _mutex );
+  
+  // This probably isn't the best way to do this, but it will allow callbacks to be deleted when the only reference is the one in this object.
+  const Usul::Base::Referenced* referenced ( reinterpret_cast<const Usul::Base::Referenced*> ( _callback.get() ) );
+  return ( 0x0 != referenced ? 1 == referenced->refCount() : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start the timer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TimerCallback::_start()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( _mutex );
+  
+  // Make sure the timer is valid.
+  if ( 0x0 == _timer.get() )
+    return;
+  
+  // Is the timer already running?
+  if ( true == _timer->isActive() )
+    return;
+  
+  // Start the timer.
+  _timer->start ( _milliseconds );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Stop the timer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TimerCallback::_stop()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( _mutex );
+
+  // Make sure the timer is valid.
+  if ( 0x0 == _timer.get() )
+    return;
+   
+  // Is the timer running?
+  if ( false == _timer->isActive() )
+    return;
+
+  // Stop the timer.
+  _timer->stop();
 }

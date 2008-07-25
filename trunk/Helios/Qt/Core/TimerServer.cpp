@@ -162,7 +162,9 @@ TimerServer::TimerID TimerServer::timerAdd ( unsigned int milliseconds, Usul::In
   Guard guard ( this );
 
   const TimerID id ( _nextId++ );
-  _timers.insert ( Timers::value_type ( id, TimerCallback::Ptr ( new TimerCallback ( id, milliseconds, callback ) ) ) );
+  TimerCallback::Ptr cb ( new TimerCallback ( id, milliseconds, callback ) );
+  _timers.insert ( Timers::value_type ( id, cb ) );
+  cb->start();
   return id;
 }
 
@@ -178,4 +180,37 @@ void TimerServer::timerRemove ( TimerID id )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _timers.erase ( id );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Purge all null timers, or timers with one reference count.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TimerServer::purge()
+{
+  Guard guard ( this );
+  
+  typedef std::list<Timers::key_type> Keys;
+  Keys doomed;
+  
+  // Find timers that need to be purged.
+  for ( Timers::const_iterator i = _timers.begin(); i != _timers.end(); ++i )
+  {
+    TimerCallback::Ptr timer ( i->second );
+    if ( 0x0 == timer.get() )
+    {
+      doomed.push_back ( i->first );
+    }
+    else if ( true == timer->canPurge() )
+    {
+      doomed.push_back ( i->first );
+    }
+  }
+  
+  // Remove the id's from the map.
+  for ( Keys::const_iterator i = doomed.begin(); i != doomed.end(); ++i )
+    _timers.erase ( *i );
 }

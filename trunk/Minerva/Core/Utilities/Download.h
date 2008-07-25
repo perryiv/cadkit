@@ -26,7 +26,7 @@ namespace Core {
 namespace Utilities {
 
   MINERVA_EXPORT bool download ( const std::string& href, std::string& filename );
-
+  MINERVA_EXPORT bool download ( const std::string& href, std::string& filename, bool useCache );
 }
 }
 }

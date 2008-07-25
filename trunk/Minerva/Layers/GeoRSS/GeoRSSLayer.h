@@ -16,6 +16,7 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IRead.h"
+#include "Usul/Interfaces/ITimerNotify.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
 
@@ -31,7 +32,8 @@ namespace Layers {
 namespace GeoRSS {  
 
 class MINERVA_GEORSS_EXPORT GeoRSSLayer : public Minerva::Core::Layers::Container,
-                                          public Usul::Interfaces::IRead
+                                          public Usul::Interfaces::IRead,
+                                          public Usul::Interfaces::ITimerNotify
                  
 {
 public:
@@ -40,12 +42,17 @@ public:
   typedef Minerva::Core::Data::DataObject            DataObject;
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;
+  typedef std::pair<TimerID,bool>                    TimerPair;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( GeoRSSLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   GeoRSSLayer();
+  
+  /// Set/get the color.
+  void                        color ( const Usul::Math::Vec4f& color );
+  Usul::Math::Vec4f           color() const;
 
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
@@ -64,12 +71,19 @@ public:
   bool                        isReading() const;
   void                        reading( bool b );
   
+  /// Set/get the refresh rate (in seconds).
+  void                        refreshRate ( double seconds );
+  double                      refreshRate() const;
+  
   /// Set/get the url.
   void                        url ( const std::string& );
   std::string                 url() const;
   
 protected:
   virtual ~GeoRSSLayer();
+  
+  // Add a timer callback.
+  void                        _addTimer();
   
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
@@ -78,7 +92,10 @@ protected:
   void                        _parseItem ( const XmlTree::Node& );
   
   // Update link.
-  void                        _updateLink( Usul::Interfaces::IUnknown* caller = 0x0 );
+  void                        _updateLink ( Usul::Interfaces::IUnknown* caller = 0x0 );
+  
+  // Called when the timer fires.
+  virtual void                timerNotify ( TimerID );
   
 private:
 
@@ -95,7 +112,7 @@ private:
   double _lastUpdate;
   unsigned int _flags;
   Usul::Math::Vec4f _color;
-  
+  TimerPair _timerInfo;
   
   SERIALIZE_XML_CLASS_NAME ( GeoRSSLayer );
 };

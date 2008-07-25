@@ -235,6 +235,9 @@ MainWindow::MainWindow ( const std::string &vendor,
 
   // Add our self as a plugin.
   Usul::Components::Manager::instance().addPlugin ( me );
+  
+  // Add the timer server.
+  Usul::Components::Manager::instance().addPlugin ( Usul::Interfaces::IUnknown::QueryPtr ( _timerServer ) );
 }
 
 
@@ -1462,6 +1465,8 @@ void MainWindow::_idleProcess()
   
   // Tell window to refresh.
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), true );
+  
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _timerServer.get(), &TimerServer::purge ) );
 }
 
 

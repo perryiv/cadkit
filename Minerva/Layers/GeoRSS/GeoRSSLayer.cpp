@@ -355,76 +355,8 @@ void GeoRSSLayer::deserialize( const XmlTree::Node &node )
   // Add the timer because the refresh interval may be different.
   this->_addTimer();
   
-  // Download the data.
-  this->_updateLink ( 0x0 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void GeoRSSLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
-{
-  // Call the base class first.
-  BaseClass::updateNotify ( caller );
-  
-  // Return now if we are already downloading or reading.
-  if ( true == this->isDownloading() || this->isReading() )
-    return;
-
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-  osg::ref_ptr<osg::FrameStamp> frameStamp ( fs.valid () ? fs->frameStamp() : 0x0 );
-  const double time ( frameStamp.valid () ? frameStamp->getReferenceTime () : 0.0 );
-  
-  // Get variables needed below.
-  const double refreshInterval ( Usul::Threads::Safe::get ( this->mutex(), _refreshInterval ) );
-  const double lastUpdate ( Usul::Threads::Safe::get ( this->mutex(), _lastUpdate ) );
-
-  // Duration between last time the date was incremented.
-  const double duration ( time - lastUpdate );
-  
-  // Update if we haven't yet or if the elapsed time is greater than our update interval
-  const bool needsUpdate ( 0.0 == lastUpdate || duration > refreshInterval );
-  
-  // If we are suppose to update...
-  if ( needsUpdate )
-  {
-    // Create a job to update the file.
-    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( caller, 
-                                                                                Usul::Adaptors::memberFunction ( GeoRSSLayer::RefPtr ( this ), &GeoRSSLayer::_updateLink ) ) ) );
-
-    if ( true == job.valid() )
-    {
-      // Set the downloading flag now so we don't launch another job before this one starts.
-      this->downloading ( true );
-      
-      // Add job to manager.
-      Usul::Jobs::Manager::instance().addJob ( job.get() );
-    }
-  }
-  
-  // See if our data is dirty.
-  if ( this->dirtyData() )
-  {
-    // Get our filename.
-    std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
-                          
-    // Create a job to read the file.
-    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ),
-                                                                              Usul::Adaptors::memberFunction ( GeoRSSLayer::RefPtr ( this ), &GeoRSSLayer::_read ) ) ) );
-    
-    if ( true == job.valid() )
-    {
-      // Set the reading flag now so we don't launch another job before this one starts.
-      this->reading ( true );
-      
-      // Add job to manager.
-      Usul::Jobs::Manager::instance().addJob ( job.get() );
-    }
-  }
+  // Start download.
+  this->_downloadFeed();
 }
 
 
@@ -469,6 +401,9 @@ void GeoRSSLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
     
     // Our data is dirty.
     this->dirtyData ( true );
+    
+    // Read the file.
+    this->_read ( filename, 0x0, 0x0 );
   }
 }
 
@@ -612,6 +547,7 @@ Usul::Math::Vec4f GeoRSSLayer::color() const
 
 void GeoRSSLayer::timerNotify ( TimerID )
 {
+  this->_downloadFeed();
 }
 
 
@@ -634,9 +570,36 @@ void GeoRSSLayer::_addTimer()
     if ( true == _timerInfo.second )
       service->timerRemove ( _timerInfo.first );
     
-    // Make a new timer.
+    // Make a new timer.  The timer expects the timeout to be in milliseconds.
     Usul::Interfaces::IUnknown::RefPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-    _timerInfo.first = service->timerAdd ( Usul::Threads::Safe::get ( this->mutex(), _refreshInterval ), me );
+    _timerInfo.first = service->timerAdd ( Usul::Threads::Safe::get ( this->mutex(), _refreshInterval ) * 1000, me );
     _timerInfo.second = true;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Launch a job to download feed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::_downloadFeed()
+{
+  // Return now if we are already downloading.
+  if ( true == this->isDownloading() )
+    return;
+  
+  // Create a job to download the data.
+  Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ), 
+                                                                             Usul::Adaptors::memberFunction ( GeoRSSLayer::RefPtr ( this ), &GeoRSSLayer::_updateLink ) ) ) );
+  
+  if ( true == job.valid() )
+  {
+    // Set the downloading flag now so we don't launch another job before this one starts.
+    this->downloading ( true );
+    
+    // Add job to manager.
+    Usul::Jobs::Manager::instance().addJob ( job.get() );
   }
 }

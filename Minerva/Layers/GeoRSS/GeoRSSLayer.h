@@ -57,9 +57,6 @@ public:
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
 
-  // Update.
-  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
-
   // Deserialize.
   virtual void                deserialize( const XmlTree::Node &node );
 
@@ -84,6 +81,9 @@ protected:
   
   // Add a timer callback.
   void                        _addTimer();
+  
+  // Launch a job to download feed.
+  void                        _downloadFeed();
   
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );

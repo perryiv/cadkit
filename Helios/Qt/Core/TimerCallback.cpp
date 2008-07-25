@@ -23,6 +23,8 @@
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
+#include "QtCore/QCoreApplication"
+
 using namespace CadKit::Helios::Core;
 
 
@@ -42,7 +44,14 @@ TimerCallback::TimerCallback ( TimerID id, unsigned int milliseconds, TimerCallb
   USUL_TRACE_SCOPE;
 
   // Make the timer.
-  _timer.reset ( new QTimer ( this ) );
+  _timer.reset ( new QTimer );
+  
+  // Move to the main thread.
+  this->moveToThread ( QCoreApplication::instance()->thread() );
+  _timer->moveToThread ( QCoreApplication::instance()->thread() );
+  
+  // Set the parent.  Do this after moving to the main thread.
+  _timer->setParent ( this );
 
   // Set the connection.
   this->connect ( _timer.get(), SIGNAL ( timeout() ), this, SLOT ( _onTimeout() ) );
@@ -197,7 +206,7 @@ void TimerCallback::_stop()
   // Make sure the timer is valid.
   if ( 0x0 == _timer.get() )
     return;
-   
+
   // Is the timer running?
   if ( false == _timer->isActive() )
     return;

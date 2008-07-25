@@ -154,7 +154,7 @@ bool TimerCallback::canPurge() const
   Guard guard ( _mutex );
   
   // This probably isn't the best way to do this, but it will allow callbacks to be deleted when the only reference is the one in this object.
-  const Usul::Base::Referenced* referenced ( reinterpret_cast<const Usul::Base::Referenced*> ( _callback.get() ) );
+  const Usul::Base::Referenced* referenced ( dynamic_cast<const Usul::Base::Referenced*> ( _callback.get() ) );
   return ( 0x0 != referenced ? 1 == referenced->refCount() : false );
 }
 

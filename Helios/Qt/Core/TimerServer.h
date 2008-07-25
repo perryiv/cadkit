@@ -56,6 +56,9 @@ public:
 
   // Clear the timers.
   void                      clear();
+  
+  // Purge all null timers, or timers with one reference count.
+  void                      purge();
 
   // Start all the timers.
   void                      start();

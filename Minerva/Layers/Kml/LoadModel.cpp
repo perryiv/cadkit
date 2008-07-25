@@ -178,7 +178,7 @@ void LoadModel::_preProcessCollada ( const std::string& filename )
         {
           const std::string uri ( image->getInit_from()->getValue().str() );
           std::string filename;
-          if ( Minerva::Core::Utilities::download ( uri, filename ) )
+          if ( Minerva::Core::Utilities::download ( uri, filename, true ) )
           {
             filename = "file:" + cdom::nativePathToUri ( filename );
             image->getInit_from()->getValue().set ( filename );

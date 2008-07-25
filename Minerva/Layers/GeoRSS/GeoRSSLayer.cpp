@@ -20,11 +20,14 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Threads/Safe.h"
 
@@ -63,13 +66,16 @@ GeoRSSLayer::GeoRSSLayer() :
   _refreshInterval ( 300.0 ),
   _lastUpdate( 0.0 ),
   _flags(),
-  _color ( 1.0, 0.0, 0.0, 1.0 )
+  _color ( 1.0, 0.0, 0.0, 1.0 ),
+  _timerInfo ( 0, false )
 {
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
   this->_addMember ( "color", _color );
   
-  this->dirtyData ( true );
+  //this->dirtyData ( true );
+  
+  this->_addTimer();
 }
 
 
@@ -96,6 +102,8 @@ Usul::Interfaces::IUnknown* GeoRSSLayer::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IRead::IID:
     return static_cast < Usul::Interfaces::IRead* > ( this );
+  case Usul::Interfaces::ITimerNotify::IID:
+    return static_cast < Usul::Interfaces::ITimerNotify* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -187,6 +195,10 @@ namespace Detail
 
 void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
+  // Make sure the file exists before reading.
+  if ( false == Usul::Predicates::FileExists::test ( filename ) )
+    return;
+  
   // Help shorten lines.
   namespace UA = Usul::Adaptors;
   
@@ -197,6 +209,7 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   // TODO: I think a SAX parser is more appropraite here, because we can stop the parsing if there isn't new data.
   XmlTree::XercesLife life;
   XmlTree::Document::RefPtr doc ( new XmlTree::Document );
+  std::cout << "Reading " << filename << std::endl;
   doc->load ( filename );
   
   // Get the date the stream was modified.
@@ -205,6 +218,9 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   boost::posix_time::ptime utcTime ( Detail::parseDate ( date ) );
   
   boost::posix_time::ptime lastDataUpdate ( Usul::Threads::Safe::get ( this->mutex(), _lastDataUpdate ) );
+  
+  std::cout << "Last data update: " << lastDataUpdate << std::endl;
+  std::cout << "Last feed update: " << utcTime << std::endl;
   
   // Check the date against the time time we updated.
   if ( false == lastDataUpdate.is_not_a_date_time() && false == utcTime.is_not_a_date_time() )
@@ -221,10 +237,13 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   // Clear what we have.
   this->clear();
   
+  unsigned int i ( 0 );
+  
   // Get all the items.
   Children children ( doc->find ( "item", true ) );
   BOOST_FOREACH ( XmlTree::Node::ValidRefPtr node, children )
   {
+    std::cout << "Adding item " << ++i << " of " << children.size() << std::endl;
     this->_parseItem( *node );
   }
   
@@ -280,7 +299,7 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
     
     // TODO: Download the thumbnail here and download the larger image when clicked on.
     std::string filename;
-    if ( Minerva::Core::Utilities::download ( url, filename ) )
+    if ( Minerva::Core::Utilities::download ( url, filename, true ) )
     {
       cb->imageFilename ( filename );
       unsigned int w ( Usul::Convert::Type<std::string, unsigned int>::convert ( width ) );
@@ -333,6 +352,10 @@ void GeoRSSLayer::deserialize( const XmlTree::Node &node )
 {
   BaseClass::deserialize ( node );
   
+  // Add the timer because the refresh interval may be different.
+  this->_addTimer();
+  
+  // Download the data.
   this->_updateLink ( 0x0 );
 }
 
@@ -358,20 +381,16 @@ void GeoRSSLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
   
   // Get variables needed below.
   const double refreshInterval ( Usul::Threads::Safe::get ( this->mutex(), _refreshInterval ) );
-  double lastUpdate ( Usul::Threads::Safe::get ( this->mutex(), _lastUpdate ) );
+  const double lastUpdate ( Usul::Threads::Safe::get ( this->mutex(), _lastUpdate ) );
 
-  // Set the last time if it hasn't been set.
-  if ( 0.0 == lastUpdate )
-  {
-    Usul::Threads::Safe::set ( this->mutex(), time, _lastUpdate );
-    lastUpdate = time;
-  }
-  
   // Duration between last time the date was incremented.
   const double duration ( time - lastUpdate );
   
+  // Update if we haven't yet or if the elapsed time is greater than our update interval
+  const bool needsUpdate ( 0.0 == lastUpdate || duration > refreshInterval );
+  
   // If we are suppose to update...
-  if ( duration > refreshInterval )
+  if ( needsUpdate )
   {
     // Create a job to update the file.
     Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( caller, 
@@ -426,16 +445,25 @@ void GeoRSSLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
   
   // Get the link.
   const std::string href ( Usul::Threads::Safe::get ( this->mutex(), _href ) );
+  
+  // Return now if we don't have a valid href to use.
+  if ( true == href.empty() )
+    return;
+  
+  std::cout << "Downloading " << href << std::endl;
   std::string filename;
   if ( Minerva::Core::Utilities::download ( href, filename ) )
   {
+    std::cout << "Downloading finished" << std::endl;
+    
     // Set the filename.
     Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
     
     // Get the current time.
     Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-    const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
-    
+    osg::ref_ptr<osg::FrameStamp> frameStamp ( fs.valid() ? fs->frameStamp() : 0x0 );
+    const double time ( frameStamp.valid () ? frameStamp->getReferenceTime () : 0.0 );
+
     // Set the last update time.
     Usul::Threads::Safe::set ( this->mutex(), time, _lastUpdate );
     
@@ -505,7 +533,7 @@ void GeoRSSLayer::reading( bool b )
 
 void GeoRSSLayer::url ( const std::string& s )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   _href = s;
 }
 
@@ -518,6 +546,97 @@ void GeoRSSLayer::url ( const std::string& s )
 
 std::string GeoRSSLayer::url() const
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   return _href;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the refresh rate (in seconds).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::refreshRate ( double seconds )
+{
+  Guard guard ( this->mutex() );
+  _refreshInterval = seconds;
+  this->_addTimer(); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the refresh rate (in seconds).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double GeoRSSLayer::refreshRate() const
+{
+  Guard guard ( this->mutex() );
+  return _refreshInterval;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::color ( const Usul::Math::Vec4f& color )
+{
+  Guard guard ( this->mutex() );
+  _color = color;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4f GeoRSSLayer::color() const
+{
+  Guard guard ( this->mutex() );
+  return _color;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the timer fires.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::timerNotify ( TimerID )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a timer callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::_addTimer()
+{
+  typedef Usul::Interfaces::ITimerService ITimerService;
+  typedef Usul::Components::Manager PluginManager;
+  
+  ITimerService::QueryPtr service ( PluginManager::instance().getInterface ( ITimerService::IID ) );
+  
+  if ( service.valid() )
+  {
+    // Remove the one we have if it's valid.
+    if ( true == _timerInfo.second )
+      service->timerRemove ( _timerInfo.first );
+    
+    // Make a new timer.
+    Usul::Interfaces::IUnknown::RefPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+    _timerInfo.first = service->timerAdd ( Usul::Threads::Safe::get ( this->mutex(), _refreshInterval ), me );
+    _timerInfo.second = true;
+  }
 }

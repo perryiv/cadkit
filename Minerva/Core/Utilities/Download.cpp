@@ -20,6 +20,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Network/Curl.h"
+#include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
 
 #include "boost/algorithm/string/replace.hpp"
@@ -33,19 +34,38 @@
 
 bool Minerva::Core::Utilities::download ( const std::string& href, std::string& filename )
 {
+  return Minerva::Core::Utilities::download ( href, filename, false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Download file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Minerva::Core::Utilities::download ( const std::string& href, std::string& filename, bool useCache )
+{
   bool success ( false );
   
   try
   {
     // Make the filename.
     filename = href;
-
+    
     // Replace illegal characters for filename.
     boost::replace_first ( filename, "http://", "" );  
     boost::algorithm::replace_all ( filename, "/", "_" );
     boost::algorithm::replace_all ( filename, "?", "_" );
     boost::algorithm::replace_all ( filename, "=", "_" );
-    filename = Usul::File::Temp::directory ( true ) + filename;
+    boost::algorithm::replace_all ( filename, "&", "_" );
+    boost::algorithm::replace_all ( filename, "@", "_" );
+    filename = Usul::File::Temp::directory ( true ) + "Minerva/" + filename;
+    
+    if ( useCache && Usul::Predicates::FileExists::test ( filename ) )
+    {
+      return true;
+    }
     
     // Download.
     {
@@ -57,7 +77,7 @@ bool Minerva::Core::Utilities::download ( const std::string& href, std::string& 
       Usul::Network::Curl curl ( href, filename );
       curl.download ( timeout, static_cast<std::ostream*> ( 0x0 ), "" );
     }
-
+    
     boost::algorithm::replace_all ( filename, "\\", "/" );
     
     // If we get here, it worked.

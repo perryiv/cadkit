@@ -34,6 +34,7 @@ namespace Core {
 
 class TimerCallback : public QObject
 {
+  Q_OBJECT;
 public:
 
   // Typedefs.
@@ -47,6 +48,9 @@ public:
 
   // Destructor.
   virtual ~TimerCallback();
+  
+  // Can this timer callback be purged?
+  bool                      canPurge() const;
 
   // Start the timer.
   void                      start();
@@ -64,7 +68,9 @@ protected:
 private slots:
   
   void                      _onTimeout();
-
+  void                      _start();
+  void                      _stop();
+  
 private:
 
   // No copying or assignment.

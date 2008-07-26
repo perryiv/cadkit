@@ -126,9 +126,6 @@ public:
 
   // Get the child at index i.
   Tile::RefPtr              childAt ( unsigned int i ) const;
-  
-  // Build raster.
-  static ImagePtr           buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr );
 
   // Build raster.
   void                      buildRaster ( Usul::Jobs::Job::RefPtr );
@@ -231,6 +228,9 @@ protected:
                                          double splitDistance, 
                                          Usul::Jobs::Job::RefPtr job,
                                          Indices index );
+  
+  // Build raster.
+  static ImagePtr           _buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr );
 
 
   void                      _setDirtyAlways ( bool state, unsigned int flags, bool dirtyChildren );

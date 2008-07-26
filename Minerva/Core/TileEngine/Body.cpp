@@ -224,9 +224,9 @@ void Body::addTile ( const Extents &extents )
   Tile::RefPtr tile ( new Tile ( 0x0, Tile::NONE, level, extents, meshSize, _imageSize, _splitDistance, this ) );
 
   // Build the raster.
-	Minerva::Core::Jobs::BuildRaster::RefPtr job ( new Minerva::Core::Jobs::BuildRaster ( tile ) );
-	if ( 0x0 != this->jobManager() )
-		this->jobManager()->addJob ( job.get() );
+  // If a network layer timesout and throws an exception, the document won't load.
+  // Wrap in a safe call to ensure the document still loads (but the top level tiles won't have textures).
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( tile.get(), &Tile::buildRaster ), Usul::Jobs::Job::RefPtr ( 0x0 ), "4827869570" );
 
   // Add tile to the transform.
   _transform->addChild ( tile.get() );

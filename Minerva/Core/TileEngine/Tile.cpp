@@ -971,7 +971,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   const Extents request ( Helper::expandExtents ( extents, Helper::degreesPerPixel ( extents, size ) ) );
 
   // Get the data for our elevation.
-  osg::ref_ptr < osg::Image > elevation ( Tile::buildRaster ( request, size[0], size[1], level, elevationData.get(), job ) );
+  osg::ref_ptr < osg::Image > elevation ( Tile::_buildRaster ( request, size[0], size[1], level, elevationData.get(), job ) );
   
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -1034,7 +1034,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::ImagePtr Tile::buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr job )
+Tile::ImagePtr Tile::_buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr job )
 {
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -1123,7 +1123,7 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
     if ( shown && this->extents().intersects ( e ) )
     {
       // Get the image for the layer.
-      image = Tile::buildRaster ( this->extents(), width, height, this->level(), raster.get(), job.get() );
+      image = Tile::_buildRaster ( this->extents(), width, height, this->level(), raster.get(), job.get() );
 
       // If we didn't get an image, use our parents image.
       if ( false == image.valid() )

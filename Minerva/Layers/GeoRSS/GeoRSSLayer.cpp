@@ -23,12 +23,12 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
-#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Scope/Caller.h"
+#include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
 
 #include "boost/foreach.hpp"
@@ -61,10 +61,8 @@ USUL_FACTORY_REGISTER_CREATOR ( GeoRSSLayer );
 GeoRSSLayer::GeoRSSLayer() :
   BaseClass(),
   _lastDataUpdate( boost::posix_time::not_a_date_time ),
-  _filename(),
   _href(),
   _refreshInterval ( 300.0 ),
-  _lastUpdate( 0.0 ),
   _flags(),
   _color ( 1.0, 0.0, 0.0, 1.0 ),
   _timerInfo ( 0, false )
@@ -72,8 +70,6 @@ GeoRSSLayer::GeoRSSLayer() :
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
   this->_addMember ( "color", _color );
-  
-  //this->dirtyData ( true );
   
   this->_addTimer();
 }
@@ -100,31 +96,11 @@ Usul::Interfaces::IUnknown* GeoRSSLayer::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IRead::IID:
-    return static_cast < Usul::Interfaces::IRead* > ( this );
   case Usul::Interfaces::ITimerNotify::IID:
     return static_cast < Usul::Interfaces::ITimerNotify* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void GeoRSSLayer::read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
-{
-  this->name ( filename );
-  
-  // Set our filename.
-  Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
-  
-  // Read.
-  this->_read ( filename, caller, progress );
 }
 
 
@@ -199,6 +175,10 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   if ( false == Usul::Predicates::FileExists::test ( filename ) )
     return;
   
+  // Set the name.
+  if ( true == this->name().empty() )
+    this->name ( filename );
+  
   // Help shorten lines.
   namespace UA = Usul::Adaptors;
   
@@ -209,7 +189,6 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   // TODO: I think a SAX parser is more appropraite here, because we can stop the parsing if there isn't new data.
   XmlTree::XercesLife life;
   XmlTree::Document::RefPtr doc ( new XmlTree::Document );
-  std::cout << "Reading " << filename << std::endl;
   doc->load ( filename );
   
   // Get the date the stream was modified.
@@ -256,10 +235,6 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
-  
-  // Update last time.
-  const boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
-  Usul::Threads::Safe::set ( this->mutex(), now, _lastDataUpdate );
 }
 
 
@@ -386,18 +361,13 @@ void GeoRSSLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
   std::string filename;
   if ( Minerva::Core::Utilities::download ( href, filename ) )
   {
+    Usul::Scope::RemoveFile remove ( filename );
+    
     std::cout << "Downloading finished" << std::endl;
     
-    // Set the filename.
-    Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
-    
-    // Get the current time.
-    Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-    osg::ref_ptr<osg::FrameStamp> frameStamp ( fs.valid() ? fs->frameStamp() : 0x0 );
-    const double time ( frameStamp.valid () ? frameStamp->getReferenceTime () : 0.0 );
-
-    // Set the last update time.
-    Usul::Threads::Safe::set ( this->mutex(), time, _lastUpdate );
+    // Update last time.
+    const boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
+    Usul::Threads::Safe::set ( this->mutex(), now, _lastDataUpdate );
     
     // Our data is dirty.
     this->dirtyData ( true );

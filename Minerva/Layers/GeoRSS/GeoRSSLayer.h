@@ -32,7 +32,6 @@ namespace Layers {
 namespace GeoRSS {  
 
 class MINERVA_GEORSS_EXPORT GeoRSSLayer : public Minerva::Core::Layers::Container,
-                                          public Usul::Interfaces::IRead,
                                           public Usul::Interfaces::ITimerNotify
                  
 {
@@ -53,9 +52,6 @@ public:
   /// Set/get the color.
   void                        color ( const Usul::Math::Vec4f& color );
   Usul::Math::Vec4f           color() const;
-
-  // Read the file.
-  virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
 
   // Deserialize.
   virtual void                deserialize( const XmlTree::Node &node );
@@ -106,10 +102,8 @@ private:
   };
   
   boost::posix_time::ptime _lastDataUpdate;
-  std::string _filename;
   std::string _href;
   double _refreshInterval;
-  double _lastUpdate;
   unsigned int _flags;
   Usul::Math::Vec4f _color;
   TimerPair _timerInfo;

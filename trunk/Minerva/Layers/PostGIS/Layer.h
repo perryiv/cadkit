@@ -198,16 +198,17 @@ public:
   bool                        isUpdating() const;
   
   /// Get/Set the x offset.
-  void                        xOffset( float f );
-  float                       xOffset() const;
+  void                        xOffset ( double f );
+  double                      xOffset() const;
   
   /// Get/Set the y offset.
-  void                        yOffset( float f );
-  float                       yOffset() const;
+  void                        yOffset ( double f );
+  double                      yOffset() const;
   
   /// Get/Set the z offset.
-  void                        zOffset( float f );
-  float                       zOffset() const;
+  void                        zOffset ( double f );
+  double                      zOffset() const;
+  
 protected:
 
   /// Use reference counting.
@@ -251,9 +252,10 @@ private:
   std::string _labelColumn;
   std::string _query;
   Usul::Types::Uint32 _renderBin;
-  float _xOffset;
-  float _yOffset;
-  float _zOffset;
+  Usul::Math::Vec3d _offset;
+  double _xOffset;
+  double _yOffset;
+  double _zOffset;
   Connection::RefPtr _connection;
   Minerva::Core::Functors::BaseColorFunctor::RefPtr _colorFunctor;
   std::string                  _legendText;

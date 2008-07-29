@@ -676,7 +676,7 @@ Usul::Interfaces::ITreeNode * Container::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return Usul::Interfaces::ITreeNode::QueryPtr ( _layers.at( which ) );
+  return Usul::Interfaces::ITreeNode::QueryPtr ( _layers.at ( which ) );
 }
 
 

@@ -383,7 +383,7 @@ const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::xOffset( float f )
+void Layer::xOffset( double f )
 {
   Guard guard ( this->mutex() );
   _xOffset = f;
@@ -396,11 +396,12 @@ void Layer::xOffset( float f )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Layer::xOffset( ) const
+double Layer::xOffset() const
 {
   Guard guard ( this->mutex() );
   return _xOffset;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -408,7 +409,7 @@ float Layer::xOffset( ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::yOffset( float f )
+void Layer::yOffset ( double f )
 {
   Guard guard ( this->mutex() );
   _yOffset = f;
@@ -421,7 +422,7 @@ void Layer::yOffset( float f )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Layer::yOffset( ) const
+double Layer::yOffset() const
 {
   Guard guard ( this->mutex() );
   return _yOffset;
@@ -434,7 +435,7 @@ float Layer::yOffset( ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::zOffset( float f )
+void Layer::zOffset ( double f )
 {
   Guard guard ( this->mutex() );
   _zOffset = f;
@@ -447,7 +448,7 @@ void Layer::zOffset( float f )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Layer::zOffset( ) const
+double Layer::zOffset() const
 {
   Guard guard ( this->mutex() );
   return _zOffset;
@@ -1417,7 +1418,7 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         std::string lastDate  ( iter[ lastDateColumn  ].as < std::string > () );
        
         // Update min max.
-        this->_updateMinMaxDate( firstDate, lastDate );
+        this->_updateMinMaxDate ( firstDate, lastDate );
         
         // Increment last day so animation works properly.
         DataObject::Date last ( lastDate ); 

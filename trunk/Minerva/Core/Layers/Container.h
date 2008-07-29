@@ -107,11 +107,11 @@ public:
   
   /// Get/Set the extents dirty flag.
   bool                        dirtyExtents() const;
-  void                        dirtyExtents( bool );
+  void                        dirtyExtents ( bool );
   
   /// Get/Set dirty scene flag (IDirtyScene).
   virtual bool                dirtyScene() const;
-  virtual void                dirtyScene( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual void                dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Elevation has changed within given extents (IElevationChangedListnerer).
   virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller = 0x0 );
@@ -123,7 +123,7 @@ public:
 
   /// Get/Set the flags.
   unsigned int                flags() const;
-  void                        flags( unsigned int );
+  void                        flags ( unsigned int );
 
   /// Get the guid (ILayer).
   virtual std::string         guid() const;
@@ -147,7 +147,7 @@ public:
   void                        remove ( IUnknown* layer );
 
   /// Get/Set show layer (ILayer).
-  virtual void                showLayer( bool b );
+  virtual void                showLayer ( bool b );
   virtual bool                showLayer() const;
 
   /// Traverse all DataObjects.

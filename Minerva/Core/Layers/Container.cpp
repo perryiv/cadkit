@@ -661,6 +661,7 @@ void Container::updateNotify ( Usul::Interfaces::IUnknown *caller )
 unsigned int Container::getNumChildNodes() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _layers.size();
 }
 
@@ -674,6 +675,7 @@ unsigned int Container::getNumChildNodes() const
 Usul::Interfaces::ITreeNode * Container::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return Usul::Interfaces::ITreeNode::QueryPtr ( _layers.at( which ) );
 }
 

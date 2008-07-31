@@ -988,7 +988,7 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   // Background menu.
   {
     MenuKit::Menu::RefPtr background ( new MenuKit::Menu ( "&Background" ) );
-    background->append ( new Button ( USUL_MAKE_COMMAND ( "&Edit...", "", this, &Viewer::editClippingDistances ) ) );
+    background->append ( new Button ( USUL_MAKE_COMMAND ( "&Edit...", "", this, &Viewer::editBackground ) ) );
     background->append ( new Button ( USUL_MAKE_COMMAND ( "&Default", "", viewer.get(), &OsgViewer::defaultBackground ) ) );
     menu.append ( background.get() );
   }

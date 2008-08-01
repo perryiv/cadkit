@@ -35,6 +35,7 @@ namespace Core {
 class TimerCallback : public QObject
 {
   Q_OBJECT;
+
 public:
 
   // Typedefs.

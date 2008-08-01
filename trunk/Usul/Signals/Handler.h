@@ -36,6 +36,7 @@ namespace ID
   const int SegmentationViolation  ( SIGSEGV );
   const int AbortSignal            ( SIGABRT );
   const int FloatingPointException ( SIGFPE  );
+  const int BusError               ( SIGBUS  );
 
 #else
 
@@ -43,6 +44,7 @@ namespace ID
   const int SegmentationViolation  ( 0 );
   const int AbortSignal            ( 1 );
   const int FloatingPointException ( 2 );
+  const int BusError               ( 3 );
 
 #endif
 }

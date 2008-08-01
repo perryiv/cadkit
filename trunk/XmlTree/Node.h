@@ -83,6 +83,14 @@ public:
   void                    find ( const std::string &name, bool traverse, Children & ) const;
   Children                find ( const std::string &name, bool traverse ) const;
 
+  // Find all children with the given predicate. Pass true for "traverse" if you 
+  // want to search all children, false if just immediate children.
+  template< class Predicate >
+  void                    findIf ( bool traverse, Children &, const Predicate& ) const;
+  
+  template< class Predicate >
+  Children                findIf ( bool traverse, const Predicate& ) const;
+
   // Access the name.
   const std::string &     name() const { return _name; }
   void                    name ( const std::string &n );
@@ -123,6 +131,52 @@ template < class T > inline Node::Node ( const std::string &name, T value ) : Ba
   _attributes (),
   _children   ()
 {
+}
+ 
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all children with the given predicate. Pass true for "traverse" if you 
+//  want to search all children, false if just immediate children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Predicate >
+void Node::findIf ( bool traverse, Children & all, const Predicate& pred ) const
+{
+  const Children &kids ( this->children() );
+  for ( Children::const_iterator i = kids.begin(); i != kids.end(); ++i )
+  {
+    Node::RefPtr node ( const_cast<Node *> ( i->get() ) );
+    if ( true == node.valid() )
+    {
+      if ( pred ( node->name() ) )
+      {
+        all.push_back ( node.get() );
+      }
+      
+      if ( true == traverse )
+      {
+        node->findIf ( traverse, all, pred );
+      }
+    }
+  }
+}
+
+  
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find all children with the given predicate. Pass true for "traverse" if you 
+//  want to search all children, false if just immediate children.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class Predicate >
+Node::Children Node::findIf ( bool traverse, const Predicate& pred ) const
+{
+  Children children;
+  this->findIf ( traverse, children, pred );
+  return children;
 }
 
 

@@ -50,9 +50,11 @@
 
 #include "boost/concept_check.hpp"
 
+#if 0
 #ifdef __GNUC__
 # include "Usul/Errors/Signals.h"
 # include <pthread.h>
+#endif
 #endif
 
 #include "QtCore/QDir"
@@ -90,6 +92,7 @@ namespace Helper
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SegmentationViolation );
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, AbortSignal );
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, FloatingPointException  );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, BusError  );
 }
 
 

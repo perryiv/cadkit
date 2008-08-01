@@ -252,6 +252,32 @@ XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool 
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper predicate to check name of node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  struct NameCompare
+  {
+    NameCompare ( const std::string& name ) : _name ( name )
+    {
+    }
+    
+    bool operator() ( const std::string& name ) const
+    {
+      return name == _name;
+    }
+    
+  private:
+    std::string _name;
+  };
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Find all children with the given name. Pass true for "traverse" if you 
@@ -261,23 +287,7 @@ XmlTree::Node *Node::_child ( unsigned int which, const std::string &name, bool 
 
 void Node::find ( const std::string &name, bool traverse, Children &all ) const
 {
-  const Children &kids ( this->children() );
-  for ( Children::const_iterator i = kids.begin(); i != kids.end(); ++i )
-  {
-    Node::RefPtr node ( const_cast<Node *> ( i->get() ) );
-    if ( true == node.valid() )
-    {
-      if ( name == node->name() )
-      {
-        all.push_back ( node.get() );
-      }
-
-      if ( true == traverse )
-      {
-        node->find ( name, traverse, all );
-      }
-    }
-  }
+  this->findIf ( traverse, all, Helper::NameCompare ( name ) );
 }
 
 

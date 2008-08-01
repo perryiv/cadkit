@@ -90,7 +90,7 @@ public:
   virtual void                accept ( Minerva::Core::Visitor& visitor );
 
   /// Add an object.
-  void                        add ( IUnknown* layer );
+  void                        add ( IUnknown* layer, bool notify = true );
 
   /// Build the scene (IBuildScene).
   virtual osg::Node *         buildScene ( const Options &options, IUnknown *caller = 0x0 );
@@ -137,7 +137,7 @@ public:
   virtual double              maxLat() const;
 
   /// Get/Set the name (ILayer).
-  virtual void                name( const std::string& name );
+  virtual void                name ( const std::string& name );
   virtual std::string         name() const;
   
   /// Get the number of data objects in this layer.

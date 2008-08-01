@@ -106,6 +106,9 @@ void OGRVectorLayer::read ( const std::string &filename, Usul::Interfaces::IUnkn
   for ( int i = 0; i < layers; ++i )
   {
     this->_addLayer ( dataSource->GetLayer ( i ) );
+    
+    // Notify any listeners that the data has changed.
+    this->_notifyDataChnagedListeners();
   }
 }
 
@@ -166,7 +169,7 @@ void OGRVectorLayer::_addLayer ( OGRLayer* layer )
       }
 
       // Add the data object.
-      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( dataObject ) );
+      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( dataObject ), false );
     }
 
     // Destroy the feature.
@@ -217,7 +220,7 @@ namespace Helper
     // Transform the point.
     if ( 0x0 != transform )
     {
-      transform->Transform ( 1, &p[0], &p[1] );
+      transform->Transform ( 1, &p[0], &p[1], &p[2] );
     }
 
     return p;
@@ -239,6 +242,7 @@ namespace Helper
     OGRPoint point;
 
     const int numPoints ( line.getNumPoints() );
+    vertices.reserve ( numPoints );
     for ( int i = 0; i < numPoints; ++i )
     {
       line.getPoint ( i, &point );

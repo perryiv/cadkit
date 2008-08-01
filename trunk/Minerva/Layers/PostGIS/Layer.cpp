@@ -1433,9 +1433,9 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         Minerva::Core::Data::Geometry::RefPtr geometry ( *geom );
         
         // Set the geometry's data.
-        geometry->wellKnownText( wkt );
-        geometry->spatialOffset( Usul::Math::Vec3d ( this->xOffset(), this->yOffset(), this->zOffset() ) );
-        geometry->color( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
+        geometry->wellKnownText ( wkt );
+        geometry->spatialOffset ( Usul::Math::Vec3d ( this->xOffset(), this->yOffset(), this->zOffset() ) );
+        geometry->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
         geometry->renderBin ( this->renderBin() );
         
         // Set primitive specific data members.

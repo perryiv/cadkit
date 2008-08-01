@@ -284,7 +284,7 @@ bool Container::showLayer() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::add ( Usul::Interfaces::IUnknown* unknown )
+void Container::add ( Usul::Interfaces::IUnknown* unknown, bool notify )
 {
   USUL_TRACE_SCOPE;
 
@@ -304,7 +304,8 @@ void Container::add ( Usul::Interfaces::IUnknown* unknown )
   this->dirtyScene ( true );
   
   // Notify any listeners that the data has changed.
-  this->_notifyDataChnagedListeners();
+  if ( notify )
+    this->_notifyDataChnagedListeners();
 }
 
 

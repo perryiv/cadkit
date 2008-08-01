@@ -23,6 +23,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/File/Path.h"
 #include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
@@ -31,9 +32,11 @@
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
 
+#include "boost/filesystem.hpp"
 #include "boost/foreach.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include "boost/date_time/local_time/local_time.hpp"
+#include "boost/regex.hpp"
 
 using namespace Minerva::Layers::GeoRSS;
 
@@ -235,6 +238,35 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
+  
+  // Update last time.
+  const boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
+  Usul::Threads::Safe::set ( this->mutex(), now, _lastDataUpdate );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper struct to match with regular expression.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  struct RegexMatch
+  {
+    RegexMatch ( const std::string& expression ) : _e ( expression )
+    {
+    }
+    
+    bool operator() ( const std::string& name ) const
+    {
+      return boost::regex_match ( name, _e );
+    }
+    
+  private:
+    boost::regex _e;
+  };
 }
 
 
@@ -248,21 +280,21 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
 {
   // Get the color.
   Usul::Math::Vec4f color ( Usul::Threads::Safe::get ( this->mutex(), _color ) );
-  
+
   // Make a new callback.
   GeoRSSCallback::RefPtr cb ( new GeoRSSCallback );
-  
+
   // Get the title.
   Children titleNode ( node.find ( "title", false ) );
   const std::string title ( titleNode.empty() ? "" : titleNode.front()->value() );
-  
+
   // Look for the publication date.
   Children pubDateNode ( node.find ( "pubDate", false ) );
   const std::string pubDate ( pubDateNode.empty() ? "" : pubDateNode.front()->value() );
   cb->date ( pubDate );
-  
+
   // Look for an image.
-  Children imageNode ( node.find ( "media:content", false ) );
+  Children imageNode ( node.find ( "media:content", true ) );
   //Children imageNode ( node.find ( "media:thumbnail", false ) );
   if ( false == imageNode.empty() )
   {
@@ -276,42 +308,60 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
     std::string filename;
     if ( Minerva::Core::Utilities::download ( url, filename, true ) )
     {
+      // Determine file extension.  Make it jpg by default.
+      std::string ext ( ( type.size() > 6 && '/' == type.at(5) ) ? std::string ( type.begin() + 6, type.end() ) : "jpg" );
+      ext = ( "jpeg" == ext ? "jpg" : ext );
+      
+      if ( ext != Usul::File::extension ( filename ) )
+      {
+        // The new filename.
+        const std::string newName ( filename + "." + ext );
+        
+        // Move the file.
+        boost::filesystem::remove ( newName );
+        boost::filesystem::copy_file ( filename, newName );
+        //boost::filesystem::remove ( filename );
+        
+        // Set the new filename.
+        filename = newName;
+      }
+      
       cb->imageFilename ( filename );
-      unsigned int w ( Usul::Convert::Type<std::string, unsigned int>::convert ( width ) );
-      unsigned int h ( Usul::Convert::Type<std::string, unsigned int>::convert ( height ) );
+      unsigned int w ( width.empty() ? 256 : Usul::Convert::Type<std::string, unsigned int>::convert ( width ) );
+      unsigned int h ( height.empty() ? 256 : Usul::Convert::Type<std::string, unsigned int>::convert ( height ) );
       cb->imageSize ( w, h );
     }
   }
   
   // Look for the geo tag information.  TODO: Handle gml in geoRSS.
-  Children latNode ( node.find ( "geo:lat", true ) );
-  Children lonNode ( node.find ( "geo:long", true ) );
-  
+  Children latNode ( node.findIf ( true, Helper::RegexMatch ( "geo:(lat|latitude)" ) ) );
+  Children lonNode ( node.findIf ( true, Helper::RegexMatch ( "geo:(long|longitude)" ) ) );
+
   const double lat ( latNode.empty() ? 0.0 : ToDouble::convert ( latNode.front()->value() ) );
   const double lon ( lonNode.empty() ? 0.0 : ToDouble::convert ( lonNode.front()->value() ) );
-  
+
   // Look for a description.
-  Children descriptionNode ( node.find ( "media:description", false ) );
+  Children descriptionNode ( node.find ( "media:description", true ) );
   const std::string description ( descriptionNode.empty() ? "" : descriptionNode.front()->value() );
-  
+
   Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
   point->autotransform ( false );
   point->size ( 100 );
   point->primitiveId ( 2 );
   point->color ( color );
   point->point ( Usul::Math::Vec3d ( lon, lat, 0.0 ) );
-  
+
   DataObject::RefPtr object ( new DataObject );
   object->name ( title );
   object->description ( description );
   object->clickedCallback ( cb.get() );
-  
+
   // Add the geometry.
   object->addGeometry ( point );
-  
+
   // Add the data object.
   this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
-  
+
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
 }
@@ -364,10 +414,6 @@ void GeoRSSLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
     Usul::Scope::RemoveFile remove ( filename );
     
     std::cout << "Downloading finished" << std::endl;
-    
-    // Update last time.
-    const boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
-    Usul::Threads::Safe::set ( this->mutex(), now, _lastDataUpdate );
     
     // Our data is dirty.
     this->dirtyData ( true );

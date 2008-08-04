@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib curld.lib osgDBd.lib libcollada14dom21-d.lib"
+				AdditionalDependencies="osgd.lib osgTextd.lib $(CURL_LIB_FILE_DEBUG) osgDBd.lib libcollada14dom21-d.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaKmld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;$(CURL_LIB_DIR);$(COLLADA_LIB_DIR_DEBUG)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(COLLADA_LIB_DIR_DEBUG)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MinervaKmld.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaKmld.lib"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib curl.lib osgDB.lib libcollada14dom21.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgText.lib $(CURL_LIB_FILE_RELEASE) osgDB.lib libcollada14dom21.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaKml.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;$(CURL_LIB_DIR);$(COLLADA_LIB_DIR_RELEASE)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(COLLADA_LIB_DIR_RELEASE)&quot;"
 				ProgramDatabaseFile=".\Release/MinervaKml.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaKml.lib"
 			/>

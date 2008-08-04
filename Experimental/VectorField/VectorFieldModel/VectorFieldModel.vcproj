@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgManipulator.lib osgFX.lib osgGA.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgManipulator.lib osgFX.lib osgGA.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/VectorFieldModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -177,7 +177,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgUtil.lib"
+				AdditionalDependencies="osg.lib osgUtil.lib OpenThreads.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/PathAnimation.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

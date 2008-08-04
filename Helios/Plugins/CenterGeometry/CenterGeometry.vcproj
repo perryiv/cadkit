@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/CenterGeometry.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libpqxxd.lib"
+				AdditionalDependencies="$(PQXX_LIB_FILE_RELEASE) wsock32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostgresd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);$(PQXX_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MinervaPostgresd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaPostgresd.lib"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libpqxx.lib"
+				AdditionalDependencies="$(PQXX_LIB_FILE_RELEASE) wsock32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostgres.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(PQXX_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);$(PQXX_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/MinervaPostgres.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaPostgres.lib"
 			/>

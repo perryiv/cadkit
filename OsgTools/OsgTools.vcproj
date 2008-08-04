@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib osgManipulatord.lib osgViewerd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="OpenThreadsd.lib osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib osgManipulatord.lib osgViewerd.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/OsgToolsd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgGA.lib osgDB.lib osgUtil.lib osgText.lib osg.lib osgManipulator.lib osgViewer.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="OpenThreads.lib osgGA.lib osgDB.lib osgUtil.lib osgText.lib osg.lib osgManipulator.lib osgViewer.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/OsgTools.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -951,22 +951,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Widgets\ProgressBar.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Widgets\ProgressBar.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Widgets\ProgressBarGroup.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Widgets\ProgressBarGroup.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Widgets\GradientIcon.cpp"
 					>
 				</File>
@@ -975,19 +959,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Widgets\Item.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Widgets\Item.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Widgets\Image.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Widgets\Image.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\Item.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\Item.h"
 					>
 				</File>
 				<File
@@ -1008,6 +992,22 @@
 				</File>
 				<File
 					RelativePath=".\Widgets\LineFunctor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\ProgressBar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\ProgressBar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\ProgressBarGroup.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Widgets\ProgressBarGroup.h"
 					>
 				</File>
 				<File

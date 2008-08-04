@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib"
+				AdditionalDependencies="osg.lib osgDB.lib OpenThreads.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/TriangleModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

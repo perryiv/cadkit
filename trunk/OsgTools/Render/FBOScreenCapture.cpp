@@ -16,6 +16,7 @@
 #include "osg/Texture2D"
 #include "osg/CameraNode"
 #include "osg/Image"
+#include "osg/Version"
 
 #include "osgUtil/SceneView"
 
@@ -155,8 +156,13 @@ void FBOScreenCapture::operator () ( osg::Image& image, osgUtil::SceneView& scen
   
   // Make the fbo.
   osg::ref_ptr< osg::FrameBufferObject > fbo ( new osg::FrameBufferObject );
+#if OPENSCENEGRAPH_MAJOR_VERSION <= 2 && OPENSCENEGRAPH_MINOR_VERSION <= 4
   fbo->setAttachment(GL_COLOR_ATTACHMENT0_EXT, osg::FrameBufferAttachment(tex.get()));
   fbo->setAttachment(GL_DEPTH_ATTACHMENT_EXT, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
+#else
+  fbo->setAttachment(osg::Camera::COLOR_BUFFER0, osg::FrameBufferAttachment(tex.get()));
+  fbo->setAttachment(osg::Camera::DEPTH_BUFFER, osg::FrameBufferAttachment(new osg::RenderBuffer(width, height, GL_DEPTH_COMPONENT24)));
+#endif
 
   // Make the camera buffer.
   osg::ref_ptr< osg::CameraNode > camera ( new osg::CameraNode );

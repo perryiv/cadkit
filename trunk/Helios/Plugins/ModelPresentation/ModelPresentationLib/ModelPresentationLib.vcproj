@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib rpcrt4.lib osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib osgManipulatord.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="OpenThreadsd.lib User32.lib rpcrt4.lib osgGAd.lib osgDBd.lib osgUtild.lib osgTextd.lib osgd.lib osgManipulatord.lib MSVCPRTD.lib MSVCRTD.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/ModelPresentationLibd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib rpcrt4.lib osgGA.lib osgDB.lib osgUtil.lib osgText.lib osg.lib osgManipulator.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="OpenThreads.lib User32.lib rpcrt4.lib osgGA.lib osgDB.lib osgUtil.lib osgText.lib osg.lib osgManipulator.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib opengl32.lib glu32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/ModelPresentationLib.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

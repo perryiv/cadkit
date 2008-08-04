@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib osgDBd.lib gdald.lib"
+				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgTextd.lib osgDBd.lib $(GDAL_LIB_FILE_DEBUG)"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDALd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MinervaGDALd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGDALd.lib"
@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(PROJ_LIB)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c&#x0D;&#x0A;xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c"
+				CommandLine="xcopy $(PROJ_LIB)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c&#x0D;&#x0A;xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -179,11 +179,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib osgDB.lib gdal.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgText.lib osgDB.lib $(GDAL_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGDAL.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(GDAL_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
 				ProgramDatabaseFile=".\Release/MinervaGDAL.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGDAL.lib"
 			/>
@@ -210,7 +210,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(PROJ_LIB)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c&#x0D;&#x0A;xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c"
+				CommandLine="xcopy $(PROJ_LIB)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c&#x0D;&#x0A;xcopy $(GDAL_DATA)\* $(CADKIT_BIN_DIR)\proj4 /f /i /k /y /c&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

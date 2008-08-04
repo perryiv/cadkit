@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgText.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/FieldViewReader.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

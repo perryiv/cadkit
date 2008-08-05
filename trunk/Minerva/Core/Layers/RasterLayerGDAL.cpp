@@ -340,9 +340,11 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   }
 
   // Save the image to the cache.
-  #ifndef _DEBUG 
+#ifndef __APPLE__
+  #ifndef _DEBUG
   BaseClass::_writeImageToCache ( extents, width, height, level, image );
   #endif
+#endif
   
   return image;
 }

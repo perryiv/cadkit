@@ -1144,6 +1144,7 @@ void PathAnimationComponent::_saveCurrentPath ( Usul::Interfaces::IUnknown::Quer
   Strings strings;
   strings = reg.get<Strings> ( strings );
   strings.push_back ( name );
+  strings.erase ( std::unique ( strings.begin(), strings.end() ), strings.end() );
   reg = strings;
 }
 

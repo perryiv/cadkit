@@ -1,0 +1,86 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The component class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "ShowtimeModel/ShowtimeComponent.h"
+#include "ShowtimeModel/ShowtimeDocument.h"
+
+#include "Usul/Components/Factory.h"
+#include "Usul/Trace/Trace.h"
+
+#include "osgDB/Registry"
+
+USUL_DECLARE_COMPONENT_FACTORY ( ShowtimeComponent );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( ShowtimeComponent, ShowtimeComponent::BaseClass );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ShowtimeComponent::ShowtimeComponent() : BaseClass()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ShowtimeComponent::~ShowtimeComponent()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *ShowtimeComponent::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IPlugin::IID:
+    return static_cast < Usul::Interfaces::IPlugin*>(this);
+  case Usul::Interfaces::IDocumentCreate::IID:
+    return static_cast < Usul::Interfaces::IDocumentCreate*>(this);
+  default:
+    return 0x0;
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Create document.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+Usul::Documents::Document *ShowtimeComponent::createDocument ( Unknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  ShowtimeDocument::ValidRefPtr document ( new ShowtimeDocument );
+  return document.release();
+}

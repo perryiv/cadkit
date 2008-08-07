@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: Display"
-	ProjectGUID="{472F2157-D0BC-4B89-BC6A-0D2DDB8FEE53}"
+	Name="plug: Showtime Model"
+	ProjectGUID="{87BA10F9-6616-48EA-9E55-BEAA9F81595D}"
 	>
 	<Platforms>
 		<Platform
@@ -39,14 +39,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Display.tlb"
+				TypeLibraryName=".\Debug/ShowtimeModel.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_DISPLAY_LIBRARY"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental/Showtime;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_SHOW_TIME_MODEL;"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -55,7 +55,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -79,14 +79,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib osgd.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/Displayd.dll"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/ShowtimeModel.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);"
+				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/Displayd.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/Displayd.lib"
+				ProgramDatabaseFile=".\Debug\ShowtimeModeld.pdb"
+				ImportLibrary=".\Debug\ShowtimeModeld.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -139,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/Display.tlb"
+				TypeLibraryName=".\Release/ShowtimeModel.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DISPLAY_LIBRARY"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental/Showtime;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SHOW_TIME_MODEL;"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -154,7 +155,7 @@
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
-				PrecompiledHeaderFile=""
+				PrecompiledHeaderFile="$(IntDir)/$(TargetName).pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -177,13 +178,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib osg.lib OpenThreads.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/Display.dll"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib OpenThreads.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/ShowtimeModel.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
-				ProgramDatabaseFile=".\Release/Display.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/Display.lib"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);"
+				ModuleDefinitionFile="Export.def"
+				ProgramDatabaseFile=".\Release\ShowtimeModel.pdb"
+				ImportLibrary=".\Release\ShowtimeModel.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -218,80 +220,62 @@
 			Name="Source"
 			>
 			<Filter
-				Name="Scene"
+				Name="Implementation"
 				>
 				<File
-					RelativePath=".\Render\Group.cpp"
+					RelativePath=".\CompileGuard.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Render\Group.h"
+					RelativePath=".\Model.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Render\Renderer.cpp"
+					RelativePath=".\Model.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Render\Renderer.h"
+					RelativePath=".\ShowtimeComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ShowtimeComponent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ShowtimeDocument.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ShowtimeDocument.h"
 					>
 				</File>
 				<Filter
-					Name="OSG"
+					Name="Actions"
 					>
 					<File
-						RelativePath=".\Render\OSG\Renderer.cpp"
+						RelativePath=".\Actions\Action.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
-						RelativePath=".\Render\OSG\Renderer.h"
+						RelativePath=".\Actions\Action.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Actions\Fade.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Actions\Fade.h"
 						>
 					</File>
 				</Filter>
 			</Filter>
 			<Filter
-				Name="View"
+				Name="DLL"
 				>
 				<File
-					RelativePath=".\View\Canvas.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\View\Canvas.h"
-					>
-				</File>
-				<File
-					RelativePath=".\View\Viewer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\View\Viewer.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Export"
-				>
-				<File
-					RelativePath=".\Export\Export.h"
+					RelativePath="Export.def"
 					>
 				</File>
 			</Filter>

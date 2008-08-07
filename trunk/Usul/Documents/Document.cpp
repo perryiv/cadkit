@@ -769,10 +769,9 @@ void Document::createDefaultGUI ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Document::updateGUI  (  ) 
+void Document::updateGUI() 
 {
-  Usul::Interfaces::IUpdateGUI::QueryPtr update  ( this->delegate( ) );
-
+  Usul::Interfaces::IUpdateGUI::QueryPtr update ( this->delegate() );
   if ( update.valid() )
     update->updateGUI();
 }

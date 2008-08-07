@@ -1466,8 +1466,12 @@ void MainWindow::_idleProcess()
   // Tell window to refresh.
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), true );
   
-  // Purge timers.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _timerServer.get(), &TimerServer::purge ) );
+  // Update the timer server.
+  if ( true == _timerServer.valid() )
+  {
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _timerServer.get(), &TimerServer::purge ), "2332384530" );
+    Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _timerServer.get(), &TimerServer::addPendingTimers ), "1116658650" );
+  }
 }
 
 

@@ -519,6 +519,110 @@
 		663C60680D11116000949515 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		663C606F0D1111C600949515 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		663C60750D11120F00949515 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		664279E50E4AA8BE009AE232 /* Helios.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59009677C07008DF27C /* Helios.icns */; };
+		664279E60E4AA8BE009AE232 /* HeliosQtApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 666765E80D1235EC002F40C6 /* HeliosQtApp-Info.plist */; };
+		664279E70E4AA8BE009AE232 /* helios_sun.png in Resources */ = {isa = PBXBuildFile; fileRef = 666766A20D124D2C002F40C6 /* helios_sun.png */; };
+		664279F30E4AA8BE009AE232 /* MeasureTool.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plug */; };
+		664279F40E4AA8BE009AE232 /* PathAnimation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plug */; };
+		664279F60E4AA8BE009AE232 /* QtSnapShot.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */; };
+		664279F70E4AA8BE009AE232 /* QtClipPlanes.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EFF3930D139F7200B4B1AA /* QtClipPlanes.plug */; };
+		664279F90E4AA8BE009AE232 /* SceneModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB89409246ADA00ED2131 /* SceneModel.plug */; };
+		664279FA0E4AA8BE009AE232 /* QtSceneDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */; };
+		664279FB0E4AA8BE009AE232 /* Helios.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666766660D12437A002F40C6 /* Helios.plugins */; };
+		664279FD0E4AA8BE009AE232 /* Back.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87260E22C57D0059B2E5 /* Back.png */; };
+		664279FE0E4AA8BE009AE232 /* Bottom.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87270E22C57D0059B2E5 /* Bottom.png */; };
+		664279FF0E4AA8BE009AE232 /* Front.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87280E22C57D0059B2E5 /* Front.png */; };
+		66427A000E4AA8BE009AE232 /* home.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87290E22C57D0059B2E5 /* home.png */; };
+		66427A010E4AA8BE009AE232 /* Left.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA872A0E22C57D0059B2E5 /* Left.png */; };
+		66427A020E4AA8BE009AE232 /* Right.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA872B0E22C57D0059B2E5 /* Right.png */; };
+		66427A030E4AA8BE009AE232 /* Top.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA872C0E22C57D0059B2E5 /* Top.png */; };
+		66427A040E4AA8BE009AE232 /* eye.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342680E14BEAF00F36EA7 /* eye.png */; };
+		66427A050E4AA8BE009AE232 /* animation_control_play_backward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE560DC0FF2B006DEE5E /* animation_control_play_backward.png */; };
+		66427A060E4AA8BE009AE232 /* animation_control_play_forward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE570DC0FF2B006DEE5E /* animation_control_play_forward.png */; };
+		66427A070E4AA8BE009AE232 /* animation_control_step_backward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE580DC0FF2B006DEE5E /* animation_control_step_backward.png */; };
+		66427A080E4AA8BE009AE232 /* animation_control_step_forward.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE590DC0FF2B006DEE5E /* animation_control_step_forward.png */; };
+		66427A090E4AA8BE009AE232 /* animation_control_stop.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A4CE5A0DC0FF2B006DEE5E /* animation_control_stop.png */; };
+		66427A0A0E4AA8BE009AE232 /* helios_sun.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A20D124D2C002F40C6 /* helios_sun.png */; };
+		66427A0B0E4AA8BE009AE232 /* newDocument.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A30D124D2C002F40C6 /* newDocument.png */; };
+		66427A0C0E4AA8BE009AE232 /* openDocument.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A40D124D2C002F40C6 /* openDocument.png */; };
+		66427A0D0E4AA8BE009AE232 /* saveDocument.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A50D124D2C002F40C6 /* saveDocument.png */; };
+		66427A0E0E4AA8BE009AE232 /* splash_screen.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A60D124D2C002F40C6 /* splash_screen.png */; };
+		66427A100E4AA8BE009AE232 /* arial.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58B09677C07008DF27C /* arial.ttf */; };
+		66427A110E4AA8BE009AE232 /* dirtydoz.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58C09677C07008DF27C /* dirtydoz.ttf */; };
+		66427A120E4AA8BE009AE232 /* fudd.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58D09677C07008DF27C /* fudd.ttf */; };
+		66427A130E4AA8BE009AE232 /* Times New Roman.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58E09677C07008DF27C /* Times New Roman.ttf */; };
+		66427A140E4AA8BE009AE232 /* times.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58F09677C07008DF27C /* times.ttf */; };
+		66427A160E4AA8BE009AE232 /* xercesc.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 6672C5160E26DEC30013A6F3 /* xercesc.framework */; };
+		66427A170E4AA8BE009AE232 /* osgViewer.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 669BD29C0E0EF9DF00E598FF /* osgViewer.framework */; };
+		66427A180E4AA8BE009AE232 /* QtCore.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
+		66427A190E4AA8BE009AE232 /* QtGui.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
+		66427A1A0E4AA8BE009AE232 /* QtOpenGL.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
+		66427A1B0E4AA8BE009AE232 /* curl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
+		66427A1C0E4AA8BE009AE232 /* Boost.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
+		66427A1D0E4AA8BE009AE232 /* OpenThreads.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
+		66427A1E0E4AA8BE009AE232 /* osg.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66427A1F0E4AA8BE009AE232 /* osgDB.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
+		66427A200E4AA8BE009AE232 /* osgGA.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CF094DE500009181E3 /* osgGA.framework */; };
+		66427A210E4AA8BE009AE232 /* osgManipulator.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 664308DE0D10B05700984C94 /* osgManipulator.framework */; };
+		66427A220E4AA8BE009AE232 /* osgText.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
+		66427A230E4AA8BE009AE232 /* osgUtil.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
+		66427A250E4AA8BE009AE232 /* libModelPresentationLib.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 6692712B0E0AD2A800E35E8B /* libModelPresentationLib.dylib */; };
+		66427A260E4AA8BE009AE232 /* libHeliosQtCommands.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */; };
+		66427A270E4AA8BE009AE232 /* libHeliosQtCore.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */; };
+		66427A280E4AA8BE009AE232 /* libHeliosQtViewOSG.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */; };
+		66427A290E4AA8BE009AE232 /* libMenuKit.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
+		66427A2A0E4AA8BE009AE232 /* libOpenThreadsEx.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */; };
+		66427A2B0E4AA8BE009AE232 /* libOsgTools.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66427A2C0E4AA8BE009AE232 /* libQtTools.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
+		66427A2D0E4AA8BE009AE232 /* libSerializeXML.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		66427A2E0E4AA8BE009AE232 /* libUsul.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66427A2F0E4AA8BE009AE232 /* libXmlTree.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66427A310E4AA8BE009AE232 /* libOpenThreadsEx.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */; };
+		66427A320E4AA8BE009AE232 /* libHeliosQtCore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */; };
+		66427A330E4AA8BE009AE232 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66427A350E4AA8BE009AE232 /* osgdb_dae.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 669FCA250E1A8FDB00DFE682 /* osgdb_dae.so */; };
+		66427A360E4AA8BE009AE232 /* osgdb_3dc.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */; };
+		66427A370E4AA8BE009AE232 /* osgdb_3ds.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */; };
+		66427A380E4AA8BE009AE232 /* osgdb_ac.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05740D143B2B00B4B1AA /* osgdb_ac.so */; };
+		66427A390E4AA8BE009AE232 /* osgdb_bmp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05750D143B2B00B4B1AA /* osgdb_bmp.so */; };
+		66427A3A0E4AA8BE009AE232 /* osgdb_bsp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05760D143B2B00B4B1AA /* osgdb_bsp.so */; };
+		66427A3B0E4AA8BE009AE232 /* osgdb_dds.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05770D143B2B00B4B1AA /* osgdb_dds.so */; };
+		66427A3C0E4AA8BE009AE232 /* osgdb_dw.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05780D143B2B00B4B1AA /* osgdb_dw.so */; };
+		66427A3D0E4AA8BE009AE232 /* osgdb_dxf.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05790D143B2B00B4B1AA /* osgdb_dxf.so */; };
+		66427A3E0E4AA8BE009AE232 /* osgdb_freetype.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057A0D143B2B00B4B1AA /* osgdb_freetype.so */; };
+		66427A3F0E4AA8BE009AE232 /* osgdb_geo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057B0D143B2B00B4B1AA /* osgdb_geo.so */; };
+		66427A400E4AA8BE009AE232 /* osgdb_hdr.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057C0D143B2B00B4B1AA /* osgdb_hdr.so */; };
+		66427A410E4AA8BE009AE232 /* osgdb_ive.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057D0D143B2B00B4B1AA /* osgdb_ive.so */; };
+		66427A420E4AA8BE009AE232 /* osgdb_logo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057E0D143B2B00B4B1AA /* osgdb_logo.so */; };
+		66427A430E4AA8BE009AE232 /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */; };
+		66427A440E4AA8BE009AE232 /* osgdb_lws.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05800D143B2B00B4B1AA /* osgdb_lws.so */; };
+		66427A450E4AA8BE009AE232 /* osgdb_md2.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05810D143B2B00B4B1AA /* osgdb_md2.so */; };
+		66427A460E4AA8BE009AE232 /* osgdb_net.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05820D143B2B00B4B1AA /* osgdb_net.so */; };
+		66427A470E4AA8BE009AE232 /* osgdb_normals.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05830D143B2B00B4B1AA /* osgdb_normals.so */; };
+		66427A480E4AA8BE009AE232 /* osgdb_obj.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05840D143B2B00B4B1AA /* osgdb_obj.so */; };
+		66427A490E4AA8BE009AE232 /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */; };
+		66427A4A0E4AA8BE009AE232 /* osgdb_osg.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05860D143B2B00B4B1AA /* osgdb_osg.so */; };
+		66427A4B0E4AA8BE009AE232 /* osgdb_osga.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05870D143B2B00B4B1AA /* osgdb_osga.so */; };
+		66427A4C0E4AA8BE009AE232 /* osgdb_osgFX.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05880D143B2B00B4B1AA /* osgdb_osgFX.so */; };
+		66427A4D0E4AA8BE009AE232 /* osgdb_osgParticle.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05890D143B2B00B4B1AA /* osgdb_osgParticle.so */; };
+		66427A4E0E4AA8BE009AE232 /* osgdb_osgSim.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058A0D143B2B00B4B1AA /* osgdb_osgSim.so */; };
+		66427A4F0E4AA8BE009AE232 /* osgdb_osgText.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058B0D143B2B00B4B1AA /* osgdb_osgText.so */; };
+		66427A500E4AA8BE009AE232 /* osgdb_osgtgz.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058C0D143B2B00B4B1AA /* osgdb_osgtgz.so */; };
+		66427A510E4AA8BE009AE232 /* osgdb_pic.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058D0D143B2B00B4B1AA /* osgdb_pic.so */; };
+		66427A520E4AA8BE009AE232 /* osgdb_pnm.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058E0D143B2B00B4B1AA /* osgdb_pnm.so */; };
+		66427A530E4AA8BE009AE232 /* osgdb_qt.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF058F0D143B2B00B4B1AA /* osgdb_qt.so */; };
+		66427A540E4AA8BE009AE232 /* osgdb_rgb.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05900D143B2B00B4B1AA /* osgdb_rgb.so */; };
+		66427A550E4AA8BE009AE232 /* osgdb_rot.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05910D143B2B00B4B1AA /* osgdb_rot.so */; };
+		66427A560E4AA8BE009AE232 /* osgdb_scale.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05920D143B2B00B4B1AA /* osgdb_scale.so */; };
+		66427A570E4AA8BE009AE232 /* osgdb_shp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05930D143B2B00B4B1AA /* osgdb_shp.so */; };
+		66427A580E4AA8BE009AE232 /* osgdb_stl.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05940D143B2B00B4B1AA /* osgdb_stl.so */; };
+		66427A590E4AA8BE009AE232 /* osgdb_tga.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05950D143B2B00B4B1AA /* osgdb_tga.so */; };
+		66427A5A0E4AA8BE009AE232 /* osgdb_tgz.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05960D143B2B00B4B1AA /* osgdb_tgz.so */; };
+		66427A5B0E4AA8BE009AE232 /* osgdb_trans.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05970D143B2B00B4B1AA /* osgdb_trans.so */; };
+		66427A5C0E4AA8BE009AE232 /* osgdb_txp.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05980D143B2B00B4B1AA /* osgdb_txp.so */; };
+		66427A5D0E4AA8BE009AE232 /* osgdb_x.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05990D143B2B00B4B1AA /* osgdb_x.so */; };
+		66427A5E0E4AA8BE009AE232 /* osgdb_zip.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF059A0D143B2B00B4B1AA /* osgdb_zip.so */; };
+		66427A660E4AA90C009AE232 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6692732A0E0B1DDE00E35E8B /* main.cpp */; };
 		664308570D10AC4900984C94 /* BaseCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 664308510D10AC4900984C94 /* BaseCreator.cpp */; };
 		664308580D10AC4900984C94 /* ObjectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 664308530D10AC4900984C94 /* ObjectFactory.cpp */; };
 		6643086F0D10AD3C00984C94 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6643086B0D10AD3C00984C94 /* Object.cpp */; };
@@ -1809,6 +1913,104 @@
 			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
 			remoteInfo = XmlTree;
 		};
+		664279C40E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 668C969D0D42B4D00007D7F4;
+			remoteInfo = TriangulateGrid;
+		};
+		664279C60E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 668BE8210D24A96B00109210;
+			remoteInfo = PathAnimation;
+		};
+		664279CA0E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF05AB0D143DF100B4B1AA;
+			remoteInfo = SnapShotQt;
+		};
+		664279CC0E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EFF3920D139F7200B4B1AA;
+			remoteInfo = ClipPlanesQt;
+		};
+		664279D00E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 666767580D12FDCF002F40C6;
+			remoteInfo = SceneDelegateQt;
+		};
+		664279D20E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 431BB88C09246ADA00ED2131;
+			remoteInfo = SceneModel;
+		};
+		664279D40E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		664279D60E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED9A9092454C300EBB610;
+			remoteInfo = Threads;
+		};
+		664279D80E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
+			remoteInfo = XmlTree;
+		};
+		664279DA0E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
+			remoteInfo = SerializeXML;
+		};
+		664279DC0E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FAB00D1204D8003F6A58;
+			remoteInfo = QtTools;
+		};
+		664279DE0E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FE740D12084C003F6A58;
+			remoteInfo = MenuKit;
+		};
+		664279E00E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6667609E0D122A70002F40C6;
+			remoteInfo = HeliosQtCommands;
+		};
+		664279E20E4AA8BE009AE232 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 666760C20D122B0C002F40C6;
+			remoteInfo = HeliosQtCore;
+		};
 		666761D30D12314D002F40C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -3037,6 +3239,163 @@
 			name = "Copy Fonts";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		664279EA0E4AA8BE009AE232 /* Copy Files to Plugins */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				664279F30E4AA8BE009AE232 /* MeasureTool.plug in Copy Files to Plugins */,
+				664279F40E4AA8BE009AE232 /* PathAnimation.plug in Copy Files to Plugins */,
+				664279F60E4AA8BE009AE232 /* QtSnapShot.plug in Copy Files to Plugins */,
+				664279F70E4AA8BE009AE232 /* QtClipPlanes.plug in Copy Files to Plugins */,
+				664279F90E4AA8BE009AE232 /* SceneModel.plug in Copy Files to Plugins */,
+				664279FA0E4AA8BE009AE232 /* QtSceneDelegate.plug in Copy Files to Plugins */,
+				664279FB0E4AA8BE009AE232 /* Helios.plugins in Copy Files to Plugins */,
+			);
+			name = "Copy Files to Plugins";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		664279FC0E4AA8BE009AE232 /* Copy Icons */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = icons;
+			dstSubfolderSpec = 7;
+			files = (
+				664279FD0E4AA8BE009AE232 /* Back.png in Copy Icons */,
+				664279FE0E4AA8BE009AE232 /* Bottom.png in Copy Icons */,
+				664279FF0E4AA8BE009AE232 /* Front.png in Copy Icons */,
+				66427A000E4AA8BE009AE232 /* home.png in Copy Icons */,
+				66427A010E4AA8BE009AE232 /* Left.png in Copy Icons */,
+				66427A020E4AA8BE009AE232 /* Right.png in Copy Icons */,
+				66427A030E4AA8BE009AE232 /* Top.png in Copy Icons */,
+				66427A040E4AA8BE009AE232 /* eye.png in Copy Icons */,
+				66427A050E4AA8BE009AE232 /* animation_control_play_backward.png in Copy Icons */,
+				66427A060E4AA8BE009AE232 /* animation_control_play_forward.png in Copy Icons */,
+				66427A070E4AA8BE009AE232 /* animation_control_step_backward.png in Copy Icons */,
+				66427A080E4AA8BE009AE232 /* animation_control_step_forward.png in Copy Icons */,
+				66427A090E4AA8BE009AE232 /* animation_control_stop.png in Copy Icons */,
+				66427A0A0E4AA8BE009AE232 /* helios_sun.png in Copy Icons */,
+				66427A0B0E4AA8BE009AE232 /* newDocument.png in Copy Icons */,
+				66427A0C0E4AA8BE009AE232 /* openDocument.png in Copy Icons */,
+				66427A0D0E4AA8BE009AE232 /* saveDocument.png in Copy Icons */,
+				66427A0E0E4AA8BE009AE232 /* splash_screen.png in Copy Icons */,
+			);
+			name = "Copy Icons";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66427A0F0E4AA8BE009AE232 /* Copy Fonts */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = fonts;
+			dstSubfolderSpec = 7;
+			files = (
+				66427A100E4AA8BE009AE232 /* arial.ttf in Copy Fonts */,
+				66427A110E4AA8BE009AE232 /* dirtydoz.ttf in Copy Fonts */,
+				66427A120E4AA8BE009AE232 /* fudd.ttf in Copy Fonts */,
+				66427A130E4AA8BE009AE232 /* Times New Roman.ttf in Copy Fonts */,
+				66427A140E4AA8BE009AE232 /* times.ttf in Copy Fonts */,
+			);
+			name = "Copy Fonts";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66427A150E4AA8BE009AE232 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				66427A160E4AA8BE009AE232 /* xercesc.framework in Copy Frameworks */,
+				66427A170E4AA8BE009AE232 /* osgViewer.framework in Copy Frameworks */,
+				66427A180E4AA8BE009AE232 /* QtCore.framework in Copy Frameworks */,
+				66427A190E4AA8BE009AE232 /* QtGui.framework in Copy Frameworks */,
+				66427A1A0E4AA8BE009AE232 /* QtOpenGL.framework in Copy Frameworks */,
+				66427A1B0E4AA8BE009AE232 /* curl.framework in Copy Frameworks */,
+				66427A1C0E4AA8BE009AE232 /* Boost.framework in Copy Frameworks */,
+				66427A1D0E4AA8BE009AE232 /* OpenThreads.framework in Copy Frameworks */,
+				66427A1E0E4AA8BE009AE232 /* osg.framework in Copy Frameworks */,
+				66427A1F0E4AA8BE009AE232 /* osgDB.framework in Copy Frameworks */,
+				66427A200E4AA8BE009AE232 /* osgGA.framework in Copy Frameworks */,
+				66427A210E4AA8BE009AE232 /* osgManipulator.framework in Copy Frameworks */,
+				66427A220E4AA8BE009AE232 /* osgText.framework in Copy Frameworks */,
+				66427A230E4AA8BE009AE232 /* osgUtil.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66427A240E4AA8BE009AE232 /* Copy Cadkit Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				66427A250E4AA8BE009AE232 /* libModelPresentationLib.dylib in Copy Cadkit Libraries */,
+				66427A260E4AA8BE009AE232 /* libHeliosQtCommands.dylib in Copy Cadkit Libraries */,
+				66427A270E4AA8BE009AE232 /* libHeliosQtCore.dylib in Copy Cadkit Libraries */,
+				66427A280E4AA8BE009AE232 /* libHeliosQtViewOSG.dylib in Copy Cadkit Libraries */,
+				66427A290E4AA8BE009AE232 /* libMenuKit.dylib in Copy Cadkit Libraries */,
+				66427A2A0E4AA8BE009AE232 /* libOpenThreadsEx.dylib in Copy Cadkit Libraries */,
+				66427A2B0E4AA8BE009AE232 /* libOsgTools.dylib in Copy Cadkit Libraries */,
+				66427A2C0E4AA8BE009AE232 /* libQtTools.dylib in Copy Cadkit Libraries */,
+				66427A2D0E4AA8BE009AE232 /* libSerializeXML.dylib in Copy Cadkit Libraries */,
+				66427A2E0E4AA8BE009AE232 /* libUsul.dylib in Copy Cadkit Libraries */,
+				66427A2F0E4AA8BE009AE232 /* libXmlTree.dylib in Copy Cadkit Libraries */,
+			);
+			name = "Copy Cadkit Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66427A340E4AA8BE009AE232 /* Copy OpenSceneGraph Plugins */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				66427A350E4AA8BE009AE232 /* osgdb_dae.so in Copy OpenSceneGraph Plugins */,
+				66427A360E4AA8BE009AE232 /* osgdb_3dc.so in Copy OpenSceneGraph Plugins */,
+				66427A370E4AA8BE009AE232 /* osgdb_3ds.so in Copy OpenSceneGraph Plugins */,
+				66427A380E4AA8BE009AE232 /* osgdb_ac.so in Copy OpenSceneGraph Plugins */,
+				66427A390E4AA8BE009AE232 /* osgdb_bmp.so in Copy OpenSceneGraph Plugins */,
+				66427A3A0E4AA8BE009AE232 /* osgdb_bsp.so in Copy OpenSceneGraph Plugins */,
+				66427A3B0E4AA8BE009AE232 /* osgdb_dds.so in Copy OpenSceneGraph Plugins */,
+				66427A3C0E4AA8BE009AE232 /* osgdb_dw.so in Copy OpenSceneGraph Plugins */,
+				66427A3D0E4AA8BE009AE232 /* osgdb_dxf.so in Copy OpenSceneGraph Plugins */,
+				66427A3E0E4AA8BE009AE232 /* osgdb_freetype.so in Copy OpenSceneGraph Plugins */,
+				66427A3F0E4AA8BE009AE232 /* osgdb_geo.so in Copy OpenSceneGraph Plugins */,
+				66427A400E4AA8BE009AE232 /* osgdb_hdr.so in Copy OpenSceneGraph Plugins */,
+				66427A410E4AA8BE009AE232 /* osgdb_ive.so in Copy OpenSceneGraph Plugins */,
+				66427A420E4AA8BE009AE232 /* osgdb_logo.so in Copy OpenSceneGraph Plugins */,
+				66427A430E4AA8BE009AE232 /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */,
+				66427A440E4AA8BE009AE232 /* osgdb_lws.so in Copy OpenSceneGraph Plugins */,
+				66427A450E4AA8BE009AE232 /* osgdb_md2.so in Copy OpenSceneGraph Plugins */,
+				66427A460E4AA8BE009AE232 /* osgdb_net.so in Copy OpenSceneGraph Plugins */,
+				66427A470E4AA8BE009AE232 /* osgdb_normals.so in Copy OpenSceneGraph Plugins */,
+				66427A480E4AA8BE009AE232 /* osgdb_obj.so in Copy OpenSceneGraph Plugins */,
+				66427A490E4AA8BE009AE232 /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */,
+				66427A4A0E4AA8BE009AE232 /* osgdb_osg.so in Copy OpenSceneGraph Plugins */,
+				66427A4B0E4AA8BE009AE232 /* osgdb_osga.so in Copy OpenSceneGraph Plugins */,
+				66427A4C0E4AA8BE009AE232 /* osgdb_osgFX.so in Copy OpenSceneGraph Plugins */,
+				66427A4D0E4AA8BE009AE232 /* osgdb_osgParticle.so in Copy OpenSceneGraph Plugins */,
+				66427A4E0E4AA8BE009AE232 /* osgdb_osgSim.so in Copy OpenSceneGraph Plugins */,
+				66427A4F0E4AA8BE009AE232 /* osgdb_osgText.so in Copy OpenSceneGraph Plugins */,
+				66427A500E4AA8BE009AE232 /* osgdb_osgtgz.so in Copy OpenSceneGraph Plugins */,
+				66427A510E4AA8BE009AE232 /* osgdb_pic.so in Copy OpenSceneGraph Plugins */,
+				66427A520E4AA8BE009AE232 /* osgdb_pnm.so in Copy OpenSceneGraph Plugins */,
+				66427A530E4AA8BE009AE232 /* osgdb_qt.so in Copy OpenSceneGraph Plugins */,
+				66427A540E4AA8BE009AE232 /* osgdb_rgb.so in Copy OpenSceneGraph Plugins */,
+				66427A550E4AA8BE009AE232 /* osgdb_rot.so in Copy OpenSceneGraph Plugins */,
+				66427A560E4AA8BE009AE232 /* osgdb_scale.so in Copy OpenSceneGraph Plugins */,
+				66427A570E4AA8BE009AE232 /* osgdb_shp.so in Copy OpenSceneGraph Plugins */,
+				66427A580E4AA8BE009AE232 /* osgdb_stl.so in Copy OpenSceneGraph Plugins */,
+				66427A590E4AA8BE009AE232 /* osgdb_tga.so in Copy OpenSceneGraph Plugins */,
+				66427A5A0E4AA8BE009AE232 /* osgdb_tgz.so in Copy OpenSceneGraph Plugins */,
+				66427A5B0E4AA8BE009AE232 /* osgdb_trans.so in Copy OpenSceneGraph Plugins */,
+				66427A5C0E4AA8BE009AE232 /* osgdb_txp.so in Copy OpenSceneGraph Plugins */,
+				66427A5D0E4AA8BE009AE232 /* osgdb_x.so in Copy OpenSceneGraph Plugins */,
+				66427A5E0E4AA8BE009AE232 /* osgdb_zip.so in Copy OpenSceneGraph Plugins */,
+			);
+			name = "Copy OpenSceneGraph Plugins";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		666766620D12433F002F40C6 /* Copy Files to Plugins */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3954,6 +4313,8 @@
 		6636BB980DF6644F006937AD /* RasterLayerGDAL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RasterLayerGDAL.cpp; sourceTree = "<group>"; };
 		6636BB990DF6644F006937AD /* RasterLayerGDAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RasterLayerGDAL.h; sourceTree = "<group>"; };
 		663C4EC80D110AFE00949515 /* Boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Boost.framework; path = ../../../Library/Frameworks/Boost.framework; sourceTree = SOURCE_ROOT; };
+		66427A630E4AA8BE009AE232 /* Nimue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nimue.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		66427A650E4AA8BE009AE232 /* HeliosQtApp-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HeliosQtApp-Info copy.plist"; sourceTree = SOURCE_ROOT; };
 		664308510D10AC4900984C94 /* BaseCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseCreator.cpp; sourceTree = "<group>"; };
 		664308520D10AC4900984C94 /* BaseCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseCreator.h; sourceTree = "<group>"; };
 		664308530D10AC4900984C94 /* ObjectFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectFactory.cpp; sourceTree = "<group>"; };
@@ -5468,6 +5829,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66427A300E4AA8BE009AE232 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66427A310E4AA8BE009AE232 /* libOpenThreadsEx.dylib in Frameworks */,
+				66427A320E4AA8BE009AE232 /* libHeliosQtCore.dylib in Frameworks */,
+				66427A330E4AA8BE009AE232 /* libUsul.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6667609D0D122A70002F40C6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -6968,6 +7339,7 @@
 				66E1A4DD0E207CE200D3E219 /* TestLegend02.app */,
 				66A025FB0E29B461002CBE4D /* TestProgressBar02.app */,
 				66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plug */,
+				66427A630E4AA8BE009AE232 /* Nimue.app */,
 			);
 			name = "Cadkit Libraries";
 			sourceTree = "<group>";
@@ -7858,6 +8230,7 @@
 				666765E80D1235EC002F40C6 /* HeliosQtApp-Info.plist */,
 				666766660D12437A002F40C6 /* Helios.plugins */,
 				666765B10D1234E2002F40C6 /* main.cpp */,
+				66427A650E4AA8BE009AE232 /* HeliosQtApp-Info copy.plist */,
 			);
 			name = Application;
 			sourceTree = "<group>";
@@ -10902,6 +11275,45 @@
 			productReference = 661C119C0DCA718E00DE43D4 /* GDALReadImage.plug */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		664279B40E4AA8BE009AE232 /* Nimue */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66427A600E4AA8BE009AE232 /* Build configuration list for PBXNativeTarget "Nimue" */;
+			buildPhases = (
+				664279E30E4AA8BE009AE232 /* Copy Nimue.plugins */,
+				664279E40E4AA8BE009AE232 /* Resources */,
+				664279E80E4AA8BE009AE232 /* Sources */,
+				664279EA0E4AA8BE009AE232 /* Copy Files to Plugins */,
+				664279FC0E4AA8BE009AE232 /* Copy Icons */,
+				66427A0F0E4AA8BE009AE232 /* Copy Fonts */,
+				66427A150E4AA8BE009AE232 /* Copy Frameworks */,
+				66427A240E4AA8BE009AE232 /* Copy Cadkit Libraries */,
+				66427A300E4AA8BE009AE232 /* Frameworks */,
+				66427A340E4AA8BE009AE232 /* Copy OpenSceneGraph Plugins */,
+				66427A5F0E4AA8BE009AE232 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				664279C30E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279C50E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279C90E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279CB0E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279CF0E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279D10E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279D30E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279D50E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279D70E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279D90E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279DB0E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279DD0E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279DF0E4AA8BE009AE232 /* PBXTargetDependency */,
+				664279E10E4AA8BE009AE232 /* PBXTargetDependency */,
+			);
+			name = Nimue;
+			productName = HeliosQtApp;
+			productReference = 66427A630E4AA8BE009AE232 /* Nimue.app */;
+			productType = "com.apple.product-type.application";
+		};
 		6667609E0D122A70002F40C6 /* HeliosQtCommands */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 666760B30D122AA5002F40C6 /* Build configuration list for PBXNativeTarget "HeliosQtCommands" */;
@@ -11929,6 +12341,7 @@
 				66E1A4CC0E207CE200D3E219 /* TestLegend02 */,
 				66A025FA0E29B461002CBE4D /* TestProgressBar02 */,
 				66A0279A0E2B1DCF002CBE4D /* QtGeoRSSLayer */,
+				664279B40E4AA8BE009AE232 /* Nimue */,
 			);
 		};
 /* End PBXProject section */
@@ -11967,6 +12380,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		664279E40E4AA8BE009AE232 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				664279E50E4AA8BE009AE232 /* Helios.icns in Resources */,
+				664279E60E4AA8BE009AE232 /* HeliosQtApp-Info.plist in Resources */,
+				664279E70E4AA8BE009AE232 /* helios_sun.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12042,6 +12465,33 @@
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/PasswordPromptComponent.h -o $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/moc_PasswordPromptComponent.cpp";
 			showEnvVarsInLog = 0;
+		};
+		664279E30E4AA8BE009AE232 /* Copy Nimue.plugins */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Nimue.plugins";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ! -f $SRCROOT/../Helios/Qt/Application/Helios.plugins ]; then\n  cp $SRCROOT/../Helios/Qt/Application/plugins.xml $SRCROOT/../Helios/Qt/Application/Helios.plugins\nfi\n";
+		};
+		66427A5F0E4AA8BE009AE232 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\nif [ ${BUILD_STYLE} = \"Release\" ]; then\n\n\tcd  ${BUILT_PRODUCTS_DIR}/HeliosQtApp.app/Contents/Plugins\n\n\t# Change the install names in the .so\n\tinstall_name_tool -id @executable_path/../Plugins/libsz.2.0.0.dylib libsz.2.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5.0.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\t# Change the paths where the .so looks for it's dependencies.\n\tinstall_name_tool -change /usr/local/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -change /usr/local/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libhdf5.0.dylib @executable_path/../Plugins/libhdf5.0.0.0.dylib FlashModel.plug\n\tinstall_name_tool -change /usr/local/lib/libhdf5_hl.0.dylib @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib FlashModel.plug\n\nfi\n";
 		};
 		666765700D1232A1002F40C6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12722,6 +13172,14 @@
 			files = (
 				661C11A90DCA71CB00DE43D4 /* GDALReadImageComponent.cpp in Sources */,
 				661C11AB0DCA71CB00DE43D4 /* GDALReadImageDocument.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		664279E80E4AA8BE009AE232 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66427A660E4AA90C009AE232 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13449,6 +13907,76 @@
 			isa = PBXTargetDependency;
 			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
 			targetProxy = 663C5FC30D11110B00949515 /* PBXContainerItemProxy */;
+		};
+		664279C30E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 668C969D0D42B4D00007D7F4 /* TriangulateGrid */;
+			targetProxy = 664279C40E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279C50E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 668BE8210D24A96B00109210 /* PathAnimation */;
+			targetProxy = 664279C60E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279C90E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF05AB0D143DF100B4B1AA /* QtSnapShot */;
+			targetProxy = 664279CA0E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279CB0E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EFF3920D139F7200B4B1AA /* QtClipPlanes */;
+			targetProxy = 664279CC0E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279CF0E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 666767580D12FDCF002F40C6 /* QtSceneDelegate */;
+			targetProxy = 664279D00E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279D10E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 431BB88C09246ADA00ED2131 /* SceneModel */;
+			targetProxy = 664279D20E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279D30E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 664279D40E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279D50E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED9A9092454C300EBB610 /* Threads */;
+			targetProxy = 664279D60E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279D70E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			targetProxy = 664279D80E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279D90E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
+			targetProxy = 664279DA0E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279DB0E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FAB00D1204D8003F6A58 /* QtTools */;
+			targetProxy = 664279DC0E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279DD0E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FE740D12084C003F6A58 /* MenuKit */;
+			targetProxy = 664279DE0E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279DF0E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6667609E0D122A70002F40C6 /* HeliosQtCommands */;
+			targetProxy = 664279E00E4AA8BE009AE232 /* PBXContainerItemProxy */;
+		};
+		664279E10E4AA8BE009AE232 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 666760C20D122B0C002F40C6 /* HeliosQtCore */;
+			targetProxy = 664279E20E4AA8BE009AE232 /* PBXContainerItemProxy */;
 		};
 		666761D40D12314D002F40C6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -15227,6 +15755,68 @@
 				INSTALL_PATH = "@executable_path/../Plugins";
 				PREBINDING = NO;
 				PRODUCT_NAME = GDALReadImage;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		66427A610E4AA8BE009AE232 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					../,
+				);
+				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/HeliosQtApp-Info copy.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Nimue;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66427A620E4AA8BE009AE232 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					../,
+				);
+				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/HeliosQtApp-Info copy.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "";
+				PREBINDING = NO;
+				PRODUCT_NAME = Nimue;
+				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -18003,6 +18593,15 @@
 			buildConfigurations = (
 				661C119D0DCA718F00DE43D4 /* Debug */,
 				661C119E0DCA718F00DE43D4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66427A600E4AA8BE009AE232 /* Build configuration list for PBXNativeTarget "Nimue" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66427A610E4AA8BE009AE232 /* Debug */,
+				66427A620E4AA8BE009AE232 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

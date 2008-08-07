@@ -34,7 +34,7 @@ struct ITimeVaryingData : public Usul::Interfaces::IUnknown
   virtual unsigned int     getCurrentTimeStep() const = 0;
 
   virtual unsigned int     getNumberOfTimeSteps() const = 0;
-}; //struct ITimeVaryingData
+};
 
 
 }

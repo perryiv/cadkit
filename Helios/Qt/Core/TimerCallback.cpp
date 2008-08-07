@@ -50,7 +50,7 @@ TimerCallback::TimerCallback ( TimerID id, unsigned int milliseconds, TimerCallb
   this->moveToThread ( QCoreApplication::instance()->thread() );
   _timer->moveToThread ( QCoreApplication::instance()->thread() );
   
-  // Set the parent.  Do this after moving to the main thread.
+  // Set the parent. Do this after moving to the main thread.
   _timer->setParent ( this );
 
   // Set the connection.

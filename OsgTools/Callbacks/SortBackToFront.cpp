@@ -553,7 +553,7 @@ void SortBackToFront::operator () ( osg::Node* node, osg::NodeVisitor *nv )
             }
             break;
           case osg::PrimitiveSet::DrawArrayLengthsPrimitiveType:
-            USUL_ASSERT ( false ); // TODO
+            // TODO
             break;
           case osg::PrimitiveSet::DrawElementsUBytePrimitiveType:
             {

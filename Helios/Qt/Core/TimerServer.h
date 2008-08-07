@@ -21,6 +21,7 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/ITimerService.h"
 
+#include <list>
 #include <map>
 
 
@@ -41,6 +42,10 @@ public:
   typedef Usul::Interfaces::ITimerService ITimerService;
   typedef ITimerService::TimerID TimerID;
   typedef std::map < TimerID, TimerCallback::Ptr > Timers;
+  typedef Usul::Interfaces::IUnknown::RefPtr UnknownPtr;
+  typedef std::pair < unsigned int, UnknownPtr > PendingTimerInput;
+  typedef std::pair < TimerID, PendingTimerInput > PendingTimerData;
+  typedef std::list < PendingTimerData > PendingTimers;
 
   // Constructor.
   TimerServer();
@@ -53,6 +58,10 @@ public:
 
   // Usul::Interfaces::IUnknown members.
 	USUL_DECLARE_IUNKNOWN_MEMBERS;
+
+  // Add the timers that were added from non-gui threads.
+  // Note: cll this from the gui thread.
+  void                      addPendingTimers();
 
   // Clear the timers.
   void                      clear();
@@ -67,13 +76,15 @@ public:
   void                      stop();
 
   // Usul::Interfaces::ITimerService.
-  virtual TimerID           timerAdd ( unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr );
+  virtual TimerID           timerAdd ( unsigned int milliseconds, UnknownPtr );
   virtual void              timerRemove ( TimerID );
   
 protected:
 
   // Use reference counting.
 	virtual ~TimerServer();
+
+  void                      _timerAdd ( TimerID id, unsigned int milliseconds, UnknownPtr callback );
 
 private:
 
@@ -85,6 +96,7 @@ private:
 
   Timers _timers;
   TimerID _nextId;
+  PendingTimers _pending;
 };
 
 

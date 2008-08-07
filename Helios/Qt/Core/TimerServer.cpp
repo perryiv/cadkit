@@ -17,6 +17,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Threads/Named.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace CadKit::Helios::Core;
@@ -33,7 +34,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( TimerServer, TimerServer::BaseClass );
 
 TimerServer::TimerServer() : BaseClass(),
   _timers(),
-  _nextId ( 0 )
+  _nextId ( 1 ), // Start at 1 so that clients can initialize timer ids with 0.
+  _pending()
 {
   USUL_TRACE_SCOPE;
 }
@@ -101,8 +103,9 @@ void TimerServer::clear()
   // First stop the timers.
   this->stop();
 
-  // Now clear the collection.
+  // Now clear the collections.
   _timers.clear();
+  _pending.clear();
 }
 
 
@@ -152,6 +155,39 @@ void TimerServer::start()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Add all pending timers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TimerServer::addPendingTimers()
+{
+  USUL_TRACE_SCOPE;
+
+  // Make copy of pending timers and clear the original.
+  PendingTimers pending;
+  {
+    Guard guard ( this );
+    pending = _pending;
+    _pending.clear();
+  }
+
+  // Loop through the pending timers.
+  for ( PendingTimers::iterator i = pending.begin(); i != pending.end(); ++i )
+  {
+    PendingTimerData data ( *i );
+    PendingTimerInput input ( data.second );
+
+    const TimerID id ( data.first );
+    const unsigned int milliseconds ( input.first );
+    UnknownPtr callback ( input.second );
+
+    this->_timerAdd ( id, milliseconds, callback );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add the timer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,11 +197,42 @@ TimerServer::TimerID TimerServer::timerAdd ( unsigned int milliseconds, Usul::In
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // Get the next id.
   const TimerID id ( _nextId++ );
+
+  // If this is the gui thread...
+  if ( true == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
+  {
+    // Add the timer now.
+    this->_timerAdd ( id, milliseconds, callback );
+  }
+
+  // Otherwise...
+  else
+  {
+    // The timer is pending.
+    _pending.push_back ( PendingTimerData ( id, PendingTimerInput ( milliseconds, callback ) ) );
+  }
+
+  // Return the new timer id.
+  return id;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the timer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TimerServer::_timerAdd ( TimerID id, unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr callback )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   TimerCallback::Ptr cb ( new TimerCallback ( id, milliseconds, callback ) );
   _timers.insert ( Timers::value_type ( id, cb ) );
   cb->start();
-  return id;
 }
 
 

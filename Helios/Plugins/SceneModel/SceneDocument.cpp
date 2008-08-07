@@ -233,7 +233,7 @@ void SceneDocument::write ( const std::string &name, Unknown *caller, Unknown *p
 void SceneDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
   Usul::Interfaces::IStatusBar::UpdateStatusBar status ( progress );
-  status ( "Loading " + name + "..." );
+  status ( "Loading " + name + " ... " );
 
   osg::ref_ptr< osg::Node > node ( this->_loadModel ( name, caller, progress ) );
 

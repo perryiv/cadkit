@@ -32,13 +32,12 @@ struct IDecimateTriangles : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IDecimateTriangles );
 
   /// Id for this interface.
-  enum { IID = 1536000000u };
+  enum { IID = 1321132304u };
 
-  /// Using osg::Referenced to get around problem
   virtual void decimateTriangles ( osg::Array *inVerts, osg::DrawElementsUInt *inIndices,
-    osg::Array *outNormalsT, osg::Array *outNormalsV, float reduction ) = 0;
+                                   osg::Array *outNormalsT, osg::Array *outNormalsV, float reduction ) = 0;
 
-  virtual void decimateTriangles ( OsgTools::Triangles::TriangleSet* ) = 0;
+  virtual void decimateTriangles ( OsgTools::Triangles::TriangleSet*, float reduction ) = 0;
 
 }; // struct IDecimateTriangles
 

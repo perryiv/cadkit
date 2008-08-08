@@ -198,8 +198,10 @@ Viewer::Viewer ( Document *doc, IUnknown* context, IUnknown *caller ) :
   // Initialize the clock.
   Usul::System::Clock::milliseconds();
 
-  // Add the manipulator
-  this->navManip ( new Trackball );
+  // Add the manipulator.
+  osg::ref_ptr<Trackball> trackball ( new Trackball );
+  trackball->minimumZoomScale ( std::numeric_limits<float>::min() );
+  this->navManip ( trackball.get() );
 
   // Add axes to the scene.  
   // Make sure that this is called after the manipulator has been created.

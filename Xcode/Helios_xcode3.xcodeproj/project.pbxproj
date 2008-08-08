@@ -12533,7 +12533,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -f $SRCROOT/../Nimue/Application/Helios.plugins ]; then\n  cp $SRCROOT/../Nimue/Application/plugins.xml $SRCROOT/../Nimue/Application/Nimue.plugins\nfi\n";
+			shellScript = "if [ ! -f $SRCROOT/../Nimue/Application/Nimue.plugins ]; then\n  cp $SRCROOT/../Nimue/Application/plugins.xml $SRCROOT/../Nimue/Application/Nimue.plugins\nfi\n";
 		};
 		666765700D1232A1002F40C6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

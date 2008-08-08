@@ -62,6 +62,10 @@ public:
   // Move the camera to the default position. 
   virtual void            home ( const osgGA::GUIEventAdapter &, osgGA::GUIActionAdapter & );
 
+  // Get/set the trackball's minimum zoom scale.
+  double                  minimumZoomScale() const;
+  void                    minimumZoomScale ( double mn );
+
   // Get/set the model's scale.
   double                  modelScale() const;
   void                    modelScale ( double ms );

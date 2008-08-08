@@ -936,10 +936,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IDecimateModel.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IDecimateTriangles.h"
 					>
 				</File>
@@ -2066,6 +2062,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Scope\CurrentDirectory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scope\CurrentDirectory.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Scope\GLBeginEnd.h"
 					>
 				</File>
@@ -2099,14 +2103,6 @@
 				</File>
 				<File
 					RelativePath=".\Scope\Timer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Scope\CurrentDirectory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Scope\CurrentDirectory.h"
 					>
 				</File>
 			</Filter>

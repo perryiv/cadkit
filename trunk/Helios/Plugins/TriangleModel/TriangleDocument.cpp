@@ -888,7 +888,7 @@ void TriangleDocument::decimateModel ( )
 
   if ( plugin.valid() )
   {
-    plugin->decimateTriangles( _triangles.get() );
+    plugin->decimateTriangles( _triangles.get(), 0.50 );
     this->modified( true );
   }
 }

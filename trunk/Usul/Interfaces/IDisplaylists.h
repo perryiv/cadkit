@@ -12,7 +12,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-//namespace osg { class Vec4; }
 
 namespace Usul {
 namespace Interfaces {
@@ -30,9 +29,7 @@ struct IDisplaylists : public Usul::Interfaces::IUnknown
   virtual bool                    displayList () const = 0;
   virtual void                    displayList ( bool ) = 0;
 
-
-}; //struct IVertices
-
+}; //struct IDisplaylists
 
 
 }

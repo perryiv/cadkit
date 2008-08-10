@@ -1303,6 +1303,8 @@ void MainWindow::loadPlugins ( const std::string &config )
   loader.directory ( directory );
 #endif
 
+  std::cout << Usul::Strings::format ( "Loading plugin file: ", config ) << std::endl;
+
 	loader.parse ( config );
   loader.load ( ( splash.valid() ) ? splash : unknown );
 }

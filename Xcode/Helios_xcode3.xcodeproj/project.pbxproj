@@ -4363,7 +4363,7 @@
 		661B8AE00E1ECB41005FC8CA /* Polygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Polygon.cpp; sourceTree = "<group>"; };
 		661B8AE10E1ECB41005FC8CA /* Polygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Polygon.h; sourceTree = "<group>"; };
 		661B8BEF0E1F544B005FC8CA /* TestLegend01.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLegend01.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		661B8BF10E1F544B005FC8CA /* TestLegend-Info01.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TestLegend-Info01.plist"; sourceTree = "<group>"; };
+		661B8BF10E1F544B005FC8CA /* TestLegend-Info01.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TestLegend-Info01.plist"; sourceTree = SOURCE_ROOT; };
 		661B8C250E1F5495005FC8CA /* ShapeFactoryTests.sln */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShapeFactoryTests.sln; sourceTree = "<group>"; };
 		661B8C270E1F5495005FC8CA /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		661B8C280E1F5495005FC8CA /* Test01.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Test01.vcproj; sourceTree = "<group>"; };
@@ -4531,7 +4531,7 @@
 		666765920D12342F002F40C6 /* Make.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Make.h; sourceTree = "<group>"; };
 		666765B10D1234E2002F40C6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = Qt/Application/main.cpp; sourceTree = "<group>"; };
 		666765E60D1235EC002F40C6 /* Helios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Helios.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		666765E80D1235EC002F40C6 /* Nimue-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Nimue-Info.plist"; path = "../Xcode/Nimue-Info.plist"; sourceTree = "<group>"; };
+		666765E80D1235EC002F40C6 /* Nimue-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nimue-Info.plist"; sourceTree = SOURCE_ROOT; };
 		6667663A0D1237B3002F40C6 /* Print.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Print.cpp; path = Trace/Print.cpp; sourceTree = "<group>"; };
 		6667663B0D1237B3002F40C6 /* Print.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Print.h; path = Trace/Print.h; sourceTree = "<group>"; };
 		6667663C0D1237B3002F40C6 /* Scope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scope.cpp; path = Trace/Scope.cpp; sourceTree = "<group>"; };
@@ -5455,7 +5455,7 @@
 		66DCF9470DAD83A2008E6F4A /* Dataset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dataset.h; path = ../Experimental/Flash/FlashModel/Dataset.h; sourceTree = SOURCE_ROOT; };
 		66DCF9480DAD83A2008E6F4A /* Dataset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dataset.cpp; path = ../Experimental/Flash/FlashModel/Dataset.cpp; sourceTree = SOURCE_ROOT; };
 		66E1A4DD0E207CE200D3E219 /* TestLegend02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLegend02.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		66E1A4FA0E207CE300D3E219 /* TestLegend-Info02.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TestLegend-Info02.plist"; sourceTree = "<group>"; };
+		66E1A4FA0E207CE300D3E219 /* TestLegend-Info02.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TestLegend-Info02.plist"; sourceTree = SOURCE_ROOT; };
 		66E1D7200D8C375D00732EE0 /* Atmosphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Atmosphere.h; sourceTree = "<group>"; };
 		66E1D7210D8C375D00732EE0 /* Atmosphere.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Atmosphere.cpp; sourceTree = "<group>"; };
 		66E1D9890D8DC26600732EE0 /* SkyDome.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyDome.cpp; sourceTree = "<group>"; };
@@ -9882,8 +9882,6 @@
 		66EF17A80D15193000B4B1AA /* Layers */ = {
 			isa = PBXGroup;
 			children = (
-				669F2A7E0E4D30C9007EB41A /* RasterLayerOssim.cpp */,
-				669F2A7F0E4D30C9007EB41A /* RasterLayerOssim.h */,
 				66096F3B0DEF24FE00DD0024 /* Container.cpp */,
 				66096F3C0DEF24FE00DD0024 /* Container.h */,
 				668DB5D60D78A75C00EA4DCD /* ElevationGroup.cpp */,
@@ -9898,6 +9896,8 @@
 				6636BB990DF6644F006937AD /* RasterLayerGDAL.h */,
 				66B36A450DF47F4A000FB4A6 /* RasterLayerNetwork.cpp */,
 				66B36A460DF47F4A000FB4A6 /* RasterLayerNetwork.h */,
+				669F2A7E0E4D30C9007EB41A /* RasterLayerOssim.cpp */,
+				669F2A7F0E4D30C9007EB41A /* RasterLayerOssim.h */,
 				668DB5E20D78A75C00EA4DCD /* RasterLayerWms.cpp */,
 				668DB5E30D78A75C00EA4DCD /* RasterLayerWms.h */,
 			);
@@ -15976,7 +15976,7 @@
 					../Experimental,
 					../,
 				);
-				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/Nimue-Info.plist";
+				INFOPLIST_FILE = "Nimue-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
@@ -16006,7 +16006,7 @@
 					../Experimental,
 					../,
 				);
-				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/Nimue-Info.plist";
+				INFOPLIST_FILE = "Nimue-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
@@ -18045,7 +18045,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/TestLegend-Info02.plist";
+				INFOPLIST_FILE = "TestLegend-Info02.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -18072,7 +18072,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				INFOPLIST_FILE = "/Users/adam/src/cadkit/Xcode/TestLegend-Info02.plist";
+				INFOPLIST_FILE = "TestLegend-Info02.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"-framework",

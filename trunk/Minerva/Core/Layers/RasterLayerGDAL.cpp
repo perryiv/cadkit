@@ -50,7 +50,7 @@ namespace
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_ArcBinary ( "Arc Binary (*.adf)", "*.adf" );
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_DEM       ( "Digital Elevation Model (*.dem)", "*.dem" );
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_SRTM      ( "NASA SRTM (*.hgt)", "*.hgt" );
-  MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_TIFF      ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
+  //MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_TIFF      ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
   MF::RegisterReader < MF::TypeCreator < RasterLayerGDAL > > _creator_for_VRT       ( "GDAL Virtual Format (*.vrt)", ".vrt" );
 }
 
@@ -376,10 +376,14 @@ void RasterLayerGDAL::deserialize ( const XmlTree::Node &node )
 
 void RasterLayerGDAL::read ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
+  USUL_TRACE_SCOPE;
+  
   // Add an error handler.
   Minerva::Detail::PushPopErrorHandler error;
   
-  USUL_TRACE_SCOPE;
+  if ( true == this->name().empty() )
+    this->name ( filename );
+  
   Guard guard ( this );
   _filename = filename;
   
@@ -414,6 +418,7 @@ void RasterLayerGDAL::read ( const std::string& filename, Usul::Interfaces::IUnk
         Extents::Vertex ll ( x, y + yLength ), ur ( x + xLength, y );
         transform->Transform ( 1, &ll[0], &ll[1] );
         transform->Transform ( 1, &ur[0], &ur[1] );
+        
         Extents extents ( ll, ur );
         
         std::cout << "Location of " << filename << std::endl;

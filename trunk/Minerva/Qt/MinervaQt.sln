@@ -47,24 +47,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit XmlTree", "..\.
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva ProjectionManager", "..\Plugins\ProjectionManager\ProjectionManager.vcproj", "{EE125749-B664-4962-A4E5-81BB0B0E5400}"
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva Trianglulate CGAL", "..\Plugins\TriangulateCGAL\TriangulateCGAL.vcproj", "{A46FB746-5481-453E-B2AB-402C3E7EA805}"
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit OsgTools", "..\..\OsgTools\OsgTools.vcproj", "{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
@@ -404,14 +386,6 @@ Global
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Debug|Win32.Build.0 = Debug|Win32
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Release|Win32.ActiveCfg = Release|Win32
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}.Release|Win32.Build.0 = Release|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Debug|Win32.Build.0 = Debug|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Release|Win32.ActiveCfg = Release|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Release|Win32.Build.0 = Release|Win32
-		{A46FB746-5481-453E-B2AB-402C3E7EA805}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A46FB746-5481-453E-B2AB-402C3E7EA805}.Debug|Win32.Build.0 = Debug|Win32
-		{A46FB746-5481-453E-B2AB-402C3E7EA805}.Release|Win32.ActiveCfg = Release|Win32
-		{A46FB746-5481-453E-B2AB-402C3E7EA805}.Release|Win32.Build.0 = Release|Win32
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Debug|Win32.Build.0 = Debug|Win32
 		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0}.Release|Win32.ActiveCfg = Release|Win32

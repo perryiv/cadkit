@@ -52,7 +52,7 @@ using namespace Minerva::Core::Layers;
 namespace
 {
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator0 ( "JPEG (*.jpg)", "*.jpg" );
-  //Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator1 ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
+  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator1 ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
   Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator2 ( "PNG (*.png)", "*.png" );
 }
 
@@ -394,20 +394,24 @@ namespace Detail
     
     PixelType *buffer ( reinterpret_cast < PixelType * > ( image.data() ) );
     
-    bool greyscale ( data.getNumberOfBands() < 3 );
+    const bool greyscale ( data.getNumberOfBands() < 3 );
     
-    const PixelType* b1 ( static_cast < const PixelType* > ( data.getBuf( 0 ) ) );
-    const PixelType* b2 ( static_cast < const PixelType* > ( data.getBuf( ( greyscale ? 0 : 1 ) ) ) );
-    const PixelType* b3 ( static_cast < const PixelType* > ( data.getBuf( ( greyscale ? 0 : 2 ) ) ) ); 
-    PixelType np1 ( static_cast < PixelType > ( data.getNullPix( 0 ) ) );
-    PixelType np2 ( static_cast < PixelType > ( data.getNullPix( ( greyscale ? 0 : 1 ) ) ) );
-    PixelType np3 ( static_cast < PixelType > ( data.getNullPix( ( greyscale ? 0 : 2 ) ) ) );
+    const PixelType* b1 ( static_cast < const PixelType* > ( data.getBuf ( 0 ) ) );
+    const PixelType* b2 ( static_cast < const PixelType* > ( data.getBuf ( ( greyscale ? 0 : 1 ) ) ) );
+    const PixelType* b3 ( static_cast < const PixelType* > ( data.getBuf ( ( greyscale ? 0 : 2 ) ) ) ); 
+    const PixelType np1 ( static_cast < PixelType > ( data.getNullPix ( 0 ) ) );
+    const PixelType np2 ( static_cast < PixelType > ( data.getNullPix ( ( greyscale ? 0 : 1 ) ) ) );
+    const PixelType np3 ( static_cast < PixelType > ( data.getNullPix ( ( greyscale ? 0 : 2 ) ) ) );
     
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
+      const PixelType r ( *b1 );
+      const PixelType g ( *b2 );
+      const PixelType b ( *b3 );
+      
       // If the pixel is null, make transparent.
-      if ( ( *b1 == np1 ) && ( *b2 == np2 ) && ( *b3 == np3 ) )
+      if ( ( r == np1 ) && ( g == np2 ) && ( b == np3 ) )
       {
         buffer[3] = 0;
       }
@@ -415,13 +419,15 @@ namespace Detail
       {
 				buffer[3] = std::numeric_limits<PixelType>::max();
       }
-      buffer[0] = *b1;
-      buffer[1] = *b2;
-      buffer[2] = *b3;
-      buffer +=4;
-      ++b1;
-      ++b2;
-      ++b3;
+      
+      // Set r,g, and b.
+      buffer[0] = r;
+      buffer[1] = g;
+      buffer[2] = b;
+      
+      // Increment pointers.
+      buffer += 4;
+      ++b1; ++b2; ++b3;
     }
     
     image.flipVertical();

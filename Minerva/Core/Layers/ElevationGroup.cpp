@@ -109,13 +109,14 @@ namespace Detail
       return;
     
     // Get the pixel format.
-    const GLenum pixelFormat ( image.getPixelFormat() );
+    const GLenum pixelFormat ( data.getPixelFormat() );
 
     // Does this image have alpha?
     const bool hasAlpha ( GL_RGBA == pixelFormat || GL_LUMINANCE_ALPHA == pixelFormat );
 
     // The offset amount.
-    const unsigned int offset ( hasAlpha ? 2 : 1 );
+    //const unsigned int offset ( hasAlpha ? 2 : 1 );
+    const unsigned int offset ( osg::Image::computeNumComponents ( pixelFormat ) );
 
     // Get the number of bytes in the source image.
     const unsigned int srcSize ( data.getImageSizeInBytes() );
@@ -134,7 +135,7 @@ namespace Detail
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      const SrcType a ( hasAlpha ? src[1] : 0 );
+      const SrcType a ( hasAlpha ? src[offset - 1] : 1 );
       const SrcType alpha ( ( 0 == a ) ? 0 : 1 );
 
       SrcType value ( *src );
@@ -173,12 +174,13 @@ namespace Detail
     
     const bool hasAlpha ( GL_RGBA == pixelFormat || GL_LUMINANCE_ALPHA == pixelFormat );
     
-    const unsigned int offset ( hasAlpha ? 2 : 1 );
+    //const unsigned int offset ( hasAlpha ? 2 : 1 );
+    const unsigned int offset ( osg::Image::computeNumComponents ( pixelFormat ) );
     
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      const float alpha ( hasAlpha ? src[1] / std::numeric_limits<float>::max() : 1.0 );
+      const float alpha ( hasAlpha ? src[offset - 1] / std::numeric_limits<float>::max() : 1.0 );
       const float value ( *src );
 
       const float current ( *dst );

@@ -677,6 +677,7 @@
 		664E33F60D89E22E006031B5 /* About.h in Headers */ = {isa = PBXBuildFile; fileRef = 664E33F40D89E22E006031B5 /* About.h */; };
 		664E33F70D89E22E006031B5 /* About.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 664E33F50D89E22E006031B5 /* About.cpp */; };
 		664EBB2B0DD4938400F78E21 /* QtAnimationControl.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */; };
+		665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */; };
 		666304690E030827004C2914 /* LoadModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 666304650E030827004C2914 /* LoadModel.h */; };
 		6663049A0E030E90004C2914 /* LoadModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666304640E030827004C2914 /* LoadModel.cpp */; };
 		666309BB0E0442CF004C2914 /* ConvertToTriangles.h in Headers */ = {isa = PBXBuildFile; fileRef = 666309B90E0442CF004C2914 /* ConvertToTriangles.h */; };
@@ -731,7 +732,6 @@
 		6667663F0D1237B3002F40C6 /* Print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6667663A0D1237B3002F40C6 /* Print.cpp */; };
 		666766400D1237B3002F40C6 /* Scope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6667663C0D1237B3002F40C6 /* Scope.cpp */; };
 		6667665C0D12426B002F40C6 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
-		666766680D1243A9002F40C6 /* Nimue.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666766660D12437A002F40C6 /* Nimue.plugins */; };
 		666766A70D124D34002F40C6 /* helios_sun.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A20D124D2C002F40C6 /* helios_sun.png */; };
 		666766A80D124D34002F40C6 /* newDocument.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A30D124D2C002F40C6 /* newDocument.png */; };
 		666766A90D124D34002F40C6 /* openDocument.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 666766A40D124D2C002F40C6 /* openDocument.png */; };
@@ -3489,6 +3489,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */,
 				66B8A1700E1D70A70031AB37 /* QtFlashDelegate.plug in Copy Files to Plugins */,
 				669F72E30E19916F005EE92C /* libsz.2.0.0.dylib in Copy Files to Plugins */,
 				669F72DF0E199060005EE92C /* libhdf5.0.0.0.dylib in Copy Files to Plugins */,
@@ -3505,7 +3506,6 @@
 				66EFF30C0D1370AF00B4B1AA /* QtSceneTree.plug in Copy Files to Plugins */,
 				66CFB21B0D13597B00F93E67 /* SceneModel.plug in Copy Files to Plugins */,
 				666767720D12FF7C002F40C6 /* QtSceneDelegate.plug in Copy Files to Plugins */,
-				666766680D1243A9002F40C6 /* Nimue.plugins in Copy Files to Plugins */,
 			);
 			name = "Copy Files to Plugins";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4401,7 +4401,6 @@
 		6636BB990DF6644F006937AD /* RasterLayerGDAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RasterLayerGDAL.h; sourceTree = "<group>"; };
 		663C4EC80D110AFE00949515 /* Boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Boost.framework; path = ../../../Library/Frameworks/Boost.framework; sourceTree = SOURCE_ROOT; };
 		66427A630E4AA8BE009AE232 /* Nimue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nimue.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		66427A650E4AA8BE009AE232 /* HeliosQtApp-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HeliosQtApp-Info copy.plist"; sourceTree = SOURCE_ROOT; };
 		664308510D10AC4900984C94 /* BaseCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseCreator.cpp; sourceTree = "<group>"; };
 		664308520D10AC4900984C94 /* BaseCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseCreator.h; sourceTree = "<group>"; };
 		664308530D10AC4900984C94 /* ObjectFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectFactory.cpp; sourceTree = "<group>"; };
@@ -4483,6 +4482,7 @@
 		664B43500D54EE8C0080DF60 /* IRemoveLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRemoveLayer.h; sourceTree = "<group>"; };
 		664E33F40D89E22E006031B5 /* About.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = About.h; path = Qt/Commands/About.h; sourceTree = "<group>"; };
 		664E33F50D89E22E006031B5 /* About.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = About.cpp; path = Qt/Commands/About.cpp; sourceTree = "<group>"; };
+		665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Helios.plugins; path = Qt/Application/Helios.plugins; sourceTree = "<group>"; };
 		666304640E030827004C2914 /* LoadModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LoadModel.cpp; sourceTree = "<group>"; };
 		666304650E030827004C2914 /* LoadModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadModel.h; sourceTree = "<group>"; };
 		666304920E030DC1004C2914 /* Collada14Dom.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Collada14Dom.framework; path = ../../../Library/Frameworks/Collada14Dom.framework; sourceTree = SOURCE_ROOT; };
@@ -8345,10 +8345,10 @@
 		6667619C0D122DB0002F40C6 /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */,
 				66CCC22A0E2882A600DDFE55 /* plugins.xml */,
 				666765E80D1235EC002F40C6 /* Nimue-Info.plist */,
 				666765B10D1234E2002F40C6 /* main.cpp */,
-				66427A650E4AA8BE009AE232 /* HeliosQtApp-Info copy.plist */,
 			);
 			name = Application;
 			sourceTree = "<group>";

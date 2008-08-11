@@ -201,7 +201,7 @@
 		4337B58609677B3F008DF27C /* UKFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4337B58209677B3F008DF27C /* UKFirstResponder.m */; };
 		4337B58809677B3F008DF27C /* UKToolbarFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 4337B58409677B3F008DF27C /* UKToolbarFactory.m */; };
 		4337B5A109677C07008DF27C /* com.imts.Helios.HeliosDocument.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4337B58909677C07008DF27C /* com.imts.Helios.HeliosDocument.plist */; };
-		4337B5A709677C07008DF27C /* Nimue.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59009677C07008DF27C /* Nimue.icns */; };
+		4337B5A709677C07008DF27C /* Helios.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59009677C07008DF27C /* Helios.icns */; };
 		4337B5A809677C07008DF27C /* Axis.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59209677C07008DF27C /* Axis.gif */; };
 		4337B5A909677C07008DF27C /* BoundBox.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59309677C07008DF27C /* BoundBox.gif */; };
 		4337B5AA09677C07008DF27C /* BoundSphere.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59409677C07008DF27C /* BoundSphere.gif */; };
@@ -519,8 +519,6 @@
 		663C60680D11116000949515 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		663C606F0D1111C600949515 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		663C60750D11120F00949515 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
-		664279E50E4AA8BE009AE232 /* Nimue.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59009677C07008DF27C /* Nimue.icns */; };
-		664279E60E4AA8BE009AE232 /* Nimue-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 666765E80D1235EC002F40C6 /* Nimue-Info.plist */; };
 		664279F30E4AA8BE009AE232 /* MeasureTool.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plug */; };
 		664279F40E4AA8BE009AE232 /* PathAnimation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plug */; };
 		664279F60E4AA8BE009AE232 /* QtSnapShot.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */; };
@@ -679,6 +677,9 @@
 		664EBB2B0DD4938400F78E21 /* QtAnimationControl.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */; };
 		665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */; };
 		665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668C969E0D42B4D00007D7F4 /* TriangulateGrid.plug */; };
+		665F2AFB0E4FD4F3001BB8F1 /* HeliosQtApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 666765E80D1235EC002F40C6 /* HeliosQtApp-Info.plist */; };
+		665F2B0A0E4FD655001BB8F1 /* Nimue-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 665F2B090E4FD644001BB8F1 /* Nimue-Info.plist */; };
+		665F2B0C0E4FD66D001BB8F1 /* Nimue.icns in Resources */ = {isa = PBXBuildFile; fileRef = 669B361F0E4B3D3900AF6B84 /* Nimue.icns */; };
 		666304690E030827004C2914 /* LoadModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 666304650E030827004C2914 /* LoadModel.h */; };
 		6663049A0E030E90004C2914 /* LoadModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666304640E030827004C2914 /* LoadModel.cpp */; };
 		666309BB0E0442CF004C2914 /* ConvertToTriangles.h in Headers */ = {isa = PBXBuildFile; fileRef = 666309B90E0442CF004C2914 /* ConvertToTriangles.h */; };
@@ -820,8 +821,7 @@
 		668C96B00D42B5180007D7F4 /* TriangulateGridComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 668C96AD0D42B5180007D7F4 /* TriangulateGridComponent.h */; };
 		668C96B20D42B5980007D7F4 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		668C96B40D42B5A70007D7F4 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
-		668C98C50D444C950007D7F4 /* Nimue-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 666765E80D1235EC002F40C6 /* Nimue-Info.plist */; };
-		668C98C80D444D130007D7F4 /* Nimue.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59009677C07008DF27C /* Nimue.icns */; };
+		668C98C80D444D130007D7F4 /* Helios.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4337B59009677C07008DF27C /* Helios.icns */; };
 		668DB5070D788D3A00EA4DCD /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		668DB5080D788D3D00EA4DCD /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		668DB5190D7891BD00EA4DCD /* libMinervaPostgres.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */; };
@@ -3995,7 +3995,7 @@
 		4337B58D09677C07008DF27C /* fudd.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = fudd.ttf; path = ../Helios/Cocoa/Resources/fonts/fudd.ttf; sourceTree = SOURCE_ROOT; };
 		4337B58E09677C07008DF27C /* Times New Roman.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Times New Roman.ttf"; path = "../Helios/Cocoa/Resources/fonts/Times New Roman.ttf"; sourceTree = SOURCE_ROOT; };
 		4337B58F09677C07008DF27C /* times.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = times.ttf; path = ../Helios/Cocoa/Resources/fonts/times.ttf; sourceTree = SOURCE_ROOT; };
-		4337B59009677C07008DF27C /* Nimue.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Nimue.icns; path = ../Nimue/Images/Nimue.icns; sourceTree = SOURCE_ROOT; };
+		4337B59009677C07008DF27C /* Helios.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Helios.icns; path = ../Helios/Cocoa/Resources/Helios.icns; sourceTree = SOURCE_ROOT; };
 		4337B59209677C07008DF27C /* Axis.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = Axis.gif; path = ../Helios/Cocoa/Resources/Images/Axis.gif; sourceTree = SOURCE_ROOT; };
 		4337B59309677C07008DF27C /* BoundBox.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = BoundBox.gif; path = ../Helios/Cocoa/Resources/Images/BoundBox.gif; sourceTree = SOURCE_ROOT; };
 		4337B59409677C07008DF27C /* BoundSphere.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = BoundSphere.gif; path = ../Helios/Cocoa/Resources/Images/BoundSphere.gif; sourceTree = SOURCE_ROOT; };
@@ -4485,6 +4485,7 @@
 		664E33F40D89E22E006031B5 /* About.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = About.h; path = Qt/Commands/About.h; sourceTree = "<group>"; };
 		664E33F50D89E22E006031B5 /* About.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = About.cpp; path = Qt/Commands/About.cpp; sourceTree = "<group>"; };
 		665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Helios.plugins; path = Qt/Application/Helios.plugins; sourceTree = "<group>"; };
+		665F2B090E4FD644001BB8F1 /* Nimue-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Nimue-Info.plist"; path = "../../Xcode/Nimue-Info.plist"; sourceTree = "<group>"; };
 		666304640E030827004C2914 /* LoadModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LoadModel.cpp; sourceTree = "<group>"; };
 		666304650E030827004C2914 /* LoadModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadModel.h; sourceTree = "<group>"; };
 		666304920E030DC1004C2914 /* Collada14Dom.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Collada14Dom.framework; path = ../../../Library/Frameworks/Collada14Dom.framework; sourceTree = SOURCE_ROOT; };
@@ -4533,7 +4534,7 @@
 		666765920D12342F002F40C6 /* Make.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Make.h; sourceTree = "<group>"; };
 		666765B10D1234E2002F40C6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = Qt/Application/main.cpp; sourceTree = "<group>"; };
 		666765E60D1235EC002F40C6 /* Helios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Helios.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		666765E80D1235EC002F40C6 /* Nimue-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Nimue-Info.plist"; sourceTree = SOURCE_ROOT; };
+		666765E80D1235EC002F40C6 /* HeliosQtApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HeliosQtApp-Info.plist"; sourceTree = SOURCE_ROOT; };
 		6667663A0D1237B3002F40C6 /* Print.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Print.cpp; path = Trace/Print.cpp; sourceTree = "<group>"; };
 		6667663B0D1237B3002F40C6 /* Print.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Print.h; path = Trace/Print.h; sourceTree = "<group>"; };
 		6667663C0D1237B3002F40C6 /* Scope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scope.cpp; path = Trace/Scope.cpp; sourceTree = "<group>"; };
@@ -7013,7 +7014,7 @@
 				430D319C0967815E003C3140 /* Info.plist */,
 				4337B58909677C07008DF27C /* com.imts.Helios.HeliosDocument.plist */,
 				4337B58A09677C07008DF27C /* fonts */,
-				4337B59009677C07008DF27C /* Nimue.icns */,
+				4337B59009677C07008DF27C /* Helios.icns */,
 				4337B59109677C07008DF27C /* Images */,
 			);
 			name = Resources;
@@ -8349,7 +8350,7 @@
 			children = (
 				665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */,
 				66CCC22A0E2882A600DDFE55 /* plugins.xml */,
-				666765E80D1235EC002F40C6 /* Nimue-Info.plist */,
+				666765E80D1235EC002F40C6 /* HeliosQtApp-Info.plist */,
 				666765B10D1234E2002F40C6 /* main.cpp */,
 			);
 			name = Application;
@@ -8933,6 +8934,7 @@
 		669273290E0B1DDE00E35E8B /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				665F2B090E4FD644001BB8F1 /* Nimue-Info.plist */,
 				666766660D12437A002F40C6 /* Nimue.plugins */,
 				66B07CB90E4BBF76007A00C9 /* plugins.xml */,
 				6692732A0E0B1DDE00E35E8B /* main.cpp */,
@@ -11262,9 +11264,9 @@
 			productReference = 431BB8E809246BD700ED2131 /* VolumeModel.plug */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		434D2D14095B2CA700642126 /* HeliosCoaco */ = {
+		434D2D14095B2CA700642126 /* HeliosCocoa */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "HeliosCoaco" */;
+			buildConfigurationList = 434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "HeliosCocoa" */;
 			buildPhases = (
 				434D2D11095B2CA700642126 /* Resources */,
 				434D2D12095B2CA700642126 /* Sources */,
@@ -11284,7 +11286,7 @@
 				4366F26C0A158DBC00882B30 /* PBXTargetDependency */,
 				4366F26E0A158DBC00882B30 /* PBXTargetDependency */,
 			);
-			name = HeliosCoaco;
+			name = HeliosCocoa;
 			productName = XHelios;
 			productReference = 434D2D15095B2CA700642126 /* Helios.app */;
 			productType = "com.apple.product-type.application";
@@ -12451,7 +12453,7 @@
 				66892DEA0D283E16005CB399 /* AllMinerva */,
 				66A8B08D0DABECA400088B3B /* FlashModel */,
 				661C119B0DCA718E00DE43D4 /* GDALReadImage */,
-				434D2D14095B2CA700642126 /* HeliosCoaco */,
+				434D2D14095B2CA700642126 /* HeliosCocoa */,
 				666765E50D1235EC002F40C6 /* HeliosQt */,
 				6667609E0D122A70002F40C6 /* HeliosQtCommands */,
 				666760C20D122B0C002F40C6 /* HeliosQtCore */,
@@ -12519,7 +12521,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4337B5A109677C07008DF27C /* com.imts.Helios.HeliosDocument.plist in Resources */,
-				4337B5A709677C07008DF27C /* Nimue.icns in Resources */,
+				4337B5A709677C07008DF27C /* Helios.icns in Resources */,
 				4337B5A809677C07008DF27C /* Axis.gif in Resources */,
 				4337B5A909677C07008DF27C /* BoundBox.gif in Resources */,
 				4337B5AA09677C07008DF27C /* BoundSphere.gif in Resources */,
@@ -12554,8 +12556,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				664279E50E4AA8BE009AE232 /* Nimue.icns in Resources */,
-				664279E60E4AA8BE009AE232 /* Nimue-Info.plist in Resources */,
+				665F2B0A0E4FD655001BB8F1 /* Nimue-Info.plist in Resources */,
+				665F2B0C0E4FD66D001BB8F1 /* Nimue.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12563,8 +12565,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				668C98C80D444D130007D7F4 /* Nimue.icns in Resources */,
-				668C98C50D444C950007D7F4 /* Nimue-Info.plist in Resources */,
+				665F2AFB0E4FD4F3001BB8F1 /* HeliosQtApp-Info.plist in Resources */,
+				668C98C80D444D130007D7F4 /* Helios.icns in Resources */,
 				66CFB2460D135FEF00F93E67 /* helios_sun.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -18748,7 +18750,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "HeliosCoaco" */ = {
+		434D2D18095B2CA900642126 /* Build configuration list for PBXNativeTarget "HeliosCocoa" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				434D2D19095B2CA900642126 /* Debug */,

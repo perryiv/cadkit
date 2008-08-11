@@ -678,6 +678,7 @@
 		664E33F70D89E22E006031B5 /* About.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 664E33F50D89E22E006031B5 /* About.cpp */; };
 		664EBB2B0DD4938400F78E21 /* QtAnimationControl.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */; };
 		665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */; };
+		665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668C969E0D42B4D00007D7F4 /* TriangulateGrid.plug */; };
 		666304690E030827004C2914 /* LoadModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 666304650E030827004C2914 /* LoadModel.h */; };
 		6663049A0E030E90004C2914 /* LoadModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666304640E030827004C2914 /* LoadModel.cpp */; };
 		666309BB0E0442CF004C2914 /* ConvertToTriangles.h in Headers */ = {isa = PBXBuildFile; fileRef = 666309B90E0442CF004C2914 /* ConvertToTriangles.h */; };
@@ -3330,6 +3331,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plug in Copy Files to Plugins */,
 				669F2A540E4D0969007EB41A /* VtkAlgorithms.plug in Copy Files to Plugins */,
 				66B07CE00E4BCC7D007A00C9 /* ModflowDelegateQt.plug in Copy Files to Plugins */,
 				66B07CE10E4BCC7D007A00C9 /* ModflowModel.plug in Copy Files to Plugins */,
@@ -11452,10 +11454,10 @@
 			buildRules = (
 			);
 			dependencies = (
+				664279C30E4AA8BE009AE232 /* PBXTargetDependency */,
 				669F29B80E4D0737007EB41A /* PBXTargetDependency */,
 				66B07C990E4BBE53007A00C9 /* PBXTargetDependency */,
 				66B07C970E4BBE49007A00C9 /* PBXTargetDependency */,
-				664279C30E4AA8BE009AE232 /* PBXTargetDependency */,
 				664279C50E4AA8BE009AE232 /* PBXTargetDependency */,
 				664279C90E4AA8BE009AE232 /* PBXTargetDependency */,
 				664279CB0E4AA8BE009AE232 /* PBXTargetDependency */,

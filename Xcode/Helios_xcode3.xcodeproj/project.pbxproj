@@ -1799,6 +1799,7 @@
 		66FF454F0D10FF57003A0AC1 /* XercesString.h in Headers */ = {isa = PBXBuildFile; fileRef = 66FF45350D10FF57003A0AC1 /* XercesString.h */; };
 		C21B9E6A0E37894100ED7433 /* TimerServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C21B9E690E37894100ED7433 /* TimerServer.cpp */; };
 		C25FFB0F0E35477000DEEF41 /* CurrentDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C25FFB0D0E35474300DEEF41 /* CurrentDirectory.cpp */; };
+		C276D4410E5119F200D2C9E5 /* NimueManual.pdf in Copy Manual */ = {isa = PBXBuildFile; fileRef = C276D43E0E51199C00D2C9E5 /* NimueManual.pdf */; };
 		C2BD0D2F0E37DE1A00137A5B /* TimerCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2BD0D2E0E37DE1A00137A5B /* TimerCallback.cpp */; };
 /* End PBXBuildFile section */
 
@@ -3815,6 +3816,17 @@
 			name = "Copy Cadkit Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C276D4400E5119DE00D2C9E5 /* Copy Manual */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				C276D4410E5119F200D2C9E5 /* NimueManual.pdf in Copy Manual */,
+			);
+			name = "Copy Manual";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -5728,6 +5740,7 @@
 		C26F88440E2EB6F50030ED9D /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		C26F88460E2EB6F50030ED9D /* XML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XML.h; sourceTree = "<group>"; };
 		C26F88470E2EB6F50030ED9D /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		C276D43E0E51199C00D2C9E5 /* NimueManual.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NimueManual.pdf; sourceTree = "<group>"; };
 		C2BD0D2D0E37DE0800137A5B /* TimerCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimerCallback.h; path = Qt/Core/TimerCallback.h; sourceTree = "<group>"; };
 		C2BD0D2E0E37DE1A00137A5B /* TimerCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimerCallback.cpp; path = Qt/Core/TimerCallback.cpp; sourceTree = "<group>"; };
 		C2BD0DFE0E37F64B00137A5B /* ITimerNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITimerNotify.h; sourceTree = "<group>"; };
@@ -8890,6 +8903,7 @@
 		669273280E0B1DDE00E35E8B /* Nimue */ = {
 			isa = PBXGroup;
 			children = (
+				C276D43D0E51199C00D2C9E5 /* Docs */,
 				669273290E0B1DDE00E35E8B /* Application */,
 				6692732D0E0B1DDE00E35E8B /* Images */,
 				669273320E0B1DDE00E35E8B /* Plugins */,
@@ -10341,6 +10355,14 @@
 			path = Write;
 			sourceTree = "<group>";
 		};
+		C276D43D0E51199C00D2C9E5 /* Docs */ = {
+			isa = PBXGroup;
+			children = (
+				C276D43E0E51199C00D2C9E5 /* NimueManual.pdf */,
+			);
+			path = Docs;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -11410,6 +11432,7 @@
 				66427A240E4AA8BE009AE232 /* Copy Cadkit Libraries */,
 				66427A300E4AA8BE009AE232 /* Frameworks */,
 				66427A340E4AA8BE009AE232 /* Copy OpenSceneGraph Plugins */,
+				C276D4400E5119DE00D2C9E5 /* Copy Manual */,
 			);
 			buildRules = (
 			);

@@ -65,13 +65,18 @@ OpenManual::~OpenManual()
 void OpenManual::_execute()
 {
   USUL_TRACE_SCOPE;
+  
+  std::string file ( this->_manualFile() );
 
 #if _MSC_VER
 
-  std::string file ( this->_manualFile() );
   std::replace ( file.begin(), file.end(), '\\', '/' );
-
   ::ShellExecuteA ( 0x0, "open", file.c_str(), 0x0, 0x0, 0 );
+
+#elif __APPLE__
+  
+  const std::string command ( Usul::Strings::format ( "open ", file ) );
+  ::system ( command.c_str() );
 
 #endif
 }
@@ -97,5 +102,15 @@ bool OpenManual::updateEnable() const
 
 std::string OpenManual::_manualFile() const
 {
-  return Usul::Strings::format ( Usul::CommandLine::Arguments::instance().directory(), "/../docs/", _manual );
+#if __APPLE__
+  
+  const std::string relativePath ( "/../Resources/" );
+
+#else
+
+  const std::string relativePath ( "/../docs/" );
+
+#endif
+
+  return Usul::Strings::format ( Usul::CommandLine::Arguments::instance().directory(), relativePath, _manual );
 }

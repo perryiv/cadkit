@@ -13,6 +13,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef __linux
+#define __USE_LARGEFILE64
+#endif
+
 #include "PointDocument.h"
 
 #include "MenuKit/Menu.h"
@@ -51,9 +55,10 @@ USUL_IMPLEMENT_TYPE_ID ( PointDocument );
 
 #ifdef _MSC_VER
 #define FILE_TELL_64 _ftelli64
+#elif __APPLE__
+#define FILE_TELL_64 ftello
 #else
 #define FILE_TELL_64 ftello64
-TODO: Look at WRF document for how to use 64-bit fopen
 #endif
 
     

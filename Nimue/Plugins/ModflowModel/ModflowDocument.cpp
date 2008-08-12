@@ -681,16 +681,17 @@ void ModflowDocument::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
     const osg::Vec4f fgColor ( 1, 1, 1, 1 );
     const osg::Vec4f bgColor ( 0, 0, 0, 1 );
-    const unsigned int y ( 10 ), x1 ( 10 ), x2 ( 90 ), x3 ( 130 );
+    const unsigned int y ( 10 ), x ( 10 );
 
-    textMatrix->setText ( x1, y, Usul::Strings::format ( "Time Step: ", step + 1 ), fgColor, bgColor );
-    textMatrix->setText ( x2, y, Usul::Strings::format ( "of ", total ), fgColor, bgColor );
+    std::string out ( Usul::Strings::format ( "Time Step: ", step + 1, " of ", total ) );
 
     TimeStamp stamp ( 0 );
     if ( true == this->timeStampGet ( step, stamp ) )
     {
-      textMatrix->setText ( x3, y, Usul::Strings::format ( "Year: ", stamp ), fgColor, bgColor );
+      out += Usul::Strings::format ( ", Year: ", stamp );
     }
+
+    textMatrix->setText ( x, y, out, fgColor, bgColor );
   }
 
   // Are we dirty?

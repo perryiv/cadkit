@@ -27,7 +27,6 @@
 				66892DF70D283E46005CB399 /* PBXTargetDependency */,
 				66892DF50D283E46005CB399 /* PBXTargetDependency */,
 				66892DF30D283E46005CB399 /* PBXTargetDependency */,
-				66892DF10D283E46005CB399 /* PBXTargetDependency */,
 				66892DEE0D283E25005CB399 /* PBXTargetDependency */,
 			);
 			name = AllMinerva;
@@ -1428,7 +1427,6 @@
 		66C4E9590DAAE45B00A3B1FB /* OssimLayerQt.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112B10D2EBADC009B29ED /* OssimLayerQt.plug */; };
 		66C4E95A0DAAE45B00A3B1FB /* PathAnimation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plug */; };
 		66C4E95B0DAAE45B00A3B1FB /* PostGISLayerQt.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plug */; };
-		66C4E95C0DAAE45B00A3B1FB /* ProjectionManager.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF19310D16106000B4B1AA /* ProjectionManager.plug */; };
 		66C4E95E0DAAE45B00A3B1FB /* QtSceneDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */; };
 		66C4E9610DAAE45B00A3B1FB /* QtSnapShot.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */; };
 		66C4E9660DAAE46500A3B1FB /* libHeliosQtCommands.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */; };
@@ -1723,11 +1721,6 @@
 		66EF191D0D15C36A00B4B1AA /* osgManipulator.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 664308DE0D10B05700984C94 /* osgManipulator.framework */; };
 		66EF191E0D15C36A00B4B1AA /* osgText.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
 		66EF191F0D15C36A00B4B1AA /* osgUtil.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
-		66EF193E0D1610ED00B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF193A0D1610ED00B4B1AA /* CompileGuard.h */; };
-		66EF193F0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF193B0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp */; };
-		66EF19400D1610ED00B4B1AA /* ProjectionManagerComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF193C0D1610ED00B4B1AA /* ProjectionManagerComponent.h */; };
-		66EF194A0D1611CE00B4B1AA /* ossim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A40D15177F00B4B1AA /* ossim.framework */; };
-		66EF194D0D1611E500B4B1AA /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66EF19610D16142200B4B1AA /* libHeliosQtCommands.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */; };
 		66EF19620D16142200B4B1AA /* libHeliosQtCore.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */; };
 		66EF19640D16142200B4B1AA /* libHeliosQtViewOSG.dylib in Copy Cadkit Libraries */ = {isa = PBXBuildFile; fileRef = 666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */; };
@@ -2215,13 +2208,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 66892DCF0D283D61005CB399;
 			remoteInfo = LayerManager;
-		};
-		66892DF00D283E46005CB399 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 66EF19300D16106000B4B1AA;
-			remoteInfo = ProjectionManager;
 		};
 		66892DF20D283E46005CB399 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3238,13 +3224,6 @@
 			remoteGlobalIDString = 66EF17680D15190B00B4B1AA;
 			remoteInfo = Minerva;
 		};
-		66EF199D0D161B3300B4B1AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 43FED6F1092452E100EBB610;
-			remoteInfo = Usul;
-		};
 		66EF19A00D161C7100B4B1AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -3693,7 +3672,6 @@
 				66C4E9590DAAE45B00A3B1FB /* OssimLayerQt.plug in Copy Files to Plugins */,
 				66C4E95A0DAAE45B00A3B1FB /* PathAnimation.plug in Copy Files to Plugins */,
 				66C4E95B0DAAE45B00A3B1FB /* PostGISLayerQt.plug in Copy Files to Plugins */,
-				66C4E95C0DAAE45B00A3B1FB /* ProjectionManager.plug in Copy Files to Plugins */,
 				66C4E95E0DAAE45B00A3B1FB /* QtSceneDelegate.plug in Copy Files to Plugins */,
 				66C4E9610DAAE45B00A3B1FB /* QtSnapShot.plug in Copy Files to Plugins */,
 			);
@@ -5601,7 +5579,6 @@
 		66EF18EF0D15C17000B4B1AA /* MinervaComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinervaComponent.cpp; path = ../Minerva/Plugins/Document/MinervaComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66EF18F00D15C17000B4B1AA /* MinervaComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinervaComponent.h; path = ../Minerva/Plugins/Document/MinervaComponent.h; sourceTree = SOURCE_ROOT; };
 		66EF18F10D15C17000B4B1AA /* MinervaFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinervaFactory.cpp; path = ../Minerva/Plugins/Document/MinervaFactory.cpp; sourceTree = SOURCE_ROOT; };
-		66EF19310D16106000B4B1AA /* ProjectionManager.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ProjectionManager.plug; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EF193A0D1610ED00B4B1AA /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Minerva/Plugins/ProjectionManager/CompileGuard.h; sourceTree = SOURCE_ROOT; };
 		66EF193B0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProjectionManagerComponent.cpp; path = ../Minerva/Plugins/ProjectionManager/ProjectionManagerComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66EF193C0D1610ED00B4B1AA /* ProjectionManagerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectionManagerComponent.h; path = ../Minerva/Plugins/ProjectionManager/ProjectionManagerComponent.h; sourceTree = SOURCE_ROOT; };
@@ -6499,15 +6476,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		66EF192F0D16106000B4B1AA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				66EF194D0D1611E500B4B1AA /* libUsul.dylib in Frameworks */,
-				66EF194A0D1611CE00B4B1AA /* ossim.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		66EFF3910D139F7200B4B1AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -6839,7 +6807,6 @@
 				66A112B10D2EBADC009B29ED /* OssimLayerQt.plug */,
 				668BE8220D24A96B00109210 /* PathAnimation.plug */,
 				66A112C20D2EBB06009B29ED /* PostGISLayerQt.plug */,
-				66EF19310D16106000B4B1AA /* ProjectionManager.plug */,
 				666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */,
 				431BB89409246ADA00ED2131 /* SceneModel.plug */,
 				6676A6480D136AFD00B95C16 /* QtSceneTree.plug */,
@@ -11144,15 +11111,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		66EF192D0D16106000B4B1AA /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				66EF193E0D1610ED00B4B1AA /* CompileGuard.h in Headers */,
-				66EF19400D1610ED00B4B1AA /* ProjectionManagerComponent.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		66EFF38F0D139F7200B4B1AA /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -12360,24 +12318,6 @@
 			productReference = 66EF18E20D15C0E600B4B1AA /* MinervaModel.plug */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		66EF19300D16106000B4B1AA /* ProjectionManager */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 66EF19340D16107E00B4B1AA /* Build configuration list for PBXNativeTarget "ProjectionManager" */;
-			buildPhases = (
-				66EF192D0D16106000B4B1AA /* Headers */,
-				66EF192E0D16106000B4B1AA /* Sources */,
-				66EF192F0D16106000B4B1AA /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				66EF199E0D161B3300B4B1AA /* PBXTargetDependency */,
-			);
-			name = ProjectionManager;
-			productName = ProjectionManager;
-			productReference = 66EF19310D16106000B4B1AA /* ProjectionManager.plug */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
 		66EFF3920D139F7200B4B1AA /* QtClipPlanes */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66EFF3960D139FB200B4B1AA /* Build configuration list for PBXNativeTarget "QtClipPlanes" */;
@@ -12477,7 +12417,6 @@
 				664279B40E4AA8BE009AE232 /* Nimue */,
 				431BAD5B09245A4600ED2131 /* OsgTools */,
 				668BE8210D24A96B00109210 /* PathAnimation */,
-				66EF19300D16106000B4B1AA /* ProjectionManager */,
 				66F523C50E0D77FA001D0057 /* PyFlashModel */,
 				669BD2B10E0EFCB400E598FF /* PyOsgTools */,
 				669BD3E70E0F740A00E598FF /* PyPathAnimation */,
@@ -13921,14 +13860,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		66EF192E0D16106000B4B1AA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				66EF193F0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		66EFF3900D139F7200B4B1AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -14261,11 +14192,6 @@
 			isa = PBXTargetDependency;
 			target = 66892DCF0D283D61005CB399 /* LayerManager */;
 			targetProxy = 66892DED0D283E25005CB399 /* PBXContainerItemProxy */;
-		};
-		66892DF10D283E46005CB399 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 66EF19300D16106000B4B1AA /* ProjectionManager */;
-			targetProxy = 66892DF00D283E46005CB399 /* PBXContainerItemProxy */;
 		};
 		66892DF30D283E46005CB399 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -14991,11 +14917,6 @@
 			isa = PBXTargetDependency;
 			target = 66EF17680D15190B00B4B1AA /* Minerva */;
 			targetProxy = 66EF18F90D15C1C800B4B1AA /* PBXContainerItemProxy */;
-		};
-		66EF199E0D161B3300B4B1AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 43FED6F1092452E100EBB610 /* Usul */;
-			targetProxy = 66EF199D0D161B3300B4B1AA /* PBXContainerItemProxy */;
 		};
 		66EF19A10D161C7100B4B1AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -18477,54 +18398,6 @@
 			};
 			name = Release;
 		};
-		66EF19320D16106000B4B1AA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				EXECUTABLE_EXTENSION = plugd;
-				EXECUTABLE_PREFIX = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					_COMPILING_PROJECTION_MANAGER,
-					_DEBUG,
-				);
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
-				PRODUCT_NAME = ProjectionManager;
-				ZERO_LINK = YES;
-			};
-			name = Debug;
-		};
-		66EF19330D16106000B4B1AA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				EXECUTABLE_EXTENSION = plug;
-				EXECUTABLE_PREFIX = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_PROJECTION_MANAGER;
-				INSTALL_PATH = "@executable_path/../Plugins";
-				PREBINDING = NO;
-				PRODUCT_NAME = ProjectionManager;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		66EFF3940D139F7200B4B1AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -19223,15 +19096,6 @@
 			buildConfigurations = (
 				66EF18E30D15C0E600B4B1AA /* Debug */,
 				66EF18E40D15C0E600B4B1AA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		66EF19340D16107E00B4B1AA /* Build configuration list for PBXNativeTarget "ProjectionManager" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				66EF19320D16106000B4B1AA /* Debug */,
-				66EF19330D16106000B4B1AA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

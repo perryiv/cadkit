@@ -518,6 +518,13 @@
 		663C60680D11116000949515 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		663C606F0D1111C600949515 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		663C60750D11120F00949515 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		663E626B0E50EF7400881387 /* OctTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 663E62640E50EF7400881387 /* OctTree.cpp */; };
+		663E626C0E50EF7400881387 /* OctTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 663E62650E50EF7400881387 /* OctTree.h */; };
+		663E626D0E50EF7400881387 /* OctTreeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 663E62660E50EF7400881387 /* OctTreeNode.cpp */; };
+		663E626E0E50EF7400881387 /* OctTreeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 663E62670E50EF7400881387 /* OctTreeNode.h */; };
+		663E626F0E50EF7400881387 /* PointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 663E62680E50EF7400881387 /* PointSet.cpp */; };
+		663E62700E50EF7400881387 /* PointSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 663E62690E50EF7400881387 /* PointSet.h */; };
+		663E62710E50EF7400881387 /* PointSetRecords.h in Headers */ = {isa = PBXBuildFile; fileRef = 663E626A0E50EF7400881387 /* PointSetRecords.h */; };
 		664279F30E4AA8BE009AE232 /* MeasureTool.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plug */; };
 		664279F40E4AA8BE009AE232 /* PathAnimation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plug */; };
 		664279F60E4AA8BE009AE232 /* QtSnapShot.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */; };
@@ -676,7 +683,6 @@
 		664EBB2B0DD4938400F78E21 /* QtAnimationControl.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */; };
 		665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */; };
 		665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668C969E0D42B4D00007D7F4 /* TriangulateGrid.plug */; };
-		665F2AFB0E4FD4F3001BB8F1 /* HeliosQtApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 666765E80D1235EC002F40C6 /* HeliosQtApp-Info.plist */; };
 		665F2B0A0E4FD655001BB8F1 /* Nimue-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 665F2B090E4FD644001BB8F1 /* Nimue-Info.plist */; };
 		665F2B0C0E4FD66D001BB8F1 /* Nimue.icns in Resources */ = {isa = PBXBuildFile; fileRef = 669B361F0E4B3D3900AF6B84 /* Nimue.icns */; };
 		666304690E030827004C2914 /* LoadModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 666304650E030827004C2914 /* LoadModel.h */; };
@@ -1153,6 +1159,22 @@
 		669BD3F40E0F740A00E598FF /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		669BD3F50E0F740A00E598FF /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		669BD3F60E0F740A00E598FF /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A8B81E0E06F7DC001C436C /* Python.framework */; };
+		669CE8A70E52101900618324 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		669CE8A80E52101900618324 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		669CE8A90E52101900618324 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		669CE8AA0E52101900618324 /* OpenThreads.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
+		669CE8AB0E52101900618324 /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
+		669CE8AC0E52101900618324 /* osgGA.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CF094DE500009181E3 /* osgGA.framework */; };
+		669CE8AD0E52101900618324 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
+		669CE8AE0E52101900618324 /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
+		669CE9C30E52107900618324 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 669CE9BB0E52107700618324 /* CompileGuard.h */; };
+		669CE9C40E52107900618324 /* PointComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669CE9BD0E52107700618324 /* PointComponent.cpp */; };
+		669CE9C50E52107900618324 /* PointComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 669CE9BE0E52107700618324 /* PointComponent.h */; };
+		669CE9C60E52107900618324 /* PointDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669CE9BF0E52107700618324 /* PointDocument.cpp */; };
+		669CE9C70E52107900618324 /* PointDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 669CE9C00E52107700618324 /* PointDocument.h */; };
+		669CE9C80E52107900618324 /* PointFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669CE9C10E52107700618324 /* PointFactory.cpp */; };
+		669CE9CD0E521EF200618324 /* PointModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669CE8B20E52101900618324 /* PointModel.plug */; };
+		669CE9D50E52204E00618324 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		669F239D0DBC14D400EC89B0 /* IconStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669F23990DBC14D400EC89B0 /* IconStyle.cpp */; };
 		669F239E0DBC14D400EC89B0 /* IconStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 669F239A0DBC14D400EC89B0 /* IconStyle.h */; };
 		669F239F0DBC14D400EC89B0 /* LineStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669F239B0DBC14D400EC89B0 /* LineStyle.cpp */; };
@@ -2539,6 +2561,13 @@
 			remoteGlobalIDString = 669BD3E70E0F740A00E598FF;
 			remoteInfo = PyPathAnimation;
 		};
+		669CE9CA0E521ED700618324 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 669CE89E0E52101900618324 /* PointModel */;
+			remoteInfo = PointModel;
+		};
 		669F28D90E4D026B007EB41A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -3471,6 +3500,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				669CE9CD0E521EF200618324 /* PointModel.plug in Copy Files to Plugins */,
 				665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */,
 				66B8A1700E1D70A70031AB37 /* QtFlashDelegate.plug in Copy Files to Plugins */,
 				669F72E30E19916F005EE92C /* libsz.2.0.0.dylib in Copy Files to Plugins */,
@@ -4392,6 +4422,13 @@
 		6636BB980DF6644F006937AD /* RasterLayerGDAL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RasterLayerGDAL.cpp; sourceTree = "<group>"; };
 		6636BB990DF6644F006937AD /* RasterLayerGDAL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RasterLayerGDAL.h; sourceTree = "<group>"; };
 		663C4EC80D110AFE00949515 /* Boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Boost.framework; path = ../../../Library/Frameworks/Boost.framework; sourceTree = SOURCE_ROOT; };
+		663E62640E50EF7400881387 /* OctTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OctTree.cpp; sourceTree = "<group>"; };
+		663E62650E50EF7400881387 /* OctTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OctTree.h; sourceTree = "<group>"; };
+		663E62660E50EF7400881387 /* OctTreeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OctTreeNode.cpp; sourceTree = "<group>"; };
+		663E62670E50EF7400881387 /* OctTreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OctTreeNode.h; sourceTree = "<group>"; };
+		663E62680E50EF7400881387 /* PointSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointSet.cpp; sourceTree = "<group>"; };
+		663E62690E50EF7400881387 /* PointSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointSet.h; sourceTree = "<group>"; };
+		663E626A0E50EF7400881387 /* PointSetRecords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointSetRecords.h; sourceTree = "<group>"; };
 		66427A630E4AA8BE009AE232 /* Nimue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nimue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		664308510D10AC4900984C94 /* BaseCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseCreator.cpp; sourceTree = "<group>"; };
 		664308520D10AC4900984C94 /* BaseCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseCreator.h; sourceTree = "<group>"; };
@@ -5090,6 +5127,16 @@
 		669BD29C0E0EF9DF00E598FF /* osgViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgViewer.framework; path = ../../../Library/Frameworks/osgViewer.framework; sourceTree = SOURCE_ROOT; };
 		669BD2C60E0EFCB400E598FF /* _OsgTools.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = _OsgTools.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		669BD3FC0E0F740A00E598FF /* _PathAnimation.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = _PathAnimation.so; sourceTree = BUILT_PRODUCTS_DIR; };
+		669CE8B20E52101900618324 /* PointModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PointModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		669CE9BA0E52107700618324 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		669CE9BB0E52107700618324 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		669CE9BC0E52107700618324 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
+		669CE9BD0E52107700618324 /* PointComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointComponent.cpp; sourceTree = "<group>"; };
+		669CE9BE0E52107700618324 /* PointComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointComponent.h; sourceTree = "<group>"; };
+		669CE9BF0E52107700618324 /* PointDocument.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointDocument.cpp; sourceTree = "<group>"; };
+		669CE9C00E52107700618324 /* PointDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointDocument.h; sourceTree = "<group>"; };
+		669CE9C10E52107700618324 /* PointFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointFactory.cpp; sourceTree = "<group>"; };
+		669CE9C20E52107800618324 /* PointModel.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PointModel.vcproj; sourceTree = "<group>"; };
 		669F23990DBC14D400EC89B0 /* IconStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IconStyle.cpp; sourceTree = "<group>"; };
 		669F239A0DBC14D400EC89B0 /* IconStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconStyle.h; sourceTree = "<group>"; };
 		669F239B0DBC14D400EC89B0 /* LineStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineStyle.cpp; sourceTree = "<group>"; };
@@ -6200,6 +6247,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		669CE8A60E52101900618324 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				669CE9D50E52204E00618324 /* libMenuKit.dylib in Frameworks */,
+				669CE8A70E52101900618324 /* osg.framework in Frameworks */,
+				669CE8A80E52101900618324 /* libOsgTools.dylib in Frameworks */,
+				669CE8A90E52101900618324 /* libUsul.dylib in Frameworks */,
+				669CE8AA0E52101900618324 /* OpenThreads.framework in Frameworks */,
+				669CE8AB0E52101900618324 /* osgDB.framework in Frameworks */,
+				669CE8AC0E52101900618324 /* osgGA.framework in Frameworks */,
+				669CE8AD0E52101900618324 /* osgText.framework in Frameworks */,
+				669CE8AE0E52101900618324 /* osgUtil.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		669F28EB0E4D026B007EB41A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -6580,8 +6643,6 @@
 		431BAD8709245AB600ED2131 /* OsgTools */ = {
 			isa = PBXGroup;
 			children = (
-				661B8C050E1F5495005FC8CA /* Tests */,
-				669BD3190E0EFF9F00E598FF /* SWIG */,
 				431BAD8809245AB600ED2131 /* Axes.cpp */,
 				431BAD8909245AB600ED2131 /* Axes.h */,
 				43A192F9094F20210029ED97 /* Builders */,
@@ -6617,6 +6678,7 @@
 				431BADCA09245AB700ED2131 /* MaterialFactory.h */,
 				431BADCB09245AB700ED2131 /* MaterialSetter.cpp */,
 				431BADCC09245AB700ED2131 /* MaterialSetter.h */,
+				663E62630E50EF7300881387 /* Points */,
 				431BADD409245AB700ED2131 /* ReadModel.cpp */,
 				431BADD509245AB700ED2131 /* ReadModel.h */,
 				431BADD609245AB700ED2131 /* Render */,
@@ -6627,6 +6689,8 @@
 				431BADF009245AB700ED2131 /* State */,
 				431BADF709245AB700ED2131 /* Statistics.cpp */,
 				431BADF809245AB700ED2131 /* Statistics.h */,
+				669BD3190E0EFF9F00E598FF /* SWIG */,
+				661B8C050E1F5495005FC8CA /* Tests */,
 				431BADF909245AB700ED2131 /* Text.cpp */,
 				431BADFA09245AB700ED2131 /* Text.h */,
 				431BADFD09245AB700ED2131 /* Triangles */,
@@ -6788,6 +6852,7 @@
 		431BB648092466C300ED2131 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				669CE9B90E52107700618324 /* PointModel */,
 				669F29950E4D0512007EB41A /* VtkAlgorithms */,
 				66A4CE850DC100BE006DEE5E /* MeasureTool */,
 				669271310E0AD36F00E35E8B /* ModelPresentation */,
@@ -6804,6 +6869,7 @@
 		431BB9DE09246F3B00ED2131 /* Cadkit Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				669CE8B20E52101900618324 /* PointModel.plug */,
 				669F28F50E4D026B007EB41A /* VtkAlgorithms.plug */,
 				66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plug */,
 				669271BB0E0AD58400E35E8B /* ModelPresentation.plug */,
@@ -8217,6 +8283,20 @@
 			path = GDALReadImage;
 			sourceTree = "<group>";
 		};
+		663E62630E50EF7300881387 /* Points */ = {
+			isa = PBXGroup;
+			children = (
+				663E62640E50EF7400881387 /* OctTree.cpp */,
+				663E62650E50EF7400881387 /* OctTree.h */,
+				663E62660E50EF7400881387 /* OctTreeNode.cpp */,
+				663E62670E50EF7400881387 /* OctTreeNode.h */,
+				663E62680E50EF7400881387 /* PointSet.cpp */,
+				663E62690E50EF7400881387 /* PointSet.h */,
+				663E626A0E50EF7400881387 /* PointSetRecords.h */,
+			);
+			path = Points;
+			sourceTree = "<group>";
+		};
 		664308500D10AC4900984C94 /* Factory */ = {
 			isa = PBXGroup;
 			children = (
@@ -9302,6 +9382,23 @@
 			);
 			name = SWIG;
 			sourceTree = "<group>";
+		};
+		669CE9B90E52107700618324 /* PointModel */ = {
+			isa = PBXGroup;
+			children = (
+				669CE9BA0E52107700618324 /* CMakeLists.txt */,
+				669CE9BB0E52107700618324 /* CompileGuard.h */,
+				669CE9BC0E52107700618324 /* Export.def */,
+				669CE9BD0E52107700618324 /* PointComponent.cpp */,
+				669CE9BE0E52107700618324 /* PointComponent.h */,
+				669CE9BF0E52107700618324 /* PointDocument.cpp */,
+				669CE9C00E52107700618324 /* PointDocument.h */,
+				669CE9C10E52107700618324 /* PointFactory.cpp */,
+				669CE9C20E52107800618324 /* PointModel.vcproj */,
+			);
+			name = PointModel;
+			path = ../Experimental/PointModel;
+			sourceTree = SOURCE_ROOT;
 		};
 		669F29950E4D0512007EB41A /* VtkAlgorithms */ = {
 			isa = PBXGroup;
@@ -10496,6 +10593,10 @@
 				66CCC32C0E2971ED00DDFE55 /* SolidIcon.h in Headers */,
 				66CCC32D0E2971ED00DDFE55 /* SphereFunctor.h in Headers */,
 				66CCC32F0E2971ED00DDFE55 /* Text.h in Headers */,
+				663E626C0E50EF7400881387 /* OctTree.h in Headers */,
+				663E626E0E50EF7400881387 /* OctTreeNode.h in Headers */,
+				663E62700E50EF7400881387 /* PointSet.h in Headers */,
+				663E62710E50EF7400881387 /* PointSetRecords.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10816,6 +10917,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		669CE89F0E52101900618324 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				669CE9C30E52107900618324 /* CompileGuard.h in Headers */,
+				669CE9C50E52107900618324 /* PointComponent.h in Headers */,
+				669CE9C70E52107900618324 /* PointDocument.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11521,6 +11632,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				669CE9CB0E521ED700618324 /* PBXTargetDependency */,
 				66B8A16E0E1D706F0031AB37 /* PBXTargetDependency */,
 				669272060E0AD85F00E35E8B /* PBXTargetDependency */,
 				669271A10E0AD53D00E35E8B /* PBXTargetDependency */,
@@ -11893,6 +12005,23 @@
 			name = PyPathAnimation;
 			productName = PyFlashModel;
 			productReference = 669BD3FC0E0F740A00E598FF /* _PathAnimation.so */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		669CE89E0E52101900618324 /* PointModel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 669CE8AF0E52101900618324 /* Build configuration list for PBXNativeTarget "PointModel" */;
+			buildPhases = (
+				669CE89F0E52101900618324 /* Headers */,
+				669CE8A30E52101900618324 /* Sources */,
+				669CE8A60E52101900618324 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PointModel;
+			productName = Animate;
+			productReference = 669CE8B20E52101900618324 /* PointModel.plug */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		669F28D70E4D026B007EB41A /* VtkAlgorithms */ = {
@@ -12473,6 +12602,7 @@
 				668E0C910D4021F50030649B /* WRFModel */,
 				66FF450E0D10FED2003A0AC1 /* XmlTree */,
 				669F28D70E4D026B007EB41A /* VtkAlgorithms */,
+				669CE89E0E52101900618324 /* PointModel */,
 			);
 		};
 /* End PBXProject section */
@@ -12527,7 +12657,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				665F2AFB0E4FD4F3001BB8F1 /* HeliosQtApp-Info.plist in Resources */,
 				668C98C80D444D130007D7F4 /* Helios.icns in Resources */,
 				66CFB2460D135FEF00F93E67 /* helios_sun.png in Resources */,
 			);
@@ -13046,6 +13175,9 @@
 				66CCC3260E2971ED00DDFE55 /* Legend.cpp in Sources */,
 				66CCC3280E2971ED00DDFE55 /* LegendObject.cpp in Sources */,
 				66CCC32E0E2971ED00DDFE55 /* Text.cpp in Sources */,
+				663E626B0E50EF7400881387 /* OctTree.cpp in Sources */,
+				663E626D0E50EF7400881387 /* OctTreeNode.cpp in Sources */,
+				663E626F0E50EF7400881387 /* PointSet.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13531,6 +13663,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				666BB6A90E136484006A51E4 /* PathAnimation_wrap.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		669CE8A30E52101900618324 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				669CE9C40E52107900618324 /* PointComponent.cpp in Sources */,
+				669CE9C60E52107900618324 /* PointDocument.cpp in Sources */,
+				669CE9C80E52107900618324 /* PointFactory.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14450,6 +14592,11 @@
 			isa = PBXTargetDependency;
 			target = 669BD3E70E0F740A00E598FF /* PyPathAnimation */;
 			targetProxy = 669BD3FE0E0F741700E598FF /* PBXContainerItemProxy */;
+		};
+		669CE9CB0E521ED700618324 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 669CE89E0E52101900618324 /* PointModel */;
+			targetProxy = 669CE9CA0E521ED700618324 /* PBXContainerItemProxy */;
 		};
 		669F28D80E4D026B007EB41A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -17123,6 +17270,68 @@
 			};
 			name = Release;
 		};
+		669CE8B00E52101900618324 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = plugd;
+				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_DEBUG,
+					_COMPILING_POINT_MODEL,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = ../;
+				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = PointModel;
+				STRIP_INSTALLED_PRODUCT = NO;
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		669CE8B10E52101900618324 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				COPY_PHASE_STRIP = YES;
+				EXECUTABLE_EXTENSION = plug;
+				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					/Library/Frameworks,
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DEBUGGING_SYMBOLS = used;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = _COMPILING_POINT_MODEL;
+				GCC_USE_GCC3_PFE_SUPPORT = NO;
+				HEADER_SEARCH_PATHS = ../;
+				INSTALL_MODE_FLAG = "a-w,a+r";
+				INSTALL_PATH = "@executable_path/../Plugins";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = PointModel;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		669F28F30E4D026B007EB41A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -18930,6 +19139,15 @@
 			buildConfigurations = (
 				669BD3FA0E0F740A00E598FF /* Debug */,
 				669BD3FB0E0F740A00E598FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		669CE8AF0E52101900618324 /* Build configuration list for PBXNativeTarget "PointModel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				669CE8B00E52101900618324 /* Debug */,
+				669CE8B10E52101900618324 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

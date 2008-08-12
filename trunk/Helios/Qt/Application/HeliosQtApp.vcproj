@@ -55,7 +55,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/HeliosQtApp.exe"
+				OutputFile="$(CADKIT_BIN_DIR)/Helios.exe"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
@@ -127,7 +127,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/HeliosQtAppd.exe"
+				OutputFile="$(CADKIT_BIN_DIR)/Heliosd.exe"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"

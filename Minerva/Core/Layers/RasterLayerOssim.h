@@ -61,12 +61,17 @@ protected:
 
   void                  _buildImagePyramids ( const std::string &file ) const;
 
+  virtual std::string   _cacheFileExtension() const;
   virtual std::string   _cacheDirectory() const;
-  virtual void          _convert ( const ossimImageData& data, osg::Image& image );
+  virtual ImagePtr      _convert ( const ossimImageData& data ) const;
 
   void                  _open ( const std::string& );
+  
+  virtual ImagePtr      _readImageFile ( const std::string & ) const;
 
   void                  _updateExtents();
+  
+  static void           _writeImageFile ( const std::string& filename, ossimImageData* data );
 
 private:
   // Do not use.

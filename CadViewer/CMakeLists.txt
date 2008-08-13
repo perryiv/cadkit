@@ -1,4 +1,6 @@
 
+cmake_minimum_required(VERSION "2.4")
+
 PROJECT(CadViewer)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
@@ -52,7 +54,6 @@ ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
 ${CADKIT_INC_DIR}/Minerva/Layers/Kml
 
 # ---- Minerva Plug-ins -------
-${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
 ${CADKIT_INC_DIR}/Minerva/Plugins/Document
 ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage
 )
@@ -82,12 +83,6 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-#./Functors/ToolPair.cpp
-#./Functors/MoveTool.cpp
-#./Functors/Tool.cpp
-#./Functors/ScaleTool.cpp
-#./Pick/Select.cpp
-#./Pick/Seek.cpp
 ./main.cpp
 ./Application.cpp
 )

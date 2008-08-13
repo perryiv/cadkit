@@ -588,7 +588,7 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
   }
 
   // Load the file.
-  ImagePtr image ( this->_readImageFile ( file, this->_imageReaderGet() ) );
+  ImagePtr image ( this->_readImageFile ( file ) );
 
   // See if the job has been cancelled.
   _checkForCanceledJob ( job );
@@ -731,6 +731,18 @@ void RasterLayer::_checkForCanceledJob ( Usul::Jobs::Job *job )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+RasterLayer::ImagePtr RasterLayer::_readImageFile ( const std::string &file ) const
+{
+  return RasterLayer::_readImageFile ( file, this->_imageReaderGet() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read an image file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 RasterLayer::ImagePtr RasterLayer::_readImageFile ( const std::string &file, ReaderPtr reader )
 {
   USUL_TRACE_SCOPE_STATIC;
@@ -755,7 +767,7 @@ RasterLayer::ImagePtr RasterLayer::_readImageFile ( const std::string &file, Rea
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RasterLayer::ReaderPtr RasterLayer::_imageReaderGet()
+RasterLayer::ReaderPtr RasterLayer::_imageReaderGet() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -876,6 +888,22 @@ std::string RasterLayer::_buildCacheDir ( const std::string &rootDir, const std:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Make the cache filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayer::_cacheFileName( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const
+{
+  // Get the cache directory.
+  const std::string cacheDir ( this->_cacheDirectory() );
+  const std::string baseDir ( this->_baseDirectory ( cacheDir, width, height, level ) );
+  std::string cacheFile ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), '.', this->_cacheFileExtension() ) );
+  return cacheFile;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Write the image to cache.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -888,14 +916,8 @@ void RasterLayer::_writeImageToCache ( const Extents& extents, unsigned int widt
   if ( false == image.valid() )
     return;
 
-  // Get the cache directory.
-  const std::string cachDir ( this->_cacheDirectory() );
-  if ( true == cachDir.empty() )
-    return;
-
   // Build the file name.
-  const std::string baseDir ( this->_baseDirectory ( cachDir, width, height, level ) );
-  std::string cacheFile ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), '.', this->_cacheFileExtension() ) );
+  std::string cacheFile ( this->_cacheFileName ( extents, width, height, level ) );
 
   // Write the file.
   osgDB::writeImageFile ( *image, cacheFile );

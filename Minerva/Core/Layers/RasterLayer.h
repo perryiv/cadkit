@@ -126,12 +126,13 @@ protected:
 
   virtual std::string   _cacheDirectory() const;
   virtual std::string   _cacheFileExtension() const;
+  virtual std::string   _cacheFileName( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
   static void           _checkForCanceledJob ( Usul::Jobs::Job *job );
   virtual ImagePtr      _createBlankImage ( unsigned int width, unsigned int height ) const;
 
   static std::size_t    _hashString ( const std::string &s );
 
-  ReaderPtr             _imageReaderGet();
+  ReaderPtr             _imageReaderGet() const;
   void                  _imageReaderSet ( ReaderPtr );
   void                  _imageReaderFind ( const std::string &ext );
 
@@ -139,6 +140,7 @@ protected:
 
   static std::string    _mangledURL ( const std::string &url );
 
+  virtual ImagePtr      _readImageFile ( const std::string & ) const;
   static ImagePtr       _readImageFile ( const std::string &, ReaderPtr );
 
   void                  _writeImageToCache ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, ImagePtr );

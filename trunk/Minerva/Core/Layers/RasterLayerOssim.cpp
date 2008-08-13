@@ -33,9 +33,12 @@
 #include "ossim/imaging/ossimImageRenderer.h"
 #include "ossim/imaging/ossimImageHandler.h"
 #include "ossim/imaging/ossimImageHandlerRegistry.h"
+#include "ossim/imaging/ossimMemoryImageSource.h"
 #include "ossim/imaging/ossimOverviewBuilderFactoryRegistry.h"
 #include "ossim/imaging/ossimOverviewBuilderFactory.h"
 #include "ossim/imaging/ossimOverviewBuilderBase.h"
+#include "ossim/imaging/ossimImageWriterFactoryRegistry.h"
+#include "ossim/imaging/ossimImageFileWriter.h"
 #include "ossim/projection/ossimEquDistCylProjection.h"
 #include "ossim/projection/ossimImageViewTransform.h"
 #include "ossim/projection/ossimImageViewProjectionTransform.h"
@@ -356,16 +359,14 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
        ( 0x0 != data->getBuf() ) && 
        ( OSSIM_EMPTY != data->getDataObjectStatus() ) )
   {
-    //result = this->_createBlankImage ( width, height );
-    result = Detail::makeImage ( width, height, data->getScalarType() );
-    this->_convert ( *data, *result );
+    // Convert to osg::Image.
+    result = this->_convert ( *data );
 
+    // Get the cache filename.
+    const std::string cacheFile ( this->_cacheFileName ( extents, width, height, level ) );
+    
     // Save the image to the cache.
-    #ifndef _DEBUG 
-    // Still getting stack corruption?
-    // Need to make a GDAL-based writer.
-    BaseClass::_writeImageToCache ( extents, width, height, level, result );
-    #endif
+    RasterLayerOssim::_writeImageFile ( cacheFile, data.get() );
   }
 
   return result;
@@ -441,39 +442,45 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterLayerOssim::_convert ( const ossimImageData& data, osg::Image& image )
+RasterLayerOssim::ImagePtr RasterLayerOssim::_convert ( const ossimImageData& data ) const
 {
   USUL_TRACE_SCOPE;
+  
+  const unsigned int width ( data.getWidth() );
+  const unsigned int height ( data.getHeight() );
+  ImagePtr image ( Detail::makeImage ( width, height, data.getScalarType() ) );
 
   switch ( data.getScalarType() )
   {
   case OSSIM_UINT8:
-    Detail::convert<unsigned char> ( data, image );
+    Detail::convert<unsigned char> ( data, *image );
     break;
   case OSSIM_SINT8:
-    Detail::convert<char> ( data, image );
+    Detail::convert<char> ( data, *image );
     break;
   case OSSIM_UINT16:
-    Detail::convert<short> ( data, image );
+    Detail::convert<short> ( data, *image );
     break;
   case OSSIM_SINT16:
-    Detail::convert<unsigned short> ( data, image );
+    Detail::convert<unsigned short> ( data, *image );
     break;
   case OSSIM_UINT32:
-    Detail::convert<unsigned int> ( data, image );
+    Detail::convert<unsigned int> ( data, *image );
     break;
   case OSSIM_SINT32:
-    Detail::convert<int> ( data, image );
+    Detail::convert<int> ( data, *image );
     break;
   case OSSIM_FLOAT32:
-    Detail::convert<float> ( data, image );
+    Detail::convert<float> ( data, *image );
     break;
   case OSSIM_FLOAT64:
-    Detail::convert<double> ( data, image );
+    Detail::convert<double> ( data, *image );
     break;
   default:
     throw std::invalid_argument ( "Error 3651784054: invalid image passed to convert" );
   }
+  
+  return image;
 }
 
 
@@ -665,4 +672,75 @@ void RasterLayerOssim::_buildImagePyramids ( const std::string &file ) const
   // It worked so do not remove these files.
   remove1.remove ( false );
   remove2.remove ( false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cache in TIFF format.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerOssim::_cacheFileExtension() const
+{
+  USUL_TRACE_SCOPE;
+  return std::string ( "tif" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read the image file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerOssim::ImagePtr RasterLayerOssim::_readImageFile ( const std::string & filename ) const
+{
+  ossimRefPtr<ossimImageHandler> handler ( ossimImageHandlerRegistry::instance()->open ( ossimFilename ( filename.c_str() ) ) );
+  
+  if ( handler.valid() )
+  {
+    const unsigned int lines ( handler->getNumberOfLines() );
+    const unsigned int samples ( handler->getNumberOfSamples() );
+  
+    ossimRefPtr<ossimImageData> data ( handler->getTile ( ossimIrect ( 0, 0, lines - 1, samples - 1 ) ) );
+    if ( data.valid() )
+    {
+      return this->_convert ( *data );
+    }
+  }
+  
+  return BaseClass::_readImageFile ( filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the image file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayerOssim::_writeImageFile ( const std::string& filename, ossimImageData* data )
+{
+  if ( 0x0 == data )
+    return;
+  
+  // Get the extension.
+  const std::string ext ( Usul::File::extension ( filename ) );
+  
+  // Find a writer.
+  ossimRefPtr<ossimImageFileWriter> writer ( ossimImageWriterFactoryRegistry::instance()->createWriterFromExtension ( ext ) );
+  
+  // Save the image to the cache.
+  if ( writer.valid() )
+  {
+    ossimRefPtr<ossimMemoryImageSource> source ( new ossimMemoryImageSource );
+    source->initialize();
+    source->setImage ( data );
+    
+    writer->changeSequencer ( new ossimImageSourceSequencer ( source.get() ) );
+    writer->connectMyInputTo ( 0, source.get() );
+    writer->setFilename ( filename.c_str() );
+    writer->execute();
+  }
 }

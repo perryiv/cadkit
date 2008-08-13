@@ -684,6 +684,22 @@ void ShowtimeDocument::timerNotify ( TimerID )
 
 Showtime::Model::RefPtr ShowtimeDocument::model ( const std::string &name )
 {
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
   Models::iterator i ( _models.find ( name ) );
   return ( ( i == _models.end() ) ? Showtime::Model::RefPtr ( 0x0 ) : i->second );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the current step.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int ShowtimeDocument::currentStep() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _currentStep;
 }

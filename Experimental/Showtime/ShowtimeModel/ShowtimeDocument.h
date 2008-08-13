@@ -75,6 +75,9 @@ public:
   // Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
 
+  // Get the current step.
+  unsigned int                currentStep() const;
+
   // Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersOpen()   const;
   virtual Filters             filtersSave()   const;

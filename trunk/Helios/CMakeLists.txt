@@ -72,7 +72,6 @@ IF(BUILD_MINERVA)
     ${CADKIT_INC_DIR}/Minerva/Layers/Kml
     ${CADKIT_INC_DIR}/Minerva/Document
     ${CADKIT_INC_DIR}/Minerva/Plugins/Document
-    ${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
     ${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
     ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
     ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt

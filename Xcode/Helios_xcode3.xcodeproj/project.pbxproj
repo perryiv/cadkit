@@ -2568,6 +2568,27 @@
 			remoteGlobalIDString = 669CE89E0E52101900618324 /* PointModel */;
 			remoteInfo = PointModel;
 		};
+		669CEA0C0E52653C00618324 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FE740D12084C003F6A58 /* MenuKit */;
+			remoteInfo = MenuKit;
+		};
+		669CEA0E0E52654200618324 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610 /* Usul */;
+			remoteInfo = Usul;
+		};
+		669CEA100E52654400618324 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			remoteInfo = OsgTools;
+		};
 		669F28D90E4D026B007EB41A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -4647,10 +4668,6 @@
 		668C96A90D42B5180007D7F4 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		668C96AC0D42B5180007D7F4 /* TriangulateGridComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateGridComponent.cpp; sourceTree = "<group>"; };
 		668C96AD0D42B5180007D7F4 /* TriangulateGridComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriangulateGridComponent.h; sourceTree = "<group>"; };
-		668C98510D43E3470007D7F4 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
-		668C98550D43E3470007D7F4 /* TriangulateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateComponent.cpp; sourceTree = "<group>"; };
-		668C98560D43E3470007D7F4 /* TriangulateComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriangulateComponent.h; sourceTree = "<group>"; };
-		668C98570D43E3470007D7F4 /* TriangulateFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateFactory.cpp; sourceTree = "<group>"; };
 		668D4C100D36C3F500CE039D /* IRasterAlphas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRasterAlphas.h; sourceTree = "<group>"; };
 		668D4CE50D373EC400CE039D /* Curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Curl.h; sourceTree = "<group>"; };
 		668D4CE60D373EC400CE039D /* Names.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Names.h; sourceTree = "<group>"; };
@@ -5638,9 +5655,6 @@
 		66EF18EF0D15C17000B4B1AA /* MinervaComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinervaComponent.cpp; path = ../Minerva/Plugins/Document/MinervaComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66EF18F00D15C17000B4B1AA /* MinervaComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinervaComponent.h; path = ../Minerva/Plugins/Document/MinervaComponent.h; sourceTree = SOURCE_ROOT; };
 		66EF18F10D15C17000B4B1AA /* MinervaFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinervaFactory.cpp; path = ../Minerva/Plugins/Document/MinervaFactory.cpp; sourceTree = SOURCE_ROOT; };
-		66EF193A0D1610ED00B4B1AA /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Minerva/Plugins/ProjectionManager/CompileGuard.h; sourceTree = SOURCE_ROOT; };
-		66EF193B0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProjectionManagerComponent.cpp; path = ../Minerva/Plugins/ProjectionManager/ProjectionManagerComponent.cpp; sourceTree = SOURCE_ROOT; };
-		66EF193C0D1610ED00B4B1AA /* ProjectionManagerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectionManagerComponent.h; path = ../Minerva/Plugins/ProjectionManager/ProjectionManagerComponent.h; sourceTree = SOURCE_ROOT; };
 		66EF1A900D16447000B4B1AA /* curl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = curl.framework; path = ../../../Library/Frameworks/curl.framework; sourceTree = SOURCE_ROOT; };
 		66EFF3930D139F7200B4B1AA /* QtClipPlanes.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtClipPlanes.plug; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EFF39B0D139FE400B4B1AA /* ClipPlanes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClipPlanes.cpp; path = Qt/Plugins/ClipPlanes/ClipPlanes.cpp; sourceTree = "<group>"; };
@@ -8664,17 +8678,6 @@
 			path = TriangulateGrid;
 			sourceTree = "<group>";
 		};
-		668C984F0D43E3470007D7F4 /* TriangulateCGAL */ = {
-			isa = PBXGroup;
-			children = (
-				668C98510D43E3470007D7F4 /* CompileGuard.h */,
-				668C98550D43E3470007D7F4 /* TriangulateComponent.cpp */,
-				668C98560D43E3470007D7F4 /* TriangulateComponent.h */,
-				668C98570D43E3470007D7F4 /* TriangulateFactory.cpp */,
-			);
-			path = TriangulateCGAL;
-			sourceTree = "<group>";
-		};
 		668D4CE40D373EC400CE039D /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -9868,12 +9871,12 @@
 		66EF175D0D1518BE00B4B1AA /* Minerva */ = {
 			isa = PBXGroup;
 			children = (
-				66C4D8070DAABEC200A3B1FB /* Images */,
 				66C4D0080DAA9CB500A3B1FB /* Application */,
 				66CCE9C80D3186630084E49D /* Config.h */,
 				66EF175E0D1518C700B4B1AA /* Core */,
 				669432160D77EA7800633017 /* DataSources */,
 				66EF18B60D15C02500B4B1AA /* Document */,
+				66C4D8070DAABEC200A3B1FB /* Images */,
 				664B434C0D54EE8C0080DF60 /* Interfaces */,
 				668E0DDA0D4063AB0030649B /* Layers */,
 				66EF18E80D15C13200B4B1AA /* Plugins */,
@@ -10038,8 +10041,6 @@
 				66892DD50D283D8C005CB399 /* LayerManager */,
 				66A112C70D2EBB9A009B29ED /* OssimLayerQt */,
 				66A112C90D2EBBAD009B29ED /* PostGISLayerQt */,
-				66EF19370D16109600B4B1AA /* ProjectionManager */,
-				668C984F0D43E3470007D7F4 /* TriangulateCGAL */,
 				66A112C80D2EBBA3009B29ED /* WmsLayerQt */,
 			);
 			path = Plugins;
@@ -10054,16 +10055,6 @@
 				66EF18F10D15C17000B4B1AA /* MinervaFactory.cpp */,
 			);
 			name = Document;
-			sourceTree = "<group>";
-		};
-		66EF19370D16109600B4B1AA /* ProjectionManager */ = {
-			isa = PBXGroup;
-			children = (
-				66EF193A0D1610ED00B4B1AA /* CompileGuard.h */,
-				66EF193B0D1610ED00B4B1AA /* ProjectionManagerComponent.cpp */,
-				66EF193C0D1610ED00B4B1AA /* ProjectionManagerComponent.h */,
-			);
-			name = ProjectionManager;
 			sourceTree = "<group>";
 		};
 		66EFF3980D139FC500B4B1AA /* ClipPlanes */ = {
@@ -11617,16 +11608,16 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 666765EB0D1235ED002F40C6 /* Build configuration list for PBXNativeTarget "HeliosQt" */;
 			buildPhases = (
-				66CCC2270E28824E00DDFE55 /* Copy Helios.plugins */,
-				666765E20D1235EC002F40C6 /* Resources */,
 				666765E30D1235EC002F40C6 /* Sources */,
+				666765E20D1235EC002F40C6 /* Resources */,
+				66EF19600D16141F00B4B1AA /* Copy Cadkit Libraries */,
 				666766620D12433F002F40C6 /* Copy Files to Plugins */,
-				6667669C0D124CE3002F40C6 /* Copy Icons */,
 				66CFB1FC0D134FB200F93E67 /* Copy Fonts */,
 				66EF19170D15C36000B4B1AA /* Copy Frameworks */,
-				66EF19600D16141F00B4B1AA /* Copy Cadkit Libraries */,
-				669272830E0AE46C00E35E8B /* Frameworks */,
+				66CCC2270E28824E00DDFE55 /* Copy Helios.plugins */,
+				6667669C0D124CE3002F40C6 /* Copy Icons */,
 				669272840E0AE46C00E35E8B /* Copy OpenSceneGraph Plugins */,
+				669272830E0AE46C00E35E8B /* Frameworks */,
 				669F72D40E198E4C005EE92C /* ShellScript */,
 			);
 			buildRules = (
@@ -12018,6 +12009,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				669CEA110E52654400618324 /* PBXTargetDependency */,
+				669CEA0F0E52654200618324 /* PBXTargetDependency */,
+				669CEA0D0E52653C00618324 /* PBXTargetDependency */,
 			);
 			name = PointModel;
 			productName = Animate;
@@ -12569,6 +12563,7 @@
 				664279B40E4AA8BE009AE232 /* Nimue */,
 				431BAD5B09245A4600ED2131 /* OsgTools */,
 				668BE8210D24A96B00109210 /* PathAnimation */,
+				669CE89E0E52101900618324 /* PointModel */,
 				66F523C50E0D77FA001D0057 /* PyFlashModel */,
 				669BD2B10E0EFCB400E598FF /* PyOsgTools */,
 				669BD3E70E0F740A00E598FF /* PyPathAnimation */,
@@ -12599,10 +12594,9 @@
 				668C969D0D42B4D00007D7F4 /* TriangulateGrid */,
 				43FED6F1092452E100EBB610 /* Usul */,
 				431BB8E009246BD700ED2131 /* VolumeModel */,
+				669F28D70E4D026B007EB41A /* VtkAlgorithms */,
 				668E0C910D4021F50030649B /* WRFModel */,
 				66FF450E0D10FED2003A0AC1 /* XmlTree */,
-				669F28D70E4D026B007EB41A /* VtkAlgorithms */,
-				669CE89E0E52101900618324 /* PointModel */,
 			);
 		};
 /* End PBXProject section */
@@ -14597,6 +14591,21 @@
 			isa = PBXTargetDependency;
 			target = 669CE89E0E52101900618324 /* PointModel */;
 			targetProxy = 669CE9CA0E521ED700618324 /* PBXContainerItemProxy */;
+		};
+		669CEA0D0E52653C00618324 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FE740D12084C003F6A58 /* MenuKit */;
+			targetProxy = 669CEA0C0E52653C00618324 /* PBXContainerItemProxy */;
+		};
+		669CEA0F0E52654200618324 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 669CEA0E0E52654200618324 /* PBXContainerItemProxy */;
+		};
+		669CEA110E52654400618324 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
+			targetProxy = 669CEA100E52654400618324 /* PBXContainerItemProxy */;
 		};
 		669F28D80E4D026B007EB41A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

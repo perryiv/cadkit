@@ -1194,6 +1194,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Points\PointLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Points\PointLoader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Points\PointSet.cpp"
 					>
 				</File>

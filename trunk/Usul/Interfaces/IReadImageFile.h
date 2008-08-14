@@ -33,6 +33,9 @@ struct IReadImageFile : public Usul::Interfaces::IUnknown
   /// Typedefs.
 	typedef osg::ref_ptr<osg::Image> ImagePtr;
 
+  /// Can we read this file?
+  virtual bool         canRead ( const std::string &filename ) const = 0;
+  
 	/// Read the file.
 	virtual ImagePtr     readImageFile ( const std::string& filename ) const = 0;
 

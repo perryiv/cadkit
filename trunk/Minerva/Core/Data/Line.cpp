@@ -39,7 +39,6 @@ using namespace Minerva::Core::Data;
 
 Line::Line() : BaseClass(),
   _line (),
-  _latLongPoints (),
   _width ( 1.0 ),
   _tessellate ( false )
 {
@@ -61,53 +60,14 @@ Line::~Line()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Convert to lat long points.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Line::_convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints )
-{
-  latLongPoints.reserve ( vertices.size() );
-
-  Minerva::Core::Data::Transform transform ( this->wellKnownText(),  "WGS84" );
-  
-  for( Vertices::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter )
-  {
-    Usul::Math::Vec2d point ( transform ( Usul::Math::Vec2d ( (*iter)[0], (*iter)[1] ) ) );
-    latLongPoints.push_back( Vertices::value_type ( point[0], point[1], (*iter)[2] ) );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the lat long points.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Line::_buildLatLongPoints()
-{
-  Guard guard ( this );
-  _latLongPoints.clear ();
-  this->_convertToLatLong( _line, _latLongPoints );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Return the line data.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Line::Vertices& Line::_lineDataWgs84()
+Line::Vertices Line::_lineDataWgs84() const
 {
   Guard guard ( this->mutex() );
-  if( _latLongPoints.empty() )
-  {
-    this->_convertToLatLong ( _line, _latLongPoints );
-  }
-
-  return _latLongPoints;
+  return _line;
 }
 
 
@@ -121,7 +81,6 @@ void Line::line( const Vertices& data )
 {
   Guard guard ( this->mutex() );
   _line = data;
-  _latLongPoints.clear();
   this->dirty( true );
 }
 

@@ -47,19 +47,15 @@ public:
 protected:
   virtual ~Line();
 
-  void                  _convertToLatLong ( const Vertices& vertices, Vertices& latLongPoints );
-  void                  _buildLatLongPoints();
-
   virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
   osg::Node*            _buildScene( const Color& color, Usul::Interfaces::IUnknown* caller );
   
   /// Get the line data as WGS 84.
-  const Vertices&       _lineDataWgs84();
+  Vertices              _lineDataWgs84() const;
 
 private:
 
   Vertices   _line;
-  Vertices   _latLongPoints;
   float      _width;
   bool       _tessellate;
 };

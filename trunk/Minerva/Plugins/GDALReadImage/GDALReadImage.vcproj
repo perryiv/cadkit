@@ -235,14 +235,6 @@
 					RelativePath=".\GDALReadImageComponent.h"
 					>
 				</File>
-				<File
-					RelativePath=".\GDALReadImageDocument.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\GDALReadImageDocument.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

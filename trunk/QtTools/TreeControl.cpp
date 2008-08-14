@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "QtTools/TreeControl.h"
+#include "QtTools/ScopedSignals.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
@@ -602,6 +603,9 @@ void TreeControl::_rebuildTree ( Unknown* unknown )
   
   if ( 0x0 == item || 0x0 == unknown )
     return;
+  
+  // Block signals during the rest of this function.
+  QtTools::ScopedSignals scoped ( *_tree );
   
   typedef QList<QTreeWidgetItem *> Items;
   Items children ( item->takeChildren() );

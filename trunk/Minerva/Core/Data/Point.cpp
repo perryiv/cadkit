@@ -97,12 +97,8 @@ Usul::Math::Vec3d Point::pointData() const
   Usul::Math::Vec3d offset ( this->spatialOffset() );
   
   point.set( point[0] + offset[0], point[1] + offset[1], point[2] + offset[2] );
-  
-  // Transform the point to wgs 84.
-  Minerva::Core::Data::Transform transform ( this->wellKnownText(),  "WGS84" );
-  Usul::Math::Vec2d p ( transform ( Usul::Math::Vec2d ( point[0], point[1] ) ) );
-    
-  return Usul::Math::Vec3d ( p[0], p[1], point[2] );
+
+  return point;
 }
 
 

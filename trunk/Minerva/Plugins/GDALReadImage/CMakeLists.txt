@@ -18,7 +18,6 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 
 set (SOURCES
 ./GDALReadImageComponent.cpp
-./GDALReadImageDocument.cpp
 )
 
 # ---------- Create a Shared Library

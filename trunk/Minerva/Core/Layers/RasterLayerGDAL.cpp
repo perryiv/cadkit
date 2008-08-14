@@ -304,40 +304,9 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   GDALWarpOperation operation;
   operation.Initialize( options );
   operation.ChunkAndWarpImage( 0, 0, width, height );
-
-  // Make an osg::Image for the number of bands and type.
-	ImagePtr image ( Minerva::GDAL::makeImage ( width, height, bands, type ) );
   
-  // Return if we couldn't create the proper image type.
-  if ( false == image.valid() )
-    return 0x0;
-  
-  switch ( type )
-  {
-    case GDT_Byte:
-      Minerva::convert<unsigned char> ( image.get(), tile, type );
-      break;
-    case GDT_UInt16:
-      Minerva::convert<unsigned short> ( image.get(), tile, type );
-      break;
-    case GDT_Int16:
-      Minerva::convert<short> ( image.get(), tile, type );
-      break;
-    case GDT_UInt32:
-      Minerva::convert<unsigned int> ( image.get(), tile, type );
-      break;
-    case GDT_Int32:
-      Minerva::convert<int> ( image.get(), tile, type );
-      break;
-    case GDT_Float32:
-      Minerva::convert<float> ( image.get(), tile, type );
-      break;
-    case GDT_Float64:
-      Minerva::convert<double> ( image.get(), tile, type );
-      break;
-    default:
-      return 0x0; // We don't handle this data type.
-  }
+  // Convert to an osg image.
+  ImagePtr image ( Minerva::convert ( tile ) );
 
   // Save the image to the cache.
 #ifndef __APPLE__

@@ -11,6 +11,8 @@
 #ifndef __MINERVA_GDAL_CONVERT_H__
 #define __MINERVA_GDAL_CONVERT_H__
 
+#include "Minerva/Layers/GDAL/MakeImage.h"
+
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "cpl_error.h"
@@ -207,6 +209,67 @@ namespace Minerva
     }
     
     image->flipVertical();
+  }
+  
+  
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Convert Gdal data to osg::image.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+  
+  osg::Image* convert ( GDALDataset * data )
+  {
+    // Return if no data.
+    if ( 0x0 == data )
+      return 0x0;
+
+    // Get the number of bands.
+    const int bands ( data->GetRasterCount() );
+
+    // Get the data type.  Assume that all bands have the same type.
+    GDALDataType type ( data->GetRasterBand ( 1 )->GetRasterDataType() );
+
+    // Get the width and height.
+    const unsigned int width ( data->GetRasterXSize() );
+    const unsigned int height ( data->GetRasterYSize() );
+
+    const bool hasColorTable ( 1 == bands && 0x0 != data->GetRasterBand ( 1 )->GetColorTable() );
+
+    osg::ref_ptr<osg::Image> image ( Minerva::GDAL::makeImage ( width, height, bands, type, hasColorTable ) );
+
+    // Return if we couldn't create the proper image type.
+    if ( false == image.valid() )
+      return 0x0;
+
+    switch ( type )
+    {
+      case GDT_Byte:
+        Minerva::convert<unsigned char> ( image.get(), data, type );
+        break;
+      case GDT_UInt16:
+        Minerva::convert<unsigned short> ( image.get(), data, type );
+        break;
+      case GDT_Int16:
+        Minerva::convert<short> ( image.get(), data, type );
+        break;
+      case GDT_UInt32:
+        Minerva::convert<unsigned int> ( image.get(), data, type );
+        break;
+      case GDT_Int32:
+        Minerva::convert<int> ( image.get(), data, type );
+        break;
+      case GDT_Float32:
+        Minerva::convert<float> ( image.get(), data, type );
+        break;
+      case GDT_Float64:
+        Minerva::convert<double> ( image.get(), data, type );
+        break;
+      default:
+        return 0x0; // We don't handle this data type.
+    }
+
+    return image.release();
   }
 }
 

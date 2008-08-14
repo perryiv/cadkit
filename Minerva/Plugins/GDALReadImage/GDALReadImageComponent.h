@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2005, Perry L Miller IV
+//  Copyright (c) 2005, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -20,22 +20,21 @@
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
-#include "Usul/Interfaces/IDocumentCreate.h"
+#include "Usul/Interfaces/IReadImageFile.h"
+#include "Usul/Interfaces/IWriteImageFile.h"
 
 #include <string>
 
-
-
 class GDALReadImageComponent : public Usul::Base::Referenced,
                                public Usul::Interfaces::IPlugin,
-                               public Usul::Interfaces::IDocumentCreate
+                               public Usul::Interfaces::IReadImageFile,
+                               public Usul::Interfaces::IWriteImageFile
 {
 public:
 
   /// Typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef Usul::Documents::Document Document;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( GDALReadImageComponent );
@@ -49,9 +48,6 @@ public:
   /// Usul::Interfaces::IPlugin
   virtual std::string           getPluginName() const { return "GDAL Read Image"; }
 
-  /// Usul::Interfaces::IDocumentCreate
-  virtual Document *            createDocument ( Unknown *caller = 0x0 );
-
 protected: 
 
   // Do not copy.
@@ -61,7 +57,14 @@ protected:
   /// Use reference counting.
   virtual ~GDALReadImageComponent();
 
-
+  /// Can we read this file (IReadImageFile)?
+  virtual bool             canRead   ( const std::string &file ) const;
+  
+  /// Read a file and return an image (IReadImageFile).
+	virtual ImagePtr         readImageFile ( const std::string& file ) const;
+  
+  /// Write the file (IWriteImageFile).
+  virtual void             writeImageFile ( const std::string& file, osg::Image & ) const;
 };
 
 

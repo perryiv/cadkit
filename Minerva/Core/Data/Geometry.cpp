@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Data/Geometry.h"
-#include "Minerva/Core/Data/Transform.h"
 
 #include "Usul/Trace/Trace.h"
 
@@ -30,7 +29,6 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 Geometry::Geometry() : 
   BaseClass(),
   _altitudeMode ( CLAMP_TO_GROUND ),
-  _wkt ( Minerva::Core::Data::Transform::wgs84AsWellKnownText() ), // By default, use WGS 84.
   _color ( 0.0, 0.0, 0.0, 1.0 ),
   _offset( 0.0, 0.0, 0.0 ),
   _dirty ( false ),
@@ -374,30 +372,4 @@ bool Geometry::dirty () const
 {
   Guard guard ( this->mutex() );
   return _dirty;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the srid.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Geometry::wellKnownText () const
-{
-  Guard guard ( this->mutex() );
-  return _wkt;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the srid.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Geometry::wellKnownText ( const std::string& wkt )
-{
-  Guard guard ( this->mutex() );
-  _wkt = wkt;
 }

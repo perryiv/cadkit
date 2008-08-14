@@ -90,10 +90,6 @@ public:
   /// Get/Set the render bin
   unsigned int          renderBin() const;
   void                  renderBin ( unsigned int );
-
-  /// Get/Set the spatial reference id.
-  std::string           wellKnownText() const;
-  void                  wellKnownText ( const std::string& wkt );
   
   /// Is this geometry transparent?
   bool                  transparent() const;
@@ -124,7 +120,6 @@ protected:
   
 private:
   AltitudeMode _altitudeMode;
-  std::string  _wkt;
   Color        _color;
   Point        _offset;
   bool         _dirty;

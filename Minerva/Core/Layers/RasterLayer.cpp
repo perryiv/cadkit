@@ -12,7 +12,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
-#include "Usul/Documents/Manager.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Stats.h"
 #include "Usul/File/Remove.h"
@@ -800,17 +800,17 @@ void RasterLayer::_imageReaderFind ( const std::string &ext )
   USUL_TRACE_SCOPE;
 
   // Typedefs to shorten the lines.
-  typedef Usul::Documents::Manager DocManager;
-  typedef DocManager::Documents Documents;
+  typedef Usul::Components::Manager PluginManager;
+  typedef PluginManager::UnknownSet Unknowns;
 
-  // Get the list of documents that can read this format.
-  Documents docs ( DocManager::instance().create ( "." + ext, 0x0, true, false ) );
+  // Get the list of unknowns that can read this format.
+  Unknowns unknowns ( PluginManager::instance().getInterfaces ( IReadImageFile::IID ) );
 
-  // Find the one that also implements the needed interface.
-  for ( Documents::const_iterator iter = docs.begin(); iter != docs.end(); ++iter )
+  // Find the one that also handles the extension.
+  for ( Unknowns::const_iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
   {
     IReadImageFile::QueryPtr reader ( iter->get() );
-    if ( reader.valid() )
+    if ( reader.valid() && reader->canRead ( Usul::Strings::format ( ".", ext ) ) )
     {
       // Set the new image reader.
       this->_imageReaderSet ( reader.get() );
@@ -822,7 +822,7 @@ void RasterLayer::_imageReaderFind ( const std::string &ext )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the mangled utl.
+//  Return the mangled url.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

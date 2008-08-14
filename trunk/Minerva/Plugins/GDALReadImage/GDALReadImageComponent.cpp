@@ -14,7 +14,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/GDALReadImage/GDALReadImageComponent.h"
-#include "Minerva/Plugins/GDALReadImage/GDALReadImageDocument.h"
 
 #include "Minerva/Layers/GDAL/Convert.h"
 

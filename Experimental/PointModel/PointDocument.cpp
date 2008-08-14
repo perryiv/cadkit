@@ -219,6 +219,11 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
   }
   */
 
+  // set the working directory in our point set
+  
+  _pointSet->workingDir( Usul::File::directory( name, true ) );
+  _pointSet->baseName( Usul::File::base( name ) );
+
   this->_read( name, caller, progress );
 
 }

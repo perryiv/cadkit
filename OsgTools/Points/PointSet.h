@@ -87,6 +87,12 @@ public:
   void                    write( std::ofstream* ofs, Usul::Types::Uint64  numPoints, Usul::Documents::Document* document = 0x0, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
   void                    read ( std::ifstream* ifs, Usul::Types::Uint64 &numPoints,Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  void                    workingDir( const std::string& dir );
+  std::string             workingDir();
+
+  void                    baseName( const std::string& name );
+  std::string             baseName();
+
  
 protected:
 
@@ -104,6 +110,8 @@ private:
   GroupPtr                _root;
   Points                  _points;
   OctTree::RefPtr         _tree;
+  std::string             _workingDir;
+  std::string             _baseName;
 
   
 }; // PointSet

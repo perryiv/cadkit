@@ -153,7 +153,7 @@ int AlphasDialog::AlphasItemModel::rowCount ( const QModelIndex &parent ) const
 
 int AlphasDialog::AlphasItemModel::columnCount ( const QModelIndex &parent ) const
 {
-  return 2;
+  return 4;
 }
 
 
@@ -173,8 +173,21 @@ QVariant AlphasDialog::AlphasItemModel::data ( const QModelIndex& index, int rol
   if ( Qt::DisplayRole == role )
   {
     if ( 0 == index.column() )
-			return _colors.at ( index.row() );
+    {
+      QColor color ( _colors.at ( index.row() ) );
+			return color.red();
+    }
     if ( 1 == index.column() )
+    {
+      QColor color ( _colors.at ( index.row() ) );
+			return color.green();
+    }
+    if ( 2 == index.column() )
+    {
+      QColor color ( _colors.at ( index.row() ) );
+			return color.blue();
+    }
+    if ( 3 == index.column() )
       return _opacities.at ( index.row() );
   }
   
@@ -192,25 +205,33 @@ bool AlphasDialog::AlphasItemModel::setData ( const QModelIndex& index, const QV
 {
   if ( index.isValid() && role == Qt::EditRole )
   {
-    // Color.
+    // Red.
     if ( 0 == index.column() )
     {
-			QColor color ( value.value<QColor>() );
-			_colors[index.row()] = color;
-
+			_colors[index.row()].setRed ( value.toUInt() );
+			emit dataChanged ( index, index );    
+      return true;
+    }
+    // Green.
+    if ( 1 == index.column() )
+    {
+			_colors[index.row()].setGreen ( value.toUInt() );
 			emit dataChanged ( index, index );
-      
+      return true;
+    }
+    // Blue.
+    if ( 2 == index.column() )
+    {
+			_colors[index.row()].setBlue ( value.toUInt() );
+			emit dataChanged ( index, index );
       return true;
     }
     
     // Alpha.
-    else if ( 1 == index.column() )
+    else if ( 3 == index.column() )
     {
-      unsigned short alpha ( value.toUInt() );
-      _opacities[index.row()] = alpha;
-      
+      _opacities[index.row()] = value.toUInt();
       emit dataChanged ( index, index );
-      
       return true;
     }
   }
@@ -230,8 +251,12 @@ QVariant AlphasDialog::AlphasItemModel::headerData ( int section, Qt::Orientatio
   if ( Qt::DisplayRole == role )
   {
     if ( 0 == section )
-      return "Color";
+      return "Red";
     if ( 1 == section )
+      return "Green";
+    if ( 2 == section )
+      return "Blue";
+    if ( 3 == section )
       return "Alpha";
   }
   
@@ -325,7 +350,7 @@ bool AlphasDialog::AlphasItemModel::insertRow ( int row, const QModelIndex & par
   if ( row <= static_cast<int> ( _colors.size() ) && row <= static_cast<int> ( _opacities.size() ) )
   {
     this->beginInsertRows ( parent, row, row );
-    _colors.insert ( _colors.begin() + row, Usul::Functions::Color::pack ( 255, 255, 255, 0 ) );
+    _colors.insert ( _colors.begin() + row, Usul::Functions::Color::pack ( 255, 255, 255, 255, 255 ) );
     _opacities.insert ( _opacities.begin() + row, 255 );
     this->endInsertRows();
     
@@ -366,14 +391,14 @@ AlphasDialog::AlphasItemDelegate::~AlphasItemDelegate()
 
 QWidget * AlphasDialog::AlphasItemDelegate::createEditor ( QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
-  if ( 0 == index.column() )
+  const int column ( index.column() );
+  if ( 0 <= column && column <= 3 )
   {
-		return new QtTools::ColorButton ( parent );
-  }
-  if ( 1 == index.column() )
-  {
+    //const unsigned short value ( index.model()->data ( index, Qt::DisplayRole ).toUInt() );
+    
     QSpinBox *spinBox ( new QSpinBox ( parent ) );
     spinBox->setRange( 0, 255 );
+    //spinBox->setValue ( value );
     return spinBox;
   }
   
@@ -389,19 +414,13 @@ QWidget * AlphasDialog::AlphasItemDelegate::createEditor ( QWidget *parent, cons
 
 void AlphasDialog::AlphasItemDelegate::setEditorData( QWidget *editor, const QModelIndex &index ) const
 {
-  if ( 0 == index.column() )
+  const int column ( index.column() );
+  if ( 0 <= column && column <= 3 )
   {
-    QColor color ( index.model()->data ( index, Qt::DisplayRole ).value<QColor>() );
-		QtTools::ColorButton* button ( static_cast<QtTools::ColorButton*> ( editor ) );
-		button->color ( color );
-  }
-  else if ( 1 == index.column() )
-  {
-    unsigned short alpha ( index.model()->data ( index, Qt::DisplayRole ).toUInt() );
+    unsigned short value ( index.model()->data ( index, Qt::DisplayRole ).toUInt() );
     QSpinBox *spinBox ( static_cast< QSpinBox* > ( editor ) );
-    spinBox->setValue ( alpha );
+    spinBox->setValue ( value );
   }
-  
   else
     BaseClass::setEditorData ( editor, index );
 }
@@ -415,13 +434,7 @@ void AlphasDialog::AlphasItemDelegate::setEditorData( QWidget *editor, const QMo
 
 void AlphasDialog::AlphasItemDelegate::setModelData ( QWidget *editor, QAbstractItemModel *model, const QModelIndex &index ) const
 {
-	if ( 0 == index.column() )
-	{
-		QtTools::ColorButton* button ( static_cast<QtTools::ColorButton*> ( editor ) );
-		model->setData ( index, button->color(), Qt::EditRole );
-	}
-	else
-		BaseClass::setModelData ( editor, model, index );
+  BaseClass::setModelData ( editor, model, index );
 }
 
 
@@ -433,14 +446,5 @@ void AlphasDialog::AlphasItemDelegate::setModelData ( QWidget *editor, QAbstract
 
 void AlphasDialog::AlphasItemDelegate::paint ( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
-#if 0
-  if ( 0x0 != painter, 0 == index.column() )
-  {
-		QColor color ( index.model()->data ( index, Qt::DisplayRole ).value<QColor>() );
-    painter->fillRect ( option.rect, color );
-  }
-  
-  else
-#endif
-    BaseClass::paint ( painter, option, index );
+  BaseClass::paint ( painter, option, index );
 }

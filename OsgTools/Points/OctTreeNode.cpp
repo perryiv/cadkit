@@ -1,4 +1,5 @@
 #include "OctTreeNode.h"
+#include "PointLoader.h"
 
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/Vector3.h"
@@ -53,7 +54,8 @@ class CustomLODCallback : public osg::NodeCallback
           _path( p ),
           _geode( geode ),
           _fileSize( 0 ),
-          _numPoints( 0 )
+          _numPoints( 0 ),
+          _myJob( 0x0 )
 		  {
          // Get the size of the lod file
          _fileSize = Usul::File::size( _path );
@@ -103,59 +105,66 @@ class CustomLODCallback : public osg::NodeCallback
 
         if( vertices->size() == 0 && _fileSize > 0 )
         {
-        
-          // Remove the vertices of the other children
-          osg::ref_ptr< osg::LOD > parent ( dynamic_cast< osg::LOD* > ( _geode->getParent( 0 ) ) );
-          if( 0x0 != parent )
+          // If my job isn't valid, create it
+          if( 0x0 == _myJob )
           {
-            for( unsigned int i = 0; i < parent->getNumChildren(); ++i )
+            // Create my job
+            _myJob = new PointLoader( _path, _numPoints );
+
+            // Start my job
+            Usul::Jobs::Manager::instance().addJob ( _myJob.get() );
+
+            // leave the function for now
+            traverse( node, nv );
+          }
+          if( true == _myJob.valid() && true == _myJob->foundNewData() )
+          {
+            // Remove the vertices of the other children
+            osg::ref_ptr< osg::LOD > parent ( dynamic_cast< osg::LOD* > ( _geode->getParent( 0 ) ) );
+            if( 0x0 != parent )
             {
-              osg::ref_ptr< osg::Geode > child ( dynamic_cast< osg::Geode* > ( parent->getChild( i ) ) );
-              if( 0x0 != child )
+              for( unsigned int i = 0; i < parent->getNumChildren(); ++i )
               {
-                osg::ref_ptr< osg::Geometry > childGeometry ( dynamic_cast< osg::Geometry* > ( child->getDrawable( 0 ) ) );
-                if( 0x0 != childGeometry )
+                osg::ref_ptr< osg::Geode > child ( dynamic_cast< osg::Geode* > ( parent->getChild( i ) ) );
+                if( 0x0 != child )
                 {
-                  childGeometry->setVertexArray( new osg::Vec3Array );
+                  osg::ref_ptr< osg::Geometry > childGeometry ( dynamic_cast< osg::Geometry* > ( child->getDrawable( 0 ) ) );
+                  if( 0x0 != childGeometry )
+                  {
+                    childGeometry->setVertexArray( new osg::Vec3Array );
+                  }
                 }
               }
             }
-          }
-
-          // Read the file
-          std::ifstream infile ( _path.c_str(),  std::ofstream::in | std::ofstream::binary );
-
-          // Initialize the points holder
-          osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
-          points->resize ( _numPoints, OctTreeNode::Point ( 0.0, 0.0, 0.0 ) );
-       
-          // Sanity check.    
-          USUL_ASSERT ( _fileSize == Usul::File::size ( _path ) );
-
-          // Read the points
-          infile.read( reinterpret_cast<char *> ( &((*points)[0]) ), _fileSize );
-
-          // Create the Geometry         
-          osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry ); 
-
-          // Set the geometry
-          geometry->setVertexArray( points.get() );
-          geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::POINTS, 0, points->size() ) );
-        
-          // Add the points to the geode
-          _geode->removeDrawables( 0, _geode->getNumDrawables() );
-          _geode->addDrawable( geometry.get() );
           
+            // Initialize the points holder
+            osg::ref_ptr< osg::Vec3Array > points ( _myJob->getData() );
+                     
+            // Create the Geometry         
+            osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry ); 
+
+            // Set the geometry
+            geometry->setVertexArray( points.get() );
+            geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::POINTS, 0, points->size() ) );
+          
+            // Add the points to the geode
+            _geode->removeDrawables( 0, _geode->getNumDrawables() );
+            _geode->addDrawable( geometry.get() );
             
+            // Reset the job
+            _myJob = 0x0;
+
+          }  
         }
         traverse( node, nv );
       }
 		  
 	 protected:
-     std::string _path;
-     osg::ref_ptr< osg::Geode > _geode;
-     Usul::Types::Uint64 _fileSize;
-     float               _numPoints;
+     std::string                  _path;
+     osg::ref_ptr< osg::Geode >   _geode;
+     Usul::Types::Uint64          _fileSize;
+     float                        _numPoints;
+     PointLoader::RefPtr          _myJob;
 }; 
 
 

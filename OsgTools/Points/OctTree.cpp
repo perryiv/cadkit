@@ -201,13 +201,8 @@ void OctTree::split(  Usul::Documents::Document* document, Unknown *caller, Unkn
   // split the tree
   _tree->split( document, caller, progress );
 
-  try
-  {
   // create the lod files from the leaf nodes
   _tree->createLodLevels();
-  }
-  catch( ... ) 
-  { std::cout << "something is wrong" <<std::endl; }
 
   // Debug info
 #if 1

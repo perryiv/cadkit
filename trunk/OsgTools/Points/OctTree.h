@@ -76,19 +76,25 @@ public:
   void                          read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                          preBuildScene( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  void                          workingDir( const std::string& dir, bool setNodes );
+  std::string                   workingDir();
+
+  void                          baseName( const std::string& name );
+  std::string                   baseName();
+
 protected:
   
   void                          _partition();
   osg::Node*                    _buildTransparentPlane();
   
-  
-
 private:
   
-  OctTreeNode::RefPtr           _tree;
+  osg::ref_ptr< OctTreeNode >   _tree;
   unsigned int                  _capacity;
   StreamBufferPtr               _buffer;
   std::string                   _tempPath;
+  std::string                   _workingDir;
+  std::string                   _baseName;
 
 
 }; // OctTree

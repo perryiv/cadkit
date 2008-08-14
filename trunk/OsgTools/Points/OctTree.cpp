@@ -41,7 +41,9 @@ USUL_IMPLEMENT_TYPE_ID ( OctTree );
 OctTree::OctTree():
 _tree( 0x0 ),
 _capacity( 1000 ),
-_buffer ( new StreamBuffer ( 4096 ) )
+_buffer ( new StreamBuffer ( 4096 ) ),
+_workingDir(),
+_baseName()
 {
   // create a temp directory in the temp directory location
   const std::string tempDir ( Usul::File::Temp::directory ( false ) ); 
@@ -56,7 +58,7 @@ _buffer ( new StreamBuffer ( 4096 ) )
   _tree = new OctTreeNode ( _buffer, path );
 
   // set the point capacity of the octree nodes
-  _tree->capacity( _capacity );
+  _tree->capacity( 1000 );
 }
 
 
@@ -142,6 +144,7 @@ osg::Node* OctTree::buildScene( Unknown *caller, Unknown *progress )
   
   group->addChild( this->_buildTransparentPlane() );
   group->addChild( _tree->buildScene( caller, progress ) );
+  //group->addChild( _tree.get() );
 
   return group.release();
 }
@@ -187,8 +190,29 @@ void OctTree::split(  Usul::Documents::Document* document, Unknown *caller, Unkn
   Usul::Types::Uint64 numPoints ( _tree->getNumPoints() );
   document->setStatusBar( "Step 2/2: Building Spatial Parameters...", progress );
   unsigned int d ( static_cast< unsigned int > ( static_cast< double > ( numPoints ) / static_cast< double > ( _tree->capacity() ) ) );
+ 
+  // setup splitting process
   _tree->initSplitProgress( 0, d );
+
+  // Name the tree and make the directory for the lod files
+  Usul::File::make( Usul::Strings::format( _workingDir, _baseName, "_files/" ) );
+  _tree->name( Usul::Strings::format( _baseName, "_files/" ) );
+
+  // split the tree
   _tree->split( document, caller, progress );
+
+  try
+  {
+  // create the lod files from the leaf nodes
+  _tree->createLodLevels();
+  }
+  catch( ... ) 
+  { std::cout << "something is wrong" <<std::endl; }
+
+  // Debug info
+#if 1
+  std::cout << "Number of leaf nodes is" << _tree->numLeafNodes() << std::endl;
+#endif
 }
 
 
@@ -223,7 +247,7 @@ void OctTree::read ( std::ifstream* ifs, Usul::Documents::Document* document, Un
   _tree->distance( static_cast< double > ( d ) );
 
   // Initialize progress
-  _tree->initSplitProgress( 0, numLeafNodes * 2 );
+  _tree->initSplitProgress( 0, numLeafNodes );
  
   _tree->read( ifs, document, caller, progress );
 
@@ -301,30 +325,80 @@ osg::Node* OctTree::_buildTransparentPlane()
   geometry->setNormalArray( normals.get() );
   geometry->setNormalBinding( osg::Geometry::BIND_PER_PRIMITIVE );
 
+  float transparency ( 0.1f );
+
   //set the color array
-  osg::Vec4 color( osg::Vec4 ( 1.0, 1.0, 1.0, 0.0 ) );
+  osg::Vec4 color( osg::Vec4 ( 1.0, 1.0, 1.0, transparency ) );
 
   // add the geometry to the geode
   geode->addDrawable( geometry.get() );
 
   // Set the material properties
-  OsgTools::State::StateSet::setMaterial( geode.get(), color, color, 0.0f );
+  OsgTools::State::StateSet::setMaterial( geode.get(), color, color, transparency );
 
   // Set the node to be transparent
-  OsgTools::State::StateSet::setAlpha ( geode.get(), 0.0f );
+  OsgTools::State::StateSet::setAlpha ( geode.get(), transparency );
 
   
   return geode.release();
 }
 
-/////////////////
-//  PRIVATE
-/////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+//  Set the base name
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+void OctTree::baseName( const std::string& name )
+{
+  Guard guard ( this );
+
+  _tree->baseName( name );
+  _baseName = name;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the base name
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string OctTree::baseName()
+{
+  Guard guard ( this );
+
+  return _baseName;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the working directory
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OctTree::workingDir( const std::string& dir, bool setNodes )
+{
+  Guard guard ( this );
+
+  // set working directory of the nodes if told to
+  if( true == setNodes )
+    _tree->workingDir( dir );
+
+  _workingDir = dir;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the working directory
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string OctTree::workingDir()
+{
+  Guard guard ( this );
+
+  return _workingDir;
+}
 

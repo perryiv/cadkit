@@ -885,3 +885,18 @@ void PointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
 
   pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &PointDocument::_editPointColor ), Usul::Commands::TrueFunctor() ) ) );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The Job is finished.  Implemented to request redraws when jobs finish
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::jobFinished ( Usul::Jobs::Job *job )
+{
+  //NOTE: This can still be further optimized
+
+  // redraw the scene
+  this->redraw();
+}
+

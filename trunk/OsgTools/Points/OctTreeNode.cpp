@@ -50,9 +50,11 @@ USUL_IMPLEMENT_TYPE_ID ( OctTreeNode );
 class CustomLODCallback : public osg::NodeCallback
 {
     public:
-      CustomLODCallback( const std::string& p, osg::Geode* geode ) :
+      CustomLODCallback( const std::string& p, osg::Geode* geode, unsigned int level ) :
+          _mutex(),
           _path( p ),
           _geode( geode ),
+          _level( level ),
           _fileSize( 0 ),
           _numPoints( 0 ),
           _myJob( 0x0 )
@@ -72,6 +74,10 @@ class CustomLODCallback : public osg::NodeCallback
       ~CustomLODCallback()         
 		  {
 		  }
+
+      typedef Usul::Threads::RecursiveMutex Mutex;
+      typedef Usul::Threads::Guard<Mutex> Guard;
+
       virtual void operator()( osg::Node *node, osg::NodeVisitor *nv )
       {
         //Guard guard ( this );
@@ -108,15 +114,42 @@ class CustomLODCallback : public osg::NodeCallback
           // If my job isn't valid, create it
           if( 0x0 == _myJob )
           {
-            // Create my job
-            _myJob = new PointLoader( _path, _numPoints );
+            // kill the other jobs that my parent has
+            osg::ref_ptr< osg::LOD > parent ( dynamic_cast< osg::LOD* > ( _geode->getParent( 0 ) ) );
+            if( 0x0 != parent )
+            {
+              for( unsigned int i = 0; i < parent->getNumChildren(); ++i )
+              {
+                osg::ref_ptr< osg::Geode > child ( dynamic_cast< osg::Geode* > ( parent->getChild( i ) ) );
+                if( 0x0 != child )
+                {
+                  osg::ref_ptr< CustomLODCallback > callback ( dynamic_cast< CustomLODCallback* > ( child->getCullCallback() ) );
+                  if( 0x0 != callback )
+                  {
+                    callback->cancelJob();
+                  }
+                 
+                }
+              }
+            }
+            // Guarding this code
+            {
+              Guard guard ( this );
+              // Create my job
+              _myJob = new PointLoader( _path, _numPoints );
+            
 
-            // Start my job
-            Usul::Jobs::Manager::instance().addJob ( _myJob.get() );
+              // Set the priority level
+              _myJob->priority( static_cast< int > ( _level ) );
+
+              // Start my job
+              Usul::Jobs::Manager::instance().addJob ( _myJob.get() );
+            }
 
             // leave the function for now
             traverse( node, nv );
           }
+
           if( true == _myJob.valid() && true == _myJob->foundNewData() )
           {
             // Remove the vertices of the other children
@@ -128,9 +161,11 @@ class CustomLODCallback : public osg::NodeCallback
                 osg::ref_ptr< osg::Geode > child ( dynamic_cast< osg::Geode* > ( parent->getChild( i ) ) );
                 if( 0x0 != child )
                 {
+                     
                   osg::ref_ptr< osg::Geometry > childGeometry ( dynamic_cast< osg::Geometry* > ( child->getDrawable( 0 ) ) );
                   if( 0x0 != childGeometry )
                   {
+                    Guard guard ( this );
                     childGeometry->setVertexArray( new osg::Vec3Array );
                   }
                 }
@@ -147,21 +182,42 @@ class CustomLODCallback : public osg::NodeCallback
             geometry->setVertexArray( points.get() );
             geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::POINTS, 0, points->size() ) );
           
-            // Add the points to the geode
-            _geode->removeDrawables( 0, _geode->getNumDrawables() );
-            _geode->addDrawable( geometry.get() );
+            // Guarding this part
+            {
+              Guard guard ( this );
+              // Add the points to the geode
+              _geode->removeDrawables( 0, _geode->getNumDrawables() );
+              _geode->addDrawable( geometry.get() );
             
-            // Reset the job
-            _myJob = 0x0;
+              // Reset the job
+              _myJob = 0x0;
+            }
 
           }  
         }
         traverse( node, nv );
       }
-		  
+      void cancelJob()
+      {
+        Guard guard ( this );
+        if( true == _myJob.valid() )
+        {
+          _myJob->cancel();
+          _myJob = 0x0;
+        }
+
+      }
+      // Return the mutex. Use with caution.
+      Mutex & mutex() const
+      {
+        return _mutex;
+      }
+
 	 protected:
+     mutable Mutex                _mutex;
      std::string                  _path;
      osg::ref_ptr< osg::Geode >   _geode;
+     unsigned int                 _level;
      Usul::Types::Uint64          _fileSize;
      float                        _numPoints;
      PointLoader::RefPtr          _myJob;
@@ -449,7 +505,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
           std::string lodName ( Usul::Strings::format( _workingDir, _name, "LOD", lodLevel ) );
 
           // Add the cull callback so vertices can be added and deleted at run time
-          geode->setCullCallback( new CustomLODCallback( lodName, geode.get() ) );
+          geode->setCullCallback( new CustomLODCallback( lodName, geode.get(), lodLevel ) );
 
           // Dynamically create lod level distance definitions
           float minLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( numLODs ) );

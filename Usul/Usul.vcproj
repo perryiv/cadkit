@@ -1096,6 +1096,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IJobFinishedListener.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IJoystick.h"
 					>
 				</File>

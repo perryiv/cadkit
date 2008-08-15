@@ -69,14 +69,14 @@ PointLoader::~PointLoader()
 
 namespace Helper
 {
-  template < class T > checkCancelledState ( T *t )
+  template < class T > inline void checkCancelledState ( T *t )
   {
     if ( 0x0 != t )
     {
-      if ( true == t->cancelled() )
-        {
-          t->cancel();
-        }
+      if ( true == t->canceled() )
+      {
+        t->cancel();
+      }
     }
   }
 }
@@ -130,14 +130,12 @@ void PointLoader::_started ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3Array* PointLoader::getData()
+osg::ref_ptr< osg::Vec3Array > PointLoader::getData()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  osg::ref_ptr< osg::Vec3Array > vertices ( _vertices );
-
-  return vertices.release();
+  return osg::ref_ptr< osg::Vec3Array > ( _vertices );
 }
 
 

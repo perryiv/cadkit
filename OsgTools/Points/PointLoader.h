@@ -39,7 +39,7 @@ class PointLoader : public Usul::Jobs::Job
       
       PointLoader ( const std::string &path, Usul::Types::Uint64 numPoints );
 
-      osg::Vec3Array*                     getData();
+      osg::ref_ptr< osg::Vec3Array >      getData();
       
       bool                                foundNewData();
       void                                foundNewData( bool state );

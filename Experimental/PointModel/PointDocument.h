@@ -19,6 +19,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Types/Types.h"
 
 #include "XmlTree/Document.h"
@@ -35,7 +36,8 @@ using namespace Usul::Types;
 
 class PointDocument : public Usul::Documents::Document,
                       public Usul::Interfaces::IBuildScene,
-                      public Usul::Interfaces::IMenuAdd
+                      public Usul::Interfaces::IMenuAdd,
+                      public Usul::Interfaces::IJobFinishedListener
 {
 public:
 
@@ -87,6 +89,10 @@ public:
 
   //Usul::Interfaces::IMenuAdd
   void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+
+  /// Usul::Interfaces::IJobFinishedListener
+  virtual void                jobFinished ( Usul::Jobs::Job *job );
+
   
 protected:
 

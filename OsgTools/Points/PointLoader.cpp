@@ -63,20 +63,47 @@ PointLoader::~PointLoader()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to shorten the lines.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class T > checkCancelledState ( T *t )
+  {
+    if ( 0x0 != t )
+    {
+      if ( true == t->cancelled() )
+        {
+          t->cancel();
+        }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Start the job.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void PointLoader::_started ()
 {
+  Helper::checkCancelledState ( this );
+
   // Read the file
   std::ifstream infile ( _path.c_str(),  std::ofstream::in | std::ofstream::binary );
 
   Usul::Types::Uint64 fileSize ( Usul::File::size( _path ) );
 
+  Helper::checkCancelledState ( this );
+
   // Initialize the points holder
   osg::ref_ptr< osg::Vec3Array > points ( new osg::Vec3Array );
   points->resize ( _numPoints, osg::Vec3f( 0.0f, 0.0f, 0.0f ) );
+
+  Helper::checkCancelledState ( this );
 
   // Sanity check.    
   // USUL_ASSERT ( _fileSize == Usul::File::size ( _path ) );
@@ -84,12 +111,16 @@ void PointLoader::_started ()
   // Read the points
   infile.read( reinterpret_cast<char *> ( &((*points)[0]) ), fileSize );
 
+  Helper::checkCancelledState ( this );
+
   if( false == _vertices.valid() )
     _vertices = new osg::Vec3Array;
 
   _vertices = points;
 
   _foundNewData = true;
+
+  Helper::checkCancelledState ( this );
 }
 
 

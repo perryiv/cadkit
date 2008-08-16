@@ -62,7 +62,7 @@ public:
 protected:
 
   // Construct a timer callback.
-  TimerCallback ( TimerID id, unsigned int milliseconds, UnknownPtr callback );
+  TimerCallback ( TimerID id, unsigned int milliseconds, UnknownPtr callback, bool singleShot );
 
   friend class TimerServer;
 

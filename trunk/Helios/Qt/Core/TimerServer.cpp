@@ -175,13 +175,13 @@ void TimerServer::addPendingTimers()
   for ( PendingTimers::iterator i = pending.begin(); i != pending.end(); ++i )
   {
     PendingTimerData data ( *i );
-    PendingTimerInput input ( data.second );
 
-    const TimerID id ( data.first );
-    const unsigned int milliseconds ( input.first );
-    UnknownPtr callback ( input.second );
+    const TimerID id ( data.get<0>() );
+    const unsigned int milliseconds ( data.get<1>() );
+    UnknownPtr callback ( data.get<2>() );
+    const bool singleShot ( data.get<3>() );
 
-    this->_timerAdd ( id, milliseconds, callback );
+    this->_timerAdd ( id, milliseconds, callback, singleShot );
   }
 }
 
@@ -192,7 +192,7 @@ void TimerServer::addPendingTimers()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TimerServer::TimerID TimerServer::timerAdd ( unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr callback )
+TimerServer::TimerID TimerServer::timerAdd ( unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr callback, bool singleShot )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -204,14 +204,14 @@ TimerServer::TimerID TimerServer::timerAdd ( unsigned int milliseconds, Usul::In
   if ( true == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
   {
     // Add the timer now.
-    this->_timerAdd ( id, milliseconds, callback );
+    this->_timerAdd ( id, milliseconds, callback, singleShot );
   }
 
   // Otherwise...
   else
   {
     // The timer is pending.
-    _pending.push_back ( PendingTimerData ( id, PendingTimerInput ( milliseconds, callback ) ) );
+    _pending.push_back ( PendingTimerData ( id, milliseconds, callback, singleShot ) );
   }
 
   // Return the new timer id.
@@ -225,12 +225,12 @@ TimerServer::TimerID TimerServer::timerAdd ( unsigned int milliseconds, Usul::In
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TimerServer::_timerAdd ( TimerID id, unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr callback )
+void TimerServer::_timerAdd ( TimerID id, unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr callback, bool singleShot )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  TimerCallback::Ptr cb ( new TimerCallback ( id, milliseconds, callback ) );
+  TimerCallback::Ptr cb ( new TimerCallback ( id, milliseconds, callback, singleShot ) );
   _timers.insert ( Timers::value_type ( id, cb ) );
   cb->start();
 }

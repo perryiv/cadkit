@@ -24,12 +24,11 @@
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
+#include "Usul/Interfaces/ITimerNotify.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
 #include "QtGui/QWidget"
-
-class QTimer;
 
 
 namespace QtTools {
@@ -38,7 +37,9 @@ namespace QtTools {
 class QT_TOOLS_EXPORT AnimationControl : public QWidget,
                                          private Ui::AnimationControl,
                                          public Usul::Interfaces::IActiveDocumentListener,
-                                         public Usul::Interfaces::IModifiedObserver
+                                         public Usul::Interfaces::IModifiedObserver,
+                                         public Usul::Interfaces::ITimerNotify
+
 {
   Q_OBJECT;
 
@@ -50,6 +51,7 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard < Mutex > Guard;
   typedef Usul::Interfaces::ITimeVaryingData ITimeVaryingData;
+  typedef Usul::Interfaces::ITimerNotify::TimerID TimerID;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( AnimationControl );
@@ -73,6 +75,9 @@ public:
   
   // The subject has been modified (IModifiedObserver).
   virtual void                subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  
+  // Called when the timer fires (ITimerNotify).
+  virtual void                timerNotify ( TimerID );
 
   // Get the mutex.
   Mutex &                     mutex() const;
@@ -87,7 +92,6 @@ protected slots:
   void                        _onStepForward();
   void                        _onStepBackward();
   void                        _onStopPlaying();
-  void                        _onTimer();
 
 protected:
 
@@ -102,8 +106,6 @@ protected:
 
 	void                        _setEnabledState();
   void                        _setState();
-  void                        _slotsConnect();
-  void                        _slotsDisconnect();
   void                        _speedChangedEvent ( double );
   void                        _stepForward();
   void                        _stepForwardEvent();
@@ -115,15 +117,13 @@ protected:
   void                        _startTimer();
   void                        _stopTimer();
 
-  void                        _timerEvent();
-
   unsigned long _refCount;
   mutable Mutex *_mutex;
   Unknown::QueryPtr _caller;
   Unknown::QueryPtr _document;
   ITimeVaryingData::QueryPtr _data;
   unsigned int _state;
-  QTimer *_timer;
+  TimerID _timer;
   double _milliSeconds;
   bool _loop;
 };

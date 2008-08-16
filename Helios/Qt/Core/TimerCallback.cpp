@@ -34,7 +34,7 @@ using namespace CadKit::Helios::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TimerCallback::TimerCallback ( TimerID id, unsigned int milliseconds, TimerCallback::UnknownPtr callback ) : BaseClass(),
+TimerCallback::TimerCallback ( TimerID id, unsigned int milliseconds, TimerCallback::UnknownPtr callback, bool singleShot ) : BaseClass(),
   _mutex(),
   _id ( id ),
   _milliseconds ( milliseconds ),
@@ -55,6 +55,9 @@ TimerCallback::TimerCallback ( TimerID id, unsigned int milliseconds, TimerCallb
 
   // Set the connection.
   this->connect ( _timer.get(), SIGNAL ( timeout() ), this, SLOT ( _onTimeout() ) );
+
+  // Is this a single-shot timer?
+  _timer->setSingleShot ( singleShot );
 }
 
 
@@ -108,10 +111,14 @@ void TimerCallback::start()
   if ( false == Usul::Threads::Named::instance().is ( Usul::Threads::Names::GUI ) )
   {
     if ( false == QMetaObject::invokeMethod ( this, "_start", Qt::QueuedConnection ) )
+    {
       std::cout << "Warning 7474543440: could not start the timer." << std::endl;
+    }
   }
   else
+  {
     this->_start();
+  }
 }
 
 
@@ -144,9 +151,20 @@ void TimerCallback::_onTimeout()
 
   UnknownPtr callback ( Usul::Threads::Safe::get ( _mutex, _callback ) );
   Usul::Interfaces::ITimerNotify::QueryPtr notify ( callback );
+
   if ( true == notify.valid() )
   {
-    notify->timerNotify ( _id );
+    Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( notify, &Usul::Interfaces::ITimerNotify::timerNotify ), _id, "4014661170" );
+  }
+
+  {
+    Guard guard ( _mutex );
+    {
+      if ( ( 0x0 != _timer ) && ( true == _timer->isSingleShot() ) )
+      {
+        _timer->start();
+      }
+    }
   }
 }
 
@@ -188,7 +206,8 @@ void TimerCallback::_start()
     return;
   
   // Start the timer.
-  _timer->start ( _milliseconds );
+  _timer->setInterval ( _milliseconds );
+  _timer->start();
 }
 
 

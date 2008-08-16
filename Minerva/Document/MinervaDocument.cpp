@@ -1917,7 +1917,7 @@ void MinervaDocument::_buildScene ( Usul::Interfaces::IUnknown *caller )
   }
 
   Usul::Jobs::Manager *manager ( this->_getJobManager() );
-  const unsigned int queued    ( ( 0x0 == manager ) ? 0 : manager->numJobsQueued() );
+  const unsigned int queued ( ( 0x0 == manager ) ? 0 : manager->numJobsQueued() );
 
   Usul::Jobs::Manager::Strings names;
   if ( 0x0 != manager )

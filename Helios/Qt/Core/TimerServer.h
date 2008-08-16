@@ -21,6 +21,8 @@
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/ITimerService.h"
 
+#include "boost/tuple/tuple.hpp"
+
 #include <list>
 #include <map>
 
@@ -43,8 +45,7 @@ public:
   typedef ITimerService::TimerID TimerID;
   typedef std::map < TimerID, TimerCallback::Ptr > Timers;
   typedef Usul::Interfaces::IUnknown::RefPtr UnknownPtr;
-  typedef std::pair < unsigned int, UnknownPtr > PendingTimerInput;
-  typedef std::pair < TimerID, PendingTimerInput > PendingTimerData;
+  typedef boost::tuple < TimerID, unsigned int, UnknownPtr, bool > PendingTimerData;
   typedef std::list < PendingTimerData > PendingTimers;
 
   // Constructor.
@@ -76,7 +77,7 @@ public:
   void                      stop();
 
   // Usul::Interfaces::ITimerService.
-  virtual TimerID           timerAdd ( unsigned int milliseconds, UnknownPtr );
+  virtual TimerID           timerAdd ( unsigned int milliseconds, UnknownPtr, bool singleShot = false );
   virtual void              timerRemove ( TimerID );
   
 protected:
@@ -84,7 +85,7 @@ protected:
   // Use reference counting.
 	virtual ~TimerServer();
 
-  void                      _timerAdd ( TimerID id, unsigned int milliseconds, UnknownPtr callback );
+  void                      _timerAdd ( TimerID id, unsigned int milliseconds, UnknownPtr callback, bool singleShot );
 
 private:
 

@@ -20,12 +20,14 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IModifiedSubject.h"
 #include "Usul/Interfaces/IRedraw.h"
+#include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Named.h"
@@ -48,7 +50,7 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   _document     ( static_cast < Unknown* > ( 0x0 ) ),
   _data         ( static_cast < ITimeVaryingData * > ( 0x0 ) ),
   _state        ( 0 ),
-  _timer        ( 0x0 ),
+  _timer        ( 0 ),
   _milliSeconds ( 1000 ),
   _loop         ( false )
 {
@@ -60,13 +62,6 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
 
   // Initialize code from Designer.
   this->setupUi ( this );
-
-  // Hide the slider until it works.
-#if 0 // Remove when confident that slider is working.
-  #ifndef _DEBUG
-  _sliderSlider->hide();
-  #endif
-#endif
   
   // Set icon buttons.
   QtTools::Image::icon ( "animation_control_play_forward.png",  _playForwardButton );
@@ -87,14 +82,18 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   _loopCheckBox->setChecked ( _loop );
   _speedSpinBox->setValue ( _milliSeconds / 1000.0 );
 
-  // Make the timer.
-  _timer = new QTimer ( this );
-
 	// Set the enabled state.
 	this->_setEnabledState();
 
   // Connect slots.
-  this->_slotsConnect();
+  QObject::connect ( _playForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onPlayForward()  ) );
+  QObject::connect ( _playBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onPlayBackward() ) );
+  QObject::connect ( _stepForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onStepForward()  ) );
+  QObject::connect ( _stepBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onStepBackward() ) );
+  QObject::connect ( _stopButton,         SIGNAL ( clicked() ), this, SLOT ( _onStopPlaying()  ) );
+  QObject::connect ( _loopCheckBox, SIGNAL ( toggled ( bool ) ), this, SLOT ( _onLoop ( bool ) ) );
+  QObject::connect ( _speedSpinBox, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _onSpeedChanged ( double ) ) );
+  QObject::connect ( _sliderSlider, SIGNAL ( valueChanged ( int ) ), this, SLOT ( _onSliderChanged( int ) ) );
 }
 
 
@@ -128,13 +127,8 @@ void AnimationControl::_destroy()
   {
     Guard guard ( this );
 
-    // Stop and delete the timer.
-    if ( 0x0 != _timer )
-    {
-      _timer->stop();
-      delete _timer;
-      _timer = 0x0;
-    }
+    // Remove the timer.
+    this->_stopTimer();
 
     // Done with these.
     _caller   = static_cast < Unknown* > ( 0x0 );
@@ -170,6 +164,8 @@ Usul::Interfaces::IUnknown *AnimationControl::queryInterface ( unsigned long iid
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
   case Usul::Interfaces::IModifiedObserver::IID:
     return static_cast < Usul::Interfaces::IModifiedObserver* > ( this );
+  case Usul::Interfaces::ITimerNotify::IID:
+    return static_cast < Usul::Interfaces::ITimerNotify* > ( this );
   default:
     return 0x0;
   }
@@ -271,9 +267,7 @@ void AnimationControl::_setState()
   Guard guard ( this );
   
   // Disconnect the slots and make sure they are re-connected.
-  Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( 
-                                                               Usul::Adaptors::memberFunction ( this, &AnimationControl::_slotsDisconnect ),
-                                                               Usul::Adaptors::memberFunction ( this, &AnimationControl::_slotsConnect ) ) );
+  QtTools::ScopedSignals scopedSignals ( *this );
   
   if ( _data.valid() )
   {
@@ -322,57 +316,8 @@ IMPLEMENT_SLOT_0 ( _onPlayBackward, _playBackwardEvent, "3231596619" );
 IMPLEMENT_SLOT_0 ( _onStepForward,  _stepForwardEvent,  "1110757894" );
 IMPLEMENT_SLOT_0 ( _onStepBackward, _stepBackwardEvent, "1598944220" );
 IMPLEMENT_SLOT_0 ( _onStopPlaying,  _stopPlayingEvent,  "7441062000" );
-IMPLEMENT_SLOT_0 ( _onTimer,        _timerEvent,        "4231156446" );
 IMPLEMENT_SLOT_1 ( _onLoop,         _loopEvent,         "1080906911", bool );
 IMPLEMENT_SLOT_1 ( _onSpeedChanged, _speedChangedEvent, "1431849635", double );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Connect slots.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void AnimationControl::_slotsConnect()
-{
-  USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  Guard guard ( this );
-
-  QObject::connect ( _playForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onPlayForward()  ) );
-  QObject::connect ( _playBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onPlayBackward() ) );
-  QObject::connect ( _stepForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onStepForward()  ) );
-  QObject::connect ( _stepBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onStepBackward() ) );
-  QObject::connect ( _stopButton,         SIGNAL ( clicked() ), this, SLOT ( _onStopPlaying()  ) );
-
-  QObject::connect ( _loopCheckBox, SIGNAL ( toggled ( bool ) ), this, SLOT ( _onLoop ( bool ) ) );
-
-  QObject::connect ( _speedSpinBox, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _onSpeedChanged ( double ) ) );
-  
-  QObject::connect ( _sliderSlider, SIGNAL ( valueChanged ( int ) ), this, SLOT ( _onSliderChanged( int ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Disconnect slots.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void AnimationControl::_slotsDisconnect()
-{
-  USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  Guard guard ( this );
-
-  _playForwardButton->disconnect ( this );
-  _playBackwardButton->disconnect ( this );
-  _stepForwardButton->disconnect ( this );
-  _stepBackwardButton->disconnect ( this );
-  _stopButton->disconnect ( this );
-  _loopCheckBox->disconnect ( this );
-  _sliderSlider->disconnect( this );
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -384,16 +329,21 @@ void AnimationControl::_slotsDisconnect()
 void AnimationControl::_startTimer()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
   Guard guard ( this );
 
   this->_stopTimer();
 
-  if ( 0x0 != _timer )
-  {
-    this->connect ( _timer, SIGNAL ( timeout() ), this, SLOT ( _onTimer() ) );
-    _timer->start ( static_cast<int> ( _milliSeconds ) );
-  }
+  // Handle repeated calls.
+  if ( 0 != _timer )
+    return;
+
+  // Get the timer-server interface.
+  Usul::Interfaces::ITimerService::QueryPtr ts ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ITimerService::IID ) );
+  if ( false == ts.valid() )
+    return;
+
+  // Add the timer.
+  _timer = ts->timerAdd ( _milliSeconds, Usul::Interfaces::IUnknown::QueryPtr ( this ), true );
 }
 
 
@@ -406,14 +356,22 @@ void AnimationControl::_startTimer()
 void AnimationControl::_stopTimer()
 {
   USUL_TRACE_SCOPE;
-  USUL_THREADS_ENSURE_GUI_THREAD ( return );
   Guard guard ( this );
+  
+  // Handle repeated calls.
+  if ( 0 == _timer )
+    return;
+  
+  // Get the timer-server interface.
+  Usul::Interfaces::ITimerService::QueryPtr ts ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ITimerService::IID ) );
+  if ( false == ts.valid() )
+    return;
 
-  if ( 0x0 != _timer )
-  {
-    _timer->stop();
-    _timer->disconnect ( this );
-  }
+  // Remove the timer.
+  ts->timerRemove ( _timer );
+
+  // This is important!
+  _timer = 0;
 }
 
 
@@ -423,7 +381,7 @@ void AnimationControl::_stopTimer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AnimationControl::_timerEvent()
+void AnimationControl::timerNotify ( TimerID )
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
@@ -713,7 +671,7 @@ void AnimationControl::_speedChangedEvent ( double speed )
 
   _milliSeconds = speed * 1000.0;
 
-  if ( true == _timer->isActive() )
+  if ( 0 != _timer )
   {
     this->_stopTimer();
     this->_startTimer();

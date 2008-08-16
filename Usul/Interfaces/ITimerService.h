@@ -29,7 +29,7 @@ struct ITimerService : public Usul::Interfaces::IUnknown
   enum { IID = 2221836210u };
 
   // Add a timer.
-  virtual TimerID                     timerAdd ( unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr ) = 0;
+  virtual TimerID                     timerAdd ( unsigned int milliseconds, Usul::Interfaces::IUnknown::RefPtr, bool singleShot = false ) = 0;
 
   // Remove a timer.
   virtual void                        timerRemove ( TimerID ) = 0;

@@ -16,6 +16,8 @@
 #ifndef __QT_TOOLS_TREE_NODE_H__
 #define __QT_TOOLS_TREE_NODE_H__
 
+#include "QtTools/Export.h"
+
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IDataChangedListener.h"
 
@@ -27,8 +29,8 @@ namespace QtTools {
 
   class TreeModel;
   
-class TreeNode : public QObject,
-                 public Usul::Interfaces::IDataChangedListener
+class QT_TOOLS_EXPORT TreeNode : public QObject,
+                                 public Usul::Interfaces::IDataChangedListener
 {
   Q_OBJECT;
 public:

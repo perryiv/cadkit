@@ -17,6 +17,7 @@
 #include "QtTools/TreeModel.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IDataChangedNotify.h"

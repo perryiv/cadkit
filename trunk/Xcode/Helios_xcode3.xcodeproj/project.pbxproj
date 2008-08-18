@@ -396,7 +396,7 @@
 		6603B88D0DCBB02900FE0D89 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
 		6603B88E0DCBB02900FE0D89 /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
 		6603BBE90DCBB04300FE0D89 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
-		6603BBEA0DCBB04D00FE0D89 /* QtPasswordPrompt.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plug */; };
+		6603BBEA0DCBB04D00FE0D89 /* QtPasswordPrompt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plugd */; };
 		6603BBFB0DCBB16300FE0D89 /* moc_PasswordPromptComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6603BBFA0DCBB16300FE0D89 /* moc_PasswordPromptComponent.cpp */; };
 		6603BD3F0DCBC6CD00FE0D89 /* newDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A30D124D2C002F40C6 /* newDocument.png */; };
 		6603BD400DCBC6CD00FE0D89 /* openDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A40D124D2C002F40C6 /* openDocument.png */; };
@@ -422,7 +422,7 @@
 		66190EE00E1C8A19004CE994 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		66190FD40E1C8ABC004CE994 /* GeoRSSLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66190FD10E1C8ABC004CE994 /* GeoRSSLayer.cpp */; };
 		66190FD50E1C8ABC004CE994 /* GeoRSSLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66190FD20E1C8ABC004CE994 /* GeoRSSLayer.h */; };
-		66190FFE0E1C98C8004CE994 /* libMinervaGeoRSSLayer.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayer.dylib */; };
+		66190FFE0E1C98C8004CE994 /* libMinervaGeoRSSLayerd.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayerd.dylib */; };
 		661B8AD20E1EB4B7005FC8CA /* Factory.h in Headers */ = {isa = PBXBuildFile; fileRef = 661B8AD00E1EB4B7005FC8CA /* Factory.h */; };
 		661B8AD30E1EB4B7005FC8CA /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661B8AD10E1EB4B7005FC8CA /* Factory.cpp */; };
 		661B8AE30E1ECB41005FC8CA /* Geometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 661B8AD70E1ECB41005FC8CA /* Geometry.h */; };
@@ -448,7 +448,7 @@
 		661C11B20DCA71F700DE43D4 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		661C11B30DCA71FE00DE43D4 /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
 		661C11DD0DCA720500DE43D4 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
-		661C12B50DCA79DA00DE43D4 /* GDALReadImage.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 661C119C0DCA718E00DE43D4 /* GDALReadImage.plug */; };
+		661C12B50DCA79DA00DE43D4 /* GDALReadImage.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 661C119C0DCA718E00DE43D4 /* GDALReadImage.plugd */; };
 		662568A00DCB8F91001E94FB /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
 		662568A10DCB8F91001E94FB /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
 		662568A20DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
@@ -523,12 +523,12 @@
 		663E626F0E50EF7400881387 /* PointSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 663E62680E50EF7400881387 /* PointSet.cpp */; };
 		663E62700E50EF7400881387 /* PointSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 663E62690E50EF7400881387 /* PointSet.h */; };
 		663E62710E50EF7400881387 /* PointSetRecords.h in Headers */ = {isa = PBXBuildFile; fileRef = 663E626A0E50EF7400881387 /* PointSetRecords.h */; };
-		664279F30E4AA8BE009AE232 /* MeasureTool.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plug */; };
-		664279F40E4AA8BE009AE232 /* PathAnimation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plug */; };
-		664279F60E4AA8BE009AE232 /* QtSnapShot.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */; };
-		664279F70E4AA8BE009AE232 /* QtClipPlanes.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EFF3930D139F7200B4B1AA /* QtClipPlanes.plug */; };
-		664279F90E4AA8BE009AE232 /* SceneModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB89409246ADA00ED2131 /* SceneModel.plug */; };
-		664279FA0E4AA8BE009AE232 /* QtSceneDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */; };
+		664279F30E4AA8BE009AE232 /* MeasureTool.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plugd */; };
+		664279F40E4AA8BE009AE232 /* PathAnimation.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plugd */; };
+		664279F60E4AA8BE009AE232 /* QtSnapShot.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plugd */; };
+		664279F70E4AA8BE009AE232 /* QtClipPlanes.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EFF3930D139F7200B4B1AA /* QtClipPlanes.plugd */; };
+		664279F90E4AA8BE009AE232 /* SceneModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB89409246ADA00ED2131 /* SceneModel.plugd */; };
+		664279FA0E4AA8BE009AE232 /* QtSceneDelegate.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plugd */; };
 		664279FB0E4AA8BE009AE232 /* Nimue.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666766660D12437A002F40C6 /* Nimue.plugins */; };
 		664279FD0E4AA8BE009AE232 /* Back.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87260E22C57D0059B2E5 /* Back.png */; };
 		664279FE0E4AA8BE009AE232 /* Bottom.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66FA87270E22C57D0059B2E5 /* Bottom.png */; };
@@ -667,7 +667,7 @@
 		66430C3F0D10C23800984C94 /* TriangleReaderOFF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430C370D10C23800984C94 /* TriangleReaderOFF.cpp */; };
 		66430C400D10C23800984C94 /* TriangleReaderOFF.h in Headers */ = {isa = PBXBuildFile; fileRef = 66430C380D10C23800984C94 /* TriangleReaderOFF.h */; };
 		6646DEEF0DEC7FC8009A95C6 /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6646DEED0DEC7FC8009A95C6 /* Log.cpp */; };
-		6647DBED0E12ED92009BD3C7 /* ModflowModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05FD0D14608800B4B1AA /* ModflowModel.plug */; };
+		6647DBED0E12ED92009BD3C7 /* ModflowModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05FD0D14608800B4B1AA /* ModflowModel.plugd */; };
 		66481B590E01935600DD75A2 /* DataObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66481B560E01935600DD75A2 /* DataObject.cpp */; };
 		66481B5A0E01935600DD75A2 /* DataObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 66481B570E01935600DD75A2 /* DataObject.h */; };
 		66481B5B0E01935600DD75A2 /* UserData.h in Headers */ = {isa = PBXBuildFile; fileRef = 66481B580E01935600DD75A2 /* UserData.h */; };
@@ -678,9 +678,9 @@
 		664B43540D54EE8C0080DF60 /* IRemoveLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B43500D54EE8C0080DF60 /* IRemoveLayer.h */; };
 		664E33F60D89E22E006031B5 /* About.h in Headers */ = {isa = PBXBuildFile; fileRef = 664E33F40D89E22E006031B5 /* About.h */; };
 		664E33F70D89E22E006031B5 /* About.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 664E33F50D89E22E006031B5 /* About.cpp */; };
-		664EBB2B0DD4938400F78E21 /* QtAnimationControl.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */; };
+		664EBB2B0DD4938400F78E21 /* QtAnimationControl.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plugd */; };
 		665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 665F2AD80E4FBCAC001BB8F1 /* Helios.plugins */; };
-		665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668C969E0D42B4D00007D7F4 /* TriangulateGrid.plug */; };
+		665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668C969E0D42B4D00007D7F4 /* TriangulateGrid.plugd */; };
 		665F2B0A0E4FD655001BB8F1 /* Nimue-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 665F2B090E4FD644001BB8F1 /* Nimue-Info.plist */; };
 		665F2B0C0E4FD66D001BB8F1 /* Nimue.icns in Resources */ = {isa = PBXBuildFile; fileRef = 669B361F0E4B3D3900AF6B84 /* Nimue.icns */; };
 		666304690E030827004C2914 /* LoadModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 666304650E030827004C2914 /* LoadModel.h */; };
@@ -767,9 +767,14 @@
 		6667676A0D12FE59002F40C6 /* SceneDelegateComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 666767660D12FE59002F40C6 /* SceneDelegateComponent.h */; };
 		6667676F0D12FF42002F40C6 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		666767700D12FF47002F40C6 /* libHeliosQtViewOSG.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */; };
-		666767720D12FF7C002F40C6 /* QtSceneDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */; };
+		666767720D12FF7C002F40C6 /* QtSceneDelegate.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plugd */; };
 		666BB6A40E13641D006A51E4 /* OsgTools_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666BB6A30E13641D006A51E4 /* OsgTools_wrap.cpp */; };
 		666BB6A90E136484006A51E4 /* PathAnimation_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666BB6A80E136484006A51E4 /* PathAnimation_wrap.cpp */; };
+		667245CD0E59003A00DE4A02 /* TreeModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667245C90E59003A00DE4A02 /* TreeModel.cpp */; };
+		667245CE0E59003A00DE4A02 /* TreeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 667245CA0E59003A00DE4A02 /* TreeModel.h */; };
+		667245CF0E59003A00DE4A02 /* TreeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667245CB0E59003A00DE4A02 /* TreeNode.cpp */; };
+		667245D00E59003A00DE4A02 /* TreeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 667245CC0E59003A00DE4A02 /* TreeNode.h */; };
+		667245E00E590AC300DE4A02 /* moc_TreeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667245DF0E590AC300DE4A02 /* moc_TreeNode.cpp */; };
 		6672C5170E26DEC30013A6F3 /* xercesc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6672C5160E26DEC30013A6F3 /* xercesc.framework */; };
 		6672D6030E26DEE70013A6F3 /* xercesc.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 6672C5160E26DEC30013A6F3 /* xercesc.framework */; };
 		6672D8FE0E26DF060013A6F3 /* xercesc.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 6672C5160E26DEC30013A6F3 /* xercesc.framework */; };
@@ -812,7 +817,7 @@
 		668BE8560D24CE7B00109210 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		668BE8570D24CE8300109210 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		668BE85D0D24CE9900109210 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
-		668BE8FD0D24CEBE00109210 /* PathAnimation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plug */; };
+		668BE8FD0D24CEBE00109210 /* PathAnimation.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plugd */; };
 		668C941A0D41C29D0007D7F4 /* Readers.h in Headers */ = {isa = PBXBuildFile; fileRef = 668C94180D41C29D0007D7F4 /* Readers.h */; };
 		668C941B0D41C29D0007D7F4 /* Readers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668C94190D41C29D0007D7F4 /* Readers.cpp */; };
 		668C94760D41D74B0007D7F4 /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
@@ -972,7 +977,7 @@
 		669271D40E0AD5C700E35E8B /* MpdWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669271610E0AD36F00E35E8B /* MpdWriter.cpp */; };
 		669271FB0E0AD83200E35E8B /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		669272010E0AD84800E35E8B /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
-		669272070E0AD87600E35E8B /* ModelPresentation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669271BB0E0AD58400E35E8B /* ModelPresentation.plug */; };
+		669272070E0AD87600E35E8B /* ModelPresentation.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669271BB0E0AD58400E35E8B /* ModelPresentation.plugd */; };
 		669272290E0AE36400E35E8B /* osgdb_3dc.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */; };
 		6692722A0E0AE36400E35E8B /* osgdb_3ds.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */; };
 		6692722B0E0AE36400E35E8B /* osgdb_ac.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05740D143B2B00B4B1AA /* osgdb_ac.so */; };
@@ -1171,7 +1176,7 @@
 		669CE9C60E52107900618324 /* PointDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669CE9BF0E52107700618324 /* PointDocument.cpp */; };
 		669CE9C70E52107900618324 /* PointDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 669CE9C00E52107700618324 /* PointDocument.h */; };
 		669CE9C80E52107900618324 /* PointFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669CE9C10E52107700618324 /* PointFactory.cpp */; };
-		669CE9CD0E521EF200618324 /* PointModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669CE8B20E52101900618324 /* PointModel.plug */; };
+		669CE9CD0E521EF200618324 /* PointModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669CE8B20E52101900618324 /* PointModel.plugd */; };
 		669CE9D50E52204E00618324 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		669F239D0DBC14D400EC89B0 /* IconStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669F23990DBC14D400EC89B0 /* IconStyle.cpp */; };
 		669F239E0DBC14D400EC89B0 /* IconStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 669F239A0DBC14D400EC89B0 /* IconStyle.h */; };
@@ -1196,7 +1201,7 @@
 		669F29AF0E4D0512007EB41A /* SubdivideTriangles.h in Headers */ = {isa = PBXBuildFile; fileRef = 669F29A10E4D0512007EB41A /* SubdivideTriangles.h */; };
 		669F29B00E4D0512007EB41A /* VtkAlgorithmsComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669F29A30E4D0512007EB41A /* VtkAlgorithmsComponent.cpp */; };
 		669F29B10E4D0512007EB41A /* VtkAlgorithmsComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 669F29A40E4D0512007EB41A /* VtkAlgorithmsComponent.h */; };
-		669F2A540E4D0969007EB41A /* VtkAlgorithms.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669F28F50E4D026B007EB41A /* VtkAlgorithms.plug */; };
+		669F2A540E4D0969007EB41A /* VtkAlgorithms.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669F28F50E4D026B007EB41A /* VtkAlgorithms.plugd */; };
 		669F2A800E4D30C9007EB41A /* RasterLayerOssim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669F2A7E0E4D30C9007EB41A /* RasterLayerOssim.cpp */; };
 		669F2A810E4D30C9007EB41A /* RasterLayerOssim.h in Headers */ = {isa = PBXBuildFile; fileRef = 669F2A7F0E4D30C9007EB41A /* RasterLayerOssim.h */; };
 		669F72DF0E199060005EE92C /* libhdf5.0.0.0.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */; };
@@ -1235,8 +1240,8 @@
 		66A027D40E2B1E4F002CBE4D /* GeoRSSQtComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A027CF0E2B1E4F002CBE4D /* GeoRSSQtComponent.h */; };
 		66A027E80E2B1FA6002CBE4D /* moc_AddGeoRSSLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A027E60E2B1FA6002CBE4D /* moc_AddGeoRSSLayerWidget.cpp */; };
 		66A027E90E2B1FA6002CBE4D /* ui_AddGeoRSSLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A027E70E2B1FA6002CBE4D /* ui_AddGeoRSSLayerWidget.h */; };
-		66A027EF0E2B2053002CBE4D /* libMinervaGeoRSSLayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayer.dylib */; };
-		66A027F60E2B22EC002CBE4D /* QtGeoRSSLayer.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plug */; };
+		66A027EF0E2B2053002CBE4D /* libMinervaGeoRSSLayerd.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayerd.dylib */; };
+		66A027F60E2B22EC002CBE4D /* QtGeoRSSLayer.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plugd */; };
 		66A06F740D997C5900D0B56A /* EditWmsLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A06F720D997C5900D0B56A /* EditWmsLayerWidget.h */; };
 		66A06F750D997C5900D0B56A /* EditWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A06F730D997C5900D0B56A /* EditWmsLayerWidget.cpp */; };
 		66A06F9E0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A06F9D0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp */; };
@@ -1349,9 +1354,9 @@
 		66A8B0B60DABF5E900088B3B /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66A8B0B70DABF5ED00088B3B /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		66A8B0B80DABF5F400088B3B /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
-		66A8B0E60DAC03BB00088B3B /* FlashModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A8B08E0DABECA400088B3B /* FlashModel.plug */; };
-		66A8B1230DAC0A7200088B3B /* WRFModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0C920D4021F50030649B /* WRFModel.plug */; };
-		66A8B1930DAC1AEE00088B3B /* WRFModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0C920D4021F50030649B /* WRFModel.plug */; };
+		66A8B0E60DAC03BB00088B3B /* FlashModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A8B08E0DABECA400088B3B /* FlashModel.plugd */; };
+		66A8B1230DAC0A7200088B3B /* WRFModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0C920D4021F50030649B /* WRFModel.plugd */; };
+		66A8B1930DAC1AEE00088B3B /* WRFModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0C920D4021F50030649B /* WRFModel.plugd */; };
 		66A8B81F0E06F7DC001C436C /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A8B81E0E06F7DC001C436C /* Python.framework */; };
 		66A8B8350E0717EB001C436C /* CommandVisitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8B8310E0717EB001C436C /* CommandVisitor.cpp */; };
 		66A8B8360E0717EB001C436C /* CommandVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8B8320E0717EB001C436C /* CommandVisitor.h */; };
@@ -1387,8 +1392,8 @@
 		66B07CB50E4BBF43007A00C9 /* moc_HeadLevelOutputForm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B07CAD0E4BBF43007A00C9 /* moc_HeadLevelOutputForm.cpp */; };
 		66B07CB60E4BBF43007A00C9 /* moc_ProjectionDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B07CAE0E4BBF43007A00C9 /* moc_ProjectionDialog.cpp */; };
 		66B07CB70E4BBF43007A00C9 /* moc_Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B07CAF0E4BBF43007A00C9 /* moc_Properties.cpp */; };
-		66B07CE00E4BCC7D007A00C9 /* ModflowDelegateQt.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF06090D14610700B4B1AA /* ModflowDelegateQt.plug */; };
-		66B07CE10E4BCC7D007A00C9 /* ModflowModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05FD0D14608800B4B1AA /* ModflowModel.plug */; };
+		66B07CE00E4BCC7D007A00C9 /* ModflowDelegateQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF06090D14610700B4B1AA /* ModflowDelegateQt.plugd */; };
+		66B07CE10E4BCC7D007A00C9 /* ModflowModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05FD0D14608800B4B1AA /* ModflowModel.plugd */; };
 		66B0F3190D4C51510045BC40 /* Link.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B0F3170D4C51510045BC40 /* Link.h */; };
 		66B0F31A0D4C51510045BC40 /* Link.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B0F3180D4C51510045BC40 /* Link.cpp */; };
 		66B0F31D0D4C515F0045BC40 /* NetworkLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B0F31B0D4C515F0045BC40 /* NetworkLink.h */; };
@@ -1398,7 +1403,7 @@
 		66B36A480DF47F4A000FB4A6 /* RasterLayerArcIMS.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B36A440DF47F4A000FB4A6 /* RasterLayerArcIMS.h */; };
 		66B36A490DF47F4A000FB4A6 /* RasterLayerNetwork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B36A450DF47F4A000FB4A6 /* RasterLayerNetwork.cpp */; };
 		66B36A4A0DF47F4A000FB4A6 /* RasterLayerNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B36A460DF47F4A000FB4A6 /* RasterLayerNetwork.h */; };
-		66B647460D9441FE00F426B2 /* MeasureTool.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plug */; };
+		66B647460D9441FE00F426B2 /* MeasureTool.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plugd */; };
 		66B647470D94420C00F426B2 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		66B647480D94420F00F426B2 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66B647490D94421200F426B2 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
@@ -1415,7 +1420,7 @@
 		66B8A1620E1D6F450031AB37 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B8A15F0E1D6F450031AB37 /* CompileGuard.h */; };
 		66B8A1630E1D6F450031AB37 /* FlashDelegateComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B8A1600E1D6F450031AB37 /* FlashDelegateComponent.cpp */; };
 		66B8A1640E1D6F450031AB37 /* FlashDelegateComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B8A1610E1D6F450031AB37 /* FlashDelegateComponent.h */; };
-		66B8A1700E1D70A70031AB37 /* QtFlashDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plug */; };
+		66B8A1700E1D70A70031AB37 /* QtFlashDelegate.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plugd */; };
 		66B8A1970E1D7CD90031AB37 /* IFlashDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B8A1960E1D7CD90031AB37 /* IFlashDocument.h */; };
 		66BCB1CF0E145AF7008375CE /* WorkOffline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66BCB1CD0E145AF7008375CE /* WorkOffline.cpp */; };
 		66BCB1D00E145AF7008375CE /* WorkOffline.h in Headers */ = {isa = PBXBuildFile; fileRef = 66BCB1CE0E145AF7008375CE /* WorkOffline.h */; };
@@ -1441,22 +1446,22 @@
 		66C4E93C0DAAE44A00A3B1FB /* osgText.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
 		66C4E93D0DAAE44A00A3B1FB /* osgUtil.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
 		66C4E93E0DAAE44A00A3B1FB /* ossim.framework in Copy Files to Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A40D15177F00B4B1AA /* ossim.framework */; };
-		66C4E9540DAAE45B00A3B1FB /* LayerManager.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66892DD00D283D61005CB399 /* LayerManager.plug */; };
-		66C4E9550DAAE45B00A3B1FB /* MeasureTool.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plug */; };
-		66C4E9560DAAE45B00A3B1FB /* MinervaModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF18E20D15C0E600B4B1AA /* MinervaModel.plug */; };
-		66C4E9590DAAE45B00A3B1FB /* OssimLayerQt.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112B10D2EBADC009B29ED /* OssimLayerQt.plug */; };
-		66C4E95A0DAAE45B00A3B1FB /* PathAnimation.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plug */; };
-		66C4E95B0DAAE45B00A3B1FB /* PostGISLayerQt.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plug */; };
-		66C4E95E0DAAE45B00A3B1FB /* QtSceneDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */; };
-		66C4E9610DAAE45B00A3B1FB /* QtSnapShot.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */; };
+		66C4E9540DAAE45B00A3B1FB /* LayerManager.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66892DD00D283D61005CB399 /* LayerManager.plugd */; };
+		66C4E9550DAAE45B00A3B1FB /* MeasureTool.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66B647400D94418200F426B2 /* MeasureTool.plugd */; };
+		66C4E9560DAAE45B00A3B1FB /* MinervaModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF18E20D15C0E600B4B1AA /* MinervaModel.plugd */; };
+		66C4E9590DAAE45B00A3B1FB /* OssimLayerQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */; };
+		66C4E95A0DAAE45B00A3B1FB /* PathAnimation.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668BE8220D24A96B00109210 /* PathAnimation.plugd */; };
+		66C4E95B0DAAE45B00A3B1FB /* PostGISLayerQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */; };
+		66C4E95E0DAAE45B00A3B1FB /* QtSceneDelegate.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plugd */; };
+		66C4E9610DAAE45B00A3B1FB /* QtSnapShot.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plugd */; };
 		66C4E9660DAAE46500A3B1FB /* libHeliosQtCommands.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 6667609F0D122A70002F40C6 /* libHeliosQtCommands.dylib */; };
 		66C4E9670DAAE46500A3B1FB /* libHeliosQtCore.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666760C30D122B0C002F40C6 /* libHeliosQtCore.dylib */; };
 		66C4E9690DAAE46500A3B1FB /* libHeliosQtViewOSG.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */; };
 		66C4E96A0DAAE46500A3B1FB /* libMenuKit.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		66C4E96B0DAAE46500A3B1FB /* libMinerva.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
 		66C4E96C0DAAE46500A3B1FB /* libMinervaDocument.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF189C0D1581ED00B4B1AA /* libMinervaDocument.dylib */; };
-		66C4E96D0DAAE46500A3B1FB /* libMinervaGdalLayer.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayer.dylib */; };
-		66C4E96E0DAAE46500A3B1FB /* libMinervaKmlLayer.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0DD40D4062090030649B /* libMinervaKmlLayer.dylib */; };
+		66C4E96D0DAAE46500A3B1FB /* libMinervaGdalLayerd.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */; };
+		66C4E96E0DAAE46500A3B1FB /* libMinervaKmlLayerd.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */; };
 		66C4E96F0DAAE46500A3B1FB /* libMinervaPostGISLayer.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */; };
 		66C4E9700DAAE46500A3B1FB /* libMinervaPostgres.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */; };
 		66C4E9710DAAE46500A3B1FB /* libOpenThreadsEx.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */; };
@@ -1578,7 +1583,7 @@
 		66CFB1FF0D134FB400F93E67 /* fudd.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58D09677C07008DF27C /* fudd.ttf */; };
 		66CFB2000D134FB400F93E67 /* Times New Roman.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58E09677C07008DF27C /* Times New Roman.ttf */; };
 		66CFB2010D134FB400F93E67 /* times.ttf in Copy Fonts */ = {isa = PBXBuildFile; fileRef = 4337B58F09677C07008DF27C /* times.ttf */; };
-		66CFB21B0D13597B00F93E67 /* SceneModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB89409246ADA00ED2131 /* SceneModel.plug */; };
+		66CFB21B0D13597B00F93E67 /* SceneModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB89409246ADA00ED2131 /* SceneModel.plugd */; };
 		66CFB2460D135FEF00F93E67 /* helios_sun.png in Resources */ = {isa = PBXBuildFile; fileRef = 666766A20D124D2C002F40C6 /* helios_sun.png */; };
 		66CFF1510D38A19700ED0216 /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
 		66DA93200ACCDBD300D3E379 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DA931E0ACCDBD300D3E379 /* Environment.cpp */; };
@@ -1626,21 +1631,21 @@
 		66E5C06B0D91902400C858B7 /* Init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E5C06A0D91902400C858B7 /* Init.cpp */; };
 		66E5C0700D91908100C858B7 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E5C06F0D91908100C858B7 /* Common.h */; };
 		66E5C0760D9190EA00C858B7 /* libMinervaPostGISLayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */; };
-		66E5C0920D91929D00C858B7 /* libMinervaGdalLayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayer.dylib */; };
+		66E5C0920D91929D00C858B7 /* libMinervaGdalLayerd.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */; };
 		66E7B0BF0B17617300E3D682 /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BB0B17617300E3D682 /* Renderer.cpp */; };
 		66E7B0C00B17617300E3D682 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BC0B17617300E3D682 /* Renderer.h */; };
 		66E7B0C10B17617300E3D682 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BD0B17617300E3D682 /* SceneManager.cpp */; };
 		66E7B0C20B17617300E3D682 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BE0B17617300E3D682 /* SceneManager.h */; };
 		66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */; };
 		66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E8B3760D930B7300024CB2 /* WmsLayerItem.h */; };
-		66EEA7240DCFD11900500B82 /* WmsLayerQt.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plug */; };
+		66EEA7240DCFD11900500B82 /* WmsLayerQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */; };
 		66EF05BC0D143F0000B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B50D143F0000B4B1AA /* CompileGuard.h */; };
 		66EF05BD0D143F0000B4B1AA /* SnapShotComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05B70D143F0000B4B1AA /* SnapShotComponent.cpp */; };
 		66EF05BE0D143F0000B4B1AA /* SnapShotComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B80D143F0000B4B1AA /* SnapShotComponent.h */; };
 		66EF05BF0D143F0000B4B1AA /* SnapShotFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05B90D143F0000B4B1AA /* SnapShotFactory.cpp */; };
 		66EF05C00D143F0000B4B1AA /* SnapShotWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05BA0D143F0000B4B1AA /* SnapShotWidget.cpp */; };
 		66EF05C10D143F0000B4B1AA /* SnapShotWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05BB0D143F0000B4B1AA /* SnapShotWidget.h */; };
-		66EF05C80D143F5600B4B1AA /* QtSnapShot.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */; };
+		66EF05C80D143F5600B4B1AA /* QtSnapShot.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plugd */; };
 		66EF05D40D143FD400B4B1AA /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66EF05DC0D14404F00B4B1AA /* moc_SnapShotWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05DB0D14404F00B4B1AA /* moc_SnapShotWidget.cpp */; };
 		66EF05E30D14597200B4B1AA /* TriangleReaderArcAsciiGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430C310D10C23800984C94 /* TriangleReaderArcAsciiGrid.cpp */; };
@@ -1649,7 +1654,7 @@
 		66EF05E60D14597200B4B1AA /* TriangleReaderOFF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430C370D10C23800984C94 /* TriangleReaderOFF.cpp */; };
 		66EF05EA0D14598900B4B1AA /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		66EF05EE0D1459AD00B4B1AA /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
-		66EF05F00D1459C300B4B1AA /* TriangleModel.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB8D409246B9A00ED2131 /* TriangleModel.plug */; };
+		66EF05F00D1459C300B4B1AA /* TriangleModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB8D409246B9A00ED2131 /* TriangleModel.plugd */; };
 		66EF065F0D1461BB00B4B1AA /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66EF06600D1461C400B4B1AA /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
 		66EF06610D1461CD00B4B1AA /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
@@ -1754,14 +1759,14 @@
 		66EF1ADE0D16471300B4B1AA /* curl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
 		66EFEF070D13707300B4B1AA /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66EFF26C0D13709D00B4B1AA /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
-		66EFF30C0D1370AF00B4B1AA /* QtSceneTree.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 6676A6480D136AFD00B95C16 /* QtSceneTree.plug */; };
+		66EFF30C0D1370AF00B4B1AA /* QtSceneTree.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 6676A6480D136AFD00B95C16 /* QtSceneTree.plugd */; };
 		66EFF3A00D139FE400B4B1AA /* ClipPlanes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EFF39B0D139FE400B4B1AA /* ClipPlanes.cpp */; };
 		66EFF3A10D139FE400B4B1AA /* ClipPlanes.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EFF39C0D139FE400B4B1AA /* ClipPlanes.h */; };
 		66EFF3A20D139FE400B4B1AA /* ClipPlanesComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EFF39D0D139FE400B4B1AA /* ClipPlanesComponent.cpp */; };
 		66EFF3A30D139FE400B4B1AA /* ClipPlanesComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EFF39E0D139FE400B4B1AA /* ClipPlanesComponent.h */; };
 		66EFF3A40D139FE400B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EFF39F0D139FE400B4B1AA /* CompileGuard.h */; };
 		66EFF3AC0D13A02A00B4B1AA /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
-		66EFF3AF0D13A05B00B4B1AA /* QtClipPlanes.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EFF3930D139F7200B4B1AA /* QtClipPlanes.plug */; };
+		66EFF3AF0D13A05B00B4B1AA /* QtClipPlanes.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66EFF3930D139F7200B4B1AA /* QtClipPlanes.plugd */; };
 		66EFF3C40D13A19A00B4B1AA /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66EFF3C70D13A1AB00B4B1AA /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66EFF3CD0D13A1D400B4B1AA /* moc_ClipPlanes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EFF3CC0D13A1D400B4B1AA /* moc_ClipPlanes.cpp */; };
@@ -3360,16 +3365,16 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plug in Copy Files to Plugins */,
-				669F2A540E4D0969007EB41A /* VtkAlgorithms.plug in Copy Files to Plugins */,
-				66B07CE00E4BCC7D007A00C9 /* ModflowDelegateQt.plug in Copy Files to Plugins */,
-				66B07CE10E4BCC7D007A00C9 /* ModflowModel.plug in Copy Files to Plugins */,
-				664279F30E4AA8BE009AE232 /* MeasureTool.plug in Copy Files to Plugins */,
-				664279F40E4AA8BE009AE232 /* PathAnimation.plug in Copy Files to Plugins */,
-				664279F60E4AA8BE009AE232 /* QtSnapShot.plug in Copy Files to Plugins */,
-				664279F70E4AA8BE009AE232 /* QtClipPlanes.plug in Copy Files to Plugins */,
-				664279F90E4AA8BE009AE232 /* SceneModel.plug in Copy Files to Plugins */,
-				664279FA0E4AA8BE009AE232 /* QtSceneDelegate.plug in Copy Files to Plugins */,
+				665F2AF10E4FC1FD001BB8F1 /* TriangulateGrid.plugd in Copy Files to Plugins */,
+				669F2A540E4D0969007EB41A /* VtkAlgorithms.plugd in Copy Files to Plugins */,
+				66B07CE00E4BCC7D007A00C9 /* ModflowDelegateQt.plugd in Copy Files to Plugins */,
+				66B07CE10E4BCC7D007A00C9 /* ModflowModel.plugd in Copy Files to Plugins */,
+				664279F30E4AA8BE009AE232 /* MeasureTool.plugd in Copy Files to Plugins */,
+				664279F40E4AA8BE009AE232 /* PathAnimation.plugd in Copy Files to Plugins */,
+				664279F60E4AA8BE009AE232 /* QtSnapShot.plugd in Copy Files to Plugins */,
+				664279F70E4AA8BE009AE232 /* QtClipPlanes.plugd in Copy Files to Plugins */,
+				664279F90E4AA8BE009AE232 /* SceneModel.plugd in Copy Files to Plugins */,
+				664279FA0E4AA8BE009AE232 /* QtSceneDelegate.plugd in Copy Files to Plugins */,
 				664279FB0E4AA8BE009AE232 /* Nimue.plugins in Copy Files to Plugins */,
 			);
 			name = "Copy Files to Plugins";
@@ -3520,24 +3525,24 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				669CE9CD0E521EF200618324 /* PointModel.plug in Copy Files to Plugins */,
+				669CE9CD0E521EF200618324 /* PointModel.plugd in Copy Files to Plugins */,
 				665F2AD90E4FBCB4001BB8F1 /* Helios.plugins in Copy Files to Plugins */,
-				66B8A1700E1D70A70031AB37 /* QtFlashDelegate.plug in Copy Files to Plugins */,
+				66B8A1700E1D70A70031AB37 /* QtFlashDelegate.plugd in Copy Files to Plugins */,
 				669F72E30E19916F005EE92C /* libsz.2.0.0.dylib in Copy Files to Plugins */,
 				669F72DF0E199060005EE92C /* libhdf5.0.0.0.dylib in Copy Files to Plugins */,
 				669F72E00E199060005EE92C /* libhdf5_hl.0.0.0.dylib in Copy Files to Plugins */,
-				669272070E0AD87600E35E8B /* ModelPresentation.plug in Copy Files to Plugins */,
-				664EBB2B0DD4938400F78E21 /* QtAnimationControl.plug in Copy Files to Plugins */,
-				66A8B1230DAC0A7200088B3B /* WRFModel.plug in Copy Files to Plugins */,
-				66A8B0E60DAC03BB00088B3B /* FlashModel.plug in Copy Files to Plugins */,
-				66B647460D9441FE00F426B2 /* MeasureTool.plug in Copy Files to Plugins */,
-				668BE8FD0D24CEBE00109210 /* PathAnimation.plug in Copy Files to Plugins */,
-				66EF05F00D1459C300B4B1AA /* TriangleModel.plug in Copy Files to Plugins */,
-				66EF05C80D143F5600B4B1AA /* QtSnapShot.plug in Copy Files to Plugins */,
-				66EFF3AF0D13A05B00B4B1AA /* QtClipPlanes.plug in Copy Files to Plugins */,
-				66EFF30C0D1370AF00B4B1AA /* QtSceneTree.plug in Copy Files to Plugins */,
-				66CFB21B0D13597B00F93E67 /* SceneModel.plug in Copy Files to Plugins */,
-				666767720D12FF7C002F40C6 /* QtSceneDelegate.plug in Copy Files to Plugins */,
+				669272070E0AD87600E35E8B /* ModelPresentation.plugd in Copy Files to Plugins */,
+				664EBB2B0DD4938400F78E21 /* QtAnimationControl.plugd in Copy Files to Plugins */,
+				66A8B1230DAC0A7200088B3B /* WRFModel.plugd in Copy Files to Plugins */,
+				66A8B0E60DAC03BB00088B3B /* FlashModel.plugd in Copy Files to Plugins */,
+				66B647460D9441FE00F426B2 /* MeasureTool.plugd in Copy Files to Plugins */,
+				668BE8FD0D24CEBE00109210 /* PathAnimation.plugd in Copy Files to Plugins */,
+				66EF05F00D1459C300B4B1AA /* TriangleModel.plugd in Copy Files to Plugins */,
+				66EF05C80D143F5600B4B1AA /* QtSnapShot.plugd in Copy Files to Plugins */,
+				66EFF3AF0D13A05B00B4B1AA /* QtClipPlanes.plugd in Copy Files to Plugins */,
+				66EFF30C0D1370AF00B4B1AA /* QtSceneTree.plugd in Copy Files to Plugins */,
+				66CFB21B0D13597B00F93E67 /* SceneModel.plugd in Copy Files to Plugins */,
+				666767720D12FF7C002F40C6 /* QtSceneDelegate.plugd in Copy Files to Plugins */,
 			);
 			name = "Copy Files to Plugins";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3691,15 +3696,15 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				66A027F60E2B22EC002CBE4D /* QtGeoRSSLayer.plug in Copy Files to Plugins */,
-				66190FFE0E1C98C8004CE994 /* libMinervaGeoRSSLayer.dylib in Copy Files to Plugins */,
-				6647DBED0E12ED92009BD3C7 /* ModflowModel.plug in Copy Files to Plugins */,
+				66A027F60E2B22EC002CBE4D /* QtGeoRSSLayer.plugd in Copy Files to Plugins */,
+				66190FFE0E1C98C8004CE994 /* libMinervaGeoRSSLayerd.dylib in Copy Files to Plugins */,
+				6647DBED0E12ED92009BD3C7 /* ModflowModel.plugd in Copy Files to Plugins */,
 				66E1F5530DE4E7EA0005073C /* libpq.5.0.dylib in Copy Files to Plugins */,
 				66E1E07D0DE4D3ED0005073C /* libpqxx-2.6.9.dylib in Copy Files to Plugins */,
-				66EEA7240DCFD11900500B82 /* WmsLayerQt.plug in Copy Files to Plugins */,
-				6603BBEA0DCBB04D00FE0D89 /* QtPasswordPrompt.plug in Copy Files to Plugins */,
-				661C12B50DCA79DA00DE43D4 /* GDALReadImage.plug in Copy Files to Plugins */,
-				66A8B1930DAC1AEE00088B3B /* WRFModel.plug in Copy Files to Plugins */,
+				66EEA7240DCFD11900500B82 /* WmsLayerQt.plugd in Copy Files to Plugins */,
+				6603BBEA0DCBB04D00FE0D89 /* QtPasswordPrompt.plugd in Copy Files to Plugins */,
+				661C12B50DCA79DA00DE43D4 /* GDALReadImage.plugd in Copy Files to Plugins */,
+				66A8B1930DAC1AEE00088B3B /* WRFModel.plugd in Copy Files to Plugins */,
 				66C4E9D20DAAEAEB00A3B1FB /* Minerva.plugins in Copy Files to Plugins */,
 				66C4E9660DAAE46500A3B1FB /* libHeliosQtCommands.dylib in Copy Files to Plugins */,
 				66C4E9670DAAE46500A3B1FB /* libHeliosQtCore.dylib in Copy Files to Plugins */,
@@ -3707,8 +3712,8 @@
 				66C4E96A0DAAE46500A3B1FB /* libMenuKit.dylib in Copy Files to Plugins */,
 				66C4E96B0DAAE46500A3B1FB /* libMinerva.dylib in Copy Files to Plugins */,
 				66C4E96C0DAAE46500A3B1FB /* libMinervaDocument.dylib in Copy Files to Plugins */,
-				66C4E96D0DAAE46500A3B1FB /* libMinervaGdalLayer.dylib in Copy Files to Plugins */,
-				66C4E96E0DAAE46500A3B1FB /* libMinervaKmlLayer.dylib in Copy Files to Plugins */,
+				66C4E96D0DAAE46500A3B1FB /* libMinervaGdalLayerd.dylib in Copy Files to Plugins */,
+				66C4E96E0DAAE46500A3B1FB /* libMinervaKmlLayerd.dylib in Copy Files to Plugins */,
 				66C4E96F0DAAE46500A3B1FB /* libMinervaPostGISLayer.dylib in Copy Files to Plugins */,
 				66C4E9700DAAE46500A3B1FB /* libMinervaPostgres.dylib in Copy Files to Plugins */,
 				66C4E9710DAAE46500A3B1FB /* libOpenThreadsEx.dylib in Copy Files to Plugins */,
@@ -3717,14 +3722,14 @@
 				66C4E9750DAAE46500A3B1FB /* libSerializeXML.dylib in Copy Files to Plugins */,
 				66C4E9760DAAE46500A3B1FB /* libUsul.dylib in Copy Files to Plugins */,
 				66C4E9770DAAE46500A3B1FB /* libXmlTree.dylib in Copy Files to Plugins */,
-				66C4E9540DAAE45B00A3B1FB /* LayerManager.plug in Copy Files to Plugins */,
-				66C4E9550DAAE45B00A3B1FB /* MeasureTool.plug in Copy Files to Plugins */,
-				66C4E9560DAAE45B00A3B1FB /* MinervaModel.plug in Copy Files to Plugins */,
-				66C4E9590DAAE45B00A3B1FB /* OssimLayerQt.plug in Copy Files to Plugins */,
-				66C4E95A0DAAE45B00A3B1FB /* PathAnimation.plug in Copy Files to Plugins */,
-				66C4E95B0DAAE45B00A3B1FB /* PostGISLayerQt.plug in Copy Files to Plugins */,
-				66C4E95E0DAAE45B00A3B1FB /* QtSceneDelegate.plug in Copy Files to Plugins */,
-				66C4E9610DAAE45B00A3B1FB /* QtSnapShot.plug in Copy Files to Plugins */,
+				66C4E9540DAAE45B00A3B1FB /* LayerManager.plugd in Copy Files to Plugins */,
+				66C4E9550DAAE45B00A3B1FB /* MeasureTool.plugd in Copy Files to Plugins */,
+				66C4E9560DAAE45B00A3B1FB /* MinervaModel.plugd in Copy Files to Plugins */,
+				66C4E9590DAAE45B00A3B1FB /* OssimLayerQt.plugd in Copy Files to Plugins */,
+				66C4E95A0DAAE45B00A3B1FB /* PathAnimation.plugd in Copy Files to Plugins */,
+				66C4E95B0DAAE45B00A3B1FB /* PostGISLayerQt.plugd in Copy Files to Plugins */,
+				66C4E95E0DAAE45B00A3B1FB /* QtSceneDelegate.plugd in Copy Files to Plugins */,
+				66C4E9610DAAE45B00A3B1FB /* QtSnapShot.plugd in Copy Files to Plugins */,
 			);
 			name = "Copy Files to Plugins";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4009,9 +4014,9 @@
 		431BAE0F09245AB700ED2131 /* TriangleSet.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TriangleSet.cpp; path = ../OsgTools/Triangles/TriangleSet.cpp; sourceTree = SOURCE_ROOT; };
 		431BAE1009245AB700ED2131 /* TriangleSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TriangleSet.h; path = ../OsgTools/Triangles/TriangleSet.h; sourceTree = SOURCE_ROOT; };
 		431BAE1109245AB700ED2131 /* Visitor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Visitor.h; path = ../OsgTools/Visitor.h; sourceTree = SOURCE_ROOT; };
-		431BB89409246ADA00ED2131 /* SceneModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = SceneModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
-		431BB8D409246B9A00ED2131 /* TriangleModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TriangleModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
-		431BB8E809246BD700ED2131 /* VolumeModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = VolumeModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		431BB89409246ADA00ED2131 /* SceneModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = SceneModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		431BB8D409246B9A00ED2131 /* TriangleModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TriangleModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		431BB8E809246BD700ED2131 /* VolumeModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = VolumeModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		433212C00974512400C16FE3 /* ViewerBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewerBridge.h; path = ../Helios/Cocoa/Views/ViewerBridge.h; sourceTree = SOURCE_ROOT; };
 		433212C10974512400C16FE3 /* ViewerBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ViewerBridge.mm; path = ../Helios/Cocoa/Views/ViewerBridge.mm; sourceTree = SOURCE_ROOT; };
 		4332AE7F0961D48400E99739 /* CocoaProgressBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CocoaProgressBar.h; path = ../Helios/Cocoa/Views/CocoaProgressBar.h; sourceTree = SOURCE_ROOT; };
@@ -4363,7 +4368,7 @@
 		43FED85A092452F700EBB610 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Types.h; path = ../Usul/Types/Types.h; sourceTree = SOURCE_ROOT; };
 		43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOpenThreadsEx.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66004AE20E33A4EA00CF3B0A /* IDirtyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDirtyData.h; sourceTree = "<group>"; };
-		6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtPasswordPrompt.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtPasswordPrompt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		6603B87D0DCBAFEE00FE0D89 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		6603B87E0DCBAFEE00FE0D89 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		6603B87F0DCBAFEE00FE0D89 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
@@ -4385,7 +4390,7 @@
 		660C4D9A0D53DD3A0072942F /* ResizePoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResizePoints.h; sourceTree = "<group>"; };
 		6610B2250E2CF877008F2BD1 /* FlyTo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlyTo.h; sourceTree = "<group>"; };
 		6610B2260E2CF877008F2BD1 /* FlyTo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlyTo.cpp; sourceTree = "<group>"; };
-		66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaGeoRSSLayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayerd.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaGeoRSSLayerd.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66190FD00E1C8ABC004CE994 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		66190FD10E1C8ABC004CE994 /* GeoRSSLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoRSSLayer.cpp; sourceTree = "<group>"; };
 		66190FD20E1C8ABC004CE994 /* GeoRSSLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoRSSLayer.h; sourceTree = "<group>"; };
@@ -4418,7 +4423,7 @@
 		661B8C340E1F5495005FC8CA /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		661B8C350E1F5495005FC8CA /* Test04.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Test04.vcproj; sourceTree = "<group>"; };
 		661B8C360E1F5495005FC8CA /* VolumeTests.sln */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = VolumeTests.sln; sourceTree = "<group>"; };
-		661C119C0DCA718E00DE43D4 /* GDALReadImage.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = GDALReadImage.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		661C119C0DCA718E00DE43D4 /* GDALReadImage.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = GDALReadImage.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		661C11A00DCA71CB00DE43D4 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		661C11A10DCA71CB00DE43D4 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		661C11A20DCA71CB00DE43D4 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
@@ -4608,12 +4613,17 @@
 		666766EA0D12F325002F40C6 /* Viewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Viewer.h; path = Qt/Views/OSG/Viewer.h; sourceTree = "<group>"; };
 		666767460D12FCCA002F40C6 /* moc_EditBackground.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_EditBackground.cpp; path = Qt/Views/OSG/moc_EditBackground.cpp; sourceTree = "<group>"; };
 		666767470D12FCCA002F40C6 /* moc_Viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_Viewer.cpp; path = Qt/Views/OSG/moc_Viewer.cpp; sourceTree = "<group>"; };
-		666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtSceneDelegate.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		666767590D12FDCF002F40C6 /* QtSceneDelegate.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtSceneDelegate.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		666767640D12FE59002F40C6 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = Qt/Plugins/SceneDelegate/CompileGuard.h; sourceTree = "<group>"; };
 		666767650D12FE59002F40C6 /* SceneDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SceneDelegateComponent.cpp; path = Qt/Plugins/SceneDelegate/SceneDelegateComponent.cpp; sourceTree = "<group>"; };
 		666767660D12FE59002F40C6 /* SceneDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneDelegateComponent.h; path = Qt/Plugins/SceneDelegate/SceneDelegateComponent.h; sourceTree = "<group>"; };
 		666BB6A30E13641D006A51E4 /* OsgTools_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OsgTools_wrap.cpp; path = SWIG/OsgTools_wrap.cpp; sourceTree = "<group>"; };
 		666BB6A80E136484006A51E4 /* PathAnimation_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathAnimation_wrap.cpp; path = ../Helios/Plugins/PathAnimation/SWIG/PathAnimation_wrap.cpp; sourceTree = SOURCE_ROOT; };
+		667245C90E59003A00DE4A02 /* TreeModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeModel.cpp; sourceTree = "<group>"; };
+		667245CA0E59003A00DE4A02 /* TreeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeModel.h; sourceTree = "<group>"; };
+		667245CB0E59003A00DE4A02 /* TreeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeNode.cpp; sourceTree = "<group>"; };
+		667245CC0E59003A00DE4A02 /* TreeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeNode.h; sourceTree = "<group>"; };
+		667245DF0E590AC300DE4A02 /* moc_TreeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_TreeNode.cpp; sourceTree = "<group>"; };
 		6672C5160E26DEC30013A6F3 /* xercesc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = xercesc.framework; path = ../../../Library/Frameworks/xercesc.framework; sourceTree = SOURCE_ROOT; };
 		6673DD280BC5F2F800C0131F /* GradientBackground.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GradientBackground.cpp; sourceTree = "<group>"; };
 		6673DD290BC5F2F800C0131F /* GradientBackground.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GradientBackground.h; sourceTree = "<group>"; };
@@ -4623,7 +4633,7 @@
 		6673DD540BC5F96700C0131F /* SceneDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SceneDocument.mm; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneDocument.mm; sourceTree = SOURCE_ROOT; };
 		6673DD9F0BC60B7800C0131F /* SceneComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneComponent.h; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneComponent.h; sourceTree = SOURCE_ROOT; };
 		6673DDA00BC60B7800C0131F /* SceneComponent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SceneComponent.m; path = ../Helios/Cocoa/Bundles/SceneDocument/SceneComponent.m; sourceTree = SOURCE_ROOT; };
-		6676A6480D136AFD00B95C16 /* QtSceneTree.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtSceneTree.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		6676A6480D136AFD00B95C16 /* QtSceneTree.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtSceneTree.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		6676A6530D136BC200B95C16 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = Qt/Plugins/SceneTree/CompileGuard.h; sourceTree = "<group>"; };
 		6676A6540D136BC200B95C16 /* SceneTreeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = SceneTreeComponent.cpp; path = Qt/Plugins/SceneTree/SceneTreeComponent.cpp; sourceTree = "<group>"; };
 		6676A6550D136BC200B95C16 /* SceneTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneTreeComponent.h; path = Qt/Plugins/SceneTree/SceneTreeComponent.h; sourceTree = "<group>"; };
@@ -4632,7 +4642,7 @@
 		667A27D00E282C460047A376 /* ILookAtLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILookAtLayer.h; sourceTree = "<group>"; };
 		667A27D10E282C670047A376 /* ISwapLayers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISwapLayers.h; sourceTree = "<group>"; };
 		667E0D610D131BE000157E5D /* ICreateDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICreateDocument.h; path = Protocol/ICreateDocument.h; sourceTree = "<group>"; };
-		667E35B10E05E0FE009732FE /* PythonQt.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PythonQt.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		667E35B10E05E0FE009732FE /* PythonQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PythonQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		667E3CB50E05E1CB009732FE /* PythonComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PythonComponent.cpp; sourceTree = "<group>"; };
 		667E3CB60E05E1CB009732FE /* PythonComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PythonComponent.h; sourceTree = "<group>"; };
 		667E3CBA0E05E20E009732FE /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
@@ -4642,7 +4652,7 @@
 		6687115509D5E0020003384F /* GLFeedback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLFeedback.h; sourceTree = "<group>"; };
 		6689186E0D281B53005CB399 /* Program.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Program.cpp; path = Qt/Core/Program.cpp; sourceTree = "<group>"; };
 		6689186F0D281B53005CB399 /* Program.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Program.h; path = Qt/Core/Program.h; sourceTree = "<group>"; };
-		66892DD00D283D61005CB399 /* LayerManager.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = LayerManager.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66892DD00D283D61005CB399 /* LayerManager.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = LayerManager.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66892DD90D283DF9005CB399 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		66892DDA0D283DF9005CB399 /* LayerManagerComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LayerManagerComponent.cpp; sourceTree = "<group>"; };
 		66892DDB0D283DF9005CB399 /* LayerManagerComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerManagerComponent.h; sourceTree = "<group>"; };
@@ -4658,10 +4668,10 @@
 		668B9BE90D35CC0D00E41E9D /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector3.h; sourceTree = "<group>"; };
 		668B9BEA0D35CC0D00E41E9D /* Vector4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector4.h; sourceTree = "<group>"; };
 		668B9C080D35E38000E41E9D /* IRasterLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IRasterLayer.h; sourceTree = "<group>"; };
-		668BE8220D24A96B00109210 /* PathAnimation.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PathAnimation.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		668BE8220D24A96B00109210 /* PathAnimation.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PathAnimation.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		668C94180D41C29D0007D7F4 /* Readers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Readers.h; sourceTree = "<group>"; };
 		668C94190D41C29D0007D7F4 /* Readers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Readers.cpp; sourceTree = "<group>"; };
-		668C969E0D42B4D00007D7F4 /* TriangulateGrid.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TriangulateGrid.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		668C969E0D42B4D00007D7F4 /* TriangulateGrid.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = TriangulateGrid.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		668C96A90D42B5180007D7F4 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		668C96AC0D42B5180007D7F4 /* TriangulateGridComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriangulateGridComponent.cpp; sourceTree = "<group>"; };
 		668C96AD0D42B5180007D7F4 /* TriangulateGridComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriangulateGridComponent.h; sourceTree = "<group>"; };
@@ -4723,7 +4733,7 @@
 		668E0A4C0D3EB23A0030649B /* StxxlConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StxxlConfig.h; sourceTree = "<group>"; };
 		668E0A4D0D3EB23A0030649B /* Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timer.cpp; sourceTree = "<group>"; };
 		668E0A4E0D3EB23A0030649B /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
-		668E0C920D4021F50030649B /* WRFModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = WRFModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		668E0C920D4021F50030649B /* WRFModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = WRFModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		668E0CB90D4022440030649B /* Channel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Channel.cpp; path = ../Experimental/WRF/WrfModel/Channel.cpp; sourceTree = SOURCE_ROOT; };
 		668E0CBA0D4022440030649B /* Channel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Channel.h; path = ../Experimental/WRF/WrfModel/Channel.h; sourceTree = SOURCE_ROOT; };
 		668E0CBB0D4022440030649B /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Experimental/WRF/WrfModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
@@ -4746,7 +4756,7 @@
 		668E0D9B0D4022F70030649B /* TransferFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransferFunction.h; sourceTree = "<group>"; };
 		668E0D9C0D4022F70030649B /* TransferFunction1D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TransferFunction1D.cpp; sourceTree = "<group>"; };
 		668E0D9D0D4022F70030649B /* TransferFunction1D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransferFunction1D.h; sourceTree = "<group>"; };
-		668E0DD40D4062090030649B /* libMinervaKmlLayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaKmlLayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaKmlLayerd.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		668E0DDC0D4063AB0030649B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		668E0DE60D406F400030649B /* KmlLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KmlLayer.cpp; sourceTree = "<group>"; };
 		668E0DE70D406F400030649B /* KmlLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KmlLayer.h; sourceTree = "<group>"; };
@@ -4849,7 +4859,7 @@
 		6692718A0E0AD36F00E35E8B /* ModelPresentationLib.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ModelPresentationLib.vcproj; sourceTree = "<group>"; };
 		6692718B0E0AD36F00E35E8B /* MpdWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MpdWriter.cpp; sourceTree = "<group>"; };
 		6692718C0E0AD36F00E35E8B /* MpdWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MpdWriter.h; sourceTree = "<group>"; };
-		669271BB0E0AD58400E35E8B /* ModelPresentation.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ModelPresentation.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		669271BB0E0AD58400E35E8B /* ModelPresentation.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ModelPresentation.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		6692732A0E0B1DDE00E35E8B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6692732B0E0B1DDE00E35E8B /* ModflowApp.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ModflowApp.vcproj; sourceTree = "<group>"; };
 		6692732C0E0B1DDE00E35E8B /* Resources.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Resources.rc; sourceTree = "<group>"; };
@@ -5135,13 +5145,13 @@
 		669B361F0E4B3D3900AF6B84 /* Nimue.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Nimue.icns; sourceTree = "<group>"; };
 		669B69140D7C9078001392F1 /* BuildLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildLegend.h; sourceTree = "<group>"; };
 		669B69150D7C9078001392F1 /* BuildLegend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BuildLegend.cpp; sourceTree = "<group>"; };
-		669B696B0D7C96E9001392F1 /* libMinervaGdalLayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaGdalLayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaGdalLayerd.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		669BD2980E0EF99A00E598FF /* OffScreenRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OffScreenRenderer.cpp; sourceTree = "<group>"; };
 		669BD2990E0EF99A00E598FF /* OffScreenRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OffScreenRenderer.h; sourceTree = "<group>"; };
 		669BD29C0E0EF9DF00E598FF /* osgViewer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgViewer.framework; path = ../../../Library/Frameworks/osgViewer.framework; sourceTree = SOURCE_ROOT; };
 		669BD2C60E0EFCB400E598FF /* _OsgTools.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = _OsgTools.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		669BD3FC0E0F740A00E598FF /* _PathAnimation.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = _PathAnimation.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		669CE8B20E52101900618324 /* PointModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PointModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		669CE8B20E52101900618324 /* PointModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PointModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		669CE9BA0E52107700618324 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		669CE9BB0E52107700618324 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		669CE9BC0E52107700618324 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
@@ -5155,7 +5165,7 @@
 		669F239A0DBC14D400EC89B0 /* IconStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconStyle.h; sourceTree = "<group>"; };
 		669F239B0DBC14D400EC89B0 /* LineStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineStyle.cpp; sourceTree = "<group>"; };
 		669F239C0DBC14D400EC89B0 /* LineStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineStyle.h; sourceTree = "<group>"; };
-		669F28F50E4D026B007EB41A /* VtkAlgorithms.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = VtkAlgorithms.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		669F28F50E4D026B007EB41A /* VtkAlgorithms.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = VtkAlgorithms.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		669F29960E4D0512007EB41A /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		669F29970E4D0512007EB41A /* Convert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Convert.cpp; sourceTree = "<group>"; };
 		669F29980E4D0512007EB41A /* Convert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Convert.h; sourceTree = "<group>"; };
@@ -5189,7 +5199,7 @@
 		66A026080E29B4D6002CBE4D /* barborder.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = barborder.tga; sourceTree = "<group>"; };
 		66A026090E29B4D6002CBE4D /* border.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = border.tga; sourceTree = "<group>"; };
 		66A0260A0E29B4D6002CBE4D /* borderGroup.tga */ = {isa = PBXFileReference; lastKnownFileType = file; path = borderGroup.tga; sourceTree = "<group>"; };
-		66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtGeoRSSLayer.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtGeoRSSLayer.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A027C70E2B1E4F002CBE4D /* AddGeoRSSLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddGeoRSSLayerWidget.cpp; sourceTree = "<group>"; };
 		66A027C80E2B1E4F002CBE4D /* AddGeoRSSLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddGeoRSSLayerWidget.h; sourceTree = "<group>"; };
 		66A027C90E2B1E4F002CBE4D /* AddGeoRSSLayerWidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddGeoRSSLayerWidget.ui; sourceTree = "<group>"; };
@@ -5211,9 +5221,9 @@
 		66A09F0B0D87241C00E7E212 /* CurvePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CurvePlayer.h; path = ../Helios/Plugins/PathAnimation/CurvePlayer.h; sourceTree = SOURCE_ROOT; };
 		66A09F0C0D87241C00E7E212 /* PathAnimationComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathAnimationComponent.cpp; path = ../Helios/Plugins/PathAnimation/PathAnimationComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66A09F0D0D87241C00E7E212 /* PathAnimationComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathAnimationComponent.h; path = ../Helios/Plugins/PathAnimation/PathAnimationComponent.h; sourceTree = SOURCE_ROOT; };
-		66A112B10D2EBADC009B29ED /* OssimLayerQt.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = OssimLayerQt.plug; sourceTree = BUILT_PRODUCTS_DIR; };
-		66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = WmsLayerQt.plug; sourceTree = BUILT_PRODUCTS_DIR; };
-		66A112C20D2EBB06009B29ED /* PostGISLayerQt.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PostGISLayerQt.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = OssimLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = WmsLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = PostGISLayerQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A112CA0D2EBC59009B29ED /* AddOssimLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddOssimLayerWidget.cpp; path = OssimLayerQt/AddOssimLayerWidget.cpp; sourceTree = "<group>"; };
 		66A112CB0D2EBC59009B29ED /* AddOssimLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddOssimLayerWidget.h; path = OssimLayerQt/AddOssimLayerWidget.h; sourceTree = "<group>"; };
 		66A112CC0D2EBC59009B29ED /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = OssimLayerQt/CompileGuard.h; sourceTree = "<group>"; };
@@ -5316,7 +5326,7 @@
 		66A4CE960DC10248006DEE5E /* moc_TreeControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_TreeControl.cpp; sourceTree = "<group>"; };
 		66A6259B0E2C702800795F3D /* GeoCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoCode.h; sourceTree = "<group>"; };
 		66A6259C0E2C702800795F3D /* GeoCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoCode.cpp; sourceTree = "<group>"; };
-		66A8B08E0DABECA400088B3B /* FlashModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = FlashModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A8B08E0DABECA400088B3B /* FlashModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = FlashModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A8B0940DABED4500088B3B /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Experimental/Flash/FlashModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
 		66A8B0950DABED4500088B3B /* FlashComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FlashComponent.cpp; path = ../Experimental/Flash/FlashModel/FlashComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66A8B0960DABED4500088B3B /* FlashComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlashComponent.h; path = ../Experimental/Flash/FlashModel/FlashComponent.h; sourceTree = SOURCE_ROOT; };
@@ -5332,7 +5342,7 @@
 		66A8B83B0E071810001C436C /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Group.h; path = Qt/Commands/Group.h; sourceTree = "<group>"; };
 		66A91DB80E2723360048613C /* GeoRSSCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoRSSCallback.h; sourceTree = "<group>"; };
 		66A91DB90E2723360048613C /* GeoRSSCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoRSSCallback.cpp; sourceTree = "<group>"; };
-		66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtAnimationControl.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtAnimationControl.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A959520DB7E3E600943BA4 /* AnimationControlComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationControlComponent.cpp; sourceTree = "<group>"; };
 		66A959530DB7E3E600943BA4 /* AnimationControlComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationControlComponent.h; sourceTree = "<group>"; };
 		66A959540DB7E3E600943BA4 /* AnimationControlQt.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = AnimationControlQt.vcproj; sourceTree = "<group>"; };
@@ -5362,9 +5372,9 @@
 		66B36A440DF47F4A000FB4A6 /* RasterLayerArcIMS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RasterLayerArcIMS.h; sourceTree = "<group>"; };
 		66B36A450DF47F4A000FB4A6 /* RasterLayerNetwork.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RasterLayerNetwork.cpp; sourceTree = "<group>"; };
 		66B36A460DF47F4A000FB4A6 /* RasterLayerNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RasterLayerNetwork.h; sourceTree = "<group>"; };
-		66B647400D94418200F426B2 /* MeasureTool.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MeasureTool.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66B647400D94418200F426B2 /* MeasureTool.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MeasureTool.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66B6476A0D94492900F426B2 /* IJobFinishedListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJobFinishedListener.h; sourceTree = "<group>"; };
-		66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtFlashDelegate.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtFlashDelegate.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66B8A15F0E1D6F450031AB37 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Experimental/Flash/FlashDelegate/CompileGuard.h; sourceTree = SOURCE_ROOT; };
 		66B8A1600E1D6F450031AB37 /* FlashDelegateComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FlashDelegateComponent.cpp; path = ../Experimental/Flash/FlashDelegate/FlashDelegateComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66B8A1610E1D6F450031AB37 /* FlashDelegateComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlashDelegateComponent.h; path = ../Experimental/Flash/FlashDelegate/FlashDelegateComponent.h; sourceTree = SOURCE_ROOT; };
@@ -5577,7 +5587,7 @@
 		66EF05980D143B2B00B4B1AA /* osgdb_txp.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_txp.so; sourceTree = "<group>"; };
 		66EF05990D143B2B00B4B1AA /* osgdb_x.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_x.so; sourceTree = "<group>"; };
 		66EF059A0D143B2B00B4B1AA /* osgdb_zip.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_zip.so; sourceTree = "<group>"; };
-		66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtSnapShot.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EF05AC0D143DF100B4B1AA /* QtSnapShot.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtSnapShot.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EF05B50D143F0000B4B1AA /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = Qt/Plugins/SnapShot/CompileGuard.h; sourceTree = "<group>"; };
 		66EF05B60D143F0000B4B1AA /* SnapShot.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SnapShot.ui; path = Qt/Plugins/SnapShot/SnapShot.ui; sourceTree = "<group>"; };
 		66EF05B70D143F0000B4B1AA /* SnapShotComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SnapShotComponent.cpp; path = Qt/Plugins/SnapShot/SnapShotComponent.cpp; sourceTree = "<group>"; };
@@ -5586,8 +5596,8 @@
 		66EF05BA0D143F0000B4B1AA /* SnapShotWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SnapShotWidget.cpp; path = Qt/Plugins/SnapShot/SnapShotWidget.cpp; sourceTree = "<group>"; };
 		66EF05BB0D143F0000B4B1AA /* SnapShotWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SnapShotWidget.h; path = Qt/Plugins/SnapShot/SnapShotWidget.h; sourceTree = "<group>"; };
 		66EF05DB0D14404F00B4B1AA /* moc_SnapShotWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_SnapShotWidget.cpp; path = Qt/Plugins/SnapShot/moc_SnapShotWidget.cpp; sourceTree = "<group>"; };
-		66EF05FD0D14608800B4B1AA /* ModflowModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ModflowModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
-		66EF06090D14610700B4B1AA /* ModflowDelegateQt.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ModflowDelegateQt.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EF05FD0D14608800B4B1AA /* ModflowModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ModflowModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EF06090D14610700B4B1AA /* ModflowDelegateQt.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = ModflowDelegateQt.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EF13A40D15177F00B4B1AA /* ossim.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ossim.framework; path = ../../../Library/Frameworks/ossim.framework; sourceTree = SOURCE_ROOT; };
 		66EF17550D15188B00B4B1AA /* GUID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUID.cpp; sourceTree = "<group>"; };
 		66EF17560D15188B00B4B1AA /* GUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUID.h; sourceTree = "<group>"; };
@@ -5647,13 +5657,13 @@
 		66EF18C30D15C04C00B4B1AA /* MinervaReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinervaReader.h; path = ../Minerva/Document/MinervaReader.h; sourceTree = SOURCE_ROOT; };
 		66EF18C40D15C04C00B4B1AA /* MinervaWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinervaWriter.cpp; path = ../Minerva/Document/MinervaWriter.cpp; sourceTree = SOURCE_ROOT; };
 		66EF18C50D15C04C00B4B1AA /* MinervaWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinervaWriter.h; path = ../Minerva/Document/MinervaWriter.h; sourceTree = SOURCE_ROOT; };
-		66EF18E20D15C0E600B4B1AA /* MinervaModel.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MinervaModel.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EF18E20D15C0E600B4B1AA /* MinervaModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MinervaModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EF18EE0D15C17000B4B1AA /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Minerva/Plugins/Document/CompileGuard.h; sourceTree = SOURCE_ROOT; };
 		66EF18EF0D15C17000B4B1AA /* MinervaComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinervaComponent.cpp; path = ../Minerva/Plugins/Document/MinervaComponent.cpp; sourceTree = SOURCE_ROOT; };
 		66EF18F00D15C17000B4B1AA /* MinervaComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MinervaComponent.h; path = ../Minerva/Plugins/Document/MinervaComponent.h; sourceTree = SOURCE_ROOT; };
 		66EF18F10D15C17000B4B1AA /* MinervaFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MinervaFactory.cpp; path = ../Minerva/Plugins/Document/MinervaFactory.cpp; sourceTree = SOURCE_ROOT; };
 		66EF1A900D16447000B4B1AA /* curl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = curl.framework; path = ../../../Library/Frameworks/curl.framework; sourceTree = SOURCE_ROOT; };
-		66EFF3930D139F7200B4B1AA /* QtClipPlanes.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtClipPlanes.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EFF3930D139F7200B4B1AA /* QtClipPlanes.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtClipPlanes.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66EFF39B0D139FE400B4B1AA /* ClipPlanes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClipPlanes.cpp; path = Qt/Plugins/ClipPlanes/ClipPlanes.cpp; sourceTree = "<group>"; };
 		66EFF39C0D139FE400B4B1AA /* ClipPlanes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClipPlanes.h; path = Qt/Plugins/ClipPlanes/ClipPlanes.h; sourceTree = "<group>"; };
 		66EFF39D0D139FE400B4B1AA /* ClipPlanesComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClipPlanesComponent.cpp; path = Qt/Plugins/ClipPlanes/ClipPlanesComponent.cpp; sourceTree = "<group>"; };
@@ -6306,7 +6316,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66A027EF0E2B2053002CBE4D /* libMinervaGeoRSSLayer.dylib in Frameworks */,
+				66A027EF0E2B2053002CBE4D /* libMinervaGeoRSSLayerd.dylib in Frameworks */,
 				66A027B70E2B1DCF002CBE4D /* libQtTools.dylib in Frameworks */,
 				66A027B80E2B1DCF002CBE4D /* libMinerva.dylib in Frameworks */,
 				66A027B90E2B1DCF002CBE4D /* osg.framework in Frameworks */,
@@ -6358,7 +6368,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66E5C0920D91929D00C858B7 /* libMinervaGdalLayer.dylib in Frameworks */,
+				66E5C0920D91929D00C858B7 /* libMinervaGdalLayerd.dylib in Frameworks */,
 				66942E120D77D8E400633017 /* libMinervaPostGISLayer.dylib in Frameworks */,
 				66A119A60D2EC503009B29ED /* libMinerva.dylib in Frameworks */,
 				66A119A50D2EC500009B29ED /* libQtTools.dylib in Frameworks */,
@@ -6882,32 +6892,32 @@
 		431BB9DE09246F3B00ED2131 /* Cadkit Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				669CE8B20E52101900618324 /* PointModel.plug */,
-				669F28F50E4D026B007EB41A /* VtkAlgorithms.plug */,
-				66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plug */,
-				669271BB0E0AD58400E35E8B /* ModelPresentation.plug */,
-				6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plug */,
-				661C119C0DCA718E00DE43D4 /* GDALReadImage.plug */,
-				66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */,
-				66A8B08E0DABECA400088B3B /* FlashModel.plug */,
-				66EFF3930D139F7200B4B1AA /* QtClipPlanes.plug */,
-				66892DD00D283D61005CB399 /* LayerManager.plug */,
-				66B647400D94418200F426B2 /* MeasureTool.plug */,
-				66EF18E20D15C0E600B4B1AA /* MinervaModel.plug */,
-				66EF06090D14610700B4B1AA /* ModflowDelegateQt.plug */,
-				66EF05FD0D14608800B4B1AA /* ModflowModel.plug */,
-				66A112B10D2EBADC009B29ED /* OssimLayerQt.plug */,
-				668BE8220D24A96B00109210 /* PathAnimation.plug */,
-				66A112C20D2EBB06009B29ED /* PostGISLayerQt.plug */,
-				666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */,
-				431BB89409246ADA00ED2131 /* SceneModel.plug */,
-				6676A6480D136AFD00B95C16 /* QtSceneTree.plug */,
-				66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */,
-				431BB8D409246B9A00ED2131 /* TriangleModel.plug */,
-				668C969E0D42B4D00007D7F4 /* TriangulateGrid.plug */,
-				668E0C920D4021F50030649B /* WRFModel.plug */,
-				66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plug */,
-				431BB8E809246BD700ED2131 /* VolumeModel.plug */,
+				669CE8B20E52101900618324 /* PointModel.plugd */,
+				669F28F50E4D026B007EB41A /* VtkAlgorithms.plugd */,
+				66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plugd */,
+				669271BB0E0AD58400E35E8B /* ModelPresentation.plugd */,
+				6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plugd */,
+				661C119C0DCA718E00DE43D4 /* GDALReadImage.plugd */,
+				66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plugd */,
+				66A8B08E0DABECA400088B3B /* FlashModel.plugd */,
+				66EFF3930D139F7200B4B1AA /* QtClipPlanes.plugd */,
+				66892DD00D283D61005CB399 /* LayerManager.plugd */,
+				66B647400D94418200F426B2 /* MeasureTool.plugd */,
+				66EF18E20D15C0E600B4B1AA /* MinervaModel.plugd */,
+				66EF06090D14610700B4B1AA /* ModflowDelegateQt.plugd */,
+				66EF05FD0D14608800B4B1AA /* ModflowModel.plugd */,
+				66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */,
+				668BE8220D24A96B00109210 /* PathAnimation.plugd */,
+				66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */,
+				666767590D12FDCF002F40C6 /* QtSceneDelegate.plugd */,
+				431BB89409246ADA00ED2131 /* SceneModel.plugd */,
+				6676A6480D136AFD00B95C16 /* QtSceneTree.plugd */,
+				66EF05AC0D143DF100B4B1AA /* QtSnapShot.plugd */,
+				431BB8D409246B9A00ED2131 /* TriangleModel.plugd */,
+				668C969E0D42B4D00007D7F4 /* TriangulateGrid.plugd */,
+				668E0C920D4021F50030649B /* WRFModel.plugd */,
+				66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */,
+				431BB8E809246BD700ED2131 /* VolumeModel.plugd */,
 			);
 			name = "Cadkit Plugins";
 			sourceTree = "<group>";
@@ -7495,8 +7505,8 @@
 				66C8FE750D12084C003F6A58 /* libMenuKit.dylib */,
 				66EF17690D15190B00B4B1AA /* libMinerva.dylib */,
 				66EF189C0D1581ED00B4B1AA /* libMinervaDocument.dylib */,
-				669B696B0D7C96E9001392F1 /* libMinervaGdalLayer.dylib */,
-				668E0DD40D4062090030649B /* libMinervaKmlLayer.dylib */,
+				669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */,
+				668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */,
 				66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */,
 				66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */,
 				43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */,
@@ -7511,16 +7521,16 @@
 				6673DD4C0BC5F87100C0131F /* SceneDocumentBundle.bundle */,
 				666765E60D1235EC002F40C6 /* Helios.app */,
 				66C4E91C0DAAE3B400A3B1FB /* Minerva.app */,
-				667E35B10E05E0FE009732FE /* PythonQt.plug */,
+				667E35B10E05E0FE009732FE /* PythonQt.plugd */,
 				6692712B0E0AD2A800E35E8B /* libModelPresentationLib.dylib */,
 				66F523C60E0D77FA001D0057 /* _FlashDocument.so */,
 				669BD2C60E0EFCB400E598FF /* _OsgTools.so */,
 				669BD3FC0E0F740A00E598FF /* _PathAnimation.so */,
-				66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayer.dylib */,
+				66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayerd.dylib */,
 				661B8BEF0E1F544B005FC8CA /* TestLegend01.app */,
 				66E1A4DD0E207CE200D3E219 /* TestLegend02.app */,
 				66A025FB0E29B461002CBE4D /* TestProgressBar02.app */,
-				66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plug */,
+				66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plugd */,
 				66427A630E4AA8BE009AE232 /* Nimue.app */,
 			);
 			name = "Cadkit Libraries";
@@ -8614,7 +8624,6 @@
 		66892DD50D283D8C005CB399 /* LayerManager */ = {
 			isa = PBXGroup;
 			children = (
-				667A0BAD0E2D839F00E3033C /* moc_FlyTo.cpp */,
 				66892DD90D283DF9005CB399 /* CompileGuard.h */,
 				668931930D285DCD005CB399 /* Favorites.cpp */,
 				668931920D285DCD005CB399 /* Favorites.h */,
@@ -8625,6 +8634,7 @@
 				66892DDD0D283DF9005CB399 /* LayersTree.cpp */,
 				66892DDE0D283DF9005CB399 /* LayersTree.h */,
 				66AC8A330D2B4F0100762CC7 /* moc_Favorites.cpp */,
+				667A0BAD0E2D839F00E3033C /* moc_FlyTo.cpp */,
 				668931740D2841D5005CB399 /* moc_LayersTree.cpp */,
 			);
 			path = LayerManager;
@@ -9546,20 +9556,6 @@
 		66A4CE450DC0FF2A006DEE5E /* QtTools */ = {
 			isa = PBXGroup;
 			children = (
-				66096F3F0DEF252800DD0024 /* Move.cpp */,
-				66096F400DEF252800DD0024 /* Move.h */,
-				66096F410DEF252800DD0024 /* SettingsGroupScope.cpp */,
-				66096F420DEF252800DD0024 /* SettingsGroupScope.h */,
-				66096F430DEF252800DD0024 /* Show.cpp */,
-				66096F440DEF252800DD0024 /* Show.h */,
-				66096F450DEF252800DD0024 /* StringsView.cpp */,
-				66096F460DEF252800DD0024 /* StringsView.h */,
-				66A4CE910DC10248006DEE5E /* moc_Action.cpp */,
-				66A4CE920DC10248006DEE5E /* moc_AnimationControl.cpp */,
-				66A4CE930DC10248006DEE5E /* moc_ColorButton.cpp */,
-				66A4CE940DC10248006DEE5E /* moc_Menu.cpp */,
-				66A4CE950DC10248006DEE5E /* moc_PropertyBrowser.cpp */,
-				66A4CE960DC10248006DEE5E /* moc_TreeControl.cpp */,
 				66A4CE480DC0FF2B006DEE5E /* Action.cpp */,
 				66A4CE490DC0FF2B006DEE5E /* Action.h */,
 				66A4CE4A0DC0FF2B006DEE5E /* AnimationControl.cpp */,
@@ -9578,13 +9574,32 @@
 				66A4CE5C0DC0FF2B006DEE5E /* Image.h */,
 				66A4CE5D0DC0FF2B006DEE5E /* Menu.cpp */,
 				66A4CE5E0DC0FF2B006DEE5E /* Menu.h */,
+				66A4CE910DC10248006DEE5E /* moc_Action.cpp */,
+				66A4CE920DC10248006DEE5E /* moc_AnimationControl.cpp */,
+				66A4CE930DC10248006DEE5E /* moc_ColorButton.cpp */,
+				66A4CE940DC10248006DEE5E /* moc_Menu.cpp */,
+				66A4CE950DC10248006DEE5E /* moc_PropertyBrowser.cpp */,
+				66A4CE960DC10248006DEE5E /* moc_TreeControl.cpp */,
+				667245DF0E590AC300DE4A02 /* moc_TreeNode.cpp */,
+				66096F3F0DEF252800DD0024 /* Move.cpp */,
+				66096F400DEF252800DD0024 /* Move.h */,
 				66A4CE5F0DC0FF2B006DEE5E /* PropertyBrowser.cpp */,
 				66A4CE600DC0FF2B006DEE5E /* PropertyBrowser.h */,
 				66A4CE630DC0FF2B006DEE5E /* Question.cpp */,
 				66A4CE640DC0FF2B006DEE5E /* Question.h */,
 				66A4CE650DC0FF2B006DEE5E /* ScopedSignals.h */,
+				66096F410DEF252800DD0024 /* SettingsGroupScope.cpp */,
+				66096F420DEF252800DD0024 /* SettingsGroupScope.h */,
+				66096F430DEF252800DD0024 /* Show.cpp */,
+				66096F440DEF252800DD0024 /* Show.h */,
+				66096F450DEF252800DD0024 /* StringsView.cpp */,
+				66096F460DEF252800DD0024 /* StringsView.h */,
 				66A4CE660DC0FF2B006DEE5E /* TreeControl.cpp */,
 				66A4CE670DC0FF2B006DEE5E /* TreeControl.h */,
+				667245C90E59003A00DE4A02 /* TreeModel.cpp */,
+				667245CA0E59003A00DE4A02 /* TreeModel.h */,
+				667245CB0E59003A00DE4A02 /* TreeNode.cpp */,
+				667245CC0E59003A00DE4A02 /* TreeNode.h */,
 			);
 			name = QtTools;
 			path = ../QtTools;
@@ -11072,6 +11087,8 @@
 				66096F4A0DEF252800DD0024 /* SettingsGroupScope.h in Headers */,
 				66096F4C0DEF252800DD0024 /* Show.h in Headers */,
 				66096F4E0DEF252800DD0024 /* StringsView.h in Headers */,
+				667245CE0E59003A00DE4A02 /* TreeModel.h in Headers */,
+				667245D00E59003A00DE4A02 /* TreeNode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11307,7 +11324,7 @@
 			);
 			name = SceneModel;
 			productName = Animate;
-			productReference = 431BB89409246ADA00ED2131 /* SceneModel.plug */;
+			productReference = 431BB89409246ADA00ED2131 /* SceneModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		431BB8CC09246B9A00ED2131 /* TriangleModel */ = {
@@ -11324,7 +11341,7 @@
 			);
 			name = TriangleModel;
 			productName = Animate;
-			productReference = 431BB8D409246B9A00ED2131 /* TriangleModel.plug */;
+			productReference = 431BB8D409246B9A00ED2131 /* TriangleModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		431BB8E009246BD700ED2131 /* VolumeModel */ = {
@@ -11341,7 +11358,7 @@
 			);
 			name = VolumeModel;
 			productName = Animate;
-			productReference = 431BB8E809246BD700ED2131 /* VolumeModel.plug */;
+			productReference = 431BB8E809246BD700ED2131 /* VolumeModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		434D2D14095B2CA700642126 /* HeliosCocoa */ = {
@@ -11457,7 +11474,7 @@
 			);
 			name = QtPasswordPrompt;
 			productName = QtPasswordPrompt;
-			productReference = 6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plug */;
+			productReference = 6603B8770DCBAF9400FE0D89 /* QtPasswordPrompt.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66190EB40E1C8A19004CE994 /* MinervaGeoRSSLayer */ = {
@@ -11478,7 +11495,7 @@
 			);
 			name = MinervaGeoRSSLayer;
 			productName = MinervaKmlLayer;
-			productReference = 66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayer.dylib */;
+			productReference = 66190EE40E1C8A19004CE994 /* libMinervaGeoRSSLayerd.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		661B8BEE0E1F544B005FC8CA /* TestLegend01 */ = {
@@ -11515,7 +11532,7 @@
 			);
 			name = GDALReadImage;
 			productName = GDALReadImage;
-			productReference = 661C119C0DCA718E00DE43D4 /* GDALReadImage.plug */;
+			productReference = 661C119C0DCA718E00DE43D4 /* GDALReadImage.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		664279B40E4AA8BE009AE232 /* Nimue */ = {
@@ -11663,8 +11680,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				666767520D12FD17002F40C6 /* PBXTargetDependency */,
 				666767500D12FD13002F40C6 /* PBXTargetDependency */,
+				666767520D12FD17002F40C6 /* PBXTargetDependency */,
 				6667674E0D12FD11002F40C6 /* PBXTargetDependency */,
 				6667674C0D12FD0E002F40C6 /* PBXTargetDependency */,
 			);
@@ -11689,7 +11706,7 @@
 			);
 			name = QtSceneDelegate;
 			productName = SceneDelegateQt;
-			productReference = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */;
+			productReference = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		6673DD4B0BC5F87100C0131F /* SceneDocumentBundle */ = {
@@ -11723,7 +11740,7 @@
 			);
 			name = QtSceneTree;
 			productName = SceneTreeQt;
-			productReference = 6676A6480D136AFD00B95C16 /* QtSceneTree.plug */;
+			productReference = 6676A6480D136AFD00B95C16 /* QtSceneTree.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		667E35920E05E0FE009732FE /* QtPython */ = {
@@ -11743,7 +11760,7 @@
 			);
 			name = QtPython;
 			productName = OssimLayerQt;
-			productReference = 667E35B10E05E0FE009732FE /* PythonQt.plug */;
+			productReference = 667E35B10E05E0FE009732FE /* PythonQt.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66892DCF0D283D61005CB399 /* LayerManager */ = {
@@ -11758,8 +11775,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				66A866FE0E2EA72F0081848E /* PBXTargetDependency */,
 				66C024FB0D7797AE00371AB4 /* PBXTargetDependency */,
+				66A866FE0E2EA72F0081848E /* PBXTargetDependency */,
 				66AC8A6C0D2B58C700762CC7 /* PBXTargetDependency */,
 				66AC8A6A0D2B58C300762CC7 /* PBXTargetDependency */,
 				6689316B0D2840F4005CB399 /* PBXTargetDependency */,
@@ -11767,7 +11784,7 @@
 			);
 			name = LayerManager;
 			productName = LayerManager;
-			productReference = 66892DD00D283D61005CB399 /* LayerManager.plug */;
+			productReference = 66892DD00D283D61005CB399 /* LayerManager.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		668BE8210D24A96B00109210 /* PathAnimation */ = {
@@ -11789,7 +11806,7 @@
 			);
 			name = PathAnimation;
 			productName = PathAnimation;
-			productReference = 668BE8220D24A96B00109210 /* PathAnimation.plug */;
+			productReference = 668BE8220D24A96B00109210 /* PathAnimation.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		668C969D0D42B4D00007D7F4 /* TriangulateGrid */ = {
@@ -11808,7 +11825,7 @@
 			);
 			name = TriangulateGrid;
 			productName = TriangulateGrid;
-			productReference = 668C969E0D42B4D00007D7F4 /* TriangulateGrid.plug */;
+			productReference = 668C969E0D42B4D00007D7F4 /* TriangulateGrid.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		668E0C910D4021F50030649B /* WRFModel */ = {
@@ -11830,7 +11847,7 @@
 			);
 			name = WRFModel;
 			productName = WRFModel;
-			productReference = 668E0C920D4021F50030649B /* WRFModel.plug */;
+			productReference = 668E0C920D4021F50030649B /* WRFModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		668E0DD30D4062090030649B /* MinervaKmlLayer */ = {
@@ -11851,7 +11868,7 @@
 			);
 			name = MinervaKmlLayer;
 			productName = MinervaKmlLayer;
-			productReference = 668E0DD40D4062090030649B /* libMinervaKmlLayer.dylib */;
+			productReference = 668E0DD40D4062090030649B /* libMinervaKmlLayerd.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		669270460E0AD2A800E35E8B /* ModelPresentationLib */ = {
@@ -11891,7 +11908,7 @@
 			);
 			name = ModelPresentation;
 			productName = Animate;
-			productReference = 669271BB0E0AD58400E35E8B /* ModelPresentation.plug */;
+			productReference = 669271BB0E0AD58400E35E8B /* ModelPresentation.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66942DB50D77D66900633017 /* MinervaPostGISLayer */ = {
@@ -11953,7 +11970,7 @@
 			);
 			name = MinervaGdalLayer;
 			productName = MinervaGdalLayer;
-			productReference = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayer.dylib */;
+			productReference = 669B696B0D7C96E9001392F1 /* libMinervaGdalLayerd.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		669BD2B10E0EFCB400E598FF /* PyOsgTools */ = {
@@ -12013,7 +12030,7 @@
 			);
 			name = PointModel;
 			productName = Animate;
-			productReference = 669CE8B20E52101900618324 /* PointModel.plug */;
+			productReference = 669CE8B20E52101900618324 /* PointModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		669F28D70E4D026B007EB41A /* VtkAlgorithms */ = {
@@ -12035,7 +12052,7 @@
 			);
 			name = VtkAlgorithms;
 			productName = PathAnimation;
-			productReference = 669F28F50E4D026B007EB41A /* VtkAlgorithms.plug */;
+			productReference = 669F28F50E4D026B007EB41A /* VtkAlgorithms.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66A025FA0E29B461002CBE4D /* TestProgressBar02 */ = {
@@ -12076,7 +12093,7 @@
 			);
 			name = QtGeoRSSLayer;
 			productName = WmsLayerQt;
-			productReference = 66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plug */;
+			productReference = 66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66A112B00D2EBADC009B29ED /* QtOssimLayer */ = {
@@ -12097,7 +12114,7 @@
 			);
 			name = QtOssimLayer;
 			productName = OssimLayerQt;
-			productReference = 66A112B10D2EBADC009B29ED /* OssimLayerQt.plug */;
+			productReference = 66A112B10D2EBADC009B29ED /* OssimLayerQt.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66A112BA0D2EBAF3009B29ED /* QtWmsLayer */ = {
@@ -12118,7 +12135,7 @@
 			);
 			name = QtWmsLayer;
 			productName = WmsLayerQt;
-			productReference = 66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plug */;
+			productReference = 66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66A112C10D2EBB06009B29ED /* QtPostGISLayer */ = {
@@ -12140,7 +12157,7 @@
 			);
 			name = QtPostGISLayer;
 			productName = PostGISLayerQt;
-			productReference = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plug */;
+			productReference = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66A8B08D0DABECA400088B3B /* FlashModel */ = {
@@ -12162,7 +12179,7 @@
 			);
 			name = FlashModel;
 			productName = FlashModel;
-			productReference = 66A8B08E0DABECA400088B3B /* FlashModel.plug */;
+			productReference = 66A8B08E0DABECA400088B3B /* FlashModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66A9594D0DB7E3A500943BA4 /* QtAnimationControl */ = {
@@ -12181,7 +12198,7 @@
 			);
 			name = QtAnimationControl;
 			productName = QtAnimationControl;
-			productReference = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */;
+			productReference = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66B6473F0D94418200F426B2 /* MeasureTool */ = {
@@ -12202,7 +12219,7 @@
 			);
 			name = MeasureTool;
 			productName = MeasureTool;
-			productReference = 66B647400D94418200F426B2 /* MeasureTool.plug */;
+			productReference = 66B647400D94418200F426B2 /* MeasureTool.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66B8A1480E1D6E910031AB37 /* QtFlashDelegate */ = {
@@ -12221,7 +12238,7 @@
 			);
 			name = QtFlashDelegate;
 			productName = SceneDelegateQt;
-			productReference = 66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plug */;
+			productReference = 66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66C4E91B0DAAE3B400A3B1FB /* MinervaQt */ = {
@@ -12287,6 +12304,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66C8FAB80D120523003F6A58 /* Build configuration list for PBXNativeTarget "QtTools" */;
 			buildPhases = (
+				663F19DA0E58FA3500AC79AA /* Moc TreeControl */,
+				663F19D80E58EA7A00AC79AA /* Moc AnimationControl */,
+				663F19BE0E58EA0E00AC79AA /* Moc Action */,
 				66C8FAB70D1204EA003F6A58 /* ShellScript */,
 				66C8FAAD0D1204D8003F6A58 /* Headers */,
 				66C8FAAE0D1204D8003F6A58 /* Sources */,
@@ -12356,7 +12376,7 @@
 			);
 			name = QtSnapShot;
 			productName = Untitled;
-			productReference = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plug */;
+			productReference = 66EF05AC0D143DF100B4B1AA /* QtSnapShot.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66EF05FC0D14608800B4B1AA /* ModflowModel */ = {
@@ -12376,7 +12396,7 @@
 			);
 			name = ModflowModel;
 			productName = ModflowModel;
-			productReference = 66EF05FD0D14608800B4B1AA /* ModflowModel.plug */;
+			productReference = 66EF05FD0D14608800B4B1AA /* ModflowModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66EF06080D14610700B4B1AA /* ModflowDelegateQt */ = {
@@ -12397,7 +12417,7 @@
 			);
 			name = ModflowDelegateQt;
 			productName = ModflowDelegateQt;
-			productReference = 66EF06090D14610700B4B1AA /* ModflowDelegateQt.plug */;
+			productReference = 66EF06090D14610700B4B1AA /* ModflowDelegateQt.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66EF17680D15190B00B4B1AA /* Minerva */ = {
@@ -12459,7 +12479,7 @@
 			);
 			name = MinervaModel;
 			productName = MinervaModel;
-			productReference = 66EF18E20D15C0E600B4B1AA /* MinervaModel.plug */;
+			productReference = 66EF18E20D15C0E600B4B1AA /* MinervaModel.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66EFF3920D139F7200B4B1AA /* QtClipPlanes */ = {
@@ -12478,7 +12498,7 @@
 			);
 			name = QtClipPlanes;
 			productName = ClipPlanes;
-			productReference = 66EFF3930D139F7200B4B1AA /* QtClipPlanes.plug */;
+			productReference = 66EFF3930D139F7200B4B1AA /* QtClipPlanes.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66F523C50E0D77FA001D0057 /* PyFlashModel */ = {
@@ -12717,6 +12737,61 @@
 			shellScript = "$QTDIR/bin/moc $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/PasswordPromptComponent.h -o $SRCROOT/../Helios/Qt/Plugins/PasswordPrompt/moc_PasswordPromptComponent.cpp";
 			showEnvVarsInLog = 0;
 		};
+		663F19BE0E58EA0E00AC79AA /* Moc Action */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				$SRCROOT/../QtTools/Action.h,
+			);
+			name = "Moc Action";
+			outputPaths = (
+				$SRCROOT/../QtTools/moc_Action.cpp,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Action.h -o ${HOME}/src/cadkit/QtTools/moc_Action.cpp\n";
+			showEnvVarsInLog = 0;
+		};
+		663F19D80E58EA7A00AC79AA /* Moc AnimationControl */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				$SRCROOT/../QtTools/AnimationControl.ui,
+				$SRCROOT/../QtTools/AnimationControl.h,
+			);
+			name = "Moc AnimationControl";
+			outputPaths = (
+				$SRCROOT/../QtTools/ui_AnimationControl.h,
+				$SRCROOT/../QtTools/moc_AnimationControl.cpp,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$QTDIR/bin/uic ${HOME}/src/cadkit/QtTools/AnimationControl.ui -o ${HOME}/src/cadkit/QtTools/ui_AnimationControl.h\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/AnimationControl.h -o ${HOME}/src/cadkit/QtTools/moc_AnimationControl.cpp\n";
+			showEnvVarsInLog = 0;
+		};
+		663F19DA0E58FA3500AC79AA /* Moc TreeControl */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				$SRCROOT/../QtTools/TreeControl.h,
+				$SRCROOT/..QtTools/TreeNode.h,
+			);
+			name = "Moc TreeControl";
+			outputPaths = (
+				$SRCROOT/../QtTools/moc_TreeControl.cpp,
+				$SRCROOT/../QtTools/moc_TreeNode.cpp,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../QtTools/TreeControl.h -o $SRCROOT/../QtTools/moc_TreeControl.cpp\n$QTDIR/bin/moc $SRCROOT/../QtTools/TreeNode.h -o $SRCROOT/../QtTools/moc_TreeNode.cpp\n";
+			showEnvVarsInLog = 0;
+		};
 		664279E30E4AA8BE009AE232 /* Copy Nimue.plugins */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -12730,6 +12805,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ ! -f $SRCROOT/../Nimue/Application/Nimue.plugins ]; then\n  cp $SRCROOT/../Nimue/Application/plugins.xml $SRCROOT/../Nimue/Application/Nimue.plugins\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		666765700D1232A1002F40C6 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12787,14 +12863,12 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../Minerva/Plugins/LayerManager/PropertiesAction.h",
 				"$(SRCROOT)/../Minerva/Plugins/LayerManager/LayersTree.h",
 				"$(SRCROOT)/../Minerva/Plugins/LayerManager/Favorites.ui",
 				"$(SRCROOT)/../Minerva/Plugins/LayerManager/Favorites.h",
 				$SRCROOT/../Minerva/Plugins/LayerManager/FlyTo.h,
 			);
 			outputPaths = (
-				"$(SRCROOT)/../Minerva/Plugins/LayerManager/moc_PropertiesAction.cpp",
 				"$(SRCROOT)/../Minerva/Plugins/LayerManager/moc_LayersTree.cpp",
 				"$(SRCROOT)/../Minerva/Plugins/LayerManager/ui_Favorites.h",
 				"$(SRCROOT)/../Minerva/Plugins/LayerManager/moc_Favorites.cpp",
@@ -12802,7 +12876,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/LayerManager/PropertiesAction.h -o $SRCROOT/../Minerva/Plugins/LayerManager/moc_PropertiesAction.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/LayerManager/LayersTree.h -o $SRCROOT/../Minerva/Plugins/LayerManager/moc_LayersTree.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/LayerManager/Favorites.ui -o $SRCROOT/../Minerva/Plugins/LayerManager/ui_Favorites.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/LayerManager/Favorites.h -o $SRCROOT/../Minerva/Plugins/LayerManager/moc_Favorites.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/LayerManager/FlyTo.h -o $SRCROOT/../Minerva/Plugins/LayerManager/moc_FlyTo.cpp";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/LayerManager/LayersTree.h -o $SRCROOT/../Minerva/Plugins/LayerManager/moc_LayersTree.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/LayerManager/Favorites.ui -o $SRCROOT/../Minerva/Plugins/LayerManager/ui_Favorites.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/LayerManager/Favorites.h -o $SRCROOT/../Minerva/Plugins/LayerManager/moc_Favorites.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/LayerManager/FlyTo.h -o $SRCROOT/../Minerva/Plugins/LayerManager/moc_FlyTo.cpp\n";
+			showEnvVarsInLog = 0;
 		};
 		669BD2B20E0EFCB400E598FF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12868,6 +12943,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\nif [ ${BUILD_STYLE} = \"Release\" ]; then\n\n\tcd  ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/Contents/Plugins\n\n\t# Change the install names in the .so\n\tinstall_name_tool -id @executable_path/../Plugins/libsz.2.0.0.dylib libsz.2.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5.0.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\t# Change the paths where the .so looks for it's dependencies.\n\tinstall_name_tool -change /usr/local/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5.0.0.0.dylib\n\tinstall_name_tool -change /usr/local/lib/libsz.2.dylib @executable_path/../Plugins/libsz.2.0.0.dylib libhdf5_hl.0.0.0.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libhdf5.0.dylib @executable_path/../Plugins/libhdf5.0.0.0.dylib FlashModel.plug\n\tinstall_name_tool -change /usr/local/lib/libhdf5_hl.0.dylib @executable_path/../Plugins/libhdf5_hl.0.0.0.dylib FlashModel.plug\n\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		66A027A10E2B1DCF002CBE4D /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12953,12 +13029,19 @@
 			files = (
 			);
 			inputPaths = (
+				$SRCROOT/../QtTools/ColorButton.h,
+				$SRCROOT/../QtTools/Menu.h,
+				$SRCROOT/../QtTools/PropertyBrowser.h,
 			);
 			outputPaths = (
+				$SRCROOT/../QtTools/moc_ColorButton.cpp,
+				$SRCROOT/../QtTools/moc_Menu.cpp,
+				$SRCROOT/../QtTools/moc_PropertyBrowser.cpp,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Action.h -o ${HOME}/src/cadkit/QtTools/moc_Action.cpp\n$QTDIR/bin/uic ${HOME}/src/cadkit/QtTools/AnimationControl.ui -o ${HOME}/src/cadkit/QtTools/ui_AnimationControl.h\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/AnimationControl.h -o ${HOME}/src/cadkit/QtTools/moc_AnimationControl.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/ColorButton.h -o ${HOME}/src/cadkit/QtTools/moc_ColorButton.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Menu.h -o ${HOME}/src/cadkit/QtTools/moc_Menu.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/PropertyBrowser.h -o ${HOME}/src/cadkit/QtTools/moc_PropertyBrowser.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/TreeControl.h -o ${HOME}/src/cadkit/QtTools/moc_TreeControl.cpp\n";
+			shellScript = "$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/ColorButton.h -o ${HOME}/src/cadkit/QtTools/moc_ColorButton.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/Menu.h -o ${HOME}/src/cadkit/QtTools/moc_Menu.cpp\n$QTDIR/bin/moc ${HOME}/src/cadkit/QtTools/PropertyBrowser.h -o ${HOME}/src/cadkit/QtTools/moc_PropertyBrowser.cpp\n";
+			showEnvVarsInLog = 0;
 		};
 		66CCC2270E28824E00DDFE55 /* Copy Helios.plugins */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -12987,6 +13070,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "#source ${HOME}/.cshrc\n\nif [ ${BUILD_STYLE} = \"Release\" ]; then\n\n\tcd  ${BUILT_PRODUCTS_DIR}/Minerva.app/Contents/Frameworks\n\n\tcp /usr/local/lib/libproj.0.dylib .\n\tcp /usr/local/lib/libpq.5.dylib .\n\n\tinstall_name_tool -id @executable_path/../Frameworks/libproj.0.dylib libproj.0.dylib\n\tinstall_name_tool -id @executable_path/../Frameworks/libpq.5.dylib libpq.5.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libproj.0.dylib @executable_path/../Frameworks/libproj.0.dylib GDAL.framework/Versions/1.5/GDAL\n\tinstall_name_tool -change /usr/local/lib/libpq.5.dylib @executable_path/../Frameworks/libpq.5.dylib GDAL.framework/Versions/1.5/GDAL\n\n\tcd  ${BUILT_PRODUCTS_DIR}/Minerva.app/Contents/Plugins\n\n\tinstall_name_tool -id @executable_path/../Plugins/libpqxx-2.6.9.dylib libpqxx-2.6.9.dylib\n\tinstall_name_tool -id @executable_path/../Plugins/libpq.5.0.dylib libpq.5.0.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libpq.5.dylib @executable_path/../Plugins/libpq.5.0.dylib libpqxx-2.6.9.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libpqxx-2.6.9.dylib @executable_path/../Plugins/libpqxx-2.6.9.dylib libMinervaDocument.dylib\n\n\tinstall_name_tool -change /usr/local/lib/libpqxx-2.6.9.dylib @executable_path/../Plugins/libpqxx-2.6.9.dylib libMinervaPostgres.dylib\n\tinstall_name_tool -change /usr/local/lib/libpq.5.dylib @executable_path/../Plugins/libpq.5.0.dylib libMinervaPostgres.dylib\n\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 		66EF05D10D143F8000B4B1AA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -13076,6 +13160,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ ! -f $SRCROOT/../Minerva/Application/Minerva.plugins ]; then\n  cp $SRCROOT/../Minerva/Application/Plugins.xml $SRCROOT/../Minerva/Application/Minerva.plugins\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -13833,6 +13918,9 @@
 				66096F490DEF252800DD0024 /* SettingsGroupScope.cpp in Sources */,
 				66096F4B0DEF252800DD0024 /* Show.cpp in Sources */,
 				66096F4D0DEF252800DD0024 /* StringsView.cpp in Sources */,
+				667245CD0E59003A00DE4A02 /* TreeModel.cpp in Sources */,
+				667245CF0E59003A00DE4A02 /* TreeNode.cpp in Sources */,
+				667245E00E590AC300DE4A02 /* moc_TreeNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

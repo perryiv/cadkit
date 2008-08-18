@@ -40,10 +40,6 @@ public:
 
   MenuKit::Menu*   menu( Usul::Interfaces::IUnknown *caller );
 
-signals:
-  
-  void             layerAdded ( Usul::Interfaces::IUnknown* layer );
-  
 public slots:
   
   void             addLayer( Usul::Interfaces::IUnknown* layer );

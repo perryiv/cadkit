@@ -138,7 +138,7 @@ void Favorites::_addLayer ( Usul::Interfaces::IUnknown *parent, Usul::Interfaces
       addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
       
       // Emit the layer added signal.
-      emit layerAdded ( unknown );
+      //emit layerAdded ( unknown );
     }
   }
 }

@@ -471,6 +471,44 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\TreeModel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TreeModel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TreeNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TreeNode.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing TreeNode.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TreeNode.h&quot; -o &quot;.\GeneratedFiles\moc_TreeNode.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TreeNode.h"
+							Outputs=".\GeneratedFiles\moc_TreeNode.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing TreeNode.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TreeNode.h&quot; -o &quot;.\GeneratedFiles\moc_TreeNode.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TreeNode.h"
+							Outputs=".\GeneratedFiles\moc_TreeNode.cpp"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="GeneratedFiles"
@@ -497,6 +535,10 @@
 				</File>
 				<File
 					RelativePath=".\GeneratedFiles\moc_TreeControl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GeneratedFiles\moc_TreeNode.cpp"
 					>
 				</File>
 			</Filter>

@@ -31,8 +31,9 @@
 #include <vector>
 
 class QDockWidget;
-class LayersTree;
 class Favorites;
+
+namespace Minerva { class LayersTree; }
 
 class LayerManagerComponent : public CadKit::Helios::Views::OSG::Delegate,
                               public Usul::Interfaces::IPlugin,
@@ -88,9 +89,9 @@ private:
   
   Usul::Interfaces::IUnknown::QueryPtr _caller;
 
-  Docks            _docks;
-  LayersTree      *_layers;
-  Favorites       *_favorites;
+  Docks                     _docks;
+  Minerva::LayersTree      *_layers;
+  Favorites                *_favorites;
 };
 
 

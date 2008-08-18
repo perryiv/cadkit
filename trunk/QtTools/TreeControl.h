@@ -1,112 +1,72 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Arizona State University
+//  Copyright (c) 2008, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
-//  Adapted from Adam Kubach's LayerTree for Minerva.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _QT_TOOLS_TREE_CONTROL_CLASS_H_
-#define _QT_TOOLS_TREE_CONTROL_CLASS_H_
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tree Control.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-#include "QtTools/Export.h"
+#ifndef __QT_TOOLS_TREE_CONTROL_H__
+#define __QT_TOOLS_TREE_CONTROL_H__
 
-#include "Usul/Interfaces/IDataChangedListener.h"
-#include "Usul/Interfaces/ITreeNode.h"
-#include "Usul/Pointers/Pointers.h"
+#include "QtCore/QList"
+#include "QtGui/QTreeView"
 
-#include "QtGui/QWidget"
-#include "QtGui/QAbstractItemView"
-
-#include <map>
-
-class QTreeWidget;
-class QTreeWidgetItem;
-
+namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 namespace QtTools {
-
-
-class QT_TOOLS_EXPORT TreeControl : public QWidget,
-                                    public Usul::Interfaces::IDataChangedListener
+  
+  class TreeNode;
+  class TreeModel;
+  
+class TreeControl : public QTreeView
 {
   Q_OBJECT;
-
 public:
-
-  typedef QWidget BaseClass;
-  typedef Usul::Interfaces::IUnknown Unknown;
-  typedef Usul::Interfaces::ITreeNode ITreeNode;
-  typedef std::map < QTreeWidgetItem *, ITreeNode::RefPtr > NodeMap;
-  typedef QAbstractItemView::SelectionMode SelectionMode;
-  typedef QList<QTreeWidgetItem*> TreeWidgetItems;
+  typedef QTreeView         BaseClass;
+  typedef QList<TreeNode*>  TreeNodeList;
   
-  USUL_DECLARE_QUERY_POINTERS ( TreeControl );
-  USUL_DECLARE_IUNKNOWN_MEMBERS;
-
-  TreeControl ( Unknown *caller, QWidget *parent = 0x0 );
+  TreeControl ( QWidget *parent = 0x0 );
   virtual ~TreeControl();
-
-  // Build the tree.
-  void                buildTree ( Usul::Interfaces::IUnknown *document );
-
-  // Get the item.
-  QTreeWidgetItem*    currentItem() const;
   
-  // Get the unknown.
-  Unknown*            currentUnknown() const;
-  Unknown*            unknownAt ( const QPoint& pos ) const;
-  Unknown*            unknown ( QTreeWidgetItem *item ) const;
+  /// Build the tree.  This is equvialent to setRootNode ( new TreeNode ( unknown ) );
+  void             buildTree ( Usul::Interfaces::IUnknown* unknown );
   
-  // Called when data has changed.
-  virtual void        dataChangedNotify ( Usul::Interfaces::IUnknown *caller );
+  /// Get the current node.
+  const TreeNode*  currentNode() const;
+  TreeNode*        currentNode();
   
-  // Remove the item.
-  void                removeItem ( QTreeWidgetItem *item );
+  /// Remove the node.
+  void             removeNode ( TreeNode* child );
   
-  // Get all the selected items.
-  TreeWidgetItems     selectedItems() const;
+  /// Set the root node.
+  void             setRootNode ( TreeNode * );
   
-  // Get/set the selection mode.
-  SelectionMode       selectionMode() const;
-  void                selectionMode( QAbstractItemView::SelectionMode );
-  
-  // Get the tree widget.
-  QTreeWidget*        treeWidget();
+  /// Get the selected items.
+  TreeNodeList     selectedItems() const;
   
 signals:
-  void                onItemChanged ( QTreeWidgetItem *item, int columnNumber );
+  void onTreeNodeChanged ( TreeNode * node );
+  void onTreeNodeDoubleClicked ( TreeNode * node );
+  void onSelectionChanged();
   
-protected slots:
-
-  void                _onItemChanged ( QTreeWidgetItem *item, int columnNumber );
-  void                _onDataChanged ( unsigned long );
-
+private slots:
+  void _dataChanged ( const QModelIndex&, const QModelIndex& );
+  void _onDoubleClicked ( const QModelIndex& );
+  void _onCurrentChanged ( const QModelIndex&, const QModelIndex& );
+  
 private:
-
-  void                _clear();
-  void                _connectTreeViewSlots();
-  
-  void                _itemChanged ( QTreeWidgetItem *item, int columnNumber );
-  
-  void                _rebuildTree ( Unknown* );
-  
-  // Get the tree item that corresponds to the unknown.
-  QTreeWidgetItem *   _treeItem ( Unknown* unknown ) const;
-
-  QTreeWidget *_tree;
-  NodeMap _nodeMap;
-  Unknown::QueryPtr _caller;
-  Unknown::QueryPtr _document;
-  bool _processingItem;
-  unsigned int _refCount;
+  TreeModel *_model;
 };
 
+}
 
-} // namespace QtTools
 
-
-#endif // _QT_TOOLS_TREE_CONTROL_CLASS_H_
+#endif // __QT_TOOLS_TREE_CONTROL_H__

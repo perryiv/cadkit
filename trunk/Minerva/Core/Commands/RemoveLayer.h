@@ -34,7 +34,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   RemoveLayer ();
-  RemoveLayer ( Usul::Interfaces::ILayer* layer );
+  RemoveLayer ( Usul::Interfaces::IUnknown* layer );
 
 protected:
   virtual ~RemoveLayer();

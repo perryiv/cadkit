@@ -41,7 +41,7 @@ RemoveLayer::RemoveLayer ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RemoveLayer::RemoveLayer ( Usul::Interfaces::ILayer* layer ) : 
+RemoveLayer::RemoveLayer ( Usul::Interfaces::IUnknown* layer ) : 
   BaseClass( 0x0 ),
   _layer ( layer )
 {

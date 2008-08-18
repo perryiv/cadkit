@@ -275,7 +275,7 @@ void ModflowDelegateComponent::initializePlugin ( Usul::Interfaces::IUnknown *ca
     std::auto_ptr<QDockWidget> dockWidget ( this->_makeDockWindow ( "Modflow Layers", "ModflowLayersDockWidget" ) );
 
     // Create the tree for the scene graph.
-    _layerTree = new QtTools::TreeControl ( caller, dockWidget.get() );
+    _layerTree = new QtTools::TreeControl ( dockWidget.get() );
 
     // Set the docking window's widget.
     dockWidget->setWidget ( _layerTree );

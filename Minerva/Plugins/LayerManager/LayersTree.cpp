@@ -24,6 +24,7 @@
 #include "QtTools/Menu.h"
 #include "QtTools/ScopedSignals.h"
 #include "QtTools/TreeControl.h"
+#include "QtTools/TreeNode.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -35,9 +36,6 @@
 #include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/Qt/IMainWindow.h"
 
-#include "QtGui/QHeaderView"
-#include "QtGui/QTreeWidget"
-#include "QtGui/QTreeWidgetItemIterator"
 #include "QtGui/QVBoxLayout"
 #include "QtGui/QHBoxLayout"
 #include "QtGui/QPushButton"
@@ -47,6 +45,8 @@
 #include "QtGui/QMenu"
 #include "QtGui/QMessageBox"
 #include "QtGui/QSlider"
+
+using namespace Minerva;
 
 namespace Detail
 {
@@ -72,7 +72,7 @@ typedef PluginManager::UnknownSet Unknowns;
 
 LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) : 
   BaseClass ( parent ),
-  _tree ( 0x0 ),
+  _tree ( new QtTools::TreeControl ( parent ) ),
   _slider ( new QSlider ( Qt::Horizontal ) ),
   _caller ( caller ),
   _document (),
@@ -84,13 +84,11 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
   QHBoxLayout *buttonLayout ( new QHBoxLayout );
   QVBoxLayout *treeLayout ( new QVBoxLayout );
   
-  _tree = new QtTools::TreeControl ( caller, parent );
-  
   // We want a custom context menu.
   _tree->setContextMenuPolicy ( Qt::CustomContextMenu );
   
   // We want exteneded selection.
-  _tree->selectionMode ( QAbstractItemView::ExtendedSelection );
+  _tree->setSelectionMode ( QAbstractItemView::ExtendedSelection );
   
   // Add the tree to the layout.
   treeLayout->addWidget ( _tree );
@@ -98,13 +96,18 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
   topLayout->addLayout ( buttonLayout );
   topLayout->addLayout ( treeLayout );
   topLayout->addWidget ( _slider );
-  
+
   _slider->setRange ( 0, Detail::SLIDER_STEPS );
   _slider->setEnabled ( false );
 
-  this->_connectTreeViewSlots ();
+  // Connect signals and slots for TreeControl.
+  QObject::connect ( _tree, SIGNAL ( onTreeNodeChanged ( TreeNode * ) ), this, SLOT ( _onTreeNodeChanged ( TreeNode * ) ) );
+  QObject::connect ( _tree, SIGNAL ( onSelectionChanged() ),  this, SLOT ( _onItemSelectionChanged() ) );
+  QObject::connect ( _tree, SIGNAL ( onTreeNodeDoubleClicked( TreeNode * ) ), this, SLOT ( _onDoubleClick ( TreeNode * ) ) );
+  QObject::connect ( _tree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ), this,  SLOT   ( _onContextMenuShow ( const QPoint& ) ) );
   
-  connect ( _slider,     SIGNAL ( sliderReleased() ), SLOT ( _onSliderReleased() ) );
+  // Connect the slider.
+  QObject::connect ( _slider,     SIGNAL ( sliderReleased() ), SLOT ( _onSliderReleased() ) );
 }
 
 
@@ -123,50 +126,17 @@ LayersTree::~LayersTree()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the tree.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
-{
-  // Save the document;
-  _document = document;
-
-  _tree->buildTree ( document );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Connect slots and signals for the tree view.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayersTree::_connectTreeViewSlots ()
-{
-  connect ( _tree, SIGNAL ( onItemChanged ( QTreeWidgetItem*, int ) ), this, SLOT ( _onItemChanged( QTreeWidgetItem*, int ) ) );
-  connect ( _tree->treeWidget(), SIGNAL ( itemSelectionChanged() ), this, SLOT ( _onItemSelectionChanged() ) );
-  connect ( _tree->treeWidget(), SIGNAL ( itemDoubleClicked( QTreeWidgetItem*, int ) ), this, SLOT ( _onDoubleClick( QTreeWidgetItem*, int ) ) );
-  
-  // Notify us when a context menu is requested.
-  connect ( _tree, SIGNAL ( customContextMenuRequested ( const QPoint& ) ),
-            this,  SLOT   ( _onContextMenuShow ( const QPoint& ) ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Item has been double clicked.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_onDoubleClick ( QTreeWidgetItem * item, int columnNumber )
+void LayersTree::_onDoubleClick ( TreeNode * node )
 {
   Minerva::Interfaces::ILookAtLayer::QueryPtr lookAt ( _document );
-
+  
   if ( lookAt.valid() )
   {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != node ? node->node().get() : 0x0 );
     lookAt->lookAtLayer ( unknown.get() );
   }
 }
@@ -178,10 +148,70 @@ void LayersTree::_onDoubleClick ( QTreeWidgetItem * item, int columnNumber )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_onItemChanged ( QTreeWidgetItem * item, int columnNumber )
+void LayersTree::_onTreeNodeChanged ( TreeNode * node )
 {
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->unknown ( item ) );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != node ? node->node().get() : 0x0 );
   this->_dirtyAndRedraw ( unknown );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the tree.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::buildTree ( Usul::Interfaces::IUnknown * document )
+{
+  Usul::Interfaces::ITreeNode::QueryPtr node ( document );
+
+  if ( 0x0 != _tree )
+    _tree->setRootNode ( new TreeNode ( node.get() ) );
+  
+  // Save the document;
+  _document = document;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::favorites ( Favorites* favorites )
+{
+  _favorites = favorites;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Favorites* LayersTree::favorites() const
+{
+  return _favorites;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dirty and request a redraw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::_dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown )
+{
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
+  if ( dirty.valid() )
+    dirty->dirtyScene ( true, unknown );
+  
+  Usul::Interfaces::IDocument::QueryPtr document ( _document );
+  if ( document.valid() )
+    document->requestRedraw();
 }
 
 
@@ -235,8 +265,6 @@ void LayersTree::_addLayer ( Usul::Interfaces::IUnknown *parent )
       gui->apply ( parent, _caller );
     }
   }
-  
-  //this->buildTree ( _document );
 }
 
 
@@ -248,10 +276,13 @@ void LayersTree::_addLayer ( Usul::Interfaces::IUnknown *parent )
 
 void LayersTree::_removeSelectedLayers()
 {
+  if ( 0x0 == _tree )
+    return;
+    
   // Get all selected items.
-  typedef QtTools::TreeControl::TreeWidgetItems Items;
+  typedef QtTools::TreeControl::TreeNodeList Items;
   Items items ( _tree->selectedItems() );
-
+  
   if ( items.size() > 0 )
   {
     std::string message ( Usul::Strings::format ( "Delete ", items.size(), " items?" ) );
@@ -263,20 +294,23 @@ void LayersTree::_removeSelectedLayers()
   for ( Items::iterator iter = items.begin(); iter != items.end(); ++iter )
   {
     // Get the item.
-    QTreeWidgetItem *item ( *iter );
+    TreeNode *node ( *iter );
     
-    // Get the unknown for the item.
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->unknown ( item ) );
-    Usul::Interfaces::IUnknown::QueryPtr parent ( _tree->unknown ( item->parent() ) );
-    Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
-
-    if ( layer.valid () && parent.valid() )
+    if ( 0x0 != node )
     {
-      Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
-      command->execute ( parent );
-
-      _tree->removeItem( item );
-      this->_dirtyAndRedraw ( unknown.get() );
+      // Get the unknown for the item.
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( node->node().get() );
+      Usul::Interfaces::IUnknown::QueryPtr parent ( 0x0 != node->parent() ? node->parent()->node().get() : 0x0 );
+      Usul::Interfaces::IUnknown::QueryPtr layer ( unknown );
+    
+      if ( layer.valid () && parent.valid() )
+      {
+        Minerva::Core::Commands::RemoveLayer::RefPtr command ( new Minerva::Core::Commands::RemoveLayer ( layer.get() ) );
+        command->execute ( parent );
+      
+        _tree->removeNode ( node );
+        this->_dirtyAndRedraw ( unknown.get() );
+      }
     }
   }
 }
@@ -292,19 +326,19 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
 {
   if ( 0x0 == _tree )
     return;
-
-  QTreeWidgetItem *currentItem ( _tree->currentItem() );
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+  
+  TreeNode *currentItem ( _tree->currentNode() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != currentItem ? currentItem->node().get() : 0x0 );
   Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
-
+  
   QMenu menu;
-
+  
   // Add button.
   QtTools::Action add ( USUL_MAKE_COMMAND_ARG0 ( "Add...", "", this, &LayersTree::_addLayer, unknown.get() ) );
   
   Minerva::Interfaces::IAddLayer::QueryPtr al ( unknown );
   add.setEnabled( al.valid() );
-
+  
   // Remove button.
   QtTools::Action remove ( USUL_MAKE_COMMAND ( "Remove", "", this, &LayersTree::_removeSelectedLayers ) );
   remove.setText ( "Remove" );
@@ -344,16 +378,16 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
     menu.addAction( &refresh );
   
   menu.addAction ( &favorites );
-
+  
   QtTools::Menu addFromFavorites ( "Add From Favorites" );
-
+  
   if ( 0x0 != this->favorites() && al.valid() )
   {
     MenuKit::Menu::RefPtr subMenu ( this->favorites()->menu( unknown.get() ) );
     addFromFavorites.menu ( subMenu );
     menu.addMenu ( &addFromFavorites );
   }
-
+  
   menu.addAction ( &properties );
   
   menu.exec ( _tree->mapToGlobal ( pos ) );
@@ -391,20 +425,9 @@ Usul::Interfaces::IUnknown* LayersTree::_findEditor ( Usul::Interfaces::IUnknown
 
 void LayersTree::_onAddLayerFavorites()
 {
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+  TreeNode* node ( 0x0 != _tree ? _tree->currentNode() : 0x0 );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != node ? node->node().get() : 0x0 );
   emit addLayerFavorites ( unknown.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add layer to the tree.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayersTree::addLayer ( Usul::Interfaces::IUnknown * unknown )
-{
-  //this->buildTree( _document );
 }
 
 
@@ -425,9 +448,12 @@ void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usu
   
   if ( gui->handle ( layer.get() ) )
   {
-    gui->showModifyGUI( layer.get(), _document.get() );  
-    QTreeWidgetItem *item ( _tree->currentItem() );
-    item->setText( 0, layer->name().c_str() );
+    gui->showModifyGUI( layer.get(), _document.get() );
+    
+#if 0
+    //TreeNode *item ( _tree->currentNode() );
+    //item->setText( 0, layer->name().c_str() );
+#endif
   }
 }
 
@@ -440,7 +466,8 @@ void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usu
 
 void LayersTree::_onSliderReleased()
 {
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+  TreeNode* node ( 0x0 != _tree ? _tree->currentNode() : 0x0 );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != node ? node->node().get() : 0x0 );
   Usul::Interfaces::IRasterAlphas::QueryPtr ra ( unknown );
   if ( ra.valid() )
   {
@@ -459,7 +486,8 @@ void LayersTree::_onSliderReleased()
 
 void LayersTree::_onItemSelectionChanged()
 {
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( _tree->currentUnknown() );
+  TreeNode* node ( 0x0 != _tree ? _tree->currentNode() : 0x0 );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != node ? node->node().get() : 0x0 );
   Usul::Interfaces::IRasterAlphas::QueryPtr ra ( unknown );
   _slider->setEnabled( ra.valid() );
   
@@ -470,63 +498,24 @@ void LayersTree::_onItemSelectionChanged()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Dirty and request a redraw.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayersTree::_dirtyAndRedraw ( Usul::Interfaces::IUnknown *unknown )
-{
-  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( _document );
-  if ( dirty.valid() )
-    dirty->dirtyScene ( true, unknown );
-  
-  Usul::Interfaces::IDocument::QueryPtr document ( _document );
-  if ( document.valid() )
-    document->requestRedraw();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the favorites.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LayersTree::favorites ( Favorites* favorites )
-{
-  _favorites = favorites;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the favorites.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Favorites* LayersTree::favorites() const
-{
-  return _favorites;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Move the given layer up.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_moveLayerUp ( QTreeWidgetItem *item )
+void LayersTree::_moveLayerUp ( TreeNode *item )
 {
   if ( 0x0 == item || 0x0 == _tree )
     return;
   
   // Get the parent and the sibling.
-  QTreeWidgetItem *parent ( item->parent() );
+  TreeNode *parent ( item->parent() );
   
-  QTreeWidgetItemIterator iter ( item ); --iter;
-  QTreeWidgetItem *sibling ( *iter );
-
+  if ( 0x0 == parent )
+    return;
+  
+  int index ( parent->indexOfChild ( item ) ); --index;
+  TreeNode *sibling ( parent->child ( index ) );
+  
   this->_swapLayers( item, sibling, parent );
 }
 
@@ -537,16 +526,19 @@ void LayersTree::_moveLayerUp ( QTreeWidgetItem *item )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_moveLayerDown ( QTreeWidgetItem *item )
+void LayersTree::_moveLayerDown ( TreeNode *item )
 {
   if ( 0x0 == item || 0x0 == _tree )
     return;
   
   // Get the parent and the sibling.
-  QTreeWidgetItem *parent ( item->parent() );
+  TreeNode *parent ( item->parent() );
   
-  QTreeWidgetItemIterator iter ( item ); ++iter;
-  QTreeWidgetItem *sibling ( *iter );
+  if ( 0x0 == parent )
+    return;
+  
+  int index ( parent->indexOfChild ( item ) ); ++index;
+  TreeNode *sibling ( parent->child ( index ) );
   
   this->_swapLayers( item, sibling, parent );
 }
@@ -558,30 +550,25 @@ void LayersTree::_moveLayerDown ( QTreeWidgetItem *item )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_swapLayers ( QTreeWidgetItem *item0, QTreeWidgetItem *item1, QTreeWidgetItem *parent )
+void LayersTree::_swapLayers ( TreeNode *item0, TreeNode *item1, TreeNode *parent )
 {
   // Check input.
   if ( 0x0 == item0 || 0x0 == item1 || 0x0 == parent || 0x0 == _tree )
     return;
-  
-  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
-  Usul::Interfaces::IUnknown::QueryPtr unknown0 ( _tree->unknown ( item0 ) );
-  Usul::Interfaces::IUnknown::QueryPtr unknown1 ( _tree->unknown ( item1 ) );
-  
+
+  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( parent->node().get() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown0 ( item0->node().get() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown1 ( item1->node().get() );
+
   if ( swap.valid() && unknown0.valid() && unknown1.valid() )
   {
     swap->swapLayers ( unknown0, unknown1 );
-    
+
     const int index0 ( parent->indexOfChild ( item0 ) );
     const int index1 ( parent->indexOfChild ( item1 ) );
-    
-    typedef QList<QTreeWidgetItem*> Children;
-    Children children ( parent->takeChildren() );
-    children[index0] = item1;
-    children[index1] = item0;
-    
-    parent->addChildren ( children );
-    
+
+    parent->swap ( index0, index1 );
+
     this->_dirtyAndRedraw ( unknown0 );
     this->_dirtyAndRedraw ( unknown1 );
   }
@@ -594,15 +581,15 @@ void LayersTree::_swapLayers ( QTreeWidgetItem *item0, QTreeWidgetItem *item1, Q
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool LayersTree::_canMoveLayerUp ( QTreeWidgetItem *item ) const
+bool LayersTree::_canMoveLayerUp ( TreeNode *item ) const
 {
   if ( 0x0 == item || 0x0 == _tree )
     return false;
   
   // Get the parent.
-  QTreeWidgetItem *parent ( item->parent() );
+  TreeNode *parent ( item->parent() );
   
-  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
+  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( 0x0 != parent ? parent->node().get() : 0x0 );
   const int index ( 0x0 != parent ? parent->indexOfChild ( item ) : -1 );
   return swap.valid() && index > 0;
 }
@@ -614,15 +601,15 @@ bool LayersTree::_canMoveLayerUp ( QTreeWidgetItem *item ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool LayersTree::_canMoveLayerDown ( QTreeWidgetItem *item ) const
+bool LayersTree::_canMoveLayerDown ( TreeNode *item ) const
 {
   if ( 0x0 == item || 0x0 == _tree )
     return false;
   
   // Get the parent.
-  QTreeWidgetItem *parent ( item->parent() );
+  TreeNode *parent ( item->parent() );
   
-  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( _tree->unknown ( parent ) );
+  Minerva::Interfaces::ISwapLayers::QueryPtr swap ( 0x0 != parent ? parent->node().get() : 0x0 );
   const int index ( 0x0 != parent ? parent->indexOfChild ( item ) : -1 );
   return swap.valid() && ( index + 1 ) < parent->childCount();
 }

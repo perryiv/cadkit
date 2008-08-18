@@ -36,10 +36,10 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( LayerManagerComponent, LayerManagerComponent::
 ///////////////////////////////////////////////////////////////////////////////
 
 LayerManagerComponent::LayerManagerComponent() : BaseClass (),
-_caller ( static_cast < Usul::Interfaces::IUnknown * > ( 0x0 ) ),
-_docks (),
-_layers ( 0x0 ),
-_favorites ( 0x0 )
+  _caller ( static_cast < Usul::Interfaces::IUnknown * > ( 0x0 ) ),
+  _docks (),
+  _layers ( 0x0 ),
+  _favorites ( 0x0 )
 {
   // We want to be notified when the active document changes.
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
@@ -235,7 +235,7 @@ void LayerManagerComponent::initializePlugin ( Usul::Interfaces::IUnknown *calle
     std::auto_ptr<QDockWidget> dock ( Detail::makeDockWindow ( "GIS Layers", "GISLayersDockWidget", caller ) );
 
     // Create the tree for the layers.
-    _layers = new LayersTree ( caller, dock.get() );
+    _layers = new Minerva::LayersTree ( caller, dock.get() );
 
     // Add the dock to the main window.
     dock->setWidget( _layers );
@@ -262,7 +262,6 @@ void LayerManagerComponent::initializePlugin ( Usul::Interfaces::IUnknown *calle
   _layers->favorites ( _favorites );
   
   QObject::connect ( _layers,    SIGNAL ( addLayerFavorites ( Usul::Interfaces::IUnknown * ) ), _favorites, SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
-  QObject::connect ( _favorites, SIGNAL ( layerAdded ( Usul::Interfaces::IUnknown * ) ),        _layers,    SLOT ( addLayer ( Usul::Interfaces::IUnknown * ) ) );
 }
 
 

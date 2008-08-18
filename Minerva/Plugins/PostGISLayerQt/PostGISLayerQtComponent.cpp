@@ -184,7 +184,8 @@ void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, U
   if ( QDialog::Accepted == dialog.exec() )
   {
     // Remove the old one.
-    Minerva::Core::Commands::RemoveLayer::RefPtr removeLayer ( new Minerva::Core::Commands::RemoveLayer ( baseLayer.get() ) );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( baseLayer );
+    Minerva::Core::Commands::RemoveLayer::RefPtr removeLayer ( new Minerva::Core::Commands::RemoveLayer ( unknown.get() ) );
     removeLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
 
     // Add the new one.

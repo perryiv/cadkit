@@ -16,6 +16,8 @@
 #ifndef __QT_TOOLS_TREE_CONTROL_H__
 #define __QT_TOOLS_TREE_CONTROL_H__
 
+#include "QtTools/Export.h"
+
 #include "QtCore/QList"
 #include "QtGui/QTreeView"
 
@@ -26,7 +28,7 @@ namespace QtTools {
   class TreeNode;
   class TreeModel;
   
-class TreeControl : public QTreeView
+class QT_TOOLS_EXPORT TreeControl : public QTreeView
 {
   Q_OBJECT;
 public:

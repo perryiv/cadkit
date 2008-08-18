@@ -2,6 +2,8 @@
 
 cmake_minimum_required(VERSION "2.4")
 
+PROJECT(HELIOS)
+
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 OLD)
 endif(COMMAND cmake_policy)
@@ -72,7 +74,6 @@ IF(BUILD_MINERVA)
     ${CADKIT_INC_DIR}/Minerva/Layers/Kml
     ${CADKIT_INC_DIR}/Minerva/Document
     ${CADKIT_INC_DIR}/Minerva/Plugins/Document
-    ${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
     ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
     ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
     ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt

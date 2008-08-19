@@ -380,7 +380,6 @@
 		43FED971092452F800EBB610 /* StatusBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED82D092452F700EBB610 /* StatusBar.cpp */; };
 		43FED973092452F800EBB610 /* TextWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED82F092452F700EBB610 /* TextWindow.cpp */; };
 		43FED97A092452F800EBB610 /* Preferences.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED838092452F700EBB610 /* Preferences.cpp */; };
-		43FED97C092452F800EBB610 /* Busy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED83B092452F700EBB610 /* Busy.cpp */; };
 		43FED980092452F800EBB610 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED841092452F700EBB610 /* Clock.cpp */; };
 		43FED982092452F800EBB610 /* Host.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED843092452F700EBB610 /* Host.cpp */; };
 		43FED984092452F800EBB610 /* LastError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43FED845092452F700EBB610 /* LastError.cpp */; };
@@ -4340,8 +4339,6 @@
 		43FED836092452F700EBB610 /* Reset.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Reset.h; path = ../Usul/Scope/Reset.h; sourceTree = SOURCE_ROOT; };
 		43FED838092452F700EBB610 /* Preferences.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Preferences.cpp; path = ../Usul/Shared/Preferences.cpp; sourceTree = SOURCE_ROOT; };
 		43FED839092452F700EBB610 /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Preferences.h; path = ../Usul/Shared/Preferences.h; sourceTree = SOURCE_ROOT; };
-		43FED83B092452F700EBB610 /* Busy.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Busy.cpp; path = ../Usul/State/Busy.cpp; sourceTree = SOURCE_ROOT; };
-		43FED83C092452F700EBB610 /* Busy.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Busy.h; path = ../Usul/State/Busy.h; sourceTree = SOURCE_ROOT; };
 		43FED83E092452F700EBB610 /* Case.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Case.h; path = ../Usul/Strings/Case.h; sourceTree = SOURCE_ROOT; };
 		43FED83F092452F700EBB610 /* Trim.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Trim.h; path = ../Usul/Strings/Trim.h; sourceTree = SOURCE_ROOT; };
 		43FED841092452F700EBB610 /* Clock.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Clock.cpp; path = ../Usul/System/Clock.cpp; sourceTree = SOURCE_ROOT; };
@@ -7584,7 +7581,6 @@
 				43FED822092452F700EBB610 /* Resources */,
 				43FED831092452F700EBB610 /* Scope */,
 				43FED837092452F700EBB610 /* Shared */,
-				43FED83A092452F700EBB610 /* State */,
 				43FED83D092452F700EBB610 /* Strings */,
 				43FED840092452F700EBB610 /* System */,
 				43FED84D092452F700EBB610 /* Threads */,
@@ -8075,16 +8071,6 @@
 			);
 			name = Shared;
 			path = ../Usul/Shared;
-			sourceTree = SOURCE_ROOT;
-		};
-		43FED83A092452F700EBB610 /* State */ = {
-			isa = PBXGroup;
-			children = (
-				43FED83B092452F700EBB610 /* Busy.cpp */,
-				43FED83C092452F700EBB610 /* Busy.h */,
-			);
-			name = State;
-			path = ../Usul/State;
 			sourceTree = SOURCE_ROOT;
 		};
 		43FED83D092452F700EBB610 /* Strings */ = {
@@ -13380,7 +13366,6 @@
 				43FED971092452F800EBB610 /* StatusBar.cpp in Sources */,
 				43FED973092452F800EBB610 /* TextWindow.cpp in Sources */,
 				43FED97A092452F800EBB610 /* Preferences.cpp in Sources */,
-				43FED97C092452F800EBB610 /* Busy.cpp in Sources */,
 				43FED980092452F800EBB610 /* Clock.cpp in Sources */,
 				43FED982092452F800EBB610 /* Host.cpp in Sources */,
 				43FED984092452F800EBB610 /* LastError.cpp in Sources */,

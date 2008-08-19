@@ -76,7 +76,6 @@ SET (SOURCES
 ./Registry/Node.cpp
 ./Registry/Visitor.cpp
 ./User/Directory.cpp
-./State/Busy.cpp
 ./ID/GUID.cpp
 ./Functions/Color.cpp
 ./Functions/GUID.cpp

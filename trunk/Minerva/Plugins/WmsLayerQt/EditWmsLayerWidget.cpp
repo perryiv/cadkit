@@ -12,6 +12,12 @@
 #include "Minerva/Plugins/WmsLayerQt/OptionsDialog.h"
 #include "Minerva/Plugins/WmsLayerQt/AlphasDialog.h"
 
+#include "Usul/File/Boost.h"
+#include "Usul/Strings/Format.h"
+
+#include "QtGui/QMessageBox"
+
+#include <list>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +35,19 @@ EditWmsLayerWidget::EditWmsLayerWidget ( RasterLayerWms *layer, QWidget * parent
   {
     _name->setText( _layer->name().c_str() );
     _server->setText ( _layer->urlBase().c_str() );
+    
+    // Find the number of files.
+    typedef std::list<std::string> Filenames;
+    Filenames files;
+    Usul::File::findFiles ( _layer->cacheDirectory(), _layer->cacheFileExtension(), files );
+    _cacheInfoText->setText ( Usul::Strings::format ( files.size() ).c_str() );
+    _cacheDirectoryText->setText ( _layer->cacheDirectory().c_str() );
   }
+  
+  // Currently only implemented on OS X.
+#ifndef __APPLE__
+  viewCacheButton->setVisible ( false );
+#endif
   
   // Connect slots and signals.
   this->connect ( _name, SIGNAL ( editingFinished() ), this, SLOT ( _nameFinishedEditing() ) );
@@ -109,4 +127,44 @@ void EditWmsLayerWidget::on_viewAlphasButton_clicked()
     if ( QDialog::Accepted == dialog.exec() )
       _layer->alphas ( dialog.alphas() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Delete the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void EditWmsLayerWidget::on_deleteCacheButton_clicked()
+{
+  if ( 0x0 == _layer )
+    return;
+  
+  const std::string message ( "Are you sure you want to delete the cache?" );
+  if ( QMessageBox::Ok != QMessageBox::question ( this, "Confirm", message.c_str(), QMessageBox::Ok | QMessageBox::Cancel ) )
+    return;
+  
+  const std::string directory ( _layer->cacheDirectory() );
+  if ( boost::filesystem::exists ( directory ) && boost::filesystem::is_directory ( directory ) )
+    boost::filesystem::remove_all ( directory );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  View the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void EditWmsLayerWidget::on_viewCacheButton_clicked()
+{
+  if ( 0x0 == _layer )
+    return;
+  
+#ifdef __APPLE__
+  const std::string directory ( _layer->cacheDirectory() );
+  const std::string command ( Usul::Strings::format ( "open ", directory ) );
+  ::system ( command.c_str() );
+#endif
 }

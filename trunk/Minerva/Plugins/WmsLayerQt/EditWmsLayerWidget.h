@@ -35,6 +35,8 @@ protected slots:
   
   void on_viewOptionsButton_clicked();
   void on_viewAlphasButton_clicked();
+  void on_viewCacheButton_clicked();
+  void on_deleteCacheButton_clicked();
   
 private:
   RasterLayerWms::RefPtr _layer;

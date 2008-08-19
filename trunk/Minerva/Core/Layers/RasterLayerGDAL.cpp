@@ -466,7 +466,7 @@ std::string RasterLayerGDAL::_cacheDirectory() const
 
   const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
   const std::size_t hashValue ( BaseClass::_hashString ( Usul::File::fullPath ( file ) ) );
-  const std::string dir ( BaseClass::_buildCacheDir ( this->cacheDirectory(), "file_system", hashValue ) );
+  const std::string dir ( BaseClass::_buildCacheDir ( this->baseCacheDirectory(), "file_system", hashValue ) );
 
   return dir;
 }

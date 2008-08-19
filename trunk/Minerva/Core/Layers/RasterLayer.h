@@ -82,8 +82,8 @@ public:
   virtual void          alphas ( const Alphas& alphas );
     
   /// Get/set the cache directory.
-  void                  cacheDirectory ( const std::string& dir, bool makeDefault = false );
-  std::string           cacheDirectory() const;
+  void                  baseCacheDirectory ( const std::string& dir, bool makeDefault = false );
+  std::string           baseCacheDirectory() const;
 
   // Clone this layer.
   virtual IUnknown*     clone() const = 0;

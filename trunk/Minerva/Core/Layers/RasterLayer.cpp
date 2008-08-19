@@ -512,7 +512,7 @@ std::string RasterLayer::defaultCacheDirectory()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string RasterLayer::cacheDirectory() const
+std::string RasterLayer::baseCacheDirectory() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -526,7 +526,7 @@ std::string RasterLayer::cacheDirectory() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterLayer::cacheDirectory ( const std::string& dir, bool makeDefault )
+void RasterLayer::baseCacheDirectory ( const std::string& dir, bool makeDefault )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

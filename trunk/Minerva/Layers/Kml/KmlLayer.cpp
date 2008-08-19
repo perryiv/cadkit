@@ -20,6 +20,7 @@
 #include "Minerva/Core/Data/Model.h"
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/Polygon.h"
+#include "Minerva/Core/Data/ModelCache.h"
 #include "Minerva/Core/Utilities/Download.h"
 
 #include "XmlTree/XercesLife.h"
@@ -97,7 +98,8 @@ KmlLayer::KmlLayer() :
   _link ( 0x0 ),
   _lastUpdate( 0.0 ),
   _flags ( 0 ),
-	_styles()
+	_styles(),
+  _modelCache ( new ModelCache, true )
 {
   this->_addMember ( "filename", _filename );
 }
@@ -109,14 +111,15 @@ KmlLayer::KmlLayer() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::KmlLayer( const std::string& filename, const std::string& directory, const Styles& styles ) :
+KmlLayer::KmlLayer( const std::string& filename, const std::string& directory, const Styles& styles, ModelCache* cache ) :
   BaseClass(),
   _filename( filename ),
   _directory( directory ),
   _link ( 0x0 ),
   _lastUpdate( 0.0 ),
   _flags ( 0 ),
-	_styles( styles )
+	_styles ( styles ),
+  _modelCache ( cache, false )
 {
   this->_addMember ( "filename", _filename );
 }
@@ -128,14 +131,15 @@ KmlLayer::KmlLayer( const std::string& filename, const std::string& directory, c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::KmlLayer( Link* link, const Styles& styles ) :
+KmlLayer::KmlLayer( Link* link, const Styles& styles, ModelCache* cache ) :
   BaseClass(),
   _filename(),
   _directory(),
   _link ( link ),
   _lastUpdate ( 0.0 ),
   _flags ( 0 ),
-	_styles( styles )
+  _styles ( styles ),
+  _modelCache ( cache, false )
 {
   this->_addMember ( "filename", _filename );
 
@@ -150,9 +154,9 @@ KmlLayer::KmlLayer( Link* link, const Styles& styles ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer* KmlLayer::create ( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles )
+KmlLayer* KmlLayer::create ( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles, ModelCache* cache )
 {
-  KmlLayer::RefPtr kml ( new KmlLayer ( filename, directory, styles ) );
+  KmlLayer::RefPtr kml ( new KmlLayer ( filename, directory, styles, cache ) );
   kml->parseFolder ( node );
   kml->dirtyData ( false );
   kml->dirtyScene ( true );
@@ -166,9 +170,9 @@ KmlLayer* KmlLayer::create ( const XmlTree::Node& node, const std::string& filen
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer* KmlLayer::create ( Link* link, const Styles& styles )
+KmlLayer* KmlLayer::create ( Link* link, const Styles& styles, ModelCache* cache )
 {
-  KmlLayer::RefPtr kml ( new KmlLayer ( link, styles ) );
+  KmlLayer::RefPtr kml ( new KmlLayer ( link, styles, cache ) );
   return kml.release();
 }
 
@@ -181,6 +185,9 @@ KmlLayer* KmlLayer::create ( Link* link, const Styles& styles )
 
 KmlLayer::~KmlLayer()
 {
+  // Delete the model cache if we own it.
+  if ( _modelCache.second )
+    delete _modelCache.first;
 }
 
 
@@ -349,7 +356,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
     Styles styles ( Usul::Threads::Safe::get ( this->mutex(), _styles ) );
 
     // Make a new layer.
-    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( KmlLayer::create ( node, filename, directory, styles ) );
+    Minerva::Layers::Kml::KmlLayer::RefPtr layer ( KmlLayer::create ( node, filename, directory, styles, this->modelCache() ) );
     
     // Make sure the scene gets built.
     layer->dirtyScene ( true );
@@ -371,8 +378,8 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
         Styles styles ( Usul::Threads::Safe::get ( this->mutex(), _styles ) );
 
         // Make a new layer.
-        KmlLayer::RefPtr layer ( KmlLayer::create ( link.get(), styles ) );
-        layer->name( networkLink->name() );
+        KmlLayer::RefPtr layer ( KmlLayer::create ( link.get(), styles, this->modelCache() ) );
+        layer->name ( networkLink->name() );
         layer->read ( 0x0, 0x0 );
         this->add ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get() ) );
       }
@@ -380,7 +387,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   }
   else if ( "Placemark" == name )
   {
-    this->_parsePlacemark( node );
+    this->_parsePlacemark ( node );
   }
 }
 
@@ -612,9 +619,9 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
     std::string filename ( this->_buildFilename ( link ) );
 
     if ( false == filename.empty() )
-    {
+    {      
       LoadModel load;
-      osg::ref_ptr<osg::Node> node ( load ( filename ) );
+      osg::ref_ptr<osg::Node> node ( load ( filename, this->modelCache() ) );
       if ( node.valid() )
       {
         model->model ( node.get() );
@@ -795,7 +802,7 @@ bool KmlLayer::isDownloading() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlLayer::downloading( bool b )
+void KmlLayer::downloading ( bool b )
 {
   Guard guard ( this );
   _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, KmlLayer::DOWNLOADING, b );
@@ -821,7 +828,7 @@ bool KmlLayer::isReading() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlLayer::reading( bool b )
+void KmlLayer::reading ( bool b )
 {
   Guard guard ( this );
   _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, KmlLayer::READING, b );
@@ -880,4 +887,17 @@ std::string KmlLayer::_buildFilename ( Link *link ) const
   }
 
   return "";
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the model cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+KmlLayer::ModelCache* KmlLayer::modelCache() const
+{
+  Guard guard ( this->mutex() );
+  return _modelCache.first;
 }

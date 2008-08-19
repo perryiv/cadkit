@@ -10,6 +10,7 @@
 
 #include "Minerva/Layers/Kml/LoadModel.h"
 #include "Minerva/Core/Utilities/Download.h"
+#include "Minerva/Core/Data/ModelCache.h"
 
 #include "OsgTools/Visitor.h"
 #include "OsgTools/State/StateSet.h"
@@ -117,7 +118,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* LoadModel::operator() ( const std::string& filename )
+osg::Node* LoadModel::operator() ( const std::string& filename, ModelCache *cache )
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
 
@@ -126,6 +127,9 @@ osg::Node* LoadModel::operator() ( const std::string& filename )
   {
     this->_preProcessCollada ( filename );
   }
+  
+  if ( 0x0 != cache && cache->hasModel ( filename ) )
+    return cache->model ( filename );
 
   Guard guard ( Detail::_readMutex );
   osg::ref_ptr<osg::Node> node ( osgDB::readNodeFile ( filename ) );
@@ -141,6 +145,9 @@ osg::Node* LoadModel::operator() ( const std::string& filename )
     //OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
     OsgTools::State::StateSet::setNormalize ( ss.get(), true );
   }
+  
+  if ( 0x0 != cache )
+    cache->addModel ( filename, node.get() );
 
   return node.release();
 }

@@ -1365,8 +1365,6 @@
 		66A8B83C0E071810001C436C /* Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8B83A0E071810001C436C /* Group.cpp */; };
 		66A8B83D0E071810001C436C /* Group.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8B83B0E071810001C436C /* Group.h */; };
 		66A8B8410E071829001C436C /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
-		66A91DBA0E2723360048613C /* GeoRSSCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A91DB80E2723360048613C /* GeoRSSCallback.h */; };
-		66A91DBB0E2723360048613C /* GeoRSSCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A91DB90E2723360048613C /* GeoRSSCallback.cpp */; };
 		66A959580DB7E3E600943BA4 /* AnimationControlComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A959520DB7E3E600943BA4 /* AnimationControlComponent.cpp */; };
 		66A959590DB7E3E600943BA4 /* AnimationControlComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A959530DB7E3E600943BA4 /* AnimationControlComponent.h */; };
 		66A9595A0DB7E3E600943BA4 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A959560DB7E3E600943BA4 /* CompileGuard.h */; };
@@ -1592,6 +1590,10 @@
 		66DCF9460DAD837A008E6F4A /* H5File.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DCF9440DAD837A008E6F4A /* H5File.h */; };
 		66DCF9490DAD83A2008E6F4A /* Dataset.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DCF9470DAD83A2008E6F4A /* Dataset.h */; };
 		66DCF94A0DAD83A2008E6F4A /* Dataset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DCF9480DAD83A2008E6F4A /* Dataset.cpp */; };
+		66DD54530E5B4987009FAA2F /* ModelCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DD54510E5B4987009FAA2F /* ModelCache.h */; };
+		66DD54540E5B4987009FAA2F /* ModelCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DD54520E5B4987009FAA2F /* ModelCache.cpp */; };
+		66E093FA0E5A8B74003B11EB /* Item.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E093F80E5A8B74003B11EB /* Item.h */; };
+		66E093FB0E5A8B74003B11EB /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E093F90E5A8B74003B11EB /* Item.cpp */; };
 		66E1A4D50E207CE200D3E219 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66E1A4D60E207CE200D3E219 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66E1A4D70E207CE200D3E219 /* osgViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 669BD29C0E0EF9DF00E598FF /* osgViewer.framework */; };
@@ -5340,8 +5342,6 @@
 		66A8B8340E0717EB001C436C /* MenuCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MenuCommands.h; path = ../MenuKit/MenuCommands.h; sourceTree = SOURCE_ROOT; };
 		66A8B83A0E071810001C436C /* Group.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Group.cpp; path = Qt/Commands/Group.cpp; sourceTree = "<group>"; };
 		66A8B83B0E071810001C436C /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Group.h; path = Qt/Commands/Group.h; sourceTree = "<group>"; };
-		66A91DB80E2723360048613C /* GeoRSSCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoRSSCallback.h; sourceTree = "<group>"; };
-		66A91DB90E2723360048613C /* GeoRSSCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoRSSCallback.cpp; sourceTree = "<group>"; };
 		66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtAnimationControl.plug; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A959520DB7E3E600943BA4 /* AnimationControlComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationControlComponent.cpp; sourceTree = "<group>"; };
 		66A959530DB7E3E600943BA4 /* AnimationControlComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationControlComponent.h; sourceTree = "<group>"; };
@@ -5518,6 +5518,10 @@
 		66DCF9440DAD837A008E6F4A /* H5File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = H5File.h; path = ../Experimental/Flash/FlashModel/H5File.h; sourceTree = SOURCE_ROOT; };
 		66DCF9470DAD83A2008E6F4A /* Dataset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dataset.h; path = ../Experimental/Flash/FlashModel/Dataset.h; sourceTree = SOURCE_ROOT; };
 		66DCF9480DAD83A2008E6F4A /* Dataset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dataset.cpp; path = ../Experimental/Flash/FlashModel/Dataset.cpp; sourceTree = SOURCE_ROOT; };
+		66DD54510E5B4987009FAA2F /* ModelCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelCache.h; sourceTree = "<group>"; };
+		66DD54520E5B4987009FAA2F /* ModelCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModelCache.cpp; sourceTree = "<group>"; };
+		66E093F80E5A8B74003B11EB /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
+		66E093F90E5A8B74003B11EB /* Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
 		66E1A4DD0E207CE200D3E219 /* TestLegend02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLegend02.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66E1A4FA0E207CE300D3E219 /* TestLegend-Info02.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TestLegend-Info02.plist"; sourceTree = SOURCE_ROOT; };
 		66E1D7200D8C375D00732EE0 /* Atmosphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Atmosphere.h; sourceTree = "<group>"; };
@@ -8210,8 +8214,8 @@
 				66190FD10E1C8ABC004CE994 /* GeoRSSLayer.cpp */,
 				66190FD20E1C8ABC004CE994 /* GeoRSSLayer.h */,
 				66190FD30E1C8ABC004CE994 /* MinervaGeoRSS.vcproj */,
-				66A91DB80E2723360048613C /* GeoRSSCallback.h */,
-				66A91DB90E2723360048613C /* GeoRSSCallback.cpp */,
+				66E093F80E5A8B74003B11EB /* Item.h */,
+				66E093F90E5A8B74003B11EB /* Item.cpp */,
 			);
 			path = GeoRSS;
 			sourceTree = "<group>";
@@ -8345,6 +8349,8 @@
 				661B8AD90E1ECB41005FC8CA /* Line.h */,
 				661B8ADA0E1ECB41005FC8CA /* Model.cpp */,
 				661B8ADB0E1ECB41005FC8CA /* Model.h */,
+				66DD54520E5B4987009FAA2F /* ModelCache.cpp */,
+				66DD54510E5B4987009FAA2F /* ModelCache.h */,
 				661B8ADC0E1ECB41005FC8CA /* Object.cpp */,
 				661B8ADD0E1ECB41005FC8CA /* Object.h */,
 				661B8ADE0E1ECB41005FC8CA /* Point.cpp */,
@@ -10700,7 +10706,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66190FD50E1C8ABC004CE994 /* GeoRSSLayer.h in Headers */,
-				66A91DBA0E2723360048613C /* GeoRSSCallback.h in Headers */,
+				66E093FA0E5A8B74003B11EB /* Item.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11224,6 +11230,7 @@
 				667A27D20E282C670047A376 /* ISwapLayers.h in Headers */,
 				66A6259D0E2C702800795F3D /* GeoCode.h in Headers */,
 				669F2A810E4D30C9007EB41A /* RasterLayerOssim.h in Headers */,
+				66DD54530E5B4987009FAA2F /* ModelCache.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13465,7 +13472,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66190FD40E1C8ABC004CE994 /* GeoRSSLayer.cpp in Sources */,
-				66A91DBB0E2723360048613C /* GeoRSSCallback.cpp in Sources */,
+				66E093FB0E5A8B74003B11EB /* Item.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14082,6 +14089,7 @@
 				662638A50E2677A700442B4D /* Download.cpp in Sources */,
 				66A6259E0E2C702800795F3D /* GeoCode.cpp in Sources */,
 				669F2A800E4D30C9007EB41A /* RasterLayerOssim.cpp in Sources */,
+				66DD54540E5B4987009FAA2F /* ModelCache.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

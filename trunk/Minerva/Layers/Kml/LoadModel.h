@@ -18,6 +18,7 @@
 #define __MINERVA_LAYERS_KML_LOAD_MODEL_H__
 
 namespace osg { class Node; }
+namespace Minerva { namespace Core { namespace Data { class ModelCache; } } }
 
 #include <string>
 
@@ -28,9 +29,11 @@ namespace Kml {
 class LoadModel
 {
 public:
+  typedef Minerva::Core::Data::ModelCache            ModelCache;
+  
   LoadModel();
 
-  osg::Node* operator() ( const std::string& filename );
+  osg::Node* operator() ( const std::string& filename, ModelCache *cache );
 
   void       toMeters ( double amount );
   double     toMeters() const;

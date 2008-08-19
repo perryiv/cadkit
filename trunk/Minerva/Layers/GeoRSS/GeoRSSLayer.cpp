@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/GeoRSS/GeoRSSLayer.h"
-#include "Minerva/Layers/GeoRSS/GeoRSSCallback.h"
+#include "Minerva/Layers/GeoRSS/Item.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Utilities/Download.h"
@@ -177,33 +177,33 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   // Make sure the file exists before reading.
   if ( false == Usul::Predicates::FileExists::test ( filename ) )
     return;
-  
+
   // Set the name.
   if ( true == this->name().empty() )
     this->name ( filename );
-  
+
   // Help shorten lines.
   namespace UA = Usul::Adaptors;
-  
+
   // Scope the reading flag.
   Usul::Scope::Caller::RefPtr scope ( Usul::Scope::makeCaller ( UA::bind1 ( true,  UA::memberFunction ( this, &GeoRSSLayer::reading ) ), 
                                                                 UA::bind1 ( false, UA::memberFunction ( this, &GeoRSSLayer::reading ) ) ) );
-  
+
   // TODO: I think a SAX parser is more appropraite here, because we can stop the parsing if there isn't new data.
   XmlTree::XercesLife life;
   XmlTree::Document::RefPtr doc ( new XmlTree::Document );
   doc->load ( filename );
-  
+
   // Get the date the stream was modified.
   Children lastPubDateNode ( doc->find ( "lastBuildDate", true ) );
   const std::string date ( false == lastPubDateNode.empty() ? lastPubDateNode.front()->value() : "" );
   boost::posix_time::ptime utcTime ( Detail::parseDate ( date ) );
-  
+
   boost::posix_time::ptime lastDataUpdate ( Usul::Threads::Safe::get ( this->mutex(), _lastDataUpdate ) );
-  
+
   std::cout << "Last data update: " << lastDataUpdate << std::endl;
   std::cout << "Last feed update: " << utcTime << std::endl;
-  
+
   // Check the date against the time time we updated.
   if ( false == lastDataUpdate.is_not_a_date_time() && false == utcTime.is_not_a_date_time() )
   {
@@ -215,12 +215,12 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
       return;
     }
   }
-  
+
   // Clear what we have.
   this->clear();
-  
+
   unsigned int i ( 0 );
-  
+
   // Get all the items.
   Children children ( doc->find ( "item", true ) );
   BOOST_FOREACH ( XmlTree::Node::ValidRefPtr node, children )
@@ -228,17 +228,17 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
     std::cout << "Adding item " << ++i << " of " << children.size() << std::endl;
     this->_parseItem( *node );
   }
-  
+
   // Stack the points.
   Minerva::Core::Visitors::StackPoints::RefPtr stack ( new Minerva::Core::Visitors::StackPoints );
   this->accept ( *stack );
-  
+
   // Our data is no longer dirty.
   this->dirtyData ( false );
-  
+
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
-  
+
   // Update last time.
   const boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
   Usul::Threads::Safe::set ( this->mutex(), now, _lastDataUpdate );
@@ -278,11 +278,10 @@ namespace Helper
 
 void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
 {
+  Item::RefPtr object ( new Item );
+  
   // Get the color.
   Usul::Math::Vec4f color ( Usul::Threads::Safe::get ( this->mutex(), _color ) );
-
-  // Make a new callback.
-  GeoRSSCallback::RefPtr cb ( new GeoRSSCallback );
 
   // Get the title.
   Children titleNode ( node.find ( "title", false ) );
@@ -291,7 +290,7 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   // Look for the publication date.
   Children pubDateNode ( node.find ( "pubDate", false ) );
   const std::string pubDate ( pubDateNode.empty() ? "" : pubDateNode.front()->value() );
-  cb->date ( pubDate );
+  object->date ( pubDate );
 
   // Look for an image.
   Children imageNode ( node.find ( "media:content", true ) );
@@ -326,10 +325,10 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
         filename = newName;
       }
       
-      cb->imageFilename ( filename );
+      object->imageFilename ( filename );
       unsigned int w ( width.empty() ? 256 : Usul::Convert::Type<std::string, unsigned int>::convert ( width ) );
       unsigned int h ( height.empty() ? 256 : Usul::Convert::Type<std::string, unsigned int>::convert ( height ) );
-      cb->imageSize ( w, h );
+      object->imageSize ( w, h );
     }
   }
   
@@ -343,6 +342,15 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   // Look for a description.
   Children descriptionNode ( node.find ( "media:description", true ) );
   const std::string description ( descriptionNode.empty() ? "" : descriptionNode.front()->value() );
+  
+  // Look for the categories.
+  Children categoryNodes ( node.find ( "category", true ) );
+  Item::Categories categories;
+  for ( Children::const_iterator iter = categoryNodes.begin(); iter != categoryNodes.end(); ++iter )
+  {
+    categories.push_back ( (*iter)->value() );
+  }
+  object->categories ( categories );
 
   Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
   point->autotransform ( false );
@@ -351,10 +359,8 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   point->color ( color );
   point->point ( Usul::Math::Vec3d ( lon, lat, 0.0 ) );
 
-  DataObject::RefPtr object ( new DataObject );
   object->name ( title );
   object->description ( description );
-  object->clickedCallback ( cb.get() );
 
   // Add the geometry.
   object->addGeometry ( point );

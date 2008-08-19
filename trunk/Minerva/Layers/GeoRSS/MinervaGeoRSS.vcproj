@@ -223,11 +223,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GeoRSSCallback.cpp"
+				RelativePath=".\Item.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\GeoRSSCallback.h"
+				RelativePath=".\Item.h"
 				>
 			</File>
 			<File

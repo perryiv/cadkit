@@ -24,7 +24,6 @@
 
 #include <string>
 
-
 class PointComponent : public Usul::Base::Referenced,
                        public Usul::Interfaces::IPlugin,
                        public Usul::Interfaces::IDocumentCreate
@@ -62,6 +61,7 @@ protected:
 
   /// Use reference counting.
   virtual ~PointComponent();
+
 };
 
 

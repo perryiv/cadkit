@@ -105,9 +105,6 @@ void PointLoader::_started ()
 
   Helper::checkCancelledState ( this );
 
-  // Sanity check.    
-  // USUL_ASSERT ( _fileSize == Usul::File::size ( _path ) );
-
   // Read the points
   infile.read( reinterpret_cast<char *> ( &((*points)[0]) ), fileSize );
 

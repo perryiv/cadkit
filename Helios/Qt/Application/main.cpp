@@ -20,7 +20,9 @@
 
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/System/DateTime.h"
+#include "Usul/System/Environment.h"
 #include "Usul/Trace/Print.h"
+#include "Usul/Convert/Convert.h"
 
 #include <string>
 
@@ -46,8 +48,11 @@ int main ( int argc, char **argv )
   const std::string plugins ( "Helios.plugins" );
   const std::string manual  ( "" );
 
+
   // Other configurations.
-  const unsigned int jobManagerThreadPoolSize ( 4 );
+  // check for the existance of the thread pool size environment variable
+  const std::string numThreads ( Usul::System::Environment::get( "HELIOS_JOB_MANAGER_THREAD_POOL_SIZE" ) );
+  const unsigned int jobManagerThreadPoolSize ( ( numThreads.empty() ? 4 : Usul::Convert::Type< std::string, unsigned int >::convert( numThreads ) ) );
 
   try
   {

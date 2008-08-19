@@ -22,6 +22,10 @@
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
 
+#include "Usul/Interfaces/IColorEditor.h"
+#include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/IViewport.h"
+
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 #include "Usul/Scope/RemoveFile.h"
@@ -36,8 +40,8 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCheckCommand.h"
-#include "Usul/Interfaces/IColorEditor.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Jobs/Manager.h"
 
 #include "OsgTools/State/StateSet.h"
 
@@ -72,12 +76,17 @@ PointDocument::PointDocument() : BaseClass ( "Point Document" ),
 _pointSet( new PointSet() ),
 _numPoints( 0 ),
 _material( new osg::Material() ),
-_color( 1.0f, 0.0f, 0.0f, 1.0f ),
-_workingDir()
+_color( 0.5f, 0.5f, 0.25f, 1.0f ),
+_workingDir(),
+_xpos( 0 ),
+_ypos( 0 )
 {
   // Set the default material ambient and diffuse
   _material->setAmbient( osg::Material::FRONT_AND_BACK, _color );
   _material->setDiffuse( osg::Material::FRONT_AND_BACK, _color );
+  
+  // Usul::Jobs::Manager::init( 15, false );
+  Usul::Jobs::Manager::instance().addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
 }
 
 
@@ -106,6 +115,10 @@ Usul::Interfaces::IUnknown *PointDocument::queryInterface ( unsigned long iid )
       return static_cast < Usul::Interfaces::IBuildScene* > ( this );
     case Usul::Interfaces::IMenuAdd::IID:
       return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+    case Usul::Interfaces::IJobFinishedListener::IID:
+      return static_cast < Usul::Interfaces::IJobFinishedListener * > ( this );
+    case Usul::Interfaces::IUpdateListener::IID:
+      return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
     default:
       return BaseClass::queryInterface ( iid );
   }
@@ -897,6 +910,89 @@ void PointDocument::jobFinished ( Usul::Jobs::Job *job )
   //NOTE: This can still be further optimized
 
   // redraw the scene
-  this->redraw();
+  this->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a view from this document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::removeView ( Usul::Interfaces::IView *view )
+{
+  // Call the base class' first.
+  BaseClass::removeView ( view );
+
+  // If there are no more views, remove the job finished listener.
+  if ( 0 == this->numViews() )
+  {
+    Usul::Jobs::Manager::instance().removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update callback
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void PointDocument::updateNotify( Unknown *caller )
+{
+  // Job update stuff
+  unsigned int numQueued ( Usul::Jobs::Manager::instance().numJobsQueued() );
+  unsigned int numRunning ( Usul::Jobs::Manager::instance().numJobsExecuting() );
+#if 0
+  std::string status( "" );
+  if( 0 != numQueued && 0 != numRunning )
+  {
+    status = Usul::Strings::format( "Number of running Jobs: ", numRunning, "\nNumber of queued jobs: ", numQueued );
+  }
+  this->_setStatusText( status, _xpos, _ypos, 0.0, 0.95, caller );
+#else
+  std::string status( Usul::Strings::format( "Number of running Jobs: ", numRunning, "\nNumber of queued jobs: ", numQueued ) );
+  this->_setStatusText( status, _xpos, _ypos, 0.0, 0.95, caller );
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the status text
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::_setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
+{
+  Guard guard ( this ); 
+
+  Usul::Interfaces::ITextMatrix::QueryPtr textMatrix ( caller );
+  if( false == textMatrix.valid() )
+    throw std::runtime_error ( "Error 3793514250: Failed to find a valid interface to Usul::Interfaces::ITextMatrix " );
+
+  Usul::Interfaces::IViewport::QueryPtr viewPort( caller );
+  if( false == viewPort.valid() )
+    throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
+
+  textMatrix->removeText( static_cast< unsigned int > ( textXPos ),
+                          static_cast< unsigned int > ( textYPos ) );
+   
+  const double xpos ( ::floor( viewPort->width()  * xmult ) );
+  const double ypos ( ::floor( viewPort->height() * ymult ) );
+
+#if 0
+  osg::Vec4f fcolor (  0.841, 0.763, 0.371, 1 );
+  osg::Vec4f bcolor (  0.841, 0.763, 0.371, 1 );
+#else
+  osg::Vec4f fcolor (  1.0, 1.0, 1.0, 1 );
+  osg::Vec4f bcolor (  0.0, 0.0, 0.0, 1 );
+#endif
+
+  textXPos = static_cast< unsigned int > ( xpos );
+  textYPos = static_cast< unsigned int > ( ypos );
+
+  textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
 }
 

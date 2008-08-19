@@ -22,7 +22,7 @@
 
 #include <vector>
 
-namespace Minerva { namespace Core { namespace Data { class DataObject; } } }
+namespace Minerva { namespace Core { namespace Data { class DataObject; class ModelCache; } } }
 namespace XmlTree { class Node; }
 namespace osg { class Node; }
 
@@ -43,6 +43,7 @@ public:
   typedef Minerva::Core::Layers::Container           BaseClass;
   typedef Minerva::Core::Data::DataObject            DataObject;
   typedef Minerva::Core::Data::Geometry              Geometry;
+  typedef Minerva::Core::Data::ModelCache            ModelCache;
   typedef std::map<std::string,Style::RefPtr>        Styles;
   
   /// Smart-pointer definitions.
@@ -52,8 +53,8 @@ public:
   KmlLayer();
   
   // Creation functions.
-  static KmlLayer*            create ( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles );
-  static KmlLayer*            create ( Link* link, const Styles& styles );
+  static KmlLayer*            create ( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles, ModelCache * );
+  static KmlLayer*            create ( Link* link, const Styles& styles, ModelCache* );
   
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
@@ -69,6 +70,9 @@ public:
   bool                        isDownloading() const;
   void                        downloading( bool b );
   
+  // Get the model cache.
+  ModelCache*                 modelCache() const;
+  
   // Get/Set reading flag.
   bool                        isReading() const;
   void                        reading( bool b );
@@ -77,8 +81,8 @@ public:
   
 protected:
 
-  KmlLayer( Link* link, const Styles& styles );
-  KmlLayer( const std::string& filename, const std::string& directory, const Styles& styles );
+  KmlLayer ( Link* link, const Styles& styles, ModelCache* );
+  KmlLayer ( const std::string& filename, const std::string& directory, const Styles& styles, ModelCache* );
   virtual ~KmlLayer();
 
   // Filename from link.  Will download if needed.
@@ -120,6 +124,7 @@ private:
   double _lastUpdate;
   unsigned int _flags;
 	Styles _styles;
+  std::pair<ModelCache*,bool> _modelCache;
   
   SERIALIZE_XML_CLASS_NAME ( KmlLayer );
 };

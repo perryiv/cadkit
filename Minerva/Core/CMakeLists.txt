@@ -58,6 +58,7 @@ SET (SOURCES
 ./Data/Geometry.cpp
 ./Data/Line.cpp
 ./Data/Model.cpp
+./Data/ModelCache.cpp
 ./Data/Object.cpp
 ./Data/Point.cpp
 ./Data/Polygon.cpp

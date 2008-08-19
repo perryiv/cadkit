@@ -95,7 +95,7 @@ public:
   void                  addGeometry ( Geometry* geometry );
 
   /// DataObject has been clicked.
-  Item*                 clicked ( Usul::Interfaces::IUnknown* caller = 0x0 ) const;
+  virtual Item*         clicked ( Usul::Interfaces::IUnknown* caller = 0x0 ) const;
   
   /// Set/get the clicked callback.
   void                  clickedCallback ( ClickedCallback* );

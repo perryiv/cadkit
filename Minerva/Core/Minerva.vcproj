@@ -281,6 +281,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\ModelCache.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\ModelCache.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\Object.cpp"
 						>
 					</File>

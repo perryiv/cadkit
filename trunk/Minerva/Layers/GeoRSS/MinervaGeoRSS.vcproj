@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="curld.lib osgd.lib"
+				AdditionalDependencies="osgd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGeoRSSd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(CURL_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MinervaGeoRSSd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGeoRSSd.lib"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="curl.lib osg.lib"
+				AdditionalDependencies="osg.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaGeoRSS.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(CURL_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
 				ProgramDatabaseFile=".\Release/MinervaGeoRSS.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaGeoRSS.lib"
 			/>

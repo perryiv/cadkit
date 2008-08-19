@@ -11,10 +11,10 @@
 #ifndef __USUL_FILE_BOOST_H__
 #define __USUL_FILE_BOOST_H__
 
-#include "boost/filesystem/operations.hpp"
-
 #include "Usul/Adaptors/Boost.h"
 #include "Usul/File/Path.h"
+
+#include "boost/filesystem/operations.hpp"
 
 namespace Usul 
 {

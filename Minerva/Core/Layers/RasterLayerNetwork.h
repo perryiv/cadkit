@@ -41,6 +41,12 @@ public:
 
   RasterLayerNetwork ( const Extents &maxExtents = Extents ( -180, -90, 180, 90 ), const std::string &url = std::string(), const Options &options = Options() );
   
+  /// The cache directory.
+  std::string           cacheDirectory() const;
+  
+  /// The cache file extension.
+  std::string           cacheFileExtension() const;
+  
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node& node );
   

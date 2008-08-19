@@ -392,7 +392,7 @@ AddWmsLayerWidget::Layer* AddWmsLayerWidget::_makeLayer ( const Extents& extents
   layer->urlBase ( server );
   
   // Set the cache directory.
-  layer->cacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
+  layer->baseCacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
   
   return layer.release();
 }

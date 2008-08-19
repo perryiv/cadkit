@@ -333,7 +333,7 @@ std::string RasterLayerNetwork::_cacheDirectory() const
 
   std::string urlProxy ( BaseClass::_mangledURL ( Usul::Threads::Safe::get ( this->mutex(), _url ) ) );
   const std::size_t hashValue ( BaseClass::_hashString ( this->_getAllOptions() ) );
-  const std::string dir ( BaseClass::_buildCacheDir ( this->cacheDirectory(), urlProxy, hashValue ) );
+  const std::string dir ( BaseClass::_buildCacheDir ( this->baseCacheDirectory(), urlProxy, hashValue ) );
   return dir;
 }
 
@@ -583,4 +583,28 @@ bool RasterLayerNetwork::useNetwork() const
 		return false;
 
 	return Usul::Threads::Safe::get ( this->mutex(), _useNetwork );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The cache directory for this layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerNetwork::cacheDirectory() const
+{
+  return this->_cacheDirectory();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The cache file extension.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerNetwork::cacheFileExtension() const
+{
+  return this->_cacheFileExtension();
 }

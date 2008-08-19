@@ -606,7 +606,7 @@ std::string RasterLayerOssim::_cacheDirectory() const
   USUL_TRACE_SCOPE;
 
   const std::size_t hashValue ( BaseClass::_hashString ( Usul::File::fullPath ( this->filename() ) ) );
-  const std::string dir ( BaseClass::_buildCacheDir ( this->cacheDirectory(), "file_system", hashValue ) );
+  const std::string dir ( BaseClass::_buildCacheDir ( this->baseCacheDirectory(), "file_system", hashValue ) );
   return dir;
 }
 

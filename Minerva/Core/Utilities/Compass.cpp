@@ -29,6 +29,81 @@ using namespace Minerva::Core::Utilities;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build a triangle fan object to use as a compass face
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+
+  osg::Geode* buildTriangleFan( osg::Image* image, float zoff, float radius, unsigned int numSlices, unsigned int render_level )
+  {
+    osg::ref_ptr< osg::StateSet > stateset ( new osg::StateSet );
+
+    if ( 0x0 != image )
+    {
+      osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D ); 
+      texture->setImage ( image );
+      stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );      
+    }
+
+    stateset->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+    stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
+    stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    stateset->setRenderBinDetails ( render_level, "RenderBin" );
+
+    osg::ref_ptr< osg::Vec3Array > fan ( new osg::Vec3Array );
+    osg::ref_ptr< osg::Vec2Array > fan_tex ( new osg::Vec2Array );
+
+    fan->reserve ( numSlices + 1 );
+    fan_tex->reserve ( numSlices + 1 );
+
+    fan->push_back( osg::Vec3 ( 0.0f, 0.0f, zoff ) );
+    fan_tex->push_back( osg::Vec2 ( 0.5f, 0.5f ) );
+
+    for ( unsigned int x = 0; x < numSlices + 1; ++x )
+    {	
+      const float angle ( float ( x ) * ( ( 2 * osg::PI ) / numSlices ) );
+      fan->push_back ( osg::Vec3 ( radius * ( cos( angle ) ), radius * ( sin ( angle ) ), zoff ) );
+      fan_tex->push_back ( osg::Vec2 ( 0.5f + ( 0.5f * ( cos( angle ) ) ), 0.5f + ( 0.5f * ( sin ( angle ) ) ) ) );
+    }
+
+    // Make a new geometry.
+    osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry ); 
+
+    // Set the colors.
+    //geometry->setColorArray ( _colors.get() );
+    //geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+
+    // Set the vertices.
+    geometry->setVertexArray ( fan.get() );
+
+    // set the texture coordinates.
+    geometry->setTexCoordArray ( 0, fan_tex.get() );
+
+    // Set the one normal.
+    osg::ref_ptr< osg::Vec3Array > normal ( new osg::Vec3Array );
+    normal->push_back ( osg::Vec3 ( 0.0f, 0.0f, 1.0f ) );
+    geometry->setNormalArray ( normal.get() );
+    geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
+
+    // Draw a triangle fan.
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_FAN, 0, fan->size() ) );
+
+    // Set the state set.
+    geometry->setStateSet ( stateset.get() );
+
+    // Make the geode.
+    osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
+    geode->addDrawable ( geometry.get() );
+
+    return geode.release();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,16 +124,19 @@ Compass::Compass() : BaseClass(),
 {
   _colors->push_back( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   
-  if( Usul::Predicates::FileExists::test ( _ring ) )
+  osg::ref_ptr<osg::Image> imageRing ( osgDB::readImageFile ( _ring ) );
+  osg::ref_ptr<osg::Image> imageInterior ( osgDB::readImageFile ( _interior ) );
+
+  if( true == imageRing.valid() && true == imageInterior.valid() )
   {
-    _compassRingObject->addChild ( this->_buildTriangleFan ( _ring, 0.0f, 1001 ) );
+    _compassRingObject->addChild ( Detail::buildTriangleFan ( imageRing.get(), 0.0f, _radius, _numslices, 1001 ) );
+    _compassInteriorObject->addChild ( Detail::buildTriangleFan ( imageInterior.get(), 0.0f, _radius, _numslices, 1001 ) );
   }
-  
-  if( Usul::Predicates::FileExists::test ( _interior ) )
+  else
   {
-    _compassInteriorObject->addChild ( this->_buildTriangleFan ( _interior, 0.0f, 1001 ) );
+    this->setNodeMask ( 0x0 );
   }
-   
+
   this->_buildCompass();
 }
 
@@ -244,79 +322,6 @@ void Compass::updateCompass()
                                      osg::Matrix::translate ( this->position() ) );
   }
 #endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build a triangle fan object to use as a compass face
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Geode* Compass::_buildTriangleFan(const std::string& tex, float zoff, unsigned int render_level )
-{
-  osg::ref_ptr< osg::StateSet > stateset ( new osg::StateSet() );
-  osg::ref_ptr< osg::Image > image ( 0x0 );
-
-  if( Usul::Predicates::FileExists::test ( tex ) )
-  {
-    image = osgDB::readImageFile( tex );
-  }
-  if ( image.get() )
-  {
-    osg::ref_ptr< osg::Texture2D > texture ( new osg::Texture2D() ); 
-    texture->setImage ( image.get() );
-    stateset->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-    stateset->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-    stateset->setMode ( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );    
-    stateset->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-    stateset->setRenderBinDetails ( render_level, "RenderBin" );
-  }
-
-  osg::ref_ptr< osg::Vec3Array > fan ( new osg::Vec3Array() );
-  osg::ref_ptr< osg::Vec2Array > fan_tex ( new osg::Vec2Array() );
-
-  fan->reserve( _numslices + 1 );
-  fan_tex->reserve( _numslices + 1 );
-
-  fan->push_back( osg::Vec3 ( 0.0f, 0.0f, zoff ) );
-  fan_tex->push_back( osg::Vec2 ( 0.5f, 0.5f ) );
-
-  for ( unsigned int x = 0; x < _numslices + 1; ++x )
-  {	
-    float angle =  float ( x ) * ( ( 2 * osg::PI ) / _numslices );
-    fan->push_back ( osg::Vec3 ( _radius * ( cos( angle ) ), _radius * ( sin ( angle ) ), zoff ) );
-    fan_tex->push_back(osg::Vec2(0.5f + (0.5f * ( cos( angle ) ) ),0.5f +( 0.5f * ( sin ( angle ) ) ) ));
-  }
-  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry() ); 
-
-  // Set the colors.
-  geometry->setColorArray ( _colors.get() );
-  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
-
-  // Set the vertices.
-  geometry->setVertexArray ( fan.get() );
-
-  // set the texture coordinates.
-  geometry->setTexCoordArray ( 0, fan_tex.get() );
-
-  // Set the one normal.
-  osg::ref_ptr< osg::Vec3Array > normal ( new osg::Vec3Array );
-  normal->push_back ( osg::Vec3 ( 0.0f, 0.0f, 1.0f ) );
-  geometry->setNormalArray ( normal.get() );
-  geometry->setNormalBinding ( osg::Geometry::BIND_OVERALL );
-
-  // Draw a triangle fan.
-  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_FAN, 0, fan->size() ) );
-
-  // Set the state set.
-  geometry->setStateSet ( stateset.get() );
-
-  // Make the geode.
-  osg::ref_ptr< osg::Geode > geode ( new osg::Geode() );
-  geode->addDrawable ( geometry.get() );
-
-  return geode.release();
 }
 
 

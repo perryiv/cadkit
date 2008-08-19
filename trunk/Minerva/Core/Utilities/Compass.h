@@ -55,8 +55,6 @@ protected:
   
   void                   _buildCompass();
 
-  osg::Geode*            _buildTriangleFan ( const std::string& tex, float zoff, unsigned int render_level );
-
 private:
         
 	osg::Vec3 _pos;

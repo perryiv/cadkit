@@ -35,7 +35,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( TimerServer, TimerServer::BaseClass );
 TimerServer::TimerServer() : BaseClass(),
   _timers(),
   _nextId ( 1 ), // Start at 1 so that clients can initialize timer ids with 0.
-  _pending()
+  _pending(),
+  _removed()
 {
   USUL_TRACE_SCOPE;
 }
@@ -246,6 +247,18 @@ void TimerServer::timerRemove ( TimerID id )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+  
+  // Get the timer.
+  TimerCallback::Ptr timer ( _timers[id] );
+  
+  // Stop the timer and add it to the list to be deleted.
+  if ( 0x0 != timer.get() )
+  {
+    timer->stop();
+    _removed.push_back ( timer );
+  }
+  
+  // Remove the timer from the map.
   _timers.erase ( id );
 }
 
@@ -259,6 +272,9 @@ void TimerServer::timerRemove ( TimerID id )
 void TimerServer::purge()
 {
   Guard guard ( this );
+  
+  // Clear the list of timers that have been removed.  This will delete them.
+  _removed.clear();
   
   typedef std::list<Timers::key_type> Keys;
   Keys doomed;

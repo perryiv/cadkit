@@ -148,7 +148,7 @@ void TimerCallback::stop()
 void TimerCallback::_onTimeout()
 {
   USUL_TRACE_SCOPE;
-
+  
   UnknownPtr callback ( Usul::Threads::Safe::get ( _mutex, _callback ) );
   Usul::Interfaces::ITimerNotify::QueryPtr notify ( callback );
 

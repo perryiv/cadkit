@@ -242,11 +242,11 @@ osg::Geometry* Polygon::_extrudeToGround ( const Vertex& v0, const Vertex& v1, U
   Vertex p1 ( this->_convertToPlanetCoordinates ( v1, planet, elevationDatabase ) );
   Vertex p2 ( this->_convertToPlanetCoordinates ( v2, planet, elevationDatabase ) );
   Vertex p3 ( this->_convertToPlanetCoordinates ( v3, planet, elevationDatabase ) );
-
+  
   vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
-  vertices->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
   vertices->push_back ( osg::Vec3 ( p2[0], p2[1], p2[2] ) );
   vertices->push_back ( osg::Vec3 ( p3[0], p3[1], p3[2] ) );
+  vertices->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
 
   p0.normalize();
   p1.normalize();
@@ -254,9 +254,9 @@ osg::Geometry* Polygon::_extrudeToGround ( const Vertex& v0, const Vertex& v1, U
   p3.normalize();
 
   normals->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
-  normals->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
   normals->push_back ( osg::Vec3 ( p2[0], p2[1], p2[2] ) );
   normals->push_back ( osg::Vec3 ( p3[0], p3[1], p3[2] ) );
+  normals->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
   
   osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
   

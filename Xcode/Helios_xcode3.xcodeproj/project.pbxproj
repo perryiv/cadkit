@@ -12772,7 +12772,7 @@
 			);
 			inputPaths = (
 				$SRCROOT/../QtTools/TreeControl.h,
-				$SRCROOT/..QtTools/TreeNode.h,
+				$SRCROOT/../QtTools/TreeNode.h,
 			);
 			name = "Moc TreeControl";
 			outputPaths = (

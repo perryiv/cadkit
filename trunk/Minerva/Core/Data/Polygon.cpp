@@ -195,6 +195,88 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Convert to planet coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Polygon::Vertex Polygon::_convertToPlanetCoordinates ( const Polygon::Vertex& v, Usul::Interfaces::IPlanetCoordinates* planet, Usul::Interfaces::IElevationDatabase* elevation ) const
+{
+  Polygon::Vertex v0 ( v ), p0;
+  
+  if ( 0x0 != elevation )
+    v0[2] = this->_elevation ( v0, elevation );
+  
+  if ( 0x0 != planet )
+    planet->convertToPlanet ( v0, p0 );
+  
+  return p0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a quad from two points to the ground.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Geometry* Polygon::_extrudeToGround ( const Vertex& v0, const Vertex& v1, Usul::Interfaces::IUnknown *caller )
+{
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevationDatabase ( caller );
+
+  // Vertices and normals.
+  osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec4Array> colors  ( new osg::Vec4Array ( 4 ) );
+  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
+  std::fill ( colors->begin(), colors->end(), color );
+  
+  // Reserve enough rooms.
+  vertices->reserve( 4 );
+  normals->reserve( 4 );
+
+  Vertex v2 ( v0 ); v2[2] = 0.0;
+  Vertex v3 ( v1 ); v3[2] = 0.0;
+  
+  Vertex p0 ( this->_convertToPlanetCoordinates ( v0, planet, elevationDatabase ) );
+  Vertex p1 ( this->_convertToPlanetCoordinates ( v1, planet, elevationDatabase ) );
+  Vertex p2 ( this->_convertToPlanetCoordinates ( v2, planet, elevationDatabase ) );
+  Vertex p3 ( this->_convertToPlanetCoordinates ( v3, planet, elevationDatabase ) );
+
+  vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
+  vertices->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
+  vertices->push_back ( osg::Vec3 ( p2[0], p2[1], p2[2] ) );
+  vertices->push_back ( osg::Vec3 ( p3[0], p3[1], p3[2] ) );
+
+  p0.normalize();
+  p1.normalize();
+  p2.normalize();
+  p3.normalize();
+
+  normals->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
+  normals->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
+  normals->push_back ( osg::Vec3 ( p2[0], p2[1], p2[2] ) );
+  normals->push_back ( osg::Vec3 ( p3[0], p3[1], p3[2] ) );
+  
+  osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
+  
+  geom->setVertexArray ( vertices.get() );
+  geom->setNormalArray ( normals.get() );
+  geom->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
+  geom->setColorArray ( colors.get() );
+  geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+  
+  geom->addPrimitiveSet ( new osg::DrawArrays ( GL_QUADS, 0, vertices->size() ) );
+    
+  // Make normals.
+  osgUtil::SmoothingVisitor::smooth ( *geom );
+  
+  return geom.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build a mesh.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,16 +286,20 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
   // Make new extents.
   Extents e;
   
+  // Get the outer boundary.
   Vertices outerBoundary ( this->outerBoundary() );
+
+  // Need at least 3 points to make a polygon.
+  if ( outerBoundary.size() < 3 )
+    return 0x0;
+
+  // TODO: Handle inner boundaries.
   //Boundaries innerBoundaries ( polygon->innerBoundaries() );
   
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
   geode->addDrawable( this->_buildGeometry ( outerBoundary, e, caller ) );
   
   osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet () );
-  
-  // Set the render bin.
-  //ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
   
   // Make a polygon offset.
   osg::ref_ptr< osg::PolygonOffset > po ( new osg::PolygonOffset( 1.0f, 4.0f ) );
@@ -226,10 +312,26 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
   osg::Vec3 offset ( geode->getBound().center() );
   osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
   tg->apply ( *geode );
-  
+
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( offset ) );
   mt->addChild ( geode.get() );
+
+  // Extrude if we are suppose to.
+  if ( true == this->extrude() )
+  {
+    for ( Vertices::const_iterator iter = outerBoundary.begin(); iter != outerBoundary.end() - 1; ++iter )
+    {
+      Vertex v0 ( *iter );
+      Vertex v1 ( *(iter + 1 ) );
+
+      osg::ref_ptr < osg::Geode > g ( new osg::Geode );
+      g->addDrawable( this->_extrudeToGround ( v0, v1, caller ) );
+      tg->apply ( *g );
+
+      mt->addChild ( g.get() );
+    }
+  }
   
   this->extents ( e );
   

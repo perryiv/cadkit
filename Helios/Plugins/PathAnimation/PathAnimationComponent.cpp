@@ -25,6 +25,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/ILoadFileDialog.h"
@@ -843,6 +844,14 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
 
   // Always update the scene.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_updateScene ) );
+  
+  // Query the active document to see if we can proceed.
+  Usul::Interfaces::IBusyState::QueryPtr busyState ( Usul::Documents::Manager::instance().activeDocument() );
+  const bool busy ( busyState.valid() ? busyState->busyStateGet() : false );
+  
+  // Return now if the document is busy.
+  if ( true == busy )
+    return;
 
   // Get the current player.
   CurvePlayer::RefPtr player ( ( false == _players.empty() ) ? _players.front() : CurvePlayer::RefPtr ( 0x0 ) );

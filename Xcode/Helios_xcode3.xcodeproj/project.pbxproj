@@ -5517,6 +5517,7 @@
 		66DCF9480DAD83A2008E6F4A /* Dataset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Dataset.cpp; path = ../Experimental/Flash/FlashModel/Dataset.cpp; sourceTree = SOURCE_ROOT; };
 		66DD54510E5B4987009FAA2F /* ModelCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelCache.h; sourceTree = "<group>"; };
 		66DD54520E5B4987009FAA2F /* ModelCache.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModelCache.cpp; sourceTree = "<group>"; };
+		66DD54AA0E5B8938009FAA2F /* IBusyState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IBusyState.h; sourceTree = "<group>"; };
 		66E093F80E5A8B74003B11EB /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
 		66E093F90E5A8B74003B11EB /* Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
 		66E1A4DD0E207CE200D3E219 /* TestLegend02.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLegend02.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6876,15 +6877,15 @@
 		431BB648092466C300ED2131 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				669CE9B90E52107700618324 /* PointModel */,
-				669F29950E4D0512007EB41A /* VtkAlgorithms */,
 				66A4CE850DC100BE006DEE5E /* MeasureTool */,
 				669271310E0AD36F00E35E8B /* ModelPresentation */,
 				668BE82D0D24AA2500109210 /* PathAnimation */,
+				669CE9B90E52107700618324 /* PointModel */,
 				43E9B1FE09F6CA5000444335 /* SceneModel */,
 				43E9B22209F6CA7100444335 /* TriangleModel */,
 				668C96A70D42B5180007D7F4 /* TriangulateGrid */,
 				43E9B25109F6CA8100444335 /* VolumeModel */,
+				669F29950E4D0512007EB41A /* VtkAlgorithms */,
 			);
 			name = Plugins;
 			path = ../Helios/Plugins;
@@ -7424,6 +7425,7 @@
 				6699A0EB0D1EFC7300A9AE47 /* IWorldInfo.h */,
 				43E9AFCE09F6B98D00444335 /* IWriteMovieFile.h */,
 				6699A0EC0D1EFC7300A9AE47 /* Qt */,
+				66DD54AA0E5B8938009FAA2F /* IBusyState.h */,
 			);
 			name = Interfaces;
 			path = ../Usul/Interfaces;

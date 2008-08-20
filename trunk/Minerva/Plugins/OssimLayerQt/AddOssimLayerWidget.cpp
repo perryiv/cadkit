@@ -60,6 +60,10 @@ AddOssimLayerWidget::AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller, QW
   // Set initial check state.
   _loadDataCheck->setChecked ( true );
   _showExtentsCheck->setChecked ( false );
+  
+  // Set the txt.
+  _loadDataCheck->setText ( "Load data" );
+  _showExtentsCheck->setText ( "Show data extents" );
 
   // Make the list.
   _listView = new QListWidget ( this );
@@ -319,6 +323,7 @@ namespace Detail
 
     // Make the data object.
     DataObject::RefPtr object ( new DataObject );
+    object->name ( filename );
 
     // Read the file.
     Usul::Interfaces::IUnknown::QueryPtr unknown ( Detail::readFile ( filename ) );
@@ -339,20 +344,25 @@ namespace Detail
 
     // Get the filesize.
     const unsigned long long size ( boost::filesystem::file_size ( filename ) );
+    const double elevation ( static_cast<double> ( size ) / 100000.0 );
 
     // Make the polygon.
     Polygon::RefPtr polygon ( new Polygon );
 
     // The vertices.
     Vertices vertices;
-    vertices.push_back ( Vertex ( minLon, minLat, size ) );
-    vertices.push_back ( Vertex ( maxLon, minLat, size ) );
-    vertices.push_back ( Vertex ( maxLon, maxLat, size ) );
-    vertices.push_back ( Vertex ( minLon, maxLat, size ) );
+    vertices.push_back ( Vertex ( minLon, minLat, elevation ) );
+    vertices.push_back ( Vertex ( maxLon, minLat, elevation ) );
+    vertices.push_back ( Vertex ( maxLon, maxLat, elevation ) );
+    vertices.push_back ( Vertex ( minLon, maxLat, elevation ) );
+    vertices.push_back ( Vertex ( minLon, minLat, elevation ) );
 
     polygon->outerBoundary ( vertices );
+    polygon->altitudeMode ( Polygon::RELATIVE_TO_GROUND );
+    polygon->extrude ( true );
 
     Usul::Math::Vec4f color ( Detail::colors ( filename ) );
+    color[3] = 0.5;
     polygon->color ( color );
 
     object->addGeometry ( polygon );
@@ -398,8 +408,12 @@ void AddOssimLayerWidget::_showDataExtents( Filenames filenames, Usul::Interface
     }
     else
     {
-      Minerva::Core::Data::DataObject::RefPtr object ( Detail::makeExtentsPolygon ( filename ) );
-      al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+      try
+      {
+        Minerva::Core::Data::DataObject::RefPtr object ( Detail::makeExtentsPolygon ( filename ) );
+        al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+      }
+      USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1383982710" )
     }
   }
 }

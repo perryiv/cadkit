@@ -290,6 +290,8 @@ namespace Detail
         return iter->second;
 
       Usul::Math::Vec4f color ( _random(), _random(), _random(), 1.0 );
+      _colors.insert ( std::make_pair ( ext, color ) );
+      return color;
     }
   private:
     Usul::Adaptors::Random<float> _random;

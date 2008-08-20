@@ -49,7 +49,7 @@ AddLayer::AddLayer ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddLayer::AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* progress ) : 
+AddLayer::AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* progress ) : 
   BaseClass( 0x0 ),
   _parent ( parent ),
   _progressBar ( progress ),

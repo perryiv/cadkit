@@ -58,6 +58,6 @@ void AddGeoRSSLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Int
   {
     Minerva::Layers::GeoRSS::GeoRSSLayer::RefPtr layer ( new Minerva::Layers::GeoRSS::GeoRSSLayer );
     layer->url ( url );
-    al->addLayer ( Usul::Interfaces::ILayer::QueryPtr ( layer ) );
+    al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
   }
 }

@@ -25,7 +25,7 @@ struct IRemoveLayer : public Usul::Interfaces::IUnknown
   enum { IID = 3509478175u };
 
   /// Remove a layer.
-  virtual void                             removeLayer ( Usul::Interfaces::ILayer * layer ) = 0;
+  virtual void                             removeLayer ( Usul::Interfaces::IUnknown * layer ) = 0;
 
 }; // struct IAnimationControl
 

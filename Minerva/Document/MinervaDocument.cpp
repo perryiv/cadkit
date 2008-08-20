@@ -871,7 +871,7 @@ void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::addLayer ( Usul::Interfaces::ILayer * layer )
+void MinervaDocument::addLayer ( Usul::Interfaces::IUnknown * layer )
 {
   USUL_TRACE_SCOPE;
 

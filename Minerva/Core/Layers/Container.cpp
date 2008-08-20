@@ -815,7 +815,7 @@ bool Container::elevationChangedNotify ( const Extents& extents, ImagePtr elevat
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::addLayer ( Usul::Interfaces::ILayer *layer )
+void Container::addLayer ( Usul::Interfaces::IUnknown *layer )
 {
   USUL_TRACE_SCOPE;
   this->add ( layer );
@@ -828,7 +828,7 @@ void Container::addLayer ( Usul::Interfaces::ILayer *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::removeLayer ( Usul::Interfaces::ILayer * layer )
+void Container::removeLayer ( Usul::Interfaces::IUnknown * layer )
 {
   USUL_TRACE_SCOPE;
   this->remove ( layer );

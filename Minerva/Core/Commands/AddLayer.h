@@ -35,7 +35,7 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AddLayer ();
-  AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* progress = 0x0 );
+  AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* progress = 0x0 );
 
 protected:
   virtual ~AddLayer();

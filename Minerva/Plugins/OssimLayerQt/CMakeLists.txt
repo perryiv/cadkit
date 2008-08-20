@@ -16,7 +16,6 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
-                     "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../" 
                      ${OSG_INC_DIR}
                      ${QT_INCLUDE_DIR} )
@@ -24,7 +23,6 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 set (SOURCES
   AddOssimLayerWidget.cpp
   OssimLayerQtComponent.cpp
-  OssimLayerQtFactory.cpp
 )
 
 SET(MOC_HDRS

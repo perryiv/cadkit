@@ -47,7 +47,8 @@ int main ( int argc, char **argv )
   const std::string manual  ( "../docs/minerva.html" );
 
   // Other configurations.
-  const unsigned int jobManagerThreadPoolSize ( 4 );
+  // Since Minerva documents have their own thread pool for tiling, use a small number here.
+  const unsigned int jobManagerThreadPoolSize ( 2 );
 
   try
   {

@@ -471,7 +471,7 @@ std::string RasterGroup::getTreeNodeName() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::addLayer ( Usul::Interfaces::ILayer *layer )
+void RasterGroup::addLayer ( Usul::Interfaces::IUnknown *layer )
 {
   USUL_TRACE_SCOPE;
   Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
@@ -488,7 +488,7 @@ void RasterGroup::addLayer ( Usul::Interfaces::ILayer *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RasterGroup::removeLayer ( Usul::Interfaces::ILayer * layer )
+void RasterGroup::removeLayer ( Usul::Interfaces::IUnknown * layer )
 {
   USUL_TRACE_SCOPE;
   Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );

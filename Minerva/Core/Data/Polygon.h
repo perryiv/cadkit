@@ -19,6 +19,8 @@
 #include <vector>
 
 namespace osg { class Geometry; }
+namespace Usul { namespace Interfaces { struct IPlanetCoordinates; struct IElevationDatabase; } }
+
 
 namespace Minerva {
 namespace Core {
@@ -32,6 +34,8 @@ public:
   typedef Usul::Math::Vec3d                Vertex;
   typedef std::vector < Vertex >           Vertices;
   typedef std::vector<Vertices>            Boundaries;
+  typedef Usul::Interfaces::IPlanetCoordinates IPlanetCoordinates;
+  typedef Usul::Interfaces::IElevationDatabase IElevationDatabase;
 
   USUL_DECLARE_QUERY_POINTERS ( Polygon );
 
@@ -64,6 +68,9 @@ protected:
   osg::Node*            _buildPolygons( Usul::Interfaces::IUnknown* caller );
   
   osg::Geometry*        _buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller );
+  osg::Geometry*        _extrudeToGround ( const Vertex& v0, const Vertex& v1, Usul::Interfaces::IUnknown *caller );
+
+  Vertex                _convertToPlanetCoordinates ( const Polygon::Vertex& v, IPlanetCoordinates* planet, IElevationDatabase* elevation ) const;
 
 private:
 

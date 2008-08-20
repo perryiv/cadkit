@@ -104,7 +104,7 @@ protected:
   virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller ) = 0;
   
   template<class Vertex>
-  double                _elevation ( const Vertex& point, Usul::Interfaces::IElevationDatabase* elevation )
+  double                _elevation ( const Vertex& point, Usul::Interfaces::IElevationDatabase* elevation ) const
   {
     switch ( this->altitudeMode() )
     {

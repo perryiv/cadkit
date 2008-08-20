@@ -26,6 +26,7 @@
 #include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPlugin.h"
+#include "Usul/Interfaces/ITimerNotify.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
 #include "MenuKit/Menu.h"
@@ -44,7 +45,8 @@ class PathAnimationComponent : public Usul::Base::Object,
                                public Usul::Interfaces::IActiveViewListener,
                                public Usul::Interfaces::IAnimatePath,
                                public Usul::Interfaces::IAnimateNurbsCurve,
-                               public Usul::Interfaces::IUpdateListener
+                               public Usul::Interfaces::IUpdateListener,
+                               public Usul::Interfaces::ITimerNotify
 {
 public:
 
@@ -59,6 +61,7 @@ public:
   typedef Usul::Interfaces::IAnimateNurbsCurve::ControlPoints ControlPoints;
   typedef Usul::Interfaces::IAnimateNurbsCurve::KnotVector KnotVector;
   typedef Usul::Interfaces::IAnimateNurbsCurve::Parameters Parameters;
+  typedef Usul::Interfaces::ITimerNotify::TimerID TimerID;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( PathAnimationComponent );
@@ -91,6 +94,9 @@ public:
   // Usul::Interfaces::IMenuAdd
   virtual void                  menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
+  // Called when the timer fires (ITimerNotify).
+  virtual void                  timerNotify ( TimerID );
+  
   // Usul::Interfaces::IUpdateListener
   virtual void                  updateNotify ( IUnknown *caller );
 
@@ -138,8 +144,8 @@ protected:
   void                          _playPathBackward ( const CameraPath *path, unsigned int steps, bool loop );
   void                          _playPathForward ( const CameraPath *path, unsigned int steps, bool loop );
 
-  void                          _renderLoopActivate();
-  void                          _renderLoopRestore();
+  void                          _timerStart();
+  void                          _timerStop();
 
   void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
   void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
@@ -151,6 +157,7 @@ protected:
   void                          _setShowPath ( bool );
 
   void                          _updateScene();
+  void                          _updatePath ( IUnknown *caller );
 
   void                          _writeMovieFile ( Usul::Interfaces::IUnknown *caller );
 
@@ -177,6 +184,8 @@ private:
   bool _dirtyScene;
   unsigned int _currentCamera;
   bool _renderLoop;
+  TimerID _timer;
+  double _milliSeconds;
 };
 
 

@@ -8437,15 +8437,6 @@
 		6667619F0D122DD2002F40C6 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				6695B44A0E3A267100C3D2FB /* moc_TimerCallback.cpp */,
-				C2BD0D2E0E37DE1A00137A5B /* TimerCallback.cpp */,
-				C2BD0D2D0E37DE0800137A5B /* TimerCallback.h */,
-				C21B9E690E37894100ED7433 /* TimerServer.cpp */,
-				C21B9E680E37890B00ED7433 /* TimerServer.h */,
-				6689186E0D281B53005CB399 /* Program.cpp */,
-				6689186F0D281B53005CB399 /* Program.h */,
-				666765880D1233F0002F40C6 /* moc_MainWindow.cpp */,
-				666765890D1233F0002F40C6 /* moc_ProgressBarDock.cpp */,
 				666765520D12326F002F40C6 /* Application.cpp */,
 				666765530D12326F002F40C6 /* Application.h */,
 				666765540D12326F002F40C6 /* Constants.h */,
@@ -8454,10 +8445,19 @@
 				666765570D12326F002F40C6 /* Export.h */,
 				666765580D12326F002F40C6 /* MainWindow.cpp */,
 				666765590D12326F002F40C6 /* MainWindow.h */,
+				666765880D1233F0002F40C6 /* moc_MainWindow.cpp */,
+				666765890D1233F0002F40C6 /* moc_ProgressBarDock.cpp */,
+				6695B44A0E3A267100C3D2FB /* moc_TimerCallback.cpp */,
+				6689186E0D281B53005CB399 /* Program.cpp */,
+				6689186F0D281B53005CB399 /* Program.h */,
 				6667655A0D12326F002F40C6 /* ProgressBarDock.cpp */,
 				6667655B0D12326F002F40C6 /* ProgressBarDock.h */,
 				6667655C0D12326F002F40C6 /* SplashScreen.cpp */,
 				6667655D0D12326F002F40C6 /* SplashScreen.h */,
+				C2BD0D2E0E37DE1A00137A5B /* TimerCallback.cpp */,
+				C2BD0D2D0E37DE0800137A5B /* TimerCallback.h */,
+				C21B9E690E37894100ED7433 /* TimerServer.cpp */,
+				C21B9E680E37890B00ED7433 /* TimerServer.h */,
 			);
 			name = Core;
 			sourceTree = "<group>";

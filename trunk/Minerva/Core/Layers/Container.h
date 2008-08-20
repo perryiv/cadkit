@@ -172,10 +172,10 @@ protected:
   void                        _notifyDataChnagedListeners();
 
   // Add a layer (IAddLayer).
-  virtual void                addLayer ( Usul::Interfaces::ILayer *layer );
+  virtual void                addLayer ( Usul::Interfaces::IUnknown *layer );
 
   /// Remove a layer (IRemoveLayer).
-  virtual void                removeLayer ( Usul::Interfaces::ILayer * layer );
+  virtual void                removeLayer ( Usul::Interfaces::IUnknown * layer );
   
   // Add the listener.
   virtual void                addDataChangedListener ( Usul::Interfaces::IUnknown *caller );

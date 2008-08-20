@@ -116,10 +116,10 @@ protected:
   virtual void                    setBooleanState ( bool );
   
   // Add a layer (IAddLayer).
-  virtual void                    addLayer ( Usul::Interfaces::ILayer *layer );
+  virtual void                    addLayer ( Usul::Interfaces::IUnknown *layer );
 
   /// Remove a layer (IRemoveLayer).
-  virtual void                    removeLayer ( Usul::Interfaces::ILayer * layer );
+  virtual void                    removeLayer ( Usul::Interfaces::IUnknown * layer );
   
   /// Swap layers (ISwapLayers).
   virtual void                    swapLayers ( Usul::Interfaces::IUnknown *layer0, Usul::Interfaces::IUnknown* layer1 );

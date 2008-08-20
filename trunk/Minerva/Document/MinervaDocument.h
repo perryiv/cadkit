@@ -39,7 +39,6 @@
 #include "Minerva/DataSources/PG/Connection.h"
 #include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
-#include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/ILookAtLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
@@ -309,7 +308,7 @@ protected:
   void                                     _setLog();
 
   /// Minerva::Interfaces::IAddLayer
-  virtual void                             addLayer ( Usul::Interfaces::ILayer * layer );
+  virtual void                             addLayer ( Usul::Interfaces::IUnknown * layer );
 
   /// Minerva::Interfaces::IRemoveLayer
   virtual void                             removeLayer ( Usul::Interfaces::ILayer * layer );

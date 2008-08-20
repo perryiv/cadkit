@@ -286,10 +286,6 @@
 						/>
 					</FileConfiguration>
 				</File>
-				<File
-					RelativePath=".\OssimLayerQtFactory.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

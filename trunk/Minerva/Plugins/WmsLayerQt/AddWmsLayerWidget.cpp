@@ -185,7 +185,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     // Get all the items.
     Items items ( addAllAsGroup ? _layersTree->findItems ( "*", Qt::MatchWildcard ) : _layersTree->selectedItems() );
 
-    al->addLayer ( this->_makeGroup ( items, format ) );
+    al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( this->_makeGroup ( items, format ) ) );
   }
   else
   {
@@ -215,7 +215,7 @@ void AddWmsLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
     // Set the name.
     layer->name ( false == name.empty() ? name : server );
     
-    al->addLayer ( layer.get () );
+    al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( layer.get () ) );
   }
   
   // Save the server names.

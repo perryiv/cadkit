@@ -189,7 +189,7 @@ void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, U
     removeLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
 
     // Add the new one.
-    Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, clonedLayer.get() ) );
+    Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, Usul::Interfaces::IUnknown::QueryPtr ( clonedLayer ) ) );
     addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
   }
 }

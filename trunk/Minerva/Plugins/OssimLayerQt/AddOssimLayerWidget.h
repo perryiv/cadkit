@@ -23,6 +23,7 @@
 #include <string>
 
 class QListWidget;
+class QCheckBox;
 
 class AddOssimLayerWidget : public QWidget
 {
@@ -33,9 +34,7 @@ public:
   AddOssimLayerWidget( Usul::Interfaces::IUnknown* caller = 0x0, QWidget *parent = 0x0 );
   virtual ~AddOssimLayerWidget();
 
-  void apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
-
-protected:
+  void             apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
 
 private slots:
 
@@ -44,11 +43,18 @@ private slots:
   void             _removeSelectedFiles();
   
 private:
+
+  typedef std::vector<std::string> Filenames;
   
-  static void _searchDirectory ( Minerva::Core::Layers::RasterGroup::RefPtr, const std::string directory );
+  // Pass the filesnames by copy so these functions can be threaded.
+  static void      _loadData ( Filenames filenames, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
+  static void      _showDataExtents ( Filenames filenames, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
+  static void      _searchDirectory ( Minerva::Core::Layers::RasterGroup::RefPtr, const std::string directory );
 
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   QListWidget *_listView;
+  QCheckBox *_loadDataCheck;
+  QCheckBox* _showExtentsCheck;
 };
 
 

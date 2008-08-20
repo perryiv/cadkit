@@ -16,6 +16,9 @@
 
 #include "Minerva/Plugins/OssimLayerQt/OssimLayerQtComponent.h"
 
+#include "Usul/Components/Factory.h"
+
+USUL_DECLARE_COMPONENT_FACTORY ( OssimLayerQtComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OssimLayerQtComponent, OssimLayerQtComponent::BaseClass );
 
 

@@ -1257,7 +1257,6 @@
 		66A112D20D2EBC59009B29ED /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CC0D2EBC59009B29ED /* CompileGuard.h */; };
 		66A112D30D2EBC59009B29ED /* OssimLayerQtComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112CD0D2EBC59009B29ED /* OssimLayerQtComponent.cpp */; };
 		66A112D40D2EBC59009B29ED /* OssimLayerQtComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CE0D2EBC59009B29ED /* OssimLayerQtComponent.h */; };
-		66A112D50D2EBC59009B29ED /* OssimLayerQtFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112CF0D2EBC59009B29ED /* OssimLayerQtFactory.cpp */; };
 		66A112DC0D2EBC77009B29ED /* AddWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */; };
 		66A112DD0D2EBC77009B29ED /* AddWmsLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */; };
 		66A112DE0D2EBC77009B29ED /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112D80D2EBC77009B29ED /* CompileGuard.h */; };
@@ -5228,7 +5227,6 @@
 		66A112CC0D2EBC59009B29ED /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = OssimLayerQt/CompileGuard.h; sourceTree = "<group>"; };
 		66A112CD0D2EBC59009B29ED /* OssimLayerQtComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OssimLayerQtComponent.cpp; path = OssimLayerQt/OssimLayerQtComponent.cpp; sourceTree = "<group>"; };
 		66A112CE0D2EBC59009B29ED /* OssimLayerQtComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OssimLayerQtComponent.h; path = OssimLayerQt/OssimLayerQtComponent.h; sourceTree = "<group>"; };
-		66A112CF0D2EBC59009B29ED /* OssimLayerQtFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OssimLayerQtFactory.cpp; path = OssimLayerQt/OssimLayerQtFactory.cpp; sourceTree = "<group>"; };
 		66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddWmsLayerWidget.cpp; path = WmsLayerQt/AddWmsLayerWidget.cpp; sourceTree = "<group>"; };
 		66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddWmsLayerWidget.h; path = WmsLayerQt/AddWmsLayerWidget.h; sourceTree = "<group>"; };
 		66A112D80D2EBC77009B29ED /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = WmsLayerQt/CompileGuard.h; sourceTree = "<group>"; };
@@ -9467,7 +9465,6 @@
 				66A112CC0D2EBC59009B29ED /* CompileGuard.h */,
 				66A112CD0D2EBC59009B29ED /* OssimLayerQtComponent.cpp */,
 				66A112CE0D2EBC59009B29ED /* OssimLayerQtComponent.h */,
-				66A112CF0D2EBC59009B29ED /* OssimLayerQtFactory.cpp */,
 			);
 			name = OssimLayerQt;
 			sourceTree = "<group>";
@@ -13785,7 +13782,6 @@
 			files = (
 				66A112D00D2EBC59009B29ED /* AddOssimLayerWidget.cpp in Sources */,
 				66A112D30D2EBC59009B29ED /* OssimLayerQtComponent.cpp in Sources */,
-				66A112D50D2EBC59009B29ED /* OssimLayerQtFactory.cpp in Sources */,
 				66A1197F0D2EC1BD009B29ED /* moc_AddOssimLayerWidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

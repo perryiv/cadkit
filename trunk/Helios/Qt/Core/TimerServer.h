@@ -47,6 +47,7 @@ public:
   typedef Usul::Interfaces::IUnknown::RefPtr UnknownPtr;
   typedef boost::tuple < TimerID, unsigned int, UnknownPtr, bool > PendingTimerData;
   typedef std::list < PendingTimerData > PendingTimers;
+  typedef std::list < TimerCallback::Ptr > RemovedTimers;
 
   // Constructor.
   TimerServer();
@@ -98,6 +99,7 @@ private:
   Timers _timers;
   TimerID _nextId;
   PendingTimers _pending;
+  RemovedTimers _removed;
 };
 
 

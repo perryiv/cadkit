@@ -170,6 +170,8 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::ISerialize::IID:
     return static_cast<Usul::Interfaces::ISerialize*> ( this );
+  case Usul::Interfaces::IBusyState::IID:
+    return static_cast<Usul::Interfaces::IBusyState*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1544,4 +1546,19 @@ std::string WRFDocument::getTreeNodeName() const
 Usul::Interfaces::IUnknown* WRFDocument::asUnknown()
 {
   return this->queryInterface( Usul::Interfaces::IUnknown::IID );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the busy state (IBusyState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::busyStateGet() const
+{
+  // The job gets set to null when it's finished and the scene is updated.
+  // As long as the job is valid, we are busy.
+  Guard guard ( this->mutex() );
+  return _jobForScene.valid();
 }

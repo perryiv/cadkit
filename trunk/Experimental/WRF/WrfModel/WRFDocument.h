@@ -25,6 +25,7 @@
 #include "Usul/Jobs/Manager.h"
 
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ITimestepAnimation.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
@@ -58,7 +59,8 @@ class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::IMenuAdd,
                     public Usul::Interfaces::ILayer,
                     public Usul::Interfaces::ITreeNode,
-                    public Usul::Interfaces::ISerialize
+                    public Usul::Interfaces::ISerialize,
+                    public Usul::Interfaces::IBusyState
 {
 public:
 
@@ -89,6 +91,9 @@ public:
 
   /// Build the scene.
   virtual osg::Node *         buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
+  
+  /// Get the busy state (IBusyState).
+  virtual bool                busyStateGet() const;
 
   /// Return true if this document can do it.
   virtual bool                canExport ( const std::string &file ) const;
@@ -98,6 +103,8 @@ public:
 
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
+  
+  virtual void                deserialize ( const XmlTree::Node &node );
 
   /// Get the filters that correspond to what this document can read and write.
   virtual Filters             filtersOpen()   const;
@@ -166,10 +173,10 @@ protected:
   bool                        _dataRequested ( unsigned int timestep, unsigned int channel );
   void                        _requestData ( unsigned int timestep, unsigned int channel, bool wait );
 
-  void                        _purgeCache ();
-  void                        _updateCache ();
-  void                        _launchNextCacheRequest ();
-  bool                        _cacheFull () const;
+  void                        _purgeCache();
+  void                        _updateCache();
+  void                        _launchNextCacheRequest();
+  bool                        _cacheFull() const;
 
   void                        _buildScene ();
 
@@ -276,12 +283,8 @@ private:
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME ( WRFDocument );
   SERIALIZE_XML_SERIALIZE_FUNCTION;
-public:
-  virtual void deserialize ( const XmlTree::Node &node );
-
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;
 };
-
 
 
 #endif // _WRF_MODEL_DOCUMENT_H_

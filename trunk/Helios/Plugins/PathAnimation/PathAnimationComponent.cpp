@@ -29,8 +29,9 @@
 #include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/IGroup.h"
 #include "Usul/Interfaces/ILoadFileDialog.h"
-#include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/ISaveFileDialog.h"
+#include "Usul/Interfaces/IRedraw.h"
+#include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Interfaces/IUpdateSubject.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IWriteMovieFile.h"
@@ -83,7 +84,9 @@ PathAnimationComponent::PathAnimationComponent() :
   _looping ( false ),
   _dirtyScene ( true ),
   _currentCamera ( 0 ),
-  _renderLoop ( false )
+  _renderLoop ( false ),
+  _timer ( 0 ),
+  _milliSeconds ( Reg::instance()[Sections::PATH_ANIMATION]["curve"]["milliseconds"].get<unsigned int> ( 15 ) )
 {
   USUL_TRACE_SCOPE;
 
@@ -111,6 +114,9 @@ PathAnimationComponent::~PathAnimationComponent()
   Usul::Documents::Manager::instance().removeActiveViewListener ( this );
   Usul::Documents::Manager::instance().removeActiveDocumentListener ( this );
 
+  // Remove the timer.
+  this->_timerStop();
+  
   // Remove scene.
   _root = 0x0;
 }
@@ -134,13 +140,15 @@ Usul::Interfaces::IUnknown *PathAnimationComponent::queryInterface ( unsigned lo
   case Usul::Interfaces::IActiveViewListener::IID:
     return static_cast < Usul::Interfaces::IActiveViewListener * > ( this );
   case Usul::Interfaces::IAnimatePath::IID:
-      return static_cast < Usul::Interfaces::IAnimatePath * > ( this );
+    return static_cast < Usul::Interfaces::IAnimatePath * > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
-      return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
+    return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
   case Usul::Interfaces::IAnimateNurbsCurve::IID:
-      return static_cast < Usul::Interfaces::IAnimateNurbsCurve * > ( this );
+    return static_cast < Usul::Interfaces::IAnimateNurbsCurve * > ( this );
   case Usul::Interfaces::IActiveDocumentListener::IID:
     return static_cast < Usul::Interfaces::IActiveDocumentListener * > ( this );
+  case Usul::Interfaces::ITimerNotify::IID:
+    return static_cast < Usul::Interfaces::ITimerNotify * > ( this );
   default:
     return 0x0;
   }
@@ -614,8 +622,8 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned
   // Play the animation forward.
   player->playForward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
 
-  // Turn on render-loop.
-  this->_renderLoopActivate();
+  // Turn on timer.
+  this->_timerStart();
 }
 
 
@@ -645,8 +653,8 @@ void PathAnimationComponent::_playPathBackward ( const CameraPath *path, unsigne
   // Play the animation backward.
   player->playBackward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
 
-  // Turn on render-loop.
-  this->_renderLoopActivate();
+  // Turn on timer.
+  this->_timerStart();
 }
 
 
@@ -693,7 +701,7 @@ void PathAnimationComponent::stopPlaying()
   _players.clear();
 
   // Restore the render-loop.
-  this->_renderLoopRestore();
+  this->_timerStop();
 }
 
 
@@ -844,7 +852,20 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
 
   // Always update the scene.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_updateScene ) );
-  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when it's time to update the current path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::_updatePath ( IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
   // Query the active document to see if we can proceed.
   Usul::Interfaces::IBusyState::QueryPtr busyState ( Usul::Documents::Manager::instance().activeDocument() );
   const bool busy ( busyState.valid() ? busyState->busyStateGet() : false );
@@ -852,26 +873,26 @@ void PathAnimationComponent::updateNotify ( IUnknown *caller )
   // Return now if the document is busy.
   if ( true == busy )
     return;
-
+  
   // Get the current player.
   CurvePlayer::RefPtr player ( ( false == _players.empty() ) ? _players.front() : CurvePlayer::RefPtr ( 0x0 ) );
-
+  
   // Should we update?
   if ( ( false == player.valid() ) || ( false == this->isPlaying() ) )
     return;
-
+  
   // Update the player.
   player->update ( caller );
-
+  
   // Did we reach the end?
   if ( false == player->playing() )
   {
     // Pop this player off the list.
     _players.pop_front();
-
+    
     // Restore the render-loop state.
-    this->_renderLoopRestore();
-
+    this->_timerStop();
+    
     // If we are suppose to write a movie.
     this->_writeMovieFile ( caller );
   }
@@ -1613,21 +1634,24 @@ void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_renderLoopActivate()
+void PathAnimationComponent::_timerStart()
 {
   USUL_TRACE_SCOPE;
-
-  // Turn on render-loop.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( Usul::Documents::Manager::instance().activeView() );
-  if ( true == rl.valid() )
-  {
-    // Save current render-loop state if this is the first player.
-    if ( 1 == _players.size() )
-      _renderLoop = rl->renderLoop();
-
-    // Turn it on.
-    rl->renderLoop ( true );
-  }
+  Guard guard ( this );
+  
+  this->_timerStop();
+  
+  // Handle repeated calls.
+  if ( 0 != _timer )
+    return;
+  
+  // Get the timer-server interface.
+  Usul::Interfaces::ITimerService::QueryPtr ts ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ITimerService::IID ) );
+  if ( false == ts.valid() )
+    return;
+  
+  // Add the timer.
+  _timer = ts->timerAdd ( _milliSeconds, Usul::Interfaces::IUnknown::QueryPtr ( this ), true );
 }
 
 
@@ -1637,14 +1661,43 @@ void PathAnimationComponent::_renderLoopActivate()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_renderLoopRestore()
+void PathAnimationComponent::_timerStop()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  
+  // Handle repeated calls.
+  if ( 0 == _timer )
+    return;
+  
+  // Get the timer-server interface.
+  Usul::Interfaces::ITimerService::QueryPtr ts ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::ITimerService::IID ) );
+  if ( false == ts.valid() )
+    return;
+  
+  // Remove the timer.
+  ts->timerRemove ( _timer );
+  
+  // This is important!
+  _timer = 0;  
+}
 
-  // Restore the render-loop.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( Usul::Documents::Manager::instance().activeView() );
-  if ( rl.valid() )
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the timer fires (ITimerNotify).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PathAnimationComponent::timerNotify ( TimerID )
+{
+  USUL_TRACE_SCOPE;
+  this->_updatePath ( Usul::Documents::Manager::instance().activeView() );
+  
+  // Redraw.
+  Usul::Interfaces::IRedraw::QueryPtr draw ( Usul::Documents::Manager::instance().activeDocument() );
+  if ( true == draw.valid() )
   {
-    rl->renderLoop ( _renderLoop );
+    draw->redraw();
   }
 }

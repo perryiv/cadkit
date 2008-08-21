@@ -514,7 +514,7 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 
       osg::Vec3 bottom ( cylinderPos.x(), cylinderPos.y(), cylinderPos.z() - ( height / 2 ) );
       osg::Vec3 top ( bottom.x(), bottom.y(), bottom.z() + height );
-      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactorySingleton::instance().cylinder( radius, 20, bottom, top );
+      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactory::instance().cylinder( radius, 20, bottom, top );
       osg::ref_ptr< osg::Geode > cylinderGeode ( new osg::Geode );
       cylinderGeode->addDrawable( geometry.get() );
       OsgTools::State::StateSet::setMaterial( cylinderGeode.get(), _medicineStockColor, _medicineStockColor, 1.0 );
@@ -545,7 +545,7 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 
       osg::Vec3 bottom ( cylinderPos.x(), cylinderPos.y(), cylinderPos.z() - ( height / 2 ) );
       osg::Vec3 top ( bottom.x(), bottom.y(), bottom.z() + height );
-      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactorySingleton::instance().cylinder( radius, 20, bottom, top );
+      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactory::instance().cylinder( radius, 20, bottom, top );
       osg::ref_ptr< osg::Geode > cylinderGeode ( new osg::Geode );
       cylinderGeode->addDrawable( geometry.get() );
       OsgTools::State::StateSet::setMaterial( cylinderGeode.get(), _vaccineStockColor, _vaccineStockColor, 1.0 );
@@ -576,7 +576,7 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 
       osg::Vec3 bottom ( cylinderPos.x(), cylinderPos.y(), cylinderPos.z() - ( height / 2 ) );
       osg::Vec3 top ( bottom.x(), bottom.y(), bottom.z() + height );
-      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactorySingleton::instance().cylinder( radius, 20, bottom, top );
+      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactory::instance().cylinder( radius, 20, bottom, top );
       osg::ref_ptr< osg::Geode > cylinderGeode ( new osg::Geode );
       cylinderGeode->addDrawable( geometry.get() );
       OsgTools::State::StateSet::setMaterial( cylinderGeode.get(), _doctorsStockColor, _doctorsStockColor, 1.0 );
@@ -605,7 +605,7 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 
       osg::Vec3 bottom ( cylinderPos.x(), cylinderPos.y(), cylinderPos.z() - ( height / 2 ) );
       osg::Vec3 top ( bottom.x(), bottom.y(), bottom.z() + height );
-      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactorySingleton::instance().cylinder( radius, 20, bottom, top );
+      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactory::instance().cylinder( radius, 20, bottom, top );
       osg::ref_ptr< osg::Geode > cylinderGeode ( new osg::Geode );
       cylinderGeode->addDrawable( geometry.get() );
       OsgTools::State::StateSet::setMaterial( cylinderGeode.get(), _nursesStockColor, _nursesStockColor, 1.0 );
@@ -634,7 +634,7 @@ osg::Group*		Stock::_createStockDetailsbyStep( const unsigned int &step, unsigne
 
       osg::Vec3 bottom ( cylinderPos.x(), cylinderPos.y(), cylinderPos.z() - ( height / 2 ) );
       osg::Vec3 top ( bottom.x(), bottom.y(), bottom.z() + height );
-      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactorySingleton::instance().cylinder( radius, 20, bottom, top );
+      osg::ref_ptr< osg::Geometry > geometry = OsgTools::ShapeFactory::instance().cylinder( radius, 20, bottom, top );
       osg::ref_ptr< osg::Geode > cylinderGeode ( new osg::Geode );
       cylinderGeode->addDrawable( geometry.get() );
       OsgTools::State::StateSet::setMaterial( cylinderGeode.get(), _bedsStockColor, _bedsStockColor, 1.0 );

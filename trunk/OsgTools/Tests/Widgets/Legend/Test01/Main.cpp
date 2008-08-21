@@ -26,7 +26,7 @@ int main ( int argc, char** argv )
   
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
   legend->maximiumSize ( 300, 600 );
-  legend->heightPerItem ( 40 );
+  //legend->heightPerItem ( 40 );
   legend->position ( 10, 10 );
   legend->growDirection ( OsgTools::Widgets::Legend::UP );
   

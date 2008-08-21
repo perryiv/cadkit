@@ -24,7 +24,7 @@ using namespace OsgTools;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ShapeFactory * ShapeFactorySingleton::_instance ( 0x0 );
+ShapeFactory * ShapeFactory::_instance ( 0x0 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ ShapeFactory * ShapeFactorySingleton::_instance ( 0x0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ShapeFactory& ShapeFactorySingleton::instance()
+ShapeFactory& ShapeFactory::instance()
 {
   if ( 0x0 == _instance )
     _instance = new ShapeFactory;

@@ -14,7 +14,6 @@
 #include "Minerva/Core/Export.h"
 
 #include "Usul/Commands/Command.h"
-#include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ISerialize.h"
 
 #include "Serialize/XML/Macros.h"
@@ -42,7 +41,7 @@ protected:
   virtual void                _execute();
 
 private:
-  Usul::Interfaces::ILayer::QueryPtr _layer;
+  Usul::Interfaces::IUnknown::QueryPtr _layer;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS( RemoveLayer );

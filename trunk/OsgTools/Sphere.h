@@ -76,7 +76,7 @@ namespace OsgTools
       sd->setTessellationHints ( hints.get() );
 
       // Needed to make gcc 4.1.1 happy
-      this->color_policy()( sd.get() );
+      //this->color_policy()( sd.get() );
 
       osg::ref_ptr<osg::Geode> node = new osg::Geode();
       node->setName("OsgTools_Sphere_geode");

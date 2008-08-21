@@ -505,7 +505,7 @@ namespace Helper
   template < class Point > osg::Node *makeCube ( const Point &point, float size )
   {
     osg::ref_ptr<osg::Geode> cube ( new osg::Geode );
-    cube->addDrawable ( OsgTools::ShapeFactorySingleton::instance().cube ( osg::Vec3 ( size, size, size ) ) );
+    cube->addDrawable ( OsgTools::ShapeFactory::instance().cube ( osg::Vec3 ( size, size, size ) ) );
 
     osg::ref_ptr<osg::AutoTransform> mat ( new osg::AutoTransform );
     mat->setAutoRotateMode ( osg::AutoTransform::NO_ROTATION );

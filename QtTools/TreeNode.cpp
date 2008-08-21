@@ -418,6 +418,10 @@ void TreeNode::_addChildren()
 
 void TreeNode::_clear()
 {
+  // Return now if there are no children.
+  if ( 0 == _children.size() )
+    return;
+
   if ( 0x0 != _model )
     _model->beginRemoveRows ( this, 0, _children.size() );
   

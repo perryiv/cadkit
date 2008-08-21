@@ -39,6 +39,7 @@
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Constants.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Safe.h"
@@ -1602,6 +1603,12 @@ void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown 
   if ( true == doc.empty() )
     return;
 
+  // Save the current path.
+  CameraPath::RefPtr currentPath ( Usul::Threads::Safe::get ( this->mutex(), _currentPath ) );
+
+  // Make sure current path is restored.
+  Usul::Scope::Caller::RefPtr restorePath ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( currentPath, Usul::Adaptors::memberFunction ( this, &PathAnimationComponent::_setCurrentPath ) ) ) );
+
   // Save properties in registry.
   Usul::Registry::Node &reg ( Reg::instance()[Sections::PATH_ANIMATION][doc]["paths"] );
 
@@ -1609,6 +1616,7 @@ void PathAnimationComponent::activeDocumentChanged ( IUnknown *oldDoc, IUnknown 
 
   Strings strings;
   strings = reg.get<Strings> ( strings );
+  strings.erase ( std::unique ( strings.begin(), strings.end() ), strings.end() );
 
   for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
   {

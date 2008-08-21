@@ -20,6 +20,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Animate/Date.h"
+#include "Minerva/Core/Data/Object.h"
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
@@ -49,7 +50,7 @@ namespace Data {
   
 class DataObject;
 
-class MINERVA_EXPORT ClickedCallback : public Usul::Base::Referenced
+class MINERVA_EXPORT ClickedCallback : public Usul::Base::Object
 {
 public:
   typedef OsgTools::Widgets::Item Item;
@@ -63,7 +64,7 @@ public:
   virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const = 0;
 };
 
-class MINERVA_EXPORT DataObject : public Usul::Base::Object,
+class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Object,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::ITreeNode,
                                   public Usul::Interfaces::ILayerExtents,
@@ -71,7 +72,7 @@ class MINERVA_EXPORT DataObject : public Usul::Base::Object,
                                   public Minerva::Interfaces::IElevationChangedListnerer
 {
 public:
-  typedef Usul::Base::Object                  BaseClass;
+  typedef Minerva::Core::Data::Object         BaseClass;
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Minerva::Core::Animate::Date        Date;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
@@ -159,10 +160,10 @@ public:
   /// Get the max latitude and max longitude (ILayerExtents).
   virtual double        maxLon() const;
   virtual double        maxLat() const;
-
-  /// Get/Set id.
-  void                  objectId ( const std::string& );
-  const std::string&    objectId() const;
+  
+  /// Set/get the name.
+  void                  name ( const std::string& );
+  std::string           name() const;
 
   /// Get/Set the flag to show the label.
   void                  showLabel ( bool value );
@@ -197,7 +198,7 @@ private:
 
   bool         _dirty;
   bool         _visible;
-  std::string  _objectId;
+  std::string  _name;
   std::string  _label;
   std::string  _description;
   osg::Vec3    _labelPosition;

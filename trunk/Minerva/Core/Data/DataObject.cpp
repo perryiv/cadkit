@@ -49,7 +49,7 @@ DataObject::DataObject() :
   BaseClass(),
   _dirty ( true ),
   _visible ( true ),
-  _objectId ( "" ),
+  _name(),
   _label(),
   _description(),
   _labelPosition ( 0.0, 0.0, 1000.0 ),
@@ -156,32 +156,6 @@ void DataObject::dirty( bool b )
 {
   Guard guard ( this );
   _dirty = b;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::objectId( const std::string & id )
-{
-  Guard guard ( this );
-  _objectId = id;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the id.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const std::string & DataObject::objectId() const
-{
-  Guard guard ( this );
-  return _objectId;
 }
 
 
@@ -920,4 +894,32 @@ ClickedCallback::ClickedCallback()
 
 ClickedCallback::~ClickedCallback()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::name ( const std::string& s )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _name = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string DataObject::name() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _name;
 }

@@ -424,8 +424,8 @@ public:
   bool                  timeoutAnimate ();
 
   // Set/Get two sided lighting
-  void                  twoSidedLighting ( bool twoSided );
-  bool                  twoSidedLighting () const;
+  void                  twoSidedLightingSet ( bool twoSided );
+  bool                  twoSidedLightingGet () const;
 
   // Get the light.
   osg::Light *          light();

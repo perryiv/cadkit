@@ -1137,6 +1137,9 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   
   // Back face culling.
   menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show Back &Faces", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::showBackFaces ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isBackFacesShowing ) ) ) );
+  
+  // Two Sided Lighting.
+  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Two Sided &Lighting", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::twoSidedLightingSet ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::twoSidedLightingGet ) ) ) );
 }
 
 

@@ -1174,7 +1174,7 @@ void Viewer::textureMode ( osg::StateAttribute::GLMode mode, bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::twoSidedLighting ( bool twoSided )
+void Viewer::twoSidedLightingSet ( bool twoSided )
 {
   // Get the state set, or make one.
   osg::ref_ptr<osg::StateSet> ss ( _renderer->getGlobalStateSet() );
@@ -1195,7 +1195,7 @@ void Viewer::twoSidedLighting ( bool twoSided )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::twoSidedLighting() const
+bool Viewer::twoSidedLightingGet() const
 {
   // Get the state set.
   const osg::StateSet *ss = _renderer->getGlobalStateSet();

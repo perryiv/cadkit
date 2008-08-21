@@ -90,8 +90,6 @@
 		431BAF7409245D9600ED2131 /* Dimension.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAD9409245AB600ED2131 /* Dimension.h */; };
 		431BAF7509245D9600ED2131 /* DisplayLists.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BAD9509245AB600ED2131 /* DisplayLists.cpp */; };
 		431BAF7609245D9600ED2131 /* DisplayLists.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAD9609245AB600ED2131 /* DisplayLists.h */; };
-		431BAF7709245D9600ED2131 /* EdgeDetect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADAA09245AB600ED2131 /* EdgeDetect.cpp */; };
-		431BAF7809245D9600ED2131 /* EdgeDetect.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADAB09245AB600ED2131 /* EdgeDetect.h */; };
 		431BAF7909245D9600ED2131 /* EventAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADDC09245AB700ED2131 /* EventAdapter.cpp */; };
 		431BAF7A09245D9600ED2131 /* EventAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADDD09245AB700ED2131 /* EventAdapter.h */; };
 		431BAF7B09245D9600ED2131 /* Factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BAE0509245AB700ED2131 /* Factory.cpp */; };
@@ -105,22 +103,14 @@
 		431BAF8309245D9600ED2131 /* GlassBoundingBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADA009245AB600ED2131 /* GlassBoundingBox.cpp */; };
 		431BAF8409245D9600ED2131 /* GlassBoundingBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADA109245AB600ED2131 /* GlassBoundingBox.h */; };
 		431BAF8509245D9600ED2131 /* GraphStreamVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADA309245AB600ED2131 /* GraphStreamVisitor.h */; };
-		431BAF8609245D9600ED2131 /* Grayscale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADAC09245AB600ED2131 /* Grayscale.cpp */; };
-		431BAF8709245D9600ED2131 /* Grayscale.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADAD09245AB600ED2131 /* Grayscale.h */; };
 		431BAF8809245D9600ED2131 /* Grid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADA409245AB600ED2131 /* Grid.cpp */; };
 		431BAF8909245D9600ED2131 /* Grid.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADA509245AB600ED2131 /* Grid.h */; };
 		431BAF8A09245D9600ED2131 /* Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADA609245AB600ED2131 /* Group.cpp */; };
 		431BAF8B09245D9600ED2131 /* Group.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADA709245AB600ED2131 /* Group.h */; };
 		431BAF8C09245D9600ED2131 /* HasOption.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADA809245AB600ED2131 /* HasOption.h */; };
-		431BAF8D09245D9600ED2131 /* Histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADAE09245AB600ED2131 /* Histogram.cpp */; };
-		431BAF8E09245D9600ED2131 /* Histogram.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADAF09245AB700ED2131 /* Histogram.h */; };
 		431BAF8F09245D9600ED2131 /* Image3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADB009245AB700ED2131 /* Image3d.cpp */; };
 		431BAF9009245D9600ED2131 /* Image3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADB109245AB700ED2131 /* Image3d.h */; };
-		431BAF9109245D9600ED2131 /* ImageOr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADB209245AB700ED2131 /* ImageOr.cpp */; };
-		431BAF9209245D9600ED2131 /* ImageOr.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADB309245AB700ED2131 /* ImageOr.h */; };
 		431BAF9309245D9600ED2131 /* Index.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADBD09245AB700ED2131 /* Index.h */; };
-		431BAF9409245D9600ED2131 /* Invert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADB409245AB700ED2131 /* Invert.cpp */; };
-		431BAF9509245D9600ED2131 /* Invert.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADB509245AB700ED2131 /* Invert.h */; };
 		431BAF9609245D9600ED2131 /* Jitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADC309245AB700ED2131 /* Jitter.cpp */; };
 		431BAF9709245D9600ED2131 /* Jitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADC409245AB700ED2131 /* Jitter.h */; };
 		431BAF9809245D9600ED2131 /* KeepFirst.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADC509245AB700ED2131 /* KeepFirst.h */; };
@@ -138,8 +128,6 @@
 		431BAFA409245D9600ED2131 /* Matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADB609245AB700ED2131 /* Matrix.h */; };
 		431BAFA509245D9600ED2131 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADCD09245AB700ED2131 /* Mesh.cpp */; };
 		431BAFA609245D9600ED2131 /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADCE09245AB700ED2131 /* Mesh.h */; };
-		431BAFA709245D9600ED2131 /* Morphology.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADB709245AB700ED2131 /* Morphology.cpp */; };
-		431BAFA809245D9600ED2131 /* Morphology.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADB809245AB700ED2131 /* Morphology.h */; };
 		431BAFA909245D9600ED2131 /* PolygonMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADF109245AB700ED2131 /* PolygonMode.cpp */; };
 		431BAFAA09245D9600ED2131 /* PolygonMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADF209245AB700ED2131 /* PolygonMode.h */; };
 		431BAFAB09245D9600ED2131 /* Ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADD209245AB700ED2131 /* Ray.cpp */; };
@@ -149,8 +137,6 @@
 		431BAFAF09245D9600ED2131 /* RecordTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADE109245AB700ED2131 /* RecordTime.h */; };
 		431BAFB009245D9600ED2131 /* Sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADE409245AB700ED2131 /* Sample.cpp */; };
 		431BAFB109245D9600ED2131 /* Sample.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADE509245AB700ED2131 /* Sample.h */; };
-		431BAFB209245D9600ED2131 /* Scale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADB909245AB700ED2131 /* Scale.cpp */; };
-		431BAFB309245D9600ED2131 /* Scale.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADBA09245AB700ED2131 /* Scale.h */; };
 		431BAFB409245D9600ED2131 /* ScopedDisplayLists.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADE609245AB700ED2131 /* ScopedDisplayLists.h */; };
 		431BAFB509245D9600ED2131 /* ScopedOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADE709245AB700ED2131 /* ScopedOptions.h */; };
 		431BAFB609245D9600ED2131 /* ScopedProjection.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADE809245AB700ED2131 /* ScopedProjection.h */; };
@@ -170,8 +156,6 @@
 		431BAFC709245D9600ED2131 /* STLWrite.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADC009245AB700ED2131 /* STLWrite.h */; };
 		431BAFC809245D9600ED2131 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADF909245AB700ED2131 /* Text.cpp */; };
 		431BAFC909245D9600ED2131 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADFA09245AB700ED2131 /* Text.h */; };
-		431BAFCA09245D9600ED2131 /* Threshold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADBB09245AB700ED2131 /* Threshold.cpp */; };
-		431BAFCB09245D9600ED2131 /* Threshold.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADBC09245AB700ED2131 /* Threshold.h */; };
 		431BAFCC09245D9600ED2131 /* Torus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADFB09245AB700ED2131 /* Torus.cpp */; };
 		431BAFCD09245D9600ED2131 /* Torus.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADFC09245AB700ED2131 /* Torus.h */; };
 		431BAFCE09245D9600ED2131 /* Trackball.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADE209245AB700ED2131 /* Trackball.cpp */; };
@@ -183,8 +167,6 @@
 		431BAFD409245D9600ED2131 /* Visitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAE1109245AB700ED2131 /* Visitor.h */; };
 		431BAFD509245D9600ED2131 /* VoxelGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BAD9909245AB600ED2131 /* VoxelGeometry.cpp */; };
 		431BAFD609245D9600ED2131 /* VoxelGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAD9A09245AB600ED2131 /* VoxelGeometry.h */; };
-		431BAFD709245D9600ED2131 /* WriteEPS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BADC109245AB700ED2131 /* WriteEPS.cpp */; };
-		431BAFD809245D9600ED2131 /* WriteEPS.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BADC209245AB700ED2131 /* WriteEPS.h */; };
 		431BB89009246ADA00ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		431BB8D009246B9A00ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		431BB8E409246BD700ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
@@ -594,7 +576,6 @@
 		66427A430E4AA8BE009AE232 /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */; };
 		66427A440E4AA8BE009AE232 /* osgdb_lws.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05800D143B2B00B4B1AA /* osgdb_lws.so */; };
 		66427A450E4AA8BE009AE232 /* osgdb_md2.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05810D143B2B00B4B1AA /* osgdb_md2.so */; };
-		66427A460E4AA8BE009AE232 /* osgdb_net.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05820D143B2B00B4B1AA /* osgdb_net.so */; };
 		66427A470E4AA8BE009AE232 /* osgdb_normals.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05830D143B2B00B4B1AA /* osgdb_normals.so */; };
 		66427A480E4AA8BE009AE232 /* osgdb_obj.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05840D143B2B00B4B1AA /* osgdb_obj.so */; };
 		66427A490E4AA8BE009AE232 /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */; };
@@ -647,7 +628,6 @@
 		664308D80D10B01B00984C94 /* Qt.h in Headers */ = {isa = PBXBuildFile; fileRef = 664308D00D10B01B00984C94 /* Qt.h */; };
 		664308DA0D10B01B00984C94 /* Visitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 664308D20D10B01B00984C94 /* Visitor.h */; };
 		66430BCF0D10B7B200984C94 /* osgManipulator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 664308DE0D10B05700984C94 /* osgManipulator.framework */; };
-		66430BE10D10B91300984C94 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		66430BF90D10BA5000984C94 /* ProgressBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430BF10D10BA5000984C94 /* ProgressBar.cpp */; };
 		66430BFA0D10BA5000984C94 /* ProgressBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 66430BF20D10BA5000984C94 /* ProgressBar.h */; };
 		66430BFB0D10BA5000984C94 /* ProgressBarGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66430BF30D10BA5000984C94 /* ProgressBarGroup.cpp */; };
@@ -797,8 +777,6 @@
 		667E3CBB0E05E20E009732FE /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 667E3CBA0E05E20E009732FE /* CompileGuard.h */; };
 		6685C34A0D45390900103700 /* StackPoints.h in Headers */ = {isa = PBXBuildFile; fileRef = 6685C3480D45390900103700 /* StackPoints.h */; };
 		6685C34B0D45390900103700 /* StackPoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6685C3490D45390900103700 /* StackPoints.cpp */; };
-		6687115809D5E0020003384F /* GLFeedback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6687115409D5E0020003384F /* GLFeedback.cpp */; };
-		6687115909D5E0020003384F /* GLFeedback.h in Headers */ = {isa = PBXBuildFile; fileRef = 6687115509D5E0020003384F /* GLFeedback.h */; };
 		668918700D281B53005CB399 /* Program.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6689186E0D281B53005CB399 /* Program.cpp */; };
 		668918710D281B53005CB399 /* Program.h in Headers */ = {isa = PBXBuildFile; fileRef = 6689186F0D281B53005CB399 /* Program.h */; };
 		66892DE10D283DF9005CB399 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66892DD90D283DF9005CB399 /* CompileGuard.h */; };
@@ -993,7 +971,6 @@
 		669272360E0AE36400E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */; };
 		669272370E0AE36400E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05800D143B2B00B4B1AA /* osgdb_lws.so */; };
 		669272380E0AE36400E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05810D143B2B00B4B1AA /* osgdb_md2.so */; };
-		669272390E0AE36400E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05820D143B2B00B4B1AA /* osgdb_net.so */; };
 		6692723A0E0AE36400E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05830D143B2B00B4B1AA /* osgdb_normals.so */; };
 		6692723B0E0AE36400E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05840D143B2B00B4B1AA /* osgdb_obj.so */; };
 		6692723C0E0AE36400E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */; };
@@ -1036,7 +1013,6 @@
 		669272640E0AE44600E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */; };
 		669272650E0AE44600E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05800D143B2B00B4B1AA /* osgdb_lws.so */; };
 		669272660E0AE44600E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05810D143B2B00B4B1AA /* osgdb_md2.so */; };
-		669272670E0AE44600E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05820D143B2B00B4B1AA /* osgdb_net.so */; };
 		669272680E0AE44600E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05830D143B2B00B4B1AA /* osgdb_normals.so */; };
 		669272690E0AE44600E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05840D143B2B00B4B1AA /* osgdb_obj.so */; };
 		6692726A0E0AE44600E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */; };
@@ -1116,6 +1092,7 @@
 		6695B44B0E3A267100C3D2FB /* moc_TimerCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6695B44A0E3A267100C3D2FB /* moc_TimerCallback.cpp */; };
 		6695C7750D19F8C600E78878 /* ExportScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6695C7730D19F8C600E78878 /* ExportScene.cpp */; };
 		6695C7760D19F8C600E78878 /* ExportScene.h in Headers */ = {isa = PBXBuildFile; fileRef = 6695C7740D19F8C600E78878 /* ExportScene.h */; };
+		6698ED610E5D411E00AB31E3 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		66990D550D8876FD0099FDAA /* LibraryPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66990D540D8876FD0099FDAA /* LibraryPool.cpp */; };
 		66999EF50D1CBE4300A9AE47 /* OpenManual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66999EF30D1CBE4300A9AE47 /* OpenManual.cpp */; };
 		66999EF60D1CBE4300A9AE47 /* OpenManual.h in Headers */ = {isa = PBXBuildFile; fileRef = 66999EF40D1CBE4300A9AE47 /* OpenManual.h */; };
@@ -3490,7 +3467,6 @@
 				66427A430E4AA8BE009AE232 /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */,
 				66427A440E4AA8BE009AE232 /* osgdb_lws.so in Copy OpenSceneGraph Plugins */,
 				66427A450E4AA8BE009AE232 /* osgdb_md2.so in Copy OpenSceneGraph Plugins */,
-				66427A460E4AA8BE009AE232 /* osgdb_net.so in Copy OpenSceneGraph Plugins */,
 				66427A470E4AA8BE009AE232 /* osgdb_normals.so in Copy OpenSceneGraph Plugins */,
 				66427A480E4AA8BE009AE232 /* osgdb_obj.so in Copy OpenSceneGraph Plugins */,
 				66427A490E4AA8BE009AE232 /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */,
@@ -3609,7 +3585,6 @@
 				669272360E0AE36400E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */,
 				669272370E0AE36400E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */,
 				669272380E0AE36400E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */,
-				669272390E0AE36400E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */,
 				6692723A0E0AE36400E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */,
 				6692723B0E0AE36400E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */,
 				6692723C0E0AE36400E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */,
@@ -3661,7 +3636,6 @@
 				669272640E0AE44600E35E8B /* osgdb_lwo.so in Copy OpenSceneGraph Plugins */,
 				669272650E0AE44600E35E8B /* osgdb_lws.so in Copy OpenSceneGraph Plugins */,
 				669272660E0AE44600E35E8B /* osgdb_md2.so in Copy OpenSceneGraph Plugins */,
-				669272670E0AE44600E35E8B /* osgdb_net.so in Copy OpenSceneGraph Plugins */,
 				669272680E0AE44600E35E8B /* osgdb_normals.so in Copy OpenSceneGraph Plugins */,
 				669272690E0AE44600E35E8B /* osgdb_obj.so in Copy OpenSceneGraph Plugins */,
 				6692726A0E0AE44600E35E8B /* osgdb_OpenFlight.so in Copy OpenSceneGraph Plugins */,
@@ -3921,30 +3895,12 @@
 		431BADA609245AB600ED2131 /* Group.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Group.cpp; path = ../OsgTools/Group.cpp; sourceTree = SOURCE_ROOT; };
 		431BADA709245AB600ED2131 /* Group.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Group.h; path = ../OsgTools/Group.h; sourceTree = SOURCE_ROOT; };
 		431BADA809245AB600ED2131 /* HasOption.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = HasOption.h; path = ../OsgTools/HasOption.h; sourceTree = SOURCE_ROOT; };
-		431BADAA09245AB600ED2131 /* EdgeDetect.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = EdgeDetect.cpp; path = ../OsgTools/Images/EdgeDetect.cpp; sourceTree = SOURCE_ROOT; };
-		431BADAB09245AB600ED2131 /* EdgeDetect.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = EdgeDetect.h; path = ../OsgTools/Images/EdgeDetect.h; sourceTree = SOURCE_ROOT; };
-		431BADAC09245AB600ED2131 /* Grayscale.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Grayscale.cpp; path = ../OsgTools/Images/Grayscale.cpp; sourceTree = SOURCE_ROOT; };
-		431BADAD09245AB600ED2131 /* Grayscale.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Grayscale.h; path = ../OsgTools/Images/Grayscale.h; sourceTree = SOURCE_ROOT; };
-		431BADAE09245AB600ED2131 /* Histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Histogram.cpp; path = ../OsgTools/Images/Histogram.cpp; sourceTree = SOURCE_ROOT; };
-		431BADAF09245AB700ED2131 /* Histogram.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Histogram.h; path = ../OsgTools/Images/Histogram.h; sourceTree = SOURCE_ROOT; };
 		431BADB009245AB700ED2131 /* Image3d.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Image3d.cpp; path = ../OsgTools/Images/Image3d.cpp; sourceTree = SOURCE_ROOT; };
 		431BADB109245AB700ED2131 /* Image3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Image3d.h; path = ../OsgTools/Images/Image3d.h; sourceTree = SOURCE_ROOT; };
-		431BADB209245AB700ED2131 /* ImageOr.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ImageOr.cpp; path = ../OsgTools/Images/ImageOr.cpp; sourceTree = SOURCE_ROOT; };
-		431BADB309245AB700ED2131 /* ImageOr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ImageOr.h; path = ../OsgTools/Images/ImageOr.h; sourceTree = SOURCE_ROOT; };
-		431BADB409245AB700ED2131 /* Invert.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Invert.cpp; path = ../OsgTools/Images/Invert.cpp; sourceTree = SOURCE_ROOT; };
-		431BADB509245AB700ED2131 /* Invert.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Invert.h; path = ../OsgTools/Images/Invert.h; sourceTree = SOURCE_ROOT; };
 		431BADB609245AB700ED2131 /* Matrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Matrix.h; path = ../OsgTools/Images/Matrix.h; sourceTree = SOURCE_ROOT; };
-		431BADB709245AB700ED2131 /* Morphology.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Morphology.cpp; path = ../OsgTools/Images/Morphology.cpp; sourceTree = SOURCE_ROOT; };
-		431BADB809245AB700ED2131 /* Morphology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Morphology.h; path = ../OsgTools/Images/Morphology.h; sourceTree = SOURCE_ROOT; };
-		431BADB909245AB700ED2131 /* Scale.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Scale.cpp; path = ../OsgTools/Images/Scale.cpp; sourceTree = SOURCE_ROOT; };
-		431BADBA09245AB700ED2131 /* Scale.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Scale.h; path = ../OsgTools/Images/Scale.h; sourceTree = SOURCE_ROOT; };
-		431BADBB09245AB700ED2131 /* Threshold.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Threshold.cpp; path = ../OsgTools/Images/Threshold.cpp; sourceTree = SOURCE_ROOT; };
-		431BADBC09245AB700ED2131 /* Threshold.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Threshold.h; path = ../OsgTools/Images/Threshold.h; sourceTree = SOURCE_ROOT; };
 		431BADBD09245AB700ED2131 /* Index.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Index.h; path = ../OsgTools/Index.h; sourceTree = SOURCE_ROOT; };
 		431BADBF09245AB700ED2131 /* STLPrintVisitor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = STLPrintVisitor.h; path = ../OsgTools/IO/STLPrintVisitor.h; sourceTree = SOURCE_ROOT; };
 		431BADC009245AB700ED2131 /* STLWrite.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = STLWrite.h; path = ../OsgTools/IO/STLWrite.h; sourceTree = SOURCE_ROOT; };
-		431BADC109245AB700ED2131 /* WriteEPS.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = WriteEPS.cpp; path = ../OsgTools/IO/WriteEPS.cpp; sourceTree = SOURCE_ROOT; };
-		431BADC209245AB700ED2131 /* WriteEPS.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = WriteEPS.h; path = ../OsgTools/IO/WriteEPS.h; sourceTree = SOURCE_ROOT; };
 		431BADC309245AB700ED2131 /* Jitter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Jitter.cpp; path = ../OsgTools/Jitter.cpp; sourceTree = SOURCE_ROOT; };
 		431BADC409245AB700ED2131 /* Jitter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Jitter.h; path = ../OsgTools/Jitter.h; sourceTree = SOURCE_ROOT; };
 		431BADC509245AB700ED2131 /* KeepFirst.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = KeepFirst.h; path = ../OsgTools/KeepFirst.h; sourceTree = SOURCE_ROOT; };
@@ -4646,8 +4602,6 @@
 		667E3CBA0E05E20E009732FE /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		6685C3480D45390900103700 /* StackPoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StackPoints.h; sourceTree = "<group>"; };
 		6685C3490D45390900103700 /* StackPoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StackPoints.cpp; sourceTree = "<group>"; };
-		6687115409D5E0020003384F /* GLFeedback.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = GLFeedback.cpp; sourceTree = "<group>"; };
-		6687115509D5E0020003384F /* GLFeedback.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GLFeedback.h; sourceTree = "<group>"; };
 		6689186E0D281B53005CB399 /* Program.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Program.cpp; path = Qt/Core/Program.cpp; sourceTree = "<group>"; };
 		6689186F0D281B53005CB399 /* Program.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Program.h; path = Qt/Core/Program.h; sourceTree = "<group>"; };
 		66892DD00D283D61005CB399 /* LayerManager.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = LayerManager.plug; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5562,7 +5516,6 @@
 		66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_lwo.so; sourceTree = "<group>"; };
 		66EF05800D143B2B00B4B1AA /* osgdb_lws.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_lws.so; sourceTree = "<group>"; };
 		66EF05810D143B2B00B4B1AA /* osgdb_md2.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_md2.so; sourceTree = "<group>"; };
-		66EF05820D143B2B00B4B1AA /* osgdb_net.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_net.so; sourceTree = "<group>"; };
 		66EF05830D143B2B00B4B1AA /* osgdb_normals.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_normals.so; sourceTree = "<group>"; };
 		66EF05840D143B2B00B4B1AA /* osgdb_obj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_obj.so; sourceTree = "<group>"; };
 		66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_OpenFlight.so; sourceTree = "<group>"; };
@@ -5836,7 +5789,6 @@
 			files = (
 				4356ECF70A11068C00AC9847 /* OpenGL.framework in Frameworks */,
 				431BAD7809245A4600ED2131 /* libUsul.dylib in Frameworks */,
-				66430BE10D10B91300984C94 /* osg.framework in Frameworks */,
 				66430BCF0D10B7B200984C94 /* osgManipulator.framework in Frameworks */,
 				43D7259E094DE500009181E3 /* OpenThreads.framework in Frameworks */,
 				43D725A0094DE500009181E3 /* osgDB.framework in Frameworks */,
@@ -5844,6 +5796,7 @@
 				43D725A2094DE500009181E3 /* osgText.framework in Frameworks */,
 				43D725A3094DE500009181E3 /* osgUtil.framework in Frameworks */,
 				669BD29D0E0EF9DF00E598FF /* osgViewer.framework in Frameworks */,
+				6698ED610E5D411E00AB31E3 /* osg.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6753,25 +6706,9 @@
 			children = (
 				664308C40D10AFE900984C94 /* DownSample.cpp */,
 				664308C50D10AFE900984C94 /* DownSample.h */,
-				431BADAA09245AB600ED2131 /* EdgeDetect.cpp */,
-				431BADAB09245AB600ED2131 /* EdgeDetect.h */,
-				431BADAC09245AB600ED2131 /* Grayscale.cpp */,
-				431BADAD09245AB600ED2131 /* Grayscale.h */,
-				431BADAE09245AB600ED2131 /* Histogram.cpp */,
-				431BADAF09245AB700ED2131 /* Histogram.h */,
 				431BADB009245AB700ED2131 /* Image3d.cpp */,
 				431BADB109245AB700ED2131 /* Image3d.h */,
-				431BADB209245AB700ED2131 /* ImageOr.cpp */,
-				431BADB309245AB700ED2131 /* ImageOr.h */,
-				431BADB409245AB700ED2131 /* Invert.cpp */,
-				431BADB509245AB700ED2131 /* Invert.h */,
 				431BADB609245AB700ED2131 /* Matrix.h */,
-				431BADB709245AB700ED2131 /* Morphology.cpp */,
-				431BADB809245AB700ED2131 /* Morphology.h */,
-				431BADB909245AB700ED2131 /* Scale.cpp */,
-				431BADBA09245AB700ED2131 /* Scale.h */,
-				431BADBB09245AB700ED2131 /* Threshold.cpp */,
-				431BADBC09245AB700ED2131 /* Threshold.h */,
 			);
 			name = Images;
 			path = ../OsgTools/Images;
@@ -6784,12 +6721,8 @@
 				66430C060D10BA8300984C94 /* Reader.h */,
 				43F6DFD70A1A526E00216A12 /* STLWriter.cpp */,
 				43F6DFD80A1A526E00216A12 /* STLWriter.h */,
-				6687115409D5E0020003384F /* GLFeedback.cpp */,
-				6687115509D5E0020003384F /* GLFeedback.h */,
 				431BADBF09245AB700ED2131 /* STLPrintVisitor.h */,
 				431BADC009245AB700ED2131 /* STLWrite.h */,
-				431BADC109245AB700ED2131 /* WriteEPS.cpp */,
-				431BADC209245AB700ED2131 /* WriteEPS.h */,
 			);
 			name = IO;
 			path = ../OsgTools/IO;
@@ -6942,7 +6875,6 @@
 				66EF057F0D143B2B00B4B1AA /* osgdb_lwo.so */,
 				66EF05800D143B2B00B4B1AA /* osgdb_lws.so */,
 				66EF05810D143B2B00B4B1AA /* osgdb_md2.so */,
-				66EF05820D143B2B00B4B1AA /* osgdb_net.so */,
 				66EF05830D143B2B00B4B1AA /* osgdb_normals.so */,
 				66EF05840D143B2B00B4B1AA /* osgdb_obj.so */,
 				66EF05850D143B2B00B4B1AA /* osgdb_OpenFlight.so */,
@@ -10480,7 +10412,6 @@
 				431BAF7309245D9600ED2131 /* Declarations.h in Headers */,
 				431BAF7409245D9600ED2131 /* Dimension.h in Headers */,
 				431BAF7609245D9600ED2131 /* DisplayLists.h in Headers */,
-				431BAF7809245D9600ED2131 /* EdgeDetect.h in Headers */,
 				431BAF7A09245D9600ED2131 /* EventAdapter.h in Headers */,
 				431BAF7C09245D9600ED2131 /* Factory.h in Headers */,
 				431BAF7D09245D9600ED2131 /* FlipNormals.h in Headers */,
@@ -10489,15 +10420,11 @@
 				431BAF8209245D9600ED2131 /* FrameDump.h in Headers */,
 				431BAF8409245D9600ED2131 /* GlassBoundingBox.h in Headers */,
 				431BAF8509245D9600ED2131 /* GraphStreamVisitor.h in Headers */,
-				431BAF8709245D9600ED2131 /* Grayscale.h in Headers */,
 				431BAF8909245D9600ED2131 /* Grid.h in Headers */,
 				431BAF8B09245D9600ED2131 /* Group.h in Headers */,
 				431BAF8C09245D9600ED2131 /* HasOption.h in Headers */,
-				431BAF8E09245D9600ED2131 /* Histogram.h in Headers */,
 				431BAF9009245D9600ED2131 /* Image3d.h in Headers */,
-				431BAF9209245D9600ED2131 /* ImageOr.h in Headers */,
 				431BAF9309245D9600ED2131 /* Index.h in Headers */,
-				431BAF9509245D9600ED2131 /* Invert.h in Headers */,
 				431BAF9709245D9600ED2131 /* Jitter.h in Headers */,
 				431BAF9809245D9600ED2131 /* KeepFirst.h in Headers */,
 				431BAF9A09245D9600ED2131 /* Lod.h in Headers */,
@@ -10508,13 +10435,11 @@
 				431BAFA309245D9600ED2131 /* MaterialSetter.h in Headers */,
 				431BAFA409245D9600ED2131 /* Matrix.h in Headers */,
 				431BAFA609245D9600ED2131 /* Mesh.h in Headers */,
-				431BAFA809245D9600ED2131 /* Morphology.h in Headers */,
 				431BAFAA09245D9600ED2131 /* PolygonMode.h in Headers */,
 				431BAFAC09245D9600ED2131 /* Ray.h in Headers */,
 				431BAFAE09245D9600ED2131 /* ReadModel.h in Headers */,
 				431BAFAF09245D9600ED2131 /* RecordTime.h in Headers */,
 				431BAFB109245D9600ED2131 /* Sample.h in Headers */,
-				431BAFB309245D9600ED2131 /* Scale.h in Headers */,
 				431BAFB409245D9600ED2131 /* ScopedDisplayLists.h in Headers */,
 				431BAFB509245D9600ED2131 /* ScopedOptions.h in Headers */,
 				431BAFB609245D9600ED2131 /* ScopedProjection.h in Headers */,
@@ -10529,14 +10454,12 @@
 				431BAFC609245D9600ED2131 /* STLPrintVisitor.h in Headers */,
 				431BAFC709245D9600ED2131 /* STLWrite.h in Headers */,
 				431BAFC909245D9600ED2131 /* Text.h in Headers */,
-				431BAFCB09245D9600ED2131 /* Threshold.h in Headers */,
 				431BAFCD09245D9600ED2131 /* Torus.h in Headers */,
 				431BAFCF09245D9600ED2131 /* Trackball.h in Headers */,
 				431BAFD109245D9600ED2131 /* Triangle.h in Headers */,
 				431BAFD309245D9600ED2131 /* TriangleSet.h in Headers */,
 				431BAFD409245D9600ED2131 /* Visitor.h in Headers */,
 				431BAFD609245D9600ED2131 /* VoxelGeometry.h in Headers */,
-				431BAFD809245D9600ED2131 /* WriteEPS.h in Headers */,
 				437A27B309447D790024AFBC /* BoundingSphere.h in Headers */,
 				437A27B509447D790024AFBC /* SortBackToFront.h in Headers */,
 				437A27B909447D920024AFBC /* DirtyBounds.h in Headers */,
@@ -10553,7 +10476,6 @@
 				43442F8F0960A303000A1AB5 /* ClipPlane.h in Headers */,
 				43442F910960A341000A1AB5 /* Enum.h in Headers */,
 				43442F950960A375000A1AB5 /* Intersect.h in Headers */,
-				6687115909D5E0020003384F /* GLFeedback.h in Headers */,
 				43F6DFDA0A1A526E00216A12 /* STLWriter.h in Headers */,
 				66E7B0C00B17617300E3D682 /* Renderer.h in Headers */,
 				66E7B0C20B17617300E3D682 /* SceneManager.h in Headers */,
@@ -13170,19 +13092,14 @@
 				431BAF6C09245D9600ED2131 /* ColorFunctor.cpp in Sources */,
 				431BAF6F09245D9600ED2131 /* ColorSetter.cpp in Sources */,
 				431BAF7509245D9600ED2131 /* DisplayLists.cpp in Sources */,
-				431BAF7709245D9600ED2131 /* EdgeDetect.cpp in Sources */,
 				431BAF7909245D9600ED2131 /* EventAdapter.cpp in Sources */,
 				431BAF7B09245D9600ED2131 /* Factory.cpp in Sources */,
 				431BAF7E09245D9600ED2131 /* Font.cpp in Sources */,
 				431BAF8109245D9600ED2131 /* FrameDump.cpp in Sources */,
 				431BAF8309245D9600ED2131 /* GlassBoundingBox.cpp in Sources */,
-				431BAF8609245D9600ED2131 /* Grayscale.cpp in Sources */,
 				431BAF8809245D9600ED2131 /* Grid.cpp in Sources */,
 				431BAF8A09245D9600ED2131 /* Group.cpp in Sources */,
-				431BAF8D09245D9600ED2131 /* Histogram.cpp in Sources */,
 				431BAF8F09245D9600ED2131 /* Image3d.cpp in Sources */,
-				431BAF9109245D9600ED2131 /* ImageOr.cpp in Sources */,
-				431BAF9409245D9600ED2131 /* Invert.cpp in Sources */,
 				431BAF9609245D9600ED2131 /* Jitter.cpp in Sources */,
 				431BAF9909245D9600ED2131 /* Lod.cpp in Sources */,
 				431BAF9C09245D9600ED2131 /* Loop.cpp in Sources */,
@@ -13190,24 +13107,20 @@
 				431BAFA009245D9600ED2131 /* MaterialFactory.cpp in Sources */,
 				431BAFA209245D9600ED2131 /* MaterialSetter.cpp in Sources */,
 				431BAFA509245D9600ED2131 /* Mesh.cpp in Sources */,
-				431BAFA709245D9600ED2131 /* Morphology.cpp in Sources */,
 				431BAFA909245D9600ED2131 /* PolygonMode.cpp in Sources */,
 				431BAFAB09245D9600ED2131 /* Ray.cpp in Sources */,
 				431BAFAD09245D9600ED2131 /* ReadModel.cpp in Sources */,
 				431BAFB009245D9600ED2131 /* Sample.cpp in Sources */,
-				431BAFB209245D9600ED2131 /* Scale.cpp in Sources */,
 				431BAFB909245D9600ED2131 /* ShadeModel.cpp in Sources */,
 				431BAFBB09245D9600ED2131 /* ShapeFactory.cpp in Sources */,
 				431BAFBD09245D9600ED2131 /* SharedVertex.cpp in Sources */,
 				431BAFC409245D9600ED2131 /* Statistics.cpp in Sources */,
 				431BAFC809245D9600ED2131 /* Text.cpp in Sources */,
-				431BAFCA09245D9600ED2131 /* Threshold.cpp in Sources */,
 				431BAFCC09245D9600ED2131 /* Torus.cpp in Sources */,
 				431BAFCE09245D9600ED2131 /* Trackball.cpp in Sources */,
 				431BAFD009245D9600ED2131 /* Triangle.cpp in Sources */,
 				431BAFD209245D9600ED2131 /* TriangleSet.cpp in Sources */,
 				431BAFD509245D9600ED2131 /* VoxelGeometry.cpp in Sources */,
-				431BAFD709245D9600ED2131 /* WriteEPS.cpp in Sources */,
 				437A27B209447D790024AFBC /* BoundingSphere.cpp in Sources */,
 				437A27B409447D790024AFBC /* SortBackToFront.cpp in Sources */,
 				43A192FC094F20210029ED97 /* Arrow.cpp in Sources */,
@@ -13216,7 +13129,6 @@
 				43442F8C0960A303000A1AB5 /* Axes.cpp in Sources */,
 				43442F8E0960A303000A1AB5 /* ClipPlane.cpp in Sources */,
 				43442F940960A375000A1AB5 /* Intersect.cpp in Sources */,
-				6687115809D5E0020003384F /* GLFeedback.cpp in Sources */,
 				43F6DFD90A1A526E00216A12 /* STLWriter.cpp in Sources */,
 				66E7B0BF0B17617300E3D682 /* Renderer.cpp in Sources */,
 				66E7B0C10B17617300E3D682 /* SceneManager.cpp in Sources */,
@@ -15252,7 +15164,7 @@
 					../,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				OTHER_LDFLAGS = "-flat_namespace";
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				VALID_ARCHS = "ppc64 ppc7400 ppc970 i386 x86_64 ppc";
@@ -15294,10 +15206,14 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -15337,10 +15253,14 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;

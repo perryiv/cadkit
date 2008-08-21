@@ -44,7 +44,6 @@
 #include "OsgTools/Utilities/Intersect.h"
 #include "OsgTools/Builders/Arrow.h"
 #include "OsgTools/Widgets/Axes.h"
-#include "OsgTools/IO/WriteEPS.h"
 #include "OsgTools/Callbacks/HiddenLines.h"
 #include "OsgTools/Font.h"
 
@@ -1650,16 +1649,6 @@ bool Viewer::writeSceneFile ( const std::string &filename, const std::string &op
   // Save and restore default options.
   OsgTools::ScopedOptions scoped ( options );
 
-  // Get the extension.
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
-
-  // Check for eps first.
-  if ( "eps" == ext )
-  {
-    OsgTools::IO::WriteEPS writer ( filename );
-    return writer.write ( const_cast < Viewer& > ( *this ) );
-  }
-
   // Write the scene to file.
   return osgDB::writeNodeFile ( *this->scene(), filename );
 }
@@ -1675,16 +1664,6 @@ bool Viewer::writeModelFile ( const std::string &filename, const std::string &op
 {
   // Save and restore default options.
   OsgTools::ScopedOptions scoped ( options );
-
-  // Get the extension.
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( filename ) ) );
-
-  // Check for eps first.
-  if ( "eps" == ext )
-  {
-    OsgTools::IO::WriteEPS writer ( filename );
-    return writer.write ( const_cast < Viewer& > ( *this ) );
-  }
 
   // Write the scene to file.
   return osgDB::writeNodeFile ( *this->model(), filename );

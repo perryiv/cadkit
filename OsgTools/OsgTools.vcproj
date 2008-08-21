@@ -689,18 +689,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Drawables"
-				>
-				<File
-					RelativePath=".\Drawables\VoxelGeometry.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Drawables\VoxelGeometry.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Render"
 				>
 				<File
@@ -816,14 +804,6 @@
 				Name="IO"
 				>
 				<File
-					RelativePath=".\IO\GLFeedback.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\IO\GLFeedback.h"
-					>
-				</File>
-				<File
 					RelativePath=".\IO\Reader.cpp"
 					>
 				</File>
@@ -845,14 +825,6 @@
 				</File>
 				<File
 					RelativePath=".\IO\STLWriter.h"
-					>
-				</File>
-				<File
-					RelativePath=".\IO\WriteEPS.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\IO\WriteEPS.h"
 					>
 				</File>
 			</Filter>
@@ -881,26 +853,6 @@
 				</File>
 				<File
 					RelativePath=".\State\StateSet.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Intersect"
-				>
-				<File
-					RelativePath=".\Intersect\Frustum.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Intersect\FrustumFunctor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Intersect\FrustumVisitor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Intersect\FrustumVisitor.h"
 					>
 				</File>
 			</Filter>
@@ -1055,18 +1007,6 @@
 				</File>
 				<File
 					RelativePath=".\Widgets\Text.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Animate"
-				>
-				<File
-					RelativePath=".\Animate\AnimationCallback.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Animate\AnimationCallback.h"
 					>
 				</File>
 			</Filter>

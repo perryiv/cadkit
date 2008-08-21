@@ -75,7 +75,8 @@ PolygonLayer::PolygonLayer ( const PolygonLayer& layer ) : BaseClass ( layer ),
 void PolygonLayer::_registerMembers()
 {
   USUL_TRACE_SCOPE;
-  SERIALIZE_XML_ADD_MEMBER ( _showInterior );
+
+  this->_addMember ( "_showInterior", _showInterior );
   SERIALIZE_XML_ADD_MEMBER ( _showBorder );
   SERIALIZE_XML_ADD_MEMBER ( _borderColor );
   SERIALIZE_XML_ADD_MEMBER ( _borderWidth );

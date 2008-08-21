@@ -303,7 +303,7 @@ void MeasureToolComponent::intersectNotify ( float x, float y, const osgUtil::Li
       OsgTools::State::StateSet::setNormalize ( autoTransform.get(), true );
 
       osg::ref_ptr <osg::Geode> geode ( new osg::Geode );
-      geode->addDrawable ( OsgTools::ShapeFactorySingleton::instance().sphere( 2.5 ) );
+      geode->addDrawable ( OsgTools::ShapeFactory::instance().sphere( 2.5 ) );
 
       autoTransform->addChild ( geode.get() );
       osg::ref_ptr <osg::Material>  mat ( new osg::Material );

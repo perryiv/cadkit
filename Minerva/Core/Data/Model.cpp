@@ -13,6 +13,8 @@
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
+#include "OsgTools/State/StateSet.h"
+
 #include "osg/MatrixTransform"
 
 using namespace Minerva::Core::Data;
@@ -76,11 +78,15 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   
   osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
   osg::Matrix S ( osg::Matrix::scale ( this->scale() * this->toMeters() ) );
-  
+
   mt->setMatrix ( S *
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
                   osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
-  
+
+  // If there is a scale, turn on normalize.
+  if ( false == S.isIdentity() )
+    OsgTools::State::StateSet::setNormalize ( this->model(), true );
+
   mt->addChild ( this->model() );
   return mt.release();
 }

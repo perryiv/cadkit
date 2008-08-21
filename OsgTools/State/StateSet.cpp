@@ -831,6 +831,8 @@ void StateSet::setMaterial ( osg::Node *node, const osg::Vec4f &ambient, const o
 
   mat->setAmbient ( osg::Material::FRONT_AND_BACK, ambient );
   mat->setDiffuse ( osg::Material::FRONT_AND_BACK, diffuse );
+  //mat->setSpecular ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.2, 0.2, 0.2, 1.0 ) );
+  //mat->setShininess ( osg::Material::FRONT_AND_BACK, 20 );
 
   if ( alpha < 1 )
   {

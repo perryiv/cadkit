@@ -30,6 +30,9 @@ public:
   typedef std::pair < float, float > LatitudeRange;
   typedef LatitudeRange LongitudeRange;
 
+  // Can use this class as a singleton.
+  static ShapeFactory& instance();
+
   // Constructor.
   ShapeFactory();
 
@@ -96,15 +99,7 @@ private:
   Cubes _cubes;
   Cylinders _cylinders;
   Cylinders _cylindersTriangles;
-};
 
-
-class OSG_TOOLS_EXPORT ShapeFactorySingleton
-{
-public:
-  static ShapeFactory& instance();
-
-private:
   static ShapeFactory* _instance;
 };
 

@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				66ACACAC0E5E2E1A0067F985 /* PBXTargetDependency */,
 				66A027D80E2B1F3B002CBE4D /* PBXTargetDependency */,
 				66190FCE0E1C8A99004CE994 /* PBXTargetDependency */,
 				66E5AC7C0E11D72A0089769F /* PBXTargetDependency */,
@@ -165,8 +166,6 @@
 		431BAFD209245D9600ED2131 /* TriangleSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BAE0F09245AB700ED2131 /* TriangleSet.cpp */; };
 		431BAFD309245D9600ED2131 /* TriangleSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAE1009245AB700ED2131 /* TriangleSet.h */; };
 		431BAFD409245D9600ED2131 /* Visitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAE1109245AB700ED2131 /* Visitor.h */; };
-		431BAFD509245D9600ED2131 /* VoxelGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 431BAD9909245AB600ED2131 /* VoxelGeometry.cpp */; };
-		431BAFD609245D9600ED2131 /* VoxelGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 431BAD9A09245AB600ED2131 /* VoxelGeometry.h */; };
 		431BB89009246ADA00ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		431BB8D009246B9A00ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		431BB8E409246BD700ED2131 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
@@ -273,10 +272,6 @@
 		43922741095C9C22004A602C /* Viewer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4392273F095C9C22004A602C /* Viewer.h */; };
 		43922742095C9C22004A602C /* Viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43922740095C9C22004A602C /* Viewer.cpp */; };
 		43922894095CB07D004A602C /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
-		439228A7095CB158004A602C /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 439228A3095CB158004A602C /* Frustum.h */; };
-		439228A8095CB158004A602C /* FrustumFunctor.h in Headers */ = {isa = PBXBuildFile; fileRef = 439228A4095CB158004A602C /* FrustumFunctor.h */; };
-		439228A9095CB158004A602C /* FrustumVisitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439228A5095CB158004A602C /* FrustumVisitor.cpp */; };
-		439228AA095CB158004A602C /* FrustumVisitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 439228A6095CB158004A602C /* FrustumVisitor.h */; };
 		439933DC0958770D00538B7E /* InstanceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 439933DA0958770D00538B7E /* InstanceManager.cpp */; };
 		43A005600960D21300F3BC07 /* OpenThreads.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 43D724CC094DE500009181E3 /* OpenThreads.framework */; };
 		43A005620960D21300F3BC07 /* osgDB.framework in Copy Frameworks (8) */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
@@ -1353,6 +1348,23 @@
 		66AC8A340D2B4F0100762CC7 /* moc_Favorites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66AC8A330D2B4F0100762CC7 /* moc_Favorites.cpp */; };
 		66AC8A670D2B58B400762CC7 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
 		66AC8A680D2B58B900762CC7 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66ACAC8D0E5E2DB20067F985 /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
+		66ACAC8E0E5E2DB20067F985 /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
+		66ACAC8F0E5E2DB20067F985 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66ACAC900E5E2DB20067F985 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		66ACAC910E5E2DB20067F985 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66ACAC920E5E2DB20067F985 /* ossim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A40D15177F00B4B1AA /* ossim.framework */; };
+		66ACAC930E5E2DB20067F985 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66ACAC940E5E2DB20067F985 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
+		66ACAC950E5E2DB20067F985 /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
+		66ACAC960E5E2DB20067F985 /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
+		66ACACA60E5E2DDC0067F985 /* AddGeometryWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66ACAC9D0E5E2DDC0067F985 /* AddGeometryWidget.cpp */; };
+		66ACACA70E5E2DDC0067F985 /* AddGeometryWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66ACAC9E0E5E2DDC0067F985 /* AddGeometryWidget.h */; };
+		66ACACA80E5E2DDC0067F985 /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66ACACA10E5E2DDC0067F985 /* CompileGuard.h */; };
+		66ACACA90E5E2DDC0067F985 /* QtCustomGeometryComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66ACACA40E5E2DDC0067F985 /* QtCustomGeometryComponent.cpp */; };
+		66ACACAA0E5E2DDC0067F985 /* QtCustomGeometryComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66ACACA50E5E2DDC0067F985 /* QtCustomGeometryComponent.h */; };
+		66ACACAE0E5E2E280067F985 /* QtCustomGeometry.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66ACAC9A0E5E2DB20067F985 /* QtCustomGeometry.plug */; };
+		66ACACBB0E5E305A0067F985 /* moc_AddGeometryWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66ACACBA0E5E305A0067F985 /* moc_AddGeometryWidget.cpp */; };
 		66AFF2D60D6E200C0062CDB9 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66AFF3060D6E90D50062CDB9 /* Feature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CA7A390D552790004909C6 /* Feature.cpp */; };
 		66AFF3120D6E96200062CDB9 /* LookAt.h in Headers */ = {isa = PBXBuildFile; fileRef = 66AFF3100D6E96200062CDB9 /* LookAt.h */; };
@@ -2808,6 +2820,34 @@
 			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
 			remoteInfo = SerializeXML;
 		};
+		66ACAC720E5E2DB20067F985 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
+			remoteInfo = XmlTree;
+		};
+		66ACAC740E5E2DB20067F985 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA;
+			remoteInfo = Minerva;
+		};
+		66ACAC760E5E2DB20067F985 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		66ACACAB0E5E2E1A0067F985 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66ACAC700E5E2DB20067F985 /* QtCustomGeometry */;
+			remoteInfo = QtCustomGeometry;
+		};
 		66AFF2D70D6E20130062CDB9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -3670,6 +3710,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				66ACACAE0E5E2E280067F985 /* QtCustomGeometry.plug in Copy Files to Plugins */,
 				66A027F60E2B22EC002CBE4D /* QtGeoRSSLayer.plug in Copy Files to Plugins */,
 				66190FFE0E1C98C8004CE994 /* libMinervaGeoRSSLayer.dylib in Copy Files to Plugins */,
 				6647DBED0E12ED92009BD3C7 /* ModflowModel.plug in Copy Files to Plugins */,
@@ -3881,8 +3922,6 @@
 		431BAD9409245AB600ED2131 /* Dimension.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Dimension.h; path = ../OsgTools/Dimension.h; sourceTree = SOURCE_ROOT; };
 		431BAD9509245AB600ED2131 /* DisplayLists.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = DisplayLists.cpp; path = ../OsgTools/DisplayLists.cpp; sourceTree = SOURCE_ROOT; };
 		431BAD9609245AB600ED2131 /* DisplayLists.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = DisplayLists.h; path = ../OsgTools/DisplayLists.h; sourceTree = SOURCE_ROOT; };
-		431BAD9909245AB600ED2131 /* VoxelGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VoxelGeometry.cpp; path = ../OsgTools/Drawables/VoxelGeometry.cpp; sourceTree = SOURCE_ROOT; };
-		431BAD9A09245AB600ED2131 /* VoxelGeometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VoxelGeometry.h; path = ../OsgTools/Drawables/VoxelGeometry.h; sourceTree = SOURCE_ROOT; };
 		431BAD9C09245AB600ED2131 /* FlipNormals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FlipNormals.h; path = ../OsgTools/FlipNormals.h; sourceTree = SOURCE_ROOT; };
 		431BAD9D09245AB600ED2131 /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Font.cpp; path = ../OsgTools/Font.cpp; sourceTree = SOURCE_ROOT; };
 		431BAD9E09245AB600ED2131 /* Font.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Font.h; path = ../OsgTools/Font.h; sourceTree = SOURCE_ROOT; };
@@ -4042,10 +4081,6 @@
 		43887E8A0945DADF00B519D0 /* xLauncher */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.script.sh; path = xLauncher; sourceTree = "<group>"; };
 		4392273F095C9C22004A602C /* Viewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Viewer.h; sourceTree = "<group>"; };
 		43922740095C9C22004A602C /* Viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Viewer.cpp; sourceTree = "<group>"; };
-		439228A3095CB158004A602C /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
-		439228A4095CB158004A602C /* FrustumFunctor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FrustumFunctor.h; sourceTree = "<group>"; };
-		439228A5095CB158004A602C /* FrustumVisitor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = FrustumVisitor.cpp; sourceTree = "<group>"; };
-		439228A6095CB158004A602C /* FrustumVisitor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FrustumVisitor.h; sourceTree = "<group>"; };
 		439933DA0958770D00538B7E /* InstanceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = InstanceManager.cpp; sourceTree = "<group>"; };
 		439933DB0958770D00538B7E /* InstanceManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = InstanceManager.h; sourceTree = "<group>"; };
 		43A192FA094F20210029ED97 /* Arrow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Arrow.cpp; sourceTree = "<group>"; };
@@ -5299,6 +5334,17 @@
 		66A959560DB7E3E600943BA4 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
 		66A959570DB7E3E600943BA4 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
 		66AC8A330D2B4F0100762CC7 /* moc_Favorites.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_Favorites.cpp; sourceTree = "<group>"; };
+		66ACAC9A0E5E2DB20067F985 /* QtCustomGeometry.plug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtCustomGeometry.plug; sourceTree = BUILT_PRODUCTS_DIR; };
+		66ACAC9D0E5E2DDC0067F985 /* AddGeometryWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddGeometryWidget.cpp; sourceTree = "<group>"; };
+		66ACAC9E0E5E2DDC0067F985 /* AddGeometryWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddGeometryWidget.h; sourceTree = "<group>"; };
+		66ACAC9F0E5E2DDC0067F985 /* AddGeometryWidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AddGeometryWidget.ui; sourceTree = "<group>"; };
+		66ACACA00E5E2DDC0067F985 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		66ACACA10E5E2DDC0067F985 /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		66ACACA20E5E2DDC0067F985 /* Export.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Export.def; sourceTree = "<group>"; };
+		66ACACA30E5E2DDC0067F985 /* QtCustomGeometry.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = QtCustomGeometry.vcproj; sourceTree = "<group>"; };
+		66ACACA40E5E2DDC0067F985 /* QtCustomGeometryComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtCustomGeometryComponent.cpp; sourceTree = "<group>"; };
+		66ACACA50E5E2DDC0067F985 /* QtCustomGeometryComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtCustomGeometryComponent.h; sourceTree = "<group>"; };
+		66ACACBA0E5E305A0067F985 /* moc_AddGeometryWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_AddGeometryWidget.cpp; sourceTree = "<group>"; };
 		66AFF3100D6E96200062CDB9 /* LookAt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LookAt.h; sourceTree = "<group>"; };
 		66AFF3110D6E96200062CDB9 /* LookAt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LookAt.cpp; sourceTree = "<group>"; };
 		66AFF78A0E0C52E400AF0239 /* InvalidParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InvalidParameter.h; sourceTree = "<group>"; };
@@ -6359,6 +6405,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66ACAC8C0E5E2DB20067F985 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66ACAC8D0E5E2DB20067F985 /* libQtTools.dylib in Frameworks */,
+				66ACAC8E0E5E2DB20067F985 /* libMinerva.dylib in Frameworks */,
+				66ACAC8F0E5E2DB20067F985 /* osg.framework in Frameworks */,
+				66ACAC900E5E2DB20067F985 /* libSerializeXML.dylib in Frameworks */,
+				66ACAC910E5E2DB20067F985 /* libXmlTree.dylib in Frameworks */,
+				66ACAC920E5E2DB20067F985 /* ossim.framework in Frameworks */,
+				66ACAC930E5E2DB20067F985 /* libUsul.dylib in Frameworks */,
+				66ACAC940E5E2DB20067F985 /* QtCore.framework in Frameworks */,
+				66ACAC950E5E2DB20067F985 /* QtGui.framework in Frameworks */,
+				66ACAC960E5E2DB20067F985 /* QtOpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66B6473E0D94418200F426B2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -6633,7 +6696,6 @@
 				431BAD9409245AB600ED2131 /* Dimension.h */,
 				431BAD9509245AB600ED2131 /* DisplayLists.cpp */,
 				431BAD9609245AB600ED2131 /* DisplayLists.h */,
-				431BAD9809245AB600ED2131 /* Drawables */,
 				431BAD9D09245AB600ED2131 /* Font.cpp */,
 				431BAD9E09245AB600ED2131 /* Font.h */,
 				431BAD9F09245AB600ED2131 /* ForEach.h */,
@@ -6645,7 +6707,6 @@
 				431BADA809245AB600ED2131 /* HasOption.h */,
 				431BADA909245AB600ED2131 /* Images */,
 				431BADBD09245AB700ED2131 /* Index.h */,
-				439228A2095CB158004A602C /* Intersect */,
 				431BADBE09245AB700ED2131 /* IO */,
 				431BADC509245AB700ED2131 /* KeepFirst.h */,
 				431BADC609245AB700ED2131 /* Lod.cpp */,
@@ -6689,16 +6750,6 @@
 			);
 			name = Callbacks;
 			path = ../OsgTools/Callbacks;
-			sourceTree = SOURCE_ROOT;
-		};
-		431BAD9809245AB600ED2131 /* Drawables */ = {
-			isa = PBXGroup;
-			children = (
-				431BAD9909245AB600ED2131 /* VoxelGeometry.cpp */,
-				431BAD9A09245AB600ED2131 /* VoxelGeometry.h */,
-			);
-			name = Drawables;
-			path = ../OsgTools/Drawables;
 			sourceTree = SOURCE_ROOT;
 		};
 		431BADA909245AB600ED2131 /* Images */ = {
@@ -6825,6 +6876,7 @@
 		431BB9DE09246F3B00ED2131 /* Cadkit Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				66ACAC9A0E5E2DB20067F985 /* QtCustomGeometry.plug */,
 				669CE8B20E52101900618324 /* PointModel.plug */,
 				669F28F50E4D026B007EB41A /* VtkAlgorithms.plug */,
 				66B8A15B0E1D6E910031AB37 /* QtFlashDelegate.plug */,
@@ -7117,17 +7169,6 @@
 				430D316609677CE0003C3140 /* NIBs */,
 			);
 			path = Cocoa;
-			sourceTree = "<group>";
-		};
-		439228A2095CB158004A602C /* Intersect */ = {
-			isa = PBXGroup;
-			children = (
-				439228A3095CB158004A602C /* Frustum.h */,
-				439228A4095CB158004A602C /* FrustumFunctor.h */,
-				439228A5095CB158004A602C /* FrustumVisitor.cpp */,
-				439228A6095CB158004A602C /* FrustumVisitor.h */,
-			);
-			path = Intersect;
 			sourceTree = "<group>";
 		};
 		43A192F9094F20210029ED97 /* Builders */ = {
@@ -9588,6 +9629,23 @@
 			path = Qt/Plugins/AnimationControl;
 			sourceTree = "<group>";
 		};
+		66ACAC9C0E5E2DDC0067F985 /* QtCustomGeometry */ = {
+			isa = PBXGroup;
+			children = (
+				66ACACBA0E5E305A0067F985 /* moc_AddGeometryWidget.cpp */,
+				66ACAC9D0E5E2DDC0067F985 /* AddGeometryWidget.cpp */,
+				66ACAC9E0E5E2DDC0067F985 /* AddGeometryWidget.h */,
+				66ACAC9F0E5E2DDC0067F985 /* AddGeometryWidget.ui */,
+				66ACACA00E5E2DDC0067F985 /* CMakeLists.txt */,
+				66ACACA10E5E2DDC0067F985 /* CompileGuard.h */,
+				66ACACA20E5E2DDC0067F985 /* Export.def */,
+				66ACACA30E5E2DDC0067F985 /* QtCustomGeometry.vcproj */,
+				66ACACA40E5E2DDC0067F985 /* QtCustomGeometryComponent.cpp */,
+				66ACACA50E5E2DDC0067F985 /* QtCustomGeometryComponent.h */,
+			);
+			path = QtCustomGeometry;
+			sourceTree = "<group>";
+		};
 		66B8A15D0E1D6F090031AB37 /* Flash */ = {
 			isa = PBXGroup;
 			children = (
@@ -9972,6 +10030,7 @@
 		66EF18E80D15C13200B4B1AA /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				66ACAC9C0E5E2DDC0067F985 /* QtCustomGeometry */,
 				66A027C60E2B1E4F002CBE4D /* GeoRSSQt */,
 				66EF18EB0D15C15400B4B1AA /* Document */,
 				661C119F0DCA71CB00DE43D4 /* GDALReadImage */,
@@ -10459,7 +10518,6 @@
 				431BAFD109245D9600ED2131 /* Triangle.h in Headers */,
 				431BAFD309245D9600ED2131 /* TriangleSet.h in Headers */,
 				431BAFD409245D9600ED2131 /* Visitor.h in Headers */,
-				431BAFD609245D9600ED2131 /* VoxelGeometry.h in Headers */,
 				437A27B309447D790024AFBC /* BoundingSphere.h in Headers */,
 				437A27B509447D790024AFBC /* SortBackToFront.h in Headers */,
 				437A27B909447D920024AFBC /* DirtyBounds.h in Headers */,
@@ -10468,9 +10526,6 @@
 				437B6C350944A0DF00C9F948 /* Transparency.h in Headers */,
 				43A192FD094F20210029ED97 /* Arrow.h in Headers */,
 				43922741095C9C22004A602C /* Viewer.h in Headers */,
-				439228A7095CB158004A602C /* Frustum.h in Headers */,
-				439228A8095CB158004A602C /* FrustumFunctor.h in Headers */,
-				439228AA095CB158004A602C /* FrustumVisitor.h in Headers */,
 				43442B35096068B6000A1AB5 /* Defaults.h in Headers */,
 				43442F8D0960A303000A1AB5 /* Axes.h in Headers */,
 				43442F8F0960A303000A1AB5 /* ClipPlane.h in Headers */,
@@ -10936,6 +10991,16 @@
 			files = (
 				66A959590DB7E3E600943BA4 /* AnimationControlComponent.h in Headers */,
 				66A9595A0DB7E3E600943BA4 /* CompileGuard.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66ACAC780E5E2DB20067F985 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66ACACA70E5E2DDC0067F985 /* AddGeometryWidget.h in Headers */,
+				66ACACA80E5E2DDC0067F985 /* CompileGuard.h in Headers */,
+				66ACACAA0E5E2DDC0067F985 /* QtCustomGeometryComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12115,6 +12180,27 @@
 			productReference = 66A9594E0DB7E3A500943BA4 /* QtAnimationControl.plug */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		66ACAC700E5E2DB20067F985 /* QtCustomGeometry */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66ACAC970E5E2DB20067F985 /* Build configuration list for PBXNativeTarget "QtCustomGeometry" */;
+			buildPhases = (
+				66ACAC770E5E2DB20067F985 /* ShellScript */,
+				66ACAC780E5E2DB20067F985 /* Headers */,
+				66ACAC800E5E2DB20067F985 /* Sources */,
+				66ACAC8C0E5E2DB20067F985 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66ACAC710E5E2DB20067F985 /* PBXTargetDependency */,
+				66ACAC730E5E2DB20067F985 /* PBXTargetDependency */,
+				66ACAC750E5E2DB20067F985 /* PBXTargetDependency */,
+			);
+			name = QtCustomGeometry;
+			productName = WmsLayerQt;
+			productReference = 66ACAC9A0E5E2DB20067F985 /* QtCustomGeometry.plug */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		66B6473F0D94418200F426B2 /* MeasureTool */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66B647520D94422A00F426B2 /* Build configuration list for PBXNativeTarget "MeasureTool" */;
@@ -12529,6 +12615,7 @@
 				669F28D70E4D026B007EB41A /* VtkAlgorithms */,
 				668E0C910D4021F50030649B /* WRFModel */,
 				66FF450E0D10FED2003A0AC1 /* XmlTree */,
+				66ACAC700E5E2DB20067F985 /* QtCustomGeometry */,
 			);
 		};
 /* End PBXProject section */
@@ -12937,6 +13024,24 @@
 			shellScript = "$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LayerProperties.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_LayerProperties.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PropertyPage.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PropertyPage.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LineWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_LineWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LineWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_LineWidget.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PointWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_PointWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PointWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PointWidget.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PolygonWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_PolygonWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PolygonWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PolygonWidget.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/SingleColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_SingleColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/GradientColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_GradientColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/UniqueColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_UniqueColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/DatabasePage.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_DatabasePage.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ConnectToDatabase.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_ConnectToDatabase.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_AddPostGISLayerWidget.cpp\n";
 			showEnvVarsInLog = 0;
 		};
+		66ACAC770E5E2DB20067F985 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				$SRCROOT/../Minerva/Plugins/QtCustomGeometry/AddGeometryWidget.h,
+				$SRCROOT/../Minerva/Plugins/QtCustomGeometry/AddGeometryWidget.ui,
+			);
+			outputPaths = (
+				$SRCROOT/../Minerva/Plugins/QtCustomGeometry/moc_AddGeometryWidget.cpp,
+				$SRCROOT/../Minerva/Plugins/QtCustomGeometry/ui_AddGeometryWidget.h,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/QtCustomGeometry/AddGeometryWidget.h -o $SRCROOT/../Minerva/Plugins/QtCustomGeometry/moc_AddGeometryWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/QtCustomGeometry/AddGeometryWidget.ui -o $SRCROOT/../Minerva/Plugins/QtCustomGeometry/ui_AddGeometryWidget.h\n";
+			showEnvVarsInLog = 0;
+		};
 		66C8FAB70D1204EA003F6A58 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;
@@ -13120,12 +13225,10 @@
 				431BAFCE09245D9600ED2131 /* Trackball.cpp in Sources */,
 				431BAFD009245D9600ED2131 /* Triangle.cpp in Sources */,
 				431BAFD209245D9600ED2131 /* TriangleSet.cpp in Sources */,
-				431BAFD509245D9600ED2131 /* VoxelGeometry.cpp in Sources */,
 				437A27B209447D790024AFBC /* BoundingSphere.cpp in Sources */,
 				437A27B409447D790024AFBC /* SortBackToFront.cpp in Sources */,
 				43A192FC094F20210029ED97 /* Arrow.cpp in Sources */,
 				43922742095C9C22004A602C /* Viewer.cpp in Sources */,
-				439228A9095CB158004A602C /* FrustumVisitor.cpp in Sources */,
 				43442F8C0960A303000A1AB5 /* Axes.cpp in Sources */,
 				43442F8E0960A303000A1AB5 /* ClipPlane.cpp in Sources */,
 				43442F940960A375000A1AB5 /* Intersect.cpp in Sources */,
@@ -13761,6 +13864,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				66A959580DB7E3E600943BA4 /* AnimationControlComponent.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66ACAC800E5E2DB20067F985 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66ACACA60E5E2DDC0067F985 /* AddGeometryWidget.cpp in Sources */,
+				66ACACA90E5E2DDC0067F985 /* QtCustomGeometryComponent.cpp in Sources */,
+				66ACACBB0E5E305A0067F985 /* moc_AddGeometryWidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14765,6 +14878,26 @@
 			isa = PBXTargetDependency;
 			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
 			targetProxy = 66AC8A6B0D2B58C700762CC7 /* PBXContainerItemProxy */;
+		};
+		66ACAC710E5E2DB20067F985 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			targetProxy = 66ACAC720E5E2DB20067F985 /* PBXContainerItemProxy */;
+		};
+		66ACAC730E5E2DB20067F985 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF17680D15190B00B4B1AA /* Minerva */;
+			targetProxy = 66ACAC740E5E2DB20067F985 /* PBXContainerItemProxy */;
+		};
+		66ACAC750E5E2DB20067F985 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66ACAC760E5E2DB20067F985 /* PBXContainerItemProxy */;
+		};
+		66ACACAC0E5E2E1A0067F985 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66ACAC700E5E2DB20067F985 /* QtCustomGeometry */;
+			targetProxy = 66ACACAB0E5E2E1A0067F985 /* PBXContainerItemProxy */;
 		};
 		66AFF2D80D6E20130062CDB9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -17900,6 +18033,79 @@
 			};
 			name = Release;
 		};
+		66ACAC980E5E2DB20067F985 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = plugd;
+				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_QT_CUSTOM_GEOMETRY,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					/usr/local/include,
+					../,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = QtCustomGeometry;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66ACAC990E5E2DB20067F985 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_EXTENSION = plug;
+				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_QT_CUSTOM_GEOMETRY,
+					NDEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					/usr/local/include,
+					../,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = QtCustomGeometry;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		66B647410D94418300F426B2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -19226,6 +19432,15 @@
 			buildConfigurations = (
 				66A9594F0DB7E3A700943BA4 /* Debug */,
 				66A959500DB7E3A700943BA4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66ACAC970E5E2DB20067F985 /* Build configuration list for PBXNativeTarget "QtCustomGeometry" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66ACAC980E5E2DB20067F985 /* Debug */,
+				66ACAC990E5E2DB20067F985 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

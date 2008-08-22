@@ -303,7 +303,7 @@ void Intersect::operator()()
     OsgTools::State::StateSet::setTwoSidedLighting ( autoTransform.get(), true );
 
     osg::ref_ptr <osg::Geode> geode ( new osg::Geode );
-    geode->addDrawable ( OsgTools::ShapeFactorySingleton::instance().sphere( 5.0 ) );
+    geode->addDrawable ( OsgTools::ShapeFactory::instance().sphere( 5.0 ) );
     autoTransform->addChild ( geode.get() );
     osg::ref_ptr <osg::Material>  mat ( new osg::Material );
     osg::Vec4 color ( 1.0, 0.0, 0.0, 1.0 );

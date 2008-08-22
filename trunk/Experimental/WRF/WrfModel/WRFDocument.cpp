@@ -1562,3 +1562,16 @@ bool WRFDocument::busyStateGet() const
   Guard guard ( this->mutex() );
   return _jobForScene.valid();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given level falls within this layer's range of levels.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::isInLevelRange ( unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+  return true;
+}

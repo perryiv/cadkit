@@ -7,7 +7,7 @@
 
 use strict;
 
-( @ARGV > 1 ) || die "Usage: $0 <file1> [file2] ... [fileN]\n";
+( @ARGV > 0 ) || die "Usage: $0 <file1> [file2] ... [fileN]\n";
 
 my $temp_extension = "some_long_file_extension";
 

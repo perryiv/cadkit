@@ -94,6 +94,7 @@ SET (SOURCES
   Triangles/SharedVertex.cpp
   Triangles/Triangle.cpp
   Triangles/TriangleSet.cpp
+  Utilities/ConvertToTriangles.cpp
   Utilities/DeleteHandler.cpp
   Utilities/FindNormals.cpp
   Utilities/Intersect.cpp

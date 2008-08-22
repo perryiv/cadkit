@@ -41,6 +41,7 @@ SET (SOURCES
 ./Factory/BaseCreator.cpp
 ./Factory/ObjectFactory.cpp
 ./Scope/Timer.cpp
+./Scope/CurrentDirectory.cpp
 ./Jobs/Manager.cpp
 ./Jobs/Job.cpp
 ./Predicates/CanWrite.cpp

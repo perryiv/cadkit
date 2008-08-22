@@ -17,11 +17,13 @@
 #include "Minerva/Core/Utilities/Download.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/App/Application.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Network/Curl.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Strings/Format.h"
 
 #include "boost/algorithm/string/replace.hpp"
 #include "boost/filesystem/operations.hpp"
@@ -60,7 +62,9 @@ bool Minerva::Core::Utilities::download ( const std::string& href, std::string& 
     boost::algorithm::replace_all ( filename, "=", "_" );
     boost::algorithm::replace_all ( filename, "&", "_" );
     boost::algorithm::replace_all ( filename, "@", "_" );
-    filename = Usul::File::Temp::directory ( true ) + "Minerva/" + filename;
+
+    const std::string program ( Usul::App::Application::instance().program() );
+    filename = Usul::Strings::format ( Usul::File::Temp::directory ( true ), program, "/", filename );
     
     if ( useCache && Usul::Predicates::FileExists::test ( filename ) )
     {

@@ -131,7 +131,7 @@ namespace Detail
     OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
     OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
 
-    geode->addDrawable( OsgTools::ShapeFactorySingleton::instance().sphere ( 0.040, meshSize, latRange, longRange  ) );
+    geode->addDrawable( OsgTools::ShapeFactory::instance().sphere ( 0.040, meshSize, latRange, longRange  ) );
 
     osg::ref_ptr < osg::Material > mat ( new osg::Material );
 

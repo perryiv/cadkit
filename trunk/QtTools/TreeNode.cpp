@@ -59,6 +59,18 @@ TreeNode::~TreeNode()
   if ( notify.valid() )
     notify->removeDataChangedListener ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
   
+  TreeNode *parent ( this->parent() );
+  if ( 0x0 != parent )
+  {
+    const int myIndex ( parent->indexOfChild ( this ) );
+    if ( myIndex >= 0 && 0x0 != _model )
+    {
+      _model->beginRemoveRows ( parent, myIndex, 1 );
+      parent->takeChild ( myIndex );
+      _model->endRemoveRows();
+    }
+  }
+  
   this->_clear();
   _model = 0x0;
   

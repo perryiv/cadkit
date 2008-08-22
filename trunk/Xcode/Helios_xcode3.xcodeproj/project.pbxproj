@@ -1365,6 +1365,38 @@
 		66ACACAA0E5E2DDC0067F985 /* QtCustomGeometryComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66ACACA50E5E2DDC0067F985 /* QtCustomGeometryComponent.h */; };
 		66ACACAE0E5E2E280067F985 /* QtCustomGeometry.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66ACAC9A0E5E2DB20067F985 /* QtCustomGeometry.plug */; };
 		66ACACBB0E5E305A0067F985 /* moc_AddGeometryWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66ACACBA0E5E305A0067F985 /* moc_AddGeometryWidget.cpp */; };
+		66ACAE300E5E45A10067F985 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66ACAE310E5E45A10067F985 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66ACAE320E5E45A30067F985 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66ACAE3C0E5E45B90067F985 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66ACAE3D0E5E45D40067F985 /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66ACAE3E0E5E45F00067F985 /* Boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
+		66ACAE3F0E5E45F10067F985 /* Boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
+		66ACAE400E5E45FD0067F985 /* Boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
+		66ACAE420E5E47F00067F985 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4358F804095B3320008F7E5E /* OpenGL.framework */; };
+		66ACAE430E5E47FE0067F985 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66ACAE450E5E48050067F985 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66ACAE460E5E48150067F985 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66ACAE470E5E48230067F985 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66ACAE480E5E483A0067F985 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
+		66ACAE490E5E485C0067F985 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
+		66ACAE520E5E48720067F985 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66ACAE540E5E488C0067F985 /* curl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
+		66ACBF3E0E5E48960067F985 /* Boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
+		66ACBF3F0E5E48AB0067F985 /* libpqxx-2.6.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E1E07C0DE4D3E40005073C /* libpqxx-2.6.9.dylib */; };
+		66ACBF400E5E48B10067F985 /* libpq.5.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E1F54F0DE4E73D0005073C /* libpq.5.0.dylib */; };
+		66ACBF420E5E49010067F985 /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
+		66ACC29D0E5E49270067F985 /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
+		66ACC29E0E5E49340067F985 /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		66ACC29F0E5E49520067F985 /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
+		66ACC2A00E5E49570067F985 /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
+		66ACC2A10E5E49600067F985 /* curl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
+		66ACC59D0E5E49830067F985 /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66ACC59E0E5E498B0067F985 /* libMinervaPostgres.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */; };
+		66ACC5A00E5E49B90067F985 /* libMinervaPostgres.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66942EB90D77EA4F00633017 /* libMinervaPostgres.dylib */; };
+		66ACC5A30E5E49D70067F985 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
+		66ACC5B30E5E4A760067F985 /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
+		66ACC5BB0E5E4DDC0067F985 /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
 		66AFF2D60D6E200C0062CDB9 /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66AFF3060D6E90D50062CDB9 /* Feature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CA7A390D552790004909C6 /* Feature.cpp */; };
 		66AFF3120D6E96200062CDB9 /* LookAt.h in Headers */ = {isa = PBXBuildFile; fileRef = 66AFF3100D6E96200062CDB9 /* LookAt.h */; };
@@ -5888,6 +5920,7 @@
 				43D72583094DE500009181E3 /* osgGA.framework in Frameworks */,
 				43D72584094DE500009181E3 /* osgText.framework in Frameworks */,
 				43D72585094DE500009181E3 /* osgUtil.framework in Frameworks */,
+				66ACAE460E5E48150067F985 /* osg.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5980,6 +6013,8 @@
 				66190EDE0E1C8A19004CE994 /* libSerializeXML.dylib in Frameworks */,
 				66190EDF0E1C8A19004CE994 /* libUsul.dylib in Frameworks */,
 				66190EE00E1C8A19004CE994 /* libXmlTree.dylib in Frameworks */,
+				66ACAE300E5E45A10067F985 /* libOsgTools.dylib in Frameworks */,
+				66ACAE3F0E5E45F10067F985 /* Boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6057,6 +6092,7 @@
 				662568CA0DCB8F91001E94FB /* QtCore.framework in Frameworks */,
 				662568CB0DCB8F91001E94FB /* QtGui.framework in Frameworks */,
 				662568CC0DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */,
+				66ACAE420E5E47F00067F985 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6114,6 +6150,11 @@
 				66AC8A670D2B58B400762CC7 /* libSerializeXML.dylib in Frameworks */,
 				668931690D2840F0005CB399 /* libMinerva.dylib in Frameworks */,
 				66892E090D284073005CB399 /* libUsul.dylib in Frameworks */,
+				66ACC29F0E5E49520067F985 /* QtCore.framework in Frameworks */,
+				66ACC2A00E5E49570067F985 /* QtGui.framework in Frameworks */,
+				66ACC2A10E5E49600067F985 /* curl.framework in Frameworks */,
+				66ACC5A30E5E49D70067F985 /* libMenuKit.dylib in Frameworks */,
+				66ACC5B30E5E4A760067F985 /* QtOpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6149,6 +6190,7 @@
 				668E0D8D0D4022B00030649B /* libUsul.dylib in Frameworks */,
 				668E0D8E0D4022B00030649B /* libXmlTree.dylib in Frameworks */,
 				668E0CEA0D40229E0030649B /* osg.framework in Frameworks */,
+				66ACAE490E5E485C0067F985 /* osgText.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6162,6 +6204,10 @@
 				668C94770D41D74B0007D7F4 /* libSerializeXML.dylib in Frameworks */,
 				668C94780D41D74B0007D7F4 /* libUsul.dylib in Frameworks */,
 				668C94790D41D74B0007D7F4 /* libXmlTree.dylib in Frameworks */,
+				66ACAE310E5E45A10067F985 /* libOsgTools.dylib in Frameworks */,
+				66ACAE3E0E5E45F00067F985 /* Boost.framework in Frameworks */,
+				66ACAE450E5E48050067F985 /* osg.framework in Frameworks */,
+				66ACBF420E5E49010067F985 /* osgDB.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6219,6 +6265,10 @@
 				66942DD60D77D6DE00633017 /* libSerializeXML.dylib in Frameworks */,
 				66942DD50D77D6DC00633017 /* libUsul.dylib in Frameworks */,
 				66942DD40D77D6D500633017 /* libMinerva.dylib in Frameworks */,
+				66ACAE320E5E45A30067F985 /* libOsgTools.dylib in Frameworks */,
+				66ACAE520E5E48720067F985 /* osg.framework in Frameworks */,
+				66ACBF3F0E5E48AB0067F985 /* libpqxx-2.6.9.dylib in Frameworks */,
+				66ACBF400E5E48B10067F985 /* libpq.5.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6240,6 +6290,11 @@
 				669B69D20D7CA2D5001392F1 /* osg.framework in Frameworks */,
 				669B69AB0D7CA2D2001392F1 /* GDAL.framework in Frameworks */,
 				669B69790D7C9BAE001392F1 /* libMinerva.dylib in Frameworks */,
+				66ACAE3D0E5E45D40067F985 /* libUsul.dylib in Frameworks */,
+				66ACC29D0E5E49270067F985 /* osgDB.framework in Frameworks */,
+				66ACC29E0E5E49340067F985 /* libSerializeXML.dylib in Frameworks */,
+				66ACC59D0E5E49830067F985 /* libXmlTree.dylib in Frameworks */,
+				66ACC59E0E5E498B0067F985 /* libMinervaPostgres.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6343,6 +6398,7 @@
 				662568B20DCB8F91001E94FB /* QtCore.framework in Frameworks */,
 				662568B30DCB8F91001E94FB /* QtGui.framework in Frameworks */,
 				662568B40DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */,
+				66ACAE400E5E45FD0067F985 /* Boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6360,6 +6416,8 @@
 				662568CD0DCB8F91001E94FB /* QtCore.framework in Frameworks */,
 				662568CE0DCB8F91001E94FB /* QtGui.framework in Frameworks */,
 				662568CF0DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */,
+				66ACAE540E5E488C0067F985 /* curl.framework in Frameworks */,
+				66ACBF3E0E5E48960067F985 /* Boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6376,6 +6434,7 @@
 				662568AF0DCB8F91001E94FB /* QtCore.framework in Frameworks */,
 				662568B00DCB8F91001E94FB /* QtGui.framework in Frameworks */,
 				662568B10DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */,
+				66ACC5A00E5E49B90067F985 /* libMinervaPostgres.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6390,6 +6449,7 @@
 				66A8B0B80DABF5F400088B3B /* libSerializeXML.dylib in Frameworks */,
 				66A8B0B70DABF5ED00088B3B /* libXmlTree.dylib in Frameworks */,
 				66A8B0B60DABF5E900088B3B /* libUsul.dylib in Frameworks */,
+				66ACAE470E5E48230067F985 /* osg.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6419,6 +6479,7 @@
 				66ACAC940E5E2DB20067F985 /* QtCore.framework in Frameworks */,
 				66ACAC950E5E2DB20067F985 /* QtGui.framework in Frameworks */,
 				66ACAC960E5E2DB20067F985 /* QtOpenGL.framework in Frameworks */,
+				66ACAE3C0E5E45B90067F985 /* libOsgTools.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6429,6 +6490,8 @@
 				66B647490D94421200F426B2 /* libUsul.dylib in Frameworks */,
 				66B647480D94420F00F426B2 /* libOsgTools.dylib in Frameworks */,
 				66B647470D94420C00F426B2 /* libMenuKit.dylib in Frameworks */,
+				66ACAE430E5E47FE0067F985 /* osg.framework in Frameworks */,
+				66ACAE480E5E483A0067F985 /* osgText.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6441,6 +6504,7 @@
 				66B8A1550E1D6E910031AB37 /* QtCore.framework in Frameworks */,
 				66B8A1560E1D6E910031AB37 /* QtGui.framework in Frameworks */,
 				66B8A1570E1D6E910031AB37 /* QtOpenGL.framework in Frameworks */,
+				66ACC5BB0E5E4DDC0067F985 /* libMenuKit.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12588,6 +12652,7 @@
 				669BD2C70E0EFCD400E598FF /* PythonBindings */,
 				66A9594D0DB7E3A500943BA4 /* QtAnimationControl */,
 				66EFF3920D139F7200B4B1AA /* QtClipPlanes */,
+				66ACAC700E5E2DB20067F985 /* QtCustomGeometry */,
 				66B8A1480E1D6E910031AB37 /* QtFlashDelegate */,
 				66A0279A0E2B1DCF002CBE4D /* QtGeoRSSLayer */,
 				66A112B00D2EBADC009B29ED /* QtOssimLayer */,
@@ -12615,7 +12680,6 @@
 				669F28D70E4D026B007EB41A /* VtkAlgorithms */,
 				668E0C910D4021F50030649B /* WRFModel */,
 				66FF450E0D10FED2003A0AC1 /* XmlTree */,
-				66ACAC700E5E2DB20067F985 /* QtCustomGeometry */,
 			);
 		};
 /* End PBXProject section */
@@ -15320,7 +15384,7 @@
 					../,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				OTHER_LDFLAGS = "-flat_namespace";
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				VALID_ARCHS = "ppc64 ppc7400 ppc970 i386 x86_64 ppc";
@@ -15565,7 +15629,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					/Library/Frameworks,
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -15603,7 +15669,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					/Library/Frameworks,
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -16034,9 +16102,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -16059,9 +16129,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = ../;
@@ -16710,9 +16782,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -16744,9 +16818,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -16897,8 +16973,10 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -16929,8 +17007,10 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -16953,9 +17033,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -16982,9 +17064,11 @@
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
@@ -17142,6 +17226,11 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -17159,6 +17248,11 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = "@executable_path/../Plugins";
@@ -17692,11 +17786,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -17730,11 +17826,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -17765,11 +17863,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -17803,11 +17903,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -17903,6 +18005,11 @@
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_EXTENSION = plugd;
 				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -17941,6 +18048,11 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXECUTABLE_EXTENSION = plug;
 				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -18112,6 +18224,11 @@
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_EXTENSION = plugd;
 				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -18139,6 +18256,11 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXECUTABLE_EXTENSION = plug;
 				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (

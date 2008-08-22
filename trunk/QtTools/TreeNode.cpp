@@ -404,7 +404,12 @@ void TreeNode::_addChildren()
   if ( false == _node.valid() )
     return;
   
-  unsigned int numChildren ( _node->getNumChildNodes() );
+  // Get the number of children.
+  const unsigned int numChildren ( _node->getNumChildNodes() );
+
+  // Return now if there are no children to add.
+  if ( 0 == numChildren )
+    return;
   
   if ( 0x0 != _model )
     _model->beginInsertRows ( this, 0, numChildren );

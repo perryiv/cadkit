@@ -38,6 +38,8 @@ struct ILayer : public Usul::Interfaces::IUnknown
   virtual void                        showLayer ( bool b ) = 0;
   virtual bool                        showLayer() const = 0;
 
+  /// See if the given level falls within this layer's range of levels.
+  virtual bool                          isInLevelRange ( unsigned int level ) const = 0;
 }; // struct ILayer
 
 

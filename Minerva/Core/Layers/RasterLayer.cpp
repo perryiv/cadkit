@@ -38,6 +38,7 @@
 #include "boost/functional/hash.hpp"
 
 #include <algorithm>
+#include <limits>
 #include <ctime>
 
 using namespace Minerva::Core::Layers;
@@ -84,6 +85,7 @@ RasterLayer::RasterLayer() :
   _cacheDir ( RasterLayer::defaultCacheDirectory() ),
   _reader ( 0x0 ),
   _log ( 0x0 ),
+  _levelRange ( 0, std::numeric_limits<unsigned int>::max() ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_registerMembers();
@@ -108,6 +110,7 @@ RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
   _cacheDir ( rhs._cacheDir ),
   _reader ( rhs._reader ),
   _log ( rhs._log ),
+  _levelRange ( rhs._levelRange ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_registerMembers();
@@ -145,6 +148,7 @@ void RasterLayer::_registerMembers()
   this->_addMember ( "shown", _shown );
   this->_addMember ( new Serialize::XML::ValueMapMember<Alphas> ( "alphas", _alphas ) );
   this->_addMember ( "alpha", _alpha );
+  this->_addMember ( "level_range", _levelRange );
 }
 
 
@@ -980,4 +984,18 @@ void RasterLayer::_logEvent ( const std::string &s )
   {
     std::cout << Usul::Strings::format ( "Warning 3604300631: layer '", this->name(), "' has a null log file", '\n', message, '\n' ) << std::flush;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given level falls within this layer's range of levels.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool RasterLayer::isInLevelRange ( unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( level >= _levelRange[0] ) && ( level <= _levelRange[1] ) );
 }

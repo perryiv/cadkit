@@ -111,7 +111,10 @@ public:
   virtual Filters             filtersSave()   const;
   virtual Filters             filtersInsert() const;
   virtual Filters             filtersExport() const;
-
+  
+  /// See if the given level falls within this layer's range of levels.
+  bool                        isInLevelRange ( unsigned int level ) const;
+  
   /// Read the document.
   virtual void                read ( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 

@@ -28,6 +28,7 @@
 #include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector2.h"
 
 #include "osg/Vec2d"
 #include "osg/Image"
@@ -96,11 +97,11 @@ public:
   void                  extents ( const Extents& extents );
   Extents               extents () const;
 
-  /// Get the texture.
-  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
-
   /// Get the guid for the layer.
   virtual std::string   guid() const;
+
+  /// See if the given level falls within this layer's range of levels.
+  bool                  isInLevelRange ( unsigned int level ) const;
 
   // Set/get the log.
   virtual void          logSet ( LogPtr );
@@ -113,7 +114,10 @@ public:
   /// Get/Set show layer
   virtual void          showLayer ( bool b );
   virtual bool          showLayer() const;
-
+  
+  /// Get the texture.
+  virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
+  
 protected:
 
   virtual ~RasterLayer();
@@ -183,6 +187,7 @@ private:
   std::string _cacheDir;
   IReadImageFile::RefPtr _reader;
   LogPtr _log;
+  Usul::Math::Vec2ui _levelRange;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayer );

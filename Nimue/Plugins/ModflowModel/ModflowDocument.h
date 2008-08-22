@@ -181,6 +181,9 @@ public:
 
   // Usul::Interfaces::IIntersectListener.
   virtual void                            intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller );
+  
+  /// See if the given level falls within this layer's range of levels.
+  bool                                    isInLevelRange ( unsigned int level ) const;
 
   // Set/get the layers.
   void                                    layers ( Layers & );

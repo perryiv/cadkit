@@ -925,3 +925,16 @@ void Container::_notifyDataChnagedListeners()
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   _dataChangedListeners.for_each ( std::bind2nd ( std::mem_fun ( &IDataChangedListener::dataChangedNotify ), me.get() ) );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given level falls within this layer's range of levels.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Container::isInLevelRange ( unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+  return true;
+}

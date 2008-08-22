@@ -128,6 +128,9 @@ public:
   /// Get the guid (ILayer).
   virtual std::string         guid() const;
   
+  /// See if the given level falls within this layer's range of levels.
+  bool                       isInLevelRange ( unsigned int level ) const;
+
   /// Get the min latitude and min longitude (ILayerExtents).
   virtual double              minLon() const;
   virtual double              minLat() const;

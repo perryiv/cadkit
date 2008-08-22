@@ -258,8 +258,9 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
       
       // Should the layer be shown?
       const bool shown ( layer.valid() ? layer->showLayer() : true );
+      const bool isLevelRange ( layer.valid() ? layer->isInLevelRange ( level ) : true );
       
-      if ( shown && extents.intersects ( e ) )
+      if ( ( true == shown ) && ( true == extents.intersects ( e ) ) && ( true == isLevelRange ) )
       {
         // Get the image for the layer.
         osg::ref_ptr < osg::Image > image ( raster->texture ( extents, width, height, level, job, caller ) );

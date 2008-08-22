@@ -1990,3 +1990,16 @@ bool ModflowDocument::showLayer() const
   USUL_TRACE_SCOPE;
   return this->getBooleanState();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given level falls within this layer's range of levels.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ModflowDocument::isInLevelRange ( unsigned int level ) const
+{
+  USUL_TRACE_SCOPE;
+  return true;
+}

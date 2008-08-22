@@ -2845,7 +2845,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66ACAC700E5E2DB20067F985 /* QtCustomGeometry */;
+			remoteGlobalIDString = 66ACAC700E5E2DB20067F985;
 			remoteInfo = QtCustomGeometry;
 		};
 		66AFF2D70D6E20130062CDB9 /* PBXContainerItemProxy */ = {
@@ -15297,7 +15297,7 @@
 					../,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-flat_namespace";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				VALID_ARCHS = "ppc64 ppc7400 ppc970 i386 x86_64 ppc";

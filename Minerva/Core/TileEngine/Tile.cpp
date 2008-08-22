@@ -1118,9 +1118,10 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
 
     // Should the layer be shown?
     const bool shown ( layer.valid() ? layer->showLayer() : true );
+    const bool isLevelRange ( layer.valid() ? layer->isInLevelRange ( this->level() ) : true );
 
     // Only use this layer if it's shown and intersects our extents.
-    if ( shown && this->extents().intersects ( e ) )
+    if ( shown && this->extents().intersects ( e ) && true == isLevelRange )
     {
       // Get the image for the layer.
       image = Tile::_buildRaster ( this->extents(), width, height, this->level(), raster.get(), job.get() );

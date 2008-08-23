@@ -42,6 +42,8 @@
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Jobs/Manager.h"
+#include "Usul/Registry/Database.h"
+#include "Usul/Registry/Constants.h"
 
 #include "OsgTools/State/StateSet.h"
 
@@ -73,20 +75,18 @@ USUL_IMPLEMENT_TYPE_ID ( PointDocument );
 ///////////////////////////////////////////////////////////////////////////////
 
 PointDocument::PointDocument() : BaseClass ( "Point Document" ),
-_pointSet( new PointSet() ),
-_numPoints( 0 ),
-_material( new osg::Material() ),
-_color( 0.5f, 0.5f, 0.25f, 1.0f ),
-_workingDir(),
-_xpos( 0 ),
-_ypos( 0 )
+  _pointSet( new PointSet() ),
+  _numPoints( 0 ),
+  _material( new osg::Material() ),
+  _color( 0.5f, 0.5f, 0.25f, 1.0f ),
+  _workingDir(),
+  _xpos( 0 ),
+  _ypos( 0 ),
+  _manager ( 0x0 )
 {
   // Set the default material ambient and diffuse
   _material->setAmbient( osg::Material::FRONT_AND_BACK, _color );
   _material->setDiffuse( osg::Material::FRONT_AND_BACK, _color );
-  
-  // Usul::Jobs::Manager::init( 15, false );
-  Usul::Jobs::Manager::instance().addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
 }
 
 
@@ -98,6 +98,35 @@ _ypos( 0 )
 
 PointDocument::~PointDocument()
 {
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &PointDocument::_destroy ), "3494661626" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointDocument::_destroy()
+{
+  // Clean up job manager.
+  if ( 0x0 != _manager )
+  {
+    // Remove all queued jobs and cancel running jobs.
+    _manager->cancel();
+    
+    // Wait for remaining jobs to finish.
+    _manager->wait();
+    
+    // Delete the manager.
+    delete _manager;
+    _manager = 0x0;
+  }
+
+  // Done with these.
+  _pointSet = 0x0;
+  _workingDir.clear();
 }
 
 
@@ -928,7 +957,7 @@ void PointDocument::removeView ( Usul::Interfaces::IView *view )
   // If there are no more views, remove the job finished listener.
   if ( 0 == this->numViews() )
   {
-    Usul::Jobs::Manager::instance().removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+    this->_getJobManager()->removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
 }
 
@@ -942,8 +971,8 @@ void PointDocument::removeView ( Usul::Interfaces::IView *view )
 void PointDocument::updateNotify( Unknown *caller )
 {
   // Job update stuff
-  unsigned int numQueued ( Usul::Jobs::Manager::instance().numJobsQueued() );
-  unsigned int numRunning ( Usul::Jobs::Manager::instance().numJobsExecuting() );
+  unsigned int numQueued ( this->_getJobManager()->numJobsQueued() );
+  unsigned int numRunning ( this->_getJobManager()->numJobsExecuting() );
 #if 0
   std::string status( "" );
   if( 0 != numQueued && 0 != numRunning )
@@ -994,5 +1023,34 @@ void PointDocument::_setStatusText( const std::string message, unsigned int &tex
   textYPos = static_cast< unsigned int > ( ypos );
 
   textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the job manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Jobs::Manager *PointDocument::_getJobManager()
+{
+  Guard guard ( this );
+  
+  // Only make it once.
+  if ( 0x0 == _manager )
+  {
+    typedef Usul::Registry::Database Reg;
+    namespace Sections = Usul::Registry::Sections;
+    
+    const std::string type ( Reg::instance().convertToTag ( this->typeName() ) );
+    Usul::Registry::Node &node ( Reg::instance()[Sections::DOCUMENT_SETTINGS][type]["job_manager_thread_pool_size"] );
+    const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
+    
+    _manager = new Usul::Jobs::Manager ( poolSize, true );
+    _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
+    _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  }
+  
+  return _manager;
 }
 

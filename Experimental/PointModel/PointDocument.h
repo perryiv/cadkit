@@ -32,7 +32,7 @@
 
 #include <string>
 
-using namespace Usul::Types;
+namespace Usul { namespace Jobs { class Manager; } }
 
 
 class PointDocument : public Usul::Documents::Document,
@@ -52,6 +52,7 @@ public:
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
   typedef std::list< PointSet::ValidRefPtr > PointSets;
+  typedef osg::ref_ptr< osg::Material > MaterialPtr;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( PointDocument );
@@ -123,21 +124,22 @@ protected:
   void                        _buildVectors( Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _split( Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _editPointColor();
-  void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller = 0x0 );
-
-
-
+  void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller = 0x0 );  
+  Usul::Jobs::Manager *       _getJobManager();
+  
 private:
 
-  PointSets                       _pointSets;
-  PointSet::ValidRefPtr           _pointSet;
-  Usul::Types::Uint64             _numPoints;
-  osg::ref_ptr< osg::Material >   _material;
-  osg::Vec4f                      _color;
-  std::string                     _workingDir;
-  unsigned int                    _xpos;
-  unsigned int                    _ypos;
-  
+  void                        _destroy();
+
+  PointSets _pointSets;
+  PointSet::ValidRefPtr _pointSet;
+  Usul::Types::Uint64 _numPoints;
+  MaterialPtr _material;
+  osg::Vec4f _color;
+  std::string _workingDir;
+  unsigned int _xpos;
+  unsigned int _ypos;
+  Usul::Jobs::Manager *_manager;
 };
 
 

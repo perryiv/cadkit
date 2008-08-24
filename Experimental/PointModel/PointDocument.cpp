@@ -1069,11 +1069,11 @@ PointDocument::PointSet *PointDocument::_getPointSet()
 {
   Guard guard ( this );
 
-  if ( 0x0 == _pointSet )
+  if ( false == _pointSet.valid() )
   {
     _pointSet = new PointSet ( this->_getJobManager() );
   }
   
-  return _pointSet;
+  return _pointSet.get();
 }
 

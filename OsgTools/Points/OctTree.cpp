@@ -17,6 +17,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Remove.h"
+#include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/ThreadId.h"
 
 #include "osg/Geometry"
@@ -26,6 +27,7 @@
 #include "osg/BoundingBox"
 
 #include <fstream>
+#include <stdexcept>
 
 using namespace OsgTools::Points;
 USUL_IMPLEMENT_TYPE_ID ( OctTree );
@@ -38,13 +40,17 @@ USUL_IMPLEMENT_TYPE_ID ( OctTree );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OctTree::OctTree():
-_tree( 0x0 ),
-_capacity( 1000 ),
-_buffer ( new StreamBuffer ( 4096 ) ),
-_workingDir(),
-_baseName()
+OctTree::OctTree ( Usul::Jobs::Manager *jm ):
+  _tree( 0x0 ),
+  _capacity( 1000 ),
+  _buffer ( new StreamBuffer ( 4096 ) ),
+  _workingDir(),
+  _baseName(),
+  _jobManager ( jm )
 {
+  if ( 0x0 == _jobManager )
+    throw std::invalid_argument ( Usul::Strings::format ( "Error 3202667510: null job manager given" ) );
+
   // create a temp directory in the temp directory location
   const std::string tempDir ( Usul::File::Temp::directory ( false ) ); 
   const std::string dataDir ( Usul::Convert::Type< Usul::Types::Uint64, std::string >::convert ( Usul::Threads::currentThreadId() ) );
@@ -55,7 +61,7 @@ _baseName()
   _tempPath = path;
 
   // create the root octree node
-  _tree = new OctTreeNode ( _buffer, path );
+  _tree = new OctTreeNode ( _jobManager, _buffer, path );
 
   // set the point capacity of the octree nodes
   _tree->capacity( 1000 );
@@ -71,6 +77,7 @@ _baseName()
 OctTree::~OctTree()
 {
   Usul::File::remove( _tempPath );
+  // Do not delete _jobManager
 }
 
 /////////////////

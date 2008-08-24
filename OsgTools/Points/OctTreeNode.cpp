@@ -28,6 +28,7 @@
 
 #include <limits>
 #include <fstream>
+#include <stdexcept>
 
 #include <Math.h>
 
@@ -49,8 +50,8 @@ USUL_IMPLEMENT_TYPE_ID ( OctTreeNode );
 
 class CustomLODCallback : public osg::NodeCallback
 {
-    public:
-      CustomLODCallback( const std::string& p, osg::Geode* geode, unsigned int level, osg::BoundingBox bb ) :
+public:
+  CustomLODCallback( Usul::Jobs::Manager &jm, const std::string& p, osg::Geode* geode, unsigned int level, osg::BoundingBox bb ) :
           _mutex(),
           _path( p ),
           _geode( geode ),
@@ -59,7 +60,8 @@ class CustomLODCallback : public osg::NodeCallback
           _numPoints( 0 ),
           _myJob( 0x0 ),
           _jobLoading( false ),
-          _bb ( bb )
+          _bb ( bb ),
+          _jobManager ( jm )
 		  {
          // Get the size of the lod file
          _fileSize = Usul::File::size( _path );
@@ -154,7 +156,7 @@ class CustomLODCallback : public osg::NodeCallback
               _myJob->priority( static_cast< int > ( _level ) );
 
               // Start my job
-              Usul::Jobs::Manager::instance().addJob ( _myJob.get() );
+              _jobManager.addJob ( _myJob.get() );
             }
 
             // leave the function for now
@@ -218,7 +220,7 @@ class CustomLODCallback : public osg::NodeCallback
         {
           Usul::Jobs::Job::RefPtr job ( dynamic_cast< Usul::Jobs::Job* > ( _myJob.get() ) );
           if( 0x0 != job )
-            Usul::Jobs::Manager::instance().removeQueuedJob( job );
+            _jobManager.removeQueuedJob( job );
 
           _myJob->cancel();
           _myJob = 0x0;
@@ -231,16 +233,21 @@ class CustomLODCallback : public osg::NodeCallback
         return _mutex;
       }
 
-	 protected:
-     mutable Mutex                _mutex;
-     std::string                  _path;
-     osg::ref_ptr< osg::Geode >   _geode;
-     unsigned int                 _level;
-     Usul::Types::Uint64          _fileSize;
-     float                        _numPoints;
-     PointLoader::RefPtr          _myJob;
-     bool                         _jobLoading;
-     osg::BoundingBox             _bb;
+	 private:
+
+    CustomLODCallback ( const CustomLODCallback & );
+    CustomLODCallback &operator = ( const CustomLODCallback & );
+  
+    mutable Mutex                _mutex;
+    std::string                  _path;
+    osg::ref_ptr< osg::Geode >   _geode;
+    unsigned int                 _level;
+    Usul::Types::Uint64          _fileSize;
+    float                        _numPoints;
+    PointLoader::RefPtr          _myJob;
+    bool                         _jobLoading;
+    osg::BoundingBox             _bb;
+    Usul::Jobs::Manager &        _jobManager;
 }; 
 
 
@@ -250,7 +257,7 @@ class CustomLODCallback : public osg::NodeCallback
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath ):
+OctTreeNode::OctTreeNode ( Usul::Jobs::Manager *jm, StreamBufferPtr buffer, const std::string &tempPath ):
   _bb(),
   _children(),
   _points( 0x0 ),
@@ -270,11 +277,15 @@ OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath )
   _material( 1.0f, 0.0f, 0.0f, 1.0f ),
   _mutex(),
   _workingDir(),
-  _baseName()
+  _baseName(),
+  _jobManager ( jm )
 {
   
   _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
-  
+
+  if ( 0x0 == _jobManager )
+    throw std::invalid_argument ( Usul::Strings::format ( "Error 2032454300: null job manager given" ) );
+
 #if 1
    _lodDefinitions.push_back( 1 );
    //_lodDefinitions.push_back( 3 );
@@ -314,7 +325,7 @@ OctTreeNode::~OctTreeNode()
   Usul::File::remove ( _tempFilename, false, 0x0 );
 
   // Clear out any queued jobs
-  Usul::Jobs::Manager::instance().clearQueuedJobs();
+  _jobManager->clearQueuedJobs();
 
 #if 0
   // Remove Lod Files
@@ -324,6 +335,8 @@ OctTreeNode::~OctTreeNode()
     Usul::File::remove ( lodName, false, 0x0 );
   }
 #endif
+
+  // Do not delete _jobManager
 }
 
 
@@ -532,7 +545,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
           std::string lodName ( Usul::Strings::format( _workingDir, _name, "LOD", lodLevel ) );
 
           // Add the cull callback so vertices can be added and deleted at run time
-          geode->setCullCallback( new CustomLODCallback( lodName, geode.get(), lodLevel, _bb ) );
+          geode->setCullCallback( new CustomLODCallback( *_jobManager, lodName, geode.get(), lodLevel, _bb ) );
 
           // Dynamically create lod level distance definitions
           float minLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( numLODs ) );
@@ -912,7 +925,7 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
         _children.resize( 8 );
         for( unsigned int i = 0; i < _children.size(); ++i )
         {
-          _children.at( i ) = new OctTreeNode( _streamBuffer, _tempPath );
+          _children.at( i ) = new OctTreeNode( _jobManager, _streamBuffer, _tempPath );
           _children.at( i )->workingDir( this->workingDir() );
           _children.at( i )->distance( _distance );
           _children.at( i )->read( ifs, document, caller, progress );
@@ -1340,7 +1353,7 @@ void OctTreeNode::_split()
 
   for( unsigned int i = 0; i < 8; i ++ )
   {
-    _children.at( i ) = new OctTreeNode ( _streamBuffer, _tempPath );
+    _children.at( i ) = new OctTreeNode ( _jobManager, _streamBuffer, _tempPath );
     _children.at( i )->distance( _distance );
     _children.at( i )->boundingBox( b.at( i ) );
     _children.at( i )->type( POINT_HOLDER );

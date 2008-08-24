@@ -125,14 +125,14 @@ protected:
   void                        _split( Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _editPointColor();
   void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller = 0x0 );  
+  PointSet *                  _getPointSet();
   Usul::Jobs::Manager *       _getJobManager();
   
 private:
 
   void                        _destroy();
 
-  PointSets _pointSets;
-  PointSet::ValidRefPtr _pointSet;
+  PointSet::ValidAccessRefPtr _pointSet;
   Usul::Types::Uint64 _numPoints;
   MaterialPtr _material;
   osg::Vec4f _color;

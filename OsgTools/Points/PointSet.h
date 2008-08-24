@@ -32,11 +32,13 @@
 
 #include <string>
 
-
+namespace Usul { namespace Jobs { class Manager; } }
 namespace osg { class Node; class Group; }
+
 
 namespace OsgTools {
 namespace Points {
+
 
 class OSG_TOOLS_EXPORT PointSet : public Usul::Base::Object
 {
@@ -62,7 +64,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( PointSet );
 
   /// Construction.
-  PointSet();
+  PointSet ( Usul::Jobs::Manager * );
 
   /// Build the scene.
   osg::Node *             buildScene ( Unknown *caller = 0x0 );
@@ -96,25 +98,24 @@ public:
  
 protected:
 
-  /// Do not copy.
-  PointSet ( const PointSet & );
-  PointSet &operator = ( const PointSet & );
-
-  
-
-  
   /// Use reference counting.
   virtual ~PointSet();
 
 private:
+  
+  /// Do not copy.
+  PointSet ( const PointSet & );
+  PointSet &operator = ( const PointSet & );
+  
   GroupPtr                _root;
   Points                  _points;
   OctTree::RefPtr         _tree;
   std::string             _workingDir;
   std::string             _baseName;
+  Usul::Jobs::Manager *   _jobManager;
+};
 
-  
-}; // PointSet
+
 }; // Points
 }; // OsgTools
 

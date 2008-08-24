@@ -39,10 +39,13 @@
 #define NODE_HOLDER 1
 #define POINT_HOLDER 2
 
+namespace Usul { namespace Jobs { class Manager; } }
 namespace osgUtil { class CullVisitor; }
+
 
 namespace OsgTools {
 namespace Points {
+
 
 class OSG_TOOLS_EXPORT OctTreeNode : public osg::Group
 {
@@ -74,7 +77,7 @@ public:
    // Type information.
   USUL_DECLARE_TYPE_ID ( OctTreeNode );
 
-  OctTreeNode ( StreamBufferPtr, const std::string &tempPath ); 
+  OctTreeNode ( Usul::Jobs::Manager *, StreamBufferPtr, const std::string &tempPath ); 
   virtual ~OctTreeNode();
 
   // Getters
@@ -173,7 +176,11 @@ protected:
 
 
 private:
-  
+
+  // No copying or assignment.
+  OctTreeNode ( const OctTreeNode & );
+  OctTreeNode &operator = ( const OctTreeNode & );
+
   osg::BoundingBox                _bb;
   Children                        _children;
   Points                          _points;
@@ -203,10 +210,12 @@ private:
   mutable Mutex                   _mutex;
   std::string                     _workingDir;
   std::string                     _baseName;
-  
+  Usul::Jobs::Manager *           _jobManager;
+};
 
-}; // OctTreeNode
+
 }; // namespace Points
 }; // namespace OsgTools
+
 
 #endif // __EXPERIMENTAL_OCTTREENODE_H__

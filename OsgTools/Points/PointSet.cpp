@@ -11,11 +11,15 @@
 #include "OsgTools/Points/PointSet.h"
 #include "OsgTools/Configure/OSG.h"
 
+#include "Usul/Jobs/Manager.h"
+#include "Usul/Strings/Format.h"
+
 #include "osgDB/WriteFile"
 
 #include "osg/BoundingBox"
 
 #include <iostream>
+#include <stdexcept>
 
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PointSet, PointSet::BaseClass );
 
@@ -28,12 +32,16 @@ USUL_IMPLEMENT_TYPE_ID ( PointSet );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointSet::PointSet() : BaseClass (),
-_points( new osg::Vec3Array ),
-_tree( new OctTree() ),
-_workingDir(),
-_baseName()
+PointSet::PointSet ( Usul::Jobs::Manager *jm ) : BaseClass (),
+  _points ( new osg::Vec3Array ),
+  _tree ( new OctTree ( jm ) ),
+  _workingDir(),
+  _baseName(),
+  _jobManager ( jm )
 {
+  if ( 0x0 == _jobManager )
+    throw std::invalid_argument ( Usul::Strings::format ( "Error 2403035396: null job manager given" ) );
+
   // Remove this after testing
 #if 0
   osg::BoundingBox bb ( 1352000.0f, -70900.0f, 4300.0f, 1355000.0f, -70000.0f, 4900.0f );
@@ -50,7 +58,7 @@ _baseName()
 
 PointSet::~PointSet()
 {
- 
+  // Do not delete _jobManager
 }
 
 

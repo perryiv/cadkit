@@ -75,13 +75,13 @@ USUL_IMPLEMENT_TYPE_ID ( PointDocument );
 ///////////////////////////////////////////////////////////////////////////////
 
 PointDocument::PointDocument() : BaseClass ( "Point Document" ),
-  _pointSet( new PointSet() ),
-  _numPoints( 0 ),
-  _material( new osg::Material() ),
-  _color( 0.5f, 0.5f, 0.25f, 1.0f ),
+  _pointSet ( 0x0 ),
+  _numPoints ( 0 ),
+  _material ( new osg::Material() ),
+  _color ( 0.5f, 0.5f, 0.25f, 1.0f ),
   _workingDir(),
-  _xpos( 0 ),
-  _ypos( 0 ),
+  _xpos ( 0 ),
+  _ypos ( 0 ),
   _manager ( 0x0 )
 {
   // Set the default material ambient and diffuse
@@ -126,6 +126,7 @@ void PointDocument::_destroy()
 
   // Done with these.
   _pointSet = 0x0;
+  _material = 0x0;
   _workingDir.clear();
 }
 
@@ -261,10 +262,9 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
   }
   */
 
-  // set the working directory in our point set
-  
-  _pointSet->workingDir( Usul::File::directory( name, true ) );
-  _pointSet->baseName( Usul::File::base( name ) );
+  // Set the working directory in our point set.
+  this->_getPointSet()->workingDir( Usul::File::directory( name, true ) );
+  this->_getPointSet()->baseName( Usul::File::base( name ) );
 
   this->_read( name, caller, progress );
 
@@ -355,8 +355,12 @@ void PointDocument::write ( const std::string &name, Unknown *caller, Unknown *p
   std::ofstream* ofs ( new std::ofstream );
   ofs->open( name.c_str(), std::ofstream::out | std::ifstream::binary ); 
 
-  // write the binary restart file
-  _pointSet->write( ofs, _numPoints, 0x0, caller, progress );
+  // write the binary restart file.
+  PointDocument *me ( const_cast < PointDocument * > ( this ) );
+  if ( 0x0 != me )
+  {
+    me->_getPointSet()->write( ofs, _numPoints, 0x0, caller, progress );
+  }
 
   // close the stream and clean up memory
   ofs->close();
@@ -446,7 +450,7 @@ osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *c
 {
   // Redirect to point set
   osg::ref_ptr< osg::Group > group ( new osg::Group );
-  group->addChild( _pointSet->buildScene ( caller ) );
+  group->addChild( this->_getPointSet()->buildScene ( caller ) );
   OsgTools::State::StateSet::setMaterial( group.get(), _material.get() );
   return group.release();
 }
@@ -495,9 +499,9 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
   in.read ( reinterpret_cast<char *> ( &_numPoints ), sizeof ( unsigned int ) );
 
   // Set the bounds of the pointset octree and the point capacity
-  _pointSet->bounds( minCorner, maxCorner );
+  this->_getPointSet()->bounds( minCorner, maxCorner );
   unsigned int capacity = Usul::Math::minimum( static_cast< unsigned int > ( _numPoints / 400 ), static_cast< unsigned int > ( std::numeric_limits< short >::max() ) );
-  _pointSet->capacity( capacity );
+  this->_getPointSet()->capacity( capacity );
   
   // Setup progress bars
   Usul::Policies::TimeBased update ( 1000 ); // Every second.
@@ -516,7 +520,7 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
 
       in.read ( reinterpret_cast<char *> ( &value ), sizeof ( osg::Vec3f ) );
     
-      if( false == _pointSet->addPoint( value ) )
+      if( false == this->_getPointSet()->addPoint( value ) )
       {
         std::cout << "Failed to insert point in PointDocument! " << std::endl;
       }
@@ -814,9 +818,9 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 #if 0
   osg::Vec3f minCorner ( bounds.xMin(), bounds.yMin(), bounds.zMin() );
   osg::Vec3f maxCorner ( bounds.xMax(), bounds.yMax(), bounds.zMax() );
-  _pointSet->bounds( minCorner, maxCorner );
+  this->_getPointSet()->bounds( minCorner, maxCorner );
   unsigned int capacity = Usul::Math::minimum( static_cast< unsigned int > ( _numPoints / 400 ), static_cast< unsigned int > ( std::numeric_limits< short >::max() ) );
-  _pointSet->capacity( capacity );
+  this->_getPointSet()->capacity( capacity );
 #endif
 
   osg::Vec3f minCorner ( bounds.xMin(), bounds.yMin(), bounds.zMin() );
@@ -847,7 +851,7 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 {
   this->setStatusBar ( "Step 2/2: Building Spatial Parameters...", progress );
-  _pointSet->buildVectors();
+  this->_getPointSet()->buildVectors();
 }
 
 
@@ -859,7 +863,7 @@ void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 
 void PointDocument::_split( Unknown *caller, Unknown *progress )
 {
-  _pointSet->split( this, caller, progress );
+  this->_getPointSet()->split( this, caller, progress );
 }
 
 
@@ -879,7 +883,7 @@ void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown
 
   Usul::Types::Uint64 numPoints ( 0 );
 
-  _pointSet->read( ifs, numPoints, this, caller, progress );
+  this->_getPointSet()->read( ifs, numPoints, this, caller, progress );
 
   _numPoints = numPoints;
 
@@ -1052,5 +1056,24 @@ Usul::Jobs::Manager *PointDocument::_getJobManager()
   }
   
   return _manager;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the point set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PointDocument::PointSet *PointDocument::_getPointSet()
+{
+  Guard guard ( this );
+
+  if ( 0x0 == _pointSet )
+  {
+    _pointSet = new PointSet ( this->_getJobManager() );
+  }
+  
+  return _pointSet;
 }
 

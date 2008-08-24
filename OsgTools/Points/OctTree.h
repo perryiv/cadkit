@@ -36,8 +36,12 @@
 
 #include <vector>
 
+namespace Usul { namespace Jobs { class Manager; } }
+
+
 namespace OsgTools {
 namespace Points {
+
 
 class OSG_TOOLS_EXPORT OctTree : public Usul::Base::Object
 {
@@ -54,7 +58,7 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( OctTree );
 
-  OctTree();
+  OctTree ( Usul::Jobs::Manager *jm );
   virtual ~OctTree();
 
   void                          add( OctTreeNode * node );
@@ -88,6 +92,10 @@ protected:
   osg::Node*                    _buildTransparentPlane();
   
 private:
+
+  // No copying or assignment.
+  OctTree ( const OctTree & );
+  OctTree &operator = ( const OctTree & );
   
   osg::ref_ptr< OctTreeNode >   _tree;
   unsigned int                  _capacity;
@@ -95,9 +103,12 @@ private:
   std::string                   _tempPath;
   std::string                   _workingDir;
   std::string                   _baseName;
+  Usul::Jobs::Manager *         _jobManager;
+};
 
 
-}; // OctTree
 }; // namespace Points
 }; // namespace OsgTools
+
+
 #endif // __EXPERIMENTAL_OCTTREE_H__

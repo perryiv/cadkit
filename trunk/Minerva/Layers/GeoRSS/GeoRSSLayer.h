@@ -42,6 +42,7 @@ public:
   typedef Usul::Math::Vec3d                          Vertex;
   typedef std::vector < Vertex >                     Vertices;
   typedef std::pair<TimerID,bool>                    TimerPair;
+	typedef std::pair<std::string,std::string>         Filter;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( GeoRSSLayer );
@@ -56,9 +57,20 @@ public:
   // Deserialize.
   virtual void                deserialize( const XmlTree::Node &node );
 
+	// Launch a job to download feed.
+  void                        downloadFeed();
+
   // Get/Set downloading flag.
   bool                        isDownloading() const;
   void                        downloading( bool b );
+
+	/// Set/get the filter.
+	void                        filter ( const Filter& filter );
+	Filter                      filter() const;
+
+	/// Set/get the filtering enabled flag.
+	void                        filteringEnabled ( bool b );
+	bool                        filteringEnabled() const;
 
   // Get/Set reading flag.
   bool                        isReading() const;
@@ -78,9 +90,6 @@ protected:
   // Add a timer callback.
   void                        _addTimer();
   
-  // Launch a job to download feed.
-  void                        _downloadFeed();
-  
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
   
@@ -97,8 +106,9 @@ private:
 
   enum STATUS_FLAGS
   {
-    DOWNLOADING = 0x00000001,
-    READING     = 0x00000002
+    DOWNLOADING       = 0x00000001,
+    READING           = 0x00000002,
+		FILTERING_ENABLED = 0x00000004
   };
   
   boost::posix_time::ptime _lastDataUpdate;
@@ -107,6 +117,7 @@ private:
   unsigned int _flags;
   Usul::Math::Vec4f _color;
   TimerPair _timerInfo;
+	Filter _filter;
   
   SERIALIZE_XML_CLASS_NAME ( GeoRSSLayer );
 };

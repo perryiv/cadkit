@@ -68,7 +68,8 @@ GeoRSSLayer::GeoRSSLayer() :
   _refreshInterval ( 300.0 ),
   _flags(),
   _color ( 1.0, 0.0, 0.0, 1.0 ),
-  _timerInfo ( 0, false )
+  _timerInfo ( 0, false ),
+	_filter()
 {
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
@@ -365,8 +366,27 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   // Add the geometry.
   object->addGeometry ( point );
 
+	// See if this object should be filtered.
+	bool filtered ( false );
+
+	if ( this->filteringEnabled() )
+	{
+		// Get the filter.
+		const Filter filter ( this->filter() );
+		
+		// Get all the children.
+		Children children ( node.children() );
+		for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+		{
+			XmlTree::Node::ValidRefPtr node ( *iter );
+			if ( filter.first == node->name() && filter.second == node->value() )
+				filtered = true;
+		}
+	}
+
   // Add the data object.
-  this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
+	if ( false == filtered )
+		this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
 
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
@@ -387,7 +407,7 @@ void GeoRSSLayer::deserialize( const XmlTree::Node &node )
   this->_addTimer();
   
   // Start download.
-  this->_downloadFeed();
+  this->downloadFeed();
 }
 
 
@@ -569,7 +589,7 @@ Usul::Math::Vec4f GeoRSSLayer::color() const
 
 void GeoRSSLayer::timerNotify ( TimerID )
 {
-  this->_downloadFeed();
+  this->downloadFeed();
 }
 
 
@@ -606,7 +626,7 @@ void GeoRSSLayer::_addTimer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GeoRSSLayer::_downloadFeed()
+void GeoRSSLayer::downloadFeed()
 {
   // Return now if we are already downloading.
   if ( true == this->isDownloading() )
@@ -624,4 +644,56 @@ void GeoRSSLayer::_downloadFeed()
     // Add job to manager.
     Usul::Jobs::Manager::instance().addJob ( job.get() );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the filtering enabled flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::filteringEnabled ( bool b )
+{
+	Guard guard ( this->mutex() );
+  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, GeoRSSLayer::FILTERING_ENABLED, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filtering enabled flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool GeoRSSLayer::filteringEnabled() const
+{
+	Guard guard ( this->mutex() );
+  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, GeoRSSLayer::FILTERING_ENABLED );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the filter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::filter ( const Filter& filter )
+{
+	Guard guard ( this->mutex() );
+	_filter = filter;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the filter.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+GeoRSSLayer::Filter GeoRSSLayer::filter() const
+{
+	Guard guard ( this->mutex() );
+	return _filter;
 }

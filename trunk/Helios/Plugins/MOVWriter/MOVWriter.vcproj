@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="QTVR.lib QTSClient.lib CVClient.lib qtmlclient.lib osgd.lib osgDBd.lib"
+				AdditionalDependencies="QTVR.lib QTSClient.lib CVClient.lib qtmlclient.lib osgd.lib osgDBd.lib OpenThreadsd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MOVWriter.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="QTVR.lib QTSClient.lib CVClient.lib qtmlclient.lib osg.lib osgDB.lib"
+				AdditionalDependencies="QTVR.lib QTSClient.lib CVClient.lib qtmlclient.lib osg.lib osgDB.lib OpenThreads.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MOVWriter.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

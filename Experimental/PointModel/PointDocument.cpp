@@ -110,7 +110,12 @@ PointDocument::~PointDocument()
 
 void PointDocument::_destroy()
 {
-  // Clean up job manager.
+  // Done with these.
+  _pointSet = 0x0;
+  _material = 0x0;
+  _workingDir.clear();
+
+  // Clean up job manager. Do this last.
   if ( 0x0 != _manager )
   {
     // Remove all queued jobs and cancel running jobs.
@@ -123,11 +128,6 @@ void PointDocument::_destroy()
     delete _manager;
     _manager = 0x0;
   }
-
-  // Done with these.
-  _pointSet = 0x0;
-  _material = 0x0;
-  _workingDir.clear();
 }
 
 

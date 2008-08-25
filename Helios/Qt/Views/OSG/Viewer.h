@@ -166,18 +166,19 @@ protected:
   virtual FileResult                      getSaveFileName  ( const std::string &title = "Save", const Filters &filters = Filters() );
 
   // Override these events.
-  virtual void                            paintEvent  ( QPaintEvent * event );
-  virtual void                            resizeEvent ( QResizeEvent * event );
-  virtual void                            focusInEvent ( QFocusEvent * event );
-  virtual void                            focusOutEvent ( QFocusEvent * event );
-  virtual void                            mouseMoveEvent ( QMouseEvent * event );
-  virtual void                            mousePressEvent ( QMouseEvent * event );
-  virtual void                            mouseReleaseEvent ( QMouseEvent * event );
-  virtual void                            keyPressEvent ( QKeyEvent * event );
-  virtual void                            keyReleaseEvent ( QKeyEvent * event );
-  virtual void                            dragEnterEvent ( QDragEnterEvent *event );
-  virtual void                            dropEvent      ( QDropEvent      *event );
-  virtual void                            closeEvent ( QCloseEvent *event );
+  virtual void                            paintEvent  ( QPaintEvent * );
+  virtual void                            resizeEvent ( QResizeEvent * );
+  virtual void                            focusInEvent ( QFocusEvent * );
+  virtual void                            focusOutEvent ( QFocusEvent * );
+  virtual void                            mouseMoveEvent ( QMouseEvent * );
+  virtual void                            mousePressEvent ( QMouseEvent * );
+  virtual void                            mouseReleaseEvent ( QMouseEvent * );
+  virtual void                            keyPressEvent ( QKeyEvent * );
+  virtual void                            keyReleaseEvent ( QKeyEvent * );
+  virtual void                            dragEnterEvent ( QDragEnterEvent * );
+  virtual void                            dropEvent ( QDropEvent * );
+  virtual void                            closeEvent ( QCloseEvent * );
+  virtual void                            wheelEvent ( QWheelEvent * );
 
 private slots:
 
@@ -198,6 +199,8 @@ private:
   ViewMode _lastMode;
   unsigned long _threadId;
   mutable Mutex *_mutex;
+  int _mouseWheelPosition;
+  float _mouseWheelSensitivity;
 };
 
 

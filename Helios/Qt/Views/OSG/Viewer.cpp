@@ -14,6 +14,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
+#include "Usul/Bits/Bits.h"
 #include "Usul/Cast/Cast.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
@@ -84,7 +85,9 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnkno
   _keys(),
   _lastMode ( OsgTools::Render::Viewer::NAVIGATION ),
   _threadId ( Usul::Threads::currentThreadId() ),
-  _mutex ( new Viewer::Mutex )
+  _mutex ( new Viewer::Mutex ),
+  _mouseWheelPosition ( 0 ),
+  _mouseWheelSensitivity ( 10.0f )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -462,22 +465,27 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   if ( false == viewer.valid() )
     return;
 
-  const bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
-  const bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
-  const bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+  // See if the mouse buttons are down. If the corresponding keys are 
+  // down then we simulate a mouse-down state.
+  const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) || ( true == _keys[Qt::Key_R] ) );
+  const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) || ( true == _keys[Qt::Key_T] ) );
+  const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) || ( true == _keys[Qt::Key_Z] ) );
 
-  float x ( event->x() );
-  float y ( this->height() - event->y() );
+  const float x ( event->x() );
+  const float y ( this->height() - event->y() );
 
-  // See if any mouses button are down.
-  unsigned int mouse ( left || middle || right );
+  // See if any mouse buttons are down.
+  bool mouse ( left || middle || right );
 
   // Set the event type.
   typedef OsgTools::Render::EventAdapter EventAdapter;
   EventAdapter::EventType type ( ( mouse ) ? EventAdapter::DRAG : EventAdapter::MOVE );
-  EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, type) );
+  EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, type ) );
   viewer->mouseMove ( ea.get() );
   this->updateCursor ( left, middle, right );
+
+  // Reset this.
+  _mouseWheelPosition = 0;
 }
 
 
@@ -494,18 +502,23 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
   if ( false == viewer.valid() )
     return;
 
-  const bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
-  const bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
-  const bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+  // See if the mouse buttons are down. If the corresponding keys are 
+  // down then we simulate a mouse-down state.
+  const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) || ( true == _keys[Qt::Key_R] ) );
+  const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) || ( true == _keys[Qt::Key_T] ) );
+  const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) || ( true == _keys[Qt::Key_Z] ) );
 
-  float x ( event->x() );
-  float y ( this->height() - event->y() );
+  const float x ( event->x() );
+  const float y ( this->height() - event->y() );
 
   // Set the event type.
   typedef OsgTools::Render::EventAdapter EventAdapter;
   EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::PUSH ) );
   viewer->buttonPress ( ea.get() );
   this->updateCursor ( left, middle, right );
+  
+  // Reset this.
+  _mouseWheelPosition = 0;
 }
 
 
@@ -522,16 +535,55 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
   if ( false == viewer.valid() )
     return;
 
-  const bool left   ( event->buttons().testFlag ( Qt::LeftButton  ) );
-  const bool middle ( event->buttons().testFlag ( Qt::MidButton   ) );
-  const bool right  ( event->buttons().testFlag ( Qt::RightButton ) );
+  // See if the mouse buttons are down. If the corresponding keys are 
+  // down then we simulate a mouse-down state.
+  const bool left   ( ( true == event->buttons().testFlag ( Qt::LeftButton  ) ) || ( true == _keys[Qt::Key_R] ) );
+  const bool middle ( ( true == event->buttons().testFlag ( Qt::MidButton   ) ) || ( true == _keys[Qt::Key_T] ) );
+  const bool right  ( ( true == event->buttons().testFlag ( Qt::RightButton ) ) || ( true == _keys[Qt::Key_Z] ) );
 
-  float x ( event->x() );
-  float y ( this->height() - event->y() );
+  const float x ( event->x() );
+  const float y ( this->height() - event->y() );
 
   typedef OsgTools::Render::EventAdapter EventAdapter;
   EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::RELEASE ) );
   viewer->buttonRelease ( ea.get() );
+  this->updateCursor ( left, middle, right );
+
+  // Reset this.
+  _mouseWheelPosition = 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The mouse wheel has been moved.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::wheelEvent ( QWheelEvent * event )
+{
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
+  // Same as the right mouse moving.
+  const bool left   ( false );
+  const bool middle ( false );
+  const bool right  ( true  );
+
+  // Adjust the mouse wheel state.
+  _mouseWheelPosition += event->delta();
+
+  // Pretend the mouse moved in the y-direction.
+  const float x ( event->x() );
+  const float y ( static_cast < float > ( _mouseWheelPosition ) / _mouseWheelSensitivity );
+  
+  // Set the event type.
+  typedef OsgTools::Render::EventAdapter EventAdapter;
+  EventAdapter::EventType type ( EventAdapter::DRAG );
+  EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, type ) );
+  viewer->mouseMove ( ea.get() );
   this->updateCursor ( left, middle, right );
 }
 
@@ -565,7 +617,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::keyPressEvent ( QKeyEvent * event )
+void Viewer::keyPressEvent ( QKeyEvent *event )
 {
   USUL_TRACE_SCOPE;
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
@@ -587,9 +639,8 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
     // Process the key.
     switch ( event->key() )
     {
-    // See if it was the space-bar or the r-key...
+    // See if it was the space-bar...
     case Qt::Key_Space:
-    case Qt::Key_R:
 
       // Move the camera.
       viewer->camera ( OsgTools::Render::Viewer::RESET );
@@ -659,7 +710,22 @@ void Viewer::keyPressEvent ( QKeyEvent * event )
       break;
 
     case Qt::Key_Escape:
+
+      this->showNormal();
       viewer->cycleMode();
+      break;
+
+    case Qt::Key_F11:
+      {
+        if ( true == Usul::Bits::has ( this->windowState(), Qt::WindowFullScreen ) )
+        {
+          this->showNormal();
+        }
+        else
+        {
+          this->showFullScreen();
+        }
+      }
       break;
     }
   }

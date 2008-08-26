@@ -17,7 +17,7 @@ namespace Core {
 namespace Data {
       
 
-class PolyStyle : public Minerva::Core::Data::ColorStyle
+class MINERVA_EXPORT PolyStyle : public Minerva::Core::Data::ColorStyle
 {
 public:
   typedef Minerva::Core::Data::ColorStyle BaseClass;

@@ -17,9 +17,9 @@
 namespace Minerva {
 namespace Core {
 namespace Data {
-      
 
-class ColorStyle : public Minerva::Core::Data::Object
+
+class MINERVA_EXPORT ColorStyle : public Minerva::Core::Data::Object
 {
 public:
   typedef Minerva::Core::Data::Object BaseClass;

@@ -377,8 +377,6 @@
 		6603BD3F0DCBC6CD00FE0D89 /* newDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A30D124D2C002F40C6 /* newDocument.png */; };
 		6603BD400DCBC6CD00FE0D89 /* openDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A40D124D2C002F40C6 /* openDocument.png */; };
 		6603BD410DCBC6CD00FE0D89 /* saveDocument.png in Copy Files Icons */ = {isa = PBXBuildFile; fileRef = 666766A50D124D2C002F40C6 /* saveDocument.png */; };
-		66096F3D0DEF24FE00DD0024 /* Container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66096F3B0DEF24FE00DD0024 /* Container.cpp */; };
-		66096F3E0DEF24FE00DD0024 /* Container.h in Headers */ = {isa = PBXBuildFile; fileRef = 66096F3C0DEF24FE00DD0024 /* Container.h */; };
 		66096F470DEF252800DD0024 /* Move.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66096F3F0DEF252800DD0024 /* Move.cpp */; };
 		66096F480DEF252800DD0024 /* Move.h in Headers */ = {isa = PBXBuildFile; fileRef = 66096F400DEF252800DD0024 /* Move.h */; };
 		66096F490DEF252800DD0024 /* SettingsGroupScope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66096F410DEF252800DD0024 /* SettingsGroupScope.cpp */; };
@@ -658,6 +656,8 @@
 		6648640E0E6386AE0068F34F /* PolyStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 664864060E6386AE0068F34F /* PolyStyle.h */; };
 		6648640F0E6386AE0068F34F /* Style.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 664864070E6386AE0068F34F /* Style.cpp */; };
 		664864100E6386AE0068F34F /* Style.h in Headers */ = {isa = PBXBuildFile; fileRef = 664864080E6386AE0068F34F /* Style.h */; };
+		66486D9B0E64916100ADB01A /* Container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66486D990E64916100ADB01A /* Container.cpp */; };
+		66486D9C0E64916100ADB01A /* Container.h in Headers */ = {isa = PBXBuildFile; fileRef = 66486D9A0E64916100ADB01A /* Container.h */; };
 		664B43510D54EE8C0080DF60 /* IAddLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B434D0D54EE8C0080DF60 /* IAddLayer.h */; };
 		664B43520D54EE8C0080DF60 /* IAnimationControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B434E0D54EE8C0080DF60 /* IAnimationControl.h */; };
 		664B43530D54EE8C0080DF60 /* IDirtyScene.h in Headers */ = {isa = PBXBuildFile; fileRef = 664B434F0D54EE8C0080DF60 /* IDirtyScene.h */; };
@@ -4395,8 +4395,6 @@
 		6603B8820DCBAFEE00FE0D89 /* PasswordPromptComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PasswordPromptComponent.cpp; sourceTree = "<group>"; };
 		6603B8830DCBAFEE00FE0D89 /* PasswordPromptComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasswordPromptComponent.h; sourceTree = "<group>"; };
 		6603BBFA0DCBB16300FE0D89 /* moc_PasswordPromptComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_PasswordPromptComponent.cpp; sourceTree = "<group>"; };
-		66096F3B0DEF24FE00DD0024 /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
-		66096F3C0DEF24FE00DD0024 /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		66096F3F0DEF252800DD0024 /* Move.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Move.cpp; sourceTree = "<group>"; };
 		66096F400DEF252800DD0024 /* Move.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Move.h; sourceTree = "<group>"; };
 		66096F410DEF252800DD0024 /* SettingsGroupScope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingsGroupScope.cpp; sourceTree = "<group>"; };
@@ -4559,6 +4557,8 @@
 		664864060E6386AE0068F34F /* PolyStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolyStyle.h; sourceTree = "<group>"; };
 		664864070E6386AE0068F34F /* Style.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Style.cpp; sourceTree = "<group>"; };
 		664864080E6386AE0068F34F /* Style.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Style.h; sourceTree = "<group>"; };
+		66486D990E64916100ADB01A /* Container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Container.cpp; sourceTree = "<group>"; };
+		66486D9A0E64916100ADB01A /* Container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Container.h; sourceTree = "<group>"; };
 		664B434D0D54EE8C0080DF60 /* IAddLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAddLayer.h; sourceTree = "<group>"; };
 		664B434E0D54EE8C0080DF60 /* IAnimationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAnimationControl.h; sourceTree = "<group>"; };
 		664B434F0D54EE8C0080DF60 /* IDirtyScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDirtyScene.h; sourceTree = "<group>"; };
@@ -8360,6 +8360,8 @@
 		66481B550E01935600DD75A2 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				66486D990E64916100ADB01A /* Container.cpp */,
+				66486D9A0E64916100ADB01A /* Container.h */,
 				664863E20E63851C0068F34F /* ColorStyle.cpp */,
 				664863E30E63851C0068F34F /* ColorStyle.h */,
 				66481B560E01935600DD75A2 /* DataObject.cpp */,
@@ -10020,8 +10022,6 @@
 		66EF17A80D15193000B4B1AA /* Layers */ = {
 			isa = PBXGroup;
 			children = (
-				66096F3B0DEF24FE00DD0024 /* Container.cpp */,
-				66096F3C0DEF24FE00DD0024 /* Container.h */,
 				668DB5D60D78A75C00EA4DCD /* ElevationGroup.cpp */,
 				668DB5D70D78A75C00EA4DCD /* ElevationGroup.h */,
 				668DB5DC0D78A75C00EA4DCD /* RasterGroup.cpp */,
@@ -11235,7 +11235,6 @@
 				668E3AC70D8A33FC00FD7F58 /* IVectorLayer.h in Headers */,
 				66E1D7220D8C375D00732EE0 /* Atmosphere.h in Headers */,
 				66E1D98C0D8DC26600732EE0 /* SkyDome.h in Headers */,
-				66096F3E0DEF24FE00DD0024 /* Container.h in Headers */,
 				66B36A480DF47F4A000FB4A6 /* RasterLayerArcIMS.h in Headers */,
 				66B36A4A0DF47F4A000FB4A6 /* RasterLayerNetwork.h in Headers */,
 				6636BB9B0DF6644F006937AD /* RasterLayerGDAL.h in Headers */,
@@ -11260,6 +11259,7 @@
 				6648640C0E6386AE0068F34F /* LineStyle.h in Headers */,
 				6648640E0E6386AE0068F34F /* PolyStyle.h in Headers */,
 				664864100E6386AE0068F34F /* Style.h in Headers */,
+				66486D9C0E64916100ADB01A /* Container.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14129,7 +14129,6 @@
 				669B69170D7C9078001392F1 /* BuildLegend.cpp in Sources */,
 				66E1D7230D8C375D00732EE0 /* Atmosphere.cpp in Sources */,
 				66E1D98B0D8DC26600732EE0 /* SkyDome.cpp in Sources */,
-				66096F3D0DEF24FE00DD0024 /* Container.cpp in Sources */,
 				66B36A470DF47F4A000FB4A6 /* RasterLayerArcIMS.cpp in Sources */,
 				66B36A490DF47F4A000FB4A6 /* RasterLayerNetwork.cpp in Sources */,
 				6636BB9A0DF6644F006937AD /* RasterLayerGDAL.cpp in Sources */,
@@ -14154,6 +14153,7 @@
 				6648640B0E6386AE0068F34F /* LineStyle.cpp in Sources */,
 				6648640D0E6386AE0068F34F /* PolyStyle.cpp in Sources */,
 				6648640F0E6386AE0068F34F /* Style.cpp in Sources */,
+				66486D9B0E64916100ADB01A /* Container.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

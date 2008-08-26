@@ -11,7 +11,7 @@
 #ifndef __MINERVA_CORE_SERIALIZE_H__
 #define __MINERVA_CORE_SERIALIZE_H__
 
-#include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/Data/Container.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
@@ -45,9 +45,9 @@ inline std::string serialize( T *layer )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline Minerva::Core::Layers::Container * deserialize ( const std::string& xml )
+inline Minerva::Core::Data::Container * deserialize ( const std::string& xml )
 {
-  std::vector< Minerva::Core::Layers::Container::RefPtr > v;
+  std::vector< Minerva::Core::Data::Container::RefPtr > v;
 
   Serialize::XML::deserialize( xml, v );
 
@@ -64,7 +64,7 @@ inline Minerva::Core::Layers::Container * deserialize ( const std::string& xml )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline void deserialize ( const std::string& xml, Minerva::Core::Layers::Container *layer )
+inline void deserialize ( const std::string& xml, Minerva::Core::Data::Container *layer )
 {
   Serialize::XML::deserialize( xml, *layer );
 }

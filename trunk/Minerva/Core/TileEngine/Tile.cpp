@@ -22,7 +22,7 @@
 
 #include "Minerva/Core/TileEngine/Tile.h"
 #include "Minerva/Core/TileEngine/Body.h"
-#include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Layers/RasterLayerGDAL.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Algorithms/Composite.h"
@@ -874,7 +874,7 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   }
 
   // Need to notify vector data so it can re-adjust.
-  Minerva::Core::Layers::Container::RefPtr vector ( body->vectorData() );
+  Minerva::Core::Data::Container::RefPtr vector ( body->vectorData() );
   if ( vector.valid() )
   {
     Usul::Interfaces::IUnknown::QueryPtr unknown ( body );

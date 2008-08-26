@@ -48,11 +48,11 @@ namespace Detail
     
     osg::ref_ptr<osgText::Text> text ( new osgText::Text );
     
-#ifndef _MSC_VER
+    // Set the font.
     osg::ref_ptr<osgText::Font> font ( OsgTools::Font::defaultFont() );
     text->setFont ( font.get() );
-#endif
-    
+
+    // Set text properties.    
     text->setCharacterSizeMode( osgText::Text::OBJECT_COORDS );
     text->setCharacterSize( textSize );
     text->setColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );

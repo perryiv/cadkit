@@ -10,7 +10,7 @@
 
 #include "Minerva/Core/Visitors/StackPoints.h"
 #include "Minerva/Core/Data/DataObject.h"
-#include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Data/Point.h"
 
 using namespace Minerva::Core::Visitors;
@@ -96,7 +96,7 @@ void StackPoints::visit ( Minerva::Core::Data::DataObject &dataObject )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StackPoints::visit ( Minerva::Core::Layers::Container &layer )
+void StackPoints::visit ( Minerva::Core::Data::Container &layer )
 {
   if ( layer.showLayer() )
   {

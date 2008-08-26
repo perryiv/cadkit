@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Visitor.h"
 
@@ -22,7 +22,7 @@
 
 #include "osg/Group"
 
-using namespace Minerva::Core::Layers;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,14 +51,10 @@ Container::Container() :
   _layers(),
   _updateListeners(),
   _builders(),
-  _dataChangedListeners(),
-  _name(),
   _guid ( Usul::Functions::GUID::generate() ),
-  _shown ( true ),
   _flags ( Container::ALL ),
   _extents(),
-  _root ( new osg::Group ),
-SERIALIZE_XML_INITIALIZER_LIST
+  _root ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
@@ -76,14 +72,10 @@ Container::Container( const Container& rhs ) :
   _layers( rhs._layers ),
   _updateListeners ( rhs._updateListeners ),
   _builders ( rhs._builders ),
-  _dataChangedListeners ( rhs._dataChangedListeners ),
-  _name( rhs._name ),
   _guid( Usul::Functions::GUID::generate() ),
-  _shown ( rhs._shown ),
   _flags ( rhs._flags | Container::SCENE_DIRTY ), // Make sure scene gets rebuilt.
   _extents ( rhs._extents ),
-  _root ( new osg::Group ),
-  SERIALIZE_XML_INITIALIZER_LIST
+  _root ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
@@ -111,9 +103,7 @@ Container::~Container()
 void Container::_registerMembers()
 {
   USUL_TRACE_SCOPE;
-  SERIALIZE_XML_ADD_MEMBER ( _name );
-  SERIALIZE_XML_ADD_MEMBER ( _guid );
-  SERIALIZE_XML_ADD_MEMBER ( _shown );
+  this->_addMember ( "guid", _guid );
   this->_addMember ( "layers", _layers );
 }
 
@@ -129,7 +119,6 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
   USUL_TRACE_SCOPE;
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILayer::IID:
     return static_cast < Usul::Interfaces::ILayer* > ( this );
   case Usul::Interfaces::IBuildScene::IID:
@@ -157,7 +146,7 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IDataChangedNotify::IID:
     return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   };
 }
 
@@ -187,7 +176,7 @@ void Container::traverse ( Minerva::Core::Visitor& visitor )
   Guard guard ( this );
   for ( Unknowns::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {
-    if ( Minerva::Core::Layers::Container *Container = dynamic_cast< Minerva::Core::Layers::Container*> ( (*iter).get() ) )
+    if ( Minerva::Core::Data::Container *Container = dynamic_cast< Minerva::Core::Data::Container*> ( (*iter).get() ) )
     {
       Container->accept ( visitor );
     }
@@ -197,41 +186,6 @@ void Container::traverse ( Minerva::Core::Visitor& visitor )
       object->accept ( visitor );
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::name ( const std::string& name )
-{
-  USUL_TRACE_SCOPE;
-  
-  // Set the name.
-  Usul::Threads::Safe::set ( this->mutex(), name, _name );
-  
-  // Notify any listeners that the data has changed.
-  this->_notifyDataChnagedListeners();
-  
-  //Guard guard ( this->mutex() );
-  //_name = name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Container::name() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _name;
 }
 
 
@@ -255,11 +209,14 @@ std::string Container::guid() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::showLayer( bool b )
+void Container::showLayer ( bool b )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _shown = b;
+
+  // Set the visibility state.
+  this->visibility ( b );
+
+  // The scene needs rebuilt.
   this->dirtyScene ( true );
 }
 
@@ -272,9 +229,7 @@ void Container::showLayer( bool b )
 
 bool Container::showLayer() const
 {
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _shown;
+  return this->visibility();
 }
 
 
@@ -887,46 +842,6 @@ double Container::maxLat() const
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////
-//
-//  Add the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::addDataChangedListener ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  _dataChangedListeners.add ( caller );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::removeDataChangedListener ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  _dataChangedListeners.remove ( caller );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Notify data changed listeners.  Note: No need to guard, _dataChangedListeners has it's own mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::_notifyDataChnagedListeners()
-{
-  USUL_TRACE_SCOPE;
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  _dataChangedListeners.for_each ( std::bind2nd ( std::mem_fun ( &IDataChangedListener::dataChangedNotify ), me.get() ) );
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  See if the given level falls within this layer's range of levels.
@@ -937,4 +852,30 @@ bool Container::isInLevelRange ( unsigned int level ) const
 {
   USUL_TRACE_SCOPE;
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Container::name() const
+{
+  USUL_TRACE_SCOPE;
+  return BaseClass::name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::name( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::name ( name );
 }

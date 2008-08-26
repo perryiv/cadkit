@@ -31,7 +31,7 @@ public:
   
   BuildLegend ( OsgTools::Widgets::Legend *legend );
   
-  virtual void visit ( Minerva::Core::Layers::Container &layer );
+  virtual void visit ( Minerva::Core::Data::Container &layer );
   
 protected:
   

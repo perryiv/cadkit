@@ -257,6 +257,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\Container.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Container.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\DataObject.cpp"
 						>
 					</File>
@@ -418,14 +426,6 @@
 				<Filter
 					Name="Layers"
 					>
-					<File
-						RelativePath=".\Layers\Container.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\Container.h"
-						>
-					</File>
 					<File
 						RelativePath=".\Layers\ElevationGroup.cpp"
 						>

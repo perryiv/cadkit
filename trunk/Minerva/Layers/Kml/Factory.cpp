@@ -582,13 +582,6 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
   object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   object->showLabel ( true );
   
-  // Temporary hack until converted on TimePrimitives.
-  if ( Minerva::Core::Data::TimeSpan *span = dynamic_cast<Minerva::Core::Data::TimeSpan*> ( object->timePrimitive() ) )
-  {
-    object->firstDate ( span->begin() );
-    object->lastDate ( span->end() );
-  }
-  
   return object.release();
 }
 

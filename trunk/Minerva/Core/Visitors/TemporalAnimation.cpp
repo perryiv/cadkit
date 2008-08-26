@@ -11,6 +11,7 @@
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 
 #include "Minerva/Core/Data/DataObject.h"
+#include "Minerva/Core/Data/TimeSpan.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -46,9 +47,12 @@ TemporalAnimation::~TemporalAnimation ()
 
 void TemporalAnimation::visit ( Minerva::Core::Data::DataObject &object )
 {
-  // This is [first,last), so for proper animation, make the object's last date one day past the actual last date.
-  boost::gregorian::date_period period ( object.firstDate().date(), object.lastDate().date() );
-
-  const bool visible ( _period.intersects ( period ) ? true : false );
-  object.visibility ( visible );
+  if ( Minerva::Core::Data::TimeSpan *span = dynamic_cast<Minerva::Core::Data::TimeSpan*> ( object.timePrimitive() ) )
+  {
+    // This is [first,last), so for proper animation, make the object's last date one day past the actual last date.
+    boost::gregorian::date_period period ( span->begin().date(), span->end().date() );
+    
+    const bool visible ( _period.intersects ( period ) ? true : false );
+    object.visibility ( visible );
+  }
 }

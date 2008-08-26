@@ -39,9 +39,7 @@ using namespace Minerva::Core::Data;
 Polygon::Polygon ( ) :
   BaseClass(),
   _boundaries(),
-  _showBorder( false ),
-  _showInterior ( true ),
-  _borderColor ( 1.0, 1.0, 1.0, 1.0 )
+  _polyStyle ( 0x0 )
 {
 }
 
@@ -145,7 +143,7 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec4Array> colors  ( new osg::Vec4Array ( inVertices.size() ) );
-  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
+  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->fillColor() ) );
   std::fill ( colors->begin(), colors->end(), color );
   
   // Reserve enough rooms.
@@ -228,7 +226,7 @@ osg::Geometry* Polygon::_extrudeToGround ( const Vertex& v0, const Vertex& v1, U
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec4Array> colors  ( new osg::Vec4Array ( 4 ) );
-  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
+  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->fillColor() ) );
   std::fill ( colors->begin(), colors->end(), color );
   
   // Reserve enough rooms.
@@ -371,7 +369,7 @@ osg::Node* Polygon::_buildScene ( Usul::Interfaces::IUnknown* caller )
   }
   
   // Set state set modes depending on alpha value.
-  if( false == this->transparent() )
+  if( false == this->isSemiTransparent() )
   {
     // Set the render bin.
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
@@ -386,20 +384,6 @@ osg::Node* Polygon::_buildScene ( Usul::Interfaces::IUnknown* caller )
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the draw border flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Polygon::showBorder( bool b )
-{
-  Guard guard ( this );
-  _showBorder = b;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the draw border flag.
@@ -408,21 +392,8 @@ void Polygon::showBorder( bool b )
 
 bool Polygon::showBorder() const
 {
-  Guard guard ( this );
-  return _showBorder;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the draw interior flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Polygon::showInterior( bool b )
-{
-  Guard guard ( this );
-  _showInterior = b;
+  PolyStyle::RefPtr style ( this->polyStyle() );
+  return ( style.valid() ? style->outline() : true );
 }
 
 
@@ -434,21 +405,8 @@ void Polygon::showInterior( bool b )
 
 bool Polygon::showInterior() const
 {
-  Guard guard ( this );
-  return _showInterior;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the border color flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Polygon::borderColor ( const Color& color )
-{
-  Guard guard ( this );
-  _borderColor = color;
+  PolyStyle::RefPtr style ( this->polyStyle() );
+  return ( style.valid() ? style->fill() : true );
 }
 
 
@@ -458,8 +416,60 @@ void Polygon::borderColor ( const Color& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Math::Vec4f Polygon::borderColor() const
+PolyStyle::Color Polygon::borderColor() const
+{
+  return this->lineColor();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the PolyStyle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Polygon::polyStyle ( PolyStyle * polyStyle )
 {
   Guard guard ( this );
-  return _borderColor;
+  _polyStyle = polyStyle;
+  this->dirty ( true );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the PolyStyle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PolyStyle* Polygon::polyStyle() const
+{
+  Guard guard ( this );
+  return _polyStyle.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the fill color flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+PolyStyle::Color Polygon::fillColor() const
+{
+  PolyStyle::RefPtr style ( this->polyStyle() );
+  return ( style.valid() ? style->color() : Usul::Math::Vec4f ( 0.8, 0.8, 0.8, 1.0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this geometry transparent?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Polygon::isSemiTransparent() const
+{
+  return 1.0 != this->fillColor()[3];
+}
+

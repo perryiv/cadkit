@@ -11,6 +11,7 @@
 #include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
 #include "Minerva/Core/Data/Transform.h"
+#include "Minerva/Core/Data/TimeSpan.h"
 
 #include "Minerva/Core/Visitor.h"
 
@@ -1421,11 +1422,13 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         this->_updateMinMaxDate ( firstDate, lastDate );
         
         // Increment last day so animation works properly.
-        DataObject::Date last ( lastDate ); 
+        Minerva::Core::Animate::Date last ( lastDate ); 
         last.increment();
        
-        data->firstDate ( DataObject::Date ( firstDate ) );
-        data->lastDate  ( last );
+        Minerva::Core::Data::TimeSpan::RefPtr span ( new Minerva::Core::Data::TimeSpan );
+        span->begin ( Minerva::Core::Animate::Date ( firstDate ) );
+        span->end ( last );
+        data->timePrimitive ( span.get() );
       }
       
       for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
@@ -1435,7 +1438,6 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         // Set the geometry's data.
         //geometry->wellKnownText ( wkt );
         geometry->spatialOffset ( Usul::Math::Vec3d ( this->xOffset(), this->yOffset(), this->zOffset() ) );
-        geometry->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
         geometry->renderBin ( this->renderBin() );
         
         // Set primitive specific data members.

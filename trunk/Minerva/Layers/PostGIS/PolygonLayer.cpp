@@ -14,6 +14,8 @@
 #include "Minerva/Core/Visitor.h"
 #include "Minerva/Core/Data/Polygon.h"
 
+#include "OsgTools/Convert.h"
+
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
@@ -22,9 +24,6 @@
 
 #include <algorithm>
 
-//USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( osg::Vec4 );
-//USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( osg::Vec4 );
-//SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( osg::Vec4 );
 
 using namespace Minerva::Layers::PostGIS;
 
@@ -119,13 +118,22 @@ void PolygonLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::
 {
   USUL_TRACE_SCOPE;
   typedef Minerva::Core::Data::Polygon Polygon;
+  typedef Minerva::Core::Data::PolyStyle PolyStyle;
+  typedef Minerva::Core::Data::LineStyle LineStyle;
 
   if ( Polygon* polygon = dynamic_cast<Polygon*> ( geometry ) )
   {
-    polygon->showBorder( this->showBorder() );
-    polygon->showInterior ( this->showInterior() );
-    polygon->borderColor ( this->borderColor() );
-    polygon->width ( this->borderWidth() );
+    PolyStyle::RefPtr polyStyle ( new PolyStyle );
+    polyStyle->outline( this->showBorder() );
+    polyStyle->fill ( this->showInterior() );
+    polyStyle->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
+    
+    LineStyle::RefPtr lineStyle ( new LineStyle );
+    lineStyle->color ( this->borderColor() );
+    lineStyle->width ( this->borderWidth() );
+    
+    polygon->polyStyle ( polyStyle.get() );
+    polygon->lineStyle ( lineStyle.get() );
 
     // Set tessellate to true for backwards compatabilty.  Need to make this an option.
     polygon->tessellate ( true );

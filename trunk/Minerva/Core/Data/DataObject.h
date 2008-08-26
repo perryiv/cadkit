@@ -19,7 +19,6 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
-#include "Minerva/Core/Animate/Date.h"
 #include "Minerva/Core/Data/Object.h"
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Core/Data/Feature.h"
@@ -75,7 +74,6 @@ class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
 public:
   typedef Minerva::Core::Data::Feature        BaseClass;
   typedef Usul::Interfaces::IUnknown          Unknown;
-  typedef Minerva::Core::Animate::Date        Date;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Minerva::Core::Data::Geometry       Geometry;
   typedef std::vector<Geometry::RefPtr>       Geometries;
@@ -123,10 +121,6 @@ public:
   void                  extents ( const Extents& e );
   Extents               extents() const;
 
-  /// Get/Set the first date.
-  const Date&           firstDate() const;
-  void                  firstDate ( const Date& );
-
   /// Get the geometries.
   Geometries            geometries() const;
 
@@ -145,10 +139,6 @@ public:
   /// Get/Set the label size.
   void                  labelSize ( float size );
   float                 labelSize () const;
-
-  /// Get/Set the last date.
-  const Date&           lastDate() const;
-  void                  lastDate( const Date& );
 
   /// Get the min latitude and min longitude (ILayerExtents).
   virtual double        minLon() const;
@@ -198,8 +188,6 @@ private:
   Unknown::QueryPtr _dataSource;
   osg::ref_ptr < osg::Node > _root;
   osg::ref_ptr < osg::Node > _preBuiltScene;
-  Minerva::Core::Animate::Date _firstDate;
-  Minerva::Core::Animate::Date _lastDate;
   Extents _extents;
   Geometries _geometries;
   ClickedCallback::RefPtr _clickedCallback;

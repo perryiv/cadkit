@@ -28,6 +28,7 @@ class MINERVA_EXPORT Point : public Geometry
 public:
   typedef Geometry BaseClass;
   typedef Usul::Math::Vec3d Vec3d;
+  typedef Usul::Math::Vec4f                   Color;
 
   USUL_DECLARE_QUERY_POINTERS ( Point );
 
@@ -47,6 +48,13 @@ public:
   /// Get the shape factory.
   static OsgTools::ShapeFactory* shapeFactory();
 
+  /// Set/get the color.
+  void                    color ( const Color& );
+  Color                   color() const;
+  
+  /// Is this geometry transparent?
+  virtual bool            isSemiTransparent() const;
+  
   /// Get/Set the size.
   float                   size () const;
   void                    size ( float );
@@ -98,6 +106,7 @@ private:
   unsigned int _primitiveId;
   float        _quality;
   bool         _autotransform;
+  Color        _color;
   
   /// Shape Factory to share across all points.
   static OsgTools::ShapeFactory::Ptr _sf;

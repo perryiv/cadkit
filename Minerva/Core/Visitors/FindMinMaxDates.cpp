@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 #include "Minerva/Core/Data/DataObject.h"
+#include "Minerva/Core/Data/TimeSpan.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -47,30 +48,33 @@ FindMinMaxDates::~FindMinMaxDates()
 
 void FindMinMaxDates::visit ( Minerva::Core::Data::DataObject &object )
 {
-  const Date first ( object.firstDate () );
-  const Date last ( object.lastDate () );
-
-  const Date min ( boost::date_time::min_date_time );
-  const Date max ( boost::date_time::max_date_time );
-  
-  // These are human readable in the debugger...
-#if _DEBUG
-  const std::string sFirst ( first.toString() );
-  const std::string sLast ( last.toString() );
-  
-  const std::string sMin ( min.toString() );
-  const std::string sMax ( max.toString() );
-#endif
-  
-  const bool valid ( min != first && max != last );
-  
-  // If the dates are valid.
-  if ( true == valid )
+  if ( Minerva::Core::Data::TimeSpan *span = dynamic_cast<Minerva::Core::Data::TimeSpan*> ( object.timePrimitive() ) )
   {
-    if ( min == _first || first < _first )
-      _first = first;
+    const Date first ( span->begin() );
+    const Date last ( span->end() );
 
-    if ( max == _last || last > _last )
-      _last = last;
+    const Date min ( boost::date_time::min_date_time );
+    const Date max ( boost::date_time::max_date_time );
+    
+    // These are human readable in the debugger...
+  #if _DEBUG
+    const std::string sFirst ( first.toString() );
+    const std::string sLast ( last.toString() );
+    
+    const std::string sMin ( min.toString() );
+    const std::string sMax ( max.toString() );
+  #endif
+    
+    const bool valid ( min != first && max != last );
+    
+    // If the dates are valid.
+    if ( true == valid )
+    {
+      if ( min == _first || first < _first )
+        _first = first;
+
+      if ( max == _last || last > _last )
+        _last = last;
+    }
   }
 }

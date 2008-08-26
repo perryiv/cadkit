@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Data/Line.h"
+#include "Minerva/Core/Data/PolyStyle.h"
 
 #include "Usul/Math/Vector3.h"
 
@@ -47,16 +48,23 @@ public:
   void                  addInnerBoundary ( const Vertices& );
   const Boundaries&     innerBoundaries() const;
 
-  /// Set/get the border color flag.
-  void                  borderColor ( const Color& color );
+  /// Get the border color flag.
   Color                 borderColor() const;
   
-  /// Set/get draw border flag.
-  void                  showBorder( bool b );
+  /// Get the fill color flag.
+  Color                 fillColor() const;
+  
+  /// Is this geometry transparent?
+  virtual bool          isSemiTransparent() const;
+  
+  /// Set/get the PolyStyle.
+  void                  polyStyle ( PolyStyle * );
+  PolyStyle*            polyStyle() const;
+  
+  /// Get draw border flag.
   bool                  showBorder() const;
   
-  /// Set/get draw interior flag.
-  void                  showInterior( bool b );
+  /// Get draw interior flag.
   bool                  showInterior() const;
   
 protected:
@@ -75,9 +83,7 @@ protected:
 private:
 
   Boundaries _boundaries;
-  bool _showBorder;
-  bool _showInterior;
-  Color _borderColor;
+  PolyStyle::RefPtr _polyStyle;
 };
 
 }

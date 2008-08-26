@@ -55,8 +55,6 @@ DataObject::DataObject() :
   _showLabel ( false ),
   _geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
-  _firstDate ( boost::date_time::min_date_time ),
-  _lastDate ( boost::date_time::max_date_time ),
   _extents(),
   _geometries(),
   _clickedCallback ( 0x0 )
@@ -176,7 +174,7 @@ void DataObject::label ( const std::string& label )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& DataObject::label () const
+const std::string& DataObject::label() const
 {
   Guard guard ( this );
   return _label;
@@ -403,7 +401,7 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
     extents.expand ( geometry->extents() );
     
     // See if the geometry is transparent.
-    if ( true == geometry->transparent() )
+    if ( true == geometry->isSemiTransparent() )
     {
       // Convert tri-strips to triangles (For sorting).
       OsgTools::Utilities::ConvertToTriangles convert;
@@ -505,58 +503,6 @@ void DataObject::visibility ( bool b )
     const unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
     _root->setNodeMask ( nodeMask );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the first date.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Minerva::Core::Animate::Date& DataObject::firstDate() const
-{
-  Guard guard ( this );
-  return _firstDate;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the first date.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::firstDate( const Minerva::Core::Animate::Date& date )
-{
-  Guard guard ( this );
-  _firstDate = date;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the last date.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Minerva::Core::Animate::Date& DataObject::lastDate() const
-{
-  Guard guard ( this );
-  return _lastDate;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the last date.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::lastDate( const Minerva::Core::Animate::Date& date )
-{
-  Guard guard ( this );
-  _lastDate = date;
 }
 
 

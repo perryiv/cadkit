@@ -317,6 +317,7 @@ namespace Detail
   {
     // Typedefs.
     typedef Minerva::Core::Data::DataObject DataObject;
+    typedef Minerva::Core::Data::PolyStyle PolyStyle;
     typedef Minerva::Core::Data::Polygon Polygon;
     typedef Polygon::Vertices Vertices;
     typedef Polygon::Vertex Vertex;
@@ -363,7 +364,11 @@ namespace Detail
 
     Usul::Math::Vec4f color ( Detail::colors ( filename ) );
     color[3] = 0.5;
-    polygon->color ( color );
+    
+    PolyStyle::RefPtr polyStyle ( new PolyStyle );
+    polyStyle->color ( color );
+    
+    polygon->polyStyle ( polyStyle.get() );
 
     object->addGeometry ( polygon );
 

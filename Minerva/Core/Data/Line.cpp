@@ -38,9 +38,9 @@ using namespace Minerva::Core::Data;
 ///////////////////////////////////////////////////////////////////////////////
 
 Line::Line() : BaseClass(),
-  _line (),
-  _width ( 1.0 ),
-  _tessellate ( false )
+  _line(),
+  _tessellate ( false ),
+  _lineStyle ( 0x0 )
 {
   // Default render bin.
   this->renderBin ( 3 );
@@ -77,12 +77,13 @@ Line::Vertices Line::_lineDataWgs84() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Line::line( const Vertices& data )
+void Line::line ( const Vertices& data )
 {
   Guard guard ( this->mutex() );
   _line = data;
   this->dirty( true );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -105,22 +106,8 @@ const Line::Vertices& Line::line() const
 
 float Line::width () const
 {
-  Guard guard ( this );
-  return _width;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the width.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Line::width ( float width )
-{
-  Guard guard ( this );
-  _width = width;
-  this->dirty( true );
+  LineStyle::RefPtr style ( this->lineStyle() );
+  return ( style.valid() ? style->width() : 1.0f );
 }
 
 
@@ -132,7 +119,7 @@ void Line::width ( float width )
 
 osg::Node* Line::_buildScene( Usul::Interfaces::IUnknown* caller )
 {
-  return this->_buildScene ( this->color(), caller );
+  return this->_buildScene ( this->lineColor(), caller );
 }
 
 
@@ -255,4 +242,55 @@ bool Line::tessellate() const
 {
   Guard guard ( this->mutex() );
   return _tessellate;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the line style.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::lineStyle ( LineStyle * lineStyle )
+{
+  Guard guard ( this->mutex() );
+  _lineStyle = lineStyle;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the line style.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+LineStyle* Line::lineStyle() const
+{
+  Guard guard ( this->mutex() );
+  return _lineStyle.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this geometry transparent?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Line::isSemiTransparent() const
+{
+  return 1.0f != this->lineColor()[3];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the line color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Line::Color Line::lineColor() const
+{
+  LineStyle::RefPtr lineStyle ( this->lineStyle() );
+  return ( lineStyle.valid() ? lineStyle->color() : Usul::Math::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
 }

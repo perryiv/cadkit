@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Data/Geometry.h"
+#include "Minerva/Core/Data/LineStyle.h"
 
 #include "Usul/Math/Vector3.h"
 
@@ -27,22 +28,32 @@ public:
   typedef Geometry                         BaseClass;
   typedef Usul::Math::Vec3d                Vertex;
   typedef std::vector < Vertex >           Vertices;
+  typedef ColorStyle::Color                Color;
 
   USUL_DECLARE_QUERY_POINTERS ( Line );
 
   Line ();
+  
+  /// Is this geometry transparent?
+  virtual bool          isSemiTransparent() const;
 
   /// Get/Set the line data.
   void                  line( const Vertices& );
   const Vertices&       line() const;
+  
+  /// Get the line color.
+  Color                 lineColor() const;
+  
+  /// Set/get the line style.
+  void                  lineStyle ( LineStyle * );
+  LineStyle*            lineStyle() const;
 
   /// Set/get tessellate flag.
   void                  tessellate ( bool );
   bool                  tessellate() const;
   
-  /// Get/Set the width
+  /// Get the width.
   float                 width() const;
-  void                  width( float );
   
 protected:
   virtual ~Line();
@@ -56,8 +67,8 @@ protected:
 private:
 
   Vertices   _line;
-  float      _width;
   bool       _tessellate;
+  LineStyle::RefPtr _lineStyle;
 };
 
 }

@@ -20,7 +20,6 @@
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Math/Vector3.h"
-#include "Usul/Math/Vector4.h"
 
 #include "osg/Vec2d"
 #include "osg/Vec3f"
@@ -40,7 +39,6 @@ public:
   typedef Minerva::Core::Data::Object         BaseClass;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Usul::Interfaces::IUnknown          Unknown;
-  typedef Usul::Math::Vec4f                   Color;
   typedef Usul::Math::Vec3d                   Point;
   
   USUL_DECLARE_QUERY_POINTERS( Geometry );
@@ -62,10 +60,6 @@ public:
 
   /// Build the scene branch.
   virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
-  
-  /// Get/Set the color.
-  Color                 color () const;
-  void                  color ( const Color& );
   
   /// Get/Set the dirty flag.
   void                  dirty ( bool b );
@@ -92,7 +86,7 @@ public:
   void                  renderBin ( unsigned int );
   
   /// Is this geometry transparent?
-  bool                  transparent() const;
+  virtual bool          isSemiTransparent() const;
 
   Point                 spatialOffset () const;
   void                  spatialOffset ( const Point& );
@@ -120,7 +114,6 @@ protected:
   
 private:
   AltitudeMode _altitudeMode;
-  Color        _color;
   Point        _offset;
   bool         _dirty;
   bool         _extrude;

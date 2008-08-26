@@ -69,7 +69,8 @@ Point::Point() : BaseClass(),
   _secondarySize ( 1.0 ),
   _primitiveId ( 1 ),
   _quality ( 0.80f ),
-  _autotransform ( true )
+  _autotransform ( true ),
+  _color ( 0.0, 0.0, 0.0, 1.0 )
 {
 }
 
@@ -631,10 +632,10 @@ osg::Node* Point::_buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfa
     }
     
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
-    osg::ref_ptr < osg::Geometry > geometry ( Point::shapeFactory()->cylinder( this->secondarySize()* 1000, sides, v0, v1, !this->transparent() ) );
+    osg::ref_ptr < osg::Geometry > geometry ( Point::shapeFactory()->cylinder( this->secondarySize()* 1000, sides, v0, v1, !this->isSemiTransparent() ) );
     geode->addDrawable( geometry.get() );
     
-    if( this->transparent() )
+    if( this->isSemiTransparent() )
     {
       geode->setCullCallback ( new OsgTools::Callbacks::SortBackToFront );
       geometry->setUseDisplayList ( false );
@@ -651,9 +652,10 @@ osg::Node* Point::_buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Point::quality( float value )
+void Point::quality ( float value )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _quality = value;
 }
 
@@ -667,6 +669,7 @@ void Point::quality( float value )
 float Point::quality() const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _quality;
 }
 
@@ -680,6 +683,7 @@ float Point::quality() const
 void Point::autotransform ( bool b )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   _autotransform = b;
 }
 
@@ -693,5 +697,50 @@ void Point::autotransform ( bool b )
 bool Point::autotransform () const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
   return _autotransform;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4f Point::color() const
+{
+  Guard guard ( this );
+  return _color;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::color ( const Color& color )
+{
+  Guard guard ( this );
+  
+  if ( false == color.equal ( _color ) )
+  {
+    // Set the internal color.
+    _color = color;
+    this->dirty( true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this geometry transparent?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Point::isSemiTransparent() const
+{
+  return 1.0 != this->color()[3];
 }

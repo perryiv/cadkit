@@ -285,6 +285,7 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createPoint ( OGRPoint* geometry, OGR
 OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry, OGRCoordinateTransformation *transform ) const
 {
   typedef Minerva::Core::Data::Line Line;
+  typedef Minerva::Core::Data::LineStyle LineStyle;
   typedef Line::Vertices Vertices;
 
   Line::RefPtr line ( new Line );
@@ -297,8 +298,10 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry,
     line->line ( vertices );
   }
 
-  line->width ( 2.0f );
-  line->color ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
+  LineStyle::RefPtr lineStyle ( new LineStyle );
+  lineStyle->width ( 2.0f );
+  lineStyle->color ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
+  line->lineStyle ( lineStyle.get() );
 
   return line.release();
 }
@@ -314,6 +317,8 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createPolygon ( OGRPolygon* geometry,
 {
   typedef Minerva::Core::Data::Polygon Polygon;
   typedef Polygon::Vertices Vertices;
+  typedef Minerva::Core::Data::LineStyle LineStyle;
+  typedef Minerva::Core::Data::PolyStyle PolyStyle;
 
   Polygon::RefPtr polygon ( new Polygon );
 
@@ -341,9 +346,18 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createPolygon ( OGRPolygon* geometry,
       }
     }
   }
-
-  polygon->borderColor ( Usul::Math::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
-  polygon->color ( Usul::Math::Vec4f ( 0.8, 0.8, 0.8, 1.0 ) );
+  
+  LineStyle::RefPtr lineStyle ( new LineStyle );
+  lineStyle->width ( 1.0f );
+  lineStyle->color ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
+  
+  PolyStyle::RefPtr polyStyle ( new PolyStyle );
+  polyStyle->fill ( true );
+  polyStyle->outline ( true );
+  polyStyle->color ( Usul::Math::Vec4f ( 0.8, 0.8, 0.8, 1.0 ) );
+  
+  polygon->lineStyle ( lineStyle.get() );
+  polygon->polyStyle ( polyStyle.get() );
 
   return polygon.release();
 }

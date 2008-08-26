@@ -504,26 +504,21 @@ KmlLayer::Geometry * KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *s
 
 KmlLayer::Geometry* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *style )
 {
-  // Get style properties.
-	const Usul::Math::Vec4f defaultColor ( 0.8, 0.8, 0.8, 1.0 );
-	const Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->color() : defaultColor ) : defaultColor );
-  const Usul::Math::Vec4f borderColor ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->color() : defaultColor ) : defaultColor );
+  typedef Minerva::Core::Data::LineStyle LineStyle;
+  typedef Minerva::Core::Data::PolyStyle PolyStyle;
   
-  const float width ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->width() : 1.0 ) : 1.0f );
-
-  const bool fill    ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->fill()    : true ) : true );
-  const bool outline ( 0x0 != style ? ( 0x0 != style->polystyle() ? style->polystyle()->outline() : true ) : true );
+  PolyStyle::RefPtr polyStyle ( 0x0 != style->polystyle() ? style->polystyle() : 0x0 );
+  LineStyle::RefPtr lineStyle ( 0x0 != style->linestyle() ? style->linestyle() : 0x0 );
 
   // Make the data object.
   Minerva::Core::Data::Polygon::RefPtr polygon ( Factory::instance().createPolygon ( node ) );
 
   if ( polygon.valid() )
   {
-    polygon->color ( color );
-    polygon->borderColor ( borderColor );
-    polygon->width ( width );
-    polygon->showBorder ( outline );
-    polygon->showInterior ( fill );
+    if ( polyStyle.valid() )
+      polygon->polyStyle ( polyStyle );
+    if ( lineStyle.valid() )
+      polygon->lineStyle ( lineStyle );
   }
 
   return polygon.release();
@@ -538,18 +533,15 @@ KmlLayer::Geometry* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *
 
 KmlLayer::Geometry* KmlLayer::_parseLineString ( const XmlTree::Node& node, Style *style )
 {
-  // Get style properties.
-	Usul::Math::Vec4f defaultColor ( 1.0, 1.0, 1.0, 1.0 );
-	Usul::Math::Vec4f color ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->color() : defaultColor ) : defaultColor );
-
-  const float width ( 0x0 != style ? ( 0x0 != style->linestyle() ? style->linestyle()->width() : 1.0f ) : 1.0f );
-
+  typedef Minerva::Core::Data::LineStyle LineStyle;
+  
+  LineStyle::RefPtr lineStyle ( 0x0 != style->linestyle() ? style->linestyle() : 0x0 );
+  
   Minerva::Core::Data::Line::RefPtr line ( Factory::instance().createLine ( node ) );
   
-  if ( line.valid() )
+  if ( line.valid() && lineStyle.valid() )
   {
-    line->width ( width );
-    line->color ( color );
+    line->lineStyle ( lineStyle );
   }
   
   return line.release();

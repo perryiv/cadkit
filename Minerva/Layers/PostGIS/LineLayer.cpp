@@ -14,6 +14,8 @@
 #include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "OsgTools/Convert.h"
+
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 
@@ -122,10 +124,15 @@ float LineLayer::lineWidth() const
 void LineLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
   typedef Minerva::Core::Data::Line Line;
+  typedef Minerva::Core::Data::LineStyle LineStyle;
 
   if ( Line* line = dynamic_cast<Line*> ( geometry ) )
   {
-    line->width( this->lineWidth() );
+    LineStyle::RefPtr lineStyle ( new LineStyle );
+    lineStyle->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
+    lineStyle->width ( this->lineWidth() );
+    
+    line->lineStyle ( lineStyle.get() );
 
     // Set tessellate to true for backwards compatabilty.  Need to make this an option.
     line->tessellate ( true );

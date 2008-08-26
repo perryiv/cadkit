@@ -15,6 +15,8 @@
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "OsgTools/Convert.h"
+
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Trace/Trace.h"
@@ -131,6 +133,7 @@ void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::co
   // Set the point style.
   if ( Point* point = dynamic_cast<Point*> ( geometry ) )
   {
+    point->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
     point->size ( this->size() );
     point->primitiveId ( this->primitiveID() );
     point->quality ( this->quality() );

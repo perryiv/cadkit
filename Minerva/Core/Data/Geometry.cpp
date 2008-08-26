@@ -29,7 +29,6 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 Geometry::Geometry() : 
   BaseClass(),
   _altitudeMode ( CLAMP_TO_GROUND ),
-  _color ( 0.0, 0.0, 0.0, 1.0 ),
   _offset( 0.0, 0.0, 0.0 ),
   _dirty ( false ),
   _extrude ( false ),
@@ -116,12 +115,12 @@ osg::Node* Geometry::buildScene( const Options& options, Usul::Interfaces::IUnkn
     const unsigned int on ( osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
     const unsigned int off ( osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
     
-    const unsigned int blendMode ( this->transparent() ? on : off );
+    const unsigned int blendMode ( this->isSemiTransparent() ? on : off );
     
     ss->setMode ( GL_BLEND, blendMode );
     
     // Set render bin depending on alpha value.
-    if( true == this->transparent() )
+    if( true == this->isSemiTransparent() )
     {
       ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
       ss->setRenderBinDetails ( osg::StateSet::TRANSPARENT_BIN, "DepthSortedBin" );
@@ -131,38 +130,6 @@ osg::Node* Geometry::buildScene( const Options& options, Usul::Interfaces::IUnkn
   this->dirty( false );
   
   return node.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Math::Vec4f Geometry::color() const
-{
-  Guard guard ( this );
-  return _color;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Geometry::color ( const Color& color )
-{
-  Guard guard ( this );
-  
-  if ( false == color.equal ( _color ) )
-  {
-    // Set the internal color.
-    _color = color;
-    this->dirty( true );
-  }
 }
 
 
@@ -313,9 +280,9 @@ void Geometry::renderBin( unsigned int renderBin )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Geometry::transparent() const
+bool Geometry::isSemiTransparent() const
 {
-  return 1.0f != this->color()[3];
+  return false;
 }
 
 

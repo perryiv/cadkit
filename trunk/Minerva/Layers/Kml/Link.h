@@ -38,7 +38,6 @@ public:
   };
   
   Link();
-  Link( const XmlTree::Node& node );
   
   /// Get/Set the href.
   void                href( const std::string& );
@@ -53,6 +52,7 @@ public:
   RefreshMode         refreshMode() const;
 
 protected:
+  
   virtual ~Link();
   
 private:

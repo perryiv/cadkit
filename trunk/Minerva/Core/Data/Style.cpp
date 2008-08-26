@@ -7,11 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/Style.h"
+#include "Minerva/Core/Data/Style.h"
 
-#include "XmlTree/Node.h"
-
-using namespace Minerva::Layers::Kml;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -25,41 +23,6 @@ Style::Style() : BaseClass(),
   _linestyle ( 0x0 ),
 	_polystyle ( 0x0 )
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Style::Style ( const XmlTree::Node& node ) : BaseClass ( node ),
-  _iconstyle ( 0x0 ),
-  _linestyle ( 0x0 ),
-	_polystyle ( 0x0 )
-{
-	typedef XmlTree::Node::Children Children;
-  
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "PolyStyle" == name )
-    {
-			_polystyle = new PolyStyle ( *node );
-    }
-    else if ( "LineStyle" == name )
-    {
-      _linestyle = new LineStyle ( *node );
-    }
-    else if ( "IconStyle" == name )
-    {
-      _iconstyle = new IconStyle ( *node );
-    }
-  }
 }
 
 

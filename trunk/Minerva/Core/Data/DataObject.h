@@ -22,6 +22,7 @@
 #include "Minerva/Core/Animate/Date.h"
 #include "Minerva/Core/Data/Object.h"
 #include "Minerva/Core/Data/Geometry.h"
+#include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
 #include "Usul/Base/Object.h"
@@ -64,7 +65,7 @@ public:
   virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const = 0;
 };
 
-class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Object,
+class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::ITreeNode,
                                   public Usul::Interfaces::ILayerExtents,
@@ -72,7 +73,7 @@ class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Object,
                                   public Minerva::Interfaces::IElevationChangedListnerer
 {
 public:
-  typedef Minerva::Core::Data::Object         BaseClass;
+  typedef Minerva::Core::Data::Feature        BaseClass;
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Minerva::Core::Animate::Date        Date;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
@@ -111,10 +112,6 @@ public:
   Unknown *             dataSource();
   const Unknown *       dataSource() const;
   
-  /// Set/get the description.
-  void                  description ( const std::string& );
-  const std::string&    description() const;
-
   /// Get/Set the dirty flag.
   bool                  dirty() const;
   void                  dirty ( bool );
@@ -160,18 +157,13 @@ public:
   /// Get the max latitude and max longitude (ILayerExtents).
   virtual double        maxLon() const;
   virtual double        maxLat() const;
-  
-  /// Set/get the name.
-  void                  name ( const std::string& );
-  std::string           name() const;
 
   /// Get/Set the flag to show the label.
   void                  showLabel ( bool value );
   bool                  showLabel() const;
-
-  /// Get/Set the visibilty flag.
-  void                  visibility ( bool b );
-  bool                  visibility() const;
+  
+  // Set the visibilty.
+  virtual void          visibility ( bool b );
   
 protected:
 
@@ -197,10 +189,7 @@ protected:
 private:
 
   bool         _dirty;
-  bool         _visible;
-  std::string  _name;
   std::string  _label;
-  std::string  _description;
   osg::Vec3    _labelPosition;
   osg::Vec4    _labelColor;
   float        _labelSize;

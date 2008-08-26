@@ -117,3 +117,16 @@ void DataMemberMap::addMember ( Serialize::XML::MemberBase *member )
     _map.insert ( Map::value_type ( member->name(), Serialize::XML::MemberBase::RefPtr ( member ) ) );
   }
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Erase the data member with the given name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataMemberMap::erase ( const std::string& name )
+{
+  _map.erase ( name );
+}

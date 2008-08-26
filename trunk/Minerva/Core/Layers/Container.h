@@ -27,7 +27,6 @@
 #include "Usul/Interfaces/IDataChangedNotify.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ILayerExtents.h"
-#include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Math/Vector2.h"

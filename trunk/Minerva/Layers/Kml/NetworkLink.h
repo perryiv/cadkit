@@ -11,7 +11,7 @@
 #ifndef __MINERVA_LAYERS_KML_NETWORK_LINK_H__
 #define __MINERVA_LAYERS_KML_NETWORK_LINK_H__
 
-#include "Minerva/Layers/Kml/Feature.h"
+#include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Layers/Kml/Link.h"
 
 namespace Minerva {
@@ -19,7 +19,7 @@ namespace Layers {
 namespace Kml {
   
 
-class NetworkLink : public Feature
+class NetworkLink : public Minerva::Core::Data::Feature
 {
 public:
   // Typedefs.

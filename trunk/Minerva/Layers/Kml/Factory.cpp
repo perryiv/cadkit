@@ -9,16 +9,27 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/Factory.h"
+#include "Minerva/Layers/Kml/Link.h"
+#include "Minerva/Layers/Kml/NetworkLink.h"
 
+#include "Minerva/Core/Data/DataObject.h"
+#include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Core/Data/Line.h"
+#include "Minerva/Core/Data/LookAt.h"
 #include "Minerva/Core/Data/Model.h"
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/Polygon.h"
+#include "Minerva/Core/Data/TimeSpan.h"
+#include "Minerva/Core/Data/Style.h"
+#include "Minerva/Core/Data/IconStyle.h"
+#include "Minerva/Core/Data/PolyStyle.h"
+#include "Minerva/Core/Data/LineStyle.h"
 
 #include "XmlTree/Node.h"
 
 #include "Usul/Convert/Convert.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 
 #include <vector>
@@ -32,7 +43,8 @@ using namespace Minerva::Layers::Kml;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef XmlTree::Node::Children    Children;
+typedef XmlTree::Node::Children Children;
+typedef Usul::Convert::Type<std::string,float>  ToFloat;
 typedef Usul::Convert::Type<std::string,double> ToDouble;
 typedef Minerva::Core::Data::Geometry Geometry;
 typedef Usul::Math::Vec3d                          Vertex;
@@ -82,6 +94,138 @@ Factory::Factory()
 Factory::~Factory()
 {
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set data members in object base class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setObjectDataMembers ( Minerva::Core::Data::Object *object, const XmlTree::Node& node )
+  {
+    if ( 0x0 != object )
+    {
+      typedef XmlTree::Node::Attributes Attributes;
+      
+      // Get the attributes.
+      const Attributes& attributes ( node.attributes() );
+      
+      // Set the id.
+      {
+        Attributes::const_iterator iter ( attributes.find ( "id" ) );
+        object->objectId ( iter != attributes.end() ? iter->second : "" );
+      }
+      
+      // Set the target id.
+      {
+        Attributes::const_iterator iter ( attributes.find ( "targetId" ) );
+        object->targetId ( iter != attributes.end() ? iter->second : "" );
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set data members in feature class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setFeatureDataMembers ( Minerva::Core::Data::Feature *feature, const Children& children )
+  {
+    if ( 0x0 != feature )
+    {
+      for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+      {
+        XmlTree::Node::RefPtr node ( (*iter).get() );
+        std::string name ( node->name() );
+        
+        if ( "name" == name )
+        {
+          feature->name ( node->value() );
+        }
+        else if ( "visibility" == name )
+        {
+          bool visible ( "0" != node->value() );
+          feature->visibility ( visible );
+        }
+        else if ( "LookAt" == name )
+        {
+          feature->lookAt ( Factory::instance().createLookAt ( *node ) );
+        }
+        else if ( "styleUrl" == name )
+        {
+          feature->styleUrl ( node->value() );
+        }
+        else if ( "TimeSpan" == name )
+        {
+          feature->timePrimitive ( Factory::instance().createTimeSpan ( *node ) );
+        }
+        else if ( "description" == name )
+        {
+          feature->description ( node->value() );
+        }
+      }
+    }
+  }
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set data members in ColorStyle class.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void setColorStyleDataMembers ( Minerva::Core::Data::ColorStyle *colorStyle, const Children& children )
+  {
+    typedef Minerva::Core::Data::ColorStyle ColorStyle;
+    
+    if ( 0x0 != colorStyle )
+    {
+      for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
+      {
+        XmlTree::Node::RefPtr node ( (*iter).get() );
+        std::string name ( node->name() );
+        
+        if ( "color" == name )
+        {
+          ColorStyle::Color color;
+          
+          const unsigned long c ( ::strtoul ( node->value().c_str(), 0x0, 16 ) );
+          
+          color[3] = static_cast<float> ( ( ( c & 0xff000000 ) >> 24 ) / 255.0 );
+          color[2] = static_cast<float> ( ( ( c & 0x00ff0000 ) >> 16 ) / 255.0 );
+          color[1] = static_cast<float> ( ( ( c & 0x0000ff00 ) >>  8 ) / 255.0 );
+          color[0] = static_cast<float> ( ( ( c & 0x000000ff )       ) / 255.0 );
+          
+          colorStyle->color ( color );
+        }
+        else if ( "colorMode" == name )
+        {
+          colorStyle->mode ( "random" == node->value() ? ColorStyle::RANDOM : ColorStyle::NORMAL );
+        }
+      }
+      
+      // Make a random color if we are suppose to.
+      if ( ColorStyle::RANDOM == colorStyle->mode() )
+      {
+        colorStyle->color ( ColorStyle::makeRandomColor ( colorStyle->color() ) );
+      }
+    }
+  }
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -218,6 +362,7 @@ Factory::Point* Factory::createPoint ( const XmlTree::Node& node ) const
     }
   }
   
+  Helper::setObjectDataMembers ( point.get(), node );
   return point.release();
 }
 
@@ -252,6 +397,7 @@ Factory::Line* Factory::createLine ( const XmlTree::Node& node ) const
     }
   }
   
+  Helper::setObjectDataMembers ( line.get(), node );
   return line.release();
 }
 
@@ -299,6 +445,7 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
     }
   }
   
+  Helper::setObjectDataMembers ( polygon.get(), node );
   return polygon.release();
 }
 
@@ -336,5 +483,310 @@ Factory::Model* Factory::createModel ( const XmlTree::Node& node ) const
   model->orientation ( orientation[0], orientation[1], orientation[2] );
   model->scale ( scale );
   
+  Helper::setObjectDataMembers ( model.get(), node );
   return model.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a LookAt.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Data::LookAt* Factory::createLookAt ( const XmlTree::Node& node ) const
+{
+  Minerva::Core::Data::LookAt::RefPtr lookAt ( new Minerva::Core::Data::LookAt );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "longitude" == name )
+    {
+      lookAt->longitude ( ToDouble::convert ( node->value() ) );
+    }
+    else if ( "latitude" == name )
+    {
+      lookAt->latitude ( ToDouble::convert ( node->value() ) );
+    }
+    else if ( "altitude" == name )
+    {
+      lookAt->altitude ( ToDouble::convert ( node->value() ) );
+    }
+    else if ( "range" == name )
+    {
+      lookAt->range ( ToDouble::convert ( node->value() ) );
+    }
+    else if ( "heading" == name )
+    {
+      lookAt->heading ( ToDouble::convert ( node->value() ) );
+    }
+  }
+
+  
+  Helper::setObjectDataMembers ( lookAt.get(), node );
+  return lookAt.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a TimeSpan.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Data::TimeSpan* Factory::createTimeSpan ( const XmlTree::Node& node ) const
+{
+  Minerva::Core::Data::TimeSpan::RefPtr span ( new Minerva::Core::Data::TimeSpan );
+
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "begin" == name )
+    {
+      span->begin ( TimeSpan::parseKml ( node->value() ) );
+    }
+    else if ( "end" == name )
+    {
+      span->end ( TimeSpan::parseKml ( node->value() ) );
+    }
+  }
+  
+  Helper::setObjectDataMembers ( span.get(), node );
+  return span.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a PlaceMark.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node& node ) const
+{
+  PlaceMark::RefPtr object ( new PlaceMark );
+ 
+  Children children ( node.children() );
+  
+  Helper::setFeatureDataMembers ( object.get(), children );
+  Helper::setObjectDataMembers ( object.get(), node );
+  
+  // Set the data object members.
+  object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  object->showLabel ( true );
+  
+  // Temporary hack until converted on TimePrimitives.
+  if ( Minerva::Core::Data::TimeSpan *span = dynamic_cast<Minerva::Core::Data::TimeSpan*> ( object->timePrimitive() ) )
+  {
+    object->firstDate ( span->begin() );
+    object->lastDate ( span->end() );
+  }
+  
+  return object.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a Link.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Link* Factory::createLink ( const XmlTree::Node& node ) const
+{
+  Link::RefPtr link ( new Link );
+  
+  // Get the children.
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr child ( *iter );
+    std::string name ( child->name() );
+    
+    if ( "href" == name )
+      link->href ( child->value() );
+    else if ( "refreshInterval" == name )
+      link->refreshInterval ( ToDouble::convert ( child->value() ) );
+    else if ( "refreshMode" == name )
+    {
+      std::string mode ( child->value() );
+      if ( "onChange" == mode )
+        link->refreshMode ( Link::ON_CHANGE );
+      else if ( "onInterval" == mode )
+        link->refreshMode ( Link::ON_INTERVAL );
+      else if ( "onExpire" == mode )
+        link->refreshMode ( Link::ON_EXPIRE );
+    }
+  }
+  
+  Helper::setObjectDataMembers ( link.get(), node );
+  return link.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a NetworkLink.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+NetworkLink* Factory::createNetworkLink ( const XmlTree::Node& node ) const
+{
+  NetworkLink::RefPtr networkLink ( new NetworkLink );
+  
+  // Loop over the children.
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr child ( *iter );
+    std::string name ( Usul::Strings::lowerCase ( child->name() ) );
+    
+    if ( "link" == name || "url" == name ) // Url is an older name, but many elements are the same.
+    {
+      networkLink->link ( Factory::instance().createLink ( *child ) );
+    }
+  }
+  
+  Helper::setFeatureDataMembers ( networkLink.get(), children );
+  Helper::setObjectDataMembers ( networkLink.get(), node );
+  return networkLink.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a Style.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Data::Style* Factory::createStyle ( const XmlTree::Node& node ) const
+{
+  Style::RefPtr style ( new Style );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr child ( *iter );
+    std::string name ( child->name() );
+    
+    if ( "PolyStyle" == name )
+    {
+			style->polystyle ( Factory::instance().createPolyStyle ( *child ) );
+    }
+    else if ( "LineStyle" == name )
+    {
+      style->linestyle ( Factory::instance().createLineStyle ( *child ) );
+    }
+    else if ( "IconStyle" == name )
+    {
+      style->iconstyle ( Factory::instance().createIconStyle ( *child ) );
+    }
+  }
+  
+  Helper::setObjectDataMembers ( style.get(), node );
+  return style.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a LineStyle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Data::LineStyle* Factory::createLineStyle ( const XmlTree::Node& node ) const
+{
+  LineStyle::RefPtr lineStyle ( new LineStyle );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "width" == name )
+    {
+      lineStyle->width ( ToFloat::convert ( node->value() ) );
+    }
+  }
+  
+  Helper::setColorStyleDataMembers ( lineStyle.get(), children );
+  Helper::setObjectDataMembers ( lineStyle.get(), node );
+  return lineStyle.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a PolyStyle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Data::PolyStyle* Factory::createPolyStyle ( const XmlTree::Node& node ) const
+{
+  PolyStyle::RefPtr polyStyle ( new PolyStyle );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "fill" == name )
+    {
+      polyStyle->fill ( "1" == node->value() );
+    }
+    else if ( "outline" == name )
+    {
+      polyStyle->outline ( "1" == node->value() );
+    }
+  }
+  
+  Helper::setColorStyleDataMembers ( polyStyle.get(), children );
+  Helper::setObjectDataMembers ( polyStyle.get(), node );
+  return polyStyle.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a IconStyle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Minerva::Core::Data::IconStyle* Factory::createIconStyle ( const XmlTree::Node& node ) const
+{
+  IconStyle::RefPtr iconStyle ( new IconStyle );
+  
+  Children children ( node.children() );
+  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    std::string name ( node->name() );
+    
+    if ( "scale" == name )
+    {
+      iconStyle->scale ( ToFloat::convert ( node->value() ) );
+    }
+    else if ( "heading" == name )
+    {
+      iconStyle->heading ( ToFloat::convert ( node->value() ) );
+    }
+    else if ( "Link" == name )
+    {
+      Link::RefPtr link ( Factory::instance().createLink ( *node ) );
+      iconStyle->href ( link->href() );
+    }
+  }
+  
+  Helper::setColorStyleDataMembers ( iconStyle.get(), children );
+  Helper::setObjectDataMembers ( iconStyle.get(), node );
+  return iconStyle.release();
 }

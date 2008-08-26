@@ -15,8 +15,8 @@
 #include "Usul/Math/Vector4.h"
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
       
 
 class ColorStyle : public Minerva::Core::Data::Object
@@ -34,11 +34,16 @@ public:
   USUL_DECLARE_REF_POINTERS ( ColorStyle );
   
   ColorStyle();
-  ColorStyle ( const XmlTree::Node& node );
   
 	/// Set/get the color.
 	void              color ( const Color& c );
 	const Color&      color() const;
+  
+  /// Set/get the mode.
+  void              mode ( ColorMode );
+  ColorMode         mode() const;
+  
+  static Color      makeRandomColor ( const Color& c);
 
 protected:
   

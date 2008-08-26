@@ -46,20 +46,11 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-./ColorStyle.cpp
 ./Factory.cpp
-./Feature.cpp
-./IconStyle.cpp
 ./KmlLayer.cpp
-./LineStyle.cpp
 ./Link.cpp
 ./LoadModel.cpp
-./LookAt.cpp
 ./NetworkLink.cpp
-./PolyStyle.cpp
-./Style.cpp
-./TimePrimitive.cpp
-./TimeSpan.cpp
 )
 
 # Create a Shared Library

@@ -12,35 +12,38 @@
 #define __MINERVA_LAYERS_KML_FEATURE_H__
 
 #include "Minerva/Core/Data/Object.h"
-#include "Minerva/Layers/Kml/LookAt.h"
-#include "Minerva/Layers/Kml/TimePrimitive.h"
+#include "Minerva/Core/Data/TimePrimitive.h"
+
+#include "Minerva/Core/Data/LookAt.h"
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
       
 
-class Feature : public Minerva::Core::Data::Object
+class MINERVA_EXPORT Feature : public Minerva::Core::Data::Object
 {
 public:
   typedef Minerva::Core::Data::Object BaseClass;
+  typedef Minerva::Core::Data::TimePrimitive TimePrimitive;
   
   USUL_DECLARE_REF_POINTERS ( Feature );
-  
-  Feature();
-  Feature ( const XmlTree::Node& node );
   
   /// Set/get the description.
   void                   description ( const std::string& );
   const std::string&     description() const;
+  
+  /// Set/get the look at.
+  void                   lookAt ( LookAt* );
+  LookAt*                lookAt() const;
   
   /// Set/get the name.
 	void                   name ( const std::string& );
   const std::string&     name() const;
   
   /// Set/get the visiblity.
-	void                   visiblity( bool b );
-  bool                   visiblity() const;
+	virtual void           visibility( bool b );
+  bool                   visibility() const;
 
 	/// Set/get the style url.
 	void                   styleUrl ( const std::string& url );
@@ -52,6 +55,7 @@ public:
   
 protected:
   
+  Feature();
   virtual ~Feature();
   
 private:
@@ -59,7 +63,7 @@ private:
   std::string _description;
   std::string _name;
 	std::string _styleUrl;
-  bool _visiblity;
+  bool _visibility;
   LookAt::RefPtr _lookAt;
   TimePrimitive::RefPtr _timePrimitive;
 };

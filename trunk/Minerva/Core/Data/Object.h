@@ -14,26 +14,29 @@
 #include "Minerva/Core/Export.h"
 
 #include "Usul/Base/Referenced.h"
+#include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
-#include <string>
+#include "Serialize/XML/Macros.h"
 
-namespace XmlTree { class Node; }
+#include <string>
 
 namespace Minerva {
 namespace Core {
 namespace Data {
 
-class MINERVA_EXPORT Object : public Usul::Base::Referenced
+class MINERVA_EXPORT Object : public Usul::Base::Referenced,
+                              public Usul::Interfaces::ISerialize
 {
 public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   
-  USUL_DECLARE_REF_POINTERS ( Object );
+  USUL_DECLARE_QUERY_POINTERS ( Object );
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   /// Get the mutex.
   Mutex &                mutex() const;
@@ -49,7 +52,6 @@ public:
 protected:
   
   Object();
-  Object ( const XmlTree::Node& node );
   virtual ~Object();
   
 private:
@@ -57,6 +59,8 @@ private:
   std::string _id;
   std::string _targetId;
   mutable Mutex _mutex;
+  SERIALIZE_XML_DEFINE_MEMBERS ( Object );
+  SERIALIZE_XML_DEFINE_MAP;
 };
 
 

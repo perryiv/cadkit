@@ -10,22 +10,21 @@
 #ifndef __MINERVA_LAYERS_KML_LINE_STYLE_H__
 #define __MINERVA_LAYERS_KML_LINE_STYLE_H__
 
-#include "Minerva/Layers/Kml/ColorStyle.h"
+#include "Minerva/Core/Data/ColorStyle.h"
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
       
 
-class LineStyle : public Minerva::Layers::Kml::ColorStyle
+class LineStyle : public Minerva::Core::Data::ColorStyle
 {
 public:
-  typedef Minerva::Layers::Kml::ColorStyle BaseClass;
+  typedef Minerva::Core::Data::ColorStyle BaseClass;
   
   USUL_DECLARE_REF_POINTERS ( LineStyle );
   
   LineStyle();
-  LineStyle ( const XmlTree::Node& node );
 
 	/// Set/get the width.
 	void        width ( float w );

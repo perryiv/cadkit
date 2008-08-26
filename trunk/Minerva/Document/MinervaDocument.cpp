@@ -1012,7 +1012,7 @@ void MinervaDocument::stopAnimation()
     if ( _global.valid () )
     {
       typedef Minerva::Core::Visitors::TemporalAnimation Visitor;
-      Visitor::RefPtr visitor ( new Visitor ( _global->firstDate(), _global->lastDate() ) );
+      Visitor::RefPtr visitor ( new Visitor ( _global->begin(), _global->end() ) );
       this->accept ( *visitor );
     }
   }
@@ -1479,16 +1479,16 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
         _lastTime = time;
 
         // Wrap if we've gone beyond the last date.
-        if( lastDate > _current->lastDate() )
+        if( lastDate > _current->end() )
         {
-          lastDate = _current->firstDate();
+          lastDate = _current->begin();
         }
 
         Minerva::Core::Animate::Date firstDate ( lastDate );
 
         if ( _animateSettings->showPastDays() )
         {
-          firstDate = _current->firstDate();
+          firstDate = _current->begin();
         }
 
         if( _animateSettings->timeWindow() )
@@ -1637,6 +1637,25 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build time span name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  std::string buildName ( Minerva::Core::Data::TimeSpan *span )
+  {
+    if ( 0x0 != span )
+    {
+      return span->begin().toString() + "->" + span->end().toString();
+    }
+    return "";
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build time span menu.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1654,13 +1673,13 @@ void MinervaDocument::_buildTimeSpanMenu()
   _timeSpanMenu->clear();
 
   if ( _global.valid() )
-    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( _global->name(),
+    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( Detail::buildName ( _global.get() ),
                                                                         UA::bind1<void> ( _global, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ),
                                                                         UA::bind1<bool> ( _global, UA::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
 
   for ( TimeSpans::iterator iter = _timeSpans.begin(); iter != _timeSpans.end(); ++iter )
   {
-    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( (*iter)->name(),
+    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( Detail::buildName ( (*iter).get() ),
                                                                         UA::bind1<void> ( *iter, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ),
                                                                         UA::bind1<bool> ( *iter, UA::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
   }
@@ -1680,7 +1699,7 @@ void MinervaDocument::currentTimeSpan ( TimeSpan::RefPtr span )
   _current = span;
 
   if ( _current.valid() )
-    _lastDate = _current->firstDate();
+    _lastDate = _current->begin();
 }
 
 
@@ -1714,8 +1733,8 @@ void MinervaDocument::_findFirstLastDate()
 
   TimeSpan::RefPtr global ( new TimeSpan );
 
-  global->firstDate ( findMinMax->first() );
-  global->lastDate ( findMinMax->last() );
+  global->begin ( findMinMax->first() );
+  global->end ( findMinMax->last() );
 
   // Set the current to the new global.
   if ( _current == _global )

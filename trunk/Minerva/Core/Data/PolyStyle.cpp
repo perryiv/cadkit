@@ -44,6 +44,7 @@ PolyStyle::~PolyStyle()
 
 void PolyStyle::fill ( bool b )
 {
+  Guard guard ( this->mutex() );
   _fill = b;
 }
 
@@ -56,6 +57,7 @@ void PolyStyle::fill ( bool b )
 
 bool PolyStyle::fill() const
 {
+  Guard guard ( this->mutex() );
   return _fill;
 }
 
@@ -68,6 +70,7 @@ bool PolyStyle::fill() const
 
 void PolyStyle::outline ( bool b )
 {
+  Guard guard ( this->mutex() );
   _outline = b;
 }
 
@@ -80,5 +83,6 @@ void PolyStyle::outline ( bool b )
 
 bool PolyStyle::outline() const
 {
+  Guard guard ( this->mutex() );
   return _outline;
 }

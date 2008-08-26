@@ -249,11 +249,27 @@
 					Name="Data"
 					>
 					<File
+						RelativePath=".\Data\ColorStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\ColorStyle.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\DataObject.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Data\DataObject.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Feature.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Feature.h"
 						>
 					</File>
 					<File
@@ -265,11 +281,35 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\IconStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\IconStyle.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\Line.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Data\Line.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\LineStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\LineStyle.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\LookAt.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\LookAt.h"
 						>
 					</File>
 					<File
@@ -310,6 +350,56 @@
 					</File>
 					<File
 						RelativePath=".\Data\Polygon.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\PolyStyle.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\PolyStyle.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Style.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Style.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\TimePrimitive.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\TimePrimitive.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\TimeSpan.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Data\TimeSpan.h"
 						>
 					</File>
 					<File
@@ -602,14 +692,6 @@
 					</File>
 					<File
 						RelativePath=".\Animate\Settings.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Animate\TimeSpan.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Animate\TimeSpan.h"
 						>
 					</File>
 				</Filter>

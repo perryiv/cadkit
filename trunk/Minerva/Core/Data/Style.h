@@ -20,7 +20,7 @@ namespace Core {
 namespace Data {
       
 
-class Style : public Minerva::Core::Data::Object
+class MINERVA_EXPORT Style : public Minerva::Core::Data::Object
 {
 public:
   typedef Minerva::Core::Data::Object BaseClass;

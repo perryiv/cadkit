@@ -219,14 +219,6 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\ColorStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ColorStyle.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Factory.cpp"
 				>
 			</File>
@@ -235,35 +227,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Feature.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Feature.h"
-				>
-			</File>
-			<File
-				RelativePath=".\IconStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\IconStyle.h"
-				>
-			</File>
-			<File
 				RelativePath=".\KmlLayer.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\KmlLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LineStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LineStyle.h"
 				>
 			</File>
 			<File
@@ -283,51 +251,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LookAt.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LookAt.h"
-				>
-			</File>
-			<File
 				RelativePath=".\NetworkLink.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\NetworkLink.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PolyStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PolyStyle.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Style.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Style.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimePrimitive.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TimePrimitive.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeSpan.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TimeSpan.h"
 				>
 			</File>
 		</Filter>

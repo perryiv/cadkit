@@ -17,7 +17,7 @@ namespace Core {
 namespace Data {
       
 
-class IconStyle : public Minerva::Core::Data::ColorStyle
+class MINERVA_EXPORT IconStyle : public Minerva::Core::Data::ColorStyle
 {
 public:
   typedef Minerva::Core::Data::ColorStyle BaseClass;

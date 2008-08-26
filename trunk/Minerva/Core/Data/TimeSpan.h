@@ -18,7 +18,7 @@ namespace Core {
 namespace Data {
 
 
-class TimeSpan : public Minerva::Core::Data::TimePrimitive
+class MINERVA_EXPORT TimeSpan : public Minerva::Core::Data::TimePrimitive
 {
 public:
   typedef Minerva::Core::Data::TimePrimitive BaseClass;

@@ -1,16 +1,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2008, Arizona State University
+//  Copyright (c) 2008, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/NetworkLink.h"
+#include "Minerva/Core/Data/LineStyle.h"
 
-using namespace Minerva::Layers::Kml;
+using namespace Minerva::Core::Data;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -18,8 +18,8 @@ using namespace Minerva::Layers::Kml;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NetworkLink::NetworkLink() : BaseClass(),
-  _link ( 0x0 )
+LineStyle::LineStyle() : BaseClass(),
+	_width ( 1.0f )
 {
 }
 
@@ -30,32 +30,32 @@ NetworkLink::NetworkLink() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-NetworkLink::~NetworkLink()
+LineStyle::~LineStyle()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the link.
+//  Set the width.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Link* NetworkLink::link() const
+void LineStyle::width ( float w )
 {
   Guard guard ( this->mutex() );
-  return _link.get();
+  _width = w;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the link.
+//  Get the width.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void NetworkLink::link( Link* link )
+float LineStyle::width() const
 {
   Guard guard ( this->mutex() );
-  _link = link;
+  return _width;
 }

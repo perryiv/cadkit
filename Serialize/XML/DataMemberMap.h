@@ -105,6 +105,9 @@ public:
   }
 
   void        addMember ( Serialize::XML::MemberBase *member );
+  
+  // Erase the data member with the given name.
+  void        erase ( const std::string& name );
 
   void        serialize ( XmlTree::Node &parent ) const;
   void        deserialize ( const XmlTree::Node &node );

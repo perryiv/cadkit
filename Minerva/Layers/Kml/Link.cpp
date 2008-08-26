@@ -10,10 +10,6 @@
 
 #include "Minerva/Layers/Kml/Link.h"
 
-#include "XmlTree/Node.h"
-
-#include "Usul/Convert/Convert.h"
-
 using namespace Minerva::Layers::Kml;
 
 
@@ -28,45 +24,6 @@ Link::Link() : BaseClass(),
   _refreshInterval( 0.0 ),
   _refreshMode ( ON_CHANGE )
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Link::Link( const XmlTree::Node& node ) : BaseClass(),
-  _href(),
-  _refreshInterval( 0.0 ),
-  _refreshMode ( ON_CHANGE )
-{
-  typedef XmlTree::Node::Children    Children;
-  typedef Usul::Convert::Type<std::string,double> ToDouble;
-  
-  // Get the children.
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "href" == name )
-      _href = node->value();
-    else if ( "refreshInterval" == name )
-      _refreshInterval = ToDouble::convert ( node->value() );
-    else if ( "refreshMode" == name )
-    {
-      std::string mode ( node->value() );
-      if ( "onChange" == mode )
-        _refreshMode = Link::ON_CHANGE;
-      else if ( "onInterval" == mode )
-        _refreshMode = Link::ON_INTERVAL;
-      else if ( "onExpire" == mode )
-        _refreshMode = Link::ON_EXPIRE;
-    }
-  }
 }
 
 

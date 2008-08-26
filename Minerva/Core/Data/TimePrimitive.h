@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_KML_TIME_PRIMITIVE_H__
-#define __MINERVA_LAYERS_KML_TIME_PRIMITIVE_H__
+#ifndef __MINERVA_CORE_DATA_TIME_PRIMITIVE_H__
+#define __MINERVA_CORE_DATA_TIME_PRIMITIVE_H__
 
 #include "Minerva/Core/Data/Object.h"
 
@@ -17,8 +17,8 @@
 namespace Minerva { namespace Core { namespace Animate { class Date; } } }
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
 
 
 class TimePrimitive : public Minerva::Core::Data::Object
@@ -30,9 +30,9 @@ public:
   USUL_DECLARE_REF_POINTERS ( TimePrimitive );
   
   TimePrimitive();
-  TimePrimitive ( const XmlTree::Node& node );
   
-  static Date parse ( const std::string& value );
+  /// Parse from kml.
+  static Date parseKml ( const std::string& value );
 
 protected:
   
@@ -45,4 +45,4 @@ protected:
 }
 
 
-#endif // __MINERVA_LAYERS_KML_TIME_PRIMITIVE_H__
+#endif // __MINERVA_CORE_DATA_TIME_PRIMITIVE_H__

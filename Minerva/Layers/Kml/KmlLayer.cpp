@@ -10,8 +10,6 @@
 
 #include "Minerva/Layers/Kml/KmlLayer.h"
 #include "Minerva/Layers/Kml/NetworkLink.h"
-#include "Minerva/Layers/Kml/Feature.h"
-#include "Minerva/Layers/Kml/TimeSpan.h"
 #include "Minerva/Layers/Kml/LoadModel.h"
 #include "Minerva/Layers/Kml/Factory.h"
 #include "Minerva/Core/Data/DataObject.h"
@@ -21,6 +19,7 @@
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/Polygon.h"
 #include "Minerva/Core/Data/ModelCache.h"
+#include "Minerva/Core/Data/TimeSpan.h"
 #include "Minerva/Core/Utilities/Download.h"
 
 #include "XmlTree/XercesLife.h"
@@ -368,7 +367,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
   }
   else if ( "NetworkLink" == name )
   {
-    NetworkLink::RefPtr networkLink ( new NetworkLink ( node ) );
+    NetworkLink::RefPtr networkLink ( Factory::instance().createNetworkLink ( node ) );
     if ( networkLink.valid() )
     {
       Link::RefPtr link ( networkLink->link() );
@@ -400,7 +399,7 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
 
 void KmlLayer::_parseStyle ( const XmlTree::Node& node )
 {
-	Style::RefPtr style ( new Style ( node ) );
+	Style::RefPtr style ( Factory::instance().createStyle ( node ) );
 	_styles[style->objectId()] = style;
 }
 
@@ -442,13 +441,7 @@ void KmlLayer::parseFolder ( const XmlTree::Node& node )
 ///////////////////////////////////////////////////////////////////////////////
 
 void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
-{ 
-	// Make the feature.
-	Feature::RefPtr feature ( new Feature ( node ) );
-
-	// Get the style, if any.
-	Style::RefPtr style ( this->_style ( feature->styleUrl() ) );
-
+{
 	// Look for the geometry.
   Children multiGeometry ( node.find ( "MultiGeometry", false ) );
   Children polygon ( node.find ( "Polygon", false ) );
@@ -457,7 +450,12 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   Children linering ( node.find ( "LineRing", false ) );
   Children model ( node.find ( "Model", false ) );
 
-  DataObject::RefPtr object ( new DataObject );
+  // Make the data object.
+  DataObject::RefPtr object ( Factory::instance().createPlaceMark ( node ) );
+  
+  // Get the style, if any.
+	Style::RefPtr style ( this->_style ( object->styleUrl() ) );
+  
   Geometry::RefPtr geometry ( 0x0 );
   
   // Pick which function to redirect to.
@@ -468,7 +466,7 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
     geometry =  this->_parsePoint( *point.front(), style.get() );
     
     // Google Earth only appears to label points.
-    object->label ( feature->name() );
+    object->label ( object->name() );
   }
   else if ( false == polygon.empty() )
     geometry = this->_parsePolygon( *polygon.front(), style.get() );
@@ -481,19 +479,6 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
   
   object->addGeometry ( geometry );
   
-  // Set the data object members.
-  object->name ( feature->name() );
-  object->description ( feature->description() );
-  object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
-  object->showLabel ( true );
-  object->visibility ( feature->visiblity() );
-  
-  if ( TimeSpan *span = dynamic_cast<TimeSpan*> ( feature->timePrimitive() ) )
-  {
-    object->firstDate ( span->begin() );
-    object->lastDate ( span->end() );
-  }
-
   // Add the data object.
   this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
 }
@@ -613,7 +598,7 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
   {
     // Make the link
     Children links ( node.find ( "Link", true ) );
-    Link::RefPtr link ( false == links.empty() ? new Link ( *links.front() ) : 0x0 );
+    Link::RefPtr link ( false == links.empty() ? Factory::instance().createLink ( *links.front() ) : 0x0 );
     
     // Make the filename.
     std::string filename ( this->_buildFilename ( link ) );
@@ -644,6 +629,26 @@ void KmlLayer::deserialize( const XmlTree::Node &node )
 {
   BaseClass::deserialize ( node );
   this->read ( _filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::serialize ( XmlTree::Node &parent ) const
+{
+  Serialize::XML::DataMemberMap dataMemberMap ( Usul::Threads::Safe::get ( this->mutex(), _dataMemberMap ) );
+  
+  // Don't serialize the layers.
+  dataMemberMap.erase ( "layers" );
+  
+  // Serialize.
+  dataMemberMap.serialize ( parent );
+  
+  // TODO: save the kml file using the current state.
 }
 
 
@@ -841,7 +846,7 @@ void KmlLayer::reading ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Style* KmlLayer::_style ( const std::string& url )
+KmlLayer::Style* KmlLayer::_style ( const std::string& url ) const
 {
 	if ( true == url.empty() )
 		return 0x0;

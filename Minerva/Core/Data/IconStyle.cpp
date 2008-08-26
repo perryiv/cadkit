@@ -7,14 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/IconStyle.h"
-#include "Minerva/Layers/Kml/Link.h"
+#include "Minerva/Core/Data/IconStyle.h"
 
-#include "XmlTree/Node.h"
-
-#include "Usul/Convert/Convert.h"
-
-using namespace Minerva::Layers::Kml;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,42 +23,6 @@ IconStyle::IconStyle() : BaseClass(),
   _heading ( 0.0 ),
   _href()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-IconStyle::IconStyle( const XmlTree::Node &node ) : BaseClass( node ),
-  _scale ( 1.0 ),
-  _heading ( 0.0 ),
-  _href()
-{
- 	typedef XmlTree::Node::Children Children;
-  
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-
-    if ( "scale" == name )
-    {
-      _scale = Usul::Convert::Type<std::string, float>::convert ( node->value() );
-    }
-    else if ( "heading" == name )
-    {
-      _heading = Usul::Convert::Type<std::string, float>::convert ( node->value() );
-    }
-    else if ( "Link" == name )
-    {
-      Link::RefPtr link ( new Link ( *node ) );
-      _href = link->href();
-    }
-  }
 }
 
 

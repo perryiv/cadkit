@@ -10,22 +10,21 @@
 #ifndef __MINERVA_LAYERS_KML_ICON_STYLE_H__
 #define __MINERVA_LAYERS_KML_ICON_STYLE_H__
 
-#include "Minerva/Layers/Kml/ColorStyle.h"
+#include "Minerva/Core/Data/ColorStyle.h"
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
       
 
-class IconStyle : public Minerva::Layers::Kml::ColorStyle
+class IconStyle : public Minerva::Core::Data::ColorStyle
 {
 public:
-  typedef Minerva::Layers::Kml::ColorStyle BaseClass;
+  typedef Minerva::Core::Data::ColorStyle BaseClass;
   
   USUL_DECLARE_REF_POINTERS ( IconStyle );
   
   IconStyle();
-  IconStyle ( const XmlTree::Node& node );
 
   /// Set/get the scale.
   void           scale ( double );

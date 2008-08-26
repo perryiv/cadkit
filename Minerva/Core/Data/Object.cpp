@@ -10,10 +10,11 @@
 
 #include "Minerva/Core/Data/Object.h"
 
-#include "XmlTree/Node.h"
+#include "Usul/Trace/Trace.h"
 
 using namespace Minerva::Core::Data;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Object, Object::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -27,36 +28,8 @@ Object::Object() :
   _targetId(),
   _mutex()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Object::Object ( const XmlTree::Node& node ) : 
-  BaseClass(),
-  _id(),
-  _targetId()
-{
-  typedef XmlTree::Node::Attributes Attributes;
-  
-  // Get the attributes.
-  const Attributes& attributes ( node.attributes() );
-  
-  // Set the id.
-  {
-    Attributes::const_iterator iter ( attributes.find ( "id" ) );
-    _id = ( iter != attributes.end() ? iter->second : "" );
-  }
-  
-  // Set the target id.
-  {
-    Attributes::const_iterator iter ( attributes.find ( "targetId" ) );
-    _targetId = ( iter != attributes.end() ? iter->second : "" );
-  }
+  this->_addMember ( "id", _id );
+  this->_addMember ( "targetId", _targetId );
 }
 
 
@@ -68,6 +41,26 @@ Object::Object ( const XmlTree::Node& node ) :
 
 Object::~Object()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query Interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Object::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+  switch ( iid )
+  {
+    case Usul::Interfaces::IUnknown::IID:
+    case Usul::Interfaces::ISerialize::IID:
+      return static_cast < Usul::Interfaces::ISerialize* > ( this );
+    default:
+      return 0x0;
+  };
 }
 
 

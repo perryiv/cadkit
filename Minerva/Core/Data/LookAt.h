@@ -13,14 +13,12 @@
 
 #include "Minerva/Core/Data/Object.h"
 
-namespace XmlTree { class Node; }
-
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
 
 
-class LookAt : public Minerva::Core::Data::Object
+class MINERVA_EXPORT LookAt : public Minerva::Core::Data::Object
 {
 public:
   typedef Minerva::Core::Data::Object BaseClass;
@@ -28,8 +26,27 @@ public:
   USUL_DECLARE_REF_POINTERS ( LookAt );
 
   LookAt();
-  LookAt ( const XmlTree::Node& node );
 
+  /// Set/get the longitude.
+  void        longitude ( double );
+  double      longitude() const;
+  
+  /// Set/get the latitude.
+  void        latitude ( double );
+  double      latitude() const;
+  
+  /// Set/get the altitude.
+  void        altitude ( double );
+  double      altitude() const;
+  
+  /// Set/get the range.
+  void        range ( double );
+  double      range() const;
+  
+  /// Set/get the heading.
+  void        heading ( double );
+  double      heading() const;
+  
 protected:
 
   virtual ~LookAt();

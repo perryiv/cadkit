@@ -7,7 +7,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/TimePrimitive.h"
+#include "Minerva/Core/Data/TimePrimitive.h"
 #include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Convert/Convert.h"
@@ -16,7 +16,7 @@
 
 #include <vector>
 
-using namespace Minerva::Layers::Kml;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,17 +26,6 @@ using namespace Minerva::Layers::Kml;
 ///////////////////////////////////////////////////////////////////////////////
 
 TimePrimitive::TimePrimitive() : BaseClass()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TimePrimitive::TimePrimitive ( const XmlTree::Node &node ) : BaseClass ( node )
 {
 }
 
@@ -58,7 +47,7 @@ TimePrimitive::~TimePrimitive()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TimePrimitive::Date TimePrimitive::parse ( const std::string& value )
+TimePrimitive::Date TimePrimitive::parseKml ( const std::string& value )
 {
   typedef std::vector<std::string> Strings;
   Strings strings;

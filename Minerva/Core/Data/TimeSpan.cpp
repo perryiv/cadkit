@@ -7,12 +7,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/TimeSpan.h"
+#include "Minerva/Core/Data/TimeSpan.h"
 
-#include "XmlTree/Node.h"
+#include "Usul/Factory/RegisterCreator.h"
 
-using namespace Minerva::Layers::Kml;
+using namespace Minerva::Core::Data;
 
+USUL_FACTORY_REGISTER_CREATOR ( TimeSpan );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Minerva::Core::Animate::Date );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -24,36 +27,8 @@ TimeSpan::TimeSpan() : BaseClass(),
   _begin ( boost::date_time::min_date_time ),
   _end ( boost::date_time::max_date_time )
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TimeSpan::TimeSpan ( const XmlTree::Node &node ) : BaseClass ( node ),
-  _begin ( boost::date_time::min_date_time ),
-  _end ( boost::date_time::max_date_time )
-{
-  typedef XmlTree::Node::Children Children;
-  
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "begin" == name )
-    {
-      _begin = TimeSpan::parse ( node->value() );
-    }
-    else if ( "end" == name )
-    {
-      _end = TimeSpan::parse ( node->value() );
-    }
-  }
+  this->_addMember ( "first_date", _begin );
+  this->_addMember ( "last_date",  _end );
 }
 
 
@@ -70,13 +45,40 @@ TimeSpan::~TimeSpan()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Begin date.
+//  Set the beginning date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TimeSpan::begin ( const Date& date )
+{
+  Guard guard ( this->mutex() );
+  _begin = date;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the beginning date.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 TimeSpan::Date TimeSpan::begin() const
 {
+  Guard guard ( this->mutex() );
   return _begin;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  End date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TimeSpan::end ( const Date& date )
+{
+  Guard guard ( this->mutex() );
+  _end = date;
 }
 
 
@@ -88,5 +90,6 @@ TimeSpan::Date TimeSpan::begin() const
 
 TimeSpan::Date TimeSpan::end() const
 {
+  Guard guard ( this->mutex() );
   return _end;
 }

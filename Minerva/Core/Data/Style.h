@@ -11,13 +11,13 @@
 #define __MINERVA_LAYERS_KML_STYLE_H__
 
 #include "Minerva/Core/Data/Object.h"
-#include "Minerva/Layers/Kml/LineStyle.h"
-#include "Minerva/Layers/Kml/PolyStyle.h"
-#include "Minerva/Layers/Kml/IconStyle.h"
+#include "Minerva/Core/Data/LineStyle.h"
+#include "Minerva/Core/Data/PolyStyle.h"
+#include "Minerva/Core/Data/IconStyle.h"
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
       
 
 class Style : public Minerva::Core::Data::Object
@@ -28,7 +28,6 @@ public:
   USUL_DECLARE_REF_POINTERS ( Style );
   
   Style();
-  Style ( const XmlTree::Node& node );
 
   /// Set/get the iconstyle.
   void           iconstyle ( IconStyle * );

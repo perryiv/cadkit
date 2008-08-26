@@ -12,10 +12,10 @@
 #define __MINERVA_LAYERS_KML_H__
 
 #include "Minerva/Layers/Kml/Link.h"
-#include "Minerva/Layers/Kml/Style.h"
 
 #include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Core/Data/Geometry.h"
+#include "Minerva/Core/Data/Style.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IRead.h"
@@ -44,6 +44,7 @@ public:
   typedef Minerva::Core::Data::DataObject            DataObject;
   typedef Minerva::Core::Data::Geometry              Geometry;
   typedef Minerva::Core::Data::ModelCache            ModelCache;
+  typedef Minerva::Core::Data::Style                 Style;
   typedef std::map<std::string,Style::RefPtr>        Styles;
   
   /// Smart-pointer definitions.
@@ -79,6 +80,9 @@ public:
   
   void                        parseFolder ( const XmlTree::Node& node );
   
+  /// Serialize.
+  virtual void                serialize ( XmlTree::Node &parent ) const;
+  
 protected:
 
   KmlLayer ( Link* link, const Styles& styles, ModelCache* );
@@ -108,7 +112,7 @@ protected:
   Geometry*                   _parseLineRing     ( const XmlTree::Node& node, Style *style );
   void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object );
 
-	Style*                      _style ( const std::string& name );
+	Style*                      _style ( const std::string& name ) const;
 
 private:
   

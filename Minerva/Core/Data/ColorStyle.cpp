@@ -7,24 +7,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/PolyStyle.h"
+#include "Minerva/Core/Data/ColorStyle.h"
 
-#include "XmlTree/Node.h"
+#include "Usul/Adaptors/Random.h"
 
-using namespace Minerva::Layers::Kml;
+#include <cstdlib>
+#include <ctime>
 
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-PolyStyle::PolyStyle() : BaseClass(),
-	_fill ( true ),
-	_outline ( true )
-{
-}
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,28 +23,10 @@ PolyStyle::PolyStyle() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PolyStyle::PolyStyle( const XmlTree::Node &node ) : BaseClass( node ),
-	_fill ( true ),
-	_outline ( true )
+ColorStyle::ColorStyle() : BaseClass(),
+	_color( 1.0, 1.0, 1.0, 1.0 ),
+  _mode ( NORMAL )
 {
- 	typedef XmlTree::Node::Children Children;
-  
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "fill" == name )
-    {
-      _fill = ( "1" == node->value() );
-    }
-    else if ( "outline" == name )
-    {
-      _outline = ( "1" == node->value() );
-    }
-  }
-
 }
 
 
@@ -64,54 +36,78 @@ PolyStyle::PolyStyle( const XmlTree::Node &node ) : BaseClass( node ),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PolyStyle::~PolyStyle()
+ColorStyle::~ColorStyle()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the fill flag.
+//  Set the color.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolyStyle::fill ( bool b )
+void ColorStyle::color ( const Color& c )
 {
-  _fill = b;
+  Guard guard ( this->mutex() );
+	_color = c;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the fill flag.
+//  Get the color.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PolyStyle::fill() const
+const ColorStyle::Color& ColorStyle::color() const
 {
-  return _fill;
+  Guard guard ( this->mutex() );
+	return _color;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the outline flag.
+//  Set the mode.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolyStyle::outline ( bool b )
+void ColorStyle::mode ( ColorMode m )
 {
-  _outline = b;
+  Guard guard ( this->mutex() );
+  _mode = m;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the outline flag.
+//  Get the mode.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PolyStyle::outline() const
+ColorStyle::ColorMode ColorStyle::mode() const
 {
-  return _outline;
+  Guard guard ( this->mutex() );
+  return _mode;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a random color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ColorStyle::Color ColorStyle::makeRandomColor ( const Color& c)
+{
+  Minerva::Core::Data::ColorStyle::Color color ( c );
+  
+  ::srand ( static_cast<unsigned int> ( ::time ( 0 ) ) );
+  Usul::Adaptors::Random<float> random ( 0.0, 1.0 );
+  color[0] = c[0] * random();
+  color[1] = c[1] * random();
+  color[2] = c[2] * random();
+  
+  return color;
 }

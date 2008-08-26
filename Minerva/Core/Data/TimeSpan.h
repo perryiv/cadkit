@@ -10,25 +10,29 @@
 #ifndef __MINERVA_LAYERS_KML_TIME_SPAN_H__
 #define __MINERVA_LAYERS_KML_TIME_SPAN_H__
 
-#include "Minerva/Layers/Kml/TimePrimitive.h"
+#include "Minerva/Core/Data/TimePrimitive.h"
 #include "Minerva/Core/Animate/Date.h"
 
 namespace Minerva {
-namespace Layers {
-namespace Kml {
+namespace Core {
+namespace Data {
 
 
-class TimeSpan : public Minerva::Layers::Kml::TimePrimitive
+class TimeSpan : public Minerva::Core::Data::TimePrimitive
 {
 public:
-  typedef Minerva::Layers::Kml::TimePrimitive BaseClass;
+  typedef Minerva::Core::Data::TimePrimitive BaseClass;
   
   USUL_DECLARE_REF_POINTERS ( TimeSpan );
   
   TimeSpan();
-  TimeSpan ( const XmlTree::Node& node );
   
+  /// Set/get the beginning date.
+  void  begin ( const Date& );
   Date  begin() const;
+  
+  /// Set/get the ending date.
+  void  end ( const Date& );
   Date  end() const;
   
 protected:

@@ -8,12 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/Kml/Feature.h"
-#include "Minerva/Layers/Kml/TimeSpan.h"
+#include "Minerva/Core/Data/LookAt.h"
 
-#include "XmlTree/Node.h"
-
-using namespace Minerva::Layers::Kml;
+using namespace Minerva::Core::Data;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,66 +19,14 @@ using namespace Minerva::Layers::Kml;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Feature::Feature() : 
+LookAt::LookAt() : 
   BaseClass(),
-  _description(),
-  _name(),
-	_styleUrl(),
-  _visiblity ( true ),
-  _lookAt ( 0x0 ),
-  _timePrimitive ( 0x0 )
+  _longitude ( 0.0 ),
+  _latitude ( 0.0 ),
+  _altitude ( 0.0 ),
+  _range ( 0.0 ),
+  _heading ( 0.0 )
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Feature::Feature( const XmlTree::Node& node ) : 
-  BaseClass( node ),
-  _name(),
-	_styleUrl(),
-  _visiblity ( true ),
-  _lookAt ( 0x0 ),
-  _timePrimitive ( 0x0 )
-{
-  typedef XmlTree::Node::Children Children;
-  
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    std::string name ( node->name() );
-    
-    if ( "name" == name )
-    {
-      _name = node->value();
-    }
-    else if ( "visibility" == name )
-    {
-      bool visible ( "0" != node->value() );
-      _visiblity = visible;
-    }
-    else if ( "LookAt" == name )
-    {
-      _lookAt = new LookAt ( *node );
-    }
-		else if ( "styleUrl" == name )
-		{
-			_styleUrl = node->value();
-		}
-    else if ( "TimeSpan" == name )
-    {
-      _timePrimitive = new TimeSpan ( *node );
-    }
-    else if ( "description" == name )
-    {
-      _description = node->value();
-    }
-  }
 }
 
 
@@ -91,126 +36,136 @@ Feature::Feature( const XmlTree::Node& node ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Feature::~Feature()
+LookAt::~LookAt()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the name.
+//  Set the longitude.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Feature::name() const
+void LookAt::longitude ( double longitude )
 {
-  return _name;
+  Guard guard ( this->mutex() );
+  _longitude = longitude;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the name.
+//  Get the longitude.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Feature::name ( const std::string& s )
+double LookAt::longitude() const
 {
-  _name = s;
+  Guard guard ( this->mutex() );
+  return _longitude;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the visiblity.
+//  Set the latitude.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Feature::visiblity() const
+void LookAt::latitude ( double latitude )
 {
-  return _visiblity;
+  Guard guard ( this->mutex() );
+  _latitude = latitude;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the visiblity.
+//  Get the latitude.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Feature::visiblity( bool b )
+double LookAt::latitude() const
 {
-  _visiblity = b;
+  Guard guard ( this->mutex() );
+  return _latitude;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the style url.
+//  Set the altitude.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Feature::styleUrl ( const std::string& url )
+void LookAt::altitude ( double altitude )
 {
-	_styleUrl = url;
+  Guard guard ( this->mutex() );
+  _altitude = altitude;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the style url.
+//  Get the altitude.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Feature::styleUrl() const
+double LookAt::altitude() const
 {
-	return _styleUrl;
+  Guard guard ( this->mutex() );
+  return _altitude;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the time primitive.
+//  Set the range.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Feature::timePrimitive ( TimePrimitive* timePrimitive )
+void LookAt::range ( double range )
 {
-  _timePrimitive = timePrimitive;
+  Guard guard ( this->mutex() );
+  _range = range;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the time primitive.
+//  Get the range.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TimePrimitive* Feature::timePrimitive() const
+double LookAt::range() const
 {
-  return _timePrimitive.get();
+  Guard guard ( this->mutex() );
+  return _range;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the description.
+//  Set the heading.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Feature::description ( const std::string& s )
+void LookAt::heading ( double heading )
 {
-  _description = s;
+  Guard guard ( this->mutex() );
+  _heading = heading;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the description.
+//  Get the heading.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Feature::description() const
+double LookAt::heading() const
 {
-  return _description;
+  Guard guard ( this->mutex() );
+  return _heading;
 }

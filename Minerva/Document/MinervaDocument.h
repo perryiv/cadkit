@@ -35,7 +35,7 @@
 #include "Usul/Policies/Update.h"
 
 #include "Minerva/Core/Animate/Settings.h"
-#include "Minerva/Core/Animate/TimeSpan.h"
+#include "Minerva/Core/Data/TimeSpan.h"
 #include "Minerva/DataSources/PG/Connection.h"
 #include "Minerva/Core/Layers/Container.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
@@ -80,7 +80,7 @@ public:
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Minerva::Core::Animate::Settings Settings;
-  typedef Minerva::Core::Animate::TimeSpan TimeSpan;
+  typedef Minerva::Core::Data::TimeSpan TimeSpan;
   typedef std::vector < TimeSpan::RefPtr > TimeSpans;
   typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
   typedef Minerva::Core::TileEngine::Body Body;

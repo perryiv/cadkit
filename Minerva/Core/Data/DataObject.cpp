@@ -48,10 +48,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DataObject, DataObject::BaseClass );
 DataObject::DataObject() :
   BaseClass(),
   _dirty ( true ),
-  _visible ( true ),
-  _name(),
   _label(),
-  _description(),
   _labelPosition ( 0.0, 0.0, 1000.0 ),
   _labelColor ( 1.0, 1.0, 1.0, 1.0 ),
   _labelSize ( 25.0f ),
@@ -465,7 +462,7 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* DataObject::buildScene( const Options& options, Usul::Interfaces::IUnknown* caller )
+osg::Node* DataObject::buildScene ( const Options& options, Usul::Interfaces::IUnknown* caller )
 {
   // Build the scene if we need to.
   if ( this->dirty () )
@@ -478,7 +475,7 @@ osg::Node* DataObject::buildScene( const Options& options, Usul::Interfaces::IUn
   if( _preBuiltScene.valid() )
   {
     // Get the visibilty state.
-    const bool visible ( this->visibility () );
+    const bool visible ( BaseClass::visibility() );
     
     _root = _preBuiltScene;
     _preBuiltScene = 0x0;
@@ -499,6 +496,8 @@ osg::Node* DataObject::buildScene( const Options& options, Usul::Interfaces::IUn
 
 void DataObject::visibility ( bool b )
 {
+  BaseClass::visibility ( b );
+  
   Guard guard ( this );
 
   if ( _root.valid () )
@@ -506,21 +505,6 @@ void DataObject::visibility ( bool b )
     const unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
     _root->setNodeMask ( nodeMask );
   }
-
-  _visible = b;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the visibilty flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool DataObject::visibility ( ) const
-{
-  Guard guard ( this );
-  return _visible;
 }
 
 
@@ -815,7 +799,7 @@ void DataObject::setBooleanState ( bool b )
 
 bool DataObject::getBooleanState() const
 {
-  return this->visibility();
+  return BaseClass::visibility();
 }
 
 
@@ -849,34 +833,6 @@ ClickedCallback* DataObject::clickedCallback() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the description.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::description ( const std::string& s )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _description = s;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the description.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const std::string& DataObject::description() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _description;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -894,32 +850,4 @@ ClickedCallback::ClickedCallback()
 
 ClickedCallback::~ClickedCallback()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::name ( const std::string& s )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _name = s;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string DataObject::name() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _name;
 }

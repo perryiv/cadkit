@@ -25,7 +25,7 @@
 #include "Minerva/Core/Jobs/BuildRaster.h"
 #include "Minerva/Core/Layers/ElevationGroup.h"
 #include "Minerva/Core/Layers/RasterGroup.h"
-#include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Utilities/SkyDome.h"
 
 #include "Usul/Containers/Unknowns.h"
@@ -74,7 +74,7 @@ public:
   typedef Minerva::Core::TileEngine::Callbacks::SplitCallback SplitCallback;
   typedef osg::ref_ptr<osg::MatrixTransform> MatrixTransformPtr;
   typedef Usul::Pointers::WeakPointer < Body > WeakPtr;
-  typedef Minerva::Core::Layers::Container VectorGroup;
+  typedef Minerva::Core::Data::Container VectorGroup;
   typedef Minerva::Core::Layers::ElevationGroup ElevationGroup;
   typedef Minerva::Core::Layers::RasterGroup RasterGroup;
   typedef Minerva::Core::Layers::RasterLayer RasterLayer;

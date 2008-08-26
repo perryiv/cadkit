@@ -16,6 +16,7 @@ using namespace Minerva::Core::Data;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Object, Object::BaseClass );
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -26,7 +27,26 @@ Object::Object() :
   BaseClass(),
   _id(),
   _targetId(),
-  _mutex()
+  _mutex(),
+  SERIALIZE_XML_INITIALIZER_LIST
+{
+  this->_addMember ( "id", _id );
+  this->_addMember ( "targetId", _targetId );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copy Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Object::Object ( const Object& rhs ) : 
+  BaseClass ( rhs ),
+  _id( rhs._id ),
+  _targetId( rhs._targetId ),
+  _mutex(),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   this->_addMember ( "id", _id );
   this->_addMember ( "targetId", _targetId );

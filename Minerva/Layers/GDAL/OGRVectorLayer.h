@@ -11,7 +11,7 @@
 #ifndef __MINERVA_LAYERS_GDAL_SHAPE_FILE_LAYER_H__
 #define __MINERVA_LAYERS_GDAL_SHAPE_FILE_LAYER_H__
 
-#include "Minerva/Core/Layers/Container.h"
+#include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Data/Geometry.h"
 
 #include "Usul/Interfaces/IRead.h"
@@ -27,13 +27,13 @@ namespace Minerva {
 namespace Layers {
 namespace GDAL {
   
-class OGRVectorLayer : public Minerva::Core::Layers::Container,
+class OGRVectorLayer : public Minerva::Core::Data::Container,
                        public Usul::Interfaces::IRead
 {
 public:
 
   /// Typedefs.
-  typedef Minerva::Core::Layers::Container              BaseClass;
+  typedef Minerva::Core::Data::Container                BaseClass;
   typedef Minerva::Core::Data::Geometry                 Geometry;
 
   /// Smart-pointer definitions.

@@ -41,7 +41,7 @@ protected:
 
     Visitor ( const std::string & filename );
 
-    virtual void visit ( Minerva::Core::Layers::Container& layer );
+    virtual void visit ( Minerva::Core::Data::Container& layer );
 
   protected:
     virtual ~Visitor ();

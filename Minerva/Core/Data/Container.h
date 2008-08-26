@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
+#include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IDirtyData.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
@@ -20,11 +21,8 @@
 #include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "Usul/Base/Object.h"
-#include "Usul/Containers/Unknowns.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
-#include "Usul/Interfaces/IDataChangedListener.h"
-#include "Usul/Interfaces/IDataChangedNotify.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
@@ -42,17 +40,15 @@ namespace Core {
 
   class Visitor;
 
-namespace Layers {
+namespace Data {
 
-class MINERVA_EXPORT Container : public Usul::Base::Object,
+class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
                                  public Usul::Interfaces::IBuildScene,
                                  public Usul::Interfaces::ILayer,
-                                 public Usul::Interfaces::ISerialize,
                                  public Usul::Interfaces::IUpdateListener,
                                  public Usul::Interfaces::ITreeNode,
                                  public Usul::Interfaces::ILayerExtents,
                                  public Usul::Interfaces::IBooleanState,
-                                 public Usul::Interfaces::IDataChangedNotify,
                                  public Minerva::Interfaces::IDirtyData,
                                  public Minerva::Interfaces::IDirtyScene,
                                  public Minerva::Interfaces::IElevationChangedListnerer,
@@ -62,7 +58,7 @@ class MINERVA_EXPORT Container : public Usul::Base::Object,
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Object                        BaseClass;
+  typedef Minerva::Core::Data::Feature              BaseClass;
   typedef Usul::Interfaces::ILayer                  ILayer;
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef std::vector<IUnknown::QueryPtr>           Unknowns;
@@ -114,7 +110,7 @@ public:
 
   /// Elevation has changed within given extents (IElevationChangedListnerer).
   virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller = 0x0 );
-  
+
   /// Set/get the extents.
   void                        extents ( const Extents& e );
   Extents                     extents() const;
@@ -126,9 +122,9 @@ public:
 
   /// Get the guid (ILayer).
   virtual std::string         guid() const;
-  
+
   /// See if the given level falls within this layer's range of levels.
-  bool                       isInLevelRange ( unsigned int level ) const;
+  bool                        isInLevelRange ( unsigned int level ) const;
 
   /// Get the min latitude and min longitude (ILayerExtents).
   virtual double              minLon() const;
@@ -139,9 +135,9 @@ public:
   virtual double              maxLat() const;
 
   /// Get/Set the name (ILayer).
-  virtual void                name ( const std::string& name );
   virtual std::string         name() const;
-  
+  virtual void                name( const std::string& );
+
   /// Get the number of data objects in this layer.
   virtual unsigned int        number() const;
 
@@ -169,21 +165,12 @@ protected:
   
   /// Build the scene.
   void                        _buildScene( Usul::Interfaces::IUnknown *caller );
-  
-  /// Notify data changed listeners.
-  void                        _notifyDataChnagedListeners();
 
   // Add a layer (IAddLayer).
   virtual void                addLayer ( Usul::Interfaces::IUnknown *layer );
 
   /// Remove a layer (IRemoveLayer).
   virtual void                removeLayer ( Usul::Interfaces::IUnknown * layer );
-  
-  // Add the listener.
-  virtual void                addDataChangedListener ( Usul::Interfaces::IUnknown *caller );
-  
-  // Remove the listener.
-  virtual void                removeDataChangedListener ( Usul::Interfaces::IUnknown *caller );
   
   // Get the number of children (ITreeNode).
   virtual unsigned int        getNumChildNodes() const;
@@ -208,24 +195,16 @@ private:
 
   typedef Usul::Containers::Unknowns<IUpdateListener> UpdateListeners;
   typedef Usul::Containers::Unknowns<IBuildScene>     Builders;
-  typedef Usul::Interfaces::IDataChangedListener      IDataChangedListener;
-  typedef Usul::Containers::Unknowns<IDataChangedListener> DataChangedListeners;
   
   Unknowns _layers;
   UpdateListeners _updateListeners;
   Builders _builders;
-  DataChangedListeners _dataChangedListeners;
-  std::string _name;
   std::string _guid;
-  bool _shown;
   unsigned int _flags;
   mutable Extents _extents;
   osg::ref_ptr<osg::Group> _root;
   
   SERIALIZE_XML_CLASS_NAME( Container )
-  SERIALIZE_XML_SERIALIZE_FUNCTION
-  SERIALIZE_XML_ADD_MEMBER_FUNCTION
-  SERIALIZE_XML_DEFINE_MAP;
 };
 
 

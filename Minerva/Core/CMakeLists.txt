@@ -54,6 +54,7 @@ SET (SOURCES
 ./Commands/StopAnimation.cpp
 ./Commands/ToggleShown.cpp
 ./Data/ColorStyle.cpp
+./Data/Container.cpp
 ./Data/DataObject.cpp
 ./Data/Feature.cpp
 ./Data/IconStyle.cpp
@@ -76,7 +77,6 @@ SET (SOURCES
 ./Functors/SingleColorFunctor.cpp
 ./Jobs/BuildRaster.cpp
 ./Jobs/BuildTiles.cpp
-./Layers/Container.cpp
 ./Layers/ElevationGroup.cpp
 ./Layers/RasterGroup.cpp
 ./Layers/RasterLayer.cpp

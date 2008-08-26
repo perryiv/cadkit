@@ -11,8 +11,12 @@
 #include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Core/Data/TimeSpan.h"
 
+#include "Usul/Trace/Trace.h"
+#include "Usul/Threads/Safe.h"
+
 using namespace Minerva::Core::Data;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Feature, Feature::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -27,8 +31,31 @@ Feature::Feature() :
 	_styleUrl(),
   _visibility ( true ),
   _lookAt ( 0x0 ),
-  _timePrimitive ( 0x0 )
+  _timePrimitive ( 0x0 ),
+  _dataChangedListeners()
 {
+  this->_addMember ( "name", _name );
+  this->_addMember ( "visibility", _visibility );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Feature::Feature ( const Feature& rhs ) : BaseClass ( rhs ),
+  _description( rhs._description ),
+  _name( rhs._name ),
+  _styleUrl( rhs._styleUrl ),
+  _visibility ( rhs._visibility ),
+  _lookAt ( rhs._lookAt ),
+  _timePrimitive ( rhs._timePrimitive ),
+  _dataChangedListeners ( rhs._dataChangedListeners )
+{
+  this->_addMember ( "name", _name );
+  this->_addMember ( "visibility", _visibility );
 }
 
 
@@ -40,6 +67,25 @@ Feature::Feature() :
 
 Feature::~Feature()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query Interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Feature::queryInterface ( unsigned long iid )
+{
+  USUL_TRACE_SCOPE;
+  switch ( iid )
+  {
+  case Usul::Interfaces::IDataChangedNotify::IID:
+    return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
+  default:
+    return BaseClass::queryInterface ( iid );
+  };
 }
 
 
@@ -62,10 +108,15 @@ const std::string& Feature::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Feature::name ( const std::string& s )
+void Feature::name ( const std::string& name )
 {
-  Guard guard ( this->mutex() );
-  _name = s;
+  USUL_TRACE_SCOPE;
+
+  // Set the name.
+  Usul::Threads::Safe::set ( this->mutex(), name, _name );
+
+  // Notify any listeners that the data has changed.
+  this->_notifyDataChnagedListeners();
 }
 
 
@@ -196,4 +247,44 @@ LookAt* Feature::lookAt() const
 {
   Guard guard ( this->mutex() );
   return _lookAt.get();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::addDataChangedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _dataChangedListeners.add ( caller );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::removeDataChangedListener ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  _dataChangedListeners.remove ( caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Notify data changed listeners.  Note: No need to guard, _dataChangedListeners has it's own mutex.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::_notifyDataChnagedListeners()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  _dataChangedListeners.for_each ( std::bind2nd ( std::mem_fun ( &IDataChangedListener::dataChangedNotify ), me.get() ) );
 }

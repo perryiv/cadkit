@@ -52,6 +52,7 @@ public:
 protected:
   
   Object();
+  Object ( const Object& rhs );
   virtual ~Object();
   
 private:

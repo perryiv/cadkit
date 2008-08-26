@@ -35,7 +35,7 @@ public:
   StackPoints ( double mutliplier = 1.0 );
 
   virtual void visit ( Minerva::Core::Data::DataObject &object );
-  virtual void visit ( Minerva::Core::Layers::Container &layer );
+  virtual void visit ( Minerva::Core::Data::Container &layer );
 
 protected:
 

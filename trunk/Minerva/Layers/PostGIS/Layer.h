@@ -81,6 +81,9 @@ public:
   /// Clone this layer.
   virtual IUnknown*           clone() const = 0;
 
+  /// Get the extents.
+  virtual Extents             calculateExtents() const;
+  
   /// Get/Set the color functor. 
   void                        colorFunctor( ColorFunctor *colorFunctor );
   ColorFunctor *              colorFunctor();
@@ -219,9 +222,6 @@ protected:
   
   /// Build the data objects.
   virtual void                _buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
-  
-  /// Get the extents.
-  virtual void                _calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const;
 
   osg::Vec4                   _color( const pqxx::result::const_iterator& iter );
 

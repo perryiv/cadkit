@@ -53,9 +53,7 @@ DataObject::DataObject() :
   _labelColor ( 1.0, 1.0, 1.0, 1.0 ),
   _labelSize ( 25.0f ),
   _showLabel ( false ),
-  _geometry ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
-  _extents(),
   _geometries(),
   _clickedCallback ( 0x0 )
 {
@@ -83,19 +81,16 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast<Usul::Interfaces::IBuildScene*> ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast<Usul::Interfaces::ITreeNode*> ( this );
-  case Usul::Interfaces::ILayerExtents::IID:
-    return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
   case Minerva::Interfaces::IElevationChangedListnerer::IID:
     return static_cast<Minerva::Interfaces::IElevationChangedListnerer*> ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast<Usul::Interfaces::IBooleanState*> ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 
@@ -617,90 +612,6 @@ OsgTools::Widgets::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* calle
   legend->addRow ( row0.get() );
   
   return legend.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::extents ( const Extents& e )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _extents = e;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-DataObject::Extents DataObject::extents() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _extents;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the min longitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double DataObject::minLon() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _extents.minLon();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the min latitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double DataObject::minLat() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _extents.minLat();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the max longitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double DataObject::maxLon() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _extents.maxLon();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the max latitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double DataObject::maxLat() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _extents.maxLat();
 }
 
 

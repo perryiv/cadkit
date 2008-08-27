@@ -20,8 +20,6 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Containers/Unknowns.h"
-#include "Usul/Interfaces/IDataChangedListener.h"
-#include "Usul/Interfaces/IDataChangedNotify.h"
 
 #include "osg/Image"
 #include "osg/ref_ptr"
@@ -36,8 +34,7 @@ namespace Layers {
 class MINERVA_EXPORT RasterGroup : public RasterLayer,
                                    public Minerva::Interfaces::IAddLayer,
                                    public Minerva::Interfaces::IRemoveLayer,
-                                   public Minerva::Interfaces::ISwapLayers,
-                                   public Usul::Interfaces::IDataChangedNotify
+                                   public Minerva::Interfaces::ISwapLayers
 {
 public:
 
@@ -98,9 +95,6 @@ protected:
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * );
 
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
-
-  /// Notify data changed listeners.
-  void                            _notifyDataChnagedListeners();
   
   // Get the number of children (ITreeNode).
   virtual unsigned int            getNumChildNodes() const;
@@ -124,22 +118,12 @@ protected:
   /// Swap layers (ISwapLayers).
   virtual void                    swapLayers ( Usul::Interfaces::IUnknown *layer0, Usul::Interfaces::IUnknown* layer1 );
 
-  // Add the listener.
-  virtual void                    addDataChangedListener ( Usul::Interfaces::IUnknown *caller );
-  
-  // Remove the listener.
-  virtual void                    removeDataChangedListener ( Usul::Interfaces::IUnknown *caller );
-  
 private:
   RasterGroup& operator= ( const RasterGroup& );
 
-  typedef Usul::Interfaces::IDataChangedListener      IDataChangedListener;
-  typedef Usul::Containers::Unknowns<IDataChangedListener> DataChangedListeners;
-  
   Layers _layers;
   ImageCache _cache;
   bool _useCache;
-  DataChangedListeners _dataChangedListeners;
   
   SERIALIZE_XML_CLASS_NAME( RasterGroup );
 };

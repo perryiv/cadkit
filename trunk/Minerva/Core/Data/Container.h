@@ -12,7 +12,6 @@
 #define __MINERVA_LAYERS_CONTAINER_H__
 
 #include "Minerva/Core/Export.h"
-#include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/IDirtyData.h"
@@ -24,7 +23,6 @@
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ILayer.h"
-#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Math/Vector2.h"
@@ -47,7 +45,6 @@ class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
                                  public Usul::Interfaces::ILayer,
                                  public Usul::Interfaces::IUpdateListener,
                                  public Usul::Interfaces::ITreeNode,
-                                 public Usul::Interfaces::ILayerExtents,
                                  public Usul::Interfaces::IBooleanState,
                                  public Minerva::Interfaces::IDirtyData,
                                  public Minerva::Interfaces::IDirtyScene,
@@ -59,10 +56,10 @@ public:
 
   /// Typedefs.
   typedef Minerva::Core::Data::Feature              BaseClass;
+  typedef BaseClass::Extents                        Extents;
   typedef Usul::Interfaces::ILayer                  ILayer;
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef std::vector<IUnknown::QueryPtr>           Unknowns;
-  typedef Minerva::Core::Extents<osg::Vec2d>        Extents;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Container );
@@ -90,6 +87,9 @@ public:
   /// Build the scene (IBuildScene).
   virtual osg::Node *         buildScene ( const Options &options, IUnknown *caller = 0x0 );
 
+  /// Get the extents.
+  virtual Extents             calculateExtents() const;
+  
   /// Clear objects.
   void                        clear();
 
@@ -111,11 +111,6 @@ public:
   /// Elevation has changed within given extents (IElevationChangedListnerer).
   virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller = 0x0 );
 
-  /// Set/get the extents.
-  void                        extents ( const Extents& e );
-  Extents                     extents() const;
-  void                        extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight );
-
   /// Get/Set the flags.
   unsigned int                flags() const;
   void                        flags ( unsigned int );
@@ -125,14 +120,6 @@ public:
 
   /// See if the given level falls within this layer's range of levels.
   bool                        isInLevelRange ( unsigned int level ) const;
-
-  /// Get the min latitude and min longitude (ILayerExtents).
-  virtual double              minLon() const;
-  virtual double              minLat() const;
-  
-  /// Get the max latitude and max longitude (ILayerExtents).
-  virtual double              maxLon() const;
-  virtual double              maxLat() const;
 
   /// Get/Set the name (ILayer).
   virtual std::string         name() const;
@@ -159,9 +146,6 @@ protected:
   virtual ~Container();
   
   Container ( const Container& rhs );
-  
-  /// Get the extents.
-  virtual void                _calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const;
   
   /// Build the scene.
   void                        _buildScene( Usul::Interfaces::IUnknown *caller );
@@ -200,7 +184,6 @@ private:
   UpdateListeners _updateListeners;
   Builders _builders;
   unsigned int _flags;
-  mutable Extents _extents;
   osg::ref_ptr<osg::Group> _root;
   
   SERIALIZE_XML_CLASS_NAME( Container )

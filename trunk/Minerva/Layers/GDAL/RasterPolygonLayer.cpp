@@ -158,8 +158,7 @@ void RasterPolygonLayer::_init()
   _projectionText = _layer->projectionWKT( _srid );
   
   // Get the extents of the layer.
-  Usul::Math::Vec2d ll, ur;
-  _layer->extents ( ll, ur );
+  Extents extents ( _layer->calculateExtents() );
   
   // Get the well known text for lat lon projection.
   _latLonProjectionText = _layer->projectionWKT ( 4326 );
@@ -171,14 +170,17 @@ void RasterPolygonLayer::_init()
   // Make sure the transformation is destroyed.
   Usul::Scope::Caller::RefPtr destroyTransform ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( transform, ::OCTDestroyCoordinateTransformation ) ) );
 
-  // Set the extents.
+  // Transform the extents.
   if ( 0x0 != transform )
   {
+    Extents::Vertex ll ( extents.minimum() ), ur ( extents.maximum() );
     transform->Transform ( 1, &ll[0], &ll[1] );
     transform->Transform ( 1, &ur[0], &ur[1] );
-    Extents extents ( Extents::Vertex ( ll[0], ll[1] ), Extents::Vertex ( ur[0], ur[1] ) );
-    this->extents ( extents );
+    extents = Extents ( ll, ur );
   }
+  
+  // Set the extents.
+  this->extents ( extents );
 
   this->_initGeometries();
 

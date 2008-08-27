@@ -77,21 +77,20 @@ namespace Detail
 
 RasterLayer::RasterLayer() : 
   BaseClass(),
-  _extents( -180.0, -90.0, 180.0, 90.0 ),
   _alphas(),
-  _guid ( Usul::Functions::GUID::generate() ),
-  _shown ( true ),
   _alpha ( 1.0f ),
   _cacheDir ( RasterLayer::defaultCacheDirectory() ),
   _reader ( 0x0 ),
   _log ( 0x0 ),
-  _levelRange ( 0, std::numeric_limits<unsigned int>::max() ),
-  SERIALIZE_XML_INITIALIZER_LIST
+  _levelRange ( 0, std::numeric_limits<unsigned int>::max() )
 {
   this->_registerMembers();
 
   // Initialize the reader.
   this->_imageReaderFind ( "png" );
+  
+  // Set an inital guid.
+  this->objectId ( Usul::Functions::GUID::generate() );
 }
 
 
@@ -102,16 +101,12 @@ RasterLayer::RasterLayer() :
 ///////////////////////////////////////////////////////////////////////////////
 
 RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
-  _extents ( rhs._extents ),
   _alphas ( rhs._alphas ),
-  _guid ( Usul::Functions::GUID::generate() ),
-  _shown ( rhs._shown ),
   _alpha ( rhs._alpha ),
   _cacheDir ( rhs._cacheDir ),
   _reader ( rhs._reader ),
   _log ( rhs._log ),
-  _levelRange ( rhs._levelRange ),
-  SERIALIZE_XML_INITIALIZER_LIST
+  _levelRange ( rhs._levelRange )
 {
   this->_registerMembers();
 }
@@ -126,7 +121,6 @@ RasterLayer::RasterLayer ( const RasterLayer& rhs ) : BaseClass ( rhs ),
 RasterLayer::~RasterLayer()
 {
   _alphas.clear();
-  _guid.clear();
   _cacheDir.clear();
   _reader = 0x0;
   _log = 0x0;
@@ -142,39 +136,9 @@ RasterLayer::~RasterLayer()
 void RasterLayer::_registerMembers()
 {
   // Serialization glue.
-  this->_addMember ( "extents", _extents );
-  this->_addMember ( "guid", _guid );
-  this->_addMember ( "name", this->_getName() );
-  this->_addMember ( "shown", _shown );
   this->_addMember ( new Serialize::XML::ValueMapMember<Alphas> ( "alphas", _alphas ) );
   this->_addMember ( "alpha", _alpha );
   this->_addMember ( "level_range", _levelRange );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayer::extents ( const Extents& extents )
-{
-  Guard guard ( this );
-  _extents = extents;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-RasterLayer::Extents RasterLayer::extents() const
-{
-  Guard guard ( this );
-  return _extents;
 }
 
 
@@ -270,15 +234,10 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
 {
   switch (iid)
   {
-  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::IRasterLayer::IID:
     return static_cast<Usul::Interfaces::IRasterLayer*> ( this );
   case Usul::Interfaces::ILayer::IID:
     return static_cast<Usul::Interfaces::ILayer*> ( this );
-  case Usul::Interfaces::ILayerExtents::IID:
-    return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
-  case Usul::Interfaces::ISerialize::IID:
-    return static_cast<Usul::Interfaces::ISerialize*> ( this );
   case Usul::Interfaces::IRasterAlphas::IID:
     return static_cast<Usul::Interfaces::IRasterAlphas*> ( this );
   case Usul::Interfaces::IClonable::IID:
@@ -288,7 +247,7 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 
@@ -301,32 +260,7 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
 
 std::string RasterLayer::guid() const
 {
-  Guard guard ( this );
-  return _guid;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayer::name() const
-{
-  return BaseClass::name();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayer::name( const std::string& s )
-{
-  BaseClass::name ( s );
+  return this->objectId();
 }
 
 
@@ -338,8 +272,7 @@ void RasterLayer::name( const std::string& s )
 
 void RasterLayer::showLayer ( bool b )
 {
-  Guard guard ( this );
-  _shown = b;
+  this->visibility ( b );
 }
 
 
@@ -351,60 +284,7 @@ void RasterLayer::showLayer ( bool b )
 
 bool RasterLayer::showLayer() const
 {
-  Guard guard ( this );
-  return _shown;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the min longitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double RasterLayer::minLon() const
-{
-  Guard guard ( this );
-  return _extents.minLon();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the min latitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double RasterLayer::minLat() const
-{
-  Guard guard ( this );
-  return _extents.minLat();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the max longitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double RasterLayer::maxLon() const
-{
-  Guard guard ( this );
-  return _extents.maxLon();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the max latitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double RasterLayer::maxLat() const
-{
-  Guard guard ( this );
-  return _extents.maxLat();
+  return this->visibility();
 }
 
 
@@ -998,4 +878,30 @@ bool RasterLayer::isInLevelRange ( unsigned int level ) const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( ( level >= _levelRange[0] ) && ( level <= _levelRange[1] ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayer::name() const
+{
+  USUL_TRACE_SCOPE;
+  return BaseClass::name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterLayer::name ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::name ( name );
 }

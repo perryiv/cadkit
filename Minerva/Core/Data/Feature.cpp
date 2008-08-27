@@ -16,6 +16,16 @@
 
 using namespace Minerva::Core::Data;
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Declare serialization wrappers.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( Feature::Extents );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( Feature::Extents );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Feature::Extents );
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Feature, Feature::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -32,10 +42,12 @@ Feature::Feature() :
   _visibility ( true ),
   _lookAt ( 0x0 ),
   _timePrimitive ( 0x0 ),
+  _extents(  -180.0, -90.0, 180.0, 90.0 ),
   _dataChangedListeners()
 {
   this->_addMember ( "name", _name );
   this->_addMember ( "visibility", _visibility );
+  this->_addMember ( "extents", _extents );
 }
 
 
@@ -52,10 +64,12 @@ Feature::Feature ( const Feature& rhs ) : BaseClass ( rhs ),
   _visibility ( rhs._visibility ),
   _lookAt ( rhs._lookAt ),
   _timePrimitive ( rhs._timePrimitive ),
+  _extents ( rhs._extents ),
   _dataChangedListeners ( rhs._dataChangedListeners )
 {
   this->_addMember ( "name", _name );
   this->_addMember ( "visibility", _visibility );
+  this->_addMember ( "extents", _extents );
 }
 
 
@@ -83,6 +97,8 @@ Usul::Interfaces::IUnknown* Feature::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IDataChangedNotify::IID:
     return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
+  case Usul::Interfaces::ILayerExtents::IID:
+    return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
@@ -287,4 +303,83 @@ void Feature::_notifyDataChnagedListeners()
   USUL_TRACE_SCOPE;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   _dataChangedListeners.for_each ( std::bind2nd ( std::mem_fun ( &IDataChangedListener::dataChangedNotify ), me.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::extents ( const Extents& e )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _extents = e;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Feature::Extents Feature::extents() const
+{
+  USUL_TRACE_SCOPE;
+  return Usul::Threads::Safe::get ( this->mutex(), _extents );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Feature::minLon() const
+{
+  Guard guard ( this );
+  return _extents.minLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the min latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Feature::minLat() const
+{
+  Guard guard ( this );
+  return _extents.minLat();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max longitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Feature::maxLon() const
+{
+  Guard guard ( this );
+  return _extents.maxLon();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//   Get the max latitude (ILayerExtents).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Feature::maxLat() const
+{
+  Guard guard ( this );
+  return _extents.maxLat();
 }

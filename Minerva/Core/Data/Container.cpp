@@ -52,7 +52,6 @@ Container::Container() :
   _updateListeners(),
   _builders(),
   _flags ( Container::ALL ),
-  _extents(),
   _root ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
@@ -75,7 +74,6 @@ Container::Container( const Container& rhs ) :
   _updateListeners ( rhs._updateListeners ),
   _builders ( rhs._builders ),
   _flags ( rhs._flags | Container::SCENE_DIRTY ), // Make sure scene gets rebuilt.
-  _extents ( rhs._extents ),
   _root ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
@@ -141,8 +139,6 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IAddLayer* > ( this );
   case Minerva::Interfaces::IRemoveLayer::IID:
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
-  case Usul::Interfaces::ILayerExtents::IID:
-    return static_cast < Usul::Interfaces::ILayerExtents* > ( this );
   case Usul::Interfaces::IDataChangedNotify::IID:
     return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   default:
@@ -501,67 +497,11 @@ void Container::dirtyScene( bool b, Usul::Interfaces::IUnknown* caller )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::extents ( const Extents& e )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  _extents = e;
-  this->dirtyExtents ( false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the extents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Container::Extents Container::extents() const
-{
-  USUL_TRACE_SCOPE;
-  
-  if ( this->dirtyExtents() )
-  {
-    Usul::Math::Vec2d ll, ur;
-    
-    // Calculate new extents.
-    this->_calculateExtents ( ll, ur );
-    
-    Extents extents ( ll[0], ll[1], ur[0], ur[1] );
-    Usul::Threads::Safe::set ( this->mutex(), extents, _extents );
-  }
-  
-  // Return the extents.
-  return Usul::Threads::Safe::get ( this->mutex(), _extents );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::extents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight )
-{
-  USUL_TRACE_SCOPE;
-  Extents e ( this->extents() );
-  lowerLeft.set  ( e.minLon(), e.minLat() );
-  upperRight.set ( e.maxLon(), e.maxLat() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
+Container::Extents Container::calculateExtents() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -577,8 +517,7 @@ void Container::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Ve
     }
   }
   
-  lowerLeft.set  ( extents.minLon(), extents.minLat() );
-  upperRight.set ( extents.maxLon(), extents.maxLat() );
+  return extents;
 }
 
 
@@ -791,58 +730,6 @@ void Container::removeLayer ( Usul::Interfaces::IUnknown * layer )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//   Get the min longitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Container::minLon() const
-{
-  USUL_TRACE_SCOPE;
-  return this->extents().minLon();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the min latitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Container::minLat() const
-{
-  USUL_TRACE_SCOPE;
-  return this->extents().minLat();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the max longitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Container::maxLon() const
-{
-  USUL_TRACE_SCOPE;
-  return this->extents().maxLon();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Get the max latitude (ILayerExtents).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double Container::maxLat() const
-{
-  USUL_TRACE_SCOPE;
-  return this->extents().maxLat();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  See if the given level falls within this layer's range of levels.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -873,7 +760,7 @@ std::string Container::name() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::name( const std::string& name )
+void Container::name ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
   BaseClass::name ( name );

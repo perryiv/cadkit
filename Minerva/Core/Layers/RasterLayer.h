@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
+#include "Minerva/Core/Data/Feature.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -21,7 +22,6 @@
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IClonable.h"
 #include "Usul/Interfaces/ILayer.h"
-#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Interfaces/IReadImageFile.h"
@@ -46,20 +46,18 @@ namespace Core {
 namespace Layers {
 
 
-class MINERVA_EXPORT RasterLayer : public Usul::Base::Object,
+class MINERVA_EXPORT RasterLayer : public Minerva::Core::Data::Feature,
                                    public Usul::Interfaces::IClonable,
                                    public Usul::Interfaces::ILayer,
-                                   public Usul::Interfaces::ILayerExtents,
                                    public Usul::Interfaces::IRasterAlphas,
                                    public Usul::Interfaces::IRasterLayer,
-                                   public Usul::Interfaces::ISerialize,
                                    public Usul::Interfaces::ITreeNode,
                                    public Usul::Interfaces::IBooleanState
 {
 public:
 
-  typedef Usul::Base::Object BaseClass;
-  typedef Minerva::Core::Extents < osg::Vec2d > Extents;
+  typedef Minerva::Core::Data::Feature BaseClass;
+  typedef BaseClass::Extents Extents;
   typedef osg::ref_ptr < osg::Image > ImagePtr;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Interfaces::IRasterAlphas::Alphas Alphas;
@@ -93,10 +91,6 @@ public:
   static void           defaultCacheDirectory ( const std::string& );
   static std::string    defaultCacheDirectory();
 
-  /// Get/Set the extents.
-  void                  extents ( const Extents& extents );
-  Extents               extents () const;
-
   /// Get the guid for the layer.
   virtual std::string   guid() const;
 
@@ -106,10 +100,10 @@ public:
   // Set/get the log.
   virtual void          logSet ( LogPtr );
   LogPtr                logGet();
-
-  /// Get/Set the name.
+  
+  /// Get/Set the name (ILayer).
   virtual std::string   name() const;
-  virtual void          name( const std::string& );
+  virtual void          name ( const std::string& );
 
   /// Get/Set show layer
   virtual void          showLayer ( bool b );
@@ -149,14 +143,6 @@ protected:
 
   void                  _writeImageToCache ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, ImagePtr );
 
-  /// Get the min latitude and min longitude (ILayerExtents).
-  virtual double        minLon() const;
-  virtual double        minLat() const;
-
-  /// Get the max latitude and max longitude (ILayerExtents).
-  virtual double        maxLon() const;
-  virtual double        maxLat() const;
-
   // Get the number of children (ITreeNode).
   virtual unsigned int  getNumChildNodes() const;
 
@@ -179,18 +165,14 @@ private:
   // Register members for serialization.
   void                  _registerMembers();
 
-  Extents _extents;
   Alphas _alphas;
-  std::string _guid;
-  bool _shown;
   float _alpha;
   std::string _cacheDir;
   IReadImageFile::RefPtr _reader;
   LogPtr _log;
   Usul::Math::Vec2ui _levelRange;
 
-  SERIALIZE_XML_DEFINE_MAP;
-  SERIALIZE_XML_DEFINE_MEMBERS ( RasterLayer );
+  SERIALIZE_XML_CLASS_NAME( RasterLayer )
 };
 
 

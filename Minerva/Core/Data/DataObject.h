@@ -24,7 +24,6 @@
 #include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
-#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -64,17 +63,18 @@ public:
   virtual Item* operator() ( const DataObject&, Usul::Interfaces::IUnknown* ) const = 0;
 };
 
+  
+
 class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::ITreeNode,
-                                  public Usul::Interfaces::ILayerExtents,
                                   public Usul::Interfaces::IBooleanState,
                                   public Minerva::Interfaces::IElevationChangedListnerer
 {
 public:
   typedef Minerva::Core::Data::Feature        BaseClass;
   typedef Usul::Interfaces::IUnknown          Unknown;
-  typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
+  typedef BaseClass::Extents                  Extents;
   typedef Minerva::Core::Data::Geometry       Geometry;
   typedef std::vector<Geometry::RefPtr>       Geometries;
   typedef OsgTools::Widgets::Item             Item;
@@ -117,10 +117,6 @@ public:
   /// Elevation has changed within given extents (IElevationChangedListnerer).
   virtual bool          elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Unknown * caller = 0x0 );
 
-  /// Set/get the extents.
-  void                  extents ( const Extents& e );
-  Extents               extents() const;
-
   /// Get the geometries.
   Geometries            geometries() const;
 
@@ -139,14 +135,6 @@ public:
   /// Get/Set the label size.
   void                  labelSize ( float size );
   float                 labelSize () const;
-
-  /// Get the min latitude and min longitude (ILayerExtents).
-  virtual double        minLon() const;
-  virtual double        minLat() const;
- 
-  /// Get the max latitude and max longitude (ILayerExtents).
-  virtual double        maxLon() const;
-  virtual double        maxLat() const;
 
   /// Get/Set the flag to show the label.
   void                  showLabel ( bool value );
@@ -184,11 +172,9 @@ private:
   osg::Vec4    _labelColor;
   float        _labelSize;
   bool         _showLabel;
-  Unknown::QueryPtr _geometry;
   Unknown::QueryPtr _dataSource;
   osg::ref_ptr < osg::Node > _root;
   osg::ref_ptr < osg::Node > _preBuiltScene;
-  Extents _extents;
   Geometries _geometries;
   ClickedCallback::RefPtr _clickedCallback;
 };
@@ -198,4 +184,3 @@ private:
 }
 
 #endif // __DATA_OBJECT_H__
-

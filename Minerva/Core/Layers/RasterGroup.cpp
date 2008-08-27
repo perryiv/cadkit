@@ -36,8 +36,7 @@ RasterGroup::RasterGroup() :
   BaseClass (),
   _layers   (),
   _cache    (),
-  _useCache ( false ),
-  _dataChangedListeners()
+  _useCache ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -57,9 +56,11 @@ RasterGroup::RasterGroup ( const RasterGroup& rhs ) :
   BaseClass ( rhs ),
   _layers ( rhs._layers ),
   _cache ( rhs._cache ),
-  _useCache ( rhs._useCache ), 
-  _dataChangedListeners ( rhs._dataChangedListeners )
+  _useCache ( rhs._useCache )
 {
+  // Serialization glue.
+  this->_addMember ( "layers", _layers );
+  this->_addMember ( "use_in_memory_image_cache", _useCache );
 }
 
 
@@ -91,8 +92,6 @@ Usul::Interfaces::IUnknown * RasterGroup::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
   case Minerva::Interfaces::ISwapLayers::IID:
     return static_cast < Minerva::Interfaces::ISwapLayers* > ( this );
-  case Usul::Interfaces::IDataChangedNotify::IID:
-    return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -609,45 +608,6 @@ void RasterGroup::swap ( IRasterLayer* layer0, IRasterLayer* layer1 )
   this->_notifyDataChnagedListeners();
 }
 
-
-/////////////////////////////////////////////////////////////////////////////////
-//
-//  Add the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterGroup::addDataChangedListener ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  _dataChangedListeners.add ( caller );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////
-//
-//  Remove the listener.  Note: No need to guard, _dataChangedListeners has it's own mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterGroup::removeDataChangedListener ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-  _dataChangedListeners.remove ( caller );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//   Notify data changed listeners.  Note: No need to guard, _dataChangedListeners has it's own mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterGroup::_notifyDataChnagedListeners()
-{
-  USUL_TRACE_SCOPE;
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  _dataChangedListeners.for_each ( std::bind2nd ( std::mem_fun ( &IDataChangedListener::dataChangedNotify ), me.get() ) );
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

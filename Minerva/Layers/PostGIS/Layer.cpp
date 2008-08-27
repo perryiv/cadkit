@@ -1167,13 +1167,13 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d& upperRight ) const
+Layer::Extents Layer::calculateExtents() const
 {
   // Get the connection.
   Connection::RefPtr connection ( const_cast <Connection*> ( this->connection() ) );
   
   if ( false == connection.valid() )
-    return;
+    return Extents();
   
   // Tablename.
   std::string tablename ( this->tablename() );
@@ -1186,10 +1186,10 @@ void Layer::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d&
   
   // Return if we didn't get any results.
   if ( result.empty() )
-    return;
+    return Extents();
   
-  lowerLeft.set  ( std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
-  upperRight.set ( std::numeric_limits<double>::min(), std::numeric_limits<double>::min() );
+  Extents::Vertex lowerLeft ( std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
+  Extents::Vertex upperRight ( std::numeric_limits<double>::min(), std::numeric_limits<double>::min() );
   
   // Loop through the results.
   for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
@@ -1208,6 +1208,8 @@ void Layer::_calculateExtents ( Usul::Math::Vec2d& lowerLeft, Usul::Math::Vec2d&
     if ( ur[1] > upperRight[1] )
       upperRight[1] = ur[1];
   }
+  
+  return Extents ( lowerLeft, upperRight );
 }
 
 
@@ -1377,6 +1379,9 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
   
   // Make a scoped connection.
   Connection::ScopedConnection scopedConnection ( *this->connection() );
+  
+  // Set our extents.
+  this->extents ( this->calculateExtents() );
   
   // Execute the query.
   pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );

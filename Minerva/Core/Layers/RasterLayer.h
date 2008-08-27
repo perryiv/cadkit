@@ -152,25 +152,25 @@ protected:
   /// Get the min latitude and min longitude (ILayerExtents).
   virtual double        minLon() const;
   virtual double        minLat() const;
- 
+
   /// Get the max latitude and max longitude (ILayerExtents).
   virtual double        maxLon() const;
   virtual double        maxLat() const;
-  
+
   // Get the number of children (ITreeNode).
   virtual unsigned int  getNumChildNodes() const;
-  
+
   // Get the child node (ITreeNode).
   virtual ITreeNode *   getChildNode ( unsigned int which );
-  
+
   // Set/get the name (ITreeNode).
   virtual void          setTreeNodeName ( const std::string & );
   virtual std::string   getTreeNodeName() const;
-  
+
   // Set/get the state (IBooleanState).
   virtual void          setBooleanState ( bool );
   virtual bool          getBooleanState() const;
-  
+
 private:
 
   // Do not use.

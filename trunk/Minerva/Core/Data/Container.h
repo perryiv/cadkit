@@ -199,7 +199,6 @@ private:
   Unknowns _layers;
   UpdateListeners _updateListeners;
   Builders _builders;
-  std::string _guid;
   unsigned int _flags;
   mutable Extents _extents;
   osg::ref_ptr<osg::Group> _root;

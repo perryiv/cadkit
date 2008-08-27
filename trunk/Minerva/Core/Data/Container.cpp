@@ -51,13 +51,15 @@ Container::Container() :
   _layers(),
   _updateListeners(),
   _builders(),
-  _guid ( Usul::Functions::GUID::generate() ),
   _flags ( Container::ALL ),
   _extents(),
   _root ( new osg::Group )
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
+
+  // Make a default id.
+  this->objectId ( Usul::Functions::GUID::generate() );
 }
 
 
@@ -72,7 +74,6 @@ Container::Container( const Container& rhs ) :
   _layers( rhs._layers ),
   _updateListeners ( rhs._updateListeners ),
   _builders ( rhs._builders ),
-  _guid( Usul::Functions::GUID::generate() ),
   _flags ( rhs._flags | Container::SCENE_DIRTY ), // Make sure scene gets rebuilt.
   _extents ( rhs._extents ),
   _root ( new osg::Group )
@@ -103,7 +104,6 @@ Container::~Container()
 void Container::_registerMembers()
 {
   USUL_TRACE_SCOPE;
-  this->_addMember ( "guid", _guid );
   this->_addMember ( "layers", _layers );
 }
 
@@ -198,8 +198,7 @@ void Container::traverse ( Minerva::Core::Visitor& visitor )
 std::string Container::guid() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _guid;
+  return this->objectId();
 }
 
 

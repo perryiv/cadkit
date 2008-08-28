@@ -105,12 +105,12 @@ namespace Helper
       return;
 
     // Get the src.
-    const std::string src ( site["images"][name][fileTagName].get ( "" ) );
+    const std::string src ( site["images"][name][fileTagName].get<std::string> ( "" ) );
     if ( true == src.empty() )
       return;
 
     // Get the alt text.
-    const std::string alt ( site["images"][name]["alternative"].get ( "" ) );
+    const std::string alt ( site["images"][name]["alternative"].get<std::string> ( "" ) );
 
     // Get the image directory.
     const std::string dir ( Functions::directory ( site["images"]["directory"] ) );
@@ -157,19 +157,19 @@ namespace Helper
 
     // Set the url.
     {
-      const std::string href ( site["links"][name]["href"].get ( "" ) );
+      const std::string href ( site["links"][name]["href"].get<std::string> ( "" ) );
       if ( false == href.empty() )
         node->attributes()["href"] = href;
     }
 
     // Are we linking to an image?
     {
-      const std::string image ( site["links"][name]["image"].get ( "" ) );
+      const std::string image ( site["links"][name]["image"].get<std::string> ( "" ) );
       if ( false == image.empty() )
       {
         const std::string domain ( Functions::urlDomain ( true ) );
-        const std::string dir  ( Functions::directory ( site["images"]["directory"].get ( "" ) ) );
-        const std::string file ( site["images"][name]["file"].get ( "" ) );
+        const std::string dir  ( Functions::directory ( site["images"]["directory"].get<std::string> ( "" ) ) );
+        const std::string file ( site["images"][name]["file"].get<std::string> ( "" ) );
         const std::string href ( Usul::Strings::format ( domain, dir, file ) );
         node->attributes()["href"] = href;
       }
@@ -177,7 +177,7 @@ namespace Helper
 
     // Is it an external link?
     {
-      const std::string target ( site["links"][name]["target"].get ( "" ) );
+      const std::string target ( site["links"][name]["target"].get<std::string> ( "" ) );
       if ( false == target.empty() )
         node->attributes()["target"] = target;
     }
@@ -230,15 +230,15 @@ namespace Helper
       return;
 
     // Get the movie file.
-    const std::string file ( site["movies"][name]["file"].get ( "" ) );
+    const std::string file ( site["movies"][name]["file"].get<std::string> ( "" ) );
     if ( true == file.empty() )
       return;
 
     // Get the cover image file.
-    const std::string cover ( site["movies"][name]["cover"].get ( "" ) );
+    const std::string cover ( site["movies"][name]["cover"].get<std::string> ( "" ) );
 
     // Get the thumbnail image file.
-    const std::string thumb ( site["movies"][name]["thumb"].get ( "" ) );
+    const std::string thumb ( site["movies"][name]["thumb"].get<std::string> ( "" ) );
 
     // Get the movie directory.
     const std::string dir ( Functions::directory ( site["movies"]["directory"] ) );
@@ -249,7 +249,7 @@ namespace Helper
     // Make the link.
     const std::string href
       ( Usul::Strings::format
-        ( Functions::urlScript(), "?site=", site["name"].get ( "" ), 
+        ( Functions::urlScript(), "?site=", site["name"].get<std::string> ( "" ), 
           "&page=", site["movies"][name].name(), "&type=movie" ) );
 
     // Make the node into a link.

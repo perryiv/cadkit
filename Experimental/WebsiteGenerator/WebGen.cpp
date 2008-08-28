@@ -130,7 +130,7 @@ WebGen::WebGen ( int argc, char **argv, char **env ) :
   _chars["registered"]    = "®";
 
   // For convenience, put the site from the query string into the member.
-  _site["name"] = _query["site"].get ( "" );
+  _site["name"] = _query["site"].get<std::string> ( "" );
 }
 
 
@@ -192,7 +192,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeHead()
   XmlTree::Node::ValidRefPtr head ( new XmlTree::Node ( "head" ) );
 
   // Add the title.
-  const std::string title ( _site["subject"]["long_name"].get ( "Title" ) );
+  const std::string title ( _site["subject"]["long_name"].get<std::string> ( "Title" ) );
   const std::string page ( this->_pageName() );
   head->append ( "title", Usul::Strings::format ( title, " - ", page ) );
 
@@ -226,20 +226,20 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
   XmlTree::Node::ValidRefPtr body ( new XmlTree::Node ( "body" ) );
 
   // Is this a movie?
-  if ( "movie" == _query["type"].get ( "" ) )
+  if ( "movie" == _query["type"].get<std::string> ( "" ) )
   {
     // Get the movie directory.
     const std::string dir ( Functions::directory ( _site["movies"]["directory"] ) );
 
     // The page name is the movie name.
-    const std::string name ( _query["page"].get ( "" ) );
+    const std::string name ( _query["page"].get<std::string> ( "" ) );
 
     // Get the url for the movie and the cover image.
-    const std::string cover ( Functions::urlDomain ( true ) + dir + _site["movies"][name]["cover"].get ( "" ) );
-    const std::string movie ( Functions::urlDomain ( true ) + dir + _site["movies"][name]["file" ].get ( "" ) );
+    const std::string cover ( Functions::urlDomain ( true ) + dir + _site["movies"][name]["cover"].get<std::string> ( "" ) );
+    const std::string movie ( Functions::urlDomain ( true ) + dir + _site["movies"][name]["file" ].get<std::string> ( "" ) );
 
     // Get the url for the player.
-    const std::string player ( Functions::urlDomain ( true ) + dir + _site["movies"]["player"]["file" ].get ( "" ) );
+    const std::string player ( Functions::urlDomain ( true ) + dir + _site["movies"]["player"]["file" ].get<std::string> ( "" ) );
 
     // Make the movie object.
     XmlTree::Node::ValidRefPtr center ( body->append ( "center" ) );
@@ -248,8 +248,8 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
     // Add object attributes.
     object->attributes()["type"]   = "application/x-shockwave-flash";
     object->attributes()["data"]   = player;
-    object->attributes()["width"]  = _site["movies"][name]["width"].get ( "" );
-    object->attributes()["height"] = _site["movies"][name]["height"].get ( "" );
+    object->attributes()["width"]  = _site["movies"][name]["width"].get<std::string> ( "" );
+    object->attributes()["height"] = _site["movies"][name]["height"].get<std::string> ( "" );
     object->attributes()["id"]     = "FlowPlayer";
 
     // Add the param children.
@@ -288,20 +288,20 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
 
       // The image gets the logo attribute.
       XmlTree::Node::ValidRefPtr img
-        ( this->_makeImage ( _site["images"]["logo"]["file"].get ( "logo.png" ), "Logo Image" ) );
+        ( this->_makeImage ( _site["images"]["logo"]["file"].get<std::string> ( "logo.png" ), "Logo Image" ) );
       img->attributes()["class"] = "logo_link";
       link->append ( img );
 
       // Set link attributes.
       link->attributes()["href"] = 
-        Usul::Strings::format ( Functions::urlScript(), "?site=", _site["name"].get ( "" ) );
+        Usul::Strings::format ( Functions::urlScript(), "?site=", _site["name"].get<std::string> ( "" ) );
     }
 
     // Add the page title and separator.
     {
       CellIndex index ( _site["subject"]["cell"].get<CellIndex> ( CellIndex ( 0, 1 ) ) );
       XmlTree::Node::ValidRefPtr subject ( this->_cell ( index[0], index[1] ) );
-      const std::string longName ( _site["subject"]["long_name"].get ( "Subject" ) );
+      const std::string longName ( _site["subject"]["long_name"].get<std::string> ( "Subject" ) );
       const std::string pageName ( this->_pageName() );
       XmlTree::Node::ValidRefPtr h1 ( subject->append ( "h1", longName ) );
       h1->attributes()["class"] = "subject";
@@ -351,12 +351,12 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
     {
       CellIndex index ( _site["legal"]["cell"].get<CellIndex> ( CellIndex ( 2, 1 ) ) );
       XmlTree::Node::ValidRefPtr legal ( this->_cell ( index[0], index[1] ) );
-      const std::string ownerLong ( _site["owner"]["long_name"].get ( "" ) );
+      const std::string ownerLong ( _site["owner"]["long_name"].get<std::string> ( "" ) );
       if ( false == ownerLong.empty() )
       {
         const std::string year ( Usul::System::DateTime::format ( "%Y" ) );
         legal->append ( "hr" );
-        const std::string ownerShort ( _site["owner"]["short_name"].get ( "" ) );
+        const std::string ownerShort ( _site["owner"]["short_name"].get<std::string> ( "" ) );
         if ( true == ownerShort.empty() )
         {
           legal->append ( "p", Usul::Strings::format ( "Copyright © ", year, ", ", ownerLong ) );
@@ -480,7 +480,7 @@ void WebGen::_findPages()
   // Get the file for the pages.
   const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
   const std::string dir ( Functions::directory ( _site["pages"]["directory"] ) );
-  std::string file ( _site["pages"]["file"].get ( "" ) );
+  std::string file ( _site["pages"]["file"].get<std::string> ( "" ) );
   if ( true == file.empty() )
   {
     std::cout << "No pages specified" << std::endl;
@@ -541,7 +541,7 @@ void WebGen::_addScripts ( XmlTree::Node::ValidRefPtr parent )
   // Get the file name.
   const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
   const std::string dir ( Functions::directory ( _site["scripts"]["directory"] ) );
-  std::string file ( _site["scripts"]["file"].get ( "" ) );
+  std::string file ( _site["scripts"]["file"].get<std::string> ( "" ) );
   if ( true == file.empty() )
     return;
   file = Usul::Strings::format ( root, dir, file );
@@ -573,7 +573,7 @@ void WebGen::_addStyles ( XmlTree::Node::ValidRefPtr parent )
   // Get the file name.
   const std::string root ( Functions::directory ( Usul::System::Environment::get ( "DOCUMENT_ROOT" ) ) );
   const std::string dir ( Functions::directory ( _site["styles"]["directory"] ) );
-  std::string file ( _site["styles"]["file"].get ( "" ) );
+  std::string file ( _site["styles"]["file"].get<std::string> ( "" ) );
   if ( true == file.empty() )
     return;
 
@@ -682,7 +682,7 @@ void WebGen::run()
 
   // Determine the file to read for the site information.
   const std::string siteName ( this->_queryValue ( "site", "default" ) );
-  const std::string siteFile ( sites[siteName].get ( "default" ) );
+  const std::string siteFile ( sites[siteName].get<std::string> ( "default" ) );
 
   // Read the main site into the registry.
   XmlTree::RegistryIO::readNode ( siteFile, _site );

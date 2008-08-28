@@ -33,7 +33,7 @@
 
 std::string Functions::directory ( Usul::Registry::Node &node )
 {
-  return Functions::directory ( node.get ( "." ) );
+  return Functions::directory ( node.get<std::string> ( "." ) );
 }
 
 

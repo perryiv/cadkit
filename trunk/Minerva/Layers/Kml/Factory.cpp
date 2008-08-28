@@ -492,6 +492,9 @@ Factory::Model* Factory::createModel ( const XmlTree::Node& node ) const
   model->orientation ( orientation[0], orientation[1], orientation[2] );
   model->scale ( scale );
   
+  // Set the extents.  It may be better to calcuate the model's footprint and use that as the extents.
+  model->extents ( Extents ( Extents::Vertex ( location[0], location[1] ), Extents::Vertex ( location[0], location[1] ) ) );
+  
   Helper::setObjectDataMembers ( model.get(), node );
   return model.release();
 }

@@ -40,6 +40,7 @@ void XmlTree::replaceIllegalCharacters ( std::string& string )
   boost::algorithm::replace_all ( string, "<", "&lt;" );
   boost::algorithm::replace_all ( string, ">", "&gt;" );
   boost::algorithm::replace_all ( string, "'", "&apos;" );
+  boost::algorithm::replace_all ( string, "©", "&copy;" );
   boost::algorithm::replace_all ( string, "\"", "&quot;" );
 }
 
@@ -56,6 +57,7 @@ void XmlTree::restoreIllegalCharacters ( std::string& string )
   boost::algorithm::replace_all ( string, "&lt;", "<" );
   boost::algorithm::replace_all ( string, "&gt;", ">" );
   boost::algorithm::replace_all ( string, "&apos;", "'" );
+  boost::algorithm::replace_all ( string, "&copy;", "©" );
   boost::algorithm::replace_all ( string, "&quot;", "\"" );
   boost::algorithm::replace_all ( string, "&amp;", "&" );
 }

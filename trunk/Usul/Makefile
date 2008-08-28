@@ -17,6 +17,7 @@ CPP_FILES = \
   ./Factory/BaseCreator.cpp \
   ./Factory/ObjectFactory.cpp \
   ./Scope/Timer.cpp \
+  ./Scope/CurrentDirectory.cpp \
   ./Jobs/Manager.cpp \
   ./Jobs/Job.cpp \
   ./Predicates/CanWrite.cpp \
@@ -32,6 +33,7 @@ CPP_FILES = \
   ./System/Environment.cpp \
   ./Types/Types.cpp \
   ./File/Remove.cpp \
+  ./File/Rename.cpp \
   ./File/Make.cpp \
   ./File/Temp.cpp \
   ./Commands/RenderLoop.cpp \
@@ -43,25 +45,27 @@ CPP_FILES = \
   ./Resources/TextWindow.cpp \
   ./Resources/CancelButton.cpp \
   ./Resources/ProgressBar.cpp \
-  ./Resources/MenuBar.cpp \
   ./Resources/EventQueue.cpp \
   ./Resources/StatusBar.cpp \
   ./Resources/ReportErrors.cpp \
+  ./Resources/Manager.cpp \
   ./Registry/Database.cpp \
   ./Registry/Node.cpp \
   ./Registry/Visitor.cpp \
   ./User/Directory.cpp \
-  ./State/Busy.cpp \
   ./ID/GUID.cpp \
   ./Functions/Color.cpp \
   ./Functions/GUID.cpp \
   ./DLL/Listener.cpp \
   ./DLL/Library.cpp \
+  ./DLL/LibraryPool.cpp \
   ./DLL/Loader.cpp \
   ./Trace/Scope.cpp \
   ./Trace/Print.cpp \
   ./Errors/Stack.cpp \
   ./Errors/Error.cpp \
+  ./Errors/Assert.cpp \
+  ./File/Log.cpp \
   ./Functors/Interaction/Wand/WandPosition.cpp \
   ./Functors/Interaction/Wand/WandRotation.cpp \
   ./Functors/Interaction/Wand/WandMatrix.cpp \
@@ -76,6 +80,7 @@ CPP_FILES = \
   ./Functors/Interaction/Matrix/IdentityMatrix.cpp \
   ./Functors/Interaction/Matrix/MatrixFunctor.cpp \
   ./Functors/Interaction/Input/WandYaw.cpp \
+  ./Functors/Interaction/Input/WandRoll.cpp \
   ./Functors/Interaction/Input/JoystickVertical.cpp \
   ./Functors/Interaction/Input/JoystickHorizontal.cpp \
   ./Functors/Interaction/Input/AnalogInput.cpp \
@@ -90,13 +95,9 @@ CPP_FILES = \
   ./CommandLine/Options.cpp \
   ./CommandLine/Flags.cpp \
   ./App/Application.cpp \
-  ./App/Controller.cpp \
   ./Documents/Document.cpp \
   ./Documents/Manager.cpp \
-  ./Components/Manager.cpp \
-  ./Devices/Factory.cpp \
-  ./Devices/State.cpp \
-  ./Devices/BaseDevice.cpp
+  ./Components/Manager.cpp
 
 LOCAL_INCLUDE = \
 	-I../

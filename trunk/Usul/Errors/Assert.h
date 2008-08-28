@@ -27,7 +27,7 @@ namespace Errors {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void _assert_debug ( bool state, const char *exp, char *file, int line );
+void _assert_debug ( bool state, const char *exp, const char *file, int line );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ void _assert_debug ( bool state, const char *exp, char *file, int line );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-inline void _assert_release ( bool state, const char *, char *, int )
+inline void _assert_release ( bool state, const char *, const char *, int )
 {
   // Banking on this being compiled away.
 }

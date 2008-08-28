@@ -30,7 +30,7 @@ namespace Usul
 {
   namespace Errors
   {
-    void _assert_debug ( bool state, const char *exp, char *file, int line )
+    void _assert_debug ( bool state, const char *exp, const char *file, int line )
     {
       USUL_TRACE_SCOPE_STATIC;
 

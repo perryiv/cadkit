@@ -14,10 +14,11 @@ LOCAL_INCLUDE = \
 	-I../
 
 LOCAL_LIBS = \
-	-L$(CADKIT_LIB_DIR) \
-	-lUsul$(TARGET_SUFFIX) \
-	-lXmlTree$(TARGET_SUFFIX) \
-	-lxerces-c
+	$(CADKIT_LIB_DIR)/libXmlTree$(TARGET_SUFFIX).a \
+	$(CADKIT_LIB_DIR)/libUsul$(TARGET_SUFFIX).a \
+	-lxerces-c \
+	-ldl \
+	-luuid
 
 
 # The name of the thing we are making.
@@ -27,7 +28,7 @@ TARGET = make_page
 TARGET_DIR = $(HOME)/www/cgi-bin
 
 # Do this after the target builds.
-POST_BUILD_COMMAND = chcon -t httpd_sys_content_t $(TARGET_DIR)/$(TARGET)
+#POST_BUILD_COMMAND = chcon -t httpd_sys_content_t $(TARGET_DIR)/$(TARGET)
 
 # Include the rules for make...
 include $(CADKIT_MAKE_DIR)/executable.mak

@@ -8,18 +8,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OsgTools/Points/PointSet.h"
-#include "OsgTools/Configure/OSG.h"
+#include "PointSet.h"
+
+#include "Usul/Jobs/Manager.h"
+#include "Usul/Strings/Format.h"
 
 #include "osgDB/WriteFile"
 
 #include "osg/BoundingBox"
 
 #include <iostream>
+#include <stdexcept>
 
 //USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PointSet, PointSet::BaseClass );
 
-using namespace OsgTools::Points;
 USUL_IMPLEMENT_TYPE_ID ( PointSet );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,10 +30,16 @@ USUL_IMPLEMENT_TYPE_ID ( PointSet );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointSet::PointSet() : BaseClass (),
-_points( new osg::Vec3Array ),
-_tree( new OctTree() )
+PointSet::PointSet ( Usul::Jobs::Manager *jm ) : BaseClass (),
+  _points ( new osg::Vec3Array ),
+  _tree ( new OctTree ( jm ) ),
+  _workingDir(),
+  _baseName(),
+  _jobManager ( jm )
 {
+  if ( 0x0 == _jobManager )
+    throw std::invalid_argument ( Usul::Strings::format ( "Error 2403035396: null job manager given" ) );
+
   // Remove this after testing
 #if 0
   osg::BoundingBox bb ( 1352000.0f, -70900.0f, 4300.0f, 1355000.0f, -70000.0f, 4900.0f );
@@ -48,7 +56,7 @@ _tree( new OctTree() )
 
 PointSet::~PointSet()
 {
- 
+  // Do not delete _jobManager
 }
 
 
@@ -276,3 +284,60 @@ void PointSet::read( std::ifstream* ifs, Usul::Types::Uint64 &numPoints, Usul::D
   _tree->read( ifs, document, caller, progress );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the base name
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::baseName( const std::string& name )
+{
+  Guard guard ( this );
+
+  _tree->baseName( name );
+  _baseName = name;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the base name
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string PointSet::baseName()
+{
+  Guard guard ( this );
+
+  return _baseName;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the working directory
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void PointSet::workingDir( const std::string& dir )
+{
+  Guard guard ( this );
+
+  // set the working directory in the tree
+  _tree->workingDir( dir, true );
+
+  _workingDir = dir;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the working directory
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string PointSet::workingDir()
+{
+  Guard guard ( this );
+
+  return _workingDir;
+}

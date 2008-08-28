@@ -14,12 +14,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __EXPERIMENTAL_OCTTREE_H__
-#define __EXPERIMENTAL_OCTTREE_H__
+#ifndef __EXPERIMENTAL_POINT_DOCUMENT_OCTTREE_H__
+#define __EXPERIMENTAL_POINT_DOCUMENT_OCTTREE_H__
 
-#include "OsgTools/Points/OctTreeNode.h"
-#include "OsgTools/Points/PointSetRecords.h"
-#include "OsgTools/Export.h"
+#include "OctTreeNode.h"
+#include "PointSetRecords.h"
 
 #include "OsgTools/Configure/OSG.h"
 
@@ -36,10 +35,10 @@
 
 #include <vector>
 
-namespace OsgTools {
-namespace Points {
+namespace Usul { namespace Jobs { class Manager; } }
 
-class OSG_TOOLS_EXPORT OctTree : public Usul::Base::Object
+
+class OctTree : public Usul::Base::Object
 {
 public:
   
@@ -54,7 +53,7 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( OctTree );
 
-  OctTree();
+  OctTree ( Usul::Jobs::Manager *jm );
   virtual ~OctTree();
 
   void                          add( OctTreeNode * node );
@@ -76,22 +75,30 @@ public:
   void                          read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                          preBuildScene( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  void                          workingDir( const std::string& dir, bool setNodes );
+  std::string                   workingDir();
+
+  void                          baseName( const std::string& name );
+  std::string                   baseName();
+
 protected:
   
   void                          _partition();
   osg::Node*                    _buildTransparentPlane();
   
-  
-
 private:
+
+  // No copying or assignment.
+  OctTree ( const OctTree & );
+  OctTree &operator = ( const OctTree & );
   
-  OctTreeNode::RefPtr           _tree;
+  osg::ref_ptr< OctTreeNode >   _tree;
   unsigned int                  _capacity;
   StreamBufferPtr               _buffer;
   std::string                   _tempPath;
+  std::string                   _workingDir;
+  std::string                   _baseName;
+  Usul::Jobs::Manager *         _jobManager;
+};
+#endif // __EXPERIMENTAL_POINT_DOCUMENT_OCTTREE_H__
 
-
-}; // OctTree
-}; // namespace Points
-}; // namespace OsgTools
-#endif // __EXPERIMENTAL_OCTTREE_H__

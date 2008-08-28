@@ -29,6 +29,7 @@ namespace PointSetRecords
       const Type POINTS             ( 4 );
       const Type CHILDREN           ( 5 );
       const Type COLORS             ( 6 );
+      const Type OOC_VERTICES       ( 7 );
     }
    
 }

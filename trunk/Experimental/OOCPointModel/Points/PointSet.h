@@ -14,12 +14,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _OSGTOOLS_POINTS_POINT_SET_H_
-#define _OSGTOOLS_POINTS_POINT_SET_H_
+#ifndef _POINT_DOCUMENT_POINTS_POINT_SET_H_
+#define _POINT_DOCUMENT_POINTS_POINT_SET_H_
 
-#include "OsgTools/Export.h"
-#include "OsgTools/Points/OctTree.h"
-#include "OsgTools/Points/PointSetRecords.h"
+#include "OctTree.h"
+#include "PointSetRecords.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -32,13 +31,10 @@
 
 #include <string>
 
-
+namespace Usul { namespace Jobs { class Manager; } }
 namespace osg { class Node; class Group; }
 
-namespace OsgTools {
-namespace Points {
-
-class OSG_TOOLS_EXPORT PointSet : public Usul::Base::Object
+class PointSet : public Usul::Base::Object
 {
 public:
  
@@ -62,7 +58,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( PointSet );
 
   /// Construction.
-  PointSet();
+  PointSet ( Usul::Jobs::Manager * );
 
   /// Build the scene.
   osg::Node *             buildScene ( Unknown *caller = 0x0 );
@@ -87,28 +83,31 @@ public:
   void                    write( std::ofstream* ofs, Usul::Types::Uint64  numPoints, Usul::Documents::Document* document = 0x0, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
   void                    read ( std::ifstream* ifs, Usul::Types::Uint64 &numPoints,Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
+  void                    workingDir( const std::string& dir );
+  std::string             workingDir();
+
+  void                    baseName( const std::string& name );
+  std::string             baseName();
+
  
 protected:
 
-  /// Do not copy.
-  PointSet ( const PointSet & );
-  PointSet &operator = ( const PointSet & );
-
-  
-
-  
   /// Use reference counting.
   virtual ~PointSet();
 
 private:
+  
+  /// Do not copy.
+  PointSet ( const PointSet & );
+  PointSet &operator = ( const PointSet & );
+  
   GroupPtr                _root;
   Points                  _points;
   OctTree::RefPtr         _tree;
-
-  
-}; // PointSet
-}; // Points
-}; // OsgTools
+  std::string             _workingDir;
+  std::string             _baseName;
+  Usul::Jobs::Manager *   _jobManager;
+};
 
 
 #endif // _OSGTOOLS_POINTS_POINT_SET_H_

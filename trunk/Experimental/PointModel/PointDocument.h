@@ -19,8 +19,6 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IMenuAdd.h"
-#include "Usul/Interfaces/IUpdateListener.h"
-#include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Types/Types.h"
 
 #include "XmlTree/Document.h"
@@ -32,14 +30,12 @@
 
 #include <string>
 
-namespace Usul { namespace Jobs { class Manager; } }
+using namespace Usul::Types;
 
 
 class PointDocument : public Usul::Documents::Document,
                       public Usul::Interfaces::IBuildScene,
-                      public Usul::Interfaces::IMenuAdd,
-                      public Usul::Interfaces::IJobFinishedListener,
-                      public Usul::Interfaces::IUpdateListener
+                      public Usul::Interfaces::IMenuAdd
 {
 public:
 
@@ -52,7 +48,6 @@ public:
   typedef XmlTree::Document::Attributes Attributes;
   typedef XmlTree::Document::Children Children;
   typedef std::list< PointSet::ValidRefPtr > PointSets;
-  typedef osg::ref_ptr< osg::Material > MaterialPtr;
 
   /// Type information.
   USUL_DECLARE_TYPE_ID ( PointDocument );
@@ -92,15 +87,6 @@ public:
 
   //Usul::Interfaces::IMenuAdd
   void                        menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
-
-  /// Usul::Interfaces::IJobFinishedListener
-  virtual void                jobFinished ( Usul::Jobs::Job *job );
-
-  // Overloaded remove view to remove out job listener from the job manager
-  virtual void                removeView ( Usul::Interfaces::IView *view );
-
-  // Usul::Interfaces::IUpdateNotify
-  virtual void                updateNotify( Unknown *caller = 0x0 );
   
 protected:
 
@@ -124,22 +110,17 @@ protected:
   void                        _buildVectors( Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _split( Unknown *caller = 0x0, Unknown *progress = 0x0 );
   void                        _editPointColor();
-  void                        _setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller = 0x0 );  
-  PointSet *                  _getPointSet();
-  Usul::Jobs::Manager *       _getJobManager();
-  
+
+
 private:
 
-  void                        _destroy();
-
-  PointSet::ValidAccessRefPtr _pointSet;
-  Usul::Types::Uint64 _numPoints;
-  MaterialPtr _material;
-  osg::Vec4f _color;
-  std::string _workingDir;
-  unsigned int _xpos;
-  unsigned int _ypos;
-  Usul::Jobs::Manager *_manager;
+  PointSets                       _pointSets;
+  PointSet::ValidRefPtr           _pointSet;
+  Usul::Types::Uint64             _numPoints;
+  osg::ref_ptr< osg::Material >   _material;
+  osg::Vec4f                      _color;
+  std::string                     _workingDir;
+  
 };
 
 

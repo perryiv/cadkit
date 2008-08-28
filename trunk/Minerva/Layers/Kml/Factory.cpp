@@ -43,12 +43,13 @@ using namespace Minerva::Layers::Kml;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef XmlTree::Node::Children Children;
+typedef XmlTree::Node::Children                 Children;
 typedef Usul::Convert::Type<std::string,float>  ToFloat;
 typedef Usul::Convert::Type<std::string,double> ToDouble;
-typedef Minerva::Core::Data::Geometry Geometry;
-typedef Usul::Math::Vec3d                          Vertex;
-typedef std::vector < Vertex >                     Vertices;
+typedef Minerva::Core::Data::Geometry           Geometry;
+typedef Geometry::Extents                       Extents;
+typedef Usul::Math::Vec3d                       Vertex;
+typedef std::vector < Vertex >                  Vertices;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -235,7 +236,7 @@ namespace Helper
 
 namespace Helper 
 {
-  inline void parseCoordinates ( const XmlTree::Node& node, Vertices& vertices )
+  inline void parseCoordinates ( const XmlTree::Node& node, Vertices& vertices, Extents& extents )
   {
     std::istringstream in ( node.value() );
     std::string vertex;
@@ -252,6 +253,7 @@ namespace Helper
         v[i] = ToDouble::convert ( strings[i] );
       
       vertices.push_back ( v );
+      extents.expand ( Extents::Vertex ( v[0], v[1] ) );
     }
   }
 }
@@ -349,10 +351,12 @@ Factory::Point* Factory::createPoint ( const XmlTree::Node& node ) const
     else if ( "coordinates" == name )
     {
       Vertices vertices;
-      Helper::parseCoordinates( *node, vertices );
+      Extents extents;
+      Helper::parseCoordinates ( *node, vertices, extents );
       if ( false == vertices.empty() )
       {
         point->point ( vertices.front() );
+        point->extents ( extents );
       }
     }
     else if ( "extrude" == name )
@@ -388,11 +392,12 @@ Factory::Line* Factory::createLine ( const XmlTree::Node& node ) const
     else if ( "coordinates" == name )
     {
       Vertices vertices;
-      Helper::parseCoordinates( *node, vertices );
+      Extents extents;
+      Helper::parseCoordinates( *node, vertices, extents );
       if ( false == vertices.empty() )
       {
-        Minerva::Core::Data::Line::RefPtr data ( new Minerva::Core::Data::Line );
         line->line ( vertices );
+        line->extents ( extents );
       }
     }
   }
@@ -413,6 +418,8 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
   // Make the data object.
   Minerva::Core::Data::Polygon::RefPtr polygon ( new Minerva::Core::Data::Polygon );
   
+  Extents extents;
+  
   Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
@@ -428,7 +435,7 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
       if ( coordinates.valid() )
       {
         Vertices vertices;
-        Helper::parseCoordinates( *coordinates, vertices );
+        Helper::parseCoordinates( *coordinates, vertices, extents );
         polygon->outerBoundary ( vertices );
       }
     }
@@ -439,11 +446,13 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
       if ( coordinates.valid() )
       {
         Vertices vertices;
-        Helper::parseCoordinates( *coordinates, vertices );
+        Helper::parseCoordinates( *coordinates, vertices, extents );
         polygon->addInnerBoundary ( vertices );
       }
     }
   }
+  
+  polygon->extents ( extents );
   
   Helper::setObjectDataMembers ( polygon.get(), node );
   return polygon.release();

@@ -45,6 +45,13 @@ public:
   {
   }
 
+  /// Copy Contructor.
+  Unknowns( const Unknowns& rhs ) : 
+    _container ( rhs._container ),
+    _mutex ( Mutex::create() )
+  {
+  }
+
 
   /// Destructor.
   ~Unknowns()

@@ -348,6 +348,9 @@ void Pool::_threadStarted ( Usul::Threads::Thread *thread )
       }
     }
 
+    // Dereference before sleep.
+    task = 0x0;
+
     // Sleep so that this thread doesn't take over.
     Usul::System::Sleep::milliseconds ( this->sleepDuration() );
   }

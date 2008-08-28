@@ -87,8 +87,6 @@ protected:
 
   RasterGroup ( const RasterGroup& );
 
-  void                            _updateExtents ( IRasterLayer* layer );
-
   void                            _cacheAdd ( const Extents& extents, unsigned int width, unsigned int height, osg::Image *image );
   ImagePtr                        _cacheFind ( const Extents& extents, unsigned int width, unsigned int height ) const;
 

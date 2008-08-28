@@ -127,7 +127,7 @@ void RasterGroup::append ( IRasterLayer* layer )
     {
       Guard guard ( this );
       _layers.push_back ( layer );
-      this->_updateExtents ( layer );
+      this->_updateExtents ( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
 
       // Clear the cache because some or all of the images are now incorrect.
       _cache.clear();
@@ -177,31 +177,6 @@ void RasterGroup::remove ( IRasterLayer* layer )
     
     this->_notifyDataChnagedListeners();
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Update the extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterGroup::_updateExtents ( IRasterLayer* layer  )
-{
-  USUL_TRACE_SCOPE;
-  
-  Extents e ( this->extents() );
-  
-  Usul::Interfaces::ILayerExtents::QueryPtr le ( layer );
-  
-  const double minLon ( le.valid() ? le->minLon() : -180.0 );
-  const double minLat ( le.valid() ? le->minLat() :  -90.0 );
-  const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
-  const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
-  
-  e.expand ( Extents ( minLon, minLat, maxLon, maxLat ) );
-  
-  this->extents ( e );
 }
 
 
@@ -560,7 +535,7 @@ void RasterGroup::deserialize ( const XmlTree::Node &node )
 
   // Update the extents.
   for ( Layers::const_iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
-    this->_updateExtents ( (*iter).get() );
+    this->_updateExtents ( Usul::Interfaces::IUnknown::QueryPtr ( (*iter).get() ) );
 }
 
 

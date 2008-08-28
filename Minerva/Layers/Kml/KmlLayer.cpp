@@ -463,7 +463,7 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
     geometry = this->_parseModel ( *model.front(), style.get() );
   else if ( false == point.empty() )
   {
-    geometry =  this->_parsePoint( *point.front(), style.get() );
+    geometry = this->_parsePoint( *point.front(), style.get() );
     
     // Google Earth only appears to label points.
     object->label ( object->name() );
@@ -476,9 +476,13 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
     geometry = this->_parseLineRing( *linering.front(), style.get() );
   else if ( false == multiGeometry.empty() )
     this->_parseMultiGeometry ( *multiGeometry.back(), style.get(), *object );
-  
-  object->addGeometry ( geometry );
-  
+
+  if ( geometry.valid() )
+  {
+    object->addGeometry ( geometry );
+    object->extents ( geometry->extents() );
+  }
+
   // Add the data object.
   this->add ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
 }
@@ -490,7 +494,7 @@ void KmlLayer::_parsePlacemark ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::Geometry * KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *style )
+KmlLayer::Geometry* KmlLayer::_parsePoint ( const XmlTree::Node& node, Style *style )
 {
   return Factory::instance().createPoint ( node );
 }

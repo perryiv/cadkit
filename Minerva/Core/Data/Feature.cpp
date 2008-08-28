@@ -383,3 +383,25 @@ double Feature::maxLat() const
   Guard guard ( this );
   return _extents.maxLat();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::_updateExtents ( Usul::Interfaces::IUnknown* unknown )
+{
+  USUL_TRACE_SCOPE;
+  
+  Usul::Interfaces::ILayerExtents::QueryPtr le ( unknown );
+  
+  const double minLon ( le.valid() ? le->minLon() : -180.0 );
+  const double minLat ( le.valid() ? le->minLat() :  -90.0 );
+  const double maxLon ( le.valid() ? le->maxLon() :  180.0 );
+  const double maxLat ( le.valid() ? le->maxLat() :   90.0 );
+
+  Guard guard ( this->mutex() );
+  _extents.expand ( Extents ( minLon, minLat, maxLon, maxLat ) );
+}

@@ -249,6 +249,9 @@ void Container::add ( Usul::Interfaces::IUnknown* unknown, bool notify )
 
   // Add the builder.
   _builders.add ( unknown );
+  
+  // Update the extents.
+  this->_updateExtents ( unknown );
 
   // Our scene needs rebuilt.
   this->dirtyScene ( true );

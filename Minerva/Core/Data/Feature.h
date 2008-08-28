@@ -84,11 +84,14 @@ protected:
 
   /// Notify data changed listeners.
   void                        _notifyDataChnagedListeners();
+  
+  /// Update the extents.
+  void                        _updateExtents ( Usul::Interfaces::IUnknown* unknown );
 
-  // Add the listener.
+  // Add the listener (IDataChangedNotify).
   virtual void                addDataChangedListener ( Usul::Interfaces::IUnknown *caller );
 
-  // Remove the listener.
+  // Remove the listener (IDataChangedNotify).
   virtual void                removeDataChangedListener ( Usul::Interfaces::IUnknown *caller );
 
 private:

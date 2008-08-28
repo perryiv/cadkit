@@ -1,5 +1,4 @@
 #include "OctTreeNode.h"
-#include "PointLoader.h"
 
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/Vector3.h"
@@ -8,16 +7,12 @@
 #include "Usul/File/Stats.h"
 #include "Usul/File/Temp.h"
 #include "Usul/File/Path.h"
-#include "Usul/File/Make.h"
-#include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/System/LastError.h"
 
 #include "OsgTools/Lod.h"
 #include "OsgTools/State/StateSet.h"
-
-#include "osgUtil/CullVisitor"
 
 #include "osg/Vec3d"
 #include "osg/Plane"
@@ -28,7 +23,6 @@
 
 #include <limits>
 #include <fstream>
-#include <stdexcept>
 
 #include <Math.h>
 
@@ -42,231 +36,19 @@ USUL_IMPLEMENT_TYPE_ID ( OctTreeNode );
  unsigned long       OctTreeNode::_denominator  ( 0 );
  Usul::Types::Uint64 OctTreeNode::_numLeafNodes ( 0 );
 
- ///////////////////////////////////////////////////////////////////////////////
-//
-//  Cull Callback for rotating the compass based on the current view matrix
-//
-///////////////////////////////////////////////////////////////////////////////
-
-class CustomLODCallback : public osg::NodeCallback
-{
-public:
-  CustomLODCallback( Usul::Jobs::Manager &jm, const std::string& p, osg::Geode* geode, unsigned int level, osg::BoundingBox bb ) :
-          _mutex(),
-          _path( p ),
-          _geode( geode ),
-          _level( level ),
-          _fileSize( 0 ),
-          _numPoints( 0 ),
-          _myJob( 0x0 ),
-          _jobLoading( false ),
-          _bb ( bb ),
-          _jobManager ( jm )
-		  {
-         // Get the size of the lod file
-         _fileSize = Usul::File::size( _path );
-         
-         // number of points in the file
-         float np ( static_cast< float > ( _fileSize ) );
-         np /= sizeof( OctTreeNode::Point );
-         
-         // Get the number of points in the lod file
-         //Usul::Types::Uint64 numPoints ( static_cast< Usul::Types::Uint64 > ( np )  );
-         _numPoints = static_cast< Usul::Types::Uint64 > ( np );
-  			
-		  }
-      ~CustomLODCallback()         
-		  {
-        // Delete my job
-        _myJob->cancel();
-        _myJob = 0x0;
-		  }
-
-      typedef Usul::Threads::RecursiveMutex Mutex;
-      typedef Usul::Threads::Guard<Mutex> Guard;
-
-      virtual void operator()( osg::Node *node, osg::NodeVisitor *nv )
-      {
-        //Guard guard ( this );
-
-        osgUtil::CullVisitor *cv = dynamic_cast<osgUtil::CullVisitor *>(nv);
-        if ( 0x0 == cv )
-        {
-          this->traverse ( node, nv );
-          return;
-        }
-        // Check to see if we are culled
-        if( true == cv->isCulled( _bb ) )
-        {
-          this->traverse ( node, nv );
-          return;
-        }
-        // Check to see if our points are already loaded
-        // If they are don't reload them again and DON'T
-        // unload the other children again
-
-        // Get the geometry
-        osg::ref_ptr< osg::Geometry > geodeGeometry ( dynamic_cast< osg::Geometry* > ( _geode->getDrawable( 0 ) ) );
-        if( 0x0 == geodeGeometry )
-        {
-          this->traverse( node, nv );
-          return;
-        }
-            
-        // Get the vertices
-        osg::ref_ptr< osg::Vec3Array > vertices ( dynamic_cast< osg::Vec3Array* > ( geodeGeometry->getVertexArray() ) );
-        if( 0x0 == vertices )
-        {
-          traverse( node, nv );
-          return;
-        }
-        
-        if( vertices->size() == 0 && _fileSize > 0 )
-        {
-          // If my job isn't valid, create it
-          if( 0x0 == _myJob )
-          {
-            // kill the other jobs that my parent has
-            osg::ref_ptr< osg::LOD > parent ( dynamic_cast< osg::LOD* > ( _geode->getParent( 0 ) ) );
-            if( 0x0 != parent )
-            {
-              for( unsigned int i = 0; i < parent->getNumChildren(); ++i )
-              {
-                osg::ref_ptr< osg::Geode > child ( dynamic_cast< osg::Geode* > ( parent->getChild( i ) ) );
-                if( 0x0 != child )
-                {
-                  osg::ref_ptr< CustomLODCallback > callback ( dynamic_cast< CustomLODCallback* > ( child->getCullCallback() ) );
-                  if( 0x0 != callback )
-                  {
-                    callback->cancelJob();
-                  }
-                 
-                }
-              }
-            }
-
-            // Guarding this code
-            {
-              Guard guard ( this );
-
-              // Create my job
-              _myJob = new PointLoader( _path, _numPoints );
-            
-              // Set the priority level
-              _myJob->priority( static_cast< int > ( _level ) );
-
-              // Start my job
-              _jobManager.addJob ( _myJob.get() );
-            }
-
-            // leave the function for now
-            traverse( node, nv );
-          }
-
-          if( true == _myJob.valid() && true == _myJob->foundNewData() )
-          {
-            // Remove the vertices of the other children
-            osg::ref_ptr< osg::LOD > parent ( dynamic_cast< osg::LOD* > ( _geode->getParent( 0 ) ) );
-            if( 0x0 != parent )
-            {
-              for( unsigned int i = 0; i < parent->getNumChildren(); ++i )
-              {
-                osg::ref_ptr< osg::Geode > child ( dynamic_cast< osg::Geode* > ( parent->getChild( i ) ) );
-                if( 0x0 != child )
-                {
-                  osg::ref_ptr< osg::Geometry > childGeometry ( dynamic_cast< osg::Geometry* > ( child->getDrawable( 0 ) ) );
-                  if( 0x0 != childGeometry )
-                  {
-                    Guard guard ( this );
-
-                    // Remove the vertices
-                    childGeometry->setVertexArray( new osg::Vec3Array );
-                    
-                    // dirty the display lists to be sure the scene is rebuilt
-                    childGeometry->dirtyDisplayList();
-                  }
-                }
-              }
-            }
-          
-            // Initialize the points holder
-            osg::ref_ptr< osg::Vec3Array > points ( _myJob->getData() );
-                     
-            // Create the Geometry         
-            osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry ); 
-
-            // Set the geometry
-            geometry->setVertexArray( points.get() );
-            geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::POINTS, 0, points->size() ) );
-          
-            // Guarding this part
-            {
-              Guard guard ( this );
-              // Add the points to the geode
-              _geode->removeDrawables( 0, _geode->getNumDrawables() );
-              _geode->addDrawable( geometry.get() );
-            
-              // Reset the job
-              _myJob = 0x0;
-            }
-          }  
-        }
-        traverse( node, nv );
-      }
-      void cancelJob()
-      {
-        Guard guard ( this );
-        if( true == _myJob.valid() )
-        {
-          Usul::Jobs::Job::RefPtr job ( dynamic_cast< Usul::Jobs::Job* > ( _myJob.get() ) );
-          if( 0x0 != job )
-            _jobManager.removeQueuedJob( job );
-
-          _myJob->cancel();
-          _myJob = 0x0;
-        }
-
-      }
-      // Return the mutex. Use with caution.
-      Mutex & mutex() const
-      {
-        return _mutex;
-      }
-
-	 private:
-
-    CustomLODCallback ( const CustomLODCallback & );
-    CustomLODCallback &operator = ( const CustomLODCallback & );
-  
-    mutable Mutex                _mutex;
-    std::string                  _path;
-    osg::ref_ptr< osg::Geode >   _geode;
-    unsigned int                 _level;
-    Usul::Types::Uint64          _fileSize;
-    float                        _numPoints;
-    PointLoader::RefPtr          _myJob;
-    bool                         _jobLoading;
-    osg::BoundingBox             _bb;
-    Usul::Jobs::Manager &        _jobManager;
-}; 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OctTreeNode::OctTreeNode ( Usul::Jobs::Manager *jm, StreamBufferPtr buffer, const std::string &tempPath ):
+OctTreeNode::OctTreeNode ( StreamBufferPtr buffer, const std::string &tempPath ):
   _bb(),
   _children(),
   _points( 0x0 ),
   _type( POINT_HOLDER ),
   _capacity( 1000 ),
-  _name(),
-  _currentLodLevel( 0 ),
   _useLOD( true ),
-  _lodDefinitions(),
   _infile( 0x0 ),
   _outfile( 0x0 ),
   _tempFilename(),
@@ -274,29 +56,20 @@ OctTreeNode::OctTreeNode ( Usul::Jobs::Manager *jm, StreamBufferPtr buffer, cons
   _streamBuffer ( buffer ),
   _tempPath( tempPath ),
   _distance( 0 ),
-  _material( 1.0f, 0.0f, 0.0f, 1.0f ),
-  _mutex(),
-  _workingDir(),
-  _baseName(),
-  _jobManager ( jm )
+  _material( 1.0f, 0.0f, 0.0f, 1.0f )
 {
   
   _tempFilename = Usul::Strings::format ( tempPath, '/', Usul::Convert::Type< unsigned int, std::string >::convert ( reinterpret_cast < unsigned int > ( this ) ), ".tmp" );
-
-  if ( 0x0 == _jobManager )
-    throw std::invalid_argument ( Usul::Strings::format ( "Error 2032454300: null job manager given" ) );
-
 #if 1
    _lodDefinitions.push_back( 1 );
-   //_lodDefinitions.push_back( 3 );
+   _lodDefinitions.push_back( 3 );
    _lodDefinitions.push_back( 10 );
-   //_lodDefinitions.push_back( 25 );
+   _lodDefinitions.push_back( 25 );
    _lodDefinitions.push_back( 50 );
-   //_lodDefinitions.push_back( 75 );
+   _lodDefinitions.push_back( 75 );
    _lodDefinitions.push_back( 100 );
-   //_lodDefinitions.push_back( 500 );
+   _lodDefinitions.push_back( 500 );
    _lodDefinitions.push_back( 1000 );
-
 #endif
 
 #if 0
@@ -323,20 +96,6 @@ OctTreeNode::~OctTreeNode()
 
   // Remove the file if it exists.
   Usul::File::remove ( _tempFilename, false, 0x0 );
-
-  // Clear out any queued jobs
-  _jobManager->clearQueuedJobs();
-
-#if 0
-  // Remove Lod Files
-  for( unsigned int i = 0; i < _lodDefinitions.size(); ++i )
-  {
-    std::string lodName ( Usul::Strings::format( _workingDir, _name, "LOD", i ) );
-    Usul::File::remove ( lodName, false, 0x0 );
-  }
-#endif
-
-  // Do not delete _jobManager
 }
 
 
@@ -353,7 +112,7 @@ OctTreeNode::~OctTreeNode()
 
 void OctTreeNode::useLOD( bool value )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   _useLOD = value;
 }
 
@@ -366,8 +125,7 @@ void OctTreeNode::useLOD( bool value )
 
 void OctTreeNode::boundingBox( const osg::BoundingBox &bb )
 {
-  Guard guard ( this );
-  this->setInitialBound( osg::BoundingSphere( bb ) );
+  Guard guard ( this->mutex() );
   this->_bb = bb;
 }
 
@@ -380,7 +138,7 @@ void OctTreeNode::boundingBox( const osg::BoundingBox &bb )
 
 void OctTreeNode::type( unsigned int type )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   this->_type = type;
 }
 
@@ -393,11 +151,24 @@ void OctTreeNode::type( unsigned int type )
 
 bool OctTreeNode::add ( OctTreeNode::Point p )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
   //check my bb to determine if the point fits inside me
   if( true == this->_contains( p ) )
   {
+    //insert node into _cells 
+#if 0
+    if( _type == POINT_HOLDER && _list->size() < _capacity )
+    {
+      _list->push_back( p );
+    }
+    else
+    {
+      //find the bounds of the child that contains the cell
+      this->_insertOrCreateChildren( p );
+    }
+#else
+    
     // Get the output stream.
     std::ofstream &outfile ( this->_getOutputStream() );
 
@@ -408,6 +179,9 @@ bool OctTreeNode::add ( OctTreeNode::Point p )
     ++_numPoints;
 
     return true;
+    
+#endif    
+
   }
   else
   {
@@ -431,7 +205,7 @@ bool OctTreeNode::add ( OctTreeNode::Point p )
 
 void OctTreeNode::capacity( unsigned int level )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   _capacity = level;
   if( _children.size() != 0 )
   {
@@ -452,7 +226,7 @@ void OctTreeNode::capacity( unsigned int level )
 
 osg::BoundingBox OctTreeNode::boundingBox() const
 { 
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   return _bb; 
 }
 
@@ -465,7 +239,7 @@ osg::BoundingBox OctTreeNode::boundingBox() const
 
 OctTreeNode::Children OctTreeNode::children() const
 { 
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   return _children; 
 }
 
@@ -478,7 +252,7 @@ OctTreeNode::Children OctTreeNode::children() const
 
 unsigned int OctTreeNode::type() const
 { 
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   return _type; 
 }
 
@@ -491,7 +265,7 @@ unsigned int OctTreeNode::type() const
 
 unsigned int OctTreeNode::capacity() const
 { 
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   return _capacity; 
 }
 
@@ -504,29 +278,32 @@ unsigned int OctTreeNode::capacity() const
 
 osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 {
-  Guard guard ( this );
-
-  //typedef osg::ref_ptr< osg::Geometry > GeometryPtr;
+  Guard guard ( this->mutex() );
+  typedef osg::ref_ptr< osg::Geometry > GeometryPtr;
   typedef osg::ref_ptr< osg::Geode > GeodePtr;
   osg::ref_ptr< osg::LOD > lod ( new osg::LOD );
+  osg::ref_ptr< osg::Group > group ( new osg::Group );
   unsigned int numLODs ( _lodDefinitions.size() );
-
-  
 
   if( true == _children.empty() )
   {
     // Make sure the points are valid
-    //if( true == _points.valid() )
+    if( true == _points.valid() )
     {
       // LOds
-      //if( _numPoints > 0 )
+      if( _points->size() > 0 )
       {
         for( unsigned int lodLevel = 0; lodLevel < numLODs; ++lodLevel )
         {
-          GeodePtr geode ( new osg::Geode );
-#if 0
-          unsigned int lodMultiplier ( _lodDefinitions.at( lodLevel ) );
+          //Points vertices ( new osg::Vec3Array );
           ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
+
+#if 0
+          double lm ( static_cast< double >( _capacity - 1 ) / static_cast< double > ( _numLODs ) );
+          unsigned short lodMultiplier = static_cast< unsigned short > ( lm * lodLevel ) + 1;
+#else
+          unsigned int lodMultiplier ( _lodDefinitions.at( lodLevel ) );
+#endif
           indices->reserve( static_cast< unsigned int > ( ( _points->size() / lodMultiplier ) ) );
           for( unsigned int i = 0; i < _points->size(); i += lodMultiplier )
           {
@@ -535,19 +312,11 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
           GeometryPtr geometry ( new osg::Geometry ); 
           geometry->setVertexArray( _points.get() );
           geometry->addPrimitiveSet( indices.get() );
+        
+          GeodePtr geode ( new osg::Geode );
           geode->addDrawable( geometry.get() );
-#endif   
-          osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-          geometry->setVertexArray( new osg::Vec3Array );
-          geode->addDrawable( geometry.get() );
-
-          // LOD name and level for this geode
-          std::string lodName ( Usul::Strings::format( _workingDir, _name, "LOD", lodLevel ) );
-
-          // Add the cull callback so vertices can be added and deleted at run time
-          geode->setCullCallback( new CustomLODCallback( *_jobManager, lodName, geode.get(), lodLevel, _bb ) );
-
-          // Dynamically create lod level distance definitions
+          
+          // High level LODs
           float minLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( numLODs ) );
           float maxLevel ( ( static_cast< float > ( lodLevel ) + 1.0f ) / static_cast< float > ( numLODs ) );
           float minDistance = Usul::Math::maximum( ( minLevel * _distance ), this->getBoundingRadius() * minLevel );
@@ -559,10 +328,12 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 
           lod->addChild( geode.get(), minDistance, maxDistance );
         }
- 
-        // Add lod to this node
-        this->addChild ( lod.get() );
-        
+
+        // add the lods to the main group
+        group->addChild( lod.get() );
+
+        // Set the default material
+        // OsgTools::State::StateSet::setMaterial( group.get(), _material, _material, 1.0f ); 
       }
     }
   }
@@ -572,12 +343,12 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
     {
       if( true == _children.at( i ).valid() )
       {
-        this->addChild( _children.at( i )->buildScene() );
+        group->addChild( _children.at( i )->buildScene() );
       }
     } 
   } 
 
-  return this;//group.release();
+  return group.release();
 }
 
 
@@ -601,7 +372,7 @@ void OctTreeNode::preBuildScene( Usul::Documents::Document* document, Unknown *c
 
 void OctTreeNode::distance( double d )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   _distance = d;
 }
 
@@ -614,7 +385,7 @@ void OctTreeNode::distance( double d )
 
 double OctTreeNode::getBoundingRadius() const
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   Usul::Math::Vec3f min ( _bb.xMin(), _bb.yMin(), _bb.zMin() );
   Usul::Math::Vec3f max ( _bb.xMax(), _bb.yMax(), _bb.zMax() );
   double d = max.distanceSquared( min );
@@ -631,49 +402,52 @@ double OctTreeNode::getBoundingRadius() const
 
 void OctTreeNode::buildVectors()
 {
-  Guard guard ( this );
-
-  // Make the lod file for this node
-  std::string lodName ( Usul::Strings::format( _workingDir, _name, "LOD", _currentLodLevel ) );
-
-  // If the file doesn't exist we are done
-  if( false == Usul::Predicates::FileExists::test( lodName ) )
+  Guard guard ( this->mutex() );
+#if 0
+  if( true == _children.empty() )
   {
-    return;
+    _points->reserve( _list->size() );
+    for( LinkedList::iterator iter = _list->begin(); iter != _list->end(); ++iter )
+    {
+      _points->push_back( (*iter) );
+    }
+    _list->clear();
+    delete _list;
+    _list = 0x0;
   }
-
-  // Get the size of the lod file
-  Usul::Types::Uint64 size ( Usul::File::size( lodName )  );
-
-  float np ( static_cast< float > ( size ) / static_cast< float > ( sizeof( OctTreeNode::Point ) ) );
-  // Get the number of points in the lod file
-  Usul::Types::Uint64 numPoints ( static_cast< Usul::Types::Uint64 > ( np )  );
-
-  // Make sure there are some points in the file or we are done
-  if( POINT_HOLDER == this->type() && numPoints > 0 )
+  else
   {
-    // Read the file
-    std::ifstream infile ( lodName.c_str(),  std::ofstream::in | std::ofstream::binary );
+    for( unsigned int i = 0; i < _children.size(); ++i )
+    {
+      _children.at( i )->buildVectors();
+    }
+  }
+#else
+  if( POINT_HOLDER == this->type() && _numPoints > 0 )
+  {
+    
+    //this->_openTempFileForRead();
+    std::ifstream &infile ( this->_getInputStream() );
 
-    // If we have an empty point vector
     if( false == _points.valid() )
     {
       _points = new osg::Vec3Array;
+      _points->resize ( _numPoints, OctTreeNode::Point ( 0.0, 0.0, 0.0 ) );
     }
-    
-    // Clear and Initialize the points holder
-    _points->clear();
-    _points->resize ( numPoints, OctTreeNode::Point ( 0.0, 0.0, 0.0 ) );
- 
-    // Sanity check.    
-    USUL_ASSERT ( size == Usul::File::size ( lodName ) );
 
-    // Read the points
+    unsigned int size = _points->size() * sizeof( OctTreeNode::Point );
+
+    // Sanity check.
+    USUL_ASSERT ( size == Usul::File::size ( _tempFilename ) );
+
     infile.read( reinterpret_cast<char *> ( &((*_points)[0]) ), size );
 
     // Close the streams
     this->_closeInputStream();
     this->_closeOutputStream();
+
+    // Increment the leaf node count
+    ++_numLeafNodes;
 
   }
   else
@@ -683,6 +457,7 @@ void OctTreeNode::buildVectors()
       _children.at( i )->buildVectors();
     }
   }
+#endif
 }
 
 
@@ -720,7 +495,11 @@ void OctTreeNode::closeOutputStream()
 
 bool OctTreeNode::split( Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
+
+  // Debug info
+  //std::cout << "Number of points before split is: " << _numPoints << std::endl;
+
   if( _numPoints > _capacity )
   {
    
@@ -746,8 +525,6 @@ bool OctTreeNode::split( Usul::Documents::Document* document, Unknown *caller, U
     {
       _children.at( i )->split( document, caller, progress );
     }
-
-    
     return true;
   }
   return false;
@@ -762,7 +539,7 @@ bool OctTreeNode::split( Usul::Documents::Document* document, Unknown *caller, U
 
 void OctTreeNode::initSplitProgress( unsigned long n, unsigned long d )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   _numerator = n;
   _denominator = d;
 }
@@ -776,7 +553,7 @@ void OctTreeNode::initSplitProgress( unsigned long n, unsigned long d )
 
 Usul::Types::Uint64 OctTreeNode::getNumPoints()
 {
-  Guard guard ( this );  
+  Guard guard ( this->mutex() );  
   return _numPoints;
 }
 
@@ -789,7 +566,7 @@ Usul::Types::Uint64 OctTreeNode::getNumPoints()
 
 Usul::Types::Uint64 OctTreeNode::numLeafNodes() const
 {
-  Guard guard ( this );  
+  Guard guard ( this->mutex() );  
   return _numLeafNodes;
 }
 
@@ -802,7 +579,7 @@ Usul::Types::Uint64 OctTreeNode::numLeafNodes() const
 
 OctTreeNode::LodDefinitions OctTreeNode::getLodDefinitions() const
 {
-  Guard guard ( this );  
+  Guard guard ( this->mutex() );  
   return _lodDefinitions;
 }
 
@@ -815,7 +592,7 @@ OctTreeNode::LodDefinitions OctTreeNode::getLodDefinitions() const
 
 void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned int denominator, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
   Usul::Types::Uint64 size ( this->_headerSize() );
   this->_writeRecord( ofs, PointSetRecords::Record::OCTREE_NODE, size );
@@ -825,15 +602,17 @@ void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned in
 
   if( true == _children.empty() )
   {
-    // Size of the node's name
-    Usul::Types::Uint64 nameSize( _name.size() );
-
     // write the record information
-    Usul::Types::Uint64 recordSize ( ( sizeof( Usul::Types::Uint64 ) * 2 ) + nameSize );
-    this->_writeRecord( ofs, PointSetRecords::Record::OOC_VERTICES, recordSize );
+    unsigned int numPoints ( 0 );
+    if( true == _points.valid() )
+    {
+      numPoints = _points->size();
+    }
+    Usul::Types::Uint64 size ( numPoints * sizeof( osg::Vec3f ) + sizeof( Usul::Types::Uint64 ) );
+    this->_writeRecord( ofs, PointSetRecords::Record::POINTS, size );
 
-    // Write the node name
-    this->_writeOOCNode( ofs );
+    // write the node points
+    this->_writePoints( ofs, document, caller, progress );
 
     // Update progress
     ++numerator;
@@ -861,7 +640,7 @@ void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned in
 
 void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
   // Read the records until we find an appropriate match
   const Usul::Types::Uint64 recordSize ( this->_readToRecord( ifs, PointSetRecords::Record::OCTREE_NODE ) );
@@ -896,23 +675,6 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
         document->setProgressBar( true, _numerator, _denominator, progress );
         break;
       }
-      case PointSetRecords::Record::OOC_VERTICES:
-      {
-        // Read the name from the restart file
-        this->name( _readOOCNode( ifs ) );
-
-        // If we have points
-        //if( _numPoints > 0 )
-        //{
-        //  // Create the LOD levels for this node
-        //  this->_createLodLevels();
-        //}
-
-        // Update progress
-        ++_numerator;
-        document->setProgressBar( true, _numerator, _denominator, progress );
-        break;
-      }
       case PointSetRecords::Record::COLORS:
       {
         // Skip it.
@@ -921,12 +683,18 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
       }
       case PointSetRecords::Record::CHILDREN:
       {
+        // Hey, I already read points!
+        //if ( _points.valid() )
+          //punt
+
+        // This better be the last thing in the oct-tree record.
+        // USUL_ASSERT ( ( currentPosition + recordSize ) == ifs->tellg() );
+
         // tell children to read
         _children.resize( 8 );
         for( unsigned int i = 0; i < _children.size(); ++i )
         {
-          _children.at( i ) = new OctTreeNode( _jobManager, _streamBuffer, _tempPath );
-          _children.at( i )->workingDir( this->workingDir() );
+          _children.at( i ) = new OctTreeNode( _streamBuffer, _tempPath );
           _children.at( i )->distance( _distance );
           _children.at( i )->read( ifs, document, caller, progress );
         }
@@ -950,7 +718,7 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
 
 void OctTreeNode::numLeafNodes( Usul::Types::Uint64 num )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   _numLeafNodes = num;
 }
 
@@ -963,7 +731,7 @@ void OctTreeNode::numLeafNodes( Usul::Types::Uint64 num )
 
 void OctTreeNode::lodDefinitions( LodDefinitions lods )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   _lodDefinitions = lods;
 }
 
@@ -980,7 +748,7 @@ void OctTreeNode::lodDefinitions( LodDefinitions lods )
 
 Usul::Types::Uint32 OctTreeNode::_headerSize() const
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   Usul::Types::Uint32 size ( ( sizeof( osg::Vec3f ) * 2 ) + ( sizeof( Usul::Types::Uint32 ) * 2 ) + sizeof( Usul::Types::Uint64 ) );
   return size;
 }
@@ -994,7 +762,7 @@ Usul::Types::Uint32 OctTreeNode::_headerSize() const
 
 void OctTreeNode::_writeRecord( std::ofstream* ofs, Usul::Types::Uint32 type, Usul::Types::Uint64 size ) const
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   
   // write the record type
   Usul::Types::Uint32 recordType ( type );
@@ -1015,7 +783,7 @@ void OctTreeNode::_writeRecord( std::ofstream* ofs, Usul::Types::Uint32 type, Us
 
 Usul::Types::Uint64 OctTreeNode::_readToRecord( std::ifstream* ifs, Usul::Types::Uint32 type )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
   // read the record type
   Usul::Types::Uint32 recordType ( 0 );
@@ -1028,9 +796,6 @@ Usul::Types::Uint64 OctTreeNode::_readToRecord( std::ifstream* ifs, Usul::Types:
   // check to see if we have an octree node
   if( type != recordType )
   {
-    if( EOF == ifs->peek() )
-      return recordSize = 0;
-
     ifs->seekg( recordSize, std::ifstream::cur );
 
     // check for end of file
@@ -1048,7 +813,7 @@ Usul::Types::Uint64 OctTreeNode::_readToRecord( std::ifstream* ifs, Usul::Types:
 
 void OctTreeNode::_readNodeInfo( std::ifstream* ifs )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   
   // read the node bounding box parameters
   osg::Vec3f minBB ( 0.0, 0.0, 0.0 );
@@ -1074,7 +839,7 @@ void OctTreeNode::_readNodeInfo( std::ifstream* ifs )
 
 void OctTreeNode::_readPoints( std::ifstream* ifs )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   Usul::Types::Uint64 numPoints( 0 );
 
   // read the number of points
@@ -1100,63 +865,13 @@ void OctTreeNode::_readPoints( std::ifstream* ifs )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Read the node name
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string OctTreeNode::_readOOCNode( std::ifstream* ifs )
-{
-  Guard guard ( this );
-  
-  // Read the number of points
-  ifs->read( reinterpret_cast< char * > ( &_numPoints ), sizeof( Usul::Types::Uint64 ) );
-
-  // read the number of characters in the name
-  Usul::Types::Uint64 size( 0 );
-  ifs->read( reinterpret_cast< char * > ( &size ), sizeof( Usul::Types::Uint64 ) );
-
-  // read the name
-  std::vector<char> name ( size );
-  ifs->read( &name[0], name.size() );
-
-  return std::string ( name.begin(), name.end() );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the node name
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OctTreeNode::_writeOOCNode( std::ofstream* ofs ) const
-{
-  Guard guard ( this );
-
-  // write the number of points
-  Usul::Types::Uint64 numPoints ( _numPoints );
-  ofs->write( reinterpret_cast< char * > ( &numPoints ), sizeof( Usul::Types::Uint64 ) );
-
-  // Size of the node's name
-  Usul::Types::Uint64 nameSize( _name.size() );
-
-  // write the number of characters in the name
-  ofs->write( reinterpret_cast< char * > ( &nameSize ), sizeof( Usul::Types::Uint64 ) );
-
-  // write the name
-  ofs->write( _name.c_str(), nameSize );
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Write this node's header information
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void OctTreeNode::_writeNodeInfo( std::ofstream* ofs ) const
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
   // write the node bounding box parameters
   osg::Vec3f minBB ( _bb.xMin(), _bb.yMin(), _bb.zMin() );
@@ -1179,7 +894,7 @@ void OctTreeNode::_writeNodeInfo( std::ofstream* ofs ) const
 
 void OctTreeNode::_writePoints( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller, Unknown *progress ) const
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
   Usul::Types::Uint64 numPoints ( 0 );
 
@@ -1212,7 +927,7 @@ void OctTreeNode::_writePoints( std::ofstream* ofs, Usul::Documents::Document* d
 
 bool OctTreeNode::_contains( OctTreeNode::Point p )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   if( _bb.contains( p ) )
     return true;
   else
@@ -1228,7 +943,7 @@ bool OctTreeNode::_contains( OctTreeNode::Point p )
 
 void OctTreeNode::_insertOrCreateChildren( OctTreeNode::Point p )
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   if( _children.size() < 8 )
   {
     this->_createChildren();
@@ -1263,7 +978,7 @@ void OctTreeNode::_insertOrCreateChildren( OctTreeNode::Point p )
 
 void OctTreeNode::_reorder()
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
   // Make sure the streams are both closed.
   this->_closeInputStream();
@@ -1302,7 +1017,7 @@ void OctTreeNode::_reorder()
 
 void OctTreeNode::_createChildren()
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
   
 }
 
@@ -1315,7 +1030,7 @@ void OctTreeNode::_createChildren()
 
 void OctTreeNode::_split()
 {
-  Guard guard ( this );
+  Guard guard ( this->mutex() );
 
 
   BoundingBoxVec b ( 0 );
@@ -1348,29 +1063,13 @@ void OctTreeNode::_split()
   this->type( NODE_HOLDER );
   _children.resize( 8 );
 
-  // Decrement the leaf node count
-  --_numLeafNodes;
-
   for( unsigned int i = 0; i < 8; i ++ )
   {
-    _children.at( i ) = new OctTreeNode ( _jobManager, _streamBuffer, _tempPath );
+    _children.at( i ) = new OctTreeNode ( _streamBuffer, _tempPath );
     _children.at( i )->distance( _distance );
     _children.at( i )->boundingBox( b.at( i ) );
     _children.at( i )->type( POINT_HOLDER );
     _children.at( i )->capacity( _capacity );
-    _children.at( i )->workingDir( _workingDir );
-
-    // make the new directory
-    Usul::File::make( Usul::Strings::format( _workingDir, "/", _name, "C", i, "/" ) );
-
-    // Name the tree
-    _children.at( i )->name( Usul::Strings::format( _name, "C", i, "/" ) );
-
-    // Add the newly created child to the scene so it gets traversed in the callback
-    this->addChild( _children.at( i ).get() );
-
-    // Increment the leaf node count
-    ++_numLeafNodes;
 
   }
 
@@ -1391,7 +1090,7 @@ void OctTreeNode::_split()
 
 bool OctTreeNode::_addCellToChild( OctTreeNode::Point p )
 {
-  Guard guard (this );
+  Guard guard ( this->mutex() );
   bool found = false;
   const unsigned int size = _children.size();
   for( unsigned int c = 0; c < size; ++c )
@@ -1415,7 +1114,7 @@ bool OctTreeNode::_addCellToChild( OctTreeNode::Point p )
 
 std::ifstream& OctTreeNode::_getInputStream()
 {
-  Guard guard (this );
+  Guard guard ( this );
 
   // Delete the other stream if needed.
   this->_closeOutputStream();
@@ -1497,7 +1196,7 @@ void  OctTreeNode::_closeInputStream()
 {
   Guard guard ( this );
 
-  // Delete the stream if needed.
+   // Delete the stream if needed.
   if ( 0x0 != _infile )
   {
     delete _infile;
@@ -1540,370 +1239,9 @@ void  OctTreeNode::_closeOutputStream()
 
 void OctTreeNode::_closeChildrenStreams()
 {
-  Guard guard ( this );
-
   for( unsigned int i = 0; i < _children.size(); ++i )
   {
     _children.at( i )->closeInputStream();
     _children.at( i )->closeOutputStream();
   }
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the mutex.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OctTreeNode::Mutex &OctTreeNode::mutex() const
-{
-  return _mutex;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build this node
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string OctTreeNode::name()
-{
-  Guard guard ( this );
-  return _name;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build this node
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OctTreeNode::name( const std::string& n )
-{
-  Guard guard ( this );
-  _name = n;
-  //_tempFilename = Usul::Strings::format ( _tempPath, "/", _name, "vertices.tmp" );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create the LOD level binary files
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OctTreeNode::createLodLevels()
-{
-  Guard guard ( this );
-
-  if( false == _children.empty() )
-  {
-    for( unsigned int i = 0; i < _children.size(); ++i )
-    {
-      _children.at( i )->createLodLevels();
-    }
-  }
-  else
-  { 
-    if( true == Usul::Predicates::FileExists::test( _tempFilename ) )
-      this->_createLodLevels();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the working directory
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OctTreeNode::workingDir( const std::string& dir )
-{
-  Guard guard ( this );
-
-  if( _children.size() > 0 )
-  {
-    for( unsigned int i = 0; i < _children.size(); ++i )
-    {
-      _children.at( i )->workingDir( dir );
-    }
-  }
-  _workingDir = dir;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the working directory
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string OctTreeNode::workingDir()
-{
-  Guard guard ( this );
-
-  return _workingDir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the base name
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OctTreeNode::baseName( const std::string& name )
-{
-  Guard guard ( this );
-
-  if( _children.size() > 0 )
-  {
-    for( unsigned int i = 0; i < _children.size(); ++i )
-    {
-      _children.at( i )->baseName( name );
-    }
-  }
-  _baseName = name;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the base name
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string OctTreeNode::baseName()
-{
-  Guard guard ( this );
-
-  return _baseName;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create the LOD level binary files
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OctTreeNode::_createLodLevels()
-{
-  Guard guard ( this );
-
-  // Define the number of LODs
-  unsigned int numLODs ( _lodDefinitions.size() );
-
-  for( unsigned int lodLevel = 0; lodLevel < numLODs; ++lodLevel )
-  {
-    // Define the amount of points to skip at this lod level
-    unsigned int lodMultiplier ( _lodDefinitions.at( lodLevel ) );
-
-    // Open the stream to the master list of points
-    std::ifstream ifs ( _tempFilename.c_str(), std::ofstream::in | std::ofstream::binary  );
-
-    // Make the lod file for this node
-    std::string lodName ( Usul::Strings::format( _workingDir, "/", _name, "LOD", lodLevel ) );
-    std::ofstream ofs ( lodName.c_str(), std::ofstream::out | std::ofstream::binary );
-
-    unsigned long long currentFilePos ( 0 );
-    // Read and write the points for this lod level
-    for( unsigned int i = 0; i < _numPoints; i += lodMultiplier )
-    {
-      // Go to the current point
-      currentFilePos = i * sizeof( OctTreeNode::Point );
-
-      // Temp point to hold the input value
-      OctTreeNode::Point p ( 0.0f, 0.0f, 0.0f );
-
-      // Make sure we are within a valid range
-      //if( currentFilePos <= infile.eof() )
-      {
-        // Seek to the next point to load
-        ifs.seekg( currentFilePos ); 
-        
-        // Read the point
-        ifs.read( reinterpret_cast<char *> ( &p ), sizeof( OctTreeNode::Point ) );
-
-        // Write the point to the temp file
-        ofs.write( reinterpret_cast<char *> ( &p ), sizeof( OctTreeNode::Point ) );
-      }
-    }
-    // close the output stream
-    ofs.close();
-
-    // close the input stream
-    ifs.close();
-   
-  }
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the current LOD level
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int OctTreeNode::_getLodLevel( const osg::Vec3d& eye )
-{
-  Guard guard ( this );
-
-  unsigned int lodLevel ( 0 );
-
-  unsigned int numLods = _lodDefinitions.size();
-
-  for( unsigned int i = 0; i < numLods; ++i )
-  {
-    float minLevel ( static_cast< float > ( i ) / static_cast< float > ( numLods ) );
-    float maxLevel ( ( static_cast< float > ( i ) + 1.0f ) / static_cast< float > ( numLods ) );
-    float minDistance = Usul::Math::maximum( ( minLevel * _distance ), this->getBoundingRadius() * minLevel );
-    float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
-
-    if( lodLevel == numLods - 1 )
-    {
-      maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), std::numeric_limits< double >::max() );
-    }
-
-    osg::Vec3 d ( eye - _bb.center() );
-    float currentDistance ( abs ( d.length() ) );
-    if( currentDistance >= minDistance && currentDistance <= maxDistance )
-    {
-      lodLevel = i;
-      break;
-    }
-  }
-  return lodLevel;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build this node
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* OctTreeNode::_buildNode( Unknown *caller, Unknown *progress )
-{
-  Guard guard ( this );
-  typedef osg::ref_ptr< osg::Geometry > GeometryPtr;
-  typedef osg::ref_ptr< osg::Geode > GeodePtr;
-  osg::ref_ptr< osg::LOD > lod ( new osg::LOD );
-  osg::ref_ptr< osg::Group > group ( new osg::Group );
-  unsigned int numLODs ( _lodDefinitions.size() );
-
-  // Get the current lod level
-  unsigned int lodLevel = _currentLodLevel;
-
-  // Make sure the points are valid
-  if( true == _points.valid() )
-  {
-    // LOds
-    if( _points->size() > 0 )
-    {
-      
-      ////Points vertices ( new osg::Vec3Array );
-      //ElementsPtr indices ( new osg::DrawElementsUShort ( osg::PrimitiveSet::POINTS ) );
-
-      //// set
-      //unsigned int lodMultiplier ( _lodDefinitions.at( lodLevel ) );
-
-      //indices->reserve( static_cast< unsigned int > ( ( _numPoints / lodMultiplier ) ) );
-      //for( unsigned int i = 0; i < _numPoints; i += lodMultiplier )
-      //{
-      //  indices->push_back( i );
-      //}
-
-      GeometryPtr geometry ( new osg::Geometry ); 
-
-      geometry->setVertexArray( _points.get() );
-      geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::POINTS, 0, _points->size() ) );
-    
-      GeodePtr geode ( new osg::Geode );
-      geode->addDrawable( geometry.get() );
-      
-      
-      group->addChild( geode.get() );
-     
-
-    }
-  }
-
-  return group.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Close the streams of all children
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OctTreeNode::traverse ( osg::NodeVisitor &nv )
-{
-  #if 1
-  // If it's a cull visitor...
-  if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
-  {
-    // Get cull visitor.
-    osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
-    
-    // Check for a valid cull visitor object.
-    if ( 0x0 == cv )
-      return;
-
-    // If we are a leaf node
-    if( this->type() == POINT_HOLDER ) 
-    {
-      // If we aren't culled...
-      if( true == cv->isCulled ( _bb ) )
-      {
-        Guard guard ( this );
-
-        // Get the lod node
-        osg::ref_ptr< osg::LOD > lod ( dynamic_cast< osg::LOD* > ( this->getChild( 0 ) ) );
-
-        // Make sure we got it
-        if( 0x0 == lod )
-        {
-          BaseClass::traverse ( nv );
-          return;
-        }
-
-        for( unsigned int i = 0; i < lod->getNumChildren(); ++i )
-        {
-          osg::ref_ptr< osg::Geode > child ( dynamic_cast< osg::Geode* > ( lod->getChild( i ) ) );
-          
-          // make sure the child is a geode
-          if( 0x0 == child )
-          {
-            BaseClass::traverse ( nv );
-            return;
-          }
-
-          // get the geometry
-          osg::ref_ptr< osg::Geometry > geometry ( dynamic_cast< osg::Geometry* > ( child->getDrawable( 0 ) ) );
-          
-          // make sure the geometry is valid
-          if( 0x0 == geometry )
-          {
-            BaseClass::traverse ( nv );
-            return;
-          }
-          
-          // clear out the vertices
-          geometry->setVertexArray( new osg::Vec3Array );
-
-          // dirty the display lists to be sure the scene is rebuilt
-          geometry->dirtyDisplayList();
-
-        }
-      }
-    }
-  }
-  #endif
-  BaseClass::traverse ( nv );
-  
-}
-

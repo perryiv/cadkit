@@ -1,29 +1,22 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Jeff Conner
+//  Copyright (c) 2008, Jeff Conner
 //  All rights reserved.
-//  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//
-//
-//
-//  For use with CFDViz for spatial partitioning of Computational Fluid
-//  Dynamics visualization.  Will generalize at a later date when 
-//  proof of concept is working.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.htm
 //
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __EXPERIMENTAL_OCTTREENODE_H__
-#define __EXPERIMENTAL_OCTTREENODE_H__
+#ifndef __EXPERIMENTAL_POINT_DOCUMENT_OCTTREENODE_H__
+#define __EXPERIMENTAL_POINT_DOCUMENT_OCTTREENODE_H__
 
-#include "OsgTools/Export.h"
-#include "OsgTools/Points/PointSetRecords.h"
+#include "PointSetRecords.h"
 
-#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Documents/Document.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 
 #include "Usul/Math/Vector3.h"
 #include "Usul/Types/Types.h"
@@ -33,6 +26,7 @@
 #include "osg/Vec4"
 #include "osg/Node"
 #include "osg/PrimitiveSet"
+#include "osg/Group"
 
 #include "boost/shared_ptr.hpp"
 
@@ -44,10 +38,10 @@
 #define NODE_HOLDER 1
 #define POINT_HOLDER 2
 
-namespace OsgTools {
-namespace Points {
+namespace Usul { namespace Jobs { class Manager; } }
+namespace osgUtil { class CullVisitor; }
 
-class OSG_TOOLS_EXPORT OctTreeNode : public Usul::Base::Object
+class OctTreeNode : public osg::Group
 {
 public:
 
@@ -57,7 +51,7 @@ public:
  
   typedef osg::Vec3f Point;
   typedef osg::ref_ptr< osg::Vec3Array > Points;
-  typedef Usul::Base::Object BaseClass;
+  typedef osg::Group BaseClass;
   typedef OctTreeNode::RefPtr OctTreeNodePtr;
   typedef std::vector< OctTreeNodePtr > Children;
   typedef std::vector< osg::BoundingBox > BoundingBoxVec;
@@ -69,12 +63,15 @@ public:
   typedef std::vector<char> StreamBuffer;
   typedef boost::shared_ptr<StreamBuffer> StreamBufferPtr;
   typedef std::vector< Usul::Types::Uint16 > LodDefinitions;
-  typedef osg::ref_ptr< osg::Group > GroupPtr;
+  typedef osg::ref_ptr< osg::Group > GroupPtr;  
+
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard<Mutex> Guard;
 
    // Type information.
   USUL_DECLARE_TYPE_ID ( OctTreeNode );
 
-  OctTreeNode ( StreamBufferPtr, const std::string &tempPath ); 
+  OctTreeNode ( Usul::Jobs::Manager *, StreamBufferPtr, const std::string &tempPath ); 
   virtual ~OctTreeNode();
 
   // Getters
@@ -90,8 +87,11 @@ public:
   bool                              add( Point p );
 
   void                              buildVectors();
+  void                              createLodLevels();
+  
 
   osg::Node*                        buildScene( Unknown *caller = 0x0, Unknown *progress = 0x0 );
+  
   void                              preBuildScene( Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
   void                              useLOD( bool value );
@@ -114,19 +114,43 @@ public:
   void                              write( std::ofstream* ofs, unsigned int numerator, unsigned int denominator, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
   void                              read ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
 
-  
+  void                              workingDir( const std::string& dir );
+  std::string                       workingDir();
+
+  void                              baseName( const std::string& name );
+  std::string                       baseName();
+
+  // Traverse the children.
+  virtual void                      traverse ( osg::NodeVisitor & );
+
+  std::string                       name();
+  void                              name( const std::string& n );
+
+  // Return the mutex. Use with caution.
+  Mutex &                           mutex() const;
+
+  // Get/Set Node Depth
+  Usul::Types::Uint32               getNodeDepth();
+  void                              setNodeDepth( Usul::Types::Uint32 d );
+
+  // Get/Set Tree Depth
+  Usul::Types::Uint32               getTreeDepth();
+  void                              setTreeDepth( Usul::Types::Uint32 d );
+
+
 
 protected:
 
   void                              _writePoints( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
   void                              _writeNodeInfo( std::ofstream* ofs ) const;
   void                              _writeRecord( std::ofstream* ofs, Usul::Types::Uint32 type, Usul::Types::Uint64 size ) const;
+  void                              _writeOOCNode( std::ofstream* ofs ) const;
 
   void                              _readNodeInfo( std::ifstream* ifs );
   void                              _readPoints( std::ifstream* ifs );
   Usul::Types::Uint64               _readToRecord( std::ifstream* ifs, Usul::Types::Uint32 type );
   void                              _readOctreeRecord ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
-
+  std::string                       _readOOCNode( std::ifstream* ifs );
 
   bool                              _contains( OctTreeNode::Point p );
   void                              _insertOrCreateChildren( OctTreeNode::Point p );
@@ -134,10 +158,7 @@ protected:
   void                              _createChildren();
   void                              _split();
   bool                              _addCellToChild( OctTreeNode::Point p );
-  bool                              _rayQuadIntersect( Vec3d a, Vec3d b, Vec3d c, Vec3d d, Vec3d p );
   
-  
-
   void                              _openTempFileForRead();
   void                              _openTempFileForWrite();
 
@@ -150,15 +171,26 @@ protected:
   void                              _closeChildrenStreams();
   Usul::Types::Uint32               _headerSize() const;
 
+  void                              _createLodLevels();
+  unsigned int                      _getLodLevel( const osg::Vec3d& eye );
+  osg::Node*                        _buildNode( Unknown *caller = 0x0, Unknown *progress = 0x0 );
+
+  osg::LOD*                         _getLod();
+
+
 private:
+
+  // No copying or assignment.
+  OctTreeNode ( const OctTreeNode & );
+  OctTreeNode &operator = ( const OctTreeNode & );
 
   osg::BoundingBox                _bb;
   Children                        _children;
   Points                          _points;
   unsigned int                    _type;
   unsigned int                    _capacity;
-
-  
+  std::string                     _name;
+  unsigned int                    _currentLodLevel;
 
   bool                            _useLOD;
 
@@ -171,7 +203,6 @@ private:
   StreamBufferPtr                 _streamBuffer;
   std::string                     _tempPath;
   double                          _distance;
-  GroupPtr                        _root;
   osg::Vec4f                      _material;
   
   static long                     _streamCount;
@@ -179,10 +210,15 @@ private:
   static unsigned long            _denominator;
   static Usul::Types::Uint64      _numLeafNodes;
 
-  
+  mutable Mutex                   _mutex;
+  std::string                     _workingDir;
+  std::string                     _baseName;
+  Usul::Jobs::Manager *           _jobManager;
 
-}; // OctTreeNode
-}; // namespace Points
-}; // namespace OsgTools
+  static Usul::Types::Uint32      _treeDepth;
+  static Usul::Types::Uint32      _depthCount;
+  Usul::Types::Uint32             _nodeDepth;
 
-#endif // __EXPERIMENTAL_OCTTREENODE_H__
+};
+#endif // __EXPERIMENTAL_POINT_DOCUMENT_OCTTREENODE_H__
+

@@ -14,13 +14,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifdef __linux
-#define __USE_LARGEFILE64
+#define __USE_LARGEFILE64 
 #endif
 
-#include "PointDocument.h"
+#include "OOCPointDocument.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
+
+#include "Usul/Interfaces/IColorEditor.h"
+#include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/IViewport.h"
 
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
@@ -36,8 +40,10 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Commands/GenericCheckCommand.h"
-#include "Usul/Interfaces/IColorEditor.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Jobs/Manager.h"
+#include "Usul/Registry/Database.h"
+#include "Usul/Registry/Constants.h"
 
 #include "OsgTools/State/StateSet.h"
 
@@ -49,8 +55,8 @@
 #include <limits>
 #include <string>
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( PointDocument, PointDocument::BaseClass );
-USUL_IMPLEMENT_TYPE_ID ( PointDocument );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OOCPointDocument, OOCPointDocument::BaseClass );
+USUL_IMPLEMENT_TYPE_ID ( OOCPointDocument );
 
 
 #ifdef _MSC_VER
@@ -68,12 +74,15 @@ USUL_IMPLEMENT_TYPE_ID ( PointDocument );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointDocument::PointDocument() : BaseClass ( "Point Document" ),
-_pointSet( new PointSet() ),
-_numPoints( 0 ),
-_material( new osg::Material() ),
-_color( 1.0f, 0.0f, 0.0f, 1.0f ),
-_workingDir()
+OOCPointDocument::OOCPointDocument() : BaseClass ( "Point Document" ),
+  _pointSet ( 0x0 ),
+  _numPoints ( 0 ),
+  _material ( new osg::Material() ),
+  _color ( 0.5f, 0.5f, 0.25f, 1.0f ),
+  _workingDir(),
+  _xpos ( 0 ),
+  _ypos ( 0 ),
+  _manager ( 0x0 )
 {
   // Set the default material ambient and diffuse
   _material->setAmbient( osg::Material::FRONT_AND_BACK, _color );
@@ -87,8 +96,38 @@ _workingDir()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointDocument::~PointDocument()
+OOCPointDocument::~OOCPointDocument()
 {
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &OOCPointDocument::_destroy ), "3494661626" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destroy this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OOCPointDocument::_destroy()
+{
+  // Done with these.
+  _pointSet = 0x0;
+  _material = 0x0;
+  _workingDir.clear();
+
+  // Clean up job manager. Do this last.
+  if ( 0x0 != _manager )
+  {
+    // Remove all queued jobs and cancel running jobs.
+    _manager->cancel();
+    
+    // Wait for remaining jobs to finish.
+    _manager->wait();
+    
+    // Delete the manager.
+    delete _manager;
+    _manager = 0x0;
+  }
 }
 
 
@@ -98,7 +137,7 @@ PointDocument::~PointDocument()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *PointDocument::queryInterface ( unsigned long iid )
+Usul::Interfaces::IUnknown *OOCPointDocument::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
@@ -106,6 +145,10 @@ Usul::Interfaces::IUnknown *PointDocument::queryInterface ( unsigned long iid )
       return static_cast < Usul::Interfaces::IBuildScene* > ( this );
     case Usul::Interfaces::IMenuAdd::IID:
       return static_cast < Usul::Interfaces::IMenuAdd * > ( this );
+    case Usul::Interfaces::IJobFinishedListener::IID:
+      return static_cast < Usul::Interfaces::IJobFinishedListener * > ( this );
+    case Usul::Interfaces::IUpdateListener::IID:
+      return static_cast < Usul::Interfaces::IUpdateListener * > ( this );
     default:
       return BaseClass::queryInterface ( iid );
   }
@@ -118,7 +161,7 @@ Usul::Interfaces::IUnknown *PointDocument::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PointDocument::canExport ( const std::string &file ) const
+bool OOCPointDocument::canExport ( const std::string &file ) const
 {
   return this->canSave ( file );
 }
@@ -130,7 +173,7 @@ bool PointDocument::canExport ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PointDocument::canInsert ( const std::string &file ) const
+bool OOCPointDocument::canInsert ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
   return ( ext == "point3d" || ext == "p3dbf" );
@@ -143,7 +186,7 @@ bool PointDocument::canInsert ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PointDocument::canOpen ( const std::string &file ) const
+bool OOCPointDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
   return ( ext == "psxml" || ext == "point3d" || ext == "p3dbf" );
@@ -156,7 +199,7 @@ bool PointDocument::canOpen ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PointDocument::canSave ( const std::string &file ) const
+bool OOCPointDocument::canSave ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
   return ( ext == "p3dbf" );
@@ -169,7 +212,7 @@ bool PointDocument::canSave ( const std::string &file ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_parseXML( XmlTree::Node &node, Unknown *caller, Unknown *progress )
+void OOCPointDocument::_parseXML( XmlTree::Node &node, Unknown *caller, Unknown *progress )
 {
   Guard guard ( this->mutex() );
   
@@ -202,7 +245,7 @@ void PointDocument::_parseXML( XmlTree::Node &node, Unknown *caller, Unknown *pr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
+void OOCPointDocument::read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
 
   // XML Parsing
@@ -219,6 +262,10 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
   }
   */
 
+  // Set the working directory in our point set.
+  this->_getPointSet()->workingDir( Usul::File::directory( name, true ) );
+  this->_getPointSet()->baseName( Usul::File::base( name ) );
+
   this->_read( name, caller, progress );
 
 }
@@ -231,7 +278,7 @@ void PointDocument::read ( const std::string &name, Unknown *caller, Unknown *pr
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void PointDocument::_read ( const std::string &name, Unknown *caller, Unknown *progress )
+void OOCPointDocument::_read ( const std::string &name, Unknown *caller, Unknown *progress )
 {
 
   // Binary restart filename
@@ -303,13 +350,17 @@ void PointDocument::_read ( const std::string &name, Unknown *caller, Unknown *p
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
+void OOCPointDocument::write ( const std::string &name, Unknown *caller, Unknown *progress ) const
 {
   std::ofstream* ofs ( new std::ofstream );
   ofs->open( name.c_str(), std::ofstream::out | std::ifstream::binary ); 
 
-  // write the binary restart file
-  _pointSet->write( ofs, _numPoints, 0x0, caller, progress );
+  // write the binary restart file.
+  OOCPointDocument *me ( const_cast < OOCPointDocument * > ( this ) );
+  if ( 0x0 != me )
+  {
+    me->_getPointSet()->write( ofs, _numPoints, 0x0, caller, progress );
+  }
 
   // close the stream and clean up memory
   ofs->close();
@@ -325,7 +376,7 @@ void PointDocument::write ( const std::string &name, Unknown *caller, Unknown *p
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::clear ( Usul::Interfaces::IUnknown *caller )
+void OOCPointDocument::clear ( Usul::Interfaces::IUnknown *caller )
 {
 
 }
@@ -337,7 +388,7 @@ void PointDocument::clear ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointDocument::Filters PointDocument::filtersInsert() const
+OOCPointDocument::Filters OOCPointDocument::filtersInsert() const
 {
   Filters filters;
   filters.push_back ( Filter ( "Ascii 3D Point Files (*.point3d )", "*.point3d" ) );
@@ -352,7 +403,7 @@ PointDocument::Filters PointDocument::filtersInsert() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointDocument::Filters PointDocument::filtersOpen() const
+OOCPointDocument::Filters OOCPointDocument::filtersOpen() const
 {
   Filters filters;
   filters.push_back ( Filter ( "Ascii 3D Point Files (*.point3d )", "*.point3d" ) );
@@ -368,7 +419,7 @@ PointDocument::Filters PointDocument::filtersOpen() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointDocument::Filters PointDocument::filtersSave() const
+OOCPointDocument::Filters OOCPointDocument::filtersSave() const
 {
   Filters filters;
   filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
@@ -382,7 +433,7 @@ PointDocument::Filters PointDocument::filtersSave() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PointDocument::Filters PointDocument::filtersExport() const
+OOCPointDocument::Filters OOCPointDocument::filtersExport() const
 {
   Filters filters;
   return filters;
@@ -395,11 +446,11 @@ PointDocument::Filters PointDocument::filtersExport() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *caller )
+osg::Node *OOCPointDocument::buildScene ( const BaseClass::Options &opt, Unknown *caller )
 {
   // Redirect to point set
   osg::ref_ptr< osg::Group > group ( new osg::Group );
-  group->addChild( _pointSet->buildScene ( caller ) );
+  group->addChild( this->_getPointSet()->buildScene ( caller ) );
   OsgTools::State::StateSet::setMaterial( group.get(), _material.get() );
   return group.release();
 }
@@ -411,7 +462,7 @@ osg::Node *PointDocument::buildScene ( const BaseClass::Options &opt, Unknown *c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *caller, Unknown *progress )
+void OOCPointDocument::_readPoint3DFile( const std::string &filename, Unknown *caller, Unknown *progress )
 {
  
   this->setStatusBar ( "Step 1/2: Reading file...", progress );
@@ -448,9 +499,9 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
   in.read ( reinterpret_cast<char *> ( &_numPoints ), sizeof ( unsigned int ) );
 
   // Set the bounds of the pointset octree and the point capacity
-  _pointSet->bounds( minCorner, maxCorner );
+  this->_getPointSet()->bounds( minCorner, maxCorner );
   unsigned int capacity = Usul::Math::minimum( static_cast< unsigned int > ( _numPoints / 400 ), static_cast< unsigned int > ( std::numeric_limits< short >::max() ) );
-  _pointSet->capacity( capacity );
+  this->_getPointSet()->capacity( capacity );
   
   // Setup progress bars
   Usul::Policies::TimeBased update ( 1000 ); // Every second.
@@ -469,9 +520,9 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
 
       in.read ( reinterpret_cast<char *> ( &value ), sizeof ( osg::Vec3f ) );
     
-      if( false == _pointSet->addPoint( value ) )
+      if( false == this->_getPointSet()->addPoint( value ) )
       {
-        std::cout << "Failed to insert point in PointDocument! " << std::endl;
+        std::cout << "Failed to insert point in OOCPointDocument! " << std::endl;
       }
 
       ++count;
@@ -497,7 +548,7 @@ void PointDocument::_readPoint3DFile( const std::string &filename, Unknown *call
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PointDocument::_parseHeader( const std::string &filename, Unknown *caller, Unknown *progress )
+bool OOCPointDocument::_parseHeader( const std::string &filename, Unknown *caller, Unknown *progress )
 {
   this->setStatusBar ( "Step 1/2: Reading File...", progress );
 
@@ -525,7 +576,7 @@ bool PointDocument::_parseHeader( const std::string &filename, Unknown *caller, 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_fastReadAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller, Unknown *progress )
+void OOCPointDocument::_fastReadAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller, Unknown *progress )
 {
   osg::BoundingBox bounds;
 
@@ -639,7 +690,7 @@ void PointDocument::_fastReadAndSetBounds( const std::string &filename, const st
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_readAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller, Unknown *progress )
+void OOCPointDocument::_readAndSetBounds( const std::string &filename, const std::string &binaryFilename, Unknown *caller, Unknown *progress )
 {
   osg::BoundingBox bounds;
 
@@ -767,9 +818,9 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 #if 0
   osg::Vec3f minCorner ( bounds.xMin(), bounds.yMin(), bounds.zMin() );
   osg::Vec3f maxCorner ( bounds.xMax(), bounds.yMax(), bounds.zMax() );
-  _pointSet->bounds( minCorner, maxCorner );
+  this->_getPointSet()->bounds( minCorner, maxCorner );
   unsigned int capacity = Usul::Math::minimum( static_cast< unsigned int > ( _numPoints / 400 ), static_cast< unsigned int > ( std::numeric_limits< short >::max() ) );
-  _pointSet->capacity( capacity );
+  this->_getPointSet()->capacity( capacity );
 #endif
 
   osg::Vec3f minCorner ( bounds.xMin(), bounds.yMin(), bounds.zMin() );
@@ -797,10 +848,10 @@ void PointDocument::_readAndSetBounds( const std::string &filename, const std::s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
+void OOCPointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 {
   this->setStatusBar ( "Step 2/2: Building Spatial Parameters...", progress );
-  _pointSet->buildVectors();
+  this->_getPointSet()->buildVectors();
 }
 
 
@@ -810,9 +861,9 @@ void PointDocument::_buildVectors( Unknown *caller, Unknown *progress )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_split( Unknown *caller, Unknown *progress )
+void OOCPointDocument::_split( Unknown *caller, Unknown *progress )
 {
-  _pointSet->split( this, caller, progress );
+  this->_getPointSet()->split( this, caller, progress );
 }
 
 
@@ -822,7 +873,7 @@ void PointDocument::_split( Unknown *caller, Unknown *progress )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown *caller, Unknown *progress )
+void OOCPointDocument::_readBinaryRestartFile( const std::string& filename, Unknown *caller, Unknown *progress )
 {
   std::ifstream* ifs ( new std::ifstream );
   ifs->open( filename.c_str(), std::ifstream::out | std::ifstream::binary );
@@ -832,7 +883,7 @@ void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown
 
   Usul::Types::Uint64 numPoints ( 0 );
 
-  _pointSet->read( ifs, numPoints, this, caller, progress );
+  this->_getPointSet()->read( ifs, numPoints, this, caller, progress );
 
   _numPoints = numPoints;
 
@@ -848,7 +899,7 @@ void PointDocument::_readBinaryRestartFile( const std::string& filename, Unknown
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::_editPointColor()
+void OOCPointDocument::_editPointColor()
 {
   Usul::Interfaces::IColorEditor::QueryPtr colorEditor ( this->delegate() );
   if( false == colorEditor.valid() )
@@ -870,7 +921,7 @@ void PointDocument::_editPointColor()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
+void OOCPointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller )
 {
   typedef MenuKit::Button       Button;
 
@@ -878,5 +929,151 @@ void PointDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
 
   MenuKit::Menu::RefPtr pointMenu ( menu.find ( "&Points", true ) );
 
-  pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &PointDocument::_editPointColor ), Usul::Commands::TrueFunctor() ) ) );
+  pointMenu->append( new Button ( Usul::Commands::genericCommand ( "Edit Color...", Usul::Adaptors::memberFunction<void> ( this, &OOCPointDocument::_editPointColor ), Usul::Commands::TrueFunctor() ) ) );
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The Job is finished.  Implemented to request redraws when jobs finish
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OOCPointDocument::jobFinished ( Usul::Jobs::Job *job )
+{
+  //NOTE: This can still be further optimized
+
+  // redraw the scene
+  this->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove a view from this document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OOCPointDocument::removeView ( Usul::Interfaces::IView *view )
+{
+  // Call the base class' first.
+  BaseClass::removeView ( view );
+
+  // If there are no more views, remove the job finished listener.
+  if ( 0 == this->numViews() )
+  {
+    this->_getJobManager()->removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update callback
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+void OOCPointDocument::updateNotify( Unknown *caller )
+{
+  // Job update stuff
+  unsigned int numQueued ( this->_getJobManager()->numJobsQueued() );
+  unsigned int numRunning ( this->_getJobManager()->numJobsExecuting() );
+#if 0
+  std::string status( "" );
+  if( 0 != numQueued && 0 != numRunning )
+  {
+    status = Usul::Strings::format( "Number of running Jobs: ", numRunning, "\nNumber of queued jobs: ", numQueued );
+  }
+  this->_setStatusText( status, _xpos, _ypos, 0.0, 0.95, caller );
+#else
+  std::string status( Usul::Strings::format( "Number of running Jobs: ", numRunning, "\nNumber of queued jobs: ", numQueued ) );
+  this->_setStatusText( status, _xpos, _ypos, 0.0, 0.95, caller );
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the status text
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OOCPointDocument::_setStatusText( const std::string message, unsigned int &textXPos, unsigned int &textYPos, double xmult, double ymult, Usul::Interfaces::IUnknown *caller )
+{
+  Guard guard ( this ); 
+
+  Usul::Interfaces::ITextMatrix::QueryPtr textMatrix ( caller );
+  if( false == textMatrix.valid() )
+    throw std::runtime_error ( "Error 3793514250: Failed to find a valid interface to Usul::Interfaces::ITextMatrix " );
+
+  Usul::Interfaces::IViewport::QueryPtr viewPort( caller );
+  if( false == viewPort.valid() )
+    throw std::runtime_error ( "Error 2482359443: Failed to find a valid interface to Usul::Interfaces::IViewport " );
+
+  textMatrix->removeText( static_cast< unsigned int > ( textXPos ),
+                          static_cast< unsigned int > ( textYPos ) );
+   
+  const double xpos ( ::floor( viewPort->width()  * xmult ) );
+  const double ypos ( ::floor( viewPort->height() * ymult ) );
+
+#if 0
+  osg::Vec4f fcolor (  0.841, 0.763, 0.371, 1 );
+  osg::Vec4f bcolor (  0.841, 0.763, 0.371, 1 );
+#else
+  osg::Vec4f fcolor (  1.0, 1.0, 1.0, 1 );
+  osg::Vec4f bcolor (  0.0, 0.0, 0.0, 1 );
+#endif
+
+  textXPos = static_cast< unsigned int > ( xpos );
+  textYPos = static_cast< unsigned int > ( ypos );
+
+  textMatrix->setText ( textXPos, textYPos, message, fcolor, bcolor );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the job manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Jobs::Manager *OOCPointDocument::_getJobManager()
+{
+  Guard guard ( this );
+  
+  // Only make it once.
+  if ( 0x0 == _manager )
+  {
+    typedef Usul::Registry::Database Reg;
+    namespace Sections = Usul::Registry::Sections;
+    
+    const std::string type ( Reg::instance().convertToTag ( this->typeName() ) );
+    Usul::Registry::Node &node ( Reg::instance()[Sections::DOCUMENT_SETTINGS][type]["job_manager_thread_pool_size"] );
+    const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
+    
+    _manager = new Usul::Jobs::Manager ( poolSize, true );
+    _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
+    _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  }
+  
+  return _manager;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the point set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OOCPointDocument::PointSet *OOCPointDocument::_getPointSet()
+{
+  Guard guard ( this );
+
+  if ( false == _pointSet.valid() )
+  {
+    _pointSet = new PointSet ( this->_getJobManager() );
+  }
+  
+  return _pointSet.get();
+}
+

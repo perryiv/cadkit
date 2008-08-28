@@ -24,8 +24,7 @@
 
 #include <string>
 
-
-class PointComponent : public Usul::Base::Referenced,
+class OOCPointComponent : public Usul::Base::Referenced,
                        public Usul::Interfaces::IPlugin,
                        public Usul::Interfaces::IDocumentCreate
 {
@@ -40,13 +39,13 @@ public:
   USUL_DECLARE_TYPE_ID ( Point );
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( PointComponent );
+  USUL_DECLARE_REF_POINTERS ( OOCPointComponent );
 
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Default construction.
-  PointComponent();
+  OOCPointComponent();
 
 protected: 
 
@@ -57,11 +56,12 @@ protected:
   virtual Document *            createDocument ( Unknown *caller = 0x0 );
 
   // Do not copy.
-  PointComponent ( const PointComponent & );
-  PointComponent &operator = ( const PointComponent & );
+  OOCPointComponent ( const OOCPointComponent & );
+  OOCPointComponent &operator = ( const OOCPointComponent & );
 
   /// Use reference counting.
-  virtual ~PointComponent();
+  virtual ~OOCPointComponent();
+
 };
 
 

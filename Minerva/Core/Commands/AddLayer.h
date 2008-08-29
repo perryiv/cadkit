@@ -16,7 +16,6 @@
 #include "Usul/Commands/Command.h"
 #include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Interfaces/ILayer.h"
-#include "Usul/Jobs/Job.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -35,40 +34,17 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   AddLayer ();
-  AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* progress = 0x0 );
+  AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::IUnknown* layer );
 
 protected:
+  
   virtual ~AddLayer();
 
   virtual void                _execute();
 
-  class AddLayerJob : public Usul::Jobs::Job
-  {
-  public:
-    typedef Usul::Jobs::Job BaseClass;
-
-    AddLayerJob ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown *caller );
-
-  protected:
-    // Use reference counting.
-    virtual ~AddLayerJob();
-
-    bool               _addLayer ( Usul::Interfaces::IUnknown *caller );
-
-    // Do the work here.
-    virtual void       _started();
-    virtual void       _finished();
-
-  private:
-    Usul::Interfaces::IUnknown::QueryPtr _parent;
-    Usul::Interfaces::ILayer::QueryPtr _layer;
-    Usul::Interfaces::IUnknown::QueryPtr _caller;
-  };
-
 private:
   Usul::Interfaces::IUnknown::QueryPtr _parent;
-  Usul::Interfaces::IUnknown::QueryPtr _progressBar;
-  Usul::Interfaces::ILayer::QueryPtr _layer;
+  Usul::Interfaces::IUnknown::QueryPtr _layer;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS( AddLayer );

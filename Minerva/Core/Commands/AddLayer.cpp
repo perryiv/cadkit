@@ -10,7 +10,6 @@
 
 #include "Minerva/Core/Commands/AddLayer.h"
 #include "Minerva/Interfaces/IAddLayer.h"
-#include "Minerva/Interfaces/IVectorLayer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 
 #include "Usul/Jobs/Manager.h"
@@ -32,10 +31,9 @@ USUL_FACTORY_REGISTER_CREATOR ( AddLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddLayer::AddLayer ( ) : 
+AddLayer::AddLayer() : 
   BaseClass( 0x0 ),
   _parent (),
-  _progressBar (),
   _layer ()
 {
   USUL_TRACE_SCOPE;
@@ -49,10 +47,9 @@ AddLayer::AddLayer ( ) :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddLayer::AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* progress ) : 
+AddLayer::AddLayer ( Usul::Interfaces::IUnknown * parent, Usul::Interfaces::IUnknown* layer ) : 
   BaseClass( 0x0 ),
   _parent ( parent ),
-  _progressBar ( progress ),
   _layer ( layer )
 {
   USUL_TRACE_SCOPE;
@@ -82,17 +79,23 @@ void AddLayer::_execute()
 {
   USUL_TRACE_SCOPE;
 
-  // Create a job to add a layer.  It captures the active document.
-  AddLayerJob::RefPtr job ( new AddLayerJob ( _parent, _layer, this->caller() ) );
-
-  if ( _progressBar.valid() )
-    job->progress ( _progressBar );
-
-  Usul::Jobs::Manager::instance().addJob ( job.get() );
+  Minerva::Interfaces::IAddLayer::QueryPtr addLayer ( _parent );
   
-  Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
-  if ( document.valid() )
-    document->requestRedraw();
+  // Add the layer.
+  if( addLayer.valid () )
+  {
+    addLayer->addLayer ( _layer );
+  
+    // Dirty the scene.
+    Minerva::Interfaces::IDirtyScene::QueryPtr ds ( Usul::Documents::Manager::instance().activeDocument() );
+    if ( ds.valid() )
+      ds->dirtyScene ( true, _layer );
+  
+    // Request a redraw of the active document.
+    Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+    if ( document.valid() )
+      document->requestRedraw();
+  }
 }
 
 
@@ -106,107 +109,9 @@ Usul::Interfaces::IUnknown* AddLayer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ISerialize::IID:
     return static_cast < Usul::Interfaces::ISerialize* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-AddLayer::AddLayerJob::AddLayerJob ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown *caller ) :
-  BaseClass ( caller ),
-  _parent ( parent ),
-  _layer ( layer ),
-  _caller ( caller )
-{
-  USUL_TRACE_SCOPE;
-
-  // Add the layer.
-  this->_addLayer ( parent );
-
-  Minerva::Interfaces::IDirtyScene::QueryPtr ds ( Usul::Documents::Manager::instance().activeDocument() );
-  if ( ds.valid() )
-    ds->dirtyScene ( true, layer );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-AddLayer::AddLayerJob::~AddLayerJob()
-{
-  USUL_TRACE_SCOPE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add the layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool AddLayer::AddLayerJob::_addLayer ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
-
-  Minerva::Interfaces::IAddLayer::QueryPtr addLayer ( caller );
-
-  // Add the layer.
-  if( addLayer.valid () )
-  {
-    addLayer->addLayer ( _layer );
-    _caller = caller;
-    return true;
-  }
-
-  return false;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the data objects and add the layer to the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void AddLayer::AddLayerJob::_started()
-{
-  USUL_TRACE_SCOPE;
-
-  // Query for needed interfaces.
-  Minerva::Interfaces::IVectorLayer::QueryPtr vector ( _layer );
-
-  // Show the progess bar.  Hides in the destructor.
-  Usul::Interfaces::IProgressBar::ShowHide showHide ( this->progress () );
-
-  // Build the vector data.
-  if ( vector.valid () )
-    vector->buildVectorData ( _parent, this->progress() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clean up.  
-//  The destructor may be too late since we don't know when the object is deleted.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void AddLayer::AddLayerJob::_finished()
-{
-  USUL_TRACE_SCOPE;
-
-  // No longer needed.  Unref.
-  _layer = static_cast < Usul::Interfaces::ILayer *> ( 0x0 );
 }

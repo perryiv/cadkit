@@ -101,6 +101,13 @@ void AddGeometryWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
   if ( false == al.valid() )
     return;
 
+  // Make the geometry.
+  Geometry::RefPtr geometry ( this->_makeGeometry() );
+
+  // Return now if there isn't a valid geometry.
+  if ( false == geometry.valid() )
+    return;
+
   // Make a new data object.
   Minerva::Core::Data::DataObject::RefPtr object ( new Minerva::Core::Data::DataObject );
 
@@ -108,7 +115,7 @@ void AddGeometryWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
   object->name ( _name->text().toStdString() );
 
   // Add the geometry.
-  object->addGeometry ( this->_makeGeometry() );
+  object->addGeometry ( geometry );
 
   // Add the data object to the parent.
   al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
@@ -203,8 +210,14 @@ Minerva::Core::Data::Geometry* AddGeometryWidget::_makeSphere() const
 {
   Minerva::Core::Data::Model::RefPtr model ( this->_makeModel() );
 
+  const double radius ( _radiusDoubleSpinBox->value() );
+
+  // Handle bad input.
+  if ( 0.0 == radius )
+    return 0x0;
+
   // Make the node.
-  osg::ref_ptr<osg::Node> node ( Detail::makeSphere ( _radiusDoubleSpinBox->value() ) );
+  osg::ref_ptr<osg::Node> node ( Detail::makeSphere ( radius ) );
 
   // Set the material.
   this->_setMaterial ( node.get() );

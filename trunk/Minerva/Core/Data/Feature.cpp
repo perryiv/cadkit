@@ -42,7 +42,7 @@ Feature::Feature() :
   _visibility ( true ),
   _lookAt ( 0x0 ),
   _timePrimitive ( 0x0 ),
-  _extents(  -180.0, -90.0, 180.0, 90.0 ),
+  _extents(),
   _dataChangedListeners()
 {
   this->_addMember ( "name", _name );

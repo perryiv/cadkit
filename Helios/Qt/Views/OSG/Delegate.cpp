@@ -98,7 +98,6 @@ void Delegate::createDefaultGUI ( Usul::Documents::Document *document, Usul::Int
   
   // Show the window.
   this->_restoreStateAndShow ( *viewer );
-  
 }
 
 

@@ -107,8 +107,7 @@ private:
   enum STATUS_FLAGS
   {
     DOWNLOADING       = 0x00000001,
-    READING           = 0x00000002,
-		FILTERING_ENABLED = 0x00000004
+    READING           = 0x00000002
   };
   
   boost::posix_time::ptime _lastDataUpdate;
@@ -118,6 +117,7 @@ private:
   Usul::Math::Vec4f _color;
   TimerPair _timerInfo;
 	Filter _filter;
+  bool _filteringEnabled;
   
   SERIALIZE_XML_CLASS_NAME ( GeoRSSLayer );
 };

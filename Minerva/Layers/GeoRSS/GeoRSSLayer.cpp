@@ -24,6 +24,7 @@
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
@@ -32,6 +33,7 @@
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
 
+#include "boost/algorithm/string/find.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/foreach.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
@@ -51,7 +53,7 @@ typedef XmlTree::Node::Children    Children;
 typedef Usul::Convert::Type<std::string,double> ToDouble;
 
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS( GeoRSSLayer, GeoRSSLayer::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( GeoRSSLayer, GeoRSSLayer::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( GeoRSSLayer );
 
 
@@ -69,11 +71,15 @@ GeoRSSLayer::GeoRSSLayer() :
   _flags(),
   _color ( 1.0, 0.0, 0.0, 1.0 ),
   _timerInfo ( 0, false ),
-	_filter()
+	_filter(),
+  _filteringEnabled ( false )
 {
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
   this->_addMember ( "color", _color );
+  this->_addMember ( "filter_element", _filter.first );
+  this->_addMember ( "filter_value", _filter.second );
+  this->_addMember ( "filteringEnabled", _filteringEnabled );
   
   this->_addTimer();
 }
@@ -118,49 +124,53 @@ namespace Detail
 {
   boost::posix_time::ptime parseDate ( const std::string& sDate )
   {
-    if ( false == sDate.empty() && sDate.size() > 27 )
+    try
     {
-      const std::string dayOfWeek ( sDate, 0, 3 );
-      const std::string day ( sDate, 5, 2 );
-      const std::string month ( sDate, 8, 3 );
-      const std::string year ( sDate, 12, 4 );
-      const std::string hours ( sDate, 17, 2 );
-      const std::string minutes ( sDate, 20, 2 );
-      const std::string seconds ( sDate, 23, 2 );
-      const std::string zone ( sDate, 26 ); // Get the remaining characters.
-      
-      // The timezone.
-      boost::local_time::time_zone_ptr timeZone;
-      
-      typedef Usul::Convert::Type<std::string,int> ToInt;
-      
-      // See if the zone is an offset.
-      if ( false == zone.empty() && ( '-' == zone[0] || '+' == zone[1] ) )
+      if ( false == sDate.empty() && sDate.size() > 27 )
       {
-        int offset ( ToInt::convert ( zone ) );
-        int hourOffset ( offset / 100 );
+        const std::string dayOfWeek ( sDate, 0, 3 );
+        const std::string day ( sDate, 5, 2 );
+        const std::string month ( sDate, 8, 3 );
+        const std::string year ( sDate, 12, 4 );
+        const std::string hours ( sDate, 17, 2 );
+        const std::string minutes ( sDate, 20, 2 );
+        const std::string seconds ( sDate, 23, 2 );
+        const std::string zone ( sDate, 26 ); // Get the remaining characters.
         
-        // Offset from UTC.
-        boost::posix_time::time_duration utcOffset ( hourOffset, 0, 0 );
+        // The timezone.
+        boost::local_time::time_zone_ptr timeZone;
         
-        // Daylight savings offsets.  TODO: Find out if the RSS feed will have accounted for dst.
-        boost::local_time::dst_adjustment_offsets dstOffsets ( boost::posix_time::time_duration ( 0, 0, 0 ),
-                                                               boost::posix_time::time_duration ( 0, 0, 0 ),
-                                                               boost::posix_time::time_duration ( 0, 0, 0 ) );
+        typedef Usul::Convert::Type<std::string,int> ToInt;
         
-        boost::shared_ptr<boost::local_time::dst_calc_rule> rules;
-        boost::local_time::time_zone_names names ( "", "", "", "" );
+        // See if the zone is an offset.
+        if ( false == zone.empty() && ( '-' == zone[0] || '+' == zone[1] ) )
+        {
+          int offset ( ToInt::convert ( zone ) );
+          int hourOffset ( offset / 100 );
+          
+          // Offset from UTC.
+          boost::posix_time::time_duration utcOffset ( hourOffset, 0, 0 );
+          
+          // Daylight savings offsets.  TODO: Find out if the RSS feed will have accounted for dst.
+          boost::local_time::dst_adjustment_offsets dstOffsets ( boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                                 boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                                 boost::posix_time::time_duration ( 0, 0, 0 ) );
+          
+          boost::shared_ptr<boost::local_time::dst_calc_rule> rules;
+          boost::local_time::time_zone_names names ( "", "", "", "" );
+          
+          timeZone = boost::local_time::time_zone_ptr ( new boost::local_time::custom_time_zone ( names, utcOffset, dstOffsets, rules ) );
+        }
         
-        timeZone = boost::local_time::time_zone_ptr ( new boost::local_time::custom_time_zone ( names, utcOffset, dstOffsets, rules ) );
+        boost::posix_time::time_duration time ( ToInt::convert ( hours ), ToInt::convert ( minutes ), ToInt::convert ( seconds ) );
+        boost::gregorian::date date ( boost::gregorian::from_simple_string ( year + "-" + month + "-" + day ) );
+        boost::posix_time::ptime lastUpdate ( date, time );
+        
+        boost::posix_time::ptime utcTime ( boost::local_time::local_date_time ( date, time, timeZone, true ).utc_time() );
+        return utcTime;
       }
-      
-      boost::posix_time::time_duration time ( ToInt::convert ( hours ), ToInt::convert ( minutes ), ToInt::convert ( seconds ) );
-      boost::gregorian::date date ( boost::gregorian::from_simple_string ( year + "-" + month + "-" + day ) );
-      boost::posix_time::ptime lastUpdate ( date, time );
-      
-      boost::posix_time::ptime utcTime ( boost::local_time::local_date_time ( date, time, timeZone, true ).utc_time() );
-      return utcTime;
     }
+    USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2928650239" );
     
     return boost::posix_time::not_a_date_time;
   }
@@ -373,13 +383,15 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
 	{
 		// Get the filter.
 		const Filter filter ( this->filter() );
-		
+
 		// Get all the children.
 		Children children ( node.children() );
 		for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
 		{
 			XmlTree::Node::ValidRefPtr node ( *iter );
-			if ( filter.first == node->name() && filter.second == node->value() )
+      const std::string name ( node->name() );
+      const std::string value ( node->value() );
+			if ( filter.first == name && !boost::algorithm::find_first ( value, filter.second ) )
 				filtered = true;
 		}
 	}
@@ -656,7 +668,7 @@ void GeoRSSLayer::downloadFeed()
 void GeoRSSLayer::filteringEnabled ( bool b )
 {
 	Guard guard ( this->mutex() );
-  _flags = Usul::Bits::set<unsigned int, unsigned int> ( _flags, GeoRSSLayer::FILTERING_ENABLED, b );
+  _filteringEnabled = b;
 }
 
 
@@ -669,7 +681,7 @@ void GeoRSSLayer::filteringEnabled ( bool b )
 bool GeoRSSLayer::filteringEnabled() const
 {
 	Guard guard ( this->mutex() );
-  return Usul::Bits::has<unsigned int, unsigned int> ( _flags, GeoRSSLayer::FILTERING_ENABLED );
+  return _filteringEnabled;
 }
 
 

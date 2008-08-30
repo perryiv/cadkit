@@ -11,5 +11,5 @@ use strict;
 
 my $files = `print_every_nth_file.pl @ARGV`;
 my $command = "rm $files";
-print $command;
+print "$command\n";
 `$command`;

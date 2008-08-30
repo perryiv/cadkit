@@ -50,6 +50,7 @@
 #include "osg/Material"
 
 #include "boost/algorithm/string/find.hpp"
+#include "boost/algorithm/string/replace.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "Usul/File/Boost.h"
 
@@ -268,9 +269,13 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
   if ( "kmz" == ext )
   {
     std::string dir ( Usul::File::Temp::directory( true ) + Usul::File::base ( filename ) + "/" );
+    boost::algorithm::replace_all ( dir, " ", "_" );
     
 #ifndef _MSC_VER
-    std::string command ( "/usr/bin/unzip -o " + filename + " -d " + dir );
+    std::string name ( filename );
+    boost::algorithm::replace_all ( name, " ", "\\ " );
+    
+    std::string command ( "/usr/bin/unzip -o " + name + " -d " + dir );
 #else
     std::string command ( "7za.exe x -y -o\"" + dir + "\" \"" + filename + "\"" );
 #endif

@@ -14,6 +14,7 @@
 
 #include "Minerva/Interfaces/IAddLayer.h"
 
+#include "QtTools/Color.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -26,6 +27,9 @@ AddGeoRSSLayerWidget::AddGeoRSSLayerWidget( Usul::Interfaces::IUnknown* caller, 
 {
   // Initialize code from designer.
   this->setupUi ( this );
+  
+  // Set default color.
+  _colorButton->color ( QColor ( 255, 0, 0, 255 ) );
 }
 
 
@@ -58,6 +62,7 @@ void AddGeoRSSLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Int
 	const bool enableFiltering ( Qt::Checked == _enableFiltering->checkState() );
 	const std::string element ( _elementFilter->text().toStdString() );
 	const std::string value ( _valueFilter->text().toStdString() );
+  const Usul::Math::Vec4f color ( QtTools::Color<Usul::Math::Vec4f>::convert ( _colorButton->color() ) );
 
   if ( false == url.empty() )
   {
@@ -65,6 +70,7 @@ void AddGeoRSSLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Int
     layer->url ( url );
 		layer->refreshRate ( refreshRate );
 		layer->filteringEnabled ( enableFiltering );
+    layer->color ( color );
 
 		if ( false == element.empty() && false == value.empty() )
 			layer->filter ( Minerva::Layers::GeoRSS::GeoRSSLayer::Filter ( element, value ) );

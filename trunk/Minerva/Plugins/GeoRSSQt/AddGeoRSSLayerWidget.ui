@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>456</width>
-    <height>311</height>
+    <width>480</width>
+    <height>329</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -43,6 +43,24 @@
        </property>
        <property name="value" >
         <double>300.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QLabel" name="label_4" >
+       <property name="text" >
+        <string>Color:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QtTools::ColorButton" name="_colorButton" >
+       <property name="text" >
+        <string>PushButton</string>
        </property>
       </widget>
      </item>
@@ -107,6 +125,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtTools::ColorButton</class>
+   <extends>QPushButton</extends>
+   <header>QtTools/ColorButton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

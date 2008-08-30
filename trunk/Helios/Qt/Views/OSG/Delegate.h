@@ -30,7 +30,7 @@ namespace Helios {
 namespace Views {
 namespace OSG {
 
-  class Viewer;
+class Viewer;
   
 class HELIOS_QT_VIEWS_OSG_EXPORT Delegate : public Usul::Base::Referenced,
                                             public Usul::Interfaces::IGUIDelegate,

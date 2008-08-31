@@ -79,7 +79,7 @@ template <> struct TypeWrapper < std::string >
   }
   static void replaceIllegalCharacters ( std::string &s )
   {
-    // Xml characters will be removed when the file is written to xml.
+    // Illegal characters will be removed when the file is written to xml.
     //XmlTree::replaceIllegalCharacters ( s );
   }
   static std::string restoreIllegalCharacters ( const std::string &in )

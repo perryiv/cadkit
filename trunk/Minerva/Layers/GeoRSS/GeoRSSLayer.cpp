@@ -40,6 +40,8 @@
 #include "boost/date_time/local_time/local_time.hpp"
 #include "boost/regex.hpp"
 
+#include <limits>
+
 using namespace Minerva::Layers::GeoRSS;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,7 +74,8 @@ GeoRSSLayer::GeoRSSLayer() :
   _color ( 1.0, 0.0, 0.0, 1.0 ),
   _timerInfo ( 0, false ),
 	_filter(),
-  _filteringEnabled ( false )
+  _filteringEnabled ( false ),
+  _maximumItems ( std::numeric_limits<unsigned int>::max() )
 {
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
@@ -80,6 +83,7 @@ GeoRSSLayer::GeoRSSLayer() :
   this->_addMember ( "filter_element", _filter.first );
   this->_addMember ( "filter_value", _filter.second );
   this->_addMember ( "filteringEnabled", _filteringEnabled );
+  this->_addMember ( "maximum_items", _maximumItems );
   
   this->_addTimer();
 }
@@ -238,6 +242,9 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   {
     std::cout << "Adding item " << ++i << " of " << children.size() << std::endl;
     this->_parseItem( *node );
+    
+    if ( this->size() >= this->maximumItems() )
+      break;
   }
 
   // Stack the points.
@@ -726,4 +733,30 @@ GeoRSSLayer::Filter GeoRSSLayer::filter() const
 {
 	Guard guard ( this->mutex() );
 	return _filter;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the maximum number of items to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::maximumItems ( unsigned int num )
+{
+  Guard guard ( this->mutex() );
+  _maximumItems = num;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the maximum number of items to show.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int GeoRSSLayer::maximumItems() const
+{
+  Guard guard ( this->mutex() );
+  return _maximumItems;
 }

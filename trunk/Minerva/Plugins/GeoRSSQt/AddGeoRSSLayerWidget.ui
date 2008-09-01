@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>329</height>
+    <width>489</width>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -63,6 +63,20 @@
         <string>PushButton</string>
        </property>
       </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <item>
+      <widget class="QLabel" name="label_5" >
+       <property name="text" >
+        <string>Maximum Items:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="_maximumItemsSpinBox" />
      </item>
     </layout>
    </item>

@@ -69,6 +69,10 @@ public:
 	/// Set/get the filtering enabled flag.
 	void                        filteringEnabled ( bool b );
 	bool                        filteringEnabled() const;
+  
+  /// Set/get the maximum number of items to show.
+  void                        maximumItems ( unsigned int );
+  unsigned int                maximumItems() const;
 
   // Get/Set reading flag.
   bool                        isReading() const;
@@ -119,6 +123,7 @@ private:
   TimerPair _timerInfo;
 	Filter _filter;
   bool _filteringEnabled;
+  unsigned int _maximumItems;
   
   SERIALIZE_XML_CLASS_NAME ( GeoRSSLayer );
 };

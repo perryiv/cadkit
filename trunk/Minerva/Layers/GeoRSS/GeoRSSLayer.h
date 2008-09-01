@@ -14,8 +14,6 @@
 
 #include "Minerva/Core/Data/Container.h"
 
-#include "Usul/Base/Object.h"
-#include "Usul/Interfaces/IRead.h"
 #include "Usul/Interfaces/ITimerNotify.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
@@ -62,7 +60,7 @@ public:
 
   // Get/Set downloading flag.
   bool                        isDownloading() const;
-  void                        downloading( bool b );
+  void                        downloading ( bool b );
 
 	/// Set/get the filter.
 	void                        filter ( const Filter& filter );
@@ -74,11 +72,14 @@ public:
 
   // Get/Set reading flag.
   bool                        isReading() const;
-  void                        reading( bool b );
+  void                        reading ( bool b );
   
   /// Set/get the refresh rate (in seconds).
   void                        refreshRate ( double seconds );
   double                      refreshRate() const;
+  
+  /// Serialize
+  virtual void                serialize ( XmlTree::Node &parent ) const;
   
   /// Set/get the url.
   void                        url ( const std::string& );

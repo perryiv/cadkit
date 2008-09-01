@@ -191,7 +191,7 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
 
   // Set the name.
   if ( true == this->name().empty() )
-    this->name ( filename );
+    this->name ( this->url() );
 
   // Help shorten lines.
   namespace UA = Usul::Adaptors;
@@ -420,6 +420,24 @@ void GeoRSSLayer::deserialize( const XmlTree::Node &node )
   
   // Start download.
   this->downloadFeed();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::serialize ( XmlTree::Node &parent ) const
+{
+  Serialize::XML::DataMemberMap dataMemberMap ( Usul::Threads::Safe::get ( this->mutex(), _dataMemberMap ) );
+  
+  // Don't serialize the layers.
+  dataMemberMap.erase ( "layers" );
+  
+  // Serialize.
+  dataMemberMap.serialize ( parent );
 }
 
 

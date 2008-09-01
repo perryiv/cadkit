@@ -128,22 +128,14 @@ void GeoRSSQtComponent::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interf
       return;
     
     const std::string url ( _widget->url() );
-    const double refreshRate ( _widget->refreshRate() );
-    const bool enableFiltering ( _widget->enableFiltering() );
-    const std::string element ( _widget->element() );
-    const std::string value ( _widget->value() );
-    const Usul::Math::Vec4f color ( _widget->color() );
     
+    // Make sure we have a url.
     if ( false == url.empty() )
     {
       Minerva::Layers::GeoRSS::GeoRSSLayer::RefPtr layer ( new Minerva::Layers::GeoRSS::GeoRSSLayer );
-      layer->url ( url );
-      layer->refreshRate ( refreshRate );
-      layer->filteringEnabled ( enableFiltering );
-      layer->color ( color );
       
-      if ( false == element.empty() && false == value.empty() )
-        layer->filter ( Minerva::Layers::GeoRSS::GeoRSSLayer::Filter ( element, value ) );
+      // Set the new members.
+      GeoRSSQtComponent::_setLayerMembers ( *_widget, *layer );
       
       // Start the download.
       layer->downloadFeed();
@@ -194,6 +186,7 @@ void GeoRSSQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::I
   page->element ( geoRss->filter().first );
   page->value ( geoRss->filter().second );
   page->color ( geoRss->color() );
+  page->maximumItems ( geoRss->maximumItems() );
   
   const QDialogButtonBox::StandardButtons buttons ( QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok );
   QDialogButtonBox *buttonBox ( new QDialogButtonBox ( buttons, Qt::Horizontal, &dialog ) );
@@ -214,22 +207,9 @@ void GeoRSSQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::I
   
 	if ( QDialog::Accepted == result )
 	{
-    const std::string url ( page->url() );
-    const double refreshRate ( page->refreshRate() );
-    const bool enableFiltering ( page->enableFiltering() );
-    const std::string element ( page->element() );
-    const std::string value ( page->value() );
-    const Usul::Math::Vec4f color ( page->color() );
-    
-    // Set the new properties.
-    geoRss->url ( url );
-    geoRss->refreshRate ( refreshRate );
-    geoRss->filteringEnabled ( enableFiltering );
-    geoRss->color ( color );
-    
-    if ( false == element.empty() && false == value.empty() )
-      geoRss->filter ( GeoRSSLayer::Filter ( element, value ) );
-    
+    // Set the new members.
+    GeoRSSQtComponent::_setLayerMembers ( *page, *geoRss );
+
     // Start the download.
     geoRss->downloadFeed();
     
@@ -239,4 +219,22 @@ void GeoRSSQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::I
 		if ( document.valid() )
 			document->requestRedraw();
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the layer members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSQtComponent::_setLayerMembers ( AddGeoRSSLayerWidget& widget, GeoRSSLayer& layer )
+{
+  // Set the new properties.
+  layer.url ( widget.url() );
+  layer.refreshRate ( widget.refreshRate() );
+  layer.filteringEnabled ( widget.enableFiltering() );
+  layer.filter ( GeoRSSLayer::Filter ( widget.element(), widget.value() ) );
+  layer.color ( widget.color() );
+  layer.maximumItems ( widget.maximumItems() );
 }

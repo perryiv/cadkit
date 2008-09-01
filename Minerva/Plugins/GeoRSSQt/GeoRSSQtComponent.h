@@ -25,6 +25,8 @@
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
 #include "Usul/Interfaces/ILayerModifyGUIQt.h"
 
+namespace Minerva { namespace Layers { namespace GeoRSS { class GeoRSSLayer; } } }
+
 class GeoRSSQtComponent : public Usul::Base::Referenced,
                           public Usul::Interfaces::IPlugin,
                           public Usul::Interfaces::ILayerAddGUIQt,
@@ -33,8 +35,9 @@ class GeoRSSQtComponent : public Usul::Base::Referenced,
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Referenced                                   BaseClass;
-  typedef Usul::Interfaces::IUnknown                               Unknown;
+  typedef Usul::Base::Referenced                BaseClass;
+  typedef Usul::Interfaces::IUnknown            Unknown;
+  typedef Minerva::Layers::GeoRSS::GeoRSSLayer  GeoRSSLayer;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( GeoRSSQtComponent );
@@ -67,6 +70,9 @@ protected:
   virtual ~GeoRSSQtComponent();
 
 private:
+  
+  static void                 _setLayerMembers ( AddGeoRSSLayerWidget& widget, GeoRSSLayer& layer );
+  
   AddGeoRSSLayerWidget *_widget;
 };
 

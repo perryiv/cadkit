@@ -7,14 +7,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Plugins/GeoRSSQt/CompileGuard.h"
 #include "Minerva/Plugins/GeoRSSQt/AddGeoRSSLayerWidget.h"
 
-#include "Minerva/Layers/GeoRSS/GeoRSSLayer.h"
-
-#include "Minerva/Interfaces/IAddLayer.h"
-
 #include "QtTools/Color.h"
+
+#include <limits>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,6 +26,9 @@ AddGeoRSSLayerWidget::AddGeoRSSLayerWidget ( QWidget *parent ) : BaseClass ( par
   
   // Set default color.
   _colorButton->color ( QColor ( 255, 0, 0, 255 ) );
+  
+  _maximumItemsSpinBox->setRange ( 0, std::numeric_limits<int>::max() );
+  _maximumItemsSpinBox->setValue ( std::numeric_limits<int>::max() );
 }
 
 
@@ -185,4 +185,28 @@ void AddGeoRSSLayerWidget::color ( const Usul::Math::Vec4f& c )
 Usul::Math::Vec4f AddGeoRSSLayerWidget::color()  const
 {
   return QtTools::Color<Usul::Math::Vec4f>::convert ( _colorButton->color() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the maximum number of items.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddGeoRSSLayerWidget::maximumItems ( unsigned int value )
+{
+  _maximumItemsSpinBox->setValue ( value );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the maximum number of items.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int AddGeoRSSLayerWidget::maximumItems() const
+{
+  return _maximumItemsSpinBox->value();
 }

@@ -17,14 +17,13 @@
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Core/Data/Style.h"
 
-#include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IRead.h"
+#include "Usul/Interfaces/ITimerNotify.h"
 
 #include <vector>
 
 namespace Minerva { namespace Core { namespace Data { class DataObject; class ModelCache; } } }
 namespace XmlTree { class Node; }
-namespace osg { class Node; }
 
 namespace Minerva {
 namespace Layers {
@@ -34,8 +33,8 @@ namespace Kml {
   class Feature;
 
 class KmlLayer : public Minerva::Core::Data::Container,
-                 public Usul::Interfaces::IRead
-                 
+                 public Usul::Interfaces::IRead,
+                 public Usul::Interfaces::ITimerNotify
 {
 public:
 
@@ -46,27 +45,27 @@ public:
   typedef Minerva::Core::Data::ModelCache            ModelCache;
   typedef Minerva::Core::Data::Style                 Style;
   typedef std::map<std::string,Style::RefPtr>        Styles;
-  
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( KmlLayer );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
-  
+
   KmlLayer();
-  
+
   // Creation functions.
   static KmlLayer*            create ( const XmlTree::Node& node, const std::string& filename, const std::string& directory, const Styles& styles, ModelCache * );
   static KmlLayer*            create ( Link* link, const Styles& styles, ModelCache* );
-  
+
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
   void                        read ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
-  
+
   // Update.
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
-  
+
   // Deserialize.
   virtual void                deserialize( const XmlTree::Node &node );
-  
+
   // Get/Set downloading flag.
   bool                        isDownloading() const;
   void                        downloading( bool b );
@@ -77,17 +76,20 @@ public:
   // Get/Set reading flag.
   bool                        isReading() const;
   void                        reading( bool b );
-  
+
   void                        parseFolder ( const XmlTree::Node& node );
-  
+
   /// Serialize.
   virtual void                serialize ( XmlTree::Node &parent ) const;
-  
+
 protected:
 
   KmlLayer ( Link* link, const Styles& styles, ModelCache* );
   KmlLayer ( const std::string& filename, const std::string& directory, const Styles& styles, ModelCache* );
   virtual ~KmlLayer();
+  
+  // Add a timer callback.
+  void                        _addTimer();
 
   // Filename from link.  Will download if needed.
   std::string                 _buildFilename ( Link *link ) const;
@@ -99,7 +101,7 @@ protected:
   void                        _parseKml ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
   
   // Update link.
-  void                        _updateLink( Usul::Interfaces::IUnknown* caller = 0x0 );
+  void                        _updateLink ( Usul::Interfaces::IUnknown* caller = 0x0 );
   
   // Parse xml nodes.
   void                        _parseNode         ( const XmlTree::Node& node );
@@ -113,6 +115,9 @@ protected:
   void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object );
 
 	Style*                      _style ( const std::string& name ) const;
+  
+  // Called when the timer fires.
+  virtual void                timerNotify ( TimerID );
 
 private:
   
@@ -129,6 +134,7 @@ private:
   unsigned int _flags;
 	Styles _styles;
   std::pair<ModelCache*,bool> _modelCache;
+  TimerID _timerId;
   
   SERIALIZE_XML_CLASS_NAME ( KmlLayer );
 };

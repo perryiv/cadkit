@@ -28,6 +28,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
@@ -36,6 +37,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IFrameStamp.h"
+#include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Predicates/FileExists.h"
@@ -99,7 +101,8 @@ KmlLayer::KmlLayer() :
   _lastUpdate( 0.0 ),
   _flags ( 0 ),
 	_styles(),
-  _modelCache ( new ModelCache, true )
+  _modelCache ( new ModelCache, true ),
+  _timerId ( 0 )
 {
   this->_addMember ( "filename", _filename );
 }
@@ -119,7 +122,8 @@ KmlLayer::KmlLayer( const std::string& filename, const std::string& directory, c
   _lastUpdate( 0.0 ),
   _flags ( 0 ),
 	_styles ( styles ),
-  _modelCache ( cache, false )
+  _modelCache ( cache, false ),
+  _timerId ( 0 )
 {
   this->_addMember ( "filename", _filename );
 }
@@ -131,7 +135,7 @@ KmlLayer::KmlLayer( const std::string& filename, const std::string& directory, c
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-KmlLayer::KmlLayer( Link* link, const Styles& styles, ModelCache* cache ) :
+KmlLayer::KmlLayer ( Link* link, const Styles& styles, ModelCache* cache ) :
   BaseClass(),
   _filename(),
   _directory(),
@@ -139,12 +143,13 @@ KmlLayer::KmlLayer( Link* link, const Styles& styles, ModelCache* cache ) :
   _lastUpdate ( 0.0 ),
   _flags ( 0 ),
   _styles ( styles ),
-  _modelCache ( cache, false )
+  _modelCache ( cache, false ),
+  _timerId ( 0 )
 {
   this->_addMember ( "filename", _filename );
-
-  // Update the link.
-  this->_updateLink();
+  
+  // Add the timer for updating link.
+  this->_addTimer();
 }
 
 
@@ -173,6 +178,10 @@ KmlLayer* KmlLayer::create ( const XmlTree::Node& node, const std::string& filen
 KmlLayer* KmlLayer::create ( Link* link, const Styles& styles, ModelCache* cache )
 {
   KmlLayer::RefPtr kml ( new KmlLayer ( link, styles, cache ) );
+  
+  // Update the link.
+  kml->_updateLink();
+  
   return kml.release();
 }
 
@@ -203,6 +212,8 @@ Usul::Interfaces::IUnknown* KmlLayer::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IRead::IID:
     return static_cast < Usul::Interfaces::IRead* > ( this );
+  case Usul::Interfaces::ITimerNotify::IID:
+    return static_cast < Usul::Interfaces::ITimerNotify* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -217,7 +228,7 @@ Usul::Interfaces::IUnknown* KmlLayer::queryInterface ( unsigned long iid )
 
 void KmlLayer::read ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
-  std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
+  const std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
   
   // Read.
   this->_read ( filename, caller, progress );
@@ -405,6 +416,8 @@ void KmlLayer::_parseNode ( const XmlTree::Node& node )
 void KmlLayer::_parseStyle ( const XmlTree::Node& node )
 {
 	Style::RefPtr style ( Factory::instance().createStyle ( node ) );
+  
+  Guard guard ( this->mutex() );
 	_styles[style->objectId()] = style;
 }
 
@@ -605,7 +618,7 @@ KmlLayer::Geometry* KmlLayer::_parseModel ( const XmlTree::Node& node, Style * )
     std::string filename ( this->_buildFilename ( link ) );
 
     if ( false == filename.empty() )
-    {      
+    {
       LoadModel load;
       osg::ref_ptr<osg::Node> node ( load ( filename, this->modelCache() ) );
       if ( node.valid() )
@@ -661,70 +674,7 @@ void KmlLayer::serialize ( XmlTree::Node &parent ) const
 
 void KmlLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
-  // Call the base class first.
   BaseClass::updateNotify ( caller );
-  
-  // Return now if we are already downloading or reading.
-  if ( true == this->isDownloading() || this->isReading() )
-    return;
-  
-  // Guard rest of function.
-  Guard guard ( this->mutex() );
-  
-  // Check the link to see if we need to update.
-  if ( _link.valid() )
-  {
-    // See if it's the right kind of refresh mode.
-    if ( Link::ON_INTERVAL == _link->refreshMode() )
-    {
-      Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-      const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
-      
-      // Set the last time if it hasn't been set.
-      if ( 0.0 == _lastUpdate )
-        _lastUpdate = time;
-      
-      // Duration between last time the date was incremented.
-      const double duration ( time - _lastUpdate );
-      
-      // If we are suppose to update...
-      if ( duration > _link->refreshInterval() )
-      {
-        // Create a job to update the file.
-        Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( caller, 
-                                                                                    Usul::Adaptors::memberFunction ( this, &KmlLayer::_updateLink ) ) ) );
-        
-        if ( true == job.valid() )
-        {
-          // Set the downloading flag now so we don't launch another job before this one starts.
-          this->downloading ( true );
-          
-          // Add job to manager.
-          Usul::Jobs::Manager::instance().addJob ( job.get() );
-        }
-      }
-    }
-  }
-  
-  // See if our data is dirty.
-  if ( this->dirtyData() )
-  {
-    // Get our filename.
-    std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
-                          
-    // Create a job to read the file.
-    Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, static_cast<Usul::Interfaces::IUnknown*> ( 0x0 ),
-                                                                               Usul::Adaptors::memberFunction ( this, &KmlLayer::_read ) ) ) );
-    
-    if ( true == job.valid() )
-    {
-      // Set the reading flag now so we don't launch another job before this one starts.
-      this->reading ( true );
-      
-      // Add job to manager.
-      Usul::Jobs::Manager::instance().addJob ( job.get() );
-    }
-  }
 }
 
 
@@ -734,7 +684,7 @@ void KmlLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
+void KmlLayer::_updateLink ( Usul::Interfaces::IUnknown* caller )
 {
   // Help shorten lines.
   namespace UA = Usul::Adaptors;
@@ -769,22 +719,18 @@ void KmlLayer::_updateLink( Usul::Interfaces::IUnknown* caller )
         fin.close();
 
         Usul::File::rename ( filename.c_str(), newFilename.c_str(), true );
-        filename = newFilename; 
+        filename = newFilename;
       }
     }
 
     // Set the filename.
     Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
-    
-    // Get the current time.
-    Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );
-    const double time ( fs.valid () ? fs->frameStamp()->getReferenceTime () : 0.0 );
-    
-    // Set the last update time.
-    Usul::Threads::Safe::set ( this->mutex(), time, _lastUpdate );
-    
+
     // Our data is dirty.
     this->dirtyData ( true );
+    
+    // Read the file.
+    this->_read ( filename, 0x0, 0x0 );
   }
 }
 
@@ -906,4 +852,60 @@ KmlLayer::ModelCache* KmlLayer::modelCache() const
 {
   Guard guard ( this->mutex() );
   return _modelCache.first;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a timer callback.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_addTimer()
+{
+  typedef Usul::Interfaces::ITimerService ITimerService;
+  typedef Usul::Components::Manager PluginManager;
+  
+  ITimerService::QueryPtr service ( PluginManager::instance().getInterface ( ITimerService::IID ) );
+  
+  // Get the link.
+  Link::RefPtr link ( Usul::Threads::Safe::get ( this->mutex(), _link ) );
+  
+  if ( service.valid() )
+  {
+    // Remove the one we have if it's valid.
+    if ( _timerId > 0 )
+      service->timerRemove ( _timerId );
+    
+    // See if it's the right kind of refresh mode.
+    if ( link.valid() && Link::ON_INTERVAL == link->refreshMode() )
+    {        
+      // Make a new timer.  The timer expects the timeout to be in milliseconds.
+      Usul::Interfaces::IUnknown::RefPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
+      _timerId = service->timerAdd ( link->refreshInterval() * 1000, me );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the timer fires.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::timerNotify ( TimerID )
+{
+  // Create a job to update the file.
+  Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( static_cast <Usul::Interfaces::IUnknown*> ( 0x0 ), 
+                                                                             Usul::Adaptors::memberFunction ( this, &KmlLayer::_updateLink ) ) ) );
+  
+  if ( true == job.valid() )
+  {
+    // Set the downloading flag now so we don't launch another job before this one starts.
+    this->downloading ( true );
+    
+    // Add job to manager.
+    Usul::Jobs::Manager::instance().addJob ( job.get() );
+  }
 }

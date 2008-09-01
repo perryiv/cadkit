@@ -22,8 +22,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AddGeoRSSLayerWidget::AddGeoRSSLayerWidget( Usul::Interfaces::IUnknown* caller, QWidget *parent ) : BaseClass ( parent ),
-  _caller ( caller )
+AddGeoRSSLayerWidget::AddGeoRSSLayerWidget ( QWidget *parent ) : BaseClass ( parent )
 {
   // Initialize code from designer.
   this->setupUi ( this );
@@ -46,39 +45,144 @@ AddGeoRSSLayerWidget::~AddGeoRSSLayerWidget()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add Geo RSS feed to caller.
+//  Set the url.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddGeoRSSLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller )
+void AddGeoRSSLayerWidget::url ( const std::string&  s )
 {
-  Minerva::Interfaces::IAddLayer::QueryPtr al ( parent );
+  _urlEdit->setText ( s.c_str() );
+}
 
-  if ( false == al.valid () )
-    return;
-  
-  const std::string url ( _urlEdit->text().toStdString() );
-	const double refreshRate ( _refreshRate->value() );
-	const bool enableFiltering ( Qt::Checked == _enableFiltering->checkState() );
-	const std::string element ( _elementFilter->text().toStdString() );
-	const std::string value ( _valueFilter->text().toStdString() );
-  const Usul::Math::Vec4f color ( QtTools::Color<Usul::Math::Vec4f>::convert ( _colorButton->color() ) );
 
-  if ( false == url.empty() )
-  {
-    Minerva::Layers::GeoRSS::GeoRSSLayer::RefPtr layer ( new Minerva::Layers::GeoRSS::GeoRSSLayer );
-    layer->url ( url );
-		layer->refreshRate ( refreshRate );
-		layer->filteringEnabled ( enableFiltering );
-    layer->color ( color );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the url.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-		if ( false == element.empty() && false == value.empty() )
-			layer->filter ( Minerva::Layers::GeoRSS::GeoRSSLayer::Filter ( element, value ) );
+std::string AddGeoRSSLayerWidget::url() const
+{
+  return _urlEdit->text().toStdString();
+}
 
-		// Start the download.
-		layer->downloadFeed();
 
-		// Add the layer.
-    al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( layer ) );
-  }
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the refresh rate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddGeoRSSLayerWidget::refreshRate ( double  d )
+{
+  _refreshRate->setValue( d );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the refresh rate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double AddGeoRSSLayerWidget::refreshRate() const
+{
+  return _refreshRate->value();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the enable filtering flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddGeoRSSLayerWidget::enableFiltering ( bool b )
+{
+  _enableFiltering->setChecked ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the enable filtering flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool AddGeoRSSLayerWidget::enableFiltering() const
+{
+  return Qt::Checked == _enableFiltering->checkState();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the element.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddGeoRSSLayerWidget::element ( const std::string&  s )
+{
+  _elementFilter->setText ( s.c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the element.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string AddGeoRSSLayerWidget::element() const
+{
+  return _elementFilter->text().toStdString();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddGeoRSSLayerWidget::value ( const std::string& s )
+{
+  _valueFilter->setText ( s.c_str() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string AddGeoRSSLayerWidget::value() const
+{
+  return _valueFilter->text().toStdString();
+}
+                                         
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void AddGeoRSSLayerWidget::color ( const Usul::Math::Vec4f& c )
+{
+  _colorButton->color ( QtTools::Color<Usul::Math::Vec4f>::convert ( c ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4f AddGeoRSSLayerWidget::color()  const
+{
+  return QtTools::Color<Usul::Math::Vec4f>::convert ( _colorButton->color() );
 }

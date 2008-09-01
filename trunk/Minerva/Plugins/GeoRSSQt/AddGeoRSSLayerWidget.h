@@ -13,7 +13,7 @@
 #include "Minerva/Plugins/GeoRSSQt/CompileGuard.h"
 #include "ui_AddGeoRSSLayerWidget.h"
 
-#include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Math/Vector4.h"
 
 #include "QtGui/QWidget"
 
@@ -24,13 +24,33 @@ class AddGeoRSSLayerWidget : public QWidget,
 public:
   typedef QWidget BaseClass;
 
-  AddGeoRSSLayerWidget( Usul::Interfaces::IUnknown* caller = 0x0, QWidget *parent = 0x0 );
+  AddGeoRSSLayerWidget ( QWidget *parent = 0x0 );
   virtual ~AddGeoRSSLayerWidget();
 
-  void apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
-
-private:
-  Usul::Interfaces::IUnknown::QueryPtr _caller;
+  /// Set/get the url.
+  void              url ( const std::string& );
+  std::string       url() const;
+  
+  /// Set/get the refresh rate.
+  void              refreshRate ( double );
+	double            refreshRate() const;
+  
+  /// Set/get the enable filtering.
+  void              enableFiltering ( bool );
+	bool              enableFiltering() const;
+  
+  /// Set/get the element to filter.
+  void              element ( const std::string& );
+	std::string       element() const;
+  
+  /// Set/get the value to filter.
+  void              value ( const std::string& );
+	std::string       value() const;
+  
+  /// Set/get the color.
+  void              color ( const Usul::Math::Vec4f& );
+  Usul::Math::Vec4f color() const;
+  
 };
 
 

@@ -23,11 +23,12 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
+#include "Usul/Interfaces/ILayerModifyGUIQt.h"
 
 class GeoRSSQtComponent : public Usul::Base::Referenced,
                           public Usul::Interfaces::IPlugin,
-                          public Usul::Interfaces::ILayerAddGUIQt
-
+                          public Usul::Interfaces::ILayerAddGUIQt,
+                          public Usul::Interfaces::ILayerModifyGUIQt
 {
 public:
 
@@ -46,10 +47,15 @@ public:
   
 protected:
 
+  /// ILayerAddGUIQt.
   virtual QWidget*            layerAddGUI ( Usul::Interfaces::IUnknown* caller = 0x0 );
   virtual std::string         name () const;
   virtual void                apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller );
 
+  /// ILayerModifyQtGUI
+  virtual bool                handle ( Usul::Interfaces::ILayer* ) const;
+  virtual void                showModifyGUI ( Usul::Interfaces::ILayer*, Usul::Interfaces::IUnknown* caller = 0x0 );
+  
   /// Return name of plugin.
   virtual std::string         getPluginName() const;
 

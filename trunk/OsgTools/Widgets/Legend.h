@@ -52,6 +52,9 @@ public:
   void                 growDirection( GrowDirectionMode mode );
   GrowDirectionMode    growDirection() const;
   
+  /// Get the number of rows.
+  unsigned int         numRows() const;
+  
 protected:
   virtual ~Legend();
 

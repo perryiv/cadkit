@@ -250,3 +250,15 @@ OsgTools::Widgets::Legend::GrowDirectionMode Legend::growDirection() const
 {
   return _growDirection;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of rows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Legend::numRows() const
+{
+  return _legendObjects.size();
+}

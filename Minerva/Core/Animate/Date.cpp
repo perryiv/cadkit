@@ -31,7 +31,7 @@ using namespace Minerva::Core::Animate;
 ///////////////////////////////////////////////////////////////////////////////
 
 Date::Date() :
-_date()
+  _date()
 {
   USUL_TRACE_SCOPE;
 }
@@ -44,7 +44,7 @@ _date()
 ///////////////////////////////////////////////////////////////////////////////
 
 Date::Date( const std::string& date ) :
-_date ( boost::gregorian::from_simple_string ( date ) )
+  _date ( boost::gregorian::from_simple_string ( date ) )
 {
   USUL_TRACE_SCOPE;
 }
@@ -56,7 +56,8 @@ _date ( boost::gregorian::from_simple_string ( date ) )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Date::Date ( boost::date_time::special_values value ) : _date ( value )
+Date::Date ( boost::date_time::special_values value ) :
+  _date ( value )
 {
   USUL_TRACE_SCOPE;
 }
@@ -68,7 +69,21 @@ Date::Date ( boost::date_time::special_values value ) : _date ( value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Date::Date ( const boost::gregorian::date& date ) : _date ( date )
+Date::Date ( const boost::gregorian::date& date ) :
+  _date ( date )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Date::Date ( const boost::posix_time::ptime& date ) :
+  _date ( date )
 {
   USUL_TRACE_SCOPE;
 }
@@ -82,7 +97,7 @@ Date::Date ( const boost::gregorian::date& date ) : _date ( date )
 
 unsigned int Date::day() const
 {
-  return _date.day();
+  return _date.date().day();
 }
 
 
@@ -94,7 +109,7 @@ unsigned int Date::day() const
 
 unsigned int Date::month() const
 {
-  return _date.month();
+  return _date.date().month();
 }
 
 
@@ -106,7 +121,7 @@ unsigned int Date::month() const
 
 unsigned int Date::year() const
 {
-  return _date.year();
+  return _date.date().year();
 }
 
 
@@ -118,7 +133,7 @@ unsigned int Date::year() const
 
 void Date::increment()
 {
-  boost::gregorian::date_duration dd(1);
+  boost::gregorian::date_duration dd ( 1 );
   _date = _date + dd;
 }
 
@@ -131,7 +146,7 @@ void Date::increment()
 
 std::string Date::toString() const
 {
-  return boost::gregorian::to_simple_string(_date);
+  return boost::posix_time::to_simple_string(_date);
 }
 
 
@@ -146,7 +161,7 @@ void Date::fromString( const std::string& date )
   USUL_TRACE_SCOPE;
   USUL_TRACE_1 ( date );
 
-  _date = boost::gregorian::from_simple_string ( date );
+  _date = boost::posix_time::time_from_string ( date );
 }
 
 
@@ -158,7 +173,7 @@ void Date::fromString( const std::string& date )
 
 bool Date::operator<( const Date& rhs ) const
 {
-  return this->_toJulian() < rhs._toJulian();
+  return _date < rhs._date;
 }
 
 
@@ -170,7 +185,7 @@ bool Date::operator<( const Date& rhs ) const
 
 bool Date::operator>( const Date& rhs ) const
 {
-  return this->_toJulian() > rhs._toJulian();
+  return _date > rhs._date;
 }
 
 
@@ -182,7 +197,7 @@ bool Date::operator>( const Date& rhs ) const
 
 bool Date::operator==( const Date& rhs ) const
 {
-  return this->_toJulian() == rhs._toJulian();
+  return _date == rhs._date;
 }
 
 
@@ -194,7 +209,7 @@ bool Date::operator==( const Date& rhs ) const
 
 bool Date::operator!=(const Date& rhs ) const
 {
-  return this->_toJulian() != rhs._toJulian();
+  return _date != rhs._date;
 }
 
 
@@ -218,7 +233,7 @@ void Date::moveBackNumDays ( unsigned int days )
 
 bool Date::operator<=( const Date& rhs ) const
 {
-  return this->_toJulian() <= rhs._toJulian();
+  return _date <= rhs._date;
 }
 
 
@@ -230,19 +245,7 @@ bool Date::operator<=( const Date& rhs ) const
 
 bool Date::operator>=( const Date& rhs ) const
 {
-  return this->_toJulian() >= rhs._toJulian();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get this date's Julian day value.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-long Date::_toJulian() const
-{
-  return _date.julian_day();
+  return _date >= rhs._date;
 }
 
 
@@ -252,21 +255,9 @@ long Date::_toJulian() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-boost::gregorian::date& Date::date()
+boost::gregorian::date Date::date() const
 {
-  return _date;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the underlying boost date.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const boost::gregorian::date& Date::date() const
-{
-  return _date;
+  return _date.date();
 }
 
 

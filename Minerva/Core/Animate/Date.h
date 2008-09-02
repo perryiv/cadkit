@@ -29,7 +29,7 @@
 # pragma warning ( disable : 4561 )
 #endif
 
-#include "boost/date_time/gregorian/gregorian.hpp"
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 namespace Minerva {
 namespace Core {
@@ -44,10 +44,10 @@ public:
   Date ( const std::string& date );
   Date ( boost::date_time::special_values value );
   Date ( const boost::gregorian::date& date );
+  Date ( const boost::posix_time::ptime& date );
 
   /// Get the underlying boost date.
-  boost::gregorian::date&           date();
-  const boost::gregorian::date&     date() const;
+  boost::gregorian::date           date() const;
 
   /// Get the day.
   unsigned int day() const;
@@ -79,11 +79,8 @@ public:
   bool operator<=( const Date& rhs ) const;
   bool operator>=( const Date& rhs ) const;
 
-protected:
-  long _toJulian() const;
-
 private:
-  boost::gregorian::date _date;
+  boost::posix_time::ptime _date;
 };
 
 }

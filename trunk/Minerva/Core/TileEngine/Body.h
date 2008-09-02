@@ -31,7 +31,6 @@
 #include "Usul/Containers/Unknowns.h"
 #include "Usul/File/Log.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
-#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Interfaces/IRasterAlphas.h"
 #include "Usul/Interfaces/IUpdateListener.h"
@@ -58,7 +57,6 @@ class MINERVA_EXPORT Body : public Node,
                             public Usul::Interfaces::IUpdateListener,
                             public Usul::Interfaces::IPlanetCoordinates,
                             public Usul::Interfaces::IElevationDatabase,
-                            public Usul::Interfaces::IFrameStamp,
                             public Usul::Interfaces::ITreeNode,
                             public Usul::Interfaces::IRasterAlphas
 {
@@ -261,7 +259,7 @@ protected:
   // Use reference counting.
   virtual ~Body();
 
-  void                      _addTileToBeDeleted ( Tile *tile );
+  void                      _addTileToBeDeleted ( Tile::RefPtr tile );
 
   Extents                   _buildExtents ( Usul::Interfaces::IUnknown* unknown );
 
@@ -269,10 +267,6 @@ protected:
   void                      _removeUpdateListener ( IUnknown *caller );
 
   void                      _updateTileAlpha ( osg::Group *group );
-
-  // Get the frame stamp (IFrameStamp). (This is a hack for layers that need to update every n seconds.)
-  virtual osg::FrameStamp *                frameStamp();
-  virtual const osg::FrameStamp *          frameStamp() const;
   
   // Get the number of children (ITreeNode).
   virtual unsigned int                     getNumChildNodes() const;
@@ -288,7 +282,6 @@ private:
 
   friend class Tile;
 
-  typedef std::map < unsigned long, BuildRaster::RefPtr > TextureJobs;
   typedef Usul::Threads::Variable<Usul::Jobs::Manager*> JobManager;
   typedef Usul::Interfaces::IUpdateListener IUpdateListener;
   typedef Usul::Containers::Unknowns<IUpdateListener> UpdateListeners;
@@ -306,7 +299,6 @@ private:
   ElevationGroup::RefPtr _elevation;
   VectorGroup::RefPtr _vectorData;
   JobManager _manager;
-  TextureJobs _textureJobs;
   unsigned int _maxLevel;
   bool _cacheTiles;
   double _splitDistance;

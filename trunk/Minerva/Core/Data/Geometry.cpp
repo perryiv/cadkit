@@ -59,15 +59,18 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-    case Usul::Interfaces::IUnknown::IID:
-    case Usul::Interfaces::IBuildScene::IID:
-      return static_cast<Usul::Interfaces::IBuildScene*> ( this );
-    case Usul::Interfaces::ILayerExtents::IID:
-      return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
-    default:
-      return 0x0;
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IBuildScene::IID:
+    return static_cast<Usul::Interfaces::IBuildScene*> ( this );
+  case Usul::Interfaces::ILayerExtents::IID:
+    return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
+  case Minerva::Interfaces::IVectorLayer::IID:
+    return static_cast<Minerva::Interfaces::IVectorLayer*> ( this );
+  default:
+    return 0x0;
   }
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -339,4 +342,16 @@ bool Geometry::dirty () const
 {
   Guard guard ( this->mutex() );
   return _dirty;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene for data that is contained by the given extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Geometry::buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+{
+  return this->buildScene ( Options(), caller );
 }

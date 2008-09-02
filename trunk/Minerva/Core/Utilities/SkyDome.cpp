@@ -18,6 +18,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Algorithms/Sphere.h"
+#include "Usul/Errors/Assert.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 

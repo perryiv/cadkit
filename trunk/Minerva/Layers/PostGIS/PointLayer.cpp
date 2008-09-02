@@ -9,21 +9,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/PostGIS/PointLayer.h"
-#include "Minerva/Layers/PostGIS/BinaryParser.h"
 
-#include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Point.h"
-#include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Convert.h"
 
 #include "Usul/Factory/RegisterCreator.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Trace/Trace.h"
 
 #include "pqxx/pqxx"
-
-#include <map>
 
 using namespace Minerva::Layers::PostGIS;
 
@@ -47,9 +41,18 @@ PointLayer::PointLayer() :
   _autotransform ( true )
 {
   USUL_TRACE_SCOPE;
-  this->name( "PointLayer" );
+  
+  // Don't set the name!  
+  // This will cause a crash because the object will be referenced and dereferenced in the function, cause the object to be deleted.
+  //this->name ( "PointLayer" );
 
-  this->_registerMembers();
+  this->_addMember ( "primitiveID", _primitiveID );
+  this->_addMember ( "size", _size );
+  this->_addMember ( "secondarySize", _secondarySize );
+  this->_addMember ( "stackPoints", _stackPoints );
+  this->_addMember ( "quality", _quality );
+  this->_addMember ( "primitiveSizeColumn", _primitiveSizeColumn );
+  this->_addMember ( "autotransform", _autotransform );
 }
 
 
@@ -70,26 +73,14 @@ PointLayer::PointLayer ( const PointLayer& layer ) :
   _autotransform ( layer._autotransform )
 {
   USUL_TRACE_SCOPE;
-  this->_registerMembers();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Register members.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void PointLayer::_registerMembers()
-{
-  USUL_TRACE_SCOPE;
-  SERIALIZE_XML_ADD_MEMBER ( _primitiveID );
-  SERIALIZE_XML_ADD_MEMBER ( _size );
-  SERIALIZE_XML_ADD_MEMBER ( _secondarySize );
-  SERIALIZE_XML_ADD_MEMBER ( _stackPoints );
-  SERIALIZE_XML_ADD_MEMBER ( _quality );
-  SERIALIZE_XML_ADD_MEMBER ( _primitiveSizeColumn );
-  SERIALIZE_XML_ADD_MEMBER ( _autotransform );
+  
+  this->_addMember ( "primitiveID", _primitiveID );
+  this->_addMember ( "size", _size );
+  this->_addMember ( "secondarySize", _secondarySize );
+  this->_addMember ( "stackPoints", _stackPoints );
+  this->_addMember ( "quality", _quality );
+  this->_addMember ( "primitiveSizeColumn", _primitiveSizeColumn );
+  this->_addMember ( "autotransform", _autotransform );
 }
 
 
@@ -134,7 +125,7 @@ void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::co
   if ( Point* point = dynamic_cast<Point*> ( geometry ) )
   {
     point->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
-    point->size ( this->size() );
+    point->size ( this->primitiveSize() );
     point->primitiveId ( this->primitiveID() );
     point->quality ( this->quality() );
     point->autotransform ( this->autotransform() );
@@ -143,7 +134,7 @@ void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::co
     if( this->primitiveSizeColumn().size() > 0 )
     {
       const float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
-      point->size( this->size() * value );
+      point->size( this->primitiveSize() * value );
       this->_updateMinMax( value );
     }
   }
@@ -184,7 +175,7 @@ Usul::Types::Uint32 PointLayer::primitiveID() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointLayer::size( float size )
+void PointLayer::primitiveSize ( float size )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -198,7 +189,7 @@ void PointLayer::size( float size )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float PointLayer::size() const
+float PointLayer::primitiveSize() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

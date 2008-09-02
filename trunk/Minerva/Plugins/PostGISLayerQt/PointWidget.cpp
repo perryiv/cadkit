@@ -132,7 +132,7 @@ void PointWidget::_sizeColumnChanged ( int index )
 void PointWidget::_sizeChanged ( double value )
 {
   if ( _layer.valid() )
-    _layer->size ( value );
+    _layer->primitiveSize ( value );
 }
 
 

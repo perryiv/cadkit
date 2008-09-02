@@ -19,7 +19,6 @@
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/Polygon.h"
 #include "Minerva/Core/Data/ModelCache.h"
-#include "Minerva/Core/Data/TimeSpan.h"
 #include "Minerva/Core/Utilities/Download.h"
 
 #include "XmlTree/XercesLife.h"
@@ -36,7 +35,6 @@
 #include "Usul/File/Rename.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
@@ -45,11 +43,7 @@
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Trim.h"
-#include "Usul/System/Directory.h"
-#include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
-
-#include "osg/Material"
 
 #include "boost/algorithm/string/find.hpp"
 #include "boost/algorithm/string/replace.hpp"

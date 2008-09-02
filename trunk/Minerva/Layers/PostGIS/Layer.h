@@ -19,12 +19,9 @@
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/DataSources/PG/Connection.h"
-#include "Minerva/Interfaces/IVectorLayer.h"
 
 #include "Serialize/XML/Macros.h"
 
-#include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
@@ -49,7 +46,6 @@ namespace PostGIS {
 
   
 class MINERVA_POSTGIS_EXPORT Layer : public Minerva::Core::Data::Container,
-                                     public Minerva::Interfaces::IVectorLayer,
                                      public Usul::Interfaces::IAddRowLegend,
                                      public Usul::Interfaces::IClonable
 {
@@ -58,7 +54,6 @@ public:
   /// Typedefs.
   typedef Minerva::Core::Data::Container            BaseClass;
   typedef Minerva::Core::Data::DataObject           DataObject;
-  typedef DataObject::RefPtr                        DataObjectPtr;
   typedef Minerva::Core::Functors::BaseColorFunctor ColorFunctor;
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef Minerva::DataSources::PG::Connection      Connection;
@@ -79,7 +74,7 @@ public:
   };
 
   /// Clone this layer.
-  virtual IUnknown*           clone() const = 0;
+  virtual IUnknown*           clone() const;
 
   /// Get the extents.
   virtual Extents             calculateExtents() const;
@@ -91,95 +86,95 @@ public:
 
   /// Get/Set the connection.
   void                        connection ( Connection *connection );
-  Connection*                 connection ();
-  const Connection*           connection () const;
+  Connection*                 connection();
+  const Connection*           connection() const;
   
   /// Get/Set the custom query flag.
-  void                        customQuery( bool value );
+  void                        customQuery ( bool value );
   bool                        customQuery() const;
   
   /// Get/Set First date column name.
-  void                        firstDateColumn( const std::string& );
+  void                        firstDateColumn ( const std::string& );
   const std::string&          firstDateColumn() const;
   
   /// Get/Set the tablename.
-  void                        tablename( const std::string& table );
+  void                        tablename ( const std::string& table );
   const std::string&          tablename() const;
 
   /// Get/Set the label column
-  void                        labelColumn( const std::string& column );
+  void                        labelColumn ( const std::string& column );
   const std::string&          labelColumn() const;
 
   /// Get/Set show label
-  void                        showLabel( bool b );
+  void                        showLabel ( bool b );
   bool                        showLabel() const;
 
   /// Get/Set the label color.
-  void                        labelColor( const osg::Vec4& color );
+  void                        labelColor ( const osg::Vec4& color );
   const osg::Vec4&            labelColor() const;
 
   /// Get/Set the label zOffset
-  void                        labelZOffset( float offset );
+  void                        labelZOffset ( float offset );
   float                       labelZOffset() const;
 
   /// Get/Set the label size/
-  void                        labelSize( float size );
+  void                        labelSize ( float size );
   float                       labelSize() const;
   
   /// Get/Set last date column name.
-  void                        lastDateColumn( const std::string& );
+  void                        lastDateColumn ( const std::string& );
   const std::string&          lastDateColumn() const;
   
   /// Get/Set the min date.
-  void                        minDate( const Date& date );
-  void                        minDate( unsigned int day, unsigned int month, unsigned int year );
+  void                        minDate ( const Date& date );
+  void                        minDate ( unsigned int day, unsigned int month, unsigned int year );
   const Date&                 minDate() const;
   
   /// Get/Set the max date.
   void                        maxDate ( const Date& date );
-  void                        maxDate (unsigned int day, unsigned int month, unsigned int year );
+  void                        maxDate ( unsigned int day, unsigned int month, unsigned int year );
   const Date&                 maxDate() const;
 
   /// Get/Set the render bin.
-  void                        renderBin( Usul::Types::Uint32 bin );
-  Usul::Types::Uint32         renderBin( ) const;
+  void                        renderBin ( Usul::Types::Uint32 bin );
+  Usul::Types::Uint32         renderBin() const;
 
   /// Get/Set the query to get the geometry.
   void                        query ( const std::string& query );
-  const std::string&          query ( ) const;
+  const std::string&          query() const;
 
   /// Get the default query.
   virtual std::string         defaultQuery() const;
 
   /// Get/Set the text for the legend.
-  void                        legendText( const std::string& text );
+  void                        legendText ( const std::string& text );
   const std::string&          legendText() const;
 
   /// Get/Set flag to show layer in legend.
   void                        showInLegend ( bool b );
-  bool                        showInLegend () const;
+  bool                        showInLegend() const;
 
   /// Get/Set the color column.
-  void                        colorColumn( const std::string& column );
+  void                        colorColumn ( const std::string& column );
   const std::string&          colorColumn() const;
 
   /// Get/Set the primary key column.
-  void                        primaryKeyColumn( const std::string& );
+  void                        primaryKeyColumn ( const std::string& );
   const std::string&          primaryKeyColumn() const;
 
   /// Get the geometry column name.
   std::string                 geometryColumn() const;
 
   /// Get/Set show count in legend.
-  void                        showCountLegend( bool b );
+  void                        showCountLegend ( bool b );
   bool                        showCountLegend() const;
 
   /// Get/Set show min in legend.
-  void                        showMinLegend( bool b );
+  void                        showMinLegend ( bool b );
   bool                        showMinLegend() const;
 
   /// Get/Set show max in legend.
-  void                        showMaxLegend( bool b );
+  void                        showMaxLegend ( bool b );
   bool                        showMaxLegend () const;
 
   /// Get/Set the alpha value.
@@ -191,13 +186,13 @@ public:
   
   /// Get the projection as "Well Known Text".
   std::string                 projectionWKT() const;
-  std::string                 projectionWKT( int srid ) const;
+  std::string                 projectionWKT ( int srid ) const;
 
   // Update.
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
   
   /// Set/get the updating state.
-  void                        updating( bool b );
+  void                        updating ( bool b );
   bool                        isUpdating() const;
   
   /// Get/Set the x offset.
@@ -218,15 +213,15 @@ protected:
   virtual ~Layer();
 
   /// Copy constructor.
-  Layer( const Layer& layer );
+  Layer ( const Layer& layer );
   
   /// Build the data objects.
-  virtual void                _buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
+  virtual void                _buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
 
   osg::Vec4                   _color( const pqxx::result::const_iterator& iter );
 
   void                        _setDataObjectMembers ( DataObject* dataObject, Usul::Interfaces::IUnknown* caller );
-  virtual void                _setGeometryMembers   ( Geometry* geometry, const pqxx::result::const_iterator& iter ) = 0;
+  virtual void                _setGeometryMembers   ( Geometry* geometry, const pqxx::result::const_iterator& iter );
 
   /// Register members for serialization.
   void                        _registerMembers();
@@ -238,9 +233,8 @@ protected:
   /// Get the where clause.
   std::string                 _whereClause() const;
 
-  /// Usul::Interfaces::IVectorLayer
-  virtual void                buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
-  virtual void                modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
+  void                        buildVectorData  ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
+  void                        modifyVectorData ( Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
 
   /// Usul::Interfaces::IAddRowLegend
   virtual void                addLegendRow ( OsgTools::Widgets::LegendObject* row );

@@ -42,7 +42,7 @@ public:
 
   /// Set/get the description.
   void                   description ( const std::string& );
-  const std::string&     description() const;
+  std::string            description() const;
 
   /// Set/get the extents.
   void                   extents ( const Extents& e );
@@ -54,7 +54,7 @@ public:
 
   /// Set/get the name.
 	void                   name ( const std::string& );
-  const std::string&     name() const;
+  std::string            name() const;
 
   /// Get the min latitude and min longitude (ILayerExtents).
   virtual double         minLon() const;
@@ -66,7 +66,7 @@ public:
 
 	/// Set/get the style url.
 	void                   styleUrl ( const std::string& url );
-	const std::string&     styleUrl() const;
+	std::string            styleUrl() const;
 
   /// Set/get the time primitive.
   void                   timePrimitive ( TimePrimitive* );

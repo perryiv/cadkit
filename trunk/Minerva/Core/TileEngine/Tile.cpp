@@ -865,28 +865,36 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   if ( job.valid() && true == job->canceled() )
     job->cancel();
   
+  // Need to notify vector data so it can re-adjust.
+  Minerva::Core::Data::Container::RefPtr vector ( body->vectorData() );
+  if ( vector.valid() )
+  {
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
+
+#if 1
+    Extents extents0 ( t0->extents() );
+    ImagePtr elevation0 ( t0->elevation() );
+    
+    // Since elevation data that is passed isn't currently used just ask once.
+    vector->elevationChangedNotify ( extents, elevation0, unknown.get() );
+    //vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
+    //vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
+    //vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
+#else
+    // Add tiled vector data.
+    t0->addChild ( vector->buildTiledScene ( t0->extents(), t0->level(), t0->elevation(), unknown.get() ) );
+    t1->addChild ( vector->buildTiledScene ( t1->extents(), t1->level(), t1->elevation(), unknown.get() ) );
+    t2->addChild ( vector->buildTiledScene ( t2->extents(), t2->level(), t2->elevation(), unknown.get() ) );
+    t3->addChild ( vector->buildTiledScene ( t3->extents(), t3->level(), t3->elevation(), unknown.get() ) );
+#endif
+  }
+  
   {
     Guard guard ( this->mutex() );
     _children[LOWER_LEFT]  = t0.get();
     _children[LOWER_RIGHT] = t1.get();
     _children[UPPER_LEFT]  = t2.get();
     _children[UPPER_RIGHT] = t3.get();
-  }
-
-  // Need to notify vector data so it can re-adjust.
-  Minerva::Core::Data::Container::RefPtr vector ( body->vectorData() );
-  if ( vector.valid() )
-  {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
-    
-    Extents extents0 ( t0->extents() );
-    ImagePtr elevation0 ( t0->elevation() );
-
-    // Since elevation data that is passed isn't currently used just ask once.
-    vector->elevationChangedNotify ( extents, elevation0, unknown.get() );
-    //vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
-    //vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
-    //vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
   }
 }
 

@@ -13,6 +13,7 @@
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Data/Polygon.h"
+#include "Minerva/Core/Data/Transform.h"
 
 #include "Usul/Endian/Endian.h"
 
@@ -31,6 +32,7 @@ using namespace Minerva::Layers::PostGIS;
 typedef Minerva::Core::Data::Point Point;
 typedef Minerva::Core::Data::Line Line;
 typedef Minerva::Core::Data::Polygon Polygon;
+typedef Minerva::Core::Data::Transform Transform;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -106,39 +108,19 @@ namespace Detail
 {
 
   template < class Convert, class Vertices >
-  void createVertices( const unsigned char*& buffer, Vertices& vertices )
+  void createVertices ( const unsigned char*& buffer, Vertices& vertices, const Transform& transform )
   {
     typedef typename Vertices::value_type Vertex;
 
     Usul::Types::Uint32 numPoints ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
-    vertices.reserve( numPoints );
+    vertices.reserve ( numPoints );
 
 	  for ( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
 	  {
       Usul::Types::Float64 x ( convert < Usul::Types::Float64, Convert > ( buffer ) );
       Usul::Types::Float64 y ( convert < Usul::Types::Float64, Convert > ( buffer ) );
       
-      vertices.push_back( Vertex ( x, y ) );
-	  }
-
-    // Remove any duplicate vertices.
-    vertices.erase ( std::unique ( vertices.begin(), vertices.end(), Detail::VectorCompare() ), vertices.end() );
-  }
-
-  template < class Convert, class Vertices >
-  void createVertices3D( const unsigned char*& buffer, Vertices& vertices )
-  {
-    typedef typename Vertices::value_type Vertex;
-
-    Usul::Types::Uint32 numPoints ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
-    vertices.reserve( numPoints );
-
-	  for ( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
-	  {
-      Usul::Types::Float64 x ( convert < Usul::Types::Float64, Convert > ( buffer ) );
-      Usul::Types::Float64 y ( convert < Usul::Types::Float64, Convert > ( buffer ) );
-      
-      vertices.push_back( Vertex ( x, y, 0.0 ) );
+      vertices.push_back ( transform ( Vertex ( x, y, 0.0 ) ) );
 	  }
 
     // Remove any duplicate vertices.
@@ -157,14 +139,14 @@ namespace Detail
   ///////////////////////////////////////////////////////////////////////////////
 
   template < class Convert >
-  Point* createPoint ( const unsigned char *& buffer )
+  Point* createPoint ( const unsigned char *& buffer, const Transform& transform )
   {
     Point::RefPtr point ( new Point );
 
     Usul::Types::Float64 x ( convert < Usul::Types::Float64, Convert > ( buffer ) );
     Usul::Types::Float64 y ( convert < Usul::Types::Float64, Convert > ( buffer ) );
 
-    point->point ( Usul::Math::Vec3d ( x, y, 0.0 ) );
+    point->point ( transform ( Usul::Math::Vec3d ( x, y, 0.0 ) ) );
 
     return point.release();
   }
@@ -177,14 +159,14 @@ namespace Detail
   ///////////////////////////////////////////////////////////////////////////////
 
   template < class Convert >
-  Line* createLine ( const unsigned char *& buffer )
+  Line* createLine ( const unsigned char *& buffer, const Transform& transform )
   {
     Line::RefPtr line ( new Line );
 
     typedef Line::Vertices Vertices;
 
     Vertices vertices;
-	  Detail::createVertices3D < Convert, Vertices > ( buffer, vertices );
+	  Detail::createVertices < Convert, Vertices > ( buffer, vertices, transform );
 
     line->line( vertices );
 
@@ -199,7 +181,7 @@ namespace Detail
   ///////////////////////////////////////////////////////////////////////////////
 
   template < class Convert >
-  Polygon* createPolygon ( const unsigned char *& buffer )
+  Polygon* createPolygon ( const unsigned char *& buffer, const Transform& transform )
   {
     Polygon::RefPtr polygon ( new Polygon );
 
@@ -210,10 +192,10 @@ namespace Detail
 
     for ( Usul::Types::Uint32 i = 0; i < numRings; ++i )
     {
-      Detail::createVertices3D < Convert, Vertices > ( buffer, vertices );
+      Detail::createVertices < Convert, Vertices > ( buffer, vertices, transform );
     }
 
-    polygon->line( vertices );
+    polygon->line ( vertices );
 
     return polygon.release();
   }
@@ -227,7 +209,7 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Convert >
-void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometries &geometries )
+void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometries &geometries, const Transform& transform )
 {
   
 
@@ -235,9 +217,9 @@ void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometr
 
 	switch ( polygonType )
 	{
-	case wkbPoint:       geometries.push_back ( Detail::createPoint   < Convert > ( buffer ) ); break;
-  case wkbLineString:  geometries.push_back ( Detail::createLine    < Convert > ( buffer ) ); break;
-  case wkbPolygon:     geometries.push_back ( Detail::createPolygon < Convert > ( buffer ) ); break;
+	case wkbPoint:       geometries.push_back ( Detail::createPoint   < Convert > ( buffer, transform ) ); break;
+  case wkbLineString:  geometries.push_back ( Detail::createLine    < Convert > ( buffer, transform ) ); break;
+  case wkbPolygon:     geometries.push_back ( Detail::createPolygon < Convert > ( buffer, transform ) ); break;
 	case wkbMultiPoint:
 		{
       // How many points will we have?
@@ -246,7 +228,7 @@ void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometr
       // Loop through and add the points.
       for( Usul::Types::Uint32 i = 0; i < numPoints; ++i )
 			{
-        this->_createGeometry( buffer, geometries );
+        this->_createGeometry( buffer, geometries, transform );
       }
 		}
 		break;
@@ -257,7 +239,7 @@ void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometr
 
 			for( Usul::Types::Uint32 i = 0; i < numLines; ++i )
 			{
-        this->_createGeometry ( buffer, geometries );
+        this->_createGeometry ( buffer, geometries, transform );
       }
 		}
 		break;
@@ -268,13 +250,13 @@ void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometr
 
 			for( Usul::Types::Uint32 i = 0; i < numPolygons; ++i )
 			{
-        this->_createGeometry ( buffer, geometries );
+        this->_createGeometry ( buffer, geometries, transform );
 			}
 		}
 		break;
 	case wkbGeometryCollection:
 		{
-      this->_createGeometry ( buffer, geometries );
+      this->_createGeometry ( buffer, geometries, transform );
 		}
 		break;
   default:
@@ -289,7 +271,7 @@ void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BinaryParser::_createGeometry ( const unsigned char*& buffer, Geometries &geometries )
+void BinaryParser::_createGeometry ( const unsigned char*& buffer, Geometries &geometries, const Transform& transform )
 {
   Usul::Types::Uint8 endian ( 0 );
 	::memcpy( &endian, buffer, sizeof( endian ) );
@@ -299,10 +281,10 @@ void BinaryParser::_createGeometry ( const unsigned char*& buffer, Geometries &g
   {
 	// Big endian.
   case wkbBigEndian:
-		return _createGeometryEndian < Usul::Endian::FromBigToSystem > ( buffer, geometries );
+		return this->_createGeometryEndian < Usul::Endian::FromBigToSystem > ( buffer, geometries, transform );
 	// Little endian.
   case wkbLittleEndian:
-		return _createGeometryEndian < Usul::Endian::FromLittleToSystem > ( buffer, geometries );    
+		return this->_createGeometryEndian < Usul::Endian::FromLittleToSystem > ( buffer, geometries, transform );
 	}
 
   throw std::runtime_error ( "Error 1713426630: Unknown endian type." );
@@ -314,9 +296,12 @@ void BinaryParser::_createGeometry ( const unsigned char*& buffer, Geometries &g
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BinaryParser::Geometries BinaryParser::operator() ( const unsigned char* buffer )
+BinaryParser::Geometries BinaryParser::operator() ( const unsigned char* buffer, const std::string& wkt )
 {
+  // Transform to wgs 84.
+  Transform transform ( wkt, Transform::wgs84AsWellKnownText() );
+  
   Geometries geometries;
-  this->_createGeometry( buffer, geometries );
+  this->_createGeometry ( buffer, geometries, transform );
   return geometries;
 }

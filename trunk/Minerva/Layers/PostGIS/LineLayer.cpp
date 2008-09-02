@@ -9,15 +9,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/PostGIS/LineLayer.h"
-#include "Minerva/Layers/PostGIS/BinaryParser.h"
 
 #include "Minerva/Core/Data/Line.h"
-#include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Convert.h"
 
 #include "Usul/Factory/RegisterCreator.h"
-#include "Usul/Interfaces/GUI/IProgressBar.h"
 
 #include "pqxx/pqxx"
 
@@ -35,8 +32,11 @@ USUL_FACTORY_REGISTER_CREATOR ( LineLayer );
 LineLayer::LineLayer() : BaseClass(),
   _lineWidth ( 1.0f )
 {
-  this->name( "LineLayer" );
-  this->_registerMembers();
+  // Don't set the name!  
+  // This will cause a crash because the object will be referenced and dereferenced in the function, cause the object to be deleted.
+  //this->name( "LineLayer" );
+  
+  this->_addMember ( "lineWidth", _lineWidth );
 }
 
 
@@ -49,19 +49,7 @@ LineLayer::LineLayer() : BaseClass(),
 LineLayer::LineLayer ( const LineLayer& layer ) : BaseClass ( layer ),
   _lineWidth ( layer._lineWidth )
 {
-  this->_registerMembers();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Register members.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LineLayer::_registerMembers()
-{
-  SERIALIZE_XML_ADD_MEMBER ( _lineWidth );
+  this->_addMember ( "lineWidth", _lineWidth );
 }
 
 

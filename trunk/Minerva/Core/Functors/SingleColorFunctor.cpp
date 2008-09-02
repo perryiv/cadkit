@@ -150,11 +150,9 @@ OsgTools::Widgets::Item * SingleColorFunctor::icon (  Usul::Interfaces::IUnknown
       }
     }
   }
-  //#endif
+
   OsgTools::Widgets::SolidColorQuadIcon::RefPtr icon ( new OsgTools::Widgets::SolidColorQuadIcon );
   icon->colorPolicy().color ( this->color() );
-  //icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::FRONT );
-  //icon->colorPolicy().diffuse( this->color(), OsgTools::MaterialSetter::BACK );
 
   return icon.release();
 }

@@ -22,6 +22,7 @@
 #include "Minerva/Core/Data/Object.h"
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Core/Data/Feature.h"
+#include "Minerva/Interfaces/IVectorLayer.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
 #include "Usul/Pointers/Pointers.h"
@@ -49,6 +50,7 @@ namespace Data {
   
 class DataObject;
 
+
 class MINERVA_EXPORT ClickedCallback : public Usul::Base::Object
 {
 public:
@@ -69,7 +71,8 @@ class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::ITreeNode,
                                   public Usul::Interfaces::IBooleanState,
-                                  public Minerva::Interfaces::IElevationChangedListnerer
+                                  public Minerva::Interfaces::IVectorLayer,
+                                  public Minerva::Interfaces::IElevationChangedListener
 {
 public:
   typedef Minerva::Core::Data::Feature        BaseClass;
@@ -78,6 +81,7 @@ public:
   typedef Minerva::Core::Data::Geometry       Geometry;
   typedef std::vector<Geometry::RefPtr>       Geometries;
   typedef OsgTools::Widgets::Item             Item;
+  typedef osg::ref_ptr<osg::Image>            ImagePtr;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
@@ -90,20 +94,23 @@ public:
 
   /// Accept the visitor.
   virtual void          accept ( Minerva::Core::Visitor& visitor );
-  
+
   /// Add a geometry.
   void                  addGeometry ( Geometry* geometry );
 
   /// DataObject has been clicked.
   virtual Item*         clicked ( Usul::Interfaces::IUnknown* caller = 0x0 ) const;
-  
+
   /// Set/get the clicked callback.
   void                  clickedCallback ( ClickedCallback* );
   ClickedCallback*      clickedCallback() const;
 
   /// Build the scene branch for the data object.
-  virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
-  void                  preBuildScene( Usul::Interfaces::IUnknown* caller = 0x0 );
+  void                  preBuildScene ( Usul::Interfaces::IUnknown* caller );
+  virtual osg::Node*    buildScene ( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
+
+  /// Build the scene for data that is contained by the given extents.
+  virtual osg::Node*    buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
 
   /// Get/Set the data source.
   void                  dataSource( Unknown* );
@@ -113,9 +120,9 @@ public:
   /// Get/Set the dirty flag.
   bool                  dirty() const;
   void                  dirty ( bool );
-
+  
   /// Elevation has changed within given extents (IElevationChangedListnerer).
-  virtual bool          elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Unknown * caller = 0x0 );
+  bool                  elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Unknown * caller = 0x0 );
 
   /// Get the geometries.
   Geometries            geometries() const;

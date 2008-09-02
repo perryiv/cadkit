@@ -77,7 +77,7 @@ Layer::Layer() : BaseClass(),
   _zOffset ( 0.0 ),
   _connection(),
   _colorFunctor( 0x0 ),
-  _legendText( "" ),
+  _legendText(),
   _showInLegend ( true ),
   _showLabel ( false ),
   _labelColor( 1.0, 1.0, 1.0, 1.0 ),
@@ -180,6 +180,7 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _lastDateColumn );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Destructor.
@@ -188,6 +189,19 @@ void Layer::_registerMembers()
 
 Layer::~Layer()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clone this layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Layer::clone() const
+{
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( new Layer ( *this ) );
+  return unknown.release();
 }
 
 
@@ -251,7 +265,7 @@ void Layer::tablename( const std::string& table )
 
 const std::string& Layer::tablename() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _tablename;
 }
 
@@ -264,7 +278,7 @@ const std::string& Layer::tablename() const
 
 void Layer::labelColumn( const std::string& column )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _labelColumn = column;
 }
 
@@ -277,7 +291,7 @@ void Layer::labelColumn( const std::string& column )
 
 const std::string& Layer::labelColumn() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _labelColumn;
 }
 
@@ -290,7 +304,7 @@ const std::string& Layer::labelColumn() const
 
 void Layer::renderBin( Usul::Types::Uint32 bin )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _renderBin = bin;
 }
 
@@ -303,7 +317,7 @@ void Layer::renderBin( Usul::Types::Uint32 bin )
 
 Usul::Types::Uint32 Layer::renderBin( ) const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _renderBin;
 }
 
@@ -316,7 +330,7 @@ Usul::Types::Uint32 Layer::renderBin( ) const
 
 void Layer::query ( const std::string& query )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   
   if ( query != _query )
   {
@@ -332,9 +346,9 @@ void Layer::query ( const std::string& query )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Layer::query ( ) const
+const std::string& Layer::query() const
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   return _query;
 }
 
@@ -345,7 +359,7 @@ const std::string& Layer::query ( ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::colorFunctor( Minerva::Core::Functors::BaseColorFunctor *colorFunctor )
+void Layer::colorFunctor ( Minerva::Core::Functors::BaseColorFunctor *colorFunctor )
 {
   Guard guard ( this->mutex() );
   _colorFunctor = colorFunctor;
@@ -514,7 +528,7 @@ bool Layer::showLabel() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::labelColor( const osg::Vec4& color )
+void Layer::labelColor ( const osg::Vec4& color )
 {
   Guard guard ( this->mutex() );
   _labelColor = color;
@@ -627,7 +641,7 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
         Usul::Types::Float64 x ( r[0][0].as<double>() );
         Usul::Types::Float64 y ( r[0][1].as<double>() );
         
-        center.set( static_cast<osg::Vec3d::value_type> ( this->xOffset() + x ), static_cast<osg::Vec3d::value_type> ( this->yOffset() + y ), this->zOffset() );
+        center.set ( static_cast<osg::Vec3d::value_type> ( this->xOffset() + x ), static_cast<osg::Vec3d::value_type> ( this->yOffset() + y ), this->zOffset() );
       }
     }
     
@@ -649,7 +663,7 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
 
 void Layer::labelSize( float size )
 {
-  Guard guard( this->mutex() );
+  Guard guard ( this->mutex() );
   _labelSize = size;
 }
 
@@ -887,9 +901,6 @@ Usul::Interfaces::IUnknown* Layer::queryInterface( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
-  case Minerva::Interfaces::IVectorLayer::IID:
-    return static_cast < Minerva::Interfaces::IVectorLayer* > ( this );
   case Usul::Interfaces::IAddRowLegend::IID:
     return static_cast < Usul::Interfaces::IAddRowLegend* > ( this );
   case Usul::Interfaces::IClonable::IID:
@@ -929,7 +940,7 @@ void Layer::buildVectorData ( Usul::Interfaces::IUnknown *caller, Usul::Interfac
   status ( "Building " + this->name() );
 
   // Build the data objects.
-  this->_buildDataObjects( caller, progress );
+  this->_buildDataObjects ( caller, progress );
   
   // Our data is no longer dirty.
   this->dirtyData ( false );
@@ -1020,11 +1031,8 @@ void Layer::addLegendRow ( OsgTools::Widgets::LegendObject* row )
       
       if( this->showCountLegend() )
       {
-        OsgTools::Widgets::Text::RefPtr text ( new OsgTools::Widgets::Text ( Usul::Strings::format ( this->number() ) ) );
+        OsgTools::Widgets::Text::RefPtr text ( new OsgTools::Widgets::Text ( Usul::Strings::format ( this->size() ) ) );
         text->alignmentHorizontal ( OsgTools::Widgets::Text::RIGHT );
-        unsigned int index ( row->addItem ( text ) );
-	      
-        row->percentage( index ) = 0.20;
       }
 
       if( this->showMinLegend() )
@@ -1049,11 +1057,13 @@ void Layer::addLegendRow ( OsgTools::Widgets::LegendObject* row )
 
       /// Find out how many columns we have.
       unsigned int numColumns ( row->columns() );
+      row->percentage ( 0 ) = 0.20;
+      
+      // Size for the rest of the columns.
+      const double sizePerColumn ( 0.8 / static_cast<double> ( numColumns - 1 ) );
 
-      for( unsigned int i = 0; i < numColumns; ++i )
-        row->percentage( i ) = .20;
-
-      row->percentage( 0 ) = 1.0 - ( ( numColumns - 1 ) * .20 );
+      for( unsigned int i = 1; i < numColumns; ++i )
+        row->percentage( i ) = sizePerColumn;
     }
   }
   catch ( const std::exception& e )
@@ -1369,7 +1379,7 @@ bool Layer::isUpdating() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
+void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *p )
 {
   USUL_TRACE_SCOPE;
   
@@ -1405,10 +1415,7 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
       // Get the id.
       const int id ( iter["id"].as < int > () );
       
-      pqxx::binarystring buffer ( iter["geom"] );
-      BinaryParser parser;
-      BinaryParser::Geometries geometries ( parser ( &buffer.front() ) );
-      
+      // Make the data object.
       Minerva::Core::Data::DataObject::RefPtr data ( new Minerva::Core::Data::DataObject );
       data->objectId ( Usul::Strings::format ( id ) );
       
@@ -1436,12 +1443,16 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         data->timePrimitive ( span.get() );
       }
       
+      // Make the parser.
+      pqxx::binarystring buffer ( iter["geom"] );
+      BinaryParser parser;
+      BinaryParser::Geometries geometries ( parser ( &buffer.front(), wkt ) );
+      
       for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
         Minerva::Core::Data::Geometry::RefPtr geometry ( *geom );
         
         // Set the geometry's data.
-        //geometry->wellKnownText ( wkt );
         geometry->spatialOffset ( Usul::Math::Vec3d ( this->xOffset(), this->yOffset(), this->zOffset() ) );
         geometry->renderBin ( this->renderBin() );
         
@@ -1452,13 +1463,11 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
         data->addGeometry( geometry );
       }
 
-      /// Set the common members.
+      // Set the common members.
       this->_setDataObjectMembers( data.get(), caller );
       
-      // Pre build the scene.
-      //data->preBuildScene( caller );
-      
-      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ) );
+      // Add the data to the container.
+      this->add ( Usul::Interfaces::IUnknown::QueryPtr ( data.get() ), false );
     }
     catch ( const std::exception& e )
     {
@@ -1475,6 +1484,9 @@ void Layer::_buildDataObjects( Usul::Interfaces::IUnknown *caller, Usul::Interfa
       progress->updateProgressBar( num );
     }
   }
+  
+  // Notify now that the data has changed.
+  this->_notifyDataChnagedListeners();
 }
 
 
@@ -1641,4 +1653,15 @@ void Layer::_updateMinMaxDate ( const std::string& min, const std::string& max )
   
   if( d1 > _maxDate )
     _maxDate = d1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the geometry memebers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::_setGeometryMembers   ( Geometry* geometry, const pqxx::result::const_iterator& iter )
+{
 }

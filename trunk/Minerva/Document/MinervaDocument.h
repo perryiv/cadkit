@@ -17,6 +17,8 @@
 #if USE_DISTRIBUTED == 1
 #include "Minerva/Document/CommandSender.h"
 #include "Minerva/Document/CommandReceiver.h"
+
+#include "Minerva/DataSources/PG/Connection.h"
 #endif
 
 #include "Usul/Documents/Document.h"
@@ -36,12 +38,10 @@
 
 #include "Minerva/Core/Animate/Settings.h"
 #include "Minerva/Core/Data/TimeSpan.h"
-#include "Minerva/DataSources/PG/Connection.h"
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/ILookAtLayer.h"
-#include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "MenuKit/Menu.h"
 
@@ -267,12 +267,12 @@ protected:
 
   /// Clear.
   void                                     _clear();
+  
+  /// Clear the balloon
+  void                                     _clearBalloon();
 
   /// Distributed functions.
   void                                     _connectToDistributedSession();
-
-  /// Execute a command.
-  void                                     _executeCommand ( Usul::Interfaces::ICommand* command );
 
   /// Animate.
   void                                     _animate ( Usul::Interfaces::IUnknown *caller );
@@ -291,6 +291,10 @@ protected:
   /// Find first and last date.
   void                                     _findFirstLastDate();
   
+  /// Intersect functions.
+  bool                                     _intersectBalloon ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );
+  bool                                     _intersectScene ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );
+  
   /// Make the planet.
   void                                     _makePlanet();
 
@@ -306,12 +310,6 @@ protected:
 
   /// Set all the children's log.
   void                                     _setLog();
-
-  /// Minerva::Interfaces::IAddLayer
-  virtual void                             addLayer ( Usul::Interfaces::IUnknown * layer );
-
-  /// Minerva::Interfaces::IRemoveLayer
-  virtual void                             removeLayer ( Usul::Interfaces::ILayer * layer );
 
   /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
   virtual bool                             dirtyScene() const;

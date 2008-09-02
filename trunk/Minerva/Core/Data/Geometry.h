@@ -14,6 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Object.h"
+#include "Minerva/Interfaces/IVectorLayer.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -33,7 +34,8 @@ namespace Data {
 
 class MINERVA_EXPORT Geometry : public Minerva::Core::Data::Object,
                                 public Usul::Interfaces::IBuildScene,
-                                public Usul::Interfaces::ILayerExtents
+                                public Usul::Interfaces::ILayerExtents,
+                                public Minerva::Interfaces::IVectorLayer
 {
 public:
   typedef Minerva::Core::Data::Object         BaseClass;
@@ -59,7 +61,10 @@ public:
   AltitudeMode          altitudeMode () const;
 
   /// Build the scene branch.
-  virtual osg::Node*    buildScene( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual osg::Node*    buildScene ( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
+  
+  /// Build the scene for data that is contained by the given extents.
+  virtual osg::Node*    buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
   
   /// Get/Set the dirty flag.
   void                  dirty ( bool b );
@@ -95,7 +100,7 @@ protected:
   virtual ~Geometry();
 
   /// Build the scene branch.
-  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller ) = 0;
+  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller ) = 0;
   
   template<class Vertex>
   double                _elevation ( const Vertex& point, Usul::Interfaces::IElevationDatabase* elevation ) const

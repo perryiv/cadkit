@@ -85,8 +85,10 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IBuildScene*> ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast<Usul::Interfaces::ITreeNode*> ( this );
-  case Minerva::Interfaces::IElevationChangedListnerer::IID:
-    return static_cast<Minerva::Interfaces::IElevationChangedListnerer*> ( this );
+  case Minerva::Interfaces::IVectorLayer::IID:
+    return static_cast<Minerva::Interfaces::IVectorLayer*> ( this );
+  case Minerva::Interfaces::IElevationChangedListener::IID:
+    return static_cast<Minerva::Interfaces::IElevationChangedListener*> ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast<Usul::Interfaces::IBooleanState*> ( this );
   default:
@@ -118,6 +120,9 @@ void DataObject::addGeometry ( Geometry *geometry )
   {
     Guard guard ( this->mutex() );
     _geometries.push_back ( geometry );
+    
+    this->_updateExtents ( Usul::Interfaces::IUnknown::QueryPtr ( geometry ) );
+    
     this->dirty ( true );
   }
 }
@@ -369,11 +374,74 @@ bool DataObject::showLabel () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Pre build the scene.
+//  Build the scene for data that is contained by the given extents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
+osg::Node* DataObject::buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+{
+  if ( false == BaseClass::visibility() )
+    return 0x0;
+ 
+  Extents e ( this->extents() );
+  
+  if ( false == e.intersects ( extents ) )
+    return 0x0;
+
+  Geometries geometries ( this->geometries() );
+  
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+  
+  // Does the scene need to be sorted?
+  bool isTransparent ( false );
+  
+  for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
+  {
+    Geometry::RefPtr geometry ( *iter );
+    
+    osg::ref_ptr<osg::Node> node ( geometry->buildTiledScene ( extents, level, elevationData, caller ) );
+    node->setUserData ( new Minerva::Core::Data::UserData( this ) );
+    group->addChild ( node.get() );
+    
+    // See if the geometry is transparent.
+    if ( true == geometry->isSemiTransparent() )
+    {
+      // Convert tri-strips to triangles (For sorting).
+      OsgTools::Utilities::ConvertToTriangles convert;
+      convert ( group.get() );
+      
+      isTransparent = true;
+    }
+  }
+  
+  // If one of the geometries is transparent, set the proper state and add needed callbacks.
+  if ( isTransparent )
+  {
+    // Get the state set.
+    osg::ref_ptr < osg::StateSet > ss ( group->getOrCreateStateSet () );
+    
+    // Add a blend function.
+    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+    ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+    
+    ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+    ss->setRenderBinDetails ( 1, "DepthSortedBin" );
+    
+    osg::ref_ptr<osg::NodeVisitor> visitor ( new OsgTools::Callbacks::SetSortToFrontCallback );
+    group->accept ( *visitor );
+  }
+  
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
 {
   Geometries geometries ( this->geometries() );
   
@@ -391,7 +459,7 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
     osg::ref_ptr<osg::Node> node ( geometry->buildScene ( Options(), caller ) );
     node->setUserData ( new Minerva::Core::Data::UserData( this ) );
     group->addChild ( node.get() );
-  
+    
     // Expand the extents by the geometry's extents.
     extents.expand ( geometry->extents() );
     
@@ -431,9 +499,9 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
   {
     osg::Vec3 position ( this->labelPosition() );
     Usul::Math::Vec3d p ( extents.center()[0], extents.center()[1], position[2] );
-
+    
     Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-   
+    
     if( planet.valid() )
     {
       planet->convertToPlanet( Usul::Math::Vec3d ( p ), p );
@@ -445,7 +513,7 @@ void DataObject::preBuildScene( Usul::Interfaces::IUnknown * caller )
   Guard guard ( this );
   _preBuiltScene = group.get();
   
-  this->dirty ( false );
+  this->dirty ( false );  
 }
 
 
@@ -490,7 +558,7 @@ osg::Node* DataObject::buildScene ( const Options& options, Usul::Interfaces::IU
 void DataObject::visibility ( bool b )
 {
   BaseClass::visibility ( b );
-  
+ 
   Guard guard ( this );
 
   if ( _root.valid () )

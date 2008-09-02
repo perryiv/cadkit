@@ -111,7 +111,7 @@ Usul::Interfaces::IUnknown* Feature::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Feature::name() const
+std::string Feature::name() const
 {
   Guard guard ( this->mutex() );
   return _name;
@@ -181,7 +181,7 @@ void Feature::styleUrl ( const std::string& url )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Feature::styleUrl() const
+std::string Feature::styleUrl() const
 {
   Guard guard ( this->mutex() );
 	return _styleUrl;
@@ -233,7 +233,7 @@ void Feature::description ( const std::string& s )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Feature::description() const
+std::string Feature::description() const
 {
   Guard guard ( this->mutex() );
   return _description;

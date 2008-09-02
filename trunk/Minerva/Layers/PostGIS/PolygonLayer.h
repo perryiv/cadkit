@@ -62,7 +62,6 @@ protected:
 
 private:
 
-  std::string _format;
   bool        _showInterior;
   bool        _showBorder;
   Color       _borderColor;

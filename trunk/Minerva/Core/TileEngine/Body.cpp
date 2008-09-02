@@ -86,7 +86,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _updateListeners(),
   _allowSplit ( true ),
   _keepDetail ( false ),
-  _sky ( new Minerva::Core::Utilities::Atmosphere ),
+  _sky ( 0x0 ),
   _newTexturesLastFrame ( 0 ),
   _needsRedraw ( false ),
   _log ( 0x0 ),
@@ -122,6 +122,9 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   // Add the vector data to the transform.
   _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
 #if 0
+  // Make the sky.
+  _sky = new Minerva::Core::Utilities::Atmosphere;
+  
   // Set parameters.
   _sky->innerRadius ( land->size() );
   _sky->outerRadius ( _sky->innerRadius() + 400000 );
@@ -192,8 +195,6 @@ Usul::Interfaces::IUnknown *Body::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IPlanetCoordinates* > ( this );
   case Usul::Interfaces::IElevationDatabase::IID:
     return static_cast < Usul::Interfaces::IElevationDatabase * > ( this );
-  case Usul::Interfaces::IFrameStamp::IID:
-    return static_cast < Usul::Interfaces::IFrameStamp* > ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IRasterAlphas::IID:
@@ -242,14 +243,14 @@ void Body::addTile ( const Extents &extents )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::_addTileToBeDeleted ( Tile *tile )
+void Body::_addTileToBeDeleted ( Tile::RefPtr tile )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( 0x0 != tile )
+  if ( true == tile.valid() )
   {
-    _deleteTiles.push_back ( Tile::RefPtr ( tile ) );
+    _deleteTiles.push_back ( tile );
   }
 }
 
@@ -1106,7 +1107,7 @@ double Body::elevation ( double lat, double lon ) const
     if ( Detail::elevationFromTile ( *iter, v, elevation ) ) 
       break;
   }
-
+  
   return elevation;
   
   // Should we use a geoid here?  Keeping this for reference.
@@ -1119,7 +1120,6 @@ double Body::elevation ( double lat, double lon ) const
   
   return height + ossimGeoidManager::instance()->offsetFromEllipsoid( point );
 #endif
-
 }
 
 
@@ -1151,7 +1151,7 @@ void Body::rasters ( Rasters& rasters ) const
 void Body::purgeTiles()
 {
   USUL_TRACE_SCOPE;
-
+  
   // Swap with the list to delete.
   Tiles deleteMe;
   {
@@ -1215,35 +1215,6 @@ void Body::_removeUpdateListener ( IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   _updateListeners.remove ( caller );  
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame stamp.
-//  
-///////////////////////////////////////////////////////////////////////////////
-
-osg::FrameStamp * Body::frameStamp()
-{
-  USUL_TRACE_SCOPE;
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
-  return ( fs.valid() ? fs->frameStamp() : 0x0 );
-  
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the frame stamp.
-//  
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::FrameStamp * Body::frameStamp() const
-{
-  USUL_TRACE_SCOPE;
-  Usul::Interfaces::IFrameStamp::QueryPtr fs ( Usul::Documents::Manager::instance().activeView() );
-  return ( fs.valid() ? fs->frameStamp() : 0x0 );
 }
 
 

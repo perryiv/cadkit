@@ -84,9 +84,14 @@ template <> struct TypeWrapper < std::string >
   }
   static std::string restoreIllegalCharacters ( const std::string &in )
   {
+    // Illegal characters are restored when file is read.
+#if 0
     std::string out ( in );
     XmlTree::restoreIllegalCharacters ( out );
     return out;
+#else
+    return in;
+#endif
   }
   static void set ( const std::string &s, std::string &value )
   {

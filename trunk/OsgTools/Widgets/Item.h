@@ -59,6 +59,9 @@ public:
   void                    minimiumSize ( const Size& size );
   Size                    minimiumSize() const;
   
+  /// Item was clicked.
+  virtual void            onClick ( double x, double y );
+  
   /// Set the position.
   void                    position ( SizeType x, SizeType y );
   

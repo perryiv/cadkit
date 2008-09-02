@@ -60,6 +60,7 @@
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IClippingDistance.h"
 #include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ISceneIntersect.h"
 #include "Usul/Interfaces/ITrackball.h"
@@ -285,15 +286,6 @@ bool MinervaDocument::canExport ( const std::string &file ) const
 
 bool MinervaDocument::canInsert ( const std::string &file ) const
 {
-  const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-
-  Filters filters ( this->filtersInsert() );
-  for ( Filters::const_iterator iter = filters.begin(); iter != filters.end(); ++iter )
-  {
-    if ( Usul::Strings::lowerCase ( Usul::File::extension ( iter->second ) ) == ext )
-      return true;
-  }
-
   return false;
 }
 
@@ -348,16 +340,7 @@ MinervaDocument::Filters MinervaDocument::filtersExport() const
 
 MinervaDocument::Filters MinervaDocument::filtersInsert() const
 {
-  Filters filters ( Minerva::Core::Factory::Readers::instance().filters() );
-  Filters open ( Usul::Documents::Manager::instance().filtersOpen() );
-  filters.insert ( filters.end(), open.begin(), open.end() );
-
-  // Remove our filter until inserting is tested.
-  filters.erase ( std::remove ( filters.begin(),
-                                filters.end(),
-                                Filter ( "Minerva (*.minerva)", "*.minerva" ) ),
-                  filters.end() );
-
+  Filters filters;
   return filters;
 }
 
@@ -429,33 +412,6 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
 
     if ( false == _bodies.empty() )
       this->activeBody ( _bodies.front() );
-  }
-  else
-  {
-    // Check the registered readers first.
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
-
-    // If we didn't find one, ask the document manager.
-    if ( false == unknown.valid() )
-    {
-      unknown = Usul::Interfaces::IUnknown::QueryPtr ( Usul::Documents::Manager::instance().find ( filename ).document.get() );
-    }
-
-    Usul::Interfaces::IRead::QueryPtr read ( unknown );
-
-    if ( read.valid() )
-    {
-      // Create a job to read the file.
-      // Pass the QueryPtr to memberFunction so that if the user removes the layer, there is still a reference until the job finishes.
-      Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::bind3 ( filename, caller, progress,
-                                    Usul::Adaptors::memberFunction ( read, &Usul::Interfaces::IRead::read ) ), caller ) );
-
-      // Add the job to the manager.
-      Usul::Jobs::Manager::instance().addJob ( job );
-    }
-
-    Usul::Interfaces::ILayer::QueryPtr layer ( read );
-    this->addLayer ( layer.get() );
   }
 
   // Reset all the log pointers.
@@ -834,93 +790,7 @@ void MinervaDocument::_connectToDistributedSession()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::removeLayer ( Usul::Interfaces::ILayer * layer )
-{
-  USUL_TRACE_SCOPE;
-
-  if ( 0x0 == layer )
-    return;
-
-  Guard guard ( this->mutex() );
-
-  // Get the active body.
-  Body::RefPtr body ( this->activeBody() );
-
-  if ( body.valid () )
-  {
-    Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
-    body->rasterRemove ( rl.get() );
-    body->vectorRemove ( layer );
-  }
-
-  // Find the min and max dates again.
-  Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
-
-  this->modified( true );
-  this->dirty( true );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a layer.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::addLayer ( Usul::Interfaces::IUnknown * layer )
-{
-  USUL_TRACE_SCOPE;
-
-  // Return now if the layer isn't valid.
-  if ( 0x0 == layer )
-    return;
-
-  try
-  {
-    // Get the active body.
-    Body::RefPtr body ( this->activeBody() );
-
-    if ( body.valid() )
-    {
-      Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( layer );
-      Usul::Interfaces::IRasterLayer::QueryPtr rl ( layer );
-      if ( rl.valid() )
-      {
-        if ( elevation.valid() )
-          body->elevationAppend ( rl.get() );
-        else
-          body->rasterAppend ( rl.get() );
-      }
-
-      body->vectorAppend ( layer );
-    }
-
-    // Find the min and max dates again.
-    Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
-
-    // We are modified.
-    this->modified ( true );
-    this->dirty( true );
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 2006879022: " << e.what() << std::endl;
-  }
-  catch ( ... )
-  {
-    std::cout << "Error 4156147184: Unknown exception caught while trying to add a layer." << std::endl;
-  }
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modify a layer.
+//  Deserialze.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -935,23 +805,6 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 
   // The dates are dirty.
   Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Execute a command.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void MinervaDocument::_executeCommand ( Usul::Interfaces::ICommand* command )
-{
-  USUL_TRACE_SCOPE;
-  if ( 0x0 != command )
-  {
-    // Execute the command.
-    command->execute( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
-  }
 }
 
 
@@ -979,6 +832,7 @@ void MinervaDocument::commandExecuteNotify ( Usul::Commands::Command* command )
 
 #endif
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1086,7 +940,7 @@ void MinervaDocument::showPastEvents ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MinervaDocument::showPastEvents () const
+bool MinervaDocument::showPastEvents() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
@@ -1134,10 +988,12 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
     {
       body->postRender ( caller );
 
+      // I don't think this is needed any more.
+#if 0
       // Draw again if a new texture has been added.
       if ( body->newTexturesLastFrame() > 0 || body->needsRedraw() )
         this->requestRedraw();
-
+#endif
       // Request has been made.  Reset state.
       body->needsRedraw ( false );
     }
@@ -1506,6 +1362,9 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
         this->accept ( *visitor );
       }
     }
+    
+    // Request a redraw while we are animating.
+    this->requestRedraw();
   }
 }
 
@@ -1981,6 +1840,7 @@ void MinervaDocument::_makePlanet()
 
   // Add the body.
   Body::RefPtr body ( new Body ( land, this->_getJobManager(), meshSize, splitDistance ) );
+  body->name ( "Earth" );
   body->useSkirts ( true );
 
   // Add tiles to the body.
@@ -2139,7 +1999,7 @@ MinervaDocument::LegendPosition MinervaDocument::legendPosition () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
+void MinervaDocument::_buildLegend ( Usul::Interfaces::IUnknown *caller )
 {
   // Always clear.
   _legend->clear();
@@ -2147,14 +2007,16 @@ void MinervaDocument::_buildLegend( Usul::Interfaces::IUnknown *caller )
   if( this->isShowLegend() )
   {
     // Set the legend size.
-    unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
-    unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
-
-    _legend->maximiumSize( legendWidth, legendHeight );
+    const unsigned int legendWidth  ( static_cast < unsigned int > ( _width * _legendWidth ) );
+    //const unsigned int legendHeight ( static_cast < unsigned int > ( _height - ( _legendPadding.y() * 2 ) ) );
 
     // Add items to the legend.
     Minerva::Core::Visitors::BuildLegend::RefPtr visitor ( new Minerva::Core::Visitors::BuildLegend ( _legend.get() ) );
     this->accept( *visitor );
+    
+    const unsigned int height ( 35 * _legend->numRows() );
+    _legend->size ( legendWidth, height );
+    _legend->maximiumSize ( legendWidth, height );
 
     // Must be called after rows are added to the legend.
     this->_setLegendPosition( legendWidth );
@@ -2520,7 +2382,7 @@ void MinervaDocument::Callback::operator()( osg::Node* node, osg::NodeVisitor* n
       {
         // Convert the eye to lat,lon, height.
         Usul::Math::Vec3d point ( _eye[0], _eye[1], _eye[2] );
-        _body->convertFromPlanet( point, _eyePosition );
+        _body->convertFromPlanet ( point, _eyePosition );
 
         // Get the model view matrix from the cull visitor.
         osg::ref_ptr<osg::RefMatrix> m ( cullVisitor->getModelViewMatrix() );
@@ -2691,45 +2553,15 @@ void MinervaDocument::jobFinished ( Usul::Jobs::Job *job )
 
 void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Interfaces::IUnknown * caller )
 {
-  // Query for the interface.
-  Usul::Interfaces::ISceneIntersect::QueryPtr si ( caller );
-
   // See if it's the left button.
   const bool left ( Usul::Bits::has ( ea.getButton(), osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) );
 
-  if ( left && si.valid() && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
+  if ( left && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
   {
-    osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
-    osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
-
-    if ( camera.valid() && balloon.valid() )
-      camera->removeChild ( balloon.get() );
-
-    osgUtil::LineSegmentIntersector::Intersection hit;
-    if ( si->intersect ( ea.getX(), ea.getY(), hit ) )
-    {
-      // See if there is user data.
-      osg::ref_ptr < Minerva::Core::Data::UserData > userdata ( 0x0 );
-      for( osg::NodePath::reverse_iterator iter = hit.nodePath.rbegin(); iter != hit.nodePath.rend(); ++iter )
-      {
-        if( Minerva::Core::Data::UserData *ud = dynamic_cast < Minerva::Core::Data::UserData *> ( (*iter)->getUserData() ) )
-          userdata = ud;
-      }
-
-      if( userdata.valid() && 0x0 != userdata->_do )
-      {
-        Minerva::Core::Data::DataObject::RefPtr dataObject ( userdata->_do );
-
-        OsgTools::Widgets::Item::RefPtr item ( dataObject->clicked() );
-        if ( item.valid() )
-        {
-          balloon = item->buildScene();
-          camera->addChild ( balloon.get() );
-
-          Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
-        }
-      }
-    }
+    if ( this->_intersectBalloon ( ea, caller ) )
+      return;
+    
+    this->_intersectScene ( ea, caller );
   }
   else if ( osgGA::GUIEventAdapter::MOVE == ea.getEventType() )
   {
@@ -2738,6 +2570,146 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
       this->requestRedraw();
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Intersect with osg::Node*.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  bool intersectWithScene ( osg::Node* node, osgUtil::LineSegmentIntersector* intersector, osgUtil::LineSegmentIntersector::Intersection& hit )
+  {
+    if ( 0x0 == node )
+      return false;
+    
+    // Make the visitor.
+    osg::ref_ptr<osgUtil::IntersectionVisitor> visitor ( new osgUtil::IntersectionVisitor ( intersector ) );
+    node->accept ( *visitor );
+    
+    osgUtil::LineSegmentIntersector::Intersections& intersections ( intersector->getIntersections() );
+    if ( false == intersections.empty() )
+    {
+      hit = *intersections.begin();
+      return true;
+    }
+    
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Intersect with balloon.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::_intersectBalloon ( osgGA::GUIEventAdapter& ea, Usul::Interfaces::IUnknown * )
+{
+  Guard guard ( this->mutex() );
+  
+  if ( false == _balloon.valid() || false == _camera.valid() )
+    return false;
+  
+  // Make a line segment intersector.
+  typedef osgUtil::LineSegmentIntersector Intersector;
+  osg::ref_ptr<Intersector> intersector ( new Intersector ( Intersector::WINDOW, ea.getX(), ea.getY() ) );
+  
+  // Intersect.
+  Intersector::Intersection hit;
+  if ( Helper::intersectWithScene ( _camera.get(), intersector.get(), hit ) )
+  { 
+    // See if the object is a Widget.
+    if ( OsgTools::Widgets::Item* item = dynamic_cast<OsgTools::Widgets::Item*> ( hit.nodePath.back() ) )
+    {
+      item->onClick ( ea.getX(), ea.getY() );
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Intersect with scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interfaces::IUnknown * caller )
+{
+  // Query for the interface.
+  Usul::Interfaces::ISceneIntersect::QueryPtr si ( caller );
+  
+  osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
+  osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
+    
+  osgUtil::LineSegmentIntersector::Intersection hit;
+  if ( si.valid() && si->intersect ( ea.getX(), ea.getY(), hit ) )
+  {
+    // See if there is user data.
+    osg::ref_ptr < Minerva::Core::Data::UserData > userdata ( 0x0 );
+    for( osg::NodePath::reverse_iterator iter = hit.nodePath.rbegin(); iter != hit.nodePath.rend(); ++iter )
+    {
+      if( Minerva::Core::Data::UserData *ud = dynamic_cast < Minerva::Core::Data::UserData *> ( (*iter)->getUserData() ) )
+      {
+        userdata = ud;
+        break;
+      }
+    }
+    
+    if( userdata.valid() && 0x0 != userdata->_do )
+    {
+      // Remove what we have.
+      this->_clearBalloon();
+      
+      Minerva::Core::Data::DataObject::RefPtr dataObject ( userdata->_do );
+      
+      OsgTools::Widgets::Item::RefPtr item ( dataObject->clicked() );
+      if ( item.valid() )
+      {
+        balloon = item->buildScene();
+        camera->addChild ( balloon.get() );
+        
+        Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
+        
+        return true;
+      }
+    }
+    else
+    {
+      this->_clearBalloon();
+    }
+  }
+  
+  // No intersection, remove the balloon.
+  else
+  {
+    this->_clearBalloon();
+  }
+  
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the balloon
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_clearBalloon()
+{
+  Guard guard ( this->mutex() );
+  if ( _camera.valid() && _balloon.valid() )
+    _camera->removeChild ( _balloon.get() );
+  
+  _balloon = 0x0;
 }
 
 

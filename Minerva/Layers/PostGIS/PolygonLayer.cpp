@@ -9,14 +9,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/PostGIS/PolygonLayer.h"
-#include "Minerva/Layers/PostGIS/BinaryParser.h"
 
-#include "Minerva/Core/Visitor.h"
 #include "Minerva/Core/Data/Polygon.h"
 
 #include "OsgTools/Convert.h"
 
-#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
 
@@ -43,7 +40,11 @@ PolygonLayer::PolygonLayer() : BaseClass(),
   _borderWidth ( 1.0f )
 {
   USUL_TRACE_SCOPE;
-  this->name( "PolygonLayer" );
+  
+  // Don't set the name!  
+  // This will cause a crash because the object will be referenced and dereferenced in the function, cause the object to be deleted.
+  //this->name( "PolygonLayer" );
+  
   this->_registerMembers();
 }
 

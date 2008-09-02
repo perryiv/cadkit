@@ -133,14 +133,16 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
-  case Minerva::Interfaces::IElevationChangedListnerer::IID:
-    return static_cast < Minerva::Interfaces::IElevationChangedListnerer* > ( this );
+  case Minerva::Interfaces::IVectorLayer::IID:
+    return static_cast < Minerva::Interfaces::IVectorLayer* > ( this );
   case Minerva::Interfaces::IAddLayer::IID:
     return static_cast < Minerva::Interfaces::IAddLayer* > ( this );
   case Minerva::Interfaces::IRemoveLayer::IID:
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
   case Usul::Interfaces::IDataChangedNotify::IID:
     return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
+  case Minerva::Interfaces::IElevationChangedListener::IID:
+    return static_cast<Minerva::Interfaces::IElevationChangedListener*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
@@ -320,7 +322,7 @@ void Container::clear ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Container::number() const
+unsigned int Container::size() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -682,25 +684,51 @@ Usul::Interfaces::IUnknown* Container::asUnknown()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Container::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller )
+osg::Node* Container::buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
 
-  bool handled ( false );
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
 
   Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
   {
     for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
     {
-      Minerva::Interfaces::IElevationChangedListnerer::QueryPtr ecl ( *iter );
+      Minerva::Interfaces::IVectorLayer::QueryPtr vl ( *iter );
+      if ( vl.valid() )
+        group->addChild ( vl->buildTiledScene ( extents, level, elevationData, caller ) );
+    }
+  }
+
+  return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Elevation has changed within given extents (IElevationChangeListener).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Container::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  bool handled ( false );
+  
+  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+  {
+    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+    {
+      Minerva::Interfaces::IElevationChangedListener::QueryPtr ecl ( *iter );
       if ( ecl.valid() )
         handled = ecl->elevationChangedNotify ( extents, elevationData, caller );
     }
   }
-
+  
   if ( handled )
     this->dirtyScene ( true );
-
+  
   return handled;
 }
 

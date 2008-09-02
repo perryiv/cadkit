@@ -120,7 +120,7 @@ public:
 
   // Clear the tile.
   void                      clear ( bool children );
-
+  
   // Get the index of the child.
   Indices                   child ( Tile* ) const;
 

@@ -29,10 +29,10 @@ namespace Minerva {
 namespace Interfaces {
 
 
-struct IElevationChangedListnerer : public Usul::Interfaces::IUnknown
+struct IElevationChangedListener : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IElevationChangedListnerer );
+  USUL_DECLARE_QUERY_POINTERS ( IElevationChangedListener );
 
   /// Id for this interface.
   enum { IID = 2421981627u };
@@ -43,7 +43,7 @@ struct IElevationChangedListnerer : public Usul::Interfaces::IUnknown
   /// Elevation has changed within given extents.
   virtual bool elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 ) = 0;
 
-}; // struct IElevationChangedListnerer
+}; // struct IElevationChangedListener
 
 
 } // End namespace Interfaces

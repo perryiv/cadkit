@@ -43,8 +43,6 @@ protected:
   /// Copy Constructor.
   LineLayer ( const LineLayer& layer );
 
-  void  _registerMembers();
-  
   virtual void            _setGeometryMembers ( Geometry* geometry, const pqxx::result::const_iterator& iter );
   
   /// Clone the this layer.

@@ -24,9 +24,8 @@
 #include "Usul/Registry/Qt.h"
 
 #include "QtGui/QDialog"
+#include "QtGui/QDialogButtonBox"
 #include "QtGui/QVBoxLayout"
-#include "QtGui/QHBoxLayout"
-#include "QtGui/QPushButton"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayerQtComponent, WmsLayerQtComponent::BaseClass );
 
@@ -182,23 +181,18 @@ void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul:
   EditWmsLayerWidget *page ( new EditWmsLayerWidget ( wms ) );
   
   QDialog dialog ( 0x0 );
-  QPushButton *ok ( new QPushButton ( "Ok" ) );
-  QPushButton *cancel ( new QPushButton ( "Cancel" ) );
   
-  QObject::connect ( ok,     SIGNAL ( clicked() ), &dialog, SLOT ( accept() ) );
-  QObject::connect ( cancel, SIGNAL ( clicked() ), &dialog, SLOT ( reject() ) );
+  const QDialogButtonBox::StandardButtons buttons ( QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok );
+  QDialogButtonBox *buttonBox ( new QDialogButtonBox ( buttons, Qt::Horizontal, &dialog ) );
+  
+  QObject::connect ( buttonBox, SIGNAL ( accepted() ), &dialog, SLOT ( accept() ) );
+  QObject::connect ( buttonBox, SIGNAL ( rejected() ), &dialog, SLOT ( reject() ) );
   
   QVBoxLayout *topLayout ( new QVBoxLayout );
   dialog.setLayout ( topLayout );
   
-  QHBoxLayout *hLayout ( new QHBoxLayout );
-  
   topLayout->addWidget ( page );
-  topLayout->addLayout ( hLayout );
-  
-  hLayout->addStretch  ();
-  hLayout->addWidget ( ok );
-  hLayout->addWidget ( cancel );
+  topLayout->addWidget ( buttonBox );
   
   // Set the title.
   dialog.setWindowTitle( QString ( "Edit " ) + QString ( name.c_str() ) );

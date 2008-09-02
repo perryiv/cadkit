@@ -28,6 +28,8 @@
 
 #include <vector>
 
+namespace Minerva { namespace Core { namespace Data { class Transform; } } }
+
 namespace Minerva {
 namespace Layers {
 namespace PostGIS {
@@ -40,6 +42,7 @@ public:
 
   typedef Minerva::Core::Data::Geometry Geometry;
   typedef std::vector < Geometry::RefPtr > Geometries;
+  typedef Minerva::Core::Data::Transform Transform;
 
   enum wkbGeometryType 
   {
@@ -58,13 +61,13 @@ public:
     wkbLittleEndian = 1
   };
 
-  Geometries              operator() ( const unsigned char* buffer );
+  Geometries              operator() ( const unsigned char* buffer, const std::string& wkt );
 
 protected:
 
   template < class Convert >
-	void _createGeometryEndian ( const unsigned char*& buffer, Geometries& );
-  void _createGeometry       ( const unsigned char*& buffer, Geometries& );
+	void _createGeometryEndian ( const unsigned char*& buffer, Geometries&, const Transform& );
+  void _createGeometry       ( const unsigned char*& buffer, Geometries&, const Transform& );
 
 };
 

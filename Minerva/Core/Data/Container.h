@@ -17,6 +17,7 @@
 #include "Minerva/Interfaces/IDirtyData.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
+#include "Minerva/Interfaces/IVectorLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
 
 #include "Usul/Base/Object.h"
@@ -48,9 +49,10 @@ class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
                                  public Usul::Interfaces::IBooleanState,
                                  public Minerva::Interfaces::IDirtyData,
                                  public Minerva::Interfaces::IDirtyScene,
-                                 public Minerva::Interfaces::IElevationChangedListnerer,
+                                 public Minerva::Interfaces::IVectorLayer,
                                  public Minerva::Interfaces::IAddLayer,
-                                 public Minerva::Interfaces::IRemoveLayer
+                                 public Minerva::Interfaces::IRemoveLayer,
+                                 public Minerva::Interfaces::IElevationChangedListener
 {
 public:
 
@@ -60,6 +62,7 @@ public:
   typedef Usul::Interfaces::ILayer                  ILayer;
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef std::vector<IUnknown::QueryPtr>           Unknowns;
+  typedef osg::ref_ptr<osg::Image>                  ImagePtr;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Container );
@@ -84,6 +87,9 @@ public:
   /// Add an object.
   void                        add ( IUnknown* layer, bool notify = true );
 
+  /// Build the scene for data that is contained by the given extents (IVectorLayer).
+  virtual osg::Node*          buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
+  
   /// Build the scene (IBuildScene).
   virtual osg::Node *         buildScene ( const Options &options, IUnknown *caller = 0x0 );
 
@@ -108,9 +114,9 @@ public:
   virtual bool                dirtyScene() const;
   virtual void                dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
 
-  /// Elevation has changed within given extents (IElevationChangedListnerer).
-  virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, IUnknown * caller = 0x0 );
-
+  /// Elevation has changed within given extents (IElevationChangeListener).
+  virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
+  
   /// Get/Set the flags.
   unsigned int                flags() const;
   void                        flags ( unsigned int );
@@ -126,7 +132,7 @@ public:
   virtual void                name( const std::string& );
 
   /// Get the number of data objects in this layer.
-  virtual unsigned int        number() const;
+  virtual unsigned int        size() const;
 
   /// Remove an object.
   void                        remove ( IUnknown* layer );

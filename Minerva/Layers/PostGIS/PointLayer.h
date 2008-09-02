@@ -36,8 +36,8 @@ public:
   Usul::Types::Uint32     primitiveID() const;
 
   /// Get/Set the size.
-  void                    size( float );
-  float                   size() const;
+  void                    primitiveSize( float );
+  float                   primitiveSize() const;
 
   /// Get/Set the secondary size.
   float                   secondarySize () const;
@@ -67,10 +67,7 @@ protected:
 
   PointLayer( const PointLayer& layer );
 
-  void _registerMembers();
-
   virtual void            _setGeometryMembers ( Geometry* geometry, const pqxx::result::const_iterator& iter );
-  void _stack ();
 
   /// Clone the this layer.
   virtual Usul::Interfaces::IUnknown*              clone() const;

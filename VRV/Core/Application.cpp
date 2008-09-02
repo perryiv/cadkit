@@ -2825,16 +2825,14 @@ void Application::_navigate()
 
 	const bool bodyCentered ( Usul::Threads::Safe::get ( this->mutex(), _bodyCenteredRotation ) );
 
-	osg::Matrix vm ( this->getViewMatrix() );
-  osg::Vec3 translation ( vm.getTrans() );
-	Vector t ( translation[0], translation[1], translation[2] );
+	osg::Matrixd vm ( this->getViewMatrix() );
+  osg::Vec3d translation ( vm.getTrans() );
 
 	// Move world to orgin.
 	if ( true == bodyCentered )
 	{
-		Usul::Math::Matrix44d m;
-		m.makeTranslation ( -t );
-		this->preMultiply ( m );
+    vm.setTrans ( 0.0, 0.0, 0.0 );
+    this->setViewMatrix ( vm );
 	}
 
 	// This is trying to get the seek to work...
@@ -2854,9 +2852,9 @@ void Application::_navigate()
 	// Restore center.
 	if ( true == bodyCentered )
 	{
-		Usul::Math::Matrix44d m;
-		m.makeTranslation ( t );
-		this->postMultiply ( m );
+    vm = this->getViewMatrix();
+    vm.setTrans ( vm.getTrans() + translation );
+    this->setViewMatrix ( vm );
 	}
 }
 

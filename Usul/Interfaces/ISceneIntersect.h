@@ -18,9 +18,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Node; };
-namespace osgUtil { class Hit; };
-
 #include "osgUtil/LineSegmentIntersector"
 
 namespace Usul {
@@ -36,6 +33,8 @@ struct ISceneIntersect : public Usul::Interfaces::IUnknown
   enum { IID = 1101086294u };
 
   virtual bool intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit ) = 0;
+  virtual bool intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersections &intersections ) = 0;
+  
 }; // class ISceneIntersect
 
 

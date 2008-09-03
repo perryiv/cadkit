@@ -2280,8 +2280,10 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
 		return static_cast< Usul::Interfaces::IModelsScene* > ( this );
   case Usul::Interfaces::IRenderInfoOSG::IID:
     return static_cast < Usul::Interfaces::IRenderInfoOSG* > ( this );
+  case Usul::Interfaces::IProjectionMatrix::IID:
+    return static_cast<Usul::Interfaces::IProjectionMatrix*> ( this );
   default:
-      return ( _caller.valid() ? _caller->queryInterface ( iid ) : 0x0 );
+    return ( _caller.valid() ? _caller->queryInterface ( iid ) : 0x0 );
   }
 }
 
@@ -3067,35 +3069,15 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegme
 {
   _pointerInfo.reset();
 
-  // Handle no scene or viewer.
-  if ( !scene || !this->viewer() )
-    return false;
-
-  // Calculate the two points for our line-segment.
-  osg::Vec3d pt0, pt1;
-  if ( !this->_lineSegment ( x, y, pt0, pt1, useWindowCoords ) )
-    return false;
-
-  // Make the intersector.
-  osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector ( new osgUtil::LineSegmentIntersector ( pt0, pt1 ) );
-
-  // Declare the pick-visitor.
-  typedef osgUtil::IntersectionVisitor Visitor;
-  osg::ref_ptr<Visitor> visitor ( new Visitor );
-  visitor->setIntersector ( intersector.get() );
-
-  // Intersect the scene.
-  
-  scene->accept ( *visitor );
-
   // Get the hit-list for our line-segment.
   typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
-  const Intersections &hits = intersector->getIntersections();
+  Intersections hits;
+  this->_intersect ( x, y, scene, hits, useWindowCoords );
   if ( hits.empty() )
     return false;
 
   // Set the hit.
-  hit = intersector->getFirstIntersection();
+  hit = *hits.begin();
 
   for ( Intersections::const_iterator iter = hits.begin(); iter != hits.end(); ++iter )
     _pointerInfo.addIntersection ( iter->nodePath, iter->getLocalIntersectPoint() );
@@ -3110,6 +3092,43 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegme
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Intersect the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegmentIntersector::Intersections &intersections, bool useWindowCoords )
+{
+  // Handle no scene or viewer.
+  if ( !scene || !this->viewer() )
+    return false;
+  
+  // Calculate the two points for our line-segment.
+  osg::Vec3d pt0, pt1;
+  if ( !this->_lineSegment ( x, y, pt0, pt1, useWindowCoords ) )
+    return false;
+  
+  // Make the intersector.
+  osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector ( new osgUtil::LineSegmentIntersector ( pt0, pt1 ) );
+  
+  // Declare the pick-visitor.
+  typedef osgUtil::IntersectionVisitor Visitor;
+  osg::ref_ptr<Visitor> visitor ( new Visitor );
+  visitor->setIntersector ( intersector.get() );
+  
+  // Intersect the scene.
+  scene->accept ( *visitor );
+  
+  // Get the hit-list for our line-segment.
+  intersections = intersector->getIntersections();
+  if ( intersections.empty() )
+    return false;
+  
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  See if event intersects the current scene
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3117,6 +3136,18 @@ bool Viewer::_intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegme
 bool Viewer::intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit ) 
 { 
   return this->_intersect ( x, y, this->model(), hit ); 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if event intersects the current scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersections &intersections )
+{
+  return this->_intersect ( x, y, this->model(), intersections );
 }
 
 
@@ -5205,4 +5236,19 @@ bool Viewer::useMultisampleGet() const
   USUL_TRACE_SCOPE;
 	Guard guard ( this->mutex() );
   return Usul::Bits::has < unsigned int, unsigned int > ( _flags, _USE_MULTISAMPLE );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the projection matrix (IProjectionMatrix).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrixd Viewer::getProjectionMatrix() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  const SceneView * viewer ( this->viewer() );
+  return ( 0x0 != viewer ? viewer->getProjectionMatrix() : osg::Matrixd() );
 }

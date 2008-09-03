@@ -580,7 +580,7 @@ void GeneralShaderDocument::_parseModels( XmlTree::Node &node, Unknown *caller, 
  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   Attributes& attributes ( node.attributes() );
   for ( Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
@@ -662,7 +662,7 @@ void GeneralShaderDocument::_parseSimpleShaders( XmlTree::Node &node, Unknown *c
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   Attributes& attributes ( node.attributes() );
 
@@ -730,7 +730,7 @@ void GeneralShaderDocument::_parseBMShaders( XmlTree::Node &node, Unknown *calle
   Guard guard ( this->mutex() );
 
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   Attributes& attributes ( node.attributes() );
 
@@ -864,7 +864,7 @@ void GeneralShaderDocument::_parseEMShaders( XmlTree::Node &node, Unknown *calle
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   Attributes& attributes ( node.attributes() );
 
@@ -1033,7 +1033,7 @@ void GeneralShaderDocument::_createSimpleShader( unsigned int index, Unknown *ca
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   GroupPtr group ( new osg::Group );
   osg::ref_ptr< osg::PositionAttitudeTransform > posAttXform ( new osg::PositionAttitudeTransform );
@@ -1080,7 +1080,7 @@ void GeneralShaderDocument::_createEMShader( unsigned int index, Unknown *caller
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   GroupPtr group ( new osg::Group );
   osg::ref_ptr< osg::PositionAttitudeTransform > posAttXform ( new osg::PositionAttitudeTransform );
@@ -1157,7 +1157,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   if( "" == _shaderGroups.at( index ).normalMapPath )
   {
@@ -1215,7 +1215,7 @@ void GeneralShaderDocument::_createBMShader( unsigned int index, Unknown *caller
   // Bump Map has an environment map so add proper uniforms and variables
   if( true == _shaderGroups.at( index ).hasSkyBox )
   {
-    Usul::System::CurrentDirectory cwd ( _workingDir );
+    Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
     // Add Environment map textures
     osg::ref_ptr< osg::TextureCubeMap > map ( new osg::TextureCubeMap );
@@ -2103,7 +2103,7 @@ void GeneralShaderDocument::_createSkyBox( unsigned int index )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   // Vertices and faceNormals
 	osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
@@ -2874,7 +2874,7 @@ void GeneralShaderDocument::_updateScene()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   try
   {
@@ -3154,7 +3154,7 @@ osg::Image* GeneralShaderDocument::_createNormalMap( const std::string &name, un
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   osg::ref_ptr< osg::Image > normalMap ( new osg::Image );
   std::vector< unsigned char > texture;
@@ -3339,7 +3339,7 @@ GeneralShaderDocument::Mesh GeneralShaderDocument::_loadMesh( const std::string 
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   std::ifstream ifs;
   ifs.open( filename.c_str() );
@@ -3467,7 +3467,7 @@ osg::Geode* GeneralShaderDocument::_createMeshModel( const std::string &filename
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
-  Usul::System::CurrentDirectory cwd ( _workingDir );
+  Usul::Scope::CurrentDirectory cwd ( _workingDir );
 
   GeodePtr geode ( new osg::Geode );
   GeometryPtr geometry ( new osg::Geometry );

@@ -1291,6 +1291,7 @@
 		66A1C5140E09B321001DB3F8 /* SubRegion.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A1C5110E09B321001DB3F8 /* SubRegion.h */; };
 		66A342690E14BEB800F36EA7 /* eye.png in Copy Icons */ = {isa = PBXBuildFile; fileRef = 66A342680E14BEAF00F36EA7 /* eye.png */; };
 		66A35C3A0DD81A480026BA66 /* Manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A35C380DD81A480026BA66 /* Manager.cpp */; };
+		66A3A5770E6E4D2E00696B4B /* ElevationGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A3A5750E6E4D2E00696B4B /* ElevationGrid.h */; };
 		66A4CE680DC0FF2B006DEE5E /* Action.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A4CE480DC0FF2B006DEE5E /* Action.cpp */; };
 		66A4CE690DC0FF2B006DEE5E /* Action.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A4CE490DC0FF2B006DEE5E /* Action.h */; };
 		66A4CE6A0DC0FF2B006DEE5E /* AnimationControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A4CE4A0DC0FF2B006DEE5E /* AnimationControl.cpp */; };
@@ -5311,6 +5312,7 @@
 		66A35C370DD81A480026BA66 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		66A35C380DD81A480026BA66 /* Manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cpp; sourceTree = "<group>"; };
 		66A35C390DD81A480026BA66 /* Manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
+		66A3A5750E6E4D2E00696B4B /* ElevationGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ElevationGrid.h; sourceTree = "<group>"; };
 		66A4CE480DC0FF2B006DEE5E /* Action.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Action.cpp; sourceTree = "<group>"; };
 		66A4CE490DC0FF2B006DEE5E /* Action.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Action.h; sourceTree = "<group>"; };
 		66A4CE4A0DC0FF2B006DEE5E /* AnimationControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationControl.cpp; sourceTree = "<group>"; };
@@ -5581,6 +5583,7 @@
 		66E7B0BE0B17617300E3D682 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
 		66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WmsLayerItem.cpp; path = WmsLayerQt/WmsLayerItem.cpp; sourceTree = "<group>"; };
 		66E8B3760D930B7300024CB2 /* WmsLayerItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WmsLayerItem.h; path = WmsLayerQt/WmsLayerItem.h; sourceTree = "<group>"; };
+		66ED165F0E6F152A0000E512 /* IProjectionMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IProjectionMatrix.h; sourceTree = "<group>"; };
 		66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3dc.so; sourceTree = "<group>"; };
 		66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3ds.so; sourceTree = "<group>"; };
 		66EF05740D143B2B00B4B1AA /* osgdb_ac.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_ac.so; sourceTree = "<group>"; };
@@ -7290,6 +7293,7 @@
 		43E9AF4709F6B98D00444335 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				66ED165F0E6F152A0000E512 /* IProjectionMatrix.h */,
 				6699A0680D1EFC7200A9AE47 /* GUI */,
 				6699A07F0D1EFC7200A9AE47 /* IActiveDocumentListener.h */,
 				6699A0800D1EFC7200A9AE47 /* IActiveViewListener.h */,
@@ -7676,9 +7680,8 @@
 			children = (
 				43FED707092452F700EBB610 /* Bits.h */,
 			);
-			name = Bits;
-			path = ../Usul/Bits;
-			sourceTree = SOURCE_ROOT;
+			path = Bits;
+			sourceTree = "<group>";
 		};
 		43FED708092452F700EBB610 /* Cast */ = {
 			isa = PBXGroup;
@@ -8806,6 +8809,7 @@
 				66E1D98A0D8DC26600732EE0 /* SkyDome.h */,
 				66A6259B0E2C702800795F3D /* GeoCode.h */,
 				66A6259C0E2C702800795F3D /* GeoCode.cpp */,
+				66A3A5750E6E4D2E00696B4B /* ElevationGrid.h */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -11267,6 +11271,7 @@
 				66DCD4880E65EDB7004301AD /* QuadTree.h in Headers */,
 				66DCD48B0E65EDC1004301AD /* QuadTreeNode.h in Headers */,
 				66046C500E6D0F080009C7E5 /* TimeStamp.h in Headers */,
+				66A3A5770E6E4D2E00696B4B /* ElevationGrid.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

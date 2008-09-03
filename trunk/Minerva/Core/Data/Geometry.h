@@ -33,15 +33,14 @@ namespace Core {
 namespace Data {
 
 class MINERVA_EXPORT Geometry : public Minerva::Core::Data::Object,
-                                public Usul::Interfaces::IBuildScene,
-                                public Usul::Interfaces::ILayerExtents,
-                                public Minerva::Interfaces::IVectorLayer
+                                public Usul::Interfaces::ILayerExtents
 {
 public:
   typedef Minerva::Core::Data::Object         BaseClass;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Usul::Math::Vec3d                   Point;
+  typedef osg::ref_ptr<osg::Image>            ImagePtr;
   
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -61,10 +60,10 @@ public:
   AltitudeMode          altitudeMode () const;
 
   /// Build the scene branch.
-  virtual osg::Node*    buildScene ( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
+  osg::Node*            buildScene ( Usul::Interfaces::IUnknown* caller );
   
   /// Build the scene for data that is contained by the given extents.
-  virtual osg::Node*    buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
+  osg::Node*            buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
   
   /// Get/Set the dirty flag.
   void                  dirty ( bool b );
@@ -100,7 +99,10 @@ protected:
   virtual ~Geometry();
 
   /// Build the scene branch.
-  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller ) = 0;
+  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller );
+  
+  /// Build the scene for data that is contained by the given extents.
+  virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
   
   template<class Vertex>
   double                _elevation ( const Vertex& point, Usul::Interfaces::IElevationDatabase* elevation ) const
@@ -111,6 +113,21 @@ protected:
         return ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 );
       case RELATIVE_TO_GROUND:
         return ( point[2] + ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 ) );
+      case ABSOLUTE_MODE:
+        return point[2];
+    }
+    return 0.0;
+  }
+  
+  template<class Vertex,class Grid>
+  double                _elevation2 ( const Vertex& point, const Grid& grid ) const
+  {
+    switch ( this->altitudeMode() )
+    {
+      case CLAMP_TO_GROUND:
+        return grid ( point );
+      case RELATIVE_TO_GROUND:
+        return point[2] + grid ( point );
       case ABSOLUTE_MODE:
         return point[2];
     }

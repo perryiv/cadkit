@@ -73,7 +73,7 @@ void Polygon::outerBoundary ( const Vertices& vertices )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Polygon::Vertices& Polygon::outerBoundary() const
+Polygon::Vertices Polygon::outerBoundary() const
 {
   return this->line();
 }

@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Data/Point.h"
-#include "Minerva/Core/Data/Transform.h"
+#include "Minerva/Core/Utilities/ElevationGrid.h"
 
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/State/StateSet.h"
@@ -109,10 +109,15 @@ Usul::Math::Vec3d Point::pointData() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Point::point( const Usul::Math::Vec3d& p )
+void Point::point ( const Usul::Math::Vec3d& p )
 {
   Guard guard ( this->mutex() );
   _point = p;
+  
+  // Set the extents.
+  this->extents ( Extents ( Extents::Vertex ( p[0], p[1] ), Extents::Vertex ( p[0], p[1] ) ) );
+  
+  // Dirty.
   this->dirty( true );
 }
 
@@ -136,7 +141,7 @@ const Usul::Math::Vec3d Point::point() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Point::size () const
+float Point::size() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -165,7 +170,7 @@ void Point::size ( float size )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Point::secondarySize () const
+float Point::secondarySize() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -194,7 +199,7 @@ void Point::secondarySize ( float size )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Point::primitiveId () const
+unsigned int Point::primitiveId() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -266,75 +271,96 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildScene( Usul::Interfaces::IUnknown * caller )
+osg::Node* Point::_buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  
+#if 0
+  /// Get the center. from our data source.
+  Usul::Math::Vec3d center ( this->pointData() );
+  
+  if ( false == extents.contains ( Extents::Vertex ( center[0], center[1] ) ) )
+    return 0x0;
+  
+  // Set the height.
+  Minerva::Core::Utilities::ElevationGrid grid ( elevationData, extents );
+  center[2] = this->_elevation2 ( center, grid );
+  
+  const double height ( grid ( center ) );
+
+  return this->_buildScene ( center, height, caller );
+    
+#else
+  return 0x0;
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene branch for the data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Point::_buildScene ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  /// Get the center. from our data source.
+  Usul::Math::Vec3d center ( this->pointData() );
+
+  // Set the height.
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+  center[2] = this->_elevation ( center, elevation );
+  
+  const double height ( elevation.valid() ? elevation->elevationAtLatLong ( center[1], center[0] ) : 0.0 );
+  
+  return this->_buildScene ( center, height, caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene branch for the data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Point::_buildScene ( const Vec3d& point, double height, Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
   
   // Make the group.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
-  
-  /// Get the center. from our data source.
-  Usul::Math::Vec3d center ( this->pointData() );
-  
-  // Set the height.
-  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
-  center[2] = this->_elevation( center, elevation.get() );
-  
+
   // Save the center in lat/lon coordinates.
-  osg::Vec3d location ( center [ 0 ], center [ 1 ], center [ 2 ] );
-  
-  // Make new extents.
-  Extents e ( osg::Vec2d ( location[0], location[1] ), osg::Vec2d ( location[0], location[1] ) );
-  this->extents ( e );
+  Vec3d location ( point [ 0 ], point [ 1 ], point [ 2 ] );
   
   // Convert to planet coordinates.
-  Detail::convertToPlanet ( center, caller );
+  Detail::convertToPlanet ( location, caller );
   
   // Location on earth in cartesian coordinates.
-  osg::Vec3d earthLocation ( center[0], center[1], center[2] );
+  osg::Vec3d earthLocation ( location[0], location[1], location[2] );
   
-  osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry( earthLocation, caller ) );
+  osg::ref_ptr < osg::Node > geometry ( this->_buildGeometry ( earthLocation, caller ) );
   
   // Get the state set
   osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
   
   // Set the render bin.
-  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-  
-  osg::ref_ptr<osg::Material> material ( new osg::Material );
-  material->setSpecular ( osg::Material::FRONT_AND_BACK, osg::Vec4 ( 0.4, 0.4, 0.4, 1.0 ) );
-  material->setAmbient ( osg::Material::FRONT_AND_BACK, osg::Vec4( 0.2, 0.2, 0.2, 1.0 ) );
-  material->setShininess( osg::Material::FRONT_AND_BACK, 50 );
-  
-  // Set the material's diffuse color
-  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
-  material->setDiffuse ( osg::Material::FRONT_AND_BACK, color );
-  material->setAmbient ( osg::Material::FRONT_AND_BACK, color );
-  
-  // Set proper state for transparency
-  if( 1.0f == color.w() )
-  {
-    ss->setMode ( GL_BLEND,      osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE );
-  }
-  else
-  {
-    material->setAlpha( osg::Material::FRONT_AND_BACK, color.w() );
-    ss->setMode ( GL_BLEND,      osg::StateAttribute::ON  | osg::StateAttribute::OVERRIDE );
-    
-    // If we don't have a render bin assigned, use the transparent bin.
-    if( 0 == this->renderBin() )
-      ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-  }
+  ss->setRenderBinDetails ( this->renderBin(), "RenderBin" );
   
   // Set the material.
-  ss->setAttribute ( material.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
+  osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->color() ) );
+  OsgTools::State::StateSet::setMaterial ( group.get(), color, color, color.w() );
+  
+  // Make sure lighting is on.
+  OsgTools::State::StateSet::setLighting ( ss.get(), true );
   
   // Add the geometry to our group.
-  group->addChild( geometry.get () );
-    
+  group->addChild ( geometry.get () );
+  
   if ( this->extrude() )
   {
-    double height ( elevation.valid() ? elevation->elevationAtLatLong ( location[1], location[0] ) : 0.0 );
     Usul::Math::Vec3d p ( location[0], location[1], height );
     Detail::convertToPlanet ( p, caller );
     
@@ -347,13 +373,7 @@ osg::Node* Point::_buildScene( Usul::Interfaces::IUnknown * caller )
     group->addChild ( ray() );
   }
   
-  // Need to track down the reason for the difference on windows and linux...
-#ifdef __linux
-  //ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-  //OsgTools::State::StateSet::setTwoSidedLighting ( group.get(), true );
-#endif
-  
-  this->dirty( false );
+  this->dirty ( false );
   
   return group.release();
 }
@@ -372,13 +392,13 @@ osg::Node* Point::_buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfa
   // Redirect to proper build function.
   switch ( _primitiveId )
   {
-    case POINT:          return this->_buildPoint( earthLocation );
-    case SPHERE:         return this->_buildSphere( earthLocation );
-    case CONE:           return this->_buildCone( earthLocation, false );
-    case DISK:           return this->_buildDisk( earthLocation );
-    case CUBE:           return this->_buildCube( earthLocation );
-    case INVERTED_CONE:  return this->_buildCone( earthLocation, true );
-    case CYLINDER:       return this->_buildCylinder( earthLocation, caller );
+    case POINT:          return this->_buildPoint ( earthLocation );
+    case SPHERE:         return this->_buildSphere ( earthLocation );
+    case CONE:           return this->_buildCone ( earthLocation, false );
+    case DISK:           return this->_buildDisk ( earthLocation );
+    case CUBE:           return this->_buildCube ( earthLocation );
+    case INVERTED_CONE:  return this->_buildCone ( earthLocation, true );
+    case CYLINDER:       return this->_buildCylinder ( earthLocation, caller );
   }
   
   return 0x0;
@@ -460,7 +480,7 @@ osg::Node* Point::_buildSphere( const osg::Vec3d& earthLocation )
   
   if ( this->autotransform() )
   {
-    osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform( earthLocation ) );
+    osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform ( earthLocation ) );
     autoTransform->addChild ( geode.get() );
     return autoTransform.release();
   }
@@ -491,9 +511,9 @@ osg::Node* Point::_buildCone( const osg::Vec3d& earthLocation, bool invert )
   osg::ref_ptr < osg::Cone > cone ( 0x0 );
   
   if( this->autotransform() )
-    cone = new osg::Cone( osg::Vec3( 0.0, 0.0, height/2.0 ), radius, height );
+    cone = new osg::Cone ( osg::Vec3 ( 0.0, 0.0, height/2.0 ), radius, height );
   else
-    cone = new osg::Cone( osg::Vec3( earthLocation ), radius, height );
+    cone = new osg::Cone ( osg::Vec3 ( earthLocation ), radius, height );
   
   // v1 is also a vector from the center of the sphere, to the point on the sphere.
   osg::Vec3 v1 ( earthLocation );

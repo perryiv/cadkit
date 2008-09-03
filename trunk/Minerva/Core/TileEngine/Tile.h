@@ -117,6 +117,9 @@ public:
          osg::Image * image = 0x0,
          osg::Image * elevation = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
+  
+  // Add vector data.
+  void                      addVectorData ( osg::Node* );
 
   // Clear the tile.
   void                      clear ( bool children );
@@ -262,6 +265,7 @@ private:
   osg::BoundingSphere _boundingSphere;
   osg::ref_ptr<osg::Group> _borders;
   osg::ref_ptr<osg::Group> _skirts;
+  osg::ref_ptr<osg::Group> _vector;
   ImageCache _textureMap;
   ImageSize _imageSize;
   WeakPtr _parent;

@@ -60,12 +60,8 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::IBuildScene::IID:
-    return static_cast<Usul::Interfaces::IBuildScene*> ( this );
   case Usul::Interfaces::ILayerExtents::IID:
     return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
-  case Minerva::Interfaces::IVectorLayer::IID:
-    return static_cast<Minerva::Interfaces::IVectorLayer*> ( this );
   default:
     return 0x0;
   }
@@ -104,7 +100,7 @@ Geometry::AltitudeMode Geometry::altitudeMode () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Geometry::buildScene( const Options& options, Usul::Interfaces::IUnknown* caller )
+osg::Node* Geometry::buildScene( Usul::Interfaces::IUnknown* caller )
 {
   osg::ref_ptr<osg::Node> node ( this->_buildScene ( caller ) );
   
@@ -353,5 +349,60 @@ bool Geometry::dirty () const
 
 osg::Node* Geometry::buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
 {
-  return this->buildScene ( Options(), caller );
+  Extents e ( this->extents() );
+  
+  if ( false == e.intersects ( extents ) )
+    return 0x0;
+  
+  osg::ref_ptr<osg::Node> node ( this->_buildTiledScene ( extents, level, elevationData, caller ) );
+  
+  if ( node.valid() )
+  {
+    osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet () );
+    
+    // Set the render bin.
+    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
+    
+    const unsigned int on ( osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+    const unsigned int off ( osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+    
+    const unsigned int blendMode ( this->isSemiTransparent() ? on : off );
+    
+    ss->setMode ( GL_BLEND, blendMode );
+    
+    // Set render bin depending on alpha value.
+    if( true == this->isSemiTransparent() )
+    {
+      ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+      ss->setRenderBinDetails ( osg::StateSet::TRANSPARENT_BIN, "DepthSortedBin" );
+    }
+  }
+  
+  this->dirty( false );
+  
+  return node.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene for data that is contained by the given extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Geometry::_buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+{
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene branch.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Geometry::_buildScene ( Usul::Interfaces::IUnknown* caller )
+{
+  return 0x0;
 }

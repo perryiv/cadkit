@@ -43,7 +43,7 @@ public:
   Polygon ();
   
   void                  outerBoundary ( const Vertices& );
-  const Vertices&       outerBoundary() const;
+  Vertices              outerBoundary() const;
 
   void                  addInnerBoundary ( const Vertices& );
   const Boundaries&     innerBoundaries() const;
@@ -71,7 +71,7 @@ protected:
   virtual ~Polygon();
   
   /// Build the scene branch for the data object.
-  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
+  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller );
   
   osg::Node*            _buildPolygons( Usul::Interfaces::IUnknown* caller );
   

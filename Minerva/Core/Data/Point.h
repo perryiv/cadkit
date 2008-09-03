@@ -43,7 +43,7 @@ public:
     CYLINDER
   };
   
-  Point ();
+  Point();
   
   /// Get the shape factory.
   static OsgTools::ShapeFactory* shapeFactory();
@@ -56,27 +56,27 @@ public:
   virtual bool            isSemiTransparent() const;
   
   /// Get/Set the size.
-  float                   size () const;
+  float                   size() const;
   void                    size ( float );
   
   /// Get/Set the secondary size.
-  float                   secondarySize () const;
+  float                   secondarySize() const;
   void                    secondarySize ( float );
   
   ///Get/Set the primitiveId.
-  unsigned int            primitiveId () const;
+  unsigned int            primitiveId() const;
   void                    primitiveId ( unsigned int );
   
   /// Get/Set quality
-  void                    quality( float value );
+  void                    quality ( float value );
   float                   quality() const;
   
   /// Get/Set use auto transform flag.
   void                    autotransform ( bool b );
-  bool                    autotransform () const;
+  bool                    autotransform() const;
   
   /// Get/Set the point.
-  void                    point( const Usul::Math::Vec3d & );
+  void                    point ( const Usul::Math::Vec3d & );
   const Vec3d             point() const;
 
   /// Get the point data as WGS 84.
@@ -88,7 +88,9 @@ protected:
   virtual ~Point();
 
   /// Build the scene branch.
-  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
+  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown * caller );
+  virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
+  osg::Node*            _buildScene ( const Vec3d& point, double height, Usul::Interfaces::IUnknown * caller );
   
   osg::Node*            _buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown* caller );
   
@@ -100,7 +102,7 @@ protected:
   osg::Node*            _buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown * caller );
   
 private:
-  Usul::Math::Vec3d _point;
+  Vec3d        _point;
   float        _size;
   float        _secondarySize;
   unsigned int _primitiveId;

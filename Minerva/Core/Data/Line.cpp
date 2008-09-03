@@ -60,19 +60,6 @@ Line::~Line()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the line data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Line::Vertices Line::_lineDataWgs84() const
-{
-  Guard guard ( this->mutex() );
-  return _line;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the line data.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -91,7 +78,7 @@ void Line::line ( const Vertices& data )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Line::Vertices& Line::line() const
+Line::Vertices Line::line() const
 {
   Guard guard ( this->mutex() );
   return _line;
@@ -133,6 +120,13 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
 {
   //Guard guard ( this ); Was causing deadlock!
 
+  // Get the line data.
+  Vertices data ( this->line() );
+  
+  // Make sure there are at least 2 points.
+  if ( data.size() < 2 )
+    return 0x0;
+  
   osg::ref_ptr < osg::Group > node ( new osg::Group );
   osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
     
@@ -145,9 +139,6 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
   
   // Make new extents.
   Extents e;
-  
-  // Get the line data.
-  Vertices data ( this->_lineDataWgs84() );
   
   Vertices sampledPoints;
   if ( this->tessellate() && Geometry::CLAMP_TO_GROUND == this->altitudeMode() )
@@ -188,7 +179,7 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
   
   // Set the colors.
   osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-  colors->push_back( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
+  colors->push_back ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   geometry->setColorArray( colors.get() );
   geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
   
@@ -293,4 +284,16 @@ Line::Color Line::lineColor() const
 {
   LineStyle::RefPtr lineStyle ( this->lineStyle() );
   return ( lineStyle.valid() ? lineStyle->color() : Usul::Math::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene branch.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Line::_buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+{
+  return 0x0;
 }

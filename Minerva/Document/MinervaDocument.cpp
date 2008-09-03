@@ -2635,6 +2635,29 @@ bool MinervaDocument::_intersectBalloon ( osgGA::GUIEventAdapter& ea, Usul::Inte
 }
 
 
+namespace Helper
+{
+  Minerva::Core::Data::DataObject::RefPtr findDataObject ( const osg::NodePath& path )
+  {
+    // See if there is user data.
+    osg::ref_ptr < Minerva::Core::Data::UserData > userdata ( 0x0 );
+    for( osg::NodePath::const_reverse_iterator iter = path.rbegin(); iter != path.rend(); ++iter )
+    {
+      if( Minerva::Core::Data::UserData *ud = dynamic_cast < Minerva::Core::Data::UserData *> ( (*iter)->getUserData() ) )
+      {
+        userdata = ud;
+        break;
+      }
+    }
+    
+    if ( userdata.valid() && 0x0 != userdata->_do )
+      return userdata->_do;
+    
+    return 0x0;
+  }
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Intersect with scene.
@@ -2648,36 +2671,40 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
   
   osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
   osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
-    
-  osgUtil::LineSegmentIntersector::Intersection hit;
-  if ( si.valid() && si->intersect ( ea.getX(), ea.getY(), hit ) )
+  
+  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+  Intersections intersections;
+  if ( si.valid() && si->intersect ( ea.getX(), ea.getY(), intersections ) )
   {
-    // See if there is user data.
-    osg::ref_ptr < Minerva::Core::Data::UserData > userdata ( 0x0 );
-    for( osg::NodePath::reverse_iterator iter = hit.nodePath.rbegin(); iter != hit.nodePath.rend(); ++iter )
+    // List of objects that were intersected.
+    std::vector<Minerva::Core::Data::DataObject::RefPtr> objects;
+    
+    for ( Intersections::const_iterator iter = intersections.begin(); iter != intersections.end(); ++iter )
     {
-      if( Minerva::Core::Data::UserData *ud = dynamic_cast < Minerva::Core::Data::UserData *> ( (*iter)->getUserData() ) )
-      {
-        userdata = ud;
-        break;
-      }
+      Minerva::Core::Data::DataObject::RefPtr dataObject ( Helper::findDataObject ( iter->nodePath ) );
+      if( dataObject.valid() )
+        objects.push_back ( dataObject );
     }
     
-    if( userdata.valid() && 0x0 != userdata->_do )
+#ifdef _DEBUG
+    std::cout << "Found " << objects.size() << " objects." << std::endl;
+#endif
+    
+    if( false == objects.empty() && true == objects.front().valid() )
     {
       // Remove what we have.
       this->_clearBalloon();
-      
-      Minerva::Core::Data::DataObject::RefPtr dataObject ( userdata->_do );
-      
+
+      Minerva::Core::Data::DataObject::RefPtr dataObject ( objects.front() );
+
       OsgTools::Widgets::Item::RefPtr item ( dataObject->clicked() );
       if ( item.valid() )
       {
         balloon = item->buildScene();
         camera->addChild ( balloon.get() );
-        
+
         Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
-        
+
         return true;
       }
     }

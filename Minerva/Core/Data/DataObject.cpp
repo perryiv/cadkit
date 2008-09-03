@@ -321,7 +321,7 @@ const DataObject::Unknown* DataObject::dataSource() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* DataObject::_buildLabel( const osg::Vec3& position )
+osg::Node* DataObject::_buildLabel ( const osg::Vec3& position )
 {
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
   
@@ -400,17 +400,24 @@ osg::Node* DataObject::buildTiledScene ( const Extents& extents, unsigned int le
     Geometry::RefPtr geometry ( *iter );
     
     osg::ref_ptr<osg::Node> node ( geometry->buildTiledScene ( extents, level, elevationData, caller ) );
-    node->setUserData ( new Minerva::Core::Data::UserData( this ) );
-    group->addChild ( node.get() );
     
-    // See if the geometry is transparent.
-    if ( true == geometry->isSemiTransparent() )
+    if ( node.valid() )
     {
-      // Convert tri-strips to triangles (For sorting).
-      OsgTools::Utilities::ConvertToTriangles convert;
-      convert ( group.get() );
+      node->setUserData ( new Minerva::Core::Data::UserData ( this ) );
+      group->addChild ( node.get() );
       
-      isTransparent = true;
+      // See if the geometry is transparent.
+      if ( true == geometry->isSemiTransparent() )
+      {
+        // Convert tri-strips to triangles (For sorting).
+        OsgTools::Utilities::ConvertToTriangles convert;
+        convert ( node.get() );
+        
+        osg::ref_ptr<osg::NodeVisitor> visitor ( new OsgTools::Callbacks::SetSortToFrontCallback );
+        node->accept ( *visitor );
+        
+        isTransparent = true;
+      }
     }
   }
   
@@ -418,7 +425,7 @@ osg::Node* DataObject::buildTiledScene ( const Extents& extents, unsigned int le
   if ( isTransparent )
   {
     // Get the state set.
-    osg::ref_ptr < osg::StateSet > ss ( group->getOrCreateStateSet () );
+    osg::ref_ptr < osg::StateSet > ss ( group->getOrCreateStateSet() );
     
     // Add a blend function.
     osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
@@ -426,9 +433,25 @@ osg::Node* DataObject::buildTiledScene ( const Extents& extents, unsigned int le
     
     ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
     ss->setRenderBinDetails ( 1, "DepthSortedBin" );
+  }
+  
+  // Get the label position.
+  osg::Vec3 position ( this->extents().center()[0], this->extents().center()[1], this->labelPosition()[2] );
+  
+  // Do we have a label?
+  if( this->showLabel() && !this->label().empty() && extents.contains ( Extents::Vertex ( position[0], position[1] ) ) )
+  {
+    // Set the position of the label.
+    Usul::Math::Vec3d p ( position[0], position[1], position[2] );
     
-    osg::ref_ptr<osg::NodeVisitor> visitor ( new OsgTools::Callbacks::SetSortToFrontCallback );
-    group->accept ( *visitor );
+    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
+    
+    if( planet.valid() )
+    {
+      planet->convertToPlanet ( Usul::Math::Vec3d ( p ), p );
+    }
+    
+    group->addChild ( this->_buildLabel ( osg::Vec3 ( p[0], p[1], p[2] ) ) );
   }
   
   return group.release();
@@ -456,21 +479,25 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
   {
     Geometry::RefPtr geometry ( *iter );
     
-    osg::ref_ptr<osg::Node> node ( geometry->buildScene ( Options(), caller ) );
-    node->setUserData ( new Minerva::Core::Data::UserData( this ) );
-    group->addChild ( node.get() );
-    
     // Expand the extents by the geometry's extents.
     extents.expand ( geometry->extents() );
     
-    // See if the geometry is transparent.
-    if ( true == geometry->isSemiTransparent() )
+    osg::ref_ptr<osg::Node> node ( geometry->buildScene ( caller ) );
+    
+    if ( node.valid() )
     {
-      // Convert tri-strips to triangles (For sorting).
-      OsgTools::Utilities::ConvertToTriangles convert;
-      convert ( group.get() );
+      node->setUserData ( new Minerva::Core::Data::UserData( this ) );
+      group->addChild ( node.get() );
       
-      isTransparent = true;
+      // See if the geometry is transparent.
+      if ( true == geometry->isSemiTransparent() )
+      {
+        // Convert tri-strips to triangles (For sorting).
+        OsgTools::Utilities::ConvertToTriangles convert;
+        convert ( group.get() );
+        
+        isTransparent = true;
+      }
     }
   }
   

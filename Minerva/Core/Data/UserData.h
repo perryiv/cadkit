@@ -12,6 +12,7 @@
 #define __DATAOBJECTS_USER_DATA_H__
 
 #include "Minerva/Core/Export.h"
+#include "Minerva/Core/Data/DataObject.h"
 
 #include "osg/Referenced"
 
@@ -19,12 +20,10 @@ namespace Minerva {
 namespace Core {
 namespace Data {
 
-class DataObject;
-
 struct MINERVA_EXPORT UserData : public osg::Referenced
 {
   UserData ( DataObject * object ) : _do ( object ) { }
-  DataObject *_do;
+  DataObject::RefPtr _do;
 };
 
 }

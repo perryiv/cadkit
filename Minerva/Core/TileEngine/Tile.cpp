@@ -124,6 +124,7 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _boundingSphere(),
   _borders ( new osg::Group ),
   _skirts ( new osg::Group ),
+  _vector ( new osg::Group ),
   _textureMap (),
   _imageSize ( imageSize ),
   _parent ( parent ),
@@ -222,6 +223,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _boundingSphere ( tile._boundingSphere ),
   _borders ( new osg::Group ),
   _skirts ( new osg::Group ),
+  _vector ( new osg::Group ),
   _textureMap ( tile._textureMap ),
   _imageSize ( tile._imageSize ),
   _parent ( tile._parent ),
@@ -430,9 +432,13 @@ void Tile::updateMesh()
 
   // Remove all the children.
   this->removeChildren ( 0, this->getNumChildren() );
+  
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
+  group->addChild ( mt.get() );
+  group->addChild ( Usul::Threads::Safe::get ( this->mutex(), _vector.get() ) );
 
   // Add the group to us.
-  this->addChild ( mt.get() );
+  this->addChild ( group.get() );
 
   // Set needed variables
   {
@@ -614,7 +620,12 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   }
   else
   {
-    BaseClass::traverse ( nv );
+    //BaseClass::traverse ( nv );
+    
+    if ( this->getNumChildren() > 0 )
+    {
+      this->getChild ( this->getNumChildren() - 1 )->accept ( nv );
+    }
   }
 }
 
@@ -871,22 +882,17 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
   {
     Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
 
-#if 1
-    Extents extents0 ( t0->extents() );
-    ImagePtr elevation0 ( t0->elevation() );
+    // Notify that the elevation has changed.
+    vector->elevationChangedNotify ( t0->extents(), t0->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
     
-    // Since elevation data that is passed isn't currently used just ask once.
-    vector->elevationChangedNotify ( extents, elevation0, unknown.get() );
-    //vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
-    //vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
-    //vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
-#else
     // Add tiled vector data.
-    t0->addChild ( vector->buildTiledScene ( t0->extents(), t0->level(), t0->elevation(), unknown.get() ) );
-    t1->addChild ( vector->buildTiledScene ( t1->extents(), t1->level(), t1->elevation(), unknown.get() ) );
-    t2->addChild ( vector->buildTiledScene ( t2->extents(), t2->level(), t2->elevation(), unknown.get() ) );
-    t3->addChild ( vector->buildTiledScene ( t3->extents(), t3->level(), t3->elevation(), unknown.get() ) );
-#endif
+    t0->addVectorData ( vector->buildTiledScene ( t0->extents(), t0->level(), t0->elevation(), unknown.get() ) );
+    t1->addVectorData ( vector->buildTiledScene ( t1->extents(), t1->level(), t1->elevation(), unknown.get() ) );
+    t2->addVectorData ( vector->buildTiledScene ( t2->extents(), t2->level(), t2->elevation(), unknown.get() ) );
+    t3->addVectorData ( vector->buildTiledScene ( t3->extents(), t3->level(), t3->elevation(), unknown.get() ) );
   }
   
   {
@@ -2055,5 +2061,23 @@ void Tile::updateAlpha()
   if ( 0x0 != _body )
   {
     OsgTools::State::StateSet::setAlpha ( this, _body->alpha() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::addVectorData ( osg::Node* node )
+{
+  USUL_TRACE_SCOPE;
+  
+  if ( 0x0 != node )
+  {
+    Guard guard ( this );
+    _vector->addChild ( node );
   }
 }

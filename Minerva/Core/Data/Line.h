@@ -32,14 +32,14 @@ public:
 
   USUL_DECLARE_QUERY_POINTERS ( Line );
 
-  Line ();
+  Line();
   
   /// Is this geometry transparent?
   virtual bool          isSemiTransparent() const;
 
   /// Get/Set the line data.
-  void                  line( const Vertices& );
-  const Vertices&       line() const;
+  void                  line ( const Vertices& );
+  Vertices              line() const;
   
   /// Get the line color.
   Color                 lineColor() const;
@@ -60,10 +60,10 @@ protected:
 
   virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
   osg::Node*            _buildScene( const Color& color, Usul::Interfaces::IUnknown* caller );
-  
-  /// Get the line data as WGS 84.
-  Vertices              _lineDataWgs84() const;
 
+  /// Build the scene branch.
+  virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
+  
 private:
 
   Vertices   _line;

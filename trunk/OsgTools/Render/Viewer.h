@@ -22,49 +22,50 @@
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IAxes.h"
-#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/ICamera.h"
-#include "Usul/Interfaces/IViewMatrix.h"
-#include "Usul/Interfaces/IShadeModel.h"
-#include "Usul/Interfaces/IPolygonMode.h"
+#include "Usul/Interfaces/IClippingDistance.h"
+#include "Usul/Interfaces/IClippingPlanes.h"
+#include "Usul/Interfaces/ICullSceneVisitor.h"
+#include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IExportImage.h"
 #include "Usul/Interfaces/IExportScene.h"
 #include "Usul/Interfaces/IExportModel.h"
-#include "Usul/Interfaces/IOpenSceneGraph.h"
 #include "Usul/Interfaces/IFrameDump.h"
-#include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/IFrameStamp.h"
 #include "Usul/Interfaces/IGetDocument.h"
 #include "Usul/Interfaces/IGroup.h"
-#include "Usul/Interfaces/IClippingPlanes.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
-#include "Usul/Interfaces/ITrackball.h"
-#include "Usul/Interfaces/ISceneIntersect.h"
-#include "Usul/Interfaces/IRedraw.h"
-#include "Usul/Interfaces/ISpin.h"
+#include "Usul/Interfaces/IIntersectListener.h"
+#include "Usul/Interfaces/IIntersectNotify.h"
+#include "Usul/Interfaces/IModelsScene.h"
+#include "Usul/Interfaces/IMouseEventListener.h"
+#include "Usul/Interfaces/IMouseEventSubject.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
-#include "Usul/Interfaces/ITimeoutAnimate.h"
-#include "Usul/Interfaces/ITimeoutSpin.h"
-#include "Usul/Interfaces/IScreenCapture.h"
-#include "Usul/Interfaces/ISnapShot.h"
-#include "Usul/Interfaces/IView.h"
+#include "Usul/Interfaces/IOpenSceneGraph.h"
+#include "Usul/Interfaces/IPolygonMode.h"
+#include "Usul/Interfaces/IProjectionMatrix.h"
+#include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IRenderInfoOSG.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRenderNotify.h"
-#include "Usul/Interfaces/IFrameStamp.h"
-#include "Usul/Interfaces/IUpdateSceneVisitor.h"
-#include "Usul/Interfaces/ICullSceneVisitor.h"
-#include "Usul/Interfaces/IUpdateSubject.h"
-#include "Usul/Interfaces/IUpdateListener.h"
-#include "Usul/Interfaces/IClippingDistance.h"
-#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
-#include "Usul/Interfaces/IIntersectListener.h"
-#include "Usul/Interfaces/IIntersectNotify.h"
-#include "Usul/Interfaces/IMouseEventListener.h"
-#include "Usul/Interfaces/IMouseEventSubject.h"
+#include "Usul/Interfaces/IScreenCapture.h"
+#include "Usul/Interfaces/ISnapShot.h"
+#include "Usul/Interfaces/ISpin.h"
+#include "Usul/Interfaces/IShadeModel.h"
+#include "Usul/Interfaces/ISceneIntersect.h"
+#include "Usul/Interfaces/ITextMatrix.h"
+#include "Usul/Interfaces/ITrackball.h"
+#include "Usul/Interfaces/ITimeoutAnimate.h"
+#include "Usul/Interfaces/ITimeoutSpin.h"
+#include "Usul/Interfaces/IUpdateSceneVisitor.h"
+#include "Usul/Interfaces/IUpdateSubject.h"
+#include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/IView.h"
+#include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IViewMode.h"
-#include "Usul/Interfaces/IModelsScene.h"
 
 #include "OsgTools/Render/FrameDump.h"
 #include "OsgTools/Render/Animation.h"
@@ -138,7 +139,8 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IRenderingPasses,
                                 public Usul::Interfaces::IViewMode,
 																public Usul::Interfaces::IModelsScene,
-                                public Usul::Interfaces::IRenderInfoOSG
+                                public Usul::Interfaces::IRenderInfoOSG,
+                                public Usul::Interfaces::IProjectionMatrix
 {
 public:
 
@@ -526,7 +528,8 @@ protected:
 
   void                  _hiddenLineRender();
 
-  virtual  bool         _intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegmentIntersector::Intersection &hit, bool useWindowCoords = false );
+  bool                  _intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegmentIntersector::Intersection &hit, bool useWindowCoords = false );
+  bool                  _intersect ( float x, float y, osg::Node *scene, osgUtil::LineSegmentIntersector::Intersections &intersections, bool useWindowCoords = false );
   void                  _intersectNotify ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit );
   bool                  _lineSegment ( float mouseX, float mouseY, osg::Vec3d &pt0, osg::Vec3d &pt1, bool useWindowCoords = false );
 
@@ -653,13 +656,9 @@ protected:
   virtual osg::Quat          getRotation();
   virtual void               setRotation( const osg::Quat& );
 
-  /////////////////////////////////////////////////////////////////////////////
-  //
-  //  Usul::Interfaces::ISceneIntersect
-  //
-  /////////////////////////////////////////////////////////////////////////////
-
+  // Intersect with the scene (ISceneIntersect).
   virtual bool               intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit );
+  virtual bool               intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersections &intersections );
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -725,6 +724,9 @@ protected:
 	// Get the model's scene (IModelsScene).
   virtual const osg::Group *    modelsScene() const;
   virtual osg::Group *          modelsScene();
+  
+  // Get the projection matrix (IProjectionMatrix).
+  virtual osg::Matrixd          getProjectionMatrix() const;
   
 private:
 

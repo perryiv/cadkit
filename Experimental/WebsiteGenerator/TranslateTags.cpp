@@ -267,6 +267,90 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to translate the node's value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline void makeVimeo ( XmlTree::Node::ValidRefPtr node, Usul::Registry::Node &site )
+  {
+    if ( "vimeo" != node->name() )
+      return;
+
+    // Always clear the children.
+    typedef XmlTree::Node::Children Children;
+    Usul::Scope::Caller::RefPtr clear
+      ( Usul::Scope::makeCaller
+        ( Usul::Adaptors::memberFunction ( &(node->children()), &Children::clear ) ) );
+
+    // Get the movie id.
+    const std::string id ( node->attribute ( "id" ) );
+    if ( true == id.empty() )
+      return;
+
+    // Get the window size.
+    const std::string width  ( site["vimeo"]["width" ].get<std::string> ( "480" ) );
+    const std::string height ( site["vimeo"]["height"].get<std::string> ( "270" ) );
+    if ( ( true == width.empty() ) || ( true == height.empty() ) )
+      return;
+
+    // Clear the children now.
+    clear = 0x0;
+
+    // Make the link.
+    const std::string link
+      ( Usul::Strings::format 
+        ( "http://vimeo.com/moogaloop.swf",
+          "?clip_id=", id, 
+          "&server=vimeo.com",
+          "&show_title=1",
+          "&show_byline=1",
+          "&show_portrait=0",
+          "&color=",
+          "&fullscreen=1" ) );
+
+    // Build the xml.
+    XmlTree::Node::ValidRefPtr object ( node->append ( "object" ) );
+    {
+      XmlTree::Node::ValidAccessRefPtr param ( object->append ( "param" ) ); 
+      param->attributes()["name"]  = "quality"; 
+      param->attributes()["value"] = "high";
+    }
+    {
+      XmlTree::Node::ValidAccessRefPtr param ( object->append ( "param" ) );
+      param->attributes()["name"]  = "allowfullscreen";
+      param->attributes()["value"] = "always";
+    }
+    {
+      XmlTree::Node::ValidAccessRefPtr param ( object->append ( "param" ) );
+      param->attributes()["name"]  = "allowscriptaccess";
+      param->attributes()["value"] = "always";
+    }
+    {
+      XmlTree::Node::ValidAccessRefPtr param ( object->append ( "param" ) );
+      param->attributes()["name"]  = "scale";
+      param->attributes()["value"] = "showAll";
+    }
+    {
+      XmlTree::Node::ValidAccessRefPtr param ( object->append ( "param" ) );
+      param->attributes()["name"]  = "movie";
+      param->attributes()["value"] = link;
+    }
+    { 
+      XmlTree::Node::ValidAccessRefPtr embed ( object->append ( "embed" ) );
+      embed->attributes()["src"] = link;
+      embed->attributes()["allowfullscreen"] = "true";
+      embed->attributes()["allowscriptaccess"] = "always";
+      embed->attributes()["width"] = width;
+      embed->attributes()["height"] = height;
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Helper function to translate the tags.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -286,6 +370,9 @@ namespace Helper
 
     // Is it a movie?
     Helper::makeMovie ( node, site );
+
+    // Is it a vimeo movie?
+    Helper::makeVimeo ( node, site );
 
     // Loop through the children.
     typedef XmlTree::Node::Children Children;

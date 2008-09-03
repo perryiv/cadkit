@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="plug: CFD Visualization"
-	ProjectGUID="{7BA257F7-FBFE-46C3-B287-E81515C510FA}"
+	Name="plug: Vapor Intrusion GUI Delegate Qt"
+	ProjectGUID="{63311CAE-6675-49EB-970E-5CB995223DF2}"
+	RootNamespace="plug: Vapor Intrusion GUI Delegate Qt"
 	>
 	<Platforms>
 		<Platform
@@ -39,14 +40,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/CFDViz/RCVV.tlb"
+				TypeLibraryName=".\Debug/QtVaporIntrusionGUIDelegate.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_CFD_VIZ;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(OSG_INC_DIR);$(QTDIR)\include"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_VAPOR_INTRUSION_GUI_DELEGATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -79,15 +80,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/CFDViz.plugd"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/QtVaporIntrusionGUIDelegate.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug\CFDViz/RCVVd.pdb"
-				ImportLibrary=".\Debug\CFDViz/Modeld.lib"
+				ProgramDatabaseFile=".\Debug\QtVaporIntrusionGUIDelegated.pdb"
+				ImportLibrary=".\Debug\QtVaporIntrusionGUIDelegated.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +141,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/CFDViz/Model.tlb"
+				TypeLibraryName=".\Release/QtVaporIntrusionGUIDelegate.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../../;../../;$(OSG_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
-				PreprocessorDefinitions="_USUL_TRACE;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_CFD_VIZ;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="$(BOOST_ROOT_DIR),$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(OSG_INC_DIR);$(QTDIR)\include"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_VAPOR_INTRUSION_GUI_DELEGATE"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -178,14 +179,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/CFDViz.plug"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib"
+				OutputFile="$(CADKIT_BIN_DIR)/QtVaporIntrusionGUIDelegate.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
 				ModuleDefinitionFile="Export.def"
-				ProgramDatabaseFile=".\Release\CFDViz/Model.pdb"
-				ImportLibrary=".\Release\CFDViz/Model.lib"
+				ProgramDatabaseFile=".\Release\QtVaporIntrusionGUIDelegate.pdb"
+				ImportLibrary=".\Release\QtVaporIntrusionGUIDelegate.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -223,31 +224,31 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\CFDVizComponent.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CFDVizComponent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CFDVizDocument.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CFDVizDocument.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CFDVizFactory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CFDVizFactory.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VaporIntrusionGUIDelegateComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VaporIntrusionGUIDelegateComponent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VaporIntrusionGUIDelegateFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VaporIntrusionGUIDelegateFactory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\VaporIntrusionGUIViewer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\VaporIntrusionGUIViewer.h"
 					>
 				</File>
 			</Filter>
@@ -256,18 +257,6 @@
 				>
 				<File
 					RelativePath="Export.def"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Commands"
-				>
-				<File
-					RelativePath=".\CFDAnimation.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CFDAnimation.h"
 					>
 				</File>
 			</Filter>

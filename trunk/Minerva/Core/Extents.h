@@ -38,7 +38,7 @@ public:
   Extents& operator = ( const Extents& rhs );
 
   /// Does the extents contain vertex v?
-  bool                  contains ( const Vertex& v );
+  bool                  contains ( const Vertex& v ) const;
   
   /// Get the center of the extents.
   Vertex                center() const;
@@ -342,7 +342,7 @@ template < class VertexType > inline bool ThisClass::intersects ( const Extents&
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class VertexType > inline bool ThisClass::contains ( const Vertex& v )
+template < class VertexType > inline bool ThisClass::contains ( const Vertex& v ) const
 {
   const Vertex mn ( this->minimum() );
   const Vertex mx ( this->maximum() );

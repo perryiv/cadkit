@@ -125,15 +125,15 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     parent->addWindow ( xyzView.get() );
 
     // Add XY window
-    xyView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
     parent->addWindow ( xyView.get() );
 
     // Add XZ window
-    xzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
     parent->addWindow ( xzView.get() );
 
     // Add YZ window
-    yzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    yzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
     parent->addWindow ( yzView.get() );
 
     // Build the scene.
@@ -147,10 +147,16 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     }
 
     // Set the titles
-    xyzView->setTitle( "XYZ" );
-    xyView->setTitle ( "XY" );
-    xzView->setTitle ( "XZ" );
-    yzView->setTitle ( "YZ" );
+    xyzView->setTitle( "XYZ -- 3D View" );
+
+    xyView->setTitle ( "XY -- Front View" );
+    xyView->camera( OsgTools::Render::Viewer::FRONT );
+
+    xzView->setTitle ( "XZ -- Top View" );
+    xzView->camera( OsgTools::Render::Viewer::TOP );
+
+    yzView->setTitle ( "YZ -- Left View" );
+    yzView->camera( OsgTools::Render::Viewer::LEFT );
 
     // Get the bounds of the parent window
     int w ( parent->width()  * 0.5 );
@@ -173,7 +179,7 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     xyView->show();
     xzView->show();
     yzView->show();
-  }
+}
 }
 
 

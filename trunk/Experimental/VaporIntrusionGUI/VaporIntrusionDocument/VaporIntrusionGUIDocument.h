@@ -35,6 +35,7 @@
 #include "osg/Image"
 #include "osg/LineSegment"
 #include "osg/Group"
+#include "osg/Material"
 
 #include <string>
 #include <memory>
@@ -48,7 +49,8 @@ class VaporIntrusionGUIDocument : public Usul::Documents::Document,
                                   
 {
 public:
- 
+
+  
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
@@ -56,7 +58,12 @@ public:
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
-  
+  typedef osg::Vec4 Color;
+  typedef osg::Vec4 ValueType;
+  typedef std::pair< ValueType, GroupPtr > Cube;
+  typedef std::vector< std::vector< std::vector< Cube > > > Cubes;
+
+
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( VaporIntrusionGUIDocument );
 
@@ -102,9 +109,16 @@ protected:
   /// Usul::Interfaces::IUpdateListener
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
 
-  
+  // Build the scene in the read
+  void                        _buildScene( Usul::Interfaces::IUnknown *caller = 0x0 );
+
+  // Test method for multiview verification
+  osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c );
 
 private:
+    GroupPtr                  _root;
+    Usul::Math::Vec3ui        _dimensions;
+    Cubes                     _cubes;
     
   
 };

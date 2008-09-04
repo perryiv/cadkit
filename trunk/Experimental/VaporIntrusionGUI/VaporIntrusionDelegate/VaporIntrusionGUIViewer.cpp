@@ -15,7 +15,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 VaporIntrusionGUIViewer::VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller ) :
-BaseClass( doc, format, parent, caller )
+BaseClass( doc, format, parent, caller ),
+_cameraDirection( OsgTools::Render::Viewer::FRONT )
 {
 }
 
@@ -30,6 +31,11 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( false == viewer.valid() )
     return;
+
+  if ( 0x0 == event )
+    return;
+
+  //BaseClass::mouseMoveEvent( event );
 }
 
 
@@ -44,6 +50,11 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( false == viewer.valid() )
     return;
+
+  if ( 0x0 == event )
+    return;
+
+  //BaseClass::mousePressEvent( event );
 }
 
 
@@ -58,6 +69,11 @@ void VaporIntrusionGUIViewer::mouseReleaseEvent ( QMouseEvent * event )
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( false == viewer.valid() )
     return;
+
+  if ( 0x0 == event )
+    return;
+
+  //BaseClass::mouseReleaseEvent( event );
 }
 
 
@@ -73,6 +89,10 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   if ( false == viewer.valid() )
     return;
 
+  if ( 0x0 == event )
+    return;
+
+  BaseClass::wheelEvent( event );
   
 }
 
@@ -89,6 +109,10 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent *event )
   if ( false == viewer.valid() )
     return;
 
+  if ( 0x0 == event )
+    return;
+
+  BaseClass::keyPressEvent( event );
 }
 
 
@@ -106,6 +130,41 @@ void VaporIntrusionGUIViewer::keyReleaseEvent ( QKeyEvent * event )
 
   if ( 0x0 == event )
     return;
+
+  BaseClass::keyReleaseEvent( event );
  
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the Axis
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::camera ( CameraOption option )
+{
+  
+  _cameraDirection = option;
+
+  // Get the viewer
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
+  // Set the camera viewing direction
+  viewer->camera( _cameraDirection );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the Axis
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIViewer::CameraOption VaporIntrusionGUIViewer::camera ()
+{
+  
+  return _cameraDirection;
 }
 

@@ -42,11 +42,13 @@ public:
   /// Typedefs.
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
-  typedef VaporIntrusionGUIViewer QtViewer;
+  typedef VaporIntrusionGUIViewer VIGUIViewer;
+  typedef CadKit::Helios::Views::OSG::Viewer QtViewer;
 
   // Non-ref'ing smart-pointers that throw if given null.
   typedef Usul::Pointers::Configs::NoRefCountingNullOk Policy;
   typedef Usul::Pointers::SmartPointer < QtViewer, Policy > QtViewerPtr;
+  typedef Usul::Pointers::SmartPointer < VIGUIViewer, Policy > VIGUIViewerPtr;
 
 
   /// Smart-pointer definitions.
@@ -81,9 +83,9 @@ protected:
 
 private:
   QtViewerPtr xyzView;
-  QtViewerPtr xyView;
-  QtViewerPtr xzView;
-  QtViewerPtr yzView;
+  VIGUIViewerPtr xyView;
+  VIGUIViewerPtr xzView;
+  VIGUIViewerPtr yzView;
 
 
 };

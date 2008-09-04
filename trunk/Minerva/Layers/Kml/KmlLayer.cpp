@@ -523,8 +523,8 @@ KmlLayer::Geometry* KmlLayer::_parsePolygon ( const XmlTree::Node& node, Style *
   typedef Minerva::Core::Data::LineStyle LineStyle;
   typedef Minerva::Core::Data::PolyStyle PolyStyle;
   
-  PolyStyle::RefPtr polyStyle ( 0x0 != style->polystyle() ? style->polystyle() : 0x0 );
-  LineStyle::RefPtr lineStyle ( 0x0 != style->linestyle() ? style->linestyle() : 0x0 );
+  PolyStyle::RefPtr polyStyle ( ( 0x0 != style ) && ( 0x0 != style->polystyle() ) ? style->polystyle() : 0x0 );
+  LineStyle::RefPtr lineStyle ( ( 0x0 != style ) && ( 0x0 != style->linestyle() ) ? style->linestyle() : 0x0 );
 
   // Make the data object.
   Minerva::Core::Data::Polygon::RefPtr polygon ( Factory::instance().createPolygon ( node ) );
@@ -551,7 +551,7 @@ KmlLayer::Geometry* KmlLayer::_parseLineString ( const XmlTree::Node& node, Styl
 {
   typedef Minerva::Core::Data::LineStyle LineStyle;
   
-  LineStyle::RefPtr lineStyle ( 0x0 != style->linestyle() ? style->linestyle() : 0x0 );
+  LineStyle::RefPtr lineStyle ( ( 0x0 != style ) && ( 0x0 != style->linestyle() ) ? style->linestyle() : 0x0 );
   
   Minerva::Core::Data::Line::RefPtr line ( Factory::instance().createLine ( node ) );
   

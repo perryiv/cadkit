@@ -138,6 +138,9 @@ GenericCommand < ExecuteFunctor, EnableFunctor > *genericCommand ( const std::st
 #define USUL_MAKE_COMMAND(name,icon,object,fun) \
 Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::memberFunction<void> ( object, fun ), Usul::Commands::TrueFunctor() )
 
+#define USUL_MAKE_COMMAND_ENABLE(name,icon,object,fun,enable_fun) \
+Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::memberFunction<void> ( object, fun ), Usul::Adaptors::memberFunction<bool> ( object, enable_fun ) )
+
 #define USUL_MAKE_COMMAND_ARG0(name,icon,object,fun,arg0) \
   Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::bind1<void> ( arg0, Usul::Adaptors::memberFunction<void> ( object, fun ) ), Usul::Commands::TrueFunctor() )
 

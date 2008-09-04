@@ -115,6 +115,8 @@ public:
 
   /// Called when the document is modified (Usul::Interfaces::IModifiedObserver).
   virtual void                            subjectModified ( Usul::Interfaces::IUnknown *caller = 0x0 );
+  
+  virtual QSize                           sizeHint() const;
 
   /// Get/Set render loop flag (IRenderLoop).
   virtual void                            renderLoop ( bool b );

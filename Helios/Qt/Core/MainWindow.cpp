@@ -561,6 +561,16 @@ void MainWindow::_buildMenuKitMenu()
     }
     USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1878677719" );
   }
+  
+  // Window menu.
+  {
+    MenuKit::Menu::RefPtr window ( new MenuKit::Menu ( "&Window" ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "&Cascade", "", this, &MainWindow::_childWindowsCascade, &MainWindow::_childWindowsHas        ) ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "&Tile",    "", this, &MainWindow::_childWindowsTile,    &MainWindow::_childWindowsHas        ) ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "Close Active Window", "", this, &MainWindow::_childWindowsCloseActive, &MainWindow::_childWindowsHas ) ) );
+    window->append ( new MenuKit::Button ( USUL_MAKE_COMMAND_ENABLE ( "Close All Windows",   "", this, &MainWindow::_childWindowsCloseAll,    &MainWindow::_childWindowsHas ) ) );
+    _menu->append ( window );
+  }
 
   // Add help menu.
   {
@@ -2055,4 +2065,85 @@ std::string MainWindow::settingsFileName() const
 std::string MainWindow::question ( const std::string &buttons, const std::string &title, const std::string &text )
 {
   return QtTools::question ( this, buttons, title, text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cascade all child windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_childWindowsCascade()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+
+  if ( 0x0 != _workSpace )
+  {
+    _workSpace->cascade();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tile all child windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_childWindowsTile()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  
+  if ( 0x0 != _workSpace )
+    _workSpace->tile();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Close active window.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_childWindowsCloseActive()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  
+  if ( 0x0 != _workSpace )
+    _workSpace->closeActiveWindow();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Close all child windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::_childWindowsCloseAll()
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return );
+  
+  if ( 0x0 != _workSpace )
+    _workSpace->closeAllWindows();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does we have child windows.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MainWindow::_childWindowsHas() const
+{
+  USUL_TRACE_SCOPE;
+  USUL_THREADS_ENSURE_GUI_THREAD ( return false );
+  
+  return ( 0x0 != _workSpace ? !_workSpace->windowList().empty() : false );
 }

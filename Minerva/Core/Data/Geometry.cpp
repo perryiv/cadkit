@@ -308,7 +308,7 @@ void Geometry::spatialOffset( const Point& value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Math::Vec3d Geometry::spatialOffset( ) const
+Usul::Math::Vec3d Geometry::spatialOffset() const
 {
   Guard guard ( this->mutex() );
   return _offset;
@@ -334,7 +334,7 @@ void Geometry::dirty ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Geometry::dirty () const
+bool Geometry::dirty() const
 {
   Guard guard ( this->mutex() );
   return _dirty;
@@ -378,7 +378,7 @@ osg::Node* Geometry::buildTiledScene ( const Extents& extents, unsigned int leve
     }
   }
   
-  this->dirty( false );
+  this->dirty ( false );
   
   return node.release();
 }

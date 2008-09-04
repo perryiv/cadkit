@@ -25,22 +25,28 @@ class VaporIntrusionGUIViewer : public CadKit::Helios::Views::OSG::Viewer
 
 public:
   typedef CadKit::Helios::Views::OSG::Viewer BaseClass;
+  typedef OsgTools::Render::Viewer::CameraOption CameraOption;
   VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller );
   //virtual ~VaporIntrusionGUIViewer ();
+
+  void                    camera( CameraOption option );
+  CameraOption            camera();
 
 protected:
 
   // Override these events.
  
-  virtual void                            mouseMoveEvent ( QMouseEvent * );
-  virtual void                            mousePressEvent ( QMouseEvent * );
-  virtual void                            mouseReleaseEvent ( QMouseEvent * );
-  virtual void                            keyPressEvent ( QKeyEvent * );
-  virtual void                            keyReleaseEvent ( QKeyEvent * );
-  virtual void                            wheelEvent ( QWheelEvent * );
+  virtual void            mouseMoveEvent ( QMouseEvent * );
+  virtual void            mousePressEvent ( QMouseEvent * );
+  virtual void            mouseReleaseEvent ( QMouseEvent * );
+  virtual void            keyPressEvent ( QKeyEvent * );
+  virtual void            keyReleaseEvent ( QKeyEvent * );
+  virtual void            wheelEvent ( QWheelEvent * );
+
+  void                    _initializeViewDirection();
 
 private:
-  
+  CameraOption            _cameraDirection;          
 
 };
 

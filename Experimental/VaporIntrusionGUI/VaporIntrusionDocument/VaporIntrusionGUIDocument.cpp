@@ -32,6 +32,7 @@
 #include "OsgTools/Group.h"
 #include "OsgTools/Convert.h"
 #include "OsgTools/State/StateSet.h"
+#include "OsgTools/Box.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
@@ -63,8 +64,10 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDocument, VaporIntrusionGUIDo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() : 
-  BaseClass ( "Vapor Intrusion GUI" )
+VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor Intrusion GUI" ),
+  _root( 0x0 ),
+  _dimensions( 10, 10, 10 ),
+  _cubes()
 {
   USUL_TRACE_SCOPE;
    
@@ -270,8 +273,11 @@ VaporIntrusionGUIDocument::Filters VaporIntrusionGUIDocument::filtersInsert() co
 osg::Node *VaporIntrusionGUIDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
 {
   USUL_TRACE_SCOPE;
-  GroupPtr group ( new osg::Group );
-  return group.release();
+  if( false == _root.valid() )
+  {
+    this->_buildScene( caller );
+  }
+  return _root.get();
 }
 
 
@@ -286,4 +292,199 @@ void VaporIntrusionGUIDocument::updateNotify ( Usul::Interfaces::IUnknown *calle
 {
   USUL_TRACE_SCOPE;
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
+{
+  if( false == _root.valid() )
+  {
+    _root = new osg::Group;
+  }
+
+  // Remove all the children
+  _root->removeChildren( 0, _root->getNumChildren() );
+
+  // Set the X size to the proper dimensions
+  _cubes.resize( _dimensions[0] );
+
+  // Loop through the dimensions and build the cube
+  for( unsigned int x = 0; x < _dimensions[0]; ++x )
+  {
+    // Set the X size to the proper dimensions
+    _cubes.at( x ).resize( _dimensions[1] );
+
+    for( unsigned int y = 0; y < _dimensions[1]; ++y )
+    {
+      // Set the X size to the proper dimensions
+      _cubes.at( x ).at( y ).resize( _dimensions[2] );
+      for( unsigned int z = 0; z < _dimensions[2]; ++z )
+      {
+        // Set the default ValueType
+        Color c ( 0.5, 0.5, 0.5, 0.1 );
+        osg::ref_ptr< osg::Material > material ( new osg::Material );
+        material->setAmbient( osg::Material::FRONT_AND_BACK, c );
+        material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
+        _cubes.at( x ).at ( y ).at ( z ).first = c;
+
+        // create the points for the cube
+        osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
+        p->push_back( osg::Vec3( float( x )    , float( y )    , float( z ) ) );
+        p->push_back( osg::Vec3( float( x + 1 ), float( y )    , float( z ) ) );
+        p->push_back( osg::Vec3( float( x )    , float( y + 1 ), float( z ) ) );
+        p->push_back( osg::Vec3( float( x + 1 ), float( y + 1 ), float( z ) ) );
+        p->push_back( osg::Vec3( float( x )    , float( y )    , float( z + 1 ) ) );
+        p->push_back( osg::Vec3( float( x + 1 ), float( y )    , float( z + 1 ) ) );
+        p->push_back( osg::Vec3( float( x )    , float( y + 1 ), float( z + 1 ) ) );
+        p->push_back( osg::Vec3( float( x + 1 ), float( y + 1 ), float( z + 1 ) ) );
+
+        // build the sub cube
+        osg::ref_ptr< osg::Group > group ( new osg::Group );
+        group->addChild( this->_buildTestCube( p.get(), c ) );
+
+        // set the material of the cube
+        // Set the material properties
+        OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
+        OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
+
+        // Set the cube
+        _cubes.at( x ).at ( y ).at ( z ).second = group.get();
+
+        // Add the cubre to the scene
+        _root->addChild( _cubes.at( x ).at( y ).at( z ).second.get() );
+      }
+
+    }
+
+  }
+
+  //_root->addChild( this->_buildTestCube() );
+
+   
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Test method for multiview verification
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Color c )
+{
+  GroupPtr group ( new osg::Group );
+
+  // Create the vertices
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec3Array > normals ( new osg::Vec3Array );
+  osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
+
+  // Populate the vertices with a unit cube
+#if 1
+  // front face
+  vertices->push_back( points->at( 4 ) );vertices->push_back( points->at( 5 ) );vertices->push_back( points->at( 7 ) );vertices->push_back( points->at( 6 ) );
+  // back face
+  vertices->push_back( points->at( 0 ) );vertices->push_back( points->at( 2 ) );vertices->push_back( points->at( 3 ) );vertices->push_back( points->at( 1 ) );
+  // top face
+  vertices->push_back( points->at( 6 ) );vertices->push_back( points->at( 7 ) );vertices->push_back( points->at( 3 ) );vertices->push_back( points->at( 2 ) );
+  // bottom face
+  vertices->push_back( points->at( 4 ) );vertices->push_back( points->at( 0 ) );vertices->push_back( points->at( 1 ) );vertices->push_back( points->at( 5 ) );
+  // right face
+  vertices->push_back( points->at( 7 ) );vertices->push_back( points->at( 5 ) );vertices->push_back( points->at( 1 ) );vertices->push_back( points->at( 3 ) );
+  // left face
+  vertices->push_back( points->at( 6 ) );vertices->push_back( points->at( 2 ) );vertices->push_back( points->at( 0 ) );vertices->push_back( points->at( 4 ) );
+#else
+  osg::Vec3 p0 ( 0.0, 0.0, 0.0 );
+  osg::Vec3 p1 ( 1.0, 0.0, 0.0 );
+  osg::Vec3 p2 ( 0.0, 1.0, 0.0 );
+  osg::Vec3 p3 ( 1.0, 1.0, 0.0 );
+  osg::Vec3 p4 ( 0.0, 0.0, 1.0 );
+  osg::Vec3 p5 ( 1.0, 0.0, 1.0 );
+  osg::Vec3 p6 ( 0.0, 1.0, 1.0 );
+  osg::Vec3 p7 ( 1.0, 1.0, 1.0 );
+  // front face
+  vertices->push_back( p4 );vertices->push_back( p5 );vertices->push_back( p7 );vertices->push_back( p6 );
+  // back face
+  vertices->push_back( p0 );vertices->push_back( p2 );vertices->push_back( p3 );vertices->push_back( p1 );
+  // top face
+  vertices->push_back( p6 );vertices->push_back( p7 );vertices->push_back( p3 );vertices->push_back( p2 );
+  // bottom face
+  vertices->push_back( p4 );vertices->push_back( p0 );vertices->push_back( p1 );vertices->push_back( p5 );
+  // right face
+  vertices->push_back( p7 );vertices->push_back( p5 );vertices->push_back( p1 );vertices->push_back( p3 );
+  // left face
+  vertices->push_back( p6 );vertices->push_back( p2 );vertices->push_back( p0 );vertices->push_back( p4 );
+#endif
+
+  // Normals for each face
+  osg::Vec3 nfr ( 0.0, 0.0, 1.0 );
+  osg::Vec3 nba ( 0.0, 0.0, -1.0 );
+  osg::Vec3 nto ( 0.0, 1.0, 0.0 );
+  osg::Vec3 nbo ( 0.0, -1.0, 0.0 );
+  osg::Vec3 nri ( 1.0, 0.0, 0.0 );
+  osg::Vec3 nle ( -1.0, 0.0, 0.0 );
+
+  normals->push_back( nfr );normals->push_back( nfr );normals->push_back( nfr );normals->push_back( nfr );
+  normals->push_back( nba );normals->push_back( nba );normals->push_back( nba );normals->push_back( nba ); 
+  normals->push_back( nto );normals->push_back( nto );normals->push_back( nto );normals->push_back( nto );
+  normals->push_back( nbo );normals->push_back( nbo );normals->push_back( nbo );normals->push_back( nbo );
+  normals->push_back( nri );normals->push_back( nri );normals->push_back( nri );normals->push_back( nri );
+  normals->push_back( nle );normals->push_back( nle );normals->push_back( nle );normals->push_back( nle );
+  
+
+  // Geometry
+  osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+
+  // Set the vertices
+  geometry->setVertexArray( vertices.get() );
+
+  // set the normals and set binding to per vertex
+  geometry->setNormalArray( normals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+    // Colors
+
+#if 1
+  colors->push_back( c );
+  // set the colors and set binding to per vertex
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+#else
+  osg::Vec4 c0 ( 1.0, 0.0, 0.0, 1.0 );
+  osg::Vec4 c1 ( 0.0, 1.0, 0.0, 1.0 );
+  osg::Vec4 c2 ( 1.0, 1.0, 0.0, 1.0 );
+  osg::Vec4 c3 ( 0.0, 0.0, 1.0, 1.0 );
+  osg::Vec4 c4 ( 1.0, 0.0, 1.0, 1.0 );
+  osg::Vec4 c5 ( 0.0, 1.0, 1.0, 1.0 );
+  colors->push_back( c0 );colors->push_back( c0 );colors->push_back( c0 );colors->push_back( c0 );
+  colors->push_back( c1 );colors->push_back( c1 );colors->push_back( c1);colors->push_back( c1 );
+  colors->push_back( c2 );colors->push_back( c2 );colors->push_back( c2 );colors->push_back( c2 );
+  colors->push_back( c3 );colors->push_back( c3 );colors->push_back( c3 );colors->push_back( c3 );
+  colors->push_back( c4 );colors->push_back( c4 );colors->push_back( c4 );colors->push_back( c4 );
+  colors->push_back( c5 );colors->push_back( c5 );colors->push_back( c5 );colors->push_back( c5 );
+
+  // set the colors and set binding to per vertex
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
+#endif
+
+  
+
+  // Add the primitive
+  geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
+  
+  // Create the geode and add the geometry
+  osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable( geometry.get() );
+
+  // Add the geode to the group
+  group->addChild( geode.get() );
+
+  return group.release();
 }

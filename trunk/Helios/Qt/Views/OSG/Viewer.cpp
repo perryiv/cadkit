@@ -326,6 +326,9 @@ void Viewer::paintEvent ( QPaintEvent * event )
 void Viewer::resizeEvent ( QResizeEvent * event )
 {
   USUL_TRACE_SCOPE;
+  
+  BaseClass::resizeEvent ( event );
+  
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( true == viewer.valid() )
   {
@@ -422,11 +425,11 @@ void Viewer::_initPlacement()
   if ( QWidget* parent = dynamic_cast < QWidget* > ( this->parent() ) )
   {
     // Shortcuts.
-    double percent ( 0.8 );
-    int width  ( parent->width() );
-    int height ( parent->height() );
-    int w ( static_cast <int> ( percent * width ) );
-    int h ( static_cast <int> ( percent * height ) );
+    const double percent ( 0.8 );
+    const int width  ( parent->width() );
+    const int height ( parent->height() );
+    const int w ( static_cast <int> ( percent * width ) );
+    const int h ( static_cast <int> ( percent * height ) );
 
     // Declare the placement static.
     static int x ( 0 );
@@ -449,6 +452,30 @@ void Viewer::_initPlacement()
 
     this->adjustSize();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Preferred size.  Needed for cascading.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+QSize Viewer::sizeHint() const
+{
+  if ( QWidget* parent = dynamic_cast < QWidget* > ( this->parent() ) )
+  {
+    // Shortcuts.
+    const double percent ( 0.8 );
+    const int width  ( parent->width() );
+    const int height ( parent->height() );
+    const int w ( static_cast <int> ( percent * width ) );
+    const int h ( static_cast <int> ( percent * height ) );
+    
+    return QSize ( w, h );
+  }
+
+  return QSize ( -1, -1 );
 }
 
 

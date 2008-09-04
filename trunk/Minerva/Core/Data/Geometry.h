@@ -118,7 +118,7 @@ protected:
     }
     return 0.0;
   }
-  
+
   template<class Vertex,class Grid>
   double                _elevation2 ( const Vertex& point, const Grid& grid ) const
   {

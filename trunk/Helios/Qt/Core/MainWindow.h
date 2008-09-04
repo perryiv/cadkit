@@ -183,6 +183,12 @@ protected:
   void                              _buildProgressBarWindow();
   void                              _buildToolBar();
   void                              _buildQtToolBar( const MenuKit::Menu& toolBar );
+  
+  void                              _childWindowsCascade();
+  void                              _childWindowsTile();
+  void                              _childWindowsCloseActive();
+  void                              _childWindowsCloseAll();
+  bool                              _childWindowsHas() const;
 
   void                              _clearDocuments();
   void                              _clearMenuBar();

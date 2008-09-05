@@ -101,6 +101,8 @@ Usul::Interfaces::IUnknown *VaporIntrusionGUIDocument::queryInterface ( unsigned
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
+  case Usul::Interfaces::IVaporIntrusionGUI::IID:
+    return static_cast < Usul::Interfaces::IVaporIntrusionGUI* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -488,3 +490,53 @@ osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Co
 
   return group.release();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Test method for multiview verification
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::highlightCells( Usul::Math::Vec3ui set, unsigned int depth )
+{
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the transparency
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha )
+{
+  OsgTools::State::StateSet::setAlpha( _cubes.at( x ).at( y ).at( z ).second.get(), alpha );
+  this->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the transparency
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setAlpha( float alpha )
+{
+  OsgTools::State::StateSet::setAlpha( _root.get(), alpha );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the dimensions of the space
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec3ui VaporIntrusionGUIDocument::getDimensions()
+{
+  return _dimensions;
+}
+

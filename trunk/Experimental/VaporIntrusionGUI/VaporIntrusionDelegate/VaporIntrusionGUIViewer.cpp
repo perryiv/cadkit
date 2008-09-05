@@ -8,6 +8,25 @@
 
 #include "VaporIntrusionGUIViewer.h"
 
+#include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+
+#include "QtTools/Color.h"
+#include "QtTools/Menu.h"
+#include "QtTools/Question.h"
+
+#include "QtCore/QUrl"
+#include "QtCore/QTimer"
+#include "QtGui/QResizeEvent"
+#include "QtGui/QDialog"
+#include "QtGui/QHBoxLayout"
+#include "QtGui/QVBoxLayout"
+#include "QtGui/QPushButton"
+#include "QtGui/QSpinBox"
+#include "QtGui/QLabel"
+#include "QtGui/QFileDialog"
+#include "QtGui/QMessageBox"
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -16,7 +35,11 @@
 
 VaporIntrusionGUIViewer::VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller ) :
 BaseClass( doc, format, parent, caller ),
-_cameraDirection( OsgTools::Render::Viewer::FRONT )
+_cameraDirection( OsgTools::Render::Viewer::FRONT ),
+_set( 0, 0, 0 ),
+_depth( 0 ),
+_mouseWheelPosition( 0 ),
+_mouseWheelSensitivity( 10.0f )
 {
 }
 
@@ -92,7 +115,35 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   if ( 0x0 == event )
     return;
 
-  BaseClass::wheelEvent( event );
+  // Query the active document
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( Usul::Interfaces::IVaporIntrusionGUI::IID ) );
+  if( false == document.valid() )
+    return;
+
+  // Get the dimensions
+  Usul::Math::Vec3ui dimensions ( document->getDimensions() );
+
+  // Adjust the mouse wheel state.
+  int delta ( event->delta() );
+  unsigned int oldDepth ( _depth );
+
+  // set the amount to move by
+  if( delta < 0 && _depth > 0 )
+    --_depth;
+  if( delta > 0 && _depth < dimensions[0] - 1 )
+    ++_depth;
+ 
+
+  for( unsigned int i = 0; i < dimensions[1]; ++i )
+  {
+    for( unsigned int j = 0; j < dimensions[2]; ++j )
+    {
+      document->setAlpha( oldDepth, i, j, 0.1f );
+      document->setAlpha( _depth, i, j, 0.8f );
+    }
+  }
+
+  //BaseClass::wheelEvent( event );
   
 }
 
@@ -163,8 +214,31 @@ void VaporIntrusionGUIViewer::camera ( CameraOption option )
 ///////////////////////////////////////////////////////////////////////////////
 
 VaporIntrusionGUIViewer::CameraOption VaporIntrusionGUIViewer::camera ()
-{
-  
+{  
   return _cameraDirection;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::set( Usul::Math::Vec3ui s )
+{
+  _set = s;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec3ui VaporIntrusionGUIViewer::set()
+{
+  return _set;
+}

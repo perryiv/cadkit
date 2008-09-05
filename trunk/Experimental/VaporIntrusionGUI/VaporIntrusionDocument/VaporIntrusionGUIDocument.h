@@ -22,13 +22,14 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+
 #include "Usul/Jobs/Job.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Policies/Update.h"
-
 
 #include "XmlTree/Document.h"
 
@@ -45,7 +46,8 @@ namespace osg { class Node; }
 
 class VaporIntrusionGUIDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
-                                  public Usul::Interfaces::IUpdateListener
+                                  public Usul::Interfaces::IUpdateListener,
+                                  public Usul::Interfaces::IVaporIntrusionGUI
                                   
 {
 public:
@@ -96,6 +98,13 @@ public:
 
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
+
+  /// Usul::Interfaces::IVaporIntrusionGUI
+  virtual void highlightCells( Usul::Math::Vec3ui set, unsigned int depth );
+  virtual void setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha );
+  virtual void setAlpha( float alpha );
+  virtual Usul::Math::Vec3ui getDimensions();
+  
 
 protected:
 

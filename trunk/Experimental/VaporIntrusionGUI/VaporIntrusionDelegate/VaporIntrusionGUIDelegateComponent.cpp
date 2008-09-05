@@ -152,14 +152,17 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     xyView->setTitle ( "XY -- Front View" );
     xyView->camera( OsgTools::Render::Viewer::FRONT );
     xyView->set( Usul::Math::Vec3ui( 1, 1, 0 ) );
+    xyView->id( 1 );
 
     xzView->setTitle ( "XZ -- Top View" );
     xzView->camera( OsgTools::Render::Viewer::TOP );
     xzView->set( Usul::Math::Vec3ui( 1, 0, 1 ) );
+    xzView->id( 2 );
 
     yzView->setTitle ( "YZ -- Left View" );
     yzView->camera( OsgTools::Render::Viewer::LEFT );
     yzView->set( Usul::Math::Vec3ui( 0, 1, 1 ) );
+    yzView->id( 3 );
 
     // Get the bounds of the parent window
     int w ( parent->width()  * 0.5 );
@@ -195,13 +198,13 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
 void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller)
 {
   // Make the menu.
-  MenuKit::Menu::RefPtr windowMenu ( new MenuKit::Menu ( "Window" ) );
+  //MenuKit::Menu::RefPtr windowMenu ( new MenuKit::Menu ( "Window" ) );
   
   // Add Window arrange button
-  windowMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Arrange", Usul::Adaptors::bind1<void> ( caller,  Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::tile )  ), Usul::Commands::TrueFunctor() ) ) );
+  //windowMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Arrange", Usul::Adaptors::bind1<void> ( caller,  Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::tile )  ), Usul::Commands::TrueFunctor() ) ) );
   
   // Add the window menu to the main menu
-  menu.append( windowMenu.get() );
+  //menu.append( windowMenu.get() );
 }
 
 

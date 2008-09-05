@@ -27,6 +27,8 @@
 #include "QtGui/QFileDialog"
 #include "QtGui/QMessageBox"
 
+Usul::Types::Uint32 VaporIntrusionGUIViewer::_selectedViewID   ( 0 );
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -39,7 +41,8 @@ _cameraDirection( OsgTools::Render::Viewer::FRONT ),
 _set( 0, 0, 0 ),
 _depth( 0 ),
 _mouseWheelPosition( 0 ),
-_mouseWheelSensitivity( 10.0f )
+_mouseWheelSensitivity( 10.0f ),
+_id( 0 )
 {
 }
 
@@ -123,23 +126,97 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   // Get the dimensions
   Usul::Math::Vec3ui dimensions ( document->getDimensions() );
 
+  // If we weren't the last view window to run reset the alpha for the scene
+  // and set the current running view tag to our id
+  if( this->id() != _selectedViewID )
+  {
+    for( unsigned int x = 0; x < dimensions[0]; ++x )
+    {
+      for( unsigned int y = 0; y < dimensions[1]; ++y )
+      {
+        for( unsigned int z = 0; z < dimensions[2]; ++z )
+        {
+          document->setAlpha( x, y, z, 0.1f );
+          _selectedViewID = this->id();
+        }
+      }
+    }
+  }
+
   // Adjust the mouse wheel state.
   int delta ( event->delta() );
   unsigned int oldDepth ( _depth );
 
-  // set the amount to move by
-  if( delta < 0 && _depth > 0 )
-    --_depth;
-  if( delta > 0 && _depth < dimensions[0] - 1 )
-    ++_depth;
- 
+  // i,j dimensions
+  unsigned int iDim ( 0 );
+  unsigned int jDim( 0 );
 
-  for( unsigned int i = 0; i < dimensions[1]; ++i )
+  // Top view
+  if( _cameraDirection == RenderViewer::TOP )
   {
-    for( unsigned int j = 0; j < dimensions[2]; ++j )
+    iDim = dimensions[0];
+    jDim = dimensions[2];
+
+    // set the amount to move by
+    if( delta < 0 && _depth > 0 )
+      --_depth;
+    if( delta > 0 && _depth < dimensions[1] - 1 )
+      ++_depth;
+
+  }
+
+  // Left View
+  else if( _cameraDirection == RenderViewer::LEFT )
+  {
+    iDim = dimensions[1];
+    jDim = dimensions[2];
+
+    // set the amount to move by
+    if( delta < 0 && _depth > 0 )
+      --_depth;
+    if( delta > 0 && _depth < dimensions[0] - 1 )
+      ++_depth;
+  }
+
+  // Front ( and default ) View
+  else
+  {
+    iDim = dimensions[0];
+    jDim = dimensions[1];
+
+    // set the amount to move by
+    if( delta < 0 && _depth > 0 )
+      --_depth;
+    if( delta > 0 && _depth < dimensions[2] - 1 )
+      ++_depth;
+  }
+
+  // Set and unset the alpha for the active selection
+  for( unsigned int i = 0; i < iDim; ++i )
+  {
+    for( unsigned int j = 0; j < jDim; ++j )
     {
-      document->setAlpha( oldDepth, i, j, 0.1f );
-      document->setAlpha( _depth, i, j, 0.8f );
+
+      // Top View
+      if( _cameraDirection == RenderViewer::TOP )
+      {
+        document->setAlpha( i, oldDepth, j, 0.1f );
+        document->setAlpha( i, _depth, j, 0.8f );
+      }
+
+      // Left View
+      else if( _cameraDirection == RenderViewer::LEFT )
+      {
+        document->setAlpha( oldDepth, i, j, 0.1f );
+        document->setAlpha( _depth, i, j, 0.8f );
+      }
+
+      // Front (default) View
+      else
+      {
+        document->setAlpha( i, j, oldDepth, 0.1f );
+        document->setAlpha( i, j, _depth, 0.8f );
+      }
     }
   }
 
@@ -242,3 +319,28 @@ Usul::Math::Vec3ui VaporIntrusionGUIViewer::set()
 {
   return _set;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::id( Usul::Types::Uint32 i )
+{
+  _id = i;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the set
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Types::Uint32 VaporIntrusionGUIViewer::id()
+{
+  return _id;
+}
+

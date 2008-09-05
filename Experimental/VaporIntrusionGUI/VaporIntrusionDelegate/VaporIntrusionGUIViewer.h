@@ -18,6 +18,8 @@
 
 #include "Helios/Qt/Views/OSG/Viewer.h"
 
+#include "Usul/Math/Vector3.h"
+
 #include "OsgTools/Render/Viewer.h"
 
 class VaporIntrusionGUIViewer : public CadKit::Helios::Views::OSG::Viewer
@@ -31,6 +33,9 @@ public:
 
   void                    camera( CameraOption option );
   CameraOption            camera();
+
+  void                    set( Usul::Math::Vec3ui s );
+  Usul::Math::Vec3ui      set();
 
 protected:
 
@@ -47,6 +52,10 @@ protected:
 
 private:
   CameraOption            _cameraDirection;          
+  Usul::Math::Vec3ui      _set;
+  unsigned int            _depth;
+  int                     _mouseWheelPosition;
+  float                   _mouseWheelSensitivity;
 
 };
 

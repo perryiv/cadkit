@@ -1480,6 +1480,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IVaporIntrusionGUI.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IVertices.h"
 					>
 				</File>

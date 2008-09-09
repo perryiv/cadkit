@@ -266,7 +266,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Creating ui_AnimationControl.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\AnimationControl.ui -o .\ui_AnimationControl.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AnimationControl.h&quot; -o &quot;.\GeneratedFiles\moc_AnimationControl.cpp&#x0D;&#x0A;"
+							CommandLine="$(QTDIR)\bin\uic.exe .\AnimationControl.ui -o .\ui_AnimationControl.h&#x0D;&#x0A;$(QTDIR)\bin\moc.exe  &quot;.\AnimationControl.h&quot; -o &quot;.\GeneratedFiles\moc_AnimationControl.cpp&quot;&#x0D;&#x0A;"
 							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AnimationControl.ui;$(QTDIR)\bin\moc.exe;.\AnimationControl.h"
 							Outputs=".\ui_AnimationControl.h;.\GeneratedFiles\moc_AnimationControl.cpp"
 						/>
@@ -277,7 +277,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Creating ui_AnimationControl.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\AnimationControl.ui -o .\ui_AnimationControl.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AnimationControl.h&quot; -o &quot;.\GeneratedFiles\moc_AnimationControl.cpp&#x0D;&#x0A;"
+							CommandLine="$(QTDIR)\bin\uic.exe .\AnimationControl.ui -o .\ui_AnimationControl.h&#x0D;&#x0A;$(QTDIR)\bin\moc.exe  &quot;.\AnimationControl.h&quot; -o &quot;.\GeneratedFiles\moc_AnimationControl.cpp&quot;&#x0D;&#x0A;"
 							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AnimationControl.ui;$(QTDIR)\bin\moc.exe;.\AnimationControl.h"
 							Outputs=".\ui_AnimationControl.h;.\GeneratedFiles\moc_AnimationControl.cpp"
 						/>

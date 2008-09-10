@@ -70,8 +70,6 @@ public:
   //Usul::Interfaces::IMenuAdd
   virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
 
-  void                        tile( Usul::Interfaces::IUnknown* caller );
-
 protected: 
 
   // Do not copy.

@@ -11,6 +11,8 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IVaporIntrusionGUI.h"
 
+#include "OsgTools/State/StateSet.h"
+
 #include "QtTools/Color.h"
 #include "QtTools/Menu.h"
 #include "QtTools/Question.h"
@@ -26,6 +28,8 @@
 #include "QtGui/QLabel"
 #include "QtGui/QFileDialog"
 #include "QtGui/QMessageBox"
+
+#include "osg/Material"
 
 Usul::Types::Uint32 VaporIntrusionGUIViewer::_selectedViewID   ( 0 );
 
@@ -73,6 +77,9 @@ void VaporIntrusionGUIViewer::mouseMoveEvent ( QMouseEvent * event )
 
 void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 {
+  typedef OsgTools::Render::EventAdapter EventAdapter;
+  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+
   OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
   if ( false == viewer.valid() )
     return;
@@ -80,7 +87,109 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
   if ( 0x0 == event )
     return;
 
+  // Declare the event adapter.
+  EventAdapter::Ptr ea ( new EventAdapter );
+  ea->setWindowSize ( Usul::Math::Vec2ui( static_cast < unsigned int > ( this->width() ), static_cast < unsigned int > ( this->height() ) ) );
+  
+  // Get the necessary coordinates.
+  const double x ( event->x() );
+  const double y ( this->height() - event->y() );
+
+  ea->setMouse ( Usul::Math::Vec2f( x, y ) );
+
+  // Query for ISceneIntersect
+  Usul::Interfaces::ISceneIntersect::QueryPtr sceneIntersect ( this->viewer() );
+
+  // Check for a valid pointer
+  if( false == sceneIntersect.valid() )
+    return;
+
+  // Create an intersections list
+  Intersections intersections;
+
+  // Grab all the intersections
+  sceneIntersect->intersect( float( x ), float( y ), intersections );
+
+   // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( Usul::Interfaces::IVaporIntrusionGUI::IID ) );
+
+  // Check for a valid pointer
+  if( false == document.valid() )
+    return;
+
+  // Get the dimensions
+  Usul::Math::Vec3ui dimensions ( document->getDimensions() );
+  
+  typedef Usul::Properties::Attribute<Usul::Math::Vec3ui,osg::Referenced> Vec3UserData;
+  
+  for( Intersections::iterator iter = intersections.begin(); iter != intersections.end(); ++iter )
+  {
+    unsigned int size ( (*iter).nodePath.size() );
+
+    for( unsigned int i = 0; i < size; ++i )
+    {
+      // Get the drawable
+      osg::ref_ptr< osg::Node > node ( (*iter).nodePath.at( i ) );
+      
+      // make sure the node is valid
+      if( true == node.valid() )
+      {
+        
+        Vec3UserData::RefPtr ud ( dynamic_cast< Vec3UserData* > ( node->getUserData() ) );
+        if( true == ud.valid() )
+        {
+          Usul::Math::Vec3ui value ( ud->value() );
+          this->_colorCube( value[0], value[1], value[2], document );
+          break;
+        }
+      }
+    }
+
+    /*osg::Vec4 color ( 1.0, 0.0, 0.0, 1.0 );
+    osg::ref_ptr< osg::Material> material ( new osg::Material );
+    material->setAmbient( osg::Material::FRONT_AND_BACK, color );
+    material->setDiffuse( osg::Material::FRONT_AND_BACK, color );
+    OsgTools::State::StateSet::setMaterial( node.get(), material.get() );
+    OsgTools::State::StateSet::setAlpha( node.get(), 1.0f );*/
+  }
+ 
   //BaseClass::mousePressEvent( event );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Color the cube
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsigned int z, Usul::Interfaces::IVaporIntrusionGUI* document )
+{
+  // Top view -- Y is depth
+  if( _cameraDirection == RenderViewer::TOP && _depth == y )
+  {
+   // Set the material for the cube
+    document->setMaterial( x, y, z, Usul::Math::Vec4f( 1.0, 0.0, 0.0, 1.0 ) ); 
+   
+  }
+
+  // Left View -- X is depth
+  else if( _cameraDirection == RenderViewer::LEFT && _depth == x )
+  {
+    // Set the material for the cube
+    document->setMaterial( x, y, z, Usul::Math::Vec4f( 1.0, 0.0, 0.0, 1.0 ) ); 
+   
+  }
+
+  // Front ( and default ) View -- Z is depth
+  else if ( _cameraDirection == RenderViewer::FRONT && _depth == z )
+  {
+    // Set the material for the cube
+    document->setMaterial( x, y, z, Usul::Math::Vec4f( 1.0, 0.0, 0.0, 1.0 ) ); 
+   
+  }
+
 }
 
 
@@ -118,7 +227,7 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   if ( 0x0 == event )
     return;
 
-  // Query the active document
+  // Query the active document for IVaporIntrusionGUI
   Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( Usul::Interfaces::IVaporIntrusionGUI::IID ) );
   if( false == document.valid() )
     return;

@@ -12,6 +12,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Math/Vector4.h"
 
 namespace Usul {
 namespace Interfaces {
@@ -36,6 +37,12 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // Get the dimensions of the space
   virtual Usul::Math::Vec3ui getDimensions() = 0;
 
+  // Get/Set the material
+  virtual void              setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c ) = 0;
+  virtual Usul::Math::Vec4f getMaterial( unsigned int x, unsigned int y, unsigned int z ) = 0;
+
+  // Request redraw
+  virtual void              requestRedraw() = 0;
 
 }; // struct IVaporIntrusionGUI
 

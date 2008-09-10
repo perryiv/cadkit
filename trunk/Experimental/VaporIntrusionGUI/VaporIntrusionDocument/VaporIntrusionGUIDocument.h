@@ -100,11 +100,13 @@ public:
   virtual void                clear ( Unknown *caller = 0x0 );
 
   /// Usul::Interfaces::IVaporIntrusionGUI
-  virtual void highlightCells( Usul::Math::Vec3ui set, unsigned int depth );
-  virtual void setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha );
-  virtual void setAlpha( float alpha );
-  virtual Usul::Math::Vec3ui getDimensions();
-  
+  virtual void                highlightCells( Usul::Math::Vec3ui set, unsigned int depth );
+  virtual void                setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha );
+  virtual void                setAlpha( float alpha );
+  virtual Usul::Math::Vec3ui  getDimensions();
+  virtual void                setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c );
+  virtual Usul::Math::Vec4f   getMaterial( unsigned int x, unsigned int y, unsigned int z );
+  virtual void                requestRedraw();
 
 protected:
 
@@ -122,7 +124,8 @@ protected:
   void                        _buildScene( Usul::Interfaces::IUnknown *caller = 0x0 );
 
   // Test method for multiview verification
-  osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c );
+  osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
+
 
 private:
     GroupPtr                  _root;

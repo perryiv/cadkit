@@ -19,6 +19,7 @@
 #include "Helios/Qt/Views/OSG/Viewer.h"
 
 #include "Usul/Math/Vector3.h"
+#include "Usul/Interfaces/IVaporIntrusionGUI.h"
 
 #include "OsgTools/Render/Viewer.h"
 
@@ -53,6 +54,8 @@ protected:
   virtual void                    wheelEvent ( QWheelEvent * );
 
   void                            _initializeViewDirection();
+
+  void                            _colorCube( unsigned int x, unsigned int y, unsigned int z, Usul::Interfaces::IVaporIntrusionGUI* document );
 
 private:
   CameraOption                    _cameraDirection;          

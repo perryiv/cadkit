@@ -190,6 +190,7 @@ public:
   typedef Usul::Interfaces::IViewMode IViewMode;
   typedef IViewMode::ViewMode ViewMode;
   typedef osg::RenderInfo RenderInfo;
+  typedef Usul::Interfaces::IFrameDump IFrameDump;
 
   // Construction
   Viewer ( Document *doc, IUnknown* context, IUnknown *caller );
@@ -594,11 +595,11 @@ protected:
                                                    unsigned int start = 0, 
                                                    unsigned int digits = 10 );
   
-  /// Turn on/off frame-dumping.
-  virtual void               dumpFrames ( bool );
+  /// Set frame-dump state.
+  virtual void               setFrameDumpState ( IFrameDump::DumpState );
 
-  /// Are we dumping frames?
-  virtual bool               dumpFrames() const;
+  /// Get frame-dump state
+  virtual IFrameDump::DumpState getFrameDumpState() const;
 
   /// Reset the file name counter.
   virtual void               resetFrameDumpCounter();

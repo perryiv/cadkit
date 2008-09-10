@@ -870,7 +870,7 @@ void PathAnimationComponent::_updatePath ( IUnknown *caller )
   // Query the active document to see if we can proceed.
   Usul::Interfaces::IBusyState::QueryPtr busyState ( Usul::Documents::Manager::instance().activeDocument() );
   const bool busy ( busyState.valid() ? busyState->busyStateGet() : false );
-  
+
   // Return now if the document is busy.
   if ( true == busy )
     return;
@@ -929,7 +929,7 @@ void PathAnimationComponent::_writeMovieFile ( IUnknown *caller )
       wm->writeMovie ( _movieFilename, filenames, _caller );
     
     // Turn off frame dumping.
-    fd->dumpFrames ( false );
+    fd->setFrameDumpState ( Usul::Interfaces::IFrameDump::NEVER_DUMP );
     fd->saveNames ( false );
   }
 
@@ -1317,7 +1317,7 @@ void PathAnimationComponent::_exportMovie ( Usul::Interfaces::IUnknown::QueryPtr
     fd->frameDumpProperties ( directory, base, ".jpg" );
     fd->resetFrameDumpCounter();
     fd->saveNames ( true );
-    fd->dumpFrames ( true );
+    fd->setFrameDumpState ( Usul::Interfaces::IFrameDump::ALWAYS_DUMP );
 
     // Play the movie.
     this->_playForward();

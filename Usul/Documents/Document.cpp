@@ -69,7 +69,8 @@ Document::Document ( const std::string &type ) : BaseClass(),
   _typeName  ( type ),
   _delegate  (),
   _options   (),
-  _modifiedObservers ()
+  _modifiedObservers(),
+  _allowRequestRedraw ( true )
 {
   this->fileValid ( false );
 }
@@ -917,7 +918,10 @@ void Document::_notifyModifiedObservers()
 
 void Document::requestRedraw()
 {
-  this->_notifyModifiedObservers();
+  if ( true == this->allowRequestRedraw() )
+  {
+    this->_notifyModifiedObservers();
+  }
 }
 
 
@@ -1112,4 +1116,32 @@ bool Document::_sortFilesBeforeInserting() const
 {
   USUL_TRACE_SCOPE;
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we allowed to request a redraw?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Document::allowRequestRedraw() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _allowRequestRedraw;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag for allowing redraw requests.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Document::allowRequestRedraw ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _allowRequestRedraw = state;
 }

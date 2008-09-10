@@ -37,6 +37,14 @@ struct IFrameDump : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 3168586510u };
 
+  // Possible states for when to dump a frame.
+  enum DumpState
+  {
+    NEVER_DUMP, 
+    IF_DOCUMENT_NOT_BUSY, 
+    ALWAYS_DUMP 
+  };
+
   /// Set properties for dumping frames.
   virtual void frameDumpProperties ( const std::string &dir, 
                                      const std::string &base, 
@@ -45,10 +53,10 @@ struct IFrameDump : public Usul::Interfaces::IUnknown
                                      unsigned int digits = 10 ) = 0;
 
   /// Turn on/off frame-dumping.
-  virtual void dumpFrames ( bool ) = 0;
+  virtual void setFrameDumpState ( DumpState ) = 0;
 
   /// Are we dumping frames?
-  virtual bool dumpFrames() const = 0;
+  virtual DumpState getFrameDumpState() const = 0;
 
   /// Reset the file name counter.
   virtual void resetFrameDumpCounter() = 0;
@@ -62,26 +70,6 @@ struct IFrameDump : public Usul::Interfaces::IUnknown
 
   /// Get the filenames that were written out.
   virtual Filenames filenames() const = 0;
-
-  /// Small struct to turn on/off frame-dumping.
-  struct ScopedDump
-  {
-    ScopedDump ( IFrameDump *f ) : _f ( f )
-    {
-      if ( _f.valid() )
-      {
-        _f->dumpFrames ( true );
-        _f->resetFrameDumpCounter();
-      }
-    }
-    ~ScopedDump()
-    {
-      if ( _f.valid() )
-        _f->dumpFrames ( false );
-    }
-  protected:
-    IFrameDump::RefPtr _f;
-  };
 };
 
 

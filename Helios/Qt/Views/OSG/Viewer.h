@@ -16,6 +16,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/GUI/IQuestion.h"
 #include "Usul/Interfaces/GUI/IWindow.h"
+#include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Interfaces/ISaveFileDialog.h"
 #include "Usul/Interfaces/ITimeoutAnimate.h"
@@ -68,6 +69,7 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::IFrameDump IFrameDump;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -141,9 +143,10 @@ public:
 
 protected:
 
-  void                                    _frameDump ( bool b );
+  void                                    _frameDumpStateSet ( IFrameDump::DumpState b );
   bool                                    _frameDumpProperties();
-  bool                                    _isFrameDump() const;
+  IFrameDump::DumpState                   _frameDumpStateGet() const;
+  bool                                    _isFrameDumpState ( IFrameDump::DumpState ) const;
 
   void                                    _initPlacement ();
   void                                    _resize ( unsigned int w, unsigned int h );

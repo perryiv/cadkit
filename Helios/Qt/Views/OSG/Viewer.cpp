@@ -1220,7 +1220,21 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
   menu.append ( size );
 
   // Frame dump button.
-  menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Frame &Dump", UA::memberFunction<void> ( this, &Viewer::_frameDump ), UA::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
+  //menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Frame &Dump", UA::memberFunction<void> ( this, &Viewer::_frameDump ), UA::memberFunction<bool> ( this, &Viewer::_isFrameDump ) ) ) );
+  // Frame-dump menu.
+  {
+    MenuKit::Menu::RefPtr dump ( new MenuKit::Menu ( "Frame &Dump" ) );
+    dump->append ( new RadioButton ( UC::genericCheckCommand ( "&Never", 
+                                                              UA::bind1<void> ( IFrameDump::NEVER_DUMP, UA::memberFunction<void> ( this, &Viewer::_frameDumpStateSet ) ), 
+                                                               UA::bind1<bool> ( IFrameDump::NEVER_DUMP, UA::memberFunction<bool> ( this, &Viewer::_isFrameDumpState ) ) ) ) );
+    dump->append ( new RadioButton ( UC::genericCheckCommand ( "If Document &Idle", 
+                                                               UA::bind1<void> ( IFrameDump::IF_DOCUMENT_NOT_BUSY, UA::memberFunction<void> ( this, &Viewer::_frameDumpStateSet ) ), 
+                                                               UA::bind1<bool> ( IFrameDump::IF_DOCUMENT_NOT_BUSY, UA::memberFunction<bool> ( this, &Viewer::_isFrameDumpState ) ) ) ) );
+    dump->append ( new RadioButton ( UC::genericCheckCommand ( "&Always", 
+                                                               UA::bind1<void> ( IFrameDump::ALWAYS_DUMP, UA::memberFunction<void> ( this, &Viewer::_frameDumpStateSet ) ), 
+                                                               UA::bind1<bool> ( IFrameDump::ALWAYS_DUMP, UA::memberFunction<bool> ( this, &Viewer::_isFrameDumpState ) ) ) ) );
+    menu.append ( dump.get() );
+  }
 
   // Axes button.
   menu.append ( new ToggleButton ( UC::genericToggleCommand ( "Show &Axes", UA::memberFunction<void> ( _viewer.get(), &OsgViewer::axesShown ), UA::memberFunction<bool> ( viewer.get(), &OsgViewer::isAxesShown ) ) ) );
@@ -1458,7 +1472,7 @@ void Viewer::_customSize()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_frameDump ( bool b )
+void Viewer::_frameDumpStateSet ( Usul::Interfaces::IFrameDump::DumpState state )
 {
   USUL_TRACE_SCOPE;
   
@@ -1469,8 +1483,24 @@ void Viewer::_frameDump ( bool b )
   if ( false == viewer.valid() )
     return;
 
+  // Get needed interface.
+  Usul::Interfaces::IFrameDump::QueryPtr frameDump ( viewer );
+  if ( false == frameDump.valid() )
+    return;
+
+  // Always turn it off first.
+  frameDump->setFrameDumpState ( IFrameDump::NEVER_DUMP );
+
+  // Are we turning it off?
+  if ( IFrameDump::NEVER_DUMP == state )
+    return;
+  
+  // Set the properties.
+  if ( false == this->_frameDumpProperties() )
+    return;
+
   // Set the frame dump state.
-  _viewer->frameDump().dump ( ( b && this->_frameDumpProperties() ? true : false ) );
+  frameDump->setFrameDumpState ( state );
 }
 
 
@@ -1480,11 +1510,25 @@ void Viewer::_frameDump ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::_isFrameDump() const
+Usul::Interfaces::IFrameDump::DumpState Viewer::_frameDumpStateGet() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return ( _viewer.valid() ? _viewer->frameDump().dump() : false );
+  return ( _viewer.valid() ? _viewer->frameDump().dump() : IFrameDump::NEVER_DUMP );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is this the frame-dump state?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::_isFrameDumpState ( IFrameDump::DumpState state ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( _viewer.valid() ) ? state == _viewer->frameDump().dump() : false );
 }
 
 

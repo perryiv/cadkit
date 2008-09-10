@@ -38,7 +38,7 @@ typedef Usul::Shared::Preferences Pref;
 ///////////////////////////////////////////////////////////////////////////////
 
 FrameDump::FrameDump() : 
-  _dump    ( false ), 
+  _dump    ( Usul::Interfaces::IFrameDump::NEVER_DUMP ), 
   _dir     ( Pref::instance().getString   ( "FrameDump Directory"   ) ), 
   _base    ( Pref::instance().getString   ( "FrameDump Base"        ) ), 
   _ext     ( Pref::instance().getString   ( "FrameDump Extension"   ) ), 
@@ -57,7 +57,7 @@ FrameDump::FrameDump() :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FrameDump::FrameDump ( bool dump, 
+FrameDump::FrameDump ( Usul::Interfaces::IFrameDump::DumpState dump, 
                        const std::string &dir, 
                        const std::string &base, 
                        const std::string &ext, 

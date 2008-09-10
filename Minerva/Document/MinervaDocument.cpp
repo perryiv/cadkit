@@ -259,6 +259,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IMouseEventListener* > ( this );
   case Minerva::Interfaces::ILookAtLayer::IID:
     return static_cast < Minerva::Interfaces::ILookAtLayer * > ( this );
+  case Usul::Interfaces::IBusyState::IID:
+    return static_cast < Usul::Interfaces::IBusyState * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -2887,4 +2889,27 @@ void MinervaDocument::showEyeAltitude ( bool b )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _hud.showEyeAltitude ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Are we busy?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::busyStateGet() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  MinervaDocument *me ( const_cast < MinervaDocument * > ( this ) );
+  if ( 0x0 == me )
+    return false;
+
+  const unsigned int queued    ( me->_getJobManager()->numJobsQueued() );
+  const unsigned int executing ( me->_getJobManager()->numJobsExecuting() );
+  const bool idle ( ( 0 == queued ) && ( 0 == executing ) );
+
+  return ( false == idle );
 }

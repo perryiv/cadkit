@@ -100,6 +100,8 @@ struct IDocument : public Usul::Interfaces::IUnknown
 
   /// Ask the views to redraw.
   virtual void                          requestRedraw() = 0;
+  virtual bool                          allowRequestRedraw() const = 0;
+  virtual void                          allowRequestRedraw ( bool ) = 0;
 
   virtual std::string                   typeName() const = 0;
 

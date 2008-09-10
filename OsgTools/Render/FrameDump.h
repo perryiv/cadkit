@@ -18,6 +18,7 @@
 
 #include "OsgTools/Export.h"
 
+#include "Usul/Interfaces/IFrameDump.h"
 #include "Usul/Properties/Attribute.h"
 
 #include <string>
@@ -36,9 +37,10 @@ public:
   typedef std::string Filename;
   typedef std::vector<Filename> Names;
   typedef Usul::Properties::Attribute<Names> Collection;
+  typedef Usul::Interfaces::IFrameDump IFrameDump;
 
   FrameDump();
-  FrameDump ( bool dump, 
+  FrameDump ( IFrameDump::DumpState dump, 
               const std::string &dir, 
               const std::string &base, 
               const std::string &ext, 
@@ -65,8 +67,8 @@ public:
   const std::string &       dir() const { return _dir; }
   void                      dir ( const std::string &d ) { _dir = d; }
 
-  void                      dump ( bool state ) { _dump = state; }
-  bool                      dump() const { return _dump; }
+  void                      dump ( IFrameDump::DumpState state ) { _dump = state; }
+  IFrameDump::DumpState     dump() const { return _dump; }
 
   std::string               file() const;
 
@@ -83,7 +85,7 @@ public:
 
 private:
 
-  bool _dump;
+  IFrameDump::DumpState _dump;
   std::string _dir;
   std::string _base;
   std::string _ext;

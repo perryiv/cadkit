@@ -2748,12 +2748,12 @@ float Viewer::stereoEyeDistance ( ) const
 ///////////////////////////////////////////////////////////////////////////////
 
 void Viewer::frameDumpProperties ( const std::string &dir, 
-                                 const std::string &base, 
-                                 const std::string &ext, 
-                                 unsigned int start, 
-                                 unsigned int digits )
+                                   const std::string &base, 
+                                   const std::string &ext, 
+                                   unsigned int start, 
+                                   unsigned int digits )
 {
-  const bool dump ( this->dumpFrames() );
+  const Usul::Interfaces::IFrameDump::DumpState dump ( this->getFrameDumpState() );
   FrameDump fd ( dump, dir, base, ext, start, digits );
   this->frameDump ( fd );
 }
@@ -2765,7 +2765,7 @@ void Viewer::frameDumpProperties ( const std::string &dir,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::dumpFrames ( bool state )
+void Viewer::setFrameDumpState ( Usul::Interfaces::IFrameDump::DumpState state )
 {
   this->frameDump().dump ( state );
 }
@@ -2777,7 +2777,7 @@ void Viewer::dumpFrames ( bool state )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Viewer::dumpFrames() const
+Usul::Interfaces::IFrameDump::DumpState Viewer::getFrameDumpState() const
 {
   return this->frameDump().dump();
 }

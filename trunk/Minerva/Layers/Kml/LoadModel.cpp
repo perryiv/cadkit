@@ -98,11 +98,27 @@ namespace Detail
           OsgTools::State::StateSet::setBackFaceCulling ( ss.get(), false );
 
           if ( osg::Texture* texture = dynamic_cast<osg::Texture*> ( ss->getTextureAttribute ( 0, osg::StateAttribute::TEXTURE ) ) )
-          {
+          {            
+#if 0
             texture->setResizeNonPowerOfTwoHint ( false );
+            
             texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
             texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+#else
+            texture->setResizeNonPowerOfTwoHint ( true );
             
+            texture->setInternalFormatMode ( osg::Texture::USE_S3TC_DXT1_COMPRESSION );
+            
+            //texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_NEAREST );
+            //texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+            
+            //texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+            //texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+            
+            //texture->setUseHardwareMipMapGeneration ( false );
+#endif
+            
+            // Turn off lighting.
             OsgTools::State::StateSet::setLighting ( ss.get(), false );
           }
         }
@@ -142,8 +158,8 @@ osg::Node* LoadModel::operator() ( const std::string& filename, ModelCache *cach
     
     osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
     
-    //OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
-    OsgTools::State::StateSet::setNormalize ( ss.get(), true );
+    OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
+    //OsgTools::State::StateSet::setNormalize ( ss.get(), true );
   }
   
   if ( 0x0 != cache )

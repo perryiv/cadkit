@@ -194,6 +194,8 @@ public:
 
   /// Ask the views to redraw.
   virtual void                requestRedraw();
+  virtual bool                allowRequestRedraw() const;
+  virtual void                allowRequestRedraw ( bool );
 
   /// Save the document to existing file name.
   void                        save ( Unknown *caller = 0x0, Unknown *progress = 0x0, std::ostream *out = 0x0 );
@@ -276,6 +278,7 @@ private:
   Delegate::RefPtr _delegate;
   Options _options;
   ModifiedObservers _modifiedObservers;
+  bool _allowRequestRedraw;
 };
 
 

@@ -24,6 +24,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/File/Log.h"
 #include "Usul/Interfaces/IBuildScene.h"
+#include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IJobFinishedListener.h"
@@ -74,7 +75,8 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::ITreeNode,
                                                 public Usul::Interfaces::IJobFinishedListener,
                                                 public Usul::Interfaces::IMouseEventListener,
-                                                public Minerva::Interfaces::ILookAtLayer
+                                                public Minerva::Interfaces::ILookAtLayer,
+                                                public Usul::Interfaces::IBusyState
 {
 public:
   /// Useful typedefs.
@@ -175,6 +177,9 @@ public:
   /// Get/Set the show past events flag (Minerva::Interfaces::IAnimationControl).
   virtual void                             showPastEvents ( bool );
   virtual bool                             showPastEvents () const;
+
+  /// Get the busy state. (Usul::Interfaces::IBusyState).
+  virtual bool                             busyStateGet() const;
 
   /// Have visitor visit all layes.
   void                                     accept ( Minerva::Core::Visitor& visitor );

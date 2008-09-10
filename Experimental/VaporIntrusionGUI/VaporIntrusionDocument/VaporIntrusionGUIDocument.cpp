@@ -16,6 +16,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Properties/Attribute.h"
 
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
@@ -348,7 +349,10 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 
         // build the sub cube
         osg::ref_ptr< osg::Group > group ( new osg::Group );
-        group->addChild( this->_buildTestCube( p.get(), c ) );
+        
+        // Set the location of the cube
+        Usul::Math::Vec3ui location( x, y, z );
+        group->addChild( this->_buildTestCube( p.get(), c, location ) );
 
         // set the material of the cube
         // Set the material properties
@@ -366,8 +370,7 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 
   }
 
-  //_root->addChild( this->_buildTestCube() );
-
+  
    
 }
 
@@ -378,7 +381,7 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Color c )
+osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location )
 {
   GroupPtr group ( new osg::Group );
 
@@ -388,7 +391,6 @@ osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Co
   osg::ref_ptr< osg::Vec4Array > colors ( new osg::Vec4Array );
 
   // Populate the vertices with a unit cube
-#if 1
   // front face
   vertices->push_back( points->at( 4 ) );vertices->push_back( points->at( 5 ) );vertices->push_back( points->at( 7 ) );vertices->push_back( points->at( 6 ) );
   // back face
@@ -401,28 +403,6 @@ osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Co
   vertices->push_back( points->at( 7 ) );vertices->push_back( points->at( 5 ) );vertices->push_back( points->at( 1 ) );vertices->push_back( points->at( 3 ) );
   // left face
   vertices->push_back( points->at( 6 ) );vertices->push_back( points->at( 2 ) );vertices->push_back( points->at( 0 ) );vertices->push_back( points->at( 4 ) );
-#else
-  osg::Vec3 p0 ( 0.0, 0.0, 0.0 );
-  osg::Vec3 p1 ( 1.0, 0.0, 0.0 );
-  osg::Vec3 p2 ( 0.0, 1.0, 0.0 );
-  osg::Vec3 p3 ( 1.0, 1.0, 0.0 );
-  osg::Vec3 p4 ( 0.0, 0.0, 1.0 );
-  osg::Vec3 p5 ( 1.0, 0.0, 1.0 );
-  osg::Vec3 p6 ( 0.0, 1.0, 1.0 );
-  osg::Vec3 p7 ( 1.0, 1.0, 1.0 );
-  // front face
-  vertices->push_back( p4 );vertices->push_back( p5 );vertices->push_back( p7 );vertices->push_back( p6 );
-  // back face
-  vertices->push_back( p0 );vertices->push_back( p2 );vertices->push_back( p3 );vertices->push_back( p1 );
-  // top face
-  vertices->push_back( p6 );vertices->push_back( p7 );vertices->push_back( p3 );vertices->push_back( p2 );
-  // bottom face
-  vertices->push_back( p4 );vertices->push_back( p0 );vertices->push_back( p1 );vertices->push_back( p5 );
-  // right face
-  vertices->push_back( p7 );vertices->push_back( p5 );vertices->push_back( p1 );vertices->push_back( p3 );
-  // left face
-  vertices->push_back( p6 );vertices->push_back( p2 );vertices->push_back( p0 );vertices->push_back( p4 );
-#endif
 
   // Normals for each face
   osg::Vec3 nfr ( 0.0, 0.0, 1.0 );
@@ -439,9 +419,13 @@ osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Co
   normals->push_back( nri );normals->push_back( nri );normals->push_back( nri );normals->push_back( nri );
   normals->push_back( nle );normals->push_back( nle );normals->push_back( nle );normals->push_back( nle );
   
+  typedef Usul::Properties::Attribute<Usul::Math::Vec3ui,osg::Referenced> Vec3UserData;
+  Vec3UserData::RefPtr ud ( new Vec3UserData );
+  ud->value( location );
 
   // Geometry
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
+  
 
   // Set the vertices
   geometry->setVertexArray( vertices.get() );
@@ -450,34 +434,13 @@ osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Co
   geometry->setNormalArray( normals.get() );
   geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
-    // Colors
+  // Colors
 
-#if 1
   colors->push_back( c );
   // set the colors and set binding to per vertex
   geometry->setColorArray( colors.get() );
   geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
-#else
-  osg::Vec4 c0 ( 1.0, 0.0, 0.0, 1.0 );
-  osg::Vec4 c1 ( 0.0, 1.0, 0.0, 1.0 );
-  osg::Vec4 c2 ( 1.0, 1.0, 0.0, 1.0 );
-  osg::Vec4 c3 ( 0.0, 0.0, 1.0, 1.0 );
-  osg::Vec4 c4 ( 1.0, 0.0, 1.0, 1.0 );
-  osg::Vec4 c5 ( 0.0, 1.0, 1.0, 1.0 );
-  colors->push_back( c0 );colors->push_back( c0 );colors->push_back( c0 );colors->push_back( c0 );
-  colors->push_back( c1 );colors->push_back( c1 );colors->push_back( c1);colors->push_back( c1 );
-  colors->push_back( c2 );colors->push_back( c2 );colors->push_back( c2 );colors->push_back( c2 );
-  colors->push_back( c3 );colors->push_back( c3 );colors->push_back( c3 );colors->push_back( c3 );
-  colors->push_back( c4 );colors->push_back( c4 );colors->push_back( c4 );colors->push_back( c4 );
-  colors->push_back( c5 );colors->push_back( c5 );colors->push_back( c5 );colors->push_back( c5 );
-
-  // set the colors and set binding to per vertex
-  geometry->setColorArray( colors.get() );
-  geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
-#endif
-
   
-
   // Add the primitive
   geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::QUADS, 0, vertices->size() ) );
   
@@ -488,6 +451,8 @@ osg::Node* VaporIntrusionGUIDocument::_buildTestCube( osg::Vec3Array* points, Co
   // Add the geode to the group
   group->addChild( geode.get() );
 
+  // Set the user data with the cube location
+  group->setUserData( ud.get() );
   return group.release();
 }
 
@@ -540,3 +505,41 @@ Usul::Math::Vec3ui VaporIntrusionGUIDocument::getDimensions()
   return _dimensions;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the material
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c )
+{
+  osg::Vec4 color ( c[0], c[1], c[2], c[3] );
+  OsgTools::State::StateSet::setMaterial( _cubes.at( x ).at( y ).at( z ).second.get(), color, color, 1.0f );
+  this->requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the material
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Math::Vec4f VaporIntrusionGUIDocument::getMaterial( unsigned int x, unsigned int y, unsigned int z )
+{
+  return Usul::Math::Vec4f( 0.0, 0.0, 0.0, 1.0 );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Request a redraw
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::requestRedraw()
+{
+  BaseClass::requestRedraw();
+}

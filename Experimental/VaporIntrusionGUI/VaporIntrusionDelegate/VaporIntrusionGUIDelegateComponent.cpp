@@ -21,7 +21,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
-
+#include "Usul/Properties/Attribute.h"
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
 
@@ -169,7 +169,7 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     int h ( parent->height() * 0.5 );
 
     // XYZ window is the top left window
-    xyzView->resize  ( w, h );
+    xyzView->resize ( w, h );
 
     // XY window is the bottom right window
     xyView->resize  ( w, h );
@@ -205,76 +205,4 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   
   // Add the window menu to the main menu
   //menu.append( windowMenu.get() );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Add to the menu
-//
-/////////////////////////////////////////////////////////////////////////////
-
-void VaporIntrusionGUIDelegateComponent::tile( Usul::Interfaces::IUnknown* caller )
-{
-#if 1
-  Usul::Interfaces::Qt::IWorkspace::QueryPtr workspace ( caller );
-
-  if( workspace.valid() )
-  {
-    QWorkspace *parent ( workspace->workspace() );
-    parent->tile();
-  }
-#else
-
-  typedef CadKit::Helios::Views::OSG::Viewer QtViewer;
-
-  // Non-ref'ing smart-pointers that throw if given null.
-  typedef Usul::Pointers::Configs::NoRefCountingNullThrows Policy;
-  typedef Usul::Pointers::SmartPointer < QtViewer, Policy > QtViewerPtr;
-
-  if( 0x0 == caller )
-    return;
-
-  Usul::Interfaces::Qt::IWorkspace::QueryPtr workspace ( caller );
-
-  if( workspace.valid() )
-  {
-    QWorkspace *parent ( workspace->workspace() );
-
-
-    // Get the bounds of the parent window
-    int x ( parent->x() );
-    int y ( parent->y() );
-    int w ( parent->width() );
-    int h ( parent->height() );
-    
-    int childWidth( w * 0.5 );
-    int childHeight ( h * 0.5 );
-
-    // Set the bounds of the child windows
-    // XYZ window is the top left window
-    //xyzView->setGeometry( 0, 0, childWidth, childHeight );
-    xyzView->move( 0, 0 );
-    xyzView->resize  ( childWidth, childHeight );
-    xyzView->adjustSize();
-
-    // XY window is the bottom right window
-    //xyView->setGeometry( childWidth, childHeight, childWidth, childHeight );
-    xyView->move( childWidth, childHeight );
-    xyView->resize  ( childWidth, childHeight );
-    xyView->adjustSize();
-
-    // XZ window is the bottom left window
-    //xzView->setGeometry( 0, childHeight, childWidth, childHeight );
-    xzView->move( 0, childHeight );
-    xzView->resize  ( childWidth, childHeight );
-    xzView->adjustSize();
-
-    // XY window is the top right window
-    //yzView->setGeometry( childWidth, 0, childWidth, childHeight );
-    yzView->move( childWidth, 0 );
-    yzView->resize  ( childWidth, childHeight );
-    yzView->adjustSize();
-  }
-#endif
 }

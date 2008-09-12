@@ -13,38 +13,36 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_INTRUSIVE_POINTER_INTRUSIVE_H_
-#define _USUL_INTRUSIVE_POINTER_INTRUSIVE_H_
+#ifndef _USUL_INTRUSIVE_POINTER_FUNCTIONS_H_
+#define _USUL_INTRUSIVE_POINTER_FUNCTIONS_H_
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Intrusive-pointer functions. Keep these in global namespace. These names 
-//  are compatable with boost::intrusive_ptr.
+//  Convenient (and safe) reference and dereference.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class T > inline void intrusive_ptr_add_ref ( T *ptr )
+namespace Usul
 {
-  if ( ptr )
+  namespace Pointers
   {
-    ptr->ref();
-  }
-}
-template < class T > inline void intrusive_ptr_release ( T *ptr )
-{
-  if ( ptr )
-  {
-    ptr->unref();
-  }
-}
-template < class T > inline void ptr_release_no_delete ( T *ptr )
-{
-  if ( ptr )
-  {
-    ptr->unref ( false );
+    template < class T > void reference ( T *v )
+    {
+      if ( v )
+      {
+        v->ref();
+      }
+    }
+    template < class T > void unreference ( T *v )
+    {
+      if ( v )
+      {
+        v->unref();
+      }
+    }
   }
 }
 
 
-#endif // _USUL_INTRUSIVE_POINTER_INTRUSIVE_H_
+#endif // _USUL_INTRUSIVE_POINTER_FUNCTIONS_H_

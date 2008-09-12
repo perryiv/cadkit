@@ -22,8 +22,6 @@
 
 #include "Usul/Base/Typed.h"
 
-#include "Usul/Pointers/Intrusive.h"
-
 namespace Usul { namespace Threads { class Mutex; } }
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 

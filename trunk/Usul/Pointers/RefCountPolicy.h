@@ -23,17 +23,26 @@ namespace Pointers {
 
 struct RefCountPolicy
 {
-  template < class T > static void ref ( T *t )
+  template < class T > static void ref ( T *ptr )
   {
-    intrusive_ptr_add_ref ( t );
+    if ( ptr )
+    {
+      ptr->ref();
+    }
   }
-  template < class T > static void unref ( T *t )
+  template < class T > static void unref ( T *ptr )
   {
-    intrusive_ptr_release ( t );
+    if ( ptr )
+    {
+      ptr->unref();
+    }
   }
-  template < class T > static void unrefNoDelete ( T *t )
+  template < class T > static void unrefNoDelete ( T *ptr )
   {
-    ptr_release_no_delete ( t );
+    if ( ptr )
+    {
+      ptr->unref ( false );
+    }
   }
 };
 

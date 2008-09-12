@@ -20,7 +20,7 @@
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Pointers/Intrusive.h"
+#include "Usul/Pointers/Functions.h"
 
 #include "Usul/Polygons/Predicates.h"
 

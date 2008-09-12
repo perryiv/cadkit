@@ -867,6 +867,9 @@ void PathAnimationComponent::_updatePath ( IUnknown *caller )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+  // This is causing problems with seek.  Disable until working properly.
+#if 0
+  
   // Query the active document to see if we can proceed.
   Usul::Interfaces::IBusyState::QueryPtr busyState ( Usul::Documents::Manager::instance().activeDocument() );
   const bool busy ( busyState.valid() ? busyState->busyStateGet() : false );
@@ -874,6 +877,8 @@ void PathAnimationComponent::_updatePath ( IUnknown *caller )
   // Return now if the document is busy.
   if ( true == busy )
     return;
+  
+#endif
   
   // Get the current player.
   CurvePlayer::RefPtr player ( ( false == _players.empty() ) ? _players.front() : CurvePlayer::RefPtr ( 0x0 ) );

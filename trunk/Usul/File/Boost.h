@@ -72,7 +72,7 @@ namespace Usul
         }
 
         // Add it to our list if its a file and the extenstion matches.
-        else if ( Usul::File::extension ( iter->leaf() ) == ext )
+        else if ( Usul::File::extension ( path.native_directory_string() ) == ext )
         {
           c.push_back ( path.native_directory_string() );
         }

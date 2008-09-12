@@ -17,7 +17,7 @@
 #define _USUL_HANDY_SMART_POINTER_DEFINITIONS_H_
 
 #include "Usul/Pointers/QueryPointer.h"
-#include "Usul/Pointers/Intrusive.h"
+#include "Usul/Pointers/Functions.h"
 #include "Usul/Pointers/RefCountPolicy.h"
 #include "Usul/Pointers/NoReferencePolicy.h"
 #include "Usul/Pointers/ArrayDeletePolicy.h"

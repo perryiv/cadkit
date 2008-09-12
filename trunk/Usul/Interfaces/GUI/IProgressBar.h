@@ -80,8 +80,8 @@ struct IProgressBar : public Usul::Interfaces::IUnknown
       //Show the progress bar if we have one
       if( _progressBar.valid() )
       {
-        _progressBar->updateProgressBar( 0 );
-        _progressBar->setTotalProgressBar( 100 );
+        _progressBar->updateProgressBar ( 0 );
+        _progressBar->setTotalProgressBar ( 100 );
         _progressBar->showProgressBar();
       }
     }

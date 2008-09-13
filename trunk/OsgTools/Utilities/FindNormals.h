@@ -37,7 +37,7 @@ public:
   virtual void apply(osg::Geode& geode);
   virtual void apply(osg::LOD& lod);
 
-  void boundingBox ( const osg::BoundingBox& bb ) { _bb = bb; }
+  void         size ( double size ) { _size = size; }
 
 protected:
   void _handleDrawArrays ( const osg::DrawArrays& drawArrays,
@@ -96,29 +96,19 @@ protected:
       
     }
     break;
-    #if 0
     case osg::PrimitiveSet::TRIANGLE_STRIP:
     {
-      typename DrawElements::const_iterator iter = indices.begin();
-      for( typename DrawElements::size_type i = 2; i < indices.size(); ++i, ++iter)
+      if( bindPerVertex )
       {
-        normalsToWrite.push_back  ( normals.at ( i ) );
-
-        if ( ( i%2 ) )
+        typename DrawElements::const_iterator iter = indices.begin();
+        for( typename DrawElements::size_type i = 2; i < indices.size(); ++i, ++iter)
         {
-          verticesToWrite.push_back( vertices.at( *iter ) );
-          verticesToWrite.push_back( vertices.at( *(iter + 2) ) );
-          verticesToWrite.push_back( vertices.at( *(iter + 1) ) );
-        }
-        else
-        {
-          verticesToWrite.push_back( vertices.at( *iter ) );
-          verticesToWrite.push_back( vertices.at( *(iter + 1) ) );
-          verticesToWrite.push_back( vertices.at( *(iter + 2) ) );
+          this->_addNormal( vertices.at( *(iter) ), normals.at ( *iter ) );
         }
       }
       break;
     }
+#if 0
     case osg::PrimitiveSet::QUADS:
     {
       typename DrawElements::const_iterator iter = indices.begin();
@@ -169,7 +159,7 @@ private:
 
   osg::ref_ptr < osg::Group > _root;
 
-  osg::BoundingBox _bb;
+  double _size;
 
   osg::ref_ptr < osg::Vec3Array > _vertices;
 };

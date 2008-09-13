@@ -62,12 +62,12 @@ public:
   /// Build the scene branch.
   osg::Node*            buildScene ( Usul::Interfaces::IUnknown* caller );
   
-  /// Build the scene for data that is contained by the given extents.
-  osg::Node*            buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
-  
   /// Get/Set the dirty flag.
   void                  dirty ( bool b );
   bool                  dirty () const;
+  
+  /// Elevation has changed within the given extents.
+  virtual bool          elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller );
   
   /// Set/get the extents.
   void                  extents ( const Extents& e );
@@ -94,15 +94,15 @@ public:
 
   Point                 spatialOffset () const;
   void                  spatialOffset ( const Point& );
+
+  /// Update.
+  virtual void          updateNotify ( Usul::Interfaces::IUnknown *caller );
   
 protected:
   virtual ~Geometry();
 
   /// Build the scene branch.
-  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller );
-  
-  /// Build the scene for data that is contained by the given extents.
-  virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
+  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller ) = 0;
   
   template<class Vertex>
   double                _elevation ( const Vertex& point, Usul::Interfaces::IElevationDatabase* elevation ) const

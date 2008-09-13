@@ -156,7 +156,6 @@ public:
   void                      xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const;
 
   /// Convert to planet coordinates.
-  virtual Usul::Math::Vec3d convertToPlanet ( const Usul::Math::Vec3d& orginal, const std::string& wkt ) const;
   virtual void              convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
   virtual void              convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
   

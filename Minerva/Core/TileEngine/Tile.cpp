@@ -23,7 +23,6 @@
 #include "Minerva/Core/TileEngine/Tile.h"
 #include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/Data/Container.h"
-#include "Minerva/Core/Layers/RasterLayerGDAL.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Algorithms/Composite.h"
 #include "Minerva/Core/Algorithms/SubRegion.h"
@@ -31,6 +30,13 @@
 #include "OsgTools/Group.h"
 #include "OsgTools/Utilities/FindNormals.h"
 #include "OsgTools/State/StateSet.h"
+
+#include "GN/Algorithms/Fill.h"
+#include "GN/Algorithms/KnotVector.h"
+#include "GN/Config/UsulConfig.h"
+#include "GN/Evaluate/Point.h"
+#include "GN/Splines/Surface.h"
+#include "GN/Write/XML.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
@@ -59,6 +65,10 @@
 #include "osgDB/ReadFile"
 
 #include "boost/bind.hpp"
+#include "boost/gil/gil_all.hpp"
+#include "boost/gil/typedefs.hpp"
+#include "boost/gil/extension/numeric/sampler.hpp"
+#include "boost/gil/extension/numeric/resample.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -364,10 +374,10 @@ void Tile::updateMesh()
   }
 
   // Make the skirt's normals.
-  Mesh::Vector leftNormal   ( mesh.point ( 0, 0 ) ^ mesh.point ( mesh.rows() - 1, 0 ) );    leftNormal.normalize();
-  Mesh::Vector rightNormal  ( mesh.point ( mesh.rows() - 1, 0 ) ^ mesh.point ( 0, 0 ) );    rightNormal.normalize();
-  Mesh::Vector topNormal    ( mesh.point ( 0, 0 ) ^ mesh.point ( 0, mesh.columns() - 1 ) ); topNormal.normalize();
-  Mesh::Vector bottomNormal ( topNormal );
+  Mesh::Vector bottomNormal ( mesh.point ( 0, 0 ) ^ mesh.point ( mesh.rows() - 1, 0 ) );    bottomNormal.normalize();
+  Mesh::Vector topNormal    ( mesh.point ( mesh.rows() - 1, 0 ) ^ mesh.point ( 0, 0 ) );    topNormal.normalize();
+  Mesh::Vector leftNormal   ( mesh.point ( 0, 0 ) ^ mesh.point ( 0, mesh.columns() - 1 ) ); leftNormal.normalize();
+  Mesh::Vector rightNormal  ( -leftNormal );
 
   // Move mesh vertices to local origin.
   Mesh::Vector ll ( mesh.point ( 0, 0 ) );
@@ -390,30 +400,28 @@ void Tile::updateMesh()
 
   // Build skirts.
   // Depth of skirt.  TODO: This function needs to be tweeked.
-  const double offset ( Usul::Math::maximum<double> ( ( 5000 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
-    
+  const double offset ( Usul::Math::maximum<double> ( ( 3500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+
   // Make new skirts.
   osg::ref_ptr<osg::Group> skirts ( new osg::Group );
 
   // Add skirts to group.
-  skirts->addChild ( this->_buildLonSkirt ( _extents.minimum()[0], texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
-  skirts->addChild ( this->_buildLonSkirt ( _extents.maximum()[0], texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
-  skirts->addChild ( this->_buildLatSkirt ( _extents.minimum()[1], texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
-  skirts->addChild ( this->_buildLatSkirt ( _extents.maximum()[1], texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
+  skirts->addChild ( this->_buildLonSkirt ( mesh, extents.minimum()[0], texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
+  skirts->addChild ( this->_buildLonSkirt ( mesh, extents.maximum()[0], texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
+  skirts->addChild ( this->_buildLatSkirt ( mesh, extents.minimum()[1], texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
+  skirts->addChild ( this->_buildLatSkirt ( mesh, extents.maximum()[1], texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
 
 #if 0
 
   // Draw skirt's normals.
   osg::ref_ptr<OsgTools::Utilities::FindNormals> visitor ( new OsgTools::Utilities::FindNormals );
-  osg::BoundingBox bbox;
-  bbox.expandBy ( this->getBound() );
-  visitor->boundingBox ( bbox );
-  _skirts->accept ( *visitor );
+  visitor->size ( boundingSphere.radius() * 0.05 );
+  skirts->accept ( *visitor );
   osg::ref_ptr<osg::Group> ng ( new osg::Group );
-  OsgTools::State::StateSet::setLineWidth ( ng.get(), 5 );
+  OsgTools::State::StateSet::setLineWidth ( ng.get(), 2 );
   OsgTools::State::StateSet::setLighting ( ng.get(), false );
   ng->addChild ( visitor->normals() );
-  _skirts->addChild ( ng.get() );
+  skirts->addChild ( ng.get() );
 
 #endif
 
@@ -730,6 +738,17 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     // Remove high level of detail.
     if ( numChildren > 1 && false == body->cacheTiles() )
     {
+      // Need to notify vector data so it can re-adjust.
+      Minerva::Core::Data::Container::RefPtr vector ( body->vectorData() );
+      if ( vector.valid() )
+      {
+        // Notify new children have been added.
+        vector->tileRemovedNotify ( this->childAt ( 0 ), Tile::RefPtr ( this ) );
+        vector->tileRemovedNotify ( this->childAt ( 1 ), Tile::RefPtr ( this ) );
+        vector->tileRemovedNotify ( this->childAt ( 2 ), Tile::RefPtr ( this ) );
+        vector->tileRemovedNotify ( this->childAt ( 3 ), Tile::RefPtr ( this ) );
+      }
+      
       // Clear all the children.
       this->_clearChildren ( false, true );
     }
@@ -883,16 +902,24 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
 
     // Notify that the elevation has changed.
-    vector->elevationChangedNotify ( t0->extents(), t0->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t1->extents(), t1->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t2->extents(), t2->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t3->extents(), t3->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t0->extents(), t0->level(), t0->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t1->extents(), t1->level(), t1->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t2->extents(), t2->level(), t2->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevation(), unknown.get() );
     
+#if 0
     // Add tiled vector data.
     t0->addVectorData ( vector->buildTiledScene ( t0->extents(), t0->level(), t0->elevation(), unknown.get() ) );
     t1->addVectorData ( vector->buildTiledScene ( t1->extents(), t1->level(), t1->elevation(), unknown.get() ) );
     t2->addVectorData ( vector->buildTiledScene ( t2->extents(), t2->level(), t2->elevation(), unknown.get() ) );
     t3->addVectorData ( vector->buildTiledScene ( t3->extents(), t3->level(), t3->elevation(), unknown.get() ) );
+#else
+    // Notify new children have been added.
+    vector->tileAddNotify ( t0, Tile::RefPtr ( this ) );
+    vector->tileAddNotify ( t1, Tile::RefPtr ( this ) );
+    vector->tileAddNotify ( t2, Tile::RefPtr ( this ) );
+    vector->tileAddNotify ( t3, Tile::RefPtr ( this ) );
+#endif
   }
   
   {
@@ -996,16 +1023,141 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   {
     // Use a quarter of the parent's elevation for the child.
     osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
-    if ( parentElevation.valid() )
+    if ( parentElevation.valid() && 0x0 != parentElevation->data() )
     {
-#if 0
-      Extents parentExtents ( Helper::expandExtents ( this->extents(), Helper::degreesPerPixel ( this->extents(), size ) ) );
-
-      typedef Minerva::Core::Layers::RasterLayerGDAL Resampler;
-      Resampler::RefPtr layer ( new Resampler ( parentElevation.get(), parentExtents ) );
-      elevation = layer->texture ( request, size[0], size[1], level, job, 0x0 );
+#if 1
+      //
+      // Use boost gil to resample the image.  I'm still learning boost gil, so there may be cleaner ways to code this.
+      //
+      
+      // Make a boost image view from the elevation data.
+      const float *pointer ( reinterpret_cast<const float*> ( parentElevation->data() ) );
+      boost::gil::gray32f_image_t srcImage ( size[0], size[1] );
+      boost::gil::gray32f_view_t srcView ( boost::gil::view ( srcImage ) );
+      
+      // Copy the pixels into the boost image.
+      const unsigned int numPixels ( size[0] * size[1] );
+      for ( unsigned int i = 0; i < numPixels; ++i )
+      {
+        const float value ( pointer[i] );
+        srcView[i] = value;
+      }
+      
+      // Make an image twice the size.
+      boost::gil::gray32f_image_t larger ( size[0] * 2, size[1] * 2 );
+      boost::gil::gray32f_view_t largerView ( boost::gil::view ( larger ) );
+      
+      // Resize using bilinear interpolation.
+      boost::gil::resize_view ( srcView, largerView, boost::gil::bilinear_sampler() );
+      
+      // Make a new osg::Image from the boost image.
+      osg::ref_ptr<osg::Image> final ( new osg::Image );
+      final->allocateImage ( size[0], size[1], 1, GL_LUMINANCE, GL_FLOAT );
+      
+      const int startS ( larger.width() * region[0] );
+      const int startV ( larger.height() * region[2] );
+      
+      // Copy the result into the osg::Image.
+      for ( int s = 0; s < static_cast<int> ( size[0] ); ++s )
+      {
+        for ( int t = 0; t < static_cast<int> ( size[1] ); ++t )
+        {
+          const float value ( largerView ( s + startS, t + startV )[0] );
+          *reinterpret_cast<float*> ( final->data ( s, t ) ) = value;
+        }
+      }
+ 
+      // Set the elevation to our answer.
+      elevation = final;
 #else
-      elevation = Minerva::Core::Algorithms::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
+
+      // Typedefs.
+      typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ErrorChecker;
+      typedef GN::Config::UsulConfig < double, double, unsigned int, ErrorChecker > Config;
+      typedef GN::Splines::Surface < Config > Surface;
+      typedef Surface::IndependentSequence IndependentSequence;
+      typedef Surface::DependentContainer DependentContainer;
+      typedef Surface::DependentSequence DependentSequence;
+      typedef Surface::IndependentType Parameter;
+      typedef Surface::SizeType SizeType;
+      typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorChecker > KnotVectorBuilder;
+      
+      // We want one dependent variable.
+      const SizeType dimension ( 1 );
+      
+      // We want bi-cubic.
+      const SizeType order ( 4 );
+      
+      // Make a surface.
+      Surface surface;
+      
+      // Resize.
+      surface.resize ( dimension, order, order, size[0], size[1], false );
+      
+      // Get a pointer to the data.
+      const float *pointer ( reinterpret_cast<const float*> ( parentElevation->data() ) );
+      
+      // We should have this many control points.
+      const unsigned int numPixels ( size[0] * size[1] );
+      
+      // Set the control points.
+      for ( unsigned int i = 0; i < numPixels; ++i )
+      {
+        surface.controlPoint ( 0, i ) = pointer[i];
+      }
+      
+      // Make the independent sequence for u and v.
+      IndependentSequence u ( size[0], 0 ), v ( size[1], 0 );
+      
+      // Fill u and v with even distribution of values from 0 to 1.
+      GN::Algorithms::fill ( u, 0, 1.0 );
+      GN::Algorithms::fill ( v, 0, 1.0 );
+      
+      // Get knot vectors.
+      IndependentSequence& knots0 ( surface.knotVector ( 0 ) );
+      IndependentSequence& knots1 ( surface.knotVector ( 1 ) );
+      
+      // Make the knots.
+      KnotVectorBuilder::build ( u, order, knots0 );
+      KnotVectorBuilder::build ( v, order, knots1 );
+      
+      surface.check();
+      std::ostringstream os;
+      GN::Write::xml ( surface, 2, os );
+      ::printf ( "%s\n", os.str().c_str() );
+      
+      // Get the range for the u and v values.
+      const double deltaU ( region[1] - region[0] );
+      const double deltaV ( region[3] - region[2] );
+      
+      // Step sizes.
+      const double stepU ( deltaU / size[0] );
+      const double stepV ( deltaV / size[1] );
+      
+      // Make our new elevation.
+      osg::ref_ptr<osg::Image> final ( new osg::Image );
+      final->allocateImage ( size[0], size[1], 1, GL_LUMINANCE, GL_FLOAT );
+      
+      // Loop and fill our image data.
+      //float *data ( reinterpret_cast<float*> ( final->data() ) );
+      for ( unsigned int i = 0; i < size[0]; ++i )
+      {
+        for ( unsigned int j = 0; j < size[1]; ++j )
+        {
+          const double u ( region[0] + ( stepU * i ) );
+          const double v ( region[2] + ( stepV * j ) );
+          
+          Surface::Vector point ( surface.dimension() );
+          GN::Evaluate::point ( surface, u, v, point );
+          
+          // Set the value.
+          *reinterpret_cast<float*> ( final->data( i, j ) ) = point[0];
+          //*data++ = static_cast<float> ( point[0] );
+        }
+      }
+
+      elevation = final;
+      
 #endif
     }
   }
@@ -1523,13 +1675,13 @@ bool Tile::textureDirty() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
+osg::Node* Tile::_buildLonSkirt ( const Mesh& mesh, double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
 {
-  const unsigned int rows ( _mesh->rows() );
-  const unsigned int columns ( _mesh->columns() );
+  const unsigned int rows ( mesh.rows() );
+  const unsigned int columns ( mesh.columns() );
 
   // Make the mesh
-  Mesh mesh ( 2, columns );
+  Mesh skirt ( 2, columns );
   
   // Get the difference of texture coordinates.
   const double difference ( _texCoords[3] - _texCoords[2] );
@@ -1542,73 +1694,69 @@ osg::Node* Tile::_buildLonSkirt ( double lon, double u, unsigned int i, double o
 
     const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
 
-    Mesh::Vector&  p0 ( mesh.point ( 0, j ) );
-    Mesh::Vector&  p1 ( mesh.point ( 1, j ) );
+    // Set the skirt point to be the same as the mesh.
+    skirt.point ( 0, j ) = mesh.point ( i, j );
     
     // Convert lat-lon coordinates to xyz.
-    _body->latLonHeightToXYZ ( lat, lon, elevation,          p0 );
-    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p1 );
-    
-    p0 = p0 - ll;
-    p1 = p1 - ll;
+    Mesh::Vector&  p ( skirt.point ( 1, j ) );
+    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p );
+    p = p - ll;
 
     // Assign texture coordinate.
-    mesh.texCoord ( 0, j ).set ( u, _texCoords[2] + ( v * difference ) );
-    mesh.texCoord ( 1, j ).set ( u, _texCoords[2] + ( v * difference ) );
+    skirt.texCoord ( 0, j ).set ( u, _texCoords[2] + ( v * difference ) );
+    skirt.texCoord ( 1, j ).set ( u, _texCoords[2] + ( v * difference ) );
 
     // Assign normal vector.
-    mesh.normal ( 0, j ) = normal;
-    mesh.normal ( 1, j ) = normal;
+    skirt.normal ( 0, j ) = normal;
+    skirt.normal ( 1, j ) = normal;
   }
 
-  return mesh();
+  return skirt();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build skirt along latitude line.
+//  Build skirt along constant latitude line.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Tile::_buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
+osg::Node* Tile::_buildLatSkirt ( const Mesh& mesh, double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
 {
-  const unsigned int rows ( _mesh->rows() );
+  const unsigned int rows ( mesh.rows() );
 
   // Make the mesh
-  Mesh mesh ( rows, 2 );
+  Mesh skirt ( rows, 2 );
   
   // Get the difference of texture coordinates.
-  const double difference ( _texCoords[3] - _texCoords[2] );
+  const double difference ( _texCoords[1] - _texCoords[0] );
 
   // Left skirt.
   for ( int i = rows - 1; i >= 0; --i )
   {
-    const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
+    const double u ( 1.0 - static_cast<double> ( i ) / ( skirt.rows() - 1 ) );
     const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
 
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
-
-    Mesh::Vector&  p0 ( mesh.point ( i, 0 ) );
-    Mesh::Vector&  p1 ( mesh.point ( i, 1 ) );
+    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
+    
+    // Set the skirt point to be the same as the mesh.
+    skirt.point ( i, 0 ) = mesh.point ( i, j );
     
     // Convert lat-lon coordinates to xyz.
-    _body->latLonHeightToXYZ ( lat, lon, elevation,          p0 );
-    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p1 );
-    
-    p0 = p0 - ll;
-    p1 = p1 - ll;
+    Mesh::Vector&  p ( skirt.point ( i, 1 ) );
+    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p );
+    p = p - ll;
 
     // Assign texture coordinate.
-    mesh.texCoord ( i, 0 ).set ( _texCoords[0] + ( u * difference ), v );
-    mesh.texCoord ( i, 1 ).set ( _texCoords[0] + ( u * difference ), v );
+    skirt.texCoord ( i, 0 ).set ( _texCoords[0] + ( u * difference ), v );
+    skirt.texCoord ( i, 1 ).set ( _texCoords[0] + ( u * difference ), v );
 
     // Assign normal vector.
-    mesh.normal ( i, 0 ) = normal;
-    mesh.normal ( i, 1 ) = normal;
+    skirt.normal ( i, 0 ) = normal;
+    skirt.normal ( i, 1 ) = normal;
   }
 
-  return mesh();
+  return skirt();
 }
 
 
@@ -1848,10 +1996,10 @@ void Tile::textureData ( osg::Image* image, const Usul::Math::Vec4d& coords )
   
   // Set children data.
   {
-    Guard guard ( this );
-
     Usul::Math::Vec4d ll, lr, ul, ur;
     this->_quarterTextureCoordinates ( ll, lr, ul, ur );
+    
+    Guard guard ( this );
     if ( _children[LOWER_LEFT].valid()  && image == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->textureData  ( image, ll );
     if ( _children[LOWER_RIGHT].valid() && image == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->textureData ( image, lr );
     if ( _children[UPPER_LEFT].valid()  && image == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->textureData  ( image, ul );

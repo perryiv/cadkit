@@ -143,6 +143,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   case Minerva::Interfaces::IElevationChangedListener::IID:
     return static_cast<Minerva::Interfaces::IElevationChangedListener*> ( this );
+  case Minerva::Interfaces::ITilesChangedListener::IID:
+    return static_cast<Minerva::Interfaces::ITilesChangedListener*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
@@ -710,7 +712,7 @@ osg::Node* Container::buildTiledScene ( const Extents& extents, unsigned int lev
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Container::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+bool Container::elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
   
@@ -722,7 +724,7 @@ bool Container::elevationChangedNotify ( const Extents& extents, ImagePtr elevat
     {
       Minerva::Interfaces::IElevationChangedListener::QueryPtr ecl ( *iter );
       if ( ecl.valid() )
-        handled = ecl->elevationChangedNotify ( extents, elevationData, caller );
+        handled = ecl->elevationChangedNotify ( extents, level, elevationData, caller );
     }
   }
   
@@ -795,4 +797,48 @@ void Container::name ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
   BaseClass::name ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A tile has been added.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent ) 
+{
+  USUL_TRACE_SCOPE;
+
+  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+  {
+    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+    {
+      Minerva::Interfaces::ITilesChangedListener::QueryPtr tcl ( *iter );
+      if ( tcl.valid() )
+        tcl->tileAddNotify ( child, parent );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A tile has been removed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent ) 
+{
+  USUL_TRACE_SCOPE;
+  
+  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+  {
+    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
+    {
+      Minerva::Interfaces::ITilesChangedListener::QueryPtr tcl ( *iter );
+      if ( tcl.valid() )
+        tcl->tileRemovedNotify ( child, parent );
+    }
+  }
 }

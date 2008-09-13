@@ -10,7 +10,6 @@
 
 #include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Algorithms/Resample.h"
-#include "Minerva/Core/Data/Transform.h"
 
 #include "OsgTools/Configure/OSG.h"
 #include "OsgTools/State/StateSet.h"
@@ -20,6 +19,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Threads/Safe.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"
@@ -38,7 +38,7 @@ using namespace Minerva::Core::Data;
 ///////////////////////////////////////////////////////////////////////////////
 
 Line::Line() : BaseClass(),
-  _line(),
+  _vertices ( 0x0 ),
   _tessellate ( false ),
   _lineStyle ( 0x0 )
 {
@@ -67,7 +67,10 @@ Line::~Line()
 void Line::line ( const Vertices& data )
 {
   Guard guard ( this->mutex() );
-  _line = data;
+  
+  _vertices = new Vertex3Array ( data );
+  
+  //_line = data;
   this->dirty( true );
 }
 
@@ -78,10 +81,10 @@ void Line::line ( const Vertices& data )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Line::Vertices Line::line() const
+Line::Vertex3Array::RefPtr Line::line() const
 {
   Guard guard ( this->mutex() );
-  return _line;
+  return _vertices;
 }
 
 
@@ -116,43 +119,66 @@ osg::Node* Line::_buildScene( Usul::Interfaces::IUnknown* caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* caller )
+osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* caller )
 {
   //Guard guard ( this ); Was causing deadlock!
 
+  Vertex3Array::RefPtr data ( Usul::Threads::Safe::get ( this->mutex(), _vertices ) );
+
   // Get the line data.
-  Vertices data ( this->line() );
-  
+  //Vertices data ( this->line() );
+
   // Make sure there are at least 2 points.
-  if ( data.size() < 2 )
+  if ( false == data.valid() || data->size() < 2 )
     return 0x0;
-  
-  osg::ref_ptr < osg::Group > node ( new osg::Group );
-  osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
-    
+
   // Query for needed interfaces.
   Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
   Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-    
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  node->addChild( geode.get() );
-  
+
   // Make new extents.
   Extents e;
   
-  Vertices sampledPoints;
+  // These points will be the ones that are worked on below.
+  Vertex3Array::RefPtr sampledPoints ( data );
+  
+  // Resample the points if we should.
   if ( this->tessellate() && Geometry::CLAMP_TO_GROUND == this->altitudeMode() )
-    Minerva::Core::Algorithms::resample( data, sampledPoints, 5, caller );
-  else
-    sampledPoints = data;
+  {
+    Vertices lineData ( data->size() ), sampled;
+    
+    // Copy in the data.
+    {
+      Vertex3Array::ReadLock guard ( data->mutex() );
+      lineData.assign ( data->begin(), data->end() );
+    }
+    
+    // Resampled the points.  This algorithm should be refactored to accept new Vector wrapper in Minerva.
+    Minerva::Core::Algorithms::resample ( lineData, sampled, 5, caller );
+    
+    sampledPoints = new Vertex3Array ( sampled );
+  }
   
   // Make the osg::Vec3Array.
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-  vertices->reserve ( sampledPoints.size() );
+  vertices->reserve ( sampledPoints->size() );
+  
+  // Offset for all points to avoid floating point inacuracies.
+  Usul::Math::Vec3d offset;
   
   if ( planet.valid() )
   {
-    for ( Vertices::const_iterator iter = sampledPoints.begin(); iter != sampledPoints.end(); ++iter )
+    Vertex3Array::ReadLock guard ( sampledPoints->mutex() );
+    
+    Vertex temp ( *sampledPoints->begin() );
+    
+    // Get the height.
+    temp[2] = this->_elevation ( temp, elevation.get() );
+    
+    // Convert to planet coordinates.
+    planet->convertToPlanet ( temp, offset );
+    
+    for ( Vertices::const_iterator iter = sampledPoints->begin(); iter != sampledPoints->end(); ++iter )
     {
       Vertices::value_type v ( *iter );
       
@@ -164,47 +190,68 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
       
       Usul::Math::Vec3d point;
       planet->convertToPlanet ( v, point );
+      
+      // Apply the offset.
+      point -= offset;
+      
       vertices->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
     }
   }
   
   // Create the geometry
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-  
+
   // Add the primitive set
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
-  
+  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
+
   // Set the vertices.
-  geometry->setVertexArray( vertices.get() );
-  
+  geometry->setVertexArray ( vertices.get() );
+
   // Set the colors.
+#if 0
   osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
   colors->push_back ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   geometry->setColorArray( colors.get() );
   geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+#else
   
+  // Make an array of osg::Vec4ub.  This is to save space over a Vec4f.
+  osg::Vec4ub c ( color[0] * 255, color[1] * 255, color[2] * 255, color[3] * 255 );
+  osg::ref_ptr < osg::Vec4ubArray > colors ( new osg::Vec4ubArray ( vertices->size() ) );
+  std::fill ( colors->begin(), colors->end(), c );
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
+#endif
+
+  geometry->setUseDisplayList ( false );
+
+  // Make the geode
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  
+  // Add the geometry.
   geode->addDrawable ( geometry.get() );
+
+  // Get the state set.
+  osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet() );
   
   // Turn off lighting.
   OsgTools::State::StateSet::setLighting  ( ss.get(), false );
   OsgTools::State::StateSet::setLineWidth ( ss.get(), this->width() );
-  
+
   // Set depth parameters.
   osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
   ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  
-  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-  
+
+  ss->setRenderBinDetails ( this->renderBin(), "RenderBin" );
+
   this->extents ( e );
-  
-  osg::Vec3 offset ( node->getBound().center() );
-  osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
-  node->accept ( *tg );
-  
+
+  // Make the matrix transform.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setMatrix ( osg::Matrix::translate ( offset ) );
-  mt->addChild ( node.get() );
-  
+  mt->setMatrix ( osg::Matrixd::translate ( osg::Vec3d ( offset[0], offset[1], offset[2] ) ) );
+  mt->addChild ( geode.get() );
+
+  // Return the scene branch.
   return mt.release();
 }
 
@@ -284,16 +331,4 @@ Line::Color Line::lineColor() const
 {
   LineStyle::RefPtr lineStyle ( this->lineStyle() );
   return ( lineStyle.valid() ? lineStyle->color() : Usul::Math::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the scene branch.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Line::_buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
-{
-  return 0x0;
 }

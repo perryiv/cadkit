@@ -25,7 +25,7 @@ namespace Minerva
   {
     // Generic implementation.
     template<class PixelType>
-    void convert ( osg::Image* image, GDALDataset *data, GDALDataType type, int width, int height )
+    inline void convert ( osg::Image* image, GDALDataset *data, GDALDataType type, int width, int height )
     {
       // Get the number of bands.
       const int bands ( data->GetRasterCount() );
@@ -144,7 +144,7 @@ namespace Minerva
   ///////////////////////////////////////////////////////////////////////////////
   
   template < class PixelType >
-  void convert ( osg::Image* image, GDALDataset *data, GDALDataType type )
+  inline void convert ( osg::Image* image, GDALDataset *data, GDALDataType type )
   {
     // Check for bad input.
     if ( 0x0 == image && 0x0 == data )
@@ -218,7 +218,7 @@ namespace Minerva
   //
   ///////////////////////////////////////////////////////////////////////////////
   
-  osg::Image* convert ( GDALDataset * data )
+  inline osg::Image* convert ( GDALDataset * data )
   {
     // Return if no data.
     if ( 0x0 == data )

@@ -17,8 +17,9 @@
 #include "Minerva/Interfaces/IDirtyData.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
-#include "Minerva/Interfaces/IVectorLayer.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
+#include "Minerva/Interfaces/ITilesChangedListener.h"
+#include "Minerva/Interfaces/IVectorLayer.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IBooleanState.h"
@@ -52,7 +53,8 @@ class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
                                  public Minerva::Interfaces::IVectorLayer,
                                  public Minerva::Interfaces::IAddLayer,
                                  public Minerva::Interfaces::IRemoveLayer,
-                                 public Minerva::Interfaces::IElevationChangedListener
+                                 public Minerva::Interfaces::IElevationChangedListener,
+                                 public Minerva::Interfaces::ITilesChangedListener
 {
 public:
 
@@ -115,7 +117,7 @@ public:
   virtual void                dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Elevation has changed within given extents (IElevationChangeListener).
-  virtual bool                elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
+  virtual bool                elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
   
   /// Get/Set the flags.
   unsigned int                flags() const;
@@ -140,6 +142,9 @@ public:
   /// Get/Set show layer (ILayer).
   virtual void                showLayer ( bool b );
   virtual bool                showLayer() const;
+  
+  virtual void                tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent );
+  virtual void                tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent );
 
   /// Traverse all DataObjects.
   virtual void                traverse ( Minerva::Core::Visitor& visitor );

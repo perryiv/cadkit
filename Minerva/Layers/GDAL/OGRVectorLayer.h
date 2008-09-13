@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Data/Geometry.h"
+#include "Minerva/Core/Data/LineStyle.h"
 
 #include "Usul/Interfaces/IRead.h"
 
@@ -49,15 +50,17 @@ protected:
 
   virtual ~OGRVectorLayer();
 
-  void                        _addLayer ( OGRLayer* layer );
+  void                        _addLayer ( OGRLayer* layer, Usul::Interfaces::IUnknown *progress );
 
-  Geometry*                   _createGeoemtry ( OGRGeometry* geometry, OGRCoordinateTransformation *transform ) const;
-  Geometry*                   _createPoint    ( OGRPoint* geometry, OGRCoordinateTransformation *transform ) const;
+  Geometry*                   _createGeoemtry ( OGRGeometry* geometry,   OGRCoordinateTransformation *transform ) const;
+  Geometry*                   _createPoint    ( OGRPoint* geometry,      OGRCoordinateTransformation *transform ) const;
   Geometry*                   _createLine     ( OGRLineString* geometry, OGRCoordinateTransformation *transform ) const;
-  Geometry*                   _createPolygon  ( OGRPolygon* geometry, OGRCoordinateTransformation *transform ) const;
+  Geometry*                   _createPolygon  ( OGRPolygon* geometry,    OGRCoordinateTransformation *transform ) const;
 
 private:
+  
   std::string _filename;
+  Minerva::Core::Data::LineStyle::RefPtr _lineStyle;
 };
 
 }

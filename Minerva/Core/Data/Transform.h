@@ -22,9 +22,9 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 
-#include <string>
+#include "ogr_geometry.h"
 
-class OGRCoordinateTransformation;
+#include <string>
 
 namespace Minerva {
 namespace Core {
@@ -35,19 +35,93 @@ class MINERVA_EXPORT Transform
 {
 public:
   
-  Transform ( const std::string& from, const std::string& to );
-  ~Transform();
-
-  // Transform.
-  Usul::Math::Vec3d operator() ( const Usul::Math::Vec3d& ) const;
-  Usul::Math::Vec2d operator() ( const Usul::Math::Vec2d& ) const;
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Constructor.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
   
-  static std::string wgs84AsWellKnownText();
+  Transform ( const std::string& from, const std::string& to ) : 
+    _transform ( 0x0 )
+  {
+    // Make the transform.
+    OGRSpatialReference src ( from.c_str() ), dst ( to.c_str() );
+    _transform = OGRCreateCoordinateTransformation( &src, &dst );
+  }
+  
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Destructor.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+  
+  Transform::~Transform()
+  {
+    ::OCTDestroyCoordinateTransformation ( _transform );
+  }
+
+  
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Transform Vec3.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+  
+  Usul::Math::Vec3d Transform::operator() ( const Usul::Math::Vec3d& vertex ) const
+  {
+    Usul::Math::Vec3d v ( vertex );
+    if ( 0x0 != _transform )
+    {
+      _transform->Transform ( 1, &v[0], &v[1], &v[2] );
+    }
+    return v;
+  }
+  
+  
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Transform Vec2.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+  
+  Usul::Math::Vec2d Transform::operator() ( const Usul::Math::Vec2d& vertex ) const
+  {
+    Usul::Math::Vec2d v ( vertex );
+    if ( 0x0 != _transform )
+    {
+      _transform->Transform ( 1, &v[0], &v[1] );
+    }
+    return v;
+  }
+  
+  
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Return well known text for wgs 84.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+  
+  static std::string wgs84AsWellKnownText()
+  {
+    OGRSpatialReference srs;
+    srs.SetWellKnownGeogCS ( "WGS84" );
+    
+    char *wkt ( 0x0 );
+    srs.exportToWkt( &wkt );
+    
+    std::string s ( wkt );
+    
+    ::OGRFree ( wkt );
+    return s;
+  }
+
 private:
+
   OGRCoordinateTransformation *_transform;
+
 };
-
-
+  
+  
 }
 }
 }

@@ -19,11 +19,9 @@
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Font.h"
-#include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/Widgets/Legend.h"
 #include "OsgTools/Widgets/LegendObject.h"
 #include "OsgTools/Widgets/Text.h"
-#include "OsgTools/Utilities/ConvertToTriangles.h"
 
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Math/Vector3.h"
@@ -32,7 +30,6 @@
 #include "osg/Geode"
 #include "osg/Group"
 #include "osgText/Text"
-#include "osg/Billboard"
 
 using namespace Minerva::Core::Data;
 
@@ -85,12 +82,12 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IBuildScene*> ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast<Usul::Interfaces::ITreeNode*> ( this );
-  case Minerva::Interfaces::IVectorLayer::IID:
-    return static_cast<Minerva::Interfaces::IVectorLayer*> ( this );
   case Minerva::Interfaces::IElevationChangedListener::IID:
     return static_cast<Minerva::Interfaces::IElevationChangedListener*> ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast<Usul::Interfaces::IBooleanState*> ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast<Usul::Interfaces::IUpdateListener*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -374,92 +371,6 @@ bool DataObject::showLabel () const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene for data that is contained by the given extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* DataObject::buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
-{
-  if ( false == BaseClass::visibility() )
-    return 0x0;
- 
-  Extents e ( this->extents() );
-  
-  if ( false == e.intersects ( extents ) )
-    return 0x0;
-
-  Geometries geometries ( this->geometries() );
-  
-  osg::ref_ptr<osg::Group> group ( new osg::Group );
-  
-  // Does the scene need to be sorted?
-  bool isTransparent ( false );
-  
-  for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
-  {
-    Geometry::RefPtr geometry ( *iter );
-    
-    osg::ref_ptr<osg::Node> node ( geometry->buildTiledScene ( extents, level, elevationData, caller ) );
-    
-    if ( node.valid() )
-    {
-      node->setUserData ( new Minerva::Core::Data::UserData ( this ) );
-      group->addChild ( node.get() );
-      
-      // See if the geometry is transparent.
-      if ( true == geometry->isSemiTransparent() )
-      {
-        // Convert tri-strips to triangles (For sorting).
-        OsgTools::Utilities::ConvertToTriangles convert;
-        convert ( node.get() );
-        
-        osg::ref_ptr<osg::NodeVisitor> visitor ( new OsgTools::Callbacks::SetSortToFrontCallback );
-        node->accept ( *visitor );
-        
-        isTransparent = true;
-      }
-    }
-  }
-  
-  // If one of the geometries is transparent, set the proper state and add needed callbacks.
-  if ( isTransparent )
-  {
-    // Get the state set.
-    osg::ref_ptr < osg::StateSet > ss ( group->getOrCreateStateSet() );
-    
-    // Add a blend function.
-    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
-    ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-    
-    ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-    ss->setRenderBinDetails ( 1, "DepthSortedBin" );
-  }
-  
-  // Get the label position.
-  osg::Vec3 position ( this->extents().center()[0], this->extents().center()[1], this->labelPosition()[2] );
-  
-  // Do we have a label?
-  if( this->showLabel() && !this->label().empty() && extents.contains ( Extents::Vertex ( position[0], position[1] ) ) )
-  {
-    // Set the position of the label.
-    Usul::Math::Vec3d p ( position[0], position[1], position[2] );
-    
-    Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-    
-    if( planet.valid() )
-    {
-      planet->convertToPlanet ( Usul::Math::Vec3d ( p ), p );
-    }
-    
-    group->addChild ( this->_buildLabel ( osg::Vec3 ( p[0], p[1], p[2] ) ) );
-  }
-  
-  return group.release();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -492,10 +403,6 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
       // See if the geometry is transparent.
       if ( true == geometry->isSemiTransparent() )
       {
-        // Convert tri-strips to triangles (For sorting).
-        OsgTools::Utilities::ConvertToTriangles convert;
-        convert ( group.get() );
-        
         isTransparent = true;
       }
     }
@@ -513,33 +420,30 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
     
     ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
     ss->setRenderBinDetails ( 1, "DepthSortedBin" );
-    
-    osg::ref_ptr<osg::NodeVisitor> visitor ( new OsgTools::Callbacks::SetSortToFrontCallback );
-    group->accept ( *visitor );
   }
-  
+
   // Set the new extents.
   this->extents ( extents );
-  
+
   // Do we have a label?
   if( this->showLabel() && !this->label().empty() )
   {
     osg::Vec3 position ( this->labelPosition() );
     Usul::Math::Vec3d p ( extents.center()[0], extents.center()[1], position[2] );
-    
+
     Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-    
+
     if( planet.valid() )
     {
       planet->convertToPlanet( Usul::Math::Vec3d ( p ), p );
     }
-    
+
     group->addChild ( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] ) ) );
   }
-  
+
   Guard guard ( this );
   _preBuiltScene = group.get();
-  
+
   this->dirty ( false );  
 }
 
@@ -716,14 +620,23 @@ OsgTools::Widgets::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* calle
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DataObject::elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Unknown * caller )
+bool DataObject::elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller )
 {
   Extents e ( this->extents() );
 
   if ( e.intersects ( extents ) )
   {
+#if 0
+    Geometries geometries ( this->geometries() );
+    for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
+    {
+      Geometry::RefPtr geometry ( *iter );
+      geometry->elevationChangedNotify ( extents, level, elevationData, caller );
+    }
+#else
     this->dirty ( true );
     this->preBuildScene ( caller );
+#endif
     return true;
   }
 
@@ -802,4 +715,22 @@ ClickedCallback::ClickedCallback()
 
 ClickedCallback::~ClickedCallback()
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::updateNotify ( Usul::Interfaces::IUnknown* caller )
+{
+  USUL_TRACE_SCOPE;
+  Geometries geometries ( this->geometries() );
+  for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
+  {
+    Geometry::RefPtr geometry ( *iter );
+    geometry->updateNotify ( caller );
+  }
 }

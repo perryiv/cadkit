@@ -26,10 +26,10 @@ using namespace OsgTools::Utilities;
 ///////////////////////////////////////////////////////////////////////////////
 
 FindNormals::FindNormals ( ) : 
-BaseClass ( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ),
-_root( new osg::Group ),
-_bb(),
-_vertices( new osg::Vec3Array )
+  BaseClass ( osg::NodeVisitor::TRAVERSE_ALL_CHILDREN ),
+  _root( new osg::Group ),
+  _size ( 1.0 ),
+  _vertices( new osg::Vec3Array )
 {
   // Always hit every node.
   const unsigned int all ( 0xffffffff );
@@ -217,13 +217,6 @@ void FindNormals::_handleDrawArrays ( const osg::DrawArrays& drawArrays,
 
 void FindNormals::_addNormal ( const osg::Vec3& position, const osg::Vec3& normal )
 {
-  _vertices->push_back( position );
-  _vertices->push_back ( position + ( normal * ( _bb.radius() * 0.005 ) ) );
-  // This is a poor way of doing this, but it's the easest.
-  /*OsgTools::Ray ray;
-  ray.start ( position );
-  ray.end( position + ( normal * ( _bb.radius() * 0.05 ) ) );
-  ray.color ( osg::Vec4( 0.0, 1.0, 0.0, 1.0 ) );
-
-  _root->addChild( ray() );*/
+  _vertices->push_back ( position );
+  _vertices->push_back ( position + ( normal * _size ) );
 }

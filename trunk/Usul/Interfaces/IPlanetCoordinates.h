@@ -32,7 +32,6 @@ struct IPlanetCoordinates : public Usul::Interfaces::IUnknown
   enum { IID = 2885858388u };
 
   /// Convert to planet coordinates.
-  virtual Usul::Math::Vec3d  convertToPlanet ( const Usul::Math::Vec3d& orginal, const std::string& wkt ) const = 0;
   virtual void               convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const = 0;
   virtual void               convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const = 0;
   

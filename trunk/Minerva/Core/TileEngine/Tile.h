@@ -202,8 +202,8 @@ protected:
   NodePtr                   _buildBorderLine();
 
   // Build skirts.
-  osg::Node*                _buildLonSkirt ( double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal );
-  osg::Node*                _buildLatSkirt ( double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal );
+  osg::Node*                _buildLonSkirt ( const Mesh& mesh, double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal );
+  osg::Node*                _buildLatSkirt ( const Mesh& mesh, double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal );
   
   // Cache the image used for the raster layer.
   void                      _cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords );

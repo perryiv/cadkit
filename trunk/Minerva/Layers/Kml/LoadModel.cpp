@@ -105,17 +105,14 @@ namespace Detail
             texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
             texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
 #else
-            texture->setResizeNonPowerOfTwoHint ( true );
-            
-            texture->setInternalFormatMode ( osg::Texture::USE_S3TC_DXT1_COMPRESSION );
-            
-            //texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_NEAREST );
-            //texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-            
-            //texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
-            //texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
-            
-            //texture->setUseHardwareMipMapGeneration ( false );
+            // Only turn on compression if the internal format is rgb.
+            if ( GL_RGB == texture->getInternalFormat() )
+            {
+              // Texture compression needs power of two image sizes.
+              texture->setResizeNonPowerOfTwoHint ( true );
+              
+              texture->setInternalFormatMode ( osg::Texture::USE_S3TC_DXT1_COMPRESSION );
+            }
 #endif
             
             // Turn off lighting.

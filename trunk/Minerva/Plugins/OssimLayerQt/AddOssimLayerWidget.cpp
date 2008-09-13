@@ -27,6 +27,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/ITreeNode.h"
+#include "Usul/Interfaces/GUI/IProgressBarFactory.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Database.h"
@@ -220,7 +221,9 @@ namespace Detail
     Usul::Interfaces::IRead::QueryPtr read ( unknown );
     if ( read.valid() )
     {
-      read->read ( filename, 0x0, 0x0 );
+      Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IProgressBarFactory::IID ) );
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar() );
+      read->read ( filename, 0x0, unknown.get() );
     }
 
     read = static_cast<Usul::Interfaces::IRead*> ( 0x0 );

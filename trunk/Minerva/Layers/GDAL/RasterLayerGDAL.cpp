@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Layers/RasterLayerGDAL.h"
+#include "Minerva/Layers/GDAL/RasterLayerGDAL.h"
 #include "Minerva/Layers/GDAL/Convert.h"
 #include "Minerva/Layers/GDAL/Common.h"
 #include "Minerva/Layers/GDAL/MakeImage.h"

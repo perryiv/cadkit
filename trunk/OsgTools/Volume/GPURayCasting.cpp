@@ -84,7 +84,7 @@ void GPURayCasting::_construct()
   osg::ref_ptr < osg::StateSet > ss  ( this->getOrCreateStateSet() );
   
   // Turn off back face culling
-  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON );
+  ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
   ss->setMode ( GL_BLEND, osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   
   ss->setRenderBinDetails ( 1000, "RenderBin" );
@@ -228,6 +228,7 @@ osg::Shader* GPURayCasting::_buildVertexShader ( )
   os << "   gl_TexCoord[0].w =  ( gl_Vertex.w + 1.0 ) / 2.0;\n";
   os << "   v = gl_Vertex.xyz;\n";
   os << "   gl_Position = ftransform();\n";
+  os << "   v = ftransform().xyz;\n";
   os << "   gl_ClipVertex = gl_ModelViewMatrix * gl_Vertex;\n";
   os << "}\n";
 
@@ -305,10 +306,11 @@ namespace Detail
        <<  "   vec3 position = gl_TexCoord[0].xyz;\n"
 
     // Compute the ray direction.
-       <<  "   vec3 direction = normalize ( vec3 ( camera - v ) );\n"
+       //<<  "   vec3 direction = normalize ( vec3 ( camera - v ) );\n"
+    <<  "   vec3 direction = normalize ( vec3 ( - v ) );\n"
 
     // Ray traversal loop.  Should probably make the 200 an input.
-       <<  "   for ( int i = 0; i < 200; i++ )\n"
+       <<  "   for ( int i = 0; i < 100; i++ )\n"
        <<  "   {\n"
 
     //  Look up the scalar value.

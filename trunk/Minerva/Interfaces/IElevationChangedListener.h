@@ -41,7 +41,7 @@ struct IElevationChangedListener : public Usul::Interfaces::IUnknown
   typedef osg::ref_ptr<osg::Image> ImagePtr;
 
   /// Elevation has changed within given extents.
-  virtual bool elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 ) = 0;
+  virtual bool elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 ) = 0;
 
 }; // struct IElevationChangedListener
 

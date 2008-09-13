@@ -13,6 +13,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Data/Geometry.h"
+#include "Minerva/Core/OSG/MatrixTransform.h"
 
 #include "OsgTools/ShapeFactory.h"
 
@@ -28,7 +29,8 @@ class MINERVA_EXPORT Point : public Geometry
 public:
   typedef Geometry BaseClass;
   typedef Usul::Math::Vec3d Vec3d;
-  typedef Usul::Math::Vec4f                   Color;
+  typedef Usul::Math::Vec4f Color;
+  typedef Minerva::Core::OSG::MatrixTransform MatrixTransform;
 
   USUL_DECLARE_QUERY_POINTERS ( Point );
 
@@ -51,6 +53,9 @@ public:
   /// Set/get the color.
   void                    color ( const Color& );
   Color                   color() const;
+  
+  /// Elevation has changed within the given extents.
+  virtual bool            elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller );
   
   /// Is this geometry transparent?
   virtual bool            isSemiTransparent() const;
@@ -82,6 +87,9 @@ public:
   /// Get the point data as WGS 84.
   Vec3d                   pointData() const;
   
+  /// Update.
+  virtual void            updateNotify ( Usul::Interfaces::IUnknown *caller );
+  
 protected:
   
   /// Use reference counting.
@@ -89,7 +97,6 @@ protected:
 
   /// Build the scene branch.
   virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown * caller );
-  virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
   osg::Node*            _buildScene ( const Vec3d& point, double height, Usul::Interfaces::IUnknown * caller );
   
   osg::Node*            _buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown* caller );
@@ -109,6 +116,7 @@ private:
   float        _quality;
   bool         _autotransform;
   Color        _color;
+  MatrixTransform::RefPtr _transform;
   
   /// Shape Factory to share across all points.
   static OsgTools::ShapeFactory::Ptr _sf;

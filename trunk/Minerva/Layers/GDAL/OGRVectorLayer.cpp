@@ -18,6 +18,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Interfaces/GUI/IProgressBar.h"
 #include "Usul/Scope/Caller.h"
 
 #include "ogr_api.h"
@@ -47,8 +48,11 @@ USUL_FACTORY_REGISTER_CREATOR ( OGRVectorLayer );
 ///////////////////////////////////////////////////////////////////////////////
 
 OGRVectorLayer::OGRVectorLayer() : BaseClass(),
-  _filename()
+  _filename(),
+  _lineStyle ( new Minerva::Core::Data::LineStyle )
 {
+  _lineStyle->width ( 2.0f );
+  _lineStyle->color ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
 }
 
 
@@ -105,7 +109,7 @@ void OGRVectorLayer::read ( const std::string &filename, Usul::Interfaces::IUnkn
   // Loop over the layers.
   for ( int i = 0; i < layers; ++i )
   {
-    this->_addLayer ( dataSource->GetLayer ( i ) );
+    this->_addLayer ( dataSource->GetLayer ( i ), progress );
     
     // Notify any listeners that the data has changed.
     this->_notifyDataChnagedListeners();
@@ -119,10 +123,13 @@ void OGRVectorLayer::read ( const std::string &filename, Usul::Interfaces::IUnkn
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OGRVectorLayer::_addLayer ( OGRLayer* layer )
+void OGRVectorLayer::_addLayer ( OGRLayer* layer, Usul::Interfaces::IUnknown *unknown )
 {
   if ( 0x0 == layer )
     return;
+  
+  // Query for a progress bar.
+  Usul::Interfaces::IProgressBar::UpdateProgressBar progress ( 0.0, 1.0, unknown );
 
   // Get the spatial reference.
   OGRSpatialReference *src ( layer->GetSpatialRef() );
@@ -134,13 +141,22 @@ void OGRVectorLayer::_addLayer ( OGRLayer* layer )
 
   // Make sure the transformation is destroyed.
   Usul::Scope::Caller::RefPtr destroyTransform ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( transform, ::OCTDestroyCoordinateTransformation ) ) );
+  
+  // Get the number of features.
+  const unsigned int numFeatures ( layer->GetFeatureCount() );
 
   layer->ResetReading();
 
   OGRFeature *feature ( 0x0 );
+  
+  unsigned int i ( 0 );
 
+  // Get the features.
   while ( 0x0 != ( feature = layer->GetNextFeature() ) )
   {
+    // Update the progress.
+    progress ( ++i, numFeatures );
+    
     // Get the geometry.
     OGRGeometry *geometry ( feature->GetGeometryRef() );
 
@@ -298,10 +314,7 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createLine ( OGRLineString* geometry,
     line->line ( vertices );
   }
 
-  LineStyle::RefPtr lineStyle ( new LineStyle );
-  lineStyle->width ( 2.0f );
-  lineStyle->color ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
-  line->lineStyle ( lineStyle.get() );
+  line->lineStyle ( _lineStyle.get() );
 
   return line.release();
 }

@@ -32,6 +32,7 @@
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
+#include "Usul/Interfaces/IUpdateListener.h"
 
 #include "osg/Vec3"
 #include "osg/Vec4"
@@ -71,8 +72,8 @@ class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::ITreeNode,
                                   public Usul::Interfaces::IBooleanState,
-                                  public Minerva::Interfaces::IVectorLayer,
-                                  public Minerva::Interfaces::IElevationChangedListener
+                                  public Minerva::Interfaces::IElevationChangedListener,
+                                  public Usul::Interfaces::IUpdateListener
 {
 public:
   typedef Minerva::Core::Data::Feature        BaseClass;
@@ -109,9 +110,6 @@ public:
   void                  preBuildScene ( Usul::Interfaces::IUnknown* caller );
   virtual osg::Node*    buildScene ( const Options& options = Options(), Usul::Interfaces::IUnknown* caller = 0x0 );
 
-  /// Build the scene for data that is contained by the given extents.
-  virtual osg::Node*    buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
-
   /// Get/Set the data source.
   void                  dataSource( Unknown* );
   Unknown *             dataSource();
@@ -122,7 +120,7 @@ public:
   void                  dirty ( bool );
   
   /// Elevation has changed within given extents (IElevationChangedListnerer).
-  bool                  elevationChangedNotify ( const Extents& extents, ImagePtr elevationData, Unknown * caller = 0x0 );
+  bool                  elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller = 0x0 );
 
   /// Get the geometries.
   Geometries            geometries() const;
@@ -146,6 +144,9 @@ public:
   /// Get/Set the flag to show the label.
   void                  showLabel ( bool value );
   bool                  showLabel() const;
+  
+  /// Update.
+  virtual void          updateNotify ( Usul::Interfaces::IUnknown* caller );
   
   // Set the visibilty.
   virtual void          visibility ( bool b );

@@ -24,7 +24,7 @@
 namespace Minerva {
 namespace GDAL {
 
-osg::Image* makeImage ( unsigned int width, unsigned int height, int bands, GDALDataType type, bool hasColorTable = false )
+inline osg::Image* makeImage ( unsigned int width, unsigned int height, int bands, GDALDataType type, bool hasColorTable = false )
 {
   // Only handle 1, 2, 3, and 4 bands.
   if ( bands < 1 || bands > 4 )

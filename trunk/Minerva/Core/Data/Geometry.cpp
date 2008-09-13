@@ -12,6 +12,9 @@
 
 #include "Usul/Trace/Trace.h"
 
+#include "OsgTools/Callbacks/SortBackToFront.h"
+#include "OsgTools/Utilities/ConvertToTriangles.h"
+
 #include "osg/Node"
 #include "osg/StateSet"
 
@@ -123,6 +126,13 @@ osg::Node* Geometry::buildScene( Usul::Interfaces::IUnknown* caller )
     {
       ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
       ss->setRenderBinDetails ( osg::StateSet::TRANSPARENT_BIN, "DepthSortedBin" );
+      
+      // Convert tri-strips to triangles (For sorting).
+      OsgTools::Utilities::ConvertToTriangles convert;
+      convert ( node.get() );
+      
+      osg::ref_ptr<osg::NodeVisitor> visitor ( new OsgTools::Callbacks::SetSortToFrontCallback );
+      node->accept ( *visitor );
     }
   }
   
@@ -263,6 +273,7 @@ double Geometry::maxLat() const
 
 void Geometry::renderBin( unsigned int renderBin )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   
   // Only change it if it's different.
@@ -281,6 +292,7 @@ void Geometry::renderBin( unsigned int renderBin )
 
 bool Geometry::isSemiTransparent() const
 {
+  USUL_TRACE_SCOPE;
   return false;
 }
 
@@ -293,6 +305,7 @@ bool Geometry::isSemiTransparent() const
 
 void Geometry::spatialOffset( const Point& value )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   if( false == _offset.equal ( value ) )
   {
@@ -310,6 +323,7 @@ void Geometry::spatialOffset( const Point& value )
 
 Usul::Math::Vec3d Geometry::spatialOffset() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _offset;
 }
@@ -323,6 +337,7 @@ Usul::Math::Vec3d Geometry::spatialOffset() const
 
 void Geometry::dirty ( bool b )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _dirty = b;
 }
@@ -336,6 +351,7 @@ void Geometry::dirty ( bool b )
 
 bool Geometry::dirty() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _dirty;
 }
@@ -343,66 +359,24 @@ bool Geometry::dirty() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene for data that is contained by the given extents.
+//  Update.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Geometry::buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+void Geometry::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
-  Extents e ( this->extents() );
-  
-  if ( false == e.intersects ( extents ) )
-    return 0x0;
-  
-  osg::ref_ptr<osg::Node> node ( this->_buildTiledScene ( extents, level, elevationData, caller ) );
-  
-  if ( node.valid() )
-  {
-    osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet () );
-    
-    // Set the render bin.
-    ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-    
-    const unsigned int on ( osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
-    const unsigned int off ( osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
-    
-    const unsigned int blendMode ( this->isSemiTransparent() ? on : off );
-    
-    ss->setMode ( GL_BLEND, blendMode );
-    
-    // Set render bin depending on alpha value.
-    if( true == this->isSemiTransparent() )
-    {
-      ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-      ss->setRenderBinDetails ( osg::StateSet::TRANSPARENT_BIN, "DepthSortedBin" );
-    }
-  }
-  
-  this->dirty ( false );
-  
-  return node.release();
+  USUL_TRACE_SCOPE;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build the scene for data that is contained by the given extents.
+//  Elevation has changed within the given extents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Geometry::_buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
+bool Geometry::elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller )
 {
-  return 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the scene branch.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Geometry::_buildScene ( Usul::Interfaces::IUnknown* caller )
-{
-  return 0x0;
+  USUL_TRACE_SCOPE;
+  return false;
 }

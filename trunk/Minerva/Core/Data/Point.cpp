@@ -20,6 +20,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/Geometry"
@@ -70,7 +71,8 @@ Point::Point() : BaseClass(),
   _primitiveId ( 1 ),
   _quality ( 0.80f ),
   _autotransform ( true ),
-  _color ( 0.0, 0.0, 0.0, 1.0 )
+  _color ( 0.0, 0.0, 0.0, 1.0 ),
+  _transform ( 0x0 )
 {
 }
 
@@ -271,37 +273,6 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
-{
-  USUL_TRACE_SCOPE;
-  
-#if 0
-  /// Get the center. from our data source.
-  Usul::Math::Vec3d center ( this->pointData() );
-  
-  if ( false == extents.contains ( Extents::Vertex ( center[0], center[1] ) ) )
-    return 0x0;
-  
-  // Set the height.
-  Minerva::Core::Utilities::ElevationGrid grid ( elevationData, extents );
-  center[2] = this->_elevation2 ( center, grid );
-  
-  const double height ( grid ( center ) );
-
-  return this->_buildScene ( center, height, caller );
-    
-#else
-  return 0x0;
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the scene branch for the data object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 osg::Node* Point::_buildScene ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
@@ -390,7 +361,7 @@ osg::Node* Point::_buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfa
   USUL_TRACE_SCOPE;
   
   // Redirect to proper build function.
-  switch ( _primitiveId )
+  switch ( this->primitiveId() )
   {
     case POINT:          return this->_buildPoint ( earthLocation );
     case SPHERE:         return this->_buildSphere ( earthLocation );
@@ -411,7 +382,7 @@ osg::Node* Point::_buildGeometry( const osg::Vec3d& earthLocation, Usul::Interfa
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildPoint( const osg::Vec3d& earthLocation )
+osg::Node* Point::_buildPoint ( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
   
@@ -448,9 +419,11 @@ osg::Node* Point::_buildPoint( const osg::Vec3d& earthLocation )
   
   geode->addDrawable ( geometry.get() );
 
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  MatrixTransform::RefPtr mt ( new MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( earthLocation ) );
   mt->addChild ( geode.get() );
+  
+  Usul::Threads::Safe::set ( this->mutex(), mt.get(), _transform );
   
   return mt.release();
 }
@@ -462,32 +435,35 @@ osg::Node* Point::_buildPoint( const osg::Vec3d& earthLocation )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildSphere( const osg::Vec3d& earthLocation )
+osg::Node* Point::_buildSphere ( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
-  
+
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  
+
   unsigned int size ( static_cast < unsigned int > ( 20.0f * this->quality() ) );
   OsgTools::ShapeFactory::MeshSize meshSize ( size, size );
   OsgTools::ShapeFactory::LatitudeRange  latRange  ( 89.9f, -89.9f );
   OsgTools::ShapeFactory::LongitudeRange longRange (  0.0f, 360.0f );
-  
+
   osg::ref_ptr < osg::Geometry> geometry ( Point::shapeFactory()->sphere ( this->size(), meshSize, latRange, longRange ) );
   geometry->setUseDisplayList ( false );
   geometry->setUseVertexBufferObjects ( true );
   geode->addDrawable( geometry.get() );
-  
+
   if ( this->autotransform() )
   {
     osg::ref_ptr< osg::AutoTransform > autoTransform ( Detail::createAutoTransform ( earthLocation ) );
     autoTransform->addChild ( geode.get() );
     return autoTransform.release();
   }
-  
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+
+  MatrixTransform::RefPtr mt ( new MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( earthLocation ) );
   mt->addChild ( geode.get() );
+  
+  Usul::Threads::Safe::set ( this->mutex(), mt.get(), _transform );
+  
   return mt.release();
 }
 
@@ -498,7 +474,7 @@ osg::Node* Point::_buildSphere( const osg::Vec3d& earthLocation )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildCone( const osg::Vec3d& earthLocation, bool invert )
+osg::Node* Point::_buildCone ( const osg::Vec3d& earthLocation, bool invert )
 {
   USUL_TRACE_SCOPE;
   
@@ -562,7 +538,7 @@ osg::Node* Point::_buildCone( const osg::Vec3d& earthLocation, bool invert )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildDisk( const osg::Vec3d& earthLocation )
+osg::Node* Point::_buildDisk ( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
   
@@ -595,7 +571,7 @@ osg::Node* Point::_buildDisk( const osg::Vec3d& earthLocation )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildCube( const osg::Vec3d& earthLocation )
+osg::Node* Point::_buildCube ( const osg::Vec3d& earthLocation )
 {
   USUL_TRACE_SCOPE;
   
@@ -627,20 +603,20 @@ osg::Node* Point::_buildCube( const osg::Vec3d& earthLocation )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Point::_buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown * caller )
+osg::Node* Point::_buildCylinder ( const osg::Vec3d& earthLocation, Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  
+
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
-  
+
   if( this->size() > 0 )
   {
     osg::Vec3 v0 ( earthLocation );
-    
+
     osg::Vec3 v1 ( v0 );
-    
+
     Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-    
+
     if( planet.valid() )
     {
       Usul::Math::Vec3d latLon;
@@ -650,18 +626,18 @@ osg::Node* Point::_buildCylinder( const osg::Vec3d& earthLocation, Usul::Interfa
       planet->convertToPlanet ( latLon, earth );
       v1.set ( earth[0], earth[1], earth[2] );
     }
-    
+
     unsigned int sides ( static_cast < unsigned int > ( 20 * this->quality() ) );
     osg::ref_ptr < osg::Geometry > geometry ( Point::shapeFactory()->cylinder( this->secondarySize()* 1000, sides, v0, v1, !this->isSemiTransparent() ) );
     geode->addDrawable( geometry.get() );
-    
+
     if( this->isSemiTransparent() )
     {
       geode->setCullCallback ( new OsgTools::Callbacks::SortBackToFront );
       geometry->setUseDisplayList ( false );
     }
   }
-  
+
   return geode.release();
 }
 
@@ -730,6 +706,7 @@ bool Point::autotransform () const
 
 Usul::Math::Vec4f Point::color() const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _color;
 }
@@ -743,6 +720,7 @@ Usul::Math::Vec4f Point::color() const
 
 void Point::color ( const Color& color )
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   
   if ( false == color.equal ( _color ) )
@@ -762,5 +740,67 @@ void Point::color ( const Color& color )
 
 bool Point::isSemiTransparent() const
 {
+  USUL_TRACE_SCOPE;
   return 1.0 != this->color()[3];
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene branch for the data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Point::elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  
+  /// Get the center. from our data source.
+  Usul::Math::Vec3d point ( this->pointData() );
+  
+  if ( false == extents.contains ( Extents::Vertex ( point[0], point[1] ) ) )
+    return false;
+  
+  if ( false == this->autotransform() )
+  {
+    MatrixTransform::RefPtr transform ( Usul::Threads::Safe::get ( this->mutex(), _transform ) );
+    
+    if ( transform.valid() )
+    {
+      // Set the height.
+      Minerva::Core::Utilities::ElevationGrid grid ( elevationData, extents );
+      point[2] = this->_elevation2 ( point, grid );
+    
+      //Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+      //point[2] = this->_elevation ( point, elevation );
+      
+      // Save the center in lat/lon coordinates.
+      Vec3d location ( point [ 0 ], point [ 1 ], point [ 2 ] );
+      
+      // Convert to planet coordinates.
+      Detail::convertToPlanet ( location, caller );
+      
+      //const double height ( grid ( center ) );
+
+      transform->matrix ( osg::Matrix::translate ( osg::Vec3 ( location[0], location[1], location[2] ) ) );
+    }
+  }
+  else
+  {
+    // TODO: update auto transform.
+  }
+  
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  It is now safe to update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Point::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
 }

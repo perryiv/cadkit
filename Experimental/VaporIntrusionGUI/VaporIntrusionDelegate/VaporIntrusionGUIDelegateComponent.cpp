@@ -21,9 +21,11 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
+#include "Usul/Interfaces/Qt/IMainWindow.h"
+#include "Usul/Interfaces/IQtDockWidgetMenu.h"
 #include "Usul/Properties/Attribute.h"
-#include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
+#include "Usul/Shared/Preferences.h"
 
 #include "Helios/Qt/Views/OSG/Viewer.h"
 #include "Helios/Qt/Views/OSG/Format.h"
@@ -34,6 +36,10 @@
 #include "MenuKit/ToggleButton.h"
 
 #include "QtGui/QWorkspace"
+#include "QtGui/QDockWidget"
+#include "QtGui/QHeaderView"
+#include "QtGui/QMainWindow"
+#include "QtGui/QTreeWidget"
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDelegateComponent, VaporIntrusionGUIDelegateComponent::BaseClass );
 
@@ -45,10 +51,10 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDelegateComponent, VaporIntru
 ///////////////////////////////////////////////////////////////////////////////
 
 VaporIntrusionGUIDelegateComponent::VaporIntrusionGUIDelegateComponent() : BaseClass(),
-xyzView( 0x0 ),
-xyView ( 0x0 ),
-xzView ( 0x0 ),
-yzView ( 0x0 )
+_xyzView( 0x0 ),
+_xyView ( 0x0 ),
+_xzView ( 0x0 ),
+_yzView ( 0x0 )
 {
 }
 
@@ -81,6 +87,8 @@ Usul::Interfaces::IUnknown *VaporIntrusionGUIDelegateComponent::queryInterface (
     return static_cast < Usul::Interfaces::IGUIDelegate*>(this);
   case Usul::Interfaces::IMenuAdd::IID:
     return static_cast < Usul::Interfaces::IMenuAdd*>(this);
+  case Usul::Interfaces::IPluginInitialize::IID:
+    return static_cast < Usul::Interfaces::IPluginInitialize*>(this);
   default:
     return 0x0;
   }
@@ -121,70 +129,70 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     QWorkspace *parent ( workspace->workspace() );
 
     // Add XYZ window
-    xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
-    parent->addWindow ( xyzView.get() );
+    _xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    parent->addWindow ( _xyzView.get() );
 
     // Add XY window
-    xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
-    parent->addWindow ( xyView.get() );
+    _xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    parent->addWindow ( _xyView.get() );
 
     // Add XZ window
-    xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
-    parent->addWindow ( xzView.get() );
+    _xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    parent->addWindow ( _xzView.get() );
 
     // Add YZ window
-    yzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
-    parent->addWindow ( yzView.get() );
+    _yzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    parent->addWindow ( _yzView.get() );
 
     // Build the scene.
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
     if ( build.valid () )
     {
-      xyzView->viewer()->scene ( build->buildScene ( document->options(), caller ) );
-      xyView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
-      xzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
-      yzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
+      _xyzView->viewer()->scene ( build->buildScene ( document->options(), caller ) );
+      _xyView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
+      _xzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
+      _yzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
     }
 
     // Set the titles
-    xyzView->setTitle( "XYZ -- 3D View" );
+    _xyzView->setTitle( "XYZ -- 3D View" );
 
-    xyView->setTitle ( "XY -- Front View" );
-    xyView->camera( OsgTools::Render::Viewer::FRONT );
-    xyView->set( Usul::Math::Vec3ui( 1, 1, 0 ) );
-    xyView->id( 1 );
+    _xyView->setTitle ( "XY -- Front View" );
+    _xyView->camera( OsgTools::Render::Viewer::FRONT );
+    _xyView->set( Usul::Math::Vec3ui( 1, 1, 0 ) );
+    _xyView->id( 1 );
 
-    xzView->setTitle ( "XZ -- Top View" );
-    xzView->camera( OsgTools::Render::Viewer::TOP );
-    xzView->set( Usul::Math::Vec3ui( 1, 0, 1 ) );
-    xzView->id( 2 );
+    _xzView->setTitle ( "XZ -- Top View" );
+    _xzView->camera( OsgTools::Render::Viewer::TOP );
+    _xzView->set( Usul::Math::Vec3ui( 1, 0, 1 ) );
+    _xzView->id( 2 );
 
-    yzView->setTitle ( "YZ -- Left View" );
-    yzView->camera( OsgTools::Render::Viewer::LEFT );
-    yzView->set( Usul::Math::Vec3ui( 0, 1, 1 ) );
-    yzView->id( 3 );
+    _yzView->setTitle ( "YZ -- Left View" );
+    _yzView->camera( OsgTools::Render::Viewer::LEFT );
+    _yzView->set( Usul::Math::Vec3ui( 0, 1, 1 ) );
+    _yzView->id( 3 );
 
     // Get the bounds of the parent window
     int w ( parent->width()  * 0.5 );
     int h ( parent->height() * 0.5 );
 
     // XYZ window is the top left window
-    xyzView->resize ( w, h );
+    _xyzView->resize ( w, h );
 
     // XY window is the bottom right window
-    xyView->resize  ( w, h );
+    _xyView->resize  ( w, h );
 
     // XZ window is the bottom left window
-    xzView->resize  ( w, h );
+    _xzView->resize  ( w, h );
 
     // XY window is the top right window
-    yzView->resize  ( w, h );
+    _yzView->resize  ( w, h );
 
     // Show the windows
-    xyzView->show();
-    xyView->show();
-    xzView->show();
-    yzView->show();
+    _xyzView->show();
+    _xyView->show();
+    _xzView->show();
+    _yzView->show();
 }
 }
 
@@ -205,4 +213,42 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   
   // Add the window menu to the main menu
   //menu.append( windowMenu.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the tab for the scene tree.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
+{
+  //_caller = caller;
+
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
+
+  if ( mainWindow.valid() )
+  {
+    QMainWindow * main ( mainWindow->mainWindow() );
+
+    // Build the docking window.
+    _dock = new QDockWidget ( QObject::tr ( "Materials Container" ), main );
+    _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
+
+    // Create the widget
+    _materialContainer = new MaterialContainer ( _dock );
+
+    // Add the dock to the main window.
+    _dock->setWidget( _materialContainer );
+    main->addDockWidget ( Qt::LeftDockWidgetArea, _dock );
+
+    // Set the object name.
+    _dock->setObjectName ( "MaterialsContainerWidget" );
+
+    // Add toggle to the menu.
+    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
+    if ( dwm.valid () )
+      dwm->addDockWidgetMenu ( _dock );
+  }
 }

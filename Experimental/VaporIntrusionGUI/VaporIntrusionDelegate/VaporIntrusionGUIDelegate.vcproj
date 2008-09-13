@@ -260,6 +260,82 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Qt"
+				>
+				<File
+					RelativePath=".\MaterialContainer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MaterialContainer.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_MaterialContainer.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\MaterialContainer.ui -o .\ui_MaterialContainer.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\MaterialContainer.h&quot; -o &quot;.\GeneratedFiles\moc_MaterialContainer.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\MaterialContainer.ui;$(QTDIR)\bin\moc.exe;.\MaterialContainer.h"
+							Outputs=".\ui_MaterialContainer.h;.\GeneratedFiles\moc_MaterialContainer.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_MaterialContainer.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\MaterialContainer.ui -o .\ui_MaterialContainer.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\MaterialContainer.h&quot; -o &quot;.\GeneratedFiles\moc_MaterialContainer.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\MaterialContainer.ui;$(QTDIR)\bin\moc.exe;.\MaterialContainer.h"
+							Outputs=".\ui_MaterialContainer.h;.\GeneratedFiles\moc_MaterialContainer.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\MaterialDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MaterialDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_MaterialDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\MaterialDialog.ui -o .\ui_MaterialDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\MaterialDialog.h&quot; -o &quot;.\GeneratedFiles\moc_MaterialDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\MaterialDialog.ui;$(QTDIR)\bin\moc.exe;.\MaterialDialog.h"
+							Outputs=".\ui_MaterialDialog.h;.\GeneratedFiles\moc_MaterialDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_MaterialDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\MaterialDialog.ui -o .\ui_MaterialDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\MaterialDialog.h&quot; -o &quot;.\GeneratedFiles\moc_MaterialDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\MaterialDialog.ui;$(QTDIR)\bin\moc.exe;.\MaterialDialog.h"
+							Outputs=".\ui_MaterialDialog.h;.\GeneratedFiles\moc_MaterialDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="Generated"
+				>
+				<File
+					RelativePath=".\generatedfiles\moc_MaterialContainer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_MaterialDialog.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

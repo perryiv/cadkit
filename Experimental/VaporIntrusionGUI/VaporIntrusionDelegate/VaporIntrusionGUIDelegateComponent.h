@@ -18,11 +18,14 @@
 
 #include "CompileGuard.h"
 #include "VaporIntrusionGUIViewer.h"
+#include "MaterialContainer.h"
+#include "MaterialDialog.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IMenuAdd.h"
+#include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
 
@@ -31,16 +34,18 @@
 
 #include <string>
 
+class QDockWidget;
 
-class VaporIntrusionGUIDelegateComponent : public Usul::Base::Referenced,
-                               public Usul::Interfaces::IPlugin,
-                               public Usul::Interfaces::IGUIDelegate,
-                               public Usul::Interfaces::IMenuAdd 
+class VaporIntrusionGUIDelegateComponent : public Usul::Base::Object,
+                                           public Usul::Interfaces::IPlugin,
+                                           public Usul::Interfaces::IGUIDelegate,
+                                           public Usul::Interfaces::IMenuAdd,
+                                           public Usul::Interfaces::IPluginInitialize
 {
 public:
 
   /// Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef Usul::Interfaces::IUnknown Unknown;
   typedef VaporIntrusionGUIViewer VIGUIViewer;
   typedef CadKit::Helios::Views::OSG::Viewer QtViewer;
@@ -69,6 +74,9 @@ public:
 
   //Usul::Interfaces::IMenuAdd
   virtual void                menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+ 
+  //  Usul::Interfaces::IPluginInitialize
+  virtual void initializePlugin ( Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected: 
 
@@ -80,10 +88,13 @@ protected:
   virtual ~VaporIntrusionGUIDelegateComponent();
 
 private:
-  QtViewerPtr xyzView;
-  VIGUIViewerPtr xyView;
-  VIGUIViewerPtr xzView;
-  VIGUIViewerPtr yzView;
+  QtViewerPtr         _xyzView;
+  VIGUIViewerPtr      _xyView;
+  VIGUIViewerPtr      _xzView;
+  VIGUIViewerPtr      _yzView;
+
+  QDockWidget         *_dock;
+  MaterialContainer   *_materialContainer;
 
 
 };

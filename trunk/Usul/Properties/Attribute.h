@@ -27,7 +27,8 @@ namespace Properties {
 template
 <
   class T, 
-  class BaseClassType = Usul::Base::Referenced 
+  class BaseClassType = Usul::Base::Referenced,
+  class RefConfig = Usul::Pointers::Configs::RefCountingNullOk
 >
 class Attribute : public BaseClassType
 {
@@ -36,10 +37,11 @@ public:
   /// Typedefs.
   typedef BaseClassType BaseClass;
   typedef T ValueType;
-  typedef Attribute < ValueType, BaseClass > ThisType;
+  typedef Attribute < ValueType, BaseClass, RefConfig > ThisType;
+  typedef Usul::Pointers::SmartPointer < Attribute, RefConfig > RefPtr;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( Attribute );
+  //USUL_DECLARE_REF_POINTERS ( Attribute );
 
   // Constructors
   explicit Attribute() : BaseClass()  {}

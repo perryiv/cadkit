@@ -144,13 +144,6 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
         }
       }
     }
-
-    /*osg::Vec4 color ( 1.0, 0.0, 0.0, 1.0 );
-    osg::ref_ptr< osg::Material> material ( new osg::Material );
-    material->setAmbient( osg::Material::FRONT_AND_BACK, color );
-    material->setDiffuse( osg::Material::FRONT_AND_BACK, color );
-    OsgTools::State::StateSet::setMaterial( node.get(), material.get() );
-    OsgTools::State::StateSet::setAlpha( node.get(), 1.0f );*/
   }
  
   //BaseClass::mousePressEvent( event );
@@ -166,28 +159,30 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
 
 void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsigned int z, Usul::Interfaces::IVaporIntrusionGUI* document )
 {
+  Guard guard ( this );
+
+  osg::Vec4 osgColor ( 1.0, 0.0, 0.0, 1.0 );
+  Usul::Math::Vec4f color( osgColor.r(), osgColor.g(), osgColor.b(), osgColor.a() );
+
   // Top view -- Y is depth
   if( _cameraDirection == RenderViewer::TOP && _depth == y )
   {
    // Set the material for the cube
-    document->setMaterial( x, y, z, Usul::Math::Vec4f( 1.0, 0.0, 0.0, 1.0 ) ); 
-   
+    document->setMaterial( x, y, z, color ); 
   }
 
   // Left View -- X is depth
   else if( _cameraDirection == RenderViewer::LEFT && _depth == x )
   {
     // Set the material for the cube
-    document->setMaterial( x, y, z, Usul::Math::Vec4f( 1.0, 0.0, 0.0, 1.0 ) ); 
-   
+    document->setMaterial( x, y, z, color );
   }
 
   // Front ( and default ) View -- Z is depth
   else if ( _cameraDirection == RenderViewer::FRONT && _depth == z )
   {
     // Set the material for the cube
-    document->setMaterial( x, y, z, Usul::Math::Vec4f( 1.0, 0.0, 0.0, 1.0 ) ); 
-   
+    document->setMaterial( x, y, z, color ); 
   }
 
 }
@@ -245,6 +240,8 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
       {
         for( unsigned int z = 0; z < dimensions[2]; ++z )
         {
+          Guard guard ( this );
+
           document->setAlpha( x, y, z, 0.1f );
           _selectedViewID = this->id();
         }
@@ -263,6 +260,8 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   // Top view
   if( _cameraDirection == RenderViewer::TOP )
   {
+    Guard guard ( this );
+
     iDim = dimensions[0];
     jDim = dimensions[2];
 
@@ -277,6 +276,8 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   // Left View
   else if( _cameraDirection == RenderViewer::LEFT )
   {
+    Guard guard ( this );
+
     iDim = dimensions[1];
     jDim = dimensions[2];
 
@@ -290,6 +291,8 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   // Front ( and default ) View
   else
   {
+    Guard guard ( this );
+
     iDim = dimensions[0];
     jDim = dimensions[1];
 
@@ -305,6 +308,7 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
   {
     for( unsigned int j = 0; j < jDim; ++j )
     {
+      Guard guard ( this );
 
       // Top View
       if( _cameraDirection == RenderViewer::TOP )

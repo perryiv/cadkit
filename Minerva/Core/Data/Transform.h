@@ -17,8 +17,6 @@
 #ifndef __MINERVA_CORE_DATA_TRANSFORM_H__
 #define __MINERVA_CORE_DATA_TRANSFORM_H__
 
-#include "Minerva/Core/Export.h"
-
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 
@@ -31,7 +29,7 @@ namespace Core {
 namespace Data {
 
 
-class MINERVA_EXPORT Transform
+class Transform
 {
 public:
   

@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
 				PreprocessorDefinitions="CURL_STATICLIB;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib ossimd.lib $(GDAL_LIB_FILE_DEBUG) $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib ossimd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minervad.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
 				PreprocessorDefinitions="CURL_STATICLIB;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgText.lib ossim.lib $(GDAL_LIB_FILE_RELEASE) $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgText.lib ossim.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minerva.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -411,10 +411,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Data\Transform.cpp"
-						>
-					</File>
-					<File
 						RelativePath=".\Data\Transform.h"
 						>
 					</File>
@@ -456,14 +452,6 @@
 					</File>
 					<File
 						RelativePath=".\Layers\RasterLayerArcIMS.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\RasterLayerGDAL.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\RasterLayerGDAL.h"
 						>
 					</File>
 					<File
@@ -876,6 +864,18 @@
 					</File>
 					<File
 						RelativePath=".\Utilities\SubRegion.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="OSG"
+					>
+					<File
+						RelativePath=".\OSG\MatrixTransform.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\OSG\MatrixTransform.h"
 						>
 					</File>
 				</Filter>

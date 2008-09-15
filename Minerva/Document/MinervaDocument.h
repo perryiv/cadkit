@@ -108,6 +108,7 @@ public:
   virtual void                             preRenderNotify ( Unknown *caller );
 
   /// Build the scene.
+  osg::Node *                              buildScene ( Unknown *caller = 0x0 );
   virtual osg::Node *                      buildScene ( const BaseClass::Options &options, Unknown *caller = 0x0 );
 
   /// Return true if this document can do it.

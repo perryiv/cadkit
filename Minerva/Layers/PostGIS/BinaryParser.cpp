@@ -29,10 +29,13 @@ using namespace Minerva::Layers::PostGIS;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef Minerva::Core::Data::Point Point;
-typedef Minerva::Core::Data::Line Line;
-typedef Minerva::Core::Data::Polygon Polygon;
-typedef Minerva::Core::Data::Transform Transform;
+namespace Detail
+{
+  typedef Minerva::Core::Data::Point Point;
+  typedef Minerva::Core::Data::Line Line;
+  typedef Minerva::Core::Data::Polygon Polygon;
+  typedef Minerva::Core::Data::Transform Transform;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //

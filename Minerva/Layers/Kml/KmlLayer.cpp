@@ -876,7 +876,7 @@ void KmlLayer::_addTimer()
     {        
       // Make a new timer.  The timer expects the timeout to be in milliseconds.
       Usul::Interfaces::IUnknown::RefPtr me ( this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );
-      _timerId = service->timerAdd ( link->refreshInterval() * 1000, me );
+      _timerId = service->timerAdd ( link->refreshInterval() * 1000, me, true );
     }
   }
 }
@@ -890,9 +890,16 @@ void KmlLayer::_addTimer()
 
 void KmlLayer::timerNotify ( TimerID )
 {
+  // Return if we are currently reading or downloading.
+  if ( this->isReading() || this->isDownloading() )
+    return;
+  
+  // Help shorten lines.
+  namespace UA = Usul::Adaptors;
+  
   // Create a job to update the file.
-  Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  Usul::Adaptors::bind1 ( static_cast <Usul::Interfaces::IUnknown*> ( 0x0 ), 
-                                                                             Usul::Adaptors::memberFunction ( this, &KmlLayer::_updateLink ) ) ) );
+  Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  UA::bind1 ( static_cast <Usul::Interfaces::IUnknown*> ( 0x0 ), 
+                                                                  UA::memberFunction ( KmlLayer::RefPtr ( this ), &KmlLayer::_updateLink ) ) ) );
   
   if ( true == job.valid() )
   {

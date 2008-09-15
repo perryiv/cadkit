@@ -8,6 +8,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef _MSC_VER
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#endif
+
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/TimeSpan.h"

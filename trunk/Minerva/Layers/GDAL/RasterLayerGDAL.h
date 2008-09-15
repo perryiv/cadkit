@@ -11,7 +11,6 @@
 #ifndef __MINERVA_GDAL_LAYER_H__
 #define __MINERVA_GDAL_LAYER_H__
 
-#include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Usul/Interfaces/IRead.h"
@@ -19,11 +18,11 @@
 class GDALDataset;
 
 namespace Minerva {
-namespace Core {
 namespace Layers {
+namespace GDAL {
 
-class MINERVA_EXPORT RasterLayerGDAL : public Minerva::Core::Layers::RasterLayer,
-                                       public Usul::Interfaces::IRead
+class RasterLayerGDAL : public Minerva::Core::Layers::RasterLayer,
+                        public Usul::Interfaces::IRead
 {
 public:
   typedef Minerva::Core::Layers::RasterLayer BaseClass;

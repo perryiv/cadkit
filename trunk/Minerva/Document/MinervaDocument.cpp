@@ -503,7 +503,7 @@ void MinervaDocument::_clear()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
+osg::Node * MinervaDocument::buildScene ( Unknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -525,6 +525,18 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
   group->addChild ( _hud.buildScene() );
 
   return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unknown *caller )
+{
+  return this->buildScene ( caller );
 }
 
 

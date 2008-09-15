@@ -35,7 +35,7 @@
 #include "ogrsf_frmts.h"
 #include "cpl_error.h"
 
-using namespace Minerva::Core::Layers;
+using namespace Minerva::Layers::GDAL;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

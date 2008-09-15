@@ -161,28 +161,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva Model", "..\M
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva ProjectionManager", "..\Minerva\Plugins\ProjectionManager\ProjectionManager.vcproj", "{EE125749-B664-4962-A4E5-81BB0B0E5400}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Model Presentation", "..\Experimental\ModelPresentation\ModelPresentation\ModelPresentationModel.vcproj", "{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{040C77E7-E4BD-4858-80F5-3AC607BFBCFA} = {040C77E7-E4BD-4858-80F5-3AC607BFBCFA}
-		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva Postgres", "..\Minerva\DataSources\PG\MinervaPostgres.vcproj", "{A232FF6C-6B18-46CE-91F9-84FE9AF17992}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -205,19 +183,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Path Animation", "..\
 		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Model Presentation", "..\Experimental\ModelPresentationLib\ModelPresentationLib.vcproj", "{040C77E7-E4BD-4858-80F5-3AC607BFBCFA}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
-		{8B99160D-5504-4A93-89DC-F4AE949501A4} = {8B99160D-5504-4A93-89DC-F4AE949501A4}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Center Geometry", "..\Helios\Plugins\CenterGeometry\CenterGeometry.vcproj", "{D22CB387-5885-4B26-B149-350F253E4F17}"
@@ -308,14 +273,6 @@ Global
 		{5C265DE8-237C-4F00-B7FB-546A6F9C595D}.Debug|Win32.Build.0 = Debug|Win32
 		{5C265DE8-237C-4F00-B7FB-546A6F9C595D}.Release|Win32.ActiveCfg = Release|Win32
 		{5C265DE8-237C-4F00-B7FB-546A6F9C595D}.Release|Win32.Build.0 = Release|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Debug|Win32.Build.0 = Debug|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Release|Win32.ActiveCfg = Release|Win32
-		{EE125749-B664-4962-A4E5-81BB0B0E5400}.Release|Win32.Build.0 = Release|Win32
-		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Debug|Win32.Build.0 = Debug|Win32
-		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Release|Win32.ActiveCfg = Release|Win32
-		{F2A4F8BA-37D6-42B4-9C76-D261BDEA99A6}.Release|Win32.Build.0 = Release|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Debug|Win32.Build.0 = Debug|Win32
 		{A232FF6C-6B18-46CE-91F9-84FE9AF17992}.Release|Win32.ActiveCfg = Release|Win32
@@ -324,10 +281,6 @@ Global
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Debug|Win32.Build.0 = Debug|Win32
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.ActiveCfg = Release|Win32
 		{372E35DF-DE41-45DC-9C11-7067C5131393}.Release|Win32.Build.0 = Release|Win32
-		{040C77E7-E4BD-4858-80F5-3AC607BFBCFA}.Debug|Win32.ActiveCfg = Debug|Win32
-		{040C77E7-E4BD-4858-80F5-3AC607BFBCFA}.Debug|Win32.Build.0 = Debug|Win32
-		{040C77E7-E4BD-4858-80F5-3AC607BFBCFA}.Release|Win32.ActiveCfg = Release|Win32
-		{040C77E7-E4BD-4858-80F5-3AC607BFBCFA}.Release|Win32.Build.0 = Release|Win32
 		{D22CB387-5885-4B26-B149-350F253E4F17}.Debug|Win32.ActiveCfg = Debug|Win32
 		{D22CB387-5885-4B26-B149-350F253E4F17}.Debug|Win32.Build.0 = Debug|Win32
 		{D22CB387-5885-4B26-B149-350F253E4F17}.Release|Win32.ActiveCfg = Release|Win32

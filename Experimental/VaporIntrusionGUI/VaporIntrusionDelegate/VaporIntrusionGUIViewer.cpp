@@ -39,14 +39,15 @@ Usul::Types::Uint32 VaporIntrusionGUIViewer::_selectedViewID   ( 0 );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-VaporIntrusionGUIViewer::VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller ) :
+VaporIntrusionGUIViewer::VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainer* matContainer ) :
 BaseClass( doc, format, parent, caller ),
 _cameraDirection( OsgTools::Render::Viewer::FRONT ),
 _set( 0, 0, 0 ),
 _depth( 0 ),
 _mouseWheelPosition( 0 ),
 _mouseWheelSensitivity( 10.0f ),
-_id( 0 )
+_id( 0 ),
+_materialContainer( matContainer )
 {
 }
 
@@ -162,6 +163,10 @@ void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsign
   Guard guard ( this );
 
   osg::Vec4 osgColor ( 1.0, 0.0, 0.0, 1.0 );
+  if( 0x0 != _materialContainer )
+  {
+    osgColor = _materialContainer->getCurrentColor();
+  }
   Usul::Math::Vec4f color( osgColor.r(), osgColor.g(), osgColor.b(), osgColor.a() );
 
   // Top view -- Y is depth

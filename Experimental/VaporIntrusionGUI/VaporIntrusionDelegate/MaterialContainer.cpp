@@ -17,11 +17,7 @@
 #include "MaterialContainer.h"
 #include "MaterialDialog.h"
 
-#include "Usul/Convert/Convert.h"
-#include "Usul/Properties/Attribute.h"
-
 #include "QtGui/QScrollArea"
-#include "QtGui/QRadioButton"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -105,7 +101,7 @@ void MaterialContainer::radioClicked( QAbstractButton * button )
   if( 0x0 == radio )
     return;
 
-  MaterialDialog* material ( dynamic_cast< MaterialDialog* > ( radio->userData( 0 ) ) );
+  MaterialDialog* material (  _materials[radio] );
 
   if( 0x0 == material )
     return;
@@ -123,9 +119,6 @@ void MaterialContainer::radioClicked( QAbstractButton * button )
 
 void MaterialContainer::on_addButton_clicked()
 {
-  typedef Usul::Pointers::Configs::NoRefCountingNullOk Config;
-  typedef Usul::Properties::Attribute< MaterialDialog, QObjectUserData, Config > UserData;
-
   MaterialDialog* a ( new MaterialDialog );
 
   QRadioButton* radio ( new QRadioButton );
@@ -138,7 +131,7 @@ void MaterialContainer::on_addButton_clicked()
   //_layout->addWidget ( a );
   _layout->insertLayout ( 0, grid );
 
-  _materials.push_back ( a );
+  _materials[radio] = a ;
 
   UserData::RefPtr data ( dynamic_cast< UserData* > ( a ) );
 

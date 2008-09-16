@@ -20,17 +20,25 @@
 #include "ui_MaterialContainer.h"
 #include "MaterialDialog.h"
 
+#include "Usul/Convert/Convert.h"
+#include "Usul/Properties/Attribute.h"
+
 #include "QtGui/QWidget"
+#include "QtGui/QRadioButton"
 
 #include "osg/Vec4"
 
 #include <vector>
+#include <map>
 class MaterialContainer : public QWidget,
                           private Ui::MaterialContainer
 {
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
+  typedef Usul::Pointers::Configs::NoRefCountingNullOk Config;
+  typedef Usul::Properties::Attribute< MaterialDialog, QObjectUserData, Config > UserData;
+  typedef std::map< QRadioButton*, MaterialDialog* > Materials;
   
 
   MaterialContainer ( QWidget *parent = 0x0 );
@@ -39,7 +47,7 @@ public:
   osg::Vec4                     getCurrentColor();
 
 private:
-  std::vector< MaterialDialog* > _materials;
+  Materials                      _materials;
   QVBoxLayout*                   _layout;
   QButtonGroup*                  _radioButtons;
   osg::Vec4                      _color;

@@ -62,6 +62,10 @@ public:
   // Return the appropriate mesh size.
   virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms );
 
+  // Return the radii.
+  double              radiusEquator() const;
+  double              radiusPolar() const;
+  
   // Get the size.
   virtual double      size() const;
 

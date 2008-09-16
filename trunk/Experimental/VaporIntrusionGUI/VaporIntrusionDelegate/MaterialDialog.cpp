@@ -88,10 +88,10 @@ osg::Vec4 MaterialDialog::color()
 
   QColor qc ( _color->color() );
 
-  osg::Vec4 c ( static_cast< float > ( qc.red() ), 
-                static_cast< float > ( qc.green() ),
-                static_cast< float > ( qc.blue() ),
-                static_cast< float > ( qc.alpha() ) );
+  osg::Vec4 c ( static_cast< float > ( qc.redF() ), 
+                static_cast< float > ( qc.greenF() ),
+                static_cast< float > ( qc.blueF() ),
+                static_cast< float > ( qc.alphaF() ) );
 
   return c;
 }

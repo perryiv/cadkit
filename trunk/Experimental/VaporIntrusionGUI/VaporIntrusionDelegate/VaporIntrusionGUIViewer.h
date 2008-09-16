@@ -16,6 +16,8 @@
 #ifndef _VAPOR_INTRUSION_GUI_VIEWER_CLASS_H_
 #define _VAPOR_INTRUSION_GUI_VIEWER_CLASS_H_
 
+#include "MaterialContainer.h"
+
 #include "Helios/Qt/Views/OSG/Viewer.h"
 
 #include "Usul/Math/Vector3.h"
@@ -30,7 +32,7 @@ public:
   typedef CadKit::Helios::Views::OSG::Viewer BaseClass;
   typedef OsgTools::Render::Viewer::CameraOption CameraOption;
   typedef OsgTools::Render::Viewer RenderViewer;
-  VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller );
+  VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainer* matContainer );
   //virtual ~VaporIntrusionGUIViewer ();
 
   void                            camera( CameraOption option );
@@ -66,6 +68,7 @@ private:
   Usul::Types::Uint32             _id;
 
   static Usul::Types::Uint32      _selectedViewID;
+  MaterialContainer*              _materialContainer;
 
 };
 

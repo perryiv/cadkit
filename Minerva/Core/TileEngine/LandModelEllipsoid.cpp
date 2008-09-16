@@ -222,3 +222,31 @@ osg::Matrixd LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, 
                        m[0][2], m[1][2], m[2][2], 0.0,
                        p[0], p[1], p[2], 1.0);
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the equator radius.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double LandModelEllipsoid::radiusEquator() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _ellipsoid->a();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the polar radius.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double LandModelEllipsoid::radiusPolar() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _ellipsoid->b();
+}

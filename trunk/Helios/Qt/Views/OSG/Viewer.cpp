@@ -738,7 +738,7 @@ void Viewer::keyPressEvent ( QKeyEvent *event )
 
     case Qt::Key_Escape:
 
-      this->showNormal();
+      //this->showNormal();
       viewer->cycleMode();
       break;
 

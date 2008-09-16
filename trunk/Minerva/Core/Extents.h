@@ -350,7 +350,13 @@ template < class VertexType > inline bool ThisClass::contains ( const Vertex& v 
   return mn[0] <= v[0] && mn[1] <= v[1] && mx[0] >= v[0] && mx[1] >= v[1];
 }
   
-/// Get the center of the extents.
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the center of the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+  
 template < class VertexType > inline VertexType ThisClass::center() const
 {
   return ( Vertex ( this->minimum() + this->maximum() ) / 2.0 );

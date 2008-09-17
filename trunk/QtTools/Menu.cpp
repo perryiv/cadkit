@@ -127,21 +127,10 @@ namespace Detail
     {
       USUL_TRACE_SCOPE;
 
-      // Save the old menu.
-      QMenu* current ( _menu );
-
-      // Add a new menu.
-      if ( 0x0 != _menu )
-        _menu = _menu->addMenu ( QObject::tr ( m.text().c_str() ) );
-
-      // Traverse the menu.
-      m.traverse ( *this );
-
-      // Set the enabled flag.
-      _menu->setEnabled ( m.enabled() );
-
-      // Restore the current menu.
-      _menu = current;
+      Menu * menu ( new Menu ( m.text().c_str() ) );
+      menu->menu ( &m ); 
+      
+      _menu->addMenu ( menu );
     }
 
     virtual void apply ( MenuKit::Button &b )

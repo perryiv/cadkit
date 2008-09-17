@@ -130,7 +130,8 @@ namespace Detail
       Menu * menu ( new Menu ( m.text().c_str() ) );
       menu->menu ( &m ); 
       
-      _menu->addMenu ( menu );
+      if ( 0x0 != _menu )
+        _menu->addMenu ( menu );
     }
 
     virtual void apply ( MenuKit::Button &b )

@@ -411,6 +411,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\TimeStamp.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\TimeStamp.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\Transform.h"
 						>
 					</File>

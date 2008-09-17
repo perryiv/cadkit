@@ -251,6 +251,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ModelPostProcess.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ModelPostProcess.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NetworkLink.cpp"
 				>
 			</File>

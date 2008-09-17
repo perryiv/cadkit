@@ -27,22 +27,27 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( FindMinMaxDates );
 
-  FindMinMaxDates ( );
+  FindMinMaxDates();
 
-  virtual void    visit ( Minerva::Core::Data::DataObject &object );
+  virtual void    visit ( Minerva::Core::Data::Feature &object );
 
   /// Get the first date.
-  const Date &    first () const { return _first; }
+  const Date &    first() const { return _first; }
 
   /// Get the last date.
-  const Date &    last () const { return _last; }
+  const Date &    last() const { return _last; }
 
 protected:
 
   /// Use reference counting.
-  virtual ~FindMinMaxDates ();
+  virtual ~FindMinMaxDates();
+  
+  /// Update min and max dates.
+  void            _updateMin ( const Date& );
+  void            _updateMax ( const Date& );
 
 private:
+  
   Date _first;
   Date _last;
 };

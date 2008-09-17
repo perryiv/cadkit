@@ -11,6 +11,7 @@
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Visitor.h"
+#include "Minerva/Interfaces/IFeature.h"
 
 #include "OsgTools/Group.h"
 
@@ -176,14 +177,11 @@ void Container::traverse ( Minerva::Core::Visitor& visitor )
   Guard guard ( this );
   for ( Unknowns::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
   {
-    if ( Minerva::Core::Data::Container *Container = dynamic_cast< Minerva::Core::Data::Container*> ( (*iter).get() ) )
+    Minerva::Interfaces::IFeature::QueryPtr f ( *iter );
+    Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
+    if ( feature.valid() )
     {
-      Container->accept ( visitor );
-    }
-
-    if ( Minerva::Core::Data::DataObject *object = dynamic_cast< Minerva::Core::Data::DataObject*> ( (*iter).get() ) )
-    {
-      object->accept ( visitor );
+      feature->accept ( visitor );
     }
   }
 }

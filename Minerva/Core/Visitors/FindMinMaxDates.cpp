@@ -17,6 +17,7 @@
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/TimeSpan.h"
+#include "Minerva/Core/Data/TimeStamp.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -29,8 +30,8 @@ using namespace Minerva::Core::Visitors;
 
 FindMinMaxDates::FindMinMaxDates () :
   BaseClass (),
-  _first ( boost::date_time::min_date_time ),
-  _last ( boost::date_time::max_date_time )
+  _first ( boost::date_time::not_a_date_time ),
+  _last ( boost::date_time::not_a_date_time )
 {
 }
 
@@ -52,35 +53,47 @@ FindMinMaxDates::~FindMinMaxDates()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void FindMinMaxDates::visit ( Minerva::Core::Data::DataObject &object )
+void FindMinMaxDates::visit ( Minerva::Core::Data::Feature &object )
 {
   if ( Minerva::Core::Data::TimeSpan *span = dynamic_cast<Minerva::Core::Data::TimeSpan*> ( object.timePrimitive() ) )
   {
     const Date first ( span->begin() );
     const Date last ( span->end() );
-
-    const Date min ( boost::date_time::min_date_time );
-    const Date max ( boost::date_time::max_date_time );
     
-    // These are human readable in the debugger...
-  #if _DEBUG
-    const std::string sFirst ( first.toString() );
-    const std::string sLast ( last.toString() );
-    
-    const std::string sMin ( min.toString() );
-    const std::string sMax ( max.toString() );
-  #endif
-    
-    const bool valid ( min != first && max != last );
-    
-    // If the dates are valid.
-    if ( true == valid )
-    {
-      if ( min == _first || first < _first )
-        _first = first;
-
-      if ( max == _last || last > _last )
-        _last = last;
-    }
+    this->_updateMin ( first );
+    this->_updateMax ( last );
   }
+  else if ( Minerva::Core::Data::TimeStamp *stamp = dynamic_cast<Minerva::Core::Data::TimeStamp*> ( object.timePrimitive() ) )
+  {
+    const Date date ( stamp->when() );
+    
+    this->_updateMin ( date );
+    this->_updateMax ( date );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update min date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FindMinMaxDates::_updateMin ( const Date& date )
+{
+  if ( Date ( boost::date_time::not_a_date_time ) == _first || date < _first )
+    _first = date;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update max date.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void FindMinMaxDates::_updateMax ( const Date& date )
+{
+  if ( Date ( boost::date_time::not_a_date_time ) == _last || date > _last )
+    _last = date;
 }

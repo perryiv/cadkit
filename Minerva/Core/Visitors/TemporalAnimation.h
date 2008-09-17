@@ -29,14 +29,18 @@ public:
 
   TemporalAnimation ( const Date& first, const Date& last );
 
-  virtual void visit ( Minerva::Core::Data::DataObject &object );
+  virtual void visit ( Minerva::Core::Data::Feature &object );
 
 protected:
+  
   /// Do not use.
   TemporalAnimation ();
 
   /// Use reference counting.
   virtual ~TemporalAnimation ();
+  
+  // Set objects visibility.
+  void         _setVisibility ( const Date& first, const Date& last, Minerva::Core::Data::Feature &object );
 
 private:
   boost::gregorian::date_period  _period;

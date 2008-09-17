@@ -17,6 +17,7 @@ USUL_FACTORY_REGISTER_CREATOR ( TimeStamp );
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Minerva::Core::Animate::Date );
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -25,6 +26,19 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Minerva::Core::Animate::Date );
 
 TimeStamp::TimeStamp() : BaseClass(),
   _when ( boost::date_time::not_a_date_time )
+{
+  this->_addMember ( "when", _when );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TimeStamp::TimeStamp ( const Date& date ) : BaseClass(),
+  _when ( date )
 {
   this->_addMember ( "when", _when );
 }

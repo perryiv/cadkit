@@ -15,6 +15,7 @@
 #include "Minerva/Core/Data/Object.h"
 #include "Minerva/Core/Data/TimePrimitive.h"
 #include "Minerva/Core/Data/LookAt.h"
+#include "Minerva/Interfaces/IFeature.h"
 
 #include "Usul/Containers/Unknowns.h"
 #include "Usul/Interfaces/IDataChangedListener.h"
@@ -25,12 +26,16 @@
 
 namespace Minerva {
 namespace Core {
+  
+  class Visitor;
+  
 namespace Data {
 
 
 class MINERVA_EXPORT Feature : public Minerva::Core::Data::Object,
                                public Usul::Interfaces::IDataChangedNotify,
-                               public Usul::Interfaces::ILayerExtents
+                               public Usul::Interfaces::ILayerExtents,
+                               public Minerva::Interfaces::IFeature
 {
 public:
   typedef Minerva::Core::Data::Object         BaseClass;
@@ -40,6 +45,9 @@ public:
   USUL_DECLARE_QUERY_POINTERS ( Feature );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
+  /// Accept the visitor.
+  virtual void           accept ( Minerva::Core::Visitor& visitor );
+  
   /// Set/get the description.
   void                   description ( const std::string& );
   std::string            description() const;
@@ -94,6 +102,9 @@ protected:
   // Remove the listener (IDataChangedNotify).
   virtual void                removeDataChangedListener ( Usul::Interfaces::IUnknown *caller );
 
+  // Get the feature.
+  virtual Feature*            feature();
+  
 private:
 
   typedef Usul::Interfaces::IDataChangedListener      IDataChangedListener;

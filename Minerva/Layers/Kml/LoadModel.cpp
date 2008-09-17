@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/Kml/LoadModel.h"
+#include "Minerva/Layers/Kml/ModelPostProcess.h"
 #include "Minerva/Core/Utilities/Download.h"
 #include "Minerva/Core/Data/ModelCache.h"
 
@@ -22,9 +23,12 @@
 #include "Usul/Threads/Guard.h"
 
 #include "osg/BlendFunc"
+#include "osg/Material" 
 #include "osg/TexEnvCombine"
 
 #include "osgDB/ReadFile"
+
+#include "osgUtil/Optimizer"
 
 #include "dae.h"
 #include "dom/domCOLLADA.h"
@@ -67,60 +71,85 @@ LoadModel::LoadModel() : _toMeters ( 0.0254 )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Turn off non-power of two resizing.
+//  Scale and normalize.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Detail
 {
-  struct ModelPostProcess
+  struct ScaleAndNormalize
   {
-    void operator () ( osg::Node * node )
+    ScaleAndNormalize ( double scale ) : _scale ( scale ), _vertices()
     {
-      if ( 0x0 != node )
+    }
+    
+    void scale ( osg::Geometry& geometry )
+    {
+      osg::ref_ptr<osg::Vec3Array> vertices ( dynamic_cast<osg::Vec3Array*> ( geometry.getVertexArray() ) );
+      osg::ref_ptr<osg::Vec3Array> normals  ( dynamic_cast<osg::Vec3Array*> ( geometry.getNormalArray() ) );
+      
+      if ( true == vertices.valid() && 1.0 != _scale && ( _vertices.end() == _vertices.find ( vertices ) ) )
       {
-        osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
-
-        if ( ss.valid() )
+        if ( 2 < vertices->referenceCount() )
         {
-          // Add a blend function.
-          osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
-          ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-          
-          ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
-          
-          osg::ref_ptr<osg::TexEnvCombine> combine ( new osg::TexEnvCombine );
-          combine->setCombine_Alpha ( GL_REPLACE );
-          ss->setTextureAttributeAndModes ( 0, combine.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-          ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-          
-          // Turn off back face culling.
-          OsgTools::State::StateSet::setBackFaceCulling ( ss.get(), false );
+          vertices = new osg::Vec3Array ( vertices->begin(), vertices->end() );
+          geometry.setVertexArray ( vertices.get() );
+        }
 
-          if ( osg::Texture* texture = dynamic_cast<osg::Texture*> ( ss->getTextureAttribute ( 0, osg::StateAttribute::TEXTURE ) ) )
-          {            
-#if 0
-            texture->setResizeNonPowerOfTwoHint ( false );
-            
-            texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
-            texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-#else
-            // Only turn on compression if the internal format is rgb.
-            if ( GL_RGB == texture->getInternalFormat() )
-            {
-              // Texture compression needs power of two image sizes.
-              texture->setResizeNonPowerOfTwoHint ( true );
-              
-              texture->setInternalFormatMode ( osg::Texture::USE_S3TC_DXT1_COMPRESSION );
-            }
-#endif
-            
-            // Turn off lighting.
-            OsgTools::State::StateSet::setLighting ( ss.get(), false );
-          }
+        osg::Matrixd m ( osg::Matrixd::scale ( osg::Vec3d ( _scale, _scale, _scale ) ) );
+        for ( osg::Vec3Array::iterator iter = vertices->begin(); iter != vertices->end(); ++iter )
+        {
+          //osg::Vec3Array::reference v ( *iter );
+          //v = m.preMult ( v );
+          (*iter) *= _scale;
+        }
+
+        // Add to the set so we don't move the vertices again.
+        _vertices.insert ( vertices );
+      }
+      
+      if ( true == normals.valid() )
+      {
+        for ( osg::Vec3Array::iterator iter = normals->begin(); iter != normals->end(); ++iter )
+        {
+          (*iter).normalize();
         }
       }
+      
+      geometry.dirtyBound();
+      geometry.dirtyDisplayList();
     }
+    
+    void operator() ( osg::Geode * geode )
+    {
+      if ( 0x0 != geode )
+      {
+        if ( "BackColor" == geode->getName() )
+        {
+          geode->removeDrawables ( 0, geode->getNumDrawables() );
+          return;
+        }
+#if 0
+        unsigned int num ( geode->getNumDrawables() );
+        for ( unsigned int i = 0; i < num; ++i )
+        {
+          osg::ref_ptr<osg::Drawable> drawable ( geode->getDrawable ( i ) );
+          if ( osg::Geometry* geometry = dynamic_cast<osg::Geometry*> ( drawable.get() ) )
+          {
+            this->scale ( *geometry );
+          }
+        }
+#endif
+      }
+    }
+    
+  private:
+    typedef osg::ref_ptr<osg::Vec3Array> VerticesPtr;
+    typedef std::set<VerticesPtr> VerticesProcessed;
+    
+    double _scale;
+    
+    VerticesProcessed _vertices;
   };
 }
 
@@ -140,7 +169,7 @@ osg::Node* LoadModel::operator() ( const std::string& filename, ModelCache *cach
   {
     this->_preProcessCollada ( filename );
   }
-  
+
   if ( 0x0 != cache && cache->hasModel ( filename ) )
     return cache->model ( filename );
 
@@ -149,16 +178,32 @@ osg::Node* LoadModel::operator() ( const std::string& filename, ModelCache *cach
   if ( node.valid() )
   {
     // Post-process.
-    Detail::ModelPostProcess nv;
-    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Node>::make ( nv ) );
-    node->accept ( *visitor );
-    
+    {
+      ModelPostProcess nv;
+      osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Node>::make ( nv ) );
+      node->accept ( *visitor );
+    }
+#if 1
+    // Flatten static transforms
+    {
+      //osgUtil::Optimizer optimizer;
+      //optimizer.optimize ( node.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS );
+    }
+
+    {
+      Detail::ScaleAndNormalize nv ( _toMeters );
+      osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Geode>::make ( nv ) );
+      node->accept ( *visitor );
+
+      //_toMeters = 1.0;
+    }
+#endif
     osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
-    
+
     OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
     //OsgTools::State::StateSet::setNormalize ( ss.get(), true );
   }
-  
+
   if ( 0x0 != cache )
     cache->addModel ( filename, node.get() );
 

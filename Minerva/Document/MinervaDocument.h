@@ -433,7 +433,6 @@ private:
   TimeSpan::RefPtr _global;
   TimeSpan::RefPtr _current;
   TimeSpans _timeSpans;
-  bool _datesDirty;
   double _lastTime;
   double _animationSpeed;
   MenuKit::Menu::RefPtr _timeSpanMenu;

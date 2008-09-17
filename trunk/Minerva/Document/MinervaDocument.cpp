@@ -123,22 +123,21 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   _hud(),
   _callback ( 0x0 ),
   _animateSettings ( new Minerva::Core::Animate::Settings ),
-  _datesDirty ( false ),
   _lastDate ( boost::date_time::min_date_time ),
   _global ( new TimeSpan ),
   _current ( _global ),
-  _timeSpans (),
+  _timeSpans(),
   _lastTime ( -1.0 ),
   _animationSpeed ( 0.1f ),
   _timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
-  _legend( new OsgTools::Widgets::Legend ),
-  _showLegend( true ),
+  _legend ( new OsgTools::Widgets::Legend ),
+  _showLegend ( true ),
   _legendWidth ( 0.40f ),
   _legendHeightPerItem ( 30 ),
   _legendPadding ( 20.0f, 20.0f ),
   _legendPosition ( LEGEND_BOTTOM_RIGHT ),
-  _width( 0 ),
-  _height( 0 ),
+  _width ( 0 ),
+  _height ( 0 ),
   _showCompass ( true ),
   _allowSplit ( true ),
   _keepDetail ( false ),
@@ -816,9 +815,6 @@ void MinervaDocument::deserialize ( const XmlTree::Node &node )
 
   // Connect.
   this->_connectToDistributedSession ();
-
-  // The dates are dirty.
-  Usul::Threads::Safe::set ( this->mutex(), true, _datesDirty );
 }
 
 
@@ -857,8 +853,16 @@ void MinervaDocument::commandExecuteNotify ( Usul::Commands::Command* command )
 void MinervaDocument::startAnimation()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  _animateSettings->animate ( true );
+  
+  {
+    Guard guard ( this->mutex () );
+    _animateSettings->animate ( true );
+  }
+  
+  this->_findFirstLastDate();
+  
+  // Rebuild the time spans menu.
+  this->_buildTimeSpanMenu();
 }
 
 
@@ -1313,16 +1317,6 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
   // If we are suppose to animate...
   if ( _animateSettings->animate () )
   {
-    if ( _datesDirty )
-    {
-      this->_findFirstLastDate();
-
-      _datesDirty = false;
-
-      // Rebuild the time spans menu.
-      this->_buildTimeSpanMenu();
-    }
-
     if ( false == _animateSettings->pause () && _current.valid() )
     {
       Usul::Interfaces::IFrameStamp::QueryPtr fs ( caller );

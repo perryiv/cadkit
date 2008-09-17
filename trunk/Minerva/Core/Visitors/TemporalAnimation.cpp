@@ -12,6 +12,7 @@
 
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/TimeSpan.h"
+#include "Minerva/Core/Data/TimeStamp.h"
 
 using namespace Minerva::Core::Visitors;
 
@@ -23,7 +24,7 @@ using namespace Minerva::Core::Visitors;
 ///////////////////////////////////////////////////////////////////////////////
 
 TemporalAnimation::TemporalAnimation ( const Date& first, const Date& last ) : BaseClass (),
-  _period( first.date(), last.date() )
+  _period ( first.date(), last.date() )
 {
 }
 
@@ -45,14 +46,31 @@ TemporalAnimation::~TemporalAnimation ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TemporalAnimation::visit ( Minerva::Core::Data::DataObject &object )
+void TemporalAnimation::visit ( Minerva::Core::Data::Feature &object )
 {
   if ( Minerva::Core::Data::TimeSpan *span = dynamic_cast<Minerva::Core::Data::TimeSpan*> ( object.timePrimitive() ) )
   {
-    // This is [first,last), so for proper animation, make the object's last date one day past the actual last date.
-    boost::gregorian::date_period period ( span->begin().date(), span->end().date() );
-    
-    const bool visible ( _period.intersects ( period ) ? true : false );
-    object.visibility ( visible );
+    this->_setVisibility ( span->begin(), span->end(), object );
   }
+  else if ( Minerva::Core::Data::TimeStamp *stamp = dynamic_cast<Minerva::Core::Data::TimeStamp*> ( object.timePrimitive() ) )
+  {
+    const Date date ( stamp->when() );
+    this->_setVisibility ( date, date, object );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set objects visibility.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TemporalAnimation::_setVisibility ( const Date& first, const Date& last, Minerva::Core::Data::Feature &object )
+{
+  // This is [first,last), so for proper animation, make the object's last date one day past the actual last date.
+  boost::gregorian::date_period period ( first.date(), last.date() );
+  
+  const bool visible ( _period.intersects ( period ) ? true : false );
+  object.visibility ( visible );
 }

@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Core/Data/TimeSpan.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Safe.h"
@@ -99,10 +100,24 @@ Usul::Interfaces::IUnknown* Feature::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IDataChangedNotify* > ( this );
   case Usul::Interfaces::ILayerExtents::IID:
     return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
+  case Minerva::Interfaces::IFeature::IID:
+    return static_cast<Minerva::Interfaces::IFeature*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::accept ( Minerva::Core::Visitor& visitor )
+{
+  visitor.visit ( *this );
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -404,4 +419,16 @@ void Feature::_updateExtents ( Usul::Interfaces::IUnknown* unknown )
 
   Guard guard ( this->mutex() );
   _extents.expand ( Extents ( minLon, minLat, maxLon, maxLat ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the feature.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Feature* Feature::feature()
+{
+  return this;
 }

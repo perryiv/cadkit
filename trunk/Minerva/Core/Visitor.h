@@ -23,6 +23,7 @@ namespace Minerva
   {
     namespace Data 
     { 
+      class Feature;
       class DataObject;
       class Container;
     }
@@ -41,11 +42,13 @@ namespace Minerva
 
       // Typedefs.
       typedef Usul::Base::Object                      BaseClass;
+      typedef Minerva::Core::Data::Feature            Feature;
       typedef Minerva::Core::Data::DataObject         DataObject;
       typedef Minerva::Core::Data::Container          Container;
 
       MINERVA_DEFINE_VISITOR_CLASS ( Visitor );
 
+      virtual void visit ( Feature &feature );
       virtual void visit ( DataObject &dataObject );
 
       virtual void visit ( Container& container );

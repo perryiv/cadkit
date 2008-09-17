@@ -105,6 +105,7 @@ void DataObject::accept ( Minerva::Core::Visitor& visitor )
   visitor.visit ( *this );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Add a geometry.

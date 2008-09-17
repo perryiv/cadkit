@@ -26,6 +26,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( TimeStamp );
   
   TimeStamp();
+  TimeStamp ( const Date& );
   
   /// Set/get the date.
   void  when ( const Date& );

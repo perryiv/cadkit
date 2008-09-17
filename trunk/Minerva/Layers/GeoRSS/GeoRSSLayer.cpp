@@ -11,6 +11,7 @@
 #include "Minerva/Layers/GeoRSS/Item.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Point.h"
+#include "Minerva/Core/Data/TimeStamp.h"
 #include "Minerva/Core/Utilities/Download.h"
 #include "Minerva/Core/Visitors/StackPoints.h"
 
@@ -309,6 +310,9 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   Children pubDateNode ( node.find ( "pubDate", false ) );
   const std::string pubDate ( pubDateNode.empty() ? "" : pubDateNode.front()->value() );
   object->date ( pubDate );
+  
+  boost::posix_time::ptime date ( Detail::parseDate ( pubDate ) );
+  object->timePrimitive ( new Minerva::Core::Data::TimeStamp ( date ) );
 
   // Look for an image.
   Children imageNode ( node.find ( "media:content", true ) );

@@ -41,8 +41,9 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
-Init.cpp
-RasterPolygonLayer.cpp
+./Init.cpp
+./RasterPolygonLayer.cpp
+./RasterLayerGDAL.cpp
 )
 
 # Create a Shared Library

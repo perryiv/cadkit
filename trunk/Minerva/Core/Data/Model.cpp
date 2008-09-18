@@ -17,6 +17,8 @@
 
 #include "osg/MatrixTransform"
 
+#include "osgUtil/Optimizer"
+
 using namespace Minerva::Core::Data;
 
 
@@ -82,6 +84,9 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   mt->setMatrix ( S *
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
                   osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
+
+  osgUtil::Optimizer optimizer;
+  optimizer.optimize ( mt.get(), osgUtil::Optimizer:: FLATTEN_STATIC_TRANSFORMS );
 
   // If there is a scale, turn on normalize.
   if ( false == S.isIdentity() )

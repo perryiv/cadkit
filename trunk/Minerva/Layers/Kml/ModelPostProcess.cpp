@@ -71,6 +71,7 @@ void ModelPostProcess::operator () ( osg::Node * node )
         OsgTools::State::StateSet::setLighting ( ss.get(), false );
       }
       
+#if 0
       // Check for a material.
       if ( osg::Material* material = dynamic_cast<osg::Material*> ( ss->getAttribute ( osg::StateAttribute::MATERIAL ) ) )
       {
@@ -80,6 +81,7 @@ void ModelPostProcess::operator () ( osg::Node * node )
       {
         OsgTools::State::StateSet::setMaterialDefault ( node );
       }
+#endif
     }
   }
 }

@@ -483,8 +483,11 @@ std::string RasterLayerGDAL::_cacheFileExtension() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  const std::string ext ( Usul::File::extension ( _filename ) );
-  return ext;
+  //const std::string ext ( Usul::File::extension ( _filename ) );
+  //return ext;
+
+  // Always save as tiff.
+  return ".tif";
 }
 
 

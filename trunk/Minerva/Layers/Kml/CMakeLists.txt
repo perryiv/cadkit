@@ -51,6 +51,7 @@ SET (SOURCES
 ./Link.cpp
 ./LoadModel.cpp
 ./NetworkLink.cpp
+./ModelPostProcess.cpp
 )
 
 # Create a Shared Library

@@ -306,8 +306,25 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
       XmlTree::Node::ValidRefPtr h1 ( subject->append ( "h1", longName ) );
       h1->attributes()["class"] = "subject";
       subject->append ( "hr" );
-      XmlTree::Node::ValidRefPtr page ( subject->append ( "p", pageName ) );
-      page->attributes()["class"] = "page_name";
+
+      // If we have a section specified then the page name is a link.
+      const std::string sectionName ( this->_queryValue ( "section", "" ) );
+      if ( false == sectionName.empty() )
+      {
+        XmlTree::Node::ValidRefPtr para ( subject->append ( "p" ) );
+        para->attributes()["class"] = "page_name";
+        const std::string site ( this->_queryValue ( "site" ) );
+        const std::string page ( this->_queryValue ( "page" ) );
+        para->append ( this->_link ( pageName, Usul::Strings::format ( Functions::urlScript(), "?site=", site, "&page=", page ) ) );
+        para->append ( "text", Usul::Strings::format ( " --> ", sectionName ) );
+      }
+
+      // No section...
+      else
+      {
+        XmlTree::Node::ValidRefPtr page ( subject->append ( "p", pageName ) );
+        page->attributes()["class"] = "page_name";
+      }
     }
     
     // Add the main menu.
@@ -338,10 +355,65 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
 
       typedef XmlTree::Node::Children Children;
       Children kids ( page->find ( "section", false ) );
-      for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+
+      bool makeSectionMenu ( true );
+
+      // If there is only one section...
+      if ( 1 == kids.size() )
       {
-        XmlTree::Node::ValidRefPtr section ( *i );
-        this->_appendChildren ( section, content );
+        this->_appendChildren ( kids.at ( 0 ), content );
+        makeSectionMenu = false;
+      }
+
+      // If there are multiple sections, or none at all...
+      else
+      {
+        // See if a section has been specified.
+        const std::string sectionName ( this->_queryValue ( "section", "" ) );
+        if ( false == sectionName.empty() )
+        {
+          // Loop through the children.
+          for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+          {
+            XmlTree::Node::ValidRefPtr section ( *i );
+            if ( sectionName == section->attribute ( "name" ) )
+            {
+              this->_appendChildren ( section, content );
+              makeSectionMenu = false;
+            }
+          }
+        }
+      }
+
+      // Need to make a menu?
+      if ( true == makeSectionMenu )
+      {
+        // Loop through the children.
+        for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+        {
+          XmlTree::Node::ValidRefPtr section ( *i );
+          const std::string sectionName ( section->attribute ( "name" ) );
+          if ( false == sectionName.empty() )
+          {
+            XmlTree::Node::ValidRefPtr para ( content->append ( "p" ) );
+            XmlTree::Node::ValidRefPtr div ( para->append ( "div" ) );
+
+            // Add link.
+            const std::string site ( this->_queryValue ( "site" ) );
+            const std::string page ( this->_queryValue ( "page" ) );
+            div->append ( this->_link ( sectionName, Usul::Strings::format 
+                                        ( Functions::urlScript(), "?site=", site, 
+                                          "&page=", page, "&section=", sectionName ) ) );
+
+            // Is there a description?
+            const std::string description ( section->attribute ( "description" ) );
+            if ( false == description.empty() )
+            {
+              div = para->append ( "div" );
+              div->append ( "text", description );
+            }
+          }
+        }
       }
 
       translateTags ( content );

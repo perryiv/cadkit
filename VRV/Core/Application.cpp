@@ -2387,7 +2387,7 @@ void Application::wandRotation ( Matrix &W ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Math::Vec2f& Application::analogTrim () const
+const Usul::Math::Vec2f& Application::analogTrim() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -2403,7 +2403,7 @@ const Usul::Math::Vec2f& Application::analogTrim () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::analogTrim ( )
+void Application::analogTrim()
 {
   USUL_TRACE_SCOPE;
 
@@ -2681,8 +2681,9 @@ bool Application::projectionGroupHas    ( const std::string& name ) const
 void Application::frameDump ( bool b )
 {
   USUL_TRACE_SCOPE;
+  typedef Usul::Interfaces::IFrameDump IFrameDump;
   Guard guard ( this->mutex() );
-  _frameDump.dump ( b );
+  _frameDump.dump ( b ? IFrameDump::ALWAYS_DUMP : IFrameDump::NEVER_DUMP );
 }
 
 
@@ -2696,7 +2697,8 @@ bool Application::frameDump () const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _frameDump.dump ();
+  typedef Usul::Interfaces::IFrameDump IFrameDump;
+  return IFrameDump::ALWAYS_DUMP == _frameDump.dump();
 }
 
 

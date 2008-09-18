@@ -35,6 +35,7 @@
 #include "Usul/Threads/Safe.h"
 
 #include "boost/algorithm/string/find.hpp"
+#include "boost/algorithm/string/trim.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/foreach.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
@@ -127,10 +128,16 @@ Usul::Interfaces::IUnknown* GeoRSSLayer::queryInterface ( unsigned long iid )
 
 namespace Detail
 {
-  boost::posix_time::ptime parseDate ( const std::string& sDate )
+  boost::posix_time::ptime parseDate ( const std::string& input )
   {
     try
     {
+			// Make a copy to work with.
+			std::string sDate ( input );
+
+			// Trim white space.
+			boost::algorithm::trim ( sDate );
+
       if ( false == sDate.empty() && sDate.size() > 27 )
       {
         const std::string dayOfWeek ( sDate, 0, 3 );
@@ -141,7 +148,7 @@ namespace Detail
         const std::string minutes ( sDate, 20, 2 );
         const std::string seconds ( sDate, 23, 2 );
         const std::string zone ( sDate, 26 ); // Get the remaining characters.
-        
+
         // The timezone.
         boost::local_time::time_zone_ptr timeZone;
         

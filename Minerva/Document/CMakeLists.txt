@@ -31,7 +31,6 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${WMS_INC_DIR}
 		     ${OSSIM_INC_DIR}
-		     ${OSG_EPHEMERIS_INC_DIR}
 		     $ENV{PQXX_INC_DIR}
 		     )
 
@@ -41,8 +40,6 @@ SET (SOURCES
 ./CommandSender.cpp
 ./MinervaDocument.cpp
 ./KmlWriter.cpp
-./MinervaWriter.cpp
-./MinervaReader.cpp
 ./CommandReceiver.cpp
 )
 

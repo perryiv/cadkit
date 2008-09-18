@@ -13,10 +13,8 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
 # ------------ Find boost ----------------------
 SET ( Boost_USE_DATE_TIME TRUE )
+SET ( Boost_USE_THREAD TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
-
-# ------------ Find GDAL Library ----------------------
-INCLUDE( ${CMakeModules}/FindGDAL.cmake)
 
 # ------------ Find curl Library ----------------------
 INCLUDE( ${CMakeModules}/FindCURL.cmake)
@@ -33,7 +31,6 @@ INCLUDE_DIRECTORIES(
 		     ${OT_INC_DIR} 
 		     ${OSSIM_INC_DIR}
 		     ${CURL_INCLUDE_DIR}
-		     ${GDAL_INCLUDE_DIR}
 		     )
 
 
@@ -41,7 +38,6 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
 ./Animate/Date.cpp
 ./Animate/Settings.cpp
-./Animate/TimeSpan.cpp
 ./Commands/AddLayer.cpp
 ./Commands/AnimationSpeed.cpp
 ./Commands/ChangeTimestepType.cpp
@@ -58,7 +54,6 @@ SET (SOURCES
 ./Data/DataObject.cpp
 ./Data/Feature.cpp
 ./Data/IconStyle.cpp
-./Data/Transform.cpp
 ./Data/Geometry.cpp
 ./Data/Line.cpp
 ./Data/LineStyle.cpp
@@ -72,6 +67,7 @@ SET (SOURCES
 ./Data/Style.cpp
 ./Data/TimePrimitive.cpp
 ./Data/TimeSpan.cpp
+./Data/TimeStamp.cpp
 ./Factory/Readers.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp
@@ -81,7 +77,6 @@ SET (SOURCES
 ./Layers/RasterGroup.cpp
 ./Layers/RasterLayer.cpp
 ./Layers/RasterLayerArcIMS.cpp
-./Layers/RasterLayerGDAL.cpp
 ./Layers/RasterLayerNetwork.cpp
 ./Layers/RasterLayerOssim.cpp
 ./Layers/RasterLayerWms.cpp

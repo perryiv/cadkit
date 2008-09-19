@@ -354,14 +354,17 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
       XmlTree::Node::ValidRefPtr page ( this->_loadXmlFile ( path ) );
 
       typedef XmlTree::Node::Children Children;
-      Children kids ( page->find ( "section", false ) );
+      Children sections ( page->find ( "section", false ) );
+      Children definitions ( page->find ( "define", false ) );
 
       bool makeSectionMenu ( true );
 
       // If there is only one section...
-      if ( 1 == kids.size() )
+      if ( 1 == sections.size() )
       {
-        this->_appendChildren ( kids.at ( 0 ), content );
+        XmlTree::Node::ValidRefPtr section ( sections.at ( 0 ) );
+        this->_replaceDefinitions ( definitions, section );
+        this->_appendChildren ( section, content );
         makeSectionMenu = false;
       }
 
@@ -373,11 +376,12 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
         if ( false == sectionName.empty() )
         {
           // Loop through the children.
-          for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+          for ( Children::iterator i = sections.begin(); i != sections.end(); ++i )
           {
             XmlTree::Node::ValidRefPtr section ( *i );
             if ( sectionName == section->attribute ( "name" ) )
             {
+              this->_replaceDefinitions ( definitions, section );
               this->_appendChildren ( section, content );
               makeSectionMenu = false;
             }
@@ -389,7 +393,7 @@ XmlTree::Node::ValidRefPtr WebGen::_makeBody()
       if ( true == makeSectionMenu )
       {
         // Loop through the children.
-        for ( Children::iterator i = kids.begin(); i != kids.end(); ++i )
+        for ( Children::iterator i = sections.begin(); i != sections.end(); ++i )
         {
           XmlTree::Node::ValidRefPtr section ( *i );
           const std::string sectionName ( section->attribute ( "name" ) );
@@ -712,6 +716,37 @@ void WebGen::_appendChildren ( XmlTree::Node::ValidRefPtr from, XmlTree::Node::V
   {
     XmlTree::Node::ValidRefPtr child ( *i );
     to->append ( child );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Replace any "use" tags with the corresponding definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WebGen::_replaceDefinitions ( XmlTree::Node::Children &from, XmlTree::Node::ValidRefPtr to )
+{
+  typedef XmlTree::Node::Children Children;
+  Children use ( to->find ( "use", true ) );
+
+  for ( Children::iterator i = use.begin(); i != use.end(); ++i )
+  {
+    XmlTree::Node::ValidRefPtr child ( *i );
+    const std::string defName ( child->attribute ( "name" ) );
+    if ( false == defName.empty() )
+    {
+      for ( Children::iterator j = from.begin(); j != from.end(); ++j )
+      {
+        XmlTree::Node::ValidRefPtr node ( *j );
+        if ( defName == node->attribute ( "name" ) )
+        {
+          child->clear();
+          this->_appendChildren ( node, child );
+        }
+      }
+    }
   }
 }
 

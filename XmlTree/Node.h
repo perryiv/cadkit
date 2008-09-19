@@ -75,7 +75,7 @@ public:
   const Children &        children() const { return _children; }
   Children &              children()       { return _children; }
 
-  // Clear the document.
+  // Clear the node.
   void                    clear();
 
   // Find all children with the given name. Pass true for "traverse" if you 

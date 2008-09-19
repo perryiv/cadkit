@@ -67,6 +67,8 @@ protected:
 
   std::string                        _queryValue ( const std::string &name, const std::string &defaultValue = std::string() ) const;
 
+  void                               _replaceDefinitions ( XmlTree::Node::Children &from, XmlTree::Node::ValidRefPtr to );
+
   std::string                        _specialChar ( const std::string &name, unsigned int num ) const;
 
 private:

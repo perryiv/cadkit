@@ -78,7 +78,7 @@ void HeadLevelOutput::read ( Modflow::ModflowDocument *doc, const std::string &f
   // Determine the number of lines that start with the label.
   // Do this before we open the file below.
   const std::string label ( "HEAD" );
-  unsigned int numLines ( this->_countLines ( label, file ) );
+  unsigned int numLines ( this->_countLines ( label, file, false ) );
 
   // Open the file and set the members.
   this->_open ( file );
@@ -148,8 +148,8 @@ void HeadLevelOutput::read ( Modflow::ModflowDocument *doc, const std::string &f
           layer->addAttribute ( attribute );
         }
 
-        
         #ifndef _DEBUG // Too slow in debug...
+
         {
           Modflow::Attributes::HeadLevels::RefPtr attribute ( new Modflow::Attributes::HeadSurface ( Modflow::Names::HEAD_SURFACE_COARSE, layer, 0, 0, this->registryPath() ) );
           attribute->init ( _document, layer );

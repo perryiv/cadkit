@@ -22,6 +22,7 @@
 #include "Usul/Trace/Trace.h"
 #include "Usul/System/LastError.h"
 
+#include "boost/algorithm/string/find.hpp"
 #include "boost/algorithm/string/trim.hpp"
 
 #include "ogr_spatialref.h"
@@ -190,11 +191,10 @@ void BaseReader::_seekToLine ( const std::string &word )
 
     const std::istream::pos_type pos ( _in.tellg() );
     _in.getline ( &buffer[0], buffer.size() - 1 );
+    const std::string line ( buffer.begin(), buffer.end() );
 
-    std::istringstream line ( &buffer[0] );
-    line >> s;
-
-    if ( word == s )
+    // Return value is convertable to bool.
+    if ( boost::algorithm::find_first ( line, word ) )
     {
       _in.seekg ( pos );
       return;
@@ -275,11 +275,11 @@ std::string BaseReader::_getLine()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Count the time steps.
+//  Count the lines with the given substring.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int BaseReader::_countLines ( const std::string &label, const std::string &file )
+unsigned int BaseReader::_countLines ( const std::string &label, const std::string &file, bool atStart )
 {
   USUL_TRACE_SCOPE_STATIC;
 
@@ -303,15 +303,31 @@ unsigned int BaseReader::_countLines ( const std::string &label, const std::stri
     // Get the line.
     in.getline ( &buffer[0], buffer.size() - 1 );
 
-    // Get the first word.
-    std::istringstream in ( &buffer[0] );
-    std::string word;
-    in >> word;
-
-    // If the first word is the label, increment the count.
-    if ( label == word )
+    // Just checking the first word?
+    if ( true == atStart )
     {
-      ++count;
+      // Get the first word.
+      std::istringstream in ( &buffer[0] );
+      std::string word;
+      in >> word;
+
+      // If the first word is the label, increment the count.
+      if ( label == word )
+      {
+        ++count;
+      }
+    }
+    
+    // Or, anywhere in the line?
+    else
+    {
+      const std::string line ( buffer.begin(), buffer.end() );
+
+      // Return value is convertable to bool.
+      if ( boost::algorithm::find_first ( line, label ) )
+      {
+        ++count;
+      }
     }
   }
   

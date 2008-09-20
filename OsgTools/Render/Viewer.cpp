@@ -58,11 +58,12 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Registry/Constants.h"
 
+#include "Usul/Interfaces/IAnimatePath.h"
+#include "Usul/Interfaces/IBusyState.h"
+#include "Usul/Interfaces/IGetBoundingBox.h"
 #include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IMaterialEditor.h"
-#include "Usul/Interfaces/IGetBoundingBox.h"
-#include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IRenderListener.h"
 
@@ -1488,19 +1489,30 @@ void Viewer::setStatusBarText ( const std::string &text, bool force )
 
 void Viewer::_dumpFrame()
 {
-  if ( _frameDump.dump() )
+  if ( Usul::Interfaces::IFrameDump::NEVER_DUMP == _frameDump.dump() )
   {
+    return;
+  }
+
+  if ( Usul::Interfaces::IFrameDump::IF_DOCUMENT_NOT_BUSY == _frameDump.dump() )
+  {
+    Usul::Interfaces::IBusyState::QueryPtr busy ( this->document() );
+    if ( true == busy->busyStateGet() )
+    {
+      return;
+    }
+  }
+
 #if 1
 
-    this->writeImageFile ( _frameDump.file() );
+  this->writeImageFile ( _frameDump.file() );
 
 #else // Better for the long-term, but no anti-aliasing yet...
 
-    this->_writeImageFile ( _frameDump.file(), 
-                            static_cast<unsigned int> ( this->width() ), 
-                            static_cast<unsigned int> ( this->height() ) );
+  this->_writeImageFile ( _frameDump.file(), 
+                          static_cast<unsigned int> ( this->width() ), 
+                          static_cast<unsigned int> ( this->height() ) );
 #endif
-  }
 }
 
 

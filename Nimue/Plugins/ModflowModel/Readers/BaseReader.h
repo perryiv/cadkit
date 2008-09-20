@@ -83,7 +83,7 @@ protected:
 
   void                    _checkStream();
 
-  static unsigned int     _countLines ( const std::string &label, const std::string &file );
+  static unsigned int     _countLines ( const std::string &label, const std::string &file, bool atStart = true );
 
   std::string             _getLine();
 

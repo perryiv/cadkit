@@ -18,7 +18,7 @@
 #define _USUL_PREDICATES_FILE_EXISTS_H_
 
 // Disable deprecated warning in Visual Studio 8 for fopen
-#if defined ( _MSC_VER ) && _MSC_VER == 1400
+#if defined ( _MSC_VER )
 #pragma warning ( disable : 4996 )
 #endif
 

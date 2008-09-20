@@ -16,7 +16,14 @@
 
 #ifdef _MSC_VER
 #define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#endif
+
+// Handle broken jpeg header.
+#define XMD_H
+#ifdef FAR
+#undef FAR
 #endif
 
 #include "Images/GIL/Actions/Stitcher.h"

@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(GIL_ROOT_DIR);$(BOOST_INC_DIR);$(TIFF_INC_DIR);$(JPEG_INC_DIR);$(PNG_INC_DIR);$(ZLIB_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(TIFF_INC_DIR);$(JPEG_INC_DIR);$(PNG_INC_DIR);$(ZLIB_INC_DIR)"
 				PreprocessorDefinitions="_USUL_TRACE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(GIL_ROOT_DIR);$(BOOST_INC_DIR);$(TIFF_INC_DIR);$(JPEG_INC_DIR);$(PNG_INC_DIR);$(ZLIB_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(BOOST_INC_DIR);$(TIFF_INC_DIR);$(JPEG_INC_DIR);$(PNG_INC_DIR);$(ZLIB_INC_DIR)"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="jpeg.lib tiff.lib png.lib zlib.lib"
+				AdditionalDependencies="jpeg.lib libtiff.lib libpng.lib zlib.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/stitch_images.exe"
 				AdditionalLibraryDirectories="$(TIFF_LIB_DIR);$(JPEG_LIB_DIR);$(PNG_LIB_DIR);$(ZLIB_LIB_DIR)"
 				GenerateDebugInformation="true"

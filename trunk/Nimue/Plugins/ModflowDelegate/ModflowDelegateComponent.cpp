@@ -420,7 +420,8 @@ void ModflowDelegateComponent::setStringGrid ( const StringGrid &grid )
   }
 
   // Set the label's text.
-  _intersectInfo->setText ( out.str().c_str() );
+  const std::string text ( out.str() );
+  _intersectInfo->setText ( text.c_str() );
 }
 
 

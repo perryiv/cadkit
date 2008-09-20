@@ -546,6 +546,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     this->_launchImageRequest();
   }
 
+  // For runtime re-scale, etc... not working but flag never true.
   if ( Usul::Bits::has ( flags, Tile::CHILDREN ) )
   {
     // Clear all the children.
@@ -807,6 +808,9 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
           group->addChild ( _children[UPPER_LEFT]  );
           group->addChild ( _children[UPPER_RIGHT] );
           this->addChild ( group.get() );
+          
+          // The low level will be traversed.  Should the low flag be set to false?
+          // At the very least, the high level will be traversed in the next frame.
         }
 
         // It did not work.

@@ -11,6 +11,8 @@
 #ifndef __WMS_ALPHAS_DIALOG_H__
 #define __WMS_ALPHAS_DIALOG_H__
 
+#include "Minerva/Qt/Widgets/Export.h"
+
 #include "ui_AlphasDialog.h"
 
 #include "Usul/Interfaces/IRasterAlphas.h"
@@ -25,8 +27,8 @@ namespace Minerva {
 namespace Widgets {
       
       
-class AlphasDialog : public QDialog,
-                     public Ui::AlphasDialog
+class MINERVA_QT_WIDGETS_EXPORT AlphasDialog : public QDialog,
+                                               public Ui::AlphasDialog
 {
   Q_OBJECT;
 public:

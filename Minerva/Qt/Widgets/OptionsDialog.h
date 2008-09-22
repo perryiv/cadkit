@@ -11,6 +11,8 @@
 #ifndef __WMS_OPTIONS_DIALOG_H__
 #define __WMS_OPTIONS_DIALOG_H__
 
+#include "Minerva/Qt/Widgets/Export.h"
+
 #include "ui_OptionsDialog.h"
 
 #include "QtGui/QDialog"
@@ -22,8 +24,8 @@ namespace Minerva {
 namespace Widgets {
       
       
-class OptionsDialog : public QDialog,
-                      private Ui::OptionsDialog
+class MINERVA_QT_WIDGETS_EXPORT OptionsDialog : public QDialog,
+                                                private Ui::OptionsDialog
 {
   Q_OBJECT;
 public:
@@ -41,7 +43,7 @@ protected slots:
   void on_removeRowButton_clicked();
 };
 
-  
+
 }
 }
 

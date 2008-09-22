@@ -224,66 +224,6 @@
 				Name="Implementation"
 				>
 				<File
-					RelativePath=".\AddWmsLayerWidget.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\AddWmsLayerWidget.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing AddWmsLayerWidget.h"
-							CommandLine="$(QTDIR)\bin\uic.exe .\WmsWidget.ui -o .\ui_WmsWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddWmsLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\WmsWidget.ui;.\AddWmsLayerWidget.h"
-							Outputs=".\ui_WmsWidget.h;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing AddWmsLayerWidget.h"
-							CommandLine="$(QTDIR)\bin\uic.exe .\WmsWidget.ui -o .\ui_WmsWidget.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AddWmsLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\WmsWidget.ui;.\AddWmsLayerWidget.h"
-							Outputs=".\ui_WmsWidget.h;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\AlphasDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\AlphasDialog.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing AlphasDialog.h"
-							CommandLine="$(QTDIR)\bin\uic.exe .\AlphasDialog.ui -o .\ui_AlphasDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AlphasDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AlphasDialog.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\AlphasDialog.ui;.\AlphasDialog.h"
-							Outputs=".\ui_AlphasDialog.h;.\GeneratedFiles\moc_AlphasDialog.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing AlphasDialog.h"
-							CommandLine="$(QTDIR)\bin\uic.exe .\AlphasDialog.ui -o .\ui_AlphasDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\AlphasDialog.h&quot; -o &quot;.\GeneratedFiles\moc_AlphasDialog.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\AlphasDialog.ui;.\AlphasDialog.h"
-							Outputs=".\ui_AlphasDialog.h;.\GeneratedFiles\moc_AlphasDialog.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\CompileGuard.h"
 					>
 				</File>
@@ -318,53 +258,11 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\OptionsDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\OptionsDialog.h"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing OptionsDialog.h"
-							CommandLine="$(QTDIR)\bin\uic.exe .\OptionsDialog.ui -o .\ui_OptionsDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\OptionsDialog.h&quot; -o &quot;.\GeneratedFiles\moc_OptionsDialog.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\OptionsDialog.ui;.\OptionsDialog.h"
-							Outputs=".\ui_OptionsDialog.h;.\GeneratedFiles\moc_OptionsDialog.cpp"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-							Description="Moc&apos;ing OptionsDialog.h"
-							CommandLine="$(QTDIR)\bin\uic.exe .\OptionsDialog.ui -o .\ui_OptionsDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\OptionsDialog.h&quot; -o &quot;.\GeneratedFiles\moc_OptionsDialog.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;$(QTDIR)\bin\moc.exe;.\OptionsDialog.ui;.\OptionsDialog.h"
-							Outputs=".\ui_OptionsDialog.h;.\GeneratedFiles\moc_OptionsDialog.cpp"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\WmsLayerItem.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\WmsLayerItem.h"
-					>
-				</File>
-				<File
 					RelativePath=".\WmsLayerQtComponent.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\WmsLayerQtComponent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\WmsLayerQtFactory.cpp"
 					>
 				</File>
 			</Filter>
@@ -380,19 +278,7 @@
 				Name="GeneratedItems"
 				>
 				<File
-					RelativePath=".\GeneratedFiles\moc_AddWmsLayerWidget.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\GeneratedFiles\moc_AlphasDialog.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\GeneratedFiles\moc_EditWmsLayerWidget.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\GeneratedFiles\moc_OptionsDialog.cpp"
 					>
 				</File>
 			</Filter>

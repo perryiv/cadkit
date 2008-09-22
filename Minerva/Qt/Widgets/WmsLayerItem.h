@@ -11,6 +11,8 @@
 #ifndef __MINERVA_PLUGINS_WMS_LAYER_ITEM_H__
 #define __MINERVA_PLUGINS_WMS_LAYER_ITEM_H__
 
+#include "Minerva/Qt/Widgets/Export.h"
+
 #include "Minerva/Core/Extents.h"
 
 #include "XmlTree/Node.h"
@@ -26,7 +28,7 @@ namespace Minerva {
 namespace Widgets {
 
       
-class WmsLayerItem : public QTreeWidgetItem
+class MINERVA_QT_WIDGETS_EXPORT WmsLayerItem : public QTreeWidgetItem
 {
 public:
   typedef QTreeWidgetItem BaseClass;

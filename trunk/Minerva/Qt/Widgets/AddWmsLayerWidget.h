@@ -11,6 +11,8 @@
 #ifndef __ADD_WMS_LAYER_WIDGET_H__
 #define __ADD_WMS_LAYER_WIDGET_H__
 
+#include "Minerva/Qt/Widgets/Export.h"
+
 #include "ui_WmsWidget.h"
 
 #include "Minerva/Core/Layers/LayerInfo.h"
@@ -30,8 +32,8 @@ namespace Minerva {
 namespace Widgets {
 
 
-class BaseAddNetworkLayerWidget : public QWidget,
-                                  protected Ui::WmsWidget
+class MINERVA_QT_WIDGETS_EXPORT BaseAddNetworkLayerWidget : public QWidget,
+                                                            protected Ui::WmsWidget
 {
   Q_OBJECT;
 public:

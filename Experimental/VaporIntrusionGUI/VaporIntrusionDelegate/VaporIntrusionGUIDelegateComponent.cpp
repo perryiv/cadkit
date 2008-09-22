@@ -54,7 +54,10 @@ VaporIntrusionGUIDelegateComponent::VaporIntrusionGUIDelegateComponent() : BaseC
 _xyzView( 0x0 ),
 _xyView ( 0x0 ),
 _xzView ( 0x0 ),
-_yzView ( 0x0 )
+_yzView ( 0x0 ),
+_dock   ( 0x0 ),
+_materialContainer( 0x0 ),
+_caller()
 {
 }
 
@@ -67,6 +70,20 @@ _yzView ( 0x0 )
 
 VaporIntrusionGUIDelegateComponent::~VaporIntrusionGUIDelegateComponent()
 {
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( _caller );
+
+  if( mainWindow.valid() )
+  {
+    // Remove the DockWidget from the MainWindow.
+    QMainWindow * main  ( mainWindow->mainWindow() );
+    main->removeDockWidget ( _dock );
+  }
+
+  // Delete the DockWidget.
+  delete _dock;
+  _dock = 0x0;
+
+  //delete _materialContainer;
 }
 
 
@@ -193,6 +210,9 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     _xyView->show();
     _xzView->show();
     _yzView->show();
+
+    // Start with all windows tiled
+    parent->tile();
 }
 }
 
@@ -224,7 +244,7 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
 
 void VaporIntrusionGUIDelegateComponent::initializePlugin ( Usul::Interfaces::IUnknown *caller )
 {
-  //_caller = caller;
+  _caller = caller;
 
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
 

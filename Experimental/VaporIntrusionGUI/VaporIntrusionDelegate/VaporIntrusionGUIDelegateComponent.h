@@ -95,6 +95,7 @@ private:
 
   QDockWidget         *_dock;
   MaterialContainer   *_materialContainer;
+  IUnknown::QueryPtr  _caller;
 
 
 };

@@ -33,8 +33,11 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Temp.h"
 #include "Usul/Network/Curl.h"
+#include "Usul/Network/Names.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Strings/Split.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
@@ -134,7 +137,7 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
   std::string request ( this->_createRequestXml ( extents, width, height, level ) );
 
   // Make the url.
-  std::string url ( this->urlBase() + "?" + this->_getAllOptions() );
+  std::string url ( this->urlBase() );
 
   // File to download to.
 	std::string name ( Usul::File::Temp::file() );
@@ -150,9 +153,8 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
 
   XmlTree::Document::RefPtr doc ( 0x0 );
 
-  // Parse the result.  Need a guard here because XercesLife is not thread safe.  Should it contain an internal reference count?
+  // Parse the result.
   {
-    //Guard guard ( this->mutex() );
     XmlTree::XercesLife life;
     doc = new XmlTree::Document;
     doc->load ( name );
@@ -236,6 +238,25 @@ std::string RasterLayerArcIMS::_createRequestXml ( const Extents& extents, unsig
   // Add background color.
   background->attributes().insert ( Attributes::value_type ( "color",      Usul::Strings::format ( bgColor[0], ",", bgColor[1], ",", bgColor[2] ) ) );
   background->attributes().insert ( Attributes::value_type ( "transcolor", Usul::Strings::format ( transparent[0], ",", transparent[1], ",", transparent[2] ) ) );
+  
+  // Add the layer list.
+  const std::string layers ( this->options()[Usul::Network::Names::LAYERS] );
+  typedef std::vector<std::string> Strings;
+  Strings layerList;
+  Usul::Strings::split ( layers, ",", false, layerList );
+  
+  if ( false == layers.empty() )
+  {
+    Node::RefPtr layerListNode ( properties->child ( "LAYERLIST" ) );
+    for ( Strings::const_iterator iter = layerList.begin(); iter != layerList.end(); ++iter )
+    {
+      Node::RefPtr layerNode ( new XmlTree::Node ( "LAYERDEF" ) );
+      layerNode->attributes()["id"] = *iter;
+      layerNode->attributes()["visible"] = "true";
+      
+      layerListNode->append ( layerNode.get() );
+    }
+  }
 
   // Write the file to an ostringstream.
   std::ostringstream os;
@@ -256,4 +277,122 @@ std::string RasterLayerArcIMS::_cacheFileExtension() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _type;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the default options.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerArcIMS::Options RasterLayerArcIMS::defaultOptions()
+{
+  return Options();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  inline RasterLayerArcIMS::Extents parseEnvelope ( const XmlTree::Node & node, const RasterLayerArcIMS::Extents& defaultExtents )
+  {
+    typedef XmlTree::Node::Children    Children;
+    typedef XmlTree::Node::Attributes  Attributes;
+    typedef Usul::Convert::Type<std::string,double> ToDouble;
+    
+    Children bbNode ( node.find ( "ENVELOPE", false ) );
+    if ( false == bbNode.empty() )
+    {
+      XmlTree::Node::ValidRefPtr bb ( bbNode.front() );
+      Attributes& attributes ( bb->attributes() );
+      
+      return RasterLayerArcIMS::Extents ( ToDouble::convert ( attributes["minx"] ),
+                                          ToDouble::convert ( attributes["miny"] ),               
+                                          ToDouble::convert ( attributes["maxx"] ),
+                                          ToDouble::convert ( attributes["maxy"] ) );
+    }
+    
+    return defaultExtents;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the layer information for the server.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerArcIMS::LayerInfos RasterLayerArcIMS::availableLayers ( const std::string& url )
+{
+  typedef XmlTree::Node::Children    Children;
+  typedef XmlTree::Node::Attributes  Attributes;
+  
+  // Xml to request available layers.
+  const std::string request ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ARCXML version=\"1.1\"><REQUEST><GET_SERVICE_INFO /></REQUEST></ARCXML>" );
+  
+  // File to download to.
+	std::string name ( Usul::File::Temp::file() );
+	Usul::Scope::RemoveFile remove ( name );
+  
+	// Download.
+	{
+    // Get the timeout.
+    const unsigned int timeout ( Usul::Registry::Database::instance()["network_download"]["wms_get_capabilities"]["timeout_milliseconds"].get<unsigned int> ( 60000, true ) );
+		Usul::Network::Curl curl ( url, name );
+		curl.download( timeout, static_cast<std::ostream*> ( 0x0 ), request );
+	}
+  
+  // Open the xml document.
+	XmlTree::XercesLife life;
+  XmlTree::Document::RefPtr document ( new XmlTree::Document );
+  document->load ( name );
+  
+  // Get all the layers.
+  Children layers ( document->find ( "LAYERINFO", true ) );
+  
+  if ( layers.empty() )
+    return LayerInfos();
+  
+  // Make the default extents.
+  const Extents defaultExtents ( -180, -90, 180, 90 );
+  
+  LayerInfos layerInfos;
+  
+  for ( Children::iterator iter = layers.begin() + 1; iter != layers.end(); ++iter )
+  {
+    Attributes& attributes ( (*iter)->attributes() );
+
+    Children envelopeNode ( (*iter)->find ( "ENVELOPE", false ) );
+    
+    const std::string name ( attributes["id"] );
+    const std::string title ( attributes["name"] ); 
+    
+    LayerInfo info;
+    info.name = name;
+    info.title = title;
+    info.extents = envelopeNode.empty() ? defaultExtents : Detail::parseEnvelope ( *envelopeNode.front(), defaultExtents );
+    
+    layerInfos.push_back ( info );
+  }
+  
+  return layerInfos;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the full url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string RasterLayerArcIMS::urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const
+{
+  return this->urlBase();
 }

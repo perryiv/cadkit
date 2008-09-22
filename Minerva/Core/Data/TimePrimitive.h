@@ -28,14 +28,10 @@ public:
   typedef Minerva::Core::Animate::Date Date;
   
   USUL_DECLARE_REF_POINTERS ( TimePrimitive );
-  
-  TimePrimitive();
-  
-  /// Parse from kml.
-  static Date parseKml ( const std::string& value );
 
 protected:
   
+  TimePrimitive();
   virtual ~TimePrimitive();
 };
 

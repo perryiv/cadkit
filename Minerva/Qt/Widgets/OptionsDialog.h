@@ -11,15 +11,17 @@
 #ifndef __WMS_OPTIONS_DIALOG_H__
 #define __WMS_OPTIONS_DIALOG_H__
 
-#include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "ui_OptionsDialog.h"
 
 #include "QtGui/QDialog"
-#include "QtGui/QItemDelegate"
 
 #include <map>
 #include <string>
 
+namespace Minerva {
+namespace Widgets {
+      
+      
 class OptionsDialog : public QDialog,
                       private Ui::OptionsDialog
 {
@@ -38,5 +40,9 @@ protected slots:
   void on_addRowButton_clicked();
   void on_removeRowButton_clicked();
 };
+
+  
+}
+}
 
 #endif // __WMS_OPTIONS_DIALOG_H__

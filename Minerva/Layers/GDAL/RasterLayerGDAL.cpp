@@ -314,7 +314,7 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   BaseClass::_writeImageToCache ( extents, width, height, level, image );
   #endif
 #endif
-  
+
   return image;
 }
 

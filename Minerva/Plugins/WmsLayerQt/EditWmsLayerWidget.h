@@ -24,9 +24,9 @@ class EditWmsLayerWidget : public QWidget,
   Q_OBJECT;
 public:
   typedef QWidget BaseClass;
-  typedef Minerva::Core::Layers::RasterLayerWms RasterLayerWms;
+  typedef Minerva::Core::Layers::RasterLayerNetwork RasterLayerNetwork;
   
-  EditWmsLayerWidget ( RasterLayerWms *layer, QWidget * parent = 0x0 );
+  EditWmsLayerWidget ( RasterLayerNetwork *layer, QWidget * parent = 0x0 );
   virtual ~EditWmsLayerWidget();
   
 protected slots:
@@ -39,7 +39,7 @@ protected slots:
   void on_deleteCacheButton_clicked();
   
 private:
-  RasterLayerWms::RefPtr _layer;
+  RasterLayerNetwork::RefPtr _layer;
 };
 
 

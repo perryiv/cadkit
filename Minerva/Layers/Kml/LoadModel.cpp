@@ -124,11 +124,14 @@ namespace Detail
     {
       if ( 0x0 != geode )
       {
+#if 0
         if ( "BackColor" == geode->getName() )
         {
           geode->removeDrawables ( 0, geode->getNumDrawables() );
           return;
         }
+#endif
+        
 #if 0
         unsigned int num ( geode->getNumDrawables() );
         for ( unsigned int i = 0; i < num; ++i )

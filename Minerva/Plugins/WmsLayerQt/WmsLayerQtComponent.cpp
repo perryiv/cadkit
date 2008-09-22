@@ -16,9 +16,11 @@
 
 #include "Minerva/Plugins/WmsLayerQt/WmsLayerQtComponent.h"
 #include "Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h"
+#include "Minerva/Qt/Widgets/AddNetworkLayerWidget.h"
 
 #include "Minerva/Interfaces/IDirtyScene.h"
 
+#include "Usul/Components/Factory.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Qt.h"
@@ -27,6 +29,7 @@
 #include "QtGui/QDialogButtonBox"
 #include "QtGui/QVBoxLayout"
 
+USUL_DECLARE_COMPONENT_FACTORY ( WmsLayerQtComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( WmsLayerQtComponent, WmsLayerQtComponent::BaseClass );
 
 

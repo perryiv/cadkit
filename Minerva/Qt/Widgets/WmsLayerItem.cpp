@@ -4,13 +4,13 @@
 //  Copyright (c) 2008, Arizona State University
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Adam Kubach
+//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Plugins/WmsLayerQt/OptionsDialog.h"
+#include "Minerva/Qt/Widgets/WmsLayerItem.h"
 
-#include "QtGui/QLineEdit"
+using namespace Minerva::Widgets;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -18,14 +18,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OptionsDialog::OptionsDialog ( const Options& options, QWidget* parent ) : BaseClass ( parent )
+WmsLayerItem::WmsLayerItem ( const std::string& name, const std::string& title, const Extents& extents, QTreeWidget *parent ) : BaseClass ( parent ),
+  _extents( extents )
 {
-  this->setupUi( this );
-  
-  for ( Options::const_iterator iter = options.begin(); iter != options.end(); ++iter )
-  {
-    _optionsTreeWidget->addItem ( iter->first, iter->second );
-  }
+  this->setText ( 0, name.c_str() );
+  this->setText ( 1, title.c_str() );
 }
 
 
@@ -35,55 +32,42 @@ OptionsDialog::OptionsDialog ( const Options& options, QWidget* parent ) : BaseC
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OptionsDialog::~OptionsDialog()
+WmsLayerItem::~WmsLayerItem()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the options.
+//  Get the extents.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OptionsDialog::Options OptionsDialog::options() const
+WmsLayerItem::Extents WmsLayerItem::extents () const
 {
-  Options options;
-  
-  if ( 0x0 != _optionsTreeWidget )
-  {
-    typedef QtTools::StringsView::Items Items;
-    Items values ( _optionsTreeWidget->items() );
-  
-    for ( Items::const_iterator iter = values.begin(); iter != values.end(); ++iter )
-    {
-      options.insert ( *iter );
-    }
-  }
-  
-  return options;
+  return _extents;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a row.
+//  Get the name.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OptionsDialog::on_addRowButton_clicked()
+std::string WmsLayerItem::name() const
 {
-  _optionsTreeWidget->addItem ( "Key", "Value" );
+  return this->text ( 0 ).toStdString();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove a row.
+//  Get the style.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OptionsDialog::on_removeRowButton_clicked()
+std::string WmsLayerItem::style() const
 {
-  _optionsTreeWidget->removeRow ( _optionsTreeWidget->currentRow() );
+  return "";
 }

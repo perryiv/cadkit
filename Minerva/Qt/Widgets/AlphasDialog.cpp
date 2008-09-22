@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Plugins/WmsLayerQt/AlphasDialog.h"
+#include "Minerva/Qt/Widgets/AlphasDialog.h"
 
 #include "Usul/Functions/Color.h"
 #include "Usul/Math/Vector4.h"
@@ -19,6 +19,8 @@
 #include "QtGui/QLabel"
 #include "QtGui/QSpinBox"
 #include "QtGui/QPainter"
+
+using namespace Minerva::Widgets;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

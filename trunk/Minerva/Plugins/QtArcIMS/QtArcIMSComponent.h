@@ -10,27 +10,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  
+//  Component for ArcIMS GUI.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _WMS_LAYER_QT_H_
 #define _WMS_LAYER_QT_H_
 
-#include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
-#include "Minerva/Core/Layers/RasterLayerWms.h"
+#include "Minerva/Plugins/QtArcIMS/CompileGuard.h"
+#include "Minerva/Core/Layers/RasterLayerArcIMS.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/ILayerAddGUIQt.h"
-#include "Usul/Interfaces/ILayerModifyGUIQt.h"
 
 namespace Minerva {  namespace Widgets { template <class Layer> class AddNetworkLayerWidget; } }
 
-class WmsLayerQtComponent : public Usul::Base::Referenced,
-                            public Usul::Interfaces::IPlugin,
-                            public Usul::Interfaces::ILayerAddGUIQt,
-                            public Usul::Interfaces::ILayerModifyGUIQt
+class QtArcIMSComponent : public Usul::Base::Referenced,
+                          public Usul::Interfaces::IPlugin,
+                          public Usul::Interfaces::ILayerAddGUIQt
 
 {
 public:
@@ -38,16 +36,16 @@ public:
   /// Typedefs.
   typedef Usul::Base::Referenced               BaseClass;
   typedef Usul::Interfaces::IUnknown           Unknown;
-  typedef Minerva::Widgets::AddNetworkLayerWidget<Minerva::Core::Layers::RasterLayerWms> AddWmsLayerWidget;
+  typedef Minerva::Widgets::AddNetworkLayerWidget<Minerva::Core::Layers::RasterLayerArcIMS> AddArcIMSLayerWidget;
 
   /// Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( WmsLayerQtComponent );
+  USUL_DECLARE_REF_POINTERS ( QtArcIMSComponent );
 
   /// Usul::Interfaces::IUnknown members.
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   /// Constructor
-  WmsLayerQtComponent();
+  QtArcIMSComponent();
   
 protected:
 
@@ -59,19 +57,15 @@ protected:
   /// Return name of plugin.
   virtual std::string         getPluginName() const;
 
-  /// ILayerModifyQtGUI
-  virtual bool                handle ( Usul::Interfaces::ILayer* ) const;
-  virtual void                showModifyGUI ( Usul::Interfaces::ILayer*, Usul::Interfaces::IUnknown* caller = 0x0 );
-  
   // Do not copy.
-  WmsLayerQtComponent ( const WmsLayerQtComponent & );
-  WmsLayerQtComponent &operator = ( const WmsLayerQtComponent & );
+  QtArcIMSComponent ( const QtArcIMSComponent & );
+  QtArcIMSComponent &operator = ( const QtArcIMSComponent & );
 
   /// Use reference counting.
-  virtual ~WmsLayerQtComponent();
+  virtual ~QtArcIMSComponent();
 
 private:
-  AddWmsLayerWidget *_widget;
+  AddArcIMSLayerWidget *_widget;
 };
 
 

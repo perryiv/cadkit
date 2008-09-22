@@ -65,12 +65,18 @@ void ModelPostProcess::operator () ( osg::Node * node )
           
           texture->setInternalFormatMode ( osg::Texture::USE_S3TC_DXT1_COMPRESSION );
         }
+        else if ( GL_RGBA == texture->getInternalFormat() )
+        {
+          ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+        }
 #endif
-        
+
         // Turn off lighting.
         OsgTools::State::StateSet::setLighting ( ss.get(), false );
       }
-      
+
+      ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+
 #if 0
       // Check for a material.
       if ( osg::Material* material = dynamic_cast<osg::Material*> ( ss->getAttribute ( osg::StateAttribute::MATERIAL ) ) )

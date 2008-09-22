@@ -11,7 +11,6 @@
 #ifndef __WMS_ALPHAS_DIALOG_H__
 #define __WMS_ALPHAS_DIALOG_H__
 
-#include "Minerva/Plugins/WmsLayerQt/CompileGuard.h"
 #include "ui_AlphasDialog.h"
 
 #include "Usul/Interfaces/IRasterAlphas.h"
@@ -21,6 +20,11 @@
 #include "QtCore/QAbstractItemModel"
 #include "QtGui/QItemDelegate"
 
+
+namespace Minerva {
+namespace Widgets {
+      
+      
 class AlphasDialog : public QDialog,
                      public Ui::AlphasDialog
 {
@@ -99,5 +103,9 @@ private:
   AlphasItemModel *_model;
   AlphasItemDelegate *_delegate;
 };
+
+  
+}
+}
 
 #endif // __WMS_ALPHAS_DIALOG_H__

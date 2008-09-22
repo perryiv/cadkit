@@ -8,7 +8,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Data/TimePrimitive.h"
-#include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Convert/Convert.h"
 #include "Usul/Strings/Format.h"
@@ -38,40 +37,4 @@ TimePrimitive::TimePrimitive() : BaseClass()
 
 TimePrimitive::~TimePrimitive()
 {
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Parse.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TimePrimitive::Date TimePrimitive::parseKml ( const std::string& value )
-{
-  typedef std::vector<std::string> Strings;
-  Strings strings;
-  Usul::Strings::split ( value, "T", false, strings );
-  
-  std::string date ( strings.size() > 0 ? strings[0] : "" );
-  
-  // Currently not handling time.
-  //std::string time ( strings.size() > 1 ? strings[1] : "" );
-
-  Strings parts;
-  Usul::Strings::split ( date, "-", false, parts );
-
-  if ( false == parts.empty() )
-  {
-    int year ( Usul::Convert::Type<std::string,int>::convert ( parts[0] ) );
-    int month ( parts.size() > 1 ? Usul::Convert::Type<std::string,int>::convert ( parts[1] ) : 1 );
-    int day ( parts.size() > 2 ? Usul::Convert::Type<std::string,int>::convert ( parts[2] ) : 1 );
-
-    if ( year < 1400 )
-      year += 1400;
-  
-    return Date ( boost::gregorian::from_simple_string ( Usul::Strings::format ( year, "-", month, "-", day ) ) );
-  }
-
-  return Date();
 }

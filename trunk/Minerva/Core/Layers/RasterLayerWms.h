@@ -19,15 +19,17 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayerNetwork.h"
+#include "Minerva/Core/Layers/LayerInfo.h"
 
 #include <map>
 #include <string>
+#include <vector>
 
 
 namespace Minerva {
 namespace Core {
 namespace Layers {
-
+  
 
 class MINERVA_EXPORT RasterLayerWms : public RasterLayerNetwork
 {
@@ -36,6 +38,7 @@ public:
   typedef RasterLayerNetwork BaseClass;
   typedef BaseClass::IReadImageFile IReadImageFile;
   typedef BaseClass::Options Options;
+  typedef std::vector<LayerInfo> LayerInfos;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayerWms );
 
@@ -46,7 +49,13 @@ public:
 
   /// Get the full url.
   virtual std::string   urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
+  
+  /// Get the default options.
+  static Options        defaultOptions();
 
+  /// Get the layer information for the server.  TODO: Handle styles.
+  static LayerInfos     availableLayers ( const std::string& url );
+  
 protected:
 
   virtual ~RasterLayerWms();

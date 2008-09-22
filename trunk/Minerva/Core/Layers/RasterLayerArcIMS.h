@@ -19,6 +19,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayerNetwork.h"
+#include "Minerva/Core/Layers/LayerInfo.h"
 
 #include "Usul/Math/Vector3.h"
 
@@ -36,6 +37,8 @@ public:
 
   typedef RasterLayerNetwork BaseClass;
   typedef BaseClass::IReadImageFile IReadImageFile;
+  typedef BaseClass::Options Options;
+  typedef std::vector<LayerInfo> LayerInfos;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayerArcIMS );
 
@@ -43,6 +46,15 @@ public:
 
   /// Clone.
   virtual IUnknown*     clone() const;
+
+  /// Get the default options.
+  static Options        defaultOptions();
+  
+  /// Get the layer information for the server.
+  static LayerInfos     availableLayers ( const std::string& url );
+  
+  /// Get the full url.
+  virtual std::string   urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;
   
 protected:
 

@@ -38,13 +38,21 @@ namespace Animate {
 class MINERVA_EXPORT Date
 {
 public:
+  
+  typedef boost::posix_time::ptime DateType;
 
+  /// Default construction.
   Date();
 
+  /// Constructors.
   Date ( const std::string& date );
   Date ( boost::date_time::special_values value );
   Date ( const boost::gregorian::date& date );
   Date ( const boost::posix_time::ptime& date );
+  
+  // Static creation functions.  Time is returned in UTC.
+  static DateType createFromKml ( const std::string& value );
+  static DateType createFromRSS ( const std::string& value );
 
   /// Get the underlying boost date.
   boost::gregorian::date           date() const;

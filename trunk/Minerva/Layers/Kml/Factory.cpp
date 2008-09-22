@@ -562,11 +562,11 @@ Minerva::Core::Data::TimeSpan* Factory::createTimeSpan ( const XmlTree::Node& no
     
     if ( "begin" == name )
     {
-      span->begin ( TimeSpan::parseKml ( node->value() ) );
+      span->begin ( Minerva::Core::Animate::Date::createFromKml ( node->value() ) );
     }
     else if ( "end" == name )
     {
-      span->end ( TimeSpan::parseKml ( node->value() ) );
+      span->end ( Minerva::Core::Animate::Date::createFromKml ( node->value() ) );
     }
   }
   

@@ -9,8 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h"
-#include "Minerva/Plugins/WmsLayerQt/OptionsDialog.h"
-#include "Minerva/Plugins/WmsLayerQt/AlphasDialog.h"
+#include "Minerva/Qt/Widgets/OptionsDialog.h"
+#include "Minerva/Qt/Widgets/AlphasDialog.h"
 
 #include "Usul/File/Boost.h"
 #include "Usul/Strings/Format.h"
@@ -25,7 +25,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-EditWmsLayerWidget::EditWmsLayerWidget ( RasterLayerWms *layer, QWidget * parent ) : BaseClass ( parent ),
+EditWmsLayerWidget::EditWmsLayerWidget ( RasterLayerNetwork *layer, QWidget * parent ) : BaseClass ( parent ),
   _layer ( layer )
 {
   // Initialize code from designer.
@@ -102,7 +102,7 @@ void EditWmsLayerWidget::on_viewOptionsButton_clicked()
 {
   if ( _layer.valid() )
   {
-    OptionsDialog dialog ( _layer->options(), this );
+    Minerva::Widgets::OptionsDialog dialog ( _layer->options(), this );
     
     if ( QDialog::Accepted == dialog.exec() )
       _layer->options ( dialog.options() );
@@ -120,9 +120,9 @@ void EditWmsLayerWidget::on_viewAlphasButton_clicked()
 {
   if ( _layer.valid() )
   {
-    RasterLayerWms::Alphas alphas ( _layer->alphas() );
+    RasterLayerNetwork::Alphas alphas ( _layer->alphas() );
     
-    AlphasDialog dialog ( alphas, this );
+    Minerva::Widgets::AlphasDialog dialog ( alphas, this );
     
     if ( QDialog::Accepted == dialog.exec() )
       _layer->alphas ( dialog.alphas() );

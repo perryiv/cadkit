@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				66A88A040E86F336007A195F /* PBXTargetDependency */,
 				668ED7F90E73B17F00632AF9 /* PBXTargetDependency */,
 				66ACACAC0E5E2E1A0067F985 /* PBXTargetDependency */,
 				66A027D80E2B1F3B002CBE4D /* PBXTargetDependency */,
@@ -1064,12 +1065,6 @@
 		6692727F0E0AE44600E35E8B /* osgdb_zip.so in Copy OpenSceneGraph Plugins */ = {isa = PBXBuildFile; fileRef = 66EF059A0D143B2B00B4B1AA /* osgdb_zip.so */; };
 		669272810E0AE46300E35E8B /* libOpenThreadsEx.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FEDAE9092454C300EBB610 /* libOpenThreadsEx.dylib */; };
 		669273970E0B1F4900E35E8B /* Transform.h in Headers */ = {isa = PBXBuildFile; fileRef = 669273950E0B1F4900E35E8B /* Transform.h */; };
-		6693572A0D9AD0CA0066DEDC /* OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357280D9AD0CA0066DEDC /* OptionsDialog.cpp */; };
-		6693572B0D9AD0CA0066DEDC /* OptionsDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 669357290D9AD0CA0066DEDC /* OptionsDialog.h */; };
-		669357410D9AD2A90066DEDC /* moc_OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357400D9AD2A90066DEDC /* moc_OptionsDialog.cpp */; };
-		669357AF0D9AF0420066DEDC /* AlphasDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 669357AD0D9AF0420066DEDC /* AlphasDialog.h */; };
-		669357B00D9AF0420066DEDC /* AlphasDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357AE0D9AF0420066DEDC /* AlphasDialog.cpp */; };
-		669357B40D9AF1CA0066DEDC /* moc_AlphasDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669357B30D9AF1CA0066DEDC /* moc_AlphasDialog.cpp */; };
 		66942DC40D77D6A200633017 /* Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DBA0D77D6A200633017 /* Layer.cpp */; };
 		66942DC50D77D6A200633017 /* Layer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66942DBB0D77D6A200633017 /* Layer.h */; };
 		66942DC60D77D6A200633017 /* LineLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66942DBC0D77D6A200633017 /* LineLayer.cpp */; };
@@ -1257,12 +1252,9 @@
 		66A112D20D2EBC59009B29ED /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CC0D2EBC59009B29ED /* CompileGuard.h */; };
 		66A112D30D2EBC59009B29ED /* OssimLayerQtComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112CD0D2EBC59009B29ED /* OssimLayerQtComponent.cpp */; };
 		66A112D40D2EBC59009B29ED /* OssimLayerQtComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112CE0D2EBC59009B29ED /* OssimLayerQtComponent.h */; };
-		66A112DC0D2EBC77009B29ED /* AddWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */; };
-		66A112DD0D2EBC77009B29ED /* AddWmsLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */; };
 		66A112DE0D2EBC77009B29ED /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112D80D2EBC77009B29ED /* CompileGuard.h */; };
 		66A112DF0D2EBC77009B29ED /* WmsLayerQtComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112D90D2EBC77009B29ED /* WmsLayerQtComponent.cpp */; };
 		66A112E00D2EBC77009B29ED /* WmsLayerQtComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112DA0D2EBC77009B29ED /* WmsLayerQtComponent.h */; };
-		66A112E10D2EBC77009B29ED /* WmsLayerQtFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112DB0D2EBC77009B29ED /* WmsLayerQtFactory.cpp */; };
 		66A112FA0D2EBCA8009B29ED /* AddPostGISLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A112E20D2EBCA8009B29ED /* AddPostGISLayerWidget.cpp */; };
 		66A112FB0D2EBCA8009B29ED /* AddPostGISLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112E30D2EBCA8009B29ED /* AddPostGISLayerWidget.h */; };
 		66A112FC0D2EBCA8009B29ED /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A112E40D2EBCA8009B29ED /* CompileGuard.h */; };
@@ -1291,7 +1283,6 @@
 		66A1197F0D2EC1BD009B29ED /* moc_AddOssimLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A1197E0D2EC1BD009B29ED /* moc_AddOssimLayerWidget.cpp */; };
 		66A119930D2EC2F7009B29ED /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66A119940D2EC30C009B29ED /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
-		66A119970D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */; };
 		66A119A50D2EC500009B29ED /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
 		66A119A60D2EC503009B29ED /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
 		66A119BB0D2EC53A009B29ED /* moc_LineWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A119B70D2EC53A009B29ED /* moc_LineWidget.cpp */; };
@@ -1345,6 +1336,45 @@
 		66A6259D0E2C702800795F3D /* GeoCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A6259B0E2C702800795F3D /* GeoCode.h */; };
 		66A6259E0E2C702800795F3D /* GeoCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A6259C0E2C702800795F3D /* GeoCode.cpp */; };
 		66A8670E0E2EA73F0081848E /* libHeliosQtViewOSG.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 666766D30D12F282002F40C6 /* libHeliosQtViewOSG.dylib */; };
+		66A887D70E85CE2B007A195F /* LayerInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A887D60E85CE2B007A195F /* LayerInfo.h */; };
+		66A888260E85E18F007A195F /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66A888270E85E18F007A195F /* libMenuKit.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */; };
+		66A888280E85E18F007A195F /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
+		66A888290E85E18F007A195F /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
+		66A8882A0E85E18F007A195F /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
+		66A888650E85E1F4007A195F /* AddWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8885A0E85E1F4007A195F /* AddWmsLayerWidget.cpp */; };
+		66A888660E85E1F4007A195F /* AddWmsLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8885B0E85E1F4007A195F /* AddWmsLayerWidget.h */; };
+		66A888670E85E1F4007A195F /* AlphasDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8885C0E85E1F4007A195F /* AlphasDialog.cpp */; };
+		66A888680E85E1F4007A195F /* AlphasDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8885D0E85E1F4007A195F /* AlphasDialog.h */; };
+		66A888690E85E1F4007A195F /* OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8885F0E85E1F4007A195F /* OptionsDialog.cpp */; };
+		66A8886A0E85E1F4007A195F /* OptionsDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A888600E85E1F4007A195F /* OptionsDialog.h */; };
+		66A8886B0E85E1F4007A195F /* WmsLayerItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A888620E85E1F4007A195F /* WmsLayerItem.cpp */; };
+		66A8886C0E85E1F4007A195F /* WmsLayerItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A888630E85E1F4007A195F /* WmsLayerItem.h */; };
+		66A888720E85E23F007A195F /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
+		66A888730E85E249007A195F /* libMinervaQtWidgets.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A8882E0E85E18F007A195F /* libMinervaQtWidgets.dylib */; };
+		66A888880E85EC3D007A195F /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
+		66A8888D0E8605BE007A195F /* moc_AddWmsLayerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8888A0E8605BE007A195F /* moc_AddWmsLayerWidget.cpp */; };
+		66A8888E0E8605BE007A195F /* moc_AlphasDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8888B0E8605BE007A195F /* moc_AlphasDialog.cpp */; };
+		66A8888F0E8605BE007A195F /* moc_OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8888C0E8605BE007A195F /* moc_OptionsDialog.cpp */; };
+		66A8889A0E8606D5007A195F /* libMinervaQtWidgets.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A8882E0E85E18F007A195F /* libMinervaQtWidgets.dylib */; };
+		66A889800E86A866007A195F /* libMinervaQtWidgets.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A8882E0E85E18F007A195F /* libMinervaQtWidgets.dylib */; };
+		66A889810E86A866007A195F /* libQtTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FAB10D1204D8003F6A58 /* libQtTools.dylib */; };
+		66A889820E86A866007A195F /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
+		66A889830E86A866007A195F /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66A889840E86A866007A195F /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		66A889850E86A866007A195F /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66A889860E86A866007A195F /* ossim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF13A40D15177F00B4B1AA /* ossim.framework */; };
+		66A889870E86A866007A195F /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66A889880E86A866007A195F /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
+		66A889890E86A866007A195F /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
+		66A8898A0E86A866007A195F /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
+		66A8898B0E86A866007A195F /* curl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
+		66A8898C0E86A866007A195F /* Boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
+		66A889960E86A8C7007A195F /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A889930E86A8C7007A195F /* CompileGuard.h */; };
+		66A889970E86A8C7007A195F /* QtArcIMSComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A889940E86A8C7007A195F /* QtArcIMSComponent.cpp */; };
+		66A889980E86A8C7007A195F /* QtArcIMSComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A889950E86A8C7007A195F /* QtArcIMSComponent.h */; };
+		66A88A060E86F379007A195F /* QtArcIMSLayer.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A889900E86A866007A195F /* QtArcIMSLayer.plugd */; };
+		66A88A340E86FDB9007A195F /* AddNetworkLayerWidget.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A88A330E86FDB9007A195F /* AddNetworkLayerWidget.h */; };
 		66A8B0990DABED4500088B3B /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8B0940DABED4500088B3B /* CompileGuard.h */; };
 		66A8B09A0DABED4500088B3B /* FlashComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A8B0950DABED4500088B3B /* FlashComponent.cpp */; };
 		66A8B09B0DABED4500088B3B /* FlashComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A8B0960DABED4500088B3B /* FlashComponent.h */; };
@@ -1680,8 +1710,6 @@
 		66E7B0C00B17617300E3D682 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BC0B17617300E3D682 /* Renderer.h */; };
 		66E7B0C10B17617300E3D682 /* SceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E7B0BD0B17617300E3D682 /* SceneManager.cpp */; };
 		66E7B0C20B17617300E3D682 /* SceneManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E7B0BE0B17617300E3D682 /* SceneManager.h */; };
-		66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */; };
-		66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E8B3760D930B7300024CB2 /* WmsLayerItem.h */; };
 		66EEA7240DCFD11900500B82 /* WmsLayerQt.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66A112BB0D2EBAF3009B29ED /* WmsLayerQt.plugd */; };
 		66EF05BC0D143F0000B4B1AA /* CompileGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EF05B50D143F0000B4B1AA /* CompileGuard.h */; };
 		66EF05BD0D143F0000B4B1AA /* SnapShotComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF05B70D143F0000B4B1AA /* SnapShotComponent.cpp */; };
@@ -2815,6 +2843,76 @@
 			remoteGlobalIDString = 666766D20D12F282002F40C6;
 			remoteInfo = HeliosQtViewOSG;
 		};
+		66A887F30E85E18F007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		66A887F50E85E18F007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FE740D12084C003F6A58;
+			remoteInfo = MenuKit;
+		};
+		66A8886D0E85E22E007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FAB00D1204D8003F6A58 /* QtTools */;
+			remoteInfo = QtTools;
+		};
+		66A8886F0E85E235007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66A887F10E85E18F007A195F /* MinervaQtWidgets */;
+			remoteInfo = MinervaQtWidgets;
+		};
+		66A888850E85EC33007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA /* Minerva */;
+			remoteInfo = Minerva;
+		};
+		66A8896F0E86A866007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66A887F10E85E18F007A195F;
+			remoteInfo = MinervaQtWidgets;
+		};
+		66A889710E86A866007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
+			remoteInfo = XmlTree;
+		};
+		66A889730E86A866007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA;
+			remoteInfo = Minerva;
+		};
+		66A889750E86A866007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		66A88A030E86F336007A195F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66A8896D0E86A866007A195F /* QtArcIMSLayer */;
+			remoteInfo = QtArcIMSLayer;
+		};
 		66A8B0A70DABF4CE00088B3B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -3796,6 +3894,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				66A88A060E86F379007A195F /* QtArcIMSLayer.plugd in Copy Files to Plugins */,
+				66A8889A0E8606D5007A195F /* libMinervaQtWidgets.dylib in Copy Files to Plugins */,
 				668ED7FB0E73B18F00632AF9 /* libMinervaOSMLayerd.dylib in Copy Files to Plugins */,
 				66ACACAE0E5E2E280067F985 /* QtCustomGeometry.plugd in Copy Files to Plugins */,
 				66A027F60E2B22EC002CBE4D /* QtGeoRSSLayer.plugd in Copy Files to Plugins */,
@@ -5053,12 +5153,6 @@
 		669273910E0B1DDE00E35E8B /* Recharge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recharge.h; sourceTree = "<group>"; };
 		669273930E0B1DDE00E35E8B /* Clear.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clear.h; sourceTree = "<group>"; };
 		669273950E0B1F4900E35E8B /* Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transform.h; sourceTree = "<group>"; };
-		669357280D9AD0CA0066DEDC /* OptionsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OptionsDialog.cpp; path = WmsLayerQt/OptionsDialog.cpp; sourceTree = "<group>"; };
-		669357290D9AD0CA0066DEDC /* OptionsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OptionsDialog.h; path = WmsLayerQt/OptionsDialog.h; sourceTree = "<group>"; };
-		669357400D9AD2A90066DEDC /* moc_OptionsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_OptionsDialog.cpp; path = WmsLayerQt/moc_OptionsDialog.cpp; sourceTree = "<group>"; };
-		669357AD0D9AF0420066DEDC /* AlphasDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AlphasDialog.h; path = WmsLayerQt/AlphasDialog.h; sourceTree = "<group>"; };
-		669357AE0D9AF0420066DEDC /* AlphasDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlphasDialog.cpp; path = WmsLayerQt/AlphasDialog.cpp; sourceTree = "<group>"; };
-		669357B30D9AF1CA0066DEDC /* moc_AlphasDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_AlphasDialog.cpp; path = WmsLayerQt/moc_AlphasDialog.cpp; sourceTree = "<group>"; };
 		6693C1D80E19E2700021752B /* Dataset.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = Dataset.i; sourceTree = "<group>"; };
 		6693C1D90E19E2700021752B /* Timestep.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = Timestep.i; sourceTree = "<group>"; };
 		66942DB60D77D66900633017 /* libMinervaPostGISLayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaPostGISLayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5324,12 +5418,9 @@
 		66A112CC0D2EBC59009B29ED /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = OssimLayerQt/CompileGuard.h; sourceTree = "<group>"; };
 		66A112CD0D2EBC59009B29ED /* OssimLayerQtComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OssimLayerQtComponent.cpp; path = OssimLayerQt/OssimLayerQtComponent.cpp; sourceTree = "<group>"; };
 		66A112CE0D2EBC59009B29ED /* OssimLayerQtComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OssimLayerQtComponent.h; path = OssimLayerQt/OssimLayerQtComponent.h; sourceTree = "<group>"; };
-		66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddWmsLayerWidget.cpp; path = WmsLayerQt/AddWmsLayerWidget.cpp; sourceTree = "<group>"; };
-		66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddWmsLayerWidget.h; path = WmsLayerQt/AddWmsLayerWidget.h; sourceTree = "<group>"; };
 		66A112D80D2EBC77009B29ED /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = WmsLayerQt/CompileGuard.h; sourceTree = "<group>"; };
 		66A112D90D2EBC77009B29ED /* WmsLayerQtComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WmsLayerQtComponent.cpp; path = WmsLayerQt/WmsLayerQtComponent.cpp; sourceTree = "<group>"; };
 		66A112DA0D2EBC77009B29ED /* WmsLayerQtComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WmsLayerQtComponent.h; path = WmsLayerQt/WmsLayerQtComponent.h; sourceTree = "<group>"; };
-		66A112DB0D2EBC77009B29ED /* WmsLayerQtFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WmsLayerQtFactory.cpp; path = WmsLayerQt/WmsLayerQtFactory.cpp; sourceTree = "<group>"; };
 		66A112E20D2EBCA8009B29ED /* AddPostGISLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddPostGISLayerWidget.cpp; path = PostGISLayerQt/AddPostGISLayerWidget.cpp; sourceTree = "<group>"; };
 		66A112E30D2EBCA8009B29ED /* AddPostGISLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddPostGISLayerWidget.h; path = PostGISLayerQt/AddPostGISLayerWidget.h; sourceTree = "<group>"; };
 		66A112E40D2EBCA8009B29ED /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = PostGISLayerQt/CompileGuard.h; sourceTree = "<group>"; };
@@ -5354,7 +5445,6 @@
 		66A112F80D2EBCA8009B29ED /* UniqueColorWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UniqueColorWidget.cpp; path = PostGISLayerQt/UniqueColorWidget.cpp; sourceTree = "<group>"; };
 		66A112F90D2EBCA8009B29ED /* UniqueColorWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UniqueColorWidget.h; path = PostGISLayerQt/UniqueColorWidget.h; sourceTree = "<group>"; };
 		66A1197E0D2EC1BD009B29ED /* moc_AddOssimLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_AddOssimLayerWidget.cpp; path = OssimLayerQt/moc_AddOssimLayerWidget.cpp; sourceTree = "<group>"; };
-		66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_AddWmsLayerWidget.cpp; path = WmsLayerQt/moc_AddWmsLayerWidget.cpp; sourceTree = "<group>"; };
 		66A119B70D2EC53A009B29ED /* moc_LineWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_LineWidget.cpp; path = PostGISLayerQt/moc_LineWidget.cpp; sourceTree = "<group>"; };
 		66A119B80D2EC53A009B29ED /* moc_PointWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_PointWidget.cpp; path = PostGISLayerQt/moc_PointWidget.cpp; sourceTree = "<group>"; };
 		66A119B90D2EC53A009B29ED /* moc_PolygonWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_PolygonWidget.cpp; path = PostGISLayerQt/moc_PolygonWidget.cpp; sourceTree = "<group>"; };
@@ -5421,6 +5511,27 @@
 		66A4CE960DC10248006DEE5E /* moc_TreeControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_TreeControl.cpp; sourceTree = "<group>"; };
 		66A6259B0E2C702800795F3D /* GeoCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoCode.h; sourceTree = "<group>"; };
 		66A6259C0E2C702800795F3D /* GeoCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeoCode.cpp; sourceTree = "<group>"; };
+		66A887D60E85CE2B007A195F /* LayerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerInfo.h; sourceTree = "<group>"; };
+		66A8882E0E85E18F007A195F /* libMinervaQtWidgets.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaQtWidgets.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A8885A0E85E1F4007A195F /* AddWmsLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddWmsLayerWidget.cpp; sourceTree = "<group>"; };
+		66A8885B0E85E1F4007A195F /* AddWmsLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddWmsLayerWidget.h; sourceTree = "<group>"; };
+		66A8885C0E85E1F4007A195F /* AlphasDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AlphasDialog.cpp; sourceTree = "<group>"; };
+		66A8885D0E85E1F4007A195F /* AlphasDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlphasDialog.h; sourceTree = "<group>"; };
+		66A8885E0E85E1F4007A195F /* AlphasDialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AlphasDialog.ui; sourceTree = "<group>"; };
+		66A8885F0E85E1F4007A195F /* OptionsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptionsDialog.cpp; sourceTree = "<group>"; };
+		66A888600E85E1F4007A195F /* OptionsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptionsDialog.h; sourceTree = "<group>"; };
+		66A888610E85E1F4007A195F /* OptionsDialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OptionsDialog.ui; sourceTree = "<group>"; };
+		66A888620E85E1F4007A195F /* WmsLayerItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WmsLayerItem.cpp; sourceTree = "<group>"; };
+		66A888630E85E1F4007A195F /* WmsLayerItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmsLayerItem.h; sourceTree = "<group>"; };
+		66A888640E85E1F4007A195F /* WmsWidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WmsWidget.ui; sourceTree = "<group>"; };
+		66A8888A0E8605BE007A195F /* moc_AddWmsLayerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_AddWmsLayerWidget.cpp; sourceTree = "<group>"; };
+		66A8888B0E8605BE007A195F /* moc_AlphasDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_AlphasDialog.cpp; sourceTree = "<group>"; };
+		66A8888C0E8605BE007A195F /* moc_OptionsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moc_OptionsDialog.cpp; sourceTree = "<group>"; };
+		66A889900E86A866007A195F /* QtArcIMSLayer.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QtArcIMSLayer.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
+		66A889930E86A8C7007A195F /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileGuard.h; sourceTree = "<group>"; };
+		66A889940E86A8C7007A195F /* QtArcIMSComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtArcIMSComponent.cpp; sourceTree = "<group>"; };
+		66A889950E86A8C7007A195F /* QtArcIMSComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtArcIMSComponent.h; sourceTree = "<group>"; };
+		66A88A330E86FDB9007A195F /* AddNetworkLayerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddNetworkLayerWidget.h; sourceTree = "<group>"; };
 		66A8B08E0DABECA400088B3B /* FlashModel.plugd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = FlashModel.plugd; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A8B0940DABED4500088B3B /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = ../Experimental/Flash/FlashModel/CompileGuard.h; sourceTree = SOURCE_ROOT; };
 		66A8B0950DABED4500088B3B /* FlashComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FlashComponent.cpp; path = ../Experimental/Flash/FlashModel/FlashComponent.cpp; sourceTree = SOURCE_ROOT; };
@@ -5646,8 +5757,6 @@
 		66E7B0BC0B17617300E3D682 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
 		66E7B0BD0B17617300E3D682 /* SceneManager.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SceneManager.cpp; sourceTree = "<group>"; };
 		66E7B0BE0B17617300E3D682 /* SceneManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SceneManager.h; sourceTree = "<group>"; };
-		66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WmsLayerItem.cpp; path = WmsLayerQt/WmsLayerItem.cpp; sourceTree = "<group>"; };
-		66E8B3760D930B7300024CB2 /* WmsLayerItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WmsLayerItem.h; path = WmsLayerQt/WmsLayerItem.h; sourceTree = "<group>"; };
 		66ED165F0E6F152A0000E512 /* IProjectionMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IProjectionMatrix.h; sourceTree = "<group>"; };
 		66EF05720D143B2B00B4B1AA /* osgdb_3dc.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3dc.so; sourceTree = "<group>"; };
 		66EF05730D143B2B00B4B1AA /* osgdb_3ds.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.bundle"; path = osgdb_3ds.so; sourceTree = "<group>"; };
@@ -6489,6 +6598,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66A888730E85E249007A195F /* libMinervaQtWidgets.dylib in Frameworks */,
 				66CCC9630D9C6A260083EB1F /* libQtTools.dylib in Frameworks */,
 				668DB7EB0D78BD5A00EA4DCD /* libMinerva.dylib in Frameworks */,
 				66A9E9220D34A31A00FD67B6 /* osg.framework in Frameworks */,
@@ -6518,6 +6628,40 @@
 				662568B00DCB8F91001E94FB /* QtGui.framework in Frameworks */,
 				662568B10DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */,
 				66ACC5A00E5E49B90067F985 /* libMinervaPostgres.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66A888250E85E18F007A195F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66A888880E85EC3D007A195F /* libMinerva.dylib in Frameworks */,
+				66A888720E85E23F007A195F /* libQtTools.dylib in Frameworks */,
+				66A888260E85E18F007A195F /* libUsul.dylib in Frameworks */,
+				66A888270E85E18F007A195F /* libMenuKit.dylib in Frameworks */,
+				66A888280E85E18F007A195F /* QtCore.framework in Frameworks */,
+				66A888290E85E18F007A195F /* QtGui.framework in Frameworks */,
+				66A8882A0E85E18F007A195F /* QtOpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66A8897F0E86A866007A195F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66A889800E86A866007A195F /* libMinervaQtWidgets.dylib in Frameworks */,
+				66A889810E86A866007A195F /* libQtTools.dylib in Frameworks */,
+				66A889820E86A866007A195F /* libMinerva.dylib in Frameworks */,
+				66A889830E86A866007A195F /* osg.framework in Frameworks */,
+				66A889840E86A866007A195F /* libSerializeXML.dylib in Frameworks */,
+				66A889850E86A866007A195F /* libXmlTree.dylib in Frameworks */,
+				66A889860E86A866007A195F /* ossim.framework in Frameworks */,
+				66A889870E86A866007A195F /* libUsul.dylib in Frameworks */,
+				66A889880E86A866007A195F /* QtCore.framework in Frameworks */,
+				66A889890E86A866007A195F /* QtGui.framework in Frameworks */,
+				66A8898A0E86A866007A195F /* QtOpenGL.framework in Frameworks */,
+				66A8898B0E86A866007A195F /* curl.framework in Frameworks */,
+				66A8898C0E86A866007A195F /* Boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7022,6 +7166,8 @@
 		431BB9DE09246F3B00ED2131 /* Cadkit Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plugd */,
+				66A889900E86A866007A195F /* QtArcIMSLayer.plugd */,
 				66ACAC9A0E5E2DB20067F985 /* QtCustomGeometry.plugd */,
 				669CE8B20E52101900618324 /* PointModel.plugd */,
 				669F28F50E4D026B007EB41A /* VtkAlgorithms.plugd */,
@@ -7651,9 +7797,9 @@
 				661B8BEF0E1F544B005FC8CA /* TestLegend01.app */,
 				66E1A4DD0E207CE200D3E219 /* TestLegend02.app */,
 				66A025FB0E29B461002CBE4D /* TestProgressBar02.app */,
-				66A027C40E2B1DCF002CBE4D /* QtGeoRSSLayer.plugd */,
 				66427A630E4AA8BE009AE232 /* Nimue.app */,
 				668ED7CD0E73B14F00632AF9 /* libMinervaOSMLayerd.dylib */,
+				66A8882E0E85E18F007A195F /* libMinervaQtWidgets.dylib */,
 			);
 			name = "Cadkit Libraries";
 			sourceTree = "<group>";
@@ -9627,24 +9773,12 @@
 		66A112C80D2EBBA3009B29ED /* WmsLayerQt */ = {
 			isa = PBXGroup;
 			children = (
-				66A112D60D2EBC77009B29ED /* AddWmsLayerWidget.cpp */,
-				66A112D70D2EBC77009B29ED /* AddWmsLayerWidget.h */,
-				669357AE0D9AF0420066DEDC /* AlphasDialog.cpp */,
-				669357AD0D9AF0420066DEDC /* AlphasDialog.h */,
 				66A112D80D2EBC77009B29ED /* CompileGuard.h */,
 				66A06F730D997C5900D0B56A /* EditWmsLayerWidget.cpp */,
 				66A06F720D997C5900D0B56A /* EditWmsLayerWidget.h */,
-				66A119960D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp */,
-				669357B30D9AF1CA0066DEDC /* moc_AlphasDialog.cpp */,
 				66A06F9D0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp */,
-				669357400D9AD2A90066DEDC /* moc_OptionsDialog.cpp */,
-				669357280D9AD0CA0066DEDC /* OptionsDialog.cpp */,
-				669357290D9AD0CA0066DEDC /* OptionsDialog.h */,
-				66E8B3750D930B7300024CB2 /* WmsLayerItem.cpp */,
-				66E8B3760D930B7300024CB2 /* WmsLayerItem.h */,
 				66A112D90D2EBC77009B29ED /* WmsLayerQtComponent.cpp */,
 				66A112DA0D2EBC77009B29ED /* WmsLayerQtComponent.h */,
-				66A112DB0D2EBC77009B29ED /* WmsLayerQtFactory.cpp */,
 			);
 			name = WmsLayerQt;
 			sourceTree = "<group>";
@@ -9774,6 +9908,46 @@
 				66A4CE8B0DC100BE006DEE5E /* MeasureToolComponent.h */,
 			);
 			path = MeasureTool;
+			sourceTree = "<group>";
+		};
+		66A888570E85E1F4007A195F /* Qt */ = {
+			isa = PBXGroup;
+			children = (
+				66A888590E85E1F4007A195F /* Widgets */,
+			);
+			path = Qt;
+			sourceTree = "<group>";
+		};
+		66A888590E85E1F4007A195F /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				66A88A330E86FDB9007A195F /* AddNetworkLayerWidget.h */,
+				66A8885A0E85E1F4007A195F /* AddWmsLayerWidget.cpp */,
+				66A8885B0E85E1F4007A195F /* AddWmsLayerWidget.h */,
+				66A8885C0E85E1F4007A195F /* AlphasDialog.cpp */,
+				66A8885D0E85E1F4007A195F /* AlphasDialog.h */,
+				66A8885E0E85E1F4007A195F /* AlphasDialog.ui */,
+				66A8888A0E8605BE007A195F /* moc_AddWmsLayerWidget.cpp */,
+				66A8888B0E8605BE007A195F /* moc_AlphasDialog.cpp */,
+				66A8888C0E8605BE007A195F /* moc_OptionsDialog.cpp */,
+				66A8885F0E85E1F4007A195F /* OptionsDialog.cpp */,
+				66A888600E85E1F4007A195F /* OptionsDialog.h */,
+				66A888610E85E1F4007A195F /* OptionsDialog.ui */,
+				66A888620E85E1F4007A195F /* WmsLayerItem.cpp */,
+				66A888630E85E1F4007A195F /* WmsLayerItem.h */,
+				66A888640E85E1F4007A195F /* WmsWidget.ui */,
+			);
+			path = Widgets;
+			sourceTree = "<group>";
+		};
+		66A889920E86A8C7007A195F /* QtArcIMS */ = {
+			isa = PBXGroup;
+			children = (
+				66A889930E86A8C7007A195F /* CompileGuard.h */,
+				66A889940E86A8C7007A195F /* QtArcIMSComponent.cpp */,
+				66A889950E86A8C7007A195F /* QtArcIMSComponent.h */,
+			);
+			path = QtArcIMS;
 			sourceTree = "<group>";
 		};
 		66A8B0930DABED2800088B3B /* FlashModel */ = {
@@ -10048,6 +10222,7 @@
 		66EF175D0D1518BE00B4B1AA /* Minerva */ = {
 			isa = PBXGroup;
 			children = (
+				66A888570E85E1F4007A195F /* Qt */,
 				66C4D0080DAA9CB500A3B1FB /* Application */,
 				66CCE9C80D3186630084E49D /* Config.h */,
 				66EF175E0D1518C700B4B1AA /* Core */,
@@ -10145,6 +10320,7 @@
 			children = (
 				668DB5D60D78A75C00EA4DCD /* ElevationGroup.cpp */,
 				668DB5D70D78A75C00EA4DCD /* ElevationGroup.h */,
+				66A887D60E85CE2B007A195F /* LayerInfo.h */,
 				668DB5DC0D78A75C00EA4DCD /* RasterGroup.cpp */,
 				668DB5DD0D78A75C00EA4DCD /* RasterGroup.h */,
 				668DB5DE0D78A75C00EA4DCD /* RasterLayer.cpp */,
@@ -10203,13 +10379,14 @@
 		66EF18E80D15C13200B4B1AA /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				66ACAC9C0E5E2DDC0067F985 /* QtCustomGeometry */,
-				66A027C60E2B1E4F002CBE4D /* GeoRSSQt */,
 				66EF18EB0D15C15400B4B1AA /* Document */,
 				661C119F0DCA71CB00DE43D4 /* GDALReadImage */,
+				66A027C60E2B1E4F002CBE4D /* GeoRSSQt */,
 				66892DD50D283D8C005CB399 /* LayerManager */,
 				66A112C70D2EBB9A009B29ED /* OssimLayerQt */,
 				66A112C90D2EBBAD009B29ED /* PostGISLayerQt */,
+				66A889920E86A8C7007A195F /* QtArcIMS */,
+				66ACAC9C0E5E2DDC0067F985 /* QtCustomGeometry */,
 				66A112C80D2EBBA3009B29ED /* WmsLayerQt */,
 			);
 			path = Plugins;
@@ -11116,13 +11293,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66A112DD0D2EBC77009B29ED /* AddWmsLayerWidget.h in Headers */,
 				66A112DE0D2EBC77009B29ED /* CompileGuard.h in Headers */,
 				66A112E00D2EBC77009B29ED /* WmsLayerQtComponent.h in Headers */,
-				66E8B3780D930B7300024CB2 /* WmsLayerItem.h in Headers */,
 				66A06F740D997C5900D0B56A /* EditWmsLayerWidget.h in Headers */,
-				6693572B0D9AD0CA0066DEDC /* OptionsDialog.h in Headers */,
-				669357AF0D9AF0420066DEDC /* AlphasDialog.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11142,6 +11315,27 @@
 				66A1130D0D2EBCA8009B29ED /* PropertyPage.h in Headers */,
 				66A1130F0D2EBCA8009B29ED /* SingleColorWidget.h in Headers */,
 				66A113110D2EBCA8009B29ED /* UniqueColorWidget.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66A887FA0E85E18F007A195F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66A888660E85E1F4007A195F /* AddWmsLayerWidget.h in Headers */,
+				66A888680E85E1F4007A195F /* AlphasDialog.h in Headers */,
+				66A8886A0E85E1F4007A195F /* OptionsDialog.h in Headers */,
+				66A8886C0E85E1F4007A195F /* WmsLayerItem.h in Headers */,
+				66A88A340E86FDB9007A195F /* AddNetworkLayerWidget.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66A889770E86A866007A195F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66A889960E86A8C7007A195F /* CompileGuard.h in Headers */,
+				66A889980E86A8C7007A195F /* QtArcIMSComponent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11392,6 +11586,7 @@
 				663FAF2E0E711BE900CC4E61 /* Vector.h in Headers */,
 				668ED7840E73A5ED00632AF9 /* ITilesChangedListener.h in Headers */,
 				669DEF660E80EEFE0006013E /* IFeature.h in Headers */,
+				66A887D70E85CE2B007A195F /* LayerInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12316,6 +12511,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				66A888700E85E235007A195F /* PBXTargetDependency */,
 				66CCC96A0D9C6A300083EB1F /* PBXTargetDependency */,
 				66B286290D37EDC6003BDAF3 /* PBXTargetDependency */,
 				66B286270D37EDC3003BDAF3 /* PBXTargetDependency */,
@@ -12345,6 +12541,50 @@
 			name = QtPostGISLayer;
 			productName = PostGISLayerQt;
 			productReference = 66A112C20D2EBB06009B29ED /* PostGISLayerQt.plugd */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		66A887F10E85E18F007A195F /* MinervaQtWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66A8882B0E85E18F007A195F /* Build configuration list for PBXNativeTarget "MinervaQtWidgets" */;
+			buildPhases = (
+				66A887F90E85E18F007A195F /* ShellScript */,
+				66A887FA0E85E18F007A195F /* Headers */,
+				66A8880E0E85E18F007A195F /* Sources */,
+				66A888250E85E18F007A195F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66A888860E85EC33007A195F /* PBXTargetDependency */,
+				66A8886E0E85E22E007A195F /* PBXTargetDependency */,
+				66A887F20E85E18F007A195F /* PBXTargetDependency */,
+				66A887F40E85E18F007A195F /* PBXTargetDependency */,
+			);
+			name = MinervaQtWidgets;
+			productName = QtTools;
+			productReference = 66A8882E0E85E18F007A195F /* libMinervaQtWidgets.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		66A8896D0E86A866007A195F /* QtArcIMSLayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66A8898D0E86A866007A195F /* Build configuration list for PBXNativeTarget "QtArcIMSLayer" */;
+			buildPhases = (
+				66A889760E86A866007A195F /* ShellScript */,
+				66A889770E86A866007A195F /* Headers */,
+				66A8897B0E86A866007A195F /* Sources */,
+				66A8897F0E86A866007A195F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66A8896E0E86A866007A195F /* PBXTargetDependency */,
+				66A889700E86A866007A195F /* PBXTargetDependency */,
+				66A889720E86A866007A195F /* PBXTargetDependency */,
+				66A889740E86A866007A195F /* PBXTargetDependency */,
+			);
+			name = QtArcIMSLayer;
+			productName = WmsLayerQt;
+			productReference = 66A889900E86A866007A195F /* QtArcIMSLayer.plugd */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		66A8B08D0DABECA400088B3B /* FlashModel */ = {
@@ -12825,6 +13065,8 @@
 				668E0C910D4021F50030649B /* WRFModel */,
 				66FF450E0D10FED2003A0AC1 /* XmlTree */,
 				668ED7B30E73B14F00632AF9 /* MinervaOSMLayer */,
+				66A887F10E85E18F007A195F /* MinervaQtWidgets */,
+				66A8896D0E86A866007A195F /* QtArcIMSLayer */,
 			);
 		};
 /* End PBXProject section */
@@ -13195,28 +13437,16 @@
 			files = (
 			);
 			inputPaths = (
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.h,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.h,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.ui,
 			);
 			outputPaths = (
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp,
 				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AlphasDialog.cpp,
-				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_AlphasDialog.h,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AddWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AddWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/WmsWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_WmsWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_OptionsDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/OptionsDialog.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_OptionsDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_AlphasDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/AlphasDialog.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_AlphasDialog.h\n";
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h\n";
 			showEnvVarsInLog = 0;
 		};
 		66A1198A0D2EC239009B29ED /* ShellScript */ = {
@@ -13231,6 +13461,50 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LayerProperties.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_LayerProperties.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PropertyPage.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PropertyPage.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LineWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_LineWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/LineWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_LineWidget.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PointWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_PointWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PointWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PointWidget.cpp\n\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PolygonWidget.ui -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ui_PolygonWidget.h\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/PolygonWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_PolygonWidget.cpp\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/SingleColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_SingleColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/GradientColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_GradientColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/UniqueColorWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_UniqueColorWidget.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/DatabasePage.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_DatabasePage.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/ConnectToDatabase.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_ConnectToDatabase.cpp\n$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/PostGISLayerQt/AddPostGISLayerWidget.h -o $SRCROOT/../Minerva/Plugins/PostGISLayerQt/moc_AddPostGISLayerWidget.cpp\n";
+			showEnvVarsInLog = 0;
+		};
+		66A887F90E85E18F007A195F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+				$SRCROOT/../Minerva/Qt/Widgets/AddWmsLayerWidget.h,
+				$SRCROOT/../Minerva/Qt/Widgets/WmsWidget.ui,
+				$SRCROOT/../Minerva/Qt/Widgets/OptionsDialog.h,
+				$SRCROOT/../Minerva/Qt/Widgets/OptionsDialog.ui,
+				$SRCROOT/../Minerva/Qt/Widgets/AlphasDialog.h,
+				$SRCROOT/../Minerva/Qt/Widgets/AlphasDialog.ui,
+			);
+			outputPaths = (
+				$SRCROOT/../Minerva/Qt/Widgets/moc_AddWmsLayerWidget.cpp,
+				$SRCROOT/../Minerva/Qt/Widgets/ui_WmsWidget.h,
+				$SRCROOT/../Minerva/Qt/Widgets/moc_OptionsDialog.cpp,
+				$SRCROOT/../Minerva/Qt/Widgets/ui_OptionsDialog.h,
+				$SRCROOT/../Minerva/Qt/Widgets/moc_AlphasDialog.cpp,
+				$SRCROOT/../Minerva/Qt/Widgets/ui_AlphasDialog.h,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Qt/Widgets/AddWmsLayerWidget.h -o $SRCROOT/../Minerva/Qt/Widgets/moc_AddWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Qt/Widgets/WmsWidget.ui -o $SRCROOT/../Minerva/Qt/Widgets/ui_WmsWidget.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Qt/Widgets/OptionsDialog.h -o $SRCROOT/../Minerva/Qt/Widgets/moc_OptionsDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Qt/Widgets/OptionsDialog.ui -o $SRCROOT/../Minerva/Qt/Widgets/ui_OptionsDialog.h\n\n$QTDIR/bin/moc $SRCROOT/../Minerva/Qt/Widgets/AlphasDialog.h -o $SRCROOT/../Minerva/Qt/Widgets/moc_AlphasDialog.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Qt/Widgets/AlphasDialog.ui -o $SRCROOT/../Minerva/Qt/Widgets/ui_AlphasDialog.h\n";
+			showEnvVarsInLog = 0;
+		};
+		66A889760E86A866007A195F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui,
+			);
+			outputPaths = (
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp,
+				$SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$QTDIR/bin/moc $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.h -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/moc_EditWmsLayerWidget.cpp\n$QTDIR/bin/uic $SRCROOT/../Minerva/Plugins/WmsLayerQt/EditWmsLayerWidget.ui -o $SRCROOT/../Minerva/Plugins/WmsLayerQt/ui_EditWmsLayerWidget.h\n";
 			showEnvVarsInLog = 0;
 		};
 		66ACAC770E5E2DB20067F985 /* ShellScript */ = {
@@ -14015,17 +14289,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66A112DC0D2EBC77009B29ED /* AddWmsLayerWidget.cpp in Sources */,
 				66A112DF0D2EBC77009B29ED /* WmsLayerQtComponent.cpp in Sources */,
-				66A112E10D2EBC77009B29ED /* WmsLayerQtFactory.cpp in Sources */,
-				66A119970D2EC32C009B29ED /* moc_AddWmsLayerWidget.cpp in Sources */,
-				66E8B3770D930B7300024CB2 /* WmsLayerItem.cpp in Sources */,
 				66A06F750D997C5900D0B56A /* EditWmsLayerWidget.cpp in Sources */,
 				66A06F9E0D997FB000D0B56A /* moc_EditWmsLayerWidget.cpp in Sources */,
-				6693572A0D9AD0CA0066DEDC /* OptionsDialog.cpp in Sources */,
-				669357410D9AD2A90066DEDC /* moc_OptionsDialog.cpp in Sources */,
-				669357B00D9AF0420066DEDC /* AlphasDialog.cpp in Sources */,
-				669357B40D9AF1CA0066DEDC /* moc_AlphasDialog.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14054,6 +14320,28 @@
 				66A119CE0D2EC68E009B29ED /* moc_AddPostGISLayerWidget.cpp in Sources */,
 				66A119CF0D2EC68E009B29ED /* moc_ConnectToDatabase.cpp in Sources */,
 				66A119D00D2EC68E009B29ED /* moc_UniqueColorWidget.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66A8880E0E85E18F007A195F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66A888650E85E1F4007A195F /* AddWmsLayerWidget.cpp in Sources */,
+				66A888670E85E1F4007A195F /* AlphasDialog.cpp in Sources */,
+				66A888690E85E1F4007A195F /* OptionsDialog.cpp in Sources */,
+				66A8886B0E85E1F4007A195F /* WmsLayerItem.cpp in Sources */,
+				66A8888D0E8605BE007A195F /* moc_AddWmsLayerWidget.cpp in Sources */,
+				66A8888E0E8605BE007A195F /* moc_AlphasDialog.cpp in Sources */,
+				66A8888F0E8605BE007A195F /* moc_OptionsDialog.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66A8897B0E86A866007A195F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66A889970E86A8C7007A195F /* QtArcIMSComponent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -15056,6 +15344,56 @@
 			isa = PBXTargetDependency;
 			target = 666766D20D12F282002F40C6 /* HeliosQtViewOSG */;
 			targetProxy = 66A866FD0E2EA72F0081848E /* PBXContainerItemProxy */;
+		};
+		66A887F20E85E18F007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66A887F30E85E18F007A195F /* PBXContainerItemProxy */;
+		};
+		66A887F40E85E18F007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FE740D12084C003F6A58 /* MenuKit */;
+			targetProxy = 66A887F50E85E18F007A195F /* PBXContainerItemProxy */;
+		};
+		66A8886E0E85E22E007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FAB00D1204D8003F6A58 /* QtTools */;
+			targetProxy = 66A8886D0E85E22E007A195F /* PBXContainerItemProxy */;
+		};
+		66A888700E85E235007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66A887F10E85E18F007A195F /* MinervaQtWidgets */;
+			targetProxy = 66A8886F0E85E235007A195F /* PBXContainerItemProxy */;
+		};
+		66A888860E85EC33007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF17680D15190B00B4B1AA /* Minerva */;
+			targetProxy = 66A888850E85EC33007A195F /* PBXContainerItemProxy */;
+		};
+		66A8896E0E86A866007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66A887F10E85E18F007A195F /* MinervaQtWidgets */;
+			targetProxy = 66A8896F0E86A866007A195F /* PBXContainerItemProxy */;
+		};
+		66A889700E86A866007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			targetProxy = 66A889710E86A866007A195F /* PBXContainerItemProxy */;
+		};
+		66A889720E86A866007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF17680D15190B00B4B1AA /* Minerva */;
+			targetProxy = 66A889730E86A866007A195F /* PBXContainerItemProxy */;
+		};
+		66A889740E86A866007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66A889750E86A866007A195F /* PBXContainerItemProxy */;
+		};
+		66A88A040E86F336007A195F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66A8896D0E86A866007A195F /* QtArcIMSLayer */;
+			targetProxy = 66A88A030E86F336007A195F /* PBXContainerItemProxy */;
 		};
 		66A8B0A80DABF4CE00088B3B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -18248,6 +18586,136 @@
 			};
 			name = Release;
 		};
+		66A8882C0E85E18F007A195F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					../,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaQtWidgets;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66A8882D0E85E18F007A195F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					../,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaQtWidgets;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		66A8898E0E86A866007A195F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_EXTENSION = plugd;
+				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_ARC_IMS_LAYER_QT,
+					_DEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					/usr/local/include,
+					../,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = QtArcIMSLayer;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66A8898F0E86A866007A195F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_EXTENSION = plug;
+				EXECUTABLE_PREFIX = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_COMPILING_ARC_IMS_LAYER_QT,
+					NDEBUG,
+				);
+				HEADER_SEARCH_PATHS = (
+					../Experimental,
+					/usr/local/include,
+					../,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = QtArcIMSLayer;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		66A8B08F0DABECA500088B3B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -19792,6 +20260,24 @@
 			buildConfigurations = (
 				66A112C30D2EBB06009B29ED /* Debug */,
 				66A112C40D2EBB06009B29ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66A8882B0E85E18F007A195F /* Build configuration list for PBXNativeTarget "MinervaQtWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66A8882C0E85E18F007A195F /* Debug */,
+				66A8882D0E85E18F007A195F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66A8898D0E86A866007A195F /* Build configuration list for PBXNativeTarget "QtArcIMSLayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66A8898E0E86A866007A195F /* Debug */,
+				66A8898F0E86A866007A195F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

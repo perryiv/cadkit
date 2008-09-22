@@ -22,20 +22,21 @@
 #include <vector>
 #include <string>
 
+namespace Minerva {
+namespace Widgets {
+
+      
 class WmsLayerItem : public QTreeWidgetItem
 {
 public:
   typedef QTreeWidgetItem BaseClass;
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
   
-  WmsLayerItem ( XmlTree::Node* node, const Extents& defaultExtents, QTreeWidget *parent = 0x0 );
+  WmsLayerItem ( const std::string& name, const std::string& title, const Extents& extents, QTreeWidget *parent = 0x0 );
   virtual ~WmsLayerItem();
   
   /// Get the extents.
   Extents         extents () const;
-  
-  /// Parse the extents
-  static Extents  parseExtents ( const XmlTree::Node & node, const Extents& defaultExtents = Extents ( -180, -90, 180, 90 )  );
   
   /// Get the name.
   std::string     name() const;
@@ -44,8 +45,11 @@ public:
   std::string     style() const;
   
 private:
-  XmlTree::Node::RefPtr _node;
   Extents _extents;
 };
 
+
+}
+}
+  
 #endif //__MINERVA_PLUGINS_WMS_LAYER_ITEM_H__

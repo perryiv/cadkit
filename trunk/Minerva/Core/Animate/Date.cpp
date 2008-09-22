@@ -16,8 +16,14 @@
 
 #include "Minerva/Core/Animate/Date.h"
 
-#include "Usul/Strings/Split.h"
+#include "Usul/Convert/Convert.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Convert.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/Strings/Split.h"
+
+#include "boost/algorithm/string/trim.hpp"
+#include "boost/date_time/local_time/local_time.hpp"
 
 #include <vector>
 #include <sstream>
@@ -390,4 +396,108 @@ std::istream& operator>> ( std::istream& in, Date& date )
     date = Date ( boost::gregorian::date ( year, month, day ) );
   }
   return in;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create date from kml.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Date::DateType Date::createFromKml ( const std::string& value )
+{
+  typedef std::vector<std::string> Strings;
+  Strings strings;
+  Usul::Strings::split ( value, "T", false, strings );
+  
+  std::string date ( strings.size() > 0 ? strings[0] : "" );
+  
+  // Currently not handling time.
+  //std::string time ( strings.size() > 1 ? strings[1] : "" );
+  
+  Strings parts;
+  Usul::Strings::split ( date, "-", false, parts );
+  
+  if ( false == parts.empty() )
+  {
+    int year ( Usul::Convert::Type<std::string,int>::convert ( parts[0] ) );
+    int month ( parts.size() > 1 ? Usul::Convert::Type<std::string,int>::convert ( parts[1] ) : 1 );
+    int day ( parts.size() > 2 ? Usul::Convert::Type<std::string,int>::convert ( parts[2] ) : 1 );
+    
+    if ( year < 1400 )
+      year += 1400;
+    
+    boost::gregorian::date date ( boost::gregorian::from_simple_string ( Usul::Strings::format ( year, "-", month, "-", day ) ) );
+    
+    return boost::posix_time::ptime ( date );
+  }
+  
+  return boost::posix_time::not_a_date_time;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create date from rss.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Date::DateType Date::createFromRSS ( const std::string& input )
+{
+  try
+  {
+    // Make a copy to work with.
+    std::string sDate ( input );
+    
+    // Trim white space.
+    boost::algorithm::trim ( sDate );
+    
+    if ( false == sDate.empty() && sDate.size() > 27 )
+    {
+      const std::string dayOfWeek ( sDate, 0, 3 );
+      const std::string day ( sDate, 5, 2 );
+      const std::string month ( sDate, 8, 3 );
+      const std::string year ( sDate, 12, 4 );
+      const std::string hours ( sDate, 17, 2 );
+      const std::string minutes ( sDate, 20, 2 );
+      const std::string seconds ( sDate, 23, 2 );
+      const std::string zone ( sDate, 26 ); // Get the remaining characters.
+      
+      // The timezone.
+      boost::local_time::time_zone_ptr timeZone;
+      
+      typedef Usul::Convert::Type<std::string,int> ToInt;
+      
+      // See if the zone is an offset.
+      if ( false == zone.empty() && ( '-' == zone[0] || '+' == zone[1] ) )
+      {
+        int offset ( ToInt::convert ( zone ) );
+        int hourOffset ( offset / 100 );
+        
+        // Offset from UTC.
+        boost::posix_time::time_duration utcOffset ( hourOffset, 0, 0 );
+        
+        // Daylight savings offsets.  TODO: Find out if the RSS feed will have accounted for dst.
+        boost::local_time::dst_adjustment_offsets dstOffsets ( boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                              boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                              boost::posix_time::time_duration ( 0, 0, 0 ) );
+        
+        boost::shared_ptr<boost::local_time::dst_calc_rule> rules;
+        boost::local_time::time_zone_names names ( "", "", "", "" );
+        
+        timeZone = boost::local_time::time_zone_ptr ( new boost::local_time::custom_time_zone ( names, utcOffset, dstOffsets, rules ) );
+      }
+      
+      boost::posix_time::time_duration time ( ToInt::convert ( hours ), ToInt::convert ( minutes ), ToInt::convert ( seconds ) );
+      boost::gregorian::date date ( boost::gregorian::from_simple_string ( year + "-" + month + "-" + day ) );
+      boost::posix_time::ptime lastUpdate ( date, time );
+      
+      boost::posix_time::ptime utcTime ( boost::local_time::local_date_time ( date, time, timeZone, true ).utc_time() );
+      return utcTime;
+    }
+  }
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2928650239" );
+  
+  return boost::posix_time::not_a_date_time;
 }

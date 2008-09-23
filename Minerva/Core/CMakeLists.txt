@@ -27,6 +27,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
+		     ${CADKIT_INC_DIR}/GenericNurbs
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${OSSIM_INC_DIR}

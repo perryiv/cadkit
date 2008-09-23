@@ -73,8 +73,10 @@ IF(BUILD_MINERVA)
     ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
     ${CADKIT_INC_DIR}/Minerva/Layers/Kml
     ${CADKIT_INC_DIR}/Minerva/Document
+    ${CADKIT_INC_DIR}/Minerva/Qt/Widgets
     ${CADKIT_INC_DIR}/Minerva/Plugins/Document
     ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
+    ${CADKIT_INC_DIR}/Minerva/Plugins/QtArcIMS
     ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
     ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
     ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt

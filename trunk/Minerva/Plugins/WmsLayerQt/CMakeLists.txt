@@ -25,35 +25,23 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
-                     "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../" 
                      ${OSG_INC_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 SET (SOURCES
-  AddWmsLayerWidget.cpp
-  AlphasDialog.cpp
   EditWmsLayerWidget.cpp
-  OptionsDialog.cpp
-  WmsLayerItem.cpp
-  WmsLayerQtFactory.cpp
   WmsLayerQtComponent.cpp
 )
 
 
 SET(MOC_HDRS
-  AddWmsLayerWidget.h
-  AlphasDialog.h
   EditWmsLayerWidget.h
-  OptionsDialog.h
 )
 
 # Make .h from .ui
 SET ( UIS 
-  AlphasDialog.ui 
-  WmsWidget.ui 
   EditWmsLayerWidget.ui 
-  OptionsDialog.ui 
 )
 
 QT4_WRAP_UI( UIS_HDRS ${UIS} )
@@ -67,4 +55,4 @@ ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
 CADKIT_PLUGIN()
 
 # Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva )
+LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaQtWidgets )

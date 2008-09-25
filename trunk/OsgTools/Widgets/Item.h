@@ -68,7 +68,7 @@ public:
   /// Set/get the suggested size.
   void                    size ( SizeType width, SizeType height );
   void                    size ( const Size& s );
-  Size                    size () const;
+  Size                    size() const;
 
   /// Get x and y position.
   SizeType                x() const;

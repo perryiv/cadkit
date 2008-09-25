@@ -16,6 +16,7 @@
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Core/Data/Style.h"
+#include "Minerva/Interfaces/IRefreshData.h"
 
 #include "Usul/Interfaces/IRead.h"
 #include "Usul/Interfaces/ITimerNotify.h"
@@ -34,6 +35,7 @@ namespace Kml {
 
 class KmlLayer : public Minerva::Core::Data::Container,
                  public Usul::Interfaces::IRead,
+                 public Minerva::Interfaces::IRefreshData,
                  public Usul::Interfaces::ITimerNotify
 {
 public:
@@ -76,6 +78,9 @@ public:
   // Get/Set reading flag.
   bool                        isReading() const;
   void                        reading( bool b );
+  
+  /// Force a refresh of data (IRefreshData).
+  virtual void                refreshData();
 
   void                        parseFolder ( const XmlTree::Node& node );
 
@@ -94,14 +99,14 @@ protected:
   // Filename from link.  Will download if needed.
   std::string                 _buildFilename ( Link *link ) const;
   
+  // Launch a job to update link.
+  void                        _launchUpdateLinkJob();
+  
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
   
   // Load a kml file.
   void                        _parseKml ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
-  
-  // Update link.
-  void                        _updateLink ( Usul::Interfaces::IUnknown* caller = 0x0 );
   
   // Parse xml nodes.
   void                        _parseNode         ( const XmlTree::Node& node );
@@ -115,6 +120,9 @@ protected:
   void                        _parseMultiGeometry ( const XmlTree::Node& node, Style *style, DataObject& object );
 
 	Style*                      _style ( const std::string& name ) const;
+  
+  // Update link.
+  void                        _updateLink ( Usul::Interfaces::IUnknown* caller = 0x0 );
   
   // Called when the timer fires.
   virtual void                timerNotify ( TimerID );

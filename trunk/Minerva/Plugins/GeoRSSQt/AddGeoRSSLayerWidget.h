@@ -43,6 +43,10 @@ public:
   void              element ( const std::string& );
 	std::string       element() const;
   
+  /// Set/get the maximum age of items.
+  void              maximumAge ( unsigned int );
+  unsigned int      maximumAge() const;
+  
   /// Set/get the maximum number of items.
   void              maximumItems ( unsigned int );
   unsigned int      maximumItems() const;

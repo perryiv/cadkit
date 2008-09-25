@@ -13,10 +13,10 @@
 #include "Minerva/Core/Commands/RemoveLayer.h"
 #include "Minerva/Core/Commands/HideLayer.h"
 #include "Minerva/Core/Commands/ShowLayer.h"
-#include "Minerva/Interfaces/IDirtyData.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 #include "Minerva/Interfaces/ILookAtLayer.h"
+#include "Minerva/Interfaces/IRefreshData.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
 #include "Minerva/Interfaces/ISwapLayers.h"
 
@@ -623,8 +623,8 @@ bool LayersTree::_canMoveLayerDown ( TreeNode *item ) const
 
 bool LayersTree::_canRefreshLayer ( Usul::Interfaces::IUnknown *unknown ) const
 {
-  Minerva::Interfaces::IDirtyData::QueryPtr dd ( unknown );
-  return dd.valid();
+  Minerva::Interfaces::IRefreshData::QueryPtr rd ( unknown );
+  return rd.valid();
 }
 
 
@@ -636,9 +636,9 @@ bool LayersTree::_canRefreshLayer ( Usul::Interfaces::IUnknown *unknown ) const
 
 void LayersTree::_refreshLayer ( Usul::Interfaces::IUnknown *unknown )
 {
-  Minerva::Interfaces::IDirtyData::QueryPtr dd ( unknown );
-  if ( dd.valid() )
-    dd->dirtyData ( true );
+  Minerva::Interfaces::IRefreshData::QueryPtr rd ( unknown );
+  if ( rd.valid() )
+    rd->refreshData();
   
   // Force a render.
   this->_dirtyAndRedraw ( unknown );

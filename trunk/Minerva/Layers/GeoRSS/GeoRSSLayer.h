@@ -34,6 +34,7 @@ class MINERVA_GEORSS_EXPORT GeoRSSLayer : public Minerva::Core::Data::Container,
                  
 {
 public:
+
   /// Typedefs.
   typedef Minerva::Core::Data::Container             BaseClass;
   typedef Minerva::Core::Data::DataObject            DataObject;
@@ -47,13 +48,13 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   GeoRSSLayer();
-  
+
   /// Set/get the color.
   void                        color ( const Usul::Math::Vec4f& color );
   Usul::Math::Vec4f           color() const;
 
   // Deserialize.
-  virtual void                deserialize( const XmlTree::Node &node );
+  virtual void                deserialize ( const XmlTree::Node &node );
 
 	// Launch a job to download feed.
   void                        downloadFeed();
@@ -69,7 +70,11 @@ public:
 	/// Set/get the filtering enabled flag.
 	void                        filteringEnabled ( bool b );
 	bool                        filteringEnabled() const;
-  
+
+  /// Set/get the maximum age of items (The current time resolution is days).
+  void                        maximumAge ( unsigned int );
+  unsigned int                maximumAge() const;
+
   /// Set/get the maximum number of items to show.
   void                        maximumItems ( unsigned int );
   unsigned int                maximumItems() const;
@@ -77,27 +82,27 @@ public:
   // Get/Set reading flag.
   bool                        isReading() const;
   void                        reading ( bool b );
-  
+
   /// Set/get the refresh rate (in seconds).
   void                        refreshRate ( double seconds );
   double                      refreshRate() const;
-  
+
   /// Serialize
   virtual void                serialize ( XmlTree::Node &parent ) const;
-  
+
   /// Set/get the url.
   void                        url ( const std::string& );
   std::string                 url() const;
-  
+
 protected:
   virtual ~GeoRSSLayer();
-  
+
   // Add a timer callback.
   void                        _addTimer();
-  
+
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
-  
+
   // Parse the item.
   void                        _parseItem ( const XmlTree::Node& );
   
@@ -124,6 +129,7 @@ private:
 	Filter _filter;
   bool _filteringEnabled;
   unsigned int _maximumItems;
+  boost::posix_time::time_duration _maximumAge;
   
   SERIALIZE_XML_CLASS_NAME ( GeoRSSLayer );
 };

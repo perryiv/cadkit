@@ -14,7 +14,6 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Core/Data/LineStyle.h"
-#include "Minerva/Core/Data/Vector.h"
 
 #include "Usul/Math/Vector3.h"
 
@@ -29,23 +28,22 @@ public:
   typedef Geometry                         BaseClass;
   typedef Usul::Math::Vec3d                Vertex;
   typedef std::vector < Vertex >           Vertices;
-  typedef Minerva::Core::Data::Vector<Usul::Math::Vec3d> Vertex3Array;
   typedef ColorStyle::Color                Color;
 
   USUL_DECLARE_QUERY_POINTERS ( Line );
 
   Line();
-
+  
   /// Is this geometry transparent?
   virtual bool          isSemiTransparent() const;
 
   /// Get/Set the line data.
   void                  line ( const Vertices& );
-  Vertex3Array::RefPtr  line() const;
-
+  Vertices              line() const;
+  
   /// Get the line color.
   Color                 lineColor() const;
-
+  
   /// Set/get the line style.
   void                  lineStyle ( LineStyle * );
   LineStyle*            lineStyle() const;
@@ -53,19 +51,22 @@ public:
   /// Set/get tessellate flag.
   void                  tessellate ( bool );
   bool                  tessellate() const;
-
+  
   /// Get the width.
   float                 width() const;
   
 protected:
   virtual ~Line();
 
-  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller );
-  osg::Node*            _buildScene ( const Color& color, Usul::Interfaces::IUnknown* caller );
+  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
+  osg::Node*            _buildScene( const Color& color, Usul::Interfaces::IUnknown* caller );
 
+  /// Build the scene branch.
+  virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
+  
 private:
 
-  Vertex3Array::RefPtr _vertices;
+  Vertices   _line;
   bool       _tessellate;
   LineStyle::RefPtr _lineStyle;
 };

@@ -73,7 +73,7 @@ void Polygon::outerBoundary ( const Vertices& vertices )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Polygon::Vertex3Array::RefPtr Polygon::outerBoundary() const
+Polygon::Vertices Polygon::outerBoundary() const
 {
   return this->line();
 }
@@ -130,10 +130,10 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geometry* Polygon::_buildGeometry ( Vertex3Array::RefPtr inVertices, Extents& e, Usul::Interfaces::IUnknown *caller )
+osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller )
 {
   // Make sure we have vertices.
-  if ( false == inVertices.valid() || inVertices->empty() )
+  if ( inVertices.empty() )
     return 0x0;
   
   Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
@@ -142,17 +142,15 @@ osg::Geometry* Polygon::_buildGeometry ( Vertex3Array::RefPtr inVertices, Extent
   // Vertices and normals.
   osg::ref_ptr<osg::Vec3Array> vertices ( new osg::Vec3Array );
   osg::ref_ptr<osg::Vec3Array> normals  ( new osg::Vec3Array );
-  osg::ref_ptr<osg::Vec4Array> colors  ( new osg::Vec4Array ( inVertices->size() ) );
+  osg::ref_ptr<osg::Vec4Array> colors  ( new osg::Vec4Array ( inVertices.size() ) );
   osg::Vec4f color ( Usul::Convert::Type<Color,osg::Vec4f>::convert ( this->fillColor() ) );
   std::fill ( colors->begin(), colors->end(), color );
   
   // Reserve enough rooms.
-  vertices->reserve ( inVertices->size() );
-  normals->reserve  ( inVertices->size() );
+  vertices->reserve( inVertices.size() );
+  normals->reserve( inVertices.size() );
   
-  // Lock for reading...
-  Vertex3Array::ReadLock guard ( inVertices->mutex() );
-  for ( Vertices::const_iterator iter = inVertices->begin(); iter != inVertices->end(); ++iter )
+  for ( Vertices::const_iterator iter = inVertices.begin(); iter != inVertices.end(); ++iter )
   {
     Vertices::value_type v0 ( *iter ), p0;
     
@@ -287,21 +285,18 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
   Extents e;
   
   // Get the outer boundary.
-  Vertex3Array::RefPtr outerBoundary ( this->outerBoundary() );
+  Vertices outerBoundary ( this->outerBoundary() );
 
   // Need at least 3 points to make a polygon.
-  if ( false == outerBoundary.valid() || outerBoundary->size() < 3 )
+  if ( outerBoundary.size() < 3 )
     return 0x0;
 
   // TODO: Handle inner boundaries.
   //Boundaries innerBoundaries ( polygon->innerBoundaries() );
   
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
+  geode->addDrawable( this->_buildGeometry ( outerBoundary, e, caller ) );
   
-  // Build the geometry for the polygons.
-  geode->addDrawable ( this->_buildGeometry ( outerBoundary, e, caller ) );
-  
-  // Get the state set.
   osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet () );
   
   // Make a polygon offset.
@@ -323,9 +318,7 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
   // Extrude if we are suppose to.
   if ( true == this->extrude() )
   {
-    // Lock for reading...
-    Vertex3Array::ReadLock guard ( outerBoundary->mutex() );
-    for ( Vertices::const_iterator iter = outerBoundary->begin(); iter != outerBoundary->end() - 1; ++iter )
+    for ( Vertices::const_iterator iter = outerBoundary.begin(); iter != outerBoundary.end() - 1; ++iter )
     {
       Vertex v0 ( *iter );
       Vertex v1 ( *(iter + 1 ) );

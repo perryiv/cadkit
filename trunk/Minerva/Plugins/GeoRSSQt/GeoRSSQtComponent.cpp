@@ -187,6 +187,7 @@ void GeoRSSQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::I
   page->value ( geoRss->filter().second );
   page->color ( geoRss->color() );
   page->maximumItems ( geoRss->maximumItems() );
+  page->maximumAge ( geoRss->maximumAge() );
   
   const QDialogButtonBox::StandardButtons buttons ( QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok );
   QDialogButtonBox *buttonBox ( new QDialogButtonBox ( buttons, Qt::Horizontal, &dialog ) );
@@ -201,7 +202,7 @@ void GeoRSSQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::I
   topLayout->addWidget ( buttonBox );
   
   // Set the title.
-  dialog.setWindowTitle( QString ( "Edit " ) + QString ( geoRss->name().c_str() ) );
+  dialog.setWindowTitle ( QString ( "Edit " ) + QString ( geoRss->name().c_str() ) );
 
 	const int result ( dialog.exec() );
   
@@ -237,4 +238,5 @@ void GeoRSSQtComponent::_setLayerMembers ( AddGeoRSSLayerWidget& widget, GeoRSSL
   layer.filter ( GeoRSSLayer::Filter ( widget.element(), widget.value() ) );
   layer.color ( widget.color() );
   layer.maximumItems ( widget.maximumItems() );
+  layer.maximumAge ( widget.maximumAge() );
 }

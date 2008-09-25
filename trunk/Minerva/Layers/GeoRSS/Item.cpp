@@ -166,7 +166,7 @@ OsgTools::Widgets::Item* Item::clicked ( Usul::Interfaces::IUnknown* caller ) co
   // Set the percentage of the row.
   row0->percentage ( 0 ) = 1.00;
   
-  const std::string description ( this->description() );
+  std::string description ( this->description() );
   if ( false == description.empty() )
   {
     OsgTools::Widgets::LegendObject::RefPtr row1 ( new OsgTools::Widgets::LegendObject );

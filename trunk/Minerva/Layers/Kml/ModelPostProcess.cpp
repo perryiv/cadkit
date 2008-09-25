@@ -68,14 +68,13 @@ void ModelPostProcess::operator () ( osg::Node * node )
         else if ( GL_RGBA == texture->getInternalFormat() )
         {
           ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
+          ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
         }
 #endif
 
         // Turn off lighting.
         OsgTools::State::StateSet::setLighting ( ss.get(), false );
       }
-
-      ss->setRenderingHint ( osg::StateSet::TRANSPARENT_BIN );
 
 #if 0
       // Check for a material.

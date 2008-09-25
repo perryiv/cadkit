@@ -43,7 +43,7 @@ public:
   Polygon ();
   
   void                  outerBoundary ( const Vertices& );
-  Vertex3Array::RefPtr  outerBoundary() const;
+  Vertices              outerBoundary() const;
 
   void                  addInnerBoundary ( const Vertices& );
   const Boundaries&     innerBoundaries() const;
@@ -75,7 +75,7 @@ protected:
   
   osg::Node*            _buildPolygons( Usul::Interfaces::IUnknown* caller );
   
-  osg::Geometry*        _buildGeometry ( Vertex3Array::RefPtr inVertices, Extents& e, Usul::Interfaces::IUnknown *caller );
+  osg::Geometry*        _buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller );
   osg::Geometry*        _extrudeToGround ( const Vertex& v0, const Vertex& v1, Usul::Interfaces::IUnknown *caller );
 
   Vertex                _convertToPlanetCoordinates ( const Polygon::Vertex& v, IPlanetCoordinates* planet, IElevationDatabase* elevation ) const;

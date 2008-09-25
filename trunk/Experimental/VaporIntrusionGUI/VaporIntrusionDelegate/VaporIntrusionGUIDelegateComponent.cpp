@@ -83,7 +83,6 @@ VaporIntrusionGUIDelegateComponent::~VaporIntrusionGUIDelegateComponent()
   delete _dock;
   _dock = 0x0;
 
-  //delete _materialContainer;
 }
 
 

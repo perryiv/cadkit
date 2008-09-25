@@ -53,7 +53,6 @@ MaterialDialog::~MaterialDialog()
 
 std::string MaterialDialog::name()
 {
-  //QLineEdit *_name;
   std::string n ( _name->text().toStdString() );
 
   return n;

@@ -53,6 +53,7 @@ class VaporIntrusionGUIDocument : public Usul::Documents::Document,
 public:
 
   
+  
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Usul::Documents::Document Document;
@@ -61,8 +62,17 @@ public:
   typedef DocManager::DocumentInfo Info;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef osg::Vec4 Color;
-  typedef osg::Vec4 ValueType;
-  typedef std::pair< ValueType, GroupPtr > Cube;
+
+  struct Cell
+  {
+    osg::Vec4 color;
+    GroupPtr group;
+    std::string name;
+    std::string value;
+  };
+
+  typedef Cell Cube;
+  //typedef std::pair< ValueType, GroupPtr > Cube;
   typedef std::vector< std::vector< std::vector< Cube > > > Cubes;
 
 
@@ -107,6 +117,8 @@ public:
   virtual void                setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c );
   virtual Usul::Math::Vec4f   getMaterial( unsigned int x, unsigned int y, unsigned int z );
   virtual void                requestRedraw();
+  virtual void                setValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value );
+  virtual void                setNameAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name );
 
 protected:
 
@@ -131,6 +143,7 @@ private:
     GroupPtr                  _root;
     Usul::Math::Vec3ui        _dimensions;
     Cubes                     _cubes;
+    
     
   
 };

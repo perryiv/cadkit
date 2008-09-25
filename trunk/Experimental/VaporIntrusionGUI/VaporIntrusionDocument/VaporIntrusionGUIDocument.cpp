@@ -334,7 +334,7 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
         osg::ref_ptr< osg::Material > material ( new osg::Material );
         material->setAmbient( osg::Material::FRONT_AND_BACK, c );
         material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
-        _cubes.at( x ).at ( y ).at ( z ).first = c;
+        _cubes.at( x ).at ( y ).at ( z ).color = c;
 
         // create the points for the cube
         osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -360,10 +360,10 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
         OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
 
         // Set the cube
-        _cubes.at( x ).at ( y ).at ( z ).second = group.get();
+        _cubes.at( x ).at ( y ).at ( z ).group = group.get();
 
         // Add the cubre to the scene
-        _root->addChild( _cubes.at( x ).at( y ).at( z ).second.get() );
+        _root->addChild( _cubes.at( x ).at( y ).at( z ).group.get() );
       }
 
     }
@@ -477,7 +477,7 @@ void VaporIntrusionGUIDocument::highlightCells( Usul::Math::Vec3ui set, unsigned
 
 void VaporIntrusionGUIDocument::setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha )
 {
-  OsgTools::State::StateSet::setAlpha( _cubes.at( x ).at( y ).at( z ).second.get(), alpha );
+  OsgTools::State::StateSet::setAlpha( _cubes.at( x ).at( y ).at( z ).group.get(), alpha );
   this->requestRedraw();
 }
 
@@ -512,10 +512,35 @@ Usul::Math::Vec3ui VaporIntrusionGUIDocument::getDimensions()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+void VaporIntrusionGUIDocument::setValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value )
+{
+  _cubes.at( x ).at( y ).at( z ).value = value;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the material
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setNameAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name )
+{
+  _cubes.at( x ).at( y ).at( z ).name = name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the material
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void VaporIntrusionGUIDocument::setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c )
 {
   osg::Vec4 color ( c[0], c[1], c[2], c[3] );
-  OsgTools::State::StateSet::setMaterial( _cubes.at( x ).at( y ).at( z ).second.get(), color, color, 1.0f );
+  OsgTools::State::StateSet::setMaterial( _cubes.at( x ).at( y ).at( z ).group.get(), color, color, 1.0f );
   this->requestRedraw();
 }
 

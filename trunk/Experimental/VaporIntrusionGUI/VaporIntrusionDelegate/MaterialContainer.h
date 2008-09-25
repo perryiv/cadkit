@@ -45,12 +45,16 @@ public:
   virtual ~MaterialContainer();
 
   osg::Vec4                     getCurrentColor();
+  std::string                   getCurrentName();
+  std::string                   getCurrentValue();
 
 private:
   Materials                      _materials;
   QVBoxLayout*                   _layout;
   QButtonGroup*                  _radioButtons;
   osg::Vec4                      _color;
+  std::string                    _name;
+  std::string                    _value;
 
 private slots:
 

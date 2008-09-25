@@ -332,7 +332,7 @@ osg::Node* Point::_buildScene ( const Vec3d& point, double height, Usul::Interfa
   
   if ( this->extrude() )
   {
-    Usul::Math::Vec3d p ( location[0], location[1], height );
+    Usul::Math::Vec3d p ( point[0], point[1], height );
     Detail::convertToPlanet ( p, caller );
     
     OsgTools::Ray ray;

@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_INTERFACES_IDIRTY_DATA_H__
-#define __MINERVA_INTERFACES_IDIRTY_DATA_H__
+#ifndef __MINERVA_INTERFACES_IREFRESH_DATA_H__
+#define __MINERVA_INTERFACES_IREFRESH_DATA_H__
 
 #include "Usul/Interfaces/IUnknown.h"
 
@@ -16,22 +16,21 @@ namespace Minerva {
 namespace Interfaces {
 
 
-struct IDirtyData : public Usul::Interfaces::IUnknown
+struct IRefreshData : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
-  USUL_DECLARE_QUERY_POINTERS ( IDirtyData );
-  
+  USUL_DECLARE_QUERY_POINTERS ( IRefreshData );
+
   /// Id for this interface.
   enum { IID = 2267764831u };
-  
-  /// Get/Set dirty scene flag.
-  virtual bool            dirtyData() const = 0;
-  virtual void            dirtyData( bool b ) = 0;
-  
-}; // struct IDirtyData
+
+  /// Force refresh of the data.
+  virtual void            refreshData() = 0;
+
+}; // struct IRefreshData
 
   
 } // end namespace Interfaces
 } // end namespace Minerva
 
-#endif // __MINERVA_INTERFACES_IDIRTY_DATA_H__
+#endif // __MINERVA_INTERFACES_IREFRESH_DATA_H__

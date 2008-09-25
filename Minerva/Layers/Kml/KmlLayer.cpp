@@ -206,6 +206,8 @@ Usul::Interfaces::IUnknown* KmlLayer::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IRead::IID:
     return static_cast < Usul::Interfaces::IRead* > ( this );
+  case Minerva::Interfaces::IRefreshData::IID:
+    return static_cast < Minerva::Interfaces::IRefreshData* > ( this );
   case Usul::Interfaces::ITimerNotify::IID:
     return static_cast < Usul::Interfaces::ITimerNotify* > ( this );
   default:
@@ -893,13 +895,45 @@ void KmlLayer::timerNotify ( TimerID )
   // Return if we are currently reading or downloading.
   if ( this->isReading() || this->isDownloading() )
     return;
+
+  // Launch a job to update.
+  this->_launchUpdateLinkJob();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Force a refresh of data (IRefreshData).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::refreshData()
+{
+  // See if there is a link.
+  Link::RefPtr link ( Usul::Threads::Safe::get ( this->mutex(), _link ) );
   
+  if ( link.valid() )
+  {
+    // Launch a job to update.
+    this->_launchUpdateLinkJob();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Launch a job to update link.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_launchUpdateLinkJob()
+{
   // Help shorten lines.
   namespace UA = Usul::Adaptors;
   
   // Create a job to update the file.
   Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create (  UA::bind1 ( static_cast <Usul::Interfaces::IUnknown*> ( 0x0 ), 
-                                                                  UA::memberFunction ( KmlLayer::RefPtr ( this ), &KmlLayer::_updateLink ) ) ) );
+                                                                 UA::memberFunction ( KmlLayer::RefPtr ( this ), &KmlLayer::_updateLink ) ) ) );
   
   if ( true == job.valid() )
   {

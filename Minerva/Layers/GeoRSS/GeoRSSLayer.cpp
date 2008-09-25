@@ -35,6 +35,7 @@
 #include "Usul/Threads/Safe.h"
 
 #include "boost/algorithm/string/find.hpp"
+#include "boost/algorithm/string/erase.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/foreach.hpp"
 #include "boost/regex.hpp"
@@ -66,7 +67,7 @@ USUL_FACTORY_REGISTER_CREATOR ( GeoRSSLayer );
 
 GeoRSSLayer::GeoRSSLayer() :
   BaseClass(),
-  _lastDataUpdate( boost::posix_time::not_a_date_time ),
+  _lastDataUpdate ( boost::posix_time::not_a_date_time ),
   _href(),
   _refreshInterval ( 300.0 ),
   _flags(),
@@ -74,7 +75,8 @@ GeoRSSLayer::GeoRSSLayer() :
   _timerInfo ( 0, false ),
 	_filter(),
   _filteringEnabled ( false ),
-  _maximumItems ( std::numeric_limits<unsigned int>::max() )
+  _maximumItems ( 1000 ),
+  _maximumAge ( boost::posix_time::hours ( 365 * 24 ) ) // Default of 356 days.
 {
   this->_addMember ( "href", _href );
   this->_addMember ( "refresh_interval", _refreshInterval );
@@ -156,7 +158,7 @@ void GeoRSSLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknow
   std::cout << "Last feed update: " << utcTime << std::endl;
 
   // Check the date against the time time we updated.
-  if ( false == lastDataUpdate.is_not_a_date_time() && false == utcTime.is_not_a_date_time() )
+  if ( false == this->dirtyData() && false == lastDataUpdate.is_not_a_date_time() && false == utcTime.is_not_a_date_time() )
   {
     // Return now if the feed has not been updated.
     if ( lastDataUpdate >= utcTime )
@@ -248,6 +250,12 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   
   boost::posix_time::ptime date ( Minerva::Core::Animate::Date::createFromRSS ( pubDate ) );
   object->timePrimitive ( new Minerva::Core::Data::TimeStamp ( date ) );
+  
+  // Check the age of the item.
+  boost::posix_time::time_duration maximumAge ( Usul::Threads::Safe::get ( this->mutex(), _maximumAge ) );
+  const boost::posix_time::ptime now ( boost::posix_time::second_clock::universal_time() );
+  if ( ( now - maximumAge ) > date )
+    return;
 
   // Look for an image.
   Children imageNode ( node.find ( "media:content", true ) );
@@ -298,7 +306,12 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
 
   // Look for a description.
   Children descriptionNode ( node.find ( "media:description", true ) );
-  const std::string description ( descriptionNode.empty() ? "" : descriptionNode.front()->value() );
+  std::string description ( descriptionNode.empty() ? "" : descriptionNode.front()->value() );
+  boost::algorithm::ierase_all ( description, "<br>" );
+  boost::algorithm::ierase_all ( description, "<br/>" );
+  boost::algorithm::ierase_all ( description, "<br />" );
+  boost::algorithm::ierase_all ( description, "<p>" );
+  boost::algorithm::ierase_all ( description, "</p>" );
   
   // Look for the categories.
   Children categoryNodes ( node.find ( "category", true ) );
@@ -541,6 +554,7 @@ void GeoRSSLayer::color ( const Usul::Math::Vec4f& color )
 {
   Guard guard ( this->mutex() );
   _color = color;
+  this->dirtyData ( true );
 }
 
 
@@ -633,6 +647,7 @@ void GeoRSSLayer::filteringEnabled ( bool b )
 {
 	Guard guard ( this->mutex() );
   _filteringEnabled = b;
+  this->dirtyData ( true );
 }
 
 
@@ -659,6 +674,7 @@ void GeoRSSLayer::filter ( const Filter& filter )
 {
 	Guard guard ( this->mutex() );
 	_filter = filter;
+  this->dirtyData ( true );
 }
 
 
@@ -685,6 +701,7 @@ void GeoRSSLayer::maximumItems ( unsigned int num )
 {
   Guard guard ( this->mutex() );
   _maximumItems = num;
+  this->dirtyData ( true );
 }
 
 
@@ -698,4 +715,31 @@ unsigned int GeoRSSLayer::maximumItems() const
 {
   Guard guard ( this->mutex() );
   return _maximumItems;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the maximum age of items (The current time resolution is days).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::maximumAge ( unsigned int days )
+{
+  Guard guard ( this->mutex() );
+  _maximumAge = boost::posix_time::hours ( days * 24 );
+  this->dirtyData ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the maximum age of items (The current time resolution is days).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int GeoRSSLayer::maximumAge() const
+{
+  Guard guard ( this->mutex() );
+  return _maximumAge.hours() / 24;
 }

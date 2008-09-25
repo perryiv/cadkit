@@ -163,17 +163,33 @@ void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsign
   Guard guard ( this );
 
   osg::Vec4 osgColor ( 1.0, 0.0, 0.0, 1.0 );
+  std::string name;
+  std::string value;
   if( 0x0 != _materialContainer )
   {
     osgColor = _materialContainer->getCurrentColor();
+    name = _materialContainer->getCurrentName();
+    value = _materialContainer->getCurrentValue();
   }
   Usul::Math::Vec4f color( osgColor.r(), osgColor.g(), osgColor.b(), osgColor.a() );
+
+
+  // These next set of if statements are necessary even though they do the same thing.
+  // Since there are different 2D views we only want the active one to operate on the
+  // the cubes.
 
   // Top view -- Y is depth
   if( _cameraDirection == RenderViewer::TOP && _depth == y )
   {
    // Set the material for the cube
     document->setMaterial( x, y, z, color ); 
+
+    // Set the name
+    document->setNameAt( x, y, z, name );
+
+    // Set the value
+    document->setValueAt( x, y, z, value ); 
+
   }
 
   // Left View -- X is depth
@@ -181,13 +197,26 @@ void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsign
   {
     // Set the material for the cube
     document->setMaterial( x, y, z, color );
+
+    // Set the name
+    document->setNameAt( x, y, z, name );
+
+    // Set the value
+    document->setValueAt( x, y, z, value ); 
+
   }
 
   // Front ( and default ) View -- Z is depth
   else if ( _cameraDirection == RenderViewer::FRONT && _depth == z )
   {
     // Set the material for the cube
-    document->setMaterial( x, y, z, color ); 
+    document->setMaterial( x, y, z, color );
+
+    // Set the name
+    document->setNameAt( x, y, z, name );
+
+    // Set the value
+    document->setValueAt( x, y, z, value ); 
   }
 
 }
@@ -256,6 +285,22 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
 
   // Adjust the mouse wheel state.
   int delta ( event->delta() );
+  
+  this->_focusChange( delta, dimensions, document );
+
+  //BaseClass::wheelEvent( event );
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Slide the current focal area.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIViewer::_focusChange( int delta, Usul::Math::Vec3ui dimensions, Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document )
+{
   unsigned int oldDepth ( _depth );
 
   // i,j dimensions
@@ -337,9 +382,6 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
       }
     }
   }
-
-  //BaseClass::wheelEvent( event );
-  
 }
 
 
@@ -357,6 +399,50 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent *event )
 
   if ( 0x0 == event )
     return;
+
+   // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( Usul::Interfaces::IVaporIntrusionGUI::IID ) );
+  if( false == document.valid() )
+    return;
+
+  // Get the dimensions
+  Usul::Math::Vec3ui dimensions ( document->getDimensions() );
+
+  // If we weren't the last view window to run reset the alpha for the scene
+  // and set the current running view tag to our id
+  if( this->id() != _selectedViewID )
+  {
+    for( unsigned int x = 0; x < dimensions[0]; ++x )
+    {
+      for( unsigned int y = 0; y < dimensions[1]; ++y )
+      {
+        for( unsigned int z = 0; z < dimensions[2]; ++z )
+        {
+          Guard guard ( this );
+
+          document->setAlpha( x, y, z, 0.1f );
+          _selectedViewID = this->id();
+        }
+      }
+    }
+  }
+
+  switch ( event->key() )
+    {
+    // See if it was the space-bar...
+      case Qt::Key_Comma:
+
+        this->_focusChange( -1, dimensions, document );
+        break;
+
+      case Qt::Key_Period:
+
+        this->_focusChange( 1, dimensions, document );
+        break;
+
+      default:
+        break;
+  }
 
   BaseClass::keyPressEvent( event );
 }

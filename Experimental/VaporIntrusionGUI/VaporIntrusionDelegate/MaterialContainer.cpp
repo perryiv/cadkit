@@ -29,7 +29,9 @@ MaterialContainer::MaterialContainer ( QWidget *parent ) : BaseClass ( parent ),
 _materials(),
 _layout( new QVBoxLayout() ),
 _radioButtons( new QButtonGroup ),
-_color( 0.5, 0.5, 0.5, 0.5 )
+_color( 0.5, 0.5, 0.5, 0.5 ),
+_name(),
+_value()
 {
   // Initialize code from Designer.
   this->setupUi ( this );
@@ -94,6 +96,29 @@ MaterialContainer::~MaterialContainer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+std::string MaterialContainer::getCurrentName()
+{
+  return _name;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Change the material color and set the current radio button
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string MaterialContainer::getCurrentValue()
+{
+  return _value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Change the material color and set the current radio button
+//
+///////////////////////////////////////////////////////////////////////////////
+
 void MaterialContainer::radioClicked( QAbstractButton * button )
 {
   QRadioButton* radio ( dynamic_cast< QRadioButton* > ( button ) );
@@ -107,6 +132,8 @@ void MaterialContainer::radioClicked( QAbstractButton * button )
     return;
 
   _color = material->color();
+  _name = material->name();
+  _value = material->type();
   
 }
 

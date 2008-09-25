@@ -59,6 +59,9 @@ protected:
 
   void                            _colorCube( unsigned int x, unsigned int y, unsigned int z, Usul::Interfaces::IVaporIntrusionGUI* document );
 
+  // Slide the current focal area
+  void                            _focusChange( int delta, Usul::Math::Vec3ui dimensions, Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document );
+
 private:
   CameraOption                    _cameraDirection;          
   Usul::Math::Vec3ui              _set;

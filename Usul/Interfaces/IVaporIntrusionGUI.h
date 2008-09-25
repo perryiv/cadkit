@@ -44,6 +44,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // Request redraw
   virtual void              requestRedraw() = 0;
 
+  virtual void              setValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value ) = 0;
+  virtual void              setNameAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name ) = 0;
+
 }; // struct IVaporIntrusionGUI
 
 }

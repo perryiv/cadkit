@@ -54,9 +54,10 @@ using namespace Minerva::Core::Layers;
 
 namespace
 {
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator0 ( "JPEG (*.jpg)", "*.jpg" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator1 ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < RasterLayerOssim > > _creator2 ( "PNG (*.png)", "*.png" );
+  namespace MF = Minerva::Core::Factory;
+  MF::RegisterReader < MF::TypeCreator < RasterLayerOssim > > _creator0 ( "JPEG (*.jpg)", "*.jpg" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerOssim > > _creator1 ( "TIFF (*.tiff *.tif)", "*.tiff,*.tif" );
+  MF::RegisterReader < MF::TypeCreator < RasterLayerOssim > > _creator2 ( "PNG (*.png)", "*.png" );
 }
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterLayerOssim );
@@ -213,7 +214,7 @@ void RasterLayerOssim::_open ( const std::string& filename )
 
   _handler = ossimImageHandlerRegistry::instance()->open ( ossimFilename ( filename.c_str() ) );
   Usul::Pointers::reference ( _handler );
-
+#if 0
   _projection = new ossimEquDistCylProjection;
   Usul::Pointers::reference ( _projection );
 
@@ -243,6 +244,7 @@ void RasterLayerOssim::_open ( const std::string& filename )
        }
     }
   }
+#endif
 
   // Update our extents.
   this->_updateExtents();
@@ -334,24 +336,32 @@ RasterLayerOssim::ImagePtr RasterLayerOssim::texture ( const Extents& extents, u
   // Create the answer.
   ImagePtr result ( 0x0 );
 
+  // This will be the tile that OSSIM creates.
   ossimRefPtr<ossimImageData> data ( 0x0 );
 
+  // Make the projection for the file.
+  ossimRefPtr<ossimEquDistCylProjection> projection = new ossimEquDistCylProjection;
+  projection->setDecimalDegreesPerPixel ( ossimDpt ( deltaLon, deltaLat ) );
+  
+  // Set the upper left corner (max lat and min lon).
+  projection->setUlGpt ( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) );
+  
+  // Make the renderer that will "cut" the tile.
+  ossimRefPtr<ossimImageRenderer> renderer ( new ossimImageRenderer );
+  
+  renderer->setView ( projection.get(), false );
+  renderer->getResampler()->setFilterType ( "nearest neighbor" );
+  
+  // Check for canceled.
+  BaseClass::_checkForCanceledJob ( job );
+  
   {
     // Now guard.
     Guard guard ( this );
-
-    // Check for canceled.
-    BaseClass::_checkForCanceledJob ( job );
-
-    // Check state.
-    if ( ( 0x0 == _projection ) || ( 0x0 == _viewInterface ) || ( 0x0 == _renderer ) )
-      return result;
-
-    _projection->setDecimalDegreesPerPixel ( ossimDpt ( deltaLon, deltaLat ) );
-
-    _projection->setUlGpt ( ossimGpt ( extents.maximum()[1], extents.minimum()[0] ) ); // Max lat and min lon.
-    _viewInterface->setView ( _projection, false );
-    data = _renderer->getTile ( requestRect );
+    
+    // Get the tile.
+    renderer->connectMyInputTo ( 0, _handler );
+    data = renderer->getTile ( requestRect );
   }
 
   // Check state and create image.

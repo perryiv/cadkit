@@ -166,5 +166,7 @@ void EditWmsLayerWidget::on_viewCacheButton_clicked()
   const std::string directory ( _layer->cacheDirectory() );
   const std::string command ( Usul::Strings::format ( "open ", directory ) );
   ::system ( command.c_str() );
+#elif _WIN32
+  // TODO: handle windows (http://msdn.microsoft.com/en-us/library/bb762232(VS.85).aspx)
 #endif
 }

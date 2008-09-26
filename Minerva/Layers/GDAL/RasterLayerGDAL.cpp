@@ -256,7 +256,7 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   }
 
   // We want cubic B-spline interpolation.
-  options->eResampleAlg = GRA_CubicSpline;
+  options->eResampleAlg = GRA_NearestNeighbour;
   
   options->hSrcDS = data;
   options->hDstDS = tile;

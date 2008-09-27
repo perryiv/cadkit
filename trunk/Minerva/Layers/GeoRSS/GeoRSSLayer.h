@@ -72,8 +72,8 @@ public:
 	bool                        filteringEnabled() const;
 
   /// Set/get the maximum age of items (The current time resolution is days).
-  void                        maximumAge ( unsigned int );
-  unsigned int                maximumAge() const;
+  void                        maximumAge ( double );
+  double                      maximumAge() const;
 
   /// Set/get the maximum number of items to show.
   void                        maximumItems ( unsigned int );

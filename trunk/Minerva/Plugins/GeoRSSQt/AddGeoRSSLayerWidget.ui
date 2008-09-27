@@ -90,7 +90,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="_maximumItemAge" >
+      <widget class="QDoubleSpinBox" name="_maximumItemAge" >
        <property name="maximum" >
         <number>999999999</number>
        </property>

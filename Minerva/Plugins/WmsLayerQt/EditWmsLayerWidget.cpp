@@ -17,6 +17,14 @@
 
 #include "QtGui/QMessageBox"
 
+#include "boost/algorithm/string/replace.hpp"
+
+#ifdef _MSC_VER // Visual C++
+# define NOMINMAX
+# include <windows.h>
+# include <shlobj.h>
+#endif
+
 #include <list>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,8 +52,8 @@ EditWmsLayerWidget::EditWmsLayerWidget ( RasterLayerNetwork *layer, QWidget * pa
     _cacheDirectoryText->setText ( _layer->cacheDirectory().c_str() );
   }
   
-  // Currently only implemented on OS X.
-#ifndef __APPLE__
+  // Currently implemented on OS X, and Windows.
+#ifdef __linux
   viewCacheButton->setVisible ( false );
 #endif
   
@@ -167,6 +175,22 @@ void EditWmsLayerWidget::on_viewCacheButton_clicked()
   const std::string command ( Usul::Strings::format ( "open ", directory ) );
   ::system ( command.c_str() );
 #elif _WIN32
-  // TODO: handle windows (http://msdn.microsoft.com/en-us/library/bb762232(VS.85).aspx)
+	const std::string directory ( _layer->cacheDirectory() );
+
+	// Initialize COM.  Is this the best way to do this?
+	::CoInitializeEx ( 0x0, COINIT_MULTITHREADED );
+
+	// NOTE: ILCreateFromPath will reject the path if it contains / instead of \.
+	std::string path ( directory );
+	boost::algorithm::replace_all ( path, "/", "\\" );
+
+	// http://msdn.microsoft.com/en-us/library/bb776438(VS.85).aspx
+	ITEMIDLIST *pidl ( ::ILCreateFromPath ( path.c_str() ) );
+
+	// http://msdn.microsoft.com/en-us/library/bb762232(VS.85).aspx
+	::SHOpenFolderAndSelectItems ( pidl, 0, 0x0, 0 );
+
+	// http://msdn.microsoft.com/en-us/library/bb776441(VS.85).aspx
+	::ILFree ( pidl );
 #endif
 }

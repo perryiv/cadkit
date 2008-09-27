@@ -218,7 +218,7 @@ unsigned int AddGeoRSSLayerWidget::maximumItems() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void AddGeoRSSLayerWidget::maximumAge ( unsigned int days )
+void AddGeoRSSLayerWidget::maximumAge ( double days )
 {
   _maximumItemAge->setValue ( days );
 }
@@ -230,7 +230,7 @@ void AddGeoRSSLayerWidget::maximumAge ( unsigned int days )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int AddGeoRSSLayerWidget::maximumAge() const
+double AddGeoRSSLayerWidget::maximumAge() const
 {
   return _maximumItemAge->value();
 }

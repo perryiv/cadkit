@@ -724,7 +724,7 @@ unsigned int GeoRSSLayer::maximumItems() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GeoRSSLayer::maximumAge ( unsigned int days )
+void GeoRSSLayer::maximumAge ( double days )
 {
   Guard guard ( this->mutex() );
   _maximumAge = boost::posix_time::hours ( days * 24 );
@@ -738,8 +738,8 @@ void GeoRSSLayer::maximumAge ( unsigned int days )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int GeoRSSLayer::maximumAge() const
+double GeoRSSLayer::maximumAge() const
 {
   Guard guard ( this->mutex() );
-  return _maximumAge.hours() / 24;
+  return static_cast<double> ( _maximumAge.hours() ) / 24;
 }

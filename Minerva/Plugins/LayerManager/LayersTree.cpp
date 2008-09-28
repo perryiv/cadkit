@@ -438,16 +438,15 @@ void LayersTree::_onAddLayerFavorites()
 
 void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usul::Interfaces::IUnknown *editor )
 {  
-  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
   Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( editor );
   
-  // Make sure we have a valid layer.
-  if ( false == layer.valid() || false == gui.valid() )
+  // Make sure we have a valid editor.
+  if ( false == gui.valid() )
     return;
   
-  if ( gui->handle ( layer.get() ) )
+  if ( gui->handle ( unknown ) )
   {
-    gui->showModifyGUI( layer.get(), _document.get() );
+    gui->showModifyGUI ( unknown, _document.get() );
     
 #if 0
     //TreeNode *item ( _tree->currentNode() );

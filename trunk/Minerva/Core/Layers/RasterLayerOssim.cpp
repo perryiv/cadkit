@@ -72,10 +72,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RasterLayerOssim, RasterLayerOssim::BaseClass 
 RasterLayerOssim::RasterLayerOssim() : 
   BaseClass(),
   _filename (),
-  _handler ( 0x0 ),
-  _renderer ( 0x0 ),
-  _viewInterface ( 0x0 ),
-  _projection ( 0x0 )
+  _handler ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -93,11 +90,8 @@ RasterLayerOssim::RasterLayerOssim() :
 ///////////////////////////////////////////////////////////////////////////////
 
 RasterLayerOssim::RasterLayerOssim ( const RasterLayerOssim& rhs ) : BaseClass ( rhs ),
-_filename (),
-_handler ( 0x0 ),
-_renderer ( 0x0 ),
-_viewInterface ( 0x0 ),
-_projection ( 0x0 )
+  _filename (),
+  _handler ( 0x0 )
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
@@ -157,9 +151,6 @@ void RasterLayerOssim::_destroy()
   USUL_TRACE_SCOPE;
 
   Usul::Pointers::unreference ( _handler ); _handler = 0x0;
-  Usul::Pointers::unreference ( _projection ); _projection = 0x0;
-  Usul::Pointers::unreference ( _renderer ); _renderer = 0x0;
-  _viewInterface = 0x0;
 }
 
 
@@ -214,22 +205,11 @@ void RasterLayerOssim::_open ( const std::string& filename )
 
   _handler = ossimImageHandlerRegistry::instance()->open ( ossimFilename ( filename.c_str() ) );
   Usul::Pointers::reference ( _handler );
-#if 0
-  _projection = new ossimEquDistCylProjection;
-  Usul::Pointers::reference ( _projection );
-
-  _renderer = new ossimImageRenderer;
-  Usul::Pointers::reference ( _renderer );
-
-  _viewInterface = _renderer;
-
-  _renderer->setView ( _projection, false );
-  _renderer->getResampler()->setFilterType ( "nearest neighbor" );
-
-  _renderer->connectMyInputTo ( 0, _handler );
 
   // I'm not really sure what this is for.
   // I think some projections might be sensitive to elevation.
+  // I haven't seen a case where this makes a difference...I'm keeping this here for reference.
+#if 0
   ossimImageViewTransform* ivt = _renderer->getImageViewTransform();
   if ( ivt )
   {

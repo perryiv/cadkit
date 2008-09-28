@@ -18,9 +18,6 @@
 
 class ossimImageData;
 class ossimImageHandler;
-class ossimImageRenderer;
-class ossimEquDistCylProjection;
-class ossimViewInterface;
 
 namespace Minerva {
 namespace Core {
@@ -84,10 +81,6 @@ private:
 
   std::string        _filename;
   ossimImageHandler *_handler;
-  ossimImageRenderer *_renderer;
-  ossimViewInterface *_viewInterface;
-
-  ossimEquDistCylProjection *_projection;
 
   SERIALIZE_XML_CLASS_NAME( RasterLayerOssim ) 
   SERIALIZE_XML_SERIALIZE_FUNCTION 

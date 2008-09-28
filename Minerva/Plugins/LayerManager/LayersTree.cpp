@@ -329,8 +329,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   
   TreeNode *currentItem ( _tree->currentNode() );
   Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != currentItem ? currentItem->node().get() : 0x0 );
-  Usul::Interfaces::ILayer::QueryPtr layer ( unknown );
-  
+
   QMenu menu;
   
   // Add button.
@@ -347,7 +346,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   QAction favorites ( 0x0 );
   favorites.setText( "Add to favorites" );
   favorites.setToolTip( "Add layer to favorites" );
-  favorites.setEnabled ( layer.valid() );
+  favorites.setEnabled ( unknown.valid() );
   QObject::connect ( &favorites, SIGNAL ( triggered() ), this, SLOT ( _onAddLayerFavorites() ) );
   
   // Move up and down actions.
@@ -360,12 +359,12 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   QtTools::Action refresh ( USUL_MAKE_COMMAND_ARG0 ( "Refresh", "", this, &LayersTree::_refreshLayer, unknown.get() ) );
   
   // Editor for this layer.
-  Usul::Interfaces::IUnknown::QueryPtr editor ( this->_findEditor ( layer.get() ) );
+  Usul::Interfaces::IUnknown::QueryPtr editor ( this->_findEditor ( unknown.get() ) );
   
   // Properties button.
   QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind2 ( unknown.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
   properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
-  properties.setEnabled ( layer.valid() && editor.valid() );
+  properties.setEnabled ( unknown.valid() && editor.valid() );
   
   // Add the actions to the menu.
   menu.addAction ( &add );

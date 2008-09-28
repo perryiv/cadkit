@@ -30,7 +30,6 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
-#include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 

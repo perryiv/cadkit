@@ -17,8 +17,6 @@
 namespace Usul {
 namespace Interfaces {
 
-  struct ILayer;
-
 struct ILayerModifyGUIQt : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.
@@ -27,8 +25,8 @@ struct ILayerModifyGUIQt : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1262894538u };
 
-  virtual bool                handle ( Usul::Interfaces::ILayer* ) const = 0;
-  virtual void                showModifyGUI ( Usul::Interfaces::ILayer*, Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
+  virtual bool                handle ( Usul::Interfaces::IUnknown* layer ) const = 0;
+  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
 
 }; // struct ILayerModifyGUIQt
 

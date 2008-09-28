@@ -407,7 +407,7 @@ Usul::Interfaces::IUnknown* LayersTree::_findEditor ( Usul::Interfaces::IUnknown
   for ( Unknowns::iterator iter = unknowns.begin (); iter != unknowns.end(); ++iter )
   {
     Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( (*iter).get() );
-    if ( gui->handle ( Usul::Interfaces::ILayer::QueryPtr ( unknown ) ) )
+    if ( gui->handle ( unknown ) )
     {
       return gui.get();
     }

@@ -58,8 +58,8 @@ protected:
   virtual std::string           getPluginName() const;
 
   /// ILayerModifyQtGUI
-  virtual bool                handle ( Usul::Interfaces::ILayer* ) const;
-  virtual void                showModifyGUI ( Usul::Interfaces::ILayer*, Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual bool                handle ( Usul::Interfaces::IUnknown* ) const;
+  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown*, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   // Do not copy.
   PostGISLayerQtComponent ( const PostGISLayerQtComponent & );

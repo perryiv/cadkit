@@ -19,6 +19,7 @@
 #include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Core/Commands/AddLayer.h"
 #include "Minerva/Core/Commands/RemoveLayer.h"
+#include "Minerva/Interfaces/IFeature.h"
 
 #include "Usul/Components/Factory.h"
 #include "Usul/Documents/Manager.h"
@@ -135,9 +136,11 @@ void PostGISLayerQtComponent::apply ( Usul::Interfaces::IUnknown* parent, Usul::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PostGISLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
+bool PostGISLayerQtComponent::handle ( Usul::Interfaces::IUnknown* layer ) const
 {
-  return 0x0 != dynamic_cast < Minerva::Layers::PostGIS::Layer * > ( layer );
+  Minerva::Interfaces::IFeature::QueryPtr f ( layer );
+  Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
+  return 0x0 != dynamic_cast < Minerva::Layers::PostGIS::Layer * > ( feature.get() );
 }
 
 
@@ -147,9 +150,11 @@ bool PostGISLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* caller ) 
+void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller ) 
 {
-  Minerva::Layers::PostGIS::Layer::RefPtr baseLayer ( dynamic_cast < Minerva::Layers::PostGIS::Layer* > ( layer ) );
+  Minerva::Interfaces::IFeature::QueryPtr f ( layer );
+  Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
+  Minerva::Layers::PostGIS::Layer::RefPtr baseLayer ( dynamic_cast < Minerva::Layers::PostGIS::Layer* > ( feature.get() ) );
 
   // Return now if no layer.
   if ( 0x0 == baseLayer )

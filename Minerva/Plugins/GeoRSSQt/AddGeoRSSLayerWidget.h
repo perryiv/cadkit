@@ -24,6 +24,7 @@ class AddGeoRSSLayerWidget : public QWidget,
 public:
   typedef QWidget BaseClass;
 
+  /// Construction/Destruction.
   AddGeoRSSLayerWidget ( QWidget *parent = 0x0 );
   virtual ~AddGeoRSSLayerWidget();
 

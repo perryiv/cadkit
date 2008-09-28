@@ -19,6 +19,7 @@
 #include "Minerva/Qt/Widgets/AddNetworkLayerWidget.h"
 
 #include "Minerva/Interfaces/IDirtyScene.h"
+#include "Minerva/Interfaces/IFeature.h"
 
 #include "Usul/Components/Factory.h"
 #include "Usul/Interfaces/IDocument.h"
@@ -151,9 +152,11 @@ void WmsLayerQtComponent::apply ( Usul::Interfaces::IUnknown* parent, Usul::Inte
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool WmsLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
+bool WmsLayerQtComponent::handle ( Usul::Interfaces::IUnknown* layer ) const
 {
-  return 0x0 != dynamic_cast<Minerva::Core::Layers::RasterLayerWms*> ( layer );
+  Minerva::Interfaces::IFeature::QueryPtr f ( layer );
+  Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
+  return 0x0 != dynamic_cast<Minerva::Core::Layers::RasterLayerWms*> ( feature.get() );
 }
 
 
@@ -163,13 +166,15 @@ bool WmsLayerQtComponent::handle ( Usul::Interfaces::ILayer* layer ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::ILayer* layer, Usul::Interfaces::IUnknown* caller )
+void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller )
 {
 	typedef Minerva::Core::Layers::RasterLayerWms RasterLayerWms;
 	typedef RasterLayerWms::Options Options;
 	typedef RasterLayerWms::Alphas Alphas;
 
-  RasterLayerWms::RefPtr wms ( dynamic_cast <RasterLayerWms*> ( layer ) );
+  Minerva::Interfaces::IFeature::QueryPtr f ( layer );
+  Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
+  RasterLayerWms::RefPtr wms ( dynamic_cast <RasterLayerWms*> ( feature.get() ) );
   
   // Return now if no layer.
   if ( 0x0 == wms )

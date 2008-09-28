@@ -15,7 +15,6 @@
 
 #include "Usul/Commands/Command.h"
 #include "Usul/Interfaces/ISerialize.h"
-#include "Usul/Interfaces/ILayer.h"
 
 #include "Serialize/XML/Macros.h"
 

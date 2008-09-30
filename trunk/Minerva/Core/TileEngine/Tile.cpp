@@ -1029,6 +1029,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
     if ( parentElevation.valid() && 0x0 != parentElevation->data() )
     {
+#ifndef __linux
 #if 1
       //
       // Use boost gil to resample the image.  I'm still learning boost gil, so there may be cleaner ways to code this.
@@ -1162,6 +1163,9 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
 
       elevation = final;
       
+#endif
+#else
+      elevation = Minerva::Core::Algorithms::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
 #endif
     }
   }

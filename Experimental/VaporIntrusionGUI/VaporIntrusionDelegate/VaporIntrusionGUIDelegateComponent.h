@@ -20,12 +20,14 @@
 #include "VaporIntrusionGUIViewer.h"
 #include "MaterialContainer.h"
 #include "MaterialDialog.h"
+#include "NewVaporIntrusion.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IGUIDelegate.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
+#include "Usul/Interfaces/IInitNewDocument.h"
 #include "Usul/Shared/Preferences.h"
 #include "Usul/Registry/Constants.h"
 
@@ -40,7 +42,8 @@ class VaporIntrusionGUIDelegateComponent : public Usul::Base::Object,
                                            public Usul::Interfaces::IPlugin,
                                            public Usul::Interfaces::IGUIDelegate,
                                            public Usul::Interfaces::IMenuAdd,
-                                           public Usul::Interfaces::IPluginInitialize
+                                           public Usul::Interfaces::IPluginInitialize,
+                                           public Usul::Interfaces::IInitNewDocument
 {
 public:
 
@@ -77,6 +80,10 @@ public:
  
   //  Usul::Interfaces::IPluginInitialize
   virtual void initializePlugin ( Usul::Interfaces::IUnknown *caller = 0x0 );
+
+  // Usul::Interfaces::IInitNewDocument.
+  virtual bool                handlesDocumentType ( Unknown *document );
+  virtual void                initNewDocument ( Unknown *document, Unknown *caller );
 
 protected: 
 

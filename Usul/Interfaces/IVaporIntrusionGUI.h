@@ -34,8 +34,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   // Set the transparency
   virtual void setAlpha( float alpha ) = 0;
 
-  // Get the dimensions of the space
-  virtual Usul::Math::Vec3ui getDimensions() = 0;
+  // Get/set the dimensions of the space
+  virtual Usul::Math::Vec3ui dimensions() = 0;
+  virtual void dimensions( Usul::Math::Vec3ui ) = 0;
 
   // Get/Set the material
   virtual void              setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c ) = 0;

@@ -113,7 +113,8 @@ public:
   virtual void                highlightCells( Usul::Math::Vec3ui set, unsigned int depth );
   virtual void                setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha );
   virtual void                setAlpha( float alpha );
-  virtual Usul::Math::Vec3ui  getDimensions();
+  virtual Usul::Math::Vec3ui  dimensions();
+  virtual void                dimensions( Usul::Math::Vec3ui d );
   virtual void                setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c );
   virtual Usul::Math::Vec4f   getMaterial( unsigned int x, unsigned int y, unsigned int z );
   virtual void                requestRedraw();

@@ -14,6 +14,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 
                      ${OSG_INC_DIR}
+                     ${QT_INCLUDE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 SET (SOURCES

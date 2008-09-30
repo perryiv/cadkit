@@ -28,6 +28,8 @@ SET (SOURCES
   Show.cpp
   StringsView.cpp
   TreeControl.cpp
+  TreeModel.cpp
+  TreeNode.cpp
 )
 
 # These need to be moc'd.
@@ -38,6 +40,7 @@ SET(MOC_HDRS
   Menu.h
   PropertyBrowser.h
   TreeControl.h
+  TreeNode.h
 )
 
 SET(UIS

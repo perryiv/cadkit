@@ -93,7 +93,11 @@ public:
   /// Set/get the url.
   void                        url ( const std::string& );
   std::string                 url() const;
-
+  
+  /// Set/get the use regular expression when filtering flag.
+  void                        useRegEx ( bool );
+  bool                        useRegEx() const;
+  
 protected:
   virtual ~GeoRSSLayer();
 
@@ -128,6 +132,7 @@ private:
   TimerPair _timerInfo;
 	Filter _filter;
   bool _filteringEnabled;
+  bool _useRegEx;
   unsigned int _maximumItems;
   boost::posix_time::time_duration _maximumAge;
   

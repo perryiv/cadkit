@@ -60,6 +60,10 @@ public:
   void              color ( const Usul::Math::Vec4f& );
   Usul::Math::Vec4f color() const;
   
+  /// Set/get the use regular expression flag.
+  void              useRegEx ( bool b );
+  bool              useRegEx() const;
+  
 };
 
 

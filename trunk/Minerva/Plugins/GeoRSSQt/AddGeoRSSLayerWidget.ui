@@ -5,14 +5,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
-    <height>484</height>
+    <width>525</width>
+    <height>511</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
    <item>
     <layout class="QHBoxLayout" >
      <item>
@@ -92,10 +92,10 @@
      <item>
       <widget class="QDoubleSpinBox" name="_maximumItemAge" >
        <property name="maximum" >
-        <number>999999999</number>
+        <double>999999999.000000000000000</double>
        </property>
        <property name="value" >
-        <number>365</number>
+        <double>365.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -113,13 +113,24 @@
      <property name="title" >
       <string>Filtering</string>
      </property>
-     <layout class="QVBoxLayout" >
+     <layout class="QVBoxLayout" name="verticalLayout" >
       <item>
-       <widget class="QCheckBox" name="_enableFiltering" >
-        <property name="text" >
-         <string>Filiter Results</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2" >
+        <item>
+         <widget class="QCheckBox" name="_enableFiltering" >
+          <property name="text" >
+           <string>Filiter Results</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="_useRegEx" >
+          <property name="text" >
+           <string>Use Regular Expression</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <layout class="QHBoxLayout" >

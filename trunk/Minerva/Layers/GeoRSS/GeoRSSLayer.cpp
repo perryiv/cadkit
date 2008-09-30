@@ -75,6 +75,7 @@ GeoRSSLayer::GeoRSSLayer() :
   _timerInfo ( 0, false ),
 	_filter(),
   _filteringEnabled ( false ),
+  _useRegEx ( false ),
   _maximumItems ( 1000 ),
   _maximumAge ( boost::posix_time::hours ( 365 * 24 ) ) // Default of 356 days.
 {
@@ -84,6 +85,7 @@ GeoRSSLayer::GeoRSSLayer() :
   this->_addMember ( "filter_element", _filter.first );
   this->_addMember ( "filter_value", _filter.second );
   this->_addMember ( "filteringEnabled", _filteringEnabled );
+  this->_addMember ( "use_reg_ex", _useRegEx );
   this->_addMember ( "maximum_items", _maximumItems );
   
   this->_addTimer();
@@ -220,6 +222,12 @@ namespace Helper
       return boost::regex_match ( name, _e );
     }
     
+    static bool test ( const std::string& expression, const std::string& name )
+    {
+      boost::regex e ( expression, boost::regex::perl );
+      return boost::regex_match ( name, e );
+    }
+    
   private:
     boost::regex _e;
   };
@@ -350,8 +358,15 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
 			XmlTree::Node::ValidRefPtr node ( *iter );
       const std::string name ( node->name() );
       const std::string value ( node->value() );
-			if ( filter.first == name && !boost::algorithm::find_first ( value, filter.second ) )
-				filtered = true;
+      
+      // Is this element the one we should filter on?
+			if ( filter.first == name )
+      {
+        if ( this->useRegEx() && Helper::RegexMatch::test ( filter.second, value ) )
+          filtered = true;
+        else if ( !boost::algorithm::find_first ( value, filter.second ) )
+          filtered = true;
+      }
 		}
 	}
 
@@ -742,4 +757,30 @@ double GeoRSSLayer::maximumAge() const
 {
   Guard guard ( this->mutex() );
   return static_cast<double> ( _maximumAge.hours() ) / 24;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the use regular expression when filtering flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void GeoRSSLayer::useRegEx ( bool b )
+{
+  Guard guard ( this->mutex() );
+  _useRegEx = b;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the use regular expression when filtering flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool GeoRSSLayer::useRegEx() const
+{
+  Guard guard ( this->mutex() );
+  return _useRegEx;
 }

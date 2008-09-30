@@ -161,9 +161,14 @@ bool GeoRSSQtComponent::handle ( Usul::Interfaces::IUnknown* layer ) const
 {
   Minerva::Interfaces::IFeature::QueryPtr f ( layer );
   Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
-  const bool handle ( 0x0 != dynamic_cast<Minerva::Layers::GeoRSS::GeoRSSLayer*> ( feature.get() ) || 
-                      0x0 != dynamic_cast<Minerva::Layers::GeoRSS::Item*> ( feature.get() ) );
-  return handle;
+  const bool isGeoRssLayer ( 0x0 != dynamic_cast<Minerva::Layers::GeoRSS::GeoRSSLayer*> ( feature.get() ) );
+  
+#ifdef _DEBUG
+  const bool isGeoRssItem  ( 0x0 != dynamic_cast<Minerva::Layers::GeoRSS::Item*> ( feature.get() ) );
+  return isGeoRssLayer || isGeoRssItem;
+#else
+  return isGeoRssLayer;
+#endif
 }
 
 
@@ -210,6 +215,7 @@ void GeoRSSQtComponent::_setLayerMembers ( AddGeoRSSLayerWidget& widget, GeoRSSL
   layer.color ( widget.color() );
   layer.maximumItems ( widget.maximumItems() );
   layer.maximumAge ( widget.maximumAge() );
+  layer.useRegEx ( widget.useRegEx() );
 }
 
 
@@ -233,6 +239,7 @@ void GeoRSSQtComponent::_displayGeoRSSLayerGUI ( GeoRSSLayer& geoRss, Usul::Inte
   page->color ( geoRss.color() );
   page->maximumItems ( geoRss.maximumItems() );
   page->maximumAge ( geoRss.maximumAge() );
+  page->useRegEx ( geoRss.useRegEx() );
   
   const QDialogButtonBox::StandardButtons buttons ( QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok );
   QDialogButtonBox *buttonBox ( new QDialogButtonBox ( buttons, Qt::Horizontal, &dialog ) );

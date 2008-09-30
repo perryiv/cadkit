@@ -323,6 +323,36 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\NewVaporIntrusion.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\NewVaporIntrusion.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewVaporIntrusion.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewVaporIntrusion.ui -o .\ui_NewVaporIntrusion.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewVaporIntrusion.h&quot; -o &quot;.\GeneratedFiles\moc_NewVaporIntrusion.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewVaporIntrusion.ui;$(QTDIR)\bin\moc.exe;.\NewVaporIntrusion.h"
+							Outputs=".\ui_NewVaporIntrusion.h;.\GeneratedFiles\moc_NewVaporIntrusion.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_NewVaporIntrusion.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\NewVaporIntrusion.ui -o .\ui_NewVaporIntrusion.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\NewVaporIntrusion.h&quot; -o &quot;.\GeneratedFiles\moc_NewVaporIntrusion.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\NewVaporIntrusion.ui;$(QTDIR)\bin\moc.exe;.\NewVaporIntrusion.h"
+							Outputs=".\ui_NewVaporIntrusion.h;.\GeneratedFiles\moc_NewVaporIntrusion.cpp"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="Generated"
@@ -333,6 +363,10 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_MaterialDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_NewVaporIntrusion.cpp"
 					>
 				</File>
 			</Filter>

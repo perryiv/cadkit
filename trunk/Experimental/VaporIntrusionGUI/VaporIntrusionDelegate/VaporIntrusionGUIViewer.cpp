@@ -119,7 +119,7 @@ void VaporIntrusionGUIViewer::mousePressEvent ( QMouseEvent * event )
     return;
 
   // Get the dimensions
-  Usul::Math::Vec3ui dimensions ( document->getDimensions() );
+  Usul::Math::Vec3ui dimensions ( document->dimensions() );
   
   typedef Usul::Properties::Attribute<Usul::Math::Vec3ui,osg::Referenced> Vec3UserData;
   
@@ -262,7 +262,7 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
     return;
 
   // Get the dimensions
-  Usul::Math::Vec3ui dimensions ( document->getDimensions() );
+  Usul::Math::Vec3ui dimensions ( document->dimensions() );
 
   // If we weren't the last view window to run reset the alpha for the scene
   // and set the current running view tag to our id
@@ -406,7 +406,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent *event )
     return;
 
   // Get the dimensions
-  Usul::Math::Vec3ui dimensions ( document->getDimensions() );
+  Usul::Math::Vec3ui dimensions ( document->dimensions() );
 
   // If we weren't the last view window to run reset the alpha for the scene
   // and set the current running view tag to our id
@@ -427,23 +427,28 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent *event )
     }
   }
 
+  // What key was pressed
   switch ( event->key() )
-    {
-    // See if it was the space-bar...
-      case Qt::Key_Comma:
+  {
+  
+    // If it was the comma key...
+    case Qt::Key_Comma:
+      
+      this->_focusChange( -1, dimensions, document );
+      break;
 
-        this->_focusChange( -1, dimensions, document );
-        break;
+    // If it was the period key...
+    case Qt::Key_Period:
 
-      case Qt::Key_Period:
+      this->_focusChange( 1, dimensions, document );
+      break;
 
-        this->_focusChange( 1, dimensions, document );
-        break;
-
-      default:
-        break;
+    // No match? Do nothing.
+    default:
+      break;
   }
 
+  // Let the baseclass handle key events as well.
   BaseClass::keyPressEvent( event );
 }
 

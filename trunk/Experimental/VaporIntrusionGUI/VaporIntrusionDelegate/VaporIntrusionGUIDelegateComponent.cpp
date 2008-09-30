@@ -26,6 +26,7 @@
 #include "Usul/Properties/Attribute.h"
 #include "Usul/Registry/Constants.h"
 #include "Usul/Shared/Preferences.h"
+#include "Usul/Exceptions/Canceled.h"
 
 #include "Helios/Qt/Views/OSG/Viewer.h"
 #include "Helios/Qt/Views/OSG/Format.h"
@@ -105,6 +106,8 @@ Usul::Interfaces::IUnknown *VaporIntrusionGUIDelegateComponent::queryInterface (
     return static_cast < Usul::Interfaces::IMenuAdd*>(this);
   case Usul::Interfaces::IPluginInitialize::IID:
     return static_cast < Usul::Interfaces::IPluginInitialize*>(this);
+  case Usul::Interfaces::IInitNewDocument::IID:
+    return static_cast < Usul::Interfaces::IInitNewDocument*>(this);
   default:
     return 0x0;
   }
@@ -270,4 +273,50 @@ void VaporIntrusionGUIDelegateComponent::initializePlugin ( Usul::Interfaces::IU
     if ( dwm.valid () )
       dwm->addDockWidgetMenu ( _dock );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Unknown *caller )
+{ 
+  // Get the parent.
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
+  QWidget *parent ( mainWindow.valid() ? mainWindow->mainWindow() : 0x0 );
+
+  // Make the dialog.
+  NewVaporIntrusion dialog ( parent );
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+  
+  Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
+
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
+
+  if( true == doc.valid() )
+  {
+    doc->dimensions( d );
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the given document type is handled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDelegateComponent::handlesDocumentType ( Usul::Interfaces::IUnknown *document )
+{
+  // Re-entrant.
+
+  Usul::Interfaces::IDocument::QueryPtr doc ( document );
+  return ( ( true == doc.valid() ) ? this->doesHandle ( doc->typeName() ) : false );
 }

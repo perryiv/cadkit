@@ -62,5 +62,17 @@ TARGET_LINK_LIBRARIES( MinervaQtWidgets
 ADD_CUSTOM_COMMAND(
         SOURCE MinervaQtWidgets
         COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_AnimationControl.h" "${PROJECT_SOURCE_DIR}/ui_AnimationControl.h"
+        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_WmsWidget.h" "${PROJECT_SOURCE_DIR}/ui_WmsWidget.h"
+        TARGET MinervaQtWidgets )
+
+ADD_CUSTOM_COMMAND(
+        SOURCE MinervaQtWidgets
+        COMMAND ${CCOMMAND_COMMAND}
+        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_OptionsDialog.h" "${PROJECT_SOURCE_DIR}/ui_OptionsDialog.h"
+        TARGET MinervaQtWidgets )
+
+ADD_CUSTOM_COMMAND(
+        SOURCE MinervaQtWidgets
+        COMMAND ${CCOMMAND_COMMAND}
+        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_AlphasDialog.h" "${PROJECT_SOURCE_DIR}/ui_AlphasDialog.h"
         TARGET MinervaQtWidgets )

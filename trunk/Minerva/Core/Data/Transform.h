@@ -53,7 +53,7 @@ public:
   //
   ///////////////////////////////////////////////////////////////////////////////
   
-  Transform::~Transform()
+  ~Transform()
   {
     ::OCTDestroyCoordinateTransformation ( _transform );
   }
@@ -65,7 +65,7 @@ public:
   //
   ///////////////////////////////////////////////////////////////////////////////
   
-  Usul::Math::Vec3d Transform::operator() ( const Usul::Math::Vec3d& vertex ) const
+  Usul::Math::Vec3d operator() ( const Usul::Math::Vec3d& vertex ) const
   {
     Usul::Math::Vec3d v ( vertex );
     if ( 0x0 != _transform )
@@ -82,7 +82,7 @@ public:
   //
   ///////////////////////////////////////////////////////////////////////////////
   
-  Usul::Math::Vec2d Transform::operator() ( const Usul::Math::Vec2d& vertex ) const
+  Usul::Math::Vec2d operator() ( const Usul::Math::Vec2d& vertex ) const
   {
     Usul::Math::Vec2d v ( vertex );
     if ( 0x0 != _transform )

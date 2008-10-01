@@ -31,7 +31,7 @@ struct USUL_EXPORT ClipBoard
   static bool isClipBoardSupported();
   
   /// Add the given text to the clip board.
-  static void paste ( const std::string& text );
+  static void addToClipboard ( const std::string& text );
   
 };
 

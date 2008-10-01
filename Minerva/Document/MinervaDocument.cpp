@@ -2964,7 +2964,7 @@ void MinervaDocument::contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Ve
         namespace UC = Usul::Commands;
         
         const std::string text ( Usul::Strings::format ( latLonPoint[1], ", ", latLonPoint[0] ) );
-        menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", UA::bind1<void> ( text, Usul::System::ClipBoard::paste ), UC::TrueFunctor() ) ) );
+        menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", UA::bind1<void> ( text, Usul::System::ClipBoard::addToClipboard ), UC::TrueFunctor() ) ) );
       }
     }
   }

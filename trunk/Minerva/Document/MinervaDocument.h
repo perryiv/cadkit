@@ -26,6 +26,7 @@
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
+#include "Usul/Interfaces/IContextMenuAdd.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Interfaces/ILayer.h"
@@ -76,9 +77,11 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IJobFinishedListener,
                                                 public Usul::Interfaces::IMouseEventListener,
                                                 public Minerva::Interfaces::ILookAtLayer,
-                                                public Usul::Interfaces::IBusyState
+                                                public Usul::Interfaces::IBusyState,
+                                                public Usul::Interfaces::IContextMenuAdd
 {
 public:
+  
   /// Useful typedefs.
   typedef Usul::Documents::Document BaseClass;
   typedef Minerva::Core::Animate::Settings Settings;
@@ -316,6 +319,9 @@ protected:
 
   /// Set all the children's log.
   void                                     _setLog();
+  
+  /// Add to the context menu.
+  virtual void                             contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Vec2ui& position, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Dirty the scene ( Minerva::Interfaces::IDirtyScene ).
   virtual bool                             dirtyScene() const;

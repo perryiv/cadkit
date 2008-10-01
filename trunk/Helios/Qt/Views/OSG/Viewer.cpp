@@ -25,6 +25,7 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IContextMenuAdd.h"
 #include "Usul/Interfaces/IKeyListener.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Constants.h"
@@ -1626,7 +1627,15 @@ void Viewer::_onContextMenuShow ( const QPoint& pos )
   if ( false == viewer.valid() || false == viewer->picking() )
     return;
 
+  // Make the menu.
   MenuKit::Menu::RefPtr menu ( new MenuKit::Menu );
+  
+  // Ask the document if it wants to add to the context menu.
+  Usul::Interfaces::IContextMenuAdd::QueryPtr cma ( this->document() );
+  if ( cma.valid() )
+    cma->contextMenuAdd ( *menu, Usul::Math::Vec2ui ( pos.x(), pos.y() ), Usul::Interfaces::IUnknown::QueryPtr ( viewer ) );
+  
+  // Add our buttons to the menu.
   this->_menuAdd ( *menu );
   
   typedef MenuKit::Button Button;

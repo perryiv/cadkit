@@ -1626,6 +1626,8 @@
 		66C8FEE80D120B60003F6A58 /* RenderLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEE00D120B60003F6A58 /* RenderLoop.cpp */; };
 		66C8FEE90D120B60003F6A58 /* ShadeModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEE20D120B60003F6A58 /* ShadeModel.cpp */; };
 		66C8FEFF0D120C64003F6A58 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66C8FEFD0D120C64003F6A58 /* Application.cpp */; };
+		66CAF86A0E94137D00390255 /* ClipBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CAF8690E94137D00390255 /* ClipBoard.cpp */; };
+		66CAF8E80E94244B00390255 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CAF8E70E94244B00390255 /* Carbon.framework */; };
 		66CCC30D0E296F4700DDFE55 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CCC3010E296D2F00DDFE55 /* Main.cpp */; };
 		66CCC30F0E296F5D00DDFE55 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CCC3030E296D2F00DDFE55 /* Main.cpp */; };
 		66CCC3200E2971ED00DDFE55 /* GradientIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CCC3100E2971ED00DDFE55 /* GradientIcon.cpp */; };
@@ -5687,6 +5689,10 @@
 		66C8FEE30D120B60003F6A58 /* ShadeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShadeModel.h; path = ../Usul/Commands/ShadeModel.h; sourceTree = SOURCE_ROOT; };
 		66C8FEFD0D120C64003F6A58 /* Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Application.cpp; sourceTree = "<group>"; };
 		66C8FEFE0D120C64003F6A58 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
+		66CAF8680E94137D00390255 /* ClipBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClipBoard.h; sourceTree = "<group>"; };
+		66CAF8690E94137D00390255 /* ClipBoard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClipBoard.cpp; sourceTree = "<group>"; };
+		66CAF8B20E94210F00390255 /* IContextMenuAdd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IContextMenuAdd.h; sourceTree = "<group>"; };
+		66CAF8E70E94244B00390255 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		66CCC22A0E2882A600DDFE55 /* plugins.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = plugins.xml; path = Qt/Application/plugins.xml; sourceTree = "<group>"; };
 		66CCC3000E296D2F00DDFE55 /* blueFlowers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueFlowers.png; sourceTree = "<group>"; };
 		66CCC3010E296D2F00DDFE55 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
@@ -6165,6 +6171,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66CAF8E80E94244B00390255 /* Carbon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7493,6 +7500,7 @@
 		43E1AAF3094619B7007F0715 /* Frameworks/Libs */ = {
 			isa = PBXGroup;
 			children = (
+				66CAF8E70E94244B00390255 /* Carbon.framework */,
 				6672C5160E26DEC30013A6F3 /* xercesc.framework */,
 				669F72DD0E199056005EE92C /* libhdf5.0.0.0.dylib */,
 				669F72DE0E199056005EE92C /* libhdf5_hl.0.0.0.dylib */,
@@ -7526,7 +7534,6 @@
 		43E9AF4709F6B98D00444335 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
-				66ED165F0E6F152A0000E512 /* IProjectionMatrix.h */,
 				6699A0680D1EFC7200A9AE47 /* GUI */,
 				6699A07F0D1EFC7200A9AE47 /* IActiveDocumentListener.h */,
 				6699A0800D1EFC7200A9AE47 /* IActiveViewListener.h */,
@@ -7541,6 +7548,7 @@
 				6699A0850D1EFC7200A9AE47 /* IBackgroundColor.h */,
 				6699A0860D1EFC7200A9AE47 /* IBooleanState.h */,
 				43E9AF7609F6B98D00444335 /* IBuildScene.h */,
+				66DD54AA0E5B8938009FAA2F /* IBusyState.h */,
 				6699A0870D1EFC7200A9AE47 /* IButtonID.h */,
 				6699A0880D1EFC7200A9AE47 /* IButtonPressListener.h */,
 				6699A0890D1EFC7200A9AE47 /* IButtonPressSubject.h */,
@@ -7638,6 +7646,7 @@
 				6699A0C50D1EFC7300A9AE47 /* IPluginInitialize.h */,
 				43E9AFAE09F6B98D00444335 /* IPolygonMode.h */,
 				6699A0CB0D1EFC7300A9AE47 /* IProjectCoordinates.h */,
+				66ED165F0E6F152A0000E512 /* IProjectionMatrix.h */,
 				6699A0CC0D1EFC7300A9AE47 /* IQtDockWidgetMenu.h */,
 				668D4C100D36C3F500CE039D /* IRasterAlphas.h */,
 				668B9C080D35E38000E41E9D /* IRasterLayer.h */,
@@ -7696,7 +7705,7 @@
 				6699A0EB0D1EFC7300A9AE47 /* IWorldInfo.h */,
 				43E9AFCE09F6B98D00444335 /* IWriteMovieFile.h */,
 				6699A0EC0D1EFC7300A9AE47 /* Qt */,
-				66DD54AA0E5B8938009FAA2F /* IBusyState.h */,
+				66CAF8B20E94210F00390255 /* IContextMenuAdd.h */,
 			);
 			name = Interfaces;
 			path = ../Usul/Interfaces;
@@ -8367,16 +8376,16 @@
 		43FED840092452F700EBB610 /* System */ = {
 			isa = PBXGroup;
 			children = (
-				664308AB0D10AF3200984C94 /* Directory.cpp */,
-				664308AC0D10AF3200984C94 /* Directory.h */,
-				664308AD0D10AF3200984C94 /* Sleep.cpp */,
-				664308AE0D10AF3200984C94 /* Sleep.h */,
-				66DA931E0ACCDBD300D3E379 /* Environment.cpp */,
-				66DA931F0ACCDBD300D3E379 /* Environment.h */,
-				43CE0B7209C0D7A00000EBE0 /* DateTime.cpp */,
-				43CE0B7309C0D7A00000EBE0 /* DateTime.h */,
+				66CAF8690E94137D00390255 /* ClipBoard.cpp */,
+				66CAF8680E94137D00390255 /* ClipBoard.h */,
 				43FED841092452F700EBB610 /* Clock.cpp */,
 				43FED842092452F700EBB610 /* Clock.h */,
+				43CE0B7209C0D7A00000EBE0 /* DateTime.cpp */,
+				43CE0B7309C0D7A00000EBE0 /* DateTime.h */,
+				664308AB0D10AF3200984C94 /* Directory.cpp */,
+				664308AC0D10AF3200984C94 /* Directory.h */,
+				66DA931E0ACCDBD300D3E379 /* Environment.cpp */,
+				66DA931F0ACCDBD300D3E379 /* Environment.h */,
 				43FED843092452F700EBB610 /* Host.cpp */,
 				43FED844092452F700EBB610 /* Host.h */,
 				43FED845092452F700EBB610 /* LastError.cpp */,
@@ -8385,6 +8394,8 @@
 				43FED848092452F700EBB610 /* Memory.h */,
 				43FED849092452F700EBB610 /* Screen.cpp */,
 				43FED84A092452F700EBB610 /* Screen.h */,
+				664308AD0D10AF3200984C94 /* Sleep.cpp */,
+				664308AE0D10AF3200984C94 /* Sleep.h */,
 				43FED84B092452F700EBB610 /* Socket.cpp */,
 				43FED84C092452F700EBB610 /* Socket.h */,
 			);
@@ -13945,6 +13956,7 @@
 				66A35C3A0DD81A480026BA66 /* Manager.cpp in Sources */,
 				6646DEEF0DEC7FC8009A95C6 /* Log.cpp in Sources */,
 				66481B670E01AC4B00DD75A2 /* Assert.cpp in Sources */,
+				66CAF86A0E94137D00390255 /* ClipBoard.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -32,6 +32,7 @@
 #include "Usul/Math/NaN.h"
 #include "Usul/Resources/Constants.h"
 #include "Usul/Resources/Manager.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
@@ -1664,4 +1665,22 @@ void Layer::_updateMinMaxDate ( const std::string& min, const std::string& max )
 
 void Layer::_setGeometryMembers   ( Geometry* geometry, const pqxx::result::const_iterator& iter )
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Serialize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Layer::serialize ( XmlTree::Node &parent ) const
+{
+  Serialize::XML::DataMemberMap dataMemberMap ( Usul::Threads::Safe::get ( this->mutex(), _dataMemberMap ) );
+  
+  // Don't serialize the layers.
+  dataMemberMap.erase ( "layers" );
+  
+  // Serialize.
+  dataMemberMap.serialize ( parent );
 }

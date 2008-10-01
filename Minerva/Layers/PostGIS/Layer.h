@@ -181,6 +181,9 @@ public:
   void                        alpha ( float a );
   float                       alpha () const;
   
+  /// Serialize.
+  virtual void                serialize ( XmlTree::Node &parent ) const;
+  
   /// Get the Spatial Reference id (srid).
   int                         srid() const;
   

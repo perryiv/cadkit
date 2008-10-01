@@ -72,6 +72,7 @@
 #include "Usul/Registry/Database.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Scope/CurrentDirectory.h"
+#include "Usul/System/ClipBoard.h"
 #include "Usul/System/Host.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -260,6 +261,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Minerva::Interfaces::ILookAtLayer * > ( this );
   case Usul::Interfaces::IBusyState::IID:
     return static_cast < Usul::Interfaces::IBusyState * > ( this );
+  case Usul::Interfaces::IContextMenuAdd::IID:
+    return static_cast < Usul::Interfaces::IContextMenuAdd * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -2643,6 +2646,12 @@ bool MinervaDocument::_intersectBalloon ( osgGA::GUIEventAdapter& ea, Usul::Inte
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to get the data object from the node path.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 namespace Helper
 {
   Minerva::Core::Data::DataObject::RefPtr findDataObject ( const osg::NodePath& path )
@@ -2918,4 +2927,45 @@ bool MinervaDocument::busyStateGet() const
   const bool idle ( ( 0 == queued ) && ( 0 == executing ) );
 
   return ( false == idle );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add to the context menu.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Vec2ui& position, Usul::Interfaces::IUnknown* caller )
+{
+  if ( Usul::System::ClipBoard::isClipBoardSupported() )
+  {
+    // Query for the interface.
+    Usul::Interfaces::ISceneIntersect::QueryPtr si ( caller );
+    
+    typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+    Intersections intersections;
+    if ( si.valid() && si->intersect ( position[0], position[1], intersections ) )
+    {
+      Body::RefPtr body ( this->activeBody() );
+      
+      // Set the intersection point.
+      if ( body.valid() )
+      {
+        osgUtil::LineSegmentIntersector::Intersection hit ( *intersections.begin() );
+        osg::Vec3 world ( hit.getWorldIntersectPoint() );
+        
+        Usul::Math::Vec3d point ( world[0], world[1], world[2] );
+        Usul::Math::Vec3d latLonPoint;
+        body->convertFromPlanet( point, latLonPoint );
+        
+        // Namespace aliases to help shorten lines.
+        namespace UA = Usul::Adaptors;
+        namespace UC = Usul::Commands;
+        
+        const std::string text ( Usul::Strings::format ( latLonPoint[1], ", ", latLonPoint[0] ) );
+        menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", UA::bind1<void> ( text, Usul::System::ClipBoard::paste ), UC::TrueFunctor() ) ) );
+      }
+    }
+  }
 }

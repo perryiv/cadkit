@@ -1736,6 +1736,14 @@
 				Name="System"
 				>
 				<File
+					RelativePath=".\System\ClipBoard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\System\ClipBoard.h"
+					>
+				</File>
+				<File
 					RelativePath=".\System\Clock.cpp"
 					>
 				</File>

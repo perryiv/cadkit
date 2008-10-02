@@ -63,7 +63,7 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
 ${CADKIT_INC_DIR}/Nimue/Plugins/ModflowModel
 )
 
-OPTION ( BUILD_MINERVA "Build Minerva libraries."  ON)
+OPTION ( BUILD_MINERVA "Build Minerva libraries."  ON )
 
 IF(BUILD_MINERVA)
   SUBDIRS (

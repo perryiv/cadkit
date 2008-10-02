@@ -45,6 +45,7 @@ SET (SOURCES
 ./Jobs/Manager.cpp
 ./Jobs/Job.cpp
 ./Predicates/CanWrite.cpp
+./System/ClipBoard.cpp
 ./System/Socket.cpp
 ./System/LastError.cpp
 ./System/DateTime.cpp

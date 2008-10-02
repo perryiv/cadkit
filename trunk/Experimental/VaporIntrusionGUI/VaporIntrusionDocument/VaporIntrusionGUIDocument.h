@@ -69,6 +69,25 @@ public:
     GroupPtr group;
     std::string name;
     std::string value;
+    Usul::Math::Vec3f position, dimensions;
+
+    Cell() : 
+      color( 0.5, 0.5, 0.5, 0.5 ), 
+      group ( new osg::Group ),
+      name(),
+      value(),
+      position( 0.0f, 0.0f, 0.0f ),
+      dimensions( 1.0f, 1.0f, 1.0f )
+      {};
+
+      Cell( osg::Vec4 c, GroupPtr g, std::string n, std::string v, Usul::Math::Vec3f pos, Usul::Math::Vec3f dim ) :
+        color( c), 
+        group ( g ),
+        name( n ),
+        value( v ),
+        position( pos ),
+        dimensions( dim )
+        {};
   };
 
   typedef Cell Cube;
@@ -138,6 +157,8 @@ protected:
 
   // Test method for multiview verification
   osg::Node*                  _buildTestCube( osg::Vec3Array* points, Color c, Usul::Math::Vec3ui location );
+
+  void                        _initCubes();
 
 
 private:

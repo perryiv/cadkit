@@ -35,11 +35,13 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 set (SOURCES
     LayerManagerComponent.cpp
     Favorites.cpp
+    FlyTo.cpp
     LayersTree.cpp
 )
 
 SET(MOC_HDRS
   Favorites.h
+  FlyTo.h
   LayersTree.h
 )
 

@@ -14,6 +14,7 @@ INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 # ------------ Find boost ----------------------
 SET ( Boost_USE_DATE_TIME TRUE )
 SET ( Boost_USE_THREAD TRUE )
+SET ( Boost_USE_FILESYSTEM TRUE )
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 # ------------ Find curl Library ----------------------

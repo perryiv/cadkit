@@ -38,13 +38,8 @@ public:
   MenuKit::Menu*              menu();
   const MenuKit::Menu*        menu() const;
 
-  /// Overload these mouse events.
-  virtual void                mousePressEvent ( QMouseEvent * event );
-	virtual void                mouseReleaseEvent ( QMouseEvent * event );
-
 protected slots:
   
-  void                        _showContextMenu ( const QPoint & );
   void                        _showMenu();
   
 private:

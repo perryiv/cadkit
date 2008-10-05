@@ -13,6 +13,7 @@
 #include "Usul/File/Temp.h"
 #include "Usul/Print/Matrix.h"
 #include "Usul/Threads/Mutex.h"
+#include "Usul/Scope/RemoveFile.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
@@ -47,14 +48,15 @@ TEST(EllipsoidTest,Serialize)
   Land::RefPtr land ( new Land ( radii ) );
   
   // Make a temp file.
-  Usul::File::Temp temp;
+  const std::string name ( Usul::File::Temp::file() );
+  Usul::Scope::RemoveFile remove ( name );
   
   // Serialize.
-  Serialize::XML::serialize ( *land, temp.name() );
+  Serialize::XML::serialize ( *land, name );
   
   XmlTree::XercesLife life;
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
-  document->load ( temp.name() );
+  document->load ( name );
 
   Land::RefPtr land1 ( new Land );
   land1->deserialize ( *document );

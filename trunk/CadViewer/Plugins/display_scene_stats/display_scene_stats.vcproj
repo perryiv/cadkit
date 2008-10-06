@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib winmm.lib wsock32.lib"
+				AdditionalDependencies="osgd.lib winmm.lib wsock32.lib OpenThreadsd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/display_scene_stats.cvplugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib"
+				AdditionalDependencies="osg.lib MSVCPRT.lib MSVCRT.lib winmm.lib wsock32.lib OpenThreads.lib"
 				OutputFile="../../../bin/display_scene_stats.cvplug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

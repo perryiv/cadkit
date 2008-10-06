@@ -11,9 +11,13 @@
 #ifndef __MINERVA_GDAL_LAYER_H__
 #define __MINERVA_GDAL_LAYER_H__
 
+#include "Minerva/Layers/GDAL/Export.h"
+
 #include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Usul/Interfaces/IRead.h"
+
+#include "gdalwarper.h"
 
 class GDALDataset;
 
@@ -21,8 +25,8 @@ namespace Minerva {
 namespace Layers {
 namespace GDAL {
 
-class RasterLayerGDAL : public Minerva::Core::Layers::RasterLayer,
-                        public Usul::Interfaces::IRead
+class MINERVA_GDAL_EXPORT RasterLayerGDAL : public Minerva::Core::Layers::RasterLayer,
+                                            public Usul::Interfaces::IRead
 {
 public:
   typedef Minerva::Core::Layers::RasterLayer BaseClass;
@@ -56,6 +60,7 @@ protected:
 
   static GDALDataset *  _createDataset ( const Extents& e, unsigned int width, unsigned int height, int bands, unsigned int type );
   static void           _createGeoTransform ( GeoTransform &transfrom, const Extents& e, unsigned int width, unsigned int height );
+  static GDALWarpOptions* _createWarpOptions ( GDALDataset* src, GDALDataset* dst, int numBands );
 
   virtual std::string   _cacheDirectory() const;
   virtual std::string   _cacheFileExtension() const;

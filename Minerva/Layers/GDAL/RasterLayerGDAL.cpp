@@ -19,6 +19,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
+#include "Usul/File/Remove.h"
 #include "Usul/File/Temp.h"
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Scope/Caller.h"
@@ -227,71 +228,27 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   Usul::Scope::Caller::RefPtr closeDataSet ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( tile, GDALClose ) ) );
 
   // Create the options.  Make sure the options are destroyed.
-  GDALWarpOptions *options ( GDALCreateWarpOptions() );
+  GDALWarpOptions *options ( RasterLayerGDAL::_createWarpOptions ( data, tile, bands ) );
   Usul::Scope::Caller::RefPtr destroyOptions ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options, ::GDALDestroyWarpOptions ) ) );
 
-  int hasNoData ( FALSE );
-
-  // Get the no data value.
-  const double noDataValue ( data->GetRasterBand ( 1 )->GetNoDataValue( &hasNoData ) );
-
-  if ( TRUE == hasNoData )
-  {
-    // Set the no data value.
-    for ( int i = 1; i <= bands; ++i )
-    {
-      GDALRasterBand* band1 ( tile->GetRasterBand ( i ) );
-      band1->SetNoDataValue( noDataValue );
-    }
-
-    // Initialize with no data.
-    char ** warpOptions = 0x0;
-    warpOptions = ::CSLSetNameValue( warpOptions, "INIT_DEST", "NO_DATA" );
-    options->papszWarpOptions = warpOptions;
-
-    options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-    options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-    options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-    options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
-  }
-
-  // We want cubic B-spline interpolation.
-  options->eResampleAlg = GRA_NearestNeighbour;
+  // Return if we don't have valid options.
+  if ( 0x0 == options )
+    return 0x0;
   
-  options->hSrcDS = data;
-  options->hDstDS = tile;
-
-  options->nBandCount = bands;
-  options->panSrcBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
-  options->panDstBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
-
-  for ( int i = 0; i < bands; ++i )
-  {
-    options->panSrcBands[i] = i + 1;
-    options->panDstBands[i] = i + 1;
-
-    if ( TRUE == hasNoData )
-    {
-      options->padfSrcNoDataReal[i] = noDataValue;
-      options->padfDstNoDataImag[i] = noDataValue;
-      options->padfDstNoDataReal[i] = noDataValue;
-      options->padfSrcNoDataImag[i] = noDataValue;
-    }
-  }
-  
+  // Print progress to the terminal.
   options->pfnProgress = GDALTermProgress;
 
   // Establish reprojection transformer. 
   options->pTransformerArg = GDALCreateGenImgProjTransformer( data, 
-                                                              GDALGetProjectionRef( data ), 
+                                                              GDALGetProjectionRef ( data ), 
                                                               tile, 
-                                                              GDALGetProjectionRef( tile ), 
-                                                              FALSE, 0.0, 0 );
+                                                              GDALGetProjectionRef ( tile ), 
+                                                              TRUE, 1000.0, 0 );
   
   // Make sure we got a transformer.
   if ( 0x0 == options->pTransformerArg )
     return 0x0;
-  
+
   // Make sure the transformer is destroyed.
   Usul::Scope::Caller::RefPtr destroyTransformer ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options->pTransformerArg, GDALDestroyGenImgProjTransformer ) ) );
   
@@ -300,19 +257,32 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   // Check for canceled before starting long running task below...
   BaseClass::_checkForCanceledJob ( job );
 
-  // Initialize and execute the warp operation.   
+  // Create the warp operation.
   GDALWarpOperation operation;
-  operation.Initialize( options );
-  operation.ChunkAndWarpImage( 0, 0, width, height );
+
+  // Intialize the warp operation.  Return 0x0 if fails.
+  if ( CE_None != operation.Initialize( options ) )
+    return 0x0;
+
+  // Do the work.  Return 0x0 if fails.
+  if ( CE_None != operation.ChunkAndWarpImage( 0, 0, width, height ) )
+    return 0x0;
   
   // Convert to an osg image.
   ImagePtr image ( Minerva::convert ( tile ) );
 
+  // Delete any temp files created.
+  char** files = tile->GetFileList();
+  Usul::Scope::Caller::RefPtr scopeFiles ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( files, ::CSLDestroy ) ) );
+  while ( 0x0 != files && 0x0 != *files )
+  {
+    Usul::File::remove ( *files );
+    ++files;
+  }
+
   // Save the image to the cache.
 #ifndef __APPLE__
-  #ifndef _DEBUG
   BaseClass::_writeImageToCache ( extents, width, height, level, image );
-  #endif
 #endif
 
   return image;
@@ -481,13 +451,9 @@ std::string RasterLayerGDAL::_cacheDirectory() const
 std::string RasterLayerGDAL::_cacheFileExtension() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  //const std::string ext ( Usul::File::extension ( _filename ) );
-  //return ext;
 
   // Always save as tiff.
-  return ".tif";
+  return "tif";
 }
 
 
@@ -500,39 +466,39 @@ std::string RasterLayerGDAL::_cacheFileExtension() const
 GDALDataset * RasterLayerGDAL::_createDataset ( const Extents& e, unsigned int width, unsigned int height, int bands, unsigned int type )
 {
   // Make an in memory raster.
-  std::string format ( "MEM" );
-  
+  const std::string format ( "MEM" );
+
   // Find a driver for in memory raster.
   GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName ( format.c_str() ) );
-  
+
   // Return now if we didn't find a driver.
   if ( 0x0 == driver )
     return 0x0;
-  
+
   // Create the file.
-  GDALDataset *data ( driver->Create( Usul::File::Temp::file().c_str(), width, height, bands, static_cast<GDALDataType> ( type ), 0x0 ) );
-  
+  GDALDataset *data ( driver->Create ( Usul::File::Temp::file().c_str(), width, height, bands, static_cast<GDALDataType> ( type ), 0x0 ) );
+
   if ( 0x0 == data )
     return 0x0;
-  
+
   // Make the transform.
   OGRSpatialReference dst;
   dst.SetWellKnownGeogCS ( "WGS84" );
-  
+
   // Create the geo transform.
   std::vector<double> geoTransform ( 6 );
   RasterLayerGDAL::_createGeoTransform ( geoTransform, e, width, height );
-  
+
   if ( CE_None != data->SetGeoTransform( &geoTransform[0] ) )
     return 0x0;
-  
+
   char *wkt ( 0x0 );
   if ( CE_None != dst.exportToWkt ( &wkt ) )
     return 0x0;
-    
+
   if ( CE_None != data->SetProjection( wkt ) )
     return 0x0;
-  
+
   return data;
 }
 
@@ -568,4 +534,87 @@ void RasterLayerGDAL::_createGeoTransform ( GeoTransform &transfrom, const Exten
   transfrom[3] = ur[1];          // top left y
   transfrom[4] = 0;              // rotation, 0 if image is "north up"
   transfrom[5] = -yResolution;   // n-s pixel resolution
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create options for warping to destination dataset.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+GDALWarpOptions* RasterLayerGDAL::_createWarpOptions ( GDALDataset* src, GDALDataset* dst, int bands )
+{
+  if ( 0x0 == src || 0x0 == dst )
+    return 0x0;
+
+  // Create the options.
+  GDALWarpOptions *options ( ::GDALCreateWarpOptions() );
+
+  try
+  {
+    int hasNoData ( FALSE );
+
+    // Get the no data value.
+    const double noDataValue ( src->GetRasterBand ( 1 )->GetNoDataValue( &hasNoData ) );
+
+    if ( TRUE == hasNoData )
+    {
+      // Set the no data value.
+      for ( int i = 1; i <= bands; ++i )
+      {
+        GDALRasterBand* band1 ( dst->GetRasterBand ( i ) );
+        band1->SetNoDataValue( noDataValue );
+      }
+
+      // Initialize with no data.
+      char ** warpOptions = 0x0;
+      warpOptions = ::CSLSetNameValue ( warpOptions, "INIT_DEST", "NO_DATA" );
+      warpOptions = ::CSLSetNameValue ( warpOptions, "UNIFIED_SRC_NODATA", "YES" );
+      options->papszWarpOptions = warpOptions;
+
+      options->padfDstNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+      options->padfDstNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+      options->padfSrcNoDataReal = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+      options->padfSrcNoDataImag = (double*) ( CPLMalloc(sizeof(double) * bands ) );
+    }
+
+    // We want cubic B-spline interpolation.
+    options->eResampleAlg = GRA_Bilinear;
+
+    options->hSrcDS = src;
+    options->hDstDS = dst;
+
+    options->nBandCount = bands;
+    options->panSrcBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
+    options->panDstBands = (int *) CPLMalloc(sizeof(int) * options->nBandCount );
+
+    for ( int i = 0; i < bands; ++i )
+    {
+      options->panSrcBands[i] = i + 1;
+      options->panDstBands[i] = i + 1;
+
+      if ( TRUE == hasNoData )
+      {
+        options->padfSrcNoDataReal[i] = noDataValue;
+        options->padfDstNoDataImag[i] = noDataValue;
+        options->padfDstNoDataReal[i] = noDataValue;
+        options->padfSrcNoDataImag[i] = noDataValue;
+      }
+    }
+  }
+  catch ( const std::exception& e )
+  {
+    // Destroy options and re-throw;
+    ::GDALDestroyWarpOptions ( options );
+    throw e;
+  }
+  catch ( ... )
+  {
+    // Destroy options and re-throw;
+    ::GDALDestroyWarpOptions ( options );
+    throw;
+  }
+
+  return options;
 }

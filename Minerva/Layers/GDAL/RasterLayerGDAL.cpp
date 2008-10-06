@@ -238,22 +238,33 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   // Print progress to the terminal.
   options->pfnProgress = GDALTermProgress;
 
-  // Establish reprojection transformer. 
-  options->pTransformerArg = GDALCreateGenImgProjTransformer( data, 
+  // Establish reprojection transformer.
+  void *genImgTransformerArg = GDALCreateGenImgProjTransformer( data, 
                                                               GDALGetProjectionRef ( data ), 
                                                               tile, 
                                                               GDALGetProjectionRef ( tile ), 
                                                               TRUE, 1000.0, 0 );
   
   // Make sure we got a transformer.
-  if ( 0x0 == options->pTransformerArg )
+  if ( 0x0 == genImgTransformerArg )
     return 0x0;
 
   // Make sure the transformer is destroyed.
-  Usul::Scope::Caller::RefPtr destroyTransformer ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( options->pTransformerArg, GDALDestroyGenImgProjTransformer ) ) );
-  
+  Usul::Scope::Caller::RefPtr destroyTransformer ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( genImgTransformerArg, GDALDestroyGenImgProjTransformer ) ) );
+
+#if 1
+  options->pTransformerArg = genImgTransformerArg;
   options->pfnTransformer = GDALGenImgProjTransform;
+#else
+
+  // Make an approximate image transformer.
+  void *approxImgTransformerArg = GDALCreateApproxTransformer( GDALGenImgProjTransform, genImgTransformerArg, 0.125 );
+  Usul::Scope::Caller::RefPtr destroyTransformer2 ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( approxImgTransformerArg, ::GDALDestroyApproxTransformer ) ) );
   
+  options->pTransformerArg = approxImgTransformerArg;
+  options->pfnTransformer = GDALApproxTransform;
+
+#endif
   // Check for canceled before starting long running task below...
   BaseClass::_checkForCanceledJob ( job );
 
@@ -596,10 +607,11 @@ GDALWarpOptions* RasterLayerGDAL::_createWarpOptions ( GDALDataset* src, GDALDat
 
       if ( TRUE == hasNoData )
       {
+        // Setting the imaginary no data value causes the warping to create bad images.
         options->padfSrcNoDataReal[i] = noDataValue;
-        options->padfDstNoDataImag[i] = noDataValue;
+        options->padfDstNoDataImag[i] = 0.0; //noDataValue;
         options->padfDstNoDataReal[i] = noDataValue;
-        options->padfSrcNoDataImag[i] = noDataValue;
+        options->padfSrcNoDataImag[i] = 0.0; //noDataValue;
       }
     }
   }

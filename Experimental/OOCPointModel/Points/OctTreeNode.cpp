@@ -67,6 +67,10 @@ public:
          // Get the size of the lod file
          _fileSize = Usul::File::size( _path );
          
+         if( _fileSize != 0 )
+         {
+           std::cout << "";
+         }
          // number of points in the file
          float np ( static_cast< float > ( _fileSize ) );
          np /= sizeof( OctTreeNode::Point );
@@ -121,7 +125,14 @@ public:
           traverse( node, nv );
           return;
         }
-        
+        if( vertices->size() == 0 )
+        {
+          std::cout << "";
+        }
+        if( _fileSize > 0 )
+        {
+          std::cout << "";
+        }
         if( vertices->size() == 0 && _fileSize > 0 )
         {
           // If my job isn't valid, create it
@@ -513,7 +524,6 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
 
   
   // Add the geode with the points to the LOD
-#if 1
   {
     // Add this node's points to the LOD
     GeodePtr geode ( new osg::Geode );
@@ -523,7 +533,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
     geode->addDrawable( geometry.get() );
 
     // LOD name and level for this geode
-    std::string lodName ( Usul::Strings::format( _workingDir, "/", _name, "_points" ) );
+    std::string lodName ( Usul::Strings::format( _workingDir, _name, "_points" ) );
 
     // Add the cull callback so vertices can be added and deleted at run time
     geode->setCullCallback( new CustomLODCallback( *_jobManager, lodName, geode.get(), lodLevel, _bb ) );
@@ -535,7 +545,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
     float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
     if( lodLevel == numLODs - 1 )
     {
-      maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), std::numeric_limits< double >::max() );
+      maxDistance = Usul::Math::maximum( float( maxLevel * _distance ), std::numeric_limits< float >::max() );
     }
 
     lod->addChild( geode.get(), minDistance, maxDistance );
@@ -544,7 +554,7 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
   // Add the children to the LOD
   {
   // Create a group to hold the children
-    GroupPtr  group ( new osg::Group );
+    GroupPtr group ( new osg::Group );
 
     // Loop through the children and add them to the group
     for( unsigned int i = 0; i < _children.size(); ++i )
@@ -560,7 +570,8 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
     
     // Dynamically create lod level distance definitions
     float minLevel ( 0.0f );
-    float maxLevel ( static_cast< float > ( this->getNodeDepth() ) / static_cast< float > ( this->getTreeDepth() ) );
+    float maxLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( numLODs ) );
+   // float maxLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( numLods ) );
     float minDistance = Usul::Math::maximum( ( minLevel * _distance ), this->getBoundingRadius() * minLevel );
     float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
 
@@ -568,68 +579,6 @@ osg::Node* OctTreeNode::buildScene( Unknown *caller, Unknown *progress )
     lod->addChild( group.get(), minDistance, maxDistance );
   }
   this->addChild( lod.get() );
-#else
-  if( true == _children.empty() )
-  {
-    for( unsigned int lodLevel = 0; lodLevel < numLODs; ++lodLevel )
-    {
-      GeodePtr geode ( new osg::Geode );
-
-      osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-      geometry->setVertexArray( new osg::Vec3Array );
-      geode->addDrawable( geometry.get() );
-
-      // LOD name and level for this geode
-      std::string lodName ( Usul::Strings::format( _workingDir, _name, "LOD", lodLevel ) );
-
-      // Add the cull callback so vertices can be added and deleted at run time
-      geode->setCullCallback( new CustomLODCallback( *_jobManager, lodName, geode.get(), lodLevel, _bb ) );
-
-      // Dynamically create lod level distance definitions
-      float minLevel ( static_cast< float > ( lodLevel ) / static_cast< float > ( numLODs ) );
-      float maxLevel ( ( static_cast< float > ( lodLevel ) + 1.0f ) / static_cast< float > ( numLODs ) );
-      float minDistance = Usul::Math::maximum( ( minLevel * _distance ), this->getBoundingRadius() * minLevel );
-      float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
-      if( lodLevel == numLODs - 1 )
-      {
-        maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), std::numeric_limits< double >::max() );
-      }
-
-      lod->addChild( geode.get(), minDistance, maxDistance );
-    }
-
-    // Add lod to this node
-    this->addChild ( lod.get() );
-     
-  }
-  else
-  { 
-    // Create a group to hold the children
-    GroupPtr  group ( new osg::Group );
-
-    // Loop through the children and add them to the group
-    for( unsigned int i = 0; i < _children.size(); ++i )
-    {
-      if( true == _children.at( i ).valid() )
-      {
-        // Add a child to the group
-        group->addChild( _children.at( i )->buildScene() );
-
-        //this->addChild( _children.at( i )->buildScene() );
-      }
-    } 
-    
-    // Dynamically create lod level distance definitions
-    float minLevel ( 0.0f );
-    float maxLevel ( static_cast< float > ( this->getNodeDepth() ) / static_cast< float > ( this->getTreeDepth() ) );
-    float minDistance = Usul::Math::maximum( ( minLevel * _distance ), this->getBoundingRadius() * minLevel );
-    float maxDistance = Usul::Math::maximum( ( maxLevel * _distance ), this->getBoundingRadius() * maxLevel );
-
-    // Add the group to the LOD
-    lod->addChild( group.get(), minDistance, maxDistance );
-  } 
-#endif
-  // Add the LOD to the Octree Node
 
   return this;//group.release();
 }
@@ -891,11 +840,11 @@ void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned in
     Usul::Types::Uint64 nameSize( _name.size() );
 
     // write the record information
-    Usul::Types::Uint64 recordSize ( ( sizeof( Usul::Types::Uint64 ) * 2 ) + nameSize );
+    Usul::Types::Uint64 recordSize ( ( sizeof( Usul::Types::Uint64 ) * 2 ) + nameSize + sizeof( Usul::Types::Uint32 ) );
     this->_writeRecord( ofs, PointSetRecords::Record::OOC_VERTICES, recordSize );
 
     // Write the node name
-    this->_writeOOCNode( ofs );
+    this->_writeOOCNodeInfo( ofs );
 
     // Update progress
     ++numerator;
@@ -903,8 +852,15 @@ void OctTreeNode::write( std::ofstream* ofs, unsigned int numerator, unsigned in
   }
   else 
   {
+    // Size of the node's name
+    Usul::Types::Uint64 nameSize( _name.size() );
+
     // write the record information    
-    this->_writeRecord( ofs, PointSetRecords::Record::CHILDREN, 0 );
+    Usul::Types::Uint64 recordSize ( ( sizeof( Usul::Types::Uint64 ) * 2 ) + nameSize + sizeof( Usul::Types::Uint32 ) );
+    this->_writeRecord( ofs, PointSetRecords::Record::CHILDREN, recordSize );
+
+    // Write the node information
+    this->_writeOOCNodeInfo( ofs );
 
     // tell children to write their information
     for( unsigned int i = 0; i < _children.size(); ++i )
@@ -961,16 +917,8 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
       case PointSetRecords::Record::OOC_VERTICES:
       {
         // Read the name from the restart file
-        this->name( _readOOCNode( ifs ) );
+        this->name( _readOOCNodeInfo( ifs ) );
 
-        // If we have points
-        //if( _numPoints > 0 )
-        //{
-        //  // Create the LOD levels for this node
-        //  this->_createLodLevels();
-        //}
-
-        // Update progress
         ++_numerator;
         document->setProgressBar( true, _numerator, _denominator, progress );
         break;
@@ -983,6 +931,9 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
       }
       case PointSetRecords::Record::CHILDREN:
       {
+        // Read the name from the restart file
+        this->name( _readOOCNodeInfo( ifs ) );
+
         // tell children to read
         _children.resize( 8 );
         for( unsigned int i = 0; i < _children.size(); ++i )
@@ -990,7 +941,10 @@ void OctTreeNode::read( std::ifstream* ifs, Usul::Documents::Document* document,
           _children.at( i ) = new OctTreeNode( _jobManager, _streamBuffer, _tempPath );
           _children.at( i )->workingDir( this->workingDir() );
           _children.at( i )->distance( _distance );
+          _children.at( i )->setTreeDepth( this->getTreeDepth() );
+          //_children.at( i )->setNodeDepth( this->getNodeDepth() + 1 );
           _children.at( i )->read( ifs, document, caller, progress );
+
         }
         break;
       }
@@ -1166,7 +1120,7 @@ void OctTreeNode::_readPoints( std::ifstream* ifs )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string OctTreeNode::_readOOCNode( std::ifstream* ifs )
+std::string OctTreeNode::_readOOCNodeInfo( std::ifstream* ifs )
 {
   Guard guard ( this );
   
@@ -1181,8 +1135,16 @@ std::string OctTreeNode::_readOOCNode( std::ifstream* ifs )
   std::vector<char> name ( size );
   ifs->read( &name[0], name.size() );
 
+  // Read the node depth
+  Usul::Types::Uint32 depth( 0 );
+  ifs->read( reinterpret_cast< char* > ( &depth), sizeof( Usul::Types::Uint32 ) );
+  
+  // Set the node's depth
+  this->setNodeDepth( depth );
+
   return std::string ( name.begin(), name.end() );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -1190,7 +1152,7 @@ std::string OctTreeNode::_readOOCNode( std::ifstream* ifs )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OctTreeNode::_writeOOCNode( std::ofstream* ofs ) const
+void OctTreeNode::_writeOOCNodeInfo( std::ofstream* ofs ) const
 {
   Guard guard ( this );
 
@@ -1207,6 +1169,10 @@ void OctTreeNode::_writeOOCNode( std::ofstream* ofs ) const
   // write the name
   ofs->write( _name.c_str(), nameSize );
 
+  //write the node depth
+  Usul::Types::Uint32 depth ( _nodeDepth );
+  ofs->write( reinterpret_cast< char* > ( &depth ), sizeof( Usul::Types::Uint32 ) );
+  
 }
 
 

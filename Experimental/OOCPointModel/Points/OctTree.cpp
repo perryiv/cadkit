@@ -234,13 +234,14 @@ void OctTree::read ( std::ifstream* ifs, Usul::Documents::Document* document, Un
   Guard guard ( this->mutex() );
 
    // Read and set the number of leaf nodes
-  Usul::Types::Uint64 numLeafNodes ( 0 );
-  ifs->read ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( Usul::Types::Uint64 ) );
-  _tree->numLeafNodes( numLeafNodes );
+  Usul::Types::Uint64 treeDepth ( 0 );
+  ifs->read ( reinterpret_cast< char* > ( &treeDepth ), sizeof( Usul::Types::Uint64 ) );
+  _tree->setTreeDepth( treeDepth );
 
   // Read the number of lods
   Usul::Types::Uint64 numLods ( 0 );
   ifs->read ( reinterpret_cast< char* > ( &numLods ), sizeof( Usul::Types::Uint64 ) );
+  
 
   // Read and set the lods
   std::vector< Usul::Types::Uint16 > lodDefinitions ( numLods );
@@ -253,7 +254,7 @@ void OctTree::read ( std::ifstream* ifs, Usul::Documents::Document* document, Un
   _tree->distance( static_cast< double > ( d ) );
 
   // Initialize progress
-  _tree->initSplitProgress( 0, numLeafNodes );
+  _tree->initSplitProgress( 0, treeDepth );
  
   _tree->read( ifs, document, caller, progress );
 
@@ -271,8 +272,8 @@ void OctTree::write( std::ofstream* ofs, Usul::Documents::Document* document, Un
   Guard guard ( this );
   
   // Write the number of leaf nodes
-  Usul::Types::Uint64 numLeafNodes ( _tree->numLeafNodes() );
-  ofs->write ( reinterpret_cast< char* > ( &numLeafNodes ), sizeof( Usul::Types::Uint64 ) );
+  Usul::Types::Uint64 treeDepth ( _tree->getTreeDepth() );
+  ofs->write ( reinterpret_cast< char* > ( &treeDepth ), sizeof( Usul::Types::Uint64 ) );
 
   // Write the lod definitions
   std::vector< Usul::Types::Uint16 > lodDefinitions ( _tree->getLodDefinitions() );
@@ -288,7 +289,7 @@ void OctTree::write( std::ofstream* ofs, Usul::Documents::Document* document, Un
   Usul::Types::Float64 d ( _tree->getBoundingRadius() );
   ofs->write ( reinterpret_cast< char* > ( &d ), sizeof( Usul::Types::Float64 ) );
 
-  _tree->write( ofs, 0, numLeafNodes, document, caller, progress );
+  _tree->write( ofs, 0, treeDepth, document, caller, progress );
 }
 
 

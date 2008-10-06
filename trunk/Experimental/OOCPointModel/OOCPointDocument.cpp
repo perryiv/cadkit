@@ -176,7 +176,7 @@ bool OOCPointDocument::canExport ( const std::string &file ) const
 bool OOCPointDocument::canInsert ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "point3d" || ext == "p3dbf" );
+  return ( ext == "ap3d" || ext == "oocp3d" );
 }
 
 
@@ -189,7 +189,7 @@ bool OOCPointDocument::canInsert ( const std::string &file ) const
 bool OOCPointDocument::canOpen ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "psxml" || ext == "point3d" || ext == "p3dbf" );
+  return ( ext == "psxml" || ext == "ap3d" || ext == "oocp3d" );
 }
 
 
@@ -202,7 +202,7 @@ bool OOCPointDocument::canOpen ( const std::string &file ) const
 bool OOCPointDocument::canSave ( const std::string &file ) const
 {
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( file ) ) );
-  return ( ext == "p3dbf" );
+  return ( ext == "oocp3d" );
 }
 
 
@@ -282,7 +282,7 @@ void OOCPointDocument::_read ( const std::string &name, Unknown *caller, Unknown
 {
 
   // Binary restart filename
-  std::string restartFilename ( Usul::Strings::format ( Usul::File::directory( name, true ), Usul::File::base( name ), ".p3dbf" ) );
+  std::string restartFilename ( Usul::Strings::format ( Usul::File::directory( name, true ), Usul::File::base( name ), ".oocp3d" ) );
 
   // TODO:
   // Check to see if the binary restart file exists.  
@@ -292,7 +292,7 @@ void OOCPointDocument::_read ( const std::string &name, Unknown *caller, Unknown
   // Get the extension of the file to load
   const std::string ext ( Usul::Strings::lowerCase ( Usul::File::extension ( name ) ) );
 
-  if ( "point3d" == ext )
+  if ( "ap3d" == ext )
   {
     // Temporary file name.
     const std::string binaryFilename ( Usul::File::directory( name, true ) + Usul::File::base( name ) + ".bp3d" );
@@ -333,7 +333,7 @@ void OOCPointDocument::_read ( const std::string &name, Unknown *caller, Unknown
     // remove.remove( false );
  
   }
-  else if( "p3dbf" == ext )
+  else if( "oocp3d" == ext )
   {
     // read the binary restart file
     this->_readBinaryRestartFile( name, caller, progress );
@@ -391,8 +391,8 @@ void OOCPointDocument::clear ( Usul::Interfaces::IUnknown *caller )
 OOCPointDocument::Filters OOCPointDocument::filtersInsert() const
 {
   Filters filters;
-  filters.push_back ( Filter ( "Ascii 3D Point Files (*.point3d )", "*.point3d" ) );
-  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
+  filters.push_back ( Filter ( "Ascii 3D Point Files (*.ap3d )", "*.ap3d" ) );
+  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.oocp3d )", "*.oocp3d" ) );
   return filters;
 }
 
@@ -406,8 +406,8 @@ OOCPointDocument::Filters OOCPointDocument::filtersInsert() const
 OOCPointDocument::Filters OOCPointDocument::filtersOpen() const
 {
   Filters filters;
-  filters.push_back ( Filter ( "Ascii 3D Point Files (*.point3d )", "*.point3d" ) );
-  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
+  filters.push_back ( Filter ( "Ascii 3D Point Files (*.ap3d )", "*.ap3d" ) );
+  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.oocp3d )", "*.oocp3d" ) );
   filters.push_back ( Filter ( "Point Set Document XML (*.psxml )", "*.psxml" ) );
   return filters;
 }
@@ -422,7 +422,7 @@ OOCPointDocument::Filters OOCPointDocument::filtersOpen() const
 OOCPointDocument::Filters OOCPointDocument::filtersSave() const
 {
   Filters filters;
-  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.p3dbf )", "*.p3dbf" ) );
+  filters.push_back ( Filter ( "Point Set Binary Restart Files (*.oocp3d )", "*.oocp3d" ) );
   return filters;
 }
 

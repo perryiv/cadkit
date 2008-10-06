@@ -144,13 +144,14 @@ protected:
   void                              _writePoints( std::ofstream* ofs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 ) const;
   void                              _writeNodeInfo( std::ofstream* ofs ) const;
   void                              _writeRecord( std::ofstream* ofs, Usul::Types::Uint32 type, Usul::Types::Uint64 size ) const;
-  void                              _writeOOCNode( std::ofstream* ofs ) const;
+  void                              _writeOOCNodeInfo( std::ofstream* ofs ) const;
 
   void                              _readNodeInfo( std::ifstream* ifs );
   void                              _readPoints( std::ifstream* ifs );
   Usul::Types::Uint64               _readToRecord( std::ifstream* ifs, Usul::Types::Uint32 type );
   void                              _readOctreeRecord ( std::ifstream* ifs, Usul::Documents::Document* document, Unknown *caller = 0x0, Unknown *progress = 0x0 );
-  std::string                       _readOOCNode( std::ifstream* ifs );
+  std::string                       _readOOCNodeInfo( std::ifstream* ifs );
+  
 
   bool                              _contains( OctTreeNode::Point p );
   void                              _insertOrCreateChildren( OctTreeNode::Point p );

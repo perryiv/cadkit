@@ -34,6 +34,7 @@
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
+#include "Minerva/Interfaces/IRefreshData.h"
 
 #include "MenuKit/Button.h"
 #include "MenuKit/ToggleButton.h"
@@ -2149,6 +2150,12 @@ void MinervaDocument::_buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces
 
     layerMenu->append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( node, "This Layer" ) ) );
     layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Goto This Layer", UA::bind1<void> ( Usul::Interfaces::IUnknown::QueryPtr ( node ).get(), UA::memberFunction<void> ( this, &MinervaDocument::lookAtLayer ) ), UC::TrueFunctor() ) ) );
+
+    Minerva::Interfaces::IRefreshData::QueryPtr rd ( node );
+    if ( rd.valid() )
+    {
+      layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh This Layer", UA::memberFunction<void> ( rd, &Minerva::Interfaces::IRefreshData::refreshData ), UC::TrueFunctor() ) ) );
+    }
 
     menu.append ( layerMenu.get() );
   }

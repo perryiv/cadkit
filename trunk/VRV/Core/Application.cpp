@@ -14,7 +14,6 @@
 #include "VRV/Core/Exceptions.h"
 #include "VRV/Common/Buttons.h"
 #include "VRV/Commands/LoadDocument.h"
-#include "Usul/Commands/Command.h"
 #include "VRV/Common/Constants.h"
 #include "VRV/Jobs/SaveImage.h"
 #include "VRV/Core/FunctorHelpers.h"
@@ -31,6 +30,7 @@
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
 #include "Usul/CommandLine/Options.h"
+#include "Usul/Commands/Command.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
 #include "Usul/Commands/ShadeModel.h"
@@ -2713,7 +2713,7 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
   USUL_TRACE_SCOPE;
 
   // reinitialize when button 10 is pressed
-#if 0
+#if 1
   {
     Usul::Interfaces::IButtonID::QueryPtr button ( caller );
     if ( button.valid () )
@@ -3101,7 +3101,17 @@ void Application::setStatusBarText ( const std::string &text, bool force )
 
 bool Application::_isHeadNode() const
 {
-	return Usul::System::Host::name() == this->preferences()->headNodeMachineName();
+  // Get the host name.
+  const std::string hostname ( Usul::System::Host::name() );
+
+  // Get what machine is the head node.
+  std::string headNode ( this->preferences()->headNodeMachineName() );
+  
+  // Make sure it is all small letters.
+  std::transform ( headNode.begin(), headNode.end(), headNode.begin(), ::tolower );
+
+  // Is this the head node?
+	return hostname == headNode;
 }
 
 

@@ -46,6 +46,7 @@
 #endif
 #endif
 
+// Auto-link with these libraries.
 #pragma comment(lib, VPR_LIB)
 #pragma comment(lib, VRJ_LIB)
 #pragma comment(lib, CPPDOM_LIB)

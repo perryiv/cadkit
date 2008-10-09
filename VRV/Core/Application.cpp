@@ -122,7 +122,7 @@ typedef Usul::Registry::Database Reg;
 ///////////////////////////////////////////////////////////////////////////////
 
 Application::Application() : 
-  vrj::GlApp( vrj::Kernel::instance() ),
+  BaseClass(),
   _mutex             (),
   _root              ( new osg::Group ),
   _navBranch         ( new osg::MatrixTransform ),
@@ -1035,43 +1035,6 @@ double Application::getTimeSinceStart()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize this instance.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::init()
-{
-  bool stop ( false );
-
-  try
-  {
-    this->_init();
-  }
-
-  catch ( const std::exception &e )
-  {
-    std::cout << "Error 1082603967: "
-              << "Exception generated while initializing."
-              << "\n\tWhat: " << e.what()
-              << std::endl;
-    stop = true;
-  }
-  catch ( ... )
-  {
-    std::cout << "Error 1082603859: "
-              << "Unknown exception generated while initializing." 
-              << std::endl;
-    stop = true;
-  }
-
-  // Are you supposed to stop?
-  if ( stop )
-    vrj::Kernel::instance()->stop();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Initialize the application.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1079,6 +1042,9 @@ void Application::init()
 void Application::_init()
 {
   USUL_TRACE_SCOPE;
+
+  // Call the base class first.
+  BaseClass::_init();
 
   // Set the scene-viewer's scene.
   this->setSceneData ( _root.get() );
@@ -1215,18 +1181,6 @@ void Application::_init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::preFrame()
-{
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_preFrame ), "3669056808" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called before the frame.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::_preFrame()
 {
   USUL_TRACE_SCOPE;
@@ -1342,18 +1296,6 @@ void Application::_preFrame()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::latePreFrame()
-{
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_latePreFrame ), "1897051329" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called after preFrame, but before the frame.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Application::_latePreFrame()
 {
   USUL_TRACE_SCOPE;
@@ -1382,18 +1324,6 @@ void Application::_latePreFrame()
     // syncronize changes required by the DatabasePager thread to the scene graph
     _databasePager->updateSceneGraph( _framestamp->getReferenceTime() );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Called when the frame is done.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::postFrame()
-{
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_postFrame ), "2751540437" );
 }
 
 

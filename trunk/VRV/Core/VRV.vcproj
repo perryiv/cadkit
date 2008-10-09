@@ -238,6 +238,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\BaseApplication.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\BaseApplication.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Exceptions.h"
 					>
 				</File>

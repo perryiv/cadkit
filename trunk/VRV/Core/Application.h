@@ -13,6 +13,7 @@
 
 #include "VRV/Export.h"
 #include "VRV/Prefs/Settings.h"
+#include "VRV/Core/BaseApplication.h"
 #include "VRV/Core/SharedData.h"
 #include "VRV/Devices/JoystickDevice.h"
 #include "VRV/Devices/ButtonGroup.h"
@@ -107,7 +108,7 @@ namespace VRV {
 namespace Core {
 
 
-class VRV_EXPORT Application : public vrj::GlApp,
+class VRV_EXPORT Application : public VRV::Core::BaseApplication,
                                public VRV::Interfaces::IModelAdd,
                                public VRV::Interfaces::INavigationScene,
                                public Usul::Interfaces::IModelsScene,
@@ -146,7 +147,7 @@ class VRV_EXPORT Application : public vrj::GlApp,
 {
 public:
   // Typedefs.
-  typedef vrj::GlApp                           BaseClass;
+  typedef VRV::Core::BaseApplication           BaseClass;
   typedef OsgTools::Render::Renderer           Renderer;
   typedef Renderer::RefPtr                     RendererPtr;
   typedef std::vector < RendererPtr >          Renderers;
@@ -289,19 +290,19 @@ public:
   void                    menuSceneShowHide ( bool show );
 
   /// Get/Set the menu.
-  Menu *                  menu ();
-  const Menu *            menu () const;
+  Menu *                  menu();
+  const Menu *            menu() const;
   void                    menu ( Menu *);
 
   /// Get the status bar.
-  Menu *                  statusBar ();
-  const Menu *            statusBar () const;
+  Menu *                  statusBar();
+  const Menu *            statusBar() const;
 
   // Get the begining of the favorites.
-  FavoriteIterator        favoritesBegin ();
+  FavoriteIterator        favoritesBegin();
 
   // Get the end of the favorites.
-  FavoriteIterator        favoritesEnd ();
+  FavoriteIterator        favoritesEnd();
 
   /// Toggle time based rendering.
   void                    timeBased ( bool b );
@@ -439,7 +440,6 @@ protected:
   void                          _increaseSpeedTen ();
   void                          _decreaseSpeedTen ();
 
-  
   // Handle the events, if any.
   bool                          _handleMenuEvent ( unsigned long id );
   bool                          _handleIntersectionEvent ( unsigned long id );
@@ -645,15 +645,11 @@ private:
   // Don't allow derived classes to implement these VR Juggler functions.
   // Implement the _function instead.  
   // This is to ensure that the functions are wrapped in a try/catch.
-  virtual void            init();
   virtual void            contextInit();
-  virtual void            preFrame();
-  virtual void            latePreFrame();
   virtual void            contextPreDraw();
   virtual void            contextPostDraw();
   virtual void            draw();
   virtual void            contextClose();
-  virtual void            postFrame();
 
   // Typedefs.
   typedef osg::ref_ptr <osg::MatrixTransform>              MatTransPtr;

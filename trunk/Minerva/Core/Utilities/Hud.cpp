@@ -28,6 +28,8 @@
 #include "osg/MatrixTransform"
 #include "osg/Version"
 
+#include "boost/format.hpp"
+
 using namespace Minerva::Core::Utilities;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,7 +190,10 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
     const bool showKilometers ( _eyeAltitude >= 1000.0 );
     const double display ( _eyeAltitude / ( showKilometers ? 1000.0 : 1.0 ) );
     const std::string units ( showKilometers ? "km" : "meters" );
-    _eyeAltitudeText->setText ( Usul::Strings::format ( "Eye: ", display, " ", units ) );
+    const std::string format ( showKilometers ? "Eye: %10.0f %s" : "Eye: %6.4f %s" );
+    boost::format f ( format );
+    f % display % units;
+    _eyeAltitudeText->setText ( f.str() );
     _eyeAltitudeText->update();
 
     osg::BoundingBox bb ( _eyeAltitudeText->computeBound() );

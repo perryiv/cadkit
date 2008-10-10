@@ -903,6 +903,43 @@ void KmlLayer::timerNotify ( TimerID )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Read the kml.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  class ReadJob : public Usul::Jobs::Job
+  {
+  public:
+    
+    typedef Usul::Jobs::Job BaseClass;
+    
+    ReadJob ( KmlLayer *layer ) : BaseClass(), _layer ( layer )
+    {
+    }
+    
+  protected:
+    
+    virtual ~ReadJob()
+    {
+    }
+    
+    virtual void _started()
+    {
+      if ( _layer.valid() )
+        _layer->read ( 0x0, 0x0 );
+    }
+    
+  private:
+    
+    KmlLayer::RefPtr _layer;
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Force a refresh of data (IRefreshData).
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -916,6 +953,22 @@ void KmlLayer::refreshData()
   {
     // Launch a job to update.
     this->_launchUpdateLinkJob();
+  }
+  
+  // Launch a job to read.
+  else
+  {
+    // Create a job to update the file.
+    Usul::Jobs::Job::RefPtr job ( new Detail::ReadJob ( this ) );
+    
+    if ( true == job.valid() )
+    {
+      // Set the reading flag now so we don't launch another job before this one starts.
+      this->reading ( true );
+      
+      // Add job to manager.
+      Usul::Jobs::Manager::instance().addJob ( job.get() );
+    }
   }
 }
 

@@ -128,8 +128,6 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
   case Minerva::Interfaces::IDirtyScene::IID:
     return static_cast < Minerva::Interfaces::IDirtyScene* > ( this );
-  case Usul::Interfaces::ITreeNode::IID:
-    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
   case Minerva::Interfaces::IVectorLayer::IID:
@@ -579,32 +577,6 @@ Usul::Interfaces::ITreeNode * Container::getChildNode ( unsigned int which )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the name (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Container::setTreeNodeName ( const std::string & s )
-{
-  USUL_TRACE_SCOPE;
-  this->name ( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string Container::getTreeNodeName() const
-{
-  USUL_TRACE_SCOPE;
-  return this->name();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the state (IBooleanState).
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -660,19 +632,6 @@ void Container::deserialize ( const XmlTree::Node &node )
     // Add the builder.
     _builders.add ( *iter );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get this as an IUnknown.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* Container::asUnknown()
-{
-  USUL_TRACE_SCOPE;
-  return this->queryInterface( Usul::Interfaces::IUnknown::IID );
 }
 
 

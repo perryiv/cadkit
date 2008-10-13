@@ -823,10 +823,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Utilities\Composite.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Utilities\DirtyTiles.cpp"
 						>
 					</File>
@@ -840,6 +836,10 @@
 					</File>
 					<File
 						RelativePath=".\Utilities\Download.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Utilities\ElevationGrid.h"
 						>
 					</File>
 					<File
@@ -859,19 +859,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Utilities\Resample.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Utilities\SkyDome.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\Utilities\SkyDome.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Utilities\SubRegion.h"
 						>
 					</File>
 				</Filter>
@@ -884,6 +876,50 @@
 					</File>
 					<File
 						RelativePath=".\OSG\MatrixTransform.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Algorithms"
+					>
+					<File
+						RelativePath=".\Algorithms\Composite.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Algorithms\Resample.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Algorithms\ResampleElevation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Algorithms\ResampleElevation.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Algorithms\SubRegion.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Functions"
+					>
+					<File
+						RelativePath=".\Functions\CacheString.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Functions\CacheString.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Functions\ParameterizeExtents.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Functions\ParameterizeExtents.h"
 						>
 					</File>
 				</Filter>

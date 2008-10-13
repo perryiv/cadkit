@@ -12,6 +12,8 @@
 #include "Minerva/Core/Data/TimeSpan.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "Usul/File/Temp.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Safe.h"
 
@@ -28,6 +30,17 @@ USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( Feature::Extents );
 SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Feature::Extents );
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Feature, Feature::BaseClass );
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Registry sections.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  const std::string RASTER_LAYER_CACHE_DIR ( "raster_layer_cache_dir" );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -102,6 +115,8 @@ Usul::Interfaces::IUnknown* Feature::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
   case Minerva::Interfaces::IFeature::IID:
     return static_cast<Minerva::Interfaces::IFeature*> ( this );
+  case Usul::Interfaces::ITreeNode::IID:
+    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
@@ -144,10 +159,25 @@ void Feature::name ( const std::string& name )
   USUL_TRACE_SCOPE;
 
   // Set the name.
-  Usul::Threads::Safe::set ( this->mutex(), name, _name );
+  this->_nameSet ( name );
 
   // Notify any listeners that the data has changed.
   this->_notifyDataChnagedListeners();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::_nameSet ( const std::string& name )
+{
+  USUL_TRACE_SCOPE;
+
+  // Set the name.
+  Usul::Threads::Safe::set ( this->mutex(), name, _name );
 }
 
 
@@ -431,4 +461,93 @@ void Feature::_updateExtents ( Usul::Interfaces::IUnknown* unknown )
 Feature* Feature::feature()
 {
   return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the default cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::defaultCacheDirectory ( const std::string& dir )
+{
+  Usul::Registry::Database::instance()[Detail::RASTER_LAYER_CACHE_DIR] = dir;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the default cache directory.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Feature::defaultCacheDirectory()
+{
+  return Usul::Registry::Database::instance()[Detail::RASTER_LAYER_CACHE_DIR].get ( Usul::File::Temp::directory ( false ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the number of children (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Feature::getNumChildNodes() const
+{
+  USUL_TRACE_SCOPE;
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the child node (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::ITreeNode * Feature::getChildNode ( unsigned int which )
+{
+  USUL_TRACE_SCOPE;
+  return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Feature::setTreeNodeName ( const std::string & s )
+{
+  USUL_TRACE_SCOPE;
+  this->name( s );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name (ITreeNode).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Feature::getTreeNodeName() const
+{
+  USUL_TRACE_SCOPE;
+  return this->name();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get this as an IUnknown.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* Feature::asUnknown()
+{
+  USUL_TRACE_SCOPE;
+  return this->queryInterface( Usul::Interfaces::IUnknown::IID );
 }

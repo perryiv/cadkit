@@ -24,7 +24,6 @@
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ILayer.h"
-#include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Math/Vector2.h"
 
@@ -45,7 +44,6 @@ class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
                                  public Usul::Interfaces::IBuildScene,
                                  public Usul::Interfaces::ILayer,
                                  public Usul::Interfaces::IUpdateListener,
-                                 public Usul::Interfaces::ITreeNode,
                                  public Usul::Interfaces::IBooleanState,
                                  public Minerva::Interfaces::IDirtyScene,
                                  public Minerva::Interfaces::IVectorLayer,
@@ -77,9 +75,6 @@ public:
   };
   
   Container();
-  
-  /// Get this as an IUnknown.
-	virtual IUnknown*           asUnknown();
   
   /// Accept the visitor.
   virtual void                accept ( Minerva::Core::Visitor& visitor );
@@ -170,10 +165,6 @@ protected:
   
   // Get the child node (ITreeNode).
   virtual ITreeNode *         getChildNode ( unsigned int which );
-  
-  // Set/get the name (ITreeNode).
-  virtual void                setTreeNodeName ( const std::string & );
-  virtual std::string         getTreeNodeName() const;
   
   // Set/get the state (IBooleanState).
   virtual void                setBooleanState ( bool );

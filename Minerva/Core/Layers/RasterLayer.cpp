@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Layers/RasterLayer.h"
+#include "Minerva/Core/Functions/CacheString.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
@@ -21,9 +22,7 @@
 #include "Usul/Functions/GUID.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Job.h"
-#include "Usul/Math/Absolute.h"
 #include "Usul/Predicates/FileExists.h"
-#include "Usul/Registry/Database.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Split.h"
 #include "Usul/Threads/ThreadId.h"
@@ -44,29 +43,7 @@
 using namespace Minerva::Core::Layers;
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Declare serialization wrappers.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( RasterLayer::Extents );
-USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( RasterLayer::Extents );
-SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( RasterLayer::Extents );
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( RasterLayer, RasterLayer::BaseClass );
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Registry sections.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  const std::string RASTER_LAYER_CACHE_DIR ( "raster_layer_cache_dir" );
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -242,8 +219,6 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
     return static_cast<Usul::Interfaces::IRasterAlphas*> ( this );
   case Usul::Interfaces::IClonable::IID:
     return static_cast<Usul::Interfaces::IClonable*> ( this );
-  case Usul::Interfaces::ITreeNode::IID:
-    return static_cast < Usul::Interfaces::ITreeNode* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
   default:
@@ -290,58 +265,6 @@ bool RasterLayer::showLayer() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the number of children (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int RasterLayer::getNumChildNodes() const
-{
-  USUL_TRACE_SCOPE;
-  return 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the child node (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ITreeNode * RasterLayer::getChildNode ( unsigned int which )
-{
-  USUL_TRACE_SCOPE;
-  return 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayer::setTreeNodeName ( const std::string & s )
-{
-  USUL_TRACE_SCOPE;
-  this->name( s );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the name (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayer::getTreeNodeName() const
-{
-  USUL_TRACE_SCOPE;
-  return this->name();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the state (IBooleanState).
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -363,30 +286,6 @@ bool RasterLayer::getBooleanState() const
 {
   USUL_TRACE_SCOPE;
   return this->showLayer();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the default cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayer::defaultCacheDirectory ( const std::string& dir )
-{
-  Usul::Registry::Database::instance()[Detail::RASTER_LAYER_CACHE_DIR] = dir;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the default cache directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayer::defaultCacheDirectory()
-{
-  return Usul::Registry::Database::instance()[Detail::RASTER_LAYER_CACHE_DIR].get ( Usul::File::Temp::directory ( false ) );
 }
 
 
@@ -493,43 +392,6 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Return the string for the value.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  std::string makeString ( unsigned int value )
-  {
-    std::ostringstream out;
-    out << std::setw ( 3 ) << std::setfill ( '0' ) << value;
-    return out.str();
-  }
-  std::string makeString ( double value )
-  {
-    std::ostringstream out;
-
-    const double positive ( Usul::Math::absolute ( value ) );
-
-    const unsigned long integer ( static_cast < unsigned long > ( positive ) );
-    const double decimal ( positive - static_cast < double > ( integer ) );
-
-    const unsigned int bufSize ( 2047 );
-    char buffer[bufSize + 1];
-    ::sprintf ( buffer, "%0.15f", decimal );
-
-    std::string temp ( buffer );
-    boost::replace_first ( temp, "0.", " " );
-    boost::trim_left ( temp );
-
-    out << ( ( value >= 0 ) ? 'P' : 'N' ) << std::setfill ( '0' ) << std::setw ( 3 ) << integer << '_' << temp;
-    return out.str();
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the directory.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -537,13 +399,7 @@ namespace Helper
 std::string RasterLayer::_baseDirectory ( const std::string &cacheDir, unsigned int width, unsigned int height, unsigned int level ) const
 {
   USUL_TRACE_SCOPE;
-
-  const std::string resolution  ( Usul::Strings::format ( 'W', width, '_', 'H', height ) );
-  const std::string levelString ( Usul::Strings::format ( 'L', Helper::makeString ( level ) ) );
-
-  std::string dir ( Usul::Strings::format ( cacheDir, resolution, '/', levelString, '/' ) );
-  std::replace ( dir.begin(), dir.end(), '\\', '/' );
-  return dir;
+  return Minerva::Core::Functions::makeDirectoryString ( cacheDir, width, height, level );
 }
 
 
@@ -556,15 +412,7 @@ std::string RasterLayer::_baseDirectory ( const std::string &cacheDir, unsigned 
 std::string RasterLayer::_baseFileName ( Extents extents ) const
 {
   USUL_TRACE_SCOPE;
-
-  std::string file ( Usul::Strings::format ( 
-                     Helper::makeString ( extents.minimum()[0] ), '_', 
-                     Helper::makeString ( extents.minimum()[1] ), '_', 
-                     Helper::makeString ( extents.maximum()[0] ), '_', 
-                     Helper::makeString ( extents.maximum()[1] ) ) );
-  std::replace ( file.begin(), file.end(), '.', '-' );
-
-  return file;
+  return Minerva::Core::Functions::makeExtentsString ( extents );
 }
 
 

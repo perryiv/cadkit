@@ -21,7 +21,7 @@ namespace Algorithms {
   //  Get sub-region of image.
   //
   ///////////////////////////////////////////////////////////////////////////////
-  
+
   template<class PixelType>
   inline osg::Image* subRegion ( const osg::Image& image, const Usul::Math::Vec4d& region, GLenum pixelFormat, GLenum dataType )
   {

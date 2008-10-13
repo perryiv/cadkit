@@ -48,21 +48,26 @@
 #include "Usul/Trace/Print.h"
 #include "Usul/User/Directory.h"
 
-#include "boost/concept_check.hpp"
-
-#if 0
-#ifdef __GNUC__
-# include "Usul/Errors/Signals.h"
-# include <pthread.h>
-#endif
-#endif
-
 #include "QtCore/QDir"
+
+#include "boost/concept_check.hpp"
 
 #include <fstream>
 #include <sstream>
 
 using namespace CadKit::Helios::Core;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize and clean up debugging symbols.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace
+{
+  Usul::Diagnostics::SymbolManager _manageSymbols;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,7 +149,7 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper object to clean up after the application.
+//  Helper function to return the name of the plugin configuration file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

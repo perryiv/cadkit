@@ -52,6 +52,7 @@
 #include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/Exceptions/Exception.h"
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/File/Contents.h"
 #include "Usul/File/Find.h"
@@ -956,6 +957,15 @@ void MainWindow::ref()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   ++_refCount;
+
+#if 0
+#ifdef _MSC_VER
+  Usul::Diagnostics::StackTrace st;
+  ::OutputDebugStringA ( "MainWindow::ref() -- Start of call stack \n" );
+  ::OutputDebugStringA ( st.toString().c_str() );
+  ::OutputDebugStringA ( "MainWindow::ref() -- End of call stack \n\n" );
+#endif
+#endif
 }
 
 
@@ -973,7 +983,7 @@ void MainWindow::unref ( bool )
   if ( 0 == _refCount )
   {
     USUL_ASSERT ( 0 );
-    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 4107780854: Reference count is already 0" );
+    throw Usul::Exceptions::Exception ( "Error 4107780854: Reference count is already 0" );
   }
 
   --_refCount;

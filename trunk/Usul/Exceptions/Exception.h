@@ -19,7 +19,7 @@
 #include "Usul/Diagnostics/StackTrace.h"
 
 #include <exception>
-#include <vector>
+#include <list>
 #include <string>
 
 
@@ -83,7 +83,7 @@ public:
 
   Exception nested() const
   {
-    return ( ( true == this->hasNested() ) ? _nested.at(0) : Exception ( "No nested exception" ) );
+    return ( ( true == this->hasNested() ) ? _nested.front() : Exception ( "No nested exception" ) );
   }
 
   void nested ( const Exception &e )
@@ -96,7 +96,7 @@ private:
 
   std::string _message;
   Usul::Diagnostics::StackTrace _stackTrace;
-  std::vector<Exception> _nested;
+  std::list<Exception> _nested;
 };
 
 

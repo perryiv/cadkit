@@ -356,18 +356,28 @@ Node::RefPtr Node::append ( const std::string &name, const std::string &value )
 
 Node::RefPtr Node::child ( const std::string &name, bool createIfNeeded )
 {
-  Node::RefPtr node ( 0x0 );
+  Node::RefPtr node ( this->child ( name ) );
+  if ( false == node.valid() && true == createIfNeeded )
+  {
+    node = this->append ( name );
+  }
+  return node;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the first child by the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node::RefPtr Node::child ( const std::string &name ) const
+{
   Children kids ( this->find ( name, false ) );
   if ( false == kids.empty() )
   {
-    node = kids.front().get();
+    return kids.front().get();
   }
-  else
-  {
-    if ( true == createIfNeeded )
-    {
-      node = this->append ( name );
-    }
-  }
-  return node;
+
+  return 0x0;
 }

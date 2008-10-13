@@ -958,7 +958,7 @@ void MainWindow::ref()
   Guard guard ( this->mutex() );
   ++_refCount;
 
-#if 0
+#if 1
 #ifdef _MSC_VER
   Usul::Diagnostics::StackTrace st;
   ::OutputDebugStringA ( "MainWindow::ref() -- Start of call stack \n" );

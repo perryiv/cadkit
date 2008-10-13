@@ -37,6 +37,14 @@
 #include <sstream>
 #include <stdio.h>
 
+// Need stack frames or else RtlCaptureContext will cause a crash.
+// http://msdn.microsoft.com/en-us/library/chh3fb0k(VS.71).aspx
+// http://msdn.microsoft.com/en-us/library/2kxx5t2c(VS.71).aspx
+// http://www.gamedev.net/community/forums/topic.asp?topic_id=455278
+#ifdef _MSC_VER
+# pragma optimize( "y", off )
+#endif
+
 using namespace Usul::Diagnostics;
 
 
@@ -181,9 +189,14 @@ void StackTrace::_get ( Container &c )
   // and http://www.codeproject.com/KB/threads/StackWalker.aspx
 
   // Initialize current thread context.
-  DWORD machineType;
   CONTEXT context;
   ::memset ( &context, 0, sizeof ( CONTEXT ) );
+
+  // Must have frame-pointers or this will cause a crash.
+  // Haven't figured out how to safely check. See the following:
+  // http://www.gamedev.net/community/forums/topic.asp?topic_id=455278
+  // http://msdn.microsoft.com/en-us/library/chh3fb0k(VS.71).aspx
+  // http://msdn.microsoft.com/en-us/library/2kxx5t2c(VS.71).aspx
   ::RtlCaptureContext ( &context );
 
   // Initialize stack frame.
@@ -194,6 +207,7 @@ void StackTrace::_get ( Container &c )
   bool platformSupported ( true );
 
   // Initialization of stack frame object varies per platform.
+  DWORD machineType;
   #ifdef _M_IX86
   machineType = IMAGE_FILE_MACHINE_I386;
   stackFrame.AddrPC.Offset = context.Eip;
@@ -286,10 +300,12 @@ void StackTrace::_get ( Container &c )
       }
     }
 
-    // Copy the answer. Skip the first one because it is this class.
+    // Copy the answer. Skip the first one because it's just this class's constructor.
     if ( i > 0 )
     {
-      c.insert ( c.end(), answer.str() );
+      const std::string info ( answer.str() );
+      const std::string text ( ( false == info.empty() ) ? info : std::string ( "No stack frame available" ) );
+      c.insert ( c.end(), text );
     }
   }
 

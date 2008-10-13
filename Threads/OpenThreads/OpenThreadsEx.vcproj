@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
+				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(OSG_INC_DIR);$(CADKIT_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_OPEN_THREADS_EXTENSIONS"

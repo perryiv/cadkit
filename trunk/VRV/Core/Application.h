@@ -15,9 +15,6 @@
 #include "VRV/Prefs/Settings.h"
 #include "VRV/Core/BaseApplication.h"
 #include "VRV/Core/SharedData.h"
-#include "VRV/Devices/JoystickDevice.h"
-#include "VRV/Devices/ButtonGroup.h"
-#include "VRV/Devices/TrackerDevice.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IAuxiliaryScene.h"
@@ -63,8 +60,6 @@
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IWandState.h"
 #include "Usul/Interfaces/IWorldInfo.h"
-#include "Usul/Threads/RecursiveMutex.h"
-#include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Queue.h"
 #include "Usul/Functors/Interaction/Common/Sequence.h"
 #include "Usul/Functors/Interaction/Navigate/Transform.h"
@@ -151,8 +146,6 @@ public:
   typedef OsgTools::Render::Renderer           Renderer;
   typedef Renderer::RefPtr                     RendererPtr;
   typedef std::vector < RendererPtr >          Renderers;
-  typedef Usul::Threads::RecursiveMutex        Mutex;
-  typedef Usul::Threads::Guard<Mutex>          Guard;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
   typedef Usul::Math::Matrix44d                Matrix;
   typedef std::vector < std::string >          Filenames;
@@ -188,8 +181,6 @@ public:
   typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction >  BoolFunctor;
   typedef Usul::Commands::GenericCommand < ExecuteFunctor >                    BasicCommand;
   typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor >    CheckCommand;
-
-  typedef std::map< std::string, Joystick::RefPtr > Analogs;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -231,15 +222,9 @@ public:
   void                    normalize ( bool state );
   bool                    normalize() const;
 
-  void                    quit();
-  void                    run();
-
   /// Get the models node.
   osg::MatrixTransform*              models();
   const osg::MatrixTransform*        models() const;
-
-  /// Get the mutex.
-  Mutex&                  mutex() const { return _mutex; }
 
   /// Get the viewport.
   osg::Viewport*          viewport()       { return _viewport.get(); }
@@ -255,14 +240,6 @@ public:
   /// Get the Preferences.
   Preferences *           preferences ();
   const Preferences *     preferences () const;
-
-  /// Get the buttons.
-  Buttons *               buttons ();
-  const Buttons *         buttons () const;
-
-  /// Get the tracker.
-  Tracker *               tracker ();
-  const Tracker *         tracker () const;
 
   /// Get/Set the analog trim.
   const Usul::Math::Vec2f&    analogTrim () const;
@@ -376,20 +353,11 @@ protected:
   // Is this the head node?
   bool                          _isHeadNode() const;
 
-  // Load VR Juggler config files.
-  void                          _loadConfigFiles ( const std::vector < std::string > &configs );
-  void                          _loadSimConfigs  ( const std::string& dir );
-  void                          _loadSimConfigs();
-
   // Load the file(s).
   void                          _loadModelFiles  ( const Filenames& filenames );
 
   // Set the near and far clipping planes based on the scene.
   void                          _setNearAndFarClippingPlanes();
-
-  // Set/Get the navigation matrix.
-  void                          _navigationMatrix ( const osg::Matrixd& m );
-  const osg::Matrixd&           _navigationMatrix () const;
 
   // Get the scene root.
   osg::Group*                   _sceneRoot();
@@ -398,15 +366,9 @@ protected:
   // Read the user's preferences.
   void                          _readUserPreferences();
 
-  // Read the user's functor config file.
-  void                          _readFunctorFile ();
-
-  // Read the user's devices config file.
-  void                          _readDevicesFile ();
-
   /// Update notify.
-  void                          _updateNotify ();
-  virtual bool                  _allowNotify () const;
+  void                          _updateNotify();
+  virtual bool                  _allowNotify() const;
 
   /// Process commands.
   void                          _processCommands ();
@@ -414,10 +376,17 @@ protected:
   /// Navigate.
   virtual void                  _navigate ();
 
+  /// Update the status bar text.
   void                          _updateStatusBar ( const std::string &text );
 
   // Parse the command-line arguments.
   void                          _parseCommandLine();
+
+  // Read the user's functor config file.
+  void                          _readFunctorFile();
+
+  // Read the user's devices config file.
+  void                          _readDevicesFile();
 
   // Set the current "camera" position as "home".
   void                          _setHome();
@@ -467,6 +436,10 @@ protected:
   /// Set the allow update state.
   void                          _setAllowUpdate ( bool );
   bool                          _isUpdateOn () const;
+
+  // Set/Get the navigation matrix.
+  void                          _navigationMatrix ( const osg::Matrixd& m );
+  const osg::Matrixd&           _navigationMatrix() const;
 
   /// Get the screen shot directory.
   std::string                   _screenShotDirectory() const;
@@ -652,12 +625,8 @@ private:
   virtual void            contextClose();
 
   // Typedefs.
-  typedef osg::ref_ptr <osg::MatrixTransform>              MatTransPtr;
   typedef osg::ref_ptr <osg::Group>                        GroupPtr;
-  typedef VRV::Devices::ButtonGroup                        ButtonGroup;
-  typedef VRV::Devices::ButtonGroup::ValidRefPtr           ButtonsPtr;
-  typedef VRV::Devices::TrackerDevice::ValidRefPtr         TrackerPtr;
-  typedef VRV::Devices::JoystickDevice::RefPtr             JoystickPtr;
+  typedef osg::ref_ptr <osg::MatrixTransform>              MatTransPtr;
   typedef Usul::Interfaces::IUpdateListener                UpdateListener;
   typedef std::vector < UpdateListener::RefPtr >           UpdateListeners;
   typedef Usul::Interfaces::ICommand                       Command;
@@ -687,7 +656,6 @@ private:
   };
 
   // Data members.
-  mutable Mutex                          _mutex;
   GroupPtr                               _root;
   MatTransPtr                            _navBranch;
   MatTransPtr                            _models;
@@ -710,9 +678,6 @@ private:
   osg::Vec2d                             _clipDist;
   bool                                   _exportImage;
   Preferences::RefPtr                    _preferences;
-  ButtonsPtr                             _buttons;
-  TrackerPtr                             _tracker;
-  Analogs                                _analogs;
   Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3d                      _wandOffset;
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
@@ -723,9 +688,12 @@ private:
   bool                                   _menuSceneShowHide;
   MenuPtr                                _menu;
   MenuPtr                                _statusBar;
-  std::string                            _functorFilename;
   std::string                            _preferencesFilename;
+  std::string                            _functorFilename;
   std::string                            _deviceFilename;
+  ButtonsPtr                             _buttons;
+  TrackerPtr                             _tracker;
+  Analogs                                _analogs;
   AnalogInputs                           _analogInputs;
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;

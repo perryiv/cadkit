@@ -68,7 +68,6 @@
 #include "Usul/System/Directory.h"
 #include "Usul/System/Clock.h"
 #include "Usul/System/Memory.h"
-#include "Usul/User/Directory.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -123,7 +122,6 @@ typedef Usul::Registry::Database Reg;
 
 Application::Application() : 
   BaseClass(),
-  _mutex             (),
   _root              ( new osg::Group ),
   _navBranch         ( new osg::MatrixTransform ),
   _models            ( new osg::MatrixTransform ),
@@ -136,7 +134,7 @@ Application::Application() :
   _frameStart        ( static_cast < osg::Timer_t > ( 0.0 ) ),
   _sharedFrameTime   (),
   _sharedReferenceTime  (),
-  _sharedMatrix      ( ),
+  _sharedMatrix      (),
   _sharedScreenShotDirectory (),
   _frameTime         ( 1 ),
   _renderer          (),
@@ -146,9 +144,6 @@ Application::Application() :
   _clipDist          ( 0, 0 ),
   _exportImage       ( false ),
   _preferences       ( new Preferences ),
-  _buttons           ( new VRV::Devices::ButtonGroup ),
-  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
-  _analogs           (),
   _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4). Move to preference file.
   _databasePager     ( 0x0 ),
@@ -159,8 +154,8 @@ Application::Application() :
   _menuSceneShowHide ( true ),
   _menu              ( new Menu ),
   _statusBar         ( new Menu ),
-  _functorFilename   (),
   _preferencesFilename (),
+  _functorFilename   (),
   _deviceFilename    (),
   _analogInputs      (),
   _transformFunctors (),
@@ -185,20 +180,20 @@ Application::Application() :
   _selectButtonID     ( VRV::BUTTON_TRIGGER ),
   _menuButtonID       ( VRV::BUTTON_JOYSTICK ),
   _menuNavigationAnalogID ( "Joystick" ),
-	_bodyCenteredRotation ( false )
+	_bodyCenteredRotation ( false ),
+  _buttons           ( new VRV::Devices::ButtonGroup ),
+  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _analogs           ()
 {
   USUL_TRACE_SCOPE;
 
-  const std::string vendor  ( Usul::App::Application::instance().vendor()  );
-  const std::string program ( Usul::App::Application::instance().program() );
-
-  // Set default file paths.
-  _functorFilename     = Usul::User::Directory::program ( vendor, program ) + "/functors.xml";
-  _preferencesFilename = Usul::User::Directory::program ( vendor, program ) + "/preferences.xml";
-  _deviceFilename      = Usul::User::Directory::program ( vendor, program ) + "/devices.xml";
-
   // We want thread safe ref and unrefing.
   osg::Referenced::setThreadSafeReferenceCounting ( true );
+
+  // Set default file paths.
+  this->_setDefaultPath ( _preferencesFilename, "preferences" );
+  this->_setDefaultPath ( _functorFilename,     "functors" );
+  this->_setDefaultPath ( _deviceFilename,      "devices" );
 
   // Set the delete handler.
   //osg::Referenced::setDeleteHandler ( _deleteHandler );
@@ -295,7 +290,7 @@ void Application::_construct()
   this->_readDevicesFile();
 
   // Read the user's functor file.
-  this->_readFunctorFile ();
+  this->_readFunctorFile();
 
   // Make the intersector.
   typedef Usul::Functors::Interaction::Navigate::Direction Dir;
@@ -389,17 +384,17 @@ void Application::cleanup()
   // Remove all button listeners.
   for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
   {
-    (*iter)->clearButtonPressListeners ();
-    (*iter)->clearButtonReleaseListeners ();
+    (*iter)->clearButtonPressListeners();
+    (*iter)->clearButtonReleaseListeners();
   }
 
   // Clear the navigator.
   this->navigator ( 0x0 );
 
   // Clear the functor maps.
-  _analogInputs.clear ();
-  _transformFunctors.clear ();
-  _favoriteFunctors.clear ();
+  _analogInputs.clear();
+  _transformFunctors.clear();
+  _favoriteFunctors.clear();
 
   // Clear the commands.
   MenuKit::MenuCommands::instance().clear();
@@ -554,30 +549,6 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
   default:
     return 0x0;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Run the application.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::run()
-{
-  USUL_TRACE_SCOPE;
-
-  // Get the kernel.
-  vrj::Kernel* kernel ( vrj::Kernel::instance() );
-
-  // Tell the kernel that we are the app.
-  kernel->setApplication ( this );
-
-  // Start the kernel.
-  kernel->start();
-
-  // Wait for events.
-  kernel->waitForKernelStop();
 }
 
 
@@ -1135,7 +1106,8 @@ void Application::_init()
   group->addChild ( _progressBars->buildScene() );
 
   // Initialize the button group by adding the individual buttons.
-  if( _buttons->size() == 0 )
+  // Do we still need this?
+  /*if( _buttons->size() == 0 )
   {
     _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON0, "VJButton0" ) );
     _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON1, "VJButton1" ) );
@@ -1143,11 +1115,7 @@ void Application::_init()
     _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON3, "VJButton3" ) );
     _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON4, "VJButton4" ) );
     _buttons->add ( new VRV::Devices::ButtonDevice ( VRV::BUTTON5, "VJButton5" ) );
-  }
-
-  // read devices.xml and add buttons found there to the _buttons group
-
-
+  }*/
 
   // Set the wand offset
   _wandOffset = this->preferences()->wandOffset();
@@ -1384,19 +1352,6 @@ void Application::_setViewport( osg::Viewport* vp, vrj::GlDrawManager* mgr )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Quit the application.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::quit()
-{
-  USUL_TRACE_SCOPE;
-  vrj::Kernel::instance()->stop();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Set the normalization state.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1501,113 +1456,6 @@ void Application::unref ( bool )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load all the config files.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadConfigFiles ( const std::vector < std::string > &configs )
-{
-  USUL_TRACE_SCOPE;
-
-  // See if there is at least one config file. Do not use the ErrorChecker.
-  if ( configs.empty() )
-  {
-    std::cout << "No VRJuggler config-files specified."
-              << "\n\tAttempting to use a sim-mode configuration."
-              << std::endl;
-    this->_loadSimConfigs();
-    return;
-  }
-
-  // Load the config files.
-  std::for_each ( configs.begin(), configs.end(), VRV::Core::Detail::LoadConfigFile() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the default config files.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadSimConfigs()
-{
-  USUL_TRACE_SCOPE;
-
-  std::cout << "Looking for environment variable VJ_CONFIG_DIR" << std::endl;
-
-  // Try this environment variable.
-  const char *dir = ::getenv ( "VJ_CONFIG_DIR" );
-  if ( dir )
-  {
-    // Load default config files from this directory.
-    this->_loadSimConfigs ( dir );
-    return;
-  }
-
-  std::cout << "Environment variable VJ_CONFIG_DIR not found." << std::endl;
-  std::cout << "Looking for environment variable VJ_BASE_DIR" << std::endl;
-
-  // Try this environment variable.
-  dir = ::getenv ( "VJ_BASE_DIR" );
-  if ( dir )
-  {
-    // Make sure there is a slash.
-    std::string d ( dir );
-    std::string::size_type last ( d.size() - 1 );
-    if ( '/' != d[last] || '\\' != d[last] )
-      d += '/';
-
-    // Add the sub-directory.
-    d += "share/vrjuggler/data/configFiles";
-
-    // Load default config files from this directory.
-    this->_loadSimConfigs ( d );
-    return;
-  }
-
-  std::cout << "Environment variable VJ_BASE_DIR not found." << std::endl;
-
-  // If we get this far then we failed.
-  Usul::Exceptions::Thrower < VRV::Core::Exceptions::UserInput > 
-    ( "No default VRJuggler config-files found." );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load the default config files from the given directory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadSimConfigs ( const std::string& d )
-{
-  USUL_TRACE_SCOPE;
-
-  // Return if string is empty.
-  if ( d.empty() )
-    return;
-
-  // Make a copy.
-  std::string dir ( d );
-
-  // Make sure there is a slash.
-  std::string::size_type last ( dir.size() - 1 );
-  if ( '/' != dir[last] || '\\' != dir[last] )
-    dir += '/';
-
-  // The config-file loader.
-  VRV::Core::Detail::LoadConfigFile loader;
-
-  // Load the config files.
-  loader ( dir + "sim.base.jconf" );
-  loader ( dir + "sim.wand.mixin.jconf" );
-  loader ( dir + "sim.analog.mixin.jconf" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Add a model.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1694,18 +1542,18 @@ void Application::_setNearAndFarClippingPlanes()
 
   // Get the bounding sphere.
   const osg::BoundingSphere &sphere = _sceneManager->scene()->getBound();
-  float radius = sphere.radius();
+  double radius ( sphere.radius() );
 
   // Handle zero-sized bounding spheres.
   if ( radius <= 1e-6 )
     radius = 1;
 
   // Set both distances.
-  _clipDist[0] = this->preferences()->nearClippingDistance();
-  _clipDist[1] = 2 * radius * this->preferences()->farClippingPlaneMultiplier();
+  const double zNear ( this->preferences()->nearClippingDistance() );
+  const double zFar  ( 2 * radius * this->preferences()->farClippingPlaneMultiplier() );
   
   // Set the clipping planes
-  vrj::Projection::setNearFar ( _clipDist[0], _clipDist[1] );
+  this->setClippingDistances ( zNear, zFar );
 }
 
 
@@ -2137,58 +1985,6 @@ void Application::_readUserPreferences()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the buttons.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-VRV::Devices::ButtonGroup * Application::buttons ()
-{
-  USUL_TRACE_SCOPE;
-  return _buttons.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the buttons.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const VRV::Devices::ButtonGroup * Application::buttons () const
-{
-  USUL_TRACE_SCOPE;
-  return _buttons.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the tracker.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-VRV::Devices::TrackerDevice * Application::tracker ()
-{
-  USUL_TRACE_SCOPE;
-  return _tracker.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the tracker.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const VRV::Devices::TrackerDevice * Application::tracker () const
-{
-  USUL_TRACE_SCOPE;
-  return _tracker.get();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the wand's position.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2196,16 +1992,21 @@ const VRV::Devices::TrackerDevice * Application::tracker () const
 void Application::wandPosition ( Usul::Math::Vec3d &p ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
   // Get the wand's offset.
   Usul::Math::Vec3d offset;
   this->wandOffset ( offset );
 
+  // Get the tracker.
+  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
+
   // Set the vector from the wand's position plus the offset.
-  p[0] = this->tracker()->x() + offset[0];
-  p[1] = this->tracker()->y() + offset[1];
-  p[2] = this->tracker()->z() + offset[2];
+  if ( true == tracker.valid() )
+  {
+    p[0] = tracker->x() + offset[0];
+    p[1] = tracker->y() + offset[1];
+    p[2] = tracker->z() + offset[2];
+  }
 }
 
 
@@ -2218,10 +2019,13 @@ void Application::wandPosition ( Usul::Math::Vec3d &p ) const
 void Application::wandMatrix ( Matrix &W ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  
+  // Get the tracker.
+  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
 
   // Set the given matrix from the wand's matrix.
-  W.set ( this->tracker()->matrix().getData() );
+  if ( true == tracker.valid() )
+    W.set ( tracker->matrix().getData() );
 
   // Get the wand's offset.
   Usul::Math::Vec3d offset;
@@ -3114,7 +2918,7 @@ void Application::_parseCommandLine()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_readDevicesFile ()
+void Application::_readDevicesFile()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
@@ -3133,6 +2937,7 @@ void Application::_readDevicesFile ()
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
   
+  // Find all the buttons...
   XmlTree::Node::Children buttons    ( document->find ( "Button",    true ) );
 
   for ( Children::iterator iter = buttons.begin(); iter != buttons.end(); ++iter )
@@ -3148,8 +2953,9 @@ void Application::_readDevicesFile ()
       const unsigned int uiid ( ::strtoul ( id.c_str(), 0x0, 16 ) );
       buttonGroup->add ( new VRV::Devices::ButtonDevice ( uiid, vj_name, name ) );
     }
-		
   }
+
+  // Find all the analogs...
   XmlTree::Node::Children analogs    ( document->find ( "Analog",    true ) );
   for ( Children::iterator iter = analogs.begin(); iter != analogs.end(); ++iter )
   {
@@ -3220,7 +3026,7 @@ void Application::_readDevicesFile ()
 
   // Add our self as button listeners.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  this->addButtonPressListener( me.get() );
+  this->addButtonPressListener ( me.get() );
   this->addButtonReleaseListener ( me.get() );
 }
 
@@ -3279,14 +3085,15 @@ void Application::_readFunctorFile ()
       const std::string cmd ( node->attributes()["command"] );
       const std::string btn ( node->attributes()["button_id"] );
 
+      // Convert from the hexidecimal string to unsigned int.
+      const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+
       if( "menu" == cmd )
       {
-        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
         _menuButtonID = uiid;
       }
       else if( "trigger" == cmd )
       {
-        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
         _selectButtonID = uiid;
       }
       else if( "menu_navigation" == cmd )
@@ -3295,8 +3102,7 @@ void Application::_readFunctorFile ()
       }
       else
       {
-        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
-        _buttonCommandsMap[ uiid ] = cmd;
+        _buttonCommandsMap[uiid] = cmd;
       }
     }	
   }
@@ -3360,7 +3166,7 @@ void Application::_readFunctorFile ()
   Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
 
   // Set the navigator.  Will be null if there isn't a favorite with this name.
-  Usul::Threads::Safe::set ( this->mutex(), _favoriteFunctors [ name ].get(), _navigator );
+  Usul::Threads::Safe::set ( this->mutex(), _favoriteFunctors[name].get(), _navigator );
 }
 
 

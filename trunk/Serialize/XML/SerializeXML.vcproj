@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
+				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(BOOST_INC_DIR);$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SERIALIZE_XML"

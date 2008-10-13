@@ -122,6 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm200 /Oy-"
 				Optimization="2"
 				AdditionalIncludeDirectories="../;&quot;$(BOOST_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_COMPILING_MENUKIT"

@@ -144,8 +144,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
+				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
+				OmitFramePointers="false"
 				AdditionalIncludeDirectories="../"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_USUL"
 				StringPooling="true"

@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
+				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="$(CADKIT_INC_DIR)/Experimental/Showtime;$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(OSG_INC_DIR);$(QTDIR)\include"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SHOW_TIME_DELEGATE;"

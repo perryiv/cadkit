@@ -328,19 +328,23 @@
 			Name="Config"
 			>
 			<File
-				RelativePath="..\..\.cadviewer\functors.xml"
+				RelativePath="..\..\..\AppData\Roaming\CadKit\CadViewer\devices.xml"
 				>
 			</File>
 			<File
-				RelativePath=".\preferences.xml"
+				RelativePath="..\..\..\AppData\Roaming\CadKit\CadViewer\functors.xml"
 				>
 			</File>
 			<File
-				RelativePath="..\..\.cadviewer\registry.xml"
+				RelativePath="..\..\..\AppData\Roaming\CadKit\CadViewer\preferences.xml"
 				>
 			</File>
 			<File
-				RelativePath="..\..\.cadviewer\settings.xml"
+				RelativePath="..\..\..\AppData\Roaming\CadKit\CadViewer\registry.xml"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\AppData\Roaming\CadKit\CadViewer\settings.xml"
 				>
 			</File>
 		</Filter>

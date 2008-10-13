@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="app: CadKit UnitTests"
-	ProjectGUID="{2D1E3E57-0ADA-4057-A8A5-B819B233F9D6}"
-	RootNamespace="UnitTests"
+	Name="app: GeoNamesCities Test"
+	ProjectGUID="{953AE1A1-EB9F-416F-A9FB-AD0FF11A67DB}"
+	RootNamespace="RasterLayerGDAL"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				PreprocessorDefinitions="CURL_STATICLIB;WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,12 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(GTEST_LIB_FILE_DEBUG) $(GTEST_MAIN_LIB_FILE_DEBUG) osgd.lib"
-				OutputFile="$(CADKIT_BIN_DIR)\CadkitUnitTestsd.exe"
+				AdditionalDependencies="$(GDAL_LIB_FILE_DEBUG) osgd.lib osgDBd.lib"
+				OutputFile="$(CADKIT_BIN_DIR)\GeoNamesCitiesd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -121,8 +119,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				PreprocessorDefinitions="CURL_STATICLIB;WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -140,8 +138,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(GTEST_LIB_FILE_RELEASE) $(GTEST_MAIN_LIB_FILE_RELEASE) osg.lib"
-				OutputFile="$(CADKIT_BIN_DIR)\CadkitUnitTests.exe"
+				AdditionalDependencies="$(GDAL_LIB_FILE_RELEASE) osg.lib osgDB.lib"
+				OutputFile="$(CADKIT_BIN_DIR)\GeoNamesCitiesTest.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
@@ -185,15 +183,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Minerva\Ellipsoid\EllipsoidTest.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Minerva\Extents\ExtentsTest.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Minerva\Extents\ParameterizeTest.cpp"
+				RelativePath=".\Main.cpp"
 				>
 			</File>
 		</Filter>

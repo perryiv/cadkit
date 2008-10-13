@@ -63,7 +63,7 @@ public:
   ~Mutex();
 
   // Create a mutex.
-  static Mutex *          create();
+  static Mutex *  create();
 
   // Lock the mutex.
   void            lock();

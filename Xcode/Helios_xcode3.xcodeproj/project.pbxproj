@@ -1658,6 +1658,23 @@
 		66CFB21B0D13597B00F93E67 /* SceneModel.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 431BB89409246ADA00ED2131 /* SceneModel.plugd */; };
 		66CFB2460D135FEF00F93E67 /* helios_sun.png in Resources */ = {isa = PBXBuildFile; fileRef = 666766A20D124D2C002F40C6 /* helios_sun.png */; };
 		66CFF1510D38A19700ED0216 /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
+		66D51F4C0EA2C19500198B7A /* CacheString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D51F480EA2C19500198B7A /* CacheString.cpp */; };
+		66D51F4D0EA2C19500198B7A /* CacheString.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D51F490EA2C19500198B7A /* CacheString.h */; };
+		66D51F4E0EA2C19500198B7A /* ParameterizeExtents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D51F4A0EA2C19500198B7A /* ParameterizeExtents.cpp */; };
+		66D51F4F0EA2C19500198B7A /* ParameterizeExtents.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D51F4B0EA2C19500198B7A /* ParameterizeExtents.h */; };
+		66D51F520EA2C1A200198B7A /* ResampleElevation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D51F500EA2C1A200198B7A /* ResampleElevation.cpp */; };
+		66D51F530EA2C1A200198B7A /* ResampleElevation.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D51F510EA2C1A200198B7A /* ResampleElevation.h */; };
+		66D51F610EA396CB00198B7A /* StackTrace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D51F5F0EA396CB00198B7A /* StackTrace.cpp */; };
+		66D51F8E0EA39B1700198B7A /* osgUtil.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D1094DE500009181E3 /* osgUtil.framework */; };
+		66D51F900EA39B1700198B7A /* curl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF1A900D16447000B4B1AA /* curl.framework */; };
+		66D51F910EA39B1700198B7A /* libMinerva.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EF17690D15190B00B4B1AA /* libMinerva.dylib */; };
+		66D51F920EA39B1700198B7A /* libSerializeXML.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66C8FA6D0D11FE9D003F6A58 /* libSerializeXML.dylib */; };
+		66D51F930EA39B1700198B7A /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
+		66D51F940EA39B1700198B7A /* libXmlTree.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66FF450F0D10FED2003A0AC1 /* libXmlTree.dylib */; };
+		66D51F950EA39B1700198B7A /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
+		66D51F960EA39B1700198B7A /* Boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663C4EC80D110AFE00949515 /* Boost.framework */; };
+		66D51F970EA39B1700198B7A /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
+		66D51F980EA39B1700198B7A /* osgDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724CE094DE500009181E3 /* osgDB.framework */; };
 		66DA93200ACCDBD300D3E379 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DA931E0ACCDBD300D3E379 /* Environment.cpp */; };
 		66DCD4880E65EDB7004301AD /* QuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DCD4870E65EDB7004301AD /* QuadTree.h */; };
 		66DCD48B0E65EDC1004301AD /* QuadTreeNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DCD48A0E65EDC1004301AD /* QuadTreeNode.h */; };
@@ -1842,6 +1859,11 @@
 		66EFF3C40D13A19A00B4B1AA /* libUsul.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 43FED6F2092452E100EBB610 /* libUsul.dylib */; };
 		66EFF3C70D13A1AB00B4B1AA /* libOsgTools.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 431BAD7D09245A4600ED2131 /* libOsgTools.dylib */; };
 		66EFF3CD0D13A1D400B4B1AA /* moc_ClipPlanes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EFF3CC0D13A1D400B4B1AA /* moc_ClipPlanes.cpp */; };
+		66F06D850EA400CC00061F3B /* City.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66F06D7F0EA400CC00061F3B /* City.cpp */; };
+		66F06D860EA400CC00061F3B /* City.h in Headers */ = {isa = PBXBuildFile; fileRef = 66F06D800EA400CC00061F3B /* City.h */; };
+		66F06D870EA400CC00061F3B /* CityLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66F06D810EA400CC00061F3B /* CityLayer.cpp */; };
+		66F06D880EA400CC00061F3B /* CityLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66F06D820EA400CC00061F3B /* CityLayer.h */; };
+		66F06D890EA400CC00061F3B /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = 66F06D830EA400CC00061F3B /* Export.h */; };
 		66F21D960DD9048800CE7A2E /* MakeImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 66F21D950DD9048800CE7A2E /* MakeImage.h */; };
 		66F523DB0E0D7D1F001D0057 /* FlashDocument_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66F523DA0E0D7D1F001D0057 /* FlashDocument_wrap.cpp */; };
 		66F523E30E0D7D93001D0057 /* Python.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A8B81E0E06F7DC001C436C /* Python.framework */; };
@@ -3305,6 +3327,34 @@
 			remoteInfo = HeliosQtViewOSG;
 		};
 		66CFB1DB0D134DCD00F93E67 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 43FED6F1092452E100EBB610;
+			remoteInfo = Usul;
+		};
+		66D51F730EA39B1700198B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EF17680D15190B00B4B1AA;
+			remoteInfo = Minerva;
+		};
+		66D51F750EA39B1700198B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66C8FA6C0D11FE9D003F6A58;
+			remoteInfo = SerializeXML;
+		};
+		66D51F770EA39B1700198B7A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66FF450E0D10FED2003A0AC1;
+			remoteInfo = XmlTree;
+		};
+		66D51F790EA39B1700198B7A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
@@ -5730,6 +5780,15 @@
 		66CFF1D90D39EE5E00ED0216 /* Qt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Qt.h; sourceTree = "<group>"; };
 		66CFF1DA0D39EE5E00ED0216 /* Split.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Split.h; sourceTree = "<group>"; };
 		66CFF1DB0D39EE5E00ED0216 /* Unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unicode.h; sourceTree = "<group>"; };
+		66D51F480EA2C19500198B7A /* CacheString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheString.cpp; sourceTree = "<group>"; };
+		66D51F490EA2C19500198B7A /* CacheString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CacheString.h; sourceTree = "<group>"; };
+		66D51F4A0EA2C19500198B7A /* ParameterizeExtents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParameterizeExtents.cpp; sourceTree = "<group>"; };
+		66D51F4B0EA2C19500198B7A /* ParameterizeExtents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParameterizeExtents.h; sourceTree = "<group>"; };
+		66D51F500EA2C1A200198B7A /* ResampleElevation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResampleElevation.cpp; sourceTree = "<group>"; };
+		66D51F510EA2C1A200198B7A /* ResampleElevation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResampleElevation.h; sourceTree = "<group>"; };
+		66D51F5F0EA396CB00198B7A /* StackTrace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StackTrace.cpp; sourceTree = "<group>"; };
+		66D51F600EA396CB00198B7A /* StackTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StackTrace.h; sourceTree = "<group>"; };
+		66D51F9C0EA39B1700198B7A /* libMinervaGeoNamesd.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMinervaGeoNamesd.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66DA931E0ACCDBD300D3E379 /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Environment.cpp; sourceTree = "<group>"; };
 		66DA931F0ACCDBD300D3E379 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		66DCD4870E65EDB7004301AD /* QuadTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuadTree.h; sourceTree = "<group>"; };
@@ -5889,6 +5948,12 @@
 		66EFF39F0D139FE400B4B1AA /* CompileGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileGuard.h; path = Qt/Plugins/ClipPlanes/CompileGuard.h; sourceTree = "<group>"; };
 		66EFF3CC0D13A1D400B4B1AA /* moc_ClipPlanes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moc_ClipPlanes.cpp; path = Qt/Plugins/ClipPlanes/moc_ClipPlanes.cpp; sourceTree = "<group>"; };
 		66EFF3DB0D13A32E00B4B1AA /* ClipPlanes.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClipPlanes.ui; path = Qt/Plugins/ClipPlanes/ClipPlanes.ui; sourceTree = "<group>"; };
+		66F06D7F0EA400CC00061F3B /* City.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = City.cpp; sourceTree = "<group>"; };
+		66F06D800EA400CC00061F3B /* City.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = City.h; sourceTree = "<group>"; };
+		66F06D810EA400CC00061F3B /* CityLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CityLayer.cpp; sourceTree = "<group>"; };
+		66F06D820EA400CC00061F3B /* CityLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CityLayer.h; sourceTree = "<group>"; };
+		66F06D830EA400CC00061F3B /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
+		66F06D840EA400CC00061F3B /* GeoNames.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = GeoNames.vcproj; sourceTree = "<group>"; };
 		66F21D950DD9048800CE7A2E /* MakeImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MakeImage.h; sourceTree = "<group>"; };
 		66F523C60E0D77FA001D0057 /* _FlashDocument.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = _FlashDocument.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		66F523CE0E0D793B001D0057 /* FlashDocument.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.interfacer; path = FlashDocument.i; sourceTree = "<group>"; };
@@ -6795,6 +6860,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				66C8FEB60D1208FB003F6A58 /* libUsul.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66D51F8D0EA39B1700198B7A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66D51F8E0EA39B1700198B7A /* osgUtil.framework in Frameworks */,
+				66D51F900EA39B1700198B7A /* curl.framework in Frameworks */,
+				66D51F910EA39B1700198B7A /* libMinerva.dylib in Frameworks */,
+				66D51F920EA39B1700198B7A /* libSerializeXML.dylib in Frameworks */,
+				66D51F930EA39B1700198B7A /* libUsul.dylib in Frameworks */,
+				66D51F940EA39B1700198B7A /* libXmlTree.dylib in Frameworks */,
+				66D51F950EA39B1700198B7A /* libOsgTools.dylib in Frameworks */,
+				66D51F960EA39B1700198B7A /* Boost.framework in Frameworks */,
+				66D51F970EA39B1700198B7A /* osg.framework in Frameworks */,
+				66D51F980EA39B1700198B7A /* osgDB.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7816,6 +7898,7 @@
 				66427A630E4AA8BE009AE232 /* Nimue.app */,
 				668ED7CD0E73B14F00632AF9 /* libMinervaOSMLayerd.dylib */,
 				66A8882E0E85E18F007A195F /* libMinervaQtWidgets.dylib */,
+				66D51F9C0EA39B1700198B7A /* libMinervaGeoNamesd.dylib */,
 			);
 			name = "Cadkit Libraries";
 			sourceTree = "<group>";
@@ -7834,6 +7917,7 @@
 				43FED70E092452F700EBB610 /* Components */,
 				43FED717092452F700EBB610 /* Containers */,
 				668B9BE40D35CC0D00E41E9D /* Convert */,
+				66D51F5E0EA396CB00198B7A /* Diagnostics */,
 				43FED72B092452F700EBB610 /* DLL */,
 				43FED731092452F700EBB610 /* Documents */,
 				43FED737092452F700EBB610 /* Endian */,
@@ -9119,6 +9203,7 @@
 		668E0DDA0D4063AB0030649B /* Layers */ = {
 			isa = PBXGroup;
 			children = (
+				66F06D7E0EA400CC00061F3B /* GeoNames */,
 				668E0DDB0D4063AB0030649B /* GDAL */,
 				66190FCF0E1C8ABC004CE994 /* GeoRSS */,
 				668E0DDD0D4063AB0030649B /* Kml */,
@@ -9847,6 +9932,8 @@
 		66A1C50E0E09B321001DB3F8 /* Algorithms */ = {
 			isa = PBXGroup;
 			children = (
+				66D51F500EA2C1A200198B7A /* ResampleElevation.cpp */,
+				66D51F510EA2C1A200198B7A /* ResampleElevation.h */,
 				66A1C50F0E09B321001DB3F8 /* Composite.h */,
 				66A1C5100E09B321001DB3F8 /* Resample.h */,
 				66A1C5110E09B321001DB3F8 /* SubRegion.h */,
@@ -10225,6 +10312,26 @@
 			path = Test02;
 			sourceTree = "<group>";
 		};
+		66D51F470EA2C19500198B7A /* Functions */ = {
+			isa = PBXGroup;
+			children = (
+				66D51F480EA2C19500198B7A /* CacheString.cpp */,
+				66D51F490EA2C19500198B7A /* CacheString.h */,
+				66D51F4A0EA2C19500198B7A /* ParameterizeExtents.cpp */,
+				66D51F4B0EA2C19500198B7A /* ParameterizeExtents.h */,
+			);
+			path = Functions;
+			sourceTree = "<group>";
+		};
+		66D51F5E0EA396CB00198B7A /* Diagnostics */ = {
+			isa = PBXGroup;
+			children = (
+				66D51F5F0EA396CB00198B7A /* StackTrace.cpp */,
+				66D51F600EA396CB00198B7A /* StackTrace.h */,
+			);
+			path = Diagnostics;
+			sourceTree = "<group>";
+		};
 		66EF05B20D143ED400B4B1AA /* SnapShot */ = {
 			isa = PBXGroup;
 			children = (
@@ -10261,6 +10368,7 @@
 		66EF175E0D1518C700B4B1AA /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				66D51F470EA2C19500198B7A /* Functions */,
 				66A1C50E0E09B321001DB3F8 /* Algorithms */,
 				66EF176F0D15193000B4B1AA /* Animate */,
 				66EF17760D15193000B4B1AA /* Commands */,
@@ -10436,6 +10544,19 @@
 				66EFF39F0D139FE400B4B1AA /* CompileGuard.h */,
 			);
 			name = ClipPlanes;
+			sourceTree = "<group>";
+		};
+		66F06D7E0EA400CC00061F3B /* GeoNames */ = {
+			isa = PBXGroup;
+			children = (
+				66F06D7F0EA400CC00061F3B /* City.cpp */,
+				66F06D800EA400CC00061F3B /* City.h */,
+				66F06D810EA400CC00061F3B /* CityLayer.cpp */,
+				66F06D820EA400CC00061F3B /* CityLayer.h */,
+				66F06D830EA400CC00061F3B /* Export.h */,
+				66F06D840EA400CC00061F3B /* GeoNames.vcproj */,
+			);
+			path = GeoNames;
 			sourceTree = "<group>";
 		};
 		66F523CD0E0D793B001D0057 /* SWIG */ = {
@@ -11485,6 +11606,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66D51F7A0EA39B1700198B7A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66F06D860EA400CC00061F3B /* City.h in Headers */,
+				66F06D880EA400CC00061F3B /* CityLayer.h in Headers */,
+				66F06D890EA400CC00061F3B /* Export.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66EF05A80D143DF100B4B1AA /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -11610,6 +11741,9 @@
 				669DEF660E80EEFE0006013E /* IFeature.h in Headers */,
 				66A887D70E85CE2B007A195F /* LayerInfo.h in Headers */,
 				6638DC8F0E8A9A1400F3A1E0 /* IRefreshData.h in Headers */,
+				66D51F4D0EA2C19500198B7A /* CacheString.h in Headers */,
+				66D51F4F0EA2C19500198B7A /* ParameterizeExtents.h in Headers */,
+				66D51F530EA2C1A200198B7A /* ResampleElevation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -12812,6 +12946,27 @@
 			productReference = 66C8FE750D12084C003F6A58 /* libMenuKit.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		66D51F710EA39B1700198B7A /* MinervaGeoNames */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66D51F990EA39B1700198B7A /* Build configuration list for PBXNativeTarget "MinervaGeoNames" */;
+			buildPhases = (
+				66D51F7A0EA39B1700198B7A /* Headers */,
+				66D51F860EA39B1700198B7A /* Sources */,
+				66D51F8D0EA39B1700198B7A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66D51F720EA39B1700198B7A /* PBXTargetDependency */,
+				66D51F740EA39B1700198B7A /* PBXTargetDependency */,
+				66D51F760EA39B1700198B7A /* PBXTargetDependency */,
+				66D51F780EA39B1700198B7A /* PBXTargetDependency */,
+			);
+			name = MinervaGeoNames;
+			productName = MinervaKmlLayer;
+			productReference = 66D51F9C0EA39B1700198B7A /* libMinervaGeoNamesd.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		66E1A4CC0E207CE200D3E219 /* TestLegend02 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66E1A4DA0E207CE200D3E219 /* Build configuration list for PBXNativeTarget "TestLegend02" */;
@@ -13090,6 +13245,7 @@
 				668ED7B30E73B14F00632AF9 /* MinervaOSMLayer */,
 				66A887F10E85E18F007A195F /* MinervaQtWidgets */,
 				66A8896D0E86A866007A195F /* QtArcIMSLayer */,
+				66D51F710EA39B1700198B7A /* MinervaGeoNames */,
 			);
 		};
 /* End PBXProject section */
@@ -13957,6 +14113,7 @@
 				6646DEEF0DEC7FC8009A95C6 /* Log.cpp in Sources */,
 				66481B670E01AC4B00DD75A2 /* Assert.cpp in Sources */,
 				66CAF86A0E94137D00390255 /* ClipBoard.cpp in Sources */,
+				66D51F610EA396CB00198B7A /* StackTrace.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14487,6 +14644,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		66D51F860EA39B1700198B7A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66F06D850EA400CC00061F3B /* City.cpp in Sources */,
+				66F06D870EA400CC00061F3B /* CityLayer.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66E1A4D20E207CE200D3E219 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -14636,6 +14802,9 @@
 				66DCD4910E65FBD7004301AD /* QuadTreeNode.cpp in Sources */,
 				66046C510E6D0F080009C7E5 /* TimeStamp.cpp in Sources */,
 				661123630E70DB9B00D519BB /* MatrixTransform.cpp in Sources */,
+				66D51F4C0EA2C19500198B7A /* CacheString.cpp in Sources */,
+				66D51F4E0EA2C19500198B7A /* ParameterizeExtents.cpp in Sources */,
+				66D51F520EA2C1A200198B7A /* ResampleElevation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -15704,6 +15873,26 @@
 			isa = PBXTargetDependency;
 			target = 43FED6F1092452E100EBB610 /* Usul */;
 			targetProxy = 66CFB1DB0D134DCD00F93E67 /* PBXContainerItemProxy */;
+		};
+		66D51F720EA39B1700198B7A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EF17680D15190B00B4B1AA /* Minerva */;
+			targetProxy = 66D51F730EA39B1700198B7A /* PBXContainerItemProxy */;
+		};
+		66D51F740EA39B1700198B7A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66C8FA6C0D11FE9D003F6A58 /* SerializeXML */;
+			targetProxy = 66D51F750EA39B1700198B7A /* PBXContainerItemProxy */;
+		};
+		66D51F760EA39B1700198B7A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66FF450E0D10FED2003A0AC1 /* XmlTree */;
+			targetProxy = 66D51F770EA39B1700198B7A /* PBXContainerItemProxy */;
+		};
+		66D51F780EA39B1700198B7A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 43FED6F1092452E100EBB610 /* Usul */;
+			targetProxy = 66D51F790EA39B1700198B7A /* PBXContainerItemProxy */;
 		};
 		66DCF8A90DAD5C00008E6F4A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -19268,6 +19457,69 @@
 			};
 			name = Release;
 		};
+		66D51F9A0EA39B1700198B7A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					../../../Library/Frameworks/Collada14Dom.framework/Headers,
+					/usr/local/include,
+					../,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaGeoNamesd;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		66D51F9B0EA39B1700198B7A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../../../Library/Frameworks/Collada14Dom.framework/Headers,
+					/usr/local/include,
+					../,
+				);
+				INSTALL_PATH = "@executable_path/../Plugins";
+				PREBINDING = NO;
+				PRODUCT_NAME = MinervaGeoNames;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		66E1A4DB0E207CE200D3E219 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -20389,6 +20641,15 @@
 			buildConfigurations = (
 				66C8FE760D12084C003F6A58 /* Debug */,
 				66C8FE770D12084C003F6A58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66D51F990EA39B1700198B7A /* Build configuration list for PBXNativeTarget "MinervaGeoNames" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66D51F9A0EA39B1700198B7A /* Debug */,
+				66D51F9B0EA39B1700198B7A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

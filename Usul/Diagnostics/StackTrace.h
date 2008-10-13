@@ -47,7 +47,7 @@ public:
 
   // Get internal container.
   Container                 get() const;
-  template < class C > void get ( Container & ) const { c = _c; }
+  template < class C > void get ( Container & c ) const { c = _c; }
 
   // Return a string.
   std::string               toString() const;

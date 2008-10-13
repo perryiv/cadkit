@@ -80,8 +80,6 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast<Usul::Interfaces::IBuildScene*> ( this );
-  case Usul::Interfaces::ITreeNode::IID:
-    return static_cast<Usul::Interfaces::ITreeNode*> ( this );
   case Minerva::Interfaces::IElevationChangedListener::IID:
     return static_cast<Minerva::Interfaces::IElevationChangedListener*> ( this );
   case Usul::Interfaces::IBooleanState::IID:
@@ -498,45 +496,6 @@ void DataObject::visibility ( bool b )
     const unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
     _root->setNodeMask ( nodeMask );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of children (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int DataObject::getNumChildNodes() const
-{
-  USUL_TRACE_SCOPE;
-  return 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the child node (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ITreeNode * DataObject::getChildNode ( unsigned int which )
-{
-  USUL_TRACE_SCOPE;
-  return 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the name (ITreeNode).
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void DataObject::setTreeNodeName ( const std::string & s )
-{
-  USUL_TRACE_SCOPE;
-  this->name ( s );
 }
 
 

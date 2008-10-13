@@ -21,6 +21,7 @@
 #include "Usul/Interfaces/IDataChangedListener.h"
 #include "Usul/Interfaces/IDataChangedNotify.h"
 #include "Usul/Interfaces/ILayerExtents.h"
+#include "Usul/Interfaces/ITreeNode.h"
 
 #include "osg/Vec2d"
 
@@ -35,6 +36,7 @@ namespace Data {
 class MINERVA_EXPORT Feature : public Minerva::Core::Data::Object,
                                public Usul::Interfaces::IDataChangedNotify,
                                public Usul::Interfaces::ILayerExtents,
+                               public Usul::Interfaces::ITreeNode,
                                public Minerva::Interfaces::IFeature
 {
 public:
@@ -45,8 +47,15 @@ public:
   USUL_DECLARE_QUERY_POINTERS ( Feature );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
+  /// Get this as an IUnknown.
+	virtual IUnknown*      asUnknown();
+
   /// Accept the visitor.
   virtual void           accept ( Minerva::Core::Visitor& visitor );
+
+  /// Get/Set the default cache directory.
+  static void            defaultCacheDirectory ( const std::string& );
+  static std::string     defaultCacheDirectory();
   
   /// Set/get the description.
   void                   description ( const std::string& );
@@ -90,6 +99,9 @@ protected:
   Feature ( const Feature& rhs );
   virtual ~Feature();
 
+  /// Set the name.
+  void                        _nameSet ( const std::string& name );
+
   /// Notify data changed listeners.
   void                        _notifyDataChnagedListeners();
   
@@ -105,6 +117,16 @@ protected:
   // Get the feature.
   virtual Feature*            feature();
   
+  // Get the number of children (ITreeNode).
+  virtual unsigned int        getNumChildNodes() const;
+  
+  // Get the child node (ITreeNode).
+  virtual ITreeNode *         getChildNode ( unsigned int which );
+  
+  // Set/get the name (ITreeNode).
+  virtual void                setTreeNodeName ( const std::string & );
+  virtual std::string         getTreeNodeName() const;
+
 private:
 
   typedef Usul::Interfaces::IDataChangedListener      IDataChangedListener;

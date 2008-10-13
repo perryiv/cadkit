@@ -26,7 +26,6 @@
 #include "Usul/Interfaces/IRasterLayer.h"
 #include "Usul/Interfaces/IReadImageFile.h"
 #include "Usul/Interfaces/ISerialize.h"
-#include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
 
@@ -51,7 +50,6 @@ class MINERVA_EXPORT RasterLayer : public Minerva::Core::Data::Feature,
                                    public Usul::Interfaces::ILayer,
                                    public Usul::Interfaces::IRasterAlphas,
                                    public Usul::Interfaces::IRasterLayer,
-                                   public Usul::Interfaces::ITreeNode,
                                    public Usul::Interfaces::IBooleanState
 {
 public:
@@ -86,10 +84,6 @@ public:
 
   // Clone this layer.
   virtual IUnknown*     clone() const = 0;
-
-  /// Get/Set the default cache directory.
-  static void           defaultCacheDirectory ( const std::string& );
-  static std::string    defaultCacheDirectory();
 
   /// Get the guid for the layer.
   virtual std::string   guid() const;
@@ -142,16 +136,6 @@ protected:
   static ImagePtr       _readImageFile ( const std::string &, ReaderPtr );
 
   void                  _writeImageToCache ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, ImagePtr );
-
-  // Get the number of children (ITreeNode).
-  virtual unsigned int  getNumChildNodes() const;
-
-  // Get the child node (ITreeNode).
-  virtual ITreeNode *   getChildNode ( unsigned int which );
-
-  // Set/get the name (ITreeNode).
-  virtual void          setTreeNodeName ( const std::string & );
-  virtual std::string   getTreeNodeName() const;
 
   // Set/get the state (IBooleanState).
   virtual void          setBooleanState ( bool );

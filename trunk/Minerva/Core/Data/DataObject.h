@@ -69,7 +69,6 @@ public:
 
 class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
                                   public Usul::Interfaces::IBuildScene,
-                                  public Usul::Interfaces::ITreeNode,
                                   public Usul::Interfaces::IBooleanState,
                                   public Minerva::Interfaces::IElevationChangedListener,
                                   public Usul::Interfaces::IUpdateListener
@@ -157,14 +156,7 @@ protected:
 
   osg::Node*            _buildLabel( const osg::Vec3& position );
 
-  // Get the number of children (ITreeNode).
-  virtual unsigned int        getNumChildNodes() const;
-  
-  // Get the child node (ITreeNode).
-  virtual ITreeNode *         getChildNode ( unsigned int which );
-  
-  // Set/get the name (ITreeNode).
-  virtual void                setTreeNodeName ( const std::string & );
+  // Get the name (ITreeNode).
   virtual std::string         getTreeNodeName() const;
   
   // Set/get the state (IBooleanState).

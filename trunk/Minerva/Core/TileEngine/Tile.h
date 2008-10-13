@@ -160,6 +160,9 @@ public:
   // Is this tile a leaf?
   bool                      isLeaf() const;
 
+  // Convience function that re-directs to the body.
+  void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;
+
   // Return level of this tile. Zero is the top.
   unsigned int              level() const;
 
@@ -168,6 +171,9 @@ public:
 
   // Get the size.
   MeshSize                  meshSize() const;
+
+  // Remove vector data.
+  void                      removeVectorData ( osg::Node* );
 
   // Get/Set the starting texture coordinates.
   Usul::Math::Vec4d         texCoords() const;

@@ -26,17 +26,11 @@
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Algorithms/Composite.h"
 #include "Minerva/Core/Algorithms/SubRegion.h"
+#include "Minerva/Core/Algorithms/ResampleElevation.h"
 
 #include "OsgTools/Group.h"
 #include "OsgTools/Utilities/FindNormals.h"
 #include "OsgTools/State/StateSet.h"
-
-#include "GN/Algorithms/Fill.h"
-#include "GN/Algorithms/KnotVector.h"
-#include "GN/Config/UsulConfig.h"
-#include "GN/Evaluate/Point.h"
-#include "GN/Splines/Surface.h"
-#include "GN/Write/XML.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Adaptors/Bind.h"
@@ -65,10 +59,6 @@
 #include "osgDB/ReadFile"
 
 #include "boost/bind.hpp"
-#include "boost/gil/gil_all.hpp"
-#include "boost/gil/typedefs.hpp"
-#include "boost/gil/extension/numeric/sampler.hpp"
-#include "boost/gil/extension/numeric/resample.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -740,7 +730,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
     if ( numChildren > 1 && false == body->cacheTiles() )
     {
       // Need to notify vector data so it can re-adjust.
-      Minerva::Core::Data::Container::RefPtr vector ( body->vectorData() );
+      Minerva::Core::Data::Container::RefPtr vector ( 0x0 != _body ? _body->vectorData() : 0x0 );
       if ( vector.valid() )
       {
         // Notify new children have been added.
@@ -749,7 +739,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         vector->tileRemovedNotify ( this->childAt ( 2 ), Tile::RefPtr ( this ) );
         vector->tileRemovedNotify ( this->childAt ( 3 ), Tile::RefPtr ( this ) );
       }
-      
+
       // Clear all the children.
       this->_clearChildren ( false, true );
     }
@@ -911,19 +901,17 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     vector->elevationChangedNotify ( t2->extents(), t2->level(), t2->elevation(), unknown.get() );
     vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevation(), unknown.get() );
     
-#if 0
     // Add tiled vector data.
     t0->addVectorData ( vector->buildTiledScene ( t0->extents(), t0->level(), t0->elevation(), unknown.get() ) );
     t1->addVectorData ( vector->buildTiledScene ( t1->extents(), t1->level(), t1->elevation(), unknown.get() ) );
     t2->addVectorData ( vector->buildTiledScene ( t2->extents(), t2->level(), t2->elevation(), unknown.get() ) );
     t3->addVectorData ( vector->buildTiledScene ( t3->extents(), t3->level(), t3->elevation(), unknown.get() ) );
-#else
+
     // Notify new children have been added.
     vector->tileAddNotify ( t0, Tile::RefPtr ( this ) );
     vector->tileAddNotify ( t1, Tile::RefPtr ( this ) );
     vector->tileAddNotify ( t2, Tile::RefPtr ( this ) );
     vector->tileAddNotify ( t3, Tile::RefPtr ( this ) );
-#endif
   }
   
   {
@@ -1029,144 +1017,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
     if ( parentElevation.valid() && 0x0 != parentElevation->data() )
     {
-#ifndef __linux
-#if 1
-      //
-      // Use boost gil to resample the image.  I'm still learning boost gil, so there may be cleaner ways to code this.
-      //
-      
-      // Make a boost image view from the elevation data.
-      const float *pointer ( reinterpret_cast<const float*> ( parentElevation->data() ) );
-      boost::gil::gray32f_image_t srcImage ( size[0], size[1] );
-      boost::gil::gray32f_view_t srcView ( boost::gil::view ( srcImage ) );
-      
-      // Copy the pixels into the boost image.
-      const unsigned int numPixels ( size[0] * size[1] );
-      for ( unsigned int i = 0; i < numPixels; ++i )
-      {
-        const float value ( pointer[i] );
-        srcView[i] = value;
-      }
-      
-      // Make an image twice the size.
-      boost::gil::gray32f_image_t larger ( size[0] * 2, size[1] * 2 );
-      boost::gil::gray32f_view_t largerView ( boost::gil::view ( larger ) );
-      
-      // Resize using bilinear interpolation.
-      boost::gil::resize_view ( srcView, largerView, boost::gil::bilinear_sampler() );
-      
-      // Make a new osg::Image from the boost image.
-      osg::ref_ptr<osg::Image> final ( new osg::Image );
-      final->allocateImage ( size[0], size[1], 1, GL_LUMINANCE, GL_FLOAT );
-      
-      const int startS ( larger.width() * region[0] );
-      const int startV ( larger.height() * region[2] );
-      
-      // Copy the result into the osg::Image.
-      for ( int s = 0; s < static_cast<int> ( size[0] ); ++s )
-      {
-        for ( int t = 0; t < static_cast<int> ( size[1] ); ++t )
-        {
-          const float value ( largerView ( s + startS, t + startV )[0] );
-          *reinterpret_cast<float*> ( final->data ( s, t ) ) = value;
-        }
-      }
- 
-      // Set the elevation to our answer.
-      elevation = final;
-#else
-
-      // Typedefs.
-      typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ErrorChecker;
-      typedef GN::Config::UsulConfig < double, double, unsigned int, ErrorChecker > Config;
-      typedef GN::Splines::Surface < Config > Surface;
-      typedef Surface::IndependentSequence IndependentSequence;
-      typedef Surface::DependentContainer DependentContainer;
-      typedef Surface::DependentSequence DependentSequence;
-      typedef Surface::IndependentType Parameter;
-      typedef Surface::SizeType SizeType;
-      typedef GN::Algorithms::KnotVector < IndependentSequence, ErrorChecker > KnotVectorBuilder;
-      
-      // We want one dependent variable.
-      const SizeType dimension ( 1 );
-      
-      // We want bi-cubic.
-      const SizeType order ( 4 );
-      
-      // Make a surface.
-      Surface surface;
-      
-      // Resize.
-      surface.resize ( dimension, order, order, size[0], size[1], false );
-      
-      // Get a pointer to the data.
-      const float *pointer ( reinterpret_cast<const float*> ( parentElevation->data() ) );
-      
-      // We should have this many control points.
-      const unsigned int numPixels ( size[0] * size[1] );
-      
-      // Set the control points.
-      for ( unsigned int i = 0; i < numPixels; ++i )
-      {
-        surface.controlPoint ( 0, i ) = pointer[i];
-      }
-      
-      // Make the independent sequence for u and v.
-      IndependentSequence u ( size[0], 0 ), v ( size[1], 0 );
-      
-      // Fill u and v with even distribution of values from 0 to 1.
-      GN::Algorithms::fill ( u, 0, 1.0 );
-      GN::Algorithms::fill ( v, 0, 1.0 );
-      
-      // Get knot vectors.
-      IndependentSequence& knots0 ( surface.knotVector ( 0 ) );
-      IndependentSequence& knots1 ( surface.knotVector ( 1 ) );
-      
-      // Make the knots.
-      KnotVectorBuilder::build ( u, order, knots0 );
-      KnotVectorBuilder::build ( v, order, knots1 );
-      
-      surface.check();
-      std::ostringstream os;
-      GN::Write::xml ( surface, 2, os );
-      ::printf ( "%s\n", os.str().c_str() );
-      
-      // Get the range for the u and v values.
-      const double deltaU ( region[1] - region[0] );
-      const double deltaV ( region[3] - region[2] );
-      
-      // Step sizes.
-      const double stepU ( deltaU / size[0] );
-      const double stepV ( deltaV / size[1] );
-      
-      // Make our new elevation.
-      osg::ref_ptr<osg::Image> final ( new osg::Image );
-      final->allocateImage ( size[0], size[1], 1, GL_LUMINANCE, GL_FLOAT );
-      
-      // Loop and fill our image data.
-      //float *data ( reinterpret_cast<float*> ( final->data() ) );
-      for ( unsigned int i = 0; i < size[0]; ++i )
-      {
-        for ( unsigned int j = 0; j < size[1]; ++j )
-        {
-          const double u ( region[0] + ( stepU * i ) );
-          const double v ( region[2] + ( stepV * j ) );
-          
-          Surface::Vector point ( surface.dimension() );
-          GN::Evaluate::point ( surface, u, v, point );
-          
-          // Set the value.
-          *reinterpret_cast<float*> ( final->data( i, j ) ) = point[0];
-          //*data++ = static_cast<float> ( point[0] );
-        }
-      }
-
-      elevation = final;
-      
-#endif
-#else
-      elevation = Minerva::Core::Algorithms::subRegion<float> ( *parentElevation, region, GL_LUMINANCE, GL_FLOAT );
-#endif
+      elevation = Minerva::Core::Algorithms::resampleElevation ( *parentElevation, this->extents(), extents );
     }
   }
   
@@ -2235,5 +2086,40 @@ void Tile::addVectorData ( osg::Node* node )
   {
     Guard guard ( this );
     _vector->addChild ( node );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::removeVectorData ( osg::Node* node )
+{
+  USUL_TRACE_SCOPE;
+  
+  if ( 0x0 != node )
+  {
+    Guard guard ( this );
+    _vector->removeChild ( node );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convience function that re-directs to the body.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
+{
+  Body* body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
+
+  if ( 0x0 != body )
+  {
+    body->latLonHeightToXYZ ( lat, lon, elevation, point );
   }
 }

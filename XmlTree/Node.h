@@ -69,7 +69,8 @@ public:
   Node *                  child ( unsigned int i, const std::string &path, const char delim = '/', bool createIfNeeded = true );
 
   // Get the first child by the name.
-  Node::RefPtr            child ( const std::string &name, bool createIfNeeded = true );
+  Node::RefPtr            child ( const std::string &name, bool createIfNeeded );
+  Node::RefPtr            child ( const std::string &name ) const;
 
   // Access the children.
   const Children &        children() const { return _children; }

@@ -1017,7 +1017,7 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
     if ( parentElevation.valid() && 0x0 != parentElevation->data() )
     {
-      elevation = Minerva::Core::Algorithms::resampleElevation ( *parentElevation, this->extents(), extents );
+      elevation = Minerva::Core::Algorithms::resampleElevation ( *parentElevation, this->extents(), extents, region );
     }
   }
   

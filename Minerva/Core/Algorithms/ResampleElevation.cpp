@@ -29,10 +29,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Image* Minerva::Core::Algorithms::resampleElevation ( const osg::Image& image, const Extents& extents, const Extents& request )
+osg::Image* Minerva::Core::Algorithms::resampleElevation ( const osg::Image& image, const Extents& extents, const Extents& request, const Usul::Math::Vec4d& region )
 {
   // Get the parameterized region to use.
-  Usul::Math::Vec4d region ( Minerva::Core::Functions::paramertizeExtents ( extents, request ) );
+  // This function does not work in all cases.  Pass in the region to use for now.
+  //Usul::Math::Vec4d region ( Minerva::Core::Functions::paramertizeExtents ( extents, request ) );
 
   // Get the size of the image.
   Usul::Math::Vec2ui size ( image.s(), image.t() );

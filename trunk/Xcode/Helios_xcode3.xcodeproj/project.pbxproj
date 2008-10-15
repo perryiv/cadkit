@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				661DBCE30EA64C5600CD4FE4 /* PBXTargetDependency */,
 				66A88A040E86F336007A195F /* PBXTargetDependency */,
 				668ED7F90E73B17F00632AF9 /* PBXTargetDependency */,
 				66ACACAC0E5E2E1A0067F985 /* PBXTargetDependency */,
@@ -432,6 +433,8 @@
 		661C11B30DCA71FE00DE43D4 /* GDAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CFF1500D38A19700ED0216 /* GDAL.framework */; };
 		661C11DD0DCA720500DE43D4 /* osg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66430AE70D10B61900984C94 /* osg.framework */; };
 		661C12B50DCA79DA00DE43D4 /* GDALReadImage.plugd in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 661C119C0DCA718E00DE43D4 /* GDALReadImage.plugd */; };
+		661DBCE50EA64C6B00CD4FE4 /* libMinervaGeoNamesd.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66D51F9C0EA39B1700198B7A /* libMinervaGeoNamesd.dylib */; };
+		661DBD0C0EA64CD600CD4FE4 /* osgText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43D724D0094DE500009181E3 /* osgText.framework */; };
 		662568A00DCB8F91001E94FB /* QtCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689D0DCB8F91001E94FB /* QtCore.framework */; };
 		662568A10DCB8F91001E94FB /* QtGui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689E0DCB8F91001E94FB /* QtGui.framework */; };
 		662568A20DCB8F91001E94FB /* QtOpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6625689F0DCB8F91001E94FB /* QtOpenGL.framework */; };
@@ -2037,6 +2040,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 661C119B0DCA718E00DE43D4;
 			remoteInfo = GDALReadImage;
+		};
+		661DBCE20EA64C5600CD4FE4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66D51F710EA39B1700198B7A /* MinervaGeoNames */;
+			remoteInfo = MinervaGeoNames;
 		};
 		662D2B6A0E175F6C0015FE4B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3950,6 +3960,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				661DBCE50EA64C6B00CD4FE4 /* libMinervaGeoNamesd.dylib in Copy Files to Plugins */,
 				66A88A060E86F379007A195F /* QtArcIMSLayer.plugd in Copy Files to Plugins */,
 				66A8889A0E8606D5007A195F /* libMinervaQtWidgets.dylib in Copy Files to Plugins */,
 				668ED7FB0E73B18F00632AF9 /* libMinervaOSMLayerd.dylib in Copy Files to Plugins */,
@@ -6867,6 +6878,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				661DBD0C0EA64CD600CD4FE4 /* osgText.framework in Frameworks */,
 				66D51F8E0EA39B1700198B7A /* osgUtil.framework in Frameworks */,
 				66D51F900EA39B1700198B7A /* curl.framework in Frameworks */,
 				66D51F910EA39B1700198B7A /* libMinerva.dylib in Frameworks */,
@@ -14949,6 +14961,11 @@
 			target = 661C119B0DCA718E00DE43D4 /* GDALReadImage */;
 			targetProxy = 661C127D0DCA721600DE43D4 /* PBXContainerItemProxy */;
 		};
+		661DBCE30EA64C5600CD4FE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66D51F710EA39B1700198B7A /* MinervaGeoNames */;
+			targetProxy = 661DBCE20EA64C5600CD4FE4 /* PBXContainerItemProxy */;
+		};
 		662D2B6B0E175F6C0015FE4B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 431BAD5B09245A4600ED2131 /* OsgTools */;
@@ -19469,11 +19486,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -19502,11 +19521,13 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_4 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_5 = "\"$(SRCROOT)/../../../Library/Frameworks\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (

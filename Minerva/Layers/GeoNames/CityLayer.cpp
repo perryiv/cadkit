@@ -42,7 +42,8 @@ USUL_FACTORY_REGISTER_CREATOR ( CityLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CityLayer::CityLayer() : BaseClass()
+CityLayer::CityLayer() : BaseClass(),
+  _citiesToAdd()
 {
   this->_nameSet ( "City Names" );
   this->extents ( Extents ( -180, -90, 180, 90 ) );
@@ -72,6 +73,8 @@ Usul::Interfaces::IUnknown* CityLayer::queryInterface ( unsigned long iid )
   {
   case Minerva::Interfaces::ITilesChangedListener::IID:
     return static_cast<Minerva::Interfaces::ITilesChangedListener*> ( this );
+  case Usul::Interfaces::IUpdateListener::IID:
+    return static_cast<Usul::Interfaces::IUpdateListener*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -123,11 +126,8 @@ void CityLayer::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent )
     // Get the cities that lay within this tile.
     Cities cities ( this->citiesGet ( extents, child->level(), 10 ) );
 
-    // Build the scene.
-    osg::ref_ptr<osg::Node> node ( this->_buildScene ( child, cities ) );
-
-    // Add the node to the tile.
-    this->_addNode ( child, node.get() );
+    Guard guard ( this->mutex() );
+    _citiesToAdd.insert ( std::make_pair ( child, cities ) );
   }
 }
 
@@ -213,11 +213,20 @@ void CityLayer::_addNode ( Tile::RefPtr tile, osg::Node* node )
   {
     // Add the node to the tile.
     tile->addVectorData ( node );
-
-    // Add the node to our internal map.
-    Guard guard ( this->mutex() );
-    _nodeMap.insert ( NodeMap::value_type ( tile, node ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Tile was removed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CityLayer::_removeNode ( Tile::RefPtr tile )
+{
+  // Cannot remove the node from the tile.  This causes a crash.
+  // This should cause a memory leak because the tiles are purged in the body.
 }
 
 
@@ -291,28 +300,6 @@ osg::Node* CityLayer::_buildScene ( Tile::RefPtr tile, const Cities& cities )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Remove the node that was added to the tile.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void CityLayer::_removeNode ( Tile::RefPtr tile )
-{
-  if ( true == tile.valid() )
-  {
-    Guard guard ( this->mutex() );
-    NodeMap::iterator iter ( _nodeMap.find ( tile ) );
-
-    if ( iter != _nodeMap.end() )
-    {
-      tile->removeVectorData ( iter->second.get() );
-      _nodeMap.erase ( tile );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get all the cities in the extents up to the maximum number allowed.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -343,10 +330,10 @@ void CityLayer::_citiesGet ( Cities& cities, const std::string& filename, const 
 
 std::string CityLayer::_makeCacheDirectory ( const Extents& extents, unsigned int level ) const
 {
-  std::string baseCacheDirectory ( Feature::defaultCacheDirectory() );
-  std::string directory ( Usul::Strings::format ( baseCacheDirectory, 
-                                                 "/GeoNames/Cities/", 
-                                                 Minerva::Core::Functions::makeLevelString ( level ), "/" ) );
+  const std::string baseCacheDirectory ( Feature::defaultCacheDirectory() );
+  const std::string directory ( Usul::Strings::format ( baseCacheDirectory, 
+                                                        "/Minerva/GeoNames/Cities/", 
+                                                        Minerva::Core::Functions::makeLevelString ( level ), "/" ) );
   
   // Make sure the directory is created.
   {
@@ -355,7 +342,37 @@ std::string CityLayer::_makeCacheDirectory ( const Extents& extents, unsigned in
   }
   
   // Make the filename.
-  std::string filename ( Usul::Strings::format ( directory, Minerva::Core::Functions::makeExtentsString ( extents ), ".xml" ) );
+  const std::string filename ( Usul::Strings::format ( directory, Minerva::Core::Functions::makeExtentsString ( extents ), ".xml" ) );
 
+  // Return the filename.
   return filename;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CityLayer::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  // Get a copy of the cities.
+  CitiesToAdd citiesToAdd ( Usul::Threads::Safe::get ( this->mutex(), _citiesToAdd ) );
+
+  // Clear the cities to add data member.
+  {
+    Guard guard ( this->mutex() );
+    _citiesToAdd.clear();
+  }
+
+  // Loop through the tiles and add the cities.
+  for ( CitiesToAdd::iterator iter = citiesToAdd.begin(); iter != citiesToAdd.end(); ++iter )
+  {
+    // Build the scene.
+    osg::ref_ptr<osg::Node> node ( this->_buildScene ( iter->first, iter->second ) );
+
+    // Add the node to the tile.
+    this->_addNode ( iter->first, node.get() );
+  }
 }

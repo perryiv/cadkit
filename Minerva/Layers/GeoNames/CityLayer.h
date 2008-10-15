@@ -27,6 +27,8 @@
 
 #include "Minerva/Core/Data/Container.h"
 
+#include "Usul/Interfaces/IUpdateListener.h"
+
 #include "osg/Node"
 
 #include <vector>
@@ -39,7 +41,8 @@ namespace Layers {
 namespace GeoNames {
   
 class MINERVA_GEO_NAMES_EXPORT CityLayer : public Minerva::Core::Data::Feature,
-                                           public Minerva::Interfaces::ITilesChangedListener
+                                           public Minerva::Interfaces::ITilesChangedListener,
+                                           public Usul::Interfaces::IUpdateListener
 {
 public:
   
@@ -66,6 +69,9 @@ public:
   virtual void                tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent );
   virtual void                tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent );
 
+  // Update.
+  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+
 protected:
 
   virtual ~CityLayer();
@@ -87,9 +93,9 @@ protected:
 
 private:
 
-  typedef std::map< Tile::RefPtr, osg::ref_ptr<osg::Node> > NodeMap;
+  typedef std::map< Tile::RefPtr, Cities > CitiesToAdd;
 
-  NodeMap _nodeMap;
+  CitiesToAdd _citiesToAdd;
   
   SERIALIZE_XML_CLASS_NAME ( CityLayer );
 };

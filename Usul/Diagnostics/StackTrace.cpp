@@ -68,7 +68,7 @@ namespace Usul { namespace Diagnostics { namespace Helper
 {
   struct Manager
   {
-    Manager() : _mutex()
+    Manager() : mutex()
     {
       #ifdef _MSC_VER
       ::SymInitialize ( ::GetCurrentProcess(), NULL, TRUE );
@@ -86,8 +86,8 @@ namespace Usul { namespace Diagnostics { namespace Helper
       ::SymCleanup ( ::GetCurrentProcess() );
       #endif
     }
-    Mutex _mutex;
-  } _manager;
+    Mutex mutex;
+  } manager;
 }}}
 
 
@@ -156,6 +156,72 @@ std::string StackTrace::toString() const
 
 /////////////////////////////////////////////////////////////////////////////
 //
+//  Helper struct for the callback below.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+namespace Usul { namespace Diagnostics { namespace Helper
+{
+#ifdef _MSC_VER
+  struct CallbackData
+  {
+    CallbackData();
+    CallbackData ( const CallbackData & );
+    CallbackData ( STACKFRAME64 &sf_, std::ostringstream &out_ ) : 
+      sf ( sf_ ), 
+      out ( out_ )
+    {
+    }
+    STACKFRAME64 &sf;
+    std::ostringstream &out;
+  };
+#endif
+}}}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Callback for symbol enumeration.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+namespace Usul { namespace Diagnostics { namespace Helper
+{
+#ifdef _MSC_VER
+  BOOL CALLBACK _enumSymbolsCallback ( SYMBOL_INFO *info, unsigned long size, void *userData )
+  {
+    CallbackData *data ( reinterpret_cast < CallbackData * > ( userData ) );
+    if ( ( 0x0 != info ) && ( 0x0 != data ) )
+    {
+      if ( true == Usul::Bits::has ( info->Flags, SYMFLAG_PARAMETER ) )
+      {
+        // See http://www.tech-archive.net/Archive/VisualStudio/microsoft.public.vsnet.debugging/2004-03/0139.html
+        // and http://www.debuginfo.com/articles/dbghelptypeinfo.html
+
+        wchar_t *typeName ( 0x0 );
+        if ( ::SymGetTypeInfo ( ::GetCurrentProcess(), info->ModBase, info->TypeIndex, TI_GET_SYMNAME, &typeName ) )
+        {
+          std::vector<char> buffer ( ::wcslen ( typeName ) * 4, '\0' );
+          ::sprintf_s ( &buffer[0], buffer.size(), "%ls", typeName );
+          ::LocalFree ( typeName );
+          const std::string name ( &buffer[0] );
+          (data->out) << ' ' << name;
+        }
+        if ( info->MaxNameLen > 0 )
+        {
+          void *address ( reinterpret_cast < void * > ( info->Address + data->sf.AddrStack.Offset - 8 ) );
+          (data->out) << ' ' << info->Name;
+        }
+      }
+    }
+    return TRUE;
+  }
+#endif
+}}}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 //  Fill the container with the function signatures.
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -163,7 +229,7 @@ std::string StackTrace::toString() const
 void StackTrace::_get ( Container &c )
 {
   // Need to guard this function for all objects.
-  Guard guard ( Usul::Diagnostics::Helper::_manager._mutex );
+  Guard guard ( Usul::Diagnostics::Helper::manager.mutex );
 
 #ifdef __GNUC__
 
@@ -299,7 +365,35 @@ void StackTrace::_get ( Container &c )
         }
       }
     }
-
+#if 0
+    // Get the function parameters.
+    {
+      // See http://www.crystalspace3d.org/svnroot/crystal/CS/migrated/tags/R0_98_002/libs/csutil/win32/callstack.cpp
+      // and http://msdn.microsoft.com/en-us/magazine/cc301692.aspxs
+      // and http://www.ecs.syr.edu/faculty/fawcett/handouts/Seminar_BrownBag04/OSperfTools/disasm/SymHandler.cpp
+      // and http://svn.reactos.org/svn/reactos/trunk/rosapps/applications/devutils/symdump/symdump.c?view=markup&pathrev=35346
+      // and http://www.tech-archive.net/Archive/VisualStudio/microsoft.public.vsnet.debugging/2004-03/0138.html
+      // and http://www.debuginfo.com/articles/dbghelptypeinfo.html
+      IMAGEHLP_STACK_FRAME sf;
+      ::memset ( &sf, 0, sizeof ( IMAGEHLP_STACK_FRAME ) );
+      sf.InstructionOffset = stackFrame.AddrPC.Offset;
+      sf.ReturnOffset = stackFrame.AddrReturn.Offset;
+      sf.FrameOffset = stackFrame.AddrFrame.Offset;
+      sf.StackOffset = stackFrame.AddrStack.Offset;
+      sf.BackingStoreOffset = stackFrame.AddrBStore.Offset;
+      sf.FuncTableEntry = reinterpret_cast < LONG_PTR > ( stackFrame.FuncTableEntry );
+      sf.Params[0] = stackFrame.Params[0];
+      sf.Params[1] = stackFrame.Params[1];
+      sf.Params[2] = stackFrame.Params[2];
+      sf.Params[3] = stackFrame.Params[3];
+      sf.Virtual = stackFrame.Virtual;
+      if ( ::SymSetContext ( ::GetCurrentProcess(), &sf, 0x0 ) )
+      {
+        Helper::CallbackData data ( stackFrame, answer );
+        ::SymEnumSymbols ( ::GetCurrentProcess(), 0, "*", &Helper::_enumSymbolsCallback, &data );
+      }
+    }
+#endif
     // Copy the answer. Skip the first one because it's just this class's constructor.
     if ( i > 0 )
     {
@@ -322,7 +416,7 @@ void StackTrace::_get ( Container &c )
 void StackTrace::print()
 {
   // Need to guard this function for all objects.
-  Guard guard ( Usul::Diagnostics::Helper::_manager._mutex );
+  Guard guard ( Usul::Diagnostics::Helper::manager.mutex );
 
 #ifdef __GNUC__
 

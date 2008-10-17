@@ -38,6 +38,7 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
+./Algorithms/ResampleElevation.cpp
 ./Animate/Date.cpp
 ./Animate/Settings.cpp
 ./Commands/AddLayer.cpp
@@ -71,6 +72,8 @@ SET (SOURCES
 ./Data/TimeSpan.cpp
 ./Data/TimeStamp.cpp
 ./Factory/Readers.cpp
+./Functions/CacheString.cpp
+./Functions/ParameterizeExtents.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp
 ./Jobs/BuildRaster.cpp

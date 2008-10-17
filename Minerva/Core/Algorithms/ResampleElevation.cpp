@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Algorithms/ResampleElevation.h"
+#include "Minerva/Core/Algorithms/SubRegion.h"
 #include "Minerva/Core/Functions/ParameterizeExtents.h"
 
 #include "GN/Algorithms/Fill.h"

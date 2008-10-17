@@ -111,6 +111,7 @@ SET (SOURCES
 ./Functors/Interaction/Input/AnalogInput.cpp
 ./Functors/Interaction/Input/WandPitch.cpp
 ./Functors/Interaction/Input/WandAngle.cpp
+./Diagnostics/StackTrace.cpp
 ./Base/InstanceManager.cpp
 ./Base/Referenced.cpp
 ./Base/Observed.cpp

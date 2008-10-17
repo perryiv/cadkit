@@ -31,6 +31,7 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
+  ./Core/BaseApplication.cpp
   ./Core/Application.cpp
   ./Commands/BackgroundColor.cpp
   ./Commands/Camera.cpp

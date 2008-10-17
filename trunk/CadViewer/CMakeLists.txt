@@ -37,12 +37,12 @@ ${CADKIT_INC_DIR}/Helios/Plugins/MeasureTool
 ${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
 
 # ---- Document Plug-ins -------
-${CADKIT_INC_DIR}/Helios/Plugins/SceneModel
-${CADKIT_INC_DIR}/Helios/Plugins/TriangleModel
-${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
+#${CADKIT_INC_DIR}/Helios/Plugins/SceneModel
+#${CADKIT_INC_DIR}/Helios/Plugins/TriangleModel
+#${CADKIT_INC_DIR}/Experimental/WRF/WrfModel
 
-${CADKIT_INC_DIR}/Helios/Plugins/ModelPresentation/ModelPresentation
-${CADKIT_INC_DIR}/Helios/Plugins/ModelPresentation/ModelPresentationLib
+#${CADKIT_INC_DIR}/Helios/Plugins/ModelPresentation/ModelPresentation
+#${CADKIT_INC_DIR}/Helios/Plugins/ModelPresentation/ModelPresentationLib
 
 # ---- Minerva -------
 ${CADKIT_INC_DIR}/Minerva/Core

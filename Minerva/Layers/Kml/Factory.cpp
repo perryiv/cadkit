@@ -399,6 +399,11 @@ Factory::Line* Factory::createLine ( const XmlTree::Node& node ) const
         line->line ( vertices );
         line->extents ( extents );
       }
+      else if ( "extrude" == name )
+      {
+        bool extrude ( "1" == node->value() );
+        point->extrude ( extrude );
+      }
     }
   }
   
@@ -449,6 +454,11 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
         Helper::parseCoordinates( *coordinates, vertices, extents );
         polygon->addInnerBoundary ( vertices );
       }
+    }
+    else if ( "extrude" == name )
+    {
+      bool extrude ( "1" == node->value() );
+      point->extrude ( extrude );
     }
   }
   

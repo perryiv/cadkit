@@ -84,7 +84,7 @@ void Visitor::visit ( Minerva::Core::Data::Feature &feature )
 
 void Visitor::visit ( Minerva::Core::Data::DataObject &dataObject )
 {
-  USUL_UNSAFE_CAST ( Feature&, dataObject );
+  this->visit ( USUL_UNSAFE_CAST ( Feature&, dataObject ) );
 }
 
 

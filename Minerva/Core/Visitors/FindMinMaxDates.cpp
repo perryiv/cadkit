@@ -59,6 +59,11 @@ void FindMinMaxDates::visit ( Minerva::Core::Data::Feature &object )
   {
     const Date first ( span->begin() );
     const Date last ( span->end() );
+
+#ifndef _DEBUG
+    const std::string s0 ( first.toString() );
+    const std::string s1 ( last.toString() );
+#endif
     
     this->_updateMin ( first );
     this->_updateMax ( last );

@@ -402,7 +402,7 @@ Factory::Line* Factory::createLine ( const XmlTree::Node& node ) const
       else if ( "extrude" == name )
       {
         bool extrude ( "1" == node->value() );
-        point->extrude ( extrude );
+        line->extrude ( extrude );
       }
     }
   }
@@ -458,7 +458,7 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
     else if ( "extrude" == name )
     {
       bool extrude ( "1" == node->value() );
-      point->extrude ( extrude );
+      polygon->extrude ( extrude );
     }
   }
   

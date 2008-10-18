@@ -144,7 +144,6 @@ Application::Application() :
   _clipDist          ( 0, 0 ),
   _exportImage       ( false ),
   _preferences       ( new Preferences ),
-  _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4). Move to preference file.
   _databasePager     ( 0x0 ),
   _commandQueue      ( ),
@@ -157,6 +156,8 @@ Application::Application() :
   _preferencesFilename (),
   _functorFilename   (),
   _deviceFilename    (),
+  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _analogs           (),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  (),
@@ -180,10 +181,7 @@ Application::Application() :
   _selectButtonID     ( VRV::BUTTON_TRIGGER ),
   _menuButtonID       ( VRV::BUTTON_JOYSTICK ),
   _menuNavigationAnalogID ( "Joystick" ),
-	_bodyCenteredRotation ( false ),
-  _buttons           ( new VRV::Devices::ButtonGroup ),
-  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
-  _analogs           ()
+	_bodyCenteredRotation ( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -197,9 +195,6 @@ Application::Application() :
 
   // Set the delete handler.
   //osg::Referenced::setDeleteHandler ( _deleteHandler );
-
-  // Parse the command-line arguments.
-  this->_parseCommandLine();
 
   this->_construct();
 
@@ -279,18 +274,6 @@ void Application::_construct()
     _databasePager->setAcceptNewDatabaseRequests( true );
     _databasePager->setDatabasePagerThreadPause( false );
   }
-
-  // Read the user's preference file, if any.
-  this->_readUserPreferences();
-
-  // Make a copy of the translation speed.
-  _translationSpeed = this->preferences()->translationSpeed ();
-
-  // Read the user's devices file
-  this->_readDevicesFile();
-
-  // Read the user's functor file.
-  this->_readFunctorFile();
 
   // Make the intersector.
   typedef Usul::Functors::Interaction::Navigate::Direction Dir;
@@ -382,11 +365,8 @@ void Application::cleanup()
   document = 0x0;
 
   // Remove all button listeners.
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->clearButtonPressListeners();
-    (*iter)->clearButtonReleaseListeners();
-  }
+  this->_clearButtonPressListeners();
+  this->_clearButtonReleaseListeners();
 
   // Clear the navigator.
   this->navigator ( 0x0 );
@@ -1017,6 +997,21 @@ void Application::_init()
   // Call the base class first.
   BaseClass::_init();
 
+  // Parse the command-line arguments.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_parseCommandLine ), "1768075678" );
+
+  // Read the user's preference file, if any.
+  this->_readUserPreferences();
+
+  // Make a copy of the translation speed.
+  _translationSpeed = this->preferences()->translationSpeed();
+
+  // Read the user's devices file
+  this->_readDevicesFile();
+
+  // Read the user's functor file.
+  this->_readFunctorFile();
+
   // Set the scene-viewer's scene.
   this->setSceneData ( _root.get() );
 
@@ -1152,6 +1147,10 @@ void Application::_init()
 void Application::_preFrame()
 {
   USUL_TRACE_SCOPE;
+
+  // Call the base class.
+  BaseClass::_preFrame();
+
   Guard guard ( this->mutex() );
 
   // Mark the start of the frame.
@@ -1171,7 +1170,6 @@ void Application::_preFrame()
   }
 
   // Update these input devices.
-  _buttons->notify();
   _tracker->update();
 
   // Update all the analog inputs.
@@ -2117,27 +2115,13 @@ void Application::wandRotation ( Matrix &W ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the analog trim.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Usul::Math::Vec2f& Application::analogTrim() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _analogTrim;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Set the trim. This assumes the user is not tilting the joystick one way 
 //  or the other. It records the value at the neutral position. If the value 
 //  is 0.5 (like it should be) then the "trim" will be zero.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::analogTrim()
+void Application::calibrateAnalogs()
 {
   USUL_TRACE_SCOPE;
 
@@ -2873,7 +2857,7 @@ void Application::_parseCommandLine()
   // Get new preferences and functor file from the command line.
   _preferencesFilename   = options.get ( "preferences", _preferencesFilename );
   _functorFilename       = options.get ( "functors",    _functorFilename     );
-  _deviceFilename        = options.get ( "devices",    _deviceFilename     );
+  _deviceFilename        = options.get ( "devices",     _deviceFilename     );
 
   // Have to load the config files now. Remove them from the arguments.
   Parser::Args configs ( parser.files ( ".jconf", true ) );
@@ -2926,6 +2910,7 @@ void Application::_readDevicesFile()
   // Get the filename.
   const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _deviceFilename ) );
 
+  // Check to see if the file exists.
   if ( false == Usul::Predicates::FileExists::test ( file ) )
   {
     std::cout << "Warning 3773295320: No devices file found." << std::endl;
@@ -2987,42 +2972,8 @@ void Application::_readDevicesFile()
     _analogs[ "Joystick" ]->name( "Joystick" );
   }
 
-    // read the button mappings from the functor file
-#if 0
-  XmlTree::Node::Children mappings    ( document->find ( "Mapping",    true ) );
-
-  for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
-  {
-    XmlTree::Node::RefPtr node ( *iter );
-    if ( "Mapping" == node->name() )
-    {
-      const std::string cmd ( node->attributes()["command"] );
-      const std::string btn ( node->attributes()["button_id"] );
-
-      if( "menu" == cmd )
-      {
-        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
-        _menuButtonID = uiid;
-      }
-      else if( "trigger" == cmd )
-      {
-        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
-        _selectButtonID = uiid;
-      }
-      else if( "menu_navigation" == cmd )
-      {
-        _menuNavigationAnalogID = btn;
-      }
-      else
-      {
-        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
-        _buttonCommandsMap[ uiid ] = cmd;
-      }
-    }	
-  }
-#endif
-
-  _buttons = buttonGroup;
+  // Set the new button group.
+  this->buttons ( buttonGroup );
 
   // Add our self as button listeners.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
@@ -3891,17 +3842,22 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     MenuKit::Menu::RefPtr buttons ( new MenuKit::Menu ( "Buttons" ) );
     MenuKit::Menu::RefPtr assign ( new MenuKit::Menu ( "Assign" ) );
 
-    for( Buttons::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+    ButtonGroup::RefPtr buttonGroup ( this->buttons() );
+
+    if ( buttonGroup.valid() )
     {
-			VRV::Devices::ButtonDevice::RefPtr button ( *iter );
+      for( Buttons::iterator iter = buttonGroup->begin(); iter != buttonGroup->end(); ++iter )
+      {
+			  VRV::Devices::ButtonDevice::RefPtr button ( *iter );
 
-			if ( true == button.valid() )
-			{
-				const std::string name ( button->getButtonName() );
-				const unsigned long id ( button->buttonID() );
+			  if ( true == button.valid() )
+			  {
+				  const std::string name ( button->getButtonName() );
+				  const unsigned long id ( button->buttonID() );
 
-				assign->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, _assignNextMenuSelection, id ) ) );
-			}
+				  assign->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, _assignNextMenuSelection, id ) ) );
+			  }
+      }
     }
     
     buttons->append ( assign );
@@ -3911,7 +3867,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     menu->append ( buttons );
   }
 
-  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::calibrateAnalogs ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 
   menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Update", _setAllowUpdate, _isUpdateOn ) ) );
@@ -4966,12 +4922,7 @@ void Application::_postRenderNotify( Renderer* renderer )
 void Application::addButtonPressListener ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->addButtonPressListener ( caller );
-  }
+  this->_addButtonPressListener ( caller );
 }
 
 
@@ -4984,12 +4935,7 @@ void Application::addButtonPressListener ( Usul::Interfaces::IUnknown * caller )
 void Application::clearButtonPressListeners()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->clearButtonPressListeners();
-  }
+  this->_clearButtonPressListeners();
 }
 
 
@@ -5002,12 +4948,7 @@ void Application::clearButtonPressListeners()
 void Application::removeButtonPressListener ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->removeButtonPressListener ( caller );
-  }
+  this->_removeButtonPressListener ( caller );
 }
 
 
@@ -5020,13 +4961,7 @@ void Application::removeButtonPressListener ( Usul::Interfaces::IUnknown * calle
 void Application::addButtonReleaseListener ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->addButtonReleaseListener ( caller );
-  }
-  
+  this->_addButtonReleaseListener ( caller );  
 }
 
 
@@ -5040,12 +4975,7 @@ void Application::addButtonReleaseListener ( Usul::Interfaces::IUnknown * caller
 void Application::clearButtonReleaseListeners()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->clearButtonReleaseListeners();
-  }
+  this->_clearButtonReleaseListeners();
 }
 
 
@@ -5058,12 +4988,7 @@ void Application::clearButtonReleaseListeners()
 void Application::removeButtonReleaseListener ( Usul::Interfaces::IUnknown *caller  )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
-  {
-    (*iter)->removeButtonReleaseListener ( caller );
-  }
+  this->_removeButtonReleaseListener ( caller );
 }
 
 

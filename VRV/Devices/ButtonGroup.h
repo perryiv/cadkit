@@ -33,6 +33,7 @@ public:
   // Useful typedefs.
   typedef Usul::Base::Object BaseClass;
   typedef std::vector< ButtonDevice::RefPtr > Buttons;
+  typedef Buttons::value_type value_type;
   typedef Buttons::iterator iterator;
 
   /// Smart-pointer definitions.

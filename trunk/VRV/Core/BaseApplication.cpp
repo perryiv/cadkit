@@ -32,7 +32,8 @@ using namespace VRV::Core;
 
 BaseApplication::BaseApplication() : 
   BaseClass ( vrj::Kernel::instance() ),
-  _mutex()
+  _mutex(),
+  _buttons           ( new VRV::Devices::ButtonGroup )
 {
 }
 
@@ -155,6 +156,13 @@ void BaseApplication::preFrame()
 void BaseApplication::_preFrame()
 {
   USUL_TRACE_SCOPE;
+
+  // Update these input devices.
+  {
+    Guard guard ( this->mutex() );
+    if ( true == _buttons.valid() )
+      _buttons->notify();
+  }
 }
 
 
@@ -327,4 +335,155 @@ void BaseApplication::_loadSimConfigs ( const std::string& d )
   loader ( dir + "sim.base.jconf" );
   loader ( dir + "sim.wand.mixin.jconf" );
   loader ( dir + "sim.analog.mixin.jconf" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::buttons ( ButtonGroup* buttons )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _buttons = buttons;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VRV::Devices::ButtonGroup* BaseApplication::buttons()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _buttons;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const VRV::Devices::ButtonGroup* BaseApplication::buttons() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _buttons;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_addButtonPressListener ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->addButtonPressListener ( caller );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_clearButtonPressListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonPressListeners();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_removeButtonPressListener ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->removeButtonPressListener ( caller );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_addButtonReleaseListener ( Usul::Interfaces::IUnknown * caller )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->addButtonReleaseListener ( caller );
+  }
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove all listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_clearButtonReleaseListeners()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonReleaseListeners();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove the listener.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_removeButtonReleaseListener ( Usul::Interfaces::IUnknown *caller  )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->removeButtonReleaseListener ( caller );
+  }
 }

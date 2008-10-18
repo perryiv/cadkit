@@ -50,6 +50,11 @@ public:
   // Destructor.
   virtual ~BaseApplication();
 
+  /// Set/get the buttons.
+  void                          buttons ( ButtonGroup* buttons );
+  ButtonGroup *                 buttons();
+  const ButtonGroup *           buttons() const;
+
   /// Get the mutex.
   Mutex&                        mutex() const { return _mutex; }
 
@@ -62,6 +67,18 @@ protected:
   virtual void                  _preFrame();
   virtual void                  _latePreFrame();
   virtual void                  _postFrame();
+
+  // Add the listener.
+  void                          _addButtonPressListener ( Usul::Interfaces::IUnknown * );
+  void                          _addButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+
+  // Remove all listeners.
+  void                          _clearButtonPressListeners();
+  void                          _clearButtonReleaseListeners();
+
+  // Remove the listener.
+  void                          _removeButtonPressListener ( Usul::Interfaces::IUnknown * );
+  void                          _removeButtonReleaseListener ( Usul::Interfaces::IUnknown * );
 
   // Load VR Juggler config files.
   void                          _loadConfigFiles ( const std::vector < std::string > &configs );
@@ -84,6 +101,7 @@ private:
 
   // Data Members.
   mutable Mutex                          _mutex;
+  ButtonsPtr                             _buttons;
 
 };
 

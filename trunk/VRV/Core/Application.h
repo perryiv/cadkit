@@ -190,32 +190,36 @@ public:
   // Destructor.
   virtual ~Application();
 
-  // Clean up.  Call before the Application is destroyed.
-  void                    cleanup();
+  /// Calibrate the analogs.
+  void                          calibrateAnalogs();
 
-  virtual void            viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
+  // Clean up.  Call before the Application is destroyed.
+  void                          cleanup();
+
+  // View all of the given node.
+  virtual void                  viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
 
   /// Add a light.
-  void                    addLight ( osg::Light* light );
+  void                          addLight ( osg::Light* light );
 
   /// Get/Set the background color.
-  virtual void                backgroundColor ( const Usul::Math::Vec4f& color );
-  virtual void                backgroundColor ( const osg::Vec4f& color, unsigned int corner );
-  virtual Usul::Math::Vec4f   backgroundColor () const;
+  virtual void                  backgroundColor ( const Usul::Math::Vec4f& color );
+  virtual void                  backgroundColor ( const osg::Vec4f& color, unsigned int corner );
+  virtual Usul::Math::Vec4f     backgroundColor() const;
 
   /// Get/Set the background corner.
-  void                    setBackgroundCorners ( unsigned int corner );
-  unsigned int            getBackgroundCorners() const;
-  bool                    isBackgroundCorners( unsigned int corner ) const;
+  void                          setBackgroundCorners ( unsigned int corner );
+  unsigned int                  getBackgroundCorners() const;
+  bool                          isBackgroundCorners ( unsigned int corner ) const;
 
   /// Get/Set the framestamp ( Usul::Interfaces::IFrameStamp ).
-  osg::FrameStamp*        frameStamp();
-  const osg::FrameStamp*  frameStamp() const;
+  osg::FrameStamp*              frameStamp();
+  const osg::FrameStamp*        frameStamp() const;
 
   /// Get/Set the scene data.
   osg::Node*              getSceneData();
   const osg::Node*        getSceneData() const;
-  void                    setSceneData( osg::Node* );
+  void                    setSceneData ( osg::Node* );
 
   double                  getTimeSinceStart();
 
@@ -235,15 +239,11 @@ public:
 
   /// Get/Set the number of rendering passes
   virtual void            renderingPasses ( unsigned int number );
-  virtual unsigned int    renderingPasses () const;
+  virtual unsigned int    renderingPasses() const;
 
   /// Get the Preferences.
-  Preferences *           preferences ();
-  const Preferences *     preferences () const;
-
-  /// Get/Set the analog trim.
-  const Usul::Math::Vec2f&    analogTrim () const;
-  void                        analogTrim ();
+  Preferences *           preferences();
+  const Preferences *     preferences() const;
 
   // Print the usage string.
   static void                   usage ( const std::string &exe, std::ostream &out );
@@ -354,7 +354,7 @@ protected:
   bool                          _isHeadNode() const;
 
   // Load the file(s).
-  void                          _loadModelFiles  ( const Filenames& filenames );
+  virtual void                  _loadModelFiles  ( const Filenames& filenames );
 
   // Set the near and far clipping planes based on the scene.
   void                          _setNearAndFarClippingPlanes();
@@ -531,7 +531,7 @@ protected:
 
   /// Get the view matrix ( Usul::Interfaces::IViewMatrix ).
   /// Note: In this implementation, the navigation matrix is set.
-  virtual const osg::Matrixd&   getViewMatrix (  ) const;
+  virtual const osg::Matrixd&   getViewMatrix() const;
 
   // Set the status bar text (IStatusBar).
   virtual void                  setStatusBarText ( const std::string &text, bool force );
@@ -678,7 +678,6 @@ private:
   osg::Vec2d                             _clipDist;
   bool                                   _exportImage;
   Preferences::RefPtr                    _preferences;
-  Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3d                      _wandOffset;
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
   CommandQueue                           _commandQueue;
@@ -691,7 +690,6 @@ private:
   std::string                            _preferencesFilename;
   std::string                            _functorFilename;
   std::string                            _deviceFilename;
-  ButtonsPtr                             _buttons;
   TrackerPtr                             _tracker;
   Analogs                                _analogs;
   AnalogInputs                           _analogInputs;

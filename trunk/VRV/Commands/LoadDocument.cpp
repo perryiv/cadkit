@@ -41,8 +41,8 @@ USUL_IMPLEMENT_COMMAND ( LoadDocument );
 ///////////////////////////////////////////////////////////////////////////////
 
 LoadDocument::LoadDocument ( const Filenames& filenames, Usul::Interfaces::IUnknown * caller ) : 
-BaseClass ( caller ),
-_filenames ( filenames )
+  BaseClass ( caller ),
+  _filenames ( filenames )
 {
 }
 
@@ -138,7 +138,7 @@ void LoadDocument::LoadJob::_started()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Load the model..
+//  Load the model.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

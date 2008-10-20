@@ -33,7 +33,8 @@ using namespace VRV::Core;
 BaseApplication::BaseApplication() : 
   BaseClass ( vrj::Kernel::instance() ),
   _mutex(),
-  _buttons           ( new VRV::Devices::ButtonGroup )
+  _buttons           ( new VRV::Devices::ButtonGroup ),
+  _analogs           ()
 {
 }
 
@@ -485,5 +486,108 @@ void BaseApplication::_removeButtonReleaseListener ( Usul::Interfaces::IUnknown 
   for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
   {
     (*iter)->removeButtonReleaseListener ( caller );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a copy of the analogs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseApplication::Analogs BaseApplication::analogs() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _analogs;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add an analog.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::analogAdd ( JoystickPtr analog )
+{
+  USUL_TRACE_SCOPE;
+
+  if ( true == analog.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _analogs[analog->name()] = analog;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find an analog.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseApplication::JoystickPtr BaseApplication::analogFind ( const std::string& key )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Analogs::iterator iter ( _analogs.find ( key ) );
+  return ( iter != _analogs.end() ? iter->second : 0x0 );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the trim. This assumes the user is not tilting the joystick one way 
+//  or the other. It records the value at the neutral position. If the value 
+//  is 0.5 (like it should be) then the "trim" will be zero.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::analogsCalibrate()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
+  {
+		Joystick::RefPtr joystick ( iter->second );
+
+		if ( joystick.valid() )
+		{
+			float x ( 0.5f - joystick->horizontal() );
+			float y ( 0.5f - joystick->vertical() );
+	  
+			joystick->analogTrim ( x, y );
+		}
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update all analogs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::analogsUpdate()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
+  {
+    Joystick::RefPtr joystick ( iter->second );
+
+    if ( joystick.valid() )
+    {
+      // update all the joystick analog inputs
+      joystick->update();
+
+      // Send any notifications to all joystick analog inputs.
+      joystick->notify();
+    }
   }
 }

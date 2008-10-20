@@ -25,6 +25,10 @@ namespace VRV
   const unsigned long BUTTON3 ( 0x00000008 );
   const unsigned long BUTTON4 ( 0x00000010 );
   const unsigned long BUTTON5 ( 0x00000020 );
+  const unsigned long BUTTON6 ( 0x00000040 );
+  const unsigned long BUTTON7 ( 0x00000080 );
+  const unsigned long BUTTON8 ( 0x00000100 );
+  const unsigned long BUTTON9 ( 0x00000200 );
 
   // For convenience.
   const unsigned long BUTTON_RED      = VRV::BUTTON1;

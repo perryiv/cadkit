@@ -35,6 +35,7 @@ public:
   typedef std::vector< ButtonDevice::RefPtr > Buttons;
   typedef Buttons::value_type value_type;
   typedef Buttons::iterator iterator;
+  typedef unsigned long MaskType;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ButtonGroup );
@@ -52,16 +53,16 @@ public:
   void            clear();
 
   // Return bitmask of buttons that are down.
-  unsigned long   down() const { return _down; }
+  MaskType        down() const { return _down; }
 
   // Notify listeners if state changed.
   void            notify();
 
   // Return bitmask of buttons just pressed.
-  unsigned long   pressed() const { return _pressed; }
+  MaskType        pressed() const { return _pressed; }
 
   // Return bitmask of buttons just released.
-  unsigned long   released() const { return _released; }
+  MaskType        released() const { return _released; }
 
   // return the number of buttons
   unsigned int    size();

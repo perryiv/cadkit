@@ -157,7 +157,6 @@ Application::Application() :
   _functorFilename   (),
   _deviceFilename    (),
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
-  _analogs           (),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  (),
@@ -1173,19 +1172,8 @@ void Application::_preFrame()
   _tracker->update();
 
   // Update all the analog inputs.
-  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
-  {
-    Joystick::RefPtr joystick ( iter->second );
+  this->analogsUpdate();
 
-    if ( joystick.valid() )
-    {
-      // update all the joystick analog inputs
-      joystick->update();
-
-      // Send any notifications to all joystick analog inputs.
-      joystick->notify();
-    }
-  }
   std::cout << "\r" << std::flush;
   // Navigate if we are supposed to.
   this->_navigate ();
@@ -2115,33 +2103,6 @@ void Application::wandRotation ( Matrix &W ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the trim. This assumes the user is not tilting the joystick one way 
-//  or the other. It records the value at the neutral position. If the value 
-//  is 0.5 (like it should be) then the "trim" will be zero.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::calibrateAnalogs()
-{
-  USUL_TRACE_SCOPE;
-
-  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
-  {
-		Joystick::RefPtr joystick ( iter->second );
-
-		if ( joystick.valid() )
-		{
-			float x ( 0.5f - joystick->horizontal() );
-			float y ( 0.5f - joystick->vertical() );
-	  
-			joystick->analogTrim( x, y );
-		}
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Print the usage string.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2953,24 +2914,26 @@ void Application::_readDevicesFile()
       const std::string hm ( node->attributes()["h_modifier"] );
       const std::string vm ( node->attributes()["v_modifier"] );
 
-      float hModifier = Usul::Convert::Type< std::string, float >::convert( hm );
-      float vModifier = Usul::Convert::Type< std::string, float >::convert( vm );
+      const float hModifier ( Usul::Convert::Type< std::string, float >::convert( hm ) );
+      const float vModifier ( Usul::Convert::Type< std::string, float >::convert( vm ) );
 
 			if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
 			{
-				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
-        _analogs[name]->name( name );
-        _analogs[name]->horizontalModifier( hModifier );
-        _analogs[name]->verticalModifier( vModifier );
-        
+        JoystickPtr analog ( new VRV::Devices::JoystickDevice ( analog0, analog1 ) );
+        analog->name( name );
+        analog->horizontalModifier( hModifier );
+        analog->verticalModifier( vModifier );
+
+        this->analogAdd ( analog );
 			}
 		}
   }
-  if( _analogs.size() == 0 )
+  // I don't think we need this anymore.
+  /*if( _analogs.size() == 0 )
   {
     _analogs[ "Joystick" ] = new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" );
     _analogs[ "Joystick" ]->name( "Joystick" );
-  }
+  }*/
 
   // Set the new button group.
   this->buttons ( buttonGroup );
@@ -3058,8 +3021,7 @@ void Application::_readFunctorFile ()
     }	
   }
 
-  Analogs::iterator iter ( _analogs.find ( _menuNavigationAnalogID ) );
-  JoystickPtr joystick ( iter != _analogs.end() ? iter->second : 0x0 );
+  JoystickPtr joystick ( this->analogFind ( _menuNavigationAnalogID ) );
 
     // assign the menu navigation to the specified joystick or default if none specified
   if( joystick.valid() )
@@ -3094,7 +3056,7 @@ void Application::_readFunctorFile ()
   DirectionFunctors directionFunctors;
 
   // Setters.
-  Helper::AnalogSetter analogSetter       ( _analogs );
+  Helper::AnalogSetter analogSetter       ( this->analogs() );
   Helper::MatrixSetter matrixSetter;
   Helper::DirectionSetter directionSetter ( matrixFunctors );
   Helper::TransformSetter transformSetter ( directionFunctors );
@@ -3867,7 +3829,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     menu->append ( buttons );
   }
 
-  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::calibrateAnalogs ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogsCalibrate ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 
   menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Update", _setAllowUpdate, _isUpdateOn ) ) );

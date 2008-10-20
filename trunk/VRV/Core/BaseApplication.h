@@ -50,6 +50,21 @@ public:
   // Destructor.
   virtual ~BaseApplication();
 
+  /// Get a copy of the analogs.
+  Analogs                       analogs() const;
+
+  /// Add an analog.
+  void                          analogAdd ( JoystickPtr analog );
+
+  /// Calibrate the analogs.
+  void                          analogsCalibrate();
+
+  /// Find an analog.
+  JoystickPtr                   analogFind ( const std::string& key );
+
+  /// Update all analogs.
+  void                          analogsUpdate();
+
   /// Set/get the buttons.
   void                          buttons ( ButtonGroup* buttons );
   ButtonGroup *                 buttons();
@@ -102,7 +117,7 @@ private:
   // Data Members.
   mutable Mutex                          _mutex;
   ButtonsPtr                             _buttons;
-
+  Analogs                                _analogs;
 };
 
 

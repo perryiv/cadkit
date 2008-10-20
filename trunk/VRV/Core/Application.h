@@ -190,9 +190,6 @@ public:
   // Destructor.
   virtual ~Application();
 
-  /// Calibrate the analogs.
-  void                          calibrateAnalogs();
-
   // Clean up.  Call before the Application is destroyed.
   void                          cleanup();
 
@@ -283,22 +280,22 @@ public:
 
   /// Toggle time based rendering.
   void                    timeBased ( bool b );
-  bool                    timeBased () const;
+  bool                    timeBased() const;
 
   // Export functions.
-  void                    exportWorld ();
-  void                    exportWorldBinary ();
-  void                    exportScene ();
-  void                    exportSceneBinary ();
+  void                    exportWorld();
+  void                    exportWorldBinary();
+  void                    exportScene();
+  void                    exportSceneBinary();
   void                    exportDocument ( const std::string& ext );
 
   // View functions.
-  void                    viewWorld ();
-  void                    viewScene ();
+  void                    viewWorld();
+  void                    viewScene();
 
   /// Get/Set near far mode.
   void                    setComputeNearFar ( bool b );
-  bool                    getComputeNearFar () const;
+  bool                    getComputeNearFar() const;
   bool                    isComputeNearFar ( osg::CullSettings::ComputeNearFarMode ) const;
 
   /// Reread the preference files and reinitialiaze.
@@ -374,7 +371,7 @@ protected:
   void                          _processCommands ();
 
   /// Navigate.
-  virtual void                  _navigate ();
+  virtual void                  _navigate();
 
   /// Update the status bar text.
   void                          _updateStatusBar ( const std::string &text );
@@ -691,7 +688,6 @@ private:
   std::string                            _functorFilename;
   std::string                            _deviceFilename;
   TrackerPtr                             _tracker;
-  Analogs                                _analogs;
   AnalogInputs                           _analogInputs;
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;

@@ -69,6 +69,7 @@ public:
   /// Increment date by one day.
   void         increment();
 
+  void         incrementHour();
   void         incrementDay();
   void         incrementMonth();
   void         incrementYear();

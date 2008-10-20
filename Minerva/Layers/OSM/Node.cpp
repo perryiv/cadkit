@@ -7,9 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Data/LineStyle.h"
+#include "Minerva/Layers/OSM/Node.h"
 
-using namespace Minerva::Core::Data;
+using namespace Minerva::Layers::OSM;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -18,25 +18,22 @@ using namespace Minerva::Core::Data;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle::LineStyle() : BaseClass(),
-	_width ( 1.0f )
+Node::Node ( IdType id, const Location& location, const Date& timestamp, const Tags& tags ) : 
+  BaseClass( id, timestamp, tags ),
+  _location ( location )
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create.
+//  Creation function.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle* LineStyle::create ( const Color& color, float width )
+Node* Node::create ( IdType id, const Location& location, const Date& timestamp, const Tags& tags )
 {
-  LineStyle::RefPtr lineStyle ( new LineStyle );
-  lineStyle->color ( color );
-  lineStyle->width ( width );
-
-  return lineStyle.release();
+  return new Node ( id, location, timestamp, tags );
 }
 
 
@@ -46,32 +43,18 @@ LineStyle* LineStyle::create ( const Color& color, float width )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle::~LineStyle()
+Node::~Node()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the width.
+//  Get the location.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineStyle::width ( float w )
+const Node::Location& Node::location() const
 {
-  Guard guard ( this->mutex() );
-  _width = w;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the width.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-float LineStyle::width() const
-{
-  Guard guard ( this->mutex() );
-  return _width;
+  return _location;
 }

@@ -9,6 +9,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/OSM/OpenStreetMap.h"
+#include "Minerva/Core/Data/DataObject.h"
+#include "Minerva/Core/Data/Line.h"
+#include "Minerva/Core/Data/Point.h"
+#include "Minerva/Core/Data/TimeStamp.h"
 #include "Minerva/Core/Factory/Readers.h"
 
 #include "XmlTree/Document.h"
@@ -110,25 +114,31 @@ void OpenStreetMap::_read ( const std::string &filename, Usul::Interfaces::IUnkn
   if ( bounds.valid() )
     this->_setBounds ( *bounds );
   
-  typedef XmlTree::Node::Children Children;
-  Children nodes, ways;
-  
-  // Get all the nodes.
-  doc->find ( "node", false, nodes );
-  
-  // Add each node.
-  BOOST_FOREACH ( XmlTree::Node::ValidRefPtr node, nodes )
+  // Nodes and ways.
+  Nodes nodes;
+  Ways ways;
+
+  // Parse.
+  OpenStreetMap::_parse ( *doc, nodes, ways );
+
+  // Add nodes.
+  BOOST_FOREACH ( OSMNodePtr node, nodes )
   {
-    this->_addWay ( *node );
+    if ( true == node.valid() )
+    {
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( OpenStreetMap::_createForNode ( *node ) );
+      this->add ( unknown );
+    }
   }
-  
-  // Get all the ways.
-  doc->find ( "way", false, ways );
-  
-  // Add each way.
-  BOOST_FOREACH ( XmlTree::Node::ValidRefPtr way, ways )
+
+  // Add ways.
+  BOOST_FOREACH ( OSMWayPtr way, ways )
   {
-    this->_addWay ( *way );
+    if ( true == way.valid() )
+    {
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( OpenStreetMap::_createForWay ( *way ) );
+      this->add ( unknown );
+    }
   }
 }
 
@@ -190,21 +200,158 @@ void OpenStreetMap::_setBounds ( const XmlTree::Node& node )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a node.
+//  Parse the xml into ways and nodes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenStreetMap::_addNode ( const XmlTree::Node& node )
+void OpenStreetMap::_parse ( const XmlTree::Node& node, Nodes& nodes, Ways& ways )
 {
+  // Typedefs.
+  typedef Minerva::Layers::OSM::Object OSMObject;
+  typedef OSMObject::IdType IdType;
+  typedef OSMObject::Date DateType;
+  typedef OSMObject::Tags Tags;
+  typedef Node::Location LocationType;
+  typedef Way::Nodes Nodes;
+  typedef std::map<IdType,Node::RefPtr> NodeMap;
+  typedef XmlTree::Node::Children Children;
+  typedef XmlTree::Node::Attributes Attributes;
+
+  // Get all the children.
+  const Children& children ( node.children() );
+
+  // Map to retrieve nodes when parsing a Way.
+  NodeMap map;
+  
+  // Add each node.
+  BOOST_FOREACH ( XmlTree::Node::ValidRefPtr node, children )
+  {
+    // Get the attributes.
+    Attributes attributes ( node->attributes() );
+    
+    // Get the id.
+    IdType id ( Usul::Convert::Type<std::string,IdType>::convert ( attributes["id"] ) );
+
+    // Get the date.
+    DateType date ( DateType::createFromKml ( attributes["timestamp"] ) );
+
+#ifdef _DEBUG
+    const std::string temp ( date.toString() );
+#endif
+
+    // Tags for the node.
+    Tags tags;
+
+    // Parse the tags.
+    BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, node->children() )
+    {
+      if ( "tag" == child->name() )
+      {
+        // Get the attributes.
+        Attributes a ( child->attributes() );
+
+        // Add the tag's key and value.
+        tags.insert ( std::make_pair ( a["k"], a["v"] ) );
+      }
+    }
+
+    // Is the xml element a node?
+    if ( "node" == node->name() )
+    {
+      // Lat/Lon position.
+      const double lat ( Usul::Convert::Type<std::string,double>::convert ( attributes["lat"] ) );
+      const double lon ( Usul::Convert::Type<std::string,double>::convert ( attributes["lon"] ) );
+
+      // Create the node.
+      Node::RefPtr node ( Node::create ( id, LocationType ( lon, lat ), date, tags ) );
+      nodes.push_back ( node );
+      map.insert ( std::make_pair ( id, node ) );
+    }
+
+    // Is the xml element a way?
+    else if ( "way" == node->name() )
+    {
+      // Nodes for this way.
+      Nodes nodes;
+
+      // Parse the nodes.
+      BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, node->children() )
+      {
+        if ( "nd" == child->name() )
+        {
+          // Get the attributes.
+          Attributes a ( child->attributes() );
+
+          // Get the node id.
+          const IdType nodeId ( Usul::Convert::Type<std::string,IdType>::convert ( a["ref"] ) );
+
+          // Get the node.
+          Node::RefPtr node ( map[nodeId] );
+
+          // Add the node.
+          if ( true == node.valid() )
+            nodes.push_back ( node );
+        }
+      }
+
+      ways.push_back ( Way::create ( id, date, tags, nodes ) );
+    }
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Add a way.
+//  Create a data object.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenStreetMap::_addWay ( const XmlTree::Node& node )
+OpenStreetMap::DataObject* OpenStreetMap::_createForNode ( const Minerva::Layers::OSM::Node& node )
 {
+  // Make a point.
+  Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
+  point->point ( Usul::Math::Vec3d (  node.location()[0], node.location()[1], 0.0 ) );
+  point->size ( 10.0 );
+  point->autotransform ( false );
+  point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
+
+  DataObject::RefPtr object ( new DataObject );
+  object->addGeometry ( point.get() );
+  object->name ( Usul::Strings::format ( node.id() ) );
+  object->timePrimitive ( new Minerva::Core::Data::TimeStamp ( node.timestamp() ) );
+
+  return object.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenStreetMap::DataObject* OpenStreetMap::_createForWay  ( const Minerva::Layers::OSM::Way&  way  )
+{
+  // Make a line.
+  Minerva::Core::Data::Line::RefPtr line ( new Minerva::Core::Data::Line );
+  Minerva::Core::Data::Line::Vertices vertices;
+  vertices.reserve ( way.numNodes() );
+
+  for ( unsigned int i = 0; i < way.numNodes(); ++i )
+  {
+    OSMNodePtr node ( way.node ( i ) );
+
+    if ( true == node.valid() )
+      vertices.push_back ( Usul::Math::Vec3d ( node->location()[0], node->location()[1], 0.0 ) );
+  }
+
+  line->line ( vertices );
+  line->lineStyle ( Minerva::Core::Data::LineStyle::create ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ), 2.0 ) );
+
+  DataObject::RefPtr object ( new DataObject );
+  object->addGeometry ( line.get() );
+  object->name ( Usul::Strings::format ( way.id() ) );
+  object->timePrimitive ( new Minerva::Core::Data::TimeStamp ( way.timestamp() ) );
+
+  return object.release();
 }

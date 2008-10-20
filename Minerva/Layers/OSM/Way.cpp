@@ -7,9 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Data/LineStyle.h"
+#include "Minerva/Layers/OSM/Way.h"
 
-using namespace Minerva::Core::Data;
+using namespace Minerva::Layers::OSM;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -18,25 +18,22 @@ using namespace Minerva::Core::Data;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle::LineStyle() : BaseClass(),
-	_width ( 1.0f )
+Way::Way ( IdType id, const Date& timestamp, const Tags& tags, const Nodes& nodes ) : 
+  BaseClass ( id, timestamp, tags ),
+  _nodes ( nodes )
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create.
+//  Create a way.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle* LineStyle::create ( const Color& color, float width )
+Way* Way::create ( IdType id, const Date& timestamp, const Tags& tags, const Nodes& nodes )
 {
-  LineStyle::RefPtr lineStyle ( new LineStyle );
-  lineStyle->color ( color );
-  lineStyle->width ( width );
-
-  return lineStyle.release();
+  return new Way ( id, timestamp, tags, nodes );
 }
 
 
@@ -46,32 +43,30 @@ LineStyle* LineStyle::create ( const Color& color, float width )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle::~LineStyle()
+Way::~Way()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the width.
+//  Get the number of nodes.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineStyle::width ( float w )
+unsigned int Way::numNodes() const
 {
-  Guard guard ( this->mutex() );
-  _width = w;
+  return _nodes.size();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the width.
+//  Get the i'th node.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float LineStyle::width() const
+Node* Way::node ( unsigned int i ) const
 {
-  Guard guard ( this->mutex() );
-  return _width;
+  return _nodes.at ( i ).get();
 }

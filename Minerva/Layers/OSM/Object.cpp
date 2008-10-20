@@ -7,9 +7,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Data/LineStyle.h"
+#include "Minerva/Layers/OSM/Object.h"
 
-using namespace Minerva::Core::Data;
+using namespace Minerva::Layers::OSM;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -18,25 +18,27 @@ using namespace Minerva::Core::Data;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle::LineStyle() : BaseClass(),
-	_width ( 1.0f )
+Object::Object() : 
+  BaseClass(),
+  _id ( 0 ),
+  _tags(),
+  _timestamp()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Create.
+//  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle* LineStyle::create ( const Color& color, float width )
+Object::Object ( IdType id, const Date& timestamp, const Tags& tags ) : 
+  BaseClass(),
+  _id ( id ),
+  _tags ( tags ),
+  _timestamp ( timestamp )
 {
-  LineStyle::RefPtr lineStyle ( new LineStyle );
-  lineStyle->color ( color );
-  lineStyle->width ( width );
-
-  return lineStyle.release();
 }
 
 
@@ -46,32 +48,30 @@ LineStyle* LineStyle::create ( const Color& color, float width )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineStyle::~LineStyle()
+Object::~Object()
 {
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the width.
+//  Get the id.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineStyle::width ( float w )
+Object::IdType Object::id() const
 {
-  Guard guard ( this->mutex() );
-  _width = w;
+  return _id;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the width.
+//  Get the timestamp.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float LineStyle::width() const
+const Object::Date& Object::timestamp() const
 {
-  Guard guard ( this->mutex() );
-  return _width;
+  return _timestamp;
 }

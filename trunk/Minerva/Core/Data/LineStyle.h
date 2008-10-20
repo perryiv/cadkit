@@ -23,6 +23,8 @@ public:
   typedef Minerva::Core::Data::ColorStyle BaseClass;
   
   USUL_DECLARE_REF_POINTERS ( LineStyle );
+
+  static LineStyle*  create ( const Color& color, float width );
   
   LineStyle();
 

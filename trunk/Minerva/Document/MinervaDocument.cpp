@@ -1338,7 +1338,9 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
       // Animate if we should.
       if ( duration > _animationSpeed )
       {
-        if( _animateSettings->timestepType() == Settings::DAY )
+        if ( _animateSettings->timestepType() == Settings::HOUR )
+          lastDate.incrementHour();
+        else if ( _animateSettings->timestepType() == Settings::DAY )
           lastDate.incrementDay();
         else if ( _animateSettings->timestepType() == Settings::MONTH )
           lastDate.incrementMonth();
@@ -1440,6 +1442,7 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   animate->append ( speed );
 
   MenuKit::Menu::RefPtr type ( new MenuKit::Menu ( "Timestep" ) );
+  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::HOUR,  me ) ) );
   type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::DAY,   me ) ) );
   type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::MONTH, me ) ) );
   type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::YEAR,  me ) ) );

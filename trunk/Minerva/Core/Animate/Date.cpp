@@ -22,6 +22,7 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Split.h"
 
+#include "boost/algorithm/string/erase.hpp"
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/date_time/local_time/local_time.hpp"
 
@@ -128,6 +129,18 @@ unsigned int Date::month() const
 unsigned int Date::year() const
 {
   return _date.date().year();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increment the hour.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Date::incrementHour()
+{
+  _date = _date + boost::posix_time::time_duration ( boost::posix_time::hours ( 1 ) );
 }
 
 
@@ -414,7 +427,7 @@ Date::DateType Date::createFromKml ( const std::string& value )
   std::string date ( strings.size() > 0 ? strings[0] : "" );
   
   // Currently not handling time.
-  //std::string time ( strings.size() > 1 ? strings[1] : "" );
+  std::string time ( strings.size() > 1 ? strings[1] : "" );
   
   Strings parts;
   Usul::Strings::split ( date, "-", false, parts );
@@ -422,15 +435,65 @@ Date::DateType Date::createFromKml ( const std::string& value )
   if ( false == parts.empty() )
   {
     int year ( Usul::Convert::Type<std::string,int>::convert ( parts[0] ) );
-    int month ( parts.size() > 1 ? Usul::Convert::Type<std::string,int>::convert ( parts[1] ) : 1 );
-    int day ( parts.size() > 2 ? Usul::Convert::Type<std::string,int>::convert ( parts[2] ) : 1 );
+    const int month ( parts.size() > 1 ? Usul::Convert::Type<std::string,int>::convert ( parts[1] ) : 1 );
+    const int day ( parts.size() > 2 ? Usul::Convert::Type<std::string,int>::convert ( parts[2] ) : 1 );
     
     if ( year < 1400 )
       year += 1400;
     
+    // The date.
     boost::gregorian::date date ( boost::gregorian::from_simple_string ( Usul::Strings::format ( year, "-", month, "-", day ) ) );
+
+    // The time duration.
+    boost::posix_time::time_duration timeDuration ( boost::posix_time::hours ( 0 ) );
+
+    // The timezone.
+    boost::local_time::time_zone_ptr timeZone;
+
+    if ( false == time.empty() )
+    {
+      boost::algorithm::erase_all ( time, "Z" );
+
+      // See if there is a plus or negative.
+      if ( time.size() > 8 && ( '-' == time[8] || '+' == time[8] ) )
+      {
+        std::string zone ( time.begin() + 8, time.end() );
+        const std::string temp ( time );
+        time.assign ( temp.begin(), temp.begin() + 8 );
+        
+        typedef Usul::Convert::Type<std::string,int> ToInt;
+        int offset ( ToInt::convert ( zone ) );
+        int hourOffset ( offset / 100 );
+        
+        // Offset from UTC.
+        boost::posix_time::time_duration utcOffset ( hourOffset, 0, 0 );
+        
+        // Daylight savings offsets.  TODO: Find out if the RSS feed will have accounted for dst.
+        boost::local_time::dst_adjustment_offsets dstOffsets ( boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                              boost::posix_time::time_duration ( 0, 0, 0 ),
+                                                              boost::posix_time::time_duration ( 0, 0, 0 ) );
+        
+        boost::shared_ptr<boost::local_time::dst_calc_rule> rules;
+        boost::local_time::time_zone_names names ( "", "", "", "" );
+        
+        timeZone = boost::local_time::time_zone_ptr ( new boost::local_time::custom_time_zone ( names, utcOffset, dstOffsets, rules ) );
+      }
+
+      parts.clear();
+      Usul::Strings::split ( time, ":", false, parts );
+
+      // We should have 3 strings.
+      if ( 3 == parts.size() )
+      {
+        const int hours   ( Usul::Convert::Type<std::string,int>::convert ( parts[0] ) );
+        const int minutes ( parts.size() > 1 ? Usul::Convert::Type<std::string,int>::convert ( parts[1] ) : 1 );
+        const int seconds ( parts.size() > 2 ? Usul::Convert::Type<std::string,int>::convert ( parts[2] ) : 1 );
+
+        timeDuration = boost::posix_time::time_duration ( hours, minutes, seconds );
+      }
+    }
     
-    return boost::posix_time::ptime ( date );
+    return boost::posix_time::ptime ( boost::local_time::local_date_time ( date, timeDuration, timeZone, true ).utc_time() );
   }
   
   return boost::posix_time::not_a_date_time;

@@ -33,6 +33,7 @@ public:
 
   enum TimestepType
   {
+    HOUR,
     DAY,
     MONTH,
     YEAR

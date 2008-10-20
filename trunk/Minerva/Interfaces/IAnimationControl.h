@@ -26,6 +26,7 @@ struct IAnimationControl : public Usul::Interfaces::IUnknown
 
   enum TimestepType
   {
+    HOUR,
     DAY,
     MONTH,
     YEAR

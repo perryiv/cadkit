@@ -43,6 +43,8 @@ ChangeTimestepType::ChangeTimestepType ( TimestepType type, Usul::Interfaces::IU
   BaseClass ( caller ),
   _type    ( type )
 {
+  if ( Minerva::Interfaces::IAnimationControl::HOUR == type )
+    this->text ( "Hour" );
   if ( Minerva::Interfaces::IAnimationControl::DAY == type )
     this->text ( "Day" );
   if ( Minerva::Interfaces::IAnimationControl::MONTH == type )

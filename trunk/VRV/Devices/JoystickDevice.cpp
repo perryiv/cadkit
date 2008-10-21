@@ -351,6 +351,30 @@ void JoystickDevice::verticalModifier( float modifier )
 
 Usul::Math::Vec2f JoystickDevice::modifier()
 {
-  Usul::Math::Vec2f modifier( _horizontalModifier, _verticalModifier );
+  Usul::Math::Vec2f modifier ( _horizontalModifier, _verticalModifier );
   return modifier;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the device's horizontal state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+JoystickDevice::Message JoystickDevice::horizontalState() const
+{
+  return _hs;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the device's vertical state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+JoystickDevice::Message JoystickDevice::verticalState() const
+{
+  return _vs;
 }

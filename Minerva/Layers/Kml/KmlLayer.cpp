@@ -39,10 +39,12 @@
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Predicates/FileExists.h"
+#include "Usul/Resources/TextWindow.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Trim.h"
+#include "Usul/System/Clock.h"
 #include "Usul/Threads/Safe.h"
 
 #include "boost/algorithm/string/find.hpp"
@@ -224,10 +226,18 @@ Usul::Interfaces::IUnknown* KmlLayer::queryInterface ( unsigned long iid )
 
 void KmlLayer::read ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
 {
+  // Initialize start time.
+  const Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
+
+  // Set our internal filename.
   const std::string filename ( Usul::Threads::Safe::get ( this->mutex(), _filename ) );
   
   // Read.
   this->_read ( filename, caller, progress );
+
+  // Feedback.
+  const double seconds ( static_cast < double > ( Usul::System::Clock::milliseconds() - start ) * 0.001 );
+  std::cout << Usul::Strings::format ( seconds, " seconds ... Time to open ", filename ) << Usul::Resources::TextWindow::endl;
 }
 
 

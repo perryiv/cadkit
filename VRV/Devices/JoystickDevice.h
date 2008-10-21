@@ -69,8 +69,12 @@ public:
   float             horizontal() const { return _h; }
   float             vertical()   const { return _v; }
 
+  // Get the device's state.
+  Message           horizontalState() const;
+  Message           verticalState() const;
+
   // set the analog trim value
-  void              analogTrim( float x, float y );
+  void              analogTrim ( float x, float y );
 
   // Notify the client of any state changes.
   void              notify();

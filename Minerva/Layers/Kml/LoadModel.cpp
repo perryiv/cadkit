@@ -202,7 +202,7 @@ osg::Node* LoadModel::operator() ( const std::string& filename, ModelCache *cach
     }
 #endif
     osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
-    
+
     OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
     //OsgTools::State::StateSet::setNormalize ( ss.get(), true );
   }

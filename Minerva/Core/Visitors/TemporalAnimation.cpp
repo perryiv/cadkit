@@ -55,7 +55,7 @@ void TemporalAnimation::visit ( Minerva::Core::Data::Feature &object )
   else if ( Minerva::Core::Data::TimeStamp *stamp = dynamic_cast<Minerva::Core::Data::TimeStamp*> ( object.timePrimitive() ) )
   {
     const Date date ( stamp->when() );
-    Date end ( date ); end.incrementDay();
+    Date end ( date ); end.increment ( Date::INCREMENT_DAY, 1 );
     this->_setVisibility ( date, end, object );
   }
 }

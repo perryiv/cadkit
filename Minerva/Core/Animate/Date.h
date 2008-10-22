@@ -66,13 +66,18 @@ public:
   /// Get the year.
   unsigned int year() const;
 
-  /// Increment date by one day.
-  void         increment();
+  enum IncrementType
+  {
+    INCREMENT_SECOND,
+    INCREMENT_MINUTE,
+    INCREMENT_HOUR,
+    INCREMENT_DAY,
+    INCREMENT_MONTH,
+    INCREMENT_YEAR
+  };
 
-  void         incrementHour();
-  void         incrementDay();
-  void         incrementMonth();
-  void         incrementYear();
+  /// Increment date by given increment type and amount.
+  void         increment ( IncrementType type, long amount = 1 );
 
   void         moveBackNumDays ( unsigned int );
 

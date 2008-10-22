@@ -1337,15 +1337,11 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
       // Animate if we should.
       if ( duration > _animationSpeed )
       {
-        if ( _animateSettings->timestepType() == Settings::HOUR )
-          lastDate.incrementHour();
-        else if ( _animateSettings->timestepType() == Settings::DAY )
-          lastDate.incrementDay();
-        else if ( _animateSettings->timestepType() == Settings::MONTH )
-          lastDate.incrementMonth();
-        else if ( _animateSettings->timestepType() == Settings::YEAR )
-          lastDate.incrementYear();
+        // Set the last time that we've updated.
         _lastTime = time;
+
+        // Increment the last date to show.
+        lastDate.increment ( static_cast<Minerva::Core::Animate::Date::IncrementType> ( _animateSettings->timestepType() ), 1.0 );
 
         // Wrap if we've gone beyond the last date.
         if( lastDate > _current->end() )
@@ -1353,8 +1349,10 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
           lastDate = _current->begin();
         }
 
+        // The first date to show.
         Minerva::Core::Animate::Date firstDate ( lastDate );
 
+        // Should we show past events?
         if ( _animateSettings->showPastDays() )
         {
           firstDate = _current->begin();
@@ -1441,10 +1439,14 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
   animate->append ( speed );
 
   MenuKit::Menu::RefPtr type ( new MenuKit::Menu ( "Timestep" ) );
-  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::HOUR,  me ) ) );
-  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::DAY,   me ) ) );
-  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::MONTH, me ) ) );
-  type->append ( new RadioButton ( new Minerva::Core::Commands::ChangeTimestepType ( Minerva::Interfaces::IAnimationControl::YEAR,  me ) ) );
+  typedef Minerva::Core::Commands::ChangeTimestepType ChangeTimestepType;
+  typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
+  type->append ( new RadioButton ( new ChangeTimestepType ( IAnimationControl::TIMESTEP_TYPE_SECOND,  me ) ) );
+  type->append ( new RadioButton ( new ChangeTimestepType ( IAnimationControl::TIMESTEP_TYPE_MINUTE,  me ) ) );
+  type->append ( new RadioButton ( new ChangeTimestepType ( IAnimationControl::TIMESTEP_TYPE_HOUR,  me ) ) );
+  type->append ( new RadioButton ( new ChangeTimestepType ( IAnimationControl::TIMESTEP_TYPE_DAY,   me ) ) );
+  type->append ( new RadioButton ( new ChangeTimestepType ( IAnimationControl::TIMESTEP_TYPE_MONTH, me ) ) );
+  type->append ( new RadioButton ( new ChangeTimestepType ( IAnimationControl::TIMESTEP_TYPE_YEAR,  me ) ) );
   animate->append ( type );
 
 	// Time spans.

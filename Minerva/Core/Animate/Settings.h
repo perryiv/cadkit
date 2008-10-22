@@ -33,10 +33,12 @@ public:
 
   enum TimestepType
   {
-    HOUR,
-    DAY,
-    MONTH,
-    YEAR
+    TIMESTEP_TYPE_SECOND = Date::INCREMENT_SECOND,
+    TIMESTEP_TYPE_MINUTE = Date::INCREMENT_MINUTE,
+    TIMESTEP_TYPE_HOUR =   Date::INCREMENT_HOUR,
+    TIMESTEP_TYPE_DAY =    Date::INCREMENT_DAY,
+    TIMESTEP_TYPE_MONTH =  Date::INCREMENT_MONTH,
+    TIMESTEP_TYPE_YEAR =   Date::INCREMENT_YEAR,
   };
 
   /// First date showing.

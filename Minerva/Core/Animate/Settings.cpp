@@ -20,15 +20,15 @@ using namespace Minerva::Core::Animate;
 ///////////////////////////////////////////////////////////////////////////////
 
 Settings::Settings() : 
-BaseClass(),
-_firstDate( boost::date_time::min_date_time ),
-_lastDate( boost::date_time::max_date_time ),
-_animate( false ),
-_pause ( false ),
-_showPastDays( false ),
-_timeWindow ( false ),
-_windowLength ( 0 ),
-_type ( DAY )
+  BaseClass(),
+  _firstDate( boost::date_time::min_date_time ),
+  _lastDate( boost::date_time::max_date_time ),
+  _animate( false ),
+  _pause ( false ),
+  _showPastDays( false ),
+  _timeWindow ( false ),
+  _windowLength ( 0 ),
+  _type ( Settings::TIMESTEP_TYPE_DAY )
 {
 }
 

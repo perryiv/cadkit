@@ -1436,7 +1436,7 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
         
         // Increment last day so animation works properly.
         Minerva::Core::Animate::Date last ( lastDate ); 
-        last.increment();
+        last.increment ( Minerva::Core::Animate::Date::INCREMENT_DAY, 1.0 );
        
         Minerva::Core::Data::TimeSpan::RefPtr span ( new Minerva::Core::Data::TimeSpan );
         span->begin ( Minerva::Core::Animate::Date ( firstDate ) );

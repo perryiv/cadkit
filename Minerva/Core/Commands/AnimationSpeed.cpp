@@ -13,6 +13,7 @@
 
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Predicates/CloseFloat.h"
 
 #include <sstream>
 
@@ -48,8 +49,9 @@ AnimationSpeed::AnimationSpeed ( double speed, Usul::Interfaces::IUnknown *calle
 {
   this->_addMember ( "speed", _speed );
 
+  const double stepsPerSecond ( 1.0 / _speed );
   std::ostringstream os;
-  os << speed;
+  os << stepsPerSecond << " steps per second";
   this->text( os.str() );
 }
 
@@ -64,6 +66,12 @@ AnimationSpeed::~AnimationSpeed()
 {
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Attempt to change the animation speed.
+//
+///////////////////////////////////////////////////////////////////////////////
 
 namespace Detail
 {
@@ -101,10 +109,10 @@ void AnimationSpeed::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool AnimationSpeed::updateCheck () const
+bool AnimationSpeed::updateCheck() const
 {
   Minerva::Interfaces::IAnimationControl::QueryPtr control ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller() ) );
-  return control.valid() ? _speed == control->animateSpeed ( ) : false;
+  return control.valid() ? Usul::Predicates::CloseFloat<double>::compare ( _speed, control->animateSpeed(), 10 ) : false;
 }
 
 

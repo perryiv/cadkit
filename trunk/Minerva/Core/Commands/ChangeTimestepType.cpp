@@ -27,7 +27,7 @@ USUL_FACTORY_REGISTER_CREATOR ( ChangeTimestepType );
 
 ChangeTimestepType::ChangeTimestepType ( ) : 
   BaseClass ( 0x0 ),
-  _type    ( Minerva::Interfaces::IAnimationControl::DAY )
+  _type    ( Minerva::Interfaces::IAnimationControl::TIMESTEP_TYPE_DAY )
 {
   this->_addMember ( "type", reinterpret_cast < unsigned int& > ( _type ) );
 }
@@ -43,13 +43,17 @@ ChangeTimestepType::ChangeTimestepType ( TimestepType type, Usul::Interfaces::IU
   BaseClass ( caller ),
   _type    ( type )
 {
-  if ( Minerva::Interfaces::IAnimationControl::HOUR == type )
+  if ( Minerva::Interfaces::IAnimationControl::TIMESTEP_TYPE_SECOND == type )
+    this->text ( "Second" );
+  if ( Minerva::Interfaces::IAnimationControl::TIMESTEP_TYPE_MINUTE == type )
+    this->text ( "Minute" );
+  if ( Minerva::Interfaces::IAnimationControl::TIMESTEP_TYPE_HOUR == type )
     this->text ( "Hour" );
-  if ( Minerva::Interfaces::IAnimationControl::DAY == type )
+  if ( Minerva::Interfaces::IAnimationControl::TIMESTEP_TYPE_DAY == type )
     this->text ( "Day" );
-  if ( Minerva::Interfaces::IAnimationControl::MONTH == type )
+  if ( Minerva::Interfaces::IAnimationControl::TIMESTEP_TYPE_MONTH == type )
     this->text ( "Month" );
-  if ( Minerva::Interfaces::IAnimationControl::YEAR == type )
+  if ( Minerva::Interfaces::IAnimationControl::TIMESTEP_TYPE_YEAR == type )
     this->text ( "Year" );
 
   this->_addMember ( "type", reinterpret_cast < unsigned int& > ( _type ) );

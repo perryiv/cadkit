@@ -26,10 +26,12 @@ struct IAnimationControl : public Usul::Interfaces::IUnknown
 
   enum TimestepType
   {
-    HOUR,
-    DAY,
-    MONTH,
-    YEAR
+    TIMESTEP_TYPE_SECOND,
+    TIMESTEP_TYPE_MINUTE,
+    TIMESTEP_TYPE_HOUR,
+    TIMESTEP_TYPE_DAY,
+    TIMESTEP_TYPE_MONTH,
+    TIMESTEP_TYPE_YEAR
   };
 
   /// Start the animation.

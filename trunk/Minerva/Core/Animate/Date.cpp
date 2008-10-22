@@ -134,26 +134,33 @@ unsigned int Date::year() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Increment the hour.
+//  Increment date by given increment type and amount.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Date::incrementHour()
+void Date::increment ( IncrementType type, long amount )
 {
-  _date = _date + boost::posix_time::time_duration ( boost::posix_time::hours ( 1 ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Increment the day.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Date::increment()
-{
-  boost::gregorian::date_duration dd ( 1 );
-  _date = _date + dd;
+  switch ( type )
+  {
+  case Date::INCREMENT_SECOND:
+    _date = _date + boost::posix_time::time_duration ( boost::posix_time::seconds ( amount ) );
+    break;
+  case Date::INCREMENT_MINUTE:
+    _date = _date + boost::posix_time::time_duration ( boost::posix_time::minutes ( amount ) );
+    break;
+  case Date::INCREMENT_HOUR:
+    _date = _date + boost::posix_time::time_duration ( boost::posix_time::hours ( amount ) );
+    break;
+  case Date::INCREMENT_DAY:
+    _date = _date + boost::gregorian::date_duration ( amount );
+    break;
+  case Date::INCREMENT_MONTH:
+    _date = _date + boost::gregorian::months ( amount );
+    break;
+  case Date::INCREMENT_YEAR:
+    _date = _date + boost::gregorian::years ( amount );
+    break;
+  }
 }
 
 
@@ -277,45 +284,6 @@ bool Date::operator>=( const Date& rhs ) const
 boost::gregorian::date Date::date() const
 {
   return _date.date();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Increment the day by one.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Date::incrementDay()
-{
-  boost::gregorian::date_duration dd(1);
-  _date = _date + dd;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Increment the month by one.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Date::incrementMonth()
-{
-  boost::gregorian::months one(1);
-  _date = _date + one;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Increment the year by one.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Date::incrementYear()
-{
-  boost::gregorian::years one(1);
-  _date = _date + one;
 }
 
 

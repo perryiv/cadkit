@@ -227,7 +227,6 @@ namespace Helper
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Parse coordinates.
@@ -267,7 +266,7 @@ namespace Helper
 
 namespace Helper
 {
- inline osg::Vec3d parseOrientation ( const XmlTree::Node& node )
+  inline osg::Vec3d parseOrientation ( const XmlTree::Node& node )
   {
     Children heading ( node.find ( "heading", false ) );
     Children tilt    ( node.find ( "tilt", false ) );
@@ -294,7 +293,7 @@ namespace Helper
   {
     osg::Vec3 v;
     
-    Children children ( node.children() );
+    const Children& children ( node.children() );
     
     v[0] = children.size() >= 1 ? ToDouble::convert ( children[0]->value() ) : defaultValue;
     v[1] = children.size() >= 2 ? ToDouble::convert ( children[1]->value() ) : defaultValue;
@@ -340,10 +339,10 @@ Factory::Point* Factory::createPoint ( const XmlTree::Node& node ) const
   point->primitiveId ( 2 );
   point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "altitudeMode" == name )
@@ -381,10 +380,10 @@ Factory::Line* Factory::createLine ( const XmlTree::Node& node ) const
 {
   Minerva::Core::Data::Line::RefPtr line ( new Minerva::Core::Data::Line );
 
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "altitudeMode" == name )
@@ -425,10 +424,10 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
   
   Extents extents;
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "altitudeMode" == name )
@@ -479,13 +478,12 @@ Factory::Model* Factory::createModel ( const XmlTree::Node& node ) const
 {
   Minerva::Core::Data::Model::RefPtr model ( new Minerva::Core::Data::Model );
   
-  Children children ( node.children() );
-  
   osg::Vec3 location, orientation, scale ( 1.0, 1.0, 1.0 );
   
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "Location" == name )
@@ -520,10 +518,10 @@ Minerva::Core::Data::LookAt* Factory::createLookAt ( const XmlTree::Node& node )
 {
   Minerva::Core::Data::LookAt::RefPtr lookAt ( new Minerva::Core::Data::LookAt );
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "longitude" == name )
@@ -564,10 +562,10 @@ Minerva::Core::Data::TimeSpan* Factory::createTimeSpan ( const XmlTree::Node& no
 {
   Minerva::Core::Data::TimeSpan::RefPtr span ( new Minerva::Core::Data::TimeSpan );
 
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "begin" == name )
@@ -595,7 +593,7 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
 {
   PlaceMark::RefPtr object ( new PlaceMark );
  
-  Children children ( node.children() );
+  const Children& children ( node.children() );
   
   Helper::setFeatureDataMembers ( object.get(), children );
   Helper::setObjectDataMembers ( object.get(), node );
@@ -619,10 +617,10 @@ Link* Factory::createLink ( const XmlTree::Node& node ) const
   Link::RefPtr link ( new Link );
   
   // Get the children.
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr child ( *iter );
+    XmlTree::Node::RefPtr child ( (*iter).get() );
     std::string name ( child->name() );
     
     if ( "href" == name )
@@ -657,10 +655,10 @@ NetworkLink* Factory::createNetworkLink ( const XmlTree::Node& node ) const
   NetworkLink::RefPtr networkLink ( new NetworkLink );
   
   // Loop over the children.
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr child ( *iter );
+    XmlTree::Node::RefPtr child ( (*iter).get() );
     std::string name ( Usul::Strings::lowerCase ( child->name() ) );
     
     if ( "link" == name || "url" == name ) // Url is an older name, but many elements are the same.
@@ -685,10 +683,10 @@ Minerva::Core::Data::Style* Factory::createStyle ( const XmlTree::Node& node ) c
 {
   Style::RefPtr style ( new Style );
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr child ( *iter );
+    XmlTree::Node::RefPtr child ( (*iter).get() );
     std::string name ( child->name() );
     
     if ( "PolyStyle" == name )
@@ -720,10 +718,10 @@ Minerva::Core::Data::LineStyle* Factory::createLineStyle ( const XmlTree::Node& 
 {
   LineStyle::RefPtr lineStyle ( new LineStyle );
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "width" == name )
@@ -748,10 +746,10 @@ Minerva::Core::Data::PolyStyle* Factory::createPolyStyle ( const XmlTree::Node& 
 {
   PolyStyle::RefPtr polyStyle ( new PolyStyle );
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "fill" == name )
@@ -780,10 +778,10 @@ Minerva::Core::Data::IconStyle* Factory::createIconStyle ( const XmlTree::Node& 
 {
   IconStyle::RefPtr iconStyle ( new IconStyle );
   
-  Children children ( node.children() );
-  for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  const Children& children ( node.children() );
+  for ( Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    XmlTree::Node::RefPtr node ( *iter );
+    XmlTree::Node::RefPtr node ( (*iter).get() );
     std::string name ( node->name() );
     
     if ( "scale" == name )

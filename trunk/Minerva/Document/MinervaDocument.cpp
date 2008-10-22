@@ -24,6 +24,7 @@
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/UserData.h"
 #include "Minerva/Core/Factory/Readers.h"
+#include "Minerva/Core/Functions/MakeBody.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
 #include "Minerva/Core/Visitors/StackPoints.h"
@@ -32,7 +33,6 @@
 #include "Minerva/Core/Utilities/ClampNearFar.h"
 #include "Minerva/Core/Visitors/SetJobManager.h"
 #include "Minerva/Core/Extents.h"
-#include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
 #include "Minerva/Interfaces/IRefreshData.h"
 
@@ -78,7 +78,6 @@
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
-#include "osg/CoordinateSystemNode"
 #include "osg/Geode"
 #include "osg/Light"
 
@@ -1839,28 +1838,8 @@ void MinervaDocument::_makePlanet()
       return;
   }
 
-  // Local typedefs to shorten the lines.
-  typedef Body::Extents Extents;
-
-  // Make the land model.
-  typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-  Land::RefPtr land ( new Land ( radii ) );
-
-  // Make a good split distance.
-  const double splitDistance ( land->size() * 3.0 ); // Was 2.5
-
-  // Size of the mesh.
-  Body::MeshSize meshSize ( 17, 17 );
-
-  // Add the body.
-  Body::RefPtr body ( new Body ( land, this->_getJobManager(), meshSize, splitDistance ) );
-  body->name ( "Earth" );
-  body->useSkirts ( true );
-
-  // Add tiles to the body.
-  body->addTile ( Extents ( -180, -90,    0,   90 ) );
-  body->addTile ( Extents (    0, -90,  180,   90 ) );
+  // Make the earth.
+  Body::RefPtr body ( Minerva::Core::Functions::makeEarth ( this->_getJobManager() ) );
 
   {
     Guard guard ( this );

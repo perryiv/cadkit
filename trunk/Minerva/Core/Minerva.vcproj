@@ -915,6 +915,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Functions\MakeBody.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Functions\MakeBody.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Functions\ParameterizeExtents.cpp"
 						>
 					</File>

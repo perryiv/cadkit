@@ -129,7 +129,7 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   _current ( _global ),
   _timeSpans(),
   _lastTime ( -1.0 ),
-  _animationSpeed ( 0.1f ),
+  _animationSpeed ( 1.0 ),
   _timeSpanMenu ( new MenuKit::Menu ( "Time Spans" ) ),
   _legend ( new OsgTools::Widgets::Legend ),
   _showLegend ( true ),
@@ -1318,7 +1318,7 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
   Guard guard ( this->mutex () );
 
   // If we are suppose to animate...
-  if ( _animateSettings->animate () )
+  if ( _animateSettings->animate() )
   {
     if ( false == _animateSettings->pause () && _current.valid() )
     {
@@ -1332,16 +1332,13 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
       // Duration between last time the date was incremented.
       const double duration ( time - _lastTime );
 
-      Minerva::Core::Animate::Date lastDate ( _lastDate );
-
       // Animate if we should.
       if ( duration > _animationSpeed )
       {
-        // Set the last time that we've updated.
-        _lastTime = time;
+        Minerva::Core::Animate::Date lastDate ( _lastDate );
 
         // Increment the last date to show.
-        lastDate.increment ( static_cast<Minerva::Core::Animate::Date::IncrementType> ( _animateSettings->timestepType() ), 1.0 );
+        lastDate.increment ( static_cast<Minerva::Core::Animate::Date::IncrementType> ( _animateSettings->timestepType() ), 1 );
 
         // Wrap if we've gone beyond the last date.
         if( lastDate > _current->end() )
@@ -1371,6 +1368,9 @@ void MinervaDocument::_animate ( Usul::Interfaces::IUnknown *caller )
         // Set the dates to show.
         Minerva::Core::Visitors::TemporalAnimation::RefPtr visitor ( new Minerva::Core::Visitors::TemporalAnimation ( firstDate, lastDate ) );
         this->accept ( *visitor );
+
+        // Set the last time that we've updated.
+        _lastTime = time;
       }
     }
     

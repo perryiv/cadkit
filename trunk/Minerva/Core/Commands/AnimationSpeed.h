@@ -40,7 +40,7 @@ protected:
 
   virtual void                _execute();
 
-  virtual bool                updateCheck () const;
+  virtual bool                updateCheck() const;
 
 private:
 

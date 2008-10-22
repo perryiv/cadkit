@@ -272,7 +272,7 @@ protected:
   MinervaDocument& operator=( const MinervaDocument& );
 
   /// Usul::Interfaces::IMatrixManipulator
-  virtual osgGA::MatrixManipulator *       getMatrixManipulator ();
+  virtual osgGA::MatrixManipulator *       getMatrixManipulator();
 
   /// Clear.
   void                                     _clear();
@@ -332,23 +332,23 @@ protected:
 
   // Command is executed.
   virtual void                             commandExecuteNotify ( Usul::Commands::Command* command );
-  
+
   // Notify the observer of the intersection (IIntersectListener).
   virtual void                             intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller );
-  
+
   // Get the number of children (ITreeNode).
   virtual unsigned int                     getNumChildNodes() const;
-  
+
   // Get the child node (ITreeNode).
   virtual ITreeNode *                      getChildNode ( unsigned int which );
-  
+
   // Set/get the name (ITreeNode).
   virtual void                             setTreeNodeName ( const std::string & );
   virtual std::string                      getTreeNodeName() const;
-  
+
   /// The job has finished (IJobFinishedListener).
   virtual void                             jobFinished ( Usul::Jobs::Job *job );
-  
+
   // Called when mouse event occurs.
   virtual void                             mouseEventNotify ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );
 

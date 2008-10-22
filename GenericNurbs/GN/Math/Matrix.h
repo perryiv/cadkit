@@ -213,8 +213,7 @@ public:
     for ( SizeType i = 0; i < r; ++i )
     {
       // Assign the entire column.
-      //_m[i].assign ( a[i], a[i] + c );
-      _m[i].assign ( a.at( i ).begin(), a.at( i ).end() );
+      _m[i].assign ( a.at(i).begin(), a.at(i).end() );
     }
   }
 

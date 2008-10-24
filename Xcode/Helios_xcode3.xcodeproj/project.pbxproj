@@ -1925,6 +1925,8 @@
 		C229133C0E55FD3B0079788D /* PointLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C229133B0E55FD3B0079788D /* PointLoader.cpp */; };
 		C25FFB0F0E35477000DEEF41 /* CurrentDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C25FFB0D0E35474300DEEF41 /* CurrentDirectory.cpp */; };
 		C276D4410E5119F200D2C9E5 /* NimueManual.pdf in Copy Manual */ = {isa = PBXBuildFile; fileRef = C276D43E0E51199C00D2C9E5 /* NimueManual.pdf */; };
+		C28142D60EB122F400B433BC /* MakeBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C28142D40EB122F400B433BC /* MakeBody.cpp */; };
+		C28142D70EB122F400B433BC /* MakeBody.h in Headers */ = {isa = PBXBuildFile; fileRef = C28142D50EB122F400B433BC /* MakeBody.h */; };
 		C293DDE30EAEEDD6006B9B7D /* Export.h in Headers */ = {isa = PBXBuildFile; fileRef = C293DDDC0EAEEDD6006B9B7D /* Export.h */; };
 		C293DDE40EAEEDD6006B9B7D /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C293DDDD0EAEEDD6006B9B7D /* Node.cpp */; };
 		C293DDE50EAEEDD6006B9B7D /* Node.h in Headers */ = {isa = PBXBuildFile; fileRef = C293DDDE0EAEEDD6006B9B7D /* Node.h */; };
@@ -6114,6 +6116,8 @@
 		C26F88460E2EB6F50030ED9D /* XML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XML.h; sourceTree = "<group>"; };
 		C26F88470E2EB6F50030ED9D /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		C276D43E0E51199C00D2C9E5 /* NimueManual.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NimueManual.pdf; sourceTree = "<group>"; };
+		C28142D40EB122F400B433BC /* MakeBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MakeBody.cpp; sourceTree = "<group>"; };
+		C28142D50EB122F400B433BC /* MakeBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MakeBody.h; sourceTree = "<group>"; };
 		C293DDDC0EAEEDD6006B9B7D /* Export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Export.h; sourceTree = "<group>"; };
 		C293DDDD0EAEEDD6006B9B7D /* Node.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
 		C293DDDE0EAEEDD6006B9B7D /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
@@ -10348,6 +10352,8 @@
 		66D51F470EA2C19500198B7A /* Functions */ = {
 			isa = PBXGroup;
 			children = (
+				C28142D40EB122F400B433BC /* MakeBody.cpp */,
+				C28142D50EB122F400B433BC /* MakeBody.h */,
 				66D51F480EA2C19500198B7A /* CacheString.cpp */,
 				66D51F490EA2C19500198B7A /* CacheString.h */,
 				66D51F4A0EA2C19500198B7A /* ParameterizeExtents.cpp */,
@@ -11781,6 +11787,7 @@
 				66D51F4D0EA2C19500198B7A /* CacheString.h in Headers */,
 				66D51F4F0EA2C19500198B7A /* ParameterizeExtents.h in Headers */,
 				66D51F530EA2C1A200198B7A /* ResampleElevation.h in Headers */,
+				C28142D70EB122F400B433BC /* MakeBody.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14845,6 +14852,7 @@
 				66D51F4C0EA2C19500198B7A /* CacheString.cpp in Sources */,
 				66D51F4E0EA2C19500198B7A /* ParameterizeExtents.cpp in Sources */,
 				66D51F520EA2C1A200198B7A /* ResampleElevation.cpp in Sources */,
+				C28142D60EB122F400B433BC /* MakeBody.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

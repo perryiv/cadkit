@@ -17,6 +17,7 @@
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"
 
+#include "Usul/Math/Matrix44.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -43,6 +44,7 @@ public:
   typedef VRV::Devices::JoystickDevice         Joystick;
   typedef Joystick::RefPtr                     JoystickPtr;
   typedef std::map<std::string, JoystickPtr>   Analogs;
+  typedef Usul::Math::Matrix44d                Matrix;
 
   // Constructors.
   BaseApplication();
@@ -75,6 +77,20 @@ public:
 
   void                          quit();
   void                          run();
+
+  /// Set/get the tracker.
+  void                          tracker ( TrackerDevice* tracker );
+  TrackerDevice*                tracker();
+  const TrackerDevice*          tracker() const;
+
+  /// Get the tracker's position.
+  void                          trackerPosition ( Usul::Math::Vec3d& ) const;
+
+  /// Get the trackers's matrix.
+  void                          trackerMatrix ( Matrix& W ) const;
+
+  /// Update the tracker.
+  void                          trackerUpdate();
 
 protected:
 
@@ -118,6 +134,11 @@ private:
   mutable Mutex                          _mutex;
   ButtonsPtr                             _buttons;
   Analogs                                _analogs;
+  TrackerPtr                             _tracker;
+
+  /// No copying.
+  BaseApplication ( const BaseApplication& );
+  BaseApplication& operator = ( const BaseApplication&) ;
 };
 
 

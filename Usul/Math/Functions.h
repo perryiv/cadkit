@@ -38,6 +38,22 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Macro to define _In_ for the various platforms.
+//  This fixes a warning with Visual Studio 2008.
+//  See: http://msdn.microsoft.com/en-us/library/cc664879.aspx
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#if defined ( _MSC_VER ) && _MSC_VER > 1400
+#include <sal.h>
+#define _USUL_IN _In_
+#else
+#define _USUL_IN
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Both cmath and math.h are a pain. 
 //
 //  Note: Needed to add 'throws()' so that Linux gcc would accept the 
@@ -48,15 +64,15 @@
 
 extern "C"
 {
-  double sin   ( double ) _USUL_THROW;
-  double cos   ( double ) _USUL_THROW;
-  double tan   ( double ) _USUL_THROW;
-  double asin  ( double ) _USUL_THROW;
-  double acos  ( double ) _USUL_THROW;
-  double atan  ( double ) _USUL_THROW;
-  double sqrt  ( double ) _USUL_THROW;
-  double atan2 ( double, double ) _USUL_THROW;
-  double pow   ( double, double ) _USUL_THROW;
+  double sin   ( _USUL_IN double ) _USUL_THROW;
+  double cos   ( _USUL_IN double ) _USUL_THROW;
+  double tan   ( _USUL_IN double ) _USUL_THROW;
+  double asin  ( _USUL_IN double ) _USUL_THROW;
+  double acos  ( _USUL_IN double ) _USUL_THROW;
+  double atan  ( _USUL_IN double ) _USUL_THROW;
+  double sqrt  ( _USUL_IN double ) _USUL_THROW;
+  double atan2 ( _USUL_IN double, _USUL_IN double ) _USUL_THROW;
+  double pow   ( _USUL_IN double, _USUL_IN double ) _USUL_THROW;
 };
 
 
@@ -67,7 +83,7 @@ extern "C"
 ///////////////////////////////////////////////////////////////////////////////
 
 #undef _USUL_THROW
-
+#undef _USUL_IN
 
 namespace Usul {
 namespace Math {

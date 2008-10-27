@@ -147,7 +147,7 @@ public:
   typedef Renderer::RefPtr                     RendererPtr;
   typedef std::vector < RendererPtr >          Renderers;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
-  typedef Usul::Math::Matrix44d                Matrix;
+  typedef BaseClass::Matrix                    Matrix;
   typedef std::vector < std::string >          Filenames;
   typedef VRV::Prefs::Settings                 Preferences;
   typedef VRV::Devices::ButtonGroup            Buttons;
@@ -232,7 +232,7 @@ public:
   const osg::Viewport*    viewport() const { return _viewport.get(); }
 
   /// Export the next frame.
-  void                    exportNextFrame ();
+  void                    exportNextFrame();
 
   /// Get/Set the number of rendering passes
   virtual void            renderingPasses ( unsigned int number );
@@ -252,12 +252,12 @@ public:
 
   /// Get/Set the frame dump flag.
   void                    frameDump ( bool b );
-  bool                    frameDump () const;
+  bool                    frameDump() const;
 
   /// Get/Set the navigator.
   void                    navigator ( Navigator * );
-  Navigator *             navigator ();
-  const Navigator *       navigator () const;
+  Navigator *             navigator();
+  const Navigator *       navigator() const;
 
   // Menu scene hiding functions
   bool                    menuSceneShowHide () const;
@@ -687,7 +687,6 @@ private:
   std::string                            _preferencesFilename;
   std::string                            _functorFilename;
   std::string                            _deviceFilename;
-  TrackerPtr                             _tracker;
   AnalogInputs                           _analogInputs;
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;

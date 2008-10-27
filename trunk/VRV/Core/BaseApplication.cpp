@@ -15,6 +15,7 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/User/Directory.h"
@@ -34,7 +35,8 @@ BaseApplication::BaseApplication() :
   BaseClass ( vrj::Kernel::instance() ),
   _mutex(),
   _buttons           ( new VRV::Devices::ButtonGroup ),
-  _analogs           ()
+  _analogs           (),
+  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) )
 {
 }
 
@@ -590,4 +592,105 @@ void BaseApplication::analogsUpdate()
       joystick->notify();
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the tracker.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::tracker ( TrackerDevice* tracker )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _tracker = tracker;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the tracker.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseApplication::TrackerDevice* BaseApplication::tracker()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _tracker.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the tracker.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const BaseApplication::TrackerDevice* BaseApplication::tracker() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _tracker.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the tracker's position.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::trackerPosition ( Usul::Math::Vec3d& position ) const
+{
+  USUL_TRACE_SCOPE;
+  
+  // Get the tracker.
+  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
+
+  // Set the position.
+  if ( tracker.valid() )
+  {
+    position.set ( tracker->x(), tracker->y(), tracker->z() );
+  }
+  // Set to zero.
+  else
+  {
+    position.set ( 0.0, 0.0, 0.0 );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the trackers's matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::trackerMatrix ( Matrix& W ) const
+{
+  USUL_TRACE_SCOPE;
+  
+  // Get the tracker.
+  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
+
+  // Set the given matrix from the wand's matrix.
+  if ( true == tracker.valid() )
+    W.set ( tracker->matrix().getData() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the tracker.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::trackerUpdate()
+{
+  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
+  if ( tracker.valid() )
+    tracker->update();
 }

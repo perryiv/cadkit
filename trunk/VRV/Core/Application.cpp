@@ -156,7 +156,6 @@ Application::Application() :
   _preferencesFilename (),
   _functorFilename   (),
   _deviceFilename    (),
-  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  (),
@@ -1163,23 +1162,24 @@ void Application::_preFrame()
   }
 
   // Write out the start of the frame.
-  if ( _sharedReferenceTime.isLocal () )
+  if ( _sharedReferenceTime.isLocal() )
   {
-    _sharedReferenceTime->data ( osg::Timer::instance()->delta_s( _initialTime, osg::Timer::instance()->tick() ) );
+    _sharedReferenceTime->data ( osg::Timer::instance()->delta_s ( _initialTime, osg::Timer::instance()->tick() ) );
   }
 
-  // Update these input devices.
-  _tracker->update();
+  // Update the tracker.
+  this->trackerUpdate();
 
   // Update all the analog inputs.
   this->analogsUpdate();
 
   std::cout << "\r" << std::flush;
+  
   // Navigate if we are supposed to.
-  this->_navigate ();
+  this->_navigate();
 
   // Write out the navigation matrix.
-  if ( _sharedMatrix.isLocal () )
+  if ( _sharedMatrix.isLocal() )
   {
     _sharedMatrix->data ( _navBranch->getMatrix () );
   }
@@ -1688,7 +1688,7 @@ void Application::_navigationMatrix ( const osg::Matrixd& m )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Matrixd& Application::_navigationMatrix ( ) const
+const osg::Matrixd& Application::_navigationMatrix() const
 {
   Guard guard ( this->mutex() );
   return _navBranch->getMatrix ( );
@@ -1979,20 +1979,15 @@ void Application::wandPosition ( Usul::Math::Vec3d &p ) const
 {
   USUL_TRACE_SCOPE;
 
+  // Get the wand's position.
+  this->trackerPosition ( p );
+
   // Get the wand's offset.
   Usul::Math::Vec3d offset;
   this->wandOffset ( offset );
 
-  // Get the tracker.
-  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
-
-  // Set the vector from the wand's position plus the offset.
-  if ( true == tracker.valid() )
-  {
-    p[0] = tracker->x() + offset[0];
-    p[1] = tracker->y() + offset[1];
-    p[2] = tracker->z() + offset[2];
-  }
+  // Add the offset.
+  p += offset;
 }
 
 
@@ -2005,13 +2000,9 @@ void Application::wandPosition ( Usul::Math::Vec3d &p ) const
 void Application::wandMatrix ( Matrix &W ) const
 {
   USUL_TRACE_SCOPE;
-  
-  // Get the tracker.
-  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
 
-  // Set the given matrix from the wand's matrix.
-  if ( true == tracker.valid() )
-    W.set ( tracker->matrix().getData() );
+  // Get the matrix.
+  this->trackerMatrix ( W );
 
   // Get the wand's offset.
   Usul::Math::Vec3d offset;

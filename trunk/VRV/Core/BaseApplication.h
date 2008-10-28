@@ -20,6 +20,9 @@
 #include "VRV/Devices/TrackerDevice.h"
 
 #include "Usul/Functors/Interaction/Common/BaseFunctor.h"
+#include "Usul/Functors/Interaction/Common/Sequence.h"
+#include "Usul/Functors/Interaction/Input/AnalogInput.h"
+#include "Usul/Functors/Interaction/Navigate/Transform.h"
 #include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Threads/RecursiveMutex.h"
@@ -29,6 +32,8 @@
 #include "plugins/ApplicationDataManager/UserData.h"
 
 #include <string>
+
+namespace XmlTree { class Node; }
 
 namespace VRV {
 namespace Core {
@@ -52,6 +57,13 @@ public:
   typedef std::map<std::string, JoystickPtr>   Analogs;
   typedef Usul::Math::Matrix44d                Matrix;
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
+  typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
+  typedef Usul::Functors::Interaction::Navigate::Transform   TransformFunctor;
+  typedef Usul::Functors::Interaction::Common::Sequence      FavoriteFunctor;
+  typedef std::map < std::string, AnalogInput::RefPtr >      AnalogInputs;
+  typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
+  typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
+  typedef FavoriteFunctors::iterator                         FavoriteIterator;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -80,6 +92,12 @@ public:
   void                          buttons ( ButtonGroup* buttons );
   ButtonGroup *                 buttons();
   const ButtonGroup *           buttons() const;
+
+  /// Get the favorite functor by name.  This will return null if not found.
+  FavoriteFunctor::RefPtr       favoriteFunctor ( const std::string& name ) const;
+
+  /// Get a copy of the user defined favorite functors.
+  FavoriteFunctors              favoriteFunctors() const;
 
   /// Get the mutex.
   Mutex&                        mutex() const { return _mutex; }
@@ -126,9 +144,15 @@ protected:
   void                          _addButtonPressListener ( Usul::Interfaces::IUnknown * );
   void                          _addButtonReleaseListener ( Usul::Interfaces::IUnknown * );
 
+  // Clear all functors.
+  void                          _clearAllFunctors();
+
   // Remove all listeners.
   void                          _clearButtonPressListeners();
   void                          _clearButtonReleaseListeners();
+
+  // Create functors.
+  void                          _createFunctors ( const XmlTree::Node& node );
 
   // Initialize shared data.
   virtual void                  _initializeSharedData ( const std::string& hostname );
@@ -174,6 +198,9 @@ private:
   TrackerPtr                             _tracker;
   cluster::UserData<SharedMatrix>        _navigationMatrix;
   Navigator::RefPtr                      _navigator;
+  AnalogInputs                           _analogInputs;
+  TransformFunctors                      _transformFunctors;
+  FavoriteFunctors                       _favoriteFunctors;
 
   /// No copying.
   BaseApplication ( const BaseApplication& );

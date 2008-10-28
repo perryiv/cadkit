@@ -16,7 +16,6 @@
 #include "VRV/Commands/LoadDocument.h"
 #include "VRV/Common/Constants.h"
 #include "VRV/Jobs/SaveImage.h"
-#include "VRV/Core/FunctorHelpers.h"
 #include "VRV/Commands/Camera.h"
 #include "VRV/Commands/Navigator.h"
 #include "VRV/Commands/BackgroundColor.h"
@@ -154,9 +153,6 @@ Application::Application() :
   _preferencesFilename (),
   _functorFilename   (),
   _deviceFilename    (),
-  _analogInputs      (),
-  _transformFunctors (),
-  _favoriteFunctors  (),
   _translationSpeed  ( 1.0f ),
   _home              ( osg::Matrixd::identity() ),
   _timeBased         ( true ),
@@ -365,9 +361,7 @@ void Application::cleanup()
   this->navigator ( 0x0 );
 
   // Clear the functor maps.
-  _analogInputs.clear();
-  _transformFunctors.clear();
-  _favoriteFunctors.clear();
+  this->_clearAllFunctors();
 
   // Clear the commands.
   MenuKit::MenuCommands::instance().clear();
@@ -2820,13 +2814,16 @@ void Application::_readDevicesFile()
     return;
   }
 
+  // Make a new button group.
   ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
 
+  // Create and load the document.
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
   
   // Find all the buttons...
-  XmlTree::Node::Children buttons    ( document->find ( "Button",    true ) );
+  typedef XmlTree::Node::Children Children;
+  Children buttons    ( document->find ( "Button",    true ) );
 
   for ( Children::iterator iter = buttons.begin(); iter != buttons.end(); ++iter )
   {
@@ -2893,45 +2890,22 @@ void Application::_readDevicesFile()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_readFunctorFile ()
+void Application::_readFunctorFile()
 {
   USUL_TRACE_SCOPE;
-
-  // Local factory for functor creation.
-  Usul::Factory::ObjectFactory factory;
-
-  // Populate the factory.
-  factory.add ( new Usul::Factory::TypeCreator<JoystickHorizontal> ( "horizontal joystick" ) );
-  factory.add ( new Usul::Factory::TypeCreator<JoystickVertical>   ( "vertical joystick"   ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandPitch>          ( "wand pitch"          ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandYaw>            ( "wand yaw"            ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandRoll>           ( "wand roll"           ) );
-
-  factory.add ( new Usul::Factory::TypeCreator<IdentityMatrix>     ( "identity matrix"     ) );
-  factory.add ( new Usul::Factory::TypeCreator<InverseMatrix>      ( "inverse matrix"      ) );
-  factory.add ( new Usul::Factory::TypeCreator<MatrixPair>         ( "matrix pair"         ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandMatrix>         ( "wand matrix"         ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandPosition>       ( "wand position"       ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandRotation>       ( "wand rotation"       ) );
-
-  factory.add ( new Usul::Factory::TypeCreator<DirectionFunctor>   ( "direction"           ) );
-
-  factory.add ( new Usul::Factory::TypeCreator<TranslateFunctor>   ( "translate"           ) );
-  factory.add ( new Usul::Factory::TypeCreator<RotateFunctor>      ( "rotate"              ) );
-
-  factory.add ( new Usul::Factory::TypeCreator<FavoriteFunctor>    ( "sequence"            ) );
 
   // Initialize and finalize use of xerces.
   XmlTree::XercesLife life;
 
   // Open the input file.
-  const std::string file ( _functorFilename );
+  const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _functorFilename ) );
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
 
   // read the button mappings from the functor file
 #if 1
-  XmlTree::Node::Children mappings    ( document->find ( "Mapping",    true ) );
+  typedef XmlTree::Node::Children Children;
+  Children mappings    ( document->find ( "Mapping",    true ) );
 
   for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
   {
@@ -2982,47 +2956,12 @@ void Application::_readFunctorFile ()
   }
 #endif
 
-  // Initialize the caller.
-  Usul::Interfaces::IUnknown::QueryPtr caller ( this );
-
-  // Find all important functors.
-  Children analogs    ( document->find ( "analog",    true ) );
-  Children digitals   ( document->find ( "digital",   true ) );
-  Children matrices   ( document->find ( "matrix",    true ) );
-  Children directions ( document->find ( "direction", true ) );
-  Children transforms ( document->find ( "transform", true ) );
-  Children favorites  ( document->find ( "favorite",  true ) );
-
-  // The maps of the various functors.
-  MatrixFunctors matrixFunctors;
-  DirectionFunctors directionFunctors;
-
-  // Setters.
-  Helper::AnalogSetter analogSetter       ( this->analogs() );
-  Helper::MatrixSetter matrixSetter;
-  Helper::DirectionSetter directionSetter ( matrixFunctors );
-  Helper::TransformSetter transformSetter ( directionFunctors );
-  Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
-
-  // Save the name of our current navigator.
-  Navigator::RefPtr navigator ( this->navigator() );
-  std::string name ( navigator.valid() ? navigator->name () : "" );
-
   // Clear what we have.
-  _analogInputs.clear();
-  _transformFunctors.clear();
-  _favoriteFunctors.clear();
+  this->_clearAllFunctors();
   //this->navigator ( 0x0 );
   
-  // Make the functors.
-  Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
-  Helper::add ( matrixSetter,    factory, matrices,   matrixFunctors, caller );
-  Helper::add ( directionSetter, factory, directions, directionFunctors, caller );
-  Helper::add ( transformSetter, factory, transforms, _transformFunctors, caller );
-  Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
-
-  // Set the navigator.  Will be null if there isn't a favorite with this name.
-  this->navigator ( _favoriteFunctors[name].get() );
+  // Create the functors.
+  this->_createFunctors ( *document );
 }
 
 
@@ -3044,34 +2983,6 @@ void Application::_navigatorChanged ( Navigator::RefPtr newNavigator, Navigator:
 
   // Set the navigator's name.
   node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].set < std::string > ( name );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the begining of the favorites.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::FavoriteIterator Application::favoritesBegin ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  return _favoriteFunctors.begin();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the end of the favorites.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::FavoriteIterator Application::favoritesEnd ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  return _favoriteFunctors.end();
 }
 
 
@@ -3651,15 +3562,19 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   
   // Favorites menu
   {
-    MenuKit::Menu::RefPtr favorites ( new MenuKit::Menu ( "Favorites", MenuKit::Menu::VERTICAL ) );
-    menu->append ( favorites.get() );
+    // Make the menu.
+    MenuKit::Menu::RefPtr favoritesMenu ( new MenuKit::Menu ( "Favorites", MenuKit::Menu::VERTICAL ) );
+    menu->append ( favoritesMenu.get() );
+
+    // Get the favorites.
+    FavoriteFunctors favorites ( this->favoriteFunctors() );
 
     typedef VRV::Commands::Navigator Navigator;
-    for ( FavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
+    for ( FavoriteIterator iter = favorites.begin(); iter != favorites.end(); ++iter )
     {
       // Only add valid favorites.
       if ( iter->second.valid() )
-        favorites->append ( new RadioButton ( new Navigator ( iter->second, me ) ) );
+        favoritesMenu->append ( new RadioButton ( new Navigator ( iter->second, me ) ) );
     }
   }
 
@@ -3727,7 +3642,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
     if ( buttonGroup.valid() )
     {
-      for( Buttons::iterator iter = buttonGroup->begin(); iter != buttonGroup->end(); ++iter )
+      for( ButtonGroup::iterator iter = buttonGroup->begin(); iter != buttonGroup->end(); ++iter )
       {
 			  VRV::Devices::ButtonDevice::RefPtr button ( *iter );
 
@@ -5094,10 +5009,8 @@ void Application::restoreState()
   // Get the navigator.
   std::string navigatorName ( node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].get < std::string > ( name ) );
 
-  {
-    Guard guard ( this );
-    this->navigator ( _favoriteFunctors[navigatorName] );
-  }
+  // Restore the navigator.
+  this->navigator ( this->favoriteFunctor ( navigatorName ) );
 
   typedef OsgTools::Render::Renderer::Corners Corners;
   osg::Vec4 black ( 0.0, 0.0, 0.0, 1.0 );

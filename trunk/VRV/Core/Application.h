@@ -59,9 +59,6 @@
 #include "Usul/Interfaces/IWandState.h"
 #include "Usul/Interfaces/IWorldInfo.h"
 #include "Usul/Threads/Queue.h"
-#include "Usul/Functors/Interaction/Common/Sequence.h"
-#include "Usul/Functors/Interaction/Navigate/Transform.h"
-#include "Usul/Functors/Interaction/Input/AnalogInput.h"
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
@@ -71,7 +68,6 @@
 #include "MenuKit/OSG/Menu.h"
 #include "MenuKit/CommandVisitor.h"
 
-#include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
 
 #include "osg/Referenced"
@@ -147,9 +143,6 @@ public:
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
   typedef std::vector < std::string >          Filenames;
   typedef VRV::Prefs::Settings                 Preferences;
-  typedef VRV::Devices::ButtonGroup            Buttons;
-  typedef VRV::Devices::TrackerDevice          Tracker;
-  typedef VRV::Devices::JoystickDevice         Joystick;
   typedef MenuKit::OSG::Menu                   Menu;
   typedef USUL_REF_POINTER(Menu)               MenuPtr;
   typedef Usul::Interfaces::ICamera            ICamera;
@@ -160,14 +153,6 @@ public:
   typedef IShadeModel::Mode                    ShadeModel;
   typedef Usul::Interfaces::IRotationCenterFloat  IRotationCenter;
   typedef IRotationCenter::Vector                 Vector;
-
-  typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
-  typedef Usul::Functors::Interaction::Navigate::Transform   TransformFunctor;
-  typedef Usul::Functors::Interaction::Common::Sequence      FavoriteFunctor;
-  typedef std::map < std::string, AnalogInput::RefPtr >      AnalogInputs;
-  typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
-  typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
-  typedef FavoriteFunctors::iterator                         FavoriteIterator;
 
   typedef void (Application::*VoidFunction) ();
   typedef void (Application::*BoolFunction) ( bool );
@@ -262,12 +247,6 @@ public:
   /// Get the status bar.
   Menu *                  statusBar();
   const Menu *            statusBar() const;
-
-  // Get the begining of the favorites.
-  FavoriteIterator        favoritesBegin();
-
-  // Get the end of the favorites.
-  FavoriteIterator        favoritesEnd();
 
   /// Toggle time based rendering.
   void                    timeBased ( bool b );
@@ -676,9 +655,6 @@ private:
   std::string                            _preferencesFilename;
   std::string                            _functorFilename;
   std::string                            _deviceFilename;
-  AnalogInputs                           _analogInputs;
-  TransformFunctors                      _transformFunctors;
-  FavoriteFunctors                       _favoriteFunctors;
   float                                  _translationSpeed;
   osg::Matrixd                           _home;
   bool                                   _timeBased;

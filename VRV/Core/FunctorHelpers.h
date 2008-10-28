@@ -160,7 +160,7 @@ namespace Helper
 {
   struct AnalogSetter
   {
-    typedef VRV::Core::Application::Analogs Analogs;
+    typedef VRV::Core::BaseApplication::Analogs Analogs;
     typedef Usul::Interfaces::IUnknown IUnknown;
     AnalogSetter ( const Analogs& analogs ) : _analogs( analogs ) { };
 

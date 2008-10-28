@@ -11,6 +11,7 @@
 #include "VRV/Core/BaseApplication.h"
 #include "VRV/Core/JugglerFunctors.h"
 #include "VRV/Core/Exceptions.h"
+#include "VRV/Core/FunctorHelpers.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
@@ -39,7 +40,10 @@ BaseApplication::BaseApplication() :
   _analogs           (),
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
   _navigationMatrix  (),
-  _navigator         ( 0x0 )
+  _navigator         ( 0x0 ),
+  _analogInputs      (),
+  _transformFunctors (),
+  _favoriteFunctors  ()
 {
 }
 
@@ -884,3 +888,123 @@ BaseApplication::Matrix BaseApplication::_navigationMatrixGet()
   return _navigationMatrix->data();
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create functors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_createFunctors ( const XmlTree::Node& node )
+{
+  USUL_TRACE_SCOPE;
+
+  // Local factory for functor creation.
+  Usul::Factory::ObjectFactory factory;
+
+  // Populate the factory.
+  factory.add ( new Usul::Factory::TypeCreator<JoystickHorizontal> ( "horizontal joystick" ) );
+  factory.add ( new Usul::Factory::TypeCreator<JoystickVertical>   ( "vertical joystick"   ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPitch>          ( "wand pitch"          ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandYaw>            ( "wand yaw"            ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRoll>           ( "wand roll"           ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<IdentityMatrix>     ( "identity matrix"     ) );
+  factory.add ( new Usul::Factory::TypeCreator<InverseMatrix>      ( "inverse matrix"      ) );
+  factory.add ( new Usul::Factory::TypeCreator<MatrixPair>         ( "matrix pair"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandMatrix>         ( "wand matrix"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPosition>       ( "wand position"       ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRotation>       ( "wand rotation"       ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<DirectionFunctor>   ( "direction"           ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<TranslateFunctor>   ( "translate"           ) );
+  factory.add ( new Usul::Factory::TypeCreator<RotateFunctor>      ( "rotate"              ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<FavoriteFunctor>    ( "sequence"            ) );
+
+  // Initialize the caller.
+  Usul::Interfaces::IUnknown::QueryPtr caller ( this );
+
+  // Find all important functors.
+  Children analogs    ( node.find ( "analog",    true ) );
+  Children digitals   ( node.find ( "digital",   true ) );
+  Children matrices   ( node.find ( "matrix",    true ) );
+  Children directions ( node.find ( "direction", true ) );
+  Children transforms ( node.find ( "transform", true ) );
+  Children favorites  ( node.find ( "favorite",  true ) );
+
+  // The maps of the various functors.
+  MatrixFunctors matrixFunctors;
+  DirectionFunctors directionFunctors;
+
+  // Save the name of our current navigator.
+  Navigator::RefPtr navigator ( this->navigator() );
+  std::string name ( navigator.valid() ? navigator->name () : "" );
+
+  // Guard for the rest of the function.
+  Guard guard ( this->mutex() );
+
+  // Setters.
+  Helper::AnalogSetter analogSetter       ( this->analogs() );
+  Helper::MatrixSetter matrixSetter;
+  Helper::DirectionSetter directionSetter ( matrixFunctors );
+  Helper::TransformSetter transformSetter ( directionFunctors );
+  Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
+
+  // Make the functors.
+  Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
+  Helper::add ( matrixSetter,    factory, matrices,   matrixFunctors, caller );
+  Helper::add ( directionSetter, factory, directions, directionFunctors, caller );
+  Helper::add ( transformSetter, factory, transforms, _transformFunctors, caller );
+  Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
+
+  // Set the navigator.  Will be null if there isn't a favorite with this name.
+  this->navigator ( _favoriteFunctors[name].get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear all functors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_clearAllFunctors()
+{
+  USUL_TRACE_SCOPE;
+
+  // Clear all the maps.
+  _analogInputs.clear();
+  _transformFunctors.clear();
+  _favoriteFunctors.clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the favorite functor by name.  This will return null if not found.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseApplication::FavoriteFunctor::RefPtr BaseApplication::favoriteFunctor ( const std::string& name ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  FavoriteFunctors::const_iterator iter ( _favoriteFunctors.find ( name ) );
+  return ( iter != _favoriteFunctors.end() ? iter->second : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a copy of the user defined favorite functors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseApplication::FavoriteFunctors BaseApplication::favoriteFunctors() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _favoriteFunctors;
+}

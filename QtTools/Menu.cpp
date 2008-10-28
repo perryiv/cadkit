@@ -33,9 +33,10 @@ using namespace QtTools;
 ///////////////////////////////////////////////////////////////////////////////
 
 Menu::Menu ( const QString& title, QWidget* parent ) :
-BaseClass ( title, parent ),
-_menu ( 0x0 ),
-_actions()
+  BaseClass ( title, parent ),
+  _menu ( 0x0 ),
+  _actions(),
+  _menus()
 {
   USUL_TRACE_SCOPE;
 
@@ -58,6 +59,7 @@ Menu::~Menu()
   USUL_TRACE_SCOPE;
   this->clear();
   _actions.clear();
+  _menus.clear();
 }
 
 
@@ -115,9 +117,10 @@ namespace Detail
     typedef MenuKit::Visitor  BaseClass;
     typedef QtTools::Action   Action;
 
-    QtMenuBuilder ( QMenu* menu, Menu::Actions &actions ) : BaseClass(),
+    QtMenuBuilder ( QMenu* menu, Menu::Actions &actions, Menu::Menus& menus ) : BaseClass(),
       _menu ( menu ),
-      _actions ( actions )
+      _actions ( actions ),
+      _menus ( menus )
     {
       USUL_TRACE_SCOPE;
     }
@@ -126,11 +129,15 @@ namespace Detail
     {
       USUL_TRACE_SCOPE;
 
-      Menu * menu ( new Menu ( m.text().c_str() ) );
+      // Create the menu.
+      Menu::RefPtr menu ( new Menu ( m.text().c_str() ) );
+      _menus.insert ( menu );
+
+      // Set the MenuKit Menu.
       menu->menu ( &m ); 
       
       if ( 0x0 != _menu )
-        _menu->addMenu ( menu );
+        _menu->addMenu ( menu.get() );
     }
 
     virtual void apply ( MenuKit::Button &b )
@@ -191,6 +198,7 @@ namespace Detail
   private:
     QMenu *_menu;
     Menu::Actions &_actions;
+    Menu::Menus &_menus;
   };
 }
 
@@ -208,6 +216,7 @@ void Menu::_showMenu()
   // Clear what we may have.
   this->clear();
   _actions.clear();
+  _menus.clear();
   
   if ( _menu.valid() )
   {
@@ -216,7 +225,7 @@ void Menu::_showMenu()
     _menu->accept ( *update );
 
     // Build the qt menu.
-    MenuKit::Visitor::RefPtr visitor ( new Detail::QtMenuBuilder ( this, _actions ) );
+    MenuKit::Visitor::RefPtr visitor ( new Detail::QtMenuBuilder ( this, _actions, _menus ) );
     _menu->traverse ( *visitor );
   }
 }

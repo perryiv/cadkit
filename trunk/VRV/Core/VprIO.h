@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Types/Types.h"
-#include "VRV/Export.h"
+#include "Usul/Math/Matrix44.h"
 
 #include "vpr/IO/SerializableObject.h"
 #include "vpr/IO/ObjectReader.h"
@@ -211,6 +211,30 @@ struct ReaderWriter<osg::Matrixd>
       writer->writeDouble( ptr[i] );
   }
 };
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Read/Write an Usul::Math::Matrix44d.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template<>
+struct ReaderWriter<Usul::Math::Matrix44d>
+{
+  static void read ( vpr::ObjectReader *reader, Usul::Math::Matrix44d &matrix )
+  {
+    Usul::Math::Matrix44d::value_type *ptr ( matrix.get() );
+    for ( unsigned int i = 0; i < 16; ++i )
+      reader->readDouble( ptr[i] );
+  }
+  static void write ( vpr::ObjectWriter *writer, Usul::Math::Matrix44d matrix )
+  {
+    const Usul::Math::Matrix44d::value_type *ptr ( matrix.get() );
+    for ( unsigned int i = 0; i < 16; ++i )
+      writer->writeDouble( ptr[i] );
+  }
+};
+
 
 }
 }

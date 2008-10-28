@@ -34,9 +34,12 @@ using namespace VRV::Core;
 BaseApplication::BaseApplication() : 
   BaseClass ( vrj::Kernel::instance() ),
   _mutex(),
+  _refCount          ( 0 ),
   _buttons           ( new VRV::Devices::ButtonGroup ),
   _analogs           (),
-  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) )
+  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _navigationMatrix  (),
+  _navigator         ( 0x0 )
 {
 }
 
@@ -49,6 +52,53 @@ BaseApplication::BaseApplication() :
 
 BaseApplication::~BaseApplication()
 {
+  USUL_TRACE_SCOPE;
+
+  // Make sure we don't have any references hanging around.
+  USUL_ASSERT ( 0 == _refCount );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query for the interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown* BaseApplication::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::INavigationFunctor::IID:
+    return static_cast<Usul::Interfaces::INavigationFunctor*> ( this );
+  default:
+    return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reference.  Keep track for debugging.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::ref()
+{
+  ++_refCount;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference.  Keep track for debugging..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::unref ( bool )
+{
+  --_refCount;
 }
 
 
@@ -135,6 +185,24 @@ void BaseApplication::init()
 void BaseApplication::_init()
 {
   USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize shared data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_initializeSharedData ( const std::string& hostname )
+{
+  USUL_TRACE_SCOPE;
+
+  // Initialize the shared navigation matrix.
+  {
+    vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
+    _navigationMatrix.init ( guid, hostname );
+  }
 }
 
 
@@ -694,3 +762,125 @@ void BaseApplication::trackerUpdate()
   if ( tracker.valid() )
     tracker->update();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::navigator ( Navigator * navigator )
+{
+  USUL_TRACE_SCOPE;
+
+  // Save the old navigator.
+  Navigator::RefPtr old ( this->navigator() );
+  
+  {
+    Guard guard ( this->mutex () );
+    _navigator = navigator;
+  }
+
+  this->_navigatorChanged ( navigator, old );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseApplication::Navigator* BaseApplication::navigator ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _navigator;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const BaseApplication::Navigator* BaseApplication::navigator () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _navigator;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The navigator has changed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_navigatorChanged ( Navigator::RefPtr newNavigator, Navigator::RefPtr oldNavigator )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Post-multiply the navigation matrix by the given matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::navigationPostMultiply ( const Matrix &M )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  Matrix matrix ( _navigationMatrix->data() );
+  matrix.postMultiply ( M );
+  _navigationMatrix->data ( matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre-multiply the navigation matrix by the given matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::navigationPreMultiply ( const Matrix &M )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  Matrix matrix ( _navigationMatrix->data() );
+  matrix.preMultiply ( M );
+  _navigationMatrix->data ( matrix );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_navigationMatrixSet ( const Matrix& m )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  _navigationMatrix->data ( m );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseApplication::Matrix BaseApplication::_navigationMatrixGet()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _navigationMatrix->data();
+}
+

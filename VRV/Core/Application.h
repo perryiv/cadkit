@@ -14,7 +14,6 @@
 #include "VRV/Export.h"
 #include "VRV/Prefs/Settings.h"
 #include "VRV/Core/BaseApplication.h"
-#include "VRV/Core/SharedData.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IAuxiliaryScene.h"
@@ -43,7 +42,6 @@
 #include "Usul/Interfaces/IJoystick.h"
 #include "Usul/Interfaces/IMatrixMultiply.h"
 #include "Usul/Interfaces/IModelsScene.h"
-#include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Interfaces/ITranslationSpeed.h"
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
@@ -75,7 +73,6 @@
 
 #include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
-#include "plugins/ApplicationDataManager/UserData.h"
 
 #include "osg/Referenced"
 #include "osg/Matrix"
@@ -126,7 +123,6 @@ class VRV_EXPORT Application : public VRV::Core::BaseApplication,
                                public Usul::Interfaces::ICamera,
                                public Usul::Interfaces::IPolygonMode,
                                public Usul::Interfaces::IShadeModel,
-                               public Usul::Interfaces::INavigationFunctor,
                                public Usul::Interfaces::IBackgroundColor,
                                public Usul::Interfaces::IRenderingPasses,
                                public Usul::Interfaces::IViewport,
@@ -141,13 +137,14 @@ class VRV_EXPORT Application : public VRV::Core::BaseApplication,
                                public Usul::Interfaces::IRenderNotify
 {
 public:
+
   // Typedefs.
   typedef VRV::Core::BaseApplication           BaseClass;
+  typedef BaseClass::Matrix                    Matrix;
   typedef OsgTools::Render::Renderer           Renderer;
   typedef Renderer::RefPtr                     RendererPtr;
   typedef std::vector < RendererPtr >          Renderers;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
-  typedef BaseClass::Matrix                    Matrix;
   typedef std::vector < std::string >          Filenames;
   typedef VRV::Prefs::Settings                 Preferences;
   typedef VRV::Devices::ButtonGroup            Buttons;
@@ -164,7 +161,6 @@ public:
   typedef Usul::Interfaces::IRotationCenterFloat  IRotationCenter;
   typedef IRotationCenter::Vector                 Vector;
 
-  typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
   typedef Usul::Functors::Interaction::Navigate::Transform   TransformFunctor;
   typedef Usul::Functors::Interaction::Common::Sequence      FavoriteFunctor;
@@ -214,50 +210,45 @@ public:
   const osg::FrameStamp*        frameStamp() const;
 
   /// Get/Set the scene data.
-  osg::Node*              getSceneData();
-  const osg::Node*        getSceneData() const;
-  void                    setSceneData ( osg::Node* );
+  osg::Node*                    getSceneData();
+  const osg::Node*              getSceneData() const;
+  void                          setSceneData ( osg::Node* );
 
-  double                  getTimeSinceStart();
+  double                        getTimeSinceStart();
 
-  void                    normalize ( bool state );
-  bool                    normalize() const;
+  void                          normalize ( bool state );
+  bool                          normalize() const;
 
   /// Get the models node.
-  osg::MatrixTransform*              models();
-  const osg::MatrixTransform*        models() const;
+  osg::MatrixTransform*         models();
+  const osg::MatrixTransform*   models() const;
 
   /// Get the viewport.
-  osg::Viewport*          viewport()       { return _viewport.get(); }
-  const osg::Viewport*    viewport() const { return _viewport.get(); }
+  osg::Viewport*                viewport()       { return _viewport.get(); }
+  const osg::Viewport*          viewport() const { return _viewport.get(); }
 
   /// Export the next frame.
-  void                    exportNextFrame();
+  void                          exportNextFrame();
 
   /// Get/Set the number of rendering passes
-  virtual void            renderingPasses ( unsigned int number );
-  virtual unsigned int    renderingPasses() const;
+  virtual void                  renderingPasses ( unsigned int number );
+  virtual unsigned int          renderingPasses() const;
 
   /// Get the Preferences.
-  Preferences *           preferences();
-  const Preferences *     preferences() const;
+  Preferences *                 preferences();
+  const Preferences *           preferences() const;
 
   // Print the usage string.
   static void                   usage ( const std::string &exe, std::ostream &out );
 
   /// Add/Remove group from projection node
-  osg::Group*             projectionGroupGet    ( const std::string& );
-  void                    projectionGroupRemove ( const std::string& );
-  bool                    projectionGroupHas    ( const std::string& ) const;
+  osg::Group*                   projectionGroupGet    ( const std::string& );
+  void                          projectionGroupRemove ( const std::string& );
+  bool                          projectionGroupHas    ( const std::string& ) const;
 
   /// Get/Set the frame dump flag.
-  void                    frameDump ( bool b );
-  bool                    frameDump() const;
-
-  /// Get/Set the navigator.
-  void                    navigator ( Navigator * );
-  Navigator *             navigator();
-  const Navigator *       navigator() const;
+  void                          frameDump ( bool b );
+  bool                          frameDump() const;
 
   // Menu scene hiding functions
   bool                    menuSceneShowHide () const;
@@ -350,6 +341,9 @@ protected:
   // Is this the head node?
   bool                          _isHeadNode() const;
 
+  // Initialize shared data.
+  virtual void                  _initializeSharedData ( const std::string& hostname );
+
   // Load the file(s).
   virtual void                  _loadModelFiles  ( const Filenames& filenames );
 
@@ -372,6 +366,9 @@ protected:
 
   /// Navigate.
   virtual void                  _navigate();
+
+  // The navigator has changed.
+  virtual void                  _navigatorChanged ( Navigator::RefPtr newNavigator, Navigator::RefPtr oldNavigator );
 
   /// Update the status bar text.
   void                          _updateStatusBar ( const std::string &text );
@@ -433,10 +430,6 @@ protected:
   /// Set the allow update state.
   void                          _setAllowUpdate ( bool );
   bool                          _isUpdateOn () const;
-
-  // Set/Get the navigation matrix.
-  void                          _navigationMatrix ( const osg::Matrixd& m );
-  const osg::Matrixd&           _navigationMatrix() const;
 
   /// Get the screen shot directory.
   std::string                   _screenShotDirectory() const;
@@ -634,7 +627,6 @@ private:
   typedef std::map<std::string, Usul::Math::Vec4f >        ColorMap;
   typedef VRV::Core::SharedData<double>                    SharedDouble;
   typedef VRV::Core::SharedData<std::string>               SharedString;
-  typedef VRV::Core::SharedData<osg::Matrixd>              SharedMatrix;
   typedef Usul::Functors::Interaction::Common::BaseFunctor BaseFunctor;
   typedef BaseFunctor::RefPtr                              FunctorPtr;
   typedef Usul::Interfaces::IIntersectListener             IIntersectListener;
@@ -666,7 +658,6 @@ private:
   double                                 _frameTime;
   cluster::UserData < SharedDouble >     _sharedFrameTime;
   cluster::UserData < SharedDouble >     _sharedReferenceTime;
-  cluster::UserData < SharedMatrix >     _sharedMatrix;
   mutable cluster::UserData < SharedString >     _sharedScreenShotDirectory;
   vrj::GlContextData< RendererPtr >      _renderer;
   Renderers                              _renderers;
@@ -679,8 +670,6 @@ private:
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
   CommandQueue                           _commandQueue;
   OsgTools::Render::FrameDump            _frameDump;
-  Navigator::RefPtr                      _navigator;
-  unsigned int                           _refCount;
   bool                                   _menuSceneShowHide;
   MenuPtr                                _menu;
   MenuPtr                                _statusBar;
@@ -710,7 +699,7 @@ private:
   unsigned int                           _selectButtonID;
   unsigned int                           _menuButtonID;
   std::string                            _menuNavigationAnalogID;
-	bool                                   _bodyCenteredRotation;
+  bool                                   _bodyCenteredRotation;
   ButtonCommandsMap                      _buttonCommandsMap;
 
 };

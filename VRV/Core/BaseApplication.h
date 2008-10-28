@@ -13,15 +13,20 @@
 
 #include "VRV/Export.h"
 
+#include "VRV/Core/SharedData.h"
+
 #include "VRV/Devices/JoystickDevice.h"
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"
 
+#include "Usul/Functors/Interaction/Common/BaseFunctor.h"
+#include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
 #include "vrj/Draw/OGL/GlApp.h"
+#include "plugins/ApplicationDataManager/UserData.h"
 
 #include <string>
 
@@ -29,7 +34,8 @@ namespace VRV {
 namespace Core {
 
 
-class VRV_EXPORT BaseApplication : public vrj::GlApp
+class VRV_EXPORT BaseApplication : public vrj::GlApp,
+                                   public Usul::Interfaces::INavigationFunctor
 {
 public:
 
@@ -45,6 +51,9 @@ public:
   typedef Joystick::RefPtr                     JoystickPtr;
   typedef std::map<std::string, JoystickPtr>   Analogs;
   typedef Usul::Math::Matrix44d                Matrix;
+  typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
+
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructors.
   BaseApplication();
@@ -75,8 +84,22 @@ public:
   /// Get the mutex.
   Mutex&                        mutex() const { return _mutex; }
 
+  /// Get/Set the navigator.
+  void                          navigator ( Navigator * );
+  Navigator *                   navigator();
+  const Navigator *             navigator() const;
+
+  /// Quit the application.
   void                          quit();
+
+  /// Run the application.
   void                          run();
+
+  /// Post-multiply the navigation matrix by the given matrix.
+  void                          navigationPostMultiply ( const Matrix &M );
+
+  /// Pre-multiply the navigation matrix by the given matrix.
+  void                          navigationPreMultiply ( const Matrix &M );
 
   /// Set/get the tracker.
   void                          tracker ( TrackerDevice* tracker );
@@ -107,14 +130,24 @@ protected:
   void                          _clearButtonPressListeners();
   void                          _clearButtonReleaseListeners();
 
-  // Remove the listener.
-  void                          _removeButtonPressListener ( Usul::Interfaces::IUnknown * );
-  void                          _removeButtonReleaseListener ( Usul::Interfaces::IUnknown * );
+  // Initialize shared data.
+  virtual void                  _initializeSharedData ( const std::string& hostname );
 
   // Load VR Juggler config files.
   void                          _loadConfigFiles ( const std::vector < std::string > &configs );
   void                          _loadSimConfigs  ( const std::string& dir );
   void                          _loadSimConfigs();
+
+  // The navigator has changed.
+  virtual void                  _navigatorChanged ( Navigator::RefPtr newNavigator, Navigator::RefPtr oldNavigator );
+
+  // Set/Get the navigation matrix.
+  void                          _navigationMatrixSet ( const Matrix& m );
+  Matrix                        _navigationMatrixGet();
+
+  // Remove the listener.
+  void                          _removeButtonPressListener ( Usul::Interfaces::IUnknown * );
+  void                          _removeButtonReleaseListener ( Usul::Interfaces::IUnknown * );
 
   // Set the default configuration filename path.
   void                          _setDefaultPath ( std::string& filename, const std::string& name );
@@ -130,11 +163,17 @@ private:
   virtual void            latePreFrame();
   virtual void            postFrame();
 
+  // Typedef.
+  typedef VRV::Core::SharedData<Matrix>              SharedMatrix;
+
   // Data Members.
   mutable Mutex                          _mutex;
+  unsigned int                           _refCount;
   ButtonsPtr                             _buttons;
   Analogs                                _analogs;
   TrackerPtr                             _tracker;
+  cluster::UserData<SharedMatrix>        _navigationMatrix;
+  Navigator::RefPtr                      _navigator;
 
   /// No copying.
   BaseApplication ( const BaseApplication& );

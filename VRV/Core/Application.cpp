@@ -113,6 +113,7 @@ namespace Sections = VRV::Constants::Sections;
 namespace Keys = VRV::Constants::Keys;
 typedef Usul::Registry::Database Reg;
 
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Application, Application::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -134,7 +135,6 @@ Application::Application() :
   _frameStart        ( static_cast < osg::Timer_t > ( 0.0 ) ),
   _sharedFrameTime   (),
   _sharedReferenceTime  (),
-  _sharedMatrix      (),
   _sharedScreenShotDirectory (),
   _frameTime         ( 1 ),
   _renderer          (),
@@ -148,8 +148,6 @@ Application::Application() :
   _databasePager     ( 0x0 ),
   _commandQueue      ( ),
   _frameDump         (),
-  _navigator         ( 0x0 ),
-  _refCount          ( 0 ),
   _menuSceneShowHide ( true ),
   _menu              ( new Menu ),
   _statusBar         ( new Menu ),
@@ -298,9 +296,6 @@ Application::~Application()
 
   // Make sure.
   this->cleanup();
-
-  // Make sure we don't have any references hanging around.
-  USUL_ASSERT ( 0 == _refCount );
 }
 
 
@@ -453,7 +448,6 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
-  case Usul::Interfaces::IUnknown::IID:
   case VRV::Interfaces::IModelAdd::IID:
     return static_cast < VRV::Interfaces::IModelAdd* > ( this );
   case Usul::Interfaces::IClippingDistance::IID:
@@ -496,8 +490,6 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IPolygonMode * > ( this );
   case Usul::Interfaces::IShadeModel::IID:
     return static_cast < Usul::Interfaces::IShadeModel * > ( this );
-  case Usul::Interfaces::INavigationFunctor::IID:
-    return static_cast < Usul::Interfaces::INavigationFunctor * > ( this );
   case Usul::Interfaces::IBackgroundColor::IID:
     return static_cast < Usul::Interfaces::IBackgroundColor * > ( this );
   case Usul::Interfaces::IRenderingPasses::IID:
@@ -525,7 +517,7 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IRenderNotify::IID:
     return static_cast<Usul::Interfaces::IRenderNotify*> ( this );
   default:
-    return 0x0;
+    return BaseClass::queryInterface ( iid );
   }
 }
 
@@ -1016,32 +1008,11 @@ void Application::_init()
   // Set the initial time.
   _initialTime = _timer.tick();
 
+  // Initialize shared data.
   const std::string head ( this->preferences()->headNodeMachineName() );
+  this->_initializeSharedData ( head );
 
-  // Initialize the shared frame time data.
-  {
-    vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
-    _sharedFrameTime.init ( guid, head );
-  }
-
-  // Initialize the shared frame start data.
-  {
-    vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
-    _sharedReferenceTime.init ( guid, head );
-  }
-
-  // Initialize the shared navigation matrix.
-  {
-    vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
-    _sharedMatrix.init ( guid, head );
-  }
-
-  {
-    vpr::GUID guid ( "edfcdb08-eece-45f5-b9d7-174bba164a41" );
-    _sharedScreenShotDirectory.init ( guid, head );
-  }
-  
-
+  // Create the screen shot directory.
   if ( _sharedScreenShotDirectory.isLocal() )
   {
     // Get the current time.
@@ -1138,6 +1109,37 @@ void Application::_init()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Initialize shared data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_initializeSharedData ( const std::string& hostname )
+{
+  // Call the base class first.
+  BaseClass::_initializeSharedData ( hostname );
+
+  // Initialize the shared frame time data.
+  {
+    vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
+    _sharedFrameTime.init ( guid, hostname );
+  }
+
+  // Initialize the shared frame start data.
+  {
+    vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
+    _sharedReferenceTime.init ( guid, hostname );
+  }
+
+  {
+    vpr::GUID guid ( "edfcdb08-eece-45f5-b9d7-174bba164a41" );
+    _sharedScreenShotDirectory.init ( guid, hostname );
+  }
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Called before the frame.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1177,12 +1179,6 @@ void Application::_preFrame()
   
   // Navigate if we are supposed to.
   this->_navigate();
-
-  // Write out the navigation matrix.
-  if ( _sharedMatrix.isLocal() )
-  {
-    _sharedMatrix->data ( _navBranch->getMatrix () );
-  }
 
   // Update the progress bars.
   _progressBars->removeFinishedProgressBars();
@@ -1265,7 +1261,9 @@ void Application::_latePreFrame()
   }
 
   // Set the navigation matrix.
-  _navBranch->setMatrix ( _sharedMatrix->data() );
+  osg::Matrixd currentNavMatrix;
+  OsgTools::Convert::matrix ( this->_navigationMatrixGet(), currentNavMatrix );
+  _navBranch->setMatrix ( currentNavMatrix );
 
   // Notify that it's ok to update.
   this->_updateNotify();
@@ -1276,7 +1274,11 @@ void Application::_latePreFrame()
     _databasePager->signalBeginFrame( _framestamp.get() );
 
     // syncronize changes required by the DatabasePager thread to the scene graph
-    _databasePager->updateSceneGraph( _framestamp->getReferenceTime() );
+#if OPENSCENEGRAPH_MAJOR_VERSION <= 2 && OPENSCENEGRAPH_MINOR_VERSION <= 6
+    _databasePager->updateSceneGraph ( _framestamp->getReferenceTime() );
+#else
+	_databasePager->updateSceneGraph ( *_framestamp );
+#endif
   }
 }
 
@@ -1413,30 +1415,6 @@ void Application::addLight ( osg::Light* light )
 {
   USUL_TRACE_SCOPE;
   _sceneManager->globalLight ( light );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Reference.  Keep track for debugging.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::ref()
-{
-  ++_refCount;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Unreference.  Keep track for debugging..
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::unref ( bool )
-{
-  --_refCount;
 }
 
 
@@ -1651,8 +1629,7 @@ osg::Group *Application::modelsScene()
 
 void Application::postMultiply ( const Matrix &m )
 {
-  Guard guard ( this->mutex() );
-  _navBranch->postMult ( osg::Matrixd ( m.get() ) );
+  this->navigationPostMultiply ( m );
 }
 
 
@@ -1664,34 +1641,7 @@ void Application::postMultiply ( const Matrix &m )
 
 void Application::preMultiply ( const Matrix &m )
 {
-  Guard guard ( this->mutex() );
-  _navBranch->preMult ( osg::Matrixd ( m.get() ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the navigation matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_navigationMatrix ( const osg::Matrixd& m )
-{
-  Guard guard ( this->mutex() );
-  _navBranch->setMatrix ( m );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the navigation matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const osg::Matrixd& Application::_navigationMatrix() const
-{
-  Guard guard ( this->mutex() );
-  return _navBranch->getMatrix ( );
+  this->navigationPreMultiply ( m );
 }
 
 
@@ -2518,8 +2468,9 @@ void Application::_navigate()
 #endif
 
   // Tell the navigator to execute.
-  if ( _navigator.valid() )
-    (*_navigator)();
+  Navigator::RefPtr navigator ( this->navigator() );
+  if ( navigator.valid() )
+    (*navigator)();
 
 	// Restore center.
 	if ( true == bodyCentered )
@@ -3054,7 +3005,8 @@ void Application::_readFunctorFile ()
   Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
 
   // Save the name of our current navigator.
-  std::string name ( _navigator.valid() ? _navigator->name () : "" );
+  Navigator::RefPtr navigator ( this->navigator() );
+  std::string name ( navigator.valid() ? navigator->name () : "" );
 
   // Clear what we have.
   _analogInputs.clear();
@@ -3070,58 +3022,28 @@ void Application::_readFunctorFile ()
   Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
 
   // Set the navigator.  Will be null if there isn't a favorite with this name.
-  Usul::Threads::Safe::set ( this->mutex(), _favoriteFunctors[name].get(), _navigator );
+  this->navigator ( _favoriteFunctors[name].get() );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the navigator.
+//  The navigator has changed.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::navigator ( Navigator * navigator )
+void Application::_navigatorChanged ( Navigator::RefPtr newNavigator, Navigator::RefPtr oldNavigator )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  _navigator = navigator;
 
   // Get the name of the navigator.
-  std::string name ( _navigator.valid() ? _navigator->name() : "" );
+  std::string name ( newNavigator.valid() ? newNavigator->name() : "" );
 
   // Get the section for the document.
   Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
 
   // Set the navigator's name.
   node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].set < std::string > ( name );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Application::Navigator * Application::navigator ()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  return _navigator;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the navigator.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Application::Navigator * Application::navigator () const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  return _navigator;
 }
 
 
@@ -3239,12 +3161,18 @@ void Application::camera ( CameraOption option )
 
 void Application::_setHome()
 {
-  Guard guard ( this->mutex() );
-  _home = this->_navigationMatrix();
+  // Get the current matrix.
+  const Usul::Math::Matrix44d currentNavMatrix ( this->_navigationMatrixGet() );
 
-  Usul::Math::Matrix44d m;
-  OsgTools::Convert::matrix ( _home, m );
-  Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::HOME_POSITION ] = m;
+  // Convert to osg::Matrixd.
+  osg::Matrixd current;
+  OsgTools::Convert::matrix ( currentNavMatrix, current );
+
+  Guard guard ( this->mutex() );
+  _home = current;
+
+  // Save the home position in the registry.
+  Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::HOME_POSITION ] = currentNavMatrix;
 }
 
 
@@ -3902,7 +3830,7 @@ void Application::exportSceneBinary ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::viewWorld ( )
+void Application::viewWorld()
 {
   USUL_TRACE_SCOPE;
 
@@ -3913,7 +3841,9 @@ void Application::viewWorld ( )
   this->viewAll ( this->models(), this->preferences()->viewAllScaleZ() );
 
   // Move the navigation branch.
-  this->_navigationMatrix ( this->models()->getMatrix() );
+  Usul::Math::Matrix44d m;
+  OsgTools::Convert::matrix ( this->models()->getMatrix(), m );
+  this->_navigationMatrixSet ( m );
 
   // Restore the model's matrix.
   this->models()->setMatrix ( original );
@@ -5147,9 +5077,8 @@ void Application::restoreState()
   this->setComputeNearFar ( autoNearFar );
 
   // Get the home position from the registry.
-  Usul::Math::Matrix44d m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44d > ( Usul::Math::Matrix44d () ) );
-  OsgTools::Convert::matrix ( m, _home );
-  this->_navigationMatrix ( _home );
+  Usul::Math::Matrix44d m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44d > ( Usul::Math::Matrix44d() ) );
+  this->_navigationMatrixSet ( m );
 
   // Set the menu show hide state.
   bool menuShowHide ( node[ VRV::Constants::Keys::MENU_SHOW_HIDE ].get < bool > ( false ) );

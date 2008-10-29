@@ -317,7 +317,7 @@ void MainWindow::_destroy()
   Usul::DLL::LibraryPool::instance().clear ( &std::cout );
 
   // Wait here until all jobs are done.
-  // It is unlikely that a plugin will create a job in it's destructor, but leaving this here to make sure.
+  // It is unlikely that a plugin will create a job in its destructor, but leaving this here to make sure.
   MainWindow::_waitForJobs();
   Usul::Jobs::Manager::destroy();
 
@@ -957,15 +957,6 @@ void MainWindow::ref()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   ++_refCount;
-
-#if 0
-#ifdef _MSC_VER
-  Usul::Diagnostics::StackTrace st;
-  ::OutputDebugStringA ( "MainWindow::ref() -- Start of call stack \n" );
-  ::OutputDebugStringA ( st.toString().c_str() );
-  ::OutputDebugStringA ( "MainWindow::ref() -- End of call stack \n\n" );
-#endif
-#endif
 }
 
 

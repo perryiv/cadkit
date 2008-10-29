@@ -2840,6 +2840,38 @@
 					RelativePath=".\Diagnostics\StackTrace.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Diagnostics\StackTraceLinux.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Diagnostics\StackTraceMac.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Diagnostics\StackTraceWindows.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Diagnostics\Write.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Diagnostics\Write.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Diagnostics\WriteLinux.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Diagnostics\WriteMac.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Diagnostics\WriteWindows.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Signals"

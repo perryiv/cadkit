@@ -84,7 +84,7 @@ Document::Document ( const std::string &type ) : BaseClass(),
 
 Document::~Document()
 {
-  // Note: the windows should already be destroyed, or will be by fox.
+  // Note: the windows should already be destroyed, or will be by the GUI toolkit.
   _modifiedObservers.clear();
 }
 

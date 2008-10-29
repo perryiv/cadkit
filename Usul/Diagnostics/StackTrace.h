@@ -26,12 +26,6 @@ namespace Usul {
 namespace Diagnostics {
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  StackTrace class.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 class USUL_EXPORT StackTrace
 {
 public:
@@ -45,8 +39,9 @@ public:
   // Destructor.
   ~StackTrace();
 
-  // Get internal container.
-  Container                 get() const;
+  // Get internal container. Nothing writes to _c after the 
+  // constructor, so not need to guard.
+  Container                 get() const { return _c; }
   template < class T > void get ( T &c ) const { c = _c; }
 
   // Return a string.
@@ -54,10 +49,6 @@ public:
 
   // Print the stack trace to stdout and stderr.
   static void               print();
-
-protected:
-
-  static void               _get ( Container &c );
 
 private:
 

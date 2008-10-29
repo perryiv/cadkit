@@ -771,6 +771,8 @@
 		666767720D12FF7C002F40C6 /* QtSceneDelegate.plug in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 666767590D12FDCF002F40C6 /* QtSceneDelegate.plug */; };
 		666BB6A40E13641D006A51E4 /* OsgTools_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666BB6A30E13641D006A51E4 /* OsgTools_wrap.cpp */; };
 		666BB6A90E136484006A51E4 /* PathAnimation_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 666BB6A80E136484006A51E4 /* PathAnimation_wrap.cpp */; };
+		666BCACC0EB7605A00D25C75 /* libpq.5.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E1F54F0DE4E73D0005073C /* libpq.5.0.dylib */; };
+		666BCC3D0EB760E600D25C75 /* libpqxx-2.6.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E1E07C0DE4D3E40005073C /* libpqxx-2.6.9.dylib */; };
 		667245CD0E59003A00DE4A02 /* TreeModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667245C90E59003A00DE4A02 /* TreeModel.cpp */; };
 		667245CE0E59003A00DE4A02 /* TreeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 667245CA0E59003A00DE4A02 /* TreeModel.h */; };
 		667245CF0E59003A00DE4A02 /* TreeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 667245CB0E59003A00DE4A02 /* TreeNode.cpp */; };
@@ -1703,8 +1705,6 @@
 		66E1D98C0D8DC26600732EE0 /* SkyDome.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E1D98A0D8DC26600732EE0 /* SkyDome.h */; };
 		66E1E0420DE4CA490005073C /* OGRVectorLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66E1E0400DE4CA490005073C /* OGRVectorLayer.cpp */; };
 		66E1E0430DE4CA490005073C /* OGRVectorLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 66E1E0410DE4CA490005073C /* OGRVectorLayer.h */; };
-		66E1E07D0DE4D3ED0005073C /* libpqxx-2.6.9.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66E1E07C0DE4D3E40005073C /* libpqxx-2.6.9.dylib */; };
-		66E1F5530DE4E7EA0005073C /* libpq.5.0.dylib in Copy Files to Plugins */ = {isa = PBXBuildFile; fileRef = 66E1F54F0DE4E73D0005073C /* libpq.5.0.dylib */; };
 		66E5AC460E11D6E50089769F /* Attribute.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6692735C0E0B1DDE00E35E8B /* Attribute.cpp */; };
 		66E5AC480E11D6E50089769F /* AuxiliaryData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6692735E0E0B1DDE00E35E8B /* AuxiliaryData.cpp */; };
 		66E5AC490E11D6E50089769F /* AuxiliaryData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 669273820E0B1DDE00E35E8B /* AuxiliaryData.cpp */; };
@@ -3977,8 +3977,6 @@
 				66A027F60E2B22EC002CBE4D /* QtGeoRSSLayer.plug in Copy Files to Plugins */,
 				66190FFE0E1C98C8004CE994 /* libMinervaGeoRSSLayer.dylib in Copy Files to Plugins */,
 				6647DBED0E12ED92009BD3C7 /* ModflowModel.plug in Copy Files to Plugins */,
-				66E1F5530DE4E7EA0005073C /* libpq.5.0.dylib in Copy Files to Plugins */,
-				66E1E07D0DE4D3ED0005073C /* libpqxx-2.6.9.dylib in Copy Files to Plugins */,
 				66EEA7240DCFD11900500B82 /* WmsLayerQt.plug in Copy Files to Plugins */,
 				6603BBEA0DCBB04D00FE0D89 /* QtPasswordPrompt.plug in Copy Files to Plugins */,
 				661C12B50DCA79DA00DE43D4 /* GDALReadImage.plug in Copy Files to Plugins */,
@@ -4355,8 +4353,8 @@
 		43D1DAB8094750B2007C0DB7 /* Options.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Options.cpp; sourceTree = "<group>"; };
 		43D1DAB9094750B2007C0DB7 /* Options.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
 		43D724CC094DE500009181E3 /* OpenThreads.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenThreads.framework; path = ../../../Library/Frameworks/OpenThreads.framework; sourceTree = SOURCE_ROOT; };
-		43D724CE094DE500009181E3 /* osgDB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgDB.framework; path = ../../../Library/Frameworks/osgDB.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		43D724CF094DE500009181E3 /* osgGA.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgGA.framework; path = ../../../Library/Frameworks/osgGA.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		43D724CE094DE500009181E3 /* osgDB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgDB.framework; path = ../../../Library/Frameworks/osgDB.framework; sourceTree = SOURCE_ROOT; };
+		43D724CF094DE500009181E3 /* osgGA.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgGA.framework; path = ../../../Library/Frameworks/osgGA.framework; sourceTree = SOURCE_ROOT; };
 		43D724D0094DE500009181E3 /* osgText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgText.framework; path = ../../../Library/Frameworks/osgText.framework; sourceTree = SOURCE_ROOT; };
 		43D724D1094DE500009181E3 /* osgUtil.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = osgUtil.framework; path = ../../../Library/Frameworks/osgUtil.framework; sourceTree = SOURCE_ROOT; };
 		43E9AF6F09F6B98D00444335 /* IAddSharedVertex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IAddSharedVertex.h; path = ../Usul/Interfaces/IAddSharedVertex.h; sourceTree = SOURCE_ROOT; };
@@ -6579,6 +6577,8 @@
 				668DB5080D788D3D00EA4DCD /* libSerializeXML.dylib in Frameworks */,
 				668DB5070D788D3A00EA4DCD /* libXmlTree.dylib in Frameworks */,
 				669432270D77EA9900633017 /* libUsul.dylib in Frameworks */,
+				666BCACC0EB7605A00D25C75 /* libpq.5.0.dylib in Frameworks */,
+				666BCC3D0EB760E600D25C75 /* libpqxx-2.6.9.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10407,7 +10407,6 @@
 		66EF175E0D1518C700B4B1AA /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				66D51F470EA2C19500198B7A /* Functions */,
 				66A1C50E0E09B321001DB3F8 /* Algorithms */,
 				66EF176F0D15193000B4B1AA /* Animate */,
 				66EF17760D15193000B4B1AA /* Commands */,
@@ -10415,6 +10414,7 @@
 				66EF17A00D15193000B4B1AA /* Export.h */,
 				668DB5910D78A74E00EA4DCD /* Extents.h */,
 				668C94170D41C27B0007D7F4 /* Factory */,
+				66D51F470EA2C19500198B7A /* Functions */,
 				66EF17A10D15193000B4B1AA /* Functors */,
 				668DB5920D78A74E00EA4DCD /* Jobs */,
 				66EF17A80D15193000B4B1AA /* Layers */,
@@ -18155,7 +18155,7 @@
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-flat_namespace",
-					"-lpq.5",
+					"-lpq.5.0",
 					"-lpqxx-2.6.9",
 				);
 				PREBINDING = NO;

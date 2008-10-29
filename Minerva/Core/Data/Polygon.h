@@ -40,8 +40,8 @@ public:
 
   USUL_DECLARE_QUERY_POINTERS ( Polygon );
 
-  Polygon ();
-  
+  Polygon();
+
   void                  outerBoundary ( const Vertices& );
   Vertices              outerBoundary() const;
 
@@ -50,23 +50,23 @@ public:
 
   /// Get the border color flag.
   Color                 borderColor() const;
-  
+
   /// Get the fill color flag.
   Color                 fillColor() const;
-  
+
   /// Is this geometry transparent?
   virtual bool          isSemiTransparent() const;
-  
+
   /// Set/get the PolyStyle.
   void                  polyStyle ( PolyStyle * );
   PolyStyle*            polyStyle() const;
-  
+
   /// Get draw border flag.
   bool                  showBorder() const;
-  
+
   /// Get draw interior flag.
   bool                  showInterior() const;
-  
+
 protected:
   virtual ~Polygon();
   

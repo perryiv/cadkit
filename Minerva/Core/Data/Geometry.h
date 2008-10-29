@@ -44,8 +44,6 @@ public:
   
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
-
-  Geometry();
   
   // Altitude Mode.
   enum AltitudeMode
@@ -99,6 +97,9 @@ public:
   virtual void          updateNotify ( Usul::Interfaces::IUnknown *caller );
   
 protected:
+	
+  /// Construction/Destruction.
+  Geometry();
   virtual ~Geometry();
 
   /// Build the scene branch.
@@ -120,7 +121,7 @@ protected:
   }
 
   template<class Vertex,class Grid>
-  double                _elevation2 ( const Vertex& point, const Grid& grid ) const
+  double                _elevationFromGrid ( const Vertex& point, const Grid& grid ) const
   {
     switch ( this->altitudeMode() )
     {

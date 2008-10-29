@@ -315,6 +315,16 @@ protected:
   /// Set the viewport.
   virtual void                  _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
 
+  // Create the button mappings.
+  void                          _createButtonMappings ( const XmlTree::Node& node );
+
+  // Create the buttons.
+  void                          _createButtons ( const XmlTree::Node& node );
+
+  // Create the analogs.
+  void                          _createAnalogs ( const XmlTree::Node& node );
+
+  /// Contruct the application.
   void                          _construct();
 
   // Is this the head node?

@@ -2802,7 +2802,6 @@ void Application::_parseCommandLine()
 void Application::_readDevicesFile()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
 
   // Get the filename.
   const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _deviceFilename ) );
@@ -2814,17 +2813,39 @@ void Application::_readDevicesFile()
     return;
   }
 
-  // Make a new button group.
-  ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
-
   // Create and load the document.
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
   
-  // Find all the buttons...
-  typedef XmlTree::Node::Children Children;
-  Children buttons    ( document->find ( "Button",    true ) );
+  // Create the buttons.
+  this->_createButtons ( *document );
 
+  // Find all the analogs.
+  this->_createAnalogs ( *document );  
+
+  // Add our self as button listeners.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  this->addButtonPressListener ( me.get() );
+  this->addButtonReleaseListener ( me.get() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_createButtons ( const XmlTree::Node& node )
+{
+  // Make a new button group.
+  ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
+
+  // Find all the buttons.
+  typedef XmlTree::Node::Children Children;
+  Children buttons ( node.find ( "Button",    true ) );
+
+  // Create the buttons.
   for ( Children::iterator iter = buttons.begin(); iter != buttons.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -2840,8 +2861,21 @@ void Application::_readDevicesFile()
     }
   }
 
-  // Find all the analogs...
-  XmlTree::Node::Children analogs    ( document->find ( "Analog",    true ) );
+  // Set the new button group.
+  this->buttons ( buttonGroup );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the analogs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_createAnalogs ( const XmlTree::Node& node )
+{
+  typedef XmlTree::Node::Children Children;
+  XmlTree::Node::Children analogs  ( node.find ( "Analog",    true ) );
   for ( Children::iterator iter = analogs.begin(); iter != analogs.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -2867,20 +2901,6 @@ void Application::_readDevicesFile()
 			}
 		}
   }
-  // I don't think we need this anymore.
-  /*if( _analogs.size() == 0 )
-  {
-    _analogs[ "Joystick" ] = new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" );
-    _analogs[ "Joystick" ]->name( "Joystick" );
-  }*/
-
-  // Set the new button group.
-  this->buttons ( buttonGroup );
-
-  // Add our self as button listeners.
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  this->addButtonPressListener ( me.get() );
-  this->addButtonReleaseListener ( me.get() );
 }
 
 
@@ -2903,9 +2923,45 @@ void Application::_readFunctorFile()
   document->load ( file );
 
   // read the button mappings from the functor file
-#if 1
+  this->_createButtonMappings ( *document );
+
+  // Find the joystick to use for menu navigation.
+  JoystickPtr joystick ( this->analogFind ( _menuNavigationAnalogID ) );
+
+  // Assign the menu navigation to the specified joystick or default if none specified.
+  if( joystick.valid() )
+  {
+    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+  }
+  else
+  {
+    // If we can't find a menu navigation analog print a warning statement.
+    std::cout << "Warning 3677656649: No valid menu navigation joystick found" << std::endl;
+  }
+
+  // Clear what we have.
+  this->_clearAllFunctors();
+  //this->navigator ( 0x0 );
+  
+  // Create the functors.
+  this->_createFunctors ( *document );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create the button mappings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_createButtonMappings ( const XmlTree::Node& node )
+{
   typedef XmlTree::Node::Children Children;
-  Children mappings    ( document->find ( "Mapping",    true ) );
+  Children mappings ( node.find ( "Mapping",    true ) );
 
   for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
   {
@@ -2936,32 +2992,6 @@ void Application::_readFunctorFile()
       }
     }	
   }
-
-  JoystickPtr joystick ( this->analogFind ( _menuNavigationAnalogID ) );
-
-    // assign the menu navigation to the specified joystick or default if none specified
-  if( joystick.valid() )
-  {
-    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-  }
-  else
-  {
-    // if we can't find a menu navigation analog print a warning statement
-    std::cout << Usul::Strings::format
-      ( "Warning 3677656649: No valid menu navigation joystick found" ) << std::endl;
-  }
-#endif
-
-  // Clear what we have.
-  this->_clearAllFunctors();
-  //this->navigator ( 0x0 );
-  
-  // Create the functors.
-  this->_createFunctors ( *document );
 }
 
 

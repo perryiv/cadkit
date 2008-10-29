@@ -36,7 +36,7 @@
 namespace Minerva {
 namespace Core { 
 
-  class Visitor;
+class Visitor;
 
 namespace Data {
 

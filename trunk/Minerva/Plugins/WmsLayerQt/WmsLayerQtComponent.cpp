@@ -114,6 +114,7 @@ std::string WmsLayerQtComponent::getPluginName() const
 
 QWidget* WmsLayerQtComponent::layerAddGUI ( Usul::Interfaces::IUnknown *caller )
 {
+  // TODO: Need to clean up if cancelled.
   _widget = new AddWmsLayerWidget;
   return _widget;
 }
@@ -142,6 +143,7 @@ void WmsLayerQtComponent::apply ( Usul::Interfaces::IUnknown* parent, Usul::Inte
   if ( 0x0 != _widget )
     _widget->apply ( parent, caller );
 
+  // TODO: What about cancelled dialog?
   _widget = 0x0;
 }
 

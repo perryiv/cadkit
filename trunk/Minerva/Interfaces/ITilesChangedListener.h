@@ -34,7 +34,7 @@ struct ITilesChangedListener : public Usul::Interfaces::IUnknown
   enum { IID = 1809784420u };
   
   typedef Minerva::Core::TileEngine::Tile Tile;
-  
+
   virtual void tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent ) = 0;
   virtual void tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent ) = 0;
   

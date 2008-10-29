@@ -769,7 +769,7 @@ bool Point::elevationChangedNotify ( const Extents& extents, unsigned int level,
     {
       // Set the height.
       Minerva::Core::Utilities::ElevationGrid grid ( elevationData, extents );
-      point[2] = this->_elevation2 ( point, grid );
+      point[2] = this->_elevationFromGrid ( point, grid );
     
       //Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
       //point[2] = this->_elevation ( point, elevation );

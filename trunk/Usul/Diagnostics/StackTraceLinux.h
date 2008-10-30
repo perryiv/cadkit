@@ -24,6 +24,7 @@ namespace Usul {
 namespace Diagnostics {
 namespace Helper {
 
+#define MAX_STACK_LEVELS 1024
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -35,9 +36,8 @@ template < class Container > void getStackTrace ( Container &c )
 {
   // See http://www.ibm.com/developerworks/linux/library/l-cppexcep.html
 
-  const int maxStackLevels ( 1024 );
-  void * array[maxStackLevels];
-  const int actualStackSize ( ::backtrace ( array, maxStackLevels - 1 ) );
+  void * array[MAX_STACK_LEVELS];
+  const int actualStackSize ( ::backtrace ( array, MAX_STACK_LEVELS - 1 ) );
 
   if ( actualStackSize >= 1 )
   {
@@ -65,9 +65,8 @@ bool printStackTrace()
   // when the proces is so corrupt that allocating memory is not possible.
   // See http://www.ibm.com/developerworks/linux/library/l-cppexcep.html
 
-  const int maxStackLevels ( 1024 );
-  void * array[maxStackLevels];
-  const int actualStackSize ( ::backtrace ( array, maxStackLevels - 1 ) );
+  void * array[MAX_STACK_LEVELS];
+  const int actualStackSize ( ::backtrace ( array, MAX_STACK_LEVELS - 1 ) );
 
   if ( actualStackSize >= 1 )
   {
@@ -84,6 +83,7 @@ bool printStackTrace()
   return true;
 }
 
+#undef MAX_STACK_LEVELS
 
 } // namespace Helper
 } // namespace Diagnostics

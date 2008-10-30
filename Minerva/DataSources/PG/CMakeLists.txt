@@ -4,6 +4,8 @@ PROJECT(MinervaPostgres)
 SET(CMakeModules ${CADKIT_INC_DIR}/CMakeModules )
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
+ADD_DEFINITIONS("-D_COMPILING_MINERVA_POSTGRES")
+
 # ------------ Find boost ----------------------
 INCLUDE( ${CMakeModules}/FindBoost.cmake)
 

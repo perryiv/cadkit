@@ -6,7 +6,7 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
-ADD_DEFINITIONS("-D_COMPILING_MENU_KIT")
+ADD_DEFINITIONS("-D_COMPILING_MENUKIT")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory

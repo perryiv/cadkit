@@ -21,6 +21,11 @@ INCLUDE( ${CMakeModules}/FindBoost.cmake)
 INCLUDE( ${CMakeModules}/FindCURL.cmake)
 
 ADD_DEFINITIONS("-D_COMPILING_MINERVA")
+
+IF(MSVC)
+	ADD_DEFINITIONS("-DCURL_STATICLIB -D_CRT_SECURE_NO_WARNINGS")
+ENDIF(MSVC)
+
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
@@ -73,6 +78,7 @@ SET (SOURCES
 ./Data/TimeStamp.cpp
 ./Factory/Readers.cpp
 ./Functions/CacheString.cpp
+./Functions/MakeBody.cpp
 ./Functions/ParameterizeExtents.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp
@@ -85,6 +91,7 @@ SET (SOURCES
 ./Layers/RasterLayerNetwork.cpp
 ./Layers/RasterLayerOssim.cpp
 ./Layers/RasterLayerWms.cpp
+./OSG/MatrixTransform.cpp
 ./TileEngine/Body.cpp
 ./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp
@@ -124,3 +131,7 @@ TARGET_LINK_LIBRARIES(Minerva
 	${OSSIM_LIB}
     ${CURL_LIBRARY}
 )
+
+IF(WIN32)
+	TARGET_LINK_LIBRARIES( Minerva Ws2_32 wldap32 )
+ENDIF(WIN32)

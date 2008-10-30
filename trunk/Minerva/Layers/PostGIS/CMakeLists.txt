@@ -17,6 +17,14 @@ FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 # ------------ Find GDAL Library ----------------------
 INCLUDE( ${CMakeModules}/FindGDAL.cmake)
 
+
+# Add needed preprocessor definitions.
+ADD_DEFINITIONS("-D_COMPILING_MINERVA_POSTGIS")
+
+IF(MSVC)
+	ADD_DEFINITIONS("-DNOMINMAX -D_CRT_SECURE_NO_DEPRECATE")
+ENDIF(MSVC)
+
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 

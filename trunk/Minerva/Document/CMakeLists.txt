@@ -18,7 +18,14 @@ INCLUDE( ${CMakeModules}/FindBoost.cmake)
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
+# Add needed preprocessor definitions.
+ADD_DEFINITIONS("-D_COMPILING_MINERVA_DOCUMENT")
 
+IF(MSVC)
+	ADD_DEFINITIONS("-DNOMINMAX -D_CRT_SECURE_NO_DEPRECATE")
+ENDIF(MSVC)
+
+# Add directories to search for libraries to link to.
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
@@ -47,7 +54,7 @@ SET (SOURCES
 ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree Minerva MinervaPostgres )
+LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree MenuKit Minerva MinervaPostgres )
 TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
 	${PQXX_LIB}

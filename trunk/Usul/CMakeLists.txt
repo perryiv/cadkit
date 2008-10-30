@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for Usul
+#
+#########################################################
+
 PROJECT(Usul)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
@@ -135,7 +141,7 @@ ADD_LIBRARY(${TARGET} SHARED ${SOURCES} )
 
 # Link the Library	
 IF(WIN32)
-	TARGET_LINK_LIBRARIES( ${TARGET} User32 rpcrt4 Ws2_32 )
+	TARGET_LINK_LIBRARIES( ${TARGET} User32 rpcrt4 Ws2_32 Dbghelp )
 ELSEIF(APPLE)
   TARGET_LINK_LIBRARIES( ${TARGET} System )
 ELSE(WIN32)
@@ -143,5 +149,7 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 INSTALL(TARGETS ${TARGET}
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION bin
+  ARCHIVE DESTINATION bin
 )

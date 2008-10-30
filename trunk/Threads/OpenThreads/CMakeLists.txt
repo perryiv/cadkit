@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for OpenThreads Extension library.
+#
+#########################################################
+
 PROJECT(OpenThreadsEx)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
@@ -50,5 +56,7 @@ LINK_CADKIT( ${TARGET} Usul )
 TARGET_LINK_LIBRARIES( ${TARGET} optimized  ${OPENTHREADS_LIB} debug ${OPENTHREADS_LIB_DEBUG} )
 
 INSTALL(TARGETS ${TARGET}
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION bin
+  ARCHIVE DESTINATION bin
 )

@@ -238,9 +238,9 @@ void Application::_construct()
   _models->setName       ( "_models"       );
   _auxiliary->setName    ( "_auxiliary"    );
 
-#if 0
+#if 1
   osg::ref_ptr <osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( OsgTools::ShapeFactorySingleton::instance().sphere( 5.0 ) );
+  geode->addDrawable ( OsgTools::ShapeFactory::instance().sphere( 5.0 ) );
 
   osg::ref_ptr <osg::Material>  mat ( new osg::Material );
   osg::Vec4 color ( 0.25, 0.25, 0.5, 1.0 );
@@ -2919,6 +2919,15 @@ void Application::_readFunctorFile()
 
   // Open the input file.
   const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _functorFilename ) );
+
+  // Return if the file does not exist.
+  if ( false == Usul::Predicates::FileExists::test ( file ) )
+  {
+    std::cout << "Warning 1144855880: Could not find functor file: " << file << std::endl;
+    return;
+  }
+
+  // Load the xml file.
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
 

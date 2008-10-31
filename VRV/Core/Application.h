@@ -141,7 +141,6 @@ public:
   typedef Renderer::RefPtr                     RendererPtr;
   typedef std::vector < RendererPtr >          Renderers;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
-  typedef std::vector < std::string >          Filenames;
   typedef VRV::Prefs::Settings                 Preferences;
   typedef MenuKit::OSG::Menu                   Menu;
   typedef USUL_REF_POINTER(Menu)               MenuPtr;
@@ -153,15 +152,6 @@ public:
   typedef IShadeModel::Mode                    ShadeModel;
   typedef Usul::Interfaces::IRotationCenterFloat  IRotationCenter;
   typedef IRotationCenter::Vector                 Vector;
-
-  typedef void (Application::*VoidFunction) ();
-  typedef void (Application::*BoolFunction) ( bool );
-  typedef bool (Application::*CheckFunction) () const;
-  typedef Usul::Adaptors::MemberFunction < void, Application*, VoidFunction >  ExecuteFunctor;
-  typedef Usul::Adaptors::MemberFunction < bool, Application*, CheckFunction > CheckFunctor;
-  typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction >  BoolFunctor;
-  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                    BasicCommand;
-  typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor >    CheckCommand;
 
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
@@ -222,9 +212,6 @@ public:
   /// Get the Preferences.
   Preferences *                 preferences();
   const Preferences *           preferences() const;
-
-  // Print the usage string.
-  static void                   usage ( const std::string &exe, std::ostream &out );
 
   /// Add/Remove group from projection node
   osg::Group*                   projectionGroupGet    ( const std::string& );
@@ -303,8 +290,10 @@ protected:
 
   /// VR Juggler methods.
   virtual void                  _init();
+  virtual void                  _contextInit();
   virtual void                  _preFrame();
   virtual void                  _latePreFrame();
+  virtual void                  _draw();
   virtual void                  _postFrame();
 
   // Draw functions.
@@ -334,7 +323,8 @@ protected:
   virtual void                  _initializeSharedData ( const std::string& hostname );
 
   // Load the file(s).
-  virtual void                  _loadModelFiles  ( const Filenames& filenames );
+  virtual void                  _loadModelFiles  ( const Strings& filenames );
+  virtual void                  _loadDirectories ( const Strings& directories );
 
   // Set the near and far clipping planes based on the scene.
   void                          _setNearAndFarClippingPlanes();
@@ -361,9 +351,6 @@ protected:
 
   /// Update the status bar text.
   void                          _updateStatusBar ( const std::string &text );
-
-  // Parse the command-line arguments.
-  void                          _parseCommandLine();
 
   // Read the user's functor config file.
   void                          _readFunctorFile();
@@ -597,10 +584,8 @@ private:
   // Don't allow derived classes to implement these VR Juggler functions.
   // Implement the _function instead.  
   // This is to ensure that the functions are wrapped in a try/catch.
-  virtual void            contextInit();
   virtual void            contextPreDraw();
   virtual void            contextPostDraw();
-  virtual void            draw();
   virtual void            contextClose();
 
   // Typedefs.
@@ -662,9 +647,6 @@ private:
   bool                                   _menuSceneShowHide;
   MenuPtr                                _menu;
   MenuPtr                                _statusBar;
-  std::string                            _preferencesFilename;
-  std::string                            _functorFilename;
-  std::string                            _deviceFilename;
   float                                  _translationSpeed;
   osg::Matrixd                           _home;
   bool                                   _timeBased;

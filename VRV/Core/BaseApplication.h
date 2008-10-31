@@ -56,6 +56,7 @@ public:
   typedef Joystick::RefPtr                     JoystickPtr;
   typedef std::map<std::string, JoystickPtr>   Analogs;
   typedef Usul::Math::Matrix44d                Matrix;
+  typedef std::vector < std::string >          Strings;
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
   typedef Usul::Functors::Interaction::Navigate::Transform   TransformFunctor;
@@ -99,6 +100,11 @@ public:
   /// Get a copy of the user defined favorite functors.
   FavoriteFunctors              favoriteFunctors() const;
 
+  /// Get config filenames.
+  std::string                   getPreferencesFilename() const;
+  std::string                   getFunctorFilename() const;
+  std::string                   getDeviceFilename() const;
+
   /// Get the mutex.
   Mutex&                        mutex() const { return _mutex; }
 
@@ -133,10 +139,15 @@ public:
   /// Update the tracker.
   void                          trackerUpdate();
 
+  // Print the usage string.
+  static void                   usage ( const std::string &exe, std::ostream &out );
+
 protected:
 
   virtual void                  _init();
+  virtual void                  _contextInit();
   virtual void                  _preFrame();
+  virtual void                  _draw() = 0;
   virtual void                  _latePreFrame();
   virtual void                  _postFrame();
 
@@ -162,12 +173,19 @@ protected:
   void                          _loadSimConfigs  ( const std::string& dir );
   void                          _loadSimConfigs();
 
+  // Load the file(s).
+  virtual void                  _loadModelFiles  ( const Strings& filenames );
+  virtual void                  _loadDirectories ( const Strings& directories );
+
   // The navigator has changed.
   virtual void                  _navigatorChanged ( Navigator::RefPtr newNavigator, Navigator::RefPtr oldNavigator );
 
   // Set/Get the navigation matrix.
   void                          _navigationMatrixSet ( const Matrix& m );
   Matrix                        _navigationMatrixGet();
+
+  // Parse the command-line arguments.
+  void                          _parseCommandLine();
 
   // Remove the listener.
   void                          _removeButtonPressListener ( Usul::Interfaces::IUnknown * );
@@ -183,7 +201,9 @@ private:
   // This is to ensure that the functions are wrapped in a try/catch.
 
   virtual void            init();
+  virtual void            contextInit();
   virtual void            preFrame();
+  virtual void            draw();
   virtual void            latePreFrame();
   virtual void            postFrame();
 
@@ -196,8 +216,12 @@ private:
   ButtonsPtr                             _buttons;
   Analogs                                _analogs;
   TrackerPtr                             _tracker;
-  cluster::UserData<SharedMatrix>        _navigationMatrix;
+  cluster::UserData<SharedMatrix>        _navigationMatrixShared;
+  Matrix                                 _navigationMatrix;
   Navigator::RefPtr                      _navigator;
+  std::string                            _preferencesFilename;
+  std::string                            _functorFilename;
+  std::string                            _deviceFilename;
   AnalogInputs                           _analogInputs;
   TransformFunctors                      _transformFunctors;
   FavoriteFunctors                       _favoriteFunctors;

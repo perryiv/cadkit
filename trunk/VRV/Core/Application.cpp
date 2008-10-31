@@ -26,9 +26,6 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
-#include "Usul/CommandLine/Arguments.h"
-#include "Usul/CommandLine/Parser.h"
-#include "Usul/CommandLine/Options.h"
 #include "Usul/Commands/Command.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
@@ -150,9 +147,6 @@ Application::Application() :
   _menuSceneShowHide ( true ),
   _menu              ( new Menu ),
   _statusBar         ( new Menu ),
-  _preferencesFilename (),
-  _functorFilename   (),
-  _deviceFilename    (),
   _translationSpeed  ( 1.0f ),
   _home              ( osg::Matrixd::identity() ),
   _timeBased         ( true ),
@@ -179,11 +173,6 @@ Application::Application() :
 
   // We want thread safe ref and unrefing.
   osg::Referenced::setThreadSafeReferenceCounting ( true );
-
-  // Set default file paths.
-  this->_setDefaultPath ( _preferencesFilename, "preferences" );
-  this->_setDefaultPath ( _functorFilename,     "functors" );
-  this->_setDefaultPath ( _deviceFilename,      "devices" );
 
   // Set the delete handler.
   //osg::Referenced::setDeleteHandler ( _deleteHandler );
@@ -262,7 +251,7 @@ void Application::_construct()
   if ( _databasePager.valid() )
   {
     _databasePager->registerPagedLODs( _sceneManager->scene() ); 
-    
+
     _databasePager->setAcceptNewDatabaseRequests( true );
     _databasePager->setDatabasePagerThreadPause( false );
   }
@@ -547,9 +536,12 @@ void Application::viewAll ( osg::Node* node, osg::Matrix::value_type zScale )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::contextInit()
+void Application::_contextInit()
 {
   USUL_TRACE_SCOPE;
+
+  // Call the base class first.
+  BaseClass::_contextInit();
 
   // Make a new Renderer.
   RendererPtr renderer ( new Renderer );
@@ -607,7 +599,7 @@ void Application::contextInit()
   _viewport->setViewport ( vp[0], vp[1], vp[2], vp[3] );
 
   // Set the projection.
-  _sceneManager->resize( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() );
+  _sceneManager->resize ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() );
 
   osg::ref_ptr < osg::StateSet > ss ( renderer->getGlobalStateSet() );
   osg::ref_ptr < osg::LightModel > model ( new osg::LightModel );
@@ -660,72 +652,13 @@ void Application::contextPreDraw()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Small class that pushes the state in constructor and pops it in destructor.
-//  This is for exception safety.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace VRV {
-namespace Core {
-namespace Detail 
-{
-  struct OpenGlStackPushPop
-  {
-    OpenGlStackPushPop()
-    {
-      #if 0
-      // Clear the errors.
-      while ( GL_ERROR_NO != ::glGetError() ){}
-      #endif
-
-      glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-
-      //glMatrixMode(GL_TEXTURE);
-      //glPushMatrix();
-    }
-    ~OpenGlStackPushPop()
-    {
-      // Check for errors.
-      #if 0
-      assert ( GL_ERROR_NO == ::glGetError() );
-      #endif
-
-      //glMatrixMode(GL_TEXTURE);
-      //glPopMatrix();
-
-      glMatrixMode(GL_PROJECTION);
-      glPopMatrix();
-
-      glMatrixMode(GL_MODELVIEW);
-      glPopMatrix();
-
-      glPopAttrib();
-    }
-  };
-}
-}
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Draw.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::draw()
+void Application::_draw()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  // For exception safety. Pushes attributes in constructor, pops them in destructor.
-  Detail::OpenGlStackPushPop pushPop;
 
   // Get the renderer for this context.
   Renderer* renderer ( *(_renderer) );
@@ -733,8 +666,9 @@ void Application::draw()
   // Drawing is about to happen.
   Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_preDraw ), renderer, "3501390015" );
 
-  // Draw.
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_draw ), renderer, "1173048910" );
+  // Draw (Function pointer variable is used to resolve ambiguity for the compiler).
+  void (Application::*_draw) ( Renderer* ) = &Application::_draw;
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, _draw ), renderer, "1173048910" );
 
   // Drawing has finished.
   Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_postDraw ), renderer, "2286306551" );
@@ -775,7 +709,7 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
   vrj::GlUserData* userData    ( mgr->currentUserData() );
   vrj::Projection* projection  ( userData->getProjection() );
   vrj::Frustum frustum         ( projection->getFrustum() );
-  
+
   // We need to set this every frame to account for stereo.
   renderer->setFrustum ( frustum[vrj::Frustum::VJ_LEFT],
 				                 frustum[vrj::Frustum::VJ_RIGHT],
@@ -980,9 +914,6 @@ void Application::_init()
 
   // Call the base class first.
   BaseClass::_init();
-
-  // Parse the command-line arguments.
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Application::_parseCommandLine ), "1768075678" );
 
   // Read the user's preference file, if any.
   this->_readUserPreferences();
@@ -1445,7 +1376,7 @@ void Application::addModel ( osg::Node *model, const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_loadModelFiles  ( const Filenames& filenames )
+void Application::_loadModelFiles ( const Strings& filenames )
 {
   USUL_TRACE_SCOPE;
 
@@ -1454,6 +1385,27 @@ void Application::_loadModelFiles  ( const Filenames& filenames )
 
   // Add the command to the queue.
   this->addCommand ( command.get () );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load all models in the directories.  TODO: Search for the files that the loaded documents can handle.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_loadDirectories ( const Strings& directories )
+{
+  Strings filenames;
+  for ( Strings::const_iterator iter = directories.begin(); iter != directories.end(); ++ iter )
+  {
+    // Find the files that we can load.
+    Usul::File::findFiles ( *iter, "osg", filenames );
+    Usul::File::findFiles ( *iter, "ive", filenames );
+  }
+
+  // Load what we found.
+  this->_loadModelFiles ( filenames );
 }
 
 
@@ -1892,7 +1844,7 @@ void Application::_readUserPreferences()
     Preferences::RefPtr preferences ( new Preferences );
 
     // Read the preferences.
-    preferences->read ( _preferencesFilename );
+    preferences->read ( this->getPreferencesFilename() );
     
     {
       Guard guard ( this->mutex() );
@@ -2033,21 +1985,6 @@ void Application::wandRotation ( Matrix &W ) const
     tm->setText ( 15, 75, std::string ( &chars[0] ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
 
 #endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Print the usage string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::usage ( const std::string &exe, std::ostream &out )
-{
-  out << "usage: " << exe << ' ';
-  out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
-  out << "[document0, document1, ..., documentN] ";
-  out << '\n';
 }
 
 
@@ -2732,69 +2669,6 @@ bool Application::_isHeadNode() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Parse the command-line arguments.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_parseCommandLine()
-{
-  // Typedefs.
-  typedef Usul::CommandLine::Parser    Parser;
-  typedef Usul::CommandLine::Arguments Arguments;
-
-  // Get the command line arguments.
-  Arguments::Args args ( Arguments::instance().args () );
-
-  // Make the parser.  Offset beginning by one to skip the application name.
-  Parser parser ( args.begin() + 1, args.end() );
-
-  // Options class.
-  Usul::CommandLine::Options options ( parser.options() );
-
-  // Get new preferences and functor file from the command line.
-  _preferencesFilename   = options.get ( "preferences", _preferencesFilename );
-  _functorFilename       = options.get ( "functors",    _functorFilename     );
-  _deviceFilename        = options.get ( "devices",     _deviceFilename     );
-
-  // Have to load the config files now. Remove them from the arguments.
-  Parser::Args configs ( parser.files ( ".jconf", true ) );
-  this->_loadConfigFiles ( configs );
-
-  // The filenames to load.
-  Filenames filenames;
-
-  // Find all directories.
-  Parser::Args directories;
-
-  // Extract the files with the given extension.
-  Usul::Algorithms::extract ( Usul::File::IsDirectory(),
-                              parser.args(),
-                              directories,
-                              true );
-
-  for ( Parser::Args::iterator iter = directories.begin(); iter != directories.end(); ++ iter )
-  {
-    // Find the files that we can load.
-    Usul::File::findFiles ( *iter, "osg", filenames );
-    Usul::File::findFiles ( *iter, "ive", filenames );
-  }
-
-  // Extract the model files and remove them from the remaining arguments.
-  Parser::Args models ( parser.files ( true ) );
-
-  // Reserve enough room.
-  filenames.reserve ( filenames.size() + models.size() );
-
-  // Copy the model files into our list to load.
-  std::copy ( models.begin(), models.end(), std::back_inserter( filenames ) );
-
-  // Load the model files.
-  this->_loadModelFiles ( filenames );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Read the user's devices config file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2804,7 +2678,7 @@ void Application::_readDevicesFile()
   USUL_TRACE_SCOPE;
 
   // Get the filename.
-  const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _deviceFilename ) );
+  const std::string file ( this->getDeviceFilename() );
 
   // Check to see if the file exists.
   if ( false == Usul::Predicates::FileExists::test ( file ) )
@@ -2918,7 +2792,7 @@ void Application::_readFunctorFile()
   XmlTree::XercesLife life;
 
   // Open the input file.
-  const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _functorFilename ) );
+  const std::string file ( this->getFunctorFilename() );
 
   // Return if the file does not exist.
   if ( false == Usul::Predicates::FileExists::test ( file ) )
@@ -3235,7 +3109,7 @@ void Application::timeBased ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::timeBased (  ) const
+bool Application::timeBased() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
@@ -3502,8 +3376,12 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 
   // Namespace aliases to help shorten lines.
   namespace UA = Usul::Adaptors;
+  namespace UC = Usul::Commands;
 
-  menu->append ( new ToggleButton ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
+  // Function pointer variable is used to resolve ambiguity for the compiler.
+  void (Application::*frameDumpSet) ( bool ) = &Application::frameDump;
+  bool (Application::*frameDumpGet) () const = &Application::frameDump;
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Frame Dump", UA::memberFunction<void> ( this, frameDumpSet ), UA::memberFunction<bool> ( this, frameDumpGet ) ) ) );
   menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Reset Clipping", _setNearAndFarClippingPlanes ) ) );
   menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Set Home",       _setHome ) ) );
   menu->append ( new Button       ( VRV_MAKE_COMMAND ( "View All",       viewScene ) ) );
@@ -3620,7 +3498,11 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   menu->addSeparator();
   
 	menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Body Centered Rotation", UA::memberFunction<void> ( this, &Application::bodyCenteredRotation ), UA::memberFunction<bool> ( this, &Application::isBodyCenteredRotation ) ) ) );
-  menu->append ( new ToggleButton ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
+
+  // Function pointer variable is used to resolve ambiguity for the compiler.
+  void (Application::*timeBasedSet) ( bool ) = &Application::timeBased;
+  bool (Application::*timeBasedGet) () const = &Application::timeBased;
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Time Based", UA::memberFunction<void> ( this, timeBasedSet ), UA::memberFunction<bool> ( this, timeBasedGet ) ) ) );
 
 	menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 10", _increaseSpeedTen ) ) );
   menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 2",  _increaseSpeed    ) ) );
@@ -3645,6 +3527,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
   // Namespace aliases to help shorten lines.
   namespace UA = Usul::Adaptors;
+  namespace UC = Usul::Commands;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -3702,8 +3585,13 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     menu->append ( buttons );
   }
 
-  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogsCalibrate ) ) ) );
-  menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
+  // Add button to calibrate joysticks.
+  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Calibrate Joystick", analogsCalibrate ) ) );
+
+  // Function pointer variable is used to resolve ambiguity for the compiler.
+  void (Application::*menuSceneShowHideSet) ( bool ) = &Application::menuSceneShowHide;
+  bool (Application::*menuSceneShowHideGet) () const = &Application::menuSceneShowHide;
+  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Hide Scene", UA::memberFunction<void> ( this, menuSceneShowHideSet ), UA::memberFunction<bool> ( this, menuSceneShowHideGet ) ) ) );
 
   menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Update", _setAllowUpdate, _isUpdateOn ) ) );
   menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Intersect", allowIntersections, isAllowIntersections ) ) );
@@ -3721,7 +3609,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportWorld ( )
+void Application::exportWorld()
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3737,7 +3625,7 @@ void Application::exportWorld ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportWorldBinary ( )
+void Application::exportWorldBinary()
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3753,7 +3641,7 @@ void Application::exportWorldBinary ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportScene ()
+void Application::exportScene()
 {
   static unsigned int count ( 0 );
   std::string number ( this->_counter ( ++count ) );
@@ -3768,7 +3656,7 @@ void Application::exportScene ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportSceneBinary ( )
+void Application::exportSceneBinary()
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3813,7 +3701,7 @@ void Application::viewWorld()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::viewScene ( )
+void Application::viewScene()
 {
   USUL_TRACE_SCOPE;
   this->viewAll ( this->navigationScene(), this->preferences()->viewAllScaleZ() );

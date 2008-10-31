@@ -15,13 +15,19 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
+#include "Usul/CommandLine/Arguments.h"
+#include "Usul/CommandLine/Parser.h"
+#include "Usul/CommandLine/Options.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Headers/OpenGL.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/User/Directory.h"
 
 #include "vrj/Kernel/Kernel.h"
+
+#include "Usul/File/Boost.h"
 
 using namespace VRV::Core;
 
@@ -39,12 +45,20 @@ BaseApplication::BaseApplication() :
   _buttons           ( new VRV::Devices::ButtonGroup ),
   _analogs           (),
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _navigationMatrixShared (),
   _navigationMatrix  (),
   _navigator         ( 0x0 ),
+  _preferencesFilename (),
+  _functorFilename   (),
+  _deviceFilename    (),
   _analogInputs      (),
   _transformFunctors (),
   _favoriteFunctors  ()
 {
+  // Set default file paths.
+  this->_setDefaultPath ( _preferencesFilename, "preferences" );
+  this->_setDefaultPath ( _functorFilename,     "functors" );
+  this->_setDefaultPath ( _deviceFilename,      "devices" );
 }
 
 
@@ -189,6 +203,107 @@ void BaseApplication::init()
 void BaseApplication::_init()
 {
   USUL_TRACE_SCOPE;
+
+  // Parse the command-line arguments.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &BaseApplication::_parseCommandLine ), "1768075678" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called once for each display ( or draw thread ) to initialize the OpenGL context.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::contextInit()
+{
+  USUL_TRACE_SCOPE;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &BaseApplication::_contextInit ), "4189074800" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the context.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_contextInit()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Small class that pushes the state in constructor and pops it in destructor.
+//  This is for exception safety.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace VRV {
+namespace Core {
+namespace Detail 
+{
+  struct OpenGlStackPushPop
+  {
+    OpenGlStackPushPop()
+    {
+      #if 0
+      // Clear the errors.
+      while ( GL_ERROR_NO != ::glGetError() ){}
+      #endif
+
+      glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+
+      //glMatrixMode(GL_TEXTURE);
+      //glPushMatrix();
+    }
+    ~OpenGlStackPushPop()
+    {
+      // Check for errors.
+      #if 0
+      assert ( GL_ERROR_NO == ::glGetError() );
+      #endif
+
+      //glMatrixMode(GL_TEXTURE);
+      //glPopMatrix();
+
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+
+      glPopAttrib();
+    }
+  };
+}
+}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Draw.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::draw()
+{
+  USUL_TRACE_SCOPE;
+
+  // For exception safety. Pushes attributes in constructor, pops them in destructor.
+  Detail::OpenGlStackPushPop pushPop;
+
+  // Do the drawing.
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &BaseApplication::_draw ), "1793314999" );
 }
 
 
@@ -205,7 +320,7 @@ void BaseApplication::_initializeSharedData ( const std::string& hostname )
   // Initialize the shared navigation matrix.
   {
     vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
-    _navigationMatrix.init ( guid, hostname );
+    _navigationMatrixShared.init ( guid, hostname );
   }
 }
 
@@ -231,6 +346,12 @@ void BaseApplication::preFrame()
 void BaseApplication::_preFrame()
 {
   USUL_TRACE_SCOPE;
+
+  // Write out the navigation matrix.
+  if ( _navigationMatrixShared.isLocal() )
+  {
+	  _navigationMatrixShared->data ( _navigationMatrix );
+  }
 
   // Update these input devices.
   {
@@ -262,6 +383,11 @@ void BaseApplication::latePreFrame()
 void BaseApplication::_latePreFrame()
 {
   USUL_TRACE_SCOPE;
+
+  {
+    Guard guard ( this->mutex() );
+    _navigationMatrix = _navigationMatrixShared->data();
+  }
 }
 
 
@@ -627,15 +753,15 @@ void BaseApplication::analogsCalibrate()
 
   for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
   {
-		Joystick::RefPtr joystick ( iter->second );
+    Joystick::RefPtr joystick ( iter->second );
 
-		if ( joystick.valid() )
-		{
-			float x ( 0.5f - joystick->horizontal() );
-			float y ( 0.5f - joystick->vertical() );
+    if ( joystick.valid() )
+    {
+      const float x ( 0.5f - joystick->horizontal() );
+      const float y ( 0.5f - joystick->vertical() );
 	  
-			joystick->analogTrim ( x, y );
-		}
+      joystick->analogTrim ( x, y );
+    }
   }
 }
 
@@ -839,9 +965,7 @@ void BaseApplication::navigationPostMultiply ( const Matrix &M )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  Matrix matrix ( _navigationMatrix->data() );
-  matrix.postMultiply ( M );
-  _navigationMatrix->data ( matrix );
+  _navigationMatrix.postMultiply ( M );
 }
 
 
@@ -855,9 +979,7 @@ void BaseApplication::navigationPreMultiply ( const Matrix &M )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  Matrix matrix ( _navigationMatrix->data() );
-  matrix.preMultiply ( M );
-  _navigationMatrix->data ( matrix );
+  _navigationMatrix.preMultiply ( M );
 }
 
 
@@ -871,7 +993,7 @@ void BaseApplication::_navigationMatrixSet ( const Matrix& m )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  _navigationMatrix->data ( m );
+  _navigationMatrix = m;
 }
 
 
@@ -885,7 +1007,7 @@ BaseApplication::Matrix BaseApplication::_navigationMatrixGet()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
-  return _navigationMatrix->data();
+  return _navigationMatrix;
 }
 
 
@@ -1007,4 +1129,147 @@ BaseApplication::FavoriteFunctors BaseApplication::favoriteFunctors() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _favoriteFunctors;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the usage string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::usage ( const std::string &exe, std::ostream &out )
+{
+  out << "usage: " << exe << ' ';
+  out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
+  out << "[document0, document1, ..., documentN] ";
+  out << '\n';
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the command-line arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_parseCommandLine()
+{
+  // Typedefs.
+  typedef Usul::CommandLine::Parser    Parser;
+  typedef Usul::CommandLine::Arguments Arguments;
+
+  // Get the command line arguments.
+  Arguments::Args args ( Arguments::instance().args () );
+
+  // Make the parser.  Offset beginning by one to skip the application name.
+  Parser parser ( args.begin() + 1, args.end() );
+
+  // Options class.
+  Usul::CommandLine::Options options ( parser.options() );
+
+  // Get new preferences and functor file from the command line.
+  {
+    Guard guard ( this->mutex() );
+    _preferencesFilename   = options.get ( "preferences", _preferencesFilename );
+    _functorFilename       = options.get ( "functors",    _functorFilename     );
+    _deviceFilename        = options.get ( "devices",     _deviceFilename     );
+  }
+
+  // Have to load the config files now. Remove them from the arguments.
+  Parser::Args configs ( parser.files ( ".jconf", true ) );
+  this->_loadConfigFiles ( configs );
+
+  // Find all directories.
+  Parser::Args dirs;
+
+  // Extract the files with the given extension.
+  Usul::Algorithms::extract ( Usul::File::IsDirectory(),
+                              parser.args(),
+                              dirs,
+                              true );
+
+  // Load the directories.
+  Strings directories;
+  std::copy ( dirs.begin(), dirs.end(), std::back_inserter ( directories ) );
+  this->_loadDirectories ( directories );
+
+  // Extract the model files and remove them from the remaining arguments.
+  Parser::Args models ( parser.files ( true ) );
+
+  // The filenames to load.
+  Strings filenames;
+
+  // Reserve enough room.
+  filenames.reserve ( filenames.size() + models.size() );
+
+  // Copy the model files into our list to load.
+  std::copy ( models.begin(), models.end(), std::back_inserter( filenames ) );
+
+  // Load the model files.
+  this->_loadModelFiles ( filenames );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the file(s).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_loadModelFiles  ( const Strings& filenames )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the directories.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseApplication::_loadDirectories ( const Strings& directories )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the preference filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string BaseApplication::getPreferencesFilename() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _preferencesFilename;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the functor filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string BaseApplication::getFunctorFilename() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _functorFilename;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the device filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string BaseApplication::getDeviceFilename() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _deviceFilename;
 }

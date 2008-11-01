@@ -12,6 +12,9 @@ IF ( USUL_TRACING )
 ADD_DEFINITIONS("-D_USUL_TRACE")
 ENDIF( USUL_TRACING )
 
+# Append d to the library name if the build is debug.
+SET(CMAKE_DEBUG_POSTFIX d)
+
 #######################################################
 #
 #  No need to define NDEBUG.  Cmake defines these.
@@ -20,7 +23,7 @@ ENDIF( USUL_TRACING )
 
 # Add _DEBUG definition is it's debug.
 IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-SET(CMAKE_DEBUG_POSTFIX d)
+#SET(CMAKE_DEBUG_POSTFIX d)
 ADD_DEFINITIONS("-D_DEBUG")
 ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
 

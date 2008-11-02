@@ -104,6 +104,7 @@ SET (SOURCES
 ./Utilities/Download.cpp
 ./Utilities/Compass.cpp
 ./Utilities/DirtyTiles.cpp
+./Utilities/GeoCode.cpp
 ./Utilities/Hud.cpp
 ./Utilities/SkyDome.cpp
 ./Visitor.cpp
@@ -124,10 +125,11 @@ ADD_LIBRARY(Minerva SHARED ${SOURCES} )
 LINK_CADKIT( Minerva Usul OsgTools SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(Minerva
 	${Boost_LIBRARIES}
-	${GDAL_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}
+	${OSG_TEXT_LIB}
+	${OSG_UTIL_LIB}
 	${OSSIM_LIB}
     ${CURL_LIBRARY}
 )

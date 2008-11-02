@@ -5,8 +5,16 @@ SET(PLUGIN_NAME "PostGISLayerQt")
 SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
+# ------------ Find boost ----------------------
+SET ( Boost_USE_DATE_TIME TRUE )
+INCLUDE( ${CMakeModules}/FindBoost.cmake)
+
 set(COMPILE_GUARD "_COMPILING_POSTGIS_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+
+IF(MSVC)
+	ADD_DEFINITIONS("-DNOMINMAX")
+ENDIF(MSVC)
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
@@ -68,4 +76,8 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaLayersGDAL )	
-
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
+	${QT_LIBRARIES}
+	${Boost_LIBRARIES}
+	)
+	

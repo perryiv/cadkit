@@ -4,6 +4,8 @@ PROJECT(HeliosQtViewsOSG)
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
+# ------------ Find OpenGL Library ----------------------
+FIND_PACKAGE(OpenGL)
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
@@ -13,6 +15,12 @@ INCLUDE_DIRECTORIES( ${OSG_INC_DIR}
                      "${PROJECT_SOURCE_DIR}/../../../" 
                      ${QT_INCLUDE_DIR} )
 
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_HELIOS_QT_VIEWS_OSG")
+
+IF(MSVC)
+	ADD_DEFINITIONS("-DNOMINMAX")
+ENDIF(MSVC)
 
 # List the Sources.
 SET (SOURCES
@@ -38,11 +46,14 @@ ADD_LIBRARY(HeliosQtViewsOSG SHARED ${SOURCES} ${MOC_SRCS} )
 LINK_CADKIT( HeliosQtViewsOSG Usul OsgTools QtTools )
 
 TARGET_LINK_LIBRARIES( HeliosQtViewsOSG
+	${OPENGL_LIBRARIES}
    ${QT_LIBRARIES}
    ${QT_QTOPENGL_LIBRARY}
-   ${OSG_LIBRARY}
+   ${OSG_LIB}
 )
 
 INSTALL(TARGETS HeliosQtViewsOSG
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION bin
+  ARCHIVE DESTINATION bin
 )

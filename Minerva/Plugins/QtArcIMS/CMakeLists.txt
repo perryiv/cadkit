@@ -8,6 +8,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 SET(COMPILE_GUARD "_COMPILING_ARC_IMS_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
+INCLUDE(${QT_USE_FILE})
+
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
@@ -28,3 +30,6 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaQtWidgets )
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
+	${QT_LIBRARIES}
+)

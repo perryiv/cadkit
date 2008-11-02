@@ -8,6 +8,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 # Find dependencies
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
+SET ( Boost_USE_DATE_TIME TRUE )
+INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 set(COMPILE_GUARD "_COMPILING_MINERVA_MODEL")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
@@ -37,3 +39,5 @@ CADKIT_PLUGIN()
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul MinervaDocument )
 
+
+TARGET_LINK_LIBRARIES ( ${PLUGIN_NAME} ${Boost_LIBRARIES} )

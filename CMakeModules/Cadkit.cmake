@@ -36,6 +36,52 @@ MACRO(LINK_CADKIT TRGTNAME)
 ENDMACRO(LINK_CADKIT TRGTNAME)
 
 
+#######################################################
+#
+#  Set variables for copy
+#
+#######################################################
+
+IF(WIN32)
+	SET ( CADKIT_COPY_COMMAND xcopy )
+	SET ( CADKIT_COPY_OPTIONS /f /i /k /y /c )
+ELSE(WIN32)
+	SET ( CADKIT_COPY_COMMAND cp )
+	SET ( CADKIT_COPY_OPTIONS )
+ENDIF(WIN32)
+
+
+#######################################################
+#
+#  Macro to change path containing '/' to '\' on Windows.
+#
+#######################################################
+
+MACRO(CORRECT_PATH VAR PATH)
+    SET(${VAR} ${PATH})
+	IF(WIN32)
+		STRING(REGEX REPLACE "/" "\\\\" ${VAR} "${PATH}")
+	ENDIF(WIN32)
+ENDMACRO(CORRECT_PATH)
+
+
+#######################################################
+#
+#  Macro copy the source file to destination.
+#
+#######################################################
+
+MACRO(CADKIT_COPY TARGET_NAME SOURCE DESTINATION)
+	CORRECT_PATH ( SOURCE_ ${SOURCE} )
+	CORRECT_PATH ( DESTINATION_ ${DESTINATION} )
+	ADD_CUSTOM_COMMAND(
+       SOURCE ${TARGET_NAME}
+      COMMAND ${CCOMMAND_COMMAND}
+       ARGS ${CADKIT_COPY_COMMAND} ${SOURCE_} ${DESTINATION_} ${CADKIT_COPY_OPTIONS}
+       TARGET ${TARGET_NAME} )
+ENDMACRO(CADKIT_COPY TARGET_NAME SOURCE DESTINATION)
+
+
  # Set up common variables	 
 IF (NOT CADKIT_LIB_DIR)
    set(CADKIT_LIB_DIR "$ENV{CADKIT_LIB_DIR}")

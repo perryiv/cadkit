@@ -23,6 +23,9 @@ INCLUDE_DIRECTORIES( ${OSG_INC_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_MINERVA_QT_WIDGETS")
+
 # List the Sources.
 SET (SOURCES
 ./WmsLayerItem.cpp
@@ -53,26 +56,12 @@ QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
 ADD_LIBRARY( MinervaQtWidgets SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
-LINK_CADKIT( MinervaQtWidgets Usul Minerva )
+LINK_CADKIT( MinervaQtWidgets Usul Minerva QtTools )
 
 TARGET_LINK_LIBRARIES( MinervaQtWidgets
    ${QT_LIBRARIES}
 )
 
-ADD_CUSTOM_COMMAND(
-        SOURCE MinervaQtWidgets
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_WmsWidget.h" "${PROJECT_SOURCE_DIR}/ui_WmsWidget.h"
-        TARGET MinervaQtWidgets )
-
-ADD_CUSTOM_COMMAND(
-        SOURCE MinervaQtWidgets
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_OptionsDialog.h" "${PROJECT_SOURCE_DIR}/ui_OptionsDialog.h"
-        TARGET MinervaQtWidgets )
-
-ADD_CUSTOM_COMMAND(
-        SOURCE MinervaQtWidgets
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_AlphasDialog.h" "${PROJECT_SOURCE_DIR}/ui_AlphasDialog.h"
-        TARGET MinervaQtWidgets )
+CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_WmsWidget.h" "${PROJECT_SOURCE_DIR}/ui_WmsWidget.h" )
+CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_OptionsDialog.h" "${PROJECT_SOURCE_DIR}/ui_OptionsDialog.h" )
+CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_AlphasDialog.h" "${PROJECT_SOURCE_DIR}/ui_AlphasDialog.h" )

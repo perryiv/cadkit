@@ -8,14 +8,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 SET(COMPILE_GUARD "_COMPILING_WMS_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
-
-set(QT_MAX_VERSION "4.9.9")
-set(QT_USE_OPENGL TRUE)
-
-FIND_PACKAGE(Qt4 REQUIRED)
-
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
 # the next line sets up include and link directories and defines some variables that we will use.
 # you can modify the behavior by setting some variables, e.g.
 INCLUDE(${QT_USE_FILE})
@@ -56,3 +48,7 @@ CADKIT_PLUGIN()
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaQtWidgets )
+TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
+	${Boost_LIBRARIES}
+	${QT_LIBRARIES}
+	)

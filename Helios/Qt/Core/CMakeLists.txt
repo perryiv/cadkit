@@ -11,6 +11,13 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_COMPILING_OSG_QT_CORE")
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${CADKIT_INC_DIR}" "${CADKIT_INC_DIR}/Experimental" ${QT_INCLUDE_DIR} )
 
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_HELIOS_QT_CORE")
+
+IF(WIN32)
+	ADD_DEFINITIONS ( "-D_CRT_SECURE_NO_DEPRECATE" )
+ENDIF(WIN32)
+
 #List the Sources
 SET (SOURCES
     Application.cpp
@@ -56,16 +63,14 @@ SET ( IconFiles ${PngFiles} ${JpgFiles} )
 
 MAKE_DIRECTORY( ${IconDir} )
 FOREACH(FILE ${IconFiles})
-#WRITE_FILE(Helios.log "${FILE}" APPEND)
-ADD_CUSTOM_COMMAND(
-        SOURCE HeliosQtCore
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp ${FILE}  ${IconDir}
-        TARGET HeliosQtCore )
+	#WRITE_FILE(Helios.log "${FILE}" APPEND)
+	CADKIT_COPY(HeliosQtCore ${FILE}  ${IconDir} )
 ENDFOREACH(FILE ${IconFiles})
 
 INSTALL ( FILES ${IconFiles} DESTINATION bin/icons )
 
 INSTALL(TARGETS HeliosQtCore
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION bin
+  ARCHIVE DESTINATION bin
 )

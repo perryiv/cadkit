@@ -17,11 +17,19 @@ SET(CMAKE_MODULE_PATH ${CMakeModules} )
 
 INCLUDE ( ${CMakeModules}/Cadkit.cmake )
 
+set(QT_MAX_VERSION "4.9.9")
+set(QT_USE_OPENGL TRUE)
+
+FIND_PACKAGE(Qt4 REQUIRED)
+
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
 
 INCLUDE( FindOSG )
 
+SET ( Boost_USE_FILESYSTEM TRUE )
 INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 # Note that the Boost Include path will automatically get added
 
@@ -94,7 +102,10 @@ SUBDIRS (
 
 
 # Install 3rd party dependencies.
-INSTALL ( FILES ${OSG_LIB} 
+INSTALL ( FILES ${QT_QTCORE_LIBRARY_RELEASE}
+                ${QT_QTGUI_LIBRARY_RELEASE}
+                ${QT_QTOPENGL_LIBRARY_RELEASE}
+				${OSG_LIB} 
                 ${OSG_DB_LIB} 
                 ${OSG_GA_LIB} 
                 ${OSG_TEXT_LIB}

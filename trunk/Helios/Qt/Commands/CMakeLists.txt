@@ -8,12 +8,12 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 # Note that the Boost Include path will automatically get added
 
-SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_COMPILING_OSG_QT_CORE")
-
-
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../../../" ${QT_INCLUDE_DIR} )
+
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_HELIOS_QT_COMMANDS")
 
 #List the Sources
 SET (SOURCES
@@ -40,10 +40,12 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 ADD_LIBRARY(HeliosQtCommands SHARED ${SOURCES} )
 
 # Link the Library	
-LINK_CADKIT( HeliosQtCommands Usul)
+LINK_CADKIT( HeliosQtCommands Usul MenuKit )
 
 TARGET_LINK_LIBRARIES( HeliosQtCommands ${QT_LIBRARIES} )
 
 INSTALL(TARGETS HeliosQtCommands
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION bin
+  ARCHIVE DESTINATION bin
 )

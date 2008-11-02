@@ -12,6 +12,10 @@ INCLUDE( ${CMakeModules}/FindBoost.cmake)
 set(COMPILE_GUARD "_COMPILING_OSSIM_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
+# Adds includes and libraries for QT.
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS( ${QT_DEFINITIONS} )
+
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
@@ -38,9 +42,10 @@ ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} )
 CADKIT_PLUGIN()
 
 # Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul QtTools Minerva )
+LINK_CADKIT( OssimLayerQt Usul QtTools Minerva )
 
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
+TARGET_LINK_LIBRARIES( OssimLayerQt
+	${QT_LIBRARIES}
 	${Boost_LIBRARIES}
 )
 

@@ -19,6 +19,9 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 # you can modify the behavior by setting some variables, e.g.
 INCLUDE(${QT_USE_FILE})
 
+# ------------ Find curl Library ----------------------
+INCLUDE( ${CMakeModules}/FindCURL.cmake)
+
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
@@ -30,8 +33,14 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
                      ${OSG_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 
                      ${OSSIM_INC_DIR} 
-                     ${CMAKE_CURRENT_BINARY_DIR} )
+                     ${CMAKE_CURRENT_BINARY_DIR}
+					 ${CURL_INCLUDE_DIR} )
 
+					 
+IF(MSVC)
+	ADD_DEFINITIONS("-DCURL_STATICLIB")
+ENDIF(MSVC)
+					 
 set (SOURCES
     LayerManagerComponent.cpp
     Favorites.cpp
@@ -59,8 +68,10 @@ ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
 CADKIT_PLUGIN()
 
 # Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva QtTools )	
+LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva QtTools MenuKit HeliosQtViewsOSG )	
 
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
+	${QT_LIBRARIES}
 	${OSSIM_LIB}
+	${CURL_LIBRARY}
 )

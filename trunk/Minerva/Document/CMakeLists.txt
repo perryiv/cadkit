@@ -36,18 +36,17 @@ INCLUDE_DIRECTORIES(
          "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${WMS_INC_DIR}
 		     ${OSSIM_INC_DIR}
-		     $ENV{PQXX_INC_DIR}
+		     #$ENV{PQXX_INC_DIR}
 		     )
 
 
 #List the Sources
 SET (SOURCES
-./CommandSender.cpp
+#./CommandSender.cpp
 ./MinervaDocument.cpp
 ./KmlWriter.cpp
-./CommandReceiver.cpp
+#./CommandReceiver.cpp
 )
 
 # Create a Shared Library
@@ -57,9 +56,11 @@ ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
 LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree MenuKit Minerva MinervaPostgres )
 TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
-	${PQXX_LIB}
+#	${PQXX_LIB}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}
+	${OSG_UTIL_LIB}
+	${OSG_GA_LIB}
 	${OSSIM_LIB}
 )

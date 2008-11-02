@@ -8,6 +8,9 @@ INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 ADD_DEFINITIONS ("-D_COMPILING_CLIP_PLANES")
 
+# Adds includes and libraries for QT.
+INCLUDE(${QT_USE_FILE})
+
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
@@ -48,6 +51,7 @@ LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-  ${OPENTHREADS_LIB}
+	${QT_LIBRARIES}
+	${OPENTHREADS_LIB}
 	${OSG_LIB}
 )

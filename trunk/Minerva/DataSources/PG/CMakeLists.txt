@@ -40,3 +40,7 @@ TARGET_LINK_LIBRARIES(MinervaPostgres
 	${Boost_LIBRARIES}
 	${PQXX_LIB}
 )
+
+IF(WIN32)
+	TARGET_LINK_LIBRARIES(MinervaPostgres wsock32)
+ENDIF(WIN32)

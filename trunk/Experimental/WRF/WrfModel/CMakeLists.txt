@@ -36,10 +36,11 @@ ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 CADKIT_PLUGIN()
 
 # Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML )
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML MenuKit )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 
   ${OPENTHREADS_LIB}
 	${OSG_LIB}
+	${OSG_TEXT_LIB}
 )

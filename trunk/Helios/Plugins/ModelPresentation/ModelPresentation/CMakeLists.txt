@@ -19,6 +19,9 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR
 
 LINK_DIRECTORIES ( ${LINK_DIRECTORIES} ${CADKIT_BIN_DIR} )
 
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_DYNAMIC_LAND_MODEL")
+
 # Set the sources to compile.
 set (SOURCES
 ./MpdMenuCommand.cpp
@@ -46,11 +49,15 @@ ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 CADKIT_PLUGIN()
 
 # Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree ModelPresentationLib )
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree ModelPresentationLib MenuKit )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 
-  ${OPENTHREADS_LIB}
+	${OPENTHREADS_LIB}
 	${OSG_LIB}
-	dl
+	${OSG_UTIL_LIB}
 )
+
+IF( NOT WIN32 )
+	TARGET_LINK_LIBRARIES ( ${PLUGIN_NAME} dl )
+ENDIF( NOT WIN32 )

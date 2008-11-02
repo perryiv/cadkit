@@ -14,6 +14,9 @@ INCLUDE_DIRECTORIES( ${OSG_INC_DIR}
                       )
 
 
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_MODEL_PRESENTATION_LIB")
+
 # List the Sources.
 SET (SOURCES
 ./DrtSim/Agent.cpp
@@ -34,5 +37,6 @@ ADD_LIBRARY( ModelPresentationLib SHARED ${SOURCES} )
 LINK_CADKIT( ModelPresentationLib Usul OsgTools )
 
 TARGET_LINK_LIBRARIES( ModelPresentationLib
-   ${OSG_LIBRARY}
+   ${OSG_LIB}
+   ${OSG_DB_LIB}
 )

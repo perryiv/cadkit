@@ -8,7 +8,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 ADD_DEFINITIONS ("-D_COMPILING_PASSWORD_PROMPT")
 
-
+# Adds includes and libraries for QT.
+INCLUDE(${QT_USE_FILE})
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory

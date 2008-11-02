@@ -13,6 +13,9 @@ INCLUDE_DIRECTORIES( ${OSG_INC_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
 
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_QT_TOOLS")
+					 
 # List the Sources.
 SET (SOURCES
   Action.cpp
@@ -56,17 +59,14 @@ QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
 ADD_LIBRARY( QtTools SHARED ${SOURCES} ${MOC_SRCS} )
 
 # Link the Library	
-LINK_CADKIT( QtTools Usul )
+LINK_CADKIT( QtTools Usul MenuKit )
 
 TARGET_LINK_LIBRARIES( QtTools
    ${QT_LIBRARIES}
 )
 
-ADD_CUSTOM_COMMAND(
-        SOURCE QtTools
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp "${CMAKE_CURRENT_BINARY_DIR}/ui_AnimationControl.h" "${PROJECT_SOURCE_DIR}/ui_AnimationControl.h"
-        TARGET QtTools )
+# Copy the generated header file to location client libraries can see.
+CADKIT_COPY(QtTools "${CMAKE_CURRENT_BINARY_DIR}/ui_AnimationControl.h" "${PROJECT_SOURCE_DIR}/ui_AnimationControl.h" )
 
 SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons )
 FILE(GLOB PngFiles "${PROJECT_SOURCE_DIR}/Icons/*.png" )
@@ -75,13 +75,11 @@ SET ( IconFiles ${PngFiles} )
 
 MAKE_DIRECTORY( ${IconDir} )
 FOREACH(FILE ${IconFiles})
-ADD_CUSTOM_COMMAND(
-        SOURCE QtTools
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp ${FILE}  ${IconDir}
-        TARGET QtTools )
+	CADKIT_COPY(QtTools ${FILE}  ${IconDir} )
 ENDFOREACH(FILE ${IconFiles})
 
 INSTALL(TARGETS QtTools
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION bin
+  ARCHIVE DESTINATION bin
 )

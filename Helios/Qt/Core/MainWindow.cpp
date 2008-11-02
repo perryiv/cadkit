@@ -1666,7 +1666,7 @@ void MainWindow::_notifyFinishedLoading ( Usul::Documents::Document *document )
 
   // If there is a valid delegate...
   Delegate::QueryPtr delegate ( document->delegate() );
-  if ( delegate.valid() );
+  if ( delegate.valid() )
   {
     // Create the GUI.
     delegate->createDefaultGUI ( document, this->queryInterface ( Usul::Interfaces::IUnknown::IID ) );

@@ -374,7 +374,7 @@ void ProgressBarDock::_updateProgressBars()
   ProgressBar::RefPtr first ( 0x0 );
   {
     Guard guard ( this );
-    if ( false == _progressBars.empty() );
+    if ( false == _progressBars.empty() )
     {
       first = _progressBars.front();
       _progressBars.pop_front();

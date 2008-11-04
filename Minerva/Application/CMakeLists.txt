@@ -1,5 +1,8 @@
 
-PROJECT(MinervaQt)
+PROJECT ( Minerva )
+
+# Set the target name.
+SET ( TARGET_NAME MinervaQt )
 
 SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
@@ -20,35 +23,56 @@ SET (SOURCES
     main.cpp
 )
 
-SET ( TARGET MinervaQt )
+# If we are building on Windows...
+IF(WIN32)
+	# Add the resource file for the icon.
+    SET( SOURCES ${SOURCES} Resources.rc )
+	
+	# Add Unicode preprocessor definition.
+	ADD_DEFINITIONS("-DUNICODE")
+ENDIF(WIN32)
 
-# Create an executable
-IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-SET ( TARGET ${TARGET}d )
-ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+# Adds includes and libraries for QT.
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS( ${QT_DEFINITIONS} )
 
-ADD_EXECUTABLE( ${TARGET} ${SOURCES} )
+# Create the executabe.
+ADD_EXECUTABLE( ${TARGET_NAME} ${SOURCES} )
+
+# Note: Set targe properties have to be called after ADD_EXECUTABLE.
+
+# Settings so the console does not appear when running (See: http://www.cmake.org/Wiki/VSConfigSpecificSettings).
+IF(WIN32)	
+	SET_TARGET_PROPERTIES( ${TARGET_NAME} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS" )
+	SET_TARGET_PROPERTIES( ${TARGET_NAME} PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:WINDOWS" )
+	SET_TARGET_PROPERTIES( ${TARGET_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS" )
+	SET_TARGET_PROPERTIES( ${TARGET_NAME} PROPERTIES LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:WINDOWS" )
+ENDIF(WIN32)
+
+# Add the target label.
+SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES PROJECT_LABEL "App ${TARGET_NAME}")
+
+# Add the debug postfix.
+SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 
 # Link the Library	
-LINK_CADKIT( ${TARGET} Usul OpenThreadsEx HeliosQtCore )
+LINK_CADKIT( ${TARGET_NAME} Usul OpenThreadsEx HeliosQtCore )
 
-TARGET_LINK_LIBRARIES( ${TARGET}
+TARGET_LINK_LIBRARIES( ${TARGET_NAME}
    ${QT_LIBRARIES}
+   ${QT_QTMAIN_LIBRARY}
    ${OPENTHREADS_LIB}
 )
 
-
+# Find icons to copy.
 SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons )
 FILE(GLOB PngFiles "${CMAKE_CURRENT_SOURCE_DIR}/../Images/*.png" )
 FILE(GLOB JpgFiles "${CMAKE_CURRENT_SOURCE_DIR}/../Images/*.jpg" )
 
 SET ( IconFiles ${PngFiles} ${JpgFiles} )
 
+# Copy the icons.
 MAKE_DIRECTORY( ${IconDir} )
 FOREACH(FILE ${IconFiles})
-ADD_CUSTOM_COMMAND(
-        SOURCE MinervaQt
-        COMMAND ${CCOMMAND_COMMAND}
-        ARGS cp ${FILE}  ${IconDir}
-        TARGET MinervaQt )
+	CADKIT_COPY( ${TARGET_NAME} ${FILE}  ${IconDir} )
 ENDFOREACH(FILE ${IconFiles})

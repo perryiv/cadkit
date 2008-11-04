@@ -12,8 +12,10 @@
 #include "Minerva/Qt/Widgets/OptionsDialog.h"
 #include "Minerva/Qt/Widgets/AlphasDialog.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/File/Boost.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Scope/Caller.h"
 
 #include "QtGui/QMessageBox"
 
@@ -23,6 +25,9 @@
 # define NOMINMAX
 # include <windows.h>
 # include <shlobj.h>
+#if ( NTDDI_VERSION < NTDDI_WINXP ) // Not sure why the prototype is pre-processed out.
+SHSTDAPI SHOpenFolderAndSelectItems ( PCIDLIST_ABSOLUTE pidlFolder, UINT cidl, __in_ecount_opt(cidl) PCUITEMID_CHILD_ARRAY apidl, DWORD dwFlags );
+#endif
 #endif
 
 #include <list>
@@ -171,26 +176,33 @@ void EditWmsLayerWidget::on_viewCacheButton_clicked()
     return;
   
 #ifdef __APPLE__
+
   const std::string directory ( _layer->cacheDirectory() );
   const std::string command ( Usul::Strings::format ( "open ", directory ) );
   ::system ( command.c_str() );
-#elif _WIN32
-	const std::string directory ( _layer->cacheDirectory() );
 
-	// Initialize COM.  Is this the best way to do this?
+#elif _WIN32
+
+  const std::string directory ( _layer->cacheDirectory() );
+
+	// Initialize COM. Ensure it gets uninitialized too.
 	::CoInitializeEx ( 0x0, COINIT_MULTITHREADED );
+  Usul::Scope::Caller::RefPtr uninitialize ( Usul::Scope::makeCaller ( ::CoUninitialize ) );
 
 	// NOTE: ILCreateFromPath will reject the path if it contains / instead of \.
 	std::string path ( directory );
 	boost::algorithm::replace_all ( path, "/", "\\" );
 
-	// http://msdn.microsoft.com/en-us/library/bb776438(VS.85).aspx
-	ITEMIDLIST *pidl ( ::ILCreateFromPath ( path.c_str() ) );
+  {
+	  // http://msdn.microsoft.com/en-us/library/bb776438(VS.85).aspx
+	  ITEMIDLIST *pidl ( ::ILCreateFromPath ( path.c_str() ) );
 
-	// http://msdn.microsoft.com/en-us/library/bb762232(VS.85).aspx
-	::SHOpenFolderAndSelectItems ( pidl, 0, 0x0, 0 );
+	  // http://msdn.microsoft.com/en-us/library/bb776441(VS.85).aspx
+    Usul::Scope::Caller::RefPtr freeItemList ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( pidl, ::ILFree ) ) );
 
-	// http://msdn.microsoft.com/en-us/library/bb776441(VS.85).aspx
-	::ILFree ( pidl );
+	  // http://msdn.microsoft.com/en-us/library/bb762232(VS.85).aspx
+	  ::SHOpenFolderAndSelectItems ( pidl, 0, 0x0, 0 );
+  }
+
 #endif
 }

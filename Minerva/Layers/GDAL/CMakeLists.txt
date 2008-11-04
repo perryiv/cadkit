@@ -25,6 +25,8 @@ FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
+# Add definitions
+ADD_DEFINITIONS ("-D_COMPILING_MINERVA_GDAL")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
@@ -53,9 +55,10 @@ ADD_LIBRARY(MinervaLayersGDAL SHARED ${SOURCES} )
 LINK_CADKIT( MinervaLayersGDAL Usul OsgTools SerializeXML XmlTree Minerva MinervaPostGIS  )
 TARGET_LINK_LIBRARIES( MinervaLayersGDAL
 	${Boost_LIBRARIES}
-  ${GDAL_LIBRARY}
+	${GDAL_LIBRARY}
 	${PQXX_LIB}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
+	${OSG_DB_LIB}
 	${OSSIM_LIB}
 )

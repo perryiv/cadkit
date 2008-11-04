@@ -18,7 +18,7 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
 
 # Set the sources to compile.
-set (SOURCES
+SET ( SOURCES
 	SceneComponent.cpp
 	SceneDocument.cpp
 )
@@ -26,7 +26,7 @@ set (SOURCES
 # ---------- Create a Shared Library
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN ( ${PLUGIN_NAME} )
 
 # Link the Library with Cadkit Libraries.
 LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools )
@@ -38,8 +38,3 @@ TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
 	${OSG_DB_LIB}
 )
 
-INSTALL(TARGETS ${PLUGIN_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION bin
-  ARCHIVE DESTINATION bin
-)

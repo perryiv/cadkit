@@ -1,5 +1,9 @@
 
-# Cmake file for all cadkit libaries to include.
+#######################################################
+#
+#  Cmake file for all cadkit libaries to include.
+#
+#######################################################
 
 # Option for tracing.
 OPTION ( USUL_TRACING "Should tracing be enabled?" OFF )

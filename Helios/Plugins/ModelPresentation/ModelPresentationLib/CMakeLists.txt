@@ -39,4 +39,5 @@ LINK_CADKIT( ModelPresentationLib Usul OsgTools )
 TARGET_LINK_LIBRARIES( ModelPresentationLib
    ${OSG_LIB}
    ${OSG_DB_LIB}
+   ${OSG_TEXT_LIB}
 )

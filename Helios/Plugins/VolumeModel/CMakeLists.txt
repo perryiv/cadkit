@@ -26,7 +26,7 @@ set (SOURCES
 # ---------- Create a Shared Library
 ADD_LIBRARY(VolumeModel SHARED ${SOURCES} )
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library with Cadkit libraries.
 LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree )

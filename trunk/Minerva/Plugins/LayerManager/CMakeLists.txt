@@ -40,7 +40,8 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 IF(MSVC)
 	ADD_DEFINITIONS("-DCURL_STATICLIB")
 ENDIF(MSVC)
-					 
+
+# Add the source files.
 set (SOURCES
     LayerManagerComponent.cpp
     Favorites.cpp
@@ -65,13 +66,20 @@ QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
 # ---------- Create a Shared Library
 ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva QtTools MenuKit HeliosQtViewsOSG )	
 
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
 	${QT_LIBRARIES}
+	${QT_QTOPENGL_LIBRARY}
+	${OSG_LIB}
 	${OSSIM_LIB}
 	${CURL_LIBRARY}
 )
+
+# If we are building on Windows, link to these libraries.
+IF(WIN32)
+	TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} Ws2_32 wldap32 )
+ENDIF(WIN32)

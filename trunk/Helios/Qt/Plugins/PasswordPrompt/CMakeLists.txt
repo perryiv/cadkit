@@ -32,10 +32,10 @@ SET(MOC_HDRS
 QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
 
 # ---------- Create a Shared Library
-ADD_LIBRARY(QtPasswordPrompt SHARED ${SOURCES} ${MOC_SRCS} )
+ADD_LIBRARY ( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} )
 
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library with Cadkit Libraries.
 LINK_CADKIT( ${PLUGIN_NAME} Usul )

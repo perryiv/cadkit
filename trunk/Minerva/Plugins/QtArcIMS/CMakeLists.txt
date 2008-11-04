@@ -26,7 +26,7 @@ SET (SOURCES
 # ---------- Create a Shared Library
 ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaQtWidgets )

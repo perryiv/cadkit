@@ -21,8 +21,7 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
                      "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../"
                      ${OSG_INC_DIR}
-                     ${OSSIM_INC_DIR}
-                     ${OSSIM_PLANET_INC_DIR} )
+                     ${OSSIM_INC_DIR} )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
@@ -34,7 +33,7 @@ set (SOURCES
 # ---------- Create a Shared Library
 ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul MinervaDocument )

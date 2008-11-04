@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for Minerva Qt Application.
+#
+#########################################################
+
 PROJECT ( Minerva )
 
 # Set the target name.

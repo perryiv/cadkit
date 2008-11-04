@@ -33,7 +33,7 @@ set (SOURCES
 ADD_LIBRARY(TriangleModel SHARED ${SOURCES} )
 
 # Create a plugin.
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library with Cadkit libraries.
 LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree )

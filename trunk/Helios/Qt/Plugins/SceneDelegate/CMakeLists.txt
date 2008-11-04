@@ -26,7 +26,7 @@ set (SOURCES
 # ---------- Create a Shared Library
 ADD_LIBRARY(QtSceneDelegate SHARED ${SOURCES} )
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library with Cadkit Libraries.
 LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools HeliosQtViewsOSG )
@@ -36,10 +36,4 @@ LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools HeliosQtViewsOSG )
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
   ${OPENTHREADS_LIB}
 	${OSG_LIB}
-)
-
-INSTALL(TARGETS ${PLUGIN_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION bin
-  ARCHIVE DESTINATION bin
 )

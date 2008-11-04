@@ -34,14 +34,16 @@ set (SOURCES
 # ---------- Create a Shared Library
 ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
 
-CADKIT_PLUGIN()
+CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML  )
+LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML MenuKit )
 
 # Link the Library	
 TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 
-  ${OPENTHREADS_LIB}
+	${OPENTHREADS_LIB}
 	${OSG_LIB}
-  ${HDF_LIBRARY}
+	${OSG_UTIL_LIB}
+	${OSG_TEXT_LIB}
+	${HDF_LIBRARY}
 )

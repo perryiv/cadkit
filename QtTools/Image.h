@@ -24,6 +24,7 @@
 class QWidget;
 class QAction;
 class QLabel;
+class QSplashScreen;
 class QAbstractButton;
 
 
@@ -35,7 +36,8 @@ struct QT_TOOLS_EXPORT Image
   static void icon   ( const std::string &file, QAbstractButton *button );
   static void icon   ( const std::string &file, QWidget *widget );
   static void icon   ( const std::string &file, QAction *action );
-  static void pixmap ( const std::string &file, QLabel  *label  );
+  static void pixmap ( const std::string &file, QSplashScreen *splash );
+  static void pixmap ( const std::string &file, QLabel *label );
 };
 
 

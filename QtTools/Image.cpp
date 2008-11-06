@@ -25,8 +25,9 @@
 #include "QtGui/QAction"
 #include "QtGui/QIcon"
 #include "QtGui/QImageReader"
-#include "QtGui/QWidget"
 #include "QtGui/QLabel"
+#include "QtGui/QSplashScreen"
+#include "QtGui/QWidget"
 
 using namespace QtTools;
 
@@ -179,36 +180,65 @@ void Image::icon ( const std::string &name, QAction *action )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Image::pixmap ( const std::string &name, QLabel *label )
+namespace Detail
 {
-  USUL_TRACE_SCOPE_STATIC;
-
-  if ( 0x0 == label )
+  template < class T > void pixmap ( const std::string &name, T *t )
   {
-    return;
-  }
+    USUL_TRACE_SCOPE_STATIC;
 
-  std::string path ( name );
-  if ( false == Usul::Predicates::FileExists::test ( path ) )
-  {
-    const std::string file ( Usul::File::base ( name ) + "." + Usul::File::extension ( name ) );
-    const std::string dir ( Usul::App::Application::instance().iconDirectory() );
-    path = dir + file;
-    if ( false == Usul::Predicates::FileExists::test ( path ) )
+    if ( 0x0 == t )
     {
       return;
     }
-  }
 
-  QPixmap pixmap;
-  if ( false == pixmap.load ( path.c_str() ) )
-  {
-    return;
-  }
+    std::string path ( name );
+    if ( false == Usul::Predicates::FileExists::test ( path ) )
+    {
+      const std::string file ( Usul::File::base ( name ) + "." + Usul::File::extension ( name ) );
+      const std::string dir ( Usul::App::Application::instance().iconDirectory() );
+      path = dir + file;
+      if ( false == Usul::Predicates::FileExists::test ( path ) )
+      {
+        return;
+      }
+    }
 
-  // If we have an image then set it.
-  if ( ( false == pixmap.isNull() ) && ( 0x0 != label ) )
-  {
-    label->setPixmap ( pixmap );
+    QPixmap p;
+    if ( false == p.load ( path.c_str() ) )
+    {
+      return;
+    }
+
+    // If we have an image then set it.
+    if ( ( false == p.isNull() ) && ( 0x0 != t ) )
+    {
+      t->setPixmap ( p );
+    }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pixmap.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::pixmap ( const std::string &name, QLabel *label )
+{
+  USUL_TRACE_SCOPE_STATIC;
+  Detail::pixmap ( name, label );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the pixmap.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Image::pixmap ( const std::string &name, QSplashScreen *splash )
+{
+  USUL_TRACE_SCOPE_STATIC;
+  Detail::pixmap ( name, splash );
 }

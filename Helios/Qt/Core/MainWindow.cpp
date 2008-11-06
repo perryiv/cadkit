@@ -167,11 +167,6 @@ MainWindow::MainWindow ( const std::string &vendor,
   QCoreApplication::setOrganizationDomain ( url.c_str() );
   QCoreApplication::setApplicationName ( program.c_str() );
 
-  // Make the splash screen.
-  const std::string iconDir ( Usul::App::Application::instance().iconDirectory() );
-  const std::string splashImage ( Usul::App::Application::instance().splashImage() );
-  _splash = new SplashScreen ( iconDir + splashImage );
-
   // Show the splash screen if we should.
   if ( true == showSplash )
     this->showSplashScreen();
@@ -1374,8 +1369,19 @@ void MainWindow::showSplashScreen()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3041826876" );
+
+  // Make the splash screen if we have to.
+  if ( false == _splash.valid() )
+  {
+    const std::string iconDir ( Usul::App::Application::instance().iconDirectory() );
+    const std::string splashImage ( Usul::App::Application::instance().splashImage() );
+    _splash = new SplashScreen ( iconDir + splashImage );
+  }
+
   if ( true == _splash.valid() )
+  {
     _splash->show();
+  }
 }
 
 
@@ -1390,7 +1396,10 @@ void MainWindow::hideSplashScreen()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "3041826876" );
   if ( true == _splash.valid() )
+  {
     _splash->hide();
+    _splash = 0x0;
+  }
 }
 
 

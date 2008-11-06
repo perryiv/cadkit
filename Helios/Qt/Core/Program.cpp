@@ -48,8 +48,6 @@
 #include "Usul/Trace/Print.h"
 #include "Usul/User/Directory.h"
 
-#include "QtCore/QDir"
-
 #include "boost/concept_check.hpp"
 
 #include <fstream>

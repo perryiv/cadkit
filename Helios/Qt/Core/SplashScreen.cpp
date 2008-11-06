@@ -21,8 +21,8 @@
 #include "Usul/Trace/Trace.h"
 
 #include "QtGui/QLabel"
-#include "QtGui/QProgressBar"
 #include "QtGui/QPixmap"
+#include "QtGui/QProgressBar"
 
 using namespace CadKit::Helios::Core;
 
@@ -85,8 +85,15 @@ void SplashScreen::setStatusBarText ( const std::string &text, bool force )
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2442782510" );
 
+  // As of Qt 4.4.3, this deletes the pixmap (the image) which has already 
+  // been set. QLabel::setText() does this by calling d->clearContents(), 
+  // which is QLabelPrivate::clearContents().
+#if 0
   if ( 0x0 != _image )
+  {
     _image->setText ( text.c_str() );
+  }
+#endif
 }
 
 

@@ -31,6 +31,7 @@
 #include "Usul/Registry/Constants.h"
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/DateTime.h"
 #include "Usul/Threads/ThreadId.h"
@@ -512,8 +513,9 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   viewer->mouseMove ( ea.get() );
   this->updateCursor ( left, middle, right );
 
-  // Reset this.
-  _mouseWheelPosition = 0;
+  // Reseting this every mouse move makes it not not very effective.
+  // Keeping this here as a reminder.
+  //_mouseWheelPosition = 0;
 }
 
 
@@ -576,6 +578,42 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
   EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::RELEASE ) );
   viewer->buttonRelease ( ea.get() );
   this->updateCursor ( left, middle, right );
+
+  // Reset this.
+  _mouseWheelPosition = 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  A mouse button has been double-clicked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::mouseDoubleClickEvent ( QMouseEvent * event )
+{
+  USUL_TRACE_SCOPE;
+  OsgTools::Render::Viewer::RefPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
+
+  // Set and restore the seek state.
+  OsgTools::Render::Viewer::ViewMode mode ( viewer->getViewMode() );
+  viewer->setViewMode ( OsgTools::Render::Viewer::SEEK );
+  Usul::Scope::Caller::RefPtr resetMode ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 
+    ( mode, ( Usul::Adaptors::memberFunction ( viewer.get(), &OsgTools::Render::Viewer::setViewMode ) ) ) ) );
+
+  // Simulate mouse button state.
+  const bool left   ( true  );
+  const bool middle ( false );
+  const bool right  ( true  );
+
+  const float x ( event->x() );
+  const float y ( this->height() - event->y() );
+
+  typedef OsgTools::Render::EventAdapter EventAdapter;
+  EventAdapter::Ptr ea ( viewer->eventAdaptor ( x, y, left, middle, right, EventAdapter::PUSH ) );
+  viewer->buttonPress ( ea.get() );
 
   // Reset this.
   _mouseWheelPosition = 0;

@@ -16,6 +16,8 @@
 #ifndef _USUL_POINTERS_SMART_POINTER_H_
 #define _USUL_POINTERS_SMART_POINTER_H_
 
+#include "Usul/Config/Config.h"
+
 // We need to undefine "check" when compiling against Carbon on OS X.
 #ifdef __OBJC__
 #undef check

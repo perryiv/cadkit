@@ -96,12 +96,6 @@ public:
   void                    finished  ( Callback * );
   void                    started   ( Callback * );
 
-  // Overload for debugging. Remove when no longer needed.
-  #ifdef _DEBUG
-  void                    ref();
-  void                    unref ( bool allowDeletion = true );
-  #endif
-
 protected:
 
   // Use creation function.

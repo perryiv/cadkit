@@ -16,6 +16,7 @@
 #ifndef _USUL_INTERFACE_UNKNOWN_H_
 #define _USUL_INTERFACE_UNKNOWN_H_
 
+#include "Usul/Config/Config.h"
 #include "Usul/Pointers/Pointers.h"
 
 
@@ -34,12 +35,10 @@ struct IUnknown
   /// See if the interface is supported.
   virtual IUnknown *      queryInterface ( unsigned long iid ) = 0;
 
-  /// Reference the interface.
+  /// Reference and unreference the interface.
   virtual void            ref() = 0;
-
-  /// Unreference the interface.
   virtual void            unref ( bool allowDeletion = true ) = 0;
-  
+
 protected:
 
   // Make gcc happy.

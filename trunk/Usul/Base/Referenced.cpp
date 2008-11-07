@@ -66,7 +66,6 @@ Referenced::Referenced() : BaseClass(),
 {
 #if _DEBUG
   Detail::im.add ( this );
-  //USUL_ASSERT ( 0x08E52F48 != reinterpret_cast < unsigned int > ( this ) );
 #endif
 }
 
@@ -199,7 +198,7 @@ void Referenced::unref ( bool allowDeletion )
         USUL_ASSERT ( 0 == 1078340966u ); // FYI
         Usul::Exceptions::Thrower<std::runtime_error>
           ( "Error 1078340800: deleting this instance caused an exception.",
-            "\n\tAddress: ",this,
+            "\n\tAddress: ", this,
             "\n\tClass:   ", name );
       }
 
@@ -227,7 +226,7 @@ unsigned long Referenced::refCount() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get this referenced as an IUnknown.  May return null.
+//  Classes that inherit can overload and return an IUnknown.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

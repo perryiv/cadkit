@@ -2885,6 +2885,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Config"
+				>
+				<File
+					RelativePath=".\Config\Config.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

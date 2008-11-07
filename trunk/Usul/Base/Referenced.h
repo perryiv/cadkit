@@ -16,14 +16,11 @@
 #ifndef _USUL_REFERENCED_BASE_CLASS_H_
 #define _USUL_REFERENCED_BASE_CLASS_H_
 
-#if 0
-#include "vld.h"
-#endif
-
 #include "Usul/Base/Typed.h"
 
 namespace Usul { namespace Threads { class Mutex; } }
 namespace Usul { namespace Interfaces { struct IUnknown; } }
+
 
 namespace Usul {
 namespace Base {
@@ -34,6 +31,7 @@ class USUL_EXPORT Referenced : public Typed
 public:
 
   typedef Typed BaseClass;
+
   USUL_DECLARE_TYPE_ID ( Referenced );
 
 	/// Get this referenced as an IUnknown.  May return null.

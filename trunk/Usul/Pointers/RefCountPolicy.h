@@ -16,6 +16,8 @@
 #ifndef _USUL_POINTERS_REFERENCE_COUNTING_POLICY_H_
 #define _USUL_POINTERS_REFERENCE_COUNTING_POLICY_H_
 
+#include "Usul/Config/Config.h"
+
 
 namespace Usul {
 namespace Pointers {

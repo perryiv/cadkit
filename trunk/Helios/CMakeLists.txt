@@ -4,9 +4,16 @@ cmake_minimum_required(VERSION "2.6")
 
 PROJECT(HELIOS)
 
-# Should the Minerva libraries be built?
+
+#########################################################
+#
+#  Options to configure which libraries get built.
+#
+#########################################################
+
 OPTION ( BUILD_MINERVA "Build Minerva libraries."  ON )
-OPTION ( BUILD_HELIOS_VR "Build VR components of Helios framework," OFF )
+OPTION ( BUILD_HELIOS_VR "Build VR components of Helios framework." OFF )
+OPTION ( BUILD_HELIOS_QT "Build Qt components of Helios framework." ON )
 
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 OLD)
@@ -73,6 +80,15 @@ FIND_PACKAGE( Boost 1.36 COMPONENTS date_time filesystem threads )
 
 #########################################################
 #
+#  Find GDAL.
+#
+#########################################################
+
+INCLUDE( FindGDAL )
+
+
+#########################################################
+#
 #  Are these variables needed still?
 #
 #########################################################
@@ -83,7 +99,7 @@ SET (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
 
 #########################################################
 #
-#  Set some apple specific properties.
+#  Set some Apple specific properties.
 #
 #########################################################
 
@@ -122,45 +138,53 @@ ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfModel
 ${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel
 ${CADKIT_INC_DIR}/Helios/Plugins/MeasureTool
 ${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry
-${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
-${CADKIT_INC_DIR}/Nimue/Plugins/ModflowModel
 )
 
-IF(BUILD_MINERVA)
-  SUBDIRS (
-    ${CADKIT_INC_DIR}/Minerva/Core
-    ${CADKIT_INC_DIR}/Minerva/DataSources/PG
-    ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
-    ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
-    ${CADKIT_INC_DIR}/Minerva/Layers/Kml
-    ${CADKIT_INC_DIR}/Minerva/Document
-    ${CADKIT_INC_DIR}/Minerva/Plugins/Document
-    ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
+# Build these projects if we found GDAL.
+IF(GDAL_FOUND)
+	SUBDIRS(
+	${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
+	${CADKIT_INC_DIR}/Nimue/Plugins/ModflowModel
 	)
+ENDIF(GDAL_FOUND)
+
+
+# Build Minerva libraries if we should.
+IF(BUILD_MINERVA)
+	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
+			  ${CADKIT_INC_DIR}/Minerva/DataSources/PG
+			  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
+			  ${CADKIT_INC_DIR}/Minerva/Document
+			  ${CADKIT_INC_DIR}/Minerva/Plugins/Document )
+	
+	# Build these projects if we found GDAL.
+	IF(GDAL_FOUND)
+		SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
+			     ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
+				 ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage )
+	ENDIF(GDAL_FOUND)
 
 	# Add these projects if Qt was found.
-	IF(QT_FOUND)
-		SUBDIRS(
-		${CADKIT_INC_DIR}/Minerva/Qt/Widgets
-		${CADKIT_INC_DIR}/Minerva/Plugins/QtArcIMS
-		${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
-		${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
-		${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
-		${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage
-		${CADKIT_INC_DIR}/Minerva/Application
-		)
-	ENDIF(QT_FOUND)
+	IF(QT_FOUND AND BUILD_HELIOS_QT)
+		SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Qt/Widgets
+				 ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
+				 ${CADKIT_INC_DIR}/Minerva/Plugins/QtArcIMS
+				 ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
+				 ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
+				 ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
+				 ${CADKIT_INC_DIR}/Minerva/Application )
+	ENDIF(QT_FOUND AND BUILD_HELIOS_QT)
 	
 ENDIF(BUILD_MINERVA)
 
 
 # Include the QT Cmake files.
-IF(QT_FOUND)
+IF(QT_FOUND AND BUILD_HELIOS_QT)
 	SUBDIRS (
 	  ${PROJECT_SOURCE_DIR}/Qt 
 	  ${CADKIT_INC_DIR}/Helios/Qt/Plugins/PasswordPrompt
 	)
-ENDIF(QT_FOUND)
+ENDIF(QT_FOUND AND BUILD_HELIOS_QT)
 
 # Should we build the VR components?
 IF(BUILD_HELIOS_VR)

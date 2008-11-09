@@ -31,6 +31,7 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY(MinervaPostgres SHARED ${SOURCES} )
+CADKIT_ADD_LIBRARY ( MinervaPostgres )
 
 # Link the Library	
 LINK_CADKIT( MinervaPostgres Usul SerializeXML XmlTree )

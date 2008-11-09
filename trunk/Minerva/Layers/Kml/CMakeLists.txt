@@ -5,7 +5,7 @@
 #
 #########################################################
 
-PROJECT(MinervaLayersKml)
+PROJECT(MinervaKml)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
@@ -51,22 +51,35 @@ INCLUDE_DIRECTORIES(
 		     )
 
 
-#List the Sources
+# List the headers
+SET ( HEADERS
+	./Factory.h
+	./KmlLayer.h
+	./Link.h
+	./LoadModel.h
+	./NetworkLink.h
+	./ModelPostProcess.h
+)
+			 
+# List the Sources
 SET (SOURCES
-./Factory.cpp
-./KmlLayer.cpp
-./Link.cpp
-./LoadModel.cpp
-./NetworkLink.cpp
-./ModelPostProcess.cpp
+	./Factory.cpp
+	./KmlLayer.cpp
+	./Link.cpp
+	./LoadModel.cpp
+	./NetworkLink.cpp
+	./ModelPostProcess.cpp
 )
 
+SET ( TARGET_NAME MinervaKml )
+
 # Create a Shared Library
-ADD_LIBRARY(MinervaLayersKml SHARED ${SOURCES} )
+ADD_LIBRARY( ${TARGET_NAME} SHARED ${HEADERS} ${SOURCES} )
+CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 
 # Link the Library	
-LINK_CADKIT( MinervaLayersKml Usul OsgTools SerializeXML XmlTree Minerva )
-TARGET_LINK_LIBRARIES( MinervaLayersKml
+LINK_CADKIT( ${TARGET_NAME} Usul OsgTools SerializeXML XmlTree Minerva )
+TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${Boost_LIBRARIES}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}

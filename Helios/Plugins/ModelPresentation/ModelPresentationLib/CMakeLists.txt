@@ -32,6 +32,7 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY( ModelPresentationLib SHARED ${SOURCES} )
+CADKIT_ADD_LIBRARY ( ModelPresentationLib )
 
 # Link the Library	
 LINK_CADKIT( ModelPresentationLib Usul OsgTools )

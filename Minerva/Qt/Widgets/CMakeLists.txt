@@ -54,6 +54,7 @@ QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
 
 # Create a Shared Library
 ADD_LIBRARY( MinervaQtWidgets SHARED ${SOURCES} ${MOC_SRCS} )
+CADKIT_ADD_LIBRARY ( MinervaQtWidgets )
 
 # Link the Library	
 LINK_CADKIT( MinervaQtWidgets Usul Minerva QtTools )

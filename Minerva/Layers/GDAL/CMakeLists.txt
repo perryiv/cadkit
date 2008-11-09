@@ -10,10 +10,6 @@ INCLUDE(${CMakeModules}/FindOSG.cmake)
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
-# ------------ Find GDAL Library ----------------------
-INCLUDE( ${CMakeModules}/FindGDAL.cmake)
-
-
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 

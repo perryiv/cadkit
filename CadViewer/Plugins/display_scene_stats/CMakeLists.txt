@@ -16,7 +16,10 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OPENGL_INCLUDE_DIR})
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+                     "${PROJECT_SOURCE_DIR}/../" 
+                     ${OPENGL_INCLUDE_DIR} 
+                     ${OSG_INC_DIR} )
 
 set (SOURCES
 ./Component.cpp

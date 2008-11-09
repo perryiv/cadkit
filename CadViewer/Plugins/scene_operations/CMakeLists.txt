@@ -14,7 +14,9 @@ INCLUDE ( ${CMakeModules}/FindOSG.cmake)
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+                     "${PROJECT_SOURCE_DIR}/../" 
+                     ${OSG_INC_DIR} )
 
 SET (SOURCES
 ./UserDataState.cpp

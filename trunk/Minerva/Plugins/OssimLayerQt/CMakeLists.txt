@@ -5,10 +5,6 @@ SET(PLUGIN_NAME "OssimLayerQt")
 SET( CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
-# ------------ Find boost ----------------------
-SET ( Boost_USE_FILESYSTEM TRUE )
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
-
 set(COMPILE_GUARD "_COMPILING_OSSIM_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
@@ -16,10 +12,11 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS( ${QT_DEFINITIONS} )
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
+					 ${CADKIT_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 
                      ${OSG_INC_DIR}
                      ${QT_INCLUDE_DIR} )

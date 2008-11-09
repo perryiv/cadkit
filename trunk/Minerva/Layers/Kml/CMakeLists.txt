@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for Minerva Kml Layer.
+#
+#########################################################
+
 PROJECT(MinervaLayersKml)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
@@ -6,16 +12,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
-
-
-# ------------ Find Ossim Libraries ----------------------
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-
-# ------------ Find boost ----------------------
-SET ( Boost_USE_DATE_TIME TRUE )
-SET ( Boost_USE_FILESYSTEM TRUE )
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
-
 
 # try to find the header
 FIND_PATH(COLLADA_INCLUDE_DIR dae.h
@@ -31,16 +27,27 @@ FIND_LIBRARY(COLLADA_LIBRARY
 )
 
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+#########################################################
+#
+#  Set link directories.
+#
+#########################################################
+
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 
-# ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
+#########################################################
+#
+#  Set include directories.
+#
+#########################################################
+
 INCLUDE_DIRECTORIES( 
+			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     ${OSG_INC_DIR} 
-         ${COLLADA_INCLUDE_DIR} 
-         ${COLLADA_INCLUDE_DIR}/1.4
+			 ${COLLADA_INCLUDE_DIR} 
+			 ${COLLADA_INCLUDE_DIR}/1.4
 		     )
 
 

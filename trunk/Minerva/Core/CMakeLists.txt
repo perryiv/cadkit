@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for Minerva library.
+#
+#########################################################
+
 PROJECT(Minerva)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
@@ -7,15 +13,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-
-# ------------ Find boost ----------------------
-SET ( Boost_USE_DATE_TIME TRUE )
-SET ( Boost_USE_THREAD TRUE )
-SET ( Boost_USE_FILESYSTEM TRUE )
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 # ------------ Find curl Library ----------------------
 INCLUDE( ${CMakeModules}/FindCURL.cmake)
@@ -26,12 +25,13 @@ IF(MSVC)
 	ADD_DEFINITIONS("-DCURL_STATICLIB -D_CRT_SECURE_NO_WARNINGS")
 ENDIF(MSVC)
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
+			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     ${CADKIT_INC_DIR}/GenericNurbs
 		     ${OSG_INC_DIR} 
@@ -120,6 +120,9 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY(Minerva SHARED ${SOURCES} )
+
+# Add a library
+CADKIT_ADD_LIBRARY ( Minerva )
 
 # Link the Library	
 LINK_CADKIT( Minerva Usul OsgTools SerializeXML XmlTree )

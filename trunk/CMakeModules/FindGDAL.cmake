@@ -12,13 +12,13 @@ FIND_PATH(GDAL_INCLUDE_DIR gdal.h
 
 # Find the library
 FIND_LIBRARY(GDAL_LIBRARY
-	NAMES gdal
+	NAMES gdal gdal_i
 	PATHS
-	  $ENV{GDAL_LIB_DIR}
+	$ENV{GDAL_LIB_DIR}
     /usr/lib64
     /usr/local/lib64
-	  /usr/lib
-	  /usr/local/lib
+	/usr/lib
+	/usr/local/lib
 	DOC "The name of the gdal library"
 )
 
@@ -29,7 +29,7 @@ IF (GDAL_INCLUDE_DIR AND GDAL_LIBRARY)
   SET (GDAL_LIBRARIES "${GDAL_LIBRARY}")
   LINK_DIRECTORIES(${GDAL_ROOT_DIR}/lib)
 ENDIF (GDAL_INCLUDE_DIR AND GDAL_LIBRARY)
- 	
+ 
 IF (GDAL_FOUND)
   IF (NOT GDAL_FIND_QUIETLY)
     MESSAGE (STATUS "Found GDAL: ${GDAL_LIBRARY}")

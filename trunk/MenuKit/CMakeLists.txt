@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for MenuKit.
+#
+#########################################################
+
 PROJECT(MenuKit)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
@@ -11,6 +17,7 @@ ADD_DEFINITIONS("-D_COMPILING_MENUKIT")
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
+			${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     ${OSG_INC_DIR} 
 		     )
@@ -35,6 +42,9 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY( MenuKit SHARED ${SOURCES} )
+
+# Add a library
+CADKIT_ADD_LIBRARY ( MenuKit )
 
 # Link the Library	
 LINK_CADKIT( MenuKit Usul )

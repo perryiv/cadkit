@@ -86,7 +86,60 @@ MACRO(CADKIT_COPY TARGET_NAME SOURCE DESTINATION)
 ENDMACRO(CADKIT_COPY TARGET_NAME SOURCE DESTINATION)
 
 
- # Set up common variables	 
+#######################################################
+#
+#  Add a library.
+#
+#######################################################
+
+MACRO(CADKIT_ADD_LIBRARY LIBRARY_NAME)
+
+	INSTALL(TARGETS ${PLUGIN_NAME}
+			RUNTIME DESTINATION bin
+			LIBRARY DESTINATION bin
+			ARCHIVE DESTINATION bin )
+			
+	# Add the target label.
+	SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES PROJECT_LABEL "Lib ${LIBRARY_NAME}")
+
+ENDMACRO(CADKIT_ADD_LIBRARY LIBRARY_NAME)
+
+
+#######################################################
+#
+#  Macro to set release and debug library variables.
+#
+#######################################################
+
+MACRO(CADKIT_SET_DEBUG_RELEASE_LIBRARY _LIBRARY _LIBRARY_DEBUG _LIBRARY_RELEASE)
+	
+	SET ( ${_LIBRARY} ${_LIBRARY_RELEASE} )
+	
+	# If only the release version was found, set the debug variable also to the release version
+     IF (${_LIBRARY_RELEASE} AND NOT ${_LIBRARY_DEBUG})
+       SET(${_LIBRARY_DEBUG} ${${_LIBRARY_RELEASE}})
+       SET(${_LIBRARY}       ${${_LIBRARY_RELEASE}})
+     ENDIF (${_LIBRARY_RELEASE} AND NOT ${_LIBRARY_DEBUG})
+
+     # If only the debug version was found, set the release variable also to the debug version
+     IF (${_LIBRARY_DEBUG} AND NOT ${_LIBRARY_RELEASE})
+       SET(${_LIBRARY_RELEASE} ${${_LIBRARY_DEBUG}})
+       SET(${_LIBRARY}         ${${_LIBRARY_DEBUG}})
+     ENDIF (${_LIBRARY_DEBUG} AND NOT ${_LIBRARY_RELEASE})
+
+	IF ( ${_LIBRARY_RELEASE} AND ${_LIBRARY_DEBUG} )
+		SET( ${_LIBRARY} optimized ${${_LIBRARY_RELEASE}} debug ${${_LIBRARY_DEBUG}} )
+	ENDIF ( ${_LIBRARY_RELEASE} AND ${_LIBRARY_DEBUG} )
+	
+ENDMACRO(CADKIT_SET_DEBUG_RELEASE_LIBRARY _LIBRARY _LIBRARY_DEBUG _LIBRARY_RELEASE)
+
+ 
+#######################################################
+#
+#  Set up common variables.
+#
+#######################################################
+
 IF (NOT CADKIT_LIB_DIR)
    set(CADKIT_LIB_DIR "$ENV{CADKIT_LIB_DIR}")
 endif( NOT CADKIT_LIB_DIR )

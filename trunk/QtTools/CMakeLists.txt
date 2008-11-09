@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for QtTools.
+#
+#########################################################
+
 PROJECT(QtTools)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
@@ -7,7 +13,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${OSG_INC_DIR} 
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} 
+					 ${OSG_INC_DIR} 
                      ${CADKIT_INC_DIR} 
                      ${QT_INCLUDE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
@@ -57,6 +64,9 @@ QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
 
 # Create a Shared Library
 ADD_LIBRARY( QtTools SHARED ${SOURCES} ${MOC_SRCS} )
+
+# Add a library
+CADKIT_ADD_LIBRARY ( QtTools )
 
 # Link the Library	
 LINK_CADKIT( QtTools Usul MenuKit )

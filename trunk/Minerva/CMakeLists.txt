@@ -13,10 +13,6 @@ FIND_PACKAGE(OpenGL)
 
 INCLUDE( FindOSG )
 
-INCLUDE ( ${CMakeModules}/FindBoost.cmake)
-# Note that the Boost Include path will automatically get added
-
-
 SET (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
 
 

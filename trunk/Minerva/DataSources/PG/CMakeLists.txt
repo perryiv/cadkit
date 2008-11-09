@@ -6,9 +6,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 ADD_DEFINITIONS("-D_COMPILING_MINERVA_POSTGRES")
 
-# ------------ Find boost ----------------------
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
-
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
@@ -19,6 +16,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
+			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     $ENV{PQXX_INC_DIR}
 		     )

@@ -1,8 +1,12 @@
 # This file should be at CadKit/Helios/CMakeLists.txt
 
-cmake_minimum_required(VERSION "2.4")
+cmake_minimum_required(VERSION "2.6")
 
 PROJECT(HELIOS)
+
+# Should the Minerva libraries be built?
+OPTION ( BUILD_MINERVA "Build Minerva libraries."  ON )
+OPTION ( BUILD_HELIOS_VR "Build VR components of Helios framework," OFF )
 
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 OLD)
@@ -13,30 +17,75 @@ SET ( CADKIT_INC_DIR ${PROJECT_SOURCE_DIR}/../ )
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
 
 # Path to look for .cmake files.
-SET(CMAKE_MODULE_PATH ${CMakeModules} )
+SET( CMAKE_MODULE_PATH ${CMakeModules} )
+
+
+#########################################################
+#
+#  Bring in our helper macros and variables.
+#
+#########################################################
 
 INCLUDE ( ${CMakeModules}/Cadkit.cmake )
 
-set(QT_MAX_VERSION "4.9.9")
-set(QT_USE_OPENGL TRUE)
 
-FIND_PACKAGE(Qt4 REQUIRED)
+#########################################################
+#
+#  Find Qt.
+#
+#########################################################
+
+SET ( QT_MAX_VERSION "4.9.9" )
+SET ( QT_USE_OPENGL TRUE )
+
+FIND_PACKAGE(Qt4)
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
-# ------------ Find OpenGL Library ----------------------
+
+#########################################################
+#
+#  Find OpenGL.
+#
+#########################################################
+
 FIND_PACKAGE(OpenGL)
+
+
+#########################################################
+#
+#  Find OpenSceneGraph.
+#
+#########################################################
 
 INCLUDE( FindOSG )
 
-SET ( Boost_USE_FILESYSTEM TRUE )
-INCLUDE ( ${CMakeModules}/FindBoost.cmake)
-# Note that the Boost Include path will automatically get added
+#########################################################
+#
+#  Find boost.
+#
+#########################################################
 
+SET ( BOOST_INCLUDEDIR $ENV{BOOST_INC_DIR} )
+SET ( BOOST_LIBRARYDIR $ENV{BOOST_LIB_DIR} )
+FIND_PACKAGE( Boost 1.36 COMPONENTS date_time filesystem threads )
+
+
+#########################################################
+#
+#  Are these variables needed still?
+#
+#########################################################
 
 SET (HELIOS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../ )
 SET (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
 
+
+#########################################################
+#
+#  Set some apple specific properties.
+#
+#########################################################
 
 IF (APPLE)
 option(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
@@ -45,6 +94,12 @@ IF (OSX_DWARF_DEBUG )
 ENDIF(OSX_DWARF_DEBUG )
 ENDIF (APPLE)
 
+
+#########################################################
+#
+#  Start adding the sub projects.
+#
+#########################################################
 
 SUBDIRS(
 
@@ -71,8 +126,6 @@ ${CADKIT_INC_DIR}/Minerva/Plugins/EsriShapeFile
 ${CADKIT_INC_DIR}/Nimue/Plugins/ModflowModel
 )
 
-OPTION ( BUILD_MINERVA "Build Minerva libraries."  ON )
-
 IF(BUILD_MINERVA)
   SUBDIRS (
     ${CADKIT_INC_DIR}/Minerva/Core
@@ -81,36 +134,60 @@ IF(BUILD_MINERVA)
     ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
     ${CADKIT_INC_DIR}/Minerva/Layers/Kml
     ${CADKIT_INC_DIR}/Minerva/Document
-    ${CADKIT_INC_DIR}/Minerva/Qt/Widgets
     ${CADKIT_INC_DIR}/Minerva/Plugins/Document
     ${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
-    ${CADKIT_INC_DIR}/Minerva/Plugins/QtArcIMS
-    ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
-    ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
-    ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
-    ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage
-    ${CADKIT_INC_DIR}/Minerva/Application
-    )
+	)
+
+	# Add these projects if Qt was found.
+	IF(QT_FOUND)
+		SUBDIRS(
+		${CADKIT_INC_DIR}/Minerva/Qt/Widgets
+		${CADKIT_INC_DIR}/Minerva/Plugins/QtArcIMS
+		${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
+		${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
+		${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
+		${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage
+		${CADKIT_INC_DIR}/Minerva/Application
+		)
+	ENDIF(QT_FOUND)
+	
 ENDIF(BUILD_MINERVA)
 
 
 # Include the QT Cmake files.
-SUBDIRS (
-  ${PROJECT_SOURCE_DIR}/Qt 
-  ${CADKIT_INC_DIR}/Helios/Qt/Plugins/PasswordPrompt
-)
+IF(QT_FOUND)
+	SUBDIRS (
+	  ${PROJECT_SOURCE_DIR}/Qt 
+	  ${CADKIT_INC_DIR}/Helios/Qt/Plugins/PasswordPrompt
+	)
+ENDIF(QT_FOUND)
+
+# Should we build the VR components?
+IF(BUILD_HELIOS_VR)
+
+	# Find VR Juggler
+	INCLUDE( FindVRJuggler )
+
+	SUBDIRS(
+		${CADKIT_INC_DIR}/VRV
+		${CADKIT_INC_DIR}/MenuKit/OSG
+		${CADKIT_INC_DIR}/CadViewer/Plugins/scene_operations
+		${CADKIT_INC_DIR}/CadViewer/Plugins/display_scene_stats
+		${CADKIT_INC_DIR}/CadViewer
+	)
+ENDIF(BUILD_HELIOS_VR)
 
 
 # Install 3rd party dependencies.
-INSTALL ( FILES ${QT_QTCORE_LIBRARY_RELEASE}
-                ${QT_QTGUI_LIBRARY_RELEASE}
-                ${QT_QTOPENGL_LIBRARY_RELEASE}
-				${OSG_LIB} 
-                ${OSG_DB_LIB} 
-                ${OSG_GA_LIB} 
-                ${OSG_TEXT_LIB}
-                ${OSG_UTIL_LIB}
-                ${OSG_MANIPULATOR}
-                ${OPENTHREADS_LIB}
-  DESTINATION bin
-)
+#INSTALL ( FILES ${QT_QTCORE_LIBRARY_RELEASE}
+#                ${QT_QTGUI_LIBRARY_RELEASE}
+#                ${QT_QTOPENGL_LIBRARY_RELEASE}
+#	     		 ${OSG_LIB} 
+#                ${OSG_DB_LIB} 
+#                ${OSG_GA_LIB} 
+#                ${OSG_TEXT_LIB}
+#                ${OSG_UTIL_LIB}
+#                ${OSG_MANIPULATOR}
+#                ${OPENTHREADS_LIB}
+#  DESTINATION bin
+#)

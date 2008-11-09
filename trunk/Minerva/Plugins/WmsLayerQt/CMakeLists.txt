@@ -13,10 +13,11 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 INCLUDE(${QT_USE_FILE})
 
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
+					 ${CADKIT_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 
                      ${OSG_INC_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )

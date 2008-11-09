@@ -9,7 +9,7 @@ SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_COMPILING_OSG_QT_CORE")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${CADKIT_INC_DIR}" "${CADKIT_INC_DIR}/Experimental" ${QT_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( "${CADKIT_INC_DIR}" "${CADKIT_INC_DIR}/Experimental" ${Boost_INCLUDE_DIR} ${QT_INCLUDE_DIR} )
 
 # Add definitions
 ADD_DEFINITIONS ("-D_COMPILING_HELIOS_QT_CORE")
@@ -17,6 +17,20 @@ ADD_DEFINITIONS ("-D_COMPILING_HELIOS_QT_CORE")
 IF(WIN32)
 	ADD_DEFINITIONS ( "-D_CRT_SECURE_NO_DEPRECATE" )
 ENDIF(WIN32)
+
+# List the headers.
+SET ( HEADERS
+	./Application.h
+	./Constants.h
+	./DocumentProxy.h
+	./Export.h
+	./MainWindow.h
+	./Program.h
+	./ProgressBarDock.h
+	./SplashScreen.h
+	./TimerCallback.h
+	./TimerServer.h
+)
 
 #List the Sources
 SET (SOURCES
@@ -42,7 +56,9 @@ QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS})
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # Create a Shared Library
-ADD_LIBRARY(HeliosQtCore SHARED ${SOURCES} ${MOC_SRCS} )
+ADD_LIBRARY(HeliosQtCore SHARED ${HEADERS} ${SOURCES} ${MOC_SRCS} )
+
+CADKIT_ADD_LIBRARY ( HeliosQtCore )
 
 # Link the Library	
 LINK_CADKIT( HeliosQtCore HeliosQtCommands XmlTree MenuKit QtTools
@@ -68,9 +84,3 @@ FOREACH(FILE ${IconFiles})
 ENDFOREACH(FILE ${IconFiles})
 
 INSTALL ( FILES ${IconFiles} DESTINATION bin/icons )
-
-INSTALL(TARGETS HeliosQtCore
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION bin
-  ARCHIVE DESTINATION bin
-)

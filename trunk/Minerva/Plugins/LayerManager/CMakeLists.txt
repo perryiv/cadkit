@@ -3,15 +3,10 @@ project (LayerManager)
 SET(PLUGIN_NAME "LayerManager")
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake )
 
 set(COMPILE_GUARD "_COMPILING_LAYER_MANAGER")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
-
-set(QT_MAX_VERSION "4.9.9")
-set(QT_USE_OPENGL TRUE)
-
-FIND_PACKAGE(Qt4 REQUIRED)
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
@@ -25,10 +20,11 @@ INCLUDE( ${CMakeModules}/FindCURL.cmake)
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
+					 ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
                      ${OSG_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 

@@ -1,13 +1,16 @@
+
+#########################################################
+#
+#  CMakeLists for PostGIS Qt GUI.
+#
+#########################################################
+
 project (PostGISLayerQt)
 
 SET(PLUGIN_NAME "PostGISLayerQt")
 
 SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
-
-# ------------ Find boost ----------------------
-SET ( Boost_USE_DATE_TIME TRUE )
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 set(COMPILE_GUARD "_COMPILING_POSTGIS_LAYER_QT")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
@@ -16,10 +19,24 @@ IF(MSVC)
 	ADD_DEFINITIONS("-DNOMINMAX")
 ENDIF(MSVC)
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
-# ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+#########################################################
+#
+#  Set link directories.
+#
+#########################################################
+
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
+
+
+#########################################################
+#
+#  Set include directories.
+#
+#########################################################
+
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
+					 ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../"
                      ${CMAKE_CURRENT_BINARY_DIR} 

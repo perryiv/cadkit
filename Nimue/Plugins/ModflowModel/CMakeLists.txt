@@ -18,7 +18,7 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} ${GDAL_INC_DIR} )
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} ${OSG_INC_DIR} ${GDAL_INC_DIR} )
 
 # Set the sources to compile.
 set (SOURCES

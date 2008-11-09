@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib osgd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib osgd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib shell32.lib ole32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/WmsLayerQt.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib osg.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib osg.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib shell32.lib ole32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/WmsLayerQt.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

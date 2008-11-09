@@ -1,4 +1,10 @@
 
+#########################################################
+#
+#  CMakeLists for XmlTree.
+#
+#########################################################
+
 PROJECT(XmlTree)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules")
@@ -7,16 +13,63 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 ADD_DEFINITIONS("-D_COMPILING_XML_TREE")
 
 INCLUDE ( ${CMakeModules}/FindXerces.cmake)
-INCLUDE ( ${CMakeModules}/FindBoost.cmake)
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
-# ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${XERCESC_INCLUDE_DIR} ${Boost_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/../" )
+
+#########################################################
+#
+#  Add include folders.
+#
+#########################################################
+
+INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+                     ${XERCESC_INCLUDE_DIR} 
+					 ${Boost_INCLUDE_DIR}
+					 "${PROJECT_SOURCE_DIR}/../" )
 
 
-#List the Sources
+#########################################################
+#
+#  Add source directory.
+#
+#########################################################
+
+SOURCE_GROUP ( Source REGULAR_EXPRESSION ./* )
+SOURCE_GROUP ( Detail REGULAR_EXPRESSION ./Detail/* )
+
+
+#########################################################
+#
+#  List all the headers.
+#
+#########################################################
+
+SET ( HEADERS
+	./Detail/RootImpl.h
+	./Document.h
+	./Export.h
+	./Functions.h
+	./Loader.h
+	./Node.h
+	./Predicates.h
+	./RegistryBuilder.h
+	./RegistryIO.h
+	./RegistryVisitor.h
+	./ReplaceIllegalCharacters.h
+	./Writer.h
+	./XercesErrorHandler.h
+	./XercesLife.h
+	./XercesString.h
+)
+
+
+#########################################################
+#
+#  List all the sources.
+#
+#########################################################
+
 SET (SOURCES
     Document.cpp
     Node.cpp
@@ -31,22 +84,21 @@ SET (SOURCES
     ReplaceIllegalCharacters.cpp
 )
 
+SET ( TARGET_NAME XmlTree )
+
 # Create a Shared Library
-ADD_LIBRARY(XmlTree SHARED ${SOURCES} )
+ADD_LIBRARY( ${TARGET_NAME} SHARED ${HEADERS} ${SOURCES} )
+
+# Add a library
+CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 
 # Link the Library
-LINK_CADKIT(XmlTree Usul)
+LINK_CADKIT( ${TARGET_NAME} Usul )
 
-TARGET_LINK_LIBRARIES(XmlTree
+TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${XERCESC_LIBRARY}
 )
 
-INSTALL(TARGETS XmlTree
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION bin
-  ARCHIVE DESTINATION bin
-)
-
-INSTALL( FILES ${XERCESC_LIBRARY}
-  DESTINATION bin
-)
+#INSTALL( FILES ${XERCESC_LIBRARY}
+#  DESTINATION bin
+#)

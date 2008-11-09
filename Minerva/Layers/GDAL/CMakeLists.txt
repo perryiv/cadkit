@@ -7,13 +7,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-
-# ------------ Find boost ----------------------
-SET ( Boost_USE_DATE_TIME TRUE )
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 # ------------ Find GDAL Library ----------------------
 INCLUDE( ${CMakeModules}/FindGDAL.cmake)
@@ -23,7 +18,7 @@ INCLUDE( ${CMakeModules}/FindGDAL.cmake)
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # Add definitions
 ADD_DEFINITIONS ("-D_COMPILING_MINERVA_GDAL")
@@ -31,6 +26,7 @@ ADD_DEFINITIONS ("-D_COMPILING_MINERVA_GDAL")
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
+			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
@@ -50,6 +46,8 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY(MinervaLayersGDAL SHARED ${SOURCES} )
+
+CADKIT_ADD_LIBRARY ( MinervaLayersGDAL )
 
 # Link the Library	
 LINK_CADKIT( MinervaLayersGDAL Usul OsgTools SerializeXML XmlTree Minerva MinervaPostGIS  )

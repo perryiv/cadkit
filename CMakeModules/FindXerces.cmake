@@ -3,13 +3,6 @@
 # If these are not set, then they will simply be ignored.
 
 
-# Look for a root installation
-FIND_PATH(XERCESC_ROOT_DIR include/xercesc/parsers/SAXParser.hpp
-	/usr
-	$ENV{XERCESC_ROOT_DIR}
-	DOC "The root of an installed xerces-c installation"
-)
- 	
 # try to find the header
 FIND_PATH(XERCESC_INCLUDE_DIR xercesc/parsers/SAXParser.hpp
   ${XERCESC_ROOT_DIR}/include
@@ -18,9 +11,20 @@ FIND_PATH(XERCESC_INCLUDE_DIR xercesc/parsers/SAXParser.hpp
   /usr/local/include
 )
 
-# Find the library
-FIND_LIBRARY(XERCESC_LIBRARY
-	NAMES xerces-c
+# Find the release library
+FIND_LIBRARY(XERCESC_LIBRARY_RELEASE
+	NAMES xerces-c xerces-c_2
+	PATHS
+	  ${XERCESC_ROOT_DIR}/lib
+	  $ENV{XERCES_LIB_DIR}
+	  /usr/lib
+	  /usr/local/lib
+	DOC "The name of the xerces-c library"
+)
+
+# Find the debug library
+FIND_LIBRARY(XERCESC_LIBRARY_DEBUG
+	NAMES xerces-cd xerces-c_2D
 	PATHS
 	  ${XERCESC_ROOT_DIR}/lib
 	  $ENV{XERCES_LIB_DIR}
@@ -30,16 +34,31 @@ FIND_LIBRARY(XERCESC_LIBRARY
 )
 
 
-IF (XERCESC_ROOT_DIR)
-  IF (XERCESC_INCLUDE_DIR AND XERCESC_LIBRARY)
-    SET (XERCESC_FOUND TRUE)
-    SET (XERCESC_LIBRARIES "${XERCESC_LIBRARY}")
-    # FIXME: There should be a better way of handling this?
-    # FIXME: How can we test to see if the lib dir isn't
-    # FIXME: one of the default dirs?
-    LINK_DIRECTORIES(${XERCESC_ROOT_DIR}/lib)
-  ENDIF (XERCESC_INCLUDE_DIR AND XERCESC_LIBRARY)
-ENDIF (XERCESC_ROOT_DIR)
+# See if anything was found.
+IF (XERCESC_INCLUDE_DIR)
+	
+	# If only the release version was found, set the debug variable also to the release version
+     IF (XERCESC_LIBRARY_RELEASE AND NOT XERCESC_LIBRARY_DEBUG)
+       SET(XERCESC_LIBRARY_DEBUG ${XERCESC_LIBRARY_RELEASE})
+       SET(XERCESC_LIBRARY       ${XERCESC_LIBRARY_RELEASE})
+     ENDIF (XERCESC_LIBRARY_RELEASE AND NOT XERCESC_LIBRARY_DEBUG)
+
+     # If only the debug version was found, set the release variable also to the debug version
+     IF (XERCESC_LIBRARY_DEBUG AND NOT XERCESC_LIBRARY_RELEASE)
+       SET(XERCESC_LIBRARY_RELEASE ${XERCESC_LIBRARY_DEBUG})
+       SET(XERCESC_LIBRARY         ${XERCESC_LIBRARY_DEBUG})
+     ENDIF (XERCESC_LIBRARY_DEBUG AND NOT XERCESC_LIBRARY_RELEASE)
+
+	IF ( XERCESC_LIBRARY_RELEASE AND XERCESC_LIBRARY_DEBUG )
+		SET( XERCESC_LIBRARY optimized ${XERCESC_LIBRARY_RELEASE} debug ${XERCESC_LIBRARY_DEBUG} )
+	ENDIF ( XERCESC_LIBRARY_RELEASE AND XERCESC_LIBRARY_DEBUG )
+	
+ENDIF (XERCESC_INCLUDE_DIR)
+
+IF(XERCESC_LIBRARY)
+	SET (XERCESC_FOUND TRUE)
+	SET (XERCESC_LIBRARIES "${XERCESC_LIBRARY}")
+ENDIF(XERCESC_LIBRARY)
  	
 IF (XERCESC_FOUND)
   IF (NOT XERCESC_FIND_QUIETLY)
@@ -50,7 +69,7 @@ ELSE (XERCESC_FOUND)
     MESSAGE(FATAL_ERROR "Could not find Xerces-C")
   ENDIF (XERCESC_FIND_REQUIRED)
 ENDIF (XERCESC_FOUND)
- 	
+ 
 MARK_AS_ADVANCED(
   XERCESC_INCLUDE_DIR
   XERCESC_LIBRARY

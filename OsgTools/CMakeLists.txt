@@ -1,7 +1,7 @@
 
 #########################################################
 #
-#  CMakeLists for OsgTools..
+#  CMakeLists for OsgTools.
 #
 #########################################################
 
@@ -18,18 +18,169 @@ FIND_PACKAGE(OpenGL)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE ( ${CMakeModules}/FindOSG.cmake)
 
-# ------------ Find Boost ----------------------
-INCLUDE ( ${CMakeModules}/FindBoost.cmake)
-# Note that the Boost Include path will automatically get added
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} ${OT_INC_DIR} )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} ${OSG_INC_DIR} ${OT_INC_DIR} )
 
+#########################################################
+#
+#  List the Sources.
+#
+#########################################################
 
-#List the Sources
+SET ( Headers
+	./Animate/AnimationCallback.h
+	./Axes.h
+	./Box.h
+	./Builders/Arrow.h
+	./Builders/GradientBackground.h
+	./Callbacks/BoundingBox.h
+	./Callbacks/BoundingSphere.h
+	./Callbacks/HiddenLines.h
+	./Callbacks/SortBackToFront.h
+	./Circle.h
+	./ColorPolicyFunctor.h
+	./ColorSetter.h
+	./Configure/OSG.h
+	./Convert/Matrix.h
+	./Convert/MatrixTransform.h
+	./Convert.h
+	./Declarations.h
+	./Dimension.h
+	./DisplayLists.h
+	./Drawables/VoxelGeometry.h
+	./Examples/utilities/Display.h
+	./Examples/utilities/FindGeodeVisitor.h
+	./Export.h
+	./FlipNormals.h
+	./Font.h
+	./ForEach.h
+	./GlassBoundingBox.h
+	./GraphStreamVisitor.h
+	./Grid.h
+	./Group.h
+	./HasOption.h
+	./Images/DownSample.h
+	./Images/EdgeDetect.h
+	./Images/Grayscale.h
+	./Images/Histogram.h
+	./Images/Image3d.h
+	./Images/ImageOr.h
+	./Images/Invert.h
+	./Images/Matrix.h
+	./Images/Morphology.h
+	./Images/Scale.h
+	./Images/Threshold.h
+	./Index.h
+	./Intersect/Frustum.h
+	./Intersect/FrustumFunctor.h
+	./Intersect/FrustumVisitor.h
+	./IO/GLFeedback.h
+	./IO/Reader.h
+	./IO/STLPrintVisitor.h
+	./IO/STLWrite.h
+	./IO/STLWriter.h
+	./IO/WriteEPS.h
+	./Jitter.h
+	./KeepFirst.h
+	./Lod.h
+	./MaterialFactory.h
+	./MaterialSetter.h
+	./Mesh.h
+	./Objects/Cylinder.h
+	./Objects/Macros.h
+	./Objects/Object.h
+	./Objects/RegularGrid.h
+	./Objects/VertexSequence.h
+	./Points/OctTree.h
+	./Points/OctTreeNode.h
+	./Points/PointLoader.h
+	./Points/PointSet.h
+	./Points/PointSetRecords.h
+	./Ray.h
+	./ReadModel.h
+	./Render/ActionAdapter.h
+	./Render/Animation.h
+	./Render/ClampProjection.h
+	./Render/ClipPlaneCallback.h
+	./Render/Constants.h
+	./Render/Defaults.h
+	./Render/EventAdapter.h
+	./Render/FBOScreenCapture.h
+	./Render/FrameDump.h
+	./Render/LodCallbacks.h
+	./Render/OffScreenRenderer.h
+	./Render/RecordTime.h
+	./Render/Renderer.h
+	./Render/SceneManager.h
+	./Render/TiledScreenCapture.h
+	./Render/Trackball.h
+	./Render/Viewer.h
+	./Sample.h
+	./ScopedDisplayLists.h
+	./ScopedNodeMask.h
+	./ScopedOptions.h
+	./ScopedProjection.h
+	./ScopedViewport.h
+	./SetDataVariance.h
+	./ShapeFactory.h
+	./Sphere.h
+	./State/PolygonMode.h
+	./State/ShadeModel.h
+	./State/StateSet.h
+	./Statistics.h
+	./Text.h
+	./Torus.h
+	./Triangles/Block.h
+	./Triangles/Blocks.h
+	./Triangles/ColorFunctor.h
+	./Triangles/Constants.h
+	./Triangles/Enum.h
+	./Triangles/Exceptions.h
+	./Triangles/Factory.h
+	./Triangles/Loop.h
+	./Triangles/LoopSplitter.h
+	./Triangles/SharedVertex.h
+	./Triangles/Triangle.h
+	./Triangles/TriangleSet.h
+	./Utilities/ConvertToTriangles.h
+	./Utilities/DeleteHandler.h
+	./Utilities/DirtyBounds.h
+	./Utilities/FindNormals.h
+	./Utilities/Intersect.h
+	./Utilities/ReferenceFrame.h
+	./Utilities/TranslateGeometry.h
+	./Utilities/Transparency.h
+	./Visitor.h
+	./Volume/GPURayCasting.h
+	./Volume/PlanarProxyGeometry.h
+	./Volume/Texture3DVolume.h
+	./Volume/TransferFunction.h
+	./Volume/TransferFunction1D.h
+	./Widgets/Axes.h
+	./Widgets/ClipPlane.h
+	./Widgets/GradientIcon.h
+	./Widgets/Image.h
+	./Widgets/Item.h
+	./Widgets/Legend.h
+	./Widgets/LegendObject.h
+	./Widgets/LineFunctor.h
+	./Widgets/ProgressBar.h
+	./Widgets/ProgressBarGroup.h
+	./Widgets/QuadFunctor.h
+	./Widgets/SolidIcon.h
+	./Widgets/SphereFunctor.h
+	./Widgets/Text.h
+)
+
+#########################################################
+#
+#  List the Sources.
+#
+#########################################################
+
 SET (SOURCES
   Animate/AnimationCallback.cpp
   Axes.cpp
@@ -115,14 +266,21 @@ SET (SOURCES
   Volume/TransferFunction1D.cpp
 )
 
+# Set the target name.
+SET ( TARGET_NAME OsgTools )
+
 # Create a Shared Library
-ADD_LIBRARY(OsgTools SHARED ${SOURCES} )
+ADD_LIBRARY(${TARGET_NAME} SHARED ${HEADERS} ${SOURCES} )
 
-# Link the Library
-LINK_CADKIT(OsgTools Usul)
+# Add a library
+CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 
-TARGET_LINK_LIBRARIES(OsgTools
-  ${Boost_LIBRARIES}
+# Link to these Cadkit libraries.
+LINK_CADKIT(${TARGET_NAME} Usul)
+
+# Link to these 3rd party librarise.
+TARGET_LINK_LIBRARIES( ${TARGET_NAME}
+	${Boost_LIBRARIES}
 	${OPENGL_LIBRARIES}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
@@ -130,13 +288,6 @@ TARGET_LINK_LIBRARIES(OsgTools
 	${OSG_GA_LIB}
 	${OSG_TEXT_LIB}
 	${OSG_UTIL_LIB}
-  ${OSG_MANIPULATOR}
-  ${OSG_VIEWER}
-)
-
-
-INSTALL(TARGETS OsgTools
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION bin
-  ARCHIVE DESTINATION bin
+	${OSG_MANIPULATOR}
+	${OSG_VIEWER}
 )

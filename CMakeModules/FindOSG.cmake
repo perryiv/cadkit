@@ -1,4 +1,6 @@
 
+INCLUDE ( Cadkit )
+
 # Pick up if the user has set an environment variable to point to the 
 # OpenThreads  Library Directory. If these are not set
 # then they will simply be ignored.
@@ -24,15 +26,18 @@ FIND_PATH(OT_INC_DIR  OpenThreads/Mutex
 #
 #########################################################
 
-FIND_LIBRARY(OPENTHREADS_LIB OpenThreads
+FIND_LIBRARY(OPENTHREADS_LIBRARY_RELEASE OpenThreads
  ${OT_LIB_DIR}
  ${OSG_LIB_DIR}
 )
 
-FIND_LIBRARY(OPENTHREADS_LIB_DEBUG OpenThreadsd
+FIND_LIBRARY(OPENTHREADS_LIBRARY_DEBUG OpenThreadsd
  ${OT_LIB_DIR}
  ${OSG_LIB_DIR}
 )
+
+SET ( OPENTHREADS_LIB OPENTHREADS_LIBRARY_RELEASE )
+CADKIT_SET_DEBUG_RELEASE_LIBRARY( OPENTHREADS_LIB OPENTHREADS_LIBRARY_DEBUG OPENTHREADS_LIBRARY_RELEASE)
 
 #########################################################
 #

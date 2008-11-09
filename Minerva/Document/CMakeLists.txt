@@ -7,13 +7,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-
 # ------------ Find Ossim Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-
-# ------------ Find boost ----------------------
-SET ( Boost_USE_DATE_TIME TRUE )
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
@@ -26,14 +21,15 @@ IF(MSVC)
 ENDIF(MSVC)
 
 # Add directories to search for libraries to link to.
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
+			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
-         "${CADKIT_INC_DIR}/Experimental"
+			 "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
 		     ${OSSIM_INC_DIR}
@@ -51,6 +47,8 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
+
+CADKIT_ADD_LIBRARY ( MinervaDocument )
 
 # Link the Library	
 LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree MenuKit Minerva MinervaPostgres )

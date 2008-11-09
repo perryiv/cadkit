@@ -1,3 +1,10 @@
+
+#########################################################
+#
+#  CMakeLists for Flash Model.
+#
+#########################################################
+
 project (FlashModel)
 
 # Set the name.  Needed for the macros to set up plugin properties.
@@ -18,9 +25,19 @@ FIND_PATH(HDF_INCLUDE_DIR hdf5.h )
 # Look for the library.
 FIND_LIBRARY(HDF_LIBRARY NAMES hdf5 )
 
-# ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${CADKIT_INC_DIR}/Experimental" "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} ${HDF_INCLUDE_DIR} )
+
+#########################################################
+#
+#  Set Include Folders.
+#
+#########################################################
+
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} 
+					 ${CADKIT_INC_DIR} 
+					 "${CADKIT_INC_DIR}/Experimental" 
+					 "${PROJECT_SOURCE_DIR}/../" 
+					 ${OSG_INC_DIR} 
+					 ${HDF_INCLUDE_DIR} )
 
 # Set the sources to compile.
 set (SOURCES

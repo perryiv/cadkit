@@ -55,7 +55,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib"
+				AdditionalDependencies=" qtmain.lib QtCore4.lib QtGui4.lib shell32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/HeliosQtCommands.dll"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="false"
@@ -128,7 +128,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib"
+				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib shell32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/HeliosQtCommandsd.dll"
 				AdditionalLibraryDirectories="$(QTDIR)\lib"
 				GenerateDebugInformation="true"

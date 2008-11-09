@@ -8,9 +8,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
 
-SET( Boost_USE_FILESYSTEM TRUE )
-INCLUDE(${CMakeModules}/FindBoost.cmake)
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 ADD_DEFINITIONS("-D_COMPILING_VRV")

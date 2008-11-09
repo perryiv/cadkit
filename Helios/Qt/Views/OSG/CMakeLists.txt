@@ -9,7 +9,8 @@ FIND_PACKAGE(OpenGL)
 
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( ${OSG_INC_DIR} 
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
+					 ${OSG_INC_DIR} 
                      ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../../../" 

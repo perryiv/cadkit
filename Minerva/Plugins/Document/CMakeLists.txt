@@ -7,9 +7,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
 
 # Find dependencies
 INCLUDE(${CMakeModules}/FindOSG.cmake)
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-SET ( Boost_USE_DATE_TIME TRUE )
-INCLUDE( ${CMakeModules}/FindBoost.cmake)
 
 set(COMPILE_GUARD "_COMPILING_MINERVA_MODEL")
 ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
@@ -17,13 +14,13 @@ ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
 
 # ------------ Set Include Folders ----------------------
 
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
+					 ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../"
-                     ${OSG_INC_DIR}
-                     ${OSSIM_INC_DIR} )
+                     ${OSG_INC_DIR} )
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 set (SOURCES
 ./MinervaComponent.cpp
@@ -37,6 +34,5 @@ CADKIT_PLUGIN( ${PLUGIN_NAME} )
 
 # Link the Library
 LINK_CADKIT( ${PLUGIN_NAME} Usul MinervaDocument )
-
 
 TARGET_LINK_LIBRARIES ( ${PLUGIN_NAME} ${Boost_LIBRARIES} )

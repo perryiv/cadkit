@@ -22,17 +22,17 @@ namespace Math {
 
 
 // Unit conversions.
-const float  RAD_TO_DEG             ( 57.2957795131f );
-const float  DEG_TO_RAD             ( 0.01745329252f );
+const double  RAD_TO_DEG             ( 57.295779513082320876798161804285 );
+const double  DEG_TO_RAD             ( 0.017453292519943295769236905555556 );
 
 // Trig.
-const float  PIE                    ( 3.14159265358979323846f );
-const float  PIE_OVER_2             ( PIE / 2.0f );
+const double  PIE                    ( 3.141592653589793238462643 );
+const double  PIE_OVER_2             ( PIE / 2.0 );
 
 // Square Root.
-const float  SQRT_2                 ( 1.41421356237309504880f );
-const float  SQRT_3                 ( 1.73205080757f );
-const float  INV_SQRT_2             ( 0.70710678118654752440f );
+const double  SQRT_2                 ( 1.41421356237309504880 );
+const double  SQRT_3                 ( 1.73205080757 );
+const double  INV_SQRT_2             ( 0.70710678118654752440 );
 
 } // namespace Math
 } // namespace Usul

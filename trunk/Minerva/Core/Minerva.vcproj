@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
 				PreprocessorDefinitions="CURL_STATICLIB;WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib ossimd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minervad.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);$(OSSIM_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Minervad.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Minervad.lib"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(OSSIM_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CURL_INC_DIR)&quot;"
 				PreprocessorDefinitions="CURL_STATICLIB;WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="1"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgText.lib ossim.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgText.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minerva.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR);$(OSSIM_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/Minerva.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Minerva.lib"
 			/>
@@ -471,14 +471,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Layers\RasterLayerOssim.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Layers\RasterLayerOssim.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Layers\RasterLayerWms.cpp"
 						>
 					</File>
@@ -752,14 +744,6 @@
 					</File>
 					<File
 						RelativePath=".\TileEngine\LandModelEllipsoid.h"
-						>
-					</File>
-					<File
-						RelativePath=".\TileEngine\LandModelFlat.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\TileEngine\LandModelFlat.h"
 						>
 					</File>
 					<File

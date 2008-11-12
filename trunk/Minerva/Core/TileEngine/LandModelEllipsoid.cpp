@@ -12,14 +12,13 @@
 
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Math/Absolute.h"
+#include "Usul/Math/Constants.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Trace/Trace.h"
 
-#include "ossim/base/ossimEllipsoid.h"
-#include "ossim/base/ossimGpt.h"
-#include "ossim/base/ossimLsrSpace.h"
-#include "ossim/base/ossimMatrix4x4.h"
+#include "OsgTools/Convert.h"
 
+#include "osg/CoordinateSystemNode"
 #include "osg/Matrixd"
 
 using namespace Minerva::Core::TileEngine;
@@ -35,12 +34,12 @@ USUL_FACTORY_REGISTER_CREATOR ( LandModelEllipsoid );
 
 LandModelEllipsoid::LandModelEllipsoid ( const Vec2d &r ) : 
   BaseClass(),
-  _ellipsoid ( new ossimEllipsoid ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] ) )
+  _ellipsoid ( new osg::EllipsoidModel ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] ) )
 {
   USUL_TRACE_SCOPE;
 
   // Set ellipsoid radii.
-  _ellipsoid->setAB ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] );
+  this->_setRadii ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] );
 }
 
 
@@ -59,34 +58,6 @@ LandModelEllipsoid::~LandModelEllipsoid()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double LandModelEllipsoid::size() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _ellipsoid->a();
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the elevation at given lat, lon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double LandModelEllipsoid::elevation ( double lat, double lon ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _ellipsoid->geodeticRadius ( lat );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Convert lat,lon,height to x,y,z.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,8 +65,12 @@ double LandModelEllipsoid::elevation ( double lat, double lon ) const
 void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
 {
   USUL_TRACE_SCOPE;
+
+  lat *= Usul::Math::DEG_TO_RAD;
+  lon *= Usul::Math::DEG_TO_RAD;
+
   Guard guard ( this );
-  _ellipsoid->latLonHeightToXYZ ( lat, lon, elevation, point.x(), point.y(), point.z() );
+  _ellipsoid->convertLatLongHeightToXYZ ( lat, lon, elevation, point.x(), point.y(), point.z() );
 }
 
 
@@ -108,8 +83,14 @@ void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elev
 void LandModelEllipsoid::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _ellipsoid->XYZToLatLonHeight ( point.x(), point.y(), point.z(), lat, lon, elevation );
+
+  {
+    Guard guard ( this );
+    _ellipsoid->convertXYZToLatLongHeight ( point.x(), point.y(), point.z(), lat, lon, elevation );
+  }
+
+  lat *= Usul::Math::RAD_TO_DEG;
+  lon *= Usul::Math::RAD_TO_DEG;
 }
 
 
@@ -168,7 +149,7 @@ void LandModelEllipsoid::serialize ( XmlTree::Node &parent ) const
   Serialize::XML::DataMemberMap m ( _dataMemberMap );
 
   // Add additional entries.
-  Vec2d r ( _ellipsoid->a(), _ellipsoid->b() );
+  Vec2d r ( this->radiusEquator(), this->radiusPolar() );
   m.addMember ( "radii", r );
 
   // Write members to the node from local map.
@@ -191,36 +172,80 @@ void LandModelEllipsoid::deserialize ( const XmlTree::Node &node )
   Serialize::XML::DataMemberMap m ( _dataMemberMap );
 
   // Add additional entries.
-  Vec2d r ( _ellipsoid->a(), _ellipsoid->b() );
+  Vec2d r ( this->radiusEquator(), this->radiusPolar() );
   m.addMember ( "radii", r );
 
   // Initialize locals and members from the the node.
   m.deserialize ( node );
 
   // Set members from locals.
-  _ellipsoid->setAB ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] );
+  this->_setRadii ( r[RADIUS_EQUATOR], r[RADIUS_POLAR] );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper trig functions.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template <class T>
+  inline T sin ( T in )
+  {
+    return Usul::Math::sin ( in * Usul::Math::DEG_TO_RAD );
+  }
+
+  template <class T>
+  inline T cos ( T in )
+  {
+    return Usul::Math::cos ( in * Usul::Math::DEG_TO_RAD );
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Matrix to place items on the planet (i.e. local coordinates to world coordinates).
+//  This is adapted from lsrSpace class in ossim.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::Matrixd LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
 {
+  USUL_TRACE_SCOPE;
+
+  const double sin_lat ( Helper::sin ( lat ) );
+  const double cos_lat ( Helper::cos ( lat ) );
+  const double sin_lon ( Helper::sin ( lon ) );
+  const double cos_lon ( Helper::cos ( lon ) );
+  
+  // East-North-Up components.
+  Usul::Math::Vec3d E ( -sin_lon,  cos_lon, 0.0 );
+  Usul::Math::Vec3d N ( -sin_lat * cos_lon,  -sin_lat * sin_lon,  cos_lat );
+  Usul::Math::Vec3d U ( E.cross ( N ) );
+
+  const double cos_azim ( Helper::cos ( heading ) );
+  const double sin_azim ( Helper::sin ( heading ) );
+  Usul::Math::Vec3d X ( cos_azim * E - sin_azim * N );
+  Usul::Math::Vec3d Y ( sin_azim * E + cos_azim * N );
+  Usul::Math::Vec3d Z ( X.cross ( Y ) );
+
+  // Get the position in earth-centered, earth-fixed (ECEF).
   osg::Vec3d p;
   this->latLonHeightToXYZ ( lat, lon, elevation, p );
-  ossimLsrSpace lsrSpace (ossimGpt( lat, lon, elevation ), heading );
-  
-  ossimMatrix4x4 lsrMatrix( lsrSpace.lsrToEcefRotMatrix() );
-  NEWMAT::Matrix m ( lsrMatrix.getData() );
 
-  return osg::Matrixd( m[0][0], m[1][0], m[2][0], 0.0,
-                       m[0][1], m[1][1], m[2][1], 0.0,
-                       m[0][2], m[1][2], m[2][2], 0.0,
-                       p[0], p[1], p[2], 1.0);
+  // Create a rotation matrix from the local space at (lat,lon) to ECEF system.
+  Usul::Math::Matrix44d m
+      ( X[0], Y[0], Z[0], p[0],
+        X[1], Y[1], Z[1], p[1],
+        X[2], Y[2], Z[2], p[2],
+        0.00, 0.00, 0.00, 1.00 );
+
+  osg::Matrixd result;
+  OsgTools::Convert::matrix ( m, result );
+  return result;
 }
 
 
@@ -234,7 +259,7 @@ double LandModelEllipsoid::radiusEquator() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _ellipsoid->a();
+  return _ellipsoid->getRadiusEquator();
 }
 
 
@@ -248,5 +273,20 @@ double LandModelEllipsoid::radiusPolar() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _ellipsoid->b();
+  return _ellipsoid->getRadiusPolar();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the radii.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LandModelEllipsoid::_setRadii ( double equator, double polar )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _ellipsoid->setRadiusEquator ( equator );
+  _ellipsoid->setRadiusPolar   ( polar   );
 }

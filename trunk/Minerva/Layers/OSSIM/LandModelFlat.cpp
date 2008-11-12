@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/TileEngine/LandModelFlat.h"
+#include "Minerva/Layers/OSSIM/LandModelFlat.h"
 
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
@@ -23,7 +23,7 @@
 
 #include "osg/Matrixd"
 
-using namespace Minerva::Core::TileEngine;
+using namespace Minerva::Layers::Ossim;
 
 USUL_FACTORY_REGISTER_CREATOR ( LandModelFlat );
 
@@ -90,37 +90,6 @@ LandModelFlat::~LandModelFlat ()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the size.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double LandModelFlat::size () const
-{
-  USUL_TRACE_SCOPE;
-
-  osg::Vec3d v0, v1;
-  this->latLonHeightToXYZ ( 0, 0, 0, v0 );
-  this->latLonHeightToXYZ ( -90, -180, 0, v1 );
-
-  return (v1 - v0).length() / 10;
-}
-  
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the elevation at given lat, lon.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-double LandModelFlat::elevation ( double lat, double lon ) const
-{
-  USUL_TRACE_SCOPE;
-  return 0.0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Convert lat, lon, height to x,y,z.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -178,7 +147,7 @@ void LandModelFlat::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, do
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LandModel::MeshSize LandModelFlat::meshSize ( const LandModel::Extents &extents, const LandModel::MeshSize &ms )
+LandModelFlat::MeshSize LandModelFlat::meshSize ( const LandModel::Extents &extents, const LandModel::MeshSize &ms )
 {
   USUL_TRACE_SCOPE;
   return ms;

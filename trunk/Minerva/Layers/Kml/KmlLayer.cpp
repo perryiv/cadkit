@@ -12,6 +12,7 @@
 #include "Minerva/Layers/Kml/NetworkLink.h"
 #include "Minerva/Layers/Kml/LoadModel.h"
 #include "Minerva/Layers/Kml/Factory.h"
+#include "Minerva/Layers/Kml/ZipFile.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Factory/Readers.h"
 #include "Minerva/Core/Data/Line.h"
@@ -293,10 +294,42 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
     boost::algorithm::replace_all ( name, " ", "\\ " );
     
     std::string command ( "/usr/bin/unzip -o " + name + " -d " + dir );
-#else
-    std::string command ( "7za.exe x -y -o\"" + dir + "\" \"" + filename + "\"" );
-#endif
     ::system ( command.c_str() );
+#else
+    // Remove the directory if it exists.
+    if ( boost::filesystem::exists ( dir ) )
+      boost::filesystem::remove_all ( dir );
+
+    // Make sure the directory is created.
+    boost::filesystem::create_directory ( dir );
+
+    // Open the zip file.
+    ZipFile zipFile;
+    zipFile.open ( filename );
+
+    // Get the contents of the file.
+    typedef ZipFile::Strings Strings;
+    Strings contents;
+    zipFile.contents ( contents );
+
+    // Loop over the contents and write them to a temporary file.
+    for ( Strings::const_iterator iter = contents.begin(); iter != contents.end(); ++iter )
+    {
+      // Read the file into a buffer.
+      std::string buffer;
+      zipFile.readFile ( *iter, buffer );
+
+      // Create the path.
+      const std::string path ( dir + "\\" + *iter );
+
+      // Make sure the directory is created.
+      boost::filesystem::create_directory ( Usul::File::directory ( path, true ) );
+
+      // Write the buffer to file.
+      std::ofstream out ( path.c_str(), std::ios::binary );
+      out << buffer;
+    }
+#endif
     
     // The filenames to load.
     std::vector<std::string> filenames;

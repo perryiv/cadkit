@@ -13,7 +13,7 @@
 # include <windows.h>
 #endif
 
-#include "Minerva/Core/Layers/RasterLayerOssim.h"
+#include "Minerva/Layers/OSSIM/RasterLayerOssim.h"
 
 #include "Minerva/Core/Factory/Readers.h"
 
@@ -44,8 +44,8 @@
 #include "ossim/projection/ossimImageViewProjectionTransform.h"
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 
-using namespace Minerva::Core::Layers;
-
+using namespace Minerva::Layers::Ossim;
+#if 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Register readers with the factory.
@@ -734,3 +734,4 @@ void RasterLayerOssim::_writeImageFile ( const std::string& filename, ossimImage
     writer->execute();
   }
 }
+#endif

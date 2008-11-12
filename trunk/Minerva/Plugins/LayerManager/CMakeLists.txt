@@ -17,9 +17,6 @@ INCLUDE(${QT_USE_FILE})
 # ------------ Find curl Library ----------------------
 INCLUDE( ${CMakeModules}/FindCURL.cmake)
 
-# ------------ Find Ossim Libraries ----------------------
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # ------------ Set Include Folders ----------------------
@@ -28,7 +25,6 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
                      "${CADKIT_INC_DIR}/Experimental"
                      ${OSG_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 
-                     ${OSSIM_INC_DIR} 
                      ${CMAKE_CURRENT_BINARY_DIR}
 					 ${CURL_INCLUDE_DIR} )
 
@@ -71,7 +67,6 @@ TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
 	${QT_LIBRARIES}
 	${QT_QTOPENGL_LIBRARY}
 	${OSG_LIB}
-	${OSSIM_LIB}
 	${CURL_LIBRARY}
 )
 

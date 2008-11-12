@@ -11,7 +11,10 @@
 #include "Minerva/Core/TileEngine/LandModelEllipsoid.h"
 
 #include "Usul/File/Temp.h"
+#include "Usul/Predicates/CloseFloat.h"
+#include "Usul/Predicates/Tolerance.h"
 #include "Usul/Print/Matrix.h"
+#include "Usul/Print/Vector.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Scope/RemoveFile.h"
 
@@ -24,14 +27,47 @@
 
 #include <iomanip>
 
+
+struct TestVec3d
+{
+  bool operator () ( const osg::Vec3d& lhs, const osg::Vec3d& rhs ) const
+  {
+    Usul::Predicates::Tolerance<double> pred ( 0.0000001 );
+    return pred ( lhs[0], rhs[0] ) &&
+           pred ( lhs[1], rhs[1] ) &&
+           pred ( lhs[2], rhs[2] );
+    /*return Usul::Predicates::CloseFloat<double>::compare ( lhs[0], rhs[0], 20 ) &&
+           Usul::Predicates::CloseFloat<double>::compare ( lhs[1], rhs[1], 20 ) &&
+           Usul::Predicates::CloseFloat<double>::compare ( lhs[2], rhs[2], 20 );*/
+  }
+};
+
 inline std::ostream& operator<< ( std::ostream& os, const osg::Vec3d& point )
 {
-  const unsigned int w ( 10 ), p ( 10 );
-  os << std::setw ( w ) << std::setprecision ( p ) << std::fixed << point[0] << " ";
-  os << std::setw ( w ) << std::setprecision ( p ) << std::fixed << point[1] << " ";
-  os << std::setw ( w ) << std::setprecision ( p ) << std::fixed << point[2];
+  const unsigned int w ( 25 ), p ( 15 );
+  Usul::Print::vector ( "", point[0], point[1], point[2], os, w, p );
   return os;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Make a test fixture to hold the land model.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class EllipsoidTest : public testing::Test
+{
+protected:
+  virtual void SetUp()
+  {
+    Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
+    _land = new Land ( radii );
+  }
+
+  typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
+  Land::RefPtr _land;
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,19 +76,14 @@ inline std::ostream& operator<< ( std::ostream& os, const osg::Vec3d& point )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(EllipsoidTest,Serialize)
-{
-  // Make the land model.
-  typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-  Land::RefPtr land ( new Land ( radii ) );
-  
+TEST_F(EllipsoidTest,Serialize)
+{ 
   // Make a temp file.
   const std::string name ( Usul::File::Temp::file() );
   Usul::Scope::RemoveFile remove ( name );
   
   // Serialize.
-  Serialize::XML::serialize ( *land, name );
+  Serialize::XML::serialize ( *_land, name );
   
   XmlTree::XercesLife life;
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
@@ -62,9 +93,23 @@ TEST(EllipsoidTest,Serialize)
   land1->deserialize ( *document );
   
   // Should be equal.
-  ASSERT_EQ ( land->radiusEquator(), land1->radiusEquator() );
-  ASSERT_EQ ( land->radiusPolar(),  land1->radiusPolar() );
+  ASSERT_EQ ( _land->radiusEquator(), land1->radiusEquator() );
+  ASSERT_EQ ( _land->radiusPolar(),   land1->radiusPolar() );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convienence macro for ToXYZ test.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define TEST_TO_XYZ(lat,lon,elevation,x,y,z) {\
+  osg::Vec3d point;\
+  _land->latLonHeightToXYZ ( lat, lon, elevation, point );\
+  const osg::Vec3d result ( x, y, z );\
+  ASSERT_PRED2 ( TestVec3d(), result, point );\
+  }\
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,21 +118,22 @@ TEST(EllipsoidTest,Serialize)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(EllipsoidTest,ToXYZ)
+TEST_F(EllipsoidTest,ToXYZ)
 {
-  // Make the land model.
-  typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-  Land::RefPtr land ( new Land ( radii ) );
-  
-  osg::Vec3d point;
-  land->latLonHeightToXYZ ( -33.0, 112.0, 350.0, point );
-  
-  const osg::Vec3d result ( -2005931.5194843430, 4964854.7327290708, -3454149.2647983050 );
-  
-  ASSERT_DOUBLE_EQ ( result[0], point[0] );
-  ASSERT_DOUBLE_EQ ( result[1], point[1] );
-  ASSERT_DOUBLE_EQ ( result[2], point[2] );
+  // Test one value from each half hemisphere of the ellipsoid.
+  TEST_TO_XYZ (  10.0,  45.0,   0.0,  4441954.876365073000000,  4441954.876365072100000,  1100248.547719956100000 );
+  TEST_TO_XYZ ( -33.0, 112.0, 350.0, -2005931.5194843430,       4964854.7327290708,      -3454149.2647983050      );
+  TEST_TO_XYZ ( -10.0, -45.0,   0.0,  4441954.876365073000000, -4441954.876365072100000, -1100248.547719956100000 );
+  TEST_TO_XYZ (  10.0, -45.0,   0.0,  4441954.876365073000000, -4441954.876365072100000,  1100248.547719956100000 );
+
+  // Test boundary conditions.
+  TEST_TO_XYZ (   0.0,    0.0, 0.0,  6378137.000000000000000,  0.000000000000000,        0.000000000000000 );
+  TEST_TO_XYZ (  90.0,    0.0, 0.0,        0.000000000391862,  0.000000000000000,  6356752.314199999900000 );
+  TEST_TO_XYZ (  90.0,  180.0, 0.0,       -0.000000000391862,  0.000000000000000,  6356752.314199999900000 );
+  TEST_TO_XYZ (   0.0,  180.0, 0.0, -6378137.000000000000000,  0.000000000781097,        0.000000000000000 );
+  TEST_TO_XYZ ( -90.0,    0.0, 0.0,        0.000000000391862,  0.000000000000000, -6356752.314199999900000 );
+  TEST_TO_XYZ (   0.0, -180.0, 0.0, -6378137.000000000000000, -0.000000000781097,        0.000000000000000 );
+  TEST_TO_XYZ ( -90.0, -180.0, 0.0,       -0.000000000391862, -0.000000000000000, -6356752.314199999900000 );
 }
 
 
@@ -97,23 +143,17 @@ TEST(EllipsoidTest,ToXYZ)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(EllipsoidTest,ToLatLonElevation)
+TEST_F(EllipsoidTest,ToLatLonElevation)
 {
-  // Make the land model.
-  typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-  Land::RefPtr land ( new Land ( radii ) );
-
+  // Convert
   const osg::Vec3d point ( -2005931.5194843430, 4964854.7327290708, -3454149.2647983050 );
   double lat ( 0.0 ), lon ( 0.0 ), elevation ( 0.0 );
-  land->xyzToLatLonHeight ( point, lat, lon, elevation );
+  _land->xyzToLatLonHeight ( point, lat, lon, elevation );
 
   const osg::Vec3d answer ( lat, lon, elevation );
   const osg::Vec3d result ( -33.0, 112.0, 350.0 );
 
-  ASSERT_DOUBLE_EQ ( result[0], answer[0] );
-  ASSERT_DOUBLE_EQ ( result[1], answer[1] );
-  ASSERT_DOUBLE_EQ ( result[2], answer[2] );
+  ASSERT_PRED2 ( TestVec3d(), result, answer );
 }
 
 
@@ -123,14 +163,9 @@ TEST(EllipsoidTest,ToLatLonElevation)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(EllipsoidTest,ToMatrix)
+TEST_F(EllipsoidTest,ToMatrix)
 {
-  // Make the land model.
-  typedef Minerva::Core::TileEngine::LandModelEllipsoid Land;
-  Land::Vec2d radii ( osg::WGS_84_RADIUS_EQUATOR, osg::WGS_84_RADIUS_POLAR );
-  Land::RefPtr land ( new Land ( radii ) );
-  
-  osg::Matrixd m ( land->planetRotationMatrix ( -33.0, 112.0, 350.0, 45.0 ) );
+  osg::Matrixd m ( _land->planetRotationMatrix ( -33.0, 112.0, 350.0, 45.0 ) );
 
   //Usul::Print::matrix ( "", m.ptr(), std::cout, 30, 20 );
   

@@ -17,9 +17,9 @@
 
 #include "Minerva/Core/TileEngine/LandModel.h"
 
-#include "osg/Vec3f"
+#include "osg/Vec3d"
 
-class ossimEllipsoid;
+namespace osg { class EllipsoidModel; }
 
 namespace Minerva {
 namespace Core {
@@ -48,16 +48,13 @@ public:
 
   // Deserialize this instance.
   virtual void        deserialize ( const XmlTree::Node &node );
-  
-  // Get the elevation at given lat, lon.
-  virtual double      elevation ( double lat, double lon ) const;
 
   // Convert lat, lon, height to x,y,z.
   virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;
   virtual void        xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const;
   
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
-  virtual osg::Matrixd planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
+  virtual Matrix      planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
 
   // Return the appropriate mesh size.
   virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms );
@@ -65,9 +62,6 @@ public:
   // Return the radii.
   double              radiusEquator() const;
   double              radiusPolar() const;
-  
-  // Get the size.
-  virtual double      size() const;
 
   // Serialize this instance.
   virtual void        serialize ( XmlTree::Node &parent ) const;
@@ -78,7 +72,9 @@ protected:
 
 private:
 
-  ossimEllipsoid *_ellipsoid;
+  void                _setRadii ( double equator, double polar );
+
+  osg::EllipsoidModel *_ellipsoid;
 
   SERIALIZE_XML_CLASS_NAME ( LandModelEllipsoid );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

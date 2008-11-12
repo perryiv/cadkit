@@ -11,7 +11,6 @@
 #ifndef __MINERVA_CORE_RASTER_LAYER_OSSIM_H__
 #define __MINERVA_CORE_RASTER_LAYER_OSSIM_H__
 
-#include "Minerva/Core/Export.h"
 #include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Usul/Interfaces/IRead.h"
@@ -20,15 +19,15 @@ class ossimImageData;
 class ossimImageHandler;
 
 namespace Minerva {
-namespace Core {
 namespace Layers {
+namespace Ossim {
 
 
-class MINERVA_EXPORT RasterLayerOssim : public RasterLayer,
-                                        public Usul::Interfaces::IRead
+class RasterLayerOssim : public Minerva::Core::Layers::RasterLayer,
+                         public Usul::Interfaces::IRead
 {
 public:
-  typedef RasterLayer BaseClass;
+  typedef Minerva::Core::Layers::RasterLayer BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
 
   USUL_DECLARE_QUERY_POINTERS ( RasterLayerOssim );

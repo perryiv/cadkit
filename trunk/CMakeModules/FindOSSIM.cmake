@@ -1,36 +1,24 @@
 
-# Set variables in Cmake.  Use the user set environment variables
-# If these are not set, then they will simply be ignored.
-
-# ------------ Wms variables ----------------------
- #set(WMS_INC_DIR "$ENV{LIBWMS_INC_DIR}" )
- #set(WMS_LIB_DIR "$ENV{LIBWMS_LIB_DIR}" )
-
-
 # ------------ Ossim variables ----------------------
  set(OSSIM_LIB_DIR "$ENV{OSSIM_LIB_DIR}")
  set(OSSIM_INC_DIR "$ENV{OSSIM_INC_DIR}")
 
-# ------------ OssimPlanet variables ---------------------- 
-
- #set( OSSIM_PLANET_INC_DIR "$ENV{OSSIM_PLANET_INC_DIR}" )
- #set( OSSIM_PLANET_LIB_DIR "$ENV{OSSIM_PLANET_LIB_DIR}" )
-
-# ------------ OsgEphemeris variables ---------------------- 
-
- #set ( OSG_EPHEMERIS_INC_DIR "$ENV{OSG_EPHEMERIS_INC_DIR}" )
- #set ( OSG_EPHEMERIS_LIB_DIR "$ENV{OSG_EPHEMERIS_LIB_DIR}" )
-
-
-
-# ------------ Find wms Library ----------------------
-#FIND_LIBRARY(WMS_LIB wms ${WMS_LIB_DIR} )
 
 # ------------ Find Ossim Library --------------------
 FIND_LIBRARY(OSSIM_LIB ossim ${OSSIM_LIB_DIR} )
 
-# ------------ Find OssimPlanet Library --------------------
-#FIND_LIBRARY(OSSIM_PLANET_LIB ossimPlanet ${OSSIM_PLANET_LIB_DIR} )
-
-# ------------ Find OssimPlanet Library --------------------
-#FIND_LIBRARY(OSG_EPHEMERIS_LIB osgEphemeris ${OSG_EPHEMERIS_LIB_DIR} )
+IF (OSSIM_INC_DIR AND OSSIM_LIB)
+  SET (OSSIM_FOUND TRUE)
+  SET (OSSIM_LIBRARIES "${GDAL_LIBRARY}")
+  LINK_DIRECTORIES(${GDAL_ROOT_DIR}/lib)
+ENDIF (OSSIM_INC_DIR AND OSSIM_LIB)
+ 
+IF (OSSIM_FOUND)
+  IF (NOT OSSIM_FIND_QUIETLY)
+    MESSAGE (STATUS "Found Ossim: ${OSSIM_LIB}")
+  ENDIF (NOT OSSIM_FIND_QUIETLY)
+ELSE (OSSIM_FOUND)
+  IF (OSSIM_FIND_REQUIRED)
+    MESSAGE(FATAL_ERROR "Could not find Ossim")
+  ENDIF (OSSIM_FIND_REQUIRED)
+ENDIF (OSSIM_FOUND)

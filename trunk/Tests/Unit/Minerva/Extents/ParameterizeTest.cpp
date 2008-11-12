@@ -13,6 +13,7 @@
 
 #include "Usul/Math/Vector2.h"
 #include "Usul/Predicates/CloseFloat.h"
+#include "Usul/Print/Vector.h"
 
 #include "osg/Vec2d"
 
@@ -31,10 +32,7 @@ inline bool operator== ( const Usul::Math::Vec4d& lhs, const Usul::Math::Vec4d& 
 inline std::ostream& operator<< ( std::ostream& os, const Usul::Math::Vec4d& v )
 {
   const unsigned int w ( 15 ), p ( 10 );
-  os << std::setw ( w ) << std::setprecision ( p ) << std::fixed << v[0] << " ";
-  os << std::setw ( w ) << std::setprecision ( p ) << std::fixed << v[1] << " ";
-  os << std::setw ( w ) << std::setprecision ( p ) << std::fixed << v[2] << " ";
-  os << std::setw ( w ) << std::setprecision ( p ) << std::fixed << v[3] << " ";
+  Usul::Print::vector ( "", v[0], v[1], v[2], v[3], os, w, p );
   return os;
 }
 

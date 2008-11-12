@@ -1,15 +1,11 @@
 
-PROJECT(MinervaLayersKml)
+PROJECT(MinervaGeoRSS)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
-
-
-# ------------ Find Ossim Libraries ----------------------
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
@@ -21,31 +17,32 @@ INCLUDE_DIRECTORIES(
 		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${OSSIM_INC_DIR}
 		     )
 
+SET ( HEADERS
+	./Export.h
+	./GeoRSSCallback.h
+	./GeoRSSLayer.h
+	./Item.h
+)
 
 #List the Sources
 SET (SOURCES
-./ColorStyle.cpp
-./Feature.cpp
-./KmlLayer.cpp
-./Link.cpp
-./LookAt.cpp
-./NetworkLink.cpp
-./Object.cpp
-./PolyStyle.cpp
-./Style.cpp
+	./GeoRSSCallback.cpp
+	./GeoRSSLayer.cpp
+	./Item.cpp
 )
 
+SET ( TARGET_NAME MinervaGeoRSS )
+
 # Create a Shared Library
-ADD_LIBRARY(MinervaLayersKml SHARED ${SOURCES} )
+ADD_LIBRARY( ${TARGET_NAME} SHARED ${HEADERS} ${SOURCES} )
+CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 
 # Link the Library	
-LINK_CADKIT( MinervaLayersKml Usul OsgTools SerializeXML XmlTree Minerva )
-TARGET_LINK_LIBRARIES( MinervaLayersKml
+LINK_CADKIT( ${TARGET_NAME} Usul OsgTools SerializeXML XmlTree Minerva )
+TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${Boost_LIBRARIES}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
-	${OSSIM_LIB}
 )

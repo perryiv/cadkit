@@ -37,6 +37,7 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef Minerva::Core::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
+  typedef osg::Matrixd Matrix;
 
   USUL_DECLARE_REF_POINTERS ( LandModel );
 
@@ -45,19 +46,13 @@ public:
   {
   }
 
-  // Get the size.
-  virtual double      size() const = 0;
-  
-  // Get the elevation at given lat, lon.
-  virtual double      elevation ( double lat, double lon ) const = 0;
-
   // Convert lat, lon, height to x,y,z.
   virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const = 0;
   virtual void        xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const = 0;
 
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
-  virtual osg::Matrixd planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const = 0;
-  
+  virtual Matrix      planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const = 0;
+
   // Return the appropriate mesh size.
   virtual MeshSize    meshSize ( const Extents &extents, const MeshSize &ms ) = 0;
 

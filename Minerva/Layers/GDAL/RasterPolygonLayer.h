@@ -13,7 +13,7 @@
 
 #include "Minerva/Layers/GDAL/Export.h"
 
-#include "Minerva/Core/Layers/RasterLayerOssim.h"
+#include "Minerva/Core/Layers/RasterLayer.h"
 
 #include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Layers/PostGIS/PolygonLayer.h"

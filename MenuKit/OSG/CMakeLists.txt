@@ -50,10 +50,12 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY( MenuKit_OSG SHARED ${SOURCES} )
+CADKIT_ADD_LIBRARY ( MenuKit_OSG )
 
 # Link the Library	
 LINK_CADKIT( MenuKit_OSG MenuKit Usul OsgTools )
 
 TARGET_LINK_LIBRARIES(  MenuKit_OSG
 	${OSG_LIB}
+	${OSG_TEXT_LIB}
 )

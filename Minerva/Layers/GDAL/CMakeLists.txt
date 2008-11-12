@@ -7,9 +7,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# ------------ Find Ossim Libraries ----------------------
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
@@ -27,7 +24,6 @@ INCLUDE_DIRECTORIES(
 		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${OSSIM_INC_DIR}
 		     $ENV{PQXX_INC_DIR}
              ${GDAL_INCLUDE_DIR}
 		     )
@@ -54,5 +50,4 @@ TARGET_LINK_LIBRARIES( MinervaLayersGDAL
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}
-	${OSSIM_LIB}
 )

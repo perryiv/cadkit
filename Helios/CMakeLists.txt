@@ -89,6 +89,15 @@ INCLUDE( FindGDAL )
 
 #########################################################
 #
+#  Find Ossim.
+#
+#########################################################
+
+INCLUDE( FindOSSIM )
+
+
+#########################################################
+#
 #  Are these variables needed still?
 #
 #########################################################
@@ -154,6 +163,7 @@ IF(BUILD_MINERVA)
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
 			  ${CADKIT_INC_DIR}/Minerva/DataSources/PG
 			  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
+			  ${CADKIT_INC_DIR}/Minerva/Layers/GeoRSS
 			  ${CADKIT_INC_DIR}/Minerva/Document
 			  ${CADKIT_INC_DIR}/Minerva/Plugins/Document )
 	
@@ -163,6 +173,11 @@ IF(BUILD_MINERVA)
 			     ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage )
 	ENDIF(GDAL_FOUND)
+	
+	# Build these projects if we found Ossim
+	IF(OSSIM_FOUND)
+		SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Layers/OSSIM )
+	ENDIF(OSSIM_FOUND)
 
 	# Add these projects if Qt was found.
 	IF(QT_FOUND AND BUILD_HELIOS_QT)

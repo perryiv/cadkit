@@ -38,7 +38,7 @@ Minerva::Core::TileEngine::Body* Minerva::Core::Functions::makeEarth ( Usul::Job
   Land::RefPtr land ( new Land ( radii ) );
 
   // Make a good split distance.
-  const double splitDistance ( land->size() * 3.0 ); // Was 2.5
+  const double splitDistance ( osg::WGS_84_RADIUS_EQUATOR * 3.0 ); // Was 2.5
 
   // Size of the mesh.
   Body::MeshSize meshSize ( 17, 17 );

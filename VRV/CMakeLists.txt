@@ -7,8 +7,9 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # Find needed libraries.
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 INCLUDE(${CMakeModules}/FindVRJuggler.cmake)
+FIND_PACKAGE(OpenGL)
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} "$ENV{VJ_DEPS_DIR}/lib" )
 
 ADD_DEFINITIONS("-D_COMPILING_VRV")
 
@@ -46,15 +47,19 @@ SET (SOURCES
 
 # Create a Shared Library
 ADD_LIBRARY(VRV SHARED ${SOURCES} )
+CADKIT_ADD_LIBRARY ( VRV )
 
 # Link the Library	
-LINK_CADKIT( VRV Usul OsgTools )
+LINK_CADKIT( VRV Usul OsgTools MenuKit MenuKit_OSG XmlTree )
 TARGET_LINK_LIBRARIES( VRV
+	${OPENGL_LIBRARIES}
 	${OSG_LIB}
-  ${VRJ_LIB}
-  ${VRJ_OGL_LIB}
-  ${VPR_LIB}
-  ${GADGET_LIB}
-  ${Boost_LIBRARIES}
+	${OSG_DB_LIB}
+	${OSG_UTIL_LIB}
+	${VRJ_LIB}
+	${VRJ_OGL_LIB}
+	${VPR_LIB}
+	${GADGET_LIB}
+	${Boost_LIBRARIES}
 	${Boost_FILESYSTEM_LIBRARY}
 )

@@ -13,9 +13,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# ------------ Find Ossim Libraries ----------------------
-INCLUDE(${CMakeModules}/FindOSSIM.cmake)
-
 # ------------ Find curl Library ----------------------
 INCLUDE( ${CMakeModules}/FindCURL.cmake)
 
@@ -36,7 +33,6 @@ INCLUDE_DIRECTORIES(
 		     ${CADKIT_INC_DIR}/GenericNurbs
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${OSSIM_INC_DIR}
 		     ${CURL_INCLUDE_DIR}
 		     )
 
@@ -89,13 +85,11 @@ SET (SOURCES
 ./Layers/RasterLayer.cpp
 ./Layers/RasterLayerArcIMS.cpp
 ./Layers/RasterLayerNetwork.cpp
-./Layers/RasterLayerOssim.cpp
 ./Layers/RasterLayerWms.cpp
 ./OSG/MatrixTransform.cpp
 ./TileEngine/Body.cpp
 ./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp
-./TileEngine/LandModelFlat.cpp
 ./TileEngine/Node.cpp
 ./TileEngine/SplitCallbacks.cpp
 ./TileEngine/System.cpp
@@ -133,7 +127,6 @@ TARGET_LINK_LIBRARIES(Minerva
 	${OSG_DB_LIB}
 	${OSG_TEXT_LIB}
 	${OSG_UTIL_LIB}
-	${OSSIM_LIB}
     ${CURL_LIBRARY}
 )
 

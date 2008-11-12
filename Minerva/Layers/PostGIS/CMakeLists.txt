@@ -10,9 +10,7 @@ INCLUDE(${CMakeModules}/FindOSG.cmake)
 # ------------ Find PQXX Library ----------------------
 FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
-# ------------ Find GDAL Library ----------------------
-INCLUDE( ${CMakeModules}/FindGDAL.cmake)
-
+INCLUDE(${QT_USE_FILE})
 
 # Add needed preprocessor definitions.
 ADD_DEFINITIONS("-D_COMPILING_MINERVA_POSTGIS")

@@ -583,8 +583,7 @@ void Application::_contextInit()
   renderer->scene ( _sceneManager->scene() );
 
   // Set the background color.
-  osg::Vec4 color;
-  OsgTools::Convert::vector ( _backgroundColor, color, 4 );
+  osg::Vec4 color ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( _backgroundColor ) );
   renderer->backgroundCorners ( OsgTools::Render::Renderer::Corners::ALL );
   renderer->backgroundColor ( color, OsgTools::Render::Renderer::Corners::ALL );
 
@@ -1657,8 +1656,7 @@ void Application::backgroundColor( const Usul::Math::Vec4f& color )
   Guard guard ( this->mutex() );
 
   _backgroundColor = color;
-  osg::Vec4 c;
-  OsgTools::Convert::vector ( color, c, 4 );
+  osg::Vec4 c ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( color ) );
 
   for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
   {
@@ -3128,16 +3126,13 @@ void Application::_initMenu()
   USUL_TRACE_SCOPE;
   typedef VRV::Prefs::Settings::Color Color;
 
-  osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
-  osg::Vec4 textNormal, textHighlight, textDisabled;
-  
   // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings
-  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorNorm(),   bgNormal,      4 );
-  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorHLght(),  bgHighlight,   4 );
-  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorDsabl(),  bgDisabled,    4 );
-  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorNorm(),  textNormal,    4 );
-  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorHLght(), textHighlight, 4 );
-  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorDsabl(), textDisabled,  4 );
+  osg::Vec4 bgNormal      ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuBgColorNorm()   ) );
+  osg::Vec4 bgHighlight   ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuBgColorHLght()  ) );
+  osg::Vec4 bgDisabled    ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuBgColorDsabl()  ) );
+  osg::Vec4 textNormal    ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuTxtColorNorm()  ) );
+  osg::Vec4 textHighlight ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuTxtColorHLght() ) );
+  osg::Vec4 textDisabled  ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuTxtColorDsabl() ) );
 
   MenuPtr osgMenu ( new Menu );
 
@@ -3967,17 +3962,11 @@ void Application::_initLight()
   }
 
   osg::ref_ptr< osg::Light > light ( new osg::Light );
-  osg::Vec3 ld;
-  osg::Vec4 lp;
-  osg::Vec4 ambient;
-  osg::Vec4 diffuse;
-  osg::Vec4 specular;
-
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->lightPosition(), lp, 4 );
-  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( this->preferences()->lightDirection(), ld, 3 );
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->ambientLightColor(), ambient, 4 );
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->diffuseLightColor(), diffuse, 4 );
-  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->specularLightColor(), specular, 4 );
+  osg::Vec3 ld ( Usul::Convert::Type<Usul::Math::Vec3f,osg::Vec3>::convert ( this->preferences()->lightDirection() ) );
+  osg::Vec4 lp ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->lightPosition() ) );
+  osg::Vec4 ambient ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->ambientLightColor() ) );
+  osg::Vec4 diffuse ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->diffuseLightColor() ) );
+  osg::Vec4 specular ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->specularLightColor() ) );
 
   light->setPosition( lp );
   light->setDirection( ld );

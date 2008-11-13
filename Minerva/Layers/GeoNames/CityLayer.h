@@ -40,9 +40,10 @@ namespace Minerva {
 namespace Layers {
 namespace GeoNames {
   
-class MINERVA_GEO_NAMES_EXPORT CityLayer : public Minerva::Core::Data::Feature,
-                                           public Minerva::Interfaces::ITilesChangedListener,
-                                           public Usul::Interfaces::IUpdateListener
+class MINERVA_GEO_NAMES_EXPORT CityLayer : 
+  public Minerva::Core::Data::Feature,
+  public Minerva::Interfaces::ITilesChangedListener,
+  public Usul::Interfaces::IUpdateListener
 {
 public:
   

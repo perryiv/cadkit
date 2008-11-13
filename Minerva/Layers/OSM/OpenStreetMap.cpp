@@ -127,7 +127,7 @@ void OpenStreetMap::_read ( const std::string &filename, Usul::Interfaces::IUnkn
     if ( true == node.valid() )
     {
       Usul::Interfaces::IUnknown::QueryPtr unknown ( OpenStreetMap::_createForNode ( *node ) );
-      this->add ( unknown );
+      //this->add ( unknown );
     }
   }
 
@@ -204,7 +204,7 @@ void OpenStreetMap::_setBounds ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenStreetMap::_parse ( const XmlTree::Node& node, Nodes& nodes, Ways& ways )
+void OpenStreetMap::_parse ( const XmlTree::Node& xmlNode, Nodes& nodes, Ways& ways )
 {
   // Typedefs.
   typedef Minerva::Layers::OSM::Object OSMObject;
@@ -218,16 +218,16 @@ void OpenStreetMap::_parse ( const XmlTree::Node& node, Nodes& nodes, Ways& ways
   typedef XmlTree::Node::Attributes Attributes;
 
   // Get all the children.
-  const Children& children ( node.children() );
+  const Children& children ( xmlNode.children() );
 
   // Map to retrieve nodes when parsing a Way.
   NodeMap map;
   
   // Add each node.
-  BOOST_FOREACH ( XmlTree::Node::ValidRefPtr node, children )
+  BOOST_FOREACH ( XmlTree::Node::ValidRefPtr xmlNode, children )
   {
     // Get the attributes.
-    Attributes attributes ( node->attributes() );
+    Attributes attributes ( xmlNode->attributes() );
     
     // Get the id.
     IdType id ( Usul::Convert::Type<std::string,IdType>::convert ( attributes["id"] ) );
@@ -243,7 +243,7 @@ void OpenStreetMap::_parse ( const XmlTree::Node& node, Nodes& nodes, Ways& ways
     Tags tags;
 
     // Parse the tags.
-    BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, node->children() )
+    BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, xmlNode->children() )
     {
       if ( "tag" == child->name() )
       {
@@ -256,26 +256,26 @@ void OpenStreetMap::_parse ( const XmlTree::Node& node, Nodes& nodes, Ways& ways
     }
 
     // Is the xml element a node?
-    if ( "node" == node->name() )
+    if ( "node" == xmlNode->name() )
     {
       // Lat/Lon position.
       const double lat ( Usul::Convert::Type<std::string,double>::convert ( attributes["lat"] ) );
       const double lon ( Usul::Convert::Type<std::string,double>::convert ( attributes["lon"] ) );
 
       // Create the node.
-      Node::RefPtr node ( Node::create ( id, LocationType ( lon, lat ), date, tags ) );
-      nodes.push_back ( node );
-      map.insert ( std::make_pair ( id, node ) );
+      Node::RefPtr osmNode ( Node::create ( id, LocationType ( lon, lat ), date, tags ) );
+      nodes.push_back ( osmNode );
+      map.insert ( std::make_pair ( id, osmNode ) );
     }
 
     // Is the xml element a way?
-    else if ( "way" == node->name() )
+    else if ( "way" == xmlNode->name() )
     {
       // Nodes for this way.
       Nodes nodes;
 
       // Parse the nodes.
-      BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, node->children() )
+      BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, xmlNode->children() )
       {
         if ( "nd" == child->name() )
         {
@@ -286,11 +286,11 @@ void OpenStreetMap::_parse ( const XmlTree::Node& node, Nodes& nodes, Ways& ways
           const IdType nodeId ( Usul::Convert::Type<std::string,IdType>::convert ( a["ref"] ) );
 
           // Get the node.
-          Node::RefPtr node ( map[nodeId] );
+          Node::RefPtr osmNode ( map[nodeId] );
 
           // Add the node.
-          if ( true == node.valid() )
-            nodes.push_back ( node );
+          if ( true == osmNode.valid() )
+            nodes.push_back ( osmNode );
         }
       }
 

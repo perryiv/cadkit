@@ -1,6 +1,13 @@
-project (OssimLayerQt)
 
-SET(PLUGIN_NAME "OssimLayerQt")
+#########################################################
+#
+#  CMakeLists for QtGeoRSS.
+#
+#########################################################
+
+project (QtGeoRSS)
+
+SET(PLUGIN_NAME "QtGeoRSS")
 
 SET( CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
 INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)

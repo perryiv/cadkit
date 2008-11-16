@@ -1,14 +1,15 @@
+
+#########################################################
+#
+#  CMakeLists for Path Animation.
+#
+#########################################################
+
 PROJECT (PathAnimation)
 
-SET(PLUGIN_NAME "PathAnimation")
-
-SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
-
-ADD_DEFINITIONS ("-D_COMPILING_PATH_ANIMATION")
+INCLUDE ( Cadkit.plugin )
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
   "${PROJECT_SOURCE_DIR}/../"
 	"${CADKIT_INC_DIR}/" 
@@ -19,18 +20,17 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
-set (SOURCES
+SET (SOURCES
 ./PathAnimationComponent.cpp
 ./CurvePlayer.cpp
 ./CameraPath.cpp
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "PathAnimation" )
+SET ( COMPILE_GUARD "_COMPILING_PATH_ANIMATION" )
+SET ( CADKIT_LIBRARIES Usul OsgTools SerializeXML MenuKit )
+SET ( OTHER_LIBRARIES ${OSG_LIB} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul MenuKit SerializeXML OsgTools )
-
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${OSG_LIB} )
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

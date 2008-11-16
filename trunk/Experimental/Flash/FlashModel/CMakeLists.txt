@@ -7,18 +7,10 @@
 
 project (FlashModel)
 
-# Set the name.  Needed for the macros to set up plugin properties.
-SET(PLUGIN_NAME "FlashModel")
-
-SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+INCLUDE ( Cadkit.plugin )
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
-INCLUDE ( ${CMakeModules}/FindOSG.cmake)
-
-# Set the compile guard.
-set(COMPILE_GUARD "_COMPILING_FLASH_MODEL")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+INCLUDE ( FindOSG )
 
 IF(WIN32)
 	ADD_DEFINITIONS ("-D_HDF5USEDLL_")
@@ -52,19 +44,15 @@ set (SOURCES
 ./Timestep.cpp
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "FlashModel" )
+SET ( COMPILE_GUARD "_COMPILING_FLASH_MODEL" )
+SET ( CADKIT_LIBRARIES Usul OsgTools XmlTree SerializeXML MenuKit )
+SET ( OTHER_LIBRARIES ${OPENTHREADS_LIB}
+					  ${OSG_LIB}
+					  ${OSG_UTIL_LIB}
+					  ${OSG_TEXT_LIB}
+					  ${HDF_LIBRARY} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML MenuKit )
-
-# Link the Library	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 
-	${OPENTHREADS_LIB}
-	${OSG_LIB}
-	${OSG_UTIL_LIB}
-	${OSG_TEXT_LIB}
-	${HDF_LIBRARY}
-)
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

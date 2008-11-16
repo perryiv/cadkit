@@ -1,12 +1,13 @@
-project (QtArcIMS)
 
-SET(PLUGIN_NAME "QtArcIMS")
+#########################################################
+#
+#  CMakeLists for WmsLayerQt.
+#
+#########################################################
 
-SET( CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+PROJECT (QtArcIMS)
 
-SET(COMPILE_GUARD "_COMPILING_ARC_IMS_LAYER_QT")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+INCLUDE ( Cadkit.plugin )
 
 INCLUDE(${QT_USE_FILE})
 
@@ -21,15 +22,14 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
 
 SET (SOURCES
   QtArcIMSComponent.cpp
+  QtArcIMSComponent.h
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "QtArcIMS" )
+SET ( COMPILE_GUARD "_COMPILING_ARC_IMS_LAYER_QT" )
+SET ( CADKIT_LIBRARIES Usul Minerva MinervaQtWidgets )
+SET ( OTHER_LIBRARIES ${QT_LIBRARIES} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaQtWidgets )
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-	${QT_LIBRARIES}
-)
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

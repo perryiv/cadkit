@@ -82,3 +82,9 @@ MAKE_DIRECTORY( ${IconDir} )
 FOREACH(FILE ${IconFiles})
 	CADKIT_COPY( ${TARGET_NAME} ${FILE}  ${IconDir} )
 ENDFOREACH(FILE ${IconFiles})
+
+# Copy the plugin file.
+FIND_FILE ( PLUGIN_FILE_NAME "Minerva.plugins" PATHS ${CMAKE_CURRENT_SOURCE_DIR} )
+
+CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Plugins.xml ${EXECUTABLE_OUTPUT_PATH}/configs/Minerva.plugins )
+#CADKIT_COPY( ${TARGET_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/Minerva.plugins"  "${EXECUTABLE_OUTPUT_PATH}/configs/Minerva.plugins" )

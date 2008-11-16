@@ -1,33 +1,33 @@
-project (QtAnimationControl)
 
-# Set the name.  Needed for the macros to set up plugin properties.
-SET(PLUGIN_NAME "QtAnimationControl")
+#########################################################
+#
+#  CMakeLists for QtAnimationControl.
+#
+#########################################################
 
-SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+PROJECT ( QtAnimationControl )
 
-ADD_DEFINITIONS ("-D_COMPILING_ANIMATION_CONTROL")
+INCLUDE ( Cadkit.plugin )
+
+# Add include paths and librares for QT.
+INCLUDE(${QT_USE_FILE})
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
-                     "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../" 
                       ${QT_INCLUDE_DIR} )
 
-
+# Set the source and headers.
 SET ( SOURCES
   ./AnimationControlComponent.cpp
+  ./AnimationControlComponent.h
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "QtAnimationControl" )
+SET ( COMPILE_GUARD "_COMPILING_ANIMATION_CONTROL" )
+SET ( CADKIT_LIBRARIES Usul QtTools )
+SET ( OTHER_LIBRARIES ${QT_LIBRARIES} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul QtTools )
-
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-	${QT_LIBRARIES}
-)
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

@@ -1,18 +1,18 @@
+
+#########################################################
+#
+#  CMakeLists for QtPasswordPrompt.
+#
+#########################################################
+
 project (QtPasswordPrompt)
 
-# Set the name.  Needed for the macros to set up plugin properties.
-SET(PLUGIN_NAME "QtPasswordPrompt")
-
-SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
-
-ADD_DEFINITIONS ("-D_COMPILING_PASSWORD_PROMPT")
+INCLUDE ( Cadkit.plugin )
 
 # Adds includes and libraries for QT.
 INCLUDE(${QT_USE_FILE})
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
   ${CADKIT_INC_DIR} 
   "${PROJECT_SOURCE_DIR}/../" 
@@ -21,6 +21,7 @@ INCLUDE_DIRECTORIES(
 
 set (SOURCES
   PasswordPromptComponent.cpp
+  PasswordPromptComponent.h
 )
 
 # These need to be moc'd.
@@ -31,17 +32,12 @@ SET(MOC_HDRS
 # Create the moc files.
 QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY ( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "QtPasswordPrompt" )
+SET ( SOURCES ${SOURCES} ${MOC_SRCS} )
+SET ( COMPILE_GUARD "_COMPILING_PASSWORD_PROMPT" )
+SET ( CADKIT_LIBRARIES Usul )
+SET ( OTHER_LIBRARIES ${QT_LIBRARIES} )
 
-
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul )
-
-
-# Link the Library	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-  ${QT_LIBRARIES}
-)
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

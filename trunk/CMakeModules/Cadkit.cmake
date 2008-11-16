@@ -6,15 +6,15 @@
 #######################################################
 
 # Option for tracing.
-OPTION ( USUL_TRACING "Should tracing be enabled?" OFF )
+OPTION ( USUL_USE_TRACING "Should tracing be enabled?" OFF )
 
 # We don't want RPath.
 SET ( CMAKE_SKIP_RPATH ON )
 
 # Turn on tracing if we are supposed to.
-IF ( USUL_TRACING )
-ADD_DEFINITIONS("-D_USUL_TRACE")
-ENDIF( USUL_TRACING )
+#IF ( USUL_TRACING )
+#ADD_DEFINITIONS("-D_USUL_TRACE")
+#ENDIF( USUL_TRACING )
 
 # Append d to the library name if the build is debug.
 SET(CMAKE_DEBUG_POSTFIX d)

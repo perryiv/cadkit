@@ -7,18 +7,13 @@
 
 project (PostGISLayerQt)
 
-SET(PLUGIN_NAME "PostGISLayerQt")
-
-SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
-
-set(COMPILE_GUARD "_COMPILING_POSTGIS_LAYER_QT")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+INCLUDE ( Cadkit.plugin)
 
 IF(MSVC)
 	ADD_DEFINITIONS("-DNOMINMAX")
 ENDIF(MSVC)
 
+INCLUDE ( ${QT_USE_FILE} )
 
 #########################################################
 #
@@ -83,18 +78,14 @@ SET ( UIS
 QT4_WRAP_UI( UIS_HDRS ${UIS} )
 
 # Make the moc files.
-QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
+QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
 
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "PostGISLayerQt" )
+SET ( SOURCES ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
+SET ( COMPILE_GUARD "_COMPILING_POSTGIS_LAYER_QT" )
+SET ( CADKIT_LIBRARIES Usul Minerva QtTools MinervaLayersGDAL )
+SET ( OTHER_LIBRARIES ${QT_LIBRARIES} ${Boost_LIBRARIES} )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES}  ${MOC_SRCS} ${UIS_HDRS} )
-
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaLayersGDAL )	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-	${QT_LIBRARIES}
-	${Boost_LIBRARIES}
-	)
-	
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

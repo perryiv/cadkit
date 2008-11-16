@@ -1,21 +1,19 @@
+
+#########################################################
+#
+#  CMakeLists for Modflow Model.
+#
+#########################################################
+
 project (ModflowModel)
 
-# Set the name.  Needed for the macros to set up plugin properties.
-SET(PLUGIN_NAME "ModflowModel")
-
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
-
-# Set the compile guard.
-set(COMPILE_GUARD "_COMPILING_MODFLOW_MODEL")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+INCLUDE ( Cadkit.plugin )
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} ${OSG_INC_DIR} ${GDAL_INCLUDE_DIR} )
 
 # Set the sources to compile.
-set (SOURCES
+SET (SOURCES
 ./Builders/Geometry.cpp
 ./ModflowDocument.cpp
 ./Model/Cell.cpp
@@ -37,22 +35,13 @@ set (SOURCES
 ./Attributes/Attribute.cpp
 ./Attributes/CellBoundary.cpp
 ./Attributes/Cylinders.cpp
-
-
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY(${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "ModflowModel" )
+SET ( COMPILE_GUARD "_COMPILING_MODFLOW_MODEL" )
+SET ( CADKIT_LIBRARIES Usul OsgTools XmlTree SerializeXML )
+SET ( OTHER_LIBRARIES ${OPENTHREADS_LIB} ${OSG_LIB} ${OSG_DB_LIB} ${GDAL_LIBRARY} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library with Cadkit Libraries.
-LINK_CADKIT( ${PLUGIN_NAME} Usul OsgTools XmlTree SerializeXML )
-
-# Link the Library	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} 
-  ${OPENTHREADS_LIB}
-  ${OSG_LIB}
-  ${OSG_DB_LIB}
-  ${GDAL_LIBRARY}
-)
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

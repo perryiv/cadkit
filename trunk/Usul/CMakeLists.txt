@@ -46,6 +46,7 @@ SOURCE_GROUP ( Cast        REGULAR_EXPRESSION ./Cast/* )
 SOURCE_GROUP ( CommandLine REGULAR_EXPRESSION ./CommandLine/* )
 SOURCE_GROUP ( Commands    REGULAR_EXPRESSION ./Commands/* )
 SOURCE_GROUP ( Components  REGULAR_EXPRESSION ./Components/* )
+SOURCE_GROUP ( Config      REGULAR_EXPRESSION ./Config/* )
 SOURCE_GROUP ( Console     REGULAR_EXPRESSION ./Console/* )
 SOURCE_GROUP ( Containers  REGULAR_EXPRESSION ./Containers/* )
 SOURCE_GROUP ( Convert     REGULAR_EXPRESSION ./Convert/* )
@@ -140,6 +141,7 @@ SET ( HEADERS
 ./Components/Factory.h
 ./Components/Loader.h
 ./Components/Manager.h
+./Config/Config.h
 ./Console/Feedback.h
 ./Containers/Array.h
 ./Containers/Array2D.h
@@ -716,3 +718,6 @@ ENDIF(WIN32)
 
 # Link the Library
 TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${SYSTEM_LIBRARIES} )
+
+# Create the config file.
+CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Config/config.h.in.cmake ${CMAKE_CURRENT_SOURCE_DIR}/Config/Config.h )

@@ -30,4 +30,22 @@
 #endif
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Definitions to customize plugin file names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef USUL_PLUGIN_EXTENSION_RELEASE
+#define USUL_PLUGIN_EXTENSION_RELEASE "plug"
+#endif // USUL_PLUGIN_EXTENSION_RELEASE
+
+#ifndef USUL_PLUGIN_EXTENSION_DEBUG
+#define USUL_PLUGIN_EXTENSION_DEBUG "plugd"
+#endif // USUL_PLUGIN_EXTENSION_DEBUG
+
+#ifndef USUL_PLUGIN_POSTFIX_DEBUG
+#define USUL_PLUGIN_POSTFIX_DEBUG ""
+#endif // USUL_PLUGIN_POSTFIX_DEBUG
+
 #endif // _USUL_DLL_CONFIG_H_

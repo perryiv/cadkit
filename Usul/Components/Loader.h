@@ -17,16 +17,17 @@
 #ifndef __USUL_COMPONENTS_LOADER_H__
 #define __USUL_COMPONENTS_LOADER_H__
 
-#include "Usul/Threads/Guard.h"
-#include "Usul/Threads/RecursiveMutex.h"
-
 #include "Usul/Components/Manager.h"
+#include "Usul/Config/Config.h"
 #include "Usul/DLL/Loader.h"
 #include "Usul/DLL/Library.h"
 #include "Usul/DLL/LibraryPool.h"
+#include "Usul/File/Path.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IProgressBar.h"
+#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Trace/Trace.h"
 
 #include <string>
@@ -63,7 +64,7 @@ public:
   Mutex &                   mutex() const { return _mutex; }
 
   /// Parse the file.
-  void                      parse( const std::string& filename );
+  void                      parse ( const std::string& filename );
 	
   /// Load all the plugins.
   void                      load ( Usul::Interfaces::IUnknown *caller = 0x0 );
@@ -82,9 +83,9 @@ protected:
     bool load;
   };
 
-  void                      _addPlugins ( Node &node );
-  void                      _addPlugin  ( Node &node );
-  void                      _addLibrary ( Node &node );
+  void                      _addPlugins ( const Node &node );
+  void                      _addPlugin  ( const Node &node );
+  void                      _addLibrary ( const Node &node );
   void                      _addPlugin  ( PluginInfo &plugin );
 	
 private:
@@ -135,7 +136,7 @@ inline Loader< Document >::~Loader()
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-inline void Loader< Document >::parse( const std::string& filename )
+inline void Loader< Document >::parse ( const std::string& filename )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -157,17 +158,16 @@ inline void Loader< Document >::parse( const std::string& filename )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-inline void Loader< Document >::_addPlugins ( Node &parent )
+inline void Loader< Document >::_addPlugins ( const Node &parent )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
   typedef typename Document::Children Children;
-  Children& children ( parent.children() );
+  const Children& children ( parent.children() );
 	
-  for ( typename Children::iterator iter = children.begin(); iter != children.end(); ++iter )
+  for ( typename Children::const_iterator iter = children.begin(); iter != children.end(); ++iter )
   {
-    typename Node::RefPtr node ( (*iter) );
+    typename Node::RefPtr node ( (*iter).get() );
     if ( "plugin" == node->name() )
     {
       this->_addPlugin ( *node );
@@ -176,6 +176,7 @@ inline void Loader< Document >::_addPlugins ( Node &parent )
       this->_addLibrary ( *node );
     else if ( "directory" == node->name() )
     {
+      Guard guard ( this->mutex() );
       _directory = node->value();
     }
   }
@@ -189,17 +190,16 @@ inline void Loader< Document >::_addPlugins ( Node &parent )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-inline void Loader< Document >::_addPlugin ( Node &node )
+inline void Loader< Document >::_addPlugin ( const Node &node )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
   typedef typename Document::Attributes Attributes;
-  Attributes& attributes ( node.attributes() );
+  const Attributes& attributes ( node.attributes() );
 	
   PluginInfo plugin;
 
-  for ( typename Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  for ( typename Attributes::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "file" == iter->first )
     {
@@ -226,15 +226,14 @@ inline void Loader< Document >::_addPlugin ( Node &node )
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Document >
-inline void Loader< Document >::_addLibrary ( Node &node )
+inline void Loader< Document >::_addLibrary ( const Node &node )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
   typedef typename Document::Attributes Attributes;
-  Attributes& attributes ( node.attributes() );
+  const Attributes& attributes ( node.attributes() );
 
-  for ( typename Attributes::iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
+  for ( typename Attributes::const_iterator iter = attributes.begin(); iter != attributes.end(); ++iter )
   {
     if ( "file" == iter->first )
     {
@@ -254,12 +253,17 @@ template < class Document >
 inline void Loader< Document >::_addPlugin ( PluginInfo &plugin )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+
+  // Strip any extension provided in the xml file.  This is to support legacy plugin files.
+  const std::string name ( Usul::File::base ( plugin.name ) );
 
 #if _DEBUG
-  plugin.name += 'd';
+  plugin.name = name + USUL_PLUGIN_POSTFIX_DEBUG + "." + USUL_PLUGIN_EXTENSION_DEBUG;
+#else
+  plugin.name = name + "." + USUL_PLUGIN_EXTENSION_RELEASE;
 #endif
-
+  
+  Guard guard ( this->mutex() );
   _plugins.push_back ( plugin );
 }
 
@@ -274,7 +278,6 @@ template < class Document >
 inline void Loader< Document >::addPlugin ( const std::string &file )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
   PluginInfo plugin;
   plugin.name = file;
@@ -294,8 +297,8 @@ template < class Document >
 inline void Loader< Document >::addLibrary ( const std::string &file )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
 
+  // Filename for the current platform.
   std::string name ( file );
 
   // Prepend 'lib' if not on windows.
@@ -303,7 +306,7 @@ inline void Loader< Document >::addLibrary ( const std::string &file )
   name = "lib" + name;
 #endif
   
-  // Add a d if building bebug.
+  // Add a d if building debug.
 #if _DEBUG
   name += 'd';
 #endif
@@ -317,6 +320,7 @@ inline void Loader< Document >::addLibrary ( const std::string &file )
   name += ".so";
 #endif
 
+  Guard guard ( this->mutex() );
   _libraries.push_back ( name );
 }
 

@@ -1,19 +1,15 @@
-project (MinervaModel)
 
-SET(PLUGIN_NAME "MinervaModel")
+#########################################################
+#
+#  CMakeLists for MinervaModel.
+#
+#########################################################
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+PROJECT (MinervaModel)
 
-# Find dependencies
-INCLUDE(${CMakeModules}/FindOSG.cmake)
-
-set(COMPILE_GUARD "_COMPILING_MINERVA_MODEL")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
-
+INCLUDE ( Cadkit.plugin )
 
 # ------------ Set Include Folders ----------------------
-
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
 					 ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
@@ -22,17 +18,18 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
-set (SOURCES
-./MinervaComponent.cpp
-./MinervaFactory.cpp
+# Set the sources to compile.
+SET ( SOURCES
+	./MinervaComponent.h
+	./MinervaComponent.cpp
+	./MinervaFactory.cpp
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "MinervaModel" )
+SET ( COMPILE_GUARD "_COMPILING_MINERVA_MODEL" )
+SET ( CADKIT_LIBRARIES Usul MinervaDocument )
+SET ( OTHER_LIBRARIES ${Boost_LIBRARIES}  )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul MinervaDocument )
-
-TARGET_LINK_LIBRARIES ( ${PLUGIN_NAME} ${Boost_LIBRARIES} )
+# Add the plugin.
+CADKIT_ADD_PLUGIN( ${PLUGIN_NAME} )

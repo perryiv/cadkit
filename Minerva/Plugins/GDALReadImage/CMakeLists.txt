@@ -1,12 +1,13 @@
-project (GDALReadImage)
 
-SET(PLUGIN_NAME "GDALReadImage")
+#########################################################
+#
+#  CMakeLists for GDALReadImage.
+#
+#########################################################
 
-SET(CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+PROJECT (GDALReadImage)
 
-set(COMPILE_GUARD "_COMPILING_GDAL_READ_IMAGE")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+INCLUDE ( Cadkit.plugin )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
@@ -16,20 +17,16 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
                      ${OSG_INC_DIR}
                      ${GDAL_INCLUDE_DIR} )
 
-set (SOURCES
-./GDALReadImageComponent.cpp
+SET (SOURCES
+	./GDALReadImageComponent.cpp
+	./GDALReadImageComponent.h
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "GDALReadImage" )
+SET ( COMPILE_GUARD "_COMPILING_GDAL_READ_IMAGE" )
+SET ( CADKIT_LIBRARIES Usul )
+SET ( OTHER_LIBRARIES ${GDAL_LIBRARY} ${OSG_LIB} )
 
-CADKIT_PLUGIN ( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul )	
-
-
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-  ${GDAL_LIBRARY}
-	${OSG_LIB}
-)
+# Add the plugin.
+CADKIT_ADD_PLUGIN( ${PLUGIN_NAME} )

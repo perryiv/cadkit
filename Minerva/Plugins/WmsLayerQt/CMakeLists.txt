@@ -1,18 +1,18 @@
-project (WmsLayerQt)
 
-SET(PLUGIN_NAME "WmsLayerQt")
+#########################################################
+#
+#  CMakeLists for WmsLayerQt.
+#
+#########################################################
 
-SET( CMakeModules "${CADKIT_INC_DIR}/CMakeModules" )
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+PROJECT ( WmsLayerQt )
 
-SET(COMPILE_GUARD "_COMPILING_WMS_LAYER_QT")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+INCLUDE ( Cadkit.plugin )
 
-# the next line sets up include and link directories and defines some variables that we will use.
-# you can modify the behavior by setting some variables, e.g.
+# Add include paths and librares for QT.
 INCLUDE(${QT_USE_FILE})
 
-
+# Set the link directories.
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # ------------ Set Include Folders ----------------------
@@ -22,12 +22,13 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
                      ${OSG_INC_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
+# Set the sources.
 SET (SOURCES
   EditWmsLayerWidget.cpp
   WmsLayerQtComponent.cpp
 )
 
-
+# Moc these headers.
 SET(MOC_HDRS
   EditWmsLayerWidget.h
 )
@@ -40,16 +41,14 @@ SET ( UIS
 QT4_WRAP_UI( UIS_HDRS ${UIS} )
 
 # Make the moc files.
-QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
+QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "WmsLayerQt" )
+SET ( SOURCES ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
+SET ( COMPILE_GUARD "_COMPILING_WMS_LAYER_QT" )
+SET ( CADKIT_LIBRARIES Usul Minerva MinervaQtWidgets )
+SET ( OTHER_LIBRARIES ${Boost_LIBRARIES} ${QT_LIBRARIES} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul Minerva MinervaQtWidgets )
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME}
-	${Boost_LIBRARIES}
-	${QT_LIBRARIES}
-	)
+# Add the plugin.
+CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

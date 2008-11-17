@@ -15,12 +15,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OracleWrap/Database.h"
+#include "OracleWrap/Environment.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/System/LastError.h"
 
-#include "ocilib.h"
+#include "occi.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -31,134 +35,25 @@ using namespace OracleWrap;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the error message.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace OracleWrap
-{
-  namespace Detail
-  {
-    std::string getErrorMessage ( OCI_Error *error )
-    {
-      std::ostringstream out;
-
-      const char *text ( ::OCI_ErrorGetString ( error ) );
-      if ( 0x0 != text )
-      {
-        out << "Message: " << text;
-      }
-
-      if ( OCI_ERR_ORACLE == ::OCI_ErrorGetType ( error ) )
-      {
-        const char *sql ( ::OCI_GetSql ( ::OCI_ErrorGetStatement ( error ) ) );
-        if ( 0x0 != sql )
-        {
-          out << ", SQL: " << sql;
-        }
-      }
-
-      return out.str();
-    } 
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the last error message.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace OracleWrap
-{
-  namespace Detail
-  {
-    std::string getLastError()
-    {
-      return OracleWrap::Detail::getErrorMessage ( ::OCI_GetLastError() );
-    } 
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Error handler function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace OracleWrap
-{
-  namespace Detail
-  {
-    void printError ( OCI_Error *error )
-    {
-      std::cout << OracleWrap::Detail::getErrorMessage ( error ) << std::endl;
-    } 
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Initialize and clean up the library.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace OracleWrap
-{
-  namespace Detail
-  {
-    struct Life
-    {
-      Life() : _isInitialized ( false )
-      {
-        _isInitialized = ( TRUE == ::OCI_Initialize ( &OracleWrap::Detail::printError, 0x0, OCI_ENV_CONTEXT ) );
-      }
-      ~Life()
-      {
-        if ( true == _isInitialized )
-        {
-          ::OCI_Cleanup();
-        }
-      }
-      bool isInitialized() const
-      {
-        return _isInitialized;
-      }
-    private:
-      bool _isInitialized;
-    } ociLib;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Database::Database ( const std::string &database, const std::string &user, const std::string &password ) : BaseClass(),
-  _connection ( 0x0 ),
-  _statement ( 0x0 )
+  _connection ( 0x0 )
 {
-  // Check library state.
-  if ( false == Detail::ociLib.isInitialized() )
-    throw std::runtime_error ( "Error 3788882072: OCI wrapper not initialized properly" );
-
-  // Try to connect.
-  _connection = ::OCI_ConnectionCreate ( database.c_str(), user.c_str(), password.c_str(), OCI_SESSION_DEFAULT );
+  try
+  {
+    _connection = Environment::instance().env()->createConnection ( user, password, database );
+  }
+  catch ( const oracle::occi::SQLException &e )
+  {
+    throw std::runtime_error ( Usul::Strings::format ( "Error 5737838080: Failed to create connection. ", ( ( 0x0 != e.what() ) ? e.what() : "" ) ) );
+  }
   if ( 0x0 == _connection )
-    throw std::runtime_error ( Usul::Strings::format 
-      ( "Error 1602442055: Failed to connect to database. ", OracleWrap::Detail::getLastError() ) );
-
-  // Create the statement object.
-  _statement = ::OCI_StatementCreate ( _connection );
-  if ( 0x0 == _statement )
-    throw std::runtime_error ( Usul::Strings::format 
-      ( "Error 3170960199: Failed to create statement. ", OracleWrap::Detail::getLastError() ) );
+  {
+    throw std::runtime_error ( "Error 2573165794: Failed to create connection" );
+  }
 }
 
 
@@ -170,7 +65,7 @@ Database::Database ( const std::string &database, const std::string &user, const
 
 Database::~Database()
 {
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Database::_destroy ), "1823607323" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Database::_destroy ), "9116646720" );
 }
 
 
@@ -182,22 +77,16 @@ Database::~Database()
 
 void Database::_destroy()
 {
-  if ( 0x0 != _statement )
-  {
-    if ( FALSE == ::OCI_StatementFree ( _statement ) )
-    {
-      std::cout << "Error 9523651570: Failed to delete statement. " << OracleWrap::Detail::getLastError() << std::endl;
-    }
-    _statement = 0x0;
-  }
-
   if ( 0x0 != _connection )
   {
-    if ( FALSE == ::OCI_ConnectionFree ( _connection ) )
+    try
     {
-      std::cout << "Error 2330026500: Failed to free connection. " << OracleWrap::Detail::getLastError() << std::endl;
+      Environment::instance().env()->terminateConnection ( _connection );
     }
-    _connection = 0x0;
+    catch ( const oracle::occi::SQLException &e )
+    {
+      std::cout << "Error 1403031671: Failed to terminate connection. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
+    }
   }
 }
 
@@ -210,22 +99,111 @@ void Database::_destroy()
 
 OracleWrap::Result::RefPtr Database::execute ( const std::string &sql )
 {
+  try
+  {
+    return this->_execute ( sql );
+  }
+  catch ( const oracle::occi::SQLException &e )
+  {
+    throw std::runtime_error ( Usul::Strings::format 
+      ( "Error 3257568799: Failed to execute statement. SQL: ", sql, ". ",
+        ( ( 0x0 != e.what() ) ? e.what() : "" ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the string a select statement?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  bool isSelectStatement ( const std::string &sql )
+  {
+    const std::string s ( Usul::Strings::lowerCase ( sql ) );
+    if ( s.size() >= 6 )
+    {
+      return ( ( 's' == s[0] ) && 
+               ( 'e' == s[1] ) && 
+               ( 'l' == s[2] ) && 
+               ( 'e' == s[3] ) && 
+               ( 'c' == s[4] ) && 
+               ( 't' == s[5] ) );
+    }
+    return false;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Terminate the statement.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void terminateStatement ( oracle::occi::Connection *c, oracle::occi::Statement *s )
+  {
+    if ( 0x0 != c )
+    {
+      if ( 0x0 != s )
+      {
+        c->terminateStatement ( s );
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute the given SQL string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OracleWrap::Result::RefPtr Database::_execute ( const std::string &sql )
+{
   Guard guard ( this );
 
   // Empty string just means no result.
   if ( true == sql.empty() )
-    return Result::RefPtr ( new Result ( 0x0, this->mutex() ) );
+    return Result::RefPtr ( new Result ( 0x0, 0x0, 0x0, this->mutex() ) );
 
   // Check state.
-  if ( 0x0 == _statement )
-    throw std::runtime_error ( "Error 4136575298: Null statement pointer" );
+  if ( 0x0 == _connection )
+    throw std::runtime_error ( "Error 3741173076: Null connection pointer" );
+
+  // Create the statement.
+  oracle::occi::Statement *statement ( _connection->createStatement ( sql ) );
+  if ( 0x0 == statement )
+    throw std::runtime_error ( Usul::Strings::format 
+      ( "Error 3577957947: Failed to create statement. SQL: ", sql ) );
+
+  // Initialize the result set.
+  oracle::occi::ResultSet *resultSet ( 0x0 );
 
   // Execute the statement.
-  if ( FALSE == ::OCI_ExecuteStmt ( _statement, sql.c_str() ) )
-    throw std::runtime_error ( Usul::Strings::format 
-    ( "Error 2396100199: Statement failed. ", OracleWrap::Detail::getLastError() ) );
+  if ( true == Helper::isSelectStatement ( sql ) )
+  {
+    resultSet = statement->executeQuery();
+  }
+  else
+  {
+    statement->executeUpdate();
+  }
 
   // Return the result. We pass the mutex so that no further executions 
   // can happen until the result is deleted.
-  return Result::RefPtr ( new Result ( _statement, this->mutex() ) );
+  return Result::RefPtr ( new Result ( _connection, statement, resultSet, this->mutex() ) );
+
+#if 0
+  -- Rename Database to Connection.
+  -- Pass "Connection::RefPtr ( this )", in addition to the statement and result set, to the Result, which will hang on to it.
+  -- No need to pass the mutex. Once the result is acquired and returned the same or any other thread can enter this function.
+  -- Result::~Result can destroy the result-set and ask the connection to destroy the statement.
+  -- Trap Windows structured exceptions here and re-throw as regular exceptions.
+#endif
 }

@@ -24,8 +24,7 @@
 
 #include <string>
 
-struct OCI_Connection;
-struct OCI_Statement;
+namespace oracle { namespace occi { class Connection; } }
 
 
 namespace OracleWrap {
@@ -52,6 +51,8 @@ protected:
   // Destructor
   virtual ~Database();
 
+  Result::RefPtr          _execute ( const std::string & );
+
 private:
 
   // Can not copy or assign.
@@ -60,8 +61,7 @@ private:
 
   void                    _destroy();
 
-  OCI_Connection *_connection;
-  OCI_Statement *_statement;
+  oracle::occi::Connection *_connection;
 };
 
 

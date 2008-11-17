@@ -20,13 +20,11 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
 
-#include "ocilib.h"
+#include "occi.h"
 
 #include <stdexcept>
 
 using namespace OracleWrap;
-
-namespace OracleWrap { namespace Detail { std::string getLastError(); } }
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,22 +33,15 @@ namespace OracleWrap { namespace Detail { std::string getLastError(); } }
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Result::Result ( OCI_Statement *statement, Mutex &mutex ) : BaseClass(),
+Result::Result ( oracle::occi::Connection *connection, oracle::occi::Statement *statement, oracle::occi::ResultSet *result, Mutex &mutex ) : BaseClass(),
+  _connection ( connection ),
   _statement ( statement ),
-  _result ( 0x0 ),
-  _mutex ( mutex )
+  _result ( result ),
+  _mutex ( mutex ),
+  _currentColumn ( 0 )
 {
   // Lock the mutex until we are destroyed.
   _mutex.lock();
-
-  // Get the result set. Handle null statements.
-  if ( 0x0 != _statement )
-  {
-    _result = ::OCI_GetResultset ( _statement );
-    if ( 0x0 == _result )
-      throw std::runtime_error ( Usul::Strings::format 
-        ( "Error 1819950264: Failed to get result set. ", OracleWrap::Detail::getLastError() ) );
-  }
 }
 
 
@@ -74,17 +65,33 @@ Result::~Result()
 
 void Result::_destroy()
 {
-  if ( 0x0 != _result )
+  if ( 0x0 != _connection )
   {
     if ( 0x0 != _statement )
     {
-      if ( FALSE == ::OCI_ReleaseResultsets ( _statement ) )
+      if ( 0x0 != _result )
       {
-        std::cout << "Error 5436080370: Failed to release result sets. " << OracleWrap::Detail::getLastError() << std::endl;
+        try
+        {
+          _statement->closeResultSet ( _result );
+        }
+        catch ( const oracle::occi::SQLException &e )
+        {
+          std::cout << "Error 5436080370: Failed to close result set. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
+        }
+        _result = 0x0;
+      }
+
+      try
+      {
+        _connection->terminateStatement ( _statement );
+      }
+      catch ( const oracle::occi::SQLException &e )
+      {
+        std::cout << "Error 3433775247: Failed to terminate statement. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
       }
       _statement = 0x0;
     }
-    _result = 0x0;
   }
   _mutex.unlock();
 }
@@ -92,13 +99,23 @@ void Result::_destroy()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Does the result have more rows?
+//  Prepare the next row for data retrieval. 
+//  Returns false if there are no more rows.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Result::hasMoreRows() const
+bool Result::prepareNextRow()
 {
-  return ( ( 0x0 == _result ) ? false : ( TRUE == ::OCI_FetchNext ( _result ) ) );
+  _currentColumn = 1;
+
+  if ( 0x0 == _result )
+    return false;
+
+  oracle::occi::ResultSet::Status status ( _result->status() );
+  if ( oracle::occi::ResultSet::END_OF_FETCH == status )
+    return false;
+
+  return ( ( 0x0 == _result ) ? false : ( oracle::occi::ResultSet::END_OF_FETCH != _result->next() ) );
 }
 
 
@@ -110,5 +127,71 @@ bool Result::hasMoreRows() const
 
 unsigned int Result::numColumns() const
 {
-  return ( ( 0x0 == _result ) ? 0 : ( ::OCI_GetColumnCount ( _result ) ) );
+  if ( 0x0 == _result )
+    return 0;
+
+  oracle::occi::ResultSet::Status status ( _result->status() );
+  if ( oracle::occi::ResultSet::END_OF_FETCH == status )
+    return 0;
+
+  std::vector<oracle::occi::MetaData> meta = _result->getColumnListMetaData();
+  return ( ( true == meta.empty() ) ? 0 : meta.size() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to get the value.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Function, class OutputType > 
+  void getValue ( oracle::occi::ResultSet *result, Function fun, OutputType &value, unsigned int &column )
+  {
+    if ( 0x0 == result )
+      throw std::runtime_error ( "Error 1644654670: Null result pointer" );
+
+    value = ( ( *result ).*fun ) ( column++ );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( std::string &value )
+{
+  Helper::getValue ( _result, &oracle::occi::ResultSet::getString, value, _currentColumn );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( double &value )
+{
+  Helper::getValue ( _result, &oracle::occi::ResultSet::getDouble, value, _currentColumn );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( unsigned int &value )
+{
+  Helper::getValue ( _result, &oracle::occi::ResultSet::getUInt, value, _currentColumn );
+  return *this;
 }

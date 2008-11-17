@@ -26,10 +26,9 @@
 
 #include <string>
 
-namespace OracleWrap { class Database; }
+namespace oracle { namespace occi { class Connection; class ResultSet; class Statement; } }
 
-struct OCI_Resultset;
-struct OCI_Statement;
+namespace OracleWrap { class Database; }
 
 
 namespace OracleWrap {
@@ -47,8 +46,9 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Result );
 
-  // Does the result have more rows?
-  bool                    hasMoreRows() const;
+  // Prepare the next row for data retrieval. 
+  // Returns false if there are no more rows.
+  bool                    prepareNextRow();
 
   // Get the number of columns.
   unsigned int            numColumns() const;
@@ -56,14 +56,14 @@ public:
   // Input operator for copying the results.
   Result &                operator >> ( std::string & );
   Result &                operator >> ( double & );
-  Result &                operator >> ( unsigned long & );
+  Result &                operator >> ( unsigned int & );
 
 protected:
 
   friend class Database;
 
   // Constructor
-  Result ( OCI_Statement *, Mutex & );
+  Result ( oracle::occi::Connection *, oracle::occi::Statement *, oracle::occi::ResultSet *, Mutex & );
 
   // Destructor
   virtual ~Result();
@@ -79,9 +79,11 @@ private:
 
   void                    _destroy();
 
-  OCI_Statement *_statement;
-  OCI_Resultset *_result;
+  oracle::occi::Connection *_connection;
+  oracle::occi::Statement *_statement;
+  oracle::occi::ResultSet *_result;
   Mutex &_mutex;
+  unsigned int _currentColumn;
 };
 
 

@@ -47,8 +47,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../;../../../;$(OCILIB_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP;OCI_CHARSET_ANSI;OCI_API= __stdcall;OCI_IMPORT_RUNTIME"
+				AdditionalIncludeDirectories="../;../../../;&quot;$(ORACLE_OCI_INC_DIR)&quot;"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="$(OCILIB_LIB_FILE_DEBUG)"
+				AdditionalDependencies="$(ORACLE_OCCI_LIB_FILE_DEBUG)"
 				OutputFile="$(CADKIT_BIN_DIR)/OracleWrapd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -146,8 +146,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../;../../../;$(OCILIB_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP;OCI_CHARSET_ANSI;OCI_API= __stdcall;OCI_IMPORT_RUNTIME"
+				AdditionalIncludeDirectories="../;../../../;&quot;$(ORACLE_OCI_INC_DIR)&quot;"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP"
 				StringPooling="true"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="$(OCILIB_LIB_FILE_RELEASE)"
+				AdditionalDependencies="$(ORACLE_OCCI_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/OracleWrap.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -223,6 +223,14 @@
 			</File>
 			<File
 				RelativePath=".\Database.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Environment.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Environment.h"
 				>
 			</File>
 			<File

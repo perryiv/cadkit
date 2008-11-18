@@ -16,11 +16,6 @@ IF(WIN32)
 	ADD_DEFINITIONS ("-D_HDF5USEDLL_")
 ENDIF(WIN32)
 
-FIND_PATH(HDF_INCLUDE_DIR hdf5.h )
-
-# Look for the library.
-FIND_LIBRARY(HDF_LIBRARY NAMES hdf5 )
-
 
 #########################################################
 #

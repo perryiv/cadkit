@@ -98,6 +98,15 @@ INCLUDE( FindOSSIM )
 
 #########################################################
 #
+#  Find HDF 5.
+#
+#########################################################
+
+INCLUDE( FindHDF )
+
+
+#########################################################
+#
 #  Are these variables needed still?
 #
 #########################################################
@@ -144,10 +153,14 @@ ${PROJECT_SOURCE_DIR}/Plugins/PathAnimation
 ${PROJECT_SOURCE_DIR}/Plugins/ModelPresentation/ModelPresentationLib
 ${PROJECT_SOURCE_DIR}/Plugins/ModelPresentation/ModelPresentation
 ${PROJECT_SOURCE_DIR}/../Experimental/WRF/WrfModel
-${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel
 ${CADKIT_INC_DIR}/Helios/Plugins/MeasureTool
 ${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry
 )
+
+# Build these projects if we found HDF
+IF ( HDF_FOUND )
+	ADD_SUBDIRECTORY ( ${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel )
+ENDIF ( HDF_FOUND )
 
 # Build these projects if we found GDAL.
 IF(GDAL_FOUND)

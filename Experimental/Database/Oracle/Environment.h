@@ -22,7 +22,9 @@
 namespace oracle { namespace occi { class Environment; } }
 
 
-namespace OracleWrap {
+namespace CadKit {
+namespace Databases {
+namespace Oracle {
 
 
 class ORACLE_WRAP_EXPORT Environment
@@ -52,7 +54,9 @@ private:
 };
 
 
-} // namespace OracleWrap
+} // namespace Oracle
+} // namespace Databases
+} // namespace CadKit
 
 
 #endif // _ORACLE_LITE_WRAP_ENVIRONMENT_H_

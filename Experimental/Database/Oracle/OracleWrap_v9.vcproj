@@ -49,7 +49,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="../;../../../;&quot;$(ORACLE_OCI_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP"
-				ExceptionHandling="1"
+				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				DisableLanguageExtensions="false"
@@ -149,7 +149,7 @@
 				AdditionalIncludeDirectories="../;../../../;&quot;$(ORACLE_OCI_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP"
 				StringPooling="true"
-				ExceptionHandling="1"
+				ExceptionHandling="2"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				RuntimeTypeInfo="true"
@@ -218,11 +218,11 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\Database.cpp"
+				RelativePath=".\Connection.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Database.h"
+				RelativePath=".\Connection.h"
 				>
 			</File>
 			<File

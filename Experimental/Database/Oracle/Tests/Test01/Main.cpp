@@ -14,16 +14,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OracleWrap/Database.h"
+#include "OracleWrap/Connection.h"
+#include "OracleWrap/Result.h"
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/LastError.h"
-
-#ifdef _MSC_VER
-#include "windows.h"
-#endif
 
 #include <fstream>
 #include <iostream>
@@ -38,7 +35,7 @@ namespace Helper {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void getTestData ( std::string &database, std::string &user, std::string &password, std::string &sql )
+void getTestData ( std::string &database, std::string &user, std::string &password, unsigned int &numRowsToPreFetch, std::string &sql )
 {
   Usul::CommandLine::Arguments::Args args ( Usul::CommandLine::Arguments::instance().args() );
   if ( args.size() < 2 )
@@ -49,7 +46,7 @@ void getTestData ( std::string &database, std::string &user, std::string &passwo
   if ( false == in.is_open() )
     throw std::runtime_error ( Usul::Strings::format ( __FILE__, ", ", __LINE__ ) );
 
-  in >> database >> user >> password;
+  in >> database >> user >> password >> numRowsToPreFetch;
 
   std::vector<char> line ( 1024, '\0' );
   in.getline ( &line[0], line.size() - 1 ); // Gets us to the beginning of the next line.
@@ -71,13 +68,16 @@ void run()
 
   // Get information.
   std::string database, user, password, sql;
-  Helper::getTestData ( database, user, password, sql );
+  unsigned int numRowsToPreFetch ( 100 );
+  Helper::getTestData ( database, user, password, numRowsToPreFetch, sql );
 
   // Make a database connection.
-  OracleWrap::Database::RefPtr db ( new OracleWrap::Database ( database, user, password ) );
+  typedef CadKit::Databases::Oracle::Connection Connection;
+  Connection::RefPtr connection ( new Connection ( database, user, password ) );
 
   // Make a query.
-  OracleWrap::Result::RefPtr result ( db->execute ( sql ) );
+  typedef CadKit::Databases::Oracle::Result Result;
+  Result::RefPtr result ( connection->execute ( sql, numRowsToPreFetch ) );
 
   // Get the number of columns.
   const unsigned int numColumns ( result->numColumns() );
@@ -96,25 +96,6 @@ void run()
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper function to handle Windows structured exception.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef _MSC_VER
-
-int handleStructuredException ( DWORD code )
-{
-  const std::string message ( Usul::System::LastError::message ( code ) );
-  std::cout << Usul::Strings::format ( 
-    "Error 2917508413: structured exception ", code, " generated. ", 
-    ( ( false == message.empty() ) ? message : "" ) ) << std::endl;
-  return EXCEPTION_EXECUTE_HANDLER;
-}
-
-#endif
-
 } // namespace Helper
 
 
@@ -127,17 +108,6 @@ int handleStructuredException ( DWORD code )
 int main ( int argc, char **argv )
 {
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
-#ifdef _MSC_VER
-  __try 
-  {
-#endif
   Usul::Functions::safeCall ( &Helper::run, "3715029360" );
-#ifdef _MSC_VER
-  }
-  __except ( Helper::handleStructuredException ( ::GetExceptionCode() ) )
-  {
-    return 1;
-  }
-#endif
   return 0;
 }

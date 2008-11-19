@@ -1,7 +1,8 @@
 
 # ------------ Ossim variables ----------------------
  set(OSSIM_LIB_DIR "$ENV{OSSIM_LIB_DIR}")
- set(OSSIM_INC_DIR "$ENV{OSSIM_INC_DIR}")
+
+FIND_PATH (OSSIM_INC_DIR ossim/base/ossimCommon.h "$ENV{OSSIM_INC_DIR}")
 
 
 # ------------ Find Ossim Library --------------------
@@ -9,8 +10,7 @@ FIND_LIBRARY(OSSIM_LIB ossim ${OSSIM_LIB_DIR} )
 
 IF (OSSIM_INC_DIR AND OSSIM_LIB)
   SET (OSSIM_FOUND TRUE)
-  SET (OSSIM_LIBRARIES "${GDAL_LIBRARY}")
-  LINK_DIRECTORIES(${GDAL_ROOT_DIR}/lib)
+  SET (OSSIM_LIBRARIES "${OSSIM_LIB}")
 ENDIF (OSSIM_INC_DIR AND OSSIM_LIB)
  
 IF (OSSIM_FOUND)

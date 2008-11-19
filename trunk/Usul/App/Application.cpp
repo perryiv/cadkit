@@ -14,6 +14,7 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Strings/Trim.h"
 #include "Usul/System/Environment.h"
 
 #include <algorithm>
@@ -96,6 +97,21 @@ const std::string Application::iconDirectory() const
 
   // If we get to here then figure out the directory.
   dir = Usul::CommandLine::Arguments::instance().directory();
+
+  // Account for the per configuration sub-directory that CMake uses.
+#ifdef CMAKE_INTDIR
+
+  const std::string cmakeIntDir ( Usul::Strings::lowerCase ( CMAKE_INTDIR ) );
+  const std::string::size_type position ( dir.find ( cmakeIntDir ) );
+
+  if ( std::string::npos != position )
+    dir.erase ( position );
+
+  // Trim any trailing slashes.
+  Usul::Strings::trimRight ( dir, '/' );
+  Usul::Strings::trimRight ( dir, '\\' );
+
+#endif
 
 #ifdef __APPLE__
   std::string path ( dir + "/../Resources/icons/" );

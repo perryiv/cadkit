@@ -77,7 +77,12 @@ FILE(GLOB JpgFiles "${CMAKE_CURRENT_SOURCE_DIR}/../Images/*.jpg" )
 
 SET ( IconFiles ${PngFiles} ${JpgFiles} )
 
-# Copy the icons.
+# Install the icons.
+INSTALL(
+    FILES ${IconFiles}
+    DESTINATION bin/icons
+)
+
 MAKE_DIRECTORY( ${IconDir} )
 FOREACH(FILE ${IconFiles})
 	CADKIT_COPY( ${TARGET_NAME} ${FILE}  ${IconDir} )

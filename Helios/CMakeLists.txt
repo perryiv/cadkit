@@ -159,7 +159,7 @@ ${CADKIT_INC_DIR}/Helios/Plugins/CenterGeometry
 
 # Build these projects if we found HDF
 IF ( HDF_FOUND )
-	ADD_SUBDIRECTORY ( ${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel )
+	SUBDIRS ( ${PROJECT_SOURCE_DIR}/../Experimental/Flash/FlashModel )
 ENDIF ( HDF_FOUND )
 
 # Build these projects if we found GDAL.
@@ -176,7 +176,9 @@ IF(BUILD_MINERVA)
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
 			  ${CADKIT_INC_DIR}/Minerva/DataSources/PG
 			  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
+			  ${CADKIT_INC_DIR}/Minerva/Layers/GeoNames
 			  ${CADKIT_INC_DIR}/Minerva/Layers/GeoRSS
+			  ${CADKIT_INC_DIR}/Minerva/Layers/OSM
 			  ${CADKIT_INC_DIR}/Minerva/Document
 			  ${CADKIT_INC_DIR}/Minerva/Plugins/Document )
 	
@@ -200,6 +202,7 @@ IF(BUILD_MINERVA)
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
+				 ${CADKIT_INC_DIR}/Minerva/Plugins/QtCustomGeometry
 				 ${CADKIT_INC_DIR}/Minerva/Application )
 	ENDIF(QT_FOUND AND BUILD_HELIOS_QT)
 	

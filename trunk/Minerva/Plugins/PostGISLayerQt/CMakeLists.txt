@@ -21,8 +21,8 @@ INCLUDE ( ${QT_USE_FILE} )
 #
 #########################################################
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
-
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} $ENV{PQXX_LIB_DIR} )
+	
 
 #########################################################
 #

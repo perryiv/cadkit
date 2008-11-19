@@ -1,11 +1,11 @@
 
 #########################################################
 #
-#  CMakeLists for Minerva Kml Layer.
+#  CMakeLists for Minerva GeoNames.
 #
 #########################################################
 
-PROJECT(MinervaKml)
+PROJECT(MinervaGeoNames)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
@@ -13,20 +13,8 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# try to find the header
-FIND_PATH(COLLADA_INCLUDE_DIR dae.h
-  $ENV{COLLADA_INC_DIR}
-)
-
-# Find the library
-FIND_LIBRARY(COLLADA_LIBRARY
-	NAMES collada14dom
-	PATHS
-    $ENV{COLLADA_LIB_DIR}
-	DOC "The name of the COLLADA library"
-)
-
-FIND_PACKAGE( ZLib )
+# ------------ Find curl Library ----------------------
+INCLUDE ( FindCURL )
 
 #########################################################
 #
@@ -47,45 +35,30 @@ INCLUDE_DIRECTORIES(
 			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     ${OSG_INC_DIR} 
-			 ${COLLADA_INCLUDE_DIR} 
-			 ${COLLADA_INCLUDE_DIR}/1.4
+			 ${CURL_INCLUDE_DIR}
 		     )
 
 
 # List the headers
 SET ( HEADERS
-	./Factory.h
-	./KmlLayer.h
-	./Link.h
-	./LoadModel.h
-	./NetworkLink.h
-	./ModelPostProcess.h
+	./City.h
+	./CityLayer.h
+	./Export.h
 )
 			 
 # List the Sources
 SET (SOURCES
-	./Factory.cpp
-	./KmlLayer.cpp
-	./Link.cpp
-	./LoadModel.cpp
-	./NetworkLink.cpp
-	./ModelPostProcess.cpp
+	./City.cpp
+	./CityLayer.cpp
 )
 
-# Add header, cpp and include directory.
-IF(ZLIB_FOUND)
-	SET ( HEADERS ${HEADERS} ZipFile.h )
-	SET ( SOURCES ${SOURCES} ZipFile.cpp )
-	
-	INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR}/contrib )
-	
-	IF(MSVC)
-		ADD_DEFINITIONS ( "-DZLIB_WINAPI" )
-	ENDIF(MSVC)
-	
-ENDIF(ZLIB_FOUND)
+ADD_DEFINITIONS ("-D_COMPILING_MINERVA_GEO_NAMES")
 
-SET ( TARGET_NAME MinervaKml )
+IF(MSVC)
+	ADD_DEFINITIONS("-DCURL_STATICLIB")
+ENDIF(MSVC)
+
+SET ( TARGET_NAME MinervaGeoNames )
 
 # Create a Shared Library
 ADD_LIBRARY( ${TARGET_NAME} SHARED ${HEADERS} ${SOURCES} )
@@ -97,11 +70,11 @@ TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${Boost_LIBRARIES}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
-	${OSG_DB_LIB}
-	${COLLADA_LIBRARY}
+	${OSG_TEXT_LIB}
+	${CURL_LIBRARY}
 )
 
-# Link to zlib.
-IF(ZLIB_FOUND)
-	TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${ZLIB_LIBRARIES} )
-ENDIF(ZLIB_FOUND)
+# If we are building on Windows, link to these libraries.
+IF(WIN32)
+	TARGET_LINK_LIBRARIES( ${TARGET_NAME} Ws2_32 wldap32 )
+ENDIF(WIN32)

@@ -1,11 +1,11 @@
 
 #########################################################
 #
-#  CMakeLists for Minerva Kml Layer.
+#  CMakeLists for Minerva OpenStreetMap.
 #
 #########################################################
 
-PROJECT(MinervaKml)
+PROJECT(MinervaOSM)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
@@ -13,20 +13,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# try to find the header
-FIND_PATH(COLLADA_INCLUDE_DIR dae.h
-  $ENV{COLLADA_INC_DIR}
-)
-
-# Find the library
-FIND_LIBRARY(COLLADA_LIBRARY
-	NAMES collada14dom
-	PATHS
-    $ENV{COLLADA_LIB_DIR}
-	DOC "The name of the COLLADA library"
-)
-
-FIND_PACKAGE( ZLib )
 
 #########################################################
 #
@@ -47,45 +33,29 @@ INCLUDE_DIRECTORIES(
 			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     ${OSG_INC_DIR} 
-			 ${COLLADA_INCLUDE_DIR} 
-			 ${COLLADA_INCLUDE_DIR}/1.4
 		     )
 
 
 # List the headers
 SET ( HEADERS
-	./Factory.h
-	./KmlLayer.h
-	./Link.h
-	./LoadModel.h
-	./NetworkLink.h
-	./ModelPostProcess.h
+	./Export.h
+	./Node.h
+	./Object.h
+	./OpenStreetMap.h
+	./Way.h
 )
 			 
 # List the Sources
 SET (SOURCES
-	./Factory.cpp
-	./KmlLayer.cpp
-	./Link.cpp
-	./LoadModel.cpp
-	./NetworkLink.cpp
-	./ModelPostProcess.cpp
+	./Node.cpp
+	./Object.cpp
+	./OpenStreetMap.cpp
+	./Way.cpp
 )
 
-# Add header, cpp and include directory.
-IF(ZLIB_FOUND)
-	SET ( HEADERS ${HEADERS} ZipFile.h )
-	SET ( SOURCES ${SOURCES} ZipFile.cpp )
-	
-	INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR}/contrib )
-	
-	IF(MSVC)
-		ADD_DEFINITIONS ( "-DZLIB_WINAPI" )
-	ENDIF(MSVC)
-	
-ENDIF(ZLIB_FOUND)
+ADD_DEFINITIONS ("-D_COMPILING_MINERVA_OSM")
 
-SET ( TARGET_NAME MinervaKml )
+SET ( TARGET_NAME MinervaOSM )
 
 # Create a Shared Library
 ADD_LIBRARY( ${TARGET_NAME} SHARED ${HEADERS} ${SOURCES} )
@@ -98,10 +68,4 @@ TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}
-	${COLLADA_LIBRARY}
 )
-
-# Link to zlib.
-IF(ZLIB_FOUND)
-	TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${ZLIB_LIBRARIES} )
-ENDIF(ZLIB_FOUND)

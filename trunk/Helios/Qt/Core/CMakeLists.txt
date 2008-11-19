@@ -69,7 +69,7 @@ TARGET_LINK_LIBRARIES( HeliosQtCore
    ${QT_LIBRARIES}
 )
 
-SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons )
+SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons/ )
 FILE(GLOB PngFiles "${CMAKE_CURRENT_SOURCE_DIR}/../../Images/*.png" )
 FILE(GLOB JpgFiles "${CMAKE_CURRENT_SOURCE_DIR}/../../Images/*.jpg" )
 

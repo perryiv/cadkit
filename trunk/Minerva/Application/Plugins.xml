@@ -9,7 +9,8 @@
 
   <plugin load="true" file="WmsLayerQt.plug" />
   <plugin load="true" file="PostGISLayerQt.plug" />
-  <plugin file="QtArcIMSLayer.plug" />
+  <plugin file="QtArcIMS.plug" />
+  <plugin file="QtCustomGeometry.plug" />
 
   <plugin load="true" file="PathAnimation.plug"/>
   <plugin load="true" file="MinervaModel.plug" />
@@ -20,9 +21,11 @@
   <plugin load="true" file="WRFModel.plug" />
   <plugin load="true" file="ModflowModel.plug" />
 
-  <library file="MinervaGdalLayer" />
-  <library file="MinervaGeoRSSLayer" />
-  <library file="MinervaKmlLayer" />
+  <library file="MinervaGdal" />
   <library file="MinervaGeoNames" />
+  <library file="MinervaGeoRSS" />
+  <library file="MinervaKml" />
+  <library file="MinervaOSM" />
+  <library file="MinervaOssim" />
 
 </plugins>

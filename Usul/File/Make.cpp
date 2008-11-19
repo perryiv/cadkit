@@ -20,6 +20,7 @@
 
 #ifdef _MSC_VER
 # define NOMINMAX
+# define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 # include <io.h>
 # define TEST_ACCESS _access

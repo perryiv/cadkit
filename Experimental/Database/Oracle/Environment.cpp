@@ -14,7 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OracleWrap/Environment.h"
+#include "Database/Oracle/Environment.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
@@ -27,7 +27,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace CadKit::Databases::Oracle;
+using namespace CadKit::Database::Oracle;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ namespace
     }
     ~DestroyEnvironment()
     {
-      CadKit::Databases::Oracle::Environment::destroy();
+      CadKit::Database::Oracle::Environment::destroy();
     }
   };
 }

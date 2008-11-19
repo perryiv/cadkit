@@ -19,11 +19,14 @@
 
 #include "Usul/Errors/Assert.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 # ifndef NOMINMAX
 #  define NOMINMAX
 # endif
-# include <windows.h>
+# ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+# include "windows.h"
 #elif __GNUC__
 # include "Usul/Cast/Cast.h"
 # include <pthread.h>

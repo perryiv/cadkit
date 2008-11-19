@@ -18,6 +18,8 @@
 #include "QtGui/QPushButton"
 #include "QtGui/QVBoxLayout"
 
+#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -64,9 +66,21 @@ void FlyTo::_onFlyToClicked()
   
   if ( false == location.empty() && true == lookAt.valid() )
   {
+    typedef Minerva::Core::Utilities::GeoCode::Result GeoCodeResult;
+
     Minerva::Core::Utilities::GeoCode geoCode;
-    Usul::Math::Vec2d point ( geoCode ( location ) );
     
-    lookAt->lookAtPoint ( point );
+    GeoCodeResult result ( geoCode ( location ) );
+
+    if ( result.success )
+    {
+      std::cout << "Geocoded " << location << " to " << result.location[1] << ", " << result.location[0] << std::endl;
+      
+      lookAt->lookAtPoint ( result.location );
+    }
+    else
+    {
+      std::cout << "Could not geocode " << location << std::endl;
+    }
   }
 }

@@ -98,8 +98,13 @@ const std::string& GeoCode::applicationId() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Math::Vec2d GeoCode::operator() ( const std::string& location ) const
+GeoCode::Result GeoCode::operator() ( const std::string& location ) const
 {
+  // Initialize the result.
+  Result result;
+  result.location = Usul::Math::Vec2d ( 0.0, 0.0 );
+  result.success = false;
+
   // Make a request.
   std::string request ( Usul::Strings::format ( Detail::requestUrl, "?appid=", this->applicationId(), "&location=", Usul::Network::Curl::encode ( location ) ) );
   
@@ -116,13 +121,15 @@ Usul::Math::Vec2d GeoCode::operator() ( const std::string& location ) const
     XmlTree::Node::RefPtr latNode ( document->child ( 0, "Result/Latitude", '/', false ) );
     XmlTree::Node::RefPtr lonNode ( document->child ( 1, "Result/Longitude", '/', false ) );
     
-    const double lat ( latNode.valid() ? Usul::Convert::Type<std::string,double>::convert ( latNode->value() ) : 0.0 );
-    const double lon ( lonNode.valid() ? Usul::Convert::Type<std::string,double>::convert ( lonNode->value() ) : 0.0 );
-    
-    //std::cout << "Geocoded " << location << " to " << lat << ", " << lon << std::endl;
-    
-    return Usul::Math::Vec2d ( lon, lat );
+    if ( latNode.valid() && lonNode.valid() )
+    {
+      const double lat ( Usul::Convert::Type<std::string,double>::convert ( latNode->value() ) );
+      const double lon ( Usul::Convert::Type<std::string,double>::convert ( lonNode->value() ) );
+      
+      result.location = Usul::Math::Vec2d ( lon, lat );
+      result.success = true;
+    }
   }
   
-  return Usul::Math::Vec2d ( 0.0, 0.0 );
+  return result;
 }

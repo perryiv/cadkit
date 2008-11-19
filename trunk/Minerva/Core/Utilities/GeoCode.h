@@ -32,13 +32,19 @@ class MINERVA_EXPORT GeoCode
 public:
   GeoCode();
   ~GeoCode();
+
+  struct Result
+  {
+    Usul::Math::Vec2d location;
+    bool success;
+  };
   
   /// Set/get the Yahoo! application id.
   void                applicationId ( const std::string& );
   const std::string&  applicationId() const;
   
   /// Get a lat,lon based on free form location.
-  Usul::Math::Vec2d   operator() ( const std::string& location ) const;
+  Result              operator() ( const std::string& location ) const;
   
 private:
     

@@ -18,7 +18,10 @@ FIND_PATH(OT_INC_DIR  OpenThreads/Mutex
 #  OpenSceneGraph Library Directory. If these are not set
 #  then they will simply be ignored.
  set(OSG_LIB_DIR "$ENV{OSG_LIB_DIR}")
- set(OSG_INC_DIR "$ENV{OSG_INC_DIR}")
+ 
+ FIND_PATH ( OSG_INC_DIR osg/Node
+ 	"$ENV{OSG_INC_DIR}")
+ 
  
 #########################################################
 #

@@ -10,12 +10,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Encapsulates all database functionality.
+//  Encapsulates all database connectivity.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OracleWrap/Database.h"
+#include "OracleWrap/Connection.h"
 #include "OracleWrap/Environment.h"
+#include "OracleWrap/Result.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -30,7 +31,7 @@
 #include <stdexcept>
 #include <sstream>
 
-using namespace OracleWrap;
+using namespace CadKit::Databases::Oracle;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,10 +40,11 @@ using namespace OracleWrap;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Database::Database ( const std::string &database, const std::string &user, const std::string &password ) : BaseClass(),
-  _connection ( 0x0 )
+Connection::Connection ( const std::string &database, const std::string &user, const std::string &password ) : BaseClass(),
+  _connection ( 0x0 ),
+  _numPreFetchRows ( 10 )
 {
-  try
+  USUL_TRY_BLOCK
   {
     _connection = Environment::instance().env()->createConnection ( user, password, database );
   }
@@ -63,9 +65,9 @@ Database::Database ( const std::string &database, const std::string &user, const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Database::~Database()
+Connection::~Connection()
 {
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Database::_destroy ), "9116646720" );
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Connection::_destroy ), "9116646720" );
 }
 
 
@@ -75,11 +77,11 @@ Database::~Database()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Database::_destroy()
+void Connection::_destroy()
 {
   if ( 0x0 != _connection )
   {
-    try
+    USUL_TRY_BLOCK
     {
       Environment::instance().env()->terminateConnection ( _connection );
     }
@@ -93,15 +95,32 @@ void Database::_destroy()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Terminate the statement.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::_terminateStatement ( oracle::occi::Statement *s )
+{
+  Guard guard ( this );
+
+  if ( ( 0x0 != _connection ) && ( 0x0 != s ) )
+  {
+    _connection->terminateStatement ( s );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Execute the given SQL string.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OracleWrap::Result::RefPtr Database::execute ( const std::string &sql )
+Result *Connection::execute ( const std::string &sql, unsigned int numRowsToPreFetch )
 {
-  try
+  USUL_TRY_BLOCK
   {
-    return this->_execute ( sql );
+    return this->_execute ( sql, numRowsToPreFetch );
   }
   catch ( const oracle::occi::SQLException &e )
   {
@@ -139,38 +158,17 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Terminate the statement.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  void terminateStatement ( oracle::occi::Connection *c, oracle::occi::Statement *s )
-  {
-    if ( 0x0 != c )
-    {
-      if ( 0x0 != s )
-      {
-        c->terminateStatement ( s );
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Execute the given SQL string.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OracleWrap::Result::RefPtr Database::_execute ( const std::string &sql )
+Result *Connection::_execute ( const std::string &sql, unsigned int numRowsToPreFetch )
 {
   Guard guard ( this );
 
   // Empty string just means no result.
   if ( true == sql.empty() )
-    return Result::RefPtr ( new Result ( 0x0, 0x0, 0x0, this->mutex() ) );
+    return new Result ( 0x0, 0x0, 0x0 );
 
   // Check state.
   if ( 0x0 == _connection )
@@ -181,6 +179,8 @@ OracleWrap::Result::RefPtr Database::_execute ( const std::string &sql )
   if ( 0x0 == statement )
     throw std::runtime_error ( Usul::Strings::format 
       ( "Error 3577957947: Failed to create statement. SQL: ", sql ) );
+
+  statement->setPrefetchRowCount ( numRowsToPreFetch );
 
   // Initialize the result set.
   oracle::occi::ResultSet *resultSet ( 0x0 );
@@ -197,13 +197,31 @@ OracleWrap::Result::RefPtr Database::_execute ( const std::string &sql )
 
   // Return the result. We pass the mutex so that no further executions 
   // can happen until the result is deleted.
-  return Result::RefPtr ( new Result ( _connection, statement, resultSet, this->mutex() ) );
+  return new Result ( this, statement, resultSet );
+}
 
-#if 0
-  -- Rename Database to Connection.
-  -- Pass "Connection::RefPtr ( this )", in addition to the statement and result set, to the Result, which will hang on to it.
-  -- No need to pass the mutex. Once the result is acquired and returned the same or any other thread can enter this function.
-  -- Result::~Result can destroy the result-set and ask the connection to destroy the statement.
-  -- Trap Windows structured exceptions here and re-throw as regular exceptions.
-#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the default number of rows to fetch at a time from the server.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::numPreFetchRows ( unsigned int num )
+{
+  Guard guard ( this );
+  _numPreFetchRows = num;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the default number of rows to fetch at a time from the server.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int Connection::numPreFetchRows() const
+{
+  Guard guard ( this );
+  return _numPreFetchRows;
 }

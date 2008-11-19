@@ -19,7 +19,7 @@
 
 #include "OracleWrap/Export.h"
 
-#include "Usul/Base/Referenced.h"
+#include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
@@ -28,18 +28,20 @@
 
 namespace oracle { namespace occi { class Connection; class ResultSet; class Statement; } }
 
-namespace OracleWrap { class Database; }
+namespace CadKit { namespace Databases { namespace Oracle { class Connection; } } }
 
 
-namespace OracleWrap {
+namespace CadKit {
+namespace Databases {
+namespace Oracle {
 
 
-class ORACLE_WRAP_EXPORT Result : public Usul::Base::Referenced
+class ORACLE_WRAP_EXPORT Result : public Usul::Base::Object
 {
 public:
 
   // Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Usul::Base::Object BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
 
@@ -60,10 +62,10 @@ public:
 
 protected:
 
-  friend class Database;
+  friend class Connection;
 
   // Constructor
-  Result ( oracle::occi::Connection *, oracle::occi::Statement *, oracle::occi::ResultSet *, Mutex & );
+  Result ( Connection *, oracle::occi::Statement *, oracle::occi::ResultSet * );
 
   // Destructor
   virtual ~Result();
@@ -79,15 +81,16 @@ private:
 
   void                    _destroy();
 
-  oracle::occi::Connection *_connection;
+  Connection *_connection;
   oracle::occi::Statement *_statement;
   oracle::occi::ResultSet *_result;
-  Mutex &_mutex;
   unsigned int _currentColumn;
 };
 
 
-} // namespace OracleWrap
+} // namespace Oracle
+} // namespace Databases
+} // namespace CadKit
 
 
 #endif // _ORACLE_LITE_WRAP_RESULT_H_

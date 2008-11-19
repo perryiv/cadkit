@@ -15,16 +15,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OracleWrap/Result.h"
+#include "OracleWrap/Connection.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Pointers/Functions.h"
 #include "Usul/Strings/Format.h"
 
 #include "occi.h"
 
 #include <stdexcept>
 
-using namespace OracleWrap;
+using namespace CadKit::Databases::Oracle;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,15 +35,13 @@ using namespace OracleWrap;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Result::Result ( oracle::occi::Connection *connection, oracle::occi::Statement *statement, oracle::occi::ResultSet *result, Mutex &mutex ) : BaseClass(),
-  _connection ( connection ),
-  _statement ( statement ),
-  _result ( result ),
-  _mutex ( mutex ),
+Result::Result ( Connection *c, oracle::occi::Statement *s, oracle::occi::ResultSet *r ) : BaseClass(),
+  _connection ( c ),
+  _statement ( s ),
+  _result ( r ),
   _currentColumn ( 0 )
 {
-  // Lock the mutex until we are destroyed.
-  _mutex.lock();
+  Usul::Pointers::reference ( _connection );
 }
 
 
@@ -65,35 +65,33 @@ Result::~Result()
 
 void Result::_destroy()
 {
-  if ( 0x0 != _connection )
+  if ( ( 0x0 != _statement ) && ( 0x0 != _result ) )
   {
-    if ( 0x0 != _statement )
+    USUL_TRY_BLOCK
     {
-      if ( 0x0 != _result )
-      {
-        try
-        {
-          _statement->closeResultSet ( _result );
-        }
-        catch ( const oracle::occi::SQLException &e )
-        {
-          std::cout << "Error 5436080370: Failed to close result set. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
-        }
-        _result = 0x0;
-      }
-
-      try
-      {
-        _connection->terminateStatement ( _statement );
-      }
-      catch ( const oracle::occi::SQLException &e )
-      {
-        std::cout << "Error 3433775247: Failed to terminate statement. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
-      }
-      _statement = 0x0;
+      _statement->closeResultSet ( _result );
+    }
+    catch ( const oracle::occi::SQLException &e )
+    {
+      std::cout << "Error 5436080370: Failed to close result set. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
     }
   }
-  _mutex.unlock();
+
+  if ( ( 0x0 != _statement ) && ( 0x0 !=_connection ) )
+  {
+    USUL_TRY_BLOCK
+    {
+      _connection->_terminateStatement ( _statement );
+    }
+    catch ( const oracle::occi::SQLException &e )
+    {
+      std::cout << "Error 3433775247: Failed to terminate statement. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
+    }
+  }
+  Usul::Pointers::unreference ( _connection );
+  _connection = 0x0;
+  _statement = 0x0;
+  _result = 0x0;
 }
 
 
@@ -115,7 +113,7 @@ bool Result::prepareNextRow()
   if ( oracle::occi::ResultSet::END_OF_FETCH == status )
     return false;
 
-  return ( ( 0x0 == _result ) ? false : ( oracle::occi::ResultSet::END_OF_FETCH != _result->next() ) );
+  return ( oracle::occi::ResultSet::END_OF_FETCH != _result->next() );
 }
 
 

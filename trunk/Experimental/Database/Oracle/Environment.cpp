@@ -27,7 +27,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace OracleWrap;
+using namespace CadKit::Databases::Oracle;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,6 +47,27 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Destroy the environment singleton.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace
+{
+  struct DestroyEnvironment
+  {
+    DestroyEnvironment()
+    {
+    }
+    ~DestroyEnvironment()
+    {
+      CadKit::Databases::Oracle::Environment::destroy();
+    }
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -54,7 +75,7 @@ namespace Detail
 Environment::Environment() :
   _env ( 0x0 )
 {
-  try
+  USUL_TRY_BLOCK
   {
     _env = oracle::occi::Environment::createEnvironment ( oracle::occi::Environment::THREADED_MUTEXED );
   }
@@ -96,7 +117,7 @@ void Environment::_destroy()
 {
   if ( 0x0 != _env )
   {
-    try
+    USUL_TRY_BLOCK
     {
       oracle::occi::Environment::terminateEnvironment ( _env );
     }

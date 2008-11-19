@@ -10,12 +10,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Test program for OracleWrap.
+//  Test program for Oracle library.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OracleWrap/Connection.h"
-#include "OracleWrap/Result.h"
+#include "Database/Oracle/Connection.h"
+#include "Database/Oracle/Result.h"
 
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Functions/SafeCall.h"
@@ -72,11 +72,11 @@ void run()
   Helper::getTestData ( database, user, password, numRowsToPreFetch, sql );
 
   // Make a database connection.
-  typedef CadKit::Databases::Oracle::Connection Connection;
+  typedef CadKit::Database::Oracle::Connection Connection;
   Connection::RefPtr connection ( new Connection ( database, user, password ) );
 
   // Make a query.
-  typedef CadKit::Databases::Oracle::Result Result;
+  typedef CadKit::Database::Oracle::Result Result;
   Result::RefPtr result ( connection->execute ( sql, numRowsToPreFetch ) );
 
   // Get the number of columns.

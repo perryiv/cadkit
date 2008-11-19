@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ORACLE_LITE_WRAP_EXPORT_H_
-#define _ORACLE_LITE_WRAP_EXPORT_H_
+#ifndef _ORACLE_WRAPPER_EXPORT_H_
+#define _ORACLE_WRAPPER_EXPORT_H_
 
 #ifdef _WIN32
 # pragma warning ( disable : 4275 ) // Irrelevant VC6 warning.
@@ -29,4 +29,4 @@
 # define ORACLE_WRAP_EXPORT
 #endif
 
-#endif // _ORACLE_LITE_WRAP_EXPORT_H_
+#endif // _ORACLE_WRAPPER_EXPORT_H_

@@ -14,9 +14,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "OracleWrap/Connection.h"
-#include "OracleWrap/Environment.h"
-#include "OracleWrap/Result.h"
+#include "Database/Oracle/Connection.h"
+#include "Database/Oracle/Environment.h"
+#include "Database/Oracle/Result.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
@@ -31,7 +31,7 @@
 #include <stdexcept>
 #include <sstream>
 
-using namespace CadKit::Databases::Oracle;
+using namespace CadKit::Database::Oracle;
 
 
 ///////////////////////////////////////////////////////////////////////////////

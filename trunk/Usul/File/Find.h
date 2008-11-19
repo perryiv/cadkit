@@ -17,17 +17,21 @@
 
 #include "Usul/File/Slash.h"
 
-#include <string>
-#if _WIN32
+#ifdef _MSC_VER
 # ifndef NOMINMAX
 #  define NOMINMAX
 # endif
-# include <windows.h>
+# ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+# include "windows.h"
 #else
 #include <sys/types.h>
 #include <dirent.h>
 #include "Usul/File/Path.h"
 #endif
+
+#include <string>
 
 
 namespace Usul {

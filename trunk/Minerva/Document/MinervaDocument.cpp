@@ -47,6 +47,13 @@
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
 
+#include "GN/Algorithms/Fill.h"
+#include "GN/Algorithms/KnotVector.h"
+#include "GN/Config/UsulConfig.h"
+#include "GN/Evaluate/Point.h"
+#include "GN/Interpolate/Global.h"
+#include "GN/Splines/Curve.h"
+
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
@@ -86,6 +93,7 @@
 #include "osgUtil/IntersectVisitor"
 #include "osgUtil/CullVisitor"
 
+#include <list>
 #include <sstream>
 
 using namespace Minerva::Document;
@@ -550,7 +558,7 @@ osg::Node * MinervaDocument::buildScene ( const BaseClass::Options &options, Unk
 
 namespace Detail
 {
-  osg::Matrixd makeLookAtMatrix ( double lat, double lon, double altitude, Minerva::Core::TileEngine::Body& body )
+  osg::Matrixd makeLookAtMatrix ( double lat, double lon, double altitude, double heading, double pitch, double roll, Minerva::Core::TileEngine::Body& body )
   {
     // Get the elevation.
     const double elevation ( body.elevationAtLatLong ( lat, lon ) );
@@ -558,17 +566,14 @@ namespace Detail
     // The height above sea level.
     const double heightAboveSeaLevel ( elevation + static_cast<double> ( Usul::Math::maximum ( 2500.0, altitude ) ) );
 
-    // Heading, Pitch, and Roll (For future use).
-    osg::Vec3d hpr ( 0.0, 0.0, 0.0 );
-
     // Get the rotation.
-    osg::Matrixd matrix ( body.planetRotationMatrix ( lat, lon, heightAboveSeaLevel, hpr[0] ) );
+    osg::Matrixd matrix ( body.planetRotationMatrix ( lat, lon, heightAboveSeaLevel, heading ) );
 
     // Rotation about x.
-    osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[1], 1, 0, 0 ) );
+    osg::Matrixd RX ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * pitch, 1, 0, 0 ) );
 
     // Rotation about y.
-    osg::Matrixd RY ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * hpr[2], 0, 1, 0 ) );
+    osg::Matrixd RY ( osg::Matrixd::rotate ( Usul::Math::DEG_TO_RAD * roll, 0, 1, 0 ) );
 
     osg::Matrix M ( matrix * RX * RY );
     return M;
@@ -597,70 +602,216 @@ namespace Detail
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make a matrix from lat, lon, and altitude.
+//  Use trig to slow down the beginning and end of the path.
+//  See http://mathworld.wolfram.com/Cosine.html
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Detail
 {
-  void animatePath ( const Usul::Math::Vec3d& from, const Usul::Math::Vec3d& to, Minerva::Core::TileEngine::Body& body )
+  inline double slowBothEnds ( double param, double mn, double mx )
   {
-    // Get the final look at matrix.
-    const osg::Matrixd M3 ( Detail::makeLookAtMatrix ( to[1], to[0], to[2], body ) );
+    param *= Usul::Math::PIE;
+    param += Usul::Math::PIE;
+    param  = Usul::Math::cos ( param );
+    param += 1.0;
+    param /= 2.0;
 
-    // The half way point.
-    const double distance ( Detail::distance ( from, to, body ) );
-    const Usul::Math::Vec3d half (  ( from[0] + to[0] ) / 2.0, ( from[1] + to[1] ) / 2.0, distance / 2.0 );
+    // Keep in range.
+    param = ( ( param < mn ) ? mn : param );
+    param = ( ( param > mx ) ? mx : param );
 
-    // Make lookat for half-way point.
-    const osg::Matrixd M2 ( Detail::makeLookAtMatrix ( half[1], half[0], half[2], body ) );
+    return param;
+  }
+}
 
-    // Look for plugin to play path.
-    typedef Usul::Interfaces::IAnimatePath IAnimatePath;
-    typedef Usul::Components::Manager PluginManager;
 
-    IAnimatePath::QueryPtr animate ( PluginManager::instance().getInterface ( IAnimatePath::IID ) );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Animate from where the camera happens to be to the new coordinate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  void animatePath ( const Usul::Math::Vec3d& llh1, 
+                     const Usul::Math::Vec3d& llh2, 
+                     double percentMidpointHeightAtTransition,
+                     const Usul::Math::Vec3ui &numPoints,
+                     Minerva::Core::TileEngine::Body& body )
+  {
+    // This is needed.
     Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
+    if ( false == vm.valid() )
+      return;
 
-    if ( animate.valid() )
+    // We can live without this one.
+    Usul::Interfaces::IRedraw::QueryPtr painter ( vm );
+
+    // Needed below.
+    typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ErrorChecker;
+    typedef GN::Config::UsulConfig < double, double, unsigned int, ErrorChecker > Config;
+    typedef GN::Splines::Curve < Config > Curve;
+
+    // Calculate the midpoint.
+    const double distance ( Detail::distance ( llh1, llh2, body ) );
+    Usul::Math::Vec3d mid ( ( llh1[0] + llh2[0] ) / 2.0, ( llh1[1] + llh2[1] ) / 2.0, distance / 2.0 );
+
+    // Midpoint has to be as high or higher than first and last points.
+    mid[2] = ( ( mid[2] < llh1[2] ) ? llh1[2] : mid[2] );
+    mid[2] = ( ( mid[2] < llh2[2] ) ? llh2[2] : mid[2] );
+
+    // Calculate the transition points.
+    Usul::Math::Vec3d tp1 ( llh1[0], llh1[1], mid[2] * percentMidpointHeightAtTransition );
+    Usul::Math::Vec3d tp2 ( llh2[0], llh2[1], mid[2] * percentMidpointHeightAtTransition );
+
+    // Transition points have to be as high or higher than first and last points.
+    tp1[2] = ( ( tp1[2] < llh1[2] ) ? llh1[2] : tp1[2] );
+    tp1[2] = ( ( tp1[2] < llh2[2] ) ? llh2[2] : tp1[2] );
+    tp2[2] = ( ( tp2[2] < llh1[2] ) ? llh1[2] : tp2[2] );
+    tp2[2] = ( ( tp2[2] < llh2[2] ) ? llh2[2] : tp2[2] );
+
+    // First path.
     {
-      // Get the first and last matrix.
-      const osg::Matrixd m1 ( vm.valid() ? vm->getViewMatrix() : osg::Matrixd() );
-      const osg::Matrixd m2 ( osg::Matrixd::inverse ( M2 ) );
-      const osg::Matrixd m3 ( osg::Matrixd::inverse ( M3 ) );
+      // Get the first matrix. Have to get the view matrix because we don't 
+      // have enough information in llh1.
+      const osg::Matrixd m1 ( vm->getViewMatrix() );
+      osg::Vec3d e1, c1, up1;
+      m1.getLookAt ( e1, c1, up1 );
 
-      // Prepare path.
-      IAnimatePath::PackedMatrices matrices;
-      matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
-      matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
-      matrices.push_back ( IAnimatePath::PackedMatrix ( m3.ptr(), m3.ptr() + 16 ) );
+      // Get the second matrix.
+      const osg::Matrixd m2 ( osg::Matrixd::inverse ( Detail::makeLookAtMatrix ( tp1[1], tp1[0], tp1[2], 0, 0, 0, body ) ) );
+      osg::Vec3d e2, c2, up2;
+      m2.getLookAt ( e2, c2, up2 );
 
-      // Animate through the path.
-      animate->animatePath ( matrices, 30 );
+      // Loop through the path.
+      unsigned int total ( numPoints[0] );
+      for ( unsigned int i = 0; i < total; ++i )
+      {
+        double param ( static_cast < double > ( i ) / static_cast < double > ( total - 1 ) );
+        param = Detail::slowBothEnds ( param, 0.0, 1.0 );
+        param = Detail::slowBothEnds ( param, 0.0, 1.0 );
+
+        const osg::Vec3d eye    (  e1 + ( (  e2 -  e1 ) * param ) );
+        const osg::Vec3d center (  c1 + ( (  c2 -  c1 ) * param ) );
+        const osg::Vec3d up     ( up1 + ( ( up2 - up1 ) * param ) );
+        const osg::Matrixd mat ( osg::Matrixd::lookAt ( eye, center, up ) );
+
+        vm->setViewMatrix ( mat );
+
+        // Redraw now if we can.
+        if ( painter.valid() )
+          painter->redraw();
+      }
     }
-    else if ( vm.valid() )
+
+    // Next path
     {
-      vm->setViewMatrix ( M3 );
+      // Make the control points.
+      const Usul::Math::Vec3d llha ( tp1 );
+      const Usul::Math::Vec3d llhb ( llh1[0], llh1[1],  mid[2] );
+      const Usul::Math::Vec3d llhc ( mid );
+      const Usul::Math::Vec3d llhd ( llh2[0], llh2[1],  mid[2] );
+      const Usul::Math::Vec3d llhe ( tp2 );
+
+      // Make the curve.
+      Curve curve;
+      curve.resize ( 3, 4, 5, false );
+
+      curve.knot ( 0 ) = 0.0;
+      curve.knot ( 1 ) = 0.0;
+      curve.knot ( 2 ) = 0.0;
+      curve.knot ( 3 ) = 0.0;
+      curve.knot ( 4 ) = 0.5;
+      curve.knot ( 5 ) = 1.0;
+      curve.knot ( 6 ) = 1.0;
+      curve.knot ( 7 ) = 1.0;
+      curve.knot ( 8 ) = 1.0;
+
+      curve.controlPoint ( 0, 0 ) = llha[0];
+      curve.controlPoint ( 1, 0 ) = llha[1];
+      curve.controlPoint ( 2, 0 ) = llha[2];
+
+      curve.controlPoint ( 0, 1 ) = llhb[0];
+      curve.controlPoint ( 1, 1 ) = llhb[1];
+      curve.controlPoint ( 2, 1 ) = llhb[2];
+
+      curve.controlPoint ( 0, 2 ) = llhc[0];
+      curve.controlPoint ( 1, 2 ) = llhc[1];
+      curve.controlPoint ( 2, 2 ) = llhc[2];
+
+      curve.controlPoint ( 0, 3 ) = llhd[0];
+      curve.controlPoint ( 1, 3 ) = llhd[1];
+      curve.controlPoint ( 2, 3 ) = llhd[2];
+
+      curve.controlPoint ( 0, 4 ) = llhe[0];
+      curve.controlPoint ( 1, 4 ) = llhe[1];
+      curve.controlPoint ( 2, 4 ) = llhe[2];
+
+      // Loop through the path.
+      Curve::Vector llh ( curve.dimension(), 0 );
+      unsigned int total ( numPoints[1] );
+      for ( unsigned int i = 0; i < total; ++i )
+      {
+        double param ( static_cast < double > ( i ) / static_cast < double > ( total - 1 ) );
+        param = Detail::slowBothEnds ( param, 0.0, 1.0 );
+        param = Detail::slowBothEnds ( param, 0.0, 1.0 );
+
+        GN::Evaluate::point ( curve, param, llh );
+        const osg::Matrixd mat ( osg::Matrixd::inverse ( Detail::makeLookAtMatrix ( llh[1], llh[0], llh[2], 0, 0, 0, body ) ) );
+
+        vm->setViewMatrix ( mat );
+
+        // Redraw now if we can.
+        if ( painter.valid() )
+          painter->redraw();
+      }
     }
 
-    // Simulate a seek.
+    // Next path
+    {
+      // Get the points.
+      const Usul::Math::Vec3d llha ( tp2 );
+      const Usul::Math::Vec3d llhb ( llh2 );
+
+      // Loop through the path.
+      unsigned int total ( numPoints[2] );
+      for ( unsigned int i = 0; i < total; ++i )
+      {
+        double param ( static_cast < double > ( i ) / static_cast < double > ( total - 1 ) );
+        param = Detail::slowBothEnds ( param, 0.0, 1.0 );
+        param = Detail::slowBothEnds ( param, 0.0, 1.0 );
+
+        const Usul::Math::Vec3d llh ( llha + ( ( llhb - llha ) * param ) );
+        const osg::Matrixd mat ( osg::Matrixd::inverse ( Detail::makeLookAtMatrix ( llh[1], llh[0], llh[2], 0, 0, 0, body ) ) );
+
+        vm->setViewMatrix ( mat );
+
+        // Redraw now if we can.
+        if ( painter.valid() )
+          painter->redraw();
+      }
+    }
+
+    // Simulate a seek so that mouse navigation is well-behaved.
     Usul::Interfaces::ITrackball::QueryPtr tb ( vm );
     if ( tb.valid() )
     {
       // The translate portion of the matrix is where the eye position will be.
-      Usul::Math::Vec3d point0 ( M3 ( 3, 0 ), M3 ( 3, 1 ), M3 ( 3, 2 ) );
+      const osg::Matrixd mat ( osg::Matrixd::inverse ( vm->getViewMatrix() ) );
+      Usul::Math::Vec3d point ( mat ( 3, 0 ), mat ( 3, 1 ), mat ( 3, 2 ) );
 
       // Find the intersection point from the eye to the center of the body.  This will become the new center of the trackball.
       Usul::Math::Vec3d center;
-      if ( body.intersectWithTiles ( point0, Usul::Math::Vec3d ( 0.0, 0.0, 0.0 ), center ) )
+      if ( body.intersectWithTiles ( point, Usul::Math::Vec3d ( 0.0, 0.0, 0.0 ), center ) )
       {
         // Get the distance between the eye and the center.
-        const double D ( center.distance ( point0 ) );
+        const double d ( center.distance ( point ) );
 
         // Get the rotation and set the trackball.
-        osg::Quat R; M3.get ( R );
-        osg::Vec3d C ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( center ) );
-        tb->setTrackball ( C, D, R, true, true );
+        osg::Quat rot; mat.get ( rot );
+        const osg::Vec3d c ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( center ) );
+        tb->setTrackball ( c, d, rot, true, true );
       }
     }
   }
@@ -709,7 +860,9 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
     // Point we want to go to.
     Usul::Math::Vec3d to ( center[0], center[1], altitude );
 
-    Detail::animatePath ( from, to, *body );
+    const double percentMidpointHeightAtTransition ( 0.75 );
+    const Usul::Math::Vec3ui numPoints ( 100, 100, 100 );
+    Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body );
   }
 }
 
@@ -729,15 +882,17 @@ void MinervaDocument::lookAtPoint ( const Usul::Math::Vec2d& location )
     // Make an itermediate point.
     osg::Vec3d eye ( _callback.valid() ? _callback->_eye : osg::Vec3d() );
 
-    // Convert the eye to lat,lon, height.
+    // Convert the eye to lat, lon, height.
     Usul::Math::Vec3d point ( eye[0], eye[1], eye[2] );
     Usul::Math::Vec3d from;
-    body->convertFromPlanet( point, from );
+    body->convertFromPlanet ( point, from );
 
     // Point we want to go to.
     Usul::Math::Vec3d to ( location[0], location[1], 2500.0 /*altitude*/ );
 
-    Detail::animatePath ( from, to, *body );
+    const double percentMidpointHeightAtTransition ( 0.75 );
+    const Usul::Math::Vec3ui numPoints ( 100, 100, 100 );
+    Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body );
   }
 }
 
@@ -2693,11 +2848,7 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
       if( dataObject.valid() )
         objects.push_back ( dataObject );
     }
-    
-#ifdef _DEBUG
-    std::cout << "Found " << objects.size() << " objects." << std::endl;
-#endif
-    
+
     if( false == objects.empty() && true == objects.front().valid() )
     {
       // Remove what we have.

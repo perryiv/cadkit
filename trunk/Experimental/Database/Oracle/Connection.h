@@ -17,7 +17,7 @@
 #ifndef _ORACLE_LITE_WRAP_CONNECTION_H_
 #define _ORACLE_LITE_WRAP_CONNECTION_H_
 
-#include "OracleWrap/Export.h"
+#include "Database/Oracle/Export.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Pointers/Pointers.h"
@@ -26,11 +26,11 @@
 
 namespace oracle { namespace occi { class Connection; class Statement; } }
 
-namespace CadKit { namespace Databases { namespace Oracle { class Result; } } }
+namespace CadKit { namespace Database { namespace Oracle { class Result; } } }
 
 
 namespace CadKit {
-namespace Databases {
+namespace Database {
 namespace Oracle {
 
 
@@ -80,7 +80,7 @@ private:
 
 
 } // namespace Oracle
-} // namespace Databases
+} // namespace Database
 } // namespace CadKit
 
 

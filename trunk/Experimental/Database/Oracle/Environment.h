@@ -17,13 +17,13 @@
 #ifndef _ORACLE_LITE_WRAP_ENVIRONMENT_H_
 #define _ORACLE_LITE_WRAP_ENVIRONMENT_H_
 
-#include "OracleWrap/Export.h"
+#include "Database/Oracle/Export.h"
 
 namespace oracle { namespace occi { class Environment; } }
 
 
 namespace CadKit {
-namespace Databases {
+namespace Database {
 namespace Oracle {
 
 
@@ -55,7 +55,7 @@ private:
 
 
 } // namespace Oracle
-} // namespace Databases
+} // namespace Database
 } // namespace CadKit
 
 

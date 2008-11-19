@@ -11,6 +11,7 @@
 #define __USUL_FUNCTIONS_GL_EXTENSIONS_H__
 
 #if defined(_WIN32)
+#define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif

@@ -45,7 +45,7 @@ ADD_LIBRARY(HeliosQtViewsOSG SHARED ${SOURCES} ${MOC_SRCS} )
 CADKIT_ADD_LIBRARY ( HeliosQtViewsOSG )
 
 # Link the Library	
-LINK_CADKIT( HeliosQtViewsOSG Usul OsgTools QtTools )
+LINK_CADKIT( HeliosQtViewsOSG Usul OsgTools QtTools MenuKit )
 
 TARGET_LINK_LIBRARIES( HeliosQtViewsOSG
 	${OPENGL_LIBRARIES}

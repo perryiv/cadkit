@@ -794,6 +794,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IAnimateMatrices.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IAnimatePath.h"
 					>
 				</File>

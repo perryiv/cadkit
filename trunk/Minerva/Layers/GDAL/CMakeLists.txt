@@ -1,5 +1,5 @@
 
-PROJECT(MinervaLayersGDAL)
+PROJECT(MinervaGDAL)
 
 SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
 INCLUDE ( ${CMakeModules}/Cadkit.cmake)
@@ -36,14 +36,16 @@ SET (SOURCES
 ./RasterLayerGDAL.cpp
 )
 
-# Create a Shared Library
-ADD_LIBRARY(MinervaLayersGDAL SHARED ${SOURCES} )
+SET ( TARGET_NAME MinervaGDAL )
 
-CADKIT_ADD_LIBRARY ( MinervaLayersGDAL )
+# Create a Shared Library
+ADD_LIBRARY( ${TARGET_NAME} SHARED ${SOURCES} )
+
+CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 
 # Link the Library	
-LINK_CADKIT( MinervaLayersGDAL Usul OsgTools SerializeXML XmlTree Minerva MinervaPostGIS  )
-TARGET_LINK_LIBRARIES( MinervaLayersGDAL
+LINK_CADKIT( ${TARGET_NAME} Usul OsgTools SerializeXML XmlTree Minerva MinervaPostGIS  )
+TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${Boost_LIBRARIES}
 	${GDAL_LIBRARY}
 	${PQXX_LIB}

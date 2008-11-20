@@ -14,6 +14,7 @@
 #include "VRV/Export.h"
 #include "VRV/Prefs/Settings.h"
 #include "VRV/Core/BaseApplication.h"
+#include "VRV/Core/SharedData.h"
 #include "VRV/Interfaces/IModelAdd.h"
 #include "VRV/Interfaces/INavigationScene.h"
 #include "VRV/Interfaces/IAuxiliaryScene.h"
@@ -42,6 +43,7 @@
 #include "Usul/Interfaces/IJoystick.h"
 #include "Usul/Interfaces/IMatrixMultiply.h"
 #include "Usul/Interfaces/IModelsScene.h"
+#include "Usul/Interfaces/INavigationFunctor.h"
 #include "Usul/Interfaces/ITranslationSpeed.h"
 #include "Usul/Interfaces/IPolygonMode.h"
 #include "Usul/Interfaces/IRenderingPasses.h"
@@ -59,6 +61,9 @@
 #include "Usul/Interfaces/IWandState.h"
 #include "Usul/Interfaces/IWorldInfo.h"
 #include "Usul/Threads/Queue.h"
+#include "Usul/Functors/Interaction/Common/Sequence.h"
+#include "Usul/Functors/Interaction/Navigate/Transform.h"
+#include "Usul/Functors/Interaction/Input/AnalogInput.h"
 
 #include "OsgTools/Render/Renderer.h"
 #include "OsgTools/Render/SceneManager.h"
@@ -68,7 +73,9 @@
 #include "MenuKit/OSG/Menu.h"
 #include "MenuKit/CommandVisitor.h"
 
+#include "vrj/Draw/OGL/GlApp.h"
 #include "vrj/Draw/OGL/GlContextData.h"
+#include "plugins/ApplicationDataManager/UserData.h"
 
 #include "osg/Referenced"
 #include "osg/Matrix"
@@ -119,6 +126,7 @@ class VRV_EXPORT Application : public VRV::Core::BaseApplication,
                                public Usul::Interfaces::ICamera,
                                public Usul::Interfaces::IPolygonMode,
                                public Usul::Interfaces::IShadeModel,
+                               public Usul::Interfaces::INavigationFunctor,
                                public Usul::Interfaces::IBackgroundColor,
                                public Usul::Interfaces::IRenderingPasses,
                                public Usul::Interfaces::IViewport,
@@ -133,15 +141,18 @@ class VRV_EXPORT Application : public VRV::Core::BaseApplication,
                                public Usul::Interfaces::IRenderNotify
 {
 public:
-
   // Typedefs.
   typedef VRV::Core::BaseApplication           BaseClass;
-  typedef BaseClass::Matrix                    Matrix;
   typedef OsgTools::Render::Renderer           Renderer;
   typedef Renderer::RefPtr                     RendererPtr;
   typedef std::vector < RendererPtr >          Renderers;
   typedef OsgTools::Widgets::ProgressBarGroup  ProgressBars;
+  typedef Usul::Math::Matrix44d                Matrix;
+  typedef std::vector < std::string >          Filenames;
   typedef VRV::Prefs::Settings                 Preferences;
+  typedef VRV::Devices::ButtonGroup            Buttons;
+  typedef VRV::Devices::TrackerDevice          Tracker;
+  typedef VRV::Devices::JoystickDevice         Joystick;
   typedef MenuKit::OSG::Menu                   Menu;
   typedef USUL_REF_POINTER(Menu)               MenuPtr;
   typedef Usul::Interfaces::ICamera            ICamera;
@@ -153,6 +164,24 @@ public:
   typedef Usul::Interfaces::IRotationCenterFloat  IRotationCenter;
   typedef IRotationCenter::Vector                 Vector;
 
+  typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
+  typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
+  typedef Usul::Functors::Interaction::Navigate::Transform   TransformFunctor;
+  typedef Usul::Functors::Interaction::Common::Sequence      FavoriteFunctor;
+  typedef std::map < std::string, AnalogInput::RefPtr >      AnalogInputs;
+  typedef std::map < std::string, TransformFunctor::RefPtr > TransformFunctors;
+  typedef std::map < std::string, FavoriteFunctor::RefPtr >  FavoriteFunctors;
+  typedef FavoriteFunctors::iterator                         FavoriteIterator;
+
+  typedef void (Application::*VoidFunction) ();
+  typedef void (Application::*BoolFunction) ( bool );
+  typedef bool (Application::*CheckFunction) () const;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, VoidFunction >  ExecuteFunctor;
+  typedef Usul::Adaptors::MemberFunction < bool, Application*, CheckFunction > CheckFunctor;
+  typedef Usul::Adaptors::MemberFunction < void, Application*, BoolFunction >  BoolFunctor;
+  typedef Usul::Commands::GenericCommand < ExecuteFunctor >                    BasicCommand;
+  typedef Usul::Commands::GenericCheckCommand < BoolFunctor, CheckFunctor >    CheckCommand;
+
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Constructors.
@@ -161,66 +190,83 @@ public:
   // Destructor.
   virtual ~Application();
 
-  // Clean up.  Call before the Application is destroyed.
-  void                          cleanup();
+  /// Find an analog.
+  JoystickPtr                   analogFind ( const std::string& key );
 
-  // View all of the given node.
-  virtual void                  viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
+  // Get the buttons.
+  ButtonGroup*                  buttons();
+
+  // Clean up.  Call before the Application is destroyed.
+  void                    cleanup();
+
+  virtual void            viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
 
   /// Add a light.
-  void                          addLight ( osg::Light* light );
+  void                    addLight ( osg::Light* light );
 
   /// Get/Set the background color.
-  virtual void                  backgroundColor ( const Usul::Math::Vec4f& color );
-  virtual void                  backgroundColor ( const osg::Vec4f& color, unsigned int corner );
-  virtual Usul::Math::Vec4f     backgroundColor() const;
+  virtual void                backgroundColor ( const Usul::Math::Vec4f& color );
+  virtual void                backgroundColor ( const osg::Vec4f& color, unsigned int corner );
+  virtual Usul::Math::Vec4f   backgroundColor () const;
 
   /// Get/Set the background corner.
-  void                          setBackgroundCorners ( unsigned int corner );
-  unsigned int                  getBackgroundCorners() const;
-  bool                          isBackgroundCorners ( unsigned int corner ) const;
+  void                    setBackgroundCorners ( unsigned int corner );
+  unsigned int            getBackgroundCorners() const;
+  bool                    isBackgroundCorners( unsigned int corner ) const;
 
   /// Get/Set the framestamp ( Usul::Interfaces::IFrameStamp ).
-  osg::FrameStamp*              frameStamp();
-  const osg::FrameStamp*        frameStamp() const;
+  osg::FrameStamp*        frameStamp();
+  const osg::FrameStamp*  frameStamp() const;
 
   /// Get/Set the scene data.
-  osg::Node*                    getSceneData();
-  const osg::Node*              getSceneData() const;
-  void                          setSceneData ( osg::Node* );
+  osg::Node*              getSceneData();
+  const osg::Node*        getSceneData() const;
+  void                    setSceneData( osg::Node* );
 
-  double                        getTimeSinceStart();
+  double                  getTimeSinceStart();
 
-  void                          normalize ( bool state );
-  bool                          normalize() const;
+  void                    normalize ( bool state );
+  bool                    normalize() const;
 
   /// Get the models node.
-  osg::MatrixTransform*         models();
-  const osg::MatrixTransform*   models() const;
+  osg::MatrixTransform*              models();
+  const osg::MatrixTransform*        models() const;
 
   /// Get the viewport.
-  osg::Viewport*                viewport()       { return _viewport.get(); }
-  const osg::Viewport*          viewport() const { return _viewport.get(); }
+  osg::Viewport*          viewport()       { return _viewport.get(); }
+  const osg::Viewport*    viewport() const { return _viewport.get(); }
 
   /// Export the next frame.
-  void                          exportNextFrame();
+  void                    exportNextFrame ();
 
   /// Get/Set the number of rendering passes
-  virtual void                  renderingPasses ( unsigned int number );
-  virtual unsigned int          renderingPasses() const;
+  virtual void            renderingPasses ( unsigned int number );
+  virtual unsigned int    renderingPasses () const;
 
   /// Get the Preferences.
-  Preferences *                 preferences();
-  const Preferences *           preferences() const;
+  Preferences *           preferences ();
+  const Preferences *     preferences () const;
+
+  /// Get/Set the analog trim.
+  const Usul::Math::Vec2f&    analogTrim () const;
+  void                        analogTrim ();
+
+  // Print the usage string.
+  static void                   usage ( const std::string &exe, std::ostream &out );
 
   /// Add/Remove group from projection node
-  osg::Group*                   projectionGroupGet    ( const std::string& );
-  void                          projectionGroupRemove ( const std::string& );
-  bool                          projectionGroupHas    ( const std::string& ) const;
+  osg::Group*             projectionGroupGet    ( const std::string& );
+  void                    projectionGroupRemove ( const std::string& );
+  bool                    projectionGroupHas    ( const std::string& ) const;
 
   /// Get/Set the frame dump flag.
-  void                          frameDump ( bool b );
-  bool                          frameDump() const;
+  void                    frameDump ( bool b );
+  bool                    frameDump () const;
+
+  /// Get/Set the navigator.
+  void                    navigator ( Navigator * );
+  Navigator *             navigator ();
+  const Navigator *       navigator () const;
 
   // Menu scene hiding functions
   bool                    menuSceneShowHide () const;
@@ -235,24 +281,30 @@ public:
   Menu *                  statusBar();
   const Menu *            statusBar() const;
 
+  // Get the begining of the favorites.
+  FavoriteIterator        favoritesBegin();
+
+  // Get the end of the favorites.
+  FavoriteIterator        favoritesEnd();
+
   /// Toggle time based rendering.
   void                    timeBased ( bool b );
-  bool                    timeBased() const;
+  bool                    timeBased () const;
 
   // Export functions.
-  void                    exportWorld();
-  void                    exportWorldBinary();
-  void                    exportScene();
-  void                    exportSceneBinary();
+  void                    exportWorld ();
+  void                    exportWorldBinary ();
+  void                    exportScene ();
+  void                    exportSceneBinary ();
   void                    exportDocument ( const std::string& ext );
 
   // View functions.
-  void                    viewWorld();
-  void                    viewScene();
+  void                    viewWorld ();
+  void                    viewScene ();
 
   /// Get/Set near far mode.
   void                    setComputeNearFar ( bool b );
-  bool                    getComputeNearFar() const;
+  bool                    getComputeNearFar () const;
   bool                    isComputeNearFar ( osg::CullSettings::ComputeNearFarMode ) const;
 
   /// Reread the preference files and reinitialiaze.
@@ -290,10 +342,8 @@ protected:
 
   /// VR Juggler methods.
   virtual void                  _init();
-  virtual void                  _contextInit();
   virtual void                  _preFrame();
   virtual void                  _latePreFrame();
-  virtual void                  _draw();
   virtual void                  _postFrame();
 
   // Draw functions.
@@ -304,27 +354,13 @@ protected:
   /// Set the viewport.
   virtual void                  _setViewport ( osg::Viewport*, vrj::GlDrawManager* );
 
-  // Create the button mappings.
-  void                          _createButtonMappings ( const XmlTree::Node& node );
-
-  // Create the buttons.
-  void                          _createButtons ( const XmlTree::Node& node );
-
-  // Create the analogs.
-  void                          _createAnalogs ( const XmlTree::Node& node );
-
-  /// Contruct the application.
   void                          _construct();
 
   // Is this the head node?
   bool                          _isHeadNode() const;
 
-  // Initialize shared data.
-  virtual void                  _initializeSharedData ( const std::string& hostname );
-
   // Load the file(s).
-  virtual void                  _loadModelFiles  ( const Strings& filenames );
-  virtual void                  _loadDirectories ( const Strings& directories );
+  virtual void                  _loadModelFiles  ( const Filenames& filenames );
 
   // Set the near and far clipping planes based on the scene.
   void                          _setNearAndFarClippingPlanes();
@@ -344,13 +380,13 @@ protected:
   void                          _processCommands ();
 
   /// Navigate.
-  virtual void                  _navigate();
-
-  // The navigator has changed.
-  virtual void                  _navigatorChanged ( Navigator::RefPtr newNavigator, Navigator::RefPtr oldNavigator );
+  virtual void                  _navigate ();
 
   /// Update the status bar text.
   void                          _updateStatusBar ( const std::string &text );
+
+  // Parse the command-line arguments.
+  void                          _parseCommandLine();
 
   // Read the user's functor config file.
   void                          _readFunctorFile();
@@ -406,6 +442,10 @@ protected:
   /// Set the allow update state.
   void                          _setAllowUpdate ( bool );
   bool                          _isUpdateOn () const;
+
+  // Set/Get the navigation matrix.
+  void                          _navigationMatrix ( const osg::Matrixd& m );
+  const osg::Matrixd&           _navigationMatrix() const;
 
   /// Get the screen shot directory.
   std::string                   _screenShotDirectory() const;
@@ -497,7 +537,7 @@ protected:
 
   /// Get the view matrix ( Usul::Interfaces::IViewMatrix ).
   /// Note: In this implementation, the navigation matrix is set.
-  virtual const osg::Matrixd&   getViewMatrix() const;
+  virtual const osg::Matrixd&   getViewMatrix (  ) const;
 
   // Set the status bar text (IStatusBar).
   virtual void                  setStatusBarText ( const std::string &text, bool force );
@@ -584,8 +624,10 @@ private:
   // Don't allow derived classes to implement these VR Juggler functions.
   // Implement the _function instead.  
   // This is to ensure that the functions are wrapped in a try/catch.
+  virtual void            contextInit();
   virtual void            contextPreDraw();
   virtual void            contextPostDraw();
+  virtual void            draw();
   virtual void            contextClose();
 
   // Typedefs.
@@ -601,6 +643,7 @@ private:
   typedef std::map<std::string, Usul::Math::Vec4f >        ColorMap;
   typedef VRV::Core::SharedData<double>                    SharedDouble;
   typedef VRV::Core::SharedData<std::string>               SharedString;
+  typedef VRV::Core::SharedData<osg::Matrixd>              SharedMatrix;
   typedef Usul::Functors::Interaction::Common::BaseFunctor BaseFunctor;
   typedef BaseFunctor::RefPtr                              FunctorPtr;
   typedef Usul::Interfaces::IIntersectListener             IIntersectListener;
@@ -632,6 +675,7 @@ private:
   double                                 _frameTime;
   cluster::UserData < SharedDouble >     _sharedFrameTime;
   cluster::UserData < SharedDouble >     _sharedReferenceTime;
+  cluster::UserData < SharedMatrix >     _sharedMatrix;
   mutable cluster::UserData < SharedString >     _sharedScreenShotDirectory;
   vrj::GlContextData< RendererPtr >      _renderer;
   Renderers                              _renderers;
@@ -640,13 +684,25 @@ private:
   osg::Vec2d                             _clipDist;
   bool                                   _exportImage;
   Preferences::RefPtr                    _preferences;
+  Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3d                      _wandOffset;
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
   CommandQueue                           _commandQueue;
   OsgTools::Render::FrameDump            _frameDump;
+  Navigator::RefPtr                      _navigator;
+  unsigned int                           _refCount;
   bool                                   _menuSceneShowHide;
   MenuPtr                                _menu;
   MenuPtr                                _statusBar;
+  std::string                            _preferencesFilename;
+  std::string                            _functorFilename;
+  std::string                            _deviceFilename;
+  ButtonsPtr                             _buttons;
+  TrackerPtr                             _tracker;
+  Analogs                                _analogs;
+  AnalogInputs                           _analogInputs;
+  TransformFunctors                      _transformFunctors;
+  FavoriteFunctors                       _favoriteFunctors;
   float                                  _translationSpeed;
   osg::Matrixd                           _home;
   bool                                   _timeBased;
@@ -667,7 +723,7 @@ private:
   unsigned int                           _selectButtonID;
   unsigned int                           _menuButtonID;
   std::string                            _menuNavigationAnalogID;
-  bool                                   _bodyCenteredRotation;
+	bool                                   _bodyCenteredRotation;
   ButtonCommandsMap                      _buttonCommandsMap;
 
 };

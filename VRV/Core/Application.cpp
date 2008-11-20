@@ -16,6 +16,7 @@
 #include "VRV/Commands/LoadDocument.h"
 #include "VRV/Common/Constants.h"
 #include "VRV/Jobs/SaveImage.h"
+#include "VRV/Core/FunctorHelpers.h"
 #include "VRV/Commands/Camera.h"
 #include "VRV/Commands/Navigator.h"
 #include "VRV/Commands/BackgroundColor.h"
@@ -26,6 +27,9 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
+#include "Usul/CommandLine/Arguments.h"
+#include "Usul/CommandLine/Parser.h"
+#include "Usul/CommandLine/Options.h"
 #include "Usul/Commands/Command.h"
 #include "Usul/Commands/PolygonMode.h"
 #include "Usul/Commands/RenderingPasses.h"
@@ -109,7 +113,6 @@ namespace Sections = VRV::Constants::Sections;
 namespace Keys = VRV::Constants::Keys;
 typedef Usul::Registry::Database Reg;
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Application, Application::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -131,6 +134,7 @@ Application::Application() :
   _frameStart        ( static_cast < osg::Timer_t > ( 0.0 ) ),
   _sharedFrameTime   (),
   _sharedReferenceTime  (),
+  _sharedMatrix      (),
   _sharedScreenShotDirectory (),
   _frameTime         ( 1 ),
   _renderer          (),
@@ -140,13 +144,22 @@ Application::Application() :
   _clipDist          ( 0, 0 ),
   _exportImage       ( false ),
   _preferences       ( new Preferences ),
+  _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4). Move to preference file.
   _databasePager     ( 0x0 ),
   _commandQueue      ( ),
   _frameDump         (),
+  _navigator         ( 0x0 ),
+  _refCount          ( 0 ),
   _menuSceneShowHide ( true ),
   _menu              ( new Menu ),
   _statusBar         ( new Menu ),
+  _preferencesFilename (),
+  _functorFilename   (),
+  _deviceFilename    (),
+  _analogInputs      (),
+  _transformFunctors (),
+  _favoriteFunctors  (),
   _translationSpeed  ( 1.0f ),
   _home              ( osg::Matrixd::identity() ),
   _timeBased         ( true ),
@@ -167,15 +180,26 @@ Application::Application() :
   _selectButtonID     ( VRV::BUTTON_TRIGGER ),
   _menuButtonID       ( VRV::BUTTON_JOYSTICK ),
   _menuNavigationAnalogID ( "Joystick" ),
-	_bodyCenteredRotation ( false )
+	_bodyCenteredRotation ( false ),
+  _buttons           ( new VRV::Devices::ButtonGroup ),
+  _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
+  _analogs           ()
 {
   USUL_TRACE_SCOPE;
 
   // We want thread safe ref and unrefing.
   osg::Referenced::setThreadSafeReferenceCounting ( true );
 
+  // Set default file paths.
+  this->_setDefaultPath ( _preferencesFilename, "preferences" );
+  this->_setDefaultPath ( _functorFilename,     "functors" );
+  this->_setDefaultPath ( _deviceFilename,      "devices" );
+
   // Set the delete handler.
   //osg::Referenced::setDeleteHandler ( _deleteHandler );
+
+  // Parse the command-line arguments.
+  this->_parseCommandLine();
 
   this->_construct();
 
@@ -227,9 +251,9 @@ void Application::_construct()
   _models->setName       ( "_models"       );
   _auxiliary->setName    ( "_auxiliary"    );
 
-#if 1
+#if 0
   osg::ref_ptr <osg::Geode> geode ( new osg::Geode );
-  geode->addDrawable ( OsgTools::ShapeFactory::instance().sphere( 5.0 ) );
+  geode->addDrawable ( OsgTools::ShapeFactorySingleton::instance().sphere( 5.0 ) );
 
   osg::ref_ptr <osg::Material>  mat ( new osg::Material );
   osg::Vec4 color ( 0.25, 0.25, 0.5, 1.0 );
@@ -251,10 +275,22 @@ void Application::_construct()
   if ( _databasePager.valid() )
   {
     _databasePager->registerPagedLODs( _sceneManager->scene() ); 
-
+    
     _databasePager->setAcceptNewDatabaseRequests( true );
     _databasePager->setDatabasePagerThreadPause( false );
   }
+
+  // Read the user's preference file, if any.
+  this->_readUserPreferences();
+
+  // Make a copy of the translation speed.
+  _translationSpeed = this->preferences()->translationSpeed ();
+
+  // Read the user's devices file
+  this->_readDevicesFile();
+
+  // Read the user's functor file.
+  this->_readFunctorFile();
 
   // Make the intersector.
   typedef Usul::Functors::Interaction::Navigate::Direction Dir;
@@ -281,6 +317,9 @@ Application::~Application()
 
   // Make sure.
   this->cleanup();
+
+  // Make sure we don't have any references hanging around.
+  USUL_ASSERT ( 0 == _refCount );
 }
 
 
@@ -343,14 +382,19 @@ void Application::cleanup()
   document = 0x0;
 
   // Remove all button listeners.
-  this->_clearButtonPressListeners();
-  this->_clearButtonReleaseListeners();
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonPressListeners();
+    (*iter)->clearButtonReleaseListeners();
+  }
 
   // Clear the navigator.
   this->navigator ( 0x0 );
 
   // Clear the functor maps.
-  this->_clearAllFunctors();
+  _analogInputs.clear();
+  _transformFunctors.clear();
+  _favoriteFunctors.clear();
 
   // Clear the commands.
   MenuKit::MenuCommands::instance().clear();
@@ -431,6 +475,7 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
 {
   switch ( iid )
   {
+  case Usul::Interfaces::IUnknown::IID:
   case VRV::Interfaces::IModelAdd::IID:
     return static_cast < VRV::Interfaces::IModelAdd* > ( this );
   case Usul::Interfaces::IClippingDistance::IID:
@@ -473,6 +518,8 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IPolygonMode * > ( this );
   case Usul::Interfaces::IShadeModel::IID:
     return static_cast < Usul::Interfaces::IShadeModel * > ( this );
+  case Usul::Interfaces::INavigationFunctor::IID:
+    return static_cast < Usul::Interfaces::INavigationFunctor * > ( this );
   case Usul::Interfaces::IBackgroundColor::IID:
     return static_cast < Usul::Interfaces::IBackgroundColor * > ( this );
   case Usul::Interfaces::IRenderingPasses::IID:
@@ -500,7 +547,7 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IRenderNotify::IID:
     return static_cast<Usul::Interfaces::IRenderNotify*> ( this );
   default:
-    return BaseClass::queryInterface ( iid );
+    return 0x0;
   }
 }
 
@@ -536,12 +583,9 @@ void Application::viewAll ( osg::Node* node, osg::Matrix::value_type zScale )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_contextInit()
+void Application::contextInit()
 {
   USUL_TRACE_SCOPE;
-
-  // Call the base class first.
-  BaseClass::_contextInit();
 
   // Make a new Renderer.
   RendererPtr renderer ( new Renderer );
@@ -583,7 +627,8 @@ void Application::_contextInit()
   renderer->scene ( _sceneManager->scene() );
 
   // Set the background color.
-  osg::Vec4 color ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( _backgroundColor ) );
+  osg::Vec4 color;
+  OsgTools::Convert::vector ( _backgroundColor, color, 4 );
   renderer->backgroundCorners ( OsgTools::Render::Renderer::Corners::ALL );
   renderer->backgroundColor ( color, OsgTools::Render::Renderer::Corners::ALL );
 
@@ -598,7 +643,7 @@ void Application::_contextInit()
   _viewport->setViewport ( vp[0], vp[1], vp[2], vp[3] );
 
   // Set the projection.
-  _sceneManager->resize ( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() );
+  _sceneManager->resize( _viewport->x(), _viewport->width(), _viewport->y(), _viewport->height() );
 
   osg::ref_ptr < osg::StateSet > ss ( renderer->getGlobalStateSet() );
   osg::ref_ptr < osg::LightModel > model ( new osg::LightModel );
@@ -651,13 +696,72 @@ void Application::contextPreDraw()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Small class that pushes the state in constructor and pops it in destructor.
+//  This is for exception safety.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace VRV {
+namespace Core {
+namespace Detail 
+{
+  struct OpenGlStackPushPop
+  {
+    OpenGlStackPushPop()
+    {
+      #if 0
+      // Clear the errors.
+      while ( GL_ERROR_NO != ::glGetError() ){}
+      #endif
+
+      glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+
+      //glMatrixMode(GL_TEXTURE);
+      //glPushMatrix();
+    }
+    ~OpenGlStackPushPop()
+    {
+      // Check for errors.
+      #if 0
+      assert ( GL_ERROR_NO == ::glGetError() );
+      #endif
+
+      //glMatrixMode(GL_TEXTURE);
+      //glPopMatrix();
+
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+
+      glPopAttrib();
+    }
+  };
+}
+}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Draw.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_draw()
+void Application::draw()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+
+  // For exception safety. Pushes attributes in constructor, pops them in destructor.
+  Detail::OpenGlStackPushPop pushPop;
 
   // Get the renderer for this context.
   Renderer* renderer ( *(_renderer) );
@@ -665,9 +769,8 @@ void Application::_draw()
   // Drawing is about to happen.
   Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_preDraw ), renderer, "3501390015" );
 
-  // Draw (Function pointer variable is used to resolve ambiguity for the compiler).
-  void (Application::*_draw) ( Renderer* ) = &Application::_draw;
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, _draw ), renderer, "1173048910" );
+  // Draw.
+  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_draw ), renderer, "1173048910" );
 
   // Drawing has finished.
   Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_postDraw ), renderer, "2286306551" );
@@ -708,7 +811,7 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
   vrj::GlUserData* userData    ( mgr->currentUserData() );
   vrj::Projection* projection  ( userData->getProjection() );
   vrj::Frustum frustum         ( projection->getFrustum() );
-
+  
   // We need to set this every frame to account for stereo.
   renderer->setFrustum ( frustum[vrj::Frustum::VJ_LEFT],
 				                 frustum[vrj::Frustum::VJ_RIGHT],
@@ -914,29 +1017,38 @@ void Application::_init()
   // Call the base class first.
   BaseClass::_init();
 
-  // Read the user's preference file, if any.
-  this->_readUserPreferences();
-
-  // Make a copy of the translation speed.
-  _translationSpeed = this->preferences()->translationSpeed();
-
-  // Read the user's devices file
-  this->_readDevicesFile();
-
-  // Read the user's functor file.
-  this->_readFunctorFile();
-
   // Set the scene-viewer's scene.
   this->setSceneData ( _root.get() );
 
   // Set the initial time.
   _initialTime = _timer.tick();
 
-  // Initialize shared data.
   const std::string head ( this->preferences()->headNodeMachineName() );
-  this->_initializeSharedData ( head );
 
-  // Create the screen shot directory.
+  // Initialize the shared frame time data.
+  {
+    vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
+    _sharedFrameTime.init ( guid, head );
+  }
+
+  // Initialize the shared frame start data.
+  {
+    vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
+    _sharedReferenceTime.init ( guid, head );
+  }
+
+  // Initialize the shared navigation matrix.
+  {
+    vpr::GUID guid ( "FEFB5D44-9EC3-4fe3-B2C7-43C394A49848" );
+    _sharedMatrix.init ( guid, head );
+  }
+
+  {
+    vpr::GUID guid ( "edfcdb08-eece-45f5-b9d7-174bba164a41" );
+    _sharedScreenShotDirectory.init ( guid, head );
+  }
+  
+
   if ( _sharedScreenShotDirectory.isLocal() )
   {
     // Get the current time.
@@ -1033,37 +1145,6 @@ void Application::_init()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Initialize shared data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_initializeSharedData ( const std::string& hostname )
-{
-  // Call the base class first.
-  BaseClass::_initializeSharedData ( hostname );
-
-  // Initialize the shared frame time data.
-  {
-    vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
-    _sharedFrameTime.init ( guid, hostname );
-  }
-
-  // Initialize the shared frame start data.
-  {
-    vpr::GUID guid ( "2E3E374B-B232-476f-A870-F854E717F61A" );
-    _sharedReferenceTime.init ( guid, hostname );
-  }
-
-  {
-    vpr::GUID guid ( "edfcdb08-eece-45f5-b9d7-174bba164a41" );
-    _sharedScreenShotDirectory.init ( guid, hostname );
-  }
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Called before the frame.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1071,10 +1152,6 @@ void Application::_initializeSharedData ( const std::string& hostname )
 void Application::_preFrame()
 {
   USUL_TRACE_SCOPE;
-
-  // Call the base class.
-  BaseClass::_preFrame();
-
   Guard guard ( this->mutex() );
 
   // Mark the start of the frame.
@@ -1088,21 +1165,38 @@ void Application::_preFrame()
   }
 
   // Write out the start of the frame.
-  if ( _sharedReferenceTime.isLocal() )
+  if ( _sharedReferenceTime.isLocal () )
   {
-    _sharedReferenceTime->data ( osg::Timer::instance()->delta_s ( _initialTime, osg::Timer::instance()->tick() ) );
+    _sharedReferenceTime->data ( osg::Timer::instance()->delta_s( _initialTime, osg::Timer::instance()->tick() ) );
   }
 
-  // Update the tracker.
-  this->trackerUpdate();
+  // Update these input devices.
+  _buttons->notify();
+  _tracker->update();
 
   // Update all the analog inputs.
-  this->analogsUpdate();
+  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
+  {
+    Joystick::RefPtr joystick ( iter->second );
 
+    if ( joystick.valid() )
+    {
+      // update all the joystick analog inputs
+      joystick->update();
+
+      // Send any notifications to all joystick analog inputs.
+      joystick->notify();
+    }
+  }
   std::cout << "\r" << std::flush;
-  
   // Navigate if we are supposed to.
-  this->_navigate();
+  this->_navigate ();
+
+  // Write out the navigation matrix.
+  if ( _sharedMatrix.isLocal () )
+  {
+    _sharedMatrix->data ( _navBranch->getMatrix () );
+  }
 
   // Update the progress bars.
   _progressBars->removeFinishedProgressBars();
@@ -1185,9 +1279,7 @@ void Application::_latePreFrame()
   }
 
   // Set the navigation matrix.
-  osg::Matrixd currentNavMatrix;
-  OsgTools::Convert::matrix ( this->_navigationMatrixGet(), currentNavMatrix );
-  _navBranch->setMatrix ( currentNavMatrix );
+  _navBranch->setMatrix ( _sharedMatrix->data() );
 
   // Notify that it's ok to update.
   this->_updateNotify();
@@ -1198,11 +1290,7 @@ void Application::_latePreFrame()
     _databasePager->signalBeginFrame( _framestamp.get() );
 
     // syncronize changes required by the DatabasePager thread to the scene graph
-#if OPENSCENEGRAPH_MAJOR_VERSION <= 2 && OPENSCENEGRAPH_MINOR_VERSION <= 6
-    _databasePager->updateSceneGraph ( _framestamp->getReferenceTime() );
-#else
-	_databasePager->updateSceneGraph ( *_framestamp );
-#endif
+    _databasePager->updateSceneGraph( _framestamp->getReferenceTime() );
   }
 }
 
@@ -1344,6 +1432,30 @@ void Application::addLight ( osg::Light* light )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Reference.  Keep track for debugging.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::ref()
+{
+  ++_refCount;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Unreference.  Keep track for debugging..
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::unref ( bool )
+{
+  --_refCount;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Add a model.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1375,7 +1487,7 @@ void Application::addModel ( osg::Node *model, const std::string& filename )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_loadModelFiles ( const Strings& filenames )
+void Application::_loadModelFiles  ( const Filenames& filenames )
 {
   USUL_TRACE_SCOPE;
 
@@ -1384,27 +1496,6 @@ void Application::_loadModelFiles ( const Strings& filenames )
 
   // Add the command to the queue.
   this->addCommand ( command.get () );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Load all models in the directories.  TODO: Search for the files that the loaded documents can handle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_loadDirectories ( const Strings& directories )
-{
-  Strings filenames;
-  for ( Strings::const_iterator iter = directories.begin(); iter != directories.end(); ++ iter )
-  {
-    // Find the files that we can load.
-    Usul::File::findFiles ( *iter, "osg", filenames );
-    Usul::File::findFiles ( *iter, "ive", filenames );
-  }
-
-  // Load what we found.
-  this->_loadModelFiles ( filenames );
 }
 
 
@@ -1574,7 +1665,8 @@ osg::Group *Application::modelsScene()
 
 void Application::postMultiply ( const Matrix &m )
 {
-  this->navigationPostMultiply ( m );
+  Guard guard ( this->mutex() );
+  _navBranch->postMult ( osg::Matrixd ( m.get() ) );
 }
 
 
@@ -1586,7 +1678,34 @@ void Application::postMultiply ( const Matrix &m )
 
 void Application::preMultiply ( const Matrix &m )
 {
-  this->navigationPreMultiply ( m );
+  Guard guard ( this->mutex() );
+  _navBranch->preMult ( osg::Matrixd ( m.get() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_navigationMatrix ( const osg::Matrixd& m )
+{
+  Guard guard ( this->mutex() );
+  _navBranch->setMatrix ( m );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const osg::Matrixd& Application::_navigationMatrix ( ) const
+{
+  Guard guard ( this->mutex() );
+  return _navBranch->getMatrix ( );
 }
 
 
@@ -1656,7 +1775,8 @@ void Application::backgroundColor( const Usul::Math::Vec4f& color )
   Guard guard ( this->mutex() );
 
   _backgroundColor = color;
-  osg::Vec4 c ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( color ) );
+  osg::Vec4 c;
+  OsgTools::Convert::vector ( color, c, 4 );
 
   for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
   {
@@ -1842,7 +1962,7 @@ void Application::_readUserPreferences()
     Preferences::RefPtr preferences ( new Preferences );
 
     // Read the preferences.
-    preferences->read ( this->getPreferencesFilename() );
+    preferences->read ( _preferencesFilename );
     
     {
       Guard guard ( this->mutex() );
@@ -1873,15 +1993,20 @@ void Application::wandPosition ( Usul::Math::Vec3d &p ) const
 {
   USUL_TRACE_SCOPE;
 
-  // Get the wand's position.
-  this->trackerPosition ( p );
-
   // Get the wand's offset.
   Usul::Math::Vec3d offset;
   this->wandOffset ( offset );
 
-  // Add the offset.
-  p += offset;
+  // Get the tracker.
+  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
+
+  // Set the vector from the wand's position plus the offset.
+  if ( true == tracker.valid() )
+  {
+    p[0] = tracker->x() + offset[0];
+    p[1] = tracker->y() + offset[1];
+    p[2] = tracker->z() + offset[2];
+  }
 }
 
 
@@ -1894,9 +2019,13 @@ void Application::wandPosition ( Usul::Math::Vec3d &p ) const
 void Application::wandMatrix ( Matrix &W ) const
 {
   USUL_TRACE_SCOPE;
+  
+  // Get the tracker.
+  TrackerPtr tracker ( Usul::Threads::Safe::get ( this->mutex(), _tracker ) );
 
-  // Get the matrix.
-  this->trackerMatrix ( W );
+  // Set the given matrix from the wand's matrix.
+  if ( true == tracker.valid() )
+    W.set ( tracker->matrix().getData() );
 
   // Get the wand's offset.
   Usul::Math::Vec3d offset;
@@ -1983,6 +2112,62 @@ void Application::wandRotation ( Matrix &W ) const
     tm->setText ( 15, 75, std::string ( &chars[0] ), osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
 
 #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the analog trim.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Usul::Math::Vec2f& Application::analogTrim() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _analogTrim;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the trim. This assumes the user is not tilting the joystick one way 
+//  or the other. It records the value at the neutral position. If the value 
+//  is 0.5 (like it should be) then the "trim" will be zero.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::analogTrim()
+{
+  USUL_TRACE_SCOPE;
+
+  for( Analogs::iterator iter = _analogs.begin(); iter != _analogs.end(); ++iter )
+  {
+		Joystick::RefPtr joystick ( iter->second );
+
+		if ( joystick.valid() )
+		{
+			float x ( 0.5f - joystick->horizontal() );
+			float y ( 0.5f - joystick->vertical() );
+	  
+			joystick->analogTrim( x, y );
+		}
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Print the usage string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::usage ( const std::string &exe, std::ostream &out )
+{
+  out << "usage: " << exe << ' ';
+  out << "<juggler1.config> [juggler2.config ... jugglerN.config] ";
+  out << "[document0, document1, ..., documentN] ";
+  out << '\n';
 }
 
 
@@ -2397,9 +2582,8 @@ void Application::_navigate()
 #endif
 
   // Tell the navigator to execute.
-  Navigator::RefPtr navigator ( this->navigator() );
-  if ( navigator.valid() )
-    (*navigator)();
+  if ( _navigator.valid() )
+    (*_navigator)();
 
 	// Restore center.
 	if ( true == bodyCentered )
@@ -2667,6 +2851,69 @@ bool Application::_isHeadNode() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Parse the command-line arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::_parseCommandLine()
+{
+  // Typedefs.
+  typedef Usul::CommandLine::Parser    Parser;
+  typedef Usul::CommandLine::Arguments Arguments;
+
+  // Get the command line arguments.
+  Arguments::Args args ( Arguments::instance().args () );
+
+  // Make the parser.  Offset beginning by one to skip the application name.
+  Parser parser ( args.begin() + 1, args.end() );
+
+  // Options class.
+  Usul::CommandLine::Options options ( parser.options() );
+
+  // Get new preferences and functor file from the command line.
+  _preferencesFilename   = options.get ( "preferences", _preferencesFilename );
+  _functorFilename       = options.get ( "functors",    _functorFilename     );
+  _deviceFilename        = options.get ( "devices",    _deviceFilename     );
+
+  // Have to load the config files now. Remove them from the arguments.
+  Parser::Args configs ( parser.files ( ".jconf", true ) );
+  this->_loadConfigFiles ( configs );
+
+  // The filenames to load.
+  Filenames filenames;
+
+  // Find all directories.
+  Parser::Args directories;
+
+  // Extract the files with the given extension.
+  Usul::Algorithms::extract ( Usul::File::IsDirectory(),
+                              parser.args(),
+                              directories,
+                              true );
+
+  for ( Parser::Args::iterator iter = directories.begin(); iter != directories.end(); ++ iter )
+  {
+    // Find the files that we can load.
+    Usul::File::findFiles ( *iter, "osg", filenames );
+    Usul::File::findFiles ( *iter, "ive", filenames );
+  }
+
+  // Extract the model files and remove them from the remaining arguments.
+  Parser::Args models ( parser.files ( true ) );
+
+  // Reserve enough room.
+  filenames.reserve ( filenames.size() + models.size() );
+
+  // Copy the model files into our list to load.
+  std::copy ( models.begin(), models.end(), std::back_inserter( filenames ) );
+
+  // Load the model files.
+  this->_loadModelFiles ( filenames );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Read the user's devices config file.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -2674,50 +2921,25 @@ bool Application::_isHeadNode() const
 void Application::_readDevicesFile()
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
 
   // Get the filename.
-  const std::string file ( this->getDeviceFilename() );
+  const std::string file ( Usul::Threads::Safe::get ( this->mutex(), _deviceFilename ) );
 
-  // Check to see if the file exists.
   if ( false == Usul::Predicates::FileExists::test ( file ) )
   {
     std::cout << "Warning 3773295320: No devices file found." << std::endl;
     return;
   }
 
-  // Create and load the document.
+  ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
+
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
   
-  // Create the buttons.
-  this->_createButtons ( *document );
+  // Find all the buttons...
+  XmlTree::Node::Children buttons    ( document->find ( "Button",    true ) );
 
-  // Find all the analogs.
-  this->_createAnalogs ( *document );  
-
-  // Add our self as button listeners.
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  this->addButtonPressListener ( me.get() );
-  this->addButtonReleaseListener ( me.get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create the buttons.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_createButtons ( const XmlTree::Node& node )
-{
-  // Make a new button group.
-  ButtonsPtr buttonGroup ( new VRV::Devices::ButtonGroup );
-
-  // Find all the buttons.
-  typedef XmlTree::Node::Children Children;
-  Children buttons ( node.find ( "Button",    true ) );
-
-  // Create the buttons.
   for ( Children::iterator iter = buttons.begin(); iter != buttons.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -2733,21 +2955,8 @@ void Application::_createButtons ( const XmlTree::Node& node )
     }
   }
 
-  // Set the new button group.
-  this->buttons ( buttonGroup );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create the analogs.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_createAnalogs ( const XmlTree::Node& node )
-{
-  typedef XmlTree::Node::Children Children;
-  XmlTree::Node::Children analogs  ( node.find ( "Analog",    true ) );
+  // Find all the analogs...
+  XmlTree::Node::Children analogs    ( document->find ( "Analog",    true ) );
   for ( Children::iterator iter = analogs.begin(); iter != analogs.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );
@@ -2759,20 +2968,66 @@ void Application::_createAnalogs ( const XmlTree::Node& node )
       const std::string hm ( node->attributes()["h_modifier"] );
       const std::string vm ( node->attributes()["v_modifier"] );
 
-      const float hModifier ( Usul::Convert::Type< std::string, float >::convert( hm ) );
-      const float vModifier ( Usul::Convert::Type< std::string, float >::convert( vm ) );
+      float hModifier = Usul::Convert::Type< std::string, float >::convert( hm );
+      float vModifier = Usul::Convert::Type< std::string, float >::convert( vm );
 
 			if ( false == name.empty() && false == analog0.empty() && false == analog1.empty() )
 			{
-        JoystickPtr analog ( new VRV::Devices::JoystickDevice ( analog0, analog1 ) );
-        analog->name( name );
-        analog->horizontalModifier( hModifier );
-        analog->verticalModifier( vModifier );
-
-        this->analogAdd ( analog );
+				_analogs[name] = new VRV::Devices::JoystickDevice ( analog0, analog1 );
+        _analogs[name]->name( name );
+        _analogs[name]->horizontalModifier( hModifier );
+        _analogs[name]->verticalModifier( vModifier );
+        
 			}
 		}
   }
+  if( _analogs.size() == 0 )
+  {
+    _analogs[ "Joystick" ] = new VRV::Devices::JoystickDevice ( "VJAnalog0", "VJAnalog1" );
+    _analogs[ "Joystick" ]->name( "Joystick" );
+  }
+
+    // read the button mappings from the functor file
+#if 0
+  XmlTree::Node::Children mappings    ( document->find ( "Mapping",    true ) );
+
+  for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( *iter );
+    if ( "Mapping" == node->name() )
+    {
+      const std::string cmd ( node->attributes()["command"] );
+      const std::string btn ( node->attributes()["button_id"] );
+
+      if( "menu" == cmd )
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _menuButtonID = uiid;
+      }
+      else if( "trigger" == cmd )
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _selectButtonID = uiid;
+      }
+      else if( "menu_navigation" == cmd )
+      {
+        _menuNavigationAnalogID = btn;
+      }
+      else
+      {
+        const unsigned int uiid ( ::strtoul ( btn.c_str(), 0x0, 16 ) );
+        _buttonCommandsMap[ uiid ] = cmd;
+      }
+    }	
+  }
+#endif
+
+  _buttons = buttonGroup;
+
+  // Add our self as button listeners.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  this->addButtonPressListener ( me.get() );
+  this->addButtonReleaseListener ( me.get() );
 }
 
 
@@ -2782,67 +3037,45 @@ void Application::_createAnalogs ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_readFunctorFile()
+void Application::_readFunctorFile ()
 {
   USUL_TRACE_SCOPE;
+
+  // Local factory for functor creation.
+  Usul::Factory::ObjectFactory factory;
+
+  // Populate the factory.
+  factory.add ( new Usul::Factory::TypeCreator<JoystickHorizontal> ( "horizontal joystick" ) );
+  factory.add ( new Usul::Factory::TypeCreator<JoystickVertical>   ( "vertical joystick"   ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPitch>          ( "wand pitch"          ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandYaw>            ( "wand yaw"            ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRoll>           ( "wand roll"           ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<IdentityMatrix>     ( "identity matrix"     ) );
+  factory.add ( new Usul::Factory::TypeCreator<InverseMatrix>      ( "inverse matrix"      ) );
+  factory.add ( new Usul::Factory::TypeCreator<MatrixPair>         ( "matrix pair"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandMatrix>         ( "wand matrix"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPosition>       ( "wand position"       ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRotation>       ( "wand rotation"       ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<DirectionFunctor>   ( "direction"           ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<TranslateFunctor>   ( "translate"           ) );
+  factory.add ( new Usul::Factory::TypeCreator<RotateFunctor>      ( "rotate"              ) );
+
+  factory.add ( new Usul::Factory::TypeCreator<FavoriteFunctor>    ( "sequence"            ) );
 
   // Initialize and finalize use of xerces.
   XmlTree::XercesLife life;
 
   // Open the input file.
-  const std::string file ( this->getFunctorFilename() );
-
-  // Return if the file does not exist.
-  if ( false == Usul::Predicates::FileExists::test ( file ) )
-  {
-    std::cout << "Warning 1144855880: Could not find functor file: " << file << std::endl;
-    return;
-  }
-
-  // Load the xml file.
+  const std::string file ( _functorFilename );
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( file );
 
   // read the button mappings from the functor file
-  this->_createButtonMappings ( *document );
-
-  // Find the joystick to use for menu navigation.
-  JoystickPtr joystick ( this->analogFind ( _menuNavigationAnalogID ) );
-
-  // Assign the menu navigation to the specified joystick or default if none specified.
-  if( joystick.valid() )
-  {
-    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
-    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
-  }
-  else
-  {
-    // If we can't find a menu navigation analog print a warning statement.
-    std::cout << "Warning 3677656649: No valid menu navigation joystick found" << std::endl;
-  }
-
-  // Clear what we have.
-  this->_clearAllFunctors();
-  //this->navigator ( 0x0 );
-  
-  // Create the functors.
-  this->_createFunctors ( *document );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create the button mappings.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::_createButtonMappings ( const XmlTree::Node& node )
-{
-  typedef XmlTree::Node::Children Children;
-  Children mappings ( node.find ( "Mapping",    true ) );
+#if 1
+  XmlTree::Node::Children mappings    ( document->find ( "Mapping",    true ) );
 
   for ( Children::iterator iter = mappings.begin(); iter != mappings.end(); ++iter )
   {
@@ -2873,27 +3106,146 @@ void Application::_createButtonMappings ( const XmlTree::Node& node )
       }
     }	
   }
+
+  Analogs::iterator iter ( _analogs.find ( _menuNavigationAnalogID ) );
+  JoystickPtr joystick ( iter != _analogs.end() ? iter->second : 0x0 );
+
+    // assign the menu navigation to the specified joystick or default if none specified
+  if( joystick.valid() )
+  {
+    JoystickCB::RefPtr jcb ( new JoystickCB ( this ) );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_RIGHT, jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_LEFT,  jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_UP,    jcb.get() );
+    joystick->callback ( VRV::Devices::JOYSTICK_ENTERING_DOWN,  jcb.get() );
+  }
+  else
+  {
+    // if we can't find a menu navigation analog print a warning statement
+    std::cout << Usul::Strings::format
+      ( "Warning 3677656649: No valid menu navigation joystick found" ) << std::endl;
+  }
+#endif
+
+  // Initialize the caller.
+  Usul::Interfaces::IUnknown::QueryPtr caller ( this );
+
+  // Find all important functors.
+  Children analogs    ( document->find ( "analog",    true ) );
+  Children digitals   ( document->find ( "digital",   true ) );
+  Children matrices   ( document->find ( "matrix",    true ) );
+  Children directions ( document->find ( "direction", true ) );
+  Children transforms ( document->find ( "transform", true ) );
+  Children favorites  ( document->find ( "favorite",  true ) );
+
+  // The maps of the various functors.
+  MatrixFunctors matrixFunctors;
+  DirectionFunctors directionFunctors;
+
+  // Setters.
+  Helper::AnalogSetter analogSetter       ( _analogs );
+  Helper::MatrixSetter matrixSetter;
+  Helper::DirectionSetter directionSetter ( matrixFunctors );
+  Helper::TransformSetter transformSetter ( directionFunctors );
+  Helper::FavoriteSetter favoriteSetter   ( _analogInputs, _transformFunctors );
+
+  // Save the name of our current navigator.
+  std::string name ( _navigator.valid() ? _navigator->name () : "" );
+
+  // Clear what we have.
+  _analogInputs.clear();
+  _transformFunctors.clear();
+  _favoriteFunctors.clear();
+  //this->navigator ( 0x0 );
+  
+  // Make the functors.
+  Helper::add ( analogSetter,    factory, analogs,    _analogInputs, caller  );
+  Helper::add ( matrixSetter,    factory, matrices,   matrixFunctors, caller );
+  Helper::add ( directionSetter, factory, directions, directionFunctors, caller );
+  Helper::add ( transformSetter, factory, transforms, _transformFunctors, caller );
+  Helper::add ( favoriteSetter,  factory, favorites,  _favoriteFunctors, caller );
+
+  // Set the navigator.  Will be null if there isn't a favorite with this name.
+  Usul::Threads::Safe::set ( this->mutex(), _favoriteFunctors[name].get(), _navigator );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  The navigator has changed.
+//  Set the navigator.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_navigatorChanged ( Navigator::RefPtr newNavigator, Navigator::RefPtr oldNavigator )
+void Application::navigator ( Navigator * navigator )
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  _navigator = navigator;
 
   // Get the name of the navigator.
-  std::string name ( newNavigator.valid() ? newNavigator->name() : "" );
+  std::string name ( _navigator.valid() ? _navigator->name() : "" );
 
   // Get the section for the document.
   Usul::Registry::Node &node ( Usul::Registry::Database::instance()[ this->_documentSection () ] );
 
   // Set the navigator's name.
   node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].set < std::string > ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::Navigator * Application::navigator ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _navigator;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigator.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Application::Navigator * Application::navigator () const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _navigator;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the begining of the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::FavoriteIterator Application::favoritesBegin ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _favoriteFunctors.begin();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the end of the favorites.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::FavoriteIterator Application::favoritesEnd ()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex () );
+  return _favoriteFunctors.end();
 }
 
 
@@ -2983,18 +3335,12 @@ void Application::camera ( CameraOption option )
 
 void Application::_setHome()
 {
-  // Get the current matrix.
-  const Usul::Math::Matrix44d currentNavMatrix ( this->_navigationMatrixGet() );
-
-  // Convert to osg::Matrixd.
-  osg::Matrixd current;
-  OsgTools::Convert::matrix ( currentNavMatrix, current );
-
   Guard guard ( this->mutex() );
-  _home = current;
+  _home = this->_navigationMatrix();
 
-  // Save the home position in the registry.
-  Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::HOME_POSITION ] = currentNavMatrix;
+  Usul::Math::Matrix44d m;
+  OsgTools::Convert::matrix ( _home, m );
+  Usul::Registry::Database::instance()[ this->_documentSection () ][ VRV::Constants::Keys::HOME_POSITION ] = m;
 }
 
 
@@ -3107,7 +3453,7 @@ void Application::timeBased ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::timeBased() const
+bool Application::timeBased (  ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex () );
@@ -3126,13 +3472,16 @@ void Application::_initMenu()
   USUL_TRACE_SCOPE;
   typedef VRV::Prefs::Settings::Color Color;
 
+  osg::Vec4 bgNormal,   bgHighlight,   bgDisabled;
+  osg::Vec4 textNormal, textHighlight, textDisabled;
+  
   // Set menu's background and text colors from preferences.xml stored in VRV::Prefs::Settings
-  osg::Vec4 bgNormal      ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuBgColorNorm()   ) );
-  osg::Vec4 bgHighlight   ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuBgColorHLght()  ) );
-  osg::Vec4 bgDisabled    ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuBgColorDsabl()  ) );
-  osg::Vec4 textNormal    ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuTxtColorNorm()  ) );
-  osg::Vec4 textHighlight ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuTxtColorHLght() ) );
-  osg::Vec4 textDisabled  ( Usul::Convert::Type<Color,osg::Vec4>::convert ( this->preferences()->menuTxtColorDsabl() ) );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorNorm(),   bgNormal,      4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorHLght(),  bgHighlight,   4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuBgColorDsabl(),  bgDisabled,    4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorNorm(),  textNormal,    4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorHLght(), textHighlight, 4 );
+  OsgTools::Convert::vector< Color, osg::Vec4 >( this->preferences()->menuTxtColorDsabl(), textDisabled,  4 );
 
   MenuPtr osgMenu ( new Menu );
 
@@ -3371,12 +3720,8 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
 
   // Namespace aliases to help shorten lines.
   namespace UA = Usul::Adaptors;
-  namespace UC = Usul::Commands;
 
-  // Function pointer variable is used to resolve ambiguity for the compiler.
-  void (Application::*frameDumpSet) ( bool ) = &Application::frameDump;
-  bool (Application::*frameDumpGet) () const = &Application::frameDump;
-  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Frame Dump", UA::memberFunction<void> ( this, frameDumpSet ), UA::memberFunction<bool> ( this, frameDumpGet ) ) ) );
+  menu->append ( new ToggleButton ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
   menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Reset Clipping", _setNearAndFarClippingPlanes ) ) );
   menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Set Home",       _setHome ) ) );
   menu->append ( new Button       ( VRV_MAKE_COMMAND ( "View All",       viewScene ) ) );
@@ -3474,30 +3819,22 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   
   // Favorites menu
   {
-    // Make the menu.
-    MenuKit::Menu::RefPtr favoritesMenu ( new MenuKit::Menu ( "Favorites", MenuKit::Menu::VERTICAL ) );
-    menu->append ( favoritesMenu.get() );
-
-    // Get the favorites.
-    FavoriteFunctors favorites ( this->favoriteFunctors() );
+    MenuKit::Menu::RefPtr favorites ( new MenuKit::Menu ( "Favorites", MenuKit::Menu::VERTICAL ) );
+    menu->append ( favorites.get() );
 
     typedef VRV::Commands::Navigator Navigator;
-    for ( FavoriteIterator iter = favorites.begin(); iter != favorites.end(); ++iter )
+    for ( FavoriteIterator iter = this->favoritesBegin(); iter != this->favoritesEnd (); ++iter )
     {
       // Only add valid favorites.
       if ( iter->second.valid() )
-        favoritesMenu->append ( new RadioButton ( new Navigator ( iter->second, me ) ) );
+        favorites->append ( new RadioButton ( new Navigator ( iter->second, me ) ) );
     }
   }
 
   menu->addSeparator();
   
 	menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Body Centered Rotation", UA::memberFunction<void> ( this, &Application::bodyCenteredRotation ), UA::memberFunction<bool> ( this, &Application::isBodyCenteredRotation ) ) ) );
-
-  // Function pointer variable is used to resolve ambiguity for the compiler.
-  void (Application::*timeBasedSet) ( bool ) = &Application::timeBased;
-  bool (Application::*timeBasedGet) () const = &Application::timeBased;
-  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Time Based", UA::memberFunction<void> ( this, timeBasedSet ), UA::memberFunction<bool> ( this, timeBasedGet ) ) ) );
+  menu->append ( new ToggleButton ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
 
 	menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 10", _increaseSpeedTen ) ) );
   menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 2",  _increaseSpeed    ) ) );
@@ -3522,7 +3859,6 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 
   // Namespace aliases to help shorten lines.
   namespace UA = Usul::Adaptors;
-  namespace UC = Usul::Commands;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -3555,22 +3891,17 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     MenuKit::Menu::RefPtr buttons ( new MenuKit::Menu ( "Buttons" ) );
     MenuKit::Menu::RefPtr assign ( new MenuKit::Menu ( "Assign" ) );
 
-    ButtonGroup::RefPtr buttonGroup ( this->buttons() );
-
-    if ( buttonGroup.valid() )
+    for( Buttons::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
     {
-      for( ButtonGroup::iterator iter = buttonGroup->begin(); iter != buttonGroup->end(); ++iter )
-      {
-			  VRV::Devices::ButtonDevice::RefPtr button ( *iter );
+			VRV::Devices::ButtonDevice::RefPtr button ( *iter );
 
-			  if ( true == button.valid() )
-			  {
-				  const std::string name ( button->getButtonName() );
-				  const unsigned long id ( button->buttonID() );
+			if ( true == button.valid() )
+			{
+				const std::string name ( button->getButtonName() );
+				const unsigned long id ( button->buttonID() );
 
-				  assign->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, _assignNextMenuSelection, id ) ) );
-			  }
-      }
+				assign->append ( new Button ( VRV_MAKE_COMMAND_ARG0 ( name, _assignNextMenuSelection, id ) ) );
+			}
     }
     
     buttons->append ( assign );
@@ -3580,13 +3911,8 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     menu->append ( buttons );
   }
 
-  // Add button to calibrate joysticks.
-  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Calibrate Joystick", analogsCalibrate ) ) );
-
-  // Function pointer variable is used to resolve ambiguity for the compiler.
-  void (Application::*menuSceneShowHideSet) ( bool ) = &Application::menuSceneShowHide;
-  bool (Application::*menuSceneShowHideGet) () const = &Application::menuSceneShowHide;
-  menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Hide Scene", UA::memberFunction<void> ( this, menuSceneShowHideSet ), UA::memberFunction<bool> ( this, menuSceneShowHideGet ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
+  menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 
   menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Update", _setAllowUpdate, _isUpdateOn ) ) );
   menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Intersect", allowIntersections, isAllowIntersections ) ) );
@@ -3604,7 +3930,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportWorld()
+void Application::exportWorld ( )
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3620,7 +3946,7 @@ void Application::exportWorld()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportWorldBinary()
+void Application::exportWorldBinary ( )
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3636,7 +3962,7 @@ void Application::exportWorldBinary()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportScene()
+void Application::exportScene ()
 {
   static unsigned int count ( 0 );
   std::string number ( this->_counter ( ++count ) );
@@ -3651,7 +3977,7 @@ void Application::exportScene()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportSceneBinary()
+void Application::exportSceneBinary ( )
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3667,7 +3993,7 @@ void Application::exportSceneBinary()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::viewWorld()
+void Application::viewWorld ( )
 {
   USUL_TRACE_SCOPE;
 
@@ -3678,9 +4004,7 @@ void Application::viewWorld()
   this->viewAll ( this->models(), this->preferences()->viewAllScaleZ() );
 
   // Move the navigation branch.
-  Usul::Math::Matrix44d m;
-  OsgTools::Convert::matrix ( this->models()->getMatrix(), m );
-  this->_navigationMatrixSet ( m );
+  this->_navigationMatrix ( this->models()->getMatrix() );
 
   // Restore the model's matrix.
   this->models()->setMatrix ( original );
@@ -3696,7 +4020,7 @@ void Application::viewWorld()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::viewScene()
+void Application::viewScene ( )
 {
   USUL_TRACE_SCOPE;
   this->viewAll ( this->navigationScene(), this->preferences()->viewAllScaleZ() );
@@ -3962,11 +4286,17 @@ void Application::_initLight()
   }
 
   osg::ref_ptr< osg::Light > light ( new osg::Light );
-  osg::Vec3 ld ( Usul::Convert::Type<Usul::Math::Vec3f,osg::Vec3>::convert ( this->preferences()->lightDirection() ) );
-  osg::Vec4 lp ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->lightPosition() ) );
-  osg::Vec4 ambient ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->ambientLightColor() ) );
-  osg::Vec4 diffuse ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->diffuseLightColor() ) );
-  osg::Vec4 specular ( Usul::Convert::Type<Usul::Math::Vec4f,osg::Vec4>::convert ( this->preferences()->specularLightColor() ) );
+  osg::Vec3 ld;
+  osg::Vec4 lp;
+  osg::Vec4 ambient;
+  osg::Vec4 diffuse;
+  osg::Vec4 specular;
+
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->lightPosition(), lp, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec3f,osg::Vec3>( this->preferences()->lightDirection(), ld, 3 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->ambientLightColor(), ambient, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->diffuseLightColor(), diffuse, 4 );
+  OsgTools::Convert::vector<Usul::Math::Vec4f,osg::Vec4>( this->preferences()->specularLightColor(), specular, 4 );
 
   light->setPosition( lp );
   light->setDirection( ld );
@@ -4636,7 +4966,12 @@ void Application::_postRenderNotify( Renderer* renderer )
 void Application::addButtonPressListener ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  this->_addButtonPressListener ( caller );
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->addButtonPressListener ( caller );
+  }
 }
 
 
@@ -4649,7 +4984,12 @@ void Application::addButtonPressListener ( Usul::Interfaces::IUnknown * caller )
 void Application::clearButtonPressListeners()
 {
   USUL_TRACE_SCOPE;
-  this->_clearButtonPressListeners();
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonPressListeners();
+  }
 }
 
 
@@ -4662,7 +5002,12 @@ void Application::clearButtonPressListeners()
 void Application::removeButtonPressListener ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  this->_removeButtonPressListener ( caller );
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->removeButtonPressListener ( caller );
+  }
 }
 
 
@@ -4675,7 +5020,13 @@ void Application::removeButtonPressListener ( Usul::Interfaces::IUnknown * calle
 void Application::addButtonReleaseListener ( Usul::Interfaces::IUnknown * caller )
 {
   USUL_TRACE_SCOPE;
-  this->_addButtonReleaseListener ( caller );  
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->addButtonReleaseListener ( caller );
+  }
+  
 }
 
 
@@ -4689,7 +5040,12 @@ void Application::addButtonReleaseListener ( Usul::Interfaces::IUnknown * caller
 void Application::clearButtonReleaseListeners()
 {
   USUL_TRACE_SCOPE;
-  this->_clearButtonReleaseListeners();
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->clearButtonReleaseListeners();
+  }
 }
 
 
@@ -4702,7 +5058,12 @@ void Application::clearButtonReleaseListeners()
 void Application::removeButtonReleaseListener ( Usul::Interfaces::IUnknown *caller  )
 {
   USUL_TRACE_SCOPE;
-  this->_removeButtonReleaseListener ( caller );
+  Guard guard ( this->mutex() );
+
+  for ( ButtonGroup::iterator iter = _buttons->begin(); iter != _buttons->end(); ++iter )
+  {
+    (*iter)->removeButtonReleaseListener ( caller );
+  }
 }
 
 
@@ -4908,8 +5269,9 @@ void Application::restoreState()
   this->setComputeNearFar ( autoNearFar );
 
   // Get the home position from the registry.
-  Usul::Math::Matrix44d m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44d > ( Usul::Math::Matrix44d() ) );
-  this->_navigationMatrixSet ( m );
+  Usul::Math::Matrix44d m ( node [ VRV::Constants::Keys::HOME_POSITION ].get < Usul::Math::Matrix44d > ( Usul::Math::Matrix44d () ) );
+  OsgTools::Convert::matrix ( m, _home );
+  this->_navigationMatrix ( _home );
 
   // Set the menu show hide state.
   bool menuShowHide ( node[ VRV::Constants::Keys::MENU_SHOW_HIDE ].get < bool > ( false ) );
@@ -4925,8 +5287,10 @@ void Application::restoreState()
   // Get the navigator.
   std::string navigatorName ( node[ VRV::Constants::Keys::NAVIGATION_FUNCTOR ].get < std::string > ( name ) );
 
-  // Restore the navigator.
-  this->navigator ( this->favoriteFunctor ( navigatorName ) );
+  {
+    Guard guard ( this );
+    this->navigator ( _favoriteFunctors[navigatorName] );
+  }
 
   typedef OsgTools::Render::Renderer::Corners Corners;
   osg::Vec4 black ( 0.0, 0.0, 0.0, 1.0 );
@@ -5091,4 +5455,33 @@ void Application::JoystickCB::operator() ( VRV::Devices::Message m, Usul::Base::
     menu->moveFocused ( MenuKit::Behavior::DOWN );
     break;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the buttons.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Application::ButtonGroup* Application::buttons()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _buttons.get();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find an analog.
+//
+///////////////////////////////////////////////////////////////////////////////
+ 
+Application::JoystickPtr Application::analogFind ( const std::string& key )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  Analogs::iterator iter ( _analogs.find ( key ) );
+  return ( iter != _analogs.end() ? iter->second : 0x0 );
 }

@@ -41,6 +41,7 @@
 #include "MenuKit/RadioButton.h"
 
 #include "OsgTools/Convert.h"
+#include "OsgTools/Convert/Matrix.h"
 #include "OsgTools/Font.h"
 #include "OsgTools/Group.h"
 
@@ -63,7 +64,7 @@
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IAddRowLegend.h"
-#include "Usul/Interfaces/IAnimatePath.h"
+#include "Usul/Interfaces/IAnimateMatrices.h"
 #include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/IClippingDistance.h"
@@ -93,7 +94,7 @@
 #include "osgUtil/IntersectVisitor"
 #include "osgUtil/CullVisitor"
 
-#include <list>
+#include <algorithm>
 #include <sstream>
 
 using namespace Minerva::Document;
@@ -652,6 +653,9 @@ namespace Detail
     typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ErrorChecker;
     typedef GN::Config::UsulConfig < double, double, unsigned int, ErrorChecker > Config;
     typedef GN::Splines::Curve < Config > Curve;
+    typedef Usul::Interfaces::IAnimateMatrices::Matrices Matrices;
+    typedef Usul::Convert::Type < osg::Matrixd, Matrices::value_type > Converter1;
+    typedef Usul::Convert::Type < Matrices::value_type, osg::Matrixd > Converter2;
 
     // Calculate the midpoint.
     const double distance ( Detail::distance ( llh1, llh2, body ) );
@@ -670,6 +674,10 @@ namespace Detail
     tp1[2] = ( ( tp1[2] < llh2[2] ) ? llh2[2] : tp1[2] );
     tp2[2] = ( ( tp2[2] < llh1[2] ) ? llh1[2] : tp2[2] );
     tp2[2] = ( ( tp2[2] < llh2[2] ) ? llh2[2] : tp2[2] );
+
+    // Container to hold the matrices.
+    Matrices matrices;
+    matrices.reserve ( numPoints[0] + numPoints[1] + numPoints[2] );
 
     // First path.
     {
@@ -695,13 +703,7 @@ namespace Detail
         const osg::Vec3d eye    (  e1 + ( (  e2 -  e1 ) * param ) );
         const osg::Vec3d center (  c1 + ( (  c2 -  c1 ) * param ) );
         const osg::Vec3d up     ( up1 + ( ( up2 - up1 ) * param ) );
-        const osg::Matrixd mat ( osg::Matrixd::lookAt ( eye, center, up ) );
-
-        vm->setViewMatrix ( mat );
-
-        // Redraw now if we can.
-        if ( painter.valid() )
-          painter->redraw();
+        matrices.push_back ( Converter1::convert ( osg::Matrixd::lookAt ( eye, center, up ) ) );
       }
     }
 
@@ -758,13 +760,7 @@ namespace Detail
         param = Detail::slowBothEnds ( param, 0.0, 1.0 );
 
         GN::Evaluate::point ( curve, param, llh );
-        const osg::Matrixd mat ( osg::Matrixd::inverse ( Detail::makeLookAtMatrix ( llh[1], llh[0], llh[2], 0, 0, 0, body ) ) );
-
-        vm->setViewMatrix ( mat );
-
-        // Redraw now if we can.
-        if ( painter.valid() )
-          painter->redraw();
+        matrices.push_back ( Converter1::convert ( osg::Matrixd::inverse ( Detail::makeLookAtMatrix ( llh[1], llh[0], llh[2], 0, 0, 0, body ) ) ) );
       }
     }
 
@@ -783,17 +779,35 @@ namespace Detail
         param = Detail::slowBothEnds ( param, 0.0, 1.0 );
 
         const Usul::Math::Vec3d llh ( llha + ( ( llhb - llha ) * param ) );
-        const osg::Matrixd mat ( osg::Matrixd::inverse ( Detail::makeLookAtMatrix ( llh[1], llh[0], llh[2], 0, 0, 0, body ) ) );
-
-        vm->setViewMatrix ( mat );
-
-        // Redraw now if we can.
-        if ( painter.valid() )
-          painter->redraw();
+        matrices.push_back ( Converter1::convert ( osg::Matrixd::inverse ( Detail::makeLookAtMatrix ( llh[1], llh[0], llh[2], 0, 0, 0, body ) ) ) );
       }
     }
 
+    // If there are no matrices then punt. This can happen if the 
+    // number of points requested is (0,0,0).
+    if ( true == matrices.empty() )
+      return;
+
+    // Look for animation interface.
+    Usul::Interfaces::IAnimateMatrices::QueryPtr animator ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimateMatrices::IID ) );
+    if ( true == animator.valid() )
+    {
+      const unsigned int milliSeconds ( Usul::Registry::Database::instance()[Usul::Registry::Sections::PATH_ANIMATION]["curve"]["milliseconds"].get<unsigned int> ( 15, true ) );
+      animator->animateMatrices ( matrices, milliSeconds, false );
+    }
+
+    // Otherwise, just slam in the last one.
+    else
+    {
+      // Set the new matrix.
+      const Matrices::value_type mat ( matrices.back() );
+      vm->setViewMatrix ( Converter2::convert ( mat ) );
+    }
+
     // Simulate a seek so that mouse navigation is well-behaved.
+    // Ideally this should be done in some kind of "animation finished" 
+    // callback because the tiles that we are flying to have not been created 
+    // yet, and the intersection test with the tiles is not very accurate.
     Usul::Interfaces::ITrackball::QueryPtr tb ( vm );
     if ( tb.valid() )
     {

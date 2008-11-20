@@ -35,7 +35,7 @@ namespace Convert {
 namespace Detail
 {
   template < class FromType, class ToType > 
-  void transpose ( const FromType &f, ToType &t )
+  inline void transpose ( const FromType &f, ToType &t )
   {
     t(0,0) = f(0,0);
     t(1,0) = f(0,1);
@@ -67,29 +67,29 @@ namespace Detail
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class T, class I, class B > 
-void matrix ( const Usul::Math::Matrix44<T,I,B> &f, osg::Matrixf &t )
+inline void matrix ( const Usul::Math::Matrix44<T,I,B> &f, osg::Matrixf &t )
 {
   Detail::transpose ( f, t );
 }
 template < class T, class I, class B > 
-void matrix ( const osg::Matrixf &f, Usul::Math::Matrix44<T,I,B> &t )
+inline void matrix ( const osg::Matrixf &f, Usul::Math::Matrix44<T,I,B> &t )
 {
   Detail::transpose ( f, t );
 }
 template < class T, class I, class B > 
-void matrix ( const Usul::Math::Matrix44<T,I,B> &f, osg::Matrixd &t )
+inline void matrix ( const Usul::Math::Matrix44<T,I,B> &f, osg::Matrixd &t )
 {
   Detail::transpose ( f, t );
 }
 template < class T, class I, class B > 
-void matrix ( const osg::Matrixd &f, Usul::Math::Matrix44<T,I,B> &t )
+inline void matrix ( const osg::Matrixd &f, Usul::Math::Matrix44<T,I,B> &t )
 {
   Detail::transpose ( f, t );
 }
 
 
 template < class F, class T >
-void vector ( const F& from, T& to, unsigned int size )
+inline void vector ( const F& from, T& to, unsigned int size )
 {
   std::copy( &from[0], &from[0] + size, &to[0] );
 }

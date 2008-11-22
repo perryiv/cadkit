@@ -13,6 +13,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 # ------------ Set Include Folders ----------------------
 #Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
+			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
 		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
@@ -32,6 +33,8 @@ SET (SOURCES
 	./GeoRSSLayer.cpp
 	./Item.cpp
 )
+
+ADD_DEFINITIONS ("-D_COMPILING_MINERVA_GEO_RSS")
 
 SET ( TARGET_NAME MinervaGeoRSS )
 

@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib opengl32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minervad.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgText.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgUtil.lib osgText.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib opengl32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Minerva.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -424,6 +424,10 @@
 					</File>
 					<File
 						RelativePath=".\Data\UserData.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Vector.h"
 						>
 					</File>
 				</Filter>
@@ -744,6 +748,10 @@
 					</File>
 					<File
 						RelativePath=".\TileEngine\LandModelEllipsoid.h"
+						>
+					</File>
+					<File
+						RelativePath=".\TileEngine\Mesh.cpp"
 						>
 					</File>
 					<File

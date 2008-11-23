@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="Test: MinervaTileTest"
-	ProjectGUID="{411E6E12-FC3D-40E6-986B-055C224209FD}"
-	RootNamespace="RasterLayerGDAL"
+	Name="app: EllipsoidConversion Test"
+	ProjectGUID="{3EED0E7D-30D2-4E24-A883-35B12B58170C}"
+	RootNamespace="EllipsoidConversion"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -61,10 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgViewerd.lib osgGAd.lib"
-				OutputFile="$(CADKIT_BIN_DIR)\MinervaTileTestd.exe"
+				AdditionalDependencies="osgd.lib osgDBd.lib"
+				OutputFile="$(CADKIT_BIN_DIR)\EllipsoidConversionTestd.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -138,10 +138,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgViewer.lib osgGA.lib"
-				OutputFile="$(CADKIT_BIN_DIR)\MinervaTileTest.exe"
+				AdditionalDependencies="osg.lib osgDB.lib"
+				OutputFile="$(CADKIT_BIN_DIR)\EllipsoidConversionTest.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

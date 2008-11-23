@@ -47,13 +47,22 @@ public:
   // Constructor
   Connection ( const std::string &database, const std::string &user, const std::string &password );
 
+  // Cancel a running statement. This has no effect if there is no running 
+  // statement. This is meant to be safe to call from any thread.
+  void                    cancelRunningStatement();
+
+  // Commit changes made since previous commit.
+  void                    commit();
+
   // Execute the sql string and return the result, which may be empty.
   // Can also specify the number of row to fetch at a time.
   Result *                execute ( const std::string &, unsigned int numRowsToPreFetch = 0 );
 
-  // Set/get the default number of rows to fetch at a time from the server.
-  void                    numPreFetchRows ( unsigned int );
-  unsigned int            numPreFetchRows() const;
+  // Cancel any running queries for this connection on the server.
+  void                    sendCancelRequestToServer();
+
+  // Roll back any changes made since previous commit.
+  void                    rollback();
 
 protected:
 
@@ -63,6 +72,9 @@ protected:
   virtual ~Connection();
 
   Result *                _execute ( const std::string &, unsigned int numRowsToPreFetch );
+  Result *                _execute ( oracle::occi::Connection *, oracle::occi::Statement *, bool );
+
+  void                    _setExecutingStatement ( oracle::occi::Statement *s );
 
   void                    _terminateStatement ( oracle::occi::Statement *s );
 
@@ -75,6 +87,7 @@ private:
   void                    _destroy();
 
   oracle::occi::Connection *_connection;
+  oracle::occi::Statement *_executing;
   unsigned int _numPreFetchRows;
 };
 

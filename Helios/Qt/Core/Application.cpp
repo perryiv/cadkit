@@ -24,8 +24,10 @@
 #include <iostream>
 
 #ifdef _MSC_VER
-#include "windows.h"
-#include "excpt.h"
+# define NOMINMAX
+# define WIN32_LEAN_AND_MEAN
+# include "windows.h"
+# include "excpt.h"
 #endif
 
 using namespace CadKit::Helios::Core;

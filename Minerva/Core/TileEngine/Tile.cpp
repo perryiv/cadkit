@@ -733,7 +733,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       Minerva::Core::Data::Container::RefPtr vector ( 0x0 != _body ? _body->vectorData() : 0x0 );
       if ( vector.valid() )
       {
-        // Notify new children have been added.
         vector->tileRemovedNotify ( this->childAt ( 0 ), Tile::RefPtr ( this ) );
         vector->tileRemovedNotify ( this->childAt ( 1 ), Tile::RefPtr ( this ) );
         vector->tileRemovedNotify ( this->childAt ( 2 ), Tile::RefPtr ( this ) );
@@ -2122,4 +2121,17 @@ void Tile::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
   {
     body->latLonHeightToXYZ ( lat, lon, elevation, point );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the job manager.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Jobs::Manager *Tile::jobManager()
+{
+  Guard guard ( this );
+  return ( ( 0x0 == _body ) ? 0x0 : _body->jobManager() );
 }

@@ -21,9 +21,12 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/LastError.h"
+#include "Usul/Threads/Safe.h"
+#include "Usul/Trace/Trace.h"
 
 #include "occi.h"
 
@@ -42,8 +45,10 @@ using namespace CadKit::Database::Oracle;
 
 Connection::Connection ( const std::string &database, const std::string &user, const std::string &password ) : BaseClass(),
   _connection ( 0x0 ),
+  _executing ( 0x0 ),
   _numPreFetchRows ( 10 )
 {
+  USUL_TRACE_SCOPE;
   USUL_TRY_BLOCK
   {
     _connection = Environment::instance().env()->createConnection ( user, password, database );
@@ -67,6 +72,7 @@ Connection::Connection ( const std::string &database, const std::string &user, c
 
 Connection::~Connection()
 {
+  USUL_TRACE_SCOPE;
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Connection::_destroy ), "9116646720" );
 }
 
@@ -79,16 +85,32 @@ Connection::~Connection()
 
 void Connection::_destroy()
 {
+  USUL_TRACE_SCOPE;
+
   if ( 0x0 != _connection )
   {
     USUL_TRY_BLOCK
     {
-      Environment::instance().env()->terminateConnection ( _connection );
+      // Always set to null.
+      oracle::occi::Statement *s ( _executing );
+      oracle::occi::Connection *c ( _connection );
+      _executing = 0x0;
+      _connection = 0x0;
+
+      // First stop the executing statement if it exists.
+      if ( 0x0 != s )
+      {
+        c->terminateStatement ( s );
+      }
+
+      // Terminate connection on client side.
+      Environment::instance().env()->terminateConnection ( c );
     }
     catch ( const oracle::occi::SQLException &e )
     {
       std::cout << "Error 1403031671: Failed to terminate connection. " << ( ( 0x0 != e.what() ) ? e.what() : "" ) << std::endl;
     }
+    USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2924598246" )
   }
 }
 
@@ -101,32 +123,15 @@ void Connection::_destroy()
 
 void Connection::_terminateStatement ( oracle::occi::Statement *s )
 {
-  Guard guard ( this );
+  USUL_TRACE_SCOPE;
 
-  if ( ( 0x0 != _connection ) && ( 0x0 != s ) )
+  if ( 0x0 != s )
   {
-    _connection->terminateStatement ( s );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Execute the given SQL string.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Result *Connection::execute ( const std::string &sql, unsigned int numRowsToPreFetch )
-{
-  USUL_TRY_BLOCK
-  {
-    return this->_execute ( sql, numRowsToPreFetch );
-  }
-  catch ( const oracle::occi::SQLException &e )
-  {
-    throw std::runtime_error ( Usul::Strings::format 
-      ( "Error 3257568799: Failed to execute statement. SQL: ", sql, ". ",
-        ( ( 0x0 != e.what() ) ? e.what() : "" ) ) );
+    oracle::occi::Connection *c ( Usul::Threads::Safe::get ( this->mutex(), _connection ) );
+    if ( 0x0 != c )
+    {
+      c->terminateStatement ( s );
+    }
   }
 }
 
@@ -139,8 +144,10 @@ Result *Connection::execute ( const std::string &sql, unsigned int numRowsToPreF
 
 namespace Helper
 {
-  bool isSelectStatement ( const std::string &sql )
+  inline bool isSelectStatement ( const std::string &sql )
   {
+    USUL_TRACE_SCOPE_STATIC;
+
     const std::string s ( Usul::Strings::lowerCase ( sql ) );
     if ( s.size() >= 6 )
     {
@@ -162,66 +169,207 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+Result *Connection::execute ( const std::string &sql, unsigned int numRowsToPreFetch )
+{
+  USUL_TRACE_SCOPE;
+
+  USUL_TRY_BLOCK
+  {
+    return this->_execute ( sql, numRowsToPreFetch );
+  }
+  catch ( const oracle::occi::SQLException &e )
+  {
+    throw std::runtime_error ( Usul::Strings::format 
+      ( "Error 3257568799: Failed to execute statement. ",
+        ( ( 0x0 != e.what() ) ? e.what() : "" ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute the given SQL string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Result *Connection::_execute ( const std::string &sql, unsigned int numRowsToPreFetch )
 {
-  Guard guard ( this );
+  USUL_TRACE_SCOPE;
 
   // Empty string just means no result.
   if ( true == sql.empty() )
     return new Result ( 0x0, 0x0, 0x0 );
 
   // Check state.
-  if ( 0x0 == _connection )
+  oracle::occi::Connection *c ( Usul::Threads::Safe::get ( this->mutex(), _connection ) );
+  if ( 0x0 == c )
     throw std::runtime_error ( "Error 3741173076: Null connection pointer" );
 
   // Create the statement.
-  oracle::occi::Statement *statement ( _connection->createStatement ( sql ) );
+  oracle::occi::Statement *statement ( c->createStatement ( sql ) );
   if ( 0x0 == statement )
-    throw std::runtime_error ( Usul::Strings::format 
-      ( "Error 3577957947: Failed to create statement. SQL: ", sql ) );
+    throw std::runtime_error ( "Error 3577957947: Failed to create statement" );
 
+  // Set the number of rows to bring back at once.
   statement->setPrefetchRowCount ( numRowsToPreFetch );
 
-  // Initialize the result set.
-  oracle::occi::ResultSet *resultSet ( 0x0 );
-
-  // Execute the statement.
-  if ( true == Helper::isSelectStatement ( sql ) )
-  {
-    resultSet = statement->executeQuery();
-  }
-  else
-  {
-    statement->executeUpdate();
-  }
-
-  // Return the result. We pass the mutex so that no further executions 
-  // can happen until the result is deleted.
-  return new Result ( this, statement, resultSet );
+  // Return the result.
+  const bool select ( true == Helper::isSelectStatement ( sql ) );
+  return this->_execute ( c, statement, select );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the default number of rows to fetch at a time from the server.
+//  Execute the given statement.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Connection::numPreFetchRows ( unsigned int num )
+Result *Connection::_execute ( oracle::occi::Connection *c, oracle::occi::Statement *s, bool select )
 {
-  Guard guard ( this );
-  _numPreFetchRows = num;
+  USUL_TRACE_SCOPE;
+
+  // Null input means no result, not an error.
+  if ( ( 0x0 == c ) || ( 0x0 == s ) )
+    return new Result ( 0x0, 0x0, 0x0 );
+
+  // This will translate Windows structured exceptions into C++ exceptions.
+  USUL_TRY_BLOCK
+  {
+    // Always unset after query.
+    Usul::Scope::Caller::RefPtr reset ( Usul::Scope::makeCaller 
+      ( Usul::Adaptors::bind1 ( static_cast < oracle::occi::Statement * > ( 0x0 ), 
+      Usul::Adaptors::memberFunction ( this, &Connection::_setExecutingStatement ) ) ) );
+
+    // Set member now.
+    this->_setExecutingStatement ( s );
+
+    // Execute the statement.
+    if ( true == select )
+    {
+      oracle::occi::ResultSet *r ( s->executeQuery() );
+      return new Result ( this, s, r );
+    }
+    else
+    {
+      s->executeUpdate();
+      return new Result ( this, s, 0x0 );
+    }
+  }
+  catch ( ... )
+  {
+    throw;
+  }
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the default number of rows to fetch at a time from the server.
+//  Roll back any changes made since previous commit.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Connection::numPreFetchRows() const
+void Connection::rollback()
 {
+  USUL_TRACE_SCOPE;
+
+  oracle::occi::Connection *c ( Usul::Threads::Safe::get ( this->mutex(), _connection ) );
+  if ( 0x0 != c )
+  {
+    c->rollback();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Commit any changes made since previous commit.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::commit()
+{
+  USUL_TRACE_SCOPE;
+
+  oracle::occi::Connection *c ( Usul::Threads::Safe::get ( this->mutex(), _connection ) );
+  if ( 0x0 != c )
+  {
+    c->commit();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cancel any running queries for this connection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::sendCancelRequestToServer()
+{
+  USUL_TRACE_SCOPE;
+
+  oracle::occi::Connection *c ( Usul::Threads::Safe::get ( this->mutex(), _connection ) );
+  if ( 0x0 == c )
+    return;
+
+  // Cancel the server side.
+  OCISvcCtx *server ( c->getOCIServiceContext() );
+  if ( 0x0 == server )
+    return;
+
+  // See http://www.orafaq.com/forum/t/52133/0/
+  // See http://forums.oracle.com/forums/thread.jspa?threadID=192292
+  OCIError *errorCallback ( static_cast < OCIError * > ( 0x0 ) );
+  Usul::Functions::safeCallV1V2 ( ::OCIBreak, server, errorCallback, "2257760186" );
+  Usul::Functions::safeCallV1V2 ( ::OCIReset, server, errorCallback, "3100516377" );
+}
+  
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cancel a running statement. This has no effect if there is no running 
+//  statement. This is meant to be safe to call from any thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::cancelRunningStatement()
+{
+  USUL_TRACE_SCOPE;
+
+  oracle::occi::Connection *c ( 0x0 );
+  oracle::occi::Statement *s ( 0x0 );
+  {
+    Guard guard ( this );
+    c = _connection;
+    s = _executing;
+  }
+
+  if ( ( 0x0 == c ) || ( 0x0 == s ) )
+    return;
+
+  USUL_TRY_BLOCK
+  {
+    c->terminateStatement ( s );
+  }
+  catch ( const oracle::occi::SQLException &e )
+  {
+    throw std::runtime_error ( Usul::Strings::format ( 
+      "Error 3905936610: Failed to terminate statement. ",
+      ( ( 0x0 != e.what() ) ? e.what() : "" ) ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the member that indicates there is a running query.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Connection::_setExecutingStatement ( oracle::occi::Statement *s )
+{
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _numPreFetchRows;
+  _executing = s;
 }

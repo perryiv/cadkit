@@ -226,7 +226,7 @@ void CityLayer::_addNode ( Tile::RefPtr tile, osg::Node* node )
 void CityLayer::_removeNode ( Tile::RefPtr tile )
 {
   // Cannot remove the node from the tile.  This causes a crash.
-  // This should cause a memory leak because the tiles are purged in the body.
+  // This should not cause a memory leak because the tiles are purged in the body.
 }
 
 

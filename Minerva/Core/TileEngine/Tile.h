@@ -41,6 +41,7 @@
 #include <typeinfo>
 
 namespace Usul { namespace Interfaces { struct IRasterLayer; } }
+namespace Usul { namespace Jobs { class Manager; } }
 namespace osgUtil { class CullVisitor; }
 
 
@@ -48,7 +49,7 @@ namespace Minerva {
 namespace Core {
 namespace TileEngine {
 
-  class Body;
+class Body;
 
 class MINERVA_EXPORT Tile : public osg::Group
 {
@@ -117,7 +118,7 @@ public:
          osg::Image * image = 0x0,
          osg::Image * elevation = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
-  
+
   // Add vector data.
   void                      addVectorData ( osg::Node* );
 
@@ -159,6 +160,9 @@ public:
 
   // Is this tile a leaf?
   bool                      isLeaf() const;
+
+  // Get the body's job manager.
+  Usul::Jobs::Manager *     jobManager();
 
   // Convience function that re-directs to the body.
   void                      latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;

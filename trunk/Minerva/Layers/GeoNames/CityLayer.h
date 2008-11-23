@@ -13,9 +13,11 @@
 //  This layer is a proof of concept for tiling vector data.
 //
 //  TODO:
-//    -Handle removing and hiding the layer (The current architechure doesn't support this well).
+//    -Handle removing and hiding the layer (The current architechure doesn't 
+//     support this well).
 //    -Vary the height and size of text based on the current split level.
-//    -There appears to be a bug when the extents covers North America.  Cities do not show up, even though they are in the GeoNames database.
+//    -There appears to be a bug when the extents covers North America.  
+//     Cities do not show up, even though they are in the GeoNames database.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

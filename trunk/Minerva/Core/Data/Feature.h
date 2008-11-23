@@ -103,7 +103,7 @@ protected:
   void                        _nameSet ( const std::string& name );
 
   /// Notify data changed listeners.
-  void                        _notifyDataChnagedListeners();
+  void                        _notifyDataChangedListeners();
   
   /// Update the extents.
   void                        _updateExtents ( Usul::Interfaces::IUnknown* unknown );

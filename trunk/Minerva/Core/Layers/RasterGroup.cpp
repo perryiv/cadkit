@@ -144,7 +144,7 @@ void RasterGroup::append ( IRasterLayer* layer )
       }
     }
     
-    this->_notifyDataChnagedListeners();
+    this->_notifyDataChangedListeners();
   }
 }
 
@@ -175,7 +175,7 @@ void RasterGroup::remove ( IRasterLayer* layer )
       _cache.clear();
     }
     
-    this->_notifyDataChnagedListeners();
+    this->_notifyDataChangedListeners();
   }
 }
 
@@ -579,8 +579,8 @@ void RasterGroup::swap ( IRasterLayer* layer0, IRasterLayer* layer1 )
       *iter1 = temp;
     }
   }
-  
-  this->_notifyDataChnagedListeners();
+
+  this->_notifyDataChangedListeners();
 }
 
 

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="lib: CadKit OracleWrap"
+	Name="lib: CadKit Database Oracle"
 	ProjectGUID="{35035460-93D8-4701-BF5F-884ABC3F295C}"
 	RootNamespace="lib: OracleWrap"
 	TargetFrameworkVersion="131072"
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="$(ORACLE_OCCI_LIB_FILE_DEBUG)"
+				AdditionalDependencies="$(ORACLE_OCCI_LIB_FILE_DEBUG) $(ORACLE_OCI_LIB_FILE_DEBUG)"
 				OutputFile="$(CADKIT_BIN_DIR)/OracleWrapd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="$(ORACLE_OCCI_LIB_FILE_RELEASE)"
+				AdditionalDependencies="$(ORACLE_OCCI_LIB_FILE_RELEASE) $(ORACLE_OCI_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/OracleWrap.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -505,6 +505,10 @@
 					RelativePath="Errors\ThrowingPolicy.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Errors\UnhandledException.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Exceptions"
@@ -798,6 +802,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IAnimateNurbsCurve.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IAnimatePath.h"
 					>
 				</File>
@@ -814,11 +822,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IBackgroundColor.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IBooleanState.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\IBuildScene.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IBusyState.h"
 					>
 				</File>
 				<File
@@ -926,6 +942,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IContextMenuAdd.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ICoordinateTransform.h"
 					>
 				</File>
@@ -946,7 +966,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IDataChangedListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDataChangedNotify.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDataSync.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IDecimateTriangles.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IDefaultGUIDelegate.h"
 					>
 				</File>
 				<File
@@ -1262,6 +1298,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IProjectionMatrix.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IQtDockWidgetMenu.h"
 					>
 				</File>
@@ -1410,11 +1450,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ITimerNotify.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITimerService.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ITimestepAnimation.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\ITimeVaryingData.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\IToolBarAdd.h"
 					>
 				</File>
 				<File

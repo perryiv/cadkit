@@ -16,7 +16,11 @@
 #include "Usul/Threads/Thread.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Errors/Assert.h"
+#include "Usul/Errors/AssertPolicy.h"
+#include "Usul/Errors/CompositePolicy.h"
+#include "Usul/Errors/ThrowingPolicy.h"
 #include "Usul/Errors/Stack.h"
+#include "Usul/Errors/UnhandledException.h"
 #include "Usul/Exceptions/Canceled.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
@@ -321,6 +325,13 @@ void Thread::_execute()
 
     __try 
     {
+      // Trying to trap errors. Each thread has to do this.
+      // See http://msdn.microsoft.com/en-us/library/ms680634(VS.85).aspx
+      typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ThrowingPolicy;
+      typedef Usul::Errors::CompositePolicy < Usul::Errors::AssertPolicy, ThrowingPolicy > CompositePolicy;
+      Usul::Errors::UnhandledException < CompositePolicy > unhandledException;
+
+      // Execute the thread now.
       this->_executeThread();
     }
 
@@ -347,7 +358,7 @@ void Thread::_executeThread() throw()
 {
   USUL_TRACE_SCOPE;
 
-  try
+  USUL_TRY_BLOCK
   {
     // See if we've been cancelled.
     if ( Thread::CANCELLED == this->result() )

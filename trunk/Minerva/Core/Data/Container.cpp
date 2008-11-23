@@ -256,7 +256,7 @@ void Container::add ( Usul::Interfaces::IUnknown* unknown, bool notify )
   
   // Notify any listeners that the data has changed.
   if ( notify )
-    this->_notifyDataChnagedListeners();
+    this->_notifyDataChangedListeners();
 }
 
 
@@ -285,7 +285,7 @@ void Container::remove ( Usul::Interfaces::IUnknown* unknown )
   this->dirtyScene( true );
   
   // Notify any listeners that the data has changed.
-  this->_notifyDataChnagedListeners();
+  this->_notifyDataChangedListeners();
 }
 
 
@@ -308,7 +308,7 @@ void Container::clear ()
   this->dirtyScene ( true );
   
   // Notify any listeners that the data has changed.
-  this->_notifyDataChnagedListeners();
+  this->_notifyDataChangedListeners();
 }
 
 

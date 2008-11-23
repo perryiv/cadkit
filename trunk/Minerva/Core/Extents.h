@@ -26,6 +26,7 @@ public:
   typedef VertexType Vertex;
   typedef typename Vertex::value_type value_type;
   typedef value_type ValueType;
+  typedef Extents < VertexType > ThisType;
 
   /// Construction/Destruction.
   Extents();
@@ -65,6 +66,9 @@ public:
   /// Bracket operator, largely for serialization.
   ValueType             operator [] ( unsigned int ) const;
   ValueType &           operator [] ( unsigned int );
+
+  /// Less-than operator for using this class as the key in an std::map.
+  bool                  operator < ( const ThisType &rhs ) const;
 
 private:
 
@@ -360,6 +364,19 @@ template < class VertexType > inline bool ThisClass::contains ( const Vertex& v 
 template < class VertexType > inline VertexType ThisClass::center() const
 {
   return ( Vertex ( this->minimum() + this->maximum() ) / 2.0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Less-than operator for using this class as the key in an std::map.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class VertexType > inline bool ThisClass::operator < ( const ThisClass &rhs ) const
+{
+  // Sort based on the min. Break ties with the max.
+  return ( ( _min == rhs._min ) ? ( _max < rhs._max ) : ( _min < rhs._min ) );
 }
 
 

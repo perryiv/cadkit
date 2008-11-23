@@ -162,7 +162,7 @@ void Feature::name ( const std::string& name )
   this->_nameSet ( name );
 
   // Notify any listeners that the data has changed.
-  this->_notifyDataChnagedListeners();
+  this->_notifyDataChangedListeners();
 }
 
 
@@ -343,7 +343,7 @@ void Feature::removeDataChangedListener ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Feature::_notifyDataChnagedListeners()
+void Feature::_notifyDataChangedListeners()
 {
   USUL_TRACE_SCOPE;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );

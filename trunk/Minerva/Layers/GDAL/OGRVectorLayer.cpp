@@ -112,7 +112,7 @@ void OGRVectorLayer::read ( const std::string &filename, Usul::Interfaces::IUnkn
     this->_addLayer ( dataSource->GetLayer ( i ), progress );
     
     // Notify any listeners that the data has changed.
-    this->_notifyDataChnagedListeners();
+    this->_notifyDataChangedListeners();
   }
 }
 

@@ -26,6 +26,7 @@
 #include "Usul/Errors/ThrowingPolicy.h"
 #include "Usul/Errors/InvalidParameter.h"
 #include "Usul/Errors/PureVirtualCall.h"
+#include "Usul/Errors/UnhandledException.h"
 #include "Usul/Exceptions/Exception.h"
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Contents.h"
@@ -72,6 +73,7 @@ namespace Helper
   typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ThrowingPolicy;
   typedef Usul::Errors::CompositePolicy < Usul::Errors::AssertPolicy, ThrowingPolicy > CompositePolicy;
   Usul::Errors::PureVirtualCall < CompositePolicy > pureCallAction;
+  Usul::Errors::UnhandledException < CompositePolicy > unhandledException;
   Usul::Errors::InvalidParameter < CompositePolicy > invalidParameterAction;
 
   // Trapping signals.

@@ -1487,7 +1487,7 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
   }
   
   // Notify now that the data has changed.
-  this->_notifyDataChnagedListeners();
+  this->_notifyDataChangedListeners();
 }
 
 

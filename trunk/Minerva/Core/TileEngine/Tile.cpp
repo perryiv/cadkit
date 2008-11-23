@@ -109,7 +109,8 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _body ( body ),
   _extents ( extents ),
   _splitDistance ( splitDistance ),
-  _mesh ( new Mesh ( meshSize[0], meshSize[1] ) ),
+  _meshSize ( meshSize ),
+  _mesh ( MeshPtr ( static_cast<Mesh*> ( 0x0 ) ) ),
   _lowerLeft(),
   _level ( level ),
   _flags ( Tile::ALL ),
@@ -209,7 +210,8 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _body ( tile._body ),
   _extents ( tile._extents ),
   _splitDistance ( tile._splitDistance ),
-  _mesh ( new Mesh ( tile._mesh->rows(), tile._mesh->columns() ) ),
+  _meshSize ( tile._meshSize ),
+  _mesh ( MeshPtr ( static_cast<Mesh*> ( 0x0 ) ) ),
   _lowerLeft ( tile._lowerLeft ),
   _level ( tile._level ),
   _flags ( Tile::ALL ),
@@ -306,79 +308,21 @@ void Tile::updateMesh()
   if ( 0x0 == body )
     return;
 
-  // The number of expected bytes for our elevation data.
-  const unsigned int expectedBytes ( size[0] * size[1] * sizeof ( float ) );
-
-  // Check to make sure our elevation data is valid.
-  const bool elevationValid ( elevation.valid() && 
-                              GL_FLOAT == elevation->getDataType() && 
-                              expectedBytes == elevation->getImageSizeInBytes() &&
-                              static_cast<int> ( size[0] ) == elevation->s() && 
-                              static_cast<int> ( size[1] ) == elevation->t() );
-
-  // Shortcuts.
-  const Extents::Vertex &mn ( extents.minimum() );
-  const Extents::Vertex &mx ( extents.maximum() );
-  const double deltaU ( texCoords[1] - texCoords[0] );
-  const double deltaV ( texCoords[3] - texCoords[2] );
+  // Depth of skirt.  TODO: This function needs to be tweeked.
+  const double offset ( Usul::Math::maximum<double> ( ( 3500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
   // Make a new mesh.
-  MeshPtr pMesh ( new Mesh ( size[0], size[1] ) );
+  MeshPtr pMesh ( new Mesh ( size[0], size[1], offset ) );
   Mesh &mesh ( *pMesh );
 
   // Make a new bounding sphere.
   BSphere boundingSphere;
 
-  // Add internal geometry.
-  for ( int i = mesh.rows() - 1; i >= 0; --i )
-  {
-    const double u ( 1.0 - static_cast<double> ( i ) / ( mesh.rows() - 1 ) );
-    for ( unsigned int j = 0; j < mesh.columns(); ++j )
-    {
-      const double v ( static_cast<double> ( j ) / ( mesh.columns() - 1 ) );
-      
-      const double lon ( mn[0] + u * ( mx[0] - mn[0] ) );
-      const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
+  // Offset of the mesh.
+  Mesh::Vector ll ( 0, 0, 0 );
 
-      // Convert lat-lon coordinates to xyz.
-      Mesh::Vector &p ( mesh.point ( i, j ) );
-
-      // The osg::Image stores it's data as char*.  However, in this case the data of the image is float.
-      // The data function will calculate and return the pointer to the beginning of the float.  The pointer needs to be cast to a float pointer so the proper value is accessed.
-      const double heightAboveSeaLevel ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( mesh.rows() - i - 1, j ) ) ) : 0.0 ) );
-      body->latLonHeightToXYZ ( lat, lon, heightAboveSeaLevel, p );
-        
-      // Expand the bounding sphere by the point.
-      boundingSphere.expandBy ( p );
-
-      // Assign normal vectors.
-      Mesh::Vector &n ( mesh.normal ( i, j ) );
-      n = p; // Minus the center, which is (0,0,0).
-      n.normalize();
-
-      // Assign texture coordinate.  Lower left corner should be (0,0).
-      const float s ( static_cast<float> ( texCoords[0] + ( u * deltaU ) ) );
-      const float t ( ( texCoords[2] + ( v * deltaV ) ) );
-      mesh.texCoord ( i, j ).set ( Usul::Math::clamp<float> ( s, 0.0f, 1.0f ), Usul::Math::clamp<float> ( t, 0.0f, 1.0f ) );
-    }
-  }
-
-  // Make the skirt's normals.
-  Mesh::Vector bottomNormal ( mesh.point ( 0, 0 ) ^ mesh.point ( mesh.rows() - 1, 0 ) );    bottomNormal.normalize();
-  Mesh::Vector topNormal    ( mesh.point ( mesh.rows() - 1, 0 ) ^ mesh.point ( 0, 0 ) );    topNormal.normalize();
-  Mesh::Vector leftNormal   ( mesh.point ( 0, 0 ) ^ mesh.point ( 0, mesh.columns() - 1 ) ); leftNormal.normalize();
-  Mesh::Vector rightNormal  ( -leftNormal );
-
-  // Move mesh vertices to local origin.
-  Mesh::Vector ll ( mesh.point ( 0, 0 ) );
-  for ( int i = mesh.rows() - 1; i >= 0; --i )
-  {
-    for ( unsigned int j = 0; j < mesh.columns(); ++j )
-    {
-      Mesh::Vector &p ( mesh.point ( i, j ) );
-      p = p - ll;
-    }
-  }
+  // Build the mesh.
+  mesh.buildMesh ( *body, extents, elevation, osg::Vec2 ( texCoords[0], texCoords[1] ), osg::Vec2 ( texCoords[2], texCoords[3] ), boundingSphere, ll );
 
   // Unset these dirty flags.
   this->dirty ( false, Tile::VERTICES, false );
@@ -388,18 +332,16 @@ void Tile::updateMesh()
   osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( ll ) );
 
-  // Build skirts.
-  // Depth of skirt.  TODO: This function needs to be tweeked.
-  const double offset ( Usul::Math::maximum<double> ( ( 3500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
+  // Make the geodes.
+  osg::ref_ptr<osg::Geode> ground ( new osg::Geode );
+  osg::ref_ptr<osg::Geode> skirts ( new osg::Geode );
 
-  // Make new skirts.
-  osg::ref_ptr<osg::Group> skirts ( new osg::Group );
+  // Build the scene for the mesh.
+  mesh ( *ground, *skirts );
 
-  // Add skirts to group.
-  skirts->addChild ( this->_buildLonSkirt ( mesh, extents.minimum()[0], texCoords[0], mesh.rows() - 1,    offset, ll, leftNormal   ) ); // Left skirt.
-  skirts->addChild ( this->_buildLonSkirt ( mesh, extents.maximum()[0], texCoords[1], 0,                  offset, ll, rightNormal  ) ); // Right skirt.
-  skirts->addChild ( this->_buildLatSkirt ( mesh, extents.minimum()[1], texCoords[2], 0,                  offset, ll, bottomNormal ) ); // Bottom skirt.
-  skirts->addChild ( this->_buildLatSkirt ( mesh, extents.maximum()[1], texCoords[3], mesh.columns() - 1, offset, ll, topNormal    ) ); // Top skirt.
+  // Add to the matrix transform.
+  mt->addChild ( skirts.get() );
+  mt->addChild ( ground.get() );
 
 #if 0
 
@@ -415,12 +357,6 @@ void Tile::updateMesh()
 
 #endif
 
-  // Add to the matrix transform.
-  mt->addChild ( skirts.get() );
-
-  // Make the ground.
-  osg::ref_ptr<osg::Node> ground ( mesh() );
-  mt->addChild ( ground.get() );
 
   // Set the ground's alpha.
   OsgTools::State::StateSet::setAlpha ( this, body->alpha() );
@@ -584,15 +520,18 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     
     // Return if we are culled.
     if ( 0x0 == cv || cv->isCulled ( *this ) )
+    {
+      // Should children be cleared here?
       return;
+    }
 
     // See if we should draw skirts and borders.
     _skirts->setNodeMask  ( ( body->useSkirts() ? 0xffffffff : 0x0 ) );
     _borders->setNodeMask ( ( body->useBorders() ? 0xffffffff : 0x0 ) );
 
     // See what we are allowed to do.
-    const bool allowSplit ( _body->allowSplit() );
-    const bool keepDetail ( _body->keepDetail() );
+    const bool allowSplit ( body->allowSplit() );
+    const bool keepDetail ( body->keepDetail() );
 
     // Do we have a high lod?
     const bool hasDetail ( this->getNumChildren() == 2 );
@@ -620,7 +559,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   else
   {
     //BaseClass::traverse ( nv );
-    
+
     if ( this->getNumChildren() > 0 )
     {
       this->getChild ( this->getNumChildren() - 1 )->accept ( nv );
@@ -931,7 +870,7 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
 
 namespace Helper
 {
-  Usul::Math::Vec2d degreesPerPixel ( const Tile::Extents& extents, const Tile::ImageSize& size )
+  inline Usul::Math::Vec2d degreesPerPixel ( const Tile::Extents& extents, const Tile::ImageSize& size )
   {
     typedef Tile::Extents Extents;
     
@@ -951,7 +890,7 @@ namespace Helper
 
 namespace Helper
 {
-  Tile::Extents expandExtents ( const Tile::Extents& extents, const Usul::Math::Vec2d& amount )
+  inline Tile::Extents expandExtents ( const Tile::Extents& extents, const Usul::Math::Vec2d& amount )
   {
     typedef Tile::Extents Extents;
     const Extents::Vertex &mn ( extents.minimum() );
@@ -1529,97 +1468,6 @@ bool Tile::textureDirty() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Build skirt along longitude line.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Tile::_buildLonSkirt ( const Mesh& mesh, double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
-{
-  const unsigned int rows ( mesh.rows() );
-  const unsigned int columns ( mesh.columns() );
-
-  // Make the mesh
-  Mesh skirt ( 2, columns );
-  
-  // Get the difference of texture coordinates.
-  const double difference ( _texCoords[3] - _texCoords[2] );
-
-  // Left skirt.
-  for ( unsigned int j = 0; j < columns; ++j )
-  {
-    const double v ( static_cast<double> ( j ) / ( columns - 1 ) );
-    const double lat ( _extents.minimum()[1] + v * ( _extents.maximum()[1] - _extents.minimum()[1] ) );
-
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
-
-    // Set the skirt point to be the same as the mesh.
-    skirt.point ( 0, j ) = mesh.point ( i, j );
-    
-    // Convert lat-lon coordinates to xyz.
-    Mesh::Vector&  p ( skirt.point ( 1, j ) );
-    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p );
-    p = p - ll;
-
-    // Assign texture coordinate.
-    skirt.texCoord ( 0, j ).set ( u, _texCoords[2] + ( v * difference ) );
-    skirt.texCoord ( 1, j ).set ( u, _texCoords[2] + ( v * difference ) );
-
-    // Assign normal vector.
-    skirt.normal ( 0, j ) = normal;
-    skirt.normal ( 1, j ) = normal;
-  }
-
-  return skirt();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build skirt along constant latitude line.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Tile::_buildLatSkirt ( const Mesh& mesh, double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal )
-{
-  const unsigned int rows ( mesh.rows() );
-
-  // Make the mesh
-  Mesh skirt ( rows, 2 );
-  
-  // Get the difference of texture coordinates.
-  const double difference ( _texCoords[1] - _texCoords[0] );
-
-  // Left skirt.
-  for ( int i = rows - 1; i >= 0; --i )
-  {
-    const double u ( 1.0 - static_cast<double> ( i ) / ( skirt.rows() - 1 ) );
-    const double lon ( _extents.minimum()[0] + u * ( _extents.maximum()[0] - _extents.minimum()[0] ) );
-
-    const double elevation ( ( _elevation.valid() ? ( *reinterpret_cast < const float * > ( _elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
-    
-    // Set the skirt point to be the same as the mesh.
-    skirt.point ( i, 0 ) = mesh.point ( i, j );
-    
-    // Convert lat-lon coordinates to xyz.
-    Mesh::Vector&  p ( skirt.point ( i, 1 ) );
-    _body->latLonHeightToXYZ ( lat, lon, elevation - offset, p );
-    p = p - ll;
-
-    // Assign texture coordinate.
-    skirt.texCoord ( i, 0 ).set ( _texCoords[0] + ( u * difference ), v );
-    skirt.texCoord ( i, 1 ).set ( _texCoords[0] + ( u * difference ), v );
-
-    // Assign normal vector.
-    skirt.normal ( i, 0 ) = normal;
-    skirt.normal ( i, 1 ) = normal;
-  }
-
-  return skirt();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Clear the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1878,16 +1726,8 @@ void Tile::textureData ( osg::Image* image, const Usul::Math::Vec4d& coords )
 Tile::MeshSize Tile::meshSize() const
 {
   USUL_TRACE_SCOPE;
-
-  MeshSize size ( 0, 0 );
-
   Guard guard ( this );
-
-  // Set the size.
-  if ( 0x0 != _mesh.get() )
-    size.set ( _mesh->rows(), _mesh->columns() );
-
-  return size;
+  return _meshSize;
 }
 
 

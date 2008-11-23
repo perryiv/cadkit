@@ -98,7 +98,6 @@ public:
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   typedef osg::BoundingSphere BSphere;
   typedef osg::ref_ptr<osg::Node> NodePtr;
-  typedef Mesh<osg::Vec3d> Mesh;
   typedef boost::shared_ptr<Mesh> MeshPtr;
   typedef std::pair<ImagePtr, Usul::Math::Vec4d> TextureData;
   typedef std::vector<TextureData> Textures;
@@ -211,10 +210,6 @@ protected:
 
   NodePtr                   _buildBorderLine();
 
-  // Build skirts.
-  osg::Node*                _buildLonSkirt ( const Mesh& mesh, double lon, double u, unsigned int i, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal );
-  osg::Node*                _buildLatSkirt ( const Mesh& mesh, double lat, double v, unsigned int j, double offset, const Mesh::Vector& ll, const Mesh::Vector &normal );
-  
   // Cache the image used for the raster layer.
   void                      _cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords );
 
@@ -260,6 +255,7 @@ private:
   Body *_body;
   Extents _extents;
   double _splitDistance;
+  MeshSize _meshSize;
   MeshPtr _mesh;
   osg::Vec3d _lowerLeft;
   unsigned int _level;
@@ -274,7 +270,7 @@ private:
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;
   osg::ref_ptr<osg::Group> _borders;
-  osg::ref_ptr<osg::Group> _skirts;
+  osg::ref_ptr<osg::Node>  _skirts;
   osg::ref_ptr<osg::Group> _vector;
   ImageCache _textureMap;
   ImageSize _imageSize;

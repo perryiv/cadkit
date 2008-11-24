@@ -746,6 +746,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\TileEngine\Mesh.cpp"
+						>
+					</File>
+					<File
 						RelativePath=".\TileEngine\Mesh.h"
 						>
 					</File>

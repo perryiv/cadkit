@@ -75,7 +75,7 @@ INCLUDE( FindOSG )
 
 SET ( BOOST_INCLUDEDIR $ENV{BOOST_INC_DIR} )
 SET ( BOOST_LIBRARYDIR $ENV{BOOST_LIB_DIR} )
-FIND_PACKAGE( Boost 1.36 COMPONENTS date_time filesystem threads )
+FIND_PACKAGE( Boost 1.36 COMPONENTS date_time filesystem regex threads system )
 
 
 #########################################################
@@ -103,6 +103,15 @@ INCLUDE( FindOSSIM )
 #########################################################
 
 INCLUDE( FindHDF )
+
+
+#########################################################
+#
+#  Find pqxx.
+#
+#########################################################
+
+INCLUDE( FindPQXX )
 
 
 #########################################################
@@ -174,19 +183,28 @@ ENDIF(GDAL_FOUND)
 # Build Minerva libraries if we should.
 IF(BUILD_MINERVA)
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
-			  ${CADKIT_INC_DIR}/Minerva/DataSources/PG
 			  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
 			  ${CADKIT_INC_DIR}/Minerva/Layers/GeoNames
 			  ${CADKIT_INC_DIR}/Minerva/Layers/GeoRSS
 			  ${CADKIT_INC_DIR}/Minerva/Layers/OSM
 			  ${CADKIT_INC_DIR}/Minerva/Document
 			  ${CADKIT_INC_DIR}/Minerva/Plugins/Document )
+			  
+	# Build this project if pqxx is found.
+	IF ( PQXX_FOUND )
+		SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/DataSources/PG )
+	ENDIF ( PQXX_FOUND )
 	
 	# Build these projects if we found GDAL.
 	IF(GDAL_FOUND)
-		SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
-			     ${CADKIT_INC_DIR}/Minerva/Layers/GDAL
-				 ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage )
+		SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Plugins/GDALReadImage )
+				 
+		# Build this project if pqxx is found.
+		IF ( PQXX_FOUND )
+			SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
+					  ${CADKIT_INC_DIR}/Minerva/Layers/GDAL )
+		ENDIF ( PQXX_FOUND )
+	
 	ENDIF(GDAL_FOUND)
 	
 	# Build these projects if we found Ossim
@@ -201,9 +219,13 @@ IF(BUILD_MINERVA)
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/QtArcIMS
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
-				 ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
 				 ${CADKIT_INC_DIR}/Minerva/Plugins/QtCustomGeometry
 				 ${CADKIT_INC_DIR}/Minerva/Application )
+				 
+		# Build this project if pqxx is found.
+		IF ( PQXX_FOUND )
+			SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt )
+		ENDIF ( PQXX_FOUND )
 	ENDIF(QT_FOUND AND BUILD_HELIOS_QT)
 	
 ENDIF(BUILD_MINERVA)

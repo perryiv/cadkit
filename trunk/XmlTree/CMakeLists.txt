@@ -46,7 +46,7 @@ SOURCE_GROUP ( Detail REGULAR_EXPRESSION ./Detail/* )
 #########################################################
 
 SET ( HEADERS
-	./Detail/RootImpl.h
+	#./Detail/RootImpl.h
 	./Document.h
 	./Export.h
 	./Functions.h
@@ -76,7 +76,7 @@ SET (SOURCES
     Loader.cpp
     XercesLife.cpp
     Writer.cpp
-    Detail/RootImpl.cpp
+    #Detail/RootImpl.cpp
     Functions.cpp
     RegistryBuilder.cpp
     RegistryIO.cpp

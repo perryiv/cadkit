@@ -24,7 +24,7 @@ INCLUDE_DIRECTORIES(
 		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     $ENV{PQXX_INC_DIR}
+		     ${PQXX_INCLUDE_DIR}
              ${GDAL_INCLUDE_DIR}
 		     )
 
@@ -44,11 +44,11 @@ ADD_LIBRARY( ${TARGET_NAME} SHARED ${SOURCES} )
 CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 
 # Link the Library	
-LINK_CADKIT( ${TARGET_NAME} Usul OsgTools SerializeXML XmlTree Minerva MinervaPostGIS  )
+LINK_CADKIT( ${TARGET_NAME} Usul OsgTools SerializeXML XmlTree Minerva MinervaPostgres MinervaPostGIS  )
 TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${Boost_LIBRARIES}
 	${GDAL_LIBRARY}
-	${PQXX_LIB}
+	${PQXX_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}

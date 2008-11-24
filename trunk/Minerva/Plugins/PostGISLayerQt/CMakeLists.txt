@@ -22,7 +22,7 @@ INCLUDE ( ${QT_USE_FILE} )
 #########################################################
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} $ENV{PQXX_LIB_DIR} )
-	
+
 
 #########################################################
 #
@@ -37,7 +37,7 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} 
                      ${QT_INCLUDE_DIR} 
                      ${OSG_INC_DIR}
-                     $ENV{PQXX_INC_DIR}
+                     ${PQXX_INCLUDE_DIR}
                      )
 
 set (SOURCES
@@ -84,7 +84,7 @@ QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
 SET ( PLUGIN_NAME "PostGISLayerQt" )
 SET ( SOURCES ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
 SET ( COMPILE_GUARD "_COMPILING_POSTGIS_LAYER_QT" )
-SET ( CADKIT_LIBRARIES Usul Minerva QtTools MinervaLayersGDAL )
+SET ( CADKIT_LIBRARIES Usul Minerva QtTools MinervaPostGIS MinervaPostgres MinervaGDAL )
 SET ( OTHER_LIBRARIES ${QT_LIBRARIES} ${Boost_LIBRARIES} )
 
 # Add the plugin.

@@ -380,7 +380,7 @@ void Tile::updateMesh()
     _lowerLeft = ll;
     _mesh = pMesh;
     _boundingSphere = boundingSphere;
-    _skirts = skirts;
+    _skirts = skirts.get();
   }
   
   this->dirtyBound();

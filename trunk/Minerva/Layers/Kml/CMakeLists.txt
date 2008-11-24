@@ -26,7 +26,10 @@ FIND_LIBRARY(COLLADA_LIBRARY
 	DOC "The name of the COLLADA library"
 )
 
-FIND_PACKAGE( ZLib )
+# Currenly zlib is only used on Windows.
+IF(WIN32)
+	FIND_PACKAGE( ZLib )
+ENDIF(WIN32)
 
 #########################################################
 #
@@ -94,7 +97,8 @@ CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 # Link the Library	
 LINK_CADKIT( ${TARGET_NAME} Usul OsgTools SerializeXML XmlTree Minerva )
 TARGET_LINK_LIBRARIES( ${TARGET_NAME}
-	${Boost_LIBRARIES}
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}

@@ -7,8 +7,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# ------------ Find PQXX Library ----------------------
-FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
 
 INCLUDE(${QT_USE_FILE})
 
@@ -29,7 +27,7 @@ INCLUDE_DIRECTORIES(
 		     ${CADKIT_INC_DIR}
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     $ENV{PQXX_INC_DIR}
+		     ${PQXX_INCLUDE_DIR}
              ${GDAL_INCLUDE_DIR}
 		     )
 
@@ -52,7 +50,7 @@ CADKIT_ADD_LIBRARY ( MinervaPostGIS )
 LINK_CADKIT( MinervaPostGIS Usul OsgTools SerializeXML XmlTree Minerva MinervaPostgres )
 TARGET_LINK_LIBRARIES(MinervaPostGIS
 	${Boost_LIBRARIES}
-	${PQXX_LIB}
+	${PQXX_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}

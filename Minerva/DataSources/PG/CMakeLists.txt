@@ -6,10 +6,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 
 ADD_DEFINITIONS("-D_COMPILING_MINERVA_POSTGRES")
 
-# ------------ Find PQXX Library ----------------------
-FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
-
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 
@@ -18,7 +14,7 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 INCLUDE_DIRECTORIES( 
 			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
-		     $ENV{PQXX_INC_DIR}
+		     ${PQXX_INCLUDE_DIR}
 		     )
 
 
@@ -37,7 +33,7 @@ CADKIT_ADD_LIBRARY ( MinervaPostgres )
 LINK_CADKIT( MinervaPostgres Usul SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(MinervaPostgres
 	${Boost_LIBRARIES}
-	${PQXX_LIB}
+	${PQXX_LIBRARY}
 )
 
 IF(WIN32)

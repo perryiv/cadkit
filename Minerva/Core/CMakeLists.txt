@@ -90,6 +90,7 @@ SET (SOURCES
 ./TileEngine/Body.cpp
 ./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp
+./TileEngine/Mesh.cpp
 ./TileEngine/Node.cpp
 ./TileEngine/SplitCallbacks.cpp
 ./TileEngine/System.cpp
@@ -121,7 +122,9 @@ CADKIT_ADD_LIBRARY ( Minerva )
 # Link the Library	
 LINK_CADKIT( Minerva Usul OsgTools SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(Minerva
-	${Boost_LIBRARIES}
+	${Boost_DATE_TIME_LIBRARY}
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}

@@ -18,11 +18,12 @@
 #include "GN/Splines/Surface.h"
 #include "GN/Write/XML.h"
 
+#if 0
 #include "boost/gil/gil_all.hpp"
 #include "boost/gil/typedefs.hpp"
 #include "boost/gil/extension/numeric/sampler.hpp"
 #include "boost/gil/extension/numeric/resample.hpp"
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -39,7 +40,7 @@ osg::Image* Minerva::Core::Algorithms::resampleElevation ( const osg::Image& ima
   // Get the size of the image.
   Usul::Math::Vec2ui size ( image.s(), image.t() );
 
-#ifndef __linux
+#if 0 //ndef __linux
 #if 1
   //
   // Use boost gil to resample the image.  I'm still learning boost gil, so there may be cleaner ways to code this.

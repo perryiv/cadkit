@@ -7,9 +7,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# ------------ Find PQXX Library ----------------------
-FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
-
 # Add needed preprocessor definitions.
 ADD_DEFINITIONS("-D_COMPILING_MINERVA_DOCUMENT")
 
@@ -26,10 +23,9 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 INCLUDE_DIRECTORIES( 
 			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
-			 "${CADKIT_INC_DIR}/Experimental"
+			 ${CADKIT_INC_DIR}/GenericNurbs
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     #$ENV{PQXX_INC_DIR}
 		     )
 
 
@@ -50,7 +46,6 @@ CADKIT_ADD_LIBRARY ( MinervaDocument )
 LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree MenuKit Minerva MinervaPostgres )
 TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
-#	${PQXX_LIB}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}

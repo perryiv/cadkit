@@ -26,7 +26,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy .\Config\Config.h.in.vc .\Config\Config.h /f /i /k /y /c"
+				CommandLine="copy .\Config\Config.h.in.vc .\Config\Config.h /y"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -126,7 +126,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy .\Config\Config.h.in.vc .\Config\Config.h /f /i /k /y /c"
+				CommandLine="copy .\Config\Config.h.in.vc .\Config\Config.h /y"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -1863,6 +1863,14 @@
 				</File>
 				<File
 					RelativePath=".\System\Memory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\System\Process.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\System\Process.h"
 					>
 				</File>
 				<File

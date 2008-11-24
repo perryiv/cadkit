@@ -186,7 +186,7 @@ void Mesh::operator() ( osg::Geode& mesh, osg::Geode& skirts ) const
     geometry->setUseVertexBufferObjects ( true );
 
     // Add the drawable.
-    mesh.addDrawable ( geometry.get() );
+    skirts.addDrawable ( geometry.get() );
   }
 }
 

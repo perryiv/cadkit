@@ -62,7 +62,7 @@ public:
 	USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Add the timers that were added from non-gui threads.
-  // Note: cll this from the gui thread.
+  // Note: call this from the gui thread.
   void                      addPendingTimers();
 
   // Clear the timers.

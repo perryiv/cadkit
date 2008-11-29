@@ -21,13 +21,14 @@
 
 #include "OsgTools/Configure/OSG.h"
 
+#include "osg/BoundingSphere"
 #include "osg/Image"
 #include "osg/Vec2d"
 #include "osg/Vec3d"
 
 #include <vector>
 
-namespace osg { class Geode; class BoundingSphere; }
+namespace osg { class Geode; class Group; class Node; }
 
 namespace Minerva {
 namespace Core {
@@ -51,19 +52,20 @@ public:
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
 
-  Mesh ( unsigned int rows, unsigned int columns, double skirtHeight );
+  Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const Extents& extents );
 
   // The number of columns.
   unsigned int        columns() const { return _columns; }
 
   // Build the mesh.
-  void                buildMesh ( const Body&, 
-                                  const Extents& extents, 
+  osg::Node*          buildMesh ( const Body&, 
                                   ImagePtr elevation, 
                                   const osg::Vec2d& uRange,
                                   const osg::Vec2d& vRange,
-                                  osg::BoundingSphere& boundingSphere,
-                                  Vector& offset );
+                                  osg::BoundingSphere& boundingSphere );
+
+  // Get the smallest distance (squared) from the given point.
+  double              getSmallestDistanceSquared ( const osg::Vec3d& point ) const;
 
   // Access to a single point.
   const_reference     point ( size_type row, size_type column ) const;
@@ -71,10 +73,22 @@ public:
   // The number of rows.
   unsigned int        rows() const { return _rows; }
 
-  // Generate a scene.
-  void                operator() ( osg::Geode& mesh, osg::Geode& skirts ) const;
+  // Show the border.
+  void                showBorder ( bool b );
+
+  // Show the skirts.
+  void                showSkirts ( bool b );
 
 private:
+
+  // Build line-segment for the border.
+  osg::Node*          _buildBorder() const;
+
+  // Build the geometries for the mesh and skirts.
+  void                _buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const;
+
+  // Get the index for the row and column.
+  inline size_type    _index ( size_type row, size_type column ) const { return row * _columns + column; }
   
   // Set the location data.
   void                _setLocationData ( const Body& body, osg::BoundingSphere& boundingSphere, unsigned int i, unsigned int j, double lat, double lon, double elevation, double s, double t );
@@ -89,6 +103,13 @@ private:
   unsigned int _rows;
   unsigned int _columns;
   double _skirtHeight;
+  Extents _extents;
+
+  osg::ref_ptr<osg::Group> _borders;
+  osg::ref_ptr<osg::Node>  _skirts;
+
+  osg::Vec3d _lowerLeft;
+  osg::BoundingSphere _boundingSphere;
 };
 
   

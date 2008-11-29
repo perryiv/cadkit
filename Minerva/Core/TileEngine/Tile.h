@@ -208,8 +208,6 @@ protected:
   // Use reference counting.
   virtual ~Tile();
 
-  NodePtr                   _buildBorderLine();
-
   // Cache the image used for the raster layer.
   void                      _cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords );
 
@@ -240,9 +238,14 @@ protected:
   // Build raster.
   static ImagePtr           _buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr );
 
-
   void                      _setDirtyAlways ( bool state, unsigned int flags, bool dirtyChildren );
   void                      _setDirtyIfIntersect ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents );
+
+  // Set the show border state.
+  void                      _setShowBorders ( bool show );
+
+  // Set the show skirt state.
+  void                      _setShowSkirts ( bool show );
 
 private:
 
@@ -257,7 +260,6 @@ private:
   double _splitDistance;
   MeshSize _meshSize;
   MeshPtr _mesh;
-  osg::Vec3d _lowerLeft;
   unsigned int _level;
   unsigned int _flags;
   Children _children;
@@ -269,8 +271,6 @@ private:
   Usul::Jobs::Job::RefPtr _elevationJob;
   Usul::Jobs::Job::RefPtr _tileJob;
   osg::BoundingSphere _boundingSphere;
-  osg::ref_ptr<osg::Group> _borders;
-  osg::ref_ptr<osg::Node>  _skirts;
   osg::ref_ptr<osg::Group> _vector;
   ImageCache _textureMap;
   ImageSize _imageSize;

@@ -18,8 +18,10 @@
 #include "Minerva/Core/TileEngine/Tile.h"
 #include "Minerva/Core/Functions/MakeBody.h"
 
+#include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Manager.h"
+#include "Usul/Registry/Database.h"
 
 #include "Threads/OpenThreads/Thread.h"
 
@@ -30,6 +32,9 @@ int main ( int argc, char** argv )
 {
   // Set thread factories.
   Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
+
+  // Initialize the thread pool.
+  Usul::Jobs::Manager::init ( 2, true );
 
   // Make the viewer.
   osgViewer::Viewer viewer;
@@ -55,8 +60,30 @@ int main ( int argc, char** argv )
   // Run the viewer.
   const int result ( viewer.run() );
 
+  // Clear the scene.
+  viewer.setSceneData ( 0x0 );
+
+  // Clear the tile.
+  tile = 0x0;
+
+  // Delete the body.
+  body = 0x0;
+
   // Wait for all threads.
-  //Usul::Threads::Manager::instance().wait();
+  Usul::Jobs::Manager::instance().cancel();
+  Usul::Jobs::Manager::instance().wait();
+
+  // Clear the registry.
+  Usul::Registry::Database::destroy();
+
+  // Clear the ObjectFactory.
+  Usul::Factory::ObjectFactory::instance().clear();
+
+  // Destroy the job manager.
+  Usul::Jobs::Manager::destroy();
+
+  // Destroy the thread manager.
+  Usul::Threads::Manager::destroy();
 
   // return the result.
   return result;

@@ -46,11 +46,7 @@
 
 #include "osgUtil/CullVisitor"
 
-#include "osg/BlendFunc"
-#include "osg/Depth"
 #include "osg/Geode"
-#include "osg/Geometry"
-#include "osg/Hint"
 #include "osg/PolygonOffset"
 #include "osg/Material"
 #include "osg/Texture2D"
@@ -111,7 +107,6 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _splitDistance ( splitDistance ),
   _meshSize ( meshSize ),
   _mesh ( MeshPtr ( static_cast<Mesh*> ( 0x0 ) ) ),
-  _lowerLeft(),
   _level ( level ),
   _flags ( Tile::ALL ),
   _children ( 4 ),
@@ -123,8 +118,6 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _elevationJob ( 0x0 ),
   _tileJob ( 0x0 ),
   _boundingSphere(),
-  _borders ( new osg::Group ),
-  _skirts ( new osg::Group ),
   _vector ( new osg::Group ),
   _textureMap (),
   _imageSize ( imageSize ),
@@ -163,36 +156,6 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _texture->setBorderWidth ( 0.0 );
   _texture->setBorderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 0.0 ) );
 
-#if 0
-
-  // Seeing if this makes the world disapear when the raster layer is 
-  // transparent (rather than see the underlying polygon).
-  {
-    osg::ref_ptr<osg::StateSet> ss ( this->getOrCreateStateSet() );
-    ss->setMode ( GL_BLEND, osg::StateAttribute::ON );
-
-    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
-    ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-
-    osg::ref_ptr<osg::TexEnvCombine> combine ( new osg::TexEnvCombine );
-    combine->setCombine_Alpha ( GL_REPLACE );
-    ss->setTextureAttributeAndModes ( 0, combine.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  }
-
-#endif
-
-  // Turn off back-face culling.
-  this->getOrCreateStateSet()->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
-
-  // Get the state set.
-  osg::ref_ptr<osg::StateSet > ss ( this->getOrCreateStateSet() );
-
-  // Need an offset.
-  osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
-  offset->setFactor ( 1.0f );
-  offset->setUnits  ( 4.0f );
-  ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-
   // For some reason this is now needed or else we cannot see the images.
   OsgTools::State::StateSet::setMaterialDefault ( this );
 }
@@ -212,7 +175,6 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _splitDistance ( tile._splitDistance ),
   _meshSize ( tile._meshSize ),
   _mesh ( MeshPtr ( static_cast<Mesh*> ( 0x0 ) ) ),
-  _lowerLeft ( tile._lowerLeft ),
   _level ( tile._level ),
   _flags ( Tile::ALL ),
   _children ( tile._children ),
@@ -223,8 +185,6 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _elevationJob ( 0x0 ),
   _tileJob ( 0x0 ),
   _boundingSphere ( tile._boundingSphere ),
-  _borders ( new osg::Group ),
-  _skirts ( new osg::Group ),
   _vector ( new osg::Group ),
   _textureMap ( tile._textureMap ),
   _imageSize ( tile._imageSize ),
@@ -272,8 +232,6 @@ void Tile::_destroy()
   _mesh = MeshPtr ( static_cast < Mesh * > ( 0x0 ) );
 
   delete _mutex; _mutex = 0x0;
-  _borders = 0x0;
-  _skirts = 0x0;
 }
 
 
@@ -312,75 +270,37 @@ void Tile::updateMesh()
   const double offset ( Usul::Math::maximum<double> ( ( 3500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
   // Make a new mesh.
-  MeshPtr pMesh ( new Mesh ( size[0], size[1], offset ) );
+  MeshPtr pMesh ( new Mesh ( size[0], size[1], offset, extents ) );
   Mesh &mesh ( *pMesh );
 
   // Make a new bounding sphere.
   BSphere boundingSphere;
 
-  // Offset of the mesh.
-  Mesh::Vector ll ( 0, 0, 0 );
-
   // Build the mesh.
-  mesh.buildMesh ( *body, extents, elevation, osg::Vec2 ( texCoords[0], texCoords[1] ), osg::Vec2 ( texCoords[2], texCoords[3] ), boundingSphere, ll );
+  osg::ref_ptr<osg::Node> ground ( mesh.buildMesh ( *body, elevation, osg::Vec2 ( texCoords[0], texCoords[1] ), osg::Vec2 ( texCoords[2], texCoords[3] ), boundingSphere ) );
 
   // Unset these dirty flags.
   this->dirty ( false, Tile::VERTICES, false );
   this->dirty ( false, Tile::TEX_COORDS, false );
 
-  // Make group to hold the meshes.
-  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
-  mt->setMatrix ( osg::Matrix::translate ( ll ) );
-
-  // Make the geodes.
-  osg::ref_ptr<osg::Geode> ground ( new osg::Geode );
-  osg::ref_ptr<osg::Geode> skirts ( new osg::Geode );
-
-  // Build the scene for the mesh.
-  mesh ( *ground, *skirts );
-
-  // Add to the matrix transform.
-  mt->addChild ( skirts.get() );
-  mt->addChild ( ground.get() );
-
-#if 0
-
-  // Draw skirt's normals.
-  osg::ref_ptr<OsgTools::Utilities::FindNormals> visitor ( new OsgTools::Utilities::FindNormals );
-  visitor->size ( boundingSphere.radius() * 0.05 );
-  skirts->accept ( *visitor );
-  osg::ref_ptr<osg::Group> ng ( new osg::Group );
-  OsgTools::State::StateSet::setLineWidth ( ng.get(), 2 );
-  OsgTools::State::StateSet::setLighting ( ng.get(), false );
-  ng->addChild ( visitor->normals() );
-  skirts->addChild ( ng.get() );
-
-#endif
-
-
   // Set the ground's alpha.
   OsgTools::State::StateSet::setAlpha ( this, body->alpha() );
-
-  // Add the place-holder for the border.
-  mt->addChild ( _borders.get() );
 
   // Remove all the children.
   this->removeChildren ( 0, this->getNumChildren() );
   
   osg::ref_ptr<osg::Group> group ( new osg::Group );
-  group->addChild ( mt.get() );
+  group->addChild ( ground.get() );
   group->addChild ( Usul::Threads::Safe::get ( this->mutex(), _vector.get() ) );
 
   // Add the group to us.
   this->addChild ( group.get() );
 
-  // Set needed variables
+  // Set needed variables.
   {
     Guard guard ( this->mutex() );
-    _lowerLeft = ll;
     _mesh = pMesh;
     _boundingSphere = boundingSphere;
-    _skirts = skirts.get();
   }
   
   this->dirtyBound();
@@ -525,9 +445,9 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       return;
     }
 
-    // See if we should draw skirts and borders.
-    _skirts->setNodeMask  ( ( body->useSkirts() ? 0xffffffff : 0x0 ) );
-    _borders->setNodeMask ( ( body->useBorders() ? 0xffffffff : 0x0 ) );
+    // See if we should draw skirts and borders.  Make sure these are called after update mesh.
+    this->_setShowSkirts ( body->useSkirts() );
+    this->_setShowBorders ( body->useBorders() );
 
     // See what we are allowed to do.
     const bool allowSplit ( body->allowSplit() );
@@ -582,14 +502,12 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   MeshPtr mesh_;
   Usul::Jobs::Job::RefPtr tileJob ( 0x0 );
   Body::RefPtr body ( 0x0 );
-  osg::Vec3d lowerLeft;
   double splitDistance ( 0 );
   {
     Guard guard ( this );
     mesh_ = _mesh;
     tileJob = _tileJob;
     body = _body;
-    lowerLeft = _lowerLeft;
     splitDistance = _splitDistance;
   }
 
@@ -629,21 +547,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   const bool back ( false );
 #endif
 
-  const osg::Vec3f &p00 ( lowerLeft + mesh.point ( 0, 0 ) );
-  const osg::Vec3f &p0N ( lowerLeft + mesh.point ( 0, mesh.columns() - 1 ) );
-  const osg::Vec3f &pN0 ( lowerLeft + mesh.point ( mesh.rows() - 1, 0 ) );
-  const osg::Vec3f &pNN ( lowerLeft + mesh.point ( mesh.rows() - 1, mesh.columns() - 1 ) );
-  const osg::Vec3f &pBC ( this->getBound().center() );
-  
-  // Squared distances from the eye to the points.
-  const float dist00 ( ( eye - p00 ).length2() );
-  const float dist0N ( ( eye - p0N ).length2() );
-  const float distN0 ( ( eye - pN0 ).length2() );
-  const float distNN ( ( eye - pNN ).length2() );
-  const float distBC ( ( eye - pBC ).length2() );
-
   // Check with smallest distance.
-  const float dist ( Usul::Math::minimum ( dist00, dist0N, distN0, distNN, distBC ) );
+  const double dist ( mesh.getSmallestDistanceSquared ( eye ) );
   const bool farAway ( ( dist > ( splitDistance * splitDistance ) ) );
   const unsigned int numChildren ( this->getNumChildren() );
   USUL_ASSERT ( numChildren > 0 );
@@ -663,7 +568,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   if ( low )
   {
     // Turn off the borders.
-    OsgTools::Group::removeAllChildren ( _borders.get() );
+    this->_setShowBorders ( false );
 
     // Remove high level of detail.
     if ( numChildren > 1 && false == body->cacheTiles() )
@@ -717,8 +622,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
           _body->jobManager()->addJob ( _tileJob.get() );
 
           // Show the border.
-          OsgTools::Group::removeAllChildren ( _borders.get() );
-          _borders->addChild ( this->_buildBorderLine().get() );
+          this->_setShowBorders ( true );
         }
       }
 
@@ -758,7 +662,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         tileJob = 0x0;
 
         // Turn off the borders.
-        OsgTools::Group::removeAllChildren ( _borders.get() );
+        this->_setShowBorders ( false );
       }
     }
   }
@@ -1155,157 +1059,6 @@ Tile::TextureData Tile::texture ( IRasterLayer * layer ) const
     return TextureData ( osgDB::readImageFile ( filename ), iter->second.second );
   }
   return TextureData ( 0x0, Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the line-segment for the border.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Tile::NodePtr Tile::_buildBorderLine()
-{
-  // Make geode to hold the geometry.
-  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
-
-  // If we have a mesh...
-  if ( 0x0 != _mesh.get() )
-  {
-    // Shortcut.
-    Mesh &mesh ( *_mesh );
-
-    // Make the colors.
-    osg::Vec4f color ( 1.0f, 0.0f, 0.0f, 1.0f );
-    osg::ref_ptr<osg::Vec4Array> horizColors ( new osg::Vec4Array );
-    osg::ref_ptr<osg::Vec4Array> vertColors  ( new osg::Vec4Array );
-    horizColors->resize ( mesh.columns(), color );
-    vertColors->resize  ( mesh.rows(),    color );
-
-    // Make the vertices.
-    osg::ref_ptr<osg::Vec3Array> top    ( new osg::Vec3Array );
-    osg::ref_ptr<osg::Vec3Array> bottom ( new osg::Vec3Array );
-    osg::ref_ptr<osg::Vec3Array> left   ( new osg::Vec3Array );
-    osg::ref_ptr<osg::Vec3Array> right  ( new osg::Vec3Array );
-
-    // Make space.
-    top->reserve    ( mesh.columns() );
-    bottom->reserve ( mesh.columns() );
-    left->reserve   ( mesh.rows() );
-    right->reserve  ( mesh.rows() );
-
-    // Loop through the columns.
-    for ( unsigned int j = 0; j < mesh.columns(); ++j )
-    {
-      top->push_back    ( mesh.point (               0, j ) );
-      bottom->push_back ( mesh.point ( mesh.rows() - 1, j ) );
-    }
-
-    // Loop through the rows.
-    for ( unsigned int i = 0; i < mesh.rows(); ++i )
-    {
-      left->push_back  ( mesh.point ( i, 0 ) );
-      right->push_back ( mesh.point ( i, mesh.columns() - 1 ) );
-    }
-
-    // Top
-    {
-      // Make the geometry.
-      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
-
-      // Add geometry properties.
-      geometry->setVertexArray ( top.get() );
-      geometry->setColorArray ( horizColors.get() );
-      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-      geometry->setNormalArray ( 0x0 );
-      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
-      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
-
-      // Add geometry to geode.
-      geode->addDrawable ( geometry.get() );
-    }
-
-    // Bottom
-    {
-      // Make the geometry.
-      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
-
-      // Add geometry properties.
-      geometry->setVertexArray ( bottom.get() );
-      geometry->setColorArray ( horizColors.get() );
-      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-      geometry->setNormalArray ( 0x0 );
-      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
-      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
-
-      // Add geometry to geode.
-      geode->addDrawable ( geometry.get() );
-    }
-
-    // Left
-    {
-      // Make the geometry.
-      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
-
-      // Add geometry properties.
-      geometry->setVertexArray ( left.get() );
-      geometry->setColorArray ( vertColors.get() );
-      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-      geometry->setNormalArray ( 0x0 );
-      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
-      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
-
-      // Add geometry to geode.
-      geode->addDrawable ( geometry.get() );
-    }
-
-    // Right
-    {
-      // Make the geometry.
-      osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
-
-      // Add geometry properties.
-      geometry->setVertexArray ( right.get() );
-      geometry->setColorArray ( vertColors.get() );
-      geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
-      geometry->setNormalArray ( 0x0 );
-      geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
-      geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
-
-      // Add geometry to geode.
-      geode->addDrawable ( geometry.get() );
-    }
-  }
-
-  // Set properties.
-  OsgTools::State::StateSet::setLineWidth ( geode.get(), 3.0f );
-  OsgTools::State::StateSet::setPolygonsTextures ( geode->getOrCreateStateSet(), false );
-  OsgTools::State::StateSet::setLighting ( geode.get(), false );
-  
-  // Get the state set.
-  osg::ref_ptr<osg::StateSet > ss ( geode->getOrCreateStateSet() );
-  
-  // Set depth parameters.
-  osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
-  ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  
-  // Set the line parameters.
-  ss->setMode ( GL_LINE_SMOOTH, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  
-  // Add a blend function.
-  osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
-  ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
- 
-  // Set the hint.
-  osg::ref_ptr<osg::Hint> hint ( new osg::Hint ( GL_LINE_SMOOTH_HINT, GL_NICEST ) );
-  ss->setAttributeAndModes ( hint.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-
-  // Draw after the tile.
-  ss->setRenderBinDetails ( 2, "RenderBin" );
-
-  // Return new geode.
-  return NodePtr ( geode.get() );
 }
 
 
@@ -1955,6 +1708,8 @@ void Tile::removeVectorData ( osg::Node* node )
 
 void Tile::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
 {
+  USUL_TRACE_SCOPE;
+
   Body* body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
 
   if ( 0x0 != body )
@@ -1972,6 +1727,41 @@ void Tile::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 
 Usul::Jobs::Manager *Tile::jobManager()
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( ( 0x0 == _body ) ? 0x0 : _body->jobManager() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show border state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_setShowBorders ( bool show )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( 0x0 != _mesh.get() )
+  {
+    _mesh->showBorder ( show );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the show skirt state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_setShowSkirts ( bool show )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  if ( 0x0 != _mesh.get() )
+  {
+    _mesh->showSkirts ( show );
+  }
 }

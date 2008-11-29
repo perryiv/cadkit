@@ -16,8 +16,15 @@
 #include "Minerva/Core/TileEngine/Mesh.h"
 #include "Minerva/Core/TileEngine/Body.h"
 
+#include "OsgTools/Group.h"
+#include "OsgTools/State/StateSet.h"
+
+#include "osg/BlendFunc"
 #include "osg/Geode"
 #include "osg/Geometry"
+#include "osg/Depth"
+#include "osg/Hint"
+#include "osg/PolygonOffset"
 
 using namespace Minerva::Core::TileEngine;
 
@@ -28,13 +35,18 @@ using namespace Minerva::Core::TileEngine;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight ) :
+Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const Extents& extents ) :
   _points    ( rows * columns * 2 ),
   _normals   ( rows * columns * 2 ),
   _texCoords ( rows * columns * 2 ),
   _rows      ( rows ),
   _columns   ( columns ),
-  _skirtHeight ( skirtHeight )
+  _skirtHeight ( skirtHeight ),
+  _extents ( extents ),
+  _borders ( new osg::Group ),
+  _skirts ( new osg::Geode ),
+  _lowerLeft(),
+  _boundingSphere()
 {
 }
 
@@ -47,7 +59,7 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight ) :
 
 Mesh::const_reference Mesh::point ( size_type r, size_type c ) const
 {
-  return _points.at ( r * _columns + c );
+  return _points.at ( this->_index ( r, c ) );
 }
 
 
@@ -57,7 +69,7 @@ Mesh::const_reference Mesh::point ( size_type r, size_type c ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Mesh::operator() ( osg::Geode& mesh, osg::Geode& skirts ) const
+void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
 {
   // Allocate the points.
   osg::ref_ptr<osg::Vec3Array> points  ( new osg::Vec3Array (  _points.begin(), _points.end() ) );
@@ -111,6 +123,19 @@ void Mesh::operator() ( osg::Geode& mesh, osg::Geode& skirts ) const
 
     // Add the drawable.
     mesh.addDrawable ( geometry.get() );
+
+    // Get the state set.
+    osg::ref_ptr<osg::StateSet> ss ( mesh.getOrCreateStateSet() );
+
+    // Turn off back-face culling.
+    ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
+
+    osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
+    offset->setFactor ( 1.0f );
+    offset->setUnits  ( 4.0f );
+    ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
+    ss->setRenderBinDetails( 1, "RenderBin" );
   }
 
   // Make the skirts.\
@@ -187,21 +212,16 @@ void Mesh::operator() ( osg::Geode& mesh, osg::Geode& skirts ) const
 
     // Add the drawable.
     skirts.addDrawable ( geometry.get() );
-  }
-}
 
+    // Get the state set.
+    osg::ref_ptr<osg::StateSet> ss ( skirts.getOrCreateStateSet() );
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the reference.
-//
-///////////////////////////////////////////////////////////////////////////////
+    osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
+    offset->setFactor ( 4.0f );
+    offset->setUnits  ( 16.0f );
+    ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 
-namespace Detail
-{
-  inline unsigned int getVectorIndex ( unsigned int row, unsigned int column, unsigned int numColumns )
-  {
-    return ( ( row * numColumns ) + column );
+    ss->setRenderBinDetails( 2, "RenderBin" );
   }
 }
 
@@ -212,14 +232,14 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Mesh::buildMesh ( const Body& body, 
-                       const Extents& extents, 
-                       ImagePtr elevation, 
-                       const osg::Vec2d& uRange,
-                       const osg::Vec2d& vRange,
-                       osg::BoundingSphere& boundingSphere,
-                       Vector& offset )
+osg::Node* Mesh::buildMesh ( const Body& body, 
+                             ImagePtr elevation, 
+                             const osg::Vec2d& uRange,
+                             const osg::Vec2d& vRange,
+                             osg::BoundingSphere& boundingSphere )
 {
+  Extents extents ( _extents );
+
   const unsigned int rows ( _rows );
   const unsigned int columns ( _columns );
 
@@ -263,12 +283,39 @@ void Mesh::buildMesh ( const Body& body,
   }
 
   // Move mesh vertices to local origin.
-  offset = _points.at ( rows * columns );
+  // The offset is the first point of the skirts.
+  Vector offset ( _points.at ( rows * columns ) );
   for ( Vectors::iterator iter = _points.begin(); iter != _points.end(); ++iter )
   {
     Vector &p ( *iter );
     p = p - offset;
   }
+
+  // Make group to hold the meshes.
+  osg::ref_ptr < osg::MatrixTransform > mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrix::translate ( offset ) );
+
+  // Make the geodes.
+  osg::ref_ptr<osg::Geode> ground ( new osg::Geode );
+  osg::ref_ptr<osg::Geode> skirts ( new osg::Geode );
+
+  // Build the scene for the mesh.
+  this->_buildGeometry ( *ground, *skirts );
+
+  // Add to the matrix transform.
+  mt->addChild ( skirts.get() );
+  mt->addChild ( ground.get() );
+
+  // Add the place-holder for the border.
+  mt->addChild ( _borders.get() );
+
+  // Set needed variables.
+  _lowerLeft = offset;
+  _skirts = skirts.get();
+  _boundingSphere = boundingSphere;
+
+  // Return the MatrixTransform.
+  return mt.release();
 }
 
 
@@ -281,7 +328,7 @@ void Mesh::buildMesh ( const Body& body,
 void Mesh::_setLocationData ( const Body& body, osg::BoundingSphere& boundingSphere, unsigned int i, unsigned int j, double lat, double lon, double elevation, double s, double t )
 {
   // Get the index into the vectors.
-  const Vectors::size_type index ( Detail::getVectorIndex ( i, j, _columns ) );
+  const Vectors::size_type index ( this->_index ( i, j ) );
 
   // Get the number of vertices.
   const Vectors::size_type numVertices ( _rows * _columns );
@@ -313,4 +360,211 @@ void Mesh::_setLocationData ( const Body& body, osg::BoundingSphere& boundingSph
 
   // Set the texture coordinate.
   _texCoords.at ( index + numVertices ) = _texCoords.at ( index );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build line-segment for the border.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Node* Mesh::_buildBorder() const
+{
+  // Make geode to hold the geometry.
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+
+  // Make the colors.
+  osg::Vec4f color ( 1.0f, 0.0f, 0.0f, 1.0f );
+  osg::ref_ptr<osg::Vec4Array> horizColors ( new osg::Vec4Array );
+  osg::ref_ptr<osg::Vec4Array> vertColors  ( new osg::Vec4Array );
+  horizColors->resize ( this->columns(), color );
+  vertColors->resize  ( this->rows(),    color );
+
+  // Make the vertices.
+  osg::ref_ptr<osg::Vec3Array> top    ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec3Array> bottom ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec3Array> left   ( new osg::Vec3Array );
+  osg::ref_ptr<osg::Vec3Array> right  ( new osg::Vec3Array );
+
+  // Make space.
+  top->reserve    ( this->columns() );
+  bottom->reserve ( this->columns() );
+  left->reserve   ( this->rows() );
+  right->reserve  ( this->rows() );
+
+  // Loop through the columns.
+  for ( unsigned int j = 0; j < this->columns(); ++j )
+  {
+    top->push_back    ( this->point (                0, j ) );
+    bottom->push_back ( this->point ( this->rows() - 1, j ) );
+  }
+
+  // Loop through the rows.
+  for ( unsigned int i = 0; i < this->rows(); ++i )
+  {
+    left->push_back  ( this->point ( i, 0 ) );
+    right->push_back ( this->point ( i, this->columns() - 1 ) );
+  }
+
+  // Top
+  {
+    // Make the geometry.
+    osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+    // Add geometry properties.
+    geometry->setVertexArray ( top.get() );
+    geometry->setColorArray ( horizColors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+    geometry->setNormalArray ( 0x0 );
+    geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+    // Add geometry to geode.
+    geode->addDrawable ( geometry.get() );
+  }
+
+  // Bottom
+  {
+    // Make the geometry.
+    osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+    // Add geometry properties.
+    geometry->setVertexArray ( bottom.get() );
+    geometry->setColorArray ( horizColors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+    geometry->setNormalArray ( 0x0 );
+    geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+    // Add geometry to geode.
+    geode->addDrawable ( geometry.get() );
+  }
+
+  // Left
+  {
+    // Make the geometry.
+    osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+    // Add geometry properties.
+    geometry->setVertexArray ( left.get() );
+    geometry->setColorArray ( vertColors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+    geometry->setNormalArray ( 0x0 );
+    geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+    // Add geometry to geode.
+    geode->addDrawable ( geometry.get() );
+  }
+
+  // Right
+  {
+    // Make the geometry.
+    osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
+
+    // Add geometry properties.
+    geometry->setVertexArray ( right.get() );
+    geometry->setColorArray ( vertColors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
+    geometry->setNormalArray ( 0x0 );
+    geometry->setNormalBinding ( osg::Geometry::BIND_OFF );
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, geometry->getVertexArray()->getNumElements() ) );
+
+    // Add geometry to geode.
+    geode->addDrawable ( geometry.get() );
+  }
+
+  // Set properties.
+  OsgTools::State::StateSet::setLineWidth ( geode.get(), 3.0f );
+  OsgTools::State::StateSet::setPolygonsTextures ( geode->getOrCreateStateSet(), false );
+  OsgTools::State::StateSet::setLighting ( geode.get(), false );
+  
+  // Get the state set.
+  osg::ref_ptr<osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  
+  // Set depth parameters.
+  osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
+  ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Set the line parameters.
+  ss->setMode ( GL_LINE_SMOOTH, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Add a blend function.
+  osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+  ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+ 
+  // Set the hint.
+  osg::ref_ptr<osg::Hint> hint ( new osg::Hint ( GL_LINE_SMOOTH_HINT, GL_NICEST ) );
+  ss->setAttributeAndModes ( hint.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+
+  // Draw after the tile.
+  ss->setRenderBinDetails ( 2, "RenderBin" );
+
+  // Return new geode.
+  return geode.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the smallest distance (squared) from the given point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+double Mesh::getSmallestDistanceSquared ( const osg::Vec3d& point ) const
+{
+  const osg::Vec3d &p00 ( _lowerLeft + this->point ( 0, 0 ) );
+  const osg::Vec3d &p0N ( _lowerLeft + this->point ( 0, this->columns() - 1 ) );
+  const osg::Vec3d &pN0 ( _lowerLeft + this->point ( this->rows() - 1, 0 ) );
+  const osg::Vec3d &pNN ( _lowerLeft + this->point ( this->rows() - 1, this->columns() - 1 ) );
+  const osg::Vec3d &pBC ( _boundingSphere.center() );
+  
+  // Squared distances from the eye to the points.
+  const double dist00 ( ( point - p00 ).length2() );
+  const double dist0N ( ( point - p0N ).length2() );
+  const double distN0 ( ( point - pN0 ).length2() );
+  const double distNN ( ( point - pNN ).length2() );
+  const double distBC ( ( point - pBC ).length2() );
+
+  // Check with smallest distance.
+  const double dist ( Usul::Math::minimum ( dist00, dist0N, distN0, distNN, distBC ) );
+
+  // Return the distance.
+  return dist;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the border.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Mesh::showBorder ( bool show )
+{
+  //_borders->setNodeMask ( ( body->useBorders() ? 0xffffffff : 0x0 ) );
+
+  if ( show )
+  {
+    OsgTools::Group::removeAllChildren ( _borders.get() );
+    _borders->addChild ( this->_buildBorder() );
+  }
+  else
+  {
+    OsgTools::Group::removeAllChildren ( _borders.get() );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show the skirts.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Mesh::showSkirts ( bool show )
+{
+  _skirts->setNodeMask  ( show ? 0xffffffff : 0x0 );
 }

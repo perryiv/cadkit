@@ -36,8 +36,133 @@ INCLUDE_DIRECTORIES(
 		     ${CURL_INCLUDE_DIR}
 		     )
 
+#########################################################
+#
+#  Add Source groups.
+#
+#########################################################
 
-#List the Sources
+SOURCE_GROUP ( Source                FILES Export.h Extents.h Macros.h Serialize.h Visitor.h Visitor.cpp )
+SOURCE_GROUP ( Source\\Algorithms    REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Algorithms/* )
+SOURCE_GROUP ( Source\\Animate       REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Animate/* )
+SOURCE_GROUP ( Source\\Commands      REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Commands/* )
+SOURCE_GROUP ( Source\\Data          REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Data/* )
+SOURCE_GROUP ( Source\\Factory       REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Factory/* )
+SOURCE_GROUP ( Source\\Functions     REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Functions/* )
+SOURCE_GROUP ( Source\\Functors      REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Functors/* )
+SOURCE_GROUP ( Source\\Jobs          REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Jobs/* )
+SOURCE_GROUP ( Source\\Layers        REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Layers/* )
+SOURCE_GROUP ( Source\\OSG           REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/OSG/* )
+SOURCE_GROUP ( Source\\TileEngine    REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/TileEngine/* )
+SOURCE_GROUP ( Source\\Utilities     REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Utilities/* )
+SOURCE_GROUP ( Source\\Visitors      REGULAR_EXPRESSION ${PROJECT_SOURCE_DIR}/Visitors/* )
+
+
+#########################################################
+#
+#  List all the headers
+#
+#########################################################
+
+SET ( HEADERS
+	./Algorithms/Composite.h
+	./Algorithms/Resample.h
+	./Algorithms/ResampleElevation.h
+	./Algorithms/SubRegion.h
+	./Animate/Date.h
+	./Animate/Settings.h
+	./Commands/AddLayer.h
+	./Commands/AnimationSpeed.h
+	./Commands/ChangeTimestepType.h
+	./Commands/HideLayer.h
+	./Commands/PauseAnimation.h
+	./Commands/RemoveLayer.h
+	./Commands/ShowLayer.h
+	./Commands/ShowPastEvents.h
+	./Commands/StartAnimation.h
+	./Commands/StopAnimation.h
+	./Commands/ToggleShown.h
+	./Data/ColorStyle.h
+	./Data/Container.h
+	./Data/DataObject.h
+	./Data/Feature.h
+	./Data/Geometry.h
+	./Data/IconStyle.h
+	./Data/Line.h
+	./Data/LineStyle.h
+	./Data/LookAt.h
+	./Data/Model.h
+	./Data/ModelCache.h
+	./Data/Object.h
+	./Data/Point.h
+	./Data/Polygon.h
+	./Data/PolyStyle.h
+	./Data/Style.h
+	./Data/TimePrimitive.h
+	./Data/TimeSpan.h
+	./Data/TimeStamp.h
+	./Data/Transform.h
+	./Data/UserData.h
+	./Data/Vector.h
+	./Export.h
+	./Extents.h
+	./Factory/Readers.h
+	./Functions/CacheString.h
+	./Functions/MakeBody.h
+	./Functions/ParameterizeExtents.h
+	./Functors/BaseColorFunctor.h
+	./Functors/GradientColorFunctor.h
+	./Functors/SingleColorFunctor.h
+	./Jobs/BuildRaster.h
+	./Jobs/BuildTiles.h
+	./Layers/ElevationGroup.h
+	./Layers/LayerInfo.h
+	./Layers/RasterGroup.h
+	./Layers/RasterLayer.h
+	./Layers/RasterLayerArcIMS.h
+	./Layers/RasterLayerNetwork.h
+	./Layers/RasterLayerWms.h
+	./Macros.h
+	./OSG/MatrixTransform.h
+	./Serialize.h
+	./TileEngine/Body.h
+	./TileEngine/Group.h
+	./TileEngine/LandModel.h
+	./TileEngine/LandModelEllipsoid.h
+	./TileEngine/Mesh.h
+	./TileEngine/Node.h
+	./TileEngine/SplitCallbacks.h
+	./TileEngine/System.h
+	./TileEngine/Tile.back.h
+	./TileEngine/Tile.h
+	./TileEngine/TileMesh.h
+	./Utilities/Atmosphere.h
+	./Utilities/ClampNearFar.h
+	./Utilities/Compass.h
+	./Utilities/DirtyTiles.h
+	./Utilities/Download.h
+	./Utilities/ElevationGrid.h
+	./Utilities/GeoCode.h
+	./Utilities/Hud.h
+	./Utilities/SkyDome.h
+	./Visitor.h
+	./Visitors/BuildLegend.h
+	./Visitors/BuildScene.h
+	./Visitors/FindMinMaxDates.h
+	./Visitors/ResizePoints.h
+	./Visitors/Scale.h
+	./Visitors/SetJobManager.h
+	./Visitors/StackPoints.h
+	./Visitors/TemporalAnimation.h
+)
+
+
+#########################################################
+#
+#  List the sources.
+#
+#########################################################
+
 SET (SOURCES
 ./Algorithms/ResampleElevation.cpp
 ./Animate/Date.cpp
@@ -114,7 +239,7 @@ SET (SOURCES
 )
 
 # Create a Shared Library
-ADD_LIBRARY(Minerva SHARED ${SOURCES} )
+ADD_LIBRARY(Minerva SHARED ${SOURCES} ${HEADERS} )
 
 # Add a library
 CADKIT_ADD_LIBRARY ( Minerva )

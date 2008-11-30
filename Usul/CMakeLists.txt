@@ -650,7 +650,6 @@ SET (SOURCES
 ./Registry/Visitor.cpp
 ./User/Directory.cpp
 ./ID/GUID.cpp
-./Functions/Color.cpp
 ./Functions/GUID.cpp
 ./DLL/Listener.cpp
 ./DLL/Library.cpp

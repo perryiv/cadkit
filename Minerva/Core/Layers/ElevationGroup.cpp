@@ -11,15 +11,27 @@
 #include "Minerva/Core/Layers/ElevationGroup.h"
 
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Functions/Color.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Types/Types.h"
 
 #include "osg/ref_ptr"
 #include "osg/Image"
 
+#include <set>
+
 using namespace Minerva::Core::Layers;
 
 USUL_FACTORY_REGISTER_CREATOR ( ElevationGroup );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Typedef.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef std::set<float> NoDataValues;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -157,7 +169,7 @@ namespace Detail
 
 namespace Detail
 {
-  void composite ( osg::Image& result, const osg::Image& image )
+  void composite ( osg::Image& result, const osg::Image& image, const NoDataValues& noDataValues )
   {
     const unsigned int width ( image.s() );
     const unsigned int height ( image.t() );
@@ -180,16 +192,36 @@ namespace Detail
     // Copy the pixels into the osg image.
     for ( unsigned int i = 0; i < size; ++i )
     {
-      const float alpha ( hasAlpha ? src[offset - 1] / std::numeric_limits<float>::max() : 1.0 );
+      // Get the current value.
       const float value ( *src );
 
+      // See if the value is in the list of no data values.
+      const bool isNoData ( noDataValues.end() != noDataValues.find ( value ) );
+
+      // Get the current value.
       const float current ( *dst );
+
+      // If the value isn't a no data, do the needed compositing.
+      if ( false == isNoData )
+      {
+        // See if there is an alpha.  This is to propagate no data values from the readers.
+        // The NoDataValues can eventually replace using the alpha to designate no data.
+        const float alpha ( hasAlpha ? src[offset - 1] / std::numeric_limits<float>::max() : 1.0 );
+        
+        // Composite the values.
+        const float destination = ( current * ( 1.0f - alpha ) ) + ( value * alpha );
+
+        // Set the destination value.
+        *dst = destination;
+      }
+      else
+      {
+        // The value is no data, set the answer to the exsisting value.
+        *dst = current;
+      }
       
-      const float destination = ( current * ( 1.0f - alpha ) ) + ( value * alpha );
-      
-      *dst = destination;
+      // Advance the pointers.
       ++dst;
-      
       src += offset;
     }
   }
@@ -206,8 +238,19 @@ void ElevationGroup::_compositeImages ( osg::Image& result, const osg::Image& im
 {
   USUL_TRACE_SCOPE;
 
+  // Values that correspond to no data values.
+  NoDataValues noDataValues;
+
+  // Encode the alpha values into floats.  This isn't ideal, but without refactoring the alpha map, I can't think of another way to do this.
+  for ( RasterLayer::Alphas::const_iterator iter = alphas.begin(); iter != alphas.end(); ++iter )
+  {
+    Usul::Math::Vec4f color ( Usul::Functions::Color::unpack<Usul::Math::Vec4f> ( iter->first ) );
+    float noDataValue ( Usul::Functions::Color::pack ( color[0], color[1], color[2], static_cast<unsigned char> ( iter->second ) ) );
+    noDataValues.insert ( noDataValue );
+  }
+
   if ( GL_FLOAT == image.getDataType() )
-    Detail::composite ( result, image );
+    Detail::composite ( result, image, noDataValues );
   else
   {
     ImagePtr convert ( new osg::Image );
@@ -229,6 +272,6 @@ void ElevationGroup::_compositeImages ( osg::Image& result, const osg::Image& im
       break;
     }
     
-    Detail::composite ( result, *convert );
+    Detail::composite ( result, *convert, noDataValues );
   }
 }

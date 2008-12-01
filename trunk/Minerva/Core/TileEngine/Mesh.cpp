@@ -138,7 +138,7 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
     ss->setRenderBinDetails( 1, "RenderBin" );
   }
 
-  // Make the skirts.\
+  // Make the skirts.
   // Consider each square detail level of
 	// the tile as a square with corners
 	// A,B,C & D as in the figure below

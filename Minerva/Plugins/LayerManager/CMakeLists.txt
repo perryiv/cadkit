@@ -12,9 +12,6 @@ INCLUDE ( Cadkit.plugin )
 # Add include paths and librares for QT.
 INCLUDE(${QT_USE_FILE})
 
-# ------------ Find curl Library ----------------------
-INCLUDE ( FindCURL )
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # ------------ Set Include Folders ----------------------
@@ -23,13 +20,7 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
                      "${CADKIT_INC_DIR}/Experimental"
                      ${OSG_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 
-                     ${CMAKE_CURRENT_BINARY_DIR}
-					 ${CURL_INCLUDE_DIR} )
-
-					 
-IF(MSVC)
-	ADD_DEFINITIONS("-DCURL_STATICLIB")
-ENDIF(MSVC)
+                     ${CMAKE_CURRENT_BINARY_DIR} )
 
 # Add the source files.
 set (SOURCES
@@ -60,13 +51,7 @@ SET ( COMPILE_GUARD "_COMPILING_LAYER_MANAGER" )
 SET ( CADKIT_LIBRARIES Usul XmlTree SerializeXML Minerva QtTools MenuKit HeliosQtViewsOSG )
 SET ( OTHER_LIBRARIES ${QT_LIBRARIES}
 					  ${QT_QTOPENGL_LIBRARY}
-					  ${OSG_LIB}
-					  ${CURL_LIBRARY} )
-
-# If we are building on Windows, link to these libraries.
-IF(WIN32)
-	SET( OTHER_LIBRARIES ${OTHER_LIBRARIES} Ws2_32 wldap32 )
-ENDIF(WIN32)
+					  ${OSG_LIB} )
 
 # Add the plugin.
 CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

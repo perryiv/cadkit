@@ -8,12 +8,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _MSC_VER
-#define NOMINMAX
-#endif
-
 #include "Minerva/Plugins/LayerManager/Favorites.h"
 #include "Minerva/Core/Commands/AddLayer.h"
+#include "Minerva/Core/Utilities/Download.h"
 
 #include "MenuKit/Menu.h"
 #include "MenuKit/Button.h"
@@ -25,11 +22,11 @@
 #include "Usul/Documents/Manager.h"
 #include "Usul/File/Make.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/IClonable.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Registry/Database.h"
-#include "Usul/Network/Curl.h"
-#include "Usul/Interfaces/IClonable.h"
+#include "Usul/Scope/RemoveFile.h"
 #include "Usul/User/Directory.h"
 
 #include "Serialize/XML/Serialize.h"
@@ -354,40 +351,28 @@ void Favorites::_onContextMenuShow ( const QPoint& pos )
 
 void Favorites::_readFavoritesFromServer()
 {
-  // See if we can use the network.
-  const bool workOffline ( Usul::Registry::Database::instance()["work_offline"].get<bool> ( false, true ) );
-  
-  // Return now if we are suppose to work offline.
-  if ( true == workOffline )
-    return;
-  
   const std::string server ( "www.minerva-gis.org" );
   const std::string file ( "gis_favorites.xml" );
 
   const std::string url ( "http://" + server + "/" + file );
 
   // File to download to.
-	std::string name ( Usul::File::Temp::file() );
-	Usul::Scope::RemoveFile remove ( name );
-  
-	// Download.
-	{
-		Usul::Network::Curl curl ( url, name );
-		Usul::Functions::safeCallV1V2V3 ( Usul::Adaptors::memberFunction 
-      ( &curl, &Usul::Network::Curl::download ), 
-      Usul::Registry::Database::instance()["network_download"]["favorites"]["timeout_milliseconds"].get<unsigned int> ( 60000, true ),
-      static_cast<std::ostream*> ( 0x0 ), "", "3274576290" );
-	}
+  std::string name ( Usul::File::Temp::file() );
+  Usul::Scope::RemoveFile remove ( name );
 
-  Serialize::XML::DataMemberMap map;
-  map.addMember ( "favorites", _serverFavorites );
+  // Attempt to download the file.
+  if ( Minerva::Core::Utilities::downloadToFile ( url, name ) )
+  {
+	  Serialize::XML::DataMemberMap map;
+    map.addMember ( "favorites", _serverFavorites );
 
-  XmlTree::XercesLife life;
-  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
-  document->load ( name );
+    XmlTree::XercesLife life;
+    XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+    document->load ( name );
 
-  map.deserialize ( *document );
-  
-  // Make sure the tree is rebuilt.
-  QMetaObject::invokeMethod ( this, "_buildTree", Qt::QueuedConnection );
+    map.deserialize ( *document );
+    
+    // Make sure the tree is rebuilt.
+    QMetaObject::invokeMethod ( this, "_buildTree", Qt::QueuedConnection );
+  }
 }

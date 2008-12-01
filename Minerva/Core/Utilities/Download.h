@@ -25,6 +25,11 @@ namespace Minerva {
 namespace Core {
 namespace Utilities {
 
+  // Download to given filename.
+  MINERVA_EXPORT bool downloadToFile ( const std::string& href, const std::string& filename );
+  MINERVA_EXPORT bool downloadToFile ( const std::string& href, const std::string& filename, unsigned int timeout );
+
+  // Download.  Filename is populated where href is downloaded to.
   MINERVA_EXPORT bool download ( const std::string& href, std::string& filename );
   MINERVA_EXPORT bool download ( const std::string& href, std::string& filename, bool useCache );
 }

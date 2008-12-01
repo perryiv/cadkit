@@ -42,7 +42,7 @@ bool Minerva::Core::Utilities::download ( const std::string& href, std::string& 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Download file.
+//  Download file.  TODO: Re-write function to handle work offline state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -89,5 +89,48 @@ bool Minerva::Core::Utilities::download ( const std::string& href, std::string& 
   }
   USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1638679894" )
   
+  return success;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Download to given filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Minerva::Core::Utilities::downloadToFile ( const std::string& href, const std::string& filename )
+{
+  const unsigned int timeout ( Usul::Registry::Database::instance()["network_download"]["timeout_milliseconds"].get<unsigned int> ( 600000, true ) );
+  return downloadToFile ( href, filename, timeout );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Download to given filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Minerva::Core::Utilities::downloadToFile ( const std::string& href, const std::string& filename, unsigned int timeout )
+{
+  // See if we can use the network.
+  const bool workOffline ( Usul::Registry::Database::instance()["work_offline"].get<bool> ( false, true ) );
+  
+  // Return now if we are suppose to work offline.
+  if ( true == workOffline )
+    return false;
+
+  bool success ( false );
+
+  try
+  {
+    Usul::Network::Curl curl ( href, filename );
+    curl.download ( timeout, static_cast<std::ostream*> ( 0x0 ), "" );
+
+    success = true;
+  }
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1638679894" )
+
   return success;
 }

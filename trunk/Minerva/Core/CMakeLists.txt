@@ -133,7 +133,6 @@ SET ( HEADERS
 	./TileEngine/Node.h
 	./TileEngine/SplitCallbacks.h
 	./TileEngine/System.h
-	./TileEngine/Tile.back.h
 	./TileEngine/Tile.h
 	./TileEngine/TileMesh.h
 	./Utilities/Atmosphere.h

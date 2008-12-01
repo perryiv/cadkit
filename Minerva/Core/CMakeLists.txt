@@ -134,7 +134,6 @@ SET ( HEADERS
 	./TileEngine/SplitCallbacks.h
 	./TileEngine/System.h
 	./TileEngine/Tile.h
-	./TileEngine/TileMesh.h
 	./Utilities/Atmosphere.h
 	./Utilities/ClampNearFar.h
 	./Utilities/Compass.h

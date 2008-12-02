@@ -17,6 +17,8 @@
 #include "VRV/Devices/ButtonGroup.h"
 #include "VRV/Devices/TrackerDevice.h"
 
+#include "VRV/Core/TimerServer.h"
+
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -84,6 +86,7 @@ private:
 
   // Data Members.
   mutable Mutex                          _mutex;
+  TimerServer::RefPtr                    _timerServer;
 
 };
 

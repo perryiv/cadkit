@@ -1,15 +1,9 @@
 
 PROJECT (SceneOperations)
 
-SET(PLUGIN_NAME "SceneOperations")
+INCLUDE ( Cadkit.plugin )
 
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
-
-SET (COMPILE_GUARD "_COMPILING_SCENE_OPERATIONS")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
-
-INCLUDE ( ${CMakeModules}/FindOSG.cmake)
+INCLUDE ( FindOSG )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
@@ -27,11 +21,11 @@ SET (SOURCES
 ./UserDataSelected.cpp
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "SceneOperations" )
+SET ( COMPILE_GUARD "_COMPILING_SCENE_OPERATIONS" )
+SET ( CADKIT_LIBRARIES Usul )
+SET ( OTHER_LIBRARIES ${OSG_LIB} ${OPENTHREADS_LIB} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul )	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${OSG_LIB} )
+# Add the plugin.
+CADKIT_ADD_PLUGIN( ${PLUGIN_NAME} )

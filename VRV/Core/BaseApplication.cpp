@@ -14,6 +14,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Strings/Format.h"
@@ -32,8 +33,11 @@ using namespace VRV::Core;
 
 BaseApplication::BaseApplication() : 
   BaseClass ( vrj::Kernel::instance() ),
-  _mutex()
+  _mutex(),
+  _timerServer ( new TimerServer )
 {
+  // Add the timer server as a plugin.
+  Usul::Components::Manager::instance().addPlugin ( Usul::Interfaces::IUnknown::QueryPtr ( _timerServer ) );
 }
 
 
@@ -155,6 +159,12 @@ void BaseApplication::preFrame()
 void BaseApplication::_preFrame()
 {
   USUL_TRACE_SCOPE;
+
+  // Update the timer server.
+  _timerServer->update();
+
+  // Purge the timer server.
+  _timerServer->purge();
 }
 
 

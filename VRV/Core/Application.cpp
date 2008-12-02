@@ -1152,6 +1152,11 @@ void Application::_init()
 void Application::_preFrame()
 {
   USUL_TRACE_SCOPE;
+
+  // Call the base class first.
+  BaseClass::_preFrame();
+
+  // Now guard.
   Guard guard ( this->mutex() );
 
   // Mark the start of the frame.

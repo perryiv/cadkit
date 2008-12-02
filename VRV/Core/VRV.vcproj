@@ -286,6 +286,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\TimerCallback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TimerCallback.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TimerServer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TimerServer.h"
+					>
+				</File>
+				<File
 					RelativePath=".\VprIO.h"
 					>
 				</File>

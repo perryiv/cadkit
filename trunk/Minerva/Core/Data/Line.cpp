@@ -20,9 +20,11 @@
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
+#include "osg/BlendFunc"
 #include "osg/Geode"
 #include "osg/Geometry"
 #include "osg/Depth"
+#include "osg/Hint"
 #include "osg/Material"
 #include "osg/MatrixTransform"
 #include "osg/Version"
@@ -192,6 +194,19 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
   osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
   ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
   
+  // Set the line parameters.
+  ss->setMode ( GL_LINE_SMOOTH, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Add a blend function.
+  osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+  ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Set the hint.
+  osg::ref_ptr<osg::Hint> hint ( new osg::Hint ( GL_LINE_SMOOTH_HINT, GL_NICEST ) );
+  ss->setAttributeAndModes ( hint.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  
+  // Set the render bin.
   ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
   
   this->extents ( e );

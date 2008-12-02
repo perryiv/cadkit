@@ -31,6 +31,28 @@ using namespace Minerva::Core::TileEngine;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Polygon offset constants.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const float MESH_POLYGON_OFFSET_FACTOR ( 1.0f );
+const float MESH_POLYGON_OFFSET_UNITS  ( 4.0f );
+const float SKIRT_POLYGON_OFFSET_FACTOR ( 0.0f );
+const float SKIRT_POLYGON_OFFSET_UNITS  ( 16.0f );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Render bin constants.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const unsigned int MESH_RENDER_BIN ( 0 );
+const unsigned int SKIRT_RENDER_BIN ( 0 );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,11 +153,12 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
     ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF );
 
     osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
-    offset->setFactor ( 1.0f );
-    offset->setUnits  ( 4.0f );
+    offset->setFactor ( MESH_POLYGON_OFFSET_FACTOR );
+    offset->setUnits  ( MESH_POLYGON_OFFSET_UNITS  );
     ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 
-    ss->setRenderBinDetails( 1, "RenderBin" );
+    if ( 0 != MESH_RENDER_BIN )
+      ss->setRenderBinDetails( MESH_RENDER_BIN, "RenderBin" );
   }
 
   // Make the skirts.
@@ -217,11 +240,12 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
     osg::ref_ptr<osg::StateSet> ss ( skirts.getOrCreateStateSet() );
 
     osg::ref_ptr<osg::PolygonOffset> offset ( new osg::PolygonOffset );
-    offset->setFactor ( 4.0f );
-    offset->setUnits  ( 16.0f );
+    offset->setFactor ( SKIRT_POLYGON_OFFSET_FACTOR );
+    offset->setUnits  ( SKIRT_POLYGON_OFFSET_UNITS );
     ss->setAttributeAndModes ( offset.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
 
-    ss->setRenderBinDetails( 2, "RenderBin" );
+    if ( 0 != SKIRT_RENDER_BIN )
+      ss->setRenderBinDetails( SKIRT_RENDER_BIN, "RenderBin" );
   }
 }
 

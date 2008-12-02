@@ -1,17 +1,11 @@
 
 project (DisplaySceneStats)
 
-SET(PLUGIN_NAME "DisplaySceneStats")
-
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.plugin.cmake)
+INCLUDE ( Cadkit.plugin )
 
 # ------------ Find OpenGL Library ----------------------
 FIND_PACKAGE(OpenGL)
-INCLUDE ( ${CMakeModules}/FindOSG.cmake)
-
-set(COMPILE_GUARD "_COMPILING_DISPLAY_SCENE_STATS")
-ADD_DEFINITIONS ("-D${COMPILE_GUARD}")
+INCLUDE ( FindOSG )
 
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
@@ -26,11 +20,11 @@ set (SOURCES
 ./Factory.cpp
 )
 
-# ---------- Create a Shared Library
-ADD_LIBRARY( ${PLUGIN_NAME} SHARED ${SOURCES} )
+# Set variables that the CADKIT_ADD_PLUGIN macro uses.
+SET ( PLUGIN_NAME "DisplaySceneStats" )
+SET ( COMPILE_GUARD "_COMPILING_DISPLAY_SCENE_STATS" )
+SET ( CADKIT_LIBRARIES Usul )
+SET ( OTHER_LIBRARIES ${OSG_LIB} ${OPENTHREADS_LIB} )
 
-CADKIT_PLUGIN( ${PLUGIN_NAME} )
-
-# Link the Library
-LINK_CADKIT( ${PLUGIN_NAME} Usul )	
-TARGET_LINK_LIBRARIES( ${PLUGIN_NAME} ${OSG_LIB} )
+# Add the plugin.
+CADKIT_ADD_PLUGIN( ${PLUGIN_NAME} )

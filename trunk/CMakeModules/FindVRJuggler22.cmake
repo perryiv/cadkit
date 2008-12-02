@@ -34,7 +34,7 @@ ENDIF(VRJ_BASE_DIR)
 #
 ################################################################
 
-FIND_LIBRARY(VRJ_LIB vrj-2_2 
+FIND_LIBRARY(VRJ_LIBRARY_RELEASE vrj-2_2 
   "$ENV{VJ_BASE_DIR}/lib64"
   "$ENV{VJ_BASE_DIR}/lib"
   /usr/local/lib64
@@ -43,11 +43,7 @@ FIND_LIBRARY(VRJ_LIB vrj-2_2
   /usr/lib
 )
 
-if(VRJ_LIB)
-  SET(VR_JUGGLER_LIBS ${VRJ_LIB})
-endif(VRJ_LIB)
-
-FIND_LIBRARY(VRJ_OGL_LIB vrj_ogl-2_2 
+FIND_LIBRARY(VRJ_LIBRARY_DEBUG vrj_d-2_2 
   "$ENV{VJ_BASE_DIR}/lib64"
   "$ENV{VJ_BASE_DIR}/lib"
   /usr/local/lib64
@@ -56,9 +52,35 @@ FIND_LIBRARY(VRJ_OGL_LIB vrj_ogl-2_2
   /usr/lib
 )
 
-if(VRJ_OGL_LIB)
-  SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${VRJ_OGL_LIB})
-endif(VRJ_OGL_LIB)
+CADKIT_SET_DEBUG_RELEASE_LIBRARY( VRJ_LIBRARY VRJ_LIBRARY_DEBUG VRJ_LIBRARY_RELEASE )
+
+if(VRJ_LIBRARY)
+  SET(VR_JUGGLER_LIBS ${VRJ_LIBRARY})
+endif(VRJ_LIBRARY)
+
+FIND_LIBRARY(VRJ_OGL_LIBRARY_RELEASE vrj_ogl-2_2 
+  "$ENV{VJ_BASE_DIR}/lib64"
+  "$ENV{VJ_BASE_DIR}/lib"
+  /usr/local/lib64
+  /usr/local/lib
+  /usr/lib64
+  /usr/lib
+)
+
+FIND_LIBRARY(VRJ_OGL_LIBRARY_DEBUG vrj_ogl_d-2_2 
+  "$ENV{VJ_BASE_DIR}/lib64"
+  "$ENV{VJ_BASE_DIR}/lib"
+  /usr/local/lib64
+  /usr/local/lib
+  /usr/lib64
+  /usr/lib
+)
+
+CADKIT_SET_DEBUG_RELEASE_LIBRARY( VRJ_OGL_LIBRARY VRJ_OGL_LIBRARY_DEBUG VRJ_OGL_LIBRARY_RELEASE )
+
+if(VRJ_OGL_LIBRARY)
+  SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${VRJ_OGL_LIBRARY})
+endif(VRJ_OGL_LIBRARY)
 
 FIND_LIBRARY(SONIX_LIB sonix-1_2 
   "$ENV{VJ_BASE_DIR}/lib64"
@@ -73,7 +95,7 @@ if(SONIX_LIB)
   SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${SONIX_LIB})
 endif(SONIX_LIB)
 
-FIND_LIBRARY(VPR_LIB vpr-2_0 
+FIND_LIBRARY(VPR_LIBRARY_RELEASE vpr-2_0 
   "$ENV{VJ_BASE_DIR}/lib64"
   "$ENV{VJ_BASE_DIR}/lib"
   /usr/local/lib64
@@ -82,11 +104,7 @@ FIND_LIBRARY(VPR_LIB vpr-2_0
   /usr/lib
 )
 
-if(VPR_LIB)
-  SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${VPR_LIB})
-endif(VPR_LIB)
-
-FIND_LIBRARY(GADGET_LIB gadget-1_2 
+FIND_LIBRARY(VPR_LIBRARY_DEBUG vpr_d-2_0 
   "$ENV{VJ_BASE_DIR}/lib64"
   "$ENV{VJ_BASE_DIR}/lib"
   /usr/local/lib64
@@ -95,9 +113,35 @@ FIND_LIBRARY(GADGET_LIB gadget-1_2
   /usr/lib
 )
 
-if(GADGET_LIB)
-  SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${GADGET_LIB})
-endif(GADGET_LIB)
+CADKIT_SET_DEBUG_RELEASE_LIBRARY( VPR_LIBRARY VPR_LIBRARY_DEBUG VPR_LIBRARY_RELEASE )
+
+if(VPR_LIBRARY)
+  SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${VPR_LIBRARY})
+endif(VPR_LIBRARY)
+
+FIND_LIBRARY(GADGET_LIBRARY_RELEASE gadget-1_2 
+  "$ENV{VJ_BASE_DIR}/lib64"
+  "$ENV{VJ_BASE_DIR}/lib"
+  /usr/local/lib64
+  /usr/local/lib
+  /usr/lib64
+  /usr/lib
+)
+
+FIND_LIBRARY(GADGET_LIBRARY_DEBUG gadget_d-1_2 
+  "$ENV{VJ_BASE_DIR}/lib64"
+  "$ENV{VJ_BASE_DIR}/lib"
+  /usr/local/lib64
+  /usr/local/lib
+  /usr/lib64
+  /usr/lib
+)
+
+CADKIT_SET_DEBUG_RELEASE_LIBRARY( GADGET_LIBRARY GADGET_LIBRARY_DEBUG GADGET_LIBRARY_RELEASE )
+
+if(GADGET_LIBRARY)
+  SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${GADGET_LIBRARY})
+endif(GADGET_LIBRARY)
 
 FIND_LIBRARY(JCCL_LIB jccl 
   "$ENV{VJ_BASE_DIR}/lib64"
@@ -125,78 +169,5 @@ FIND_LIBRARY(TWEEK_LIB tweek-1_2
 if(TWEEK_LIB)
   SET(VR_JUGGLER_LIBS ${VR_JUGGLER_LIBS} ${TWEEK_LIB})
 endif(TWEEK_LIB)
-
-
-################################################################
-#
-#  Find Omni libraries.
-#
-################################################################
-
-FIND_LIBRARY(OMNI_CODE_SETS_LIB omniCodeSets4 
-  "$ENV{VJ_DEPS_DIR}/lib64"
-  "$ENV{VJ_DEPS_DIR}/lib"
-  /usr/local/lib64
-  /usr/local/lib
-  /usr/lib
-)
-
-if(OMNI_CODE_SETS_LIB)
-  SET(OMNI_LIBS ${OMNI_CODE_SETS_LIB})
-endif(OMNI_CODE_SETS_LIB)
-
-
-FIND_LIBRARY(OMNI_CONNECTION_MGMT_LIB omniConnectionMgmt4 
-  "$ENV{VJ_DEPS_DIR}/lib64"
-  "$ENV{VJ_DEPS_DIR}/lib"
-  /usr/local/lib64
-  /usr/local/lib
-  /usr/lib
-)
-
-if(OMNI_CONNECTION_MGMT_LIB)
-  SET(OMNI_LIBS ${OMNI_LIBS} ${OMNI_CONNECTION_MGMT_LIB})
-endif(OMNI_CONNECTION_MGMT_LIB)
-
-
-
-FIND_LIBRARY(OMNI_DYNAMIC_LIB omniDynamic4 
-  "$ENV{VJ_DEPS_DIR}/lib64"
-  "$ENV{VJ_DEPS_DIR}/lib"
-  /usr/local/lib64
-  /usr/local/lib
-  /usr/lib
-)
-
-if(OMNI_DYNAMIC_LIB)
-  SET(OMNI_LIBS ${OMNI_LIBS} ${OMNI_DYNAMIC_LIB})
-endif(OMNI_DYNAMIC_LIB)
-
-
-FIND_LIBRARY(OMNI_ORB_LIB omniORB4
-  "$ENV{VJ_DEPS_DIR}/lib64"
-  "$ENV{VJ_DEPS_DIR}/lib"
-  /usr/local/lib64
-  /usr/local/lib
-  /usr/lib
-)
-
-if(OMNI_ORB_LIB)
-  SET(OMNI_LIBS ${OMNI_LIBS} ${OMNI_ORB_LIB})
-endif(OMNI_ORB_LIB)
-
-
-FIND_LIBRARY(OMNI_THREAD_LIB omnithread 
-  "$ENV{VJ_DEPS_DIR}/lib64"
-  "$ENV{VJ_DEPS_DIR}/lib"
-  /usr/local/lib64
-  /usr/local/lib
-  /usr/lib
-)
-
-if(OMNI_THREAD_LIB)
-  SET(OMNI_LIBS ${OMNI_LIBS} ${OMNI_THREAD_LIB})
-endif(OMNI_THREAD_LIB)
-
 
 

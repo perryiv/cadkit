@@ -13,17 +13,16 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Threads/OpenThreads/Thread.h"
-
-#include "Usul/Functions/SafeCall.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/Convert/Convert.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Process.h"
 #include "Usul/System/Sleep.h"
 
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <list>
 
 
@@ -37,7 +36,7 @@ void _runChild()
 {
   const Usul::System::Process::ID id ( Usul::System::Process::currentProcessId() );
 
-  // Use this make it write to files or not.
+  // Use this to make it write to files or not.
 #if 0
   const std::string file ( Usul::Strings::format ( "testing_process_", id, ".txt" ) );
   std::ofstream stream ( file.c_str() );
@@ -46,10 +45,12 @@ void _runChild()
   std::ostream &out ( std::cout );
 #endif
 
-  Usul::CommandLine::Arguments::Args args ( Usul::CommandLine::Arguments::instance().args() );
+  typedef Usul::CommandLine::Arguments::Args Args;
+  Args args ( Usul::CommandLine::Arguments::instance().args() );
 
   out << Usul::Strings::format ( "Running child ", id, " with command-line: " ) << std::flush;
-  std::copy ( args.begin(), args.end(), std::ostream_iterator<std::string> ( out ) );
+  for ( Args::const_iterator i = args.begin(); i != args.end(); ++i )
+    out << *i << ' ';
   out << std::endl;
 
   for ( unsigned int i = 0; i < 10; ++i )
@@ -83,9 +84,10 @@ void _runParent()
   {
     for ( unsigned int i = 0; i < 10; ++i )
     {
-      ProcessPtr process ( new Usul::System::Process ( program, " 500" ) );
+      ProcessPtr process ( new Usul::System::Process ( program, "500", true ) );
       std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
       processes.push_back ( process );
+      process->output ( std::cout );
     }
   }
 
@@ -96,6 +98,7 @@ void _runParent()
     while ( i != processes.end() )
     {
       ProcessPtr process ( *i );
+      process->output ( std::cout );
       if ( false == process->isRunning() )
       {
         Processes::iterator eraseMe ( i );
@@ -115,8 +118,9 @@ void _runParent()
   {
     for ( unsigned int i = 0; i < 5; ++i )
     {
-      ProcessPtr process ( new Usul::System::Process ( program, " 100" ) );
+      ProcessPtr process ( new Usul::System::Process ( program, "100", true ) );
       std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
+      process->output ( std::cout );
       process->wait();
       std::cout << Usul::Strings::format ( "Child process ", process->id(), " exited" ) << std::endl;
     }
@@ -128,7 +132,7 @@ void _runParent()
     {
       for ( unsigned int i = 0; i < 10; ++i )
       {
-        ProcessPtr process ( new Usul::System::Process ( program, " 10000" ) );
+        ProcessPtr process ( new Usul::System::Process ( program, "10000", true ) );
         std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
         processes.push_back ( process );
       }
@@ -137,6 +141,7 @@ void _runParent()
       for ( Processes::iterator i = processes.begin(); i != processes.end(); ++i )
       {
         ProcessPtr process ( *i );
+        process->output ( std::cout );
         process->stop();
         std::cout << Usul::Strings::format ( "Parent just stopped child ", process->id() ) << std::endl;
       }
@@ -158,11 +163,14 @@ void _runTest()
   Usul::CommandLine::Arguments::Args args ( Usul::CommandLine::Arguments::instance().args() );
   if ( args.size() > 1 )
   {
+    std::ios::sync_with_stdio ( true );
     ::_runChild();
   }
   else
   {
     ::_runParent();
+    std::cout << "Press any key to exit" << std::endl;
+    std::cin.get();
   }
 }
 

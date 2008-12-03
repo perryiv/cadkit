@@ -1374,9 +1374,6 @@ void MinervaDocument::dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller )
   // This is causing the document to prompt about saving even though 
   // no changes have been made.
   //this->modified ( true );
-
-  // Could do this instead ... is it needed?
-  //this->_notifyModifiedObservers();
 }
 
 

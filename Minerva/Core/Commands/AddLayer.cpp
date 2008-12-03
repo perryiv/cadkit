@@ -94,7 +94,10 @@ void AddLayer::_execute()
     // Request a redraw of the active document.
     Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
     if ( document.valid() )
+    {
       document->requestRedraw();
+      document->modified ( true );
+    }
   }
 }
 

@@ -66,7 +66,7 @@ RemoveLayer::~RemoveLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RemoveLayer::_execute ()
+void RemoveLayer::_execute()
 {
   // Use the caller if we have one, if not fall back on the active document.
   Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != this->caller() ? this->caller() : Usul::Documents::Manager::instance().activeDocument() );
@@ -80,7 +80,10 @@ void RemoveLayer::_execute ()
   
   Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
   if ( document.valid() )
+  {
     document->requestRedraw();
+    document->modified ( true );
+  }
 }
 
 

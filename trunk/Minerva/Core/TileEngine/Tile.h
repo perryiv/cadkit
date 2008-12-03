@@ -43,6 +43,7 @@
 namespace Usul { namespace Interfaces { struct IRasterLayer; } }
 namespace Usul { namespace Jobs { class Manager; } }
 namespace osgUtil { class CullVisitor; }
+namespace Minerva { namespace Core { namespace Data { class Container; } } }
 
 
 namespace Minerva {
@@ -104,6 +105,7 @@ public:
   typedef Usul::Interfaces::IRasterLayer IRasterLayer;
   typedef std::pair<std::string, Usul::Math::Vec4d> ImageCacheData;
   typedef std::map <IRasterLayer::RefPtr, ImageCacheData> ImageCache;
+  typedef Minerva::Core::Data::Container TileVectorData;
 
   // Constructors.
   Tile ( Tile* parent = 0x0,
@@ -222,6 +224,9 @@ protected:
   void                      _launchImageRequest();
   void                      _launchElevationRequest();
 
+  void                      _perTileVectorDataClear();
+  TileVectorData &          _perTileVectorDataGet();
+
   // Quarter the texture coordinates.
   void                      _quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const;
   static Usul::Math::Vec4d  _textureCoordinatesSubRegion ( const Usul::Math::Vec4d& region, Indices index );
@@ -276,6 +281,7 @@ private:
   ImageSize _imageSize;
   WeakPtr _parent;
   Indices _index;
+  TileVectorData *_tileVectorData;
 };
 
 

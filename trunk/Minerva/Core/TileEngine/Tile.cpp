@@ -14,9 +14,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #ifndef NOMINMAX
 #define NOMINMAX
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #endif
 #endif
 
@@ -122,7 +125,8 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _textureMap (),
   _imageSize ( imageSize ),
   _parent ( parent ),
-  _index ( index )
+  _index ( index ),
+  _tileVectorData ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
@@ -189,13 +193,17 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _textureMap ( tile._textureMap ),
   _imageSize ( tile._imageSize ),
   _parent ( tile._parent ),
-  _index ( tile._index )
+  _index ( tile._index ),
+  _tileVectorData ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
   // Remove if you are ready to test copying. Right now, I'm not sure what 
   // it means. This constructor is here to satisfy the META_Node macro.
   USUL_ASSERT ( false );
+
+  // Handle release build too.
+  throw std::runtime_error ( "Error 4113256974: Do not call Tile's copy constructor" );
 }
 
 
@@ -225,12 +233,16 @@ void Tile::_destroy()
   // Clear this tile and all it's children.
   this->clear ( true );
 
+  // At the moment this is redundant but safe.
+  this->_perTileVectorDataClear();
+
   // Don't delete!
   _body = 0x0;
 
   // Reset the boost shared pointer.
   _mesh = MeshPtr ( static_cast < Mesh * > ( 0x0 ) );
 
+  // Done with the mutex.
   delete _mutex; _mutex = 0x0;
 }
 
@@ -1262,7 +1274,13 @@ void Tile::clear ( bool children )
 
   // Set the body to null. We have to do this because the tiles 
   // in jobs may live longer than the body.
-  _body = 0x0;
+  {
+    Guard guard ( this );
+    _body = 0x0;
+  }
+
+  // Clear the per-tile vector data.
+  this->_perTileVectorDataClear();
 
   // Set dirty flags.
   this->dirty ( false, Tile::ALL, false );
@@ -1782,4 +1800,42 @@ void Tile::_setShowSkirts ( bool show )
   {
     _mesh->showSkirts ( show );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the per-tile vector data. Create it if needed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile::TileVectorData &Tile::_perTileVectorDataGet()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  if ( 0x0 == _tileVectorData )
+  {
+    _tileVectorData = new TileVectorData;
+    Usul::Pointers::reference ( _tileVectorData );
+  }
+  return *_tileVectorData;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the per-tile vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_perTileVectorDataClear()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  if ( 0x0 != _tileVectorData )
+  {
+    _tileVectorData->clear();
+    Usul::Pointers::unreference ( _tileVectorData );
+  }
+  _tileVectorData = 0x0;
 }

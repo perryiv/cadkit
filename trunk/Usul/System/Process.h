@@ -18,6 +18,7 @@
 
 #include "Usul/Base/Object.h"
 
+#include <iosfwd>
 #include <string>
 
 
@@ -38,7 +39,10 @@ public:
 
   // Constructor asks the system to start the process 
   // but does not wait for it to actually start.
-  Process ( const std::string &executable, const std::string &arguments, const std::string &dir = std::string() );
+  Process ( const std::string &executable, 
+            const std::string &arguments, 
+            bool captureStdOut,
+            const std::string &dir = std::string() );
 
   // Get the current process's id.
   static ID               currentProcessId();
@@ -48,6 +52,10 @@ public:
 
   // Is the process running?
   bool                    isRunning() const;
+
+  // Send any accumulated output to the given stream.
+  // Only has effect if process's stdout is being captured.
+  void                    output ( std::ostream &, bool appendNewLine = true, bool flushStream = true );
 
   // Stop the process.
   void                    stop();
@@ -68,6 +76,8 @@ private:
 
   void                    _destroy();
 
+  std::string _executable;
+  std::string _arguments;
   void *_data;
   bool _hasBeenStopped;
 };

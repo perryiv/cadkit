@@ -30,7 +30,8 @@ public:
     NORMAL,
     RANDOM
   };
-  
+
+  USUL_DECLARE_TYPE_ID ( ColorStyle );
   USUL_DECLARE_REF_POINTERS ( ColorStyle );
   
   ColorStyle();

@@ -158,8 +158,11 @@ void Body::_destroy()
   USUL_TRACE_SCOPE;
 
   _transform = 0x0;
+  _landModel = 0x0;
   _rasters = 0x0;
   _elevation = 0x0;
+  _vectorData = 0x0;
+  _splitCallback = 0x0;
 
   // Clear all the tiles.
   Usul::Functions::executeMemberFunctions ( _topTiles, &Tile::clear, true );
@@ -173,7 +176,10 @@ void Body::_destroy()
   // Should be ok now.
   _deleteTiles.clear();
 
+  _updateListeners.clear();
+  _sky = 0x0;
   _log = 0x0;
+  _name.clear();
 }
 
 

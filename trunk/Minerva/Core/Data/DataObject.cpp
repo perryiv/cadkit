@@ -33,6 +33,8 @@
 
 using namespace Minerva::Core::Data;
 
+USUL_IMPLEMENT_TYPE_ID ( DataObject );
+USUL_IMPLEMENT_TYPE_ID ( ClickedCallback );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( DataObject, DataObject::BaseClass );
 
 
@@ -110,11 +112,11 @@ void DataObject::accept ( Minerva::Core::Visitor& visitor )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::addGeometry ( Geometry *geometry )
+void DataObject::addGeometry ( Geometry::RefPtr geometry )
 {
-  if ( 0x0 != geometry )
+  if ( true == geometry.valid() )
   {
-    Guard guard ( this->mutex() );
+    Guard guard ( this );
     _geometries.push_back ( geometry );
     
     this->_updateExtents ( Usul::Interfaces::IUnknown::QueryPtr ( geometry ) );
@@ -396,7 +398,9 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
     
     if ( node.valid() )
     {
-      node->setUserData ( new Minerva::Core::Data::UserData( this ) );
+      // Causes a circular reference and subsequent memory leak.
+      //node->setUserData ( new Minerva::Core::Data::UserData ( this ) );
+
       group->addChild ( node.get() );
       
       // See if the geometry is transparent.
@@ -634,7 +638,7 @@ bool DataObject::getBooleanState() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::clickedCallback ( ClickedCallback* cb )
+void DataObject::clickedCallback ( ClickedCallback::RefPtr cb )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -648,11 +652,11 @@ void DataObject::clickedCallback ( ClickedCallback* cb )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ClickedCallback* DataObject::clickedCallback() const
+ClickedCallback::RefPtr DataObject::clickedCallback() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _clickedCallback.get();
+  return _clickedCallback;
 }
 
 

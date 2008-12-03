@@ -14,6 +14,7 @@
 
 using namespace Minerva::Core::Data;
 
+USUL_IMPLEMENT_TYPE_ID ( Object );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Object, Object::BaseClass );
 
 

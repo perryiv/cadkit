@@ -373,7 +373,7 @@ namespace Detail
     
     polygon->polyStyle ( polyStyle.get() );
 
-    object->addGeometry ( polygon );
+    object->addGeometry ( polygon.get() );
 
     return object.release();
   }

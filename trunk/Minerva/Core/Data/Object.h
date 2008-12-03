@@ -34,7 +34,8 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
-  
+
+  USUL_DECLARE_TYPE_ID ( Object );
   USUL_DECLARE_QUERY_POINTERS ( Object );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   

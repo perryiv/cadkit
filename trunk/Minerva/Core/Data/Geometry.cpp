@@ -20,6 +20,7 @@
 
 using namespace Minerva::Core::Data;
 
+USUL_IMPLEMENT_TYPE_ID ( Geometry );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Geometry, Geometry::BaseClass );
 
 

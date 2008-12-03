@@ -30,6 +30,7 @@ public:
   typedef std::vector < Vertex >           Vertices;
   typedef ColorStyle::Color                Color;
 
+  USUL_DECLARE_TYPE_ID ( Line );
   USUL_DECLARE_QUERY_POINTERS ( Line );
 
   Line();

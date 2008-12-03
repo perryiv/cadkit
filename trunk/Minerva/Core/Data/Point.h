@@ -32,6 +32,7 @@ public:
   typedef Usul::Math::Vec4f Color;
   typedef Minerva::Core::OSG::MatrixTransform MatrixTransform;
 
+  USUL_DECLARE_TYPE_ID ( Point );
   USUL_DECLARE_QUERY_POINTERS ( Point );
 
   enum PrimitiveTypes

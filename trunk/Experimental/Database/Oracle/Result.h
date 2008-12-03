@@ -45,6 +45,9 @@ public:
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Result );
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Result );
 

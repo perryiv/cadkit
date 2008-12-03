@@ -55,7 +55,10 @@ class MINERVA_EXPORT ClickedCallback : public Usul::Base::Object
 {
 public:
   typedef OsgTools::Widgets::Item Item;
-  
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( ClickedCallback );
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( ClickedCallback );
   
@@ -81,6 +84,10 @@ public:
   typedef std::vector<Geometry::RefPtr>       Geometries;
   typedef OsgTools::Widgets::Item             Item;
   typedef osg::ref_ptr<osg::Image>            ImagePtr;
+  typedef ClickedCallback                     ClickedCB;
+
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( DataObject );
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( DataObject );
@@ -95,14 +102,14 @@ public:
   virtual void          accept ( Minerva::Core::Visitor& visitor );
 
   /// Add a geometry.
-  void                  addGeometry ( Geometry* geometry );
+  void                  addGeometry ( Geometry::RefPtr );
 
   /// DataObject has been clicked.
   virtual Item*         clicked ( Usul::Interfaces::IUnknown* caller = 0x0 ) const;
 
   /// Set/get the clicked callback.
-  void                  clickedCallback ( ClickedCallback* );
-  ClickedCallback*      clickedCallback() const;
+  void                  clickedCallback ( ClickedCB::RefPtr );
+  ClickedCB::RefPtr     clickedCallback() const;
 
   /// Build the scene branch for the data object.
   void                  preBuildScene ( Usul::Interfaces::IUnknown* caller );

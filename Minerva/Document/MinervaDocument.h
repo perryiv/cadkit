@@ -22,6 +22,22 @@
 #endif
 
 #include "Usul/Documents/Document.h"
+
+#include "Minerva/Core/Animate/Settings.h"
+#include "Minerva/Core/Data/TimeSpan.h"
+#include "Minerva/Core/Data/Container.h"
+#include "Minerva/Core/TileEngine/Body.h"
+#include "Minerva/Core/Utilities/Hud.h"
+#include "Minerva/Interfaces/IAnimationControl.h"
+#include "Minerva/Interfaces/IDirtyScene.h"
+#include "Minerva/Interfaces/ILookAtLayer.h"
+
+#include "MenuKit/Menu.h"
+
+#include "OsgTools/Widgets/Legend.h"
+
+#include "Serialize/XML/Macros.h"
+
 #include "Usul/File/Log.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IBusyState.h"
@@ -37,22 +53,6 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Policies/Update.h"
-
-#include "Minerva/Core/Animate/Settings.h"
-#include "Minerva/Core/Data/TimeSpan.h"
-#include "Minerva/Core/Data/Container.h"
-#include "Minerva/Interfaces/IAnimationControl.h"
-#include "Minerva/Interfaces/IDirtyScene.h"
-#include "Minerva/Interfaces/ILookAtLayer.h"
-
-#include "MenuKit/Menu.h"
-
-#include "OsgTools/Widgets/Legend.h"
-
-#include "Serialize/XML/Macros.h"
-
-#include "Minerva/Core/TileEngine/Body.h"
-#include "Minerva/Core/Utilities/Hud.h"
 
 #include "osg/Camera"
 #include "osgText/Text"

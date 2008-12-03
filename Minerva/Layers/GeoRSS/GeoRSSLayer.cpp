@@ -341,7 +341,7 @@ void GeoRSSLayer::_parseItem ( const XmlTree::Node& node )
   object->description ( description );
 
   // Add the geometry.
-  object->addGeometry ( point );
+  object->addGeometry ( point.get() );
 
 	// See if this object should be filtered.
 	bool filtered ( false );

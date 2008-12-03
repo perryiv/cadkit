@@ -293,6 +293,14 @@ void Tile::updateMesh()
   group->addChild ( ground.get() );
   group->addChild ( Usul::Threads::Safe::get ( this->mutex(), _vector.get() ) );
 
+#ifdef _PER_TILE_VECTOR_DATA
+  // This will add the root node of the container.
+  {
+    Guard guard ( this );
+    group->addChild ( _container->buildScene() );
+  }
+#endif
+
   // Add the group to us.
   this->addChild ( group.get() );
 
@@ -437,7 +445,11 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     
     // Make sure our texture is updated.
     this->updateTexture();
-    
+
+#ifdef _PER_TILE_VECTOR_DATA
+    this->updateVector();
+#endif
+
     // Return if we are culled.
     if ( 0x0 == cv || cv->isCulled ( *this ) )
     {
@@ -525,6 +537,7 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   Mesh &mesh ( *mesh_ );
   const osg::Vec3f &eye ( cv.getViewPointLocal() );
 
+  // Do not bother traversing tiles that are facing away.
 #if 0
   const osg::Vec3f look ( cv.getLookVectorLocal() );
   
@@ -744,6 +757,7 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevation(), unknown.get() );
     
     // Add tiled vector data.
+    // TODO: Remove when you get per-tile vector data working.
     t0->addVectorData ( vector->buildTiledScene ( t0->extents(), t0->level(), t0->elevation(), unknown.get() ) );
     t1->addVectorData ( vector->buildTiledScene ( t1->extents(), t1->level(), t1->elevation(), unknown.get() ) );
     t2->addVectorData ( vector->buildTiledScene ( t2->extents(), t2->level(), t2->elevation(), unknown.get() ) );
@@ -872,6 +886,10 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
 
   // Build the raster.  Make sure this is done before mesh is built and texture updated.
   tile->buildRaster ( job );
+
+#ifdef _PER_TILE_VECTOR_DATA
+  tile->buildVector ( job );
+#endif
 
   // Check to see if the tile has a valid image.
   if ( false == tile->image().valid() && 0x0 != this->image() )

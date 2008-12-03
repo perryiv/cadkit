@@ -21,7 +21,8 @@ class MINERVA_EXPORT LineStyle : public Minerva::Core::Data::ColorStyle
 {
 public:
   typedef Minerva::Core::Data::ColorStyle BaseClass;
-  
+
+  USUL_DECLARE_TYPE_ID ( LineStyle );
   USUL_DECLARE_REF_POINTERS ( LineStyle );
 
   static LineStyle*  create ( const Color& color, float width );

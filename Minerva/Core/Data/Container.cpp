@@ -91,6 +91,11 @@ Container::Container( const Container& rhs ) :
 Container::~Container()
 {
   USUL_TRACE_SCOPE;
+
+  _layers.clear();
+  _updateListeners.clear();
+  _builders.clear();
+  _root = 0x0;
 }
 
 

@@ -41,6 +41,9 @@ public:
   // Typedefs.
   typedef Usul::Base::Object BaseClass;
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Connection );
+
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Connection );
 

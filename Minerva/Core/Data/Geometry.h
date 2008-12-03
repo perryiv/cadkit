@@ -41,7 +41,8 @@ public:
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Usul::Math::Vec3d                   Point;
   typedef osg::ref_ptr<osg::Image>            ImagePtr;
-  
+
+  USUL_DECLARE_TYPE_ID ( Geometry );
   USUL_DECLARE_QUERY_POINTERS( Geometry );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   

@@ -23,6 +23,7 @@
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Interfaces/IRasterLayer.h"
+#include "Usul/Interfaces/ITileVectorData.h"
 #include "Usul/Jobs/Job.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Math/Vector2.h"
@@ -83,7 +84,8 @@ public:
     TEXTURE    = 0x00000004,
     CHILDREN   = 0x00000008,
     IMAGE      = 0x00000010,
-    ALL        = VERTICES | TEX_COORDS | TEXTURE
+    VECTOR     = 0x00000020,
+    ALL        = VERTICES | TEX_COORDS | TEXTURE | VECTOR
   };
 
   // Useful typedefs.
@@ -106,6 +108,7 @@ public:
   typedef std::pair<std::string, Usul::Math::Vec4d> ImageCacheData;
   typedef std::map <IRasterLayer::RefPtr, ImageCacheData> ImageCache;
   typedef Minerva::Core::Data::Container TileVectorData;
+  typedef Usul::Interfaces::ITileVectorData::Jobs TileVectorJobs;
 
   // Constructors.
   Tile ( Tile* parent = 0x0,
@@ -132,7 +135,8 @@ public:
   // Get the child at index i.
   Tile::RefPtr              childAt ( unsigned int i ) const;
 
-  // Build raster.
+  // Build raster and vector data.
+  void                      buildPerTileVectorData ( Usul::Jobs::Job::RefPtr );
   void                      buildRaster ( Usul::Jobs::Job::RefPtr );
 
   // Compute the bounding sphere.
@@ -204,6 +208,7 @@ public:
   void                      updateAlpha();
   void                      updateMesh();
   void                      updateTexture();
+  void                      updateTileVectorData();
 
 protected:
 
@@ -212,6 +217,8 @@ protected:
 
   // Cache the image used for the raster layer.
   void                      _cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords );
+
+  void                      _cancelTileVectorJobs();
 
   void                      _cull ( osgUtil::CullVisitor &cv );
 
@@ -282,6 +289,7 @@ private:
   WeakPtr _parent;
   Indices _index;
   TileVectorData *_tileVectorData;
+  TileVectorJobs _tileVectorJobs;
 };
 
 

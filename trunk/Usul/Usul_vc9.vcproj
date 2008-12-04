@@ -1442,6 +1442,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\ITileVectorData.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Interfaces\ITileVectorJob.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\ITimeoutAnimate.h"
 					>
 				</File>

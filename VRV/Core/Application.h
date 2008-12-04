@@ -193,16 +193,19 @@ public:
   /// Find an analog.
   JoystickPtr                   analogFind ( const std::string& key );
 
+  /// Calibrate all the analogs.
+  void                          analogsCalibrate();
+
   // Get the buttons.
   ButtonGroup*                  buttons();
 
   // Clean up.  Call before the Application is destroyed.
-  void                    cleanup();
+  void                          cleanup();
 
-  virtual void            viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
+  virtual void                  viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
 
   /// Add a light.
-  void                    addLight ( osg::Light* light );
+  void                          addLight ( osg::Light* light );
 
   /// Get/Set the background color.
   virtual void                backgroundColor ( const Usul::Math::Vec4f& color );
@@ -246,10 +249,6 @@ public:
   /// Get the Preferences.
   Preferences *           preferences ();
   const Preferences *     preferences () const;
-
-  /// Get/Set the analog trim.
-  const Usul::Math::Vec2f&    analogTrim () const;
-  void                        analogTrim ();
 
   // Print the usage string.
   static void                   usage ( const std::string &exe, std::ostream &out );
@@ -684,7 +683,6 @@ private:
   osg::Vec2d                             _clipDist;
   bool                                   _exportImage;
   Preferences::RefPtr                    _preferences;
-  Usul::Math::Vec2f                      _analogTrim;
   Usul::Math::Vec3d                      _wandOffset;
   osg::ref_ptr < osgDB::DatabasePager >  _databasePager;
   CommandQueue                           _commandQueue;

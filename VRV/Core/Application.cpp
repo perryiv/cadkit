@@ -144,7 +144,6 @@ Application::Application() :
   _clipDist          ( 0, 0 ),
   _exportImage       ( false ),
   _preferences       ( new Preferences ),
-  _analogTrim        ( 0, 0 ),
   _wandOffset        ( 0, 0, 0 ), // feet (used to be z=-4). Move to preference file.
   _databasePager     ( 0x0 ),
   _commandQueue      ( ),
@@ -201,6 +200,7 @@ Application::Application() :
   // Parse the command-line arguments.
   this->_parseCommandLine();
 
+  // Construct the scene.
   this->_construct();
 
   // Set the frame dump properties.
@@ -284,7 +284,7 @@ void Application::_construct()
   this->_readUserPreferences();
 
   // Make a copy of the translation speed.
-  _translationSpeed = this->preferences()->translationSpeed ();
+  _translationSpeed = this->preferences()->translationSpeed();
 
   // Read the user's devices file
   this->_readDevicesFile();
@@ -1910,7 +1910,7 @@ void Application::renderingPasses ( unsigned int num )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned int Application::renderingPasses ( ) const
+unsigned int Application::renderingPasses() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -2122,27 +2122,13 @@ void Application::wandRotation ( Matrix &W ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the analog trim.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Usul::Math::Vec2f& Application::analogTrim() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  return _analogTrim;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the trim. This assumes the user is not tilting the joystick one way 
+//  Calibrate all the analogs. This assumes the user is not tilting the joystick one way 
 //  or the other. It records the value at the neutral position. If the value 
 //  is 0.5 (like it should be) then the "trim" will be zero.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::analogTrim()
+void Application::analogsCalibrate()
 {
   USUL_TRACE_SCOPE;
 
@@ -3916,7 +3902,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
     menu->append ( buttons );
   }
 
-  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogTrim ) ) ) );
+  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogsCalibrate ) ) ) );
   menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
 
   menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Update", _setAllowUpdate, _isUpdateOn ) ) );

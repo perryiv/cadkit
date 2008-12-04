@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy .\Config\Config.h.in.vc .\Config\Config.h /f /i /k /y /c"
+				CommandLine="copy .\Config\Config.h.in.vc .\Config\Config.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -126,7 +126,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="xcopy .\Config\Config.h.in.vc .\Config\Config.h /f /i /k /y /c"
+				CommandLine="copy .\Config\Config.h.in.vc .\Config\Config.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

@@ -390,23 +390,25 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
   for ( Geometries::iterator iter = geometries.begin(); iter != geometries.end(); ++iter )
   {
     Geometry::RefPtr geometry ( *iter );
-    
-    // Expand the extents by the geometry's extents.
-    extents.expand ( geometry->extents() );
-    
-    osg::ref_ptr<osg::Node> node ( geometry->buildScene ( caller ) );
-    
-    if ( node.valid() )
+    if ( true == geometry.valid() )
     {
-      // Causes a circular reference and subsequent memory leak.
-      //node->setUserData ( new Minerva::Core::Data::UserData ( this ) );
-
-      group->addChild ( node.get() );
+      // Expand the extents by the geometry's extents.
+      extents.expand ( geometry->extents() );
       
-      // See if the geometry is transparent.
-      if ( true == geometry->isSemiTransparent() )
+      osg::ref_ptr<osg::Node> node ( geometry->buildScene ( caller ) );
+      
+      if ( node.valid() )
       {
-        isTransparent = true;
+        // Causes a circular reference and subsequent memory leak.
+        //node->setUserData ( new Minerva::Core::Data::UserData ( this ) );
+
+        group->addChild ( node.get() );
+        
+        // See if the geometry is transparent.
+        if ( true == geometry->isSemiTransparent() )
+        {
+          isTransparent = true;
+        }
       }
     }
   }

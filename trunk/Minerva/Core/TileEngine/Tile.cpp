@@ -395,7 +395,17 @@ void Tile::updateTileVectorData()
   // Update if we need to.
   if ( true == needToUpdate )
   {
-    this->_perTileVectorDataGet().updateNotify ( 0x0 );
+    // Get the body as an unknown pointer.
+    // Note: I do not thing Usul::Threads::Safe::get is safe in this case 
+    // because it returns a pointer and we catch it with a smart-pointer. 
+    // The _body member could be deferenced and deleted after assignment 
+    // to the returned pointer but before catching it with the smart-pointer.
+    Usul::Interfaces::IUnknown::QueryPtr body;
+    Usul::Threads::Safe::set ( this->mutex(), _body, body );
+
+    // Need to pass the body because it implements the necessary interfaces 
+    // to convert the coordinates from lat-lon-elev to x-y-z.
+    this->_perTileVectorDataGet().updateNotify ( body );
   }
 }
 

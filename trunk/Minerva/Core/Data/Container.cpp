@@ -379,9 +379,16 @@ void Container::_buildScene ( Usul::Interfaces::IUnknown *caller )
         // Should the layer be shown?
         const bool show ( layer.valid() ? layer->showLayer() : true );
 
-        // Build the scene.
+        // Should we build the scene?
         if ( show && build.valid() )
-          _root->addChild ( build->buildScene ( Usul::Interfaces::IBuildScene::Options(), caller ) );
+        {
+          // Build the scene. Handle possible null return.
+          osg::ref_ptr<osg::Node> node ( build->buildScene ( Usul::Interfaces::IBuildScene::Options(), caller ) );
+          if ( true == node.valid() )
+          {
+            _root->addChild ( node.get() );
+          }
+        }
       }
     }
     

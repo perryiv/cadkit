@@ -24,6 +24,7 @@
 #include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Interfaces/ITileVectorData.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Math/Vector2.h"
 
@@ -50,7 +51,8 @@ class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
                                  public Minerva::Interfaces::IAddLayer,
                                  public Minerva::Interfaces::IRemoveLayer,
                                  public Minerva::Interfaces::IElevationChangedListener,
-                                 public Minerva::Interfaces::ITilesChangedListener
+                                 public Minerva::Interfaces::ITilesChangedListener,
+                                 public Usul::Interfaces::ITileVectorData
 {
 public:
 
@@ -61,7 +63,9 @@ public:
   typedef Usul::Interfaces::IUnknown                IUnknown;
   typedef std::vector<IUnknown::QueryPtr>           Unknowns;
   typedef osg::ref_ptr<osg::Image>                  ImagePtr;
-  
+  typedef Usul::Interfaces::ITileVectorData         ITileVectorData;
+  typedef ITileVectorData::Jobs                     TileVectorJobs;
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Container );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -84,7 +88,7 @@ public:
 
   /// Build the scene for data that is contained by the given extents (IVectorLayer).
   virtual osg::Node*          buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
-  
+
   /// Build the scene (IBuildScene).
   virtual osg::Node *         buildScene ( const Options &options, IUnknown *caller = 0x0 );
 
@@ -121,6 +125,9 @@ public:
 
   /// See if the given level falls within this layer's range of levels.
   bool                        isInLevelRange ( unsigned int level ) const;
+
+  /// Launch the jobs to fetch vector data.
+  virtual TileVectorJobs      launchVectorJobs ( double minLon, double minLat, double maxLon, double maxLat, unsigned int level, Usul::Jobs::Manager *manager, Usul::Interfaces::IUnknown *caller );
 
   /// Get/Set the name (ILayer).
   virtual std::string         name() const;

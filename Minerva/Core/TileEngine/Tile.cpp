@@ -41,6 +41,7 @@
 #include "Usul/Errors/Assert.h"
 #include "Usul/Functions/Execute.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Interfaces/ITileVectorJob.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/NaN.h"
 #include "Usul/Threads/Safe.h"
@@ -126,7 +127,8 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _imageSize ( imageSize ),
   _parent ( parent ),
   _index ( index ),
-  _tileVectorData ( 0x0 )
+  _tileVectorData ( 0x0 ),
+  _tileVectorJobs()
 {
   USUL_TRACE_SCOPE;
 
@@ -194,7 +196,8 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _imageSize ( tile._imageSize ),
   _parent ( tile._parent ),
   _index ( tile._index ),
-  _tileVectorData ( 0x0 )
+  _tileVectorData ( 0x0 ),
+  _tileVectorJobs()
 {
   USUL_TRACE_SCOPE;
 
@@ -234,6 +237,7 @@ void Tile::_destroy()
   this->clear ( true );
 
   // At the moment this is redundant but safe.
+  this->_cancelTileVectorJobs();
   this->_perTileVectorDataClear();
 
   // Don't delete!
@@ -305,25 +309,94 @@ void Tile::updateMesh()
   group->addChild ( ground.get() );
   group->addChild ( Usul::Threads::Safe::get ( this->mutex(), _vector.get() ) );
 
-#ifdef _PER_TILE_VECTOR_DATA
   // This will add the root node of the container.
   {
     Guard guard ( this );
-    group->addChild ( _container->buildScene() );
+    group->addChild ( this->_perTileVectorDataGet().buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
   }
-#endif
 
   // Add the group to us.
   this->addChild ( group.get() );
 
   // Set needed variables.
   {
-    Guard guard ( this->mutex() );
+    Guard guard ( this );
     _mesh = pMesh;
     _boundingSphere = boundingSphere;
   }
   
   this->dirtyBound();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//  Update the per-tile vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::updateTileVectorData()
+{
+  USUL_TRACE_SCOPE;
+
+  typedef Usul::Interfaces::ITileVectorJob ITileVectorJob;
+
+  // Copy our container of jobs.
+  TileVectorJobs jobs ( Usul::Threads::Safe::get ( this->mutex(), _tileVectorJobs ) );
+
+  // These are the ones we'll remove.
+  TileVectorJobs removeMe;
+
+  // Need to update.
+  bool needToUpdate ( false );
+
+  // Loop through the container of jobs.
+  for ( TileVectorJobs::iterator i = jobs.begin(); i != jobs.end(); ++i )
+  {
+    // Get needed interface.
+    ITileVectorJob::QueryPtr job ( *i );
+    if ( true == job.valid() )
+    {
+      // See if the job is done.
+      if ( true == job->isVectorJobDone() )
+      {
+        // We want to remove this job.
+        removeMe.push_back ( *i );
+
+        // Add the data to our container.
+        ITileVectorJob::Data data ( job->getVectorData() );
+        for ( ITileVectorJob::Data::iterator d = data.begin(); d != data.end(); ++d )
+        {
+          Usul::Interfaces::IUnknown::RefPtr layer ( *d );
+          TileVectorData &tileVectorData ( this->_perTileVectorDataGet() );
+          Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &tileVectorData, &TileVectorData::add ), layer.get(), true, "1356847360" );
+          needToUpdate = true;
+        }
+      }
+    }
+    else
+    {
+      // Needed interface not available so purge.
+      removeMe.push_back ( *i );
+    }
+  }
+
+  // Remove these jobs.
+  if ( false == removeMe.empty() )
+  {
+    Guard guard ( this );
+    for ( TileVectorJobs::iterator j = removeMe.begin(); j != removeMe.end(); ++j )
+    {
+      Usul::Interfaces::IUnknown::RefPtr job ( *j );
+      Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &_tileVectorJobs, &TileVectorJobs::remove ), job, "1975135769" );
+    }
+  }
+
+  // Update if we need to.
+  if ( true == needToUpdate )
+  {
+    this->_perTileVectorDataGet().updateNotify ( 0x0 );
+  }
 }
 
 
@@ -458,9 +531,8 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // Make sure our texture is updated.
     this->updateTexture();
 
-#ifdef _PER_TILE_VECTOR_DATA
-    this->updateVector();
-#endif
+    // Make sure the per-tile vector data is up-to-date.
+    this->updateTileVectorData();
 
     // Return if we are culled.
     if ( 0x0 == cv || cv->isCulled ( *this ) )
@@ -502,8 +574,6 @@ void Tile::traverse ( osg::NodeVisitor &nv )
   }
   else
   {
-    //BaseClass::traverse ( nv );
-
     if ( this->getNumChildren() > 0 )
     {
       this->getChild ( this->getNumChildren() - 1 )->accept ( nv );
@@ -715,6 +785,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
 
 void Tile::split ( Usul::Jobs::Job::RefPtr job )
 {
+  USUL_TRACE_SCOPE;
+
   Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
   
   // Handle no body.
@@ -802,6 +874,7 @@ namespace Helper
 {
   inline Usul::Math::Vec2d degreesPerPixel ( const Tile::Extents& extents, const Tile::ImageSize& size )
   {
+    USUL_TRACE_SCOPE_STATIC;
     typedef Tile::Extents Extents;
     
     const Extents::Vertex &mn ( extents.minimum() );
@@ -822,6 +895,7 @@ namespace Helper
 {
   inline Tile::Extents expandExtents ( const Tile::Extents& extents, const Usul::Math::Vec2d& amount )
   {
+    USUL_TRACE_SCOPE_STATIC;
     typedef Tile::Extents Extents;
     const Extents::Vertex &mn ( extents.minimum() );
     const Extents::Vertex &mx ( extents.maximum() );
@@ -845,6 +919,8 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
                                 Usul::Jobs::Job::RefPtr job,
                                 Indices index )
 {
+  USUL_TRACE_SCOPE;
+
   // If our logic is correct, this should be true.
   USUL_ASSERT ( this->referenceCount() >= 1 );
   
@@ -899,10 +975,6 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   // Build the raster.  Make sure this is done before mesh is built and texture updated.
   tile->buildRaster ( job );
 
-#ifdef _PER_TILE_VECTOR_DATA
-  tile->buildVector ( job );
-#endif
-
   // Check to see if the tile has a valid image.
   if ( false == tile->image().valid() && 0x0 != this->image() )
   {
@@ -920,7 +992,14 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
+
+  // Now build the per-tile vector data.
+  tile->buildPerTileVectorData ( job );
   
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
+
   return tile;
 }
 
@@ -933,6 +1012,8 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
 
 Tile::ImagePtr Tile::_buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr job )
 {
+  USUL_TRACE_SCOPE_STATIC;
+
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
@@ -959,6 +1040,8 @@ Tile::ImagePtr Tile::_buildRaster ( const Extents &extents, unsigned int width, 
 
 void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
 {
+  USUL_TRACE_SCOPE;
+
   // Get the parent.
   Tile::RefPtr parent ( Usul::Threads::Safe::get ( this->mutex(), _parent.get() ) );
   
@@ -1037,7 +1120,6 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
     // Composite if it's valid...
     if ( true == image.valid() )
     {
-
       // Save this mapping...
       this->_cacheImage ( raster, image.get(), tCoords );
 
@@ -1075,13 +1157,54 @@ void Tile::buildRaster ( Usul::Jobs::Job::RefPtr job )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Build per-tile vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::buildPerTileVectorData ( Usul::Jobs::Job::RefPtr job )
+{
+  USUL_TRACE_SCOPE;
+
+  // Get the body.
+  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
+  if ( false == body.valid() )
+    return;
+
+  // Get the needed interface.
+  typedef Usul::Interfaces::ITileVectorData ITileVectorData;
+  ITileVectorData::QueryPtr perTileVectorData ( body->vectorData() );
+  if ( false == perTileVectorData.valid() )
+    return;
+
+  Extents e ( this->extents() );
+
+  // Ask for the container of jobs that we later poll.
+  TileVectorJobs tileVectorJobs ( perTileVectorData->launchVectorJobs 
+    ( e.minLon(), e.minLat(), e.maxLon(), e.maxLat(), this->level(), body->jobManager(), 0x0 ) );
+
+  // Have we been cancelled?
+  if ( ( 0x0 != job ) && ( true == job->canceled() ) )
+    job->cancel();
+
+  // Purge any jobs that are null.
+  tileVectorJobs.remove_if ( std::bind2nd ( std::equal_to<TileVectorJobs::value_type>(), TileVectorJobs::value_type ( 0x0 ) ) );
+
+  // Save the jobs.
+  Usul::Threads::Safe::set ( this->mutex(), tileVectorJobs, _tileVectorJobs );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the image from the given RasterLayer.  May return null.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 Tile::TextureData Tile::texture ( IRasterLayer * layer ) const
 {
+  USUL_TRACE_SCOPE;
   Guard guard ( this );
+
   ImageCache::const_iterator iter ( _textureMap.find ( IRasterLayer::RefPtr ( layer ) ) );
   if ( iter != _textureMap.end() )
   {
@@ -1127,6 +1250,7 @@ Tile::Mutex &Tile::mutex() const
 
 void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren )
 {
+  USUL_TRACE_SCOPE;
   this->_setDirtyAlways ( state, flags, dirtyChildren );
 }
 
@@ -1139,6 +1263,7 @@ void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren )
 
 void Tile::dirty ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents )
 {
+  USUL_TRACE_SCOPE;
   this->_setDirtyIfIntersect ( state, flags, dirtyChildren, extents );
 }
 
@@ -1279,7 +1404,8 @@ void Tile::clear ( bool children )
     _body = 0x0;
   }
 
-  // Clear the per-tile vector data.
+  // Clear the per-tile vector data and jobs.
+  this->_cancelTileVectorJobs();
   this->_perTileVectorDataClear();
 
   // Set dirty flags.
@@ -1577,6 +1703,9 @@ void Tile::_clearChildren ( bool traverse, bool cancelJob )
     // finish, even if we've already chosen to go down the low path, which 
     // happens when we are zoomed in and then "view all".
     Helper::removeAndCancelJob ( _body, _tileJob );
+
+    // Clear the per-tile vector data jobs.
+    this->_cancelTileVectorJobs();
   }
 }
 
@@ -1838,4 +1967,37 @@ void Tile::_perTileVectorDataClear()
     Usul::Pointers::unreference ( _tileVectorData );
   }
   _tileVectorData = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Cancel the per-tile vector data jobs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_cancelTileVectorJobs()
+{
+  USUL_TRACE_SCOPE;
+
+  typedef Usul::Interfaces::ITileVectorJob ITileVectorJob;
+
+  // Copy jobs and clear member.
+  TileVectorJobs jobs;
+  {
+    Guard guard ( this );
+    jobs = _tileVectorJobs;
+    _tileVectorJobs.clear();
+  }
+
+  // Loop through jobs.
+  for ( TileVectorJobs::iterator i = jobs.begin(); i != jobs.end(); ++i )
+  {
+    // Get needed interface.
+    ITileVectorJob::QueryPtr job ( *i );
+    if ( true == job.valid() )
+    {
+      job->cancelVectorJob();
+    }
+  }
 }

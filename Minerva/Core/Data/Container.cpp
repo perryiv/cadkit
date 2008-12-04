@@ -147,6 +147,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast<Minerva::Interfaces::IElevationChangedListener*> ( this );
   case Minerva::Interfaces::ITilesChangedListener::IID:
     return static_cast<Minerva::Interfaces::ITilesChangedListener*> ( this );
+  case Usul::Interfaces::ITileVectorData::IID:
+    return static_cast<Usul::Interfaces::ITileVectorData*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
@@ -351,7 +353,7 @@ osg::Node * Container::buildScene ( const Options &options, Usul::Interfaces::IU
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::_buildScene( Usul::Interfaces::IUnknown *caller )
+void Container::_buildScene ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard( this->mutex() );
@@ -540,12 +542,13 @@ void Container::updateNotify ( Usul::Interfaces::IUnknown *caller )
 
   osg::ref_ptr<osg::Group> root ( Usul::Threads::Safe::get ( this->mutex(), _root ) );
 
-  // Check to see if the number of children in the root is the same as the data objects.  This is a hack before dirtyScene isn't alway accurate.
+  // Check to see if the number of children in the root is the same as the data objects. 
+  // This is a hack from before dirtyScene was accurate.
   const bool needsBuild ( root.valid() ? root->getNumChildren() != _builders.size() : false );
 
   // Build if we need to...
   if ( this->dirtyScene() || needsBuild )
-    this->_buildScene( caller );
+    this->_buildScene ( caller );
 
   // Ask each one to update.
   _updateListeners.for_each ( std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), caller ) );
@@ -791,7 +794,7 @@ void Container::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent )
 void Container::tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent ) 
 {
   USUL_TRACE_SCOPE;
-  
+
   Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
   {
     for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
@@ -801,4 +804,39 @@ void Container::tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent )
         tcl->tileRemovedNotify ( child, parent );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Launch the jobs to fetch vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Container::TileVectorJobs Container::launchVectorJobs ( double minLon, 
+                                                        double minLat, 
+                                                        double maxLon, 
+                                                        double maxLat, 
+                                                        unsigned int level, 
+                                                        Usul::Jobs::Manager *manager, 
+                                                        Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+
+  TileVectorJobs answer;
+
+  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+  {
+    for ( Unknowns::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
+    {
+      Usul::Interfaces::ITileVectorData::QueryPtr tileVectorData ( *i );
+      if ( true == tileVectorData.valid() )
+      {
+        TileVectorJobs jobs ( tileVectorData->launchVectorJobs ( minLon, minLat, maxLon, maxLat, level, manager, caller ) );
+        answer.insert ( answer.end(), jobs.begin(), jobs.end() );
+      }
+    }
+  }
+
+  return answer;
 }

@@ -259,6 +259,9 @@ protected:
   // Set the show skirt state.
   void                      _setShowSkirts ( bool show );
 
+  // Update the border-showing state.
+  void                      _updateShowBorders();
+
 private:
 
   // No assignment.

@@ -392,11 +392,14 @@ void Tile::updateTileVectorData()
     }
   }
 
-  // Update if we need to.
+  // Update the borders.
+  this->_updateShowBorders();
+
+  // Update container if we need to.
   if ( true == needToUpdate )
   {
     // Get the body as an unknown pointer.
-    // Note: I do not thing Usul::Threads::Safe::get is safe in this case 
+    // Note: I do not think Usul::Threads::Safe::get is safe in this case 
     // because it returns a pointer and we catch it with a smart-pointer. 
     // The _body member could be deferenced and deleted after assignment 
     // to the returned pointer but before catching it with the smart-pointer.
@@ -553,7 +556,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
 
     // See if we should draw skirts and borders.  Make sure these are called after update mesh.
     this->_setShowSkirts ( body->useSkirts() );
-    this->_setShowBorders ( body->useBorders() );
+    this->_updateShowBorders();
 
     // See what we are allowed to do.
     const bool allowSplit ( body->allowSplit() );
@@ -672,14 +675,14 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   
   if ( low )
   {
-    // Turn off the borders.
-    this->_setShowBorders ( false );
+    // Set the borders.
+    this->_updateShowBorders();
 
     // Remove high level of detail.
     if ( numChildren > 1 && false == body->cacheTiles() )
     {
       // Need to notify vector data so it can re-adjust.
-      Minerva::Core::Data::Container::RefPtr vector ( 0x0 != _body ? _body->vectorData() : 0x0 );
+      Minerva::Core::Data::Container::RefPtr vector ( ( true == body.valid() ) ? body->vectorData() : 0x0 );
       if ( vector.valid() )
       {
         vector->tileRemovedNotify ( this->childAt ( 0 ), Tile::RefPtr ( this ) );
@@ -726,8 +729,8 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
           // Add the job to the job manager.
           _body->jobManager()->addJob ( _tileJob.get() );
 
-          // Show the border.
-          this->_setShowBorders ( true );
+          // Set the borders.
+          this->_updateShowBorders();
         }
       }
 
@@ -761,13 +764,14 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
           this->_clearChildren ( false, false );
         }
 
-        Guard guard ( this->mutex() );
+        {
+          Guard guard ( this->mutex() );
+          _tileJob = 0x0;
+          tileJob = 0x0;
+        }
 
-        _tileJob = 0x0;
-        tileJob = 0x0;
-
-        // Turn off the borders.
-        this->_setShowBorders ( false );
+        // Update the borders.
+        this->_updateShowBorders();
       }
     }
   }
@@ -1910,18 +1914,39 @@ Usul::Jobs::Manager *Tile::jobManager()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the show border state.
+//  Set the border state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Tile::_setShowBorders ( bool show )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
+  Guard guard ( this );
+
   if ( 0x0 != _mesh.get() )
   {
     _mesh->showBorder ( show );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Update the border state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_updateShowBorders()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  const bool hasTileVectorJobs ( false == _tileVectorJobs.empty() );
+  const bool hasTileJob ( true == _tileJob.valid() );
+  const bool isBusy ( hasTileVectorJobs || hasTileJob );
+  const bool allowedToShow ( ( 0x0 == _body ) ? true : _body->useBorders() );
+
+  this->_setShowBorders ( allowedToShow && isBusy );
 }
 
 

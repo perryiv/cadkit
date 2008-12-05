@@ -586,3 +586,17 @@ void Manager::_logEvent ( const std::string &s, Job::RefPtr job )
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if a higher-priority job is waiting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Manager::isHigherPriorityJobWaiting ( int priority ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( ( true == _pool.valid() ) ? _pool->isHigherPriorityTaskWaiting ( priority ) : false );
+}

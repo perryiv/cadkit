@@ -690,3 +690,27 @@ void Pool::_logEvent ( const std::string &s, Thread::RefPtr thread, std::ostream
     file->write ( message );
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if a higher-priority task is waiting.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Pool::isHigherPriorityTaskWaiting ( int priority ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( false == _queue.empty() )
+  {
+    const TaskHandle &taskHandle ( _queue.begin()->first );
+    if ( taskHandle.first < priority )
+    {
+      return true;
+    }
+  }
+
+  return false;
+}

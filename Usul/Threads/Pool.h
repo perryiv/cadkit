@@ -71,11 +71,14 @@ public:
   // Clear the queued tasks. Has no effect on tasks currently being executed.
   void                    clearQueuedTasks();
 
+  // Get the names of the executing tasks.
+  void                    executingNames ( Strings & ) const;
+
   // Does the pool have the task?
   bool                    hasQueuedTask ( TaskHandle ) const;
 
-  // Get the names of the executing tasks.
-  void                    executingNames ( Strings & ) const;
+  // See if a higher-priority job is waiting.
+  bool                    isHigherPriorityTaskWaiting ( int priority ) const;
 
   // Set/get the log.
   void                    logSet ( LogPtr );

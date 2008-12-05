@@ -71,6 +71,9 @@ public:
   // Get the singleton.
   static Manager &        instance();
 
+  // See if a higher-priority job is waiting.
+  bool                    isHigherPriorityJobWaiting ( int priority ) const;
+
   // Set/get the log.
   void                    logSet ( LogPtr );
   LogPtr                  logGet();

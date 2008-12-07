@@ -1186,7 +1186,8 @@ void Tile::buildPerTileVectorData ( Usul::Jobs::Job::RefPtr job )
 
   // Get the needed interface.
   typedef Usul::Interfaces::ITileVectorData ITileVectorData;
-  ITileVectorData::QueryPtr perTileVectorData ( body->vectorData() );
+  Body::VectorGroup::RefPtr vectorData ( body->vectorData() );
+  ITileVectorData::QueryPtr perTileVectorData ( vectorData.get() );
   if ( false == perTileVectorData.valid() )
     return;
 

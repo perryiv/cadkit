@@ -33,11 +33,12 @@ Texture3DVolume::Texture3DVolume() : BaseClass (),
   _geometry ( new Geometry ),
   _flags ( _USE_TRANSFER_FUNCTION ),
   _transferFunction ( 0x0 ),
+  _tfTextureUnit ( 0 ),
+  _program ( Texture3DVolume::createProgram() ),
   _bbLengths ( new osg::Uniform ( "bb", osg::Vec3 ( 1.0f, 1.0f, 1.0f ) ) ),
   _bbMin ( new osg::Uniform ( "bbMin", osg::Vec3 ( 0.0f, 0.0f, 0.0f ) ) ),
   _volumeSampler ( new osg::Uniform ( "Volume", 0 ) ),
-  _tfSampler ( new osg::Uniform ( "TransferFunction", 1 ) ),
-  _program ( Texture3DVolume::createProgram() )
+  _tfSampler ( new osg::Uniform ( "TransferFunction", 1 ) )
 {
   this->_construct();
 }
@@ -54,11 +55,12 @@ Texture3DVolume::Texture3DVolume( osg::Program *program ) : BaseClass (),
   _geometry ( new Geometry ),
   _flags ( _USE_TRANSFER_FUNCTION ),
   _transferFunction ( 0x0 ),
+  _tfTextureUnit ( 0 ),
+  _program ( program ),
   _bbLengths ( new osg::Uniform ( "bb", osg::Vec3 ( 1.0f, 1.0f, 1.0f ) ) ),
   _bbMin ( new osg::Uniform ( "bbMin", osg::Vec3 ( 0.0f, 0.0f, 0.0f ) ) ),
   _volumeSampler ( new osg::Uniform ( "Volume", 0 ) ),
-  _tfSampler ( new osg::Uniform ( "TransferFunction", 1 ) ),
-  _program ( program )
+  _tfSampler ( new osg::Uniform ( "TransferFunction", 1 ) )
 {
   this->_construct();
 }

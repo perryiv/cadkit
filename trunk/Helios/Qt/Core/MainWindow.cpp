@@ -1308,7 +1308,7 @@ void MainWindow::loadPlugins ( const std::string &config )
   const std::string directory ( Usul::CommandLine::Arguments::instance().directory() + "/../Plugins/" );
   loader.directory ( directory );
 #endif
-
+  
   std::cout << Usul::Strings::format ( "Loading plugin file: ", config ) << std::endl;
 
 	loader.parse ( config );

@@ -60,10 +60,10 @@ SET(UIS
 QT4_WRAP_UI(UIS_HDRS ${UIS})
 
 # Create the moc files.
-QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} ${UIS_HDRS} )
+QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} )
 
 # Create a Shared Library
-ADD_LIBRARY( QtTools SHARED ${SOURCES} ${MOC_SRCS} )
+ADD_LIBRARY( QtTools SHARED ${SOURCES} ${MOC_SRCS} ${UIS} )
 
 # Add a library
 CADKIT_ADD_LIBRARY ( QtTools )

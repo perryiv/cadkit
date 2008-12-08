@@ -182,3 +182,35 @@ SET (EXECUTABLE_OUTPUT_PATH
 # We want to see compiler arguments.
 # Note: If we set this here, the user cannot override in the user interface.
 SET (CMAKE_VERBOSE_MAKEFILE "ON")
+
+
+# -------- Function to build OS X Stand Alone Bundles -----------------
+function(MakeOSXBundleApp target binary_dir)
+
+	SET( SOURCE_BUNDLE_CMAKE_SCRIPT "${CMakeModules}/CompleteBundle.cmake.in" )
+
+	IF(${CMAKE_GENERATOR} MATCHES "Xcode")
+	
+		SET (OSX_COPY_PLUGINS_SCRIPT "${binary_dir}/${target}_OSX_CopyPlugins.sh")
+		CONFIGURE_FILE( "${CMakeModules}/CopyPlugins.sh.in.xcode" "${OSX_COPY_PLUGINS_SCRIPT}" @ONLY IMMEDIATE)
+   
+   		# Copy plugins when building, but not installing.
+   		ADD_CUSTOM_COMMAND(
+       		SOURCE ${TARGET_NAME}
+      		COMMAND ${OSX_COPY_PLUGINS_SCRIPT}
+       		TARGET ${TARGET_NAME} )
+       
+		SET( SOURCE_BUNDLE_BASH_SCRIPT "${CMakeModules}/CreateBundle.sh.in.xcode" )
+	ELSE(${CMAKE_GENERATOR} MATCHES "Xcode")
+		SET( SOURCE_BUNDLE_BASH_SCRIPT "${CMakeModules}/CreateBundle.sh.in" )
+	ENDIF(${CMAKE_GENERATOR} MATCHES "Xcode")
+    
+    SET (OSX_MAKE_STANDALONE_BUNDLE_CMAKE_SCRIPT "${binary_dir}/${target}_OSX_MakeStandAloneBundle.cmake")
+    SET (OSX_MAKE_STANDALONE_BUNDLE_BASH_SCRIPT "${binary_dir}/${target}_OSX_MakeStandAloneBundle.sh")
+
+    CONFIGURE_FILE( "${SOURCE_BUNDLE_CMAKE_SCRIPT}" "${OSX_MAKE_STANDALONE_BUNDLE_CMAKE_SCRIPT}" @ONLY IMMEDIATE)
+    CONFIGURE_FILE( "${SOURCE_BUNDLE_BASH_SCRIPT}" "${OSX_MAKE_STANDALONE_BUNDLE_BASH_SCRIPT}" @ONLY IMMEDIATE)
+ 
+   install(SCRIPT "${OSX_MAKE_STANDALONE_BUNDLE_CMAKE_SCRIPT}")
+                    
+endfunction(MakeOSXBundleApp)

@@ -9,15 +9,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Data/MultiPoint.h"
-#include "Minerva/Core/Utilities/ElevationGrid.h"
 
-#include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/State/StateSet.h"
-#include "OsgTools/Font.h"
-#include "OsgTools/Ray.h"
 #include "OsgTools/Convert.h"
 
-#include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Threads/Safe.h"
@@ -26,12 +21,7 @@
 #include "osg/Geometry"
 #include "osg/Point"
 #include "osg/Geode"
-#include "osg/Material"
 #include "osg/MatrixTransform"
-#include "osg/Shape"
-#include "osg/ShapeDrawable"
-#include "osg/AutoTransform"
-#include "osgText/Text"
 
 using namespace Minerva::Core::Data;
 
@@ -218,6 +208,10 @@ osg::Node* MultiPoint::_buildScene ( Usul::Interfaces::IUnknown * caller )
   mt->setMatrix ( osg::Matrixd::translate ( offset[0], offset[1], offset[2] ) );
   mt->addChild ( geode.get() );
   
+  // Set the render bin.
+  ss->setRenderBinDetails ( this->renderBin(), "RenderBin" );
+  
+  // Return the MatixTransform.
   return mt.release();
 }
 

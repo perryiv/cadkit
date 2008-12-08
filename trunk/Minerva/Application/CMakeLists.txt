@@ -98,3 +98,18 @@ FIND_FILE ( PLUGIN_FILE_NAME "Minerva.plugins" PATHS ${CMAKE_CURRENT_SOURCE_DIR}
 
 CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Plugins.xml ${EXECUTABLE_OUTPUT_PATH}/configs/Minerva.plugins )
 #CADKIT_COPY( ${TARGET_NAME} "${CMAKE_CURRENT_SOURCE_DIR}/Minerva.plugins"  "${EXECUTABLE_OUTPUT_PATH}/configs/Minerva.plugins" )
+
+# --- If we are on OS X copy all the embedded libraries to the app bundle
+IF (APPLE)
+
+	# This is a hack.  When CMake runs, copy the plugin file to both Debug and Release app packages.
+	CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Plugins.xml ${EXECUTABLE_OUTPUT_PATH}/Release/${TARGET_NAME}.app/Contents/Plugins/Minerva.plugins )
+	CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Plugins.xml ${EXECUTABLE_OUTPUT_PATH}/Debug/${TARGET_NAME}.app/Contents/Plugins/Minerva.plugins )
+
+  IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+      MakeOSXBundleApp( ${TARGET_NAME} ${PROJECT_BINARY_DIR})
+  ELSE (CMAKE_BUILD_TYPE MATCHES "Debug")
+      MakeOSXBundleApp(${TARGET_NAME} ${PROJECT_BINARY_DIR})
+  ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+
+ENDIF (APPLE)

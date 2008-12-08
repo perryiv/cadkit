@@ -131,10 +131,17 @@ SET (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
 #########################################################
 
 IF (APPLE)
-option(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
-IF (OSX_DWARF_DEBUG )
-	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-2")
-ENDIF(OSX_DWARF_DEBUG )
+	
+	option(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
+	IF (OSX_DWARF_DEBUG )
+		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-2")
+	ENDIF(OSX_DWARF_DEBUG )
+
+	# CMake doesn't define _DEBUG when using Xcode.
+	IF(${CMAKE_GENERATOR} MATCHES "Xcode")
+		SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG" )
+	ENDIF(${CMAKE_GENERATOR} MATCHES "Xcode")
+	
 ENDIF (APPLE)
 
 

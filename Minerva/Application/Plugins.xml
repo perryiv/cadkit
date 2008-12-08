@@ -12,6 +12,7 @@
   <plugin file="QtArcIMS.plug" />
   <plugin file="QtCustomGeometry.plug" />
 
+  <plugin load="true" file="MatrixAnimation.plug"/>
   <plugin load="true" file="PathAnimation.plug"/>
   <plugin load="true" file="MinervaModel.plug" />
   <plugin load="true" file="LayerManager.plug" />

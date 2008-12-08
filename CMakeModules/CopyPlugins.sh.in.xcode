@@ -1,0 +1,18 @@
+#!/bin/tcsh
+
+set OSX_App_Name="@target@"
+set OSX_App="$BUILT_PRODUCTS_DIR/$OSX_App_Name.app"
+set PluginsDir="$OSX_App/Contents/Plugins"
+
+
+mkdir -p "$PluginsDir"
+
+
+cd $BUILT_PRODUCTS_DIR
+foreach i (*.plug)
+	cp $i $OSX_App/Contents/Plugins
+end
+
+foreach i (*.dylib)
+	cp $i $OSX_App/Contents/Plugins
+end

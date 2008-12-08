@@ -1178,12 +1178,14 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
     {
       body->postRender ( caller );
 
-      // I don't think this is needed any more.
-#if 0
-      // Draw again if a new texture has been added.
-      if ( body->newTexturesLastFrame() > 0 || body->needsRedraw() )
+      // This is needed.  When a job finishes, the finished callback requests a redraw.
+      // In the subsequent cull traversal, the new texture will be added to the scene (which sets the Body's needs redraw flag).
+      // Sometimes another redraw is needed for the texture to appear on the screen (Not sure why this is true).
+      if ( body->needsRedraw() )
+      {
         this->requestRedraw();
-#endif
+      }
+
       // Request has been made.  Reset state.
       body->needsRedraw ( false );
     }

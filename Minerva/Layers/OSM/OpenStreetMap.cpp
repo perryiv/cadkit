@@ -12,6 +12,7 @@
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Data/Point.h"
+#include "Minerva/Core/Data/MultiPoint.h"
 #include "Minerva/Core/Data/TimeStamp.h"
 #include "Minerva/Core/Factory/Readers.h"
 
@@ -121,15 +122,20 @@ void OpenStreetMap::_read ( const std::string &filename, Usul::Interfaces::IUnkn
   // Parse.
   OpenStreetMap::_parse ( *doc, nodes, ways );
 
+  Usul::Interfaces::IUnknown::QueryPtr allNodes ( OpenStreetMap::_createForAllNodes ( nodes ) );
+  this->add ( allNodes );
+  
   // Add nodes.
+#if 0
   BOOST_FOREACH ( OSMNodePtr node, nodes )
   {
     if ( true == node.valid() )
     {
       Usul::Interfaces::IUnknown::QueryPtr unknown ( OpenStreetMap::_createForNode ( *node ) );
-      //this->add ( unknown );
+      this->add ( unknown );
     }
   }
+#endif
 
   // Add ways.
   BOOST_FOREACH ( OSMWayPtr way, ways )
@@ -297,6 +303,42 @@ void OpenStreetMap::_parse ( const XmlTree::Node& xmlNode, Nodes& nodes, Ways& w
       ways.push_back ( Way::create ( id, date, tags, nodes ) );
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a data object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenStreetMap::DataObject* OpenStreetMap::_createForAllNodes ( const Nodes& nodes )
+{
+  // Make a vertex array.
+  Minerva::Core::Data::MultiPoint::Vertices points;
+  points.reserve ( nodes.size() );
+  
+  // All all the points.
+  for ( Nodes::const_iterator iter = nodes.begin(); iter != nodes.end(); ++iter )
+  {
+    OSMNodePtr node ( *iter );
+    if ( node.valid() )
+    {
+      points.push_back ( Usul::Math::Vec3d (  node->location()[0], node->location()[1], 0.0 ) );
+    }
+  }
+  
+  // Make a point.
+  Minerva::Core::Data::MultiPoint::RefPtr point ( new Minerva::Core::Data::MultiPoint );
+  point->points ( points );
+  point->size ( 6.0 );
+  point->color ( Usul::Math::Vec4f ( 1.0, 0.0, 0.0, 1.0 ) );
+  
+  DataObject::RefPtr object ( new DataObject );
+  object->addGeometry ( point.get() );
+  object->name ( "All Nodes" );
+  
+  return object.release();
 }
 
 

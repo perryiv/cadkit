@@ -61,6 +61,7 @@ protected:
   virtual ~OpenStreetMap();
 
   // Create a data object.
+  static DataObject*          _createForAllNodes ( const Nodes& nodes );
   static DataObject*          _createForNode ( const Minerva::Layers::OSM::Node& node );
   static DataObject*          _createForWay  ( const Minerva::Layers::OSM::Way&  way  );
 

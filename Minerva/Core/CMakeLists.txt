@@ -93,6 +93,7 @@ SET ( HEADERS
 	./Data/LookAt.h
 	./Data/Model.h
 	./Data/ModelCache.h
+	./Data/MultiPoint.h
 	./Data/Object.h
 	./Data/Point.h
 	./Data/Polygon.h
@@ -187,6 +188,7 @@ SET (SOURCES
 ./Data/LookAt.cpp
 ./Data/Model.cpp
 ./Data/ModelCache.cpp
+./Data/MultiPoint.cpp
 ./Data/Object.cpp
 ./Data/Point.cpp
 ./Data/Polygon.cpp

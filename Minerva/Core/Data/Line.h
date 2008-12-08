@@ -57,15 +57,19 @@ public:
   float                 width() const;
   
 protected:
+
   virtual ~Line();
 
-  virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
-  osg::Node*            _buildScene( const Color& color, Usul::Interfaces::IUnknown* caller );
+  virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller );
+  osg::Node*            _buildScene ( const Color& color, Usul::Interfaces::IUnknown* caller );
 
   /// Build the scene branch.
   virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
-  
+    
 private:
+  
+  // Set proper state.
+  void                  _setState ( osg::StateSet* ) const;
 
   Vertices   _line;
   bool       _tessellate;

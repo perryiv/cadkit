@@ -337,6 +337,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\MultiPoint.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\MultiPoint.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\Object.cpp"
 						>
 					</File>

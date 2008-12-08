@@ -167,6 +167,9 @@ osg::Node* MultiPoint::_buildScene ( Usul::Interfaces::IUnknown * caller )
     convertedPoints.swap ( data );
   }
   
+  // Set our new extents.
+  this->extents ( e );
+  
   // Make the osg::Vec3Array.
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
   vertices->reserve ( data.size() );

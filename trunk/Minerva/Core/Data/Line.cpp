@@ -119,7 +119,7 @@ osg::Node* Line::_buildScene( Usul::Interfaces::IUnknown* caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* caller )
+osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* caller )
 {
   //Guard guard ( this ); Was causing deadlock!
 
@@ -130,28 +130,23 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
   if ( data.size() < 2 )
     return 0x0;
   
-  osg::ref_ptr < osg::Group > node ( new osg::Group );
-  osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet() );
-    
-  // Query for needed interfaces.
-  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
-  Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
-
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  node->addChild( geode.get() );
-  
-  // Make new extents.
-  Extents e;
-  
+  // Fit the line to the terrain if required.
   Vertices sampledPoints;
   if ( this->tessellate() && Geometry::CLAMP_TO_GROUND == this->altitudeMode() )
     Minerva::Core::Algorithms::resample( data, sampledPoints, 5, caller );
   else
     sampledPoints = data;
   
-  // Make the osg::Vec3Array.
-  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
-  vertices->reserve ( sampledPoints.size() );
+  // Query for needed interfaces.
+  Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
+  Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
+
+  // Store the converted values here.
+  Vertices convertedPoints;
+  convertedPoints.reserve ( sampledPoints.size() );
+  
+  // Make new extents.
+  Extents e;
   
   if ( planet.valid() )
   {
@@ -167,30 +162,79 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
       
       Usul::Math::Vec3d point;
       planet->convertToPlanet ( v, point );
-      vertices->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
+      convertedPoints.push_back ( point );
     }
   }
+  else
+  {
+    convertedPoints.swap ( sampledPoints );
+  }
   
+  // Make the osg::Vec3Array.
+  osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
+  vertices->reserve ( sampledPoints.size() );
+  
+  // Move all the points so the line starts at (0,0,0).
+  Vertices::value_type offset ( convertedPoints.at ( 0 ) );
+  for ( Vertices::const_iterator iter = convertedPoints.begin(); iter != convertedPoints.end(); ++iter )
+  {
+    Vertices::value_type v ( *iter );
+    Vertices::value_type point ( v - offset );
+    vertices->push_back ( osg::Vec3f ( point[0], point[1], point[2] ) );
+  }
+
   // Create the geometry
   osg::ref_ptr< osg::Geometry > geometry ( new osg::Geometry );
-  
+
   // Add the primitive set
-  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
-  
+  geometry->addPrimitiveSet( new osg::DrawArrays ( osg::PrimitiveSet::LINE_STRIP, 0, vertices->size() ) );
+
   // Set the vertices.
-  geometry->setVertexArray( vertices.get() );
-  
+  geometry->setVertexArray ( vertices.get() );
+
   // Set the colors.
   osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
   colors->push_back ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
   geometry->setColorArray( colors.get() );
   geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
   
+  // Get the state set.
+  osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
+  
+  // Set needed state.
+  this->_setState ( ss.get() );
+  
+  // Set our new extents.
+  this->extents ( e );
+  
+  // Make the geode.
+  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
   geode->addDrawable ( geometry.get() );
+
+  // Make the MatrixTransform.
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrixd::translate ( osg::Vec3d ( offset[0], offset[1], offset[2] ) ) );
+  mt->addChild ( geode.get() );
+  
+  return mt.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set proper state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::_setState ( osg::StateSet* ss ) const
+{
+  // Return now if state isn't valid.
+  if ( 0x0 == ss )
+    return;
   
   // Turn off lighting.
-  OsgTools::State::StateSet::setLighting  ( ss.get(), false );
-  OsgTools::State::StateSet::setLineWidth ( ss.get(), this->width() );
+  OsgTools::State::StateSet::setLighting  ( ss, false );
+  OsgTools::State::StateSet::setLineWidth ( ss, this->width() );
   
   // Set depth parameters.
   osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
@@ -209,19 +253,7 @@ osg::Node* Line::_buildScene( const Color& color, Usul::Interfaces::IUnknown* ca
   ss->setAttributeAndModes ( hint.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
   
   // Set the render bin.
-  ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
-  
-  this->extents ( e );
-  
-  osg::Vec3 offset ( node->getBound().center() );
-  osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
-  node->accept ( *tg );
-  
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setMatrix ( osg::Matrix::translate ( offset ) );
-  mt->addChild ( node.get() );
-  
-  return mt.release();
+  ss->setRenderBinDetails ( this->renderBin(), "RenderBin" );
 }
 
 

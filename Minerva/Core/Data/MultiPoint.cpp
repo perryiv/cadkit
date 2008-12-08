@@ -174,7 +174,7 @@ osg::Node* MultiPoint::_buildScene ( Usul::Interfaces::IUnknown * caller )
   osg::ref_ptr< osg::Vec3Array > vertices ( new osg::Vec3Array );
   vertices->reserve ( data.size() );
   
-  // Move all the points so the line starts at (0,0,0).
+  // Move all the points so that the first point starts at (0,0,0).
   Vertices::value_type offset ( convertedPoints.at ( 0 ) );
   for ( Vertices::const_iterator iter = convertedPoints.begin(); iter != convertedPoints.end(); ++iter )
   {

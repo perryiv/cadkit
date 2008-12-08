@@ -11,7 +11,8 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} 
                      "${PROJECT_SOURCE_DIR}/../" 
                      ${OSG_INC_DIR}
-                     ${QT_INCLUDE_DIR} )
+                     ${QT_INCLUDE_DIR}
+                     ${CMAKE_CURRENT_BINARY_DIR} )
 
 set (SOURCES
   AddGeometryWidget.cpp
@@ -34,7 +35,7 @@ QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )
 
 # Set variables that the CADKIT_ADD_PLUGIN macro uses.
 SET ( PLUGIN_NAME "QtCustomGeometry" )
-SET ( SOURCES ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
+SET ( SOURCES ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} ${UIS} )
 SET ( COMPILE_GUARD "_COMPILING_QT_CUSTOM_GEOMETRY" )
 SET ( CADKIT_LIBRARIES Usul QtTools OsgTools Minerva )
 SET ( OTHER_LIBRARIES ${Boost_LIBRARIES} ${QT_LIBRARIES} ${OSG_LIB} )

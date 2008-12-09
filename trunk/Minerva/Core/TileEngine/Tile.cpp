@@ -1191,6 +1191,7 @@ void Tile::buildPerTileVectorData ( Usul::Jobs::Job::RefPtr job )
   if ( false == perTileVectorData.valid() )
     return;
 
+  // Need the extents.
   Extents e ( this->extents() );
 
   // Ask for the container of jobs that we later poll.

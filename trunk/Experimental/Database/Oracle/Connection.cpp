@@ -183,7 +183,8 @@ Result *Connection::execute ( const std::string &sql, unsigned int numRowsToPreF
   {
     throw std::runtime_error ( Usul::Strings::format 
       ( "Error 3257568799: Failed to execute statement. ",
-        ( ( 0x0 != e.what() ) ? e.what() : "" ) ) );
+        ( ( 0x0 != e.what() ) ? e.what() : "" ),
+        ", SQL = ", sql ) );
   }
 }
 

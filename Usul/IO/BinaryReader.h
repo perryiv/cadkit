@@ -19,6 +19,7 @@
 #include "Usul/Endian/Endian.h"
 #include "Usul/Exceptions/IO.h"
 #include "Usul/Cast/Cast.h"
+#include "Usul/MPL/SameType.h"
 
 #include <stdexcept>
 #include <string>
@@ -75,6 +76,17 @@ template < class EndianPolicy_ > struct Reader
   template < class Stream, class T > static void read4 ( Stream &stream, T &t )
   {
     Usul::IO::Binary::Reader<EndianPolicy>::read ( stream, t[0], t[1], t[2], t[3] );
+  }
+  template < class Stream, class T > static void vector ( Stream &stream, T &v )
+  {
+    // Only works properly when not converting to a particular endian.
+    USUL_ASSERT_SAME_TYPE ( Usul::Endian::FromSystemToSystem, EndianPolicy );
+
+    // Vector must already be sized.
+    if ( false == v.empty() )
+    {
+      stream.read ( reinterpret_cast < char * > ( &v[0] ), v.size() * sizeof ( T::value_type ) );
+    }
   }
 };
 

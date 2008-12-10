@@ -18,6 +18,7 @@
 
 #include "Usul/Endian/Endian.h"
 #include "Usul/Cast/Cast.h"
+#include "Usul/MPL/SameType.h"
 
 
 namespace Usul {
@@ -70,6 +71,16 @@ template < class EndianPolicy_ > struct Writer
   template < class Stream, class T > static void write4 ( Stream &stream, const T &t )
   {
     Usul::IO::Binary::Writer<EndianPolicy>::write ( stream, t[0], t[1], t[2], t[3] );
+  }
+  template < class Stream, class T > static void vector ( Stream &stream, const T &v )
+  {
+    // Only works properly when not converting to a particular endian.
+    USUL_ASSERT_SAME_TYPE ( Usul::Endian::FromSystemToSystem, EndianPolicy );
+
+    if ( false == v.empty() )
+    {
+      stream.write ( reinterpret_cast < const char * > ( &v[0] ), sizeof ( T::value_type ) * v.size() );
+    }
   }
 };
 

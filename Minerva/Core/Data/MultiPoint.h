@@ -41,7 +41,11 @@ public:
   USUL_DECLARE_QUERY_POINTERS ( MultiPoint );
 
   MultiPoint();
-  
+
+  /// Append a points.
+  void                    append ( const Vertex & );
+  void                    append ( const Vertices & );
+
   /// Set/get the color.
   void                    color ( const Color& );
   Color                   color() const;

@@ -27,7 +27,7 @@ struct IAddRowLegend : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1598417075u };
 
-  /// Set flag to show row in legend.
+  /// Get flag to show row in legend.
   virtual bool                         showInLegend () const = 0;
 
   virtual void                         addLegendRow ( OsgTools::Widgets::LegendObject* row ) = 0;

@@ -151,7 +151,7 @@ OsgTools::Widgets::Item* Item::clicked ( Usul::Interfaces::IUnknown* caller ) co
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
   legend->maximiumSize ( 350, 750 );
   legend->position ( 20, 40 );
-  legend->growDirection ( OsgTools::Widgets::Legend::UP );
+  legend->growDirection ( OsgTools::Widgets::Legend::GROW_DIRECTION_UP );
   legend->backgroundColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
   legend->borderColor ( osg::Vec4 ( 0.0, 0.0, 0.0, 1.0 ) );
   

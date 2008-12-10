@@ -8,8 +8,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OsgTools/Widgets/Item.h"
-
 #include "OsgTools/State/StateSet.h"
+
+#include "Usul/Bits/Bits.h"
 
 #include "osg/Geode"
 #include "osg/Geometry"
@@ -33,7 +34,8 @@ Item::Item() : BaseClass(),
   _minimiumSize ( 0, 0 ),
   _position ( 0, 0 ),
   _backgroundColor ( 0.5, 0.5, 0.5, 0.3 ),
-  _borderColor( 0.5, 0.5, 0.8, 1.0 )
+  _borderColor( 0.5, 0.5, 0.8, 1.0 ),
+  _styleFlags ( STYLE_BACKGROUND | STYLE_BORDER )
 {
 }
 
@@ -214,8 +216,12 @@ osg::Node* Item::_buildBackground ( unsigned int width, unsigned int height )
   const unsigned int off ( osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
   
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
+
+  // Get the style flags.
+  Flags styleFlags ( this->styleFlags() );
   
   // Make the background.
+  if ( Usul::Bits::has ( styleFlags, STYLE_BACKGROUND ) )
   {
     osg::ref_ptr < osg::Geometry > geometry ( Detail::buildQuad ( width, height ) );
     geode->addDrawable( geometry.get() );
@@ -239,6 +245,7 @@ osg::Node* Item::_buildBackground ( unsigned int width, unsigned int height )
   }
   
   // Make the outline.
+  if ( Usul::Bits::has ( styleFlags, STYLE_BORDER ) )
   {
     osg::ref_ptr < osg::Geometry > geometry ( Detail::buildQuad ( width, height ) );
     geode->addDrawable( geometry.get() );
@@ -357,4 +364,48 @@ Item::Size Item::minimiumSize() const
 
 void Item::onClick ( double x, double y )
 {
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the style flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Item::styleFlags ( Flags flags )
+{
+  _styleFlags = flags;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the style flags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Item::Flags Item::styleFlags() const
+{
+  return _styleFlags;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the render order for the given depth.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Item::_setState ( osg::StateSet* ss, unsigned int depth )
+{
+  if ( 0x0 != ss )
+  {
+    // Does these need to be set?
+    //ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED | osg::StateAttribute::OVERRIDE );
+    //ss->setMode( GL_BLEND, osg::StateAttribute::ON  | osg::StateAttribute::PROTECTED | osg::StateAttribute::OVERRIDE );
+
+    // Set the render bin based off of the depth.
+    ss->setRenderBinDetails ( 100 + depth, "RenderBin" );
+  }
 }

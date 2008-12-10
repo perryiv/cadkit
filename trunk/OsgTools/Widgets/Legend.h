@@ -35,8 +35,8 @@ public:
 
   enum GrowDirectionMode
   {
-    DOWN,
-    UP
+    GROW_DIRECTION_DOWN,
+    GROW_DIRECTION_UP
   };
 
   /// Clear.
@@ -46,7 +46,7 @@ public:
   void                 addRow ( LegendObject * );
 
   /// Build the scene.
-  osg::Node*           buildScene();
+  osg::Node*           buildScene ( unsigned int depth = 0 );
 
   /// Get/Set the grow direction
   void                 growDirection( GrowDirectionMode mode );

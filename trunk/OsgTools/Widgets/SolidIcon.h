@@ -53,7 +53,7 @@ public:
   ColorPolicy&            colorPolicy()       { return _policy; }
   const ColorPolicy&      colorPolicy() const { return _policy; }
 
-  virtual osg::Node*      buildScene();
+  virtual osg::Node*      buildScene ( unsigned int depth = 0 );
 
 protected:
   virtual ~SolidIcon() { }
@@ -71,7 +71,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class ColorPolicy, class GeometryFunctor >
-osg::Node* SolidIcon < ColorPolicy, GeometryFunctor >::buildScene()
+osg::Node* SolidIcon < ColorPolicy, GeometryFunctor >::buildScene ( unsigned int depth )
 {
   const SizeType width  ( this->size()[0] );
   const SizeType height ( this->size()[1] );
@@ -81,6 +81,9 @@ osg::Node* SolidIcon < ColorPolicy, GeometryFunctor >::buildScene()
   osg::ref_ptr < osg::Geometry > geometry ( this->geometryFunctor() ( width, height ) );
 
   geode->addDrawable( geometry.get() );
+
+  // Set the correct render order.
+  Item::_setState ( geode->getOrCreateStateSet(), depth );
 
   _policy ( geometry.get() );
 

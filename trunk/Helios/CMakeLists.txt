@@ -193,11 +193,15 @@ IF(BUILD_MINERVA)
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
 			  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
 			  ${CADKIT_INC_DIR}/Minerva/Layers/GeoNames
-			  ${CADKIT_INC_DIR}/Minerva/Layers/GeoRSS
 			  ${CADKIT_INC_DIR}/Minerva/Layers/OSM
 			  ${CADKIT_INC_DIR}/Minerva/Document
 			  ${CADKIT_INC_DIR}/Minerva/Plugins/Document )
-			  
+	
+	# Build this project only if Boost regex library is found.
+	IF ( Boost_REGEX_LIBRARY_FOUND )
+		SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/GeoRSS )
+	ENDIF ( Boost_REGEX_LIBRARY_FOUND )
+	
 	# Build this project if pqxx is found.
 	IF ( PQXX_FOUND )
 		SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/DataSources/PG )

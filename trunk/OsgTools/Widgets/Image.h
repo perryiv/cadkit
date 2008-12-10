@@ -41,9 +41,9 @@ public:
   /// Get/Set the text.
   void                    filename ( const std::string& filename );
   const std::string &     filename() const;
-  
+
   /// Build the scene.
-  osg::Node*              buildScene();
+  osg::Node*              buildScene ( unsigned int depth = 0 );
   
 protected:
   

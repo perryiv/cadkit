@@ -99,18 +99,23 @@ const std::string& Text::text() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Text::buildScene()
+osg::Node* Text::buildScene ( unsigned int depth )
 {
   osg::ref_ptr< osg::Geode > geode ( new osg::Geode );
 
-  osg::ref_ptr<osgText::Text> text ( this->_makeText() );
+  osg::ref_ptr<osgText::Text> text ( this->_makeText ( depth ) );
   geode->addDrawable( text.get() );
   
+  // Set our state.
   osg::ref_ptr<osg::StateSet> ss ( geode->getOrCreateStateSet() );
-  ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+  //ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+  ss->setMode( GL_BLEND, osg::StateAttribute::ON  | osg::StateAttribute::PROTECTED | osg::StateAttribute::OVERRIDE );
 
   // Turn off lighting.
-  OsgTools::State::StateSet::setLighting ( geode.get(), false );
+  OsgTools::State::StateSet::setLighting ( ss.get(), false );
+
+  // Set the correct render order.
+  Item::_setState ( ss, depth );
 
   // For debuging placements...
 #if 0
@@ -296,7 +301,7 @@ Text::ValueType Text::_yTextPosition( unsigned int height ) const
 
 Text::Size Text::estimateSizeForWidth ( unsigned int w ) const
 {
-  osg::ref_ptr<osgText::Text> text ( this->_makeText() );
+  osg::ref_ptr<osgText::Text> text ( this->_makeText ( 0 ) );
   text->update();
   osg::BoundingBox bb ( text->computeBound() );
   
@@ -315,7 +320,7 @@ Text::Size Text::estimateSizeForWidth ( unsigned int w ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osgText::Text* Text::_makeText() const
+osgText::Text* Text::_makeText ( unsigned int depth ) const
 {
   const SizeType width  ( this->size()[0] );
   SizeType height ( this->size()[1] );

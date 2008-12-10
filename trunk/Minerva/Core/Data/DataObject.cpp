@@ -535,7 +535,7 @@ OsgTools::Widgets::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* calle
   OsgTools::Widgets::Legend::RefPtr legend ( new OsgTools::Widgets::Legend );
   legend->maximiumSize ( 300, 300 );
   legend->position ( 10, 10 );
-  legend->growDirection ( OsgTools::Widgets::Legend::UP );
+  legend->growDirection ( OsgTools::Widgets::Legend::GROW_DIRECTION_UP );
   
   OsgTools::Widgets::LegendObject::RefPtr row0 ( new OsgTools::Widgets::LegendObject );
   

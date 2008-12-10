@@ -11,6 +11,9 @@
 #include "OsgTools/Widgets/Text.h"
 #include "OsgTools/State/StateSet.h"
 
+#include "Usul/Math/MinMax.h"
+
+#include "osg/BlendFunc"
 #include "osg/Group"
 #include "osg/MatrixTransform"
 
@@ -28,7 +31,7 @@ using namespace OsgTools::Widgets;
 Legend::Legend() : 
   BaseClass(),
   _legendObjects(),
-  _growDirection ( UP )
+  _growDirection ( GROW_DIRECTION_UP )
 {
 }
 
@@ -111,10 +114,10 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Legend::buildScene()
+osg::Node* Legend::buildScene ( unsigned int depth )
 {
-  const SizeType maxWidth  ( this->maximiumSize()[0] );
-  const SizeType maxHeight ( this->maximiumSize()[1] );
+  const SizeType maxWidth  ( Usul::Math::minimum ( this->size()[0], this->maximiumSize()[0] ) );
+  const SizeType maxHeight ( Usul::Math::minimum ( this->size()[1], this->maximiumSize()[1] ) );
   
   // Sort the legend by name.
   std::sort( _legendObjects.begin(), _legendObjects.end(), Detail::SortLegend ( 1 ) );
@@ -122,17 +125,15 @@ osg::Node* Legend::buildScene()
   // Create the root for the legend.
   osg::ref_ptr< osg::MatrixTransform > root ( new osg::MatrixTransform );
   root->setName( "Legend" );
-  root->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
   root->setMatrix ( osg::Matrix::translate ( this->x(), this->y(), 0.0 ) );
 
+  // Set our desired state.
   osg::ref_ptr < osg::StateSet > ss ( root->getOrCreateStateSet () );
   ss->setMode ( GL_CULL_FACE, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
-  //ss->setMode ( GL_LIGHTING,  osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
   OsgTools::State::StateSet::setTwoSidedLighting ( ss.get(), true );
 
-  osg::ref_ptr< osg::Group > group ( new osg::Group );
-
-  root->addChild ( group.get() );
+  // Set the correct render order.
+  Item::_setState ( ss.get(), depth );
 
   // Only build the legend if we have something...
   if( _legendObjects.size() > 0 )
@@ -148,6 +149,7 @@ osg::Node* Legend::buildScene()
     std::vector<SizeType> heights;
     heights.reserve ( _legendObjects.size() );
     
+    // Ask each row for it's preferred height for our current width.
     for ( LegendObjects::iterator iter = _legendObjects.begin(); iter != _legendObjects.end(); ++iter )
     {
       Item::RefPtr item ( *iter );
@@ -163,10 +165,11 @@ osg::Node* Legend::buildScene()
         heights.push_back( 0 );
     }
     
-    unsigned int height ( totalHeight );
+    // Add the aggregated height of the rows plus the padding between top and bottom of the legend.
+    SizeType height ( totalHeight + ( padding * 2 ) );
 
     // Change the height per object to fit in the size paramaters given.
-    if( totalHeight > maxHeight )
+    if( height > maxHeight )
     {
       const double tooBig ( static_cast<double> ( height ) / maxHeight );
       for ( unsigned int i = 0; i < heights.size(); ++i )
@@ -178,7 +181,7 @@ osg::Node* Legend::buildScene()
     }
 
     // Build the background
-    group->addChild ( this->_buildBackground( maxWidth, height ) );
+    root->addChild ( this->_buildBackground ( maxWidth, height ) );
 
     // The current height.
     unsigned int currentHeight ( padding );
@@ -189,9 +192,6 @@ osg::Node* Legend::buildScene()
       
       if ( item.valid() )
       {
-        // Transform for the row.
-        osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
-        
         // Height of the row.
         const unsigned int num ( std::distance ( _legendObjects.begin(), iter ) );
         const unsigned int rowHeight ( heights.at ( num ) );
@@ -200,22 +200,19 @@ osg::Node* Legend::buildScene()
         int yTranslate ( currentHeight );
 
         // Invert the y translation if we are growing down.
-        if( this->growDirection() == DOWN )
+        if( this->growDirection() == GROW_DIRECTION_DOWN )
           yTranslate *= -1;
 
         // Position the row.
-        mt->setMatrix( osg::Matrix::translate ( padding, yTranslate, -1.0 ) );
+        osg::ref_ptr< osg::MatrixTransform > mt ( new osg::MatrixTransform );
+        mt->setMatrix( osg::Matrix::translate ( padding, yTranslate, 0.0 ) );
 
         // Build the row.
         item->size ( rowWidth, rowHeight );
-        mt->addChild( item->buildScene() );
-
-        // Turn off depth testing.
-        osg::ref_ptr < osg::StateSet > ss ( mt->getOrCreateStateSet() );
-        ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF );
+        mt->addChild( item->buildScene ( ++depth ) );
 
         // Add to the scene.
-        group->addChild( mt.get() );
+        root->addChild ( mt.get() );
         
         // Increment the current height.
         currentHeight += rowHeight;

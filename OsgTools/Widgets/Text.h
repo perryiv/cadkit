@@ -65,7 +65,7 @@ public:
   bool                    autoSize() const;
 
   /// Build the scene.
-  osg::Node*              buildScene();
+  osg::Node*              buildScene ( unsigned int depth = 0 );
   
   /// Estimate the needed size for the item.
   virtual Size            estimateSizeForWidth ( unsigned int w ) const;
@@ -90,7 +90,7 @@ protected:
   
   virtual ~Text();
   
-  osgText::Text*          _makeText() const;
+  osgText::Text*          _makeText ( unsigned int depth ) const;
 
   /// Get x and y position on text based on alignment settings.
   ValueType               _xTextPosition ( unsigned int width ) const;

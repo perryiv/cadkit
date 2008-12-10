@@ -137,12 +137,16 @@ unsigned int LegendObject::columns() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* LegendObject::buildScene()
+osg::Node* LegendObject::buildScene ( unsigned int depth )
 {
   const SizeType width  ( this->size()[0] );
   const SizeType height ( this->size()[1] );
   
+  // Create the group for our scene.
   osg::ref_ptr < osg::Group > group ( new osg::Group );
+
+  // Set the correct render order.
+  Item::_setState ( group->getOrCreateStateSet(), depth );
 
   const unsigned int padding ( 5 );
   
@@ -165,7 +169,7 @@ osg::Node* LegendObject::buildScene()
       osg::Matrix m ( osg::Matrix::translate ( currentPosition, 0.0, 0.0 ) );
       mt->setMatrix( m );
       text->size ( columnWidth - padding, maxHeight );
-      mt->addChild ( text->buildScene() );
+      mt->addChild ( text->buildScene ( ++depth ) );
       group->addChild( mt.get() );
 
       currentPosition += ( columnWidth + padding );

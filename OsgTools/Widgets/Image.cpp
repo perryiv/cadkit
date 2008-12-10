@@ -89,7 +89,7 @@ const std::string& Image::filename() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* Image::buildScene()
+osg::Node* Image::buildScene ( unsigned int depth )
 {
   // Read the image
   osg::ref_ptr<osg::Image> image ( osgDB::readImageFile ( this->filename() ) );
@@ -114,11 +114,13 @@ osg::Node* Image::buildScene()
   
   osg::ref_ptr<osg::StateSet> ss ( geode->getOrCreateStateSet() );
   ss->setTextureAttributeAndModes ( 0, texture.get(), osg::StateAttribute::ON | osg::StateAttribute::PROTECTED );
-  //ss->setRenderBinDetails ( 11, "RenderBin" );
   ss->setMode( GL_DEPTH_TEST, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED );
+
+  // Set the correct render order.
+  Item::_setState ( ss.get(), depth );
   
   // Turn off lighting.
-  OsgTools::State::StateSet::setLighting ( geode.get(), false );
+  OsgTools::State::StateSet::setLighting ( ss.get(), false );
   
   return geode.release();
 }

@@ -40,7 +40,7 @@ public:
   unsigned int           addItem ( Item* );
 
   /// Build the scene.
-  osg::Node*             buildScene();
+  osg::Node*             buildScene ( unsigned int depth = 0 );
   
   /// Get/Set the number of columns.
   void                   columns( unsigned int value );

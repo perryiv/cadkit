@@ -2215,33 +2215,30 @@ void MinervaDocument::_setLegendPosition ( unsigned int legendWidth )
     {
       x = static_cast < unsigned int > ( _legendPadding.x() );
       y = static_cast < unsigned int > ( _height - legendHeight -_legendPadding.y() );
-      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
     case LEGEND_TOP_RIGHT:
     {
       x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
       y = static_cast < unsigned int > ( _height - legendHeight - _legendPadding.y() );
-      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
     case LEGEND_BOTTOM_RIGHT:
     {
       x = static_cast < unsigned int > ( _width - ( legendWidth + _legendPadding.x() ) );
       y = static_cast < unsigned int > ( _legendPadding.y() );
-      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
     case LEGEND_BOTTOM_LEFT:
     {
       x = static_cast < unsigned int > ( _legendPadding.x() );
       y = static_cast < unsigned int > ( _legendPadding.y() );
-      _legend->growDirection( OsgTools::Widgets::Legend::UP );
     }
       break;
   }
 
   _legend->position( x, y );
+  _legend->growDirection( OsgTools::Widgets::Legend::GROW_DIRECTION_UP );
 }
 
 

@@ -18,7 +18,7 @@
 
 #include "osg/Vec4"
 
-namespace osg { class Node; }
+namespace osg { class Node; class StateSet; }
 
 namespace OsgTools {
 namespace Widgets {
@@ -30,9 +30,17 @@ public:
   typedef Usul::Math::Vec2ui Size;
   typedef Size::value_type SizeType;
   typedef osg::Vec4 Color;
+  typedef unsigned int Flags;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Item );
+
+  enum StyleFlags
+  {
+    STYLE_NONE       = 0x00000000,
+    STYLE_BACKGROUND = 0x00000001,
+    STYLE_BORDER     = 0x00000002
+  };
   
   /// Set/get the background color.
   void                    backgroundColor ( const Color& );
@@ -43,7 +51,7 @@ public:
   Color                   borderColor() const;
 
   /// Build the scene.
-  virtual osg::Node*      buildScene() = 0;
+  virtual osg::Node*      buildScene ( unsigned int depth = 0 ) = 0;
   
   /// Estimate the needed size for the item to fit in given width.
   /// By default it returns the suggested size.
@@ -70,6 +78,10 @@ public:
   void                    size ( const Size& s );
   Size                    size() const;
 
+  /// Set/get the style flags.
+  void                    styleFlags ( Flags flags );
+  Flags                   styleFlags() const;
+
   /// Get x and y position.
   SizeType                x() const;
   SizeType                y() const;
@@ -80,6 +92,9 @@ protected:
   virtual ~Item();
 
   osg::Node*              _buildBackground ( unsigned int width, unsigned int height );
+
+  // Set the render order for the given depth.
+  static void             _setState ( osg::StateSet*, unsigned int depth );
   
 private:
   Size _size;
@@ -88,6 +103,7 @@ private:
   Size _position;
   Color _backgroundColor;
   Color _borderColor;
+  Flags _styleFlags;
 };
 
 }

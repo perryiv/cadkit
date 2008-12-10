@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_EXCEPTIONS_CANCELED_CLASS_H_
-#define _USUL_EXCEPTIONS_CANCELED_CLASS_H_
+#ifndef _USUL_EXCEPTIONS_IO_CLASS_H_
+#define _USUL_EXCEPTIONS_IO_CLASS_H_
 
 #include <stdexcept>
 #include <string>
@@ -45,4 +45,4 @@ struct UnexpectedEndOfFile : public std::runtime_error
 } // namespace Usul
 
 
-#endif // _USUL_EXCEPTIONS_CANCELED_CLASS_H_
+#endif // _USUL_EXCEPTIONS_IO_CLASS_H_

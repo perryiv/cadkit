@@ -115,7 +115,7 @@ osg::Node* Text::buildScene ( unsigned int depth )
   OsgTools::State::StateSet::setLighting ( ss.get(), false );
 
   // Set the correct render order.
-  Item::_setState ( ss, depth );
+  Item::_setState ( ss.get(), depth );
 
   // For debuging placements...
 #if 0

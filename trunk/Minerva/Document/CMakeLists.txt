@@ -1,11 +1,8 @@
 
-PROJECT(MinervaDocument)
-
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.cmake)
+INCLUDE ( Cadkit )
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
-INCLUDE(${CMakeModules}/FindOSG.cmake)
+INCLUDE( FindOSG )
 
 # Add needed preprocessor definitions.
 ADD_DEFINITIONS("-D_COMPILING_MINERVA_DOCUMENT")
@@ -41,9 +38,9 @@ SET (SOURCES
 ADD_LIBRARY( MinervaDocument SHARED ${SOURCES} )
 
 CADKIT_ADD_LIBRARY ( MinervaDocument )
-
+			
 # Link the Library	
-LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree MenuKit Minerva MinervaPostgres )
+LINK_CADKIT( MinervaDocument Usul OsgTools SerializeXML XmlTree MenuKit Minerva )
 TARGET_LINK_LIBRARIES( MinervaDocument
 	${Boost_LIBRARIES}
 	${OPENTHREADS_LIB}

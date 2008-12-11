@@ -27,6 +27,7 @@
 #include "Minerva/Core/Functions/MakeBody.h"
 #include "Minerva/Core/Visitors/TemporalAnimation.h"
 #include "Minerva/Core/Visitors/FindMinMaxDates.h"
+#include "Minerva/Core/Visitors/FindObject.h"
 #include "Minerva/Core/Visitors/StackPoints.h"
 #include "Minerva/Core/Visitors/ResizePoints.h"
 #include "Minerva/Core/Visitors/BuildLegend.h"
@@ -34,6 +35,7 @@
 #include "Minerva/Core/Visitors/SetJobManager.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
+#include "Minerva/Interfaces/IDataObject.h"
 #include "Minerva/Interfaces/IRefreshData.h"
 
 #include "MenuKit/Button.h"
@@ -2729,6 +2731,15 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
 
   if ( left && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
   {
+    // Stop any animation.
+    // Look for animation interface.
+    Usul::Interfaces::IAnimateMatrices::QueryPtr animator ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimateMatrices::IID ) );
+    if ( true == animator.valid() )
+    {
+      // Send an empty vector of matrices to stop the animation.
+      animator->animateMatrices ( Usul::Interfaces::IAnimateMatrices::Matrices(), 0, false );
+    }
+    
     if ( this->_intersectBalloon ( ea, caller ) )
       return;
     
@@ -2814,7 +2825,7 @@ bool MinervaDocument::_intersectBalloon ( osgGA::GUIEventAdapter& ea, Usul::Inte
 
 namespace Helper
 {
-  Minerva::Core::Data::DataObject::RefPtr findDataObject ( const osg::NodePath& path )
+  MinervaDocument::ObjectID findObjectID ( const osg::NodePath& path )
   {
     // See if there is user data.
     osg::ref_ptr < Minerva::Core::Data::UserData > userdata ( 0x0 );
@@ -2827,11 +2838,25 @@ namespace Helper
       }
     }
     
-    if ( userdata.valid() && 0x0 != userdata->_do )
-      return userdata->_do;
+    if ( userdata.valid() )
+      return userdata->objectID;
     
-    return 0x0;
+    return "";
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown::RefPtr MinervaDocument::_findObject ( const ObjectID& objectID )
+{
+  Minerva::Core::Visitors::FindObject::RefPtr visitor ( new Minerva::Core::Visitors::FindObject ( objectID ) );
+  this->accept ( *visitor );
+  return visitor->object();
 }
 
 
@@ -2858,9 +2883,24 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
     
     for ( Intersections::const_iterator iter = intersections.begin(); iter != intersections.end(); ++iter )
     {
-      Minerva::Core::Data::DataObject::RefPtr dataObject ( Helper::findDataObject ( iter->nodePath ) );
-      if( dataObject.valid() )
-        objects.push_back ( dataObject );
+      // Find the id for the object we intersected.
+      ObjectID objectID ( Helper::findObjectID ( iter->nodePath ) );
+      
+      if ( false == objectID.empty() )
+      {
+        // Find the unknown
+        Usul::Interfaces::IUnknown::RefPtr unknown ( this->_findObject ( objectID ) );
+        
+        // See if it's a data object.
+        Minerva::Interfaces::IDataObject::QueryPtr iDataObject ( unknown );
+        if ( iDataObject.valid() )
+        {
+          // This should be true, but check to make sure the data object pointer is valid.
+          Minerva::Core::Data::DataObject::RefPtr dataObject ( iDataObject->dataObject() );
+          if( dataObject.valid() )
+            objects.push_back ( dataObject );
+        }
+      }
     }
 
     if( false == objects.empty() && true == objects.front().valid() )

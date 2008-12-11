@@ -34,6 +34,7 @@ public:
   typedef Usul::Base::Referenced BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef std::string ObjectID;
 
   USUL_DECLARE_TYPE_ID ( Object );
   USUL_DECLARE_QUERY_POINTERS ( Object );
@@ -43,8 +44,8 @@ public:
   Mutex &                mutex() const;
   
   /// Get/set the id.
-  const std::string&     objectId() const;
-  void                   objectId( const std::string& );
+  const ObjectID&        objectId() const;
+  void                   objectId( const ObjectID& );
   
   /// Get/set the target id.
   const std::string&     targetId() const;
@@ -58,7 +59,7 @@ protected:
   
 private:
   
-  std::string _id;
+  ObjectID _id;
   std::string _targetId;
   mutable Mutex _mutex;
   SERIALIZE_XML_DEFINE_MEMBERS ( Object );

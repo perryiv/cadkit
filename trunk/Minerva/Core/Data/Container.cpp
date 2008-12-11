@@ -17,7 +17,6 @@
 
 #include "Usul/Bits/Bits.h"
 #include "Usul/Factory/RegisterCreator.h"
-#include "Usul/Functions/GUID.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Threads/Safe.h"
 
@@ -53,13 +52,11 @@ Container::Container() :
   _updateListeners(),
   _builders(),
   _flags ( Container::ALL ),
-  _root ( new osg::Group )
+  _root ( new osg::Group ),
+  _unknownMap()
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
-
-  // Make a default id.
-  this->objectId ( Usul::Functions::GUID::generate() );
 }
 
 
@@ -75,7 +72,8 @@ Container::Container( const Container& rhs ) :
   _updateListeners ( rhs._updateListeners ),
   _builders ( rhs._builders ),
   _flags ( rhs._flags | Container::SCENE_DIRTY ), // Make sure scene gets rebuilt.
-  _root ( new osg::Group )
+  _root ( new osg::Group ),
+  _unknownMap ( rhs._unknownMap )
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
@@ -95,6 +93,7 @@ Container::~Container()
   _layers.clear();
   _updateListeners.clear();
   _builders.clear();
+  _unknownMap.clear();
   _root = 0x0;
 }
 
@@ -257,6 +256,15 @@ void Container::add ( Usul::Interfaces::IUnknown* unknown, bool notify )
   
   // Update the extents.
   this->_updateExtents ( unknown );
+  
+  // If we can get a GUID, save the mapping for quick lookup later.
+  Minerva::Interfaces::IFeature::QueryPtr iFeature ( unknown );
+  Minerva::Core::Data::Feature::RefPtr feature ( iFeature.valid() ? iFeature->feature() : 0x0 );
+  if ( feature.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _unknownMap.insert ( UnknownMap::value_type ( feature->objectId(), unknown ) );
+  }
 
   // Our scene needs rebuilt.
   this->dirtyScene ( true );
@@ -287,6 +295,15 @@ void Container::remove ( Usul::Interfaces::IUnknown* unknown )
 
   // Remove the builder.
   _builders.remove ( unknown );
+  
+  // If we can get a GUID, remove the mapping.
+  Minerva::Interfaces::IFeature::QueryPtr iFeature ( unknown );
+  Minerva::Core::Data::Feature::RefPtr feature ( iFeature.valid() ? iFeature->feature() : 0x0 );
+  if ( feature.valid() )
+  {
+    Guard guard ( this->mutex() );
+    _unknownMap.erase ( feature->objectId() );
+  }
   
   // Our scene needs rebuilt.
   this->dirtyScene( true );
@@ -846,4 +863,24 @@ Container::TileVectorJobs Container::launchVectorJobs ( double minLon,
   }
 
   return answer;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Find unknown with given id.  The function will return null if not found.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown::RefPtr Container::find ( const ObjectID& id ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  UnknownMap::const_iterator iter ( _unknownMap.find ( id ) );
+  if ( iter != _unknownMap.end() )
+  {
+    return iter->second;
+  }
+  
+  return 0x0;
 }

@@ -22,7 +22,7 @@
 #include "Minerva/Core/Data/Object.h"
 #include "Minerva/Core/Data/Geometry.h"
 #include "Minerva/Core/Data/Feature.h"
-#include "Minerva/Interfaces/IVectorLayer.h"
+#include "Minerva/Interfaces/IDataObject.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 
 #include "Usul/Pointers/Pointers.h"
@@ -73,6 +73,7 @@ public:
 class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IBooleanState,
+                                  public Minerva::Interfaces::IDataObject,
                                   public Minerva::Interfaces::IElevationChangedListener,
                                   public Usul::Interfaces::IUpdateListener
 {
@@ -162,6 +163,9 @@ protected:
   virtual ~DataObject ();
 
   osg::Node*            _buildLabel( const osg::Vec3& position );
+  
+  // Return the pointer to this (IDataObject).
+  virtual DataObject*         dataObject();
 
   // Get the name (ITreeNode).
   virtual std::string         getTreeNodeName() const;

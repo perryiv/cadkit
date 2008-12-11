@@ -88,6 +88,8 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IBooleanState*> ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast<Usul::Interfaces::IUpdateListener*> ( this );
+  case Minerva::Interfaces::IDataObject::IID:
+    return static_cast<Minerva::Interfaces::IDataObject*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -395,12 +397,13 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
       // Expand the extents by the geometry's extents.
       extents.expand ( geometry->extents() );
       
+      // Build the scene for the geometry.
       osg::ref_ptr<osg::Node> node ( geometry->buildScene ( caller ) );
       
       if ( node.valid() )
       {
-        // Causes a circular reference and subsequent memory leak.
-        //node->setUserData ( new Minerva::Core::Data::UserData ( this ) );
+        // Add user data.
+        node->setUserData ( new Minerva::Core::Data::UserData ( this->objectId() ) );
 
         group->addChild ( node.get() );
         
@@ -699,4 +702,16 @@ void DataObject::updateNotify ( Usul::Interfaces::IUnknown* caller )
     Geometry::RefPtr geometry ( *iter );
     geometry->updateNotify ( caller );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the pointer to this (IDataObject).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+DataObject* DataObject::dataObject()
+{
+  return this;
 }

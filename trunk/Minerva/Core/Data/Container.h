@@ -32,6 +32,7 @@
 
 #include "osg/Group"
 
+#include <map>
 #include <vector>
 
 namespace Minerva {
@@ -116,6 +117,9 @@ public:
   /// Elevation has changed within given extents (IElevationChangeListener).
   virtual bool                elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
   
+  /// Find unknown with given id.  The function will return null if not found.
+  IUnknown::RefPtr            find ( const ObjectID& id ) const;
+  
   /// Get/Set the flags.
   unsigned int                flags() const;
   void                        flags ( unsigned int );
@@ -143,13 +147,14 @@ public:
   virtual void                showLayer ( bool b );
   virtual bool                showLayer() const;
   
+  /// Notifications of change in tile state.
   virtual void                tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent );
   virtual void                tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent );
 
   /// Traverse all DataObjects.
   virtual void                traverse ( Minerva::Core::Visitor& visitor );
   
-  // Update.
+  /// Update.
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
   
 protected:
@@ -158,8 +163,8 @@ protected:
   
   Container ( const Container& rhs );
   
-  /// Build the scene.
-  void                        _buildScene( Usul::Interfaces::IUnknown *caller );
+  // Build the scene.
+  void                        _buildScene ( Usul::Interfaces::IUnknown *caller );
 
   // Add a layer (IAddLayer).
   virtual void                addLayer ( Usul::Interfaces::IUnknown *layer );
@@ -178,6 +183,7 @@ protected:
   virtual bool                getBooleanState() const;
   
 private:
+
   // Do not use.
   Container& operator= ( const Container& rhs );
 
@@ -186,12 +192,14 @@ private:
 
   typedef Usul::Containers::Unknowns<IUpdateListener> UpdateListeners;
   typedef Usul::Containers::Unknowns<IBuildScene>     Builders;
+  typedef std::map<ObjectID,IUnknown::RefPtr>         UnknownMap;
   
   Unknowns _layers;
   UpdateListeners _updateListeners;
   Builders _builders;
   unsigned int _flags;
   osg::ref_ptr<osg::Group> _root;
+  UnknownMap _unknownMap;
   
   SERIALIZE_XML_CLASS_NAME( Container )
 };

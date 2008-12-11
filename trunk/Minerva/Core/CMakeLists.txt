@@ -145,6 +145,7 @@ SET ( HEADERS
 	./Visitors/BuildLegend.h
 	./Visitors/BuildScene.h
 	./Visitors/FindMinMaxDates.h
+	./Visitors/FindObject.h
 	./Visitors/ResizePoints.h
 	./Visitors/Scale.h
 	./Visitors/SetJobManager.h
@@ -228,6 +229,7 @@ SET (SOURCES
 ./Visitors/BuildLegend.cpp
 ./Visitors/BuildScene.cpp
 ./Visitors/FindMinMaxDates.cpp
+./Visitors/FindObject.cpp
 ./Visitors/ResizePoints.cpp
 ./Visitors/Scale.cpp
 ./Visitors/SetJobManager.cpp

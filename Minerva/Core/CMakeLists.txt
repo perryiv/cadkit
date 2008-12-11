@@ -5,16 +5,13 @@
 #
 #########################################################
 
-PROJECT(Minerva)
-
-SET(CMakeModules "${PROJECT_SOURCE_DIR}/../../CMakeModules")
-INCLUDE ( ${CMakeModules}/Cadkit.cmake)
+INCLUDE ( Cadkit )
 
 # ------------ Find OpenSceneGraph Libraries ----------------------
-INCLUDE(${CMakeModules}/FindOSG.cmake)
+INCLUDE( FindOSG )
 
 # ------------ Find curl Library ----------------------
-INCLUDE( ${CMakeModules}/FindCURL.cmake)
+INCLUDE( FindCURL )
 
 ADD_DEFINITIONS("-D_COMPILING_MINERVA")
 

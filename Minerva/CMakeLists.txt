@@ -1,53 +1,38 @@
 
-# Set variables needed below...
-SET ( CADKIT_INC_DIR ${PROJECT_SOURCE_DIR}/../ )
-SET ( CMakeModules "${PROJECT_SOURCE_DIR}/../CMakeModules" )
+PROJECT(MinervaAll)
 
-# Path to look for .cmake files.
-SET(CMAKE_MODULE_PATH ${CMakeModules} )
+SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
+		  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
+		  ${CADKIT_INC_DIR}/Minerva/Layers/GeoNames
+		  ${CADKIT_INC_DIR}/Minerva/Layers/OSM
+		  ${CADKIT_INC_DIR}/Minerva/Document )
 
-INCLUDE ( ${CMakeModules}/Cadkit.cmake )
+# Add these projects if Qt was found.
+IF(QT_FOUND AND BUILD_HELIOS_QT)
+	SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Qt/Widgets
+	         ${CADKIT_INC_DIR}/Minerva/Application )
+ENDIF(QT_FOUND AND BUILD_HELIOS_QT)
 
-# ------------ Find OpenGL Library ----------------------
-FIND_PACKAGE(OpenGL)
+# Build this project only if Boost regex library is found.
+IF ( Boost_REGEX_LIBRARY_FOUND )
+	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/GeoRSS )
+ENDIF ( Boost_REGEX_LIBRARY_FOUND )
 
-INCLUDE( FindOSG )
+# Build this project if pqxx is found.
+IF ( PQXX_FOUND )
+	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/DataSources/PG )
+ENDIF ( PQXX_FOUND )
 
-SET (GENERIC_NURBS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../GenericNurbs)
+# Build these projects if we found GDAL and pqxx.
+IF(GDAL_FOUND AND PQXX_FOUND )
+	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
+			  ${CADKIT_INC_DIR}/Minerva/Layers/GDAL )
+ENDIF(GDAL_FOUND AND PQXX_FOUND)
 
+# Build these projects if we found Ossim
+IF(OSSIM_FOUND)
+	SUBDIRS( ${CADKIT_INC_DIR}/Minerva/Layers/OSSIM )
+ENDIF(OSSIM_FOUND)
 
-IF (APPLE)
-option(OSX_DWARF_DEBUG "Use Dwarf Debug Style" ON)
-IF (OSX_DWARF_DEBUG )
-	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-2")
-ENDIF(OSX_DWARF_DEBUG )
-ENDIF (APPLE)
-
-
-# Build these projects.
-SUBDIRS(
-${CADKIT_INC_DIR}/Usul 
-${CADKIT_INC_DIR}/Threads/OpenThreads
-${CADKIT_INC_DIR}/OsgTools 
-${CADKIT_INC_DIR}/XmlTree 
-${CADKIT_INC_DIR}/Serialize/XML
-${CADKIT_INC_DIR}/MenuKit
-${CADKIT_INC_DIR}/Helios/Plugins/PathAnimation
-${CADKIT_INC_DIR}/Experimental/MeasureTool
-${CADKIT_INC_DIR}/Helios/Qt
-${CADKIT_INC_DIR}/Helios/Qt/Plugins/PasswordPrompt
-${CADKIT_INC_DIR}/Minerva/Application
-${CADKIT_INC_DIR}/Minerva/Core
-${CADKIT_INC_DIR}/Minerva/DataSources/PG
-${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
-${CADKIT_INC_DIR}/Minerva/Layers/GDAL
-${CADKIT_INC_DIR}/Minerva/Layers/Kml
-${CADKIT_INC_DIR}/Minerva/Document
-${CADKIT_INC_DIR}/Minerva/Plugins/Document
-${CADKIT_INC_DIR}/Minerva/Plugins/ProjectionManager
-${CADKIT_INC_DIR}/Minerva/Plugins/TriangulateCGAL
-${CADKIT_INC_DIR}/Minerva/Plugins/LayerManager
-${CADKIT_INC_DIR}/Minerva/Plugins/WmsLayerQt
-${CADKIT_INC_DIR}/Minerva/Plugins/OssimLayerQt
-${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt
-)
+# Add the plugins
+SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Plugins )

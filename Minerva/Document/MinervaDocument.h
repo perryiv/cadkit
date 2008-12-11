@@ -86,6 +86,7 @@ public:
   typedef Usul::Documents::Document BaseClass;
   typedef Minerva::Core::Animate::Settings Settings;
   typedef Minerva::Core::Data::TimeSpan TimeSpan;
+  typedef Minerva::Core::Data::Container::ObjectID ObjectID;
   typedef std::vector < TimeSpan::RefPtr > TimeSpans;
   typedef Minerva::Interfaces::IAnimationControl IAnimationControl;
   typedef Minerva::Core::TileEngine::Body Body;
@@ -296,6 +297,9 @@ protected:
   void                                     _buildTimeSpanMenu();
   void                                     _buildLayerMenu();
   void                                     _buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces::ITreeNode* node );
+  
+  /// Find object.
+  Usul::Interfaces::IUnknown::RefPtr       _findObject ( const ObjectID& objectID );
 
   /// Find first and last date.
   void                                     _findFirstLastDate();

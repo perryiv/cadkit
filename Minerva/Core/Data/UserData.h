@@ -22,8 +22,12 @@ namespace Data {
 
 struct MINERVA_EXPORT UserData : public osg::Referenced
 {
-  UserData ( DataObject * object ) : _do ( object ) { }
-  DataObject::RefPtr _do;
+  UserData ( const DataObject::ObjectID & id ) : 
+    objectID ( id ) 
+  {
+  }
+  
+  DataObject::ObjectID objectID;
 };
 
 }

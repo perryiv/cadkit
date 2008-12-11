@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Data/Object.h"
 
+#include "Usul/Functions/GUID.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace Minerva::Core::Data;
@@ -26,7 +27,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Object, Object::BaseClass );
 
 Object::Object() : 
   BaseClass(),
-  _id(),
+  _id( Usul::Functions::GUID::generate() ), // Make a default id.
   _targetId(),
   _mutex(),
   SERIALIZE_XML_INITIALIZER_LIST
@@ -91,7 +92,7 @@ Usul::Interfaces::IUnknown* Object::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const std::string& Object::objectId() const
+const Object::ObjectID& Object::objectId() const
 {
   Guard guard ( this->mutex() );
   return _id;
@@ -104,7 +105,7 @@ const std::string& Object::objectId() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Object::objectId( const std::string& s )
+void Object::objectId( const ObjectID& s )
 {
   Guard guard ( this->mutex() );
   _id = s;

@@ -45,8 +45,6 @@ FindObject::~FindObject()
 
 void FindObject::visit ( Minerva::Core::Data::Container &container )
 {
-  std::cout << "Visiting " << container.name() << std::endl;
-  
   _unknown = container.find ( _objectID );
   
   // If we didn't find it, keep traversing.

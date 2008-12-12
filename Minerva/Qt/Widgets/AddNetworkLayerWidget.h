@@ -246,14 +246,25 @@ inline Minerva::Core::Layers::RasterLayer* AddNetworkLayerWidget<Layer>::_makeGr
     if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
     {
       typename Layer::ValidRefPtr layer ( this->_makeLayer ( item->extents(), format, item->name().c_str(), item->style().c_str()  ) );
-      layer->name ( ( false == item->name().empty() ) ? item->name() : Usul::Strings::format ( group->name(), ": ", ++count ) );
-      
+
+      std::string t ( item->title() );
+      std::string n ( item->name() );
+      if ( ( false == t.empty() ) && ( false == n.empty() ) )
+      {
+        n = Usul::Strings::format ( n, ": ", t );
+      }
+      else if ( false == t.empty() )
+      {
+        n = t;
+      }
+
+      layer->name ( ( false == n.empty() ) ? n : Usul::Strings::format ( group->name(), ": ", ++count ) );
+
       layer->showLayer ( false );
-      
       group->append ( layer.get() );
     }
   }
-  
+
   return group.release();
 }
 

@@ -42,9 +42,12 @@ public:
   
   /// Get the name.
   std::string     name() const;
-  
+
   /// Get the style.
   std::string     style() const;
+
+  /// Get the title.
+  std::string     title() const;
   
 private:
   Extents _extents;

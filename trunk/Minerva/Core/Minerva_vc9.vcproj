@@ -630,6 +630,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Visitors\FindObject.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Visitors\FindObject.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Visitors\ResizePoints.cpp"
 						>
 					</File>

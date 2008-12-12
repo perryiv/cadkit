@@ -379,7 +379,7 @@ void Pool::_threadProcessTasks ( Usul::Threads::Task *task, Usul::Threads::Threa
   Usul::Threads::Callback::RefPtr error     ( task->errorCB()     );
 
   // Safely...
-  try
+  USUL_TRY_BLOCK
   {
     // Call the start callback.
     if ( true == started.valid() )

@@ -563,8 +563,9 @@ std::string RasterLayer::_mangledURL ( const std::string &url )
   USUL_TRACE_SCOPE_STATIC;
 
   // Trim all characters left of the '@' character, if it's found.
-  // This will remove embedded username-password pairs.
-  std::string mangled ( boost::trim_left_copy_if ( url, std::bind2nd ( std::equal_to<char>(), '@' ) ) );
+  // This will remove username and password pairs.
+  std::string::const_iterator i ( std::find ( url.begin(), url.end(), '@' ) );
+  std::string mangled ( ( ( url.end() == i ) ? url.begin() : i + 1 ), url.end() );
 
   boost::replace_first ( mangled, "http://", " " );
   boost::replace_first ( mangled, "https://", " " );

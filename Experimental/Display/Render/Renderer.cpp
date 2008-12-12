@@ -33,7 +33,8 @@ USUL_IMPLEMENT_TYPE_ID ( Renderer );
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Renderer::Renderer() : BaseClass()
+Renderer::Renderer() : BaseClass(),
+  _scene ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -61,6 +62,7 @@ Renderer::~Renderer()
 void Renderer::_destroy()
 {
   USUL_TRACE_SCOPE;
+  _scene = 0x0;
 }
 
 
@@ -94,7 +96,7 @@ void Renderer::_postRender()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::_render ( osg::Node * )
+void Renderer::_render()
 {
   USUL_TRACE_SCOPE;
 }
@@ -106,7 +108,7 @@ void Renderer::_render ( osg::Node * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::render ( osg::Node *node )
+void Renderer::render()
 {
   USUL_TRACE_SCOPE;
 
@@ -116,5 +118,58 @@ void Renderer::render ( osg::Node *node )
       Usul::Adaptors::memberFunction ( this, &Renderer::_postRender ) ) );
 
   // Render the scene.
-  this->_render ( node );
+  this->_render();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call this when you want the viewport to resize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::resize ( unsigned int, unsigned int )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Renderer::NodePtr Renderer::_getScene() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _scene;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the camera.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Renderer::NodePtr Renderer::_getScene()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _scene;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::scene ( NodePtr node )
+{
+  USUL_TRACE_SCOPE;
+  _scene = node;
 }

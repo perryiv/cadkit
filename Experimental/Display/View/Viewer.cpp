@@ -18,9 +18,14 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
+#include "Usul/Registry/Constants.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Trace/Trace.h"
 
 using namespace Display::View;
+namespace Sections = Usul::Registry::Sections;
+namespace Keys = Usul::Registry::Keys;
+typedef Usul::Registry::Database Reg;
 
 USUL_IMPLEMENT_TYPE_ID ( Viewer );
 
@@ -31,7 +36,7 @@ USUL_IMPLEMENT_TYPE_ID ( Viewer );
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Viewer::Viewer() : BaseClass()
+Viewer::Viewer ( IUnknown::RefPtr doc ) : BaseClass ( doc )
 {
 }
 
@@ -56,6 +61,30 @@ Viewer::~Viewer()
 /////////////////////////////////////////////////////////////////////////////
 
 void Viewer::_destroy()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Save the state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::stateSave() const
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load the state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Viewer::stateLoad()
 {
   USUL_TRACE_SCOPE;
 }

@@ -324,6 +324,7 @@ void Container::clear ()
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
 
+  _unknownMap.clear();
   _layers.clear();
   _builders.clear();
   _updateListeners.clear();

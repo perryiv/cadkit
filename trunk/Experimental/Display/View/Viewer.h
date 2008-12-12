@@ -38,7 +38,11 @@ public:
   USUL_DECLARE_REF_POINTERS ( Viewer );
 
   // Construction.
-  Viewer();
+  Viewer ( IUnknown::RefPtr doc = IUnknown::RefPtr ( 0x0 ) );
+
+  // Save/load the state.
+  void                  stateLoad();
+  void                  stateSave() const;
 
 protected:
 
@@ -51,7 +55,7 @@ private:
   Viewer ( const Viewer & );
   Viewer &operator = ( const Viewer & );
 
-  void                      _destroy();
+  void                                _destroy();
 };
 
 

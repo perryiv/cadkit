@@ -18,12 +18,8 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Scope/Caller.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
-
-#include <functional>
-#include <algorithm>
 
 using namespace Display::Render;
 
@@ -98,7 +94,7 @@ void Group::_postRender()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Group::_render ( osg::Node *node )
+void Group::_render()
 {
   USUL_TRACE_SCOPE;
 
@@ -110,7 +106,55 @@ void Group::_render ( osg::Node *node )
     if ( true == r.valid() )
     {
       // Render the scene.
-      r->render ( node );
+      r->render();
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::scene ( NodePtr node )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::scene ( node );
+
+  // Loop through all the renderers.
+  Renderers renderers ( Usul::Threads::Safe::get ( this->mutex(), _renderers ) );
+  for ( Renderers::iterator i = renderers.begin(); i != renderers.end(); ++i )
+  {
+    Renderer::RefPtr r ( *i );
+    if ( true == r.valid() )
+    {
+      // Set the scene.
+      r->scene ( node );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call this when you want the viewport to resize.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Group::resize ( unsigned int w, unsigned int h )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::resize ( w, h );
+
+  Renderers r ( Usul::Threads::Safe::get ( this->mutex(), _renderers ) );
+  for ( Renderers::iterator i = r.begin(); i != r.end(); ++i )
+  {
+    Renderers::value_type renderer ( *i );
+    if ( true == renderer.valid() )
+    {
+      renderer->resize ( w, h );
     }
   }
 }

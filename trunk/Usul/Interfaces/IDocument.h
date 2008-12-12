@@ -23,11 +23,13 @@
 #include <utility>
 #include <vector>
 
+namespace Usul { namespace Jobs { class Job; } }
+namespace Usul { namespace Interfaces { struct IWindow; struct IView; } }
+
+
 namespace Usul {
 namespace Interfaces {
 
-  struct IWindow;
-  struct IView;
 
 struct IDocument : public Usul::Interfaces::IUnknown
 {
@@ -59,7 +61,10 @@ struct IDocument : public Usul::Interfaces::IUnknown
   virtual bool                          canOpen   ( const std::string &ext ) const = 0;
   virtual bool                          canSave   ( const std::string &ext ) const = 0;
 
-  // The following window is closing
+  /// Return the job to close this document. Default is null.
+  virtual Usul::Jobs::Job *             closeJob() = 0;
+
+  /// The following window is closing
   virtual void                          closing     ( Usul::Interfaces::IWindow *window ) = 0;
 
   /// Create default GUI

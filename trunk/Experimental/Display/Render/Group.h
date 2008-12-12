@@ -42,6 +42,12 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Group );
 
+  // Call this when you want the viewport to resize.
+  virtual void              resize ( unsigned int width, unsigned int height );
+
+  // Set the scene.
+  virtual void              scene ( NodePtr );
+
 protected:
 
   // Construction.
@@ -55,7 +61,7 @@ protected:
   virtual void              _postRender();
 
   // Render the scene.
-  virtual void              _render ( osg::Node * );
+  virtual void              _render();
 
 private:
 

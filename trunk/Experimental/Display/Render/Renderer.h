@@ -21,7 +21,8 @@
 
 #include "Usul/Base/Object.h"
 
-namespace osg { class Node; }
+#include "osg/Node"
+#include "osg/ref_ptr"
 
 
 namespace Display {
@@ -36,6 +37,7 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef BaseClass::Mutex Mutex;
   typedef BaseClass::Guard Guard;
+  typedef osg::ref_ptr<osg::Node> NodePtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Renderer );
@@ -44,7 +46,13 @@ public:
   USUL_DECLARE_REF_POINTERS ( Renderer );
 
   // Render the scene.
-  void                      render ( osg::Node * );
+  void                      render();
+
+  // Call this when you want the viewport to resize.
+  virtual void              resize ( unsigned int width, unsigned int height );
+
+  // Set the scene.
+  virtual void              scene ( NodePtr );
 
 protected:
 
@@ -54,12 +62,13 @@ protected:
   // Use reference counting.
   virtual ~Renderer();
 
-  // Pre/post render notifications.
+  NodePtr                   _getScene();
+  const NodePtr             _getScene() const;
+
   virtual void              _preRender();
   virtual void              _postRender();
 
-  // Render the scene.
-  virtual void              _render ( osg::Node * );
+  virtual void              _render();
 
 private:
 
@@ -68,6 +77,8 @@ private:
   Renderer &operator = ( const Renderer & );
 
   void                      _destroy();
+
+  NodePtr _scene;
 };
 
 

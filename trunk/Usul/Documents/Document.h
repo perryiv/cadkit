@@ -43,8 +43,6 @@
 #include <iosfwd>
 #include <set>
 
-namespace Usul { namespace Jobs { class Job; } }
-
 
 namespace Usul {
 namespace Documents {

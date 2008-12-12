@@ -19,6 +19,13 @@
 
 #include "Display/Render/Renderer.h"
 
+#include "Usul/Interfaces/IOpenGLContext.h"
+
+#include "osg/Camera"
+
+#include "osgViewer/GraphicsWindow"
+#include "osgViewer/Viewer"
+
 
 namespace Display {
 namespace Render {
@@ -33,6 +40,11 @@ public:
   typedef Display::Render::Renderer BaseClass;
   typedef BaseClass::Mutex Mutex;
   typedef BaseClass::Guard Guard;
+  typedef osg::ref_ptr<osgViewer::Viewer> ViewerPtr;
+  typedef osg::ref_ptr<osgViewer::GraphicsWindow> GraphicsWindowPtr;
+  typedef osg::ref_ptr<osg::Camera> CameraPtr;
+  typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::IOpenGLContext IContext;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Renderer );
@@ -41,12 +53,30 @@ public:
   USUL_DECLARE_REF_POINTERS ( Renderer );
 
   // Construction.
-  Renderer();
+  Renderer ( IUnknown::RefPtr context, IUnknown::RefPtr caller );
+
+  // Call this when you want the viewport to resize.
+  virtual void              resize ( unsigned int width, unsigned int height );
+
+  // Set the scene.
+  virtual void              scene ( NodePtr );
 
 protected:
 
   // Use reference counting.
   virtual ~Renderer();
+
+  // Render the scene.
+  virtual void              _render();
+
+  CameraPtr                 _getCamera();
+  const CameraPtr           _getCamera() const;
+  IContext::RefPtr          _getContext();
+  const IContext::RefPtr    _getContext() const;
+  ViewerPtr                 _getViewer();
+  const ViewerPtr           _getViewer() const;
+  GraphicsWindowPtr         _getWindow();
+  const GraphicsWindowPtr   _getWindow() const;
 
 private:
 
@@ -55,6 +85,11 @@ private:
   Renderer &operator = ( const Renderer & );
 
   void                      _destroy();
+
+  ViewerPtr _viewer;
+  GraphicsWindowPtr _window;
+  IContext::QueryPtr _context;
+  IUnknown::RefPtr _caller;
 };
 
 

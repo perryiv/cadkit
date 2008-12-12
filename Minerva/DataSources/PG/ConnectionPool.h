@@ -27,6 +27,9 @@ namespace PG {
 class MINERVA_POSTGRES_EXPORT ConnectionPool
 {
 public:
+  typedef std::pair<std::string, std::string> Key;
+	typedef std::map<Key, std::string> Passwords;
+  
   static ConnectionPool& instance();
 
   bool                             hasConnection ( const std::string& name ) const;
@@ -46,8 +49,6 @@ private:
 	typedef Usul::Threads::Mutex Mutex;
 	typedef Usul::Threads::Guard<Mutex> Guard;
   typedef std::map< std::string, Connection::RefPtr > Connections;
-	typedef std::pair<std::string, std::string> Key;
-	typedef std::map<Key, std::string> Passwords;
 
 	mutable Mutex *_mutex;
   Connections _connections;

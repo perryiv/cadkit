@@ -10,7 +10,76 @@
 
 #include "Minerva/DataSources/PG/ConnectionPool.h"
 
+#include "Usul/Registry/Database.h"
+
 using namespace Minerva::DataSources::PG;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  String conversion for boolean.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul
+{ 
+  namespace Convert
+  {
+    template <> struct Type < ConnectionPool::Passwords, std::string >
+    {
+      typedef Type < ConnectionPool::Passwords, std::string > ThisType;
+      static void convert ( ConnectionPool::Passwords from, std::string &to )
+      {
+        std::ostringstream in;
+        for ( ConnectionPool::Passwords::const_iterator iter = from.begin(); iter != from.end(); ++iter )
+        {
+          in << iter->first.first << " " << iter->first.second << " " << iter->second << " ";
+        }
+        to = in.str();
+      }
+      static std::string convert ( ConnectionPool::Passwords from )
+      {
+        std::string to;
+        ThisType::convert ( from, to );
+        return to;
+      }
+    };
+    template <> struct Type < std::string, ConnectionPool::Passwords >
+    {
+      typedef Type < std::string, ConnectionPool::Passwords > ThisType;
+      static void convert ( const std::string &from, ConnectionPool::Passwords &to )
+      {
+        std::istringstream in ( from );
+        while ( false == in.eof() )
+        {
+          std::string user, host, password;
+          in >> user;
+          in >> host;
+          in >> password;
+          to.insert ( std::make_pair ( std::make_pair ( user, host ), password ) );
+        }
+      }
+      static ConnectionPool::Passwords convert ( const std::string &from )
+      {
+        ConnectionPool::Passwords to;
+        ThisType::convert ( from, to );
+        return to;
+      }
+    };
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constants for registry.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  const std::string SECTION ( "connection_pool" );
+  const std::string KEY     ( "saved_passwords" );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,6 +116,9 @@ ConnectionPool::ConnectionPool() :
 	_connections(),
 	_passwords()
 {
+  // Restore the passwords.  Currently this is for multi-screen set ups where a password prompt isn't avaiable.
+  // Since this is stored in clear text, only save user's with read-only access.
+  _passwords = Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY].get<Passwords> ( Passwords() );
 }
 
 
@@ -58,6 +130,9 @@ ConnectionPool::ConnectionPool() :
 
 ConnectionPool::~ConnectionPool()
 {
+  // Enable this if we can encrypt passwords (and/or add a check box to the dialog).
+  //Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = _passwords;
+  
 	delete _mutex;
 }
 

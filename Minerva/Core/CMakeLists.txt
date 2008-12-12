@@ -5,6 +5,8 @@
 #
 #########################################################
 
+PROJECT ( Minerva )
+
 INCLUDE ( Cadkit )
 
 # ------------ Find OpenSceneGraph Libraries ----------------------

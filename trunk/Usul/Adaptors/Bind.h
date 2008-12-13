@@ -169,7 +169,7 @@ struct Bind2
   
   ReturnType operator()()
   {
-    _f ( _a1, _a2 );
+    return _f ( _a1, _a2 );
   }
 
 private:
@@ -217,6 +217,7 @@ private:
   ArgumentType2 _a2;
   FunctionType _f;
 };
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -288,7 +289,7 @@ struct Bind3
   
   ReturnType operator()()
   {
-    _f ( _a1, _a2, _a3 );
+    return _f ( _a1, _a2, _a3 );
   }
 
 private:
@@ -341,6 +342,7 @@ private:
   FunctionType _f;
 };
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Bind three arguments.
@@ -379,6 +381,142 @@ private:
   ArgumentType1 _a1;
   ArgumentType2 _a2;
   ArgumentType3 _a3;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bind four arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ReturnType,
+  class ArgumentType1,
+  class ArgumentType2,
+  class ArgumentType3,
+  class ArgumentType4,
+  class FunctionType
+>
+struct Bind4
+{
+  Bind4() : _a1 ( 0x0 ), _a2 ( 0x0 ), _a3 ( 0x0 ), _a4 ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind4 ( ArgumentType1 a1, ArgumentType2 a2, ArgumentType3 a3, ArgumentType4 a4, FunctionType f ) : _a1 ( a1 ), _a2 ( a2 ), _a3 ( a3 ), _a4 ( a4 ), _f ( f ){}
+  Bind4 ( const Bind4 &b ) : _a1 ( b._a1 ), _a2 ( b._a2 ), _a3 ( b._a3 ), _a4 ( b._a4 ), _f ( b._f ){}
+
+  Bind4 &operator = ( const Bind4 &b )
+  {
+    _a1 = b._a1;
+    _a2 = b._a2;
+    _a3 = b._a3;
+    _a4 = b._a4;
+    _f = b._f;
+    return *this;
+  }
+  
+  ReturnType operator()()
+  {
+    return _f ( _a1, _a2, _a3, _a4 );
+  }
+
+private:
+
+  ArgumentType1 _a1;
+  ArgumentType2 _a2;
+  ArgumentType3 _a3;
+  ArgumentType4 _a4;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bind four arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ArgumentType1,
+  class ArgumentType2,
+  class ArgumentType3,
+  class ArgumentType4,
+  class FunctionType
+>
+struct Bind4 < void, ArgumentType1, ArgumentType2, ArgumentType3, ArgumentType4, FunctionType >
+{
+  Bind4() : _a1 ( 0x0 ), _a2 ( 0x0 ), _a3 ( 0x0 ), _a4 ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind4 ( ArgumentType1 a1, ArgumentType2 a2, ArgumentType3 a3, ArgumentType4 a4, FunctionType f ) : _a1 ( a1 ), _a2 ( a2 ), _a3 ( a3 ), _a4 ( a4 ), _f ( f ){}
+  Bind4 ( const Bind4 &b ) : _a1 ( b._a1 ), _a2 ( b._a2 ), _a3 ( b._a3 ), _a4 ( b._a4 ), _f ( b._f ){}
+
+  Bind4 &operator = ( const Bind4 &b )
+  {
+    _a1 = b._a1;
+    _a2 = b._a2;
+    _a3 = b._a3;
+    _a4 = b._a4;
+    _f = b._f;
+    return *this;
+  }
+  
+  void operator()()
+  {
+    _f ( _a1, _a2, _a3, _a4 );
+  }
+
+private:
+
+  ArgumentType1 _a1;
+  ArgumentType2 _a2;
+  ArgumentType3 _a3;
+  ArgumentType4 _a4;
+  FunctionType _f;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bind four arguments.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ArgumentType1,
+  class ArgumentType2,
+  class ArgumentType3,
+  class ArgumentType4,
+  class FunctionType
+>
+struct Bind4 < bool, ArgumentType1, ArgumentType2, ArgumentType3, ArgumentType4, FunctionType >
+{
+  Bind4() : _a1 ( 0x0 ), _a2 ( 0x0 ), _a3 ( 0x0 ), _a4 ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
+  Bind4 ( ArgumentType1 a1, ArgumentType2 a2, ArgumentType3 a3, ArgumentType4 a4, FunctionType f ) : _a1 ( a1 ), _a2 ( a2 ), _a3 ( a3 ), _a4 ( a4 ), _f ( f ){}
+  Bind4 ( const Bind4 &b ) : _a1 ( b._a1 ), _a2 ( b._a2 ), _a3 ( b._a3 ), _a4 ( b._a4 ), _f ( b._f ){}
+
+  Bind4 &operator = ( const Bind4 &b )
+  {
+    _a1 = b._a1;
+    _a2 = b._a2;
+    _a3 = b._a3;
+    _a4 = b._a4;
+    _f = b._f;
+    return *this;
+  }
+  
+  bool operator()() const
+  {
+    return _f ( _a1, _a2, _a3, _a4 );
+  }
+
+private:
+
+  ArgumentType1 _a1;
+  ArgumentType2 _a2;
+  ArgumentType3 _a3;
+  ArgumentType4 _a4;
   FunctionType _f;
 };
 
@@ -476,6 +614,42 @@ Bind3 < ReturnType, ArgumentType1, ArgumentType2, ArgumentType3, FunctionType >
 bind3 ( ArgumentType1 argument1, ArgumentType2 argument2, ArgumentType3 argument3, FunctionType function )
 {
   return Bind3 < ReturnType, ArgumentType1, ArgumentType2, ArgumentType3, FunctionType > ( argument1, argument2, argument3, function );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Functions to create bind-four adaptors.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template
+<
+  class ArgumentType1,
+  class ArgumentType2,
+  class ArgumentType3,
+  class ArgumentType4,
+  class FunctionType
+>
+Bind4 < void, ArgumentType1, ArgumentType2, ArgumentType3, ArgumentType4, FunctionType > 
+bind4 ( ArgumentType1 argument1, ArgumentType2 argument2, ArgumentType3 argument3, ArgumentType4 argument4, FunctionType function )
+{
+  return Bind4 < void, ArgumentType1, ArgumentType2, ArgumentType3, ArgumentType4, FunctionType > ( argument1, argument2, argument3, argument4, function );
+}
+
+template
+<
+  class ReturnType,
+  class ArgumentType1,
+  class ArgumentType2,
+  class ArgumentType3,
+  class ArgumentType4,
+  class FunctionType
+>
+Bind4 < ReturnType, ArgumentType1, ArgumentType2, ArgumentType3, ArgumentType4, FunctionType > 
+bind4 ( ArgumentType1 argument1, ArgumentType2 argument2, ArgumentType3 argument3, ArgumentType4 argument4, FunctionType function )
+{
+  return Bind4 < ReturnType, ArgumentType1, ArgumentType2, ArgumentType3, ArgumentType4, FunctionType > ( argument1, argument2, argument3, argument4, function );
 }
 
 

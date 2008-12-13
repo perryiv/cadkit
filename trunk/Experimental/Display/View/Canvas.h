@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Perry L Miller IV
+//  Copyright (c) 2008, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -27,6 +26,7 @@
 #include "osgViewer/Viewer"
 
 #include <string>
+#include <stack>
 
 
 namespace Display {
@@ -45,6 +45,7 @@ public:
   typedef osg::ref_ptr<osg::Group> GroupPtr;
   typedef osg::ref_ptr<osg::Node> NodePtr;
   typedef Display::Render::Renderer::RefPtr RendererPtr;
+  typedef std::stack<RendererPtr> Renderers;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef osg::ref_ptr<osgViewer::Viewer> ViewerPtr;
   typedef Usul::Interfaces::IView IView;
@@ -85,8 +86,11 @@ public:
   // Add a model.
   void                      modelAdd ( NodePtr );
 
-  // Set/get the renderer.
-  void                      renderer ( RendererPtr );
+  // Push/pop the renderer.
+  void                      pushRenderer ( RendererPtr );
+  void                      popRenderer();
+
+  // Get the current renderer.
   RendererPtr               renderer();
   const RendererPtr         renderer() const;
 
@@ -112,7 +116,7 @@ private:
   void                      _destroy();
 
   unsigned int _flags;
-  RendererPtr _renderer;
+  Renderers _renderers;
   GroupPtr _scene;
   GroupPtr _models;
   IDocument::QueryPtr _document;

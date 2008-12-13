@@ -36,6 +36,8 @@
 #include "QtCore/QUrl"
 #include "QtGui/QResizeEvent"
 
+#include "boost/bind.hpp"
+
 #include <limits>
 
 using namespace Showtime;
@@ -53,11 +55,12 @@ Viewer::Viewer ( IUnknown::RefPtr doc, const QGLFormat& format, QWidget* parent,
   _caller ( caller ),
   _document ( doc ),
   _refCount ( 0 ),
-  _keys(),
   _threadId ( Usul::Threads::currentThreadId() ),
   _mutex ( new Viewer::Mutex ),
   _mouseWheelPosition ( 0 ),
-  _mouseWheelSensitivity ( 10.0f )
+  _mouseWheelSensitivity ( 10.0f ),
+  _listeners(),
+  _keysDown()
 {
   USUL_TRACE_SCOPE;
 
@@ -68,7 +71,7 @@ Viewer::Viewer ( IUnknown::RefPtr doc, const QGLFormat& format, QWidget* parent,
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
   // Give the viewer a renderer.
-  _viewer->renderer ( new Display::Render::OSG::Renderer ( me, me ) );
+  _viewer->pushRenderer ( new Display::Render::OSG::Renderer ( me, me ) );
 
   // Set the focus policy.
   this->setFocusPolicy ( Qt::ClickFocus );
@@ -123,7 +126,8 @@ void Viewer::_destroy()
   _viewer = 0x0;
   _caller = Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
   _document = 0x0;
-  _keys.clear();
+  _listeners.clear();
+  _keysDown.clear();
 
   // Now delete the mutex.
   delete _mutex; _mutex = 0x0;
@@ -228,7 +232,7 @@ void Viewer::resizeGL ( int width, int height )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::focusInEvent ( QFocusEvent * event )
+void Viewer::focusInEvent ( QFocusEvent *event )
 {
   USUL_TRACE_SCOPE;
 
@@ -246,7 +250,7 @@ void Viewer::focusInEvent ( QFocusEvent * event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::focusOutEvent ( QFocusEvent * event )
+void Viewer::focusOutEvent ( QFocusEvent *event )
 {
   USUL_TRACE_SCOPE;
 
@@ -370,13 +374,52 @@ QSize Viewer::sizeHint() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to call the listeners.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class Function > inline void callListener ( Viewer *me, QMouseEvent *event, Function function )
+  {
+    USUL_TRACE_SCOPE_STATIC;
+
+    // Handle bad input.
+    if ( ( 0x0 == me ) || ( 0x0 == event ) )
+      return;
+
+    // Needed below.
+    const double x ( event->x() );
+    const double y ( me->height() - event->y() );
+
+    // Look up the listeners.
+    Viewer::ButtonsDown mouse ( me->buttonsDown ( event ) );
+    Viewer::KeysDown keys ( me->keysDown() );
+    Viewer::ListenerSequence listeners ( me->listeners ( keys, mouse ) );
+
+    // Loop throught the listeners.
+    for ( Viewer::ListenerSequence::iterator i = listeners.begin(); i != listeners.end(); ++i )
+    {
+      Usul::Interfaces::IInputListener::QueryPtr listener ( *i );
+      if ( true == listener.valid() )
+      {
+        boost::bind ( Usul::Adaptors::memberFunction ( listener, function ), keys, mouse, x, y, me );
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  The mouse has moved.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mouseMoveEvent ( QMouseEvent * event )
+void Viewer::mouseMoveEvent ( QMouseEvent *event )
 {
   USUL_TRACE_SCOPE;
+  Helper::callListener ( this, event, &Usul::Interfaces::IInputListener::mouseMoveNotify );
 }
 
 
@@ -386,9 +429,10 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mousePressEvent ( QMouseEvent * event )
+void Viewer::mousePressEvent ( QMouseEvent *event )
 {
   USUL_TRACE_SCOPE;
+  Helper::callListener ( this, event, &Usul::Interfaces::IInputListener::buttonPressNotify );
 }
 
 
@@ -398,9 +442,10 @@ void Viewer::mousePressEvent ( QMouseEvent * event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mouseReleaseEvent ( QMouseEvent * event )
+void Viewer::mouseReleaseEvent ( QMouseEvent *event )
 {
   USUL_TRACE_SCOPE;
+  Helper::callListener ( this, event, &Usul::Interfaces::IInputListener::buttonReleaseNotify );
 }
 
 
@@ -410,7 +455,7 @@ void Viewer::mouseReleaseEvent ( QMouseEvent * event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mouseDoubleClickEvent ( QMouseEvent * event )
+void Viewer::mouseDoubleClickEvent ( QMouseEvent *event )
 {
   USUL_TRACE_SCOPE;
 }
@@ -422,7 +467,7 @@ void Viewer::mouseDoubleClickEvent ( QMouseEvent * event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::wheelEvent ( QWheelEvent * event )
+void Viewer::wheelEvent ( QWheelEvent *event )
 {
   USUL_TRACE_SCOPE;
 }
@@ -438,7 +483,7 @@ void Viewer::keyPressEvent ( QKeyEvent *event )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _keys[event->key()] = true;
+  _keysDown.insert ( event->key() );
 }
 
 
@@ -448,11 +493,11 @@ void Viewer::keyPressEvent ( QKeyEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::keyReleaseEvent ( QKeyEvent * event )
+void Viewer::keyReleaseEvent ( QKeyEvent *event )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _keys[event->key()] = false;
+  _keysDown.erase ( event->key() );
 }
 
 
@@ -580,7 +625,7 @@ void Viewer::closeEvent ( QCloseEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::_closeEvent ( QCloseEvent* event )
+void Viewer::_closeEvent ( QCloseEvent *event )
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
@@ -804,9 +849,63 @@ void Viewer::subjectModified ( Usul::Interfaces::IUnknown * )
 
 void Viewer::stateLoad()
 {
+  USUL_TRACE_SCOPE;
+
   ViewerPtr viewer ( this->viewer() );
   if ( true == viewer.valid() )
   {
     viewer->stateLoad();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the set of keys that are currenty pressed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::KeysDown Viewer::keysDown() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _keysDown;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the mouse state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::ButtonsDown Viewer::buttonsDown ( QMouseEvent *event ) const
+{
+  USUL_TRACE_SCOPE;
+  ButtonsDown mouse;
+  if ( 0x0 != event )
+  {
+    if ( true == event->buttons().testFlag ( Qt::LeftButton ) )
+      mouse.insert ( 0 );
+    if ( true == event->buttons().testFlag ( Qt::MidButton ) )
+      mouse.insert ( 1 );
+    if ( true == event->buttons().testFlag ( Qt::RightButton ) )
+      mouse.insert ( 2 );
+  }
+  return mouse;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the listeners for the input.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Viewer::ListenerSequence Viewer::listeners ( const KeysDown &keys, const ButtonsDown &mouse ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  ListenerMap::const_iterator i ( _listeners.find ( InputState ( keys, mouse ) ) );
+  return ( ( _listeners.end() == i ) ? ListenerSequence() : i->second );
 }

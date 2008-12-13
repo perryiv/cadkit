@@ -35,6 +35,8 @@ template
 >
 struct MemberFunction
 {
+  typedef ReturnType result_type;
+
   MemberFunction() : _o ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
   MemberFunction ( ObjectType o, FunctionType f ) : _o ( o ), _f ( f ){}
   MemberFunction ( const MemberFunction &mf ) : _o ( mf._o ), _f ( mf._f ){}
@@ -95,6 +97,8 @@ template
 >
 struct MemberFunction < void, ObjectType, FunctionType >
 {
+  typedef void result_type;
+
   MemberFunction() : _o ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
   MemberFunction ( ObjectType o, FunctionType f ) : _o ( o ), _f ( f ){}
   MemberFunction ( const MemberFunction &mf ) : _o ( mf._o ), _f ( mf._f ){}
@@ -155,6 +159,8 @@ template
 >
 struct MemberFunction < bool, ObjectType, FunctionType >
 {
+  typedef bool result_type;
+
   MemberFunction() : _o ( 0x0 ), _f ( 0x0 ){} // For gcc's stl containers.
   MemberFunction ( ObjectType o, FunctionType f ) : _o ( o ), _f ( f ){}
   MemberFunction ( const MemberFunction &mf ) : _o ( mf._o ), _f ( mf._f ){}

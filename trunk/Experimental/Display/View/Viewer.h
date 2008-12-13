@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Perry L Miller IV
+//  Copyright (c) 2008, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +18,11 @@
 
 #include "Display/View/Canvas.h"
 
+#include "Usul/Interfaces/IInputListener.h"
+
+#include <map>
+#include <vector>
+
 
 namespace Display {
 namespace View {
@@ -30,6 +34,12 @@ public:
 
   // Typedefs.
   typedef Canvas BaseClass;
+  typedef Usul::Interfaces::IInputListener IInputListener;
+  typedef IInputListener::KeysDown KeysDown;
+  typedef IInputListener::ButtonsDown ButtonsDown;
+  typedef std::pair<KeysDown,ButtonsDown> InputState;
+  typedef std::vector<IUnknown::RefPtr> ListenerSequence;
+  typedef std::map<InputState,ListenerSequence> ListenerMap;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Viewer );

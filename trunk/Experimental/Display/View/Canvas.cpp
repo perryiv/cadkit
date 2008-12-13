@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Perry L Miller IV
+//  Copyright (c) 2008, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +39,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Canvas, Canvas::BaseClass );
 
 Canvas::Canvas ( IUnknown::RefPtr doc ) : BaseClass(),
   _flags ( 0 ),
-  _renderer ( 0x0 ),
+  _renderers(),
   _scene ( new osg::Group ),
   _models ( new osg::Group ),
   _document ( doc ),
@@ -87,7 +86,10 @@ void Canvas::clear()
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  _renderer = 0x0;
+  // Call popRenderer() because it sets the renderer's scene to null.
+  while ( false == _renderers.empty() )
+    this->popRenderer();
+
   _scene = 0x0;
   _models = 0x0;
   _document = Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
@@ -163,17 +165,42 @@ void Canvas::modelAdd ( NodePtr model )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the new renderer.
+//  Push the new renderer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Canvas::renderer ( RendererPtr r )
+void Canvas::pushRenderer ( RendererPtr r )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  _renderer = r;
-  if ( true == _renderer.valid() )
-    _renderer->scene ( _scene );
+
+  if ( true == r.valid() )
+  {
+    _renderers.push ( r );
+    r->scene ( _scene );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pop the top renderer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::popRenderer()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  if ( true == _renderers.empty() )
+    return;
+
+  RendererPtr r ( _renderers.top() );
+  _renderers.pop();
+
+  if ( true == r.valid() )
+    r->scene ( 0x0 );
 }
 
 
@@ -187,7 +214,7 @@ const Canvas::RendererPtr Canvas::renderer() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _renderer;
+  return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
 }
 
 
@@ -201,7 +228,7 @@ Canvas::RendererPtr Canvas::renderer()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _renderer;
+  return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
 }
 
 

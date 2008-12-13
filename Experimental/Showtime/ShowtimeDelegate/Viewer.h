@@ -20,6 +20,7 @@
 
 #include "Usul/Interfaces/GUI/IWindow.h"
 #include "Usul/Interfaces/IDocument.h"
+#include "Usul/Interfaces/IInputListener.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
 #include "Usul/Threads/RecursiveMutex.h"
@@ -28,6 +29,7 @@
 #include "QtOpenGL/QGLWidget"
 
 #include <map>
+#include <vector>
 
 
 namespace Showtime {
@@ -45,11 +47,16 @@ public:
   // Typedefs.
   typedef QGLWidget BaseClass;
   typedef Usul::Interfaces::IDocument IDocument;
-  typedef std::map<int,bool> KeyMap;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Display::View::Viewer::RefPtr ViewerPtr;
+  typedef Usul::Interfaces::IInputListener IInputListener;
+  typedef IInputListener::KeysDown KeysDown;
+  typedef IInputListener::ButtonsDown ButtonsDown;
+  typedef std::pair<KeysDown,ButtonsDown> InputState;
+  typedef std::vector<IUnknown::RefPtr> ListenerSequence;
+  typedef std::map<InputState,ListenerSequence> ListenerMap;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Viewer );
@@ -61,6 +68,9 @@ public:
   Viewer ( IUnknown::RefPtr doc, const QGLFormat &format, QWidget *parent, IUnknown *caller );
   virtual ~Viewer();
 
+  // Get the mouse state.
+  ButtonsDown                             buttonsDown ( QMouseEvent * ) const;
+
   // Get the document.
   IUnknown::RefPtr                        document();
   const IUnknown::RefPtr                  document() const;
@@ -68,6 +78,12 @@ public:
   // Get the caller.
   IUnknown::RefPtr                        caller();
   const IUnknown::RefPtr                  caller() const;
+
+  // Return the set of keys that are currenty dorm.
+  KeysDown                                keysDown() const;
+
+  // Get the listeners for the input.
+  ListenerSequence                        listeners ( const KeysDown &, const ButtonsDown & ) const;
 
   // Get the mutex.
   Mutex &                                 mutex() const;
@@ -97,9 +113,10 @@ public:
 
 protected:
 
-  void                                    _initPlacement();
   void                                    _closeEvent ( QCloseEvent* event );
   void                                    _close();
+
+  void                                    _initPlacement();
 
   // Override these events.
   virtual void                            paintGL();
@@ -125,11 +142,12 @@ private:
   IUnknown::RefPtr _caller;
   IUnknown::RefPtr _document;
   unsigned int _refCount;
-  KeyMap _keys;
   unsigned long _threadId;
   mutable Mutex *_mutex;
   int _mouseWheelPosition;
   float _mouseWheelSensitivity;
+  ListenerMap _listeners;
+  KeysDown _keysDown;
 };
 
 

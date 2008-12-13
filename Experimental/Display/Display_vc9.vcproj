@@ -295,6 +295,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Events"
+				>
+				<File
+					RelativePath=".\Events\Events.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Events\Events.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

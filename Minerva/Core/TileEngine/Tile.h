@@ -218,6 +218,7 @@ protected:
   // Cache the image used for the raster layer.
   void                      _cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords );
 
+  void                      _cancelAllJobs();
   void                      _cancelTileVectorJobs();
 
   void                      _cull ( osgUtil::CullVisitor &cv );

@@ -568,7 +568,7 @@ double Mesh::getSmallestDistanceSquared ( const osg::Vec3d& point ) const
 
 void Mesh::showBorder ( bool show )
 {
-  //_borders->setNodeMask ( ( body->useBorders() ? 0xffffffff : 0x0 ) );
+  //_borders->setNodeMask ( ( show ? 0xffffffff : 0x0 ) );
 
   if ( show )
   {

@@ -514,9 +514,18 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // See if our job is done loading image.
     if ( imageJob.valid() && imageJob->isDone() )
     {
-      Guard guard ( this );
-      _imageJob = 0x0;
-      imageJob = 0x0;
+      const bool imageJobSuccess ( imageJob->success() );
+      
+      // Clear the image job.
+      {
+        Guard guard ( this );
+        _imageJob = 0x0;
+        imageJob = 0x0;
+      }
+
+      // If the job did not succeed, launch a new request.
+      if ( false == imageJobSuccess )
+        this->_launchImageRequest();
     }
     
     // Not currently using this...
@@ -547,13 +556,6 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // Make sure the per-tile vector data is up-to-date.
     this->updateTileVectorData();
 
-    // Return if we are culled.
-    if ( 0x0 == cv || cv->isCulled ( *this ) )
-    {
-      // Should children be cleared here?
-      return;
-    }
-
     // See if we should draw skirts and borders.  Make sure these are called after update mesh.
     this->_setShowSkirts ( body->useSkirts() );
     this->_updateShowBorders();
@@ -573,6 +575,23 @@ void Tile::traverse ( osg::NodeVisitor &nv )
 
     // Check if we can split.  Don't freeze if we are waiting for a job.
     const bool splitIfNeeded ( ( false == tileJob.valid() && this->getNumChildren() == 0 ) || true == defaultMode || true == checkDetail );
+
+    // Check to see if we are culled.
+    if ( 0x0 == cv || cv->isCulled ( *this ) )
+    {
+      // Do not clear children if we are suppose to keep detail.
+      if ( false == keepDetail && false == body->cacheTiles() )
+      {
+        // Clear our children.
+        this->_clearChildren ( true, true );
+      }
+
+      // Make sure the borders are updated.
+      this->_updateShowBorders();
+
+      // Do not traverse further.
+      return;
+    }
 
     if ( false == splitIfNeeded )
     {
@@ -675,9 +694,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
   
   if ( low )
   {
-    // Set the borders.
-    this->_updateShowBorders();
-
     // Remove high level of detail.
     if ( numChildren > 1 && false == body->cacheTiles() )
     {
@@ -691,9 +707,12 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         vector->tileRemovedNotify ( this->childAt ( 3 ), Tile::RefPtr ( this ) );
       }
 
-      // Clear all the children.
-      this->_clearChildren ( false, true );
+      // Clear all the children.  Jobs are canceled later.
+      this->_clearChildren ( false, false );
     }
+
+    // Cancel all running jobs.
+    this->_cancelAllJobs();
   }
 
   else
@@ -728,9 +747,6 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         
           // Add the job to the job manager.
           _body->jobManager()->addJob ( _tileJob.get() );
-
-          // Set the borders.
-          this->_updateShowBorders();
         }
       }
 
@@ -769,12 +785,12 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
           _tileJob = 0x0;
           tileJob = 0x0;
         }
-
-        // Update the borders.
-        this->_updateShowBorders();
       }
     }
   }
+
+  // Update the borders.
+  this->_updateShowBorders();
   
   // Traverse low level of detail.
   if ( low || tileJob.valid() )
@@ -986,15 +1002,8 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   // Make the tile.
   Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
 
-  // Build the raster.  Make sure this is done before mesh is built and texture updated.
-  tile->buildRaster ( job );
-
-  // Check to see if the tile has a valid image.
-  if ( false == tile->image().valid() && 0x0 != this->image() )
-  {
-    // Use the specified region of our image.
-    tile->textureData ( this->image().get(), region );
-  }
+  // Use the specified region of our image.
+  tile->textureData ( this->image().get(), region );
   
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -1013,6 +1022,9 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
+
+  // Make sure the image is dirty so a job is launched to build the raster when the tile is added to the scene.
+  tile->dirty ( true, Tile::IMAGE, false );
 
   return tile;
 }
@@ -1715,14 +1727,29 @@ void Tile::_clearChildren ( bool traverse, bool cancelJob )
   // Clear the tile job.
   if ( true == cancelJob )
   {
-    // Without this call to cancel we always have to wait for the job to 
-    // finish, even if we've already chosen to go down the low path, which 
-    // happens when we are zoomed in and then "view all".
-    Helper::removeAndCancelJob ( _body, _tileJob );
-
-    // Clear the per-tile vector data jobs.
-    this->_cancelTileVectorJobs();
+    this->_cancelAllJobs();
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear all the jobs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_cancelAllJobs()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  // Without this call to cancel we always have to wait for the job to 
+  // finish, even if we've already chosen to go down the low path, which 
+  // happens when we are zoomed in and then "view all".
+  Helper::removeAndCancelJob ( _body, _tileJob );
+
+  // Clear the per-tile vector data jobs.
+  this->_cancelTileVectorJobs();
 }
 
 
@@ -1945,7 +1972,8 @@ void Tile::_updateShowBorders()
 
   const bool hasTileVectorJobs ( false == _tileVectorJobs.empty() );
   const bool hasTileJob ( true == _tileJob.valid() );
-  const bool isBusy ( hasTileVectorJobs || hasTileJob );
+  const bool hasImageJob ( true == _imageJob.valid() );
+  const bool isBusy ( hasTileVectorJobs || hasTileJob || hasImageJob );
   const bool allowedToShow ( ( 0x0 == _body ) ? true : _body->useBorders() );
 
   this->_setShowBorders ( allowedToShow && isBusy );

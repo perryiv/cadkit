@@ -523,9 +523,7 @@ SET ( HEADERS
 ./Registry/Qt.h
 ./Registry/Visitor.h
 ./Resources/CancelButton.h
-./Resources/Constants.h
 ./Resources/EventQueue.h
-./Resources/Manager.h
 ./Resources/ProgressBar.h
 ./Resources/ReportErrors.h
 ./Resources/StatusBar.h
@@ -644,7 +642,6 @@ SET (SOURCES
 ./Resources/EventQueue.cpp
 ./Resources/StatusBar.cpp
 ./Resources/ReportErrors.cpp
-./Resources/Manager.cpp
 ./Registry/Database.cpp
 ./Registry/Node.cpp
 ./Registry/Visitor.cpp

@@ -70,8 +70,6 @@
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Qt.h"
-#include "Usul/Resources/Constants.h"
-#include "Usul/Resources/Manager.h"
 #include "Usul/Resources/TextWindow.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
@@ -225,11 +223,8 @@ MainWindow::MainWindow ( const std::string &vendor,
   // Register DocumentProxy for Usul::Documents::Document.
   qRegisterMetaType<DocumentProxy>();
 
-  // Set resources.
-  Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  Usul::Resources::Manager::instance().add ( Usul::Resources::Contants::PROGRESS_BAR_FACTORY, me );
-
   // Add our self as a plugin.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
   Usul::Components::Manager::instance().addPlugin ( me );
   
   // Add the timer server.
@@ -329,9 +324,6 @@ void MainWindow::_destroy()
 
   // Unset the text window resource.
   Usul::Resources::textWindow ( 0x0 );
-
-  // Clear the resources.
-  Usul::Resources::Manager::instance().clear();
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );

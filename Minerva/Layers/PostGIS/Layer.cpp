@@ -30,8 +30,6 @@
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/NaN.h"
-#include "Usul/Resources/Constants.h"
-#include "Usul/Resources/Manager.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Scope/Caller.h"
@@ -985,7 +983,7 @@ void Layer::updateNotify ( Usul::Interfaces::IUnknown *caller )
   {
     // Get the progress bar factory.
     Usul::Interfaces::IProgressBarFactory::QueryPtr factory 
-      ( Usul::Resources::Manager::instance().find ( Usul::Resources::Contants::PROGRESS_BAR_FACTORY ) );
+      ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IProgressBarFactory::IID ) );
 
     // Make the progress bar.
     Usul::Interfaces::IUnknown::QueryPtr progress ( factory.valid() ? factory->createProgressBar() : 0x0 );

@@ -2285,41 +2285,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Resources\Constants.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Resources\EventQueue.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Resources\EventQueue.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Resources\Manager.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)4.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)4.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)4.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)4.xdc"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\Resources\Manager.h"
 					>
 				</File>
 				<File

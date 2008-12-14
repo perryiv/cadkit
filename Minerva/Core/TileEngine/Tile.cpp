@@ -50,11 +50,8 @@
 
 #include "osgUtil/CullVisitor"
 
-#include "osg/Geode"
-#include "osg/PolygonOffset"
 #include "osg/Material"
 #include "osg/Texture2D"
-#include "osg/TexEnvCombine"
 
 #include "osgDB/ReadFile"
 
@@ -64,6 +61,7 @@
 #include <limits>
 
 #define USE_MIP_MAPS 1
+#define USE_TOP_DOWN_BUILD_RASTER 0 // A value of 1 is the older way of building raster data.
 
 using namespace Minerva::Core::TileEngine;
 
@@ -304,7 +302,7 @@ void Tile::updateMesh()
 
   // Remove all the children.
   this->removeChildren ( 0, this->getNumChildren() );
-  
+
   osg::ref_ptr<osg::Group> group ( new osg::Group );
   group->addChild ( ground.get() );
   group->addChild ( Usul::Threads::Safe::get ( this->mutex(), _vector.get() ) );
@@ -1002,29 +1000,43 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   // Make the tile.
   Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
 
+#if USE_TOP_DOWN_BUILD_RASTER == 0
   // Use the specified region of our image.
   tile->textureData ( this->image().get(), region );
-  
+#else
+  // Build the raster.  Make sure this is done before mesh is built and texture updated.
+  tile->buildRaster ( job );
+
+  // Check to see if the tile has a valid image.
+  if ( false == tile->image().valid() && 0x0 != this->image() )
+  {
+    // Use the specified region of our image.
+    tile->textureData ( this->image().get(), region );
+  }
+#endif
+
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
 
   tile->updateMesh();
   tile->updateTexture();
-  
+
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
 
   // Now build the per-tile vector data.
   tile->buildPerTileVectorData ( job );
-  
+
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
 
+#if USE_TOP_DOWN_BUILD_RASTER == 0
   // Make sure the image is dirty so a job is launched to build the raster when the tile is added to the scene.
   tile->dirty ( true, Tile::IMAGE, false );
+#endif
 
   return tile;
 }

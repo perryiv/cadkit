@@ -33,8 +33,8 @@ using namespace QtTools;
 
 TreeNode::TreeNode ( ITreeNode *node, TreeNode *parent ) : BaseClass(),
   _model ( 0x0 ),
-  _node ( node ),
   _parent ( parent ),
+  _node ( node ),
   _children(),
   _refCount ( 0 )
 {

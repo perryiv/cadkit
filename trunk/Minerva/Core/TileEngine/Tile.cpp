@@ -705,12 +705,12 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
         vector->tileRemovedNotify ( this->childAt ( 3 ), Tile::RefPtr ( this ) );
       }
 
-      // Clear all the children.  Jobs are canceled later.
-      this->_clearChildren ( false, false );
+      // Clear all the children.
+      this->_clearChildren ( false, true );
     }
 
-    // Cancel all running jobs.
-    this->_cancelAllJobs();
+    // We no longer need to make the high level of detail.
+    this->_cancelTileJob();
   }
 
   else
@@ -1739,7 +1739,13 @@ void Tile::_clearChildren ( bool traverse, bool cancelJob )
   // Clear the tile job.
   if ( true == cancelJob )
   {
-    this->_cancelAllJobs();
+    // Without this call to cancel we always have to wait for the job to 
+    // finish, even if we've already chosen to go down the low path, which 
+    // happens when we are zoomed in and then "view all".
+    Helper::removeAndCancelJob ( _body, _tileJob );
+    
+    // Clear the per-tile vector data jobs.
+    this->_cancelTileVectorJobs();
   }
 }
 
@@ -1750,18 +1756,12 @@ void Tile::_clearChildren ( bool traverse, bool cancelJob )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::_cancelAllJobs()
+void Tile::_cancelTileJob()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  // Without this call to cancel we always have to wait for the job to 
-  // finish, even if we've already chosen to go down the low path, which 
-  // happens when we are zoomed in and then "view all".
   Helper::removeAndCancelJob ( _body, _tileJob );
-
-  // Clear the per-tile vector data jobs.
-  this->_cancelTileVectorJobs();
 }
 
 

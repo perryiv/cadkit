@@ -121,10 +121,20 @@ void Visitor::visit ( Minerva::Core::TileEngine::Node & )
 void Visitor::visit ( Minerva::Core::TileEngine::Body & body )
 {
   USUL_TRACE_SCOPE;
+  
+  // Get body compoents.
   Minerva::Core::Data::Container::RefPtr vector ( body.vectorData() );
+  Minerva::Core::Layers::RasterLayer::RefPtr raster ( body.rasterData() );
+  Minerva::Core::Layers::RasterLayer::RefPtr elevation ( body.elevationData() );
   
   if ( vector.valid() )
     vector->traverse ( *this );
+  
+  if ( raster.valid() )
+    this->visit ( *raster );
+  
+  if ( elevation.valid() )
+    this->visit ( *elevation );
 }
 
 
@@ -182,4 +192,28 @@ void Visitor::visit ( Minerva::Core::TileEngine::System &system )
   {
     system.satellites()->accept ( *this );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit the raster layer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Visitor::visit ( Minerva::Core::Layers::RasterLayer &rasterLayer )
+{
+  this->visit ( USUL_UNSAFE_CAST ( Feature&, rasterLayer ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Visit the raster group.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Visitor::visit ( Minerva::Core::Layers::RasterGroup &rasterGroup )
+{
+  rasterGroup.traverse ( *this );
 }

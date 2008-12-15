@@ -57,11 +57,17 @@ public:
 
   RasterGroup();
   
+  /// Accept the visitor.
+  virtual void                    accept ( Minerva::Core::Visitor& visitor );
+  
   // Clone.
   virtual IUnknown*               clone() const;
 
   /// Deserialize.
-  virtual                         void deserialize ( const XmlTree::Node &node );
+  virtual void                    deserialize ( const XmlTree::Node &node );
+  
+  // Clear.
+  void                            clear();
 
   void                            append ( IRasterLayer* layer );
   void                            remove ( IRasterLayer* layer );
@@ -80,6 +86,9 @@ public:
   unsigned int                    size() const;
 
   virtual ImagePtr                texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
+  
+  /// Traverse all layers.
+  virtual void                    traverse ( Minerva::Core::Visitor& visitor );
 
 protected:
 
@@ -93,6 +102,8 @@ protected:
   virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * );
 
   static ImageKey                 _makeKey ( const Extents& extents, unsigned int width, unsigned int height );
+  
+  ImagePtr                        _texture ( const Layers& layers, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
   
   // Get the number of children (ITreeNode).
   virtual unsigned int            getNumChildNodes() const;

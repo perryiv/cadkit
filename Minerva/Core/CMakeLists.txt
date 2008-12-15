@@ -110,12 +110,15 @@ SET ( HEADERS
 	./Functions/CacheString.h
 	./Functions/MakeBody.h
 	./Functions/ParameterizeExtents.h
+	./Functions/ReadFile.h
+	./Functions/SearchDirectory.h
 	./Functors/BaseColorFunctor.h
 	./Functors/GradientColorFunctor.h
 	./Functors/SingleColorFunctor.h
 	./Jobs/BuildRaster.h
 	./Jobs/BuildTiles.h
 	./Layers/ElevationGroup.h
+	./Layers/ElevationLayerDirectory.h
 	./Layers/LayerInfo.h
 	./Layers/RasterGroup.h
 	./Layers/RasterLayer.h
@@ -148,6 +151,7 @@ SET ( HEADERS
 	./Visitors/BuildScene.h
 	./Visitors/FindMinMaxDates.h
 	./Visitors/FindObject.h
+	./Visitors/FindUnknowns.h
 	./Visitors/ResizePoints.h
 	./Visitors/Scale.h
 	./Visitors/SetJobManager.h
@@ -201,11 +205,14 @@ SET (SOURCES
 ./Functions/CacheString.cpp
 ./Functions/MakeBody.cpp
 ./Functions/ParameterizeExtents.cpp
+./Functions/ReadFile.cpp
+./Functions/SearchDirectory.cpp
 ./Functors/GradientColorFunctor.cpp
 ./Functors/SingleColorFunctor.cpp
 ./Jobs/BuildRaster.cpp
 ./Jobs/BuildTiles.cpp
 ./Layers/ElevationGroup.cpp
+./Layers/ElevationLayerDirectory.cpp
 ./Layers/RasterGroup.cpp
 ./Layers/RasterLayer.cpp
 ./Layers/RasterLayerArcIMS.cpp

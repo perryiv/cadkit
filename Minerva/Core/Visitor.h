@@ -35,6 +35,12 @@ namespace Minerva
       class Body;
       class System;
     }
+    
+    namespace Layers
+    {
+      class RasterLayer;
+      class RasterGroup;
+    }
 
     class MINERVA_EXPORT Visitor : public Usul::Base::Object
     {
@@ -52,6 +58,9 @@ namespace Minerva
       virtual void visit ( DataObject &dataObject );
 
       virtual void visit ( Container& container );
+      
+      virtual void visit ( Minerva::Core::Layers::RasterLayer & );
+      virtual void visit ( Minerva::Core::Layers::RasterGroup & );
       
       virtual void visit ( Minerva::Core::TileEngine::System & );
       virtual void visit ( Minerva::Core::TileEngine::Group & );

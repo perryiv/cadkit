@@ -199,21 +199,21 @@ std::string RasterLayerArcIMS::_createRequestXml ( const Extents& extents, unsig
   arcXml->attributes().insert ( Attributes::value_type ( "version", "1.1" ) );
 
   // REQUEST node.
-  Node::RefPtr request ( arcXml->child ( "REQUEST" ) );
+  Node::RefPtr request ( arcXml->child ( "REQUEST", true ) );
 
   // GET_IMAGE node.
-  Node::RefPtr getImage ( request->child ( "GET_IMAGE" ) );
+  Node::RefPtr getImage ( request->child ( "GET_IMAGE", true ) );
 
   // PROPERTIES node.
-  Node::RefPtr properties ( getImage->child ( "PROPERTIES" ) );
+  Node::RefPtr properties ( getImage->child ( "PROPERTIES", true ) );
 
   // Property nodes.
-  Node::RefPtr envelope ( properties->child ( "ENVELOPE" ) );
-  Node::RefPtr imageSize ( properties->child ( "IMAGESIZE" ) );
-  Node::RefPtr featureCoordSys ( properties->child ( "FEATURECOORDSYS" ) );
-  Node::RefPtr filterCoordSys ( properties->child ( "FILTERCOORDSYS" ) );
-  Node::RefPtr output ( properties->child ( "OUTPUT" ) );
-  Node::RefPtr background ( properties->child ( "OUTPUT" ) );
+  Node::RefPtr envelope ( properties->child ( "ENVELOPE", true ) );
+  Node::RefPtr imageSize ( properties->child ( "IMAGESIZE", true ) );
+  Node::RefPtr featureCoordSys ( properties->child ( "FEATURECOORDSYS", true ) );
+  Node::RefPtr filterCoordSys ( properties->child ( "FILTERCOORDSYS", true ) );
+  Node::RefPtr output ( properties->child ( "OUTPUT", true ) );
+  Node::RefPtr background ( properties->child ( "BACKGROUND", true ) );
 
   // Add envelope.  Use Usul convert for full precision.
   envelope->attributes().insert ( Attributes::value_type ( "minx", Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.minimum()[0] ) ) );
@@ -247,7 +247,7 @@ std::string RasterLayerArcIMS::_createRequestXml ( const Extents& extents, unsig
   
   if ( false == layers.empty() )
   {
-    Node::RefPtr layerListNode ( properties->child ( "LAYERLIST" ) );
+    Node::RefPtr layerListNode ( properties->child ( "LAYERLIST", true ) );
     for ( Strings::const_iterator iter = layerList.begin(); iter != layerList.end(); ++iter )
     {
       Node::RefPtr layerNode ( new XmlTree::Node ( "LAYERDEF" ) );

@@ -49,7 +49,6 @@ private:
   // Pass the filesnames by copy so these functions can be threaded.
   static void      _loadData ( Filenames filenames, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
   static void      _showDataExtents ( Filenames filenames, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown * caller );
-  static void      _searchDirectory ( Minerva::Core::Layers::RasterGroup::RefPtr, const std::string directory );
 
   Usul::Interfaces::IUnknown::QueryPtr _caller;
   QListWidget *_listView;

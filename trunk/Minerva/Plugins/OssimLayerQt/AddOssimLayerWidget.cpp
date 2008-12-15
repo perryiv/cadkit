@@ -14,6 +14,8 @@
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Polygon.h"
 #include "Minerva/Core/Factory/Readers.h"
+#include "Minerva/Core/Functions/ReadFile.h"
+#include "Minerva/Core/Functions/SearchDirectory.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 
 #include "QtTools/FileDialog.h"
@@ -197,40 +199,6 @@ void AddOssimLayerWidget::apply ( Usul::Interfaces::IUnknown* parent, Usul::Inte
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  Usul::Interfaces::IUnknown* readFile ( const std::string& filename )
-  {
-    const std::string ext ( Usul::File::extension ( filename ) );
-
-    // Check the registered readers first.
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( Minerva::Core::Factory::Readers::instance().create ( ext ) );
-
-    // If we didn't find one, ask the document manager.
-    if ( false == unknown.valid() )
-    {
-      unknown = Usul::Interfaces::IUnknown::QueryPtr ( Usul::Documents::Manager::instance().find ( filename ).document.get() );
-    }
-
-    Usul::Interfaces::IRead::QueryPtr read ( unknown );
-    if ( read.valid() )
-    {
-      Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IProgressBarFactory::IID ) );
-      Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar() );
-      read->read ( filename, 0x0, unknown.get() );
-    }
-
-    read = static_cast<Usul::Interfaces::IRead*> ( 0x0 );
-    return unknown.release();
-  }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -259,11 +227,11 @@ void AddOssimLayerWidget::_loadData ( Filenames filenames, Usul::Interfaces::IUn
       al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( group ) );
 
       // Search the directory (and all sub-directories).
-      AddOssimLayerWidget::_searchDirectory ( group, filename );
+      Minerva::Core::Functions::searchDirectory ( *group, filename );
     }
     else
     {
-      Usul::Interfaces::IUnknown::QueryPtr unknown ( Detail::readFile ( filename ) );
+      Usul::Interfaces::IUnknown::QueryPtr unknown ( Minerva::Core::Functions::readFile ( filename ) );
       al->addLayer ( unknown );
     }
   }
@@ -330,7 +298,7 @@ namespace Detail
     object->name ( filename );
 
     // Read the file.
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( Detail::readFile ( filename ) );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( Minerva::Core::Functions::readFile ( filename ) );
 
     if ( false == unknown.valid() )
       return 0x0;
@@ -422,93 +390,6 @@ void AddOssimLayerWidget::_showDataExtents( Filenames filenames, Usul::Interface
         al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( object ) );
       }
       USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1383982710" )
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Search a directory and add to a group.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void AddOssimLayerWidget::_searchDirectory ( Minerva::Core::Layers::RasterGroup::RefPtr group, const std::string directory )
-{
-  if ( false == group.valid() )
-    return;
-  
-  typedef QtTools::FileDialog::Filters Filters;
-  typedef std::vector<std::string>     Strings;
-  Strings filenames;
-
-  Filters filters ( Minerva::Core::Factory::Readers::instance().filters() );
-
-  std::set<std::string> extensions;
-
-  for ( Filters::const_iterator iter = filters.begin(); iter != filters.end(); ++iter )
-  {
-    std::string extension ( iter->second );
-
-    Strings strings;
-    Usul::Strings::split ( extension, ",", false, strings );
-    for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
-      extensions.insert ( Usul::File::extension ( *iter ) );
-  }
-
-  typedef boost::filesystem::directory_iterator Iterator;
-
-  Iterator iter ( directory );
-  Iterator end;
-  for( ; iter != end; ++iter )
-  {
-    const boost::filesystem::path &path = BOOST_FILE_SYSTEM_ITERATOR_TO_PATH ( iter );
-    const std::string name ( path.native_directory_string() );
-
-    // Make a recursive call if its a directory.
-    if ( boost::filesystem::is_directory ( BOOST_FILE_SYSTEM_ITERATOR_TO_STATUS ( iter ) ) )
-    {
-      Minerva::Core::Layers::RasterGroup::RefPtr subGroup ( new Minerva::Core::Layers::RasterGroup );
-      subGroup->showLayer ( false );
-      subGroup->name ( name );
-      group->append ( subGroup.get() );
-
-      // Search this directory.
-      AddOssimLayerWidget::_searchDirectory ( subGroup, name );
-
-      if ( 0 == subGroup->size() )
-        group->remove ( subGroup.get() );
-    }
-
-    // Add it to our list if its a file and the extenstion matches.
-    else if ( extensions.end() != extensions.find ( Usul::File::extension ( name ) ) )
-    {
-      const std::string extension ( Usul::File::extension ( name ) );
-      const std::string base ( Usul::File::base ( name ) );
-
-      /// Hack so ArcAscii grids don't get loaded more than once.
-      if ( "adf" == extension && "w001001" != base )
-        continue;
-
-      try
-      {
-        // Read the file.
-        Usul::Interfaces::IUnknown::QueryPtr unknown ( Detail::readFile ( name ) );
-
-        // Set the name.
-        Usul::Interfaces::ITreeNode::QueryPtr tn ( unknown );
-        if ( tn.valid() )
-          tn->setTreeNodeName ( base + "." + extension );
-
-        // Hide by default.
-        Usul::Interfaces::IBooleanState::QueryPtr state ( unknown );
-        if ( state.valid() )
-          state->setBooleanState ( false );
-
-        // Add the unknown to the group.
-        group->append ( Usul::Interfaces::IRasterLayer::QueryPtr ( unknown ) );
-      }
-      USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2020505170" );
     }
   }
 }

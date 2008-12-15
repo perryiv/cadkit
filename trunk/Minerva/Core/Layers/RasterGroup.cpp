@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Layers/RasterGroup.h"
 #include "Minerva/Core/Algorithms/Composite.h"
+#include "Minerva/Core/Visitor.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
@@ -120,7 +121,9 @@ Usul::Interfaces::IUnknown* RasterGroup::clone() const
 void RasterGroup::append ( IRasterLayer* layer )
 {
   USUL_TRACE_SCOPE;
-  USUL_ASSERT ( true == this->logGet().valid() );
+  
+  // Do we need this assert?  The log is checked for null before it's used.
+  //USUL_ASSERT ( true == this->logGet().valid() );
 
   if ( 0x0 != layer )
   {
@@ -203,19 +206,36 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
   // Get copy of the layers.
   Layers layers ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
 
+  return this->_texture ( layers, extents, width, height, level, job, caller );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the texture.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterGroup::ImagePtr RasterGroup::_texture ( const Layers& layers, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+  
   // If there are no layers...
   if ( true == layers.empty() )
     return ImagePtr ( 0x0 );
-
+  
+  // The result.
+  ImagePtr result ( 0x0 );
+  
   // Loop through each layer.
-  for ( Layers::iterator iter = layers.begin(); iter != layers.end(); ++iter )
+  for ( Layers::const_iterator iter = layers.begin(); iter != layers.end(); ++iter )
   {
     // Have we been cancelled?
     if ( ( 0x0 != job ) && ( true == job->canceled() ) )
       job->cancel();
-
+    
     // Get the layer.
-    Layers::value_type raster ( *iter );
+    Layers::value_type raster ( (*iter).get() );
     if ( true == raster.valid() )
     {
       // Query for needed interfaces.
@@ -238,7 +258,7 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
       {
         // Get the image for the layer.
         osg::ref_ptr < osg::Image > image ( raster->texture ( extents, width, height, level, job, caller ) );
-
+        
         if ( image.valid() )
         {
           // Is this the first image?
@@ -250,7 +270,7 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
           
           // See if it has raster alpha data.
           Usul::Interfaces::IRasterAlphas::QueryPtr ra ( layer );
-
+          
           // Copy the alphas.
           Alphas alphas;
           float alpha ( 1.0f );
@@ -259,17 +279,17 @@ RasterGroup::ImagePtr RasterGroup::texture ( const Extents& extents, unsigned in
             alphas = ra->alphas();
             alpha = ra->alpha();
           }
-
+          
           // Composite the images.
           this->_compositeImages ( *result, *image, alphas, alpha, job );
-
-          // Cache the result.
+          
+          // Cache the result.  Why is this done here and not at the end of the function?
           this->_cacheAdd ( extents, width, height, result.get() );
         }
       }
     }
   }
-
+  
   // Return the result.
   return result;
 }
@@ -602,5 +622,59 @@ void RasterGroup::setBooleanState ( bool b )
     Usul::Interfaces::IBooleanState::QueryPtr state ( *iter );
     if ( state.valid() )
       state->setBooleanState ( b );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::clear()
+{
+  USUL_TRACE_SCOPE;
+
+  {
+    Guard guard ( this );
+    _layers.clear();
+  }
+  
+  this->_notifyDataChangedListeners();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Accept the visitor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::accept ( Minerva::Core::Visitor& visitor )
+{
+  USUL_TRACE_SCOPE;
+  visitor.visit ( *this );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Traverse all DataObjects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RasterGroup::traverse ( Minerva::Core::Visitor& visitor )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  for ( Layers::iterator iter = _layers.begin(); iter != _layers.end(); ++iter )
+  {
+    Minerva::Interfaces::IFeature::QueryPtr f ( *iter );
+    Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
+    if ( feature.valid() )
+    {
+      feature->accept ( visitor );
+    }
   }
 }

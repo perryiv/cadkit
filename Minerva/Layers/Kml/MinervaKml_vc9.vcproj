@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreads.lib osg.lib osgText.lib $(CURL_LIB_FILE_RELEASE) osgDB.lib $(COLLADA_LIB_FILE_DEBUG) $(ZLIB_LIB_FILE_RELEASE)"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgText.lib $(CURL_LIB_FILE_RELEASE) osgDB.lib $(COLLADA_LIB_FILE_RELEASE) $(ZLIB_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaKml.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

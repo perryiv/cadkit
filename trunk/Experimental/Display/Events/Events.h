@@ -35,11 +35,12 @@ namespace Events {
 
 struct DISPLAY_LIBRARY_EXPORT Event
 {
+  typedef Usul::Types::Uint64 TypeID;
   typedef std::set<int> KeysDown;
   typedef std::set<unsigned int> ButtonsDown;
   ~Event(){}
-  static Usul::Types::Uint64 classType() { return 2571790917u; }
-  virtual Usul::Types::Uint64 type() = 0;
+  static TypeID classType() { return 2571790917u; }
+  virtual TypeID type() = 0;
   KeysDown keysDown() const { return _keys; }
   ButtonsDown buttonsDown() const { return _buttons; }
 protected:
@@ -59,8 +60,8 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 #define DISPLAY_EVENTS_EVENT_CLASS(type_id) \
-  static Usul::Types::Uint64 classType() { return type_id; } \
-  virtual Usul::Types::Uint64 type() { return type_id; }
+  static TypeID classType() { return type_id; } \
+  virtual TypeID type() { return type_id; }
 
 
 ///////////////////////////////////////////////////////////////////////////////

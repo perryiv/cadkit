@@ -41,6 +41,12 @@ public:
   typedef std::vector<IUnknown::RefPtr> ListenerSequence;
   typedef std::map<InputState,ListenerSequence> ListenerMap;
 
+  We need a map of Display::Events::TypeID to a sequence of listeners.
+  The new Qt viewer can make the event class and pass it to a generic notifyEvent() function.
+  This function can look up the regestered listeners for the event-type and pass the event to 
+  these listeners, without ever knowing the concrete event types.
+  Once you have this you will no longer need the listeners in the Qt viewer class.
+
   // Type information.
   USUL_DECLARE_TYPE_ID ( Viewer );
 

@@ -933,6 +933,22 @@
 						RelativePath=".\Functions\ParameterizeExtents.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Functions\ReadFile.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Functions\ReadFile.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Functions\SearchDirectory.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Functions\SearchDirectory.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter

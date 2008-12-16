@@ -159,8 +159,7 @@ public:
   // Get the extents.
   Extents                   extents() const;
 
-  // Get/Set the image.
-  void                      image ( osg::Image* );
+  // Get the image.
   ImagePtr                  image();
 
   // Is this tile a leaf?
@@ -184,9 +183,8 @@ public:
   // Remove vector data.
   void                      removeVectorData ( osg::Node* );
 
-  // Get/Set the starting texture coordinates.
+  // Get the texture coordinate range.
   Usul::Math::Vec4d         texCoords() const;
-  void                      texCoords ( const Usul::Math::Vec4d& );
 
   // Get the image from the given RasterLayer.  May return null.
   TextureData               texture ( IRasterLayer * ) const;
@@ -227,7 +225,7 @@ protected:
   void                      _clearChildren ( bool traverse, bool cancelJob );
 
   void                      _deleteMe();
-
+  
   // Load the image.
   void                      _launchImageRequest();
   void                      _launchElevationRequest();
@@ -250,7 +248,7 @@ protected:
   
   // Build raster.
   static ImagePtr           _buildRaster ( const Extents &extents, unsigned int width, unsigned int height, unsigned int level, IRasterLayer* raster, Usul::Jobs::Job::RefPtr );
-
+  
   void                      _setDirtyAlways ( bool state, unsigned int flags, bool dirtyChildren );
   void                      _setDirtyIfIntersect ( bool state, unsigned int flags, bool dirtyChildren, const Extents& extents );
 
@@ -269,6 +267,10 @@ private:
   Tile &operator = ( const Tile & );
 
   void                      _destroy();
+  
+  // Set the image and texture coordinates.
+  void                      _setImage ( osg::Image* );
+  void                      _setTexCoords ( const Usul::Math::Vec4d& );
 
   mutable Mutex *_mutex;
   Body *_body;

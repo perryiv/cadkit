@@ -284,14 +284,13 @@ void Tile::updateMesh()
   const double offset ( Usul::Math::maximum<double> ( ( 3500 - ( this->level() * 150 ) ), ( 10 * std::numeric_limits<double>::epsilon() ) ) );
 
   // Make a new mesh.
-  MeshPtr pMesh ( new Mesh ( size[0], size[1], offset, extents ) );
-  Mesh &mesh ( *pMesh );
+  MeshPtr mesh ( new Mesh ( size[0], size[1], offset, extents ) );
 
   // Make a new bounding sphere.
   BSphere boundingSphere;
 
   // Build the mesh.
-  osg::ref_ptr<osg::Node> ground ( mesh.buildMesh ( *body, elevation, osg::Vec2 ( texCoords[0], texCoords[1] ), osg::Vec2 ( texCoords[2], texCoords[3] ), boundingSphere ) );
+  osg::ref_ptr<osg::Node> ground ( mesh->buildMesh ( *body, elevation, osg::Vec2 ( texCoords[0], texCoords[1] ), osg::Vec2 ( texCoords[2], texCoords[3] ), boundingSphere ) );
 
   // Unset these dirty flags.
   this->dirty ( false, Tile::VERTICES, false );
@@ -319,7 +318,7 @@ void Tile::updateMesh()
   // Set needed variables.
   {
     Guard guard ( this );
-    _mesh = pMesh;
+    _mesh = mesh;
     _boundingSphere = boundingSphere;
   }
   
@@ -490,28 +489,12 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     body = _body;
   }
 
-  // Launch the image request if one is needed.
-  if ( ( Usul::Bits::has ( flags, Tile::IMAGE ) ) && ( false == imageJob.valid() ) )
+  // If we have a job, see if it has finished.
+  if ( imageJob.valid() )
   {
-    this->_launchImageRequest();
-  }
-
-  // For runtime re-scale, etc... not working but flag never true.
-  if ( Usul::Bits::has ( flags, Tile::CHILDREN ) )
-  {
-    // Clear all the children.
-    this->_clearChildren ( false, true );
-    this->dirty ( false, Tile::CHILDREN, false );
-
-    this->dirtyBound();
-  }
-
-  // If it's a cull visitor...
-  if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
-  {
-    // See if our job is done loading image.
-    if ( imageJob.valid() && imageJob->isDone() )
+    if ( imageJob->isDone() )
     {
+      // Capture the success state.
       const bool imageJobSuccess ( imageJob->success() );
       
       // Clear the image job.
@@ -525,7 +508,28 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       if ( false == imageJobSuccess )
         this->_launchImageRequest();
     }
-    
+  }
+  
+  // If we don't have a job, see if we need to create one.
+  else
+  {
+    if ( Usul::Bits::has ( flags, Tile::IMAGE ) )
+      this->_launchImageRequest();
+  }
+  
+  // For runtime re-scale, etc... not working but flag never true.
+  if ( Usul::Bits::has ( flags, Tile::CHILDREN ) )
+  {
+    // Clear all the children.
+    this->_clearChildren ( false, true );
+    this->dirty ( false, Tile::CHILDREN, false );
+
+    this->dirtyBound();
+  }
+
+  // If it's a cull visitor...
+  if ( osg::NodeVisitor::CULL_VISITOR == nv.getVisitorType() )
+  {    
     // Not currently using this...
 #if 0
     // Check for new elevation data.
@@ -590,7 +594,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       // Do not traverse further.
       return;
     }
-
+    
     if ( false == splitIfNeeded )
     {
       const unsigned int child ( ( false == allowSplit && false == keepDetail ) ? 0 : this->getNumChildren() - 1 );
@@ -1034,8 +1038,11 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
     job->cancel();
 
 #if USE_TOP_DOWN_BUILD_RASTER == 0
-  // Make sure the image is dirty so a job is launched to build the raster when the tile is added to the scene.
+  // Make sure the image is dirty.
   tile->dirty ( true, Tile::IMAGE, false );
+  
+  // Add a request to the queue for this tile now.
+  tile->_launchImageRequest();
 #endif
 
   return tile;
@@ -1483,25 +1490,6 @@ Usul::Math::Vec4d Tile::texCoords() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the starting texture coordinates.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Tile::texCoords ( const Usul::Math::Vec4d& t )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  
-  if ( false == t.equal ( _texCoords ) )
-  {
-    _texCoords = t;
-    this->dirty ( true, Tile::TEX_COORDS, false );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Load the image.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1549,26 +1537,6 @@ void Tile::_launchElevationRequest()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the image.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Tile::image ( osg::Image* image )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _image = image;
-  
-  // Our image is no longer dirty.
-  this->dirty ( false, Tile::IMAGE, false );
-  
-  // Our texture needs to be updated.
-  this->dirty ( true, Tile::TEXTURE, false );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the image.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1590,6 +1558,7 @@ Tile::ImagePtr Tile::image()
 void Tile::_quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const
 {
   USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   const double deltaU ( _texCoords[1] - _texCoords[0] );
   const double deltaV ( _texCoords[3] - _texCoords[2] );
@@ -1636,6 +1605,7 @@ Usul::Math::Vec4d Tile::_textureCoordinatesSubRegion ( const Usul::Math::Vec4d& 
   case LOWER_RIGHT: return Usul::Math::Vec4d ( halfU,  endU,  startV, halfV );
   case UPPER_LEFT:  return Usul::Math::Vec4d ( startU, halfU, halfV,  endV );
   case UPPER_RIGHT: return Usul::Math::Vec4d ( halfU,  endU,  halfV,  endV );
+  case NONE: break; // If the index is none, fall through to the last return statement.
   }
 
   return Usul::Math::Vec4d ( 0.0, 1.0, 0.0, 1.0 );
@@ -1651,24 +1621,68 @@ Usul::Math::Vec4d Tile::_textureCoordinatesSubRegion ( const Usul::Math::Vec4d& 
 void Tile::textureData ( osg::Image* image, const Usul::Math::Vec4d& coords )
 {
   USUL_TRACE_SCOPE;
-
-  // Set the texture coordinates.
-  this->texCoords ( coords );
+  
+  // Set texutre coordinates and image atomiclly.
+  {
+    Guard guard ( this );
+    
+    // Set the texture coordinates.
+    this->_setTexCoords ( coords );
+    
+    // Set our image.
+    this->_setImage ( image );
+  }
   
   // Set children data.
   {
     Usul::Math::Vec4d ll, lr, ul, ur;
     this->_quarterTextureCoordinates ( ll, lr, ul, ur );
     
+    // If our children is using the same image that we are, give them the new image with a quarter of the texutre coordinates.
     Guard guard ( this );
-    if ( _children[LOWER_LEFT].valid()  && image == _children[LOWER_LEFT]->image()  ) _children[LOWER_LEFT]->textureData  ( image, ll );
-    if ( _children[LOWER_RIGHT].valid() && image == _children[LOWER_RIGHT]->image() ) _children[LOWER_RIGHT]->textureData ( image, lr );
-    if ( _children[UPPER_LEFT].valid()  && image == _children[UPPER_LEFT]->image()  ) _children[UPPER_LEFT]->textureData  ( image, ul );
-    if ( _children[UPPER_RIGHT].valid() && image == _children[UPPER_RIGHT]->image() ) _children[UPPER_RIGHT]->textureData ( image, ur );
+    osg::ref_ptr<osg::Image> myImage ( _image );
+    if ( _children[LOWER_LEFT].valid()  && myImage.get() == _children[LOWER_LEFT]->image().get()  ) _children[LOWER_LEFT]->textureData  ( image, ll );
+    if ( _children[LOWER_RIGHT].valid() && myImage.get() == _children[LOWER_RIGHT]->image().get() ) _children[LOWER_RIGHT]->textureData ( image, lr );
+    if ( _children[UPPER_LEFT].valid()  && myImage.get() == _children[UPPER_LEFT]->image().get()  ) _children[UPPER_LEFT]->textureData  ( image, ul );
+    if ( _children[UPPER_RIGHT].valid() && myImage.get() == _children[UPPER_RIGHT]->image().get() ) _children[UPPER_RIGHT]->textureData ( image, ur );
   }
+}
 
-  // Set our image.
-  this->image ( image );
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the image.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_setImage ( osg::Image* image )
+{
+  USUL_TRACE_SCOPE;
+  _image = image;
+  
+  // Our image is no longer dirty.
+  this->dirty ( false, Tile::IMAGE, false );
+  
+  // Our texture needs to be updated.
+  this->dirty ( true, Tile::TEXTURE, false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the starting texture coordinates.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_setTexCoords ( const Usul::Math::Vec4d& t )
+{
+  USUL_TRACE_SCOPE;
+  
+  if ( false == t.equal ( _texCoords ) )
+  {
+    _texCoords = t;
+    this->dirty ( true, Tile::TEX_COORDS, false );
+  }
 }
 
 
@@ -2062,6 +2076,8 @@ void Tile::_cancelTileVectorJobs()
   // Copy jobs and clear member.
   TileVectorJobs jobs;
   {
+    // Instead of the code below, would jobs.swap ( _tileVectorJobs ) be better?
+    // It would avoid a copy, but would it introduce threading issues?
     Guard guard ( this );
     jobs = _tileVectorJobs;
     _tileVectorJobs.clear();

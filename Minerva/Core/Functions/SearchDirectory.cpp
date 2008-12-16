@@ -20,35 +20,27 @@
 
 #include <set>
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Search a directory (and all sub-directories) and add all readable files to group.
+//  Typedef.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Minerva::Core::Functions::searchDirectory ( Minerva::Core::Layers::RasterGroup& group, const std::string directory, bool showFoundLayers )
+typedef std::set<std::string> Extensions;
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Search directory implementation.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
 {
+  void searchDirectoryImpl ( Minerva::Core::Layers::RasterGroup& group, const std::string directory, bool showFoundLayers, const Extensions& extensions )
   {
-    typedef Minerva::Core::Factory::Readers::Filters Filters;
-    typedef std::vector<std::string>     Strings;
-    Strings filenames;
-    
-    Filters filters ( Minerva::Core::Factory::Readers::instance().filters() );
-    
-    std::set<std::string> extensions;
-    
-    for ( Filters::const_iterator iter = filters.begin(); iter != filters.end(); ++iter )
-    {
-      const std::string extension ( iter->second );
-      
-      Strings strings;
-      Usul::Strings::split ( extension, ",", false, strings );
-      for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
-        extensions.insert ( Usul::File::extension ( *iter ) );
-    }
-    
     typedef boost::filesystem::directory_iterator Iterator;
-    
+  
     Iterator iter ( directory );
     Iterator end;
     for( ; iter != end; ++iter )
@@ -64,7 +56,7 @@ void Minerva::Core::Functions::searchDirectory ( Minerva::Core::Layers::RasterGr
         subGroup->name ( name );
         
         // Search this directory.
-        searchDirectory ( *subGroup, name );
+        searchDirectoryImpl ( *subGroup, name, showFoundLayers, extensions );
         
         // Add if we found files that we could load.
         if ( subGroup->size() > 0 )
@@ -102,5 +94,35 @@ void Minerva::Core::Functions::searchDirectory ( Minerva::Core::Layers::RasterGr
         USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2020505170" );
       }
     }
-  }  
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Search a directory (and all sub-directories) and add all readable files to group.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Minerva::Core::Functions::searchDirectory ( Minerva::Core::Layers::RasterGroup& group, const std::string directory, bool showFoundLayers )
+{
+  typedef Minerva::Core::Factory::Readers::Filters Filters;
+  typedef std::vector<std::string>     Strings;
+  
+  Filters filters ( Minerva::Core::Factory::Readers::instance().filters() );
+  
+  Extensions extensions;
+  
+  // Find all the extensions that we can load.
+  for ( Filters::const_iterator iter = filters.begin(); iter != filters.end(); ++iter )
+  {
+    const std::string extension ( iter->second );
+    
+    Strings strings;
+    Usul::Strings::split ( extension, ",", false, strings );
+    for ( Strings::const_iterator iter = strings.begin(); iter != strings.end(); ++iter )
+      extensions.insert ( Usul::File::extension ( *iter ) );
+  }
+  
+  // Redirect.
+  Detail::searchDirectoryImpl ( group, directory, showFoundLayers, extensions );
 }

@@ -78,7 +78,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _meshSize ( ms ),
   _useSkirts ( true ),
   _useBorders ( true ),
-  _splitCallback ( new Minerva::Core::TileEngine::Callbacks::PassThrough ),
+  _splitCallback ( 0x0 ),
   _scale ( 1 ),
   _deleteTiles(),
   _topTiles(),
@@ -840,10 +840,14 @@ void Body::splitCallback ( SplitCallback *cb )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Body::SplitCallback::RefPtr Body::splitCallback() const
+Body::SplitCallback::RefPtr Body::splitCallback()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
+  if ( false == _splitCallback.valid() )
+  {
+    _splitCallback = new Minerva::Core::TileEngine::Callbacks::PassThrough;
+  }
   return SplitCallback::RefPtr ( _splitCallback );
 }
 

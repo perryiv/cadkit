@@ -61,7 +61,7 @@
 #include <limits>
 
 #define USE_MIP_MAPS 1
-#define USE_TOP_DOWN_BUILD_RASTER 0 // A value of 1 is the older way of building raster data.
+#define USE_TOP_DOWN_BUILD_RASTER 1 // A value of 1 is the older way of building raster data.
 
 using namespace Minerva::Core::TileEngine;
 

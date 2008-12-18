@@ -567,6 +567,11 @@ std::string RasterLayer::_mangledURL ( const std::string &url )
   std::string::const_iterator i ( std::find ( url.begin(), url.end(), '@' ) );
   std::string mangled ( ( ( url.end() == i ) ? url.begin() : i + 1 ), url.end() );
 
+  // Trim all characters right of the '?' character, if it's found.
+  // This will remove special arguments needed in the "base" url. 
+  // For example, a client ID needed to perform a WMS GetCapabilities request.
+  mangled = std::string ( mangled.begin(), std::find ( mangled.begin(), mangled.end(), '?' ) );
+
   boost::replace_first ( mangled, "http://", " " );
   boost::replace_first ( mangled, "https://", " " );
   boost::trim_left ( mangled );

@@ -220,7 +220,7 @@ public:
   bool                      shouldSplit ( bool suggestion, Tile * );
 
   // Set/get the callback used for tile splitting. Returns the existing callback.
-  SplitCallback::RefPtr     splitCallback() const;
+  SplitCallback::RefPtr     splitCallback();
   void                      splitCallback ( SplitCallback * );
 
   /// Get/Set the split distance.

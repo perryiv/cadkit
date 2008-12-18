@@ -24,10 +24,12 @@
 #include "Usul/Registry/Convert.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Registry/Qt.h"
+#include "Usul/Strings/Split.h"
 
 #include "QtGui/QWidget"
 #include "QtGui/QStringListModel"
 
+#include <algorithm>
 #include <vector>
 #include <string>
 
@@ -189,7 +191,7 @@ inline BaseAddNetworkLayerWidget::LayerInfos AddNetworkLayerWidget<Layer>::_getC
 template < class Layer >
 inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents, const std::string& format, const std::string& layers, const std::string& styles ) const
 {
-  const std::string server ( _server->text().toStdString() );
+  std::string server ( _server->text().toStdString() );
   const std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
   
   typename Layer::RefPtr layer ( new Layer );
@@ -202,7 +204,30 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
   
   // Set the format.
   options[Usul::Network::Names::FORMAT] = format;
-  
+
+  // Sometimes the '?' character is needed in the url to make the GetCapabilities 
+  // query. It should not become part of the url; it's an option.
+  std::string::const_iterator i ( std::find ( server.begin(), server.end(), '?' ) );
+  if ( server.end() != i )
+  {
+    // Split the sub-string to the right of the '?'
+    typedef std::vector<std::string> StringList;
+    StringList arguments;
+    Usul::Strings::split ( std::string ( i + 1, server.end() ), '&', false, arguments );
+    for ( StringList::const_iterator j = arguments.begin(); j != arguments.end(); ++j )
+    {
+      StringList argument;
+      Usul::Strings::split ( *j, '=', false, argument );
+      if ( 2 == argument.size() )
+      {
+        options[argument.at(0)] = argument.at(1);
+      }
+    }
+
+    // Reset the server url.
+    server = std::string ( server.begin(), i );
+  }
+
   // Set the options.
   layer->options ( options );
   
@@ -249,7 +274,7 @@ inline Minerva::Core::Layers::RasterLayer* AddNetworkLayerWidget<Layer>::_makeGr
 
       std::string t ( item->title() );
       std::string n ( item->name() );
-      if ( ( false == t.empty() ) && ( false == n.empty() ) )
+      if ( ( false == t.empty() ) && ( false == n.empty() ) && ( t != n ) )
       {
         n = Usul::Strings::format ( n, ": ", t );
       }

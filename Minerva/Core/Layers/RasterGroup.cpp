@@ -223,7 +223,11 @@ RasterGroup::ImagePtr RasterGroup::_texture ( const Layers& layers, const Extent
   // If there are no layers...
   if ( true == layers.empty() )
     return ImagePtr ( 0x0 );
-  
+
+  // Are we in range?
+  if ( false == this->isInLevelRange ( level ) )
+    return ImagePtr ( 0x0 );
+
   // The result.
   ImagePtr result ( 0x0 );
   

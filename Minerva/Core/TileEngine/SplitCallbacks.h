@@ -131,6 +131,39 @@ private:
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Callback that will split if the level is less than the max.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+class MINERVA_EXPORT SplitIfLess : public SplitCallback
+{
+public:
+
+  typedef SplitCallback BaseClass;
+
+  USUL_DECLARE_REF_POINTERS ( SplitIfLess );
+
+  // Constructor
+  SplitIfLess ( unsigned int maxLevel = 20 );
+
+  // Return true if the tile should split.
+  virtual bool shouldSplit ( bool suggestion, Tile * );
+
+protected:
+
+  // Use reference counting.
+  virtual ~SplitIfLess();
+
+private:
+
+  unsigned int _maxLevel;
+
+  SERIALIZE_XML_DEFINE_MEMBERS ( SplitIfLess );
+};
+
+
 } // namespace Callbacks
 } // namespace TileEngine
 } // namespace Core

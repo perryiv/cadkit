@@ -393,7 +393,7 @@ void RasterLayerNetwork::options ( const Options& options )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _options = options;
-  
+
   // Find a reader.
   this->_findImageReader();
 }

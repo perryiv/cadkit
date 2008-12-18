@@ -24,6 +24,7 @@ using namespace Minerva::Core::TileEngine::Callbacks;
 
 USUL_FACTORY_REGISTER_CREATOR ( PassThrough );
 USUL_FACTORY_REGISTER_CREATOR ( SplitToLevel );
+USUL_FACTORY_REGISTER_CREATOR ( SplitIfLess );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,4 +125,44 @@ SplitToLevel::~SplitToLevel()
 bool SplitToLevel::shouldSplit ( bool suggestion, Tile *tile )
 {
   return ( ( 0x0 == tile ) ? suggestion : ( tile->level() < _maxLevel ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SplitIfLess::SplitIfLess ( unsigned int maxLevel ) : BaseClass(), 
+  _maxLevel ( maxLevel )
+{
+  USUL_TRACE_SCOPE;
+
+  // Serialization glue.
+  this->_addMember ( "max_level", _maxLevel );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+SplitIfLess::~SplitIfLess()
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return true if the tile's level is less than the max.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool SplitIfLess::shouldSplit ( bool suggestion, Tile *tile )
+{
+  return ( ( 0x0 == tile ) ? suggestion : ( ( true == suggestion ) && ( tile->level() < _maxLevel ) ) );
 }

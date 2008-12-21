@@ -21,6 +21,7 @@
 #endif
 
 #include "Minerva/Core/Layers/RasterLayerArcIMS.h"
+#include "Minerva/Core/Utilities/Download.h"
 
 #include "XmlTree/XercesLife.h"
 #include "XmlTree/Document.h"
@@ -47,6 +48,41 @@ using namespace Minerva::Core::Layers;
 
 USUL_FACTORY_REGISTER_CREATOR ( RasterLayerArcIMS );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Math::Vec3uc );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constants used in url when posting data to ArcIMS server.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail {
+namespace Contants {
+
+  const std::string SERVICE_NAME ( "ServiceName" );
+  const std::string CLIENT_VERSION ( "ClientVersion" );
+
+}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Node names used in ArcXML.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail {
+namespace Names {
+
+  const std::string REQUEST ( "REQUEST" );
+  const std::string GET_IMAGE ( "GET_IMAGE" );
+  const std::string PROPERTIES ( "PROPERTIES" );
+  const std::string ENVELOPE ( "ENVELOPE" );
+
+}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -137,7 +173,7 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
   std::string request ( this->_createRequestXml ( extents, width, height, level ) );
 
   // Make the url.
-  std::string url ( this->urlBase() );
+  std::string url ( this->urlFull ( extents, width, height, level ) );
 
   // File to download to.
 	std::string name ( Usul::File::Temp::file() );
@@ -173,10 +209,7 @@ void RasterLayerArcIMS::_download ( const std::string& file, const Extents& exte
     if ( false == imageUrl.empty() )
     {
       // Download to the given filename.
-      Usul::Network::Curl curl ( imageUrl, file );
-
-      std::ostream *stream ( 0x0 );
-      curl.download ( this->timeoutMilliSeconds(), stream, std::string() );
+      Minerva::Core::Utilities::downloadToFile ( imageUrl, file, this->timeoutMilliSeconds() );
     }
   }
 }
@@ -199,54 +232,53 @@ std::string RasterLayerArcIMS::_createRequestXml ( const Extents& extents, unsig
   arcXml->attributes().insert ( Attributes::value_type ( "version", "1.1" ) );
 
   // REQUEST node.
-  Node::RefPtr request ( arcXml->child ( "REQUEST", true ) );
+  Node::RefPtr request ( arcXml->child ( Detail::Names::REQUEST, true ) );
 
   // GET_IMAGE node.
-  Node::RefPtr getImage ( request->child ( "GET_IMAGE", true ) );
+  Node::RefPtr getImage ( request->child ( Detail::Names::GET_IMAGE, true ) );
 
   // PROPERTIES node.
-  Node::RefPtr properties ( getImage->child ( "PROPERTIES", true ) );
-
-  // Property nodes.
-  Node::RefPtr envelope ( properties->child ( "ENVELOPE", true ) );
-  Node::RefPtr imageSize ( properties->child ( "IMAGESIZE", true ) );
-  Node::RefPtr featureCoordSys ( properties->child ( "FEATURECOORDSYS", true ) );
-  Node::RefPtr filterCoordSys ( properties->child ( "FILTERCOORDSYS", true ) );
-  Node::RefPtr output ( properties->child ( "OUTPUT", true ) );
-  Node::RefPtr background ( properties->child ( "BACKGROUND", true ) );
+  Node::RefPtr properties ( getImage->child ( Detail::Names::PROPERTIES, true ) );
 
   // Add envelope.  Use Usul convert for full precision.
+  Node::RefPtr envelope ( properties->child ( Detail::Names::ENVELOPE, true ) );
   envelope->attributes().insert ( Attributes::value_type ( "minx", Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.minimum()[0] ) ) );
   envelope->attributes().insert ( Attributes::value_type ( "miny", Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.minimum()[1] ) ) );
   envelope->attributes().insert ( Attributes::value_type ( "maxx", Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.maximum()[0] ) ) );
   envelope->attributes().insert ( Attributes::value_type ( "maxy", Usul::Convert::Type<Extents::ValueType,std::string>::convert ( extents.maximum()[1] ) ) );
 
   // Add width and height.
+  Node::RefPtr imageSize ( properties->child ( "IMAGESIZE", true ) );
   imageSize->attributes().insert ( Attributes::value_type ( "width", Usul::Convert::Type<unsigned int,std::string>::convert ( width  ) ) );
   imageSize->attributes().insert ( Attributes::value_type ( "height", Usul::Convert::Type<unsigned int,std::string>::convert ( height ) ) );
 
   // Retrieve answer in WGS 84.
+  Node::RefPtr featureCoordSys ( properties->child ( "FEATURECOORDSYS", true ) );
+  Node::RefPtr filterCoordSys ( properties->child ( "FILTERCOORDSYS", true ) );
   featureCoordSys->attributes().insert ( Attributes::value_type ( "id", Usul::Convert::Type<unsigned int,std::string>::convert ( 4326 ) ) );
   filterCoordSys->attributes().insert ( Attributes::value_type ( "id", Usul::Convert::Type<unsigned int,std::string>::convert ( 4326 ) ) );
 
   // Add the format type.
+  Node::RefPtr output ( properties->child ( "OUTPUT", true ) );
   output->attributes().insert ( Attributes::value_type ( "type", Usul::Threads::Safe::get ( this->mutex(), _type ) ) );
 
   Usul::Math::Vec3d bgColor  ( Usul::Threads::Safe::get ( this->mutex(), _background  ) );
   Usul::Math::Vec3d transparent ( Usul::Threads::Safe::get ( this->mutex(), _transparent ) );
 
   // Add background color.
+  Node::RefPtr background ( properties->child ( "BACKGROUND", true ) );
   background->attributes().insert ( Attributes::value_type ( "color",      Usul::Strings::format ( bgColor[0], ",", bgColor[1], ",", bgColor[2] ) ) );
   background->attributes().insert ( Attributes::value_type ( "transcolor", Usul::Strings::format ( transparent[0], ",", transparent[1], ",", transparent[2] ) ) );
   
   // Add the layer list.
   const std::string layers ( this->options()[Usul::Network::Names::LAYERS] );
-  typedef std::vector<std::string> Strings;
-  Strings layerList;
-  Usul::Strings::split ( layers, ",", false, layerList );
-  
+
   if ( false == layers.empty() )
   {
+    typedef std::vector<std::string> Strings;
+    Strings layerList;
+    Usul::Strings::split ( layers, ",", false, layerList );
+
     Node::RefPtr layerListNode ( properties->child ( "LAYERLIST", true ) );
     for ( Strings::const_iterator iter = layerList.begin(); iter != layerList.end(); ++iter )
     {
@@ -306,7 +338,7 @@ namespace Detail
     typedef XmlTree::Node::Attributes  Attributes;
     typedef Usul::Convert::Type<std::string,double> ToDouble;
     
-    Children bbNode ( node.find ( "ENVELOPE", false ) );
+    Children bbNode ( node.find ( Detail::Names::ENVELOPE, false ) );
     if ( false == bbNode.empty() )
     {
       XmlTree::Node::ValidRefPtr bb ( bbNode.front() );
@@ -369,7 +401,7 @@ RasterLayerArcIMS::LayerInfos RasterLayerArcIMS::availableLayers ( const std::st
   {
     Attributes& attributes ( (*iter)->attributes() );
 
-    Children envelopeNode ( (*iter)->find ( "ENVELOPE", false ) );
+    Children envelopeNode ( (*iter)->find ( Detail::Names::ENVELOPE, false ) );
     
     const std::string name ( attributes["id"] );
     const std::string title ( attributes["name"] ); 
@@ -388,11 +420,82 @@ RasterLayerArcIMS::LayerInfos RasterLayerArcIMS::availableLayers ( const std::st
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get a list of available service names.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerArcIMS::ServiceNames RasterLayerArcIMS::availableServices ( const std::string& url )
+{
+  typedef XmlTree::Node::Children    Children;
+  typedef XmlTree::Node::Attributes  Attributes;
+  
+  // Xml to request available layers.
+  const std::string request ( "<?xml version=\"1.0\" encoding=\"UTF-8\"?><GETCLIENTSERVICES />" );
+  
+  // File to download to.
+	std::string name ( Usul::File::Temp::file() );
+	Usul::Scope::RemoveFile remove ( name );
+
+  // Get the timeout.
+  const unsigned int timeout ( Usul::Registry::Database::instance()["network_download"]["wms_get_capabilities"]["timeout_milliseconds"].get<unsigned int> ( 60000, true ) );
+  
+	// Download.
+	{
+    Usul::Network::Curl curl ( url, name );
+		curl.download( timeout, static_cast<std::ostream*> ( 0x0 ), request );
+	}
+  
+  // Open the xml document.
+	XmlTree::XercesLife life;
+  XmlTree::Document::RefPtr document ( new XmlTree::Document );
+  document->load ( name );
+
+  // Get all the services.
+  Children services ( document->find ( "SERVICE", true ) );
+
+  ServiceNames names;
+
+  for ( Children::const_iterator iter = services.begin(); iter != services.end(); ++iter )
+  {
+    XmlTree::Node::RefPtr node ( (*iter).get() );
+    names.push_back ( node->attribute ( "name" ) );
+  }
+
+  return names;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the full url.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 std::string RasterLayerArcIMS::urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const
 {
-  return this->urlBase();
+  // Get base url.
+  const std::string baseUrl ( this->urlBase() );
+
+  // Get all the options.
+  Options options ( this->options() );
+
+  // Get the service name.
+  const std::string serviceName ( options[Detail::Contants::SERVICE_NAME] );
+
+  // We need a service name.
+  if ( true == serviceName.empty() )
+    throw std::runtime_error ( "Error 3125621866: No service name provided." );
+
+  // Add service name to the base url.
+  std::string fullUrl ( Usul::Strings::format ( baseUrl, "?", Detail::Contants::SERVICE_NAME, "=", serviceName ) );
+
+  // Get the client version.
+  const std::string clientVersion ( options[Detail::Contants::CLIENT_VERSION] );
+
+  // Add the client version if we have one.
+  if ( false == clientVersion.empty() )
+    fullUrl = Usul::Strings::format ( fullUrl, "&", Detail::Contants::CLIENT_VERSION, "=", clientVersion );
+  
+  // Return our full url.
+  return fullUrl;
 }

@@ -39,6 +39,7 @@ public:
   typedef BaseClass::IReadImageFile IReadImageFile;
   typedef BaseClass::Options Options;
   typedef std::vector<LayerInfo> LayerInfos;
+  typedef std::vector<std::string> ServiceNames;
 
   USUL_DECLARE_REF_POINTERS ( RasterLayerArcIMS );
 
@@ -52,6 +53,9 @@ public:
   
   /// Get the layer information for the server.
   static LayerInfos     availableLayers ( const std::string& url );
+
+  /// Get a list of available service names.
+  static ServiceNames   availableServices ( const std::string& url );
   
   /// Get the full url.
   virtual std::string   urlFull ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;

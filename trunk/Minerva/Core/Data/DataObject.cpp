@@ -393,12 +393,13 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
   {
     Geometry::RefPtr geometry ( *iter );
     if ( true == geometry.valid() )
-    {
-      // Expand the extents by the geometry's extents.
-      extents.expand ( geometry->extents() );
-      
+    {    
       // Build the scene for the geometry.
       osg::ref_ptr<osg::Node> node ( geometry->buildScene ( caller ) );
+
+      // Expand the extents by the geometry's extents.
+      // This needs to be called after the scene is built because the extents may be updated in Geometry::buildScene.
+      extents.expand ( geometry->extents() );
       
       if ( node.valid() )
       {
@@ -465,7 +466,7 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
 osg::Node* DataObject::buildScene ( const Options& options, Usul::Interfaces::IUnknown* caller )
 {
   // Build the scene if we need to.
-  if ( this->dirty () )
+  if ( this->dirty() )
     this->preBuildScene( caller );
 
   Guard guard ( this );

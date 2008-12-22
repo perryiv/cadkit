@@ -67,6 +67,9 @@ public:
   // Get the smallest distance (squared) from the given point.
   double              getSmallestDistanceSquared ( const osg::Vec3d& point ) const;
 
+  // Intersect with line segment defined by two points.
+  bool                intersect ( const osg::Vec3d& point0, const osg::Vec3d& point1, osg::Vec3d& point );
+
   // Access to a single point.
   const_reference     point ( size_type row, size_type column ) const;
 
@@ -96,7 +99,7 @@ private:
   Mesh();
   Mesh ( const Mesh & );
   Mesh &operator = ( const Mesh & );
-  
+
   Vectors _points;
   Vectors _normals;
   TexCoords _texCoords;
@@ -107,6 +110,7 @@ private:
 
   osg::ref_ptr<osg::Group> _borders;
   osg::ref_ptr<osg::Node>  _skirts;
+  osg::ref_ptr<osg::Node>  _ground;
 
   osg::Vec3d _lowerLeft;
   osg::BoundingSphere _boundingSphere;

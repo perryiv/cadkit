@@ -26,6 +26,8 @@
 #include "osg/Hint"
 #include "osg/PolygonOffset"
 
+#include "osgUtil/LineSegmentIntersector"
+
 using namespace Minerva::Core::TileEngine;
 
 
@@ -67,6 +69,7 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const 
   _extents ( extents ),
   _borders ( new osg::Group ),
   _skirts ( new osg::Geode ),
+  _ground ( new osg::Geode ),
   _lowerLeft(),
   _boundingSphere()
 {
@@ -336,6 +339,7 @@ osg::Node* Mesh::buildMesh ( const Body& body,
   // Set needed variables.
   _lowerLeft = offset;
   _skirts = skirts.get();
+  _ground = ground.get();
   _boundingSphere = boundingSphere;
 
   // Return the MatrixTransform.
@@ -579,6 +583,7 @@ void Mesh::showBorder ( bool show )
   {
     OsgTools::Group::removeAllChildren ( _borders.get() );
   }
+
 }
 
 
@@ -591,4 +596,46 @@ void Mesh::showBorder ( bool show )
 void Mesh::showSkirts ( bool show )
 {
   _skirts->setNodeMask  ( show ? 0xffffffff : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Intersect with line segment defined by two points.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Mesh::intersect ( const osg::Vec3d& point0, const osg::Vec3d& point1, osg::Vec3d& point )
+{
+  // Points to intersect with.
+  osg::Vec3d pt0 ( point0 - _lowerLeft );
+  osg::Vec3d pt1 ( point1 - _lowerLeft );
+  
+  // Make the intersector.
+  typedef osgUtil::LineSegmentIntersector Intersector;
+  osg::ref_ptr<Intersector> intersector ( new Intersector ( pt0, pt1 ) );
+  
+  // Declare the pick-visitor.
+  typedef osgUtil::IntersectionVisitor Visitor;
+  osg::ref_ptr<Visitor> visitor ( new Visitor );
+  visitor->setIntersector ( intersector.get() );
+
+  // Return zero if no node.
+  if ( false == _ground.valid() )
+    return false;
+
+  // Intersect the scene.
+  _ground->accept ( *visitor );
+
+  // Get the hit-list for our line-segment.
+  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
+  const Intersections &hits = intersector->getIntersections();
+  if ( hits.empty() )
+    return false;
+  
+  // Set the hit.
+  point = intersector->getFirstIntersection().getWorldIntersectPoint();
+  point += _lowerLeft;
+
+  return true;
 }

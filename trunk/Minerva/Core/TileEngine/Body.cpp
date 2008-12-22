@@ -1038,6 +1038,10 @@ namespace Detail
     {
       if ( tile->isLeaf() )
       {
+#if 1
+        elevation = tile->elevation ( p[1], p[0] );
+        return true;
+#else
         // Use tile's elevation data.
         osg::ref_ptr<osg::Image> elevationData ( tile->elevation() );
 
@@ -1061,7 +1065,9 @@ namespace Detail
           elevation = *reinterpret_cast<float*> ( elevationData->data ( i, j ) );
 
           return true;
+
         }
+#endif
       }
       else
       {

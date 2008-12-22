@@ -153,8 +153,11 @@ public:
   bool                      texCoordsDirty() const;
   bool                      textureDirty() const;
 
+  // Get the elevation at lat, lon.
+  double                    elevation ( double lat, double lon );
+
   // Get the elevation data.
-  ImagePtr                  elevation();
+  ImagePtr                  elevation() const;
 
   // Get the extents.
   Extents                   extents() const;

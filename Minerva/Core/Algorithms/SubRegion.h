@@ -12,6 +12,8 @@
 
 #include "osg/Image"
 
+#include <cstring>
+
 namespace Minerva {
 namespace Core {
 namespace Algorithms {

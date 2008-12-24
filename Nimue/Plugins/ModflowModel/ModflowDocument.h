@@ -49,6 +49,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 namespace osg { class Node; class Group; class MatrixTransform; }
 namespace Usul { namespace Factory { class ObjectFactory; } }

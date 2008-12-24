@@ -15,7 +15,7 @@
 
 #include <fstream>
 #include <algorithm>
-
+#include <cstring>
 
 #ifdef USUL_BIG_ENDIAN
   const Usul::Types::Uint32 PARADIS = 0x50524453;

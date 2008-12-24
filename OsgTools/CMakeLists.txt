@@ -63,16 +63,7 @@ SET ( Headers
 	./Group.h
 	./HasOption.h
 	./Images/DownSample.h
-	./Images/EdgeDetect.h
-	./Images/Grayscale.h
-	./Images/Histogram.h
 	./Images/Image3d.h
-	./Images/ImageOr.h
-	./Images/Invert.h
-	./Images/Matrix.h
-	./Images/Morphology.h
-	./Images/Scale.h
-	./Images/Threshold.h
 	./Index.h
 	./Intersect/Frustum.h
 	./Intersect/FrustumFunctor.h
@@ -82,7 +73,6 @@ SET ( Headers
 	./IO/STLPrintVisitor.h
 	./IO/STLWrite.h
 	./IO/STLWriter.h
-	./IO/WriteEPS.h
 	./Jitter.h
 	./KeepFirst.h
 	./Lod.h
@@ -196,20 +186,11 @@ SET (SOURCES
   Grid.cpp
   Group.cpp
   Images/DownSample.cpp
-  Images/EdgeDetect.cpp
-  Images/Grayscale.cpp
-  Images/Histogram.cpp
   Images/Image3d.cpp
-  Images/ImageOr.cpp
-  Images/Invert.cpp
-  Images/Morphology.cpp
-  Images/Scale.cpp
-  Images/Threshold.cpp
   Intersect/FrustumVisitor.cpp
   IO/GLFeedback.cpp
   IO/Reader.cpp
   IO/STLWriter.cpp
-  IO/WriteEPS.cpp
   Jitter.cpp
   Lod.cpp
   MaterialFactory.cpp

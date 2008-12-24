@@ -23,6 +23,7 @@
 # include <windows.h> // For GetComputerName()
 #else
 #include <unistd.h>
+#include <cstring>
 #endif
 #include <algorithm>
 #include <stdexcept>

@@ -19,6 +19,7 @@
 #include "Usul/Strings/Format.h"
 
 #include <ctime>
+#include <cstring>
 #include <map>
 
 

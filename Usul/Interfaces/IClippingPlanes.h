@@ -12,7 +12,9 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class Plane; class BoundingBox; }
+#include "osg/BoundingBox"
+
+namespace osg { class Plane; }
 
 namespace Usul {
 namespace Interfaces {

@@ -18,8 +18,9 @@
 #include "Usul/Pointers/Pointers.h"
 
 #include "osg/Array"
+#include "osg/BoundingBox"
 
-namespace osg { class Group; class Node; class Drawable; class BoundingBox; }
+namespace osg { class Group; class Node; class Drawable; }
 
 namespace OsgTools {
   

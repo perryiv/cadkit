@@ -26,6 +26,7 @@
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
+#include <cstring>
 
 #ifdef _MSC_VER // Visual C++
 # define NOMINMAX

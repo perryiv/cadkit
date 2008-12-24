@@ -22,7 +22,7 @@
 #include "Usul/Math/Vector2.h"
 
 #include <vector>
-
+#include <string>
 
 namespace OsgTools {
 

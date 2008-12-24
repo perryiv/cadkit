@@ -15,6 +15,8 @@
 
 #include "osg/DeleteHandler"
 
+#include <string>
+
 namespace OsgTools {
   namespace Utilities {
 

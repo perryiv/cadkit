@@ -18,6 +18,7 @@
 #include "Usul/Exceptions/Thrower.h"
 
 #include <stdexcept>
+#include <cstdlib>
 
 using namespace Usul;
 using namespace Usul::ID;

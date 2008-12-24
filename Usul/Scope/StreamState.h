@@ -18,7 +18,7 @@
 
 #include <iomanip>
 #include <limits>
-
+#include <ostream>
 
 namespace Usul {
 namespace Scope {

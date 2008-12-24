@@ -15,6 +15,7 @@
 #ifndef _MSC_VER 
 #include <errno.h>
 #include <sys/types.h>
+#include <cstring>
 #endif
 
 #if defined ( _MSC_VER ) && _MSC_VER >= 1400

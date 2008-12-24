@@ -25,6 +25,8 @@
 #include "QtGui/QDockWidget"
 #include "QtGui/QMainWindow"
 
+#include <memory>
+
 USUL_DECLARE_COMPONENT_FACTORY ( LayerManagerComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( LayerManagerComponent, LayerManagerComponent::BaseClass );
 

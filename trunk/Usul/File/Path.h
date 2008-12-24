@@ -81,21 +81,38 @@ inline std::string fullPath ( const std::string &file )
 {
   typedef std::string::value_type Char;
 
-  const size_t size ( 1024 );
+#ifdef _MSC_VER
+
+  const size_t size ( _MAX_PATH );
+
+#else
+
+  const size_t size ( PATH_MAX );
+
+#endif
+
   Char buffer[size];
   ::memset ( buffer, '\0', size - 1 );
 
+  char* result ( 0x0 );
+
 #ifdef _MSC_VER
 
-  ::_fullpath ( buffer, file.c_str(), size - 1 );
+  // http://msdn.microsoft.com/en-us/library/506720ff(VS.80).aspx
+  result = ::_fullpath ( buffer, file.c_str(), size - 1 );
 
 #else
 
   // http://linux.about.com/library/cmd/blcmdl3_realpath.htm
-  ::realpath ( file.c_str(), buffer );
+  result = ::realpath ( file.c_str(), buffer );
 
 #endif
 
+  // Return an empty string if we didn't get a result.  Should we throw an exception?
+  if ( 0x0 == result )
+    return std::string ( "" );
+
+  // Return the answer.
   return std::string ( buffer );
 }
 

@@ -19,6 +19,7 @@
 #include "osg/Image"
 
 #include <set>
+#include <cstring>
 
 using namespace Minerva::Core::Layers;
 

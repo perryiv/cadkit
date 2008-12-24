@@ -25,6 +25,7 @@
 #include "boost/gil/extension/numeric/resample.hpp"
 #endif
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Return elevation data for the request extents.

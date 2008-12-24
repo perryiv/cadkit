@@ -24,7 +24,10 @@
 
 #include "boost/algorithm/string/erase.hpp"
 #include "boost/algorithm/string/trim.hpp"
-#include "boost/date_time/local_time/local_time.hpp"
+#include "boost/date_time/local_time/local_date_time.hpp"
+#include "boost/date_time/local_time/local_time_types.hpp"
+#include "boost/date_time/local_time/posix_time_zone.hpp"
+#include "boost/date_time/time_zone_base.hpp"
 
 #include <vector>
 #include <sstream>

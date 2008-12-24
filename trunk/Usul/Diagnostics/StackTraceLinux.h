@@ -18,7 +18,7 @@
 
 #include <execinfo.h>
 #include <unistd.h>
-
+#include <cstdlib>
 
 namespace Usul {
 namespace Diagnostics {

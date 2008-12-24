@@ -207,7 +207,7 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
 
   // Sometimes the '?' character is needed in the url to make the GetCapabilities 
   // query. It should not become part of the url; it's an option.
-  std::string::const_iterator i ( std::find ( server.begin(), server.end(), '?' ) );
+  std::string::iterator i ( std::find ( server.begin(), server.end(), '?' ) );
   if ( server.end() != i )
   {
     // Split the sub-string to the right of the '?'

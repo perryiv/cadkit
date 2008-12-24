@@ -17,6 +17,7 @@
 # include <windows.h>
 #else
 #include "uuid/uuid.h"
+#include <cstring>
 #endif
 
 

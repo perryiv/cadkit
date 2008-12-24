@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <iostream>
+#include <cstring>
 
 #ifndef _MSC_VER
 #include <limits.h>

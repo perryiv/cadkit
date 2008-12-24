@@ -22,6 +22,8 @@
 #endif
 
 #include <stdexcept>
+#include <cstring>
+#include <cstdlib>
 
 using namespace Usul::System;
 

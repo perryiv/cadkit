@@ -18,7 +18,7 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-namespace osg { class BoundingBox; }
+#include "osg/BoundingBox"
 
 namespace Usul {
 namespace Interfaces {

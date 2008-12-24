@@ -36,6 +36,7 @@
 #include <fstream>
 #include <limits>
 #include <vector>
+#include <cstring>
 
 #define CURL_OUTPUT if ( 0x0 != _output ) (*_output)
 const unsigned int CURL_ERROR_BUFFER_SIZE ( 2 * CURL_ERROR_SIZE );

@@ -28,6 +28,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <algorithm>
+#include <cstring>
+#include <cstdlib>
 
 
 ///////////////////////////////////////////////////////////////////////////////

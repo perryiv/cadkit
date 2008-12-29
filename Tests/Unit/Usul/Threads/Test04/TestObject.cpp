@@ -1,0 +1,187 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2008, Perry L Miller IV
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Test object.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "TestObject.h"
+
+#include "Usul/Preprocess/UniqueName.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/System/Sleep.h"
+
+#include <iostream>
+
+USUL_IMPLEMENT_TYPE_ID ( TestObject );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TestObject::TestObject() : BaseClass(),
+  _data ( 1 )
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+TestObject::~TestObject()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int TestObject::getData() const
+{
+  ReadLock lock ( this );
+  return this->_getData();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TestObject::setData ( unsigned int data )
+{
+  WriteLock lock ( this );
+  this->_setData ( data );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int TestObject::_getData() const
+{
+  ReadLock lock ( this );
+  return _data;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TestObject::_setData ( unsigned int data )
+{
+  WriteLock lock ( this );
+
+  _data = data;
+
+  // Handle overflow.
+  if ( 0 == _data )
+  {
+    _data = 1;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Exercise the locks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TestObject::exercise()
+{
+  this->_test1();
+  this->_test2();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Test the locks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TestObject::_test1()
+{
+  WriteLock USUL_UNIQUE_NAME ( this );
+  WriteLock USUL_UNIQUE_NAME ( this );
+  ReadLock  USUL_UNIQUE_NAME ( this );
+
+  {
+    ReadLock  USUL_UNIQUE_NAME ( this );
+    WriteLock USUL_UNIQUE_NAME ( this );
+    WriteLock USUL_UNIQUE_NAME ( this );
+    ReadLock  USUL_UNIQUE_NAME ( this );
+
+    {
+      ReadLock  USUL_UNIQUE_NAME ( this );
+      WriteLock USUL_UNIQUE_NAME ( this );
+      ReadLock  USUL_UNIQUE_NAME ( this );
+      WriteLock USUL_UNIQUE_NAME ( this );
+
+      {
+        WriteLock USUL_UNIQUE_NAME ( this );
+        ReadLock  USUL_UNIQUE_NAME ( this );
+        ReadLock  USUL_UNIQUE_NAME ( this );
+        WriteLock USUL_UNIQUE_NAME ( this );
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Test the locks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TestObject::_test2()
+{
+  ReadLock USUL_UNIQUE_NAME ( this );
+  ReadLock USUL_UNIQUE_NAME ( this );
+  ReadLock USUL_UNIQUE_NAME ( this );
+  ReadLock USUL_UNIQUE_NAME ( this );
+
+  {
+    WriteLock USUL_UNIQUE_NAME ( this );
+    Usul::System::Sleep::milliseconds ( 100 );
+    WriteLock USUL_UNIQUE_NAME ( this );
+  }
+
+  {
+    ReadLock  USUL_UNIQUE_NAME ( this );
+    WriteLock USUL_UNIQUE_NAME ( this );
+    ReadLock  USUL_UNIQUE_NAME ( this );
+    WriteLock USUL_UNIQUE_NAME ( this );
+  }
+
+  ReadLock USUL_UNIQUE_NAME ( this );
+  ReadLock USUL_UNIQUE_NAME ( this );
+  ReadLock USUL_UNIQUE_NAME ( this );
+  ReadLock USUL_UNIQUE_NAME ( this );
+}

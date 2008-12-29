@@ -32,15 +32,17 @@ public:
   ~RecursiveMutex();
 
   // Lock/unlock the mutex.
-  void            lock();
-  void            unlock();
+  void                    lock();
+  void                    unlock();
+
+  // How many locks are there?
+  unsigned long           numLocks() const;
 
 private:
 
   RecursiveMutex ( const RecursiveMutex & );             // No copying
   RecursiveMutex &operator = ( const RecursiveMutex & ); // No assignment
 
-  unsigned long           _getReferenceCount() const;
   unsigned long           _getOwnerThread() const;
 
   void                    _destroy();

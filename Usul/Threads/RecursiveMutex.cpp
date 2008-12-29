@@ -161,11 +161,11 @@ void RecursiveMutex::unlock()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the reference count.
+//  Is it locked?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-unsigned long RecursiveMutex::_getReferenceCount() const
+unsigned long RecursiveMutex::numLocks() const
 {
   USUL_TRACE_SCOPE;
   MutexGuard guard ( *_local );

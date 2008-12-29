@@ -123,7 +123,6 @@ void Renderer::_destroy()
 void Renderer::_render()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
 
   // Handle no context.
   IContext::RefPtr context ( this->_getContext() );
@@ -139,11 +138,16 @@ void Renderer::_render()
   if ( false == viewer.valid() )
     return;
 
-  // Make this context current.
-  context->makeCurrent();
+  // Need local scope.
+  {
+    WriteLock lock ( this->mutex() );
 
-  // Render a single frame.
-  viewer->frame();
+    // Make this context current.
+    context->makeCurrent();
+
+    // Render a single frame.
+    viewer->frame();
+  }
 }
 
 
@@ -192,7 +196,7 @@ void Renderer::resize ( unsigned int w, unsigned int h )
 const Renderer::GraphicsWindowPtr Renderer::_getWindow() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _window;
 }
 
@@ -206,7 +210,7 @@ const Renderer::GraphicsWindowPtr Renderer::_getWindow() const
 Renderer::GraphicsWindowPtr Renderer::_getWindow()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _window;
 }
 
@@ -220,7 +224,7 @@ Renderer::GraphicsWindowPtr Renderer::_getWindow()
 const Renderer::ViewerPtr Renderer::_getViewer() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _viewer;
 }
 
@@ -234,7 +238,7 @@ const Renderer::ViewerPtr Renderer::_getViewer() const
 Renderer::ViewerPtr Renderer::_getViewer()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _viewer;
 }
 
@@ -248,7 +252,7 @@ Renderer::ViewerPtr Renderer::_getViewer()
 const Renderer::CameraPtr Renderer::_getCamera() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return ( ( true == _viewer.valid() ) ? _viewer->getCamera() : 0x0 );
 }
 
@@ -262,7 +266,7 @@ const Renderer::CameraPtr Renderer::_getCamera() const
 Renderer::CameraPtr Renderer::_getCamera()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return ( ( true == _viewer.valid() ) ? _viewer->getCamera() : 0x0 );
 }
 
@@ -276,7 +280,7 @@ Renderer::CameraPtr Renderer::_getCamera()
 const Renderer::IContext::RefPtr Renderer::_getContext() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _context;
 }
 
@@ -290,7 +294,7 @@ const Renderer::IContext::RefPtr Renderer::_getContext() const
 Renderer::IContext::RefPtr Renderer::_getContext()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _context;
 }
 

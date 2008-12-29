@@ -119,7 +119,6 @@ void Mutex::unlock()
 #ifdef __GNUC__
   ::pthread_mutex_unlock ( &_mutex );
 #endif
-
 }
 
 

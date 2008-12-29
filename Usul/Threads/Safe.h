@@ -16,7 +16,7 @@
 #ifndef _USUL_THREADS_THREAD_SAFE_OPERATIONS_H_
 #define _USUL_THREADS_THREAD_SAFE_OPERATIONS_H_
 
-#include "Usul/Threads/Guard.h"
+#include "Usul/Threads/MutexTraits.h"
 
 
 namespace Usul {
@@ -32,8 +32,8 @@ namespace Safe {
 
 template < class MutexType, class T > T get ( MutexType &mutex, const T &t )
 {
-  typedef Usul::Threads::Guard<MutexType> Guard;
-  Guard guard ( mutex );
+  typedef typename Usul::Threads::MutexTraits<MutexType>::ReadLock Lock;
+  Lock lock ( mutex );
   return t;
 }
 
@@ -46,39 +46,9 @@ template < class MutexType, class T > T get ( MutexType &mutex, const T &t )
 
 template < class MutexType, class T1, class T2 > void set ( MutexType &mutex, const T1 &from, T2 &to )
 {
-  typedef Usul::Threads::Guard<MutexType> Guard;
-  Guard guard ( mutex );
+  typedef typename Usul::Threads::MutexTraits<MutexType>::WriteLock Lock;
+  Lock lock ( mutex );
   to = from;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convenience function to block while executing the function.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class MutexType, class FunctionType > void execute ( MutexType &mutex, FunctionType f )
-{
-  typedef Usul::Threads::Guard<MutexType> Guard;
-  Guard guard ( mutex );
-  f();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Convenience macro to block while executing the expression.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#define USUL_THREADS_SAFE_EXECUTE(mutex_type,the_mutex,expression) \
-{ \
-  typedef Usul::Threads::Guard<mutex_type> the_guard_type; \
-  the_guard_type the_guard ( the_mutex ); \
-  { \
-    expression; \
-  } \
 }
 
 

@@ -116,6 +116,7 @@ SET ( HEADERS
 ./Algorithms/Sphere.h
 ./Algorithms/TriStrip.h
 ./App/Application.h
+./Base/BaseObject.h
 ./Base/InstanceManager.h
 ./Base/Object.h
 ./Base/Observed.h
@@ -568,9 +569,12 @@ SET ( HEADERS
 ./Threads/Manager.h
 ./Threads/Map.h
 ./Threads/Mutex.h
+./Threads/MutexTraits.h
 ./Threads/Named.h
 ./Threads/Pool.h
 ./Threads/Queue.h
+./Threads/ReadWriteLocks.h
+./Threads/ReadWriteMutex.h
 ./Threads/RecursiveMutex.h
 ./Threads/Safe.h
 ./Threads/Set.h
@@ -599,6 +603,7 @@ SET ( HEADERS
 SET (SOURCES
 ./Threads/Named.cpp
 ./Threads/Callback.cpp
+./Threads/ReadWriteMutex.cpp
 ./Threads/RecursiveMutex.cpp
 ./Threads/Task.cpp
 ./Threads/Pool.cpp
@@ -679,6 +684,7 @@ SET (SOURCES
 ./Functors/Interaction/Input/WandPitch.cpp
 ./Functors/Interaction/Input/WandAngle.cpp
 ./Diagnostics/StackTrace.cpp
+./Base/BaseObject.cpp
 ./Base/InstanceManager.cpp
 ./Base/Referenced.cpp
 ./Base/Observed.cpp

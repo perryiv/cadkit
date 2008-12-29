@@ -103,7 +103,7 @@ Pool::~Pool()
 void Pool::_destroy()
 {
   USUL_TRACE_SCOPE;
-  // Do not lock mutex! Threads waiting for this mutex will never finish.
+  // Do not lock mutex up here! Threads waiting for this mutex will never finish.
 
   // Turn off the switch.
   Usul::Threads::Safe::set ( this->mutex(), false, _runThreads );
@@ -119,7 +119,10 @@ void Pool::_destroy()
   USUL_ASSERT ( true == _executing.empty() );
 
   // Remove the threads from the pool.
-  Usul::Threads::Safe::execute ( this->mutex(), Usul::Adaptors::memberFunction ( &_pool, &Pool::ThreadPool::clear ) );
+  {
+    Guard guard ( this ); // Needed?
+    _pool.clear();
+  }
 }
 
 
@@ -402,7 +405,7 @@ void Pool::_threadProcessTasks ( Usul::Threads::Task *task, Usul::Threads::Threa
   catch ( const std::exception &e )
   {
     // Feedback.
-    std::cout << Usul::Strings::format ( "Error 3878127704: standard exception caught while running thread ", thread->id(), ", ", e.what() ) << std::endl;
+    std::cout << Usul::Strings::format ( "Error 3878127704: standard exception caught while running thread ", thread->id(), ", ", e.what(), '\n' ) << std::flush;
 
     // Call the error callback.
     if ( true == error.valid() )

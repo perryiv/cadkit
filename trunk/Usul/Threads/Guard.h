@@ -21,18 +21,20 @@ namespace Usul {
 namespace Threads {
 
 
-template < class MutexType > class Guard
+template < class MutexType_ > class Guard
 {
 public:
 
+  typedef MutexType_ MutexType;
+
   // Constructor. Locks the mutex.
-  Guard ( MutexType &m ) : _mutex ( m )
+  Guard ( MutexType &m ) : _mutex ( m ), _isLocked ( true )
   {
     _mutex.lock();
   }
 
   // Constructor. Locks the mutex.
-  template < class ObjectType > Guard ( ObjectType *object ) : _mutex ( object->mutex() )
+  template < class ObjectType > Guard ( ObjectType *object ) : _mutex ( object->mutex() ), _isLocked ( true )
   {
     _mutex.lock();
   }
@@ -40,12 +42,29 @@ public:
   // Destructor. Unlocks the mutex.
   ~Guard()
   {
-    _mutex.unlock();
+    this->unlock();
+  }
+
+  // Call to explicitely unlock the mutex.
+  void Guard::unlock()
+  {
+    if ( _isLocked )
+    {
+      _isLocked = false;
+      _mutex.unlock();
+    }
+  }
+
+  // Prevent the automatic unlocking of the mutex.
+  void Guard::release()
+  {
+    _isLocked = false;
   }
 
 protected:
 
   MutexType &_mutex;
+  bool _isLocked;
 };
 
 

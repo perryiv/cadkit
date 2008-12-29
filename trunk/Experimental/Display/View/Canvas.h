@@ -33,15 +33,13 @@ namespace Display {
 namespace View {
 
 
-class DISPLAY_LIBRARY_EXPORT Canvas : public Usul::Base::Object,
+class DISPLAY_LIBRARY_EXPORT Canvas : public Usul::Base::BaseObject,
                                       public Usul::Interfaces::IView
 {
 public:
 
   // Typedefs.
-  typedef Usul::Base::Object BaseClass;
-  typedef BaseClass::Mutex Mutex;
-  typedef BaseClass::Guard Guard;
+  typedef Usul::Base::BaseObject BaseClass;
   typedef osg::ref_ptr<osg::Group> GroupPtr;
   typedef osg::ref_ptr<osg::Node> NodePtr;
   typedef Display::Render::Renderer::RefPtr RendererPtr;

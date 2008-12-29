@@ -84,7 +84,7 @@ void Canvas::_destroy()
 void Canvas::clear()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  WriteLock lock ( this->mutex() );
 
   // Call popRenderer() because it sets the renderer's scene to null.
   while ( false == _renderers.empty() )
@@ -127,7 +127,7 @@ Usul::Interfaces::IUnknown * Canvas::queryInterface ( unsigned long iid )
 unsigned int Canvas::flags() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _flags;
 }
 
@@ -154,10 +154,10 @@ bool Canvas::isRendering() const
 void Canvas::modelAdd ( NodePtr model )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
 
   if ( true == model.valid() )
   {
+    WriteLock lock ( this->mutex() );
     _models->addChild ( model.get() );
   }
 }
@@ -172,10 +172,10 @@ void Canvas::modelAdd ( NodePtr model )
 void Canvas::pushRenderer ( RendererPtr r )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
 
   if ( true == r.valid() )
   {
+    WriteLock lock ( this );
     _renderers.push ( r );
     r->scene ( _scene );
   }
@@ -191,7 +191,7 @@ void Canvas::pushRenderer ( RendererPtr r )
 void Canvas::popRenderer()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  WriteLock lock ( this );
 
   if ( true == _renderers.empty() )
     return;
@@ -213,7 +213,7 @@ void Canvas::popRenderer()
 const Canvas::RendererPtr Canvas::renderer() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
 }
 
@@ -227,7 +227,7 @@ const Canvas::RendererPtr Canvas::renderer() const
 Canvas::RendererPtr Canvas::renderer()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
 }
 
@@ -241,7 +241,10 @@ Canvas::RendererPtr Canvas::renderer()
 void Canvas::render()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+
+  // Don't re-enter.
+  if ( true == this->isRendering() )
+    return;
 
   // Always set and reset this state.
   Usul::Scope::Caller::RefPtr resetFlag ( Usul::Scope::makeCaller ( 
@@ -267,7 +270,7 @@ void Canvas::render()
 void Canvas::_setFlag ( unsigned int bit, bool state )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  WriteLock lock ( this->mutex() );
   _flags = Usul::Bits::set ( _flags, bit, state );
 }
 
@@ -281,7 +284,7 @@ void Canvas::_setFlag ( unsigned int bit, bool state )
 void Canvas::document ( Usul::Interfaces::IUnknown::RefPtr unknown )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  WriteLock lock ( this->mutex() );
   _document = unknown;
 }
 
@@ -295,7 +298,7 @@ void Canvas::document ( Usul::Interfaces::IUnknown::RefPtr unknown )
 Usul::Interfaces::IDocument *Canvas::document()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _document.get();
 }
 
@@ -309,7 +312,7 @@ Usul::Interfaces::IDocument *Canvas::document()
 const Usul::Interfaces::IDocument *Canvas::document() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _document.get();
 }
 

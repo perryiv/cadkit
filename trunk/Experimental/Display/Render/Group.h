@@ -32,8 +32,6 @@ public:
 
   // Typedefs.
   typedef Display::Render::Renderer BaseClass;
-  typedef BaseClass::Mutex Mutex;
-  typedef BaseClass::Guard Guard;
   typedef std::vector<BaseClass::RefPtr> Renderers;
 
   // Type information.

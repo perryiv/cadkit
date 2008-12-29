@@ -143,7 +143,7 @@ void Renderer::resize ( unsigned int, unsigned int )
 const Renderer::NodePtr Renderer::_getScene() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _scene;
 }
 
@@ -157,7 +157,7 @@ const Renderer::NodePtr Renderer::_getScene() const
 Renderer::NodePtr Renderer::_getScene()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
+  ReadLock lock ( this->mutex() );
   return _scene;
 }
 
@@ -171,5 +171,6 @@ Renderer::NodePtr Renderer::_getScene()
 void Renderer::scene ( NodePtr node )
 {
   USUL_TRACE_SCOPE;
+  WriteLock lock ( this->mutex() );
   _scene = node;
 }

@@ -84,7 +84,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/QtShowtimeDelegate.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib;$(BOOST_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug\QtShowtimeDelegated.pdb"
@@ -182,7 +182,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/QtShowtimeDelegate.plug"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(QTDIR)\lib;$(BOOST_LIB_DIR)"
 				ModuleDefinitionFile="Export.def"
 				ProgramDatabaseFile=".\Release\QtShowtimeDelegate.pdb"
 				RandomizedBaseAddress="1"
@@ -237,41 +237,41 @@
 					RelativePath=".\Viewer.cpp"
 					>
 				</File>
-			<File
-				RelativePath=".\Viewer.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
+				<File
+					RelativePath=".\Viewer.h"
 					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing Viewer.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe  -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;.&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;.\Viewer.h&quot; -o &quot;.\GeneratedFiles\moc_Viewer.cpp&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Viewer.h"
-						Outputs="&quot;.\GeneratedFiles\moc_Viewer.cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing Viewer.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe  -D_USUL_TRACE -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;$(CADKIT_INC_DIR)&quot; -I&quot;$(QTDIR)\include&quot; &quot;.\Viewer.h&quot; -o &quot;.\GeneratedFiles\moc_Viewer.cpp&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Viewer.h"
-						Outputs="&quot;.\GeneratedFiles\moc_Viewer.cpp&quot;"
-					/>
-				</FileConfiguration>
-			</File>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing Viewer.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  -D_USUL_TRACE -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;$(CADKIT_INC_DIR)&quot; -I&quot;$(QTDIR)\include&quot; &quot;.\Viewer.h&quot; -o &quot;.\GeneratedFiles\moc_Viewer.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Viewer.h"
+							Outputs="&quot;.\GeneratedFiles\moc_Viewer.cpp&quot;"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Moc&apos;ing Viewer.h..."
+							CommandLine="$(QTDIR)\bin\moc.exe  -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;.&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;.\Viewer.h&quot; -o &quot;.\GeneratedFiles\moc_Viewer.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\Viewer.h"
+							Outputs="&quot;.\GeneratedFiles\moc_Viewer.cpp&quot;"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
-		<Filter
-			Name="Generated Files"
-			>
-			<File
-				RelativePath=".\GeneratedFiles\moc_Viewer.cpp"
+			<Filter
+				Name="Generated Files"
 				>
-			</File>
-		</Filter>
+				<File
+					RelativePath=".\GeneratedFiles\moc_Viewer.cpp"
+					>
+				</File>
+			</Filter>
 			<Filter
 				Name="DLL"
 				>

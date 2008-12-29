@@ -19,7 +19,7 @@
 
 #include "Display/Export/Export.h"
 
-#include "Usul/Base/Object.h"
+#include "Usul/Base/BaseObject.h"
 
 #include "osg/Node"
 #include "osg/ref_ptr"
@@ -29,14 +29,12 @@ namespace Display {
 namespace Render {
 
 
-class DISPLAY_LIBRARY_EXPORT Renderer : public Usul::Base::Object
+class DISPLAY_LIBRARY_EXPORT Renderer : public Usul::Base::BaseObject
 {
 public:
 
   // Typedefs.
-  typedef Usul::Base::Object BaseClass;
-  typedef BaseClass::Mutex Mutex;
-  typedef BaseClass::Guard Guard;
+  typedef Usul::Base::BaseObject BaseClass;
   typedef osg::ref_ptr<osg::Node> NodePtr;
 
   // Type information.

@@ -46,7 +46,7 @@ public:
   }
 
   // Call to explicitely unlock the mutex.
-  void Guard::unlock()
+  void unlock()
   {
     if ( _isLocked )
     {
@@ -56,7 +56,7 @@ public:
   }
 
   // Prevent the automatic unlocking of the mutex.
-  void Guard::release()
+  void release()
   {
     _isLocked = false;
   }

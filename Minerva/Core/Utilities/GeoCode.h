@@ -37,6 +37,14 @@ public:
   {
     Usul::Math::Vec2d location;
     bool success;
+    std::string address;
+    std::string city;
+    std::string state;
+    std::string zip;
+    std::string country;
+    Result() : location ( 0, 0 ), success ( false ), address(), city(), state(), zip(), country()
+    {
+    }
   };
   
   /// Set/get the Yahoo! application id.

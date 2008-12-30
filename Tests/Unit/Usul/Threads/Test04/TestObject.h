@@ -39,12 +39,6 @@ protected:
 
   virtual ~TestObject();
 
-  void              _test1();
-  void              _test2();
-
-  unsigned int      _getData() const;
-  void              _setData ( unsigned int );
-
 private:
 
   unsigned int _data;

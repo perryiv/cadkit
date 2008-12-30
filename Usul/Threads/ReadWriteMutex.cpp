@@ -42,7 +42,7 @@ struct USUL_EXPORT ReadWriteMutexImpl
   typedef Usul::Threads::Guard<Usul::Threads::Mutex> Guard;
   typedef std::set<unsigned long> Threads;
 
-  ReadWriteMutexImpl();
+  ReadWriteMutexImpl ( unsigned long writeLockWaitSleep );
   ~ReadWriteMutexImpl();
 
   // Lock/unlock for reading.
@@ -73,6 +73,7 @@ private:
   unsigned long _writeLockThread;
   Usul::Threads::Mutex *_local;
   Threads _threads;
+  unsigned long _sleep;
 }; } } }
 
 
@@ -82,8 +83,8 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReadWriteMutex::ReadWriteMutex() :
-  _mutex ( new Usul::Threads::Detail::ReadWriteMutexImpl )
+ReadWriteMutex::ReadWriteMutex ( unsigned long writeLockWaitSleep ) :
+  _mutex ( new Usul::Threads::Detail::ReadWriteMutexImpl ( writeLockWaitSleep ) )
 {
 }
 
@@ -154,11 +155,12 @@ void ReadWriteMutex::writeUnlock()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ReadWriteMutexImpl::ReadWriteMutexImpl() :
+ReadWriteMutexImpl::ReadWriteMutexImpl ( unsigned long writeLockWaitSleep ) :
   _writeMutex ( new Usul::Threads::Mutex ),
   _writeLockThread ( 0 ),
   _local ( new Usul::Threads::Mutex ),
-  _threads()
+  _threads(),
+  _sleep ( writeLockWaitSleep )
 {
 }
 
@@ -418,7 +420,7 @@ void ReadWriteMutexImpl::writeLock()
     std::cout << Usul::Strings::format ( "Thread ", thread, " waiting for read-locks held by threads: ", this->_threadsToString(), '\n' ) << std::flush;
     #endif
 
-    Usul::System::Sleep::milliseconds ( 100 );
+    Usul::System::Sleep::milliseconds ( _sleep );
   }
 
   // Add this thread to the set.

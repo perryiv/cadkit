@@ -13,12 +13,14 @@
 #include "Minerva/Interfaces/ILookAtLayer.h"
 
 #include "Usul/Documents/Manager.h"
+#include "Usul/Strings/Format.h"
 
 #include "QtGui/QLineEdit"
 #include "QtGui/QPushButton"
 #include "QtGui/QVBoxLayout"
 
 #include <iostream>
+#include <sstream>
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -64,23 +66,26 @@ void FlyTo::_onFlyToClicked()
   const std::string location ( _lineEdit->text().toStdString() );
   Minerva::Interfaces::ILookAtLayer::QueryPtr lookAt ( Usul::Documents::Manager::instance().activeDocument() );
   
-  if ( false == location.empty() && true == lookAt.valid() )
+  if ( true == location.empty() || false == lookAt.valid() )
+    return;
+
+  typedef Minerva::Core::Utilities::GeoCode::Result GeoCodeResult;
+  Minerva::Core::Utilities::GeoCode geoCode;
+  GeoCodeResult result ( geoCode ( location ) );
+  if ( false == result.success )
   {
-    typedef Minerva::Core::Utilities::GeoCode::Result GeoCodeResult;
-
-    Minerva::Core::Utilities::GeoCode geoCode;
-    
-    GeoCodeResult result ( geoCode ( location ) );
-
-    if ( result.success )
-    {
-      std::cout << "Geocoded " << location << " to " << result.location[1] << ", " << result.location[0] << std::endl;
-      
-      lookAt->lookAtPoint ( result.location );
-    }
-    else
-    {
-      std::cout << "Could not geocode " << location << std::endl;
-    }
+    std::cout << "Could not geocode " << location << std::endl;
+    return;
   }
+
+  std::ostringstream out;
+  out << ( ( result.address.empty() ) ? std::string() : result.address );
+  out << ( ( result.city.empty()    ) ? std::string() : ( ( out.str().empty() ) ? result.city    : Usul::Strings::format ( ", ", result.city    ) ) );
+  out << ( ( result.state.empty()   ) ? std::string() : ( ( out.str().empty() ) ? result.state   : Usul::Strings::format ( ", ", result.state   ) ) );
+  out << ( ( result.zip.empty()     ) ? std::string() : ( ( out.str().empty() ) ? result.zip     : Usul::Strings::format ( ", ", result.zip     ) ) );
+  out << ( ( result.country.empty() ) ? std::string() : ( ( out.str().empty() ) ? result.country : Usul::Strings::format ( ", ", result.country ) ) );
+
+  const std::string address ( ( out.str().empty() ) ? location : out.str() );
+  std::cout << Usul::Strings::format ( "Geocoded '", address, "' to (", result.location[1], ',', result.location[0], ")\n" ) << std::flush;
+  lookAt->lookAtPoint ( result.location );
 }

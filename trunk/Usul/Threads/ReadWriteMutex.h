@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Recursive multiple-reader, single-writer mutex class.
+//  Non-recursive multiple-reader, single-writer mutex class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_THREADS_RECURSIVE_READER_WRITER_MUTEX_CLASS_H_
-#define _USUL_THREADS_RECURSIVE_READER_WRITER_MUTEX_CLASS_H_
+#ifndef _USUL_THREADS_NON_RECURSIVE_READER_WRITER_MUTEX_CLASS_H_
+#define _USUL_THREADS_NON_RECURSIVE_READER_WRITER_MUTEX_CLASS_H_
 
 #include "Usul/Export/Export.h"
 
@@ -51,4 +51,4 @@ private:
 } // namespace Usul
 
 
-#endif // _USUL_THREADS_RECURSIVE_READER_WRITER_MUTEX_CLASS_H_
+#endif // _USUL_THREADS_NON_RECURSIVE_READER_WRITER_MUTEX_CLASS_H_

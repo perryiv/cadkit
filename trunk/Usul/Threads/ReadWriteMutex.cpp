@@ -20,11 +20,10 @@
 #include "Usul/System/Sleep.h"
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Mutex.h"
-#include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Threads/ThreadId.h"
 
-#include <map>
+#include <set>
 #include <stdexcept>
 
 using namespace Usul::Threads;
@@ -40,9 +39,8 @@ using namespace Usul::Threads::Detail;
 namespace Usul { namespace Threads { namespace Detail {
 struct USUL_EXPORT ReadWriteMutexImpl
 {
-  typedef Usul::Threads::Guard<Usul::Threads::RecursiveMutex> RecursiveGuard;
   typedef Usul::Threads::Guard<Usul::Threads::Mutex> Guard;
-  typedef std::map<unsigned long,unsigned long> RefCounts;
+  typedef std::set<unsigned long> Threads;
 
   ReadWriteMutexImpl();
   ~ReadWriteMutexImpl();
@@ -60,11 +58,21 @@ private:
   ReadWriteMutexImpl ( const ReadWriteMutexImpl & );             // No copying
   ReadWriteMutexImpl &operator = ( const ReadWriteMutexImpl & ); // No assignment
 
+  bool            _hasLocks() const;
+
+  void            _threadAdd();
+  void            _threadHasLock ( bool has );
+  void            _threadHasWriteLock ( bool has );
+  void            _threadRemove();
+  Threads         _threadsGet() const;
+  std::string     _threadsToString() const;
+
   void            _destroy();
 
-  Usul::Threads::RecursiveMutex *_writeMutex;
+  Usul::Threads::Mutex *_writeMutex;
+  unsigned long _writeLockThread;
   Usul::Threads::Mutex *_local;
-  RefCounts _refCounts;
+  Threads _threads;
 }; } } }
 
 
@@ -147,9 +155,10 @@ void ReadWriteMutex::writeUnlock()
 ///////////////////////////////////////////////////////////////////////////////
 
 ReadWriteMutexImpl::ReadWriteMutexImpl() :
-  _writeMutex ( new Usul::Threads::RecursiveMutex ),
+  _writeMutex ( new Usul::Threads::Mutex ),
+  _writeLockThread ( 0 ),
   _local ( new Usul::Threads::Mutex ),
-  _refCounts()
+  _threads()
 {
 }
 
@@ -168,70 +177,6 @@ ReadWriteMutexImpl::~ReadWriteMutexImpl()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the reference count for the given thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  template < class MutexType, class RefCountContainer > 
-  inline typename RefCountContainer::mapped_type &getRefCount ( MutexType &mutex, RefCountContainer &refCounts, unsigned long thread )
-  {
-    typedef Usul::Threads::Detail::ReadWriteMutexImpl Object;
-    typedef typename Object::Guard Guard;
-    typedef typename Object::RefCounts RefCounts;
-    Guard guard ( mutex );
-    RefCounts::mapped_type &count ( refCounts[thread] );
-    return count;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  See if it is ok to take a write-lock.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  template < class MutexType, class RefCountContainer > 
-  inline bool canTakeWriteLock ( MutexType &mutex, RefCountContainer &refCounts )
-  {
-    typedef Usul::Threads::Detail::ReadWriteMutexImpl Object;
-    typedef typename Object::Guard Guard;
-    typedef typename Object::RefCounts RefCounts;
-
-    Guard guard ( mutex );
-
-    if ( true == refCounts.empty() )
-    {
-      // There are no read-locks.
-      return true;
-    }
-
-    if ( 1 == refCounts.size() )
-    {
-      if ( Usul::Threads::currentThreadId() == refCounts.begin()->first )
-      {
-        // There is one read-lock and it is this thread.
-        return true;
-      }
-      else
-      {
-        // There is one read-lock but it's not this thread.
-        return false;
-      }
-    }
-
-    // There are more than one read-locks.
-    return false;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Destroy this instance.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,10 +188,16 @@ void ReadWriteMutexImpl::_destroy()
     Guard local ( *_local );
 
     // Should be true.
-    if ( false == _refCounts.empty() )
+    if ( false == _threads.empty() )
     {
-      _refCounts.clear();
-      throw std::runtime_error ( "Error 1777649577: Map of reference counts is not empty. Is the mutex still locked?" );
+      _threads.clear();
+      throw std::runtime_error ( "Error 1777649577: Set of threads is not empty. Is the mutex still locked?" );
+    }
+
+    // Should be true.
+    if ( 0 != _writeLockThread )
+    {
+      throw std::runtime_error ( Usul::Strings::format ( "Error 3757046843: Thread ", _writeLockThread, " still has the write-lock" ) );
     }
 
     // Delete the these mutexes.
@@ -260,23 +211,185 @@ void ReadWriteMutexImpl::_destroy()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  See if there are any locks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool ReadWriteMutexImpl::_hasLocks() const
+{
+  Guard guard ( *_local );
+  return ( false == _threads.empty() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Try to add the current thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReadWriteMutexImpl::_threadAdd()
+{
+  Guard guard ( *_local );
+
+  // Add this thread to the set.
+  typedef std::pair<Threads::iterator,bool> Result;
+  const unsigned long thread ( Usul::Threads::currentThreadId() );
+  const Result result ( _threads.insert ( thread ) );
+
+  // Was this thread already in the set?
+  if ( false == result.second )
+  {
+    throw std::runtime_error ( Usul::Strings::format 
+      ( "Error 3705275995: thread ", thread, " already has a read-lock" ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Try to remove the current thread.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReadWriteMutexImpl::_threadRemove()
+{
+  Guard guard ( *_local );
+
+  // Look for the thread in the set.
+  const unsigned long thread ( Usul::Threads::currentThreadId() );
+  Threads::iterator i ( _threads.find ( thread ) );
+
+  // Did we find it?
+  if ( _threads.end() == i )
+  {
+    throw std::runtime_error ( Usul::Strings::format 
+      ( "Error 3763892839: thread ", thread, " does not have a read-lock" ) );
+  }
+
+  // Erase the entry.
+  _threads.erase ( i );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the current thread is in the set.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReadWriteMutexImpl::_threadHasLock ( bool has )
+{
+  Guard guard ( *_local );
+
+  // Look for the thread in the set.
+  const unsigned long thread ( Usul::Threads::currentThreadId() );
+  Threads::iterator i ( _threads.find ( thread ) );
+
+  if ( has )
+  {
+    if ( _threads.end() == i )
+    {
+      throw std::runtime_error ( Usul::Strings::format 
+        ( "Error 3446629783: thread ", thread, " does not have a read-lock" ) );
+    }
+  }
+  else
+  {
+    if ( _threads.end() != i )
+    {
+      throw std::runtime_error ( Usul::Strings::format 
+        ( "Error 1144823296: thread ", thread, " already has a read-lock" ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the current thread has the write lock.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ReadWriteMutexImpl::_threadHasWriteLock ( bool has )
+{
+  Guard guard ( *_local );
+
+  const unsigned long thread ( Usul::Threads::currentThreadId() );
+
+  if ( has )
+  {
+    if ( thread != _writeLockThread )
+    {
+      throw std::runtime_error ( Usul::Strings::format 
+        ( "Error 8090541550: thread ", thread, " does not have the write-lock, ", _writeLockThread, " does" ) );
+    }
+  }
+  else
+  {
+    if ( thread == _writeLockThread )
+    {
+      throw std::runtime_error ( Usul::Strings::format 
+        ( "Error 1220405437: thread ", thread, " already has the write-lock" ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get a copy of the threads with locks.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ReadWriteMutexImpl::Threads ReadWriteMutexImpl::_threadsGet() const
+{
+  Guard guard ( *_local );
+  return _threads;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert the threads to space-delimited string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string ReadWriteMutexImpl::_threadsToString() const
+{
+  Threads threads ( this->_threadsGet() );
+  if ( true == threads.empty() )
+    return std::string();
+
+  std::ostringstream s;
+  for ( Threads::const_iterator i = threads.begin(); i != threads.end(); ++i )
+    s << *i << ' ';
+
+  std::string answer ( s.str() );
+  answer.erase ( answer.begin() + answer.size() - 1 );
+  return answer;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Lock the mutex for reading.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadWriteMutexImpl::readLock()
 {
-  // If there is a write-lock then this will block unless the 
-  // thread that holds the write-lock is the calling thread 
-  // (because _writeMutex is recursive). In either case, when the 
-  // write-lock is aquired it is immediately released.
-  RecursiveGuard write ( *_writeMutex );
+  // Make sure this thread does not already have a lock.
+  this->_threadHasLock ( false );
 
-  // We have one more read-lock for this thread. It's ok to operate directly 
-  // on this reference because an std::map does not invalidate iterators
-  // (or references to items).
-  RefCounts::mapped_type &count ( Helper::getRefCount ( *_local, _refCounts, Usul::Threads::currentThreadId() ) );
-  ++count;
+  // Make sure this thread does not already have the write-lock.
+  this->_threadHasWriteLock ( false );
+
+  // Lock for writing and release when we return.
+  Guard write ( *_writeMutex );
+
+  // Add this thread to the set.
+  this->_threadAdd();
 }
 
 
@@ -288,91 +401,53 @@ void ReadWriteMutexImpl::readLock()
 
 void ReadWriteMutexImpl::writeLock()
 {
-  // A thread gets a write-lock if there are no locks or if the only 
-  // existing lock (read or write) is held by the same thread.
-  const unsigned long duration ( 100 );
-  while ( true )
+  // Make sure this thread does not already have a lock.
+  this->_threadHasLock ( false );
+
+  // Make sure this thread does not already have the write-lock.
+  this->_threadHasWriteLock ( false );
+
+  // Lock for writing.
+  Guard write ( *_writeMutex );
+
+  // Spin until there are no read-locks.
+  const unsigned long thread ( Usul::Threads::currentThreadId() );
+  while ( true == this->_hasLocks() )
   {
-    // Need local scope because we don't want this lock if we sleep.
-    {
-      // Try to get the write-lock.
-      RecursiveGuard write ( *_writeMutex );
-
-      // Are we allowed to have the write-lock?
-      if ( true == Helper::canTakeWriteLock ( *_local, _refCounts ) )
-      {
-        write.release();
-        return;
-      }
-    }
-
-    #if 0
-    const unsigned long thread ( Usul::Threads::currentThreadId() );
-    std::ostringstream threads;
-    const RefCounts refCounts ( Usul::Threads::Safe::get ( *_local, _refCounts ) );
-    for ( RefCounts::const_iterator i = refCounts.begin(); i != refCounts.end(); ++i )
-      threads << i->first << ' ';
-    std::cout << Usul::Strings::format ( "Thread ", thread, " trying to take write-lock, waiting on read-locks held by threads: ", threads.str(), '\n' ) << std::flush;
+    #ifdef _DEBUG
+    std::cout << Usul::Strings::format ( "Thread ", thread, " waiting for read-locks held by threads: ", this->_threadsToString(), '\n' ) << std::flush;
     #endif
 
-    // Sleep here to give other threads a chance to proceed.
-    Usul::System::Sleep::milliseconds ( duration );
+    Usul::System::Sleep::milliseconds ( 100 );
   }
+
+  // Add this thread to the set.
+  this->_threadAdd();
+
+  // We have the write-lock.
+  Usul::Threads::Safe::set ( *_local, Usul::Threads::currentThreadId(), _writeLockThread );
+
+  // Hang on to the lock.
+  write.release();
 }
-
-#if 0
-
-I'm concluding that this is a flawed idea. If n-number of threads each have 
-read-locks, and their paths through the code require them to get write-locks, 
-and, when they try to get write-locks they have to wait on the read-locks, 
-then you create a "infinite wait" situation. Not exactly deadlock, but 
-effectively the same thing.
-
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Unlock the mutex for reading.
 //
-//  Note: taking advantage of the fact that std::map entries remain valid 
-//  even when the structure of the map may change. In other words, if we 
-//  get a reference to an item in the map, if another thread inserts or 
-//  removes another item, our reference is still valid. This means we only 
-//  have to guard reads and writes to _refCount and not its items.
-//
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadWriteMutexImpl::readUnlock()
 {
-  // This container should not be empty.
-  {
-    Guard local ( *_local );
-    if ( true == _refCounts.empty() )
-    {
-      throw std::runtime_error ( "Error 1957225110: Attempting to release a read-lock when there are none" );
-    }
-  }
+  // Make sure this thread has a lock.
+  this->_threadHasLock ( true );
 
-  // Get a reference to the reference count.
-  const unsigned long thread ( Usul::Threads::currentThreadId() );
-  RefCounts::mapped_type &count ( Helper::getRefCount ( *_local, _refCounts, thread ) );
+  // Should not have the write-lock.
+  this->_threadHasWriteLock ( false );
 
-  // There should be at least one read-lock for this thread
-  if ( 0 == count )
-  {
-    throw std::runtime_error ( "Error 7469268180: This thread does not hold a read-lock" );
-  }
-
-  // We have one less read-lock for this thread.
-  --count;
-
-  // If we're now at zero then remove the entry.
-  if ( 0 == count )
-  {
-    Guard local ( *_local );
-    _refCounts.erase ( thread );
-  }
+  // Remove the read-lock.
+  this->_threadRemove();
 }
 
 
@@ -384,6 +459,18 @@ void ReadWriteMutexImpl::readUnlock()
 
 void ReadWriteMutexImpl::writeUnlock()
 {
-  // No conditions required. Just unlock it.
+  // Make sure this thread has a lock.
+  this->_threadHasLock ( true );
+
+  // Should own the write-lock.
+  this->_threadHasWriteLock ( true );
+
+  // Remove this thread from the set.
+  this->_threadRemove();
+
+  // Nobody has the write-lock.
+  Usul::Threads::Safe::set ( *_local, 0, _writeLockThread );
+
+  // Unlock the mutex.
   _writeMutex->unlock();
 }

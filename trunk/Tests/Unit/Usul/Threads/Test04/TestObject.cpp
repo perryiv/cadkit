@@ -56,32 +56,6 @@ TestObject::~TestObject()
 unsigned int TestObject::getData() const
 {
   ReadLock lock ( this );
-  return this->_getData();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TestObject::setData ( unsigned int data )
-{
-  WriteLock lock ( this );
-  this->_setData ( data );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int TestObject::_getData() const
-{
-  ReadLock lock ( this );
   return _data;
 }
 
@@ -92,7 +66,7 @@ unsigned int TestObject::_getData() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TestObject::_setData ( unsigned int data )
+void TestObject::setData ( unsigned int data )
 {
   WriteLock lock ( this );
 
@@ -114,74 +88,20 @@ void TestObject::_setData ( unsigned int data )
 
 void TestObject::exercise()
 {
-  this->_test1();
-  this->_test2();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Test the locks.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TestObject::_test1()
-{
-  WriteLock USUL_UNIQUE_NAME ( this );
-  WriteLock USUL_UNIQUE_NAME ( this );
-  ReadLock  USUL_UNIQUE_NAME ( this );
-
+  for ( unsigned int i = 0; i < 5; ++i )
   {
-    ReadLock  USUL_UNIQUE_NAME ( this );
-    WriteLock USUL_UNIQUE_NAME ( this );
-    WriteLock USUL_UNIQUE_NAME ( this );
-    ReadLock  USUL_UNIQUE_NAME ( this );
-
     {
-      ReadLock  USUL_UNIQUE_NAME ( this );
-      WriteLock USUL_UNIQUE_NAME ( this );
-      ReadLock  USUL_UNIQUE_NAME ( this );
-      WriteLock USUL_UNIQUE_NAME ( this );
-
+      for ( unsigned int j = 0; j < i + 1; ++j )
       {
-        WriteLock USUL_UNIQUE_NAME ( this );
-        ReadLock  USUL_UNIQUE_NAME ( this );
-        ReadLock  USUL_UNIQUE_NAME ( this );
         WriteLock USUL_UNIQUE_NAME ( this );
       }
     }
+    Usul::System::Sleep::milliseconds ( 10 );
+    {
+      for ( unsigned int j = 0; j < i + 1; ++j )
+      {
+        ReadLock USUL_UNIQUE_NAME ( this );
+      }
+    }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Test the locks.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void TestObject::_test2()
-{
-  ReadLock USUL_UNIQUE_NAME ( this );
-  ReadLock USUL_UNIQUE_NAME ( this );
-  ReadLock USUL_UNIQUE_NAME ( this );
-  ReadLock USUL_UNIQUE_NAME ( this );
-
-  {
-    WriteLock USUL_UNIQUE_NAME ( this );
-    Usul::System::Sleep::milliseconds ( 100 );
-    WriteLock USUL_UNIQUE_NAME ( this );
-  }
-
-  {
-    ReadLock  USUL_UNIQUE_NAME ( this );
-    WriteLock USUL_UNIQUE_NAME ( this );
-    ReadLock  USUL_UNIQUE_NAME ( this );
-    WriteLock USUL_UNIQUE_NAME ( this );
-  }
-
-  ReadLock USUL_UNIQUE_NAME ( this );
-  ReadLock USUL_UNIQUE_NAME ( this );
-  ReadLock USUL_UNIQUE_NAME ( this );
-  ReadLock USUL_UNIQUE_NAME ( this );
 }

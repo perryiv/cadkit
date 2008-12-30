@@ -69,7 +69,7 @@ void TestJob::_started()
     // Temporarily gets a read-lock.
     const unsigned int data ( _object->getData() );
 
-    std::cout << Usul::Strings::format ( "Thread: ", id, ", object's data: ", data, '\n' ) << std::flush;
+    std::cout << Usul::Strings::format ( "Thread: ", id, ", iteration: ", i, ", object's data: ", data, '\n' ) << std::flush;
 
     // Temporarily gets a write-lock.
     _object->setData ( ( i + 1 ) * data );

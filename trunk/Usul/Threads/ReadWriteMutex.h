@@ -27,7 +27,7 @@ namespace Threads {
 
 struct USUL_EXPORT ReadWriteMutex
 {
-  ReadWriteMutex();
+  ReadWriteMutex ( unsigned long writeLockWaitSleep = 100 );
   ~ReadWriteMutex();
 
   // Lock/unlock for reading.

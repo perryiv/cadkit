@@ -18,10 +18,14 @@
 
 #include "Display/Render/Renderer.h"
 
+#include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IView.h"
+#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IDocument.h"
+#include "Usul/Math/Matrix44.h"
 
-#include "osg/Group"
+#include "osg/MatrixTransform"
+#include "osg/ClipNode"
 #include "osg/ref_ptr"
 #include "osgViewer/Viewer"
 
@@ -34,12 +38,16 @@ namespace View {
 
 
 class DISPLAY_LIBRARY_EXPORT Canvas : public Usul::Base::BaseObject,
-                                      public Usul::Interfaces::IView
+                                      public Usul::Interfaces::IView,
+                                      public Usul::Interfaces::IViewMatrix,
+                                      public Usul::Interfaces::IRedraw
 {
 public:
 
   // Typedefs.
   typedef Usul::Base::BaseObject BaseClass;
+  typedef osg::ref_ptr<osg::MatrixTransform> TransformPtr;
+  typedef osg::ref_ptr<osg::ClipNode> ClipNodePtr;
   typedef osg::ref_ptr<osg::Group> GroupPtr;
   typedef osg::ref_ptr<osg::Node> NodePtr;
   typedef Display::Render::Renderer::RefPtr RendererPtr;
@@ -48,6 +56,7 @@ public:
   typedef osg::ref_ptr<osgViewer::Viewer> ViewerPtr;
   typedef Usul::Interfaces::IView IView;
   typedef Usul::Interfaces::IDocument IDocument;
+  typedef Usul::Math::Matrix44d Matrix;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Canvas );
@@ -81,8 +90,15 @@ public:
   // Is this canvas currently rendering?
   bool                      isRendering() const;
 
-  // Add a model.
-  void                      modelAdd ( NodePtr );
+  // Add a model. Specify whether or not it can be clipped.
+  void                      modelAdd ( NodePtr, bool clipped = true );
+
+  // Set/get the navigation matrix.
+  Matrix                    navigationMatrix() const;
+  void                      navigationMatrix ( const Matrix & );
+
+  // Return the matrix that will view all the models.
+  Matrix                    navigationViewAll ( double zScale = 3.0 ) const;
 
   // Push/pop the renderer.
   void                      pushRenderer ( RendererPtr );
@@ -97,6 +113,14 @@ public:
 
   // Call this when you want the viewport to resize.
   void                      resize ( unsigned int width, unsigned int height );
+
+  // Usul::Interfaces::IViewMatrix
+  virtual void              setViewMatrix ( const osg::Matrixd & );
+  virtual osg::Matrixd      getViewMatrix() const;
+
+  // Usul::Interfaces::IRedraw
+  virtual void              redraw();
+  virtual void              setStatsDisplay ( bool );
 
 protected:
 
@@ -116,7 +140,10 @@ private:
   unsigned int _flags;
   Renderers _renderers;
   GroupPtr _scene;
-  GroupPtr _models;
+  TransformPtr _models;
+  ClipNodePtr _clipped;
+  GroupPtr _unclipped;
+  GroupPtr _decoration;
   IDocument::QueryPtr _document;
   ViewerPtr _viewer;
 };

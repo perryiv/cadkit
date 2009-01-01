@@ -31,6 +31,8 @@
 #include <map>
 #include <vector>
 
+namespace Display { namespace Events { class Event; } }
+
 
 namespace Showtime {
 
@@ -68,9 +70,6 @@ public:
   Viewer ( IUnknown::RefPtr doc, const QGLFormat &format, QWidget *parent, IUnknown *caller );
   virtual ~Viewer();
 
-  // Get the mouse state.
-  ButtonsDown                             buttonsDown ( QMouseEvent * ) const;
-
   // Get the document.
   IUnknown::RefPtr                        document();
   const IUnknown::RefPtr                  document() const;
@@ -79,11 +78,8 @@ public:
   IUnknown::RefPtr                        caller();
   const IUnknown::RefPtr                  caller() const;
 
-  // Return the set of keys that are currenty dorm.
+  // Return the set of keys that are currenty down.
   KeysDown                                keysDown() const;
-
-  // Get the listeners for the input.
-  ListenerSequence                        listeners ( const KeysDown &, const ButtonsDown & ) const;
 
   // Get the mutex.
   Mutex &                                 mutex() const;
@@ -95,7 +91,7 @@ public:
 
   // Usul::Interfaces::IWindow
   virtual void                            setFocus();
-  virtual void                            setTitle ( const std::string& title );
+  virtual void                            setTitle ( const std::string &title );
   virtual void                            forceClose();
 
   // Usul::Interfaces::IModifiedObserver
@@ -117,6 +113,8 @@ protected:
   void                                    _close();
 
   void                                    _initPlacement();
+
+  void                                    _notify ( Display::Events::Event & );
 
   // Override these events.
   virtual void                            paintGL();
@@ -144,9 +142,6 @@ private:
   unsigned int _refCount;
   unsigned long _threadId;
   mutable Mutex *_mutex;
-  int _mouseWheelPosition;
-  float _mouseWheelSensitivity;
-  ListenerMap _listeners;
   KeysDown _keysDown;
 };
 

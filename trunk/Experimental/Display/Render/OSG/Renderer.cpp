@@ -76,7 +76,7 @@ Renderer::Renderer ( IUnknown::RefPtr context, IUnknown::RefPtr caller ) : BaseC
   camera->setRenderOrder ( osg::Camera::POST_RENDER );
   camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
   camera->setViewMatrix ( osg::Matrix::identity() );
-  camera->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_PRIMITIVES );
+  camera->setComputeNearFarMode ( osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES );
   camera->setCullingMode ( osg::CullSettings::VIEW_FRUSTUM_CULLING );
 
   // Set viewer properties.
@@ -147,6 +147,9 @@ void Renderer::_render()
 
     // Render a single frame.
     viewer->frame();
+
+    // Swap the buffers.
+    context->swapBuffers();
   }
 }
 
@@ -308,13 +311,9 @@ Renderer::IContext::RefPtr Renderer::_getContext()
 void Renderer::scene ( NodePtr node )
 {
   USUL_TRACE_SCOPE;
-  CameraPtr camera ( this->_getCamera() );
-  if ( true == camera.valid() )
+  ViewerPtr viewer ( this->_getViewer() );
+  if ( true == viewer.valid() )
   {
-    OsgTools::Group::removeAllChildren ( camera.get() );
-    if ( true == node.valid() )
-    {
-      camera->addChild ( node.get() );
-    }
+    viewer->setSceneData ( node.get() );
   }
 }

@@ -15,6 +15,7 @@
 
 #include "Display/View/Canvas.h"
 
+#include "OsgTools/Convert/Matrix.h"
 #include "OsgTools/Group.h"
 
 #include "Usul/Adaptors/Bind.h"
@@ -41,11 +42,17 @@ Canvas::Canvas ( IUnknown::RefPtr doc ) : BaseClass(),
   _flags ( 0 ),
   _renderers(),
   _scene ( new osg::Group ),
-  _models ( new osg::Group ),
+  _models ( new osg::MatrixTransform ),
+  _clipped ( new osg::ClipNode ),
+  _unclipped ( new osg::Group ),
+  _decoration ( new osg::Group ),
   _document ( doc ),
   _viewer ( new osgViewer::Viewer )
 {
   _scene->addChild ( _models.get() );
+  _scene->addChild ( _decoration.get() );
+  _models->addChild ( _clipped.get() );
+  _models->addChild ( _unclipped.get() );
 }
 
 
@@ -84,16 +91,24 @@ void Canvas::_destroy()
 void Canvas::clear()
 {
   USUL_TRACE_SCOPE;
-  WriteLock lock ( this->mutex() );
+  // Do not lock up here because the mutex is not recursive and 
+  // popRenderer() locks it for writing.
 
   // Call popRenderer() because it sets the renderer's scene to null.
-  while ( false == _renderers.empty() )
+  while ( true == this->renderer().valid() )
     this->popRenderer();
 
-  _scene = 0x0;
-  _models = 0x0;
-  _document = Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
-  _viewer = 0x0;
+  // Local scope not necessary but good practice.
+  {
+    WriteLock lock ( this );
+    _scene = 0x0;
+    _models = 0x0;
+    _clipped = 0x0;
+    _unclipped = 0x0;
+    _decoration = 0x0;
+    _document = Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
+    _viewer = 0x0;
+  }
 }
 
 
@@ -110,8 +125,12 @@ Usul::Interfaces::IUnknown * Canvas::queryInterface ( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
+  case Usul::Interfaces::IRedraw::IID:
+    return static_cast < Usul::Interfaces::IRedraw* > ( this );
   case Usul::Interfaces::IView::IID:
     return static_cast < Usul::Interfaces::IView* > ( this );
+  case Usul::Interfaces::IViewMatrix::IID:
+    return static_cast < Usul::Interfaces::IViewMatrix* > ( this );
   default:
     return 0x0;
   }
@@ -127,7 +146,7 @@ Usul::Interfaces::IUnknown * Canvas::queryInterface ( unsigned long iid )
 unsigned int Canvas::flags() const
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  ReadLock lock ( this );
   return _flags;
 }
 
@@ -151,14 +170,21 @@ bool Canvas::isRendering() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Canvas::modelAdd ( NodePtr model )
+void Canvas::modelAdd ( NodePtr model, bool clipped )
 {
   USUL_TRACE_SCOPE;
 
   if ( true == model.valid() )
   {
-    WriteLock lock ( this->mutex() );
-    _models->addChild ( model.get() );
+    WriteLock lock ( this );
+    if ( true == clipped )
+    {
+      _clipped->addChild ( model.get() );
+    }
+    else
+    {
+      _unclipped->addChild ( model.get() );
+    }
   }
 }
 
@@ -213,7 +239,7 @@ void Canvas::popRenderer()
 const Canvas::RendererPtr Canvas::renderer() const
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  ReadLock lock ( this );
   return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
 }
 
@@ -227,7 +253,7 @@ const Canvas::RendererPtr Canvas::renderer() const
 Canvas::RendererPtr Canvas::renderer()
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  ReadLock lock ( this );
   return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
 }
 
@@ -270,7 +296,7 @@ void Canvas::render()
 void Canvas::_setFlag ( unsigned int bit, bool state )
 {
   USUL_TRACE_SCOPE;
-  WriteLock lock ( this->mutex() );
+  WriteLock lock ( this );
   _flags = Usul::Bits::set ( _flags, bit, state );
 }
 
@@ -284,7 +310,7 @@ void Canvas::_setFlag ( unsigned int bit, bool state )
 void Canvas::document ( Usul::Interfaces::IUnknown::RefPtr unknown )
 {
   USUL_TRACE_SCOPE;
-  WriteLock lock ( this->mutex() );
+  WriteLock lock ( this );
   _document = unknown;
 }
 
@@ -298,7 +324,7 @@ void Canvas::document ( Usul::Interfaces::IUnknown::RefPtr unknown )
 Usul::Interfaces::IDocument *Canvas::document()
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  ReadLock lock ( this );
   return _document.get();
 }
 
@@ -312,7 +338,7 @@ Usul::Interfaces::IDocument *Canvas::document()
 const Usul::Interfaces::IDocument *Canvas::document() const
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  ReadLock lock ( this );
   return _document.get();
 }
 
@@ -329,4 +355,108 @@ void Canvas::resize ( unsigned int width, unsigned int height )
   RendererPtr renderer ( this->renderer() );
   if ( true == renderer.valid() )
     renderer->resize ( width, height );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the matrix that will view all the models.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Canvas::Matrix Canvas::navigationViewAll ( double zScale ) const
+{
+  USUL_TRACE_SCOPE;
+  ReadLock lock ( this );
+
+  // Get the bounding sphere of the group.
+  osg::BoundingSphere bs ( _models->getBound() );
+  osg::Vec3d c ( bs.center() );
+
+  // Push it back so we can see it.
+  osg::Matrixd matrix;
+  osg::Matrixd::value_type z ( zScale * bs.radius() + c[2] );
+  matrix.makeTranslate ( -c[0], -c[1], -z );
+
+  // Post-multiply the current matrix.
+  return ( Usul::Convert::Type<osg::Matrixd,Canvas::Matrix>::convert ( _models->getMatrix() * matrix ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::navigationMatrix ( const Matrix &m )
+{
+  USUL_TRACE_SCOPE;
+  this->setViewMatrix ( Usul::Convert::Type<Canvas::Matrix,osg::Matrixd>::convert ( m ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the navigation matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Canvas::Matrix Canvas::navigationMatrix() const
+{
+  USUL_TRACE_SCOPE;
+  return ( Usul::Convert::Type<osg::Matrixd,Canvas::Matrix>::convert ( this->getViewMatrix() ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::setViewMatrix ( const osg::Matrixd &m )
+{
+  USUL_TRACE_SCOPE;
+  WriteLock lock ( this );
+  _models->setMatrix ( m );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the view matrix.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrixd Canvas::getViewMatrix() const
+{
+  USUL_TRACE_SCOPE;
+  ReadLock lock ( this );
+  return _models->getMatrix();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Redraw the view now.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::redraw()
+{
+  USUL_TRACE_SCOPE;
+  this->render();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Hide/show the statistics.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Canvas::setStatsDisplay ( bool )
+{
+  USUL_TRACE_SCOPE;
 }

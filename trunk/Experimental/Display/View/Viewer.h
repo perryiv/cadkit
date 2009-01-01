@@ -17,8 +17,7 @@
 #define _DISPLAY_LIBRARY_VIEWER_CLASS_H_
 
 #include "Display/View/Canvas.h"
-
-#include "Usul/Interfaces/IInputListener.h"
+#include "Display/Events/Events.h"
 
 #include <map>
 #include <vector>
@@ -34,19 +33,10 @@ public:
 
   // Typedefs.
   typedef Canvas BaseClass;
-  typedef Usul::Interfaces::IInputListener IInputListener;
-  typedef IInputListener::KeysDown KeysDown;
-  typedef IInputListener::ButtonsDown ButtonsDown;
-  typedef std::pair<KeysDown,ButtonsDown> InputState;
+  typedef Display::Events::Event::TypeID EventType;
   typedef std::vector<IUnknown::RefPtr> ListenerSequence;
-  typedef std::map<InputState,ListenerSequence> ListenerMap;
-#if 0
-  We need a map of Display::Events::TypeID to a sequence of listeners.
-  The new Qt viewer can make the event class and pass it to a generic notifyEvent() function.
-  This function can look up the regestered listeners for the event-type and pass the event to 
-  these listeners, without ever knowing the concrete event types.
-  Once you have this you will no longer need the listeners in the Qt viewer class.
-#endif
+  typedef std::map<EventType,ListenerSequence> EventListeners;
+
   // Type information.
   USUL_DECLARE_TYPE_ID ( Viewer );
 
@@ -55,6 +45,14 @@ public:
 
   // Construction.
   Viewer ( IUnknown::RefPtr doc = IUnknown::RefPtr ( 0x0 ) );
+
+  // Add and remove listeners.
+  void                  listenerAppend  ( EventType type, IUnknown::RefPtr );
+  void                  listenerRemove  ( EventType type, IUnknown::RefPtr );
+  void                  listenerPrepend ( EventType type, IUnknown::RefPtr );
+
+  // Notification of an event.
+  void                  notify ( Display::Events::Event &e );
 
   // Save/load the state.
   void                  stateLoad();
@@ -71,7 +69,11 @@ private:
   Viewer ( const Viewer & );
   Viewer &operator = ( const Viewer & );
 
-  void                                _destroy();
+  void                  _destroy();
+
+  void                  _notify ( Display::Events::Event &e );
+
+  EventListeners _eventListeners;
 };
 
 

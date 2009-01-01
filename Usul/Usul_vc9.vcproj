@@ -1034,6 +1034,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IEventListener.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IExportImage.h"
 					>
 				</File>

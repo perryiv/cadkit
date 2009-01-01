@@ -569,9 +569,8 @@ protected:
   void                  _useHighLodsSet ( bool b );
 
   /// Usul::Interfaces::IViewMatrix
-  virtual void                      setViewMatrix ( const osg::Matrixf& );
   virtual void                      setViewMatrix ( const osg::Matrixd& );
-  virtual const osg::Matrixd&       getViewMatrix ( ) const;
+  virtual osg::Matrixd              getViewMatrix ( ) const;
 
   /// Usul::Interfaces::IShadeModel
   virtual void                      shadeModel ( IShadeModel::Mode mode );

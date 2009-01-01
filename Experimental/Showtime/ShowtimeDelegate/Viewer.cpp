@@ -15,6 +15,7 @@
 
 #include "Showtime/ShowtimeDelegate/Viewer.h"
 
+#include "Display/Events/Events.h"
 #include "Display/Render/OSG/Renderer.h"
 
 #include "OsgTools/Render/Defaults.h"
@@ -57,9 +58,6 @@ Viewer::Viewer ( IUnknown::RefPtr doc, const QGLFormat& format, QWidget* parent,
   _refCount ( 0 ),
   _threadId ( Usul::Threads::currentThreadId() ),
   _mutex ( new Viewer::Mutex ),
-  _mouseWheelPosition ( 0 ),
-  _mouseWheelSensitivity ( 10.0f ),
-  _listeners(),
   _keysDown()
 {
   USUL_TRACE_SCOPE;
@@ -126,7 +124,6 @@ void Viewer::_destroy()
   _viewer = 0x0;
   _caller = Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
   _document = 0x0;
-  _listeners.clear();
   _keysDown.clear();
 
   // Now delete the mutex.
@@ -186,6 +183,34 @@ Usul::Interfaces::IUnknown * Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IModifiedObserver * > ( this );
   default:
     return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to get the mouse state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class EventType > inline Viewer::ButtonsDown buttonsDown ( EventType *event )
+  {
+    USUL_TRACE_SCOPE;
+    Viewer::ButtonsDown mouse;
+
+    if ( 0x0 != event )
+    {
+      if ( true == event->buttons().testFlag ( Qt::LeftButton ) )
+        mouse.insert ( 0 );
+      if ( true == event->buttons().testFlag ( Qt::MidButton ) )
+        mouse.insert ( 1 );
+      if ( true == event->buttons().testFlag ( Qt::RightButton ) )
+        mouse.insert ( 2 );
+    }
+
+    return mouse;
   }
 }
 
@@ -374,52 +399,19 @@ QSize Viewer::sizeHint() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper function to call the listeners.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Helper
-{
-  template < class Function > inline void callListener ( Viewer *me, QMouseEvent *event, Function function )
-  {
-    USUL_TRACE_SCOPE_STATIC;
-
-    // Handle bad input.
-    if ( ( 0x0 == me ) || ( 0x0 == event ) )
-      return;
-
-    // Needed below.
-    const double x ( event->x() );
-    const double y ( me->height() - event->y() );
-
-    // Look up the listeners.
-    Viewer::ButtonsDown mouse ( me->buttonsDown ( event ) );
-    Viewer::KeysDown keys ( me->keysDown() );
-    Viewer::ListenerSequence listeners ( me->listeners ( keys, mouse ) );
-
-    // Loop throught the listeners.
-    for ( Viewer::ListenerSequence::iterator i = listeners.begin(); i != listeners.end(); ++i )
-    {
-      Usul::Interfaces::IInputListener::QueryPtr listener ( *i );
-      if ( true == listener.valid() )
-      {
-        boost::bind ( Usul::Adaptors::memberFunction ( listener, function ), keys, mouse, x, y, me );
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  The mouse has moved.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mouseMoveEvent ( QMouseEvent *event )
+void Viewer::mouseMoveEvent ( QMouseEvent *e )
 {
   USUL_TRACE_SCOPE;
-  Helper::callListener ( this, event, &Usul::Interfaces::IInputListener::mouseMoveNotify );
+
+  if ( 0x0 == e )
+    return;
+
+  Display::Events::MouseMove event ( e->x(), e->y(), this->keysDown(), Helper::buttonsDown ( e ) );
+  this->_notify ( event );
 }
 
 
@@ -429,10 +421,15 @@ void Viewer::mouseMoveEvent ( QMouseEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mousePressEvent ( QMouseEvent *event )
+void Viewer::mousePressEvent ( QMouseEvent *e )
 {
   USUL_TRACE_SCOPE;
-  Helper::callListener ( this, event, &Usul::Interfaces::IInputListener::buttonPressNotify );
+
+  if ( 0x0 == e )
+    return;
+
+  Display::Events::MousePress event ( e->button(), this->keysDown(), Helper::buttonsDown ( e ) );
+  this->_notify ( event );
 }
 
 
@@ -442,10 +439,15 @@ void Viewer::mousePressEvent ( QMouseEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mouseReleaseEvent ( QMouseEvent *event )
+void Viewer::mouseReleaseEvent ( QMouseEvent *e )
 {
   USUL_TRACE_SCOPE;
-  Helper::callListener ( this, event, &Usul::Interfaces::IInputListener::buttonReleaseNotify );
+
+  if ( 0x0 == e )
+    return;
+
+  Display::Events::MouseRelease event ( e->button(), this->keysDown(), Helper::buttonsDown ( e ) );
+  this->_notify ( event );
 }
 
 
@@ -455,9 +457,15 @@ void Viewer::mouseReleaseEvent ( QMouseEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::mouseDoubleClickEvent ( QMouseEvent *event )
+void Viewer::mouseDoubleClickEvent ( QMouseEvent *e )
 {
   USUL_TRACE_SCOPE;
+
+  if ( 0x0 == e )
+    return;
+
+  Display::Events::MouseDoubleClick event ( e->button(), this->keysDown(), Helper::buttonsDown ( e ) );
+  this->_notify ( event );
 }
 
 
@@ -467,9 +475,15 @@ void Viewer::mouseDoubleClickEvent ( QMouseEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::wheelEvent ( QWheelEvent *event )
+void Viewer::wheelEvent ( QWheelEvent *e )
 {
   USUL_TRACE_SCOPE;
+
+  if ( 0x0 == e )
+    return;
+
+  Display::Events::MouseWheel event ( e->delta(), this->keysDown(), Helper::buttonsDown ( e ) );
+  this->_notify ( event );
 }
 
 
@@ -479,11 +493,20 @@ void Viewer::wheelEvent ( QWheelEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::keyPressEvent ( QKeyEvent *event )
+void Viewer::keyPressEvent ( QKeyEvent *e )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _keysDown.insert ( event->key() );
+
+  if ( 0x0 == e )
+    return;
+
+  {
+    Guard guard ( this );
+    _keysDown.insert ( e->key() );
+  }
+
+  Display::Events::KeyPress event ( e->key(), this->keysDown(), Viewer::ButtonsDown() );
+  this->_notify ( event );
 }
 
 
@@ -493,11 +516,20 @@ void Viewer::keyPressEvent ( QKeyEvent *event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::keyReleaseEvent ( QKeyEvent *event )
+void Viewer::keyReleaseEvent ( QKeyEvent *e )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _keysDown.erase ( event->key() );
+
+  if ( 0x0 == e )
+    return;
+
+  {
+    Guard guard ( this );
+    _keysDown.erase ( e->key() );
+  }
+
+  Display::Events::KeyRelease event ( e->key(), this->keysDown(), Viewer::ButtonsDown() );
+  this->_notify ( event );
 }
 
 
@@ -875,37 +907,17 @@ Viewer::KeysDown Viewer::keysDown() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the mouse state.
+//  Send the event to the internal viewer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::ButtonsDown Viewer::buttonsDown ( QMouseEvent *event ) const
+void Viewer::_notify ( Display::Events::Event &e )
 {
   USUL_TRACE_SCOPE;
-  ButtonsDown mouse;
-  if ( 0x0 != event )
-  {
-    if ( true == event->buttons().testFlag ( Qt::LeftButton ) )
-      mouse.insert ( 0 );
-    if ( true == event->buttons().testFlag ( Qt::MidButton ) )
-      mouse.insert ( 1 );
-    if ( true == event->buttons().testFlag ( Qt::RightButton ) )
-      mouse.insert ( 2 );
-  }
-  return mouse;
-}
 
+  ViewerPtr viewer ( this->viewer() );
+  if ( false == viewer.valid() )
+    return;
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the listeners for the input.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Viewer::ListenerSequence Viewer::listeners ( const KeysDown &keys, const ButtonsDown &mouse ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  ListenerMap::const_iterator i ( _listeners.find ( InputState ( keys, mouse ) ) );
-  return ( ( _listeners.end() == i ) ? ListenerSequence() : i->second );
+  viewer->notify ( e );
 }

@@ -2540,18 +2540,6 @@ void Viewer::axesLabels ( const std::string& x, const std::string& y, const std:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::setViewMatrix ( const osg::Matrixf& matrix )
-{
-  this->viewer()->setViewMatrix ( matrix );
-  this->navManip()->setByInverseMatrix ( this->getViewMatrix() );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the view matrix.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Viewer::setViewMatrix ( const osg::Matrixd& matrix )
 {
   this->viewer()->setViewMatrix ( matrix );
@@ -2565,9 +2553,9 @@ void Viewer::setViewMatrix ( const osg::Matrixd& matrix )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Matrixd& Viewer::getViewMatrix ( ) const
+osg::Matrixd Viewer::getViewMatrix() const
 {
-  return this->viewer()->getViewMatrix ( );
+  return this->viewer()->getViewMatrix();
 }
 
 

@@ -31,9 +31,8 @@ struct IViewMatrix : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1479567401u };
 
-  virtual void                 setViewMatrix ( const osg::Matrixf& ) = 0;
-  virtual void                 setViewMatrix ( const osg::Matrixd& ) = 0;
-  virtual const osg::Matrixd&  getViewMatrix (  ) const = 0;
+  virtual void                 setViewMatrix ( const osg::Matrixd & ) = 0;
+  virtual osg::Matrixd         getViewMatrix (  ) const = 0;
 
 
 }; // class IViewMatrix

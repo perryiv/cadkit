@@ -290,13 +290,13 @@ Usul::Interfaces::IDocument* Manager::activeDocument()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::activeView ( View * view )
+void Manager::activeView ( View *view )
 {
    // Save the old view.
   View::RefPtr oldView ( this->activeView() );
 
   // Return now if the view is already active.
-  if( view == oldView.get() )
+  if ( view == oldView.get() )
     return;
 
   // Set the active view.

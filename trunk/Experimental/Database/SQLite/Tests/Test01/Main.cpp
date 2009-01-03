@@ -43,17 +43,16 @@ void _printResult ( CadKit::Database::SQLite::Result::RefPtr result )
 
   while ( true == result->prepareNextRow() )
   {
-    int index ( 0 );
-    double num ( 0 );
-    *result >> index >> num;
-    std::cout << "row = " << row++ << ", index = " << index << ", num = " << num;
-    if ( numColumns > 2 )
+    std::cout << row++;
+    for ( unsigned int i = 0; i < numColumns; ++i )
     {
-      *result >> num;
-      std::cout << ", num = " << num;
+      std::string value;
+      *result >> value;
+      std::cout << ", " << value;
     }
-    std::cout << std::endl;
+    std::cout << '\n';
   }
+  std::cout << std::flush;
 }
 
 

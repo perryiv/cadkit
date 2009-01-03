@@ -22,6 +22,7 @@
 
 #include "sqlite3.h"
 
+#include <limits>
 #include <stdexcept>
 
 using namespace CadKit::Database::SQLite;
@@ -118,6 +119,9 @@ unsigned int Result::numColumns() const
 
 Result &Result::operator >> ( std::string &value )
 {
+  const unsigned char *temp ( 0x0 );
+  Helper::getValue ( _statement, ::sqlite3_column_text, temp, _currentColumn );
+  value = ( ( 0x0 == temp ) ? std::string() : reinterpret_cast<const char *> ( temp ) );
   return *this;
 }
 
@@ -141,8 +145,85 @@ Result &Result::operator >> ( double &value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+Result &Result::operator >> ( float &value )
+{
+  double temp ( 0 );
+  *this >> temp;
+  if ( ( temp < static_cast<double> ( - std::numeric_limits<float>::max() ) ) ||
+       ( temp > static_cast<double> (   std::numeric_limits<float>::max() ) ) )
+  {
+    throw std::range_error ( Usul::Strings::format 
+      ( "Error 2911940382: ", sizeof ( double ), " byte float ", temp, 
+        " will not fit in a ", sizeof ( float ), " byte float" ) );
+  }
+  value = static_cast<float> ( temp );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 Result &Result::operator >> ( int &value )
 {
   Helper::getValue ( _statement, ::sqlite3_column_int, value, _currentColumn );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( unsigned int &value )
+{
+  int temp ( 0 );
+  *this >> temp;
+  if ( temp < 0 )
+  {
+    throw std::range_error ( Usul::Strings::format 
+      ( "Error 3361492869: Negative ", sizeof ( int ), "-byte integer ", temp, 
+        " will not convert to ", sizeof ( unsigned int ), "-byte unsigned integer" ) );
+  }
+  value = static_cast<unsigned int> ( temp );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( Usul::Types::Int64 &value )
+{
+  Helper::getValue ( _statement, ::sqlite3_column_int64, value, _currentColumn );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( Usul::Types::Uint64 &value )
+{
+  Usul::Types::Int64 temp ( 0 );
+  *this >> temp;
+  if ( temp < 0 )
+  {
+    throw std::range_error ( Usul::Strings::format 
+      ( "Error 3361492869: Negative ", sizeof ( Usul::Types::Int64 ), "-byte integer ", temp, 
+        " will not convert to ", sizeof ( Usul::Types::Uint64 ), "-byte unsigned integer" ) );
+  }
+  value = static_cast<Usul::Types::Uint64> ( temp );
   return *this;
 }

@@ -1630,6 +1630,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\Barycentric.h"
+					>
+				</File>
+				<File
 					RelativePath="Math\Constants.h"
 					>
 				</File>

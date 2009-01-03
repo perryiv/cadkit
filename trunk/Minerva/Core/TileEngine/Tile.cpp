@@ -2104,44 +2104,20 @@ void Tile::_cancelTileVectorJobs()
 
 double Tile::elevation ( double lat, double lon )
 {
-  // Get the body.
+  // Get the body and mesh.
   Body::RefPtr body;
-  Usul::Threads::Safe::set ( this->mutex(), _body, body );
-
-  // Get the mesh.
   MeshPtr mesh;
   {
     Guard guard ( this );
+    body = _body;
     mesh = _mesh;
   }
 
-  // Return zero if no body, or no mesh.
-  if ( false == body.valid() ||  0x0 == mesh.get())
+  LandModel::RefPtr land ( body.valid() ? body->landModel() : 0x0 );
+
+  // Return zero if no land model, or no mesh.
+  if ( false == land.valid() ||  0x0 == mesh.get())
     return 0.0;
 
-  // Get the bounding sphere.
-  osg::BoundingSphere bounds ( this->getBound() );
-
-  // Calcuate the x,y,z position with no elevation.
-  osg::Vec3d point;
-  body->latLonHeightToXYZ ( lat, lon, 0.0, point );
-
-  // Get a vector to offset along.
-  osg::Vec3d direction ( point ); direction.normalize();
-
-  // Points to intersect with.
-  osg::Vec3d pt0 ( point + ( direction * bounds.radius() ) );
-  osg::Vec3d pt1 ( point - ( direction * bounds.radius() ) );
-
-  osg::Vec3d hit;
-  if ( mesh->intersect ( pt0, pt1, hit ) )
-  {
-    // Convert hit to lat,lon,elevation.
-    double tempLat, tempLon, elevation;
-    body->xyzToLatLonHeight ( hit, tempLat, tempLon, elevation );
-
-    return elevation;
-  }
-
-  return 0.0;
+  return mesh->elevation ( lat, lon, *land );
 }

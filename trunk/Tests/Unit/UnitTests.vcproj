@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(GTEST_LIB_FILE_DEBUG) $(GTEST_MAIN_LIB_FILE_DEBUG) osgd.lib"
+				AdditionalDependencies="$(GTEST_LIB_FILE_DEBUG) osgd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)\CadkitUnitTestsd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
@@ -121,8 +121,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(GTEST_LIB_FILE_RELEASE) $(GTEST_MAIN_LIB_FILE_RELEASE) osg.lib"
+				AdditionalDependencies="$(GTEST_LIB_FILE_RELEASE) osg.lib"
 				OutputFile="$(CADKIT_BIN_DIR)\CadkitUnitTests.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
@@ -185,17 +185,41 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Minerva\Ellipsoid\EllipsoidTest.cpp"
+				RelativePath=".\Main.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\Minerva\Extents\ExtentsTest.cpp"
+			<Filter
+				Name="Usul"
 				>
-			</File>
-			<File
-				RelativePath=".\Minerva\Extents\ParameterizeTest.cpp"
+				<Filter
+					Name="Math"
+					>
+					<File
+						RelativePath=".\Usul\Math\BarycentricTest.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Minerva"
 				>
-			</File>
+				<File
+					RelativePath=".\Minerva\Ellipsoid\EllipsoidTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Minerva\Extents\ExtentsTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Minerva\Extents\ParameterizeTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Minerva\Core\TileEngine\TileTest.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

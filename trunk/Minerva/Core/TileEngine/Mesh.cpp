@@ -16,17 +16,18 @@
 #include "Minerva/Core/TileEngine/Mesh.h"
 #include "Minerva/Core/TileEngine/Body.h"
 
+#include "Usul/Math/Barycentric.h"
+#include "Usul/Predicates/Tolerance.h"
+
+#include "OsgTools/Convert.h"
 #include "OsgTools/Group.h"
 #include "OsgTools/State/StateSet.h"
 
 #include "osg/BlendFunc"
 #include "osg/Geode"
-#include "osg/Geometry"
 #include "osg/Depth"
 #include "osg/Hint"
 #include "osg/PolygonOffset"
-
-#include "osgUtil/LineSegmentIntersector"
 
 using namespace Minerva::Core::TileEngine;
 
@@ -63,6 +64,7 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const 
   _points    ( rows * columns * 2 ),
   _normals   ( rows * columns * 2 ),
   _texCoords ( rows * columns * 2 ),
+  _meshPrimitives(),
   _rows      ( rows ),
   _columns   ( columns ),
   _skirtHeight ( skirtHeight ),
@@ -73,6 +75,22 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const 
   _lowerLeft(),
   _boundingSphere()
 {
+  // Make the draw elements now because they are only dependent on the rows and columns.
+  // There is one tri-strip for each adjacent pair of rows.
+  _meshPrimitives.resize ( _rows - 1 );
+  
+  // Loop through all the rows.
+  for ( unsigned int i = 0; i < _meshPrimitives.size(); ++i )
+  {
+    Indices& indices ( _meshPrimitives.at ( i ) );
+
+    // Loop through all the columns.
+    for ( unsigned int j = 0; j < _columns; ++j )
+    {
+      indices.push_back ( ( ( i + 1 ) * _columns ) + j );
+      indices.push_back ( ( ( i     ) * _columns ) + j );
+    }
+  }
 }
 
 
@@ -107,25 +125,6 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
 
   // Make the main mesh.
   {
-    // There is one tri-strip for each adjacent pair of rows.
-    osg::Geometry::PrimitiveSetList primSetList ( _rows - 1 );
-    
-    // Loop through all the rows.
-    for ( unsigned int i = 0; i < primSetList.size(); ++i )
-    {
-      osg::ref_ptr<osg::DrawElementsUShort> drawElements ( new osg::DrawElementsUShort ( osg::PrimitiveSet::TRIANGLE_STRIP ) );
-      
-      // Loop through all the columns.
-      for ( unsigned int j = 0; j < _columns; ++j )
-      {
-        drawElements->push_back ( ( ( i + 1 ) * _columns ) + j );
-        drawElements->push_back ( ( ( i     ) * _columns ) + j );
-      }
-      
-      // Define the primitive.
-      primSetList[i] = drawElements.get();
-    }
-
     // Make the geometry.
     osg::ref_ptr<osg::Geometry> geometry ( new osg::Geometry );
     
@@ -138,9 +137,23 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
     
     // Set the texture coordinates.
     geometry->setTexCoordArray ( 0, texCoords.get() );
+
+    // Make the draw elements.
+    osg::Geometry::PrimitiveSetList primitives ( _meshPrimitives.size() );
+
+    for ( unsigned int i = 0; i < primitives.size(); ++i )
+    {
+      const Indices& indices ( _meshPrimitives.at ( i ) );
+
+      // Create the draw elements.
+      osg::ref_ptr<osg::DrawElementsUShort> drawElements ( new osg::DrawElementsUShort ( osg::PrimitiveSet::TRIANGLE_STRIP, indices.size(), &indices[0] ) );
+
+      // Assign the value.
+      primitives[i] = drawElements.get();
+    }
     
     // Set the primitive-set list.
-    geometry->setPrimitiveSetList ( primSetList );
+    geometry->setPrimitiveSetList ( primitives );
         
     // Use vertex buffers.
     geometry->setUseDisplayList ( false );
@@ -225,7 +238,7 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
     // Set the normals.
     geometry->setNormalArray ( normals.get() );
     geometry->setNormalBinding ( osg::Geometry::BIND_PER_VERTEX );
-    
+
     // Set the texture coordinates.
     geometry->setTexCoordArray ( 0, texCoords.get() );
     
@@ -543,11 +556,11 @@ osg::Node* Mesh::_buildBorder() const
 
 double Mesh::getSmallestDistanceSquared ( const osg::Vec3d& point ) const
 {
-  const osg::Vec3d &p00 ( _lowerLeft + this->point ( 0, 0 ) );
-  const osg::Vec3d &p0N ( _lowerLeft + this->point ( 0, this->columns() - 1 ) );
-  const osg::Vec3d &pN0 ( _lowerLeft + this->point ( this->rows() - 1, 0 ) );
-  const osg::Vec3d &pNN ( _lowerLeft + this->point ( this->rows() - 1, this->columns() - 1 ) );
-  const osg::Vec3d &pBC ( _boundingSphere.center() );
+  osg::Vec3d p00 ( _lowerLeft + this->point ( 0, 0 ) );
+  osg::Vec3d p0N ( _lowerLeft + this->point ( 0, this->columns() - 1 ) );
+  osg::Vec3d pN0 ( _lowerLeft + this->point ( this->rows() - 1, 0 ) );
+  osg::Vec3d pNN ( _lowerLeft + this->point ( this->rows() - 1, this->columns() - 1 ) );
+  const osg::Vec3d& pBC ( _boundingSphere.center() );
   
   // Squared distances from the eye to the points.
   const double dist00 ( ( point - p00 ).length2() );
@@ -601,41 +614,114 @@ void Mesh::showSkirts ( bool show )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Intersect with line segment defined by two points.
+//  Get the elevation value from the triangles at a given lat,lon.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Mesh::intersect ( const osg::Vec3d& point0, const osg::Vec3d& point1, osg::Vec3d& point )
+double Mesh::elevation ( double lat, double lon, const LandModel& land ) const
 {
-  // Points to intersect with.
-  osg::Vec3d pt0 ( point0 - _lowerLeft );
-  osg::Vec3d pt1 ( point1 - _lowerLeft );
-  
-  // Make the intersector.
-  typedef osgUtil::LineSegmentIntersector Intersector;
-  osg::ref_ptr<Intersector> intersector ( new Intersector ( pt0, pt1 ) );
-  
-  // Declare the pick-visitor.
-  typedef osgUtil::IntersectionVisitor Visitor;
-  osg::ref_ptr<Visitor> visitor ( new Visitor );
-  visitor->setIntersector ( intersector.get() );
+  // Shortcuts.
+  Extents e ( _extents );
+  const Extents::Vertex &mn ( e.minimum() );
+  const Extents::Vertex &mx ( e.maximum() );
 
-  // Return zero if no node.
-  if ( false == _ground.valid() )
-    return false;
+  const double u ( ( lon - mn[0] ) / ( mx[0] - mn[0] ) );
 
-  // Intersect the scene.
-  _ground->accept ( *visitor );
+  // How many tri-strips there are.
+  const unsigned int numStrips ( _meshPrimitives.size() );
 
-  // Get the hit-list for our line-segment.
-  typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
-  const Intersections &hits = intersector->getIntersections();
-  if ( hits.empty() )
-    return false;
-  
-  // Set the hit.
-  point = intersector->getFirstIntersection().getWorldIntersectPoint();
-  point += _lowerLeft;
+  // Get the index.
+  const unsigned int index ( numStrips * u );
 
-  return true;
+  // Get the row of the tri-strip we need.
+  const unsigned int row ( index == numStrips ? 0 : numStrips - index - 1 );
+
+  // Get the tri-strip.
+  const Indices& triStrip ( _meshPrimitives.at ( row) );
+
+  // Loop over the triangles of the tristrip.
+  for ( unsigned int i = 0; i < triStrip.size() - 2; ++i )
+  {
+    // Get the 3 points of the current triangle.
+    Vertex v0 ( _lowerLeft + _points.at ( triStrip.at ( i ) ) );
+    Vertex v1 ( _lowerLeft + _points.at ( triStrip.at ( i + 1 ) ) );
+    Vertex v2 ( _lowerLeft + _points.at ( triStrip.at ( i + 2 ) ) );
+
+    // 3 points in lat-lon coordinates.
+    Vertex t0, t1, t2;
+
+    // Do the conversion.
+    land.xyzToLatLonHeight ( v0, t0[1], t0[0], t0[2] );
+    land.xyzToLatLonHeight ( v1, t1[1], t1[0], t1[2] );
+    land.xyzToLatLonHeight ( v2, t2[1], t2[0], t2[2] );
+
+    // Weighted position.
+    Vertex weights;
+
+    // See if the lat/lon is inside this triangle.
+    if ( Mesh::_containsPoint ( t0, t1, t2, Vertex ( lon, lat, 0.0 ), weights ) )
+    {
+      const double elevation ( weights[0] * t0[2] + weights[1] * t1[2] + weights[2] * t2[2] );
+      return elevation;
+    }
+  }
+
+  return 0.0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the value is between 0 and 1.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  bool isValueBetweenZeroAndOne ( double value )
+  {
+    Usul::Predicates::Tolerance<double> pred ( 1e-10 );
+
+    // First handle cases where the value is close to zero or one.
+    const bool isCloseToZero ( pred ( 0.0, value ) );
+    if ( isCloseToZero )
+      return true;
+
+    const bool isCloseToOne ( pred ( 1.0, value ) );
+    if ( isCloseToOne )
+      return true;
+
+    return 0.0 <= value && value <= 1.0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the point contained in the triangle?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Mesh::_containsPoint ( const Vertex& v0, const Vertex& v1, const Vertex& v2, const Vertex& point, Vertex& weights )
+{
+  Usul::Math::Vec3d t0 ( Usul::Convert::Type<Vertex,Usul::Math::Vec3d>::convert ( v0 ) );
+  Usul::Math::Vec3d t1 ( Usul::Convert::Type<Vertex,Usul::Math::Vec3d>::convert ( v1 ) );
+  Usul::Math::Vec3d t2 ( Usul::Convert::Type<Vertex,Usul::Math::Vec3d>::convert ( v2 ) );
+  Usul::Math::Vec3d p  ( Usul::Convert::Type<Vertex,Usul::Math::Vec3d>::convert ( point ) );
+
+  // Zero out the elevation, so the test is only in the lat/long plane.
+  t0[2] = 0; t1[2] = 0; t2[2] = 0; p[2] = 0;
+
+  Usul::Math::Vec3d barycentricCoords ( Usul::Math::barycentric ( t0, t1, t2, p ) );
+
+  // See if the all the values are between zero and one.  This means that the point is inside the triangle.
+  if ( Detail::isValueBetweenZeroAndOne ( barycentricCoords[0] ) &&
+       Detail::isValueBetweenZeroAndOne ( barycentricCoords[1] ) &&
+       Detail::isValueBetweenZeroAndOne ( barycentricCoords[2] ) )
+  {
+    weights.set ( barycentricCoords[0], barycentricCoords[1], barycentricCoords[2] );
+    return true;
+  }
+
+  return false;
 }

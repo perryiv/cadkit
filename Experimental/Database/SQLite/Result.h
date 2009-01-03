@@ -20,6 +20,7 @@
 #include "Database/SQLite/Export.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Types/Types.h"
 
 #include <string>
 
@@ -55,7 +56,11 @@ public:
   // Input operator for copying the results.
   Result &                operator >> ( std::string & );
   Result &                operator >> ( double & );
+  Result &                operator >> ( float & );
   Result &                operator >> ( int & );
+  Result &                operator >> ( unsigned int & );
+  Result &                operator >> ( Usul::Types::Int64 & );
+  Result &                operator >> ( Usul::Types::Uint64 & );
 
 protected:
 

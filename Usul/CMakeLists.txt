@@ -460,6 +460,7 @@ SET ( HEADERS
 ./Loops/FindLoops.h
 ./Math/Absolute.h
 ./Math/Angle.h
+./Math/Barycentric.h
 ./Math/Constants.h
 ./Math/Equality.h
 ./Math/Finite.h

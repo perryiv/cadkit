@@ -22,6 +22,7 @@
 #include "OsgTools/Configure/OSG.h"
 
 #include "osg/BoundingSphere"
+#include "osg/Geometry"
 #include "osg/Image"
 #include "osg/Vec2d"
 #include "osg/Vec3d"
@@ -35,6 +36,7 @@ namespace Core {
 namespace TileEngine {
 
   class Body;
+  class LandModel;
 
 class MINERVA_EXPORT Mesh
 {
@@ -42,13 +44,12 @@ public:
 
   // Useful typedefs.
   typedef osg::Vec3d Vector;
+  typedef Vector Vertex;
   typedef std::vector<Vector> Vectors;
   typedef Vectors::reference reference;
   typedef Vectors::const_reference const_reference;
   typedef Vectors::value_type value_type;
   typedef Vectors::size_type size_type;
-  typedef osg::Vec2d TexCoord;
-  typedef std::vector < TexCoord > TexCoords;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
 
@@ -67,8 +68,8 @@ public:
   // Get the smallest distance (squared) from the given point.
   double              getSmallestDistanceSquared ( const osg::Vec3d& point ) const;
 
-  // Intersect with line segment defined by two points.
-  bool                intersect ( const osg::Vec3d& point0, const osg::Vec3d& point1, osg::Vec3d& point );
+  // Get the elevation value from the triangles at a given lat,lon.
+  double              elevation ( double lat, double lon, const LandModel& land ) const;
 
   // Access to a single point.
   const_reference     point ( size_type row, size_type column ) const;
@@ -90,11 +91,21 @@ private:
   // Build the geometries for the mesh and skirts.
   void                _buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const;
 
+  // Is the point contained in the triangle?
+  static bool         _containsPoint ( const Vertex& v0, const Vertex& v1, const Vertex& v2, const Vertex& point, Vertex& weights );
+
   // Get the index for the row and column.
   inline size_type    _index ( size_type row, size_type column ) const { return row * _columns + column; }
   
   // Set the location data.
   void                _setLocationData ( const Body& body, osg::BoundingSphere& boundingSphere, unsigned int i, unsigned int j, double lat, double lon, double elevation, double s, double t );
+
+  // Useful typedefs.
+  typedef osg::Vec2d TexCoord;
+  typedef std::vector<TexCoord> TexCoords;
+  typedef unsigned short IndexType;
+  typedef std::vector<IndexType> Indices;
+  typedef std::vector<Indices> Primitives;
 
   Mesh();
   Mesh ( const Mesh & );
@@ -103,6 +114,7 @@ private:
   Vectors _points;
   Vectors _normals;
   TexCoords _texCoords;
+  Primitives _meshPrimitives;
   unsigned int _rows;
   unsigned int _columns;
   double _skirtHeight;

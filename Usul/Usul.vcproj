@@ -277,6 +277,14 @@
 				Name="Base"
 				>
 				<File
+					RelativePath=".\Base\BaseObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Base\BaseObject.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Base\InstanceManager.cpp"
 					>
 				</File>
@@ -1547,6 +1555,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\Barycentric.h"
+					>
+				</File>
+				<File
 					RelativePath="Math\Constants.h"
 					>
 				</File>
@@ -1897,6 +1909,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Threads\MutexTraits.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Threads\Named.cpp"
 					>
 				</File>
@@ -1914,6 +1930,18 @@
 				</File>
 				<File
 					RelativePath="Threads\Queue.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\ReadWriteLocks.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\ReadWriteMutex.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\ReadWriteMutex.h"
 					>
 				</File>
 				<File

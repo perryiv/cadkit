@@ -148,7 +148,7 @@ unsigned int Result::numColumns() const
 namespace Helper
 {
   template < class Function, class OutputType > 
-  void getValue ( oracle::occi::ResultSet *result, Function fun, OutputType &value, unsigned int &column )
+  inline void getValue ( oracle::occi::ResultSet *result, Function fun, OutputType &value, unsigned int &column )
   {
     if ( 0x0 == result )
       throw std::runtime_error ( "Error 1644654670: Null result pointer" );

@@ -25,6 +25,7 @@
 #include "Usul/Strings/Format.h"
 
 #include "sqlite3.h"
+#include "spatialite.h"
 
 using namespace CadKit::Database::SQLite;
 
@@ -44,6 +45,7 @@ namespace
     Life()
     {
       ::sqlite3_initialize();
+      ::spatialite_init();
     }
     ~Life()
     {

@@ -46,6 +46,10 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Result );
 
+  // Return the column name or empty string if index is out of range.
+  // Valid range is [0,numColumns()-1].
+  std::string             columnName ( unsigned int index ) const;
+
   // Prepare the next row for data retrieval. 
   // Returns false if there are no more rows.
   bool                    prepareNextRow();

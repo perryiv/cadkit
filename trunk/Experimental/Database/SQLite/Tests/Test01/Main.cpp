@@ -39,8 +39,17 @@ void _printResult ( CadKit::Database::SQLite::Result::RefPtr result )
     return;
 
   const unsigned int numColumns ( result->numColumns() );
-  unsigned int row ( 0 );
+  if ( 0 == numColumns )
+    return;
 
+  std::cout << result->columnName ( 0 );
+  for ( unsigned int j = 1; j < numColumns; ++j )
+  {
+    std::cout << ", " << result->columnName ( j );
+  }
+  std::cout << '\n';
+
+  unsigned int row ( 0 );
   while ( true == result->prepareNextRow() )
   {
     std::cout << row++;
@@ -50,7 +59,7 @@ void _printResult ( CadKit::Database::SQLite::Result::RefPtr result )
       *result >> value;
       std::cout << ", " << value;
     }
-    std::cout << '\n';
+    std::cout << std::endl;
   }
   std::cout << std::flush;
 }
@@ -79,12 +88,20 @@ void _test()
 
   db->execute ( Usul::Strings::format ( "create table ", table, " ( ", column0, " integer, ", column1, " double )" ) );
 
-  const unsigned int total ( 10 );
+  // Huge difference in speed when using a transaction.
+  // See: http://www.sqlite.org/cvstrac/wiki?p=PerformanceTuning
+  db->execute ( "begin transaction" );
+
+  const unsigned int total ( 1000 );
   for ( unsigned int i = 0; i < total; ++i )
   {
-    std::ostringstream sql;
-    db->execute ( Usul::Strings::format ( "insert into ", table, " ( ", column0, ", ", column1, " ) values ( ", i, ", ", 10.0 * i, " )" ) );
+    std::string sql ( Usul::Strings::format ( "insert into ", table, " ( ", column0, ", ", column1, " ) values ( ", i, ", ", 10.0 * i, " )" ) );
+    std::cout << "Insert statement " << i << " of " << total << ", SQL: " << sql << " ... ";
+    db->execute ( sql );
+    std::cout << "done" << std::endl;
   }
+
+  db->execute ( "commit transaction" );
 
   ::_printResult ( db->execute ( Usul::Strings::format ( "select * from ", table ) ) );
   ::_printResult ( db->execute ( Usul::Strings::format ( "alter table ", table, " add ", column2, " double" ) ) );

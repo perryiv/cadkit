@@ -113,6 +113,30 @@ unsigned int Result::numColumns() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Return the column name or empty string if index is out of range.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Result::columnName ( unsigned int which ) const
+{
+  std::string name;
+
+  // Handle bad statement.
+  if ( 0x0 == _statement )
+    return name;
+
+  // Handle out of range index.
+  if ( which >= this->numColumns() )
+    return name;
+
+  // Set the name and return it.
+  name = ::sqlite3_column_name ( _statement, which );
+  return name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the result.
 //
 ///////////////////////////////////////////////////////////////////////////////

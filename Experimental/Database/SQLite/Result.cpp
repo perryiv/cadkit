@@ -64,7 +64,9 @@ Result::~Result()
 
 void Result::_destroy()
 {
-  // We do not own _database!
+  Guard guard ( this );
+
+  // Note: We do not own _database!
 
   if ( 0x0 != _statement )
   {
@@ -84,6 +86,8 @@ void Result::_destroy()
 
 bool Result::prepareNextRow()
 {
+  Guard guard ( this );
+
   _currentColumn = 0;
 
   if ( 0x0 == _statement )
@@ -103,6 +107,8 @@ bool Result::prepareNextRow()
 
 unsigned int Result::numColumns() const
 {
+  Guard guard ( this );
+
   if ( 0x0 == _statement )
     return 0;
 
@@ -119,6 +125,8 @@ unsigned int Result::numColumns() const
 
 std::string Result::columnName ( unsigned int which ) const
 {
+  Guard guard ( this );
+
   std::string name;
 
   // Handle bad statement.
@@ -143,6 +151,7 @@ std::string Result::columnName ( unsigned int which ) const
 
 Result &Result::operator >> ( std::string &value )
 {
+  Guard guard ( this );
   const unsigned char *temp ( 0x0 );
   Helper::getValue ( _statement, ::sqlite3_column_text, temp, _currentColumn );
   value = ( ( 0x0 == temp ) ? std::string() : reinterpret_cast<const char *> ( temp ) );
@@ -158,6 +167,7 @@ Result &Result::operator >> ( std::string &value )
 
 Result &Result::operator >> ( double &value )
 {
+  Guard guard ( this );
   Helper::getValue ( _statement, ::sqlite3_column_double, value, _currentColumn );
   return *this;
 }
@@ -171,6 +181,7 @@ Result &Result::operator >> ( double &value )
 
 Result &Result::operator >> ( float &value )
 {
+  Guard guard ( this );
   double temp ( 0 );
   *this >> temp;
   if ( ( temp < static_cast<double> ( - std::numeric_limits<float>::max() ) ) ||
@@ -193,6 +204,7 @@ Result &Result::operator >> ( float &value )
 
 Result &Result::operator >> ( int &value )
 {
+  Guard guard ( this );
   Helper::getValue ( _statement, ::sqlite3_column_int, value, _currentColumn );
   return *this;
 }
@@ -206,6 +218,7 @@ Result &Result::operator >> ( int &value )
 
 Result &Result::operator >> ( unsigned int &value )
 {
+  Guard guard ( this );
   int temp ( 0 );
   *this >> temp;
   if ( temp < 0 )
@@ -227,6 +240,7 @@ Result &Result::operator >> ( unsigned int &value )
 
 Result &Result::operator >> ( Usul::Types::Int64 &value )
 {
+  Guard guard ( this );
   Helper::getValue ( _statement, ::sqlite3_column_int64, value, _currentColumn );
   return *this;
 }
@@ -240,6 +254,7 @@ Result &Result::operator >> ( Usul::Types::Int64 &value )
 
 Result &Result::operator >> ( Usul::Types::Uint64 &value )
 {
+  Guard guard ( this );
   Usul::Types::Int64 temp ( 0 );
   *this >> temp;
   if ( temp < 0 )

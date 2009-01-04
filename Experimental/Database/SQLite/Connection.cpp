@@ -96,6 +96,8 @@ Connection::~Connection()
 
 void Connection::_destroy()
 {
+  Guard guard ( this );
+
   if ( 0x0 != _db )
   {
     Usul::Functions::safeCallV1 ( ::sqlite3_close, _db, "6855261040" );

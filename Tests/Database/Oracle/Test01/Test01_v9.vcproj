@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../;../../../../../"
+				AdditionalIncludeDirectories="../../../../;../../../../Experimental"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;_DEBUG"
 				MinimalRebuild="true"
 				ExceptionHandling="2"
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="Test01d.exe"
+				OutputFile="$(ConfigurationName)/Test01d.exe"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../../;../../../../../"
+				AdditionalIncludeDirectories="../../../../;../../../../Experimental"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;NDEBUG"
 				ExceptionHandling="2"
 				RuntimeLibrary="2"
@@ -131,7 +131,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="Test01.exe"
+				OutputFile="$(ConfigurationName)/Test01.exe"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

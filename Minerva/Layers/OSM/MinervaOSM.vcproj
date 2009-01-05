@@ -219,7 +219,19 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\Common.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Functions.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Functions.h"
 				>
 			</File>
 			<File
@@ -239,11 +251,27 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OpenStreetMap.cpp"
+				RelativePath=".\OpenStreetMapFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\OpenStreetMap.h"
+				RelativePath=".\OpenStreetMapFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OpenStreetMapXAPI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OpenStreetMapXAPI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TileVectorJob.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TileVectorJob.h"
 				>
 			</File>
 			<File

@@ -14,6 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Common/Functions.h"
+
 #include "Database/SQLite/Connection.h"
 #include "Database/SQLite/Result.h"
 
@@ -25,44 +27,6 @@
 #include "Usul/Strings/Format.h"
 
 #include <iostream>
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Print the result.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _printResult ( CadKit::Database::SQLite::Result::RefPtr result )
-{
-  if ( false == result.valid() )
-    return;
-
-  const unsigned int numColumns ( result->numColumns() );
-  if ( 0 == numColumns )
-    return;
-
-  std::cout << "Row";
-  for ( unsigned int j = 0; j < numColumns; ++j )
-  {
-    std::cout << ", " << result->columnName ( j );
-  }
-  std::cout << '\n';
-
-  unsigned int row ( 0 );
-  while ( true == result->prepareNextRow() )
-  {
-    std::cout << row++;
-    for ( unsigned int i = 0; i < numColumns; ++i )
-    {
-      std::string value;
-      *result >> value;
-      std::cout << ", " << value;
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::flush;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,16 +67,16 @@ void _test()
 
   db->execute ( "commit transaction" );
 
-  ::_printResult ( db->execute ( Usul::Strings::format ( "select * from ", table ) ) );
-  ::_printResult ( db->execute ( Usul::Strings::format ( "alter table ", table, " add ", column2, " double" ) ) );
-  ::_printResult ( db->execute ( Usul::Strings::format ( "select * from ", table ) ) );
-  ::_printResult ( db->execute ( Usul::Strings::format ( "select ", column0, ", ", column1, " from ", table ) ) );
+  Helper::printResult ( db->execute ( Usul::Strings::format ( "select * from ", table ) ) );
+  Helper::printResult ( db->execute ( Usul::Strings::format ( "alter table ", table, " add ", column2, " double" ) ) );
+  Helper::printResult ( db->execute ( Usul::Strings::format ( "select * from ", table ) ) );
+  Helper::printResult ( db->execute ( Usul::Strings::format ( "select ", column0, ", ", column1, " from ", table ) ) );
 
   // Can we get two results before we access them?
   Result::RefPtr r1 ( db->execute ( Usul::Strings::format ( "select * from ", table ) ) );
   Result::RefPtr r2 ( db->execute ( Usul::Strings::format ( "select ", column0, ", ", column1, " from ", table ) ) );
-  ::_printResult ( r1 );
-  ::_printResult ( r2 );
+  Helper::printResult ( r1 );
+  Helper::printResult ( r2 );
 
   db = 0x0;
 }

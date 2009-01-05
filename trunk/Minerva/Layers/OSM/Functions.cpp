@@ -1,183 +1,35 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2008, Arizona State University
+//  Copyright (c) 2008, Adam Kubach
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Created by: Adam Kubach
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Layers/OSM/OpenStreetMap.h"
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper functions to parse xml and create DataObjects.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "Minerva/Layers/OSM/Functions.h"
+
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Data/Point.h"
 #include "Minerva/Core/Data/MultiPoint.h"
 #include "Minerva/Core/Data/TimeStamp.h"
-#include "Minerva/Core/Factory/Readers.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
 
 #include "Usul/Convert/Convert.h"
-#include "Usul/Factory/RegisterCreator.h"
-#include "Usul/Threads/Safe.h"
 
 #include "boost/foreach.hpp"
 
-using namespace Minerva::Layers::OSM;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Register readers with the factory.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace
-{
-  Minerva::Core::Factory::RegisterReader < Minerva::Core::Factory::TypeCreator < OpenStreetMap > > _creator_for_OSM ( "OpenStreetMap (*.osm)", "*.osm" );
-}
-
-
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( OpenStreetMap, OpenStreetMap::BaseClass );
-USUL_FACTORY_REGISTER_CREATOR ( OpenStreetMap );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Constructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OpenStreetMap::OpenStreetMap() : BaseClass()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destructor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OpenStreetMap::~OpenStreetMap()
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Query Interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::IUnknown* OpenStreetMap::queryInterface ( unsigned long iid )
-{
-  switch ( iid )
-  {
-  case Usul::Interfaces::IRead::IID:
-    return static_cast < Usul::Interfaces::IRead* > ( this );
-  default:
-    return BaseClass::queryInterface ( iid );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenStreetMap::read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
-{
-  Usul::Threads::Safe::set ( this->mutex(), filename, _filename );
-  
-  this->_read ( filename, caller, progress );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Read the file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenStreetMap::_read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
-{
-  XmlTree::XercesLife life;
-  XmlTree::Document::RefPtr doc ( new XmlTree::Document );
-  doc->load ( filename );
-  
-  // Get the bounds of the data set.
-  XmlTree::Node::RefPtr bounds ( doc->child ( "bounds" ) );
-  if ( bounds.valid() )
-    this->_setBounds ( *bounds );
-  
-  // Nodes and ways.
-  Nodes nodes;
-  Ways ways;
-
-  // Parse.
-  OpenStreetMap::_parse ( *doc, nodes, ways );
-
-  Usul::Interfaces::IUnknown::QueryPtr allNodes ( OpenStreetMap::_createForAllNodes ( nodes ) );
-  this->add ( allNodes );
-  
-  // Add nodes.
-#if 0
-  BOOST_FOREACH ( OSMNodePtr node, nodes )
-  {
-    if ( true == node.valid() )
-    {
-      Usul::Interfaces::IUnknown::QueryPtr unknown ( OpenStreetMap::_createForNode ( *node ) );
-      this->add ( unknown );
-    }
-  }
-#endif
-
-  // Add ways.
-  BOOST_FOREACH ( OSMWayPtr way, ways )
-  {
-    if ( true == way.valid() )
-    {
-      Usul::Interfaces::IUnknown::QueryPtr unknown ( OpenStreetMap::_createForWay ( *way ) );
-      this->add ( unknown );
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Deserialize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenStreetMap::deserialize( const XmlTree::Node &node )
-{
-  BaseClass::deserialize ( node );
-  this->read ( _filename );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Serialize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void OpenStreetMap::serialize ( XmlTree::Node &parent ) const
-{
-  Serialize::XML::DataMemberMap dataMemberMap ( Usul::Threads::Safe::get ( this->mutex(), _dataMemberMap ) );
-  
-  // Don't serialize the layers.
-  dataMemberMap.erase ( "layers" );
-  
-  // Serialize.
-  dataMemberMap.serialize ( parent );
-}
+using Minerva::Layers::OSM::DataObject;
+using Minerva::Layers::OSM::Extents;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -186,7 +38,7 @@ void OpenStreetMap::serialize ( XmlTree::Node &parent ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenStreetMap::_setBounds ( const XmlTree::Node& node )
+Extents Minerva::Layers::OSM::parseExtents ( const XmlTree::Node& node )
 {
   const std::string minlat ( node.attribute ( "minlat" ) );
   const std::string minlon ( node.attribute ( "minlon" ) );
@@ -200,7 +52,7 @@ void OpenStreetMap::_setBounds ( const XmlTree::Node& node )
   mn.set ( minlon.empty() ? 0.0 : ToDouble::convert ( minlon ), minlat.empty() ? 0.0 : ToDouble::convert ( minlat ) );
   mx.set ( maxlon.empty() ? 0.0 : ToDouble::convert ( maxlon ), maxlat.empty() ? 0.0 : ToDouble::convert ( maxlat ) );
   
-  this->extents ( Extents ( mn, mx ) );
+  return Extents ( mn, mx );
 }
 
 
@@ -210,7 +62,7 @@ void OpenStreetMap::_setBounds ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void OpenStreetMap::_parse ( const XmlTree::Node& xmlNode, Nodes& nodes, Ways& ways )
+void Minerva::Layers::OSM::parseNodesAndWays ( const XmlTree::Node& xmlNode, Nodes& nodes, Ways& ways )
 {
   // Typedefs.
   typedef Minerva::Layers::OSM::Object OSMObject;
@@ -308,11 +160,28 @@ void OpenStreetMap::_parse ( const XmlTree::Node& xmlNode, Nodes& nodes, Ways& w
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Parse the xml into ways and nodes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Minerva::Layers::OSM::parseNodesAndWays ( const std::string& filename, Nodes& nodes, Ways& ways )
+{
+  XmlTree::XercesLife life;
+  XmlTree::Document::RefPtr doc ( new XmlTree::Document );
+  doc->load ( filename );
+
+  // Redirect
+  parseNodesAndWays ( *doc, nodes, ways );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Create a data object.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenStreetMap::DataObject* OpenStreetMap::_createForAllNodes ( const Nodes& nodes )
+DataObject* Minerva::Layers::OSM::createForAllNodes ( const Nodes& nodes )
 {
   // Make a vertex array.
   Minerva::Core::Data::MultiPoint::Vertices points;
@@ -348,7 +217,7 @@ OpenStreetMap::DataObject* OpenStreetMap::_createForAllNodes ( const Nodes& node
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenStreetMap::DataObject* OpenStreetMap::_createForNode ( const Minerva::Layers::OSM::Node& node )
+DataObject* Minerva::Layers::OSM::createForNode ( const Minerva::Layers::OSM::Node& node )
 {
   // Make a point.
   Minerva::Core::Data::Point::RefPtr point ( new Minerva::Core::Data::Point );
@@ -372,7 +241,7 @@ OpenStreetMap::DataObject* OpenStreetMap::_createForNode ( const Minerva::Layers
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenStreetMap::DataObject* OpenStreetMap::_createForWay  ( const Minerva::Layers::OSM::Way&  way  )
+DataObject* Minerva::Layers::OSM::createForWay  ( const Minerva::Layers::OSM::Way&  way  )
 {
   // Make a line.
   Minerva::Core::Data::Line::RefPtr line ( new Minerva::Core::Data::Line );

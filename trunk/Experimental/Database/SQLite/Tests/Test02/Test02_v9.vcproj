@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../;../../../../../"
+				AdditionalIncludeDirectories="../;../../../../;../../../../../"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;_DEBUG"
 				MinimalRebuild="true"
 				ExceptionHandling="2"
@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../../;../../../../../"
+				AdditionalIncludeDirectories="../;../../../../;../../../../../"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;NDEBUG"
 				ExceptionHandling="2"
 				RuntimeLibrary="2"
@@ -168,6 +168,10 @@
 		<Filter
 			Name="Source"
 			>
+			<File
+				RelativePath="..\Common\Functions.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Main.cpp"
 				>

@@ -14,6 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Common/Functions.h"
+
 #include "Database/SQLite/Connection.h"
 #include "Database/SQLite/Result.h"
 
@@ -27,44 +29,6 @@
 #include "Usul/Strings/Format.h"
 
 #include <iostream>
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Print the result.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void _printResult ( CadKit::Database::SQLite::Result::RefPtr result )
-{
-  if ( false == result.valid() )
-    return;
-
-  const unsigned int numColumns ( result->numColumns() );
-  if ( 0 == numColumns )
-    return;
-
-  std::cout << "Row";
-  for ( unsigned int j = 0; j < numColumns; ++j )
-  {
-    std::cout << ", " << result->columnName ( j );
-  }
-  std::cout << '\n';
-
-  unsigned int row ( 0 );
-  while ( true == result->prepareNextRow() )
-  {
-    std::cout << row++;
-    for ( unsigned int i = 0; i < numColumns; ++i )
-    {
-      std::string value;
-      *result >> value;
-      std::cout << ", " << value;
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::flush;
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,11 +84,11 @@ void _test()
   db->execute ( "commit transaction" );
 
   Usul::Types::Uint64 start ( Usul::System::Clock::milliseconds() );
-  ::_printResult ( db->execute ( Usul::Strings::format ( "select AsText ( Geometry ) from ", table, " where MBRContains ( BuildMBR ( 3,   30,  7,  70 ), Geometry )" ) ) );
+  Helper::printResult ( db->execute ( Usul::Strings::format ( "select AsText ( Geometry ) from ", table, " where MBRContains ( BuildMBR ( 3,   30,  7,  70 ), Geometry )" ) ) );
   std::cout << "Time for select statement = " << ( Usul::System::Clock::milliseconds() - start ) << " milliseconds" << std::endl;
 
   start = Usul::System::Clock::milliseconds();
-  ::_printResult ( db->execute ( Usul::Strings::format ( "select AsText ( Geometry ) from ", table, " where MBRContains ( BuildMBR ( 30, 300, 70, 700 ), Geometry )" ) ) );
+  Helper::printResult ( db->execute ( Usul::Strings::format ( "select AsText ( Geometry ) from ", table, " where MBRContains ( BuildMBR ( 30, 300, 70, 700 ), Geometry )" ) ) );
   std::cout << "Time for select statement = " << ( Usul::System::Clock::milliseconds() - start ) << " milliseconds" << std::endl;
 
   db = 0x0;

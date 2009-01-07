@@ -38,18 +38,25 @@ INCLUDE_DIRECTORIES(
 
 # List the headers
 SET ( HEADERS
+	./Common.h
 	./Export.h
+	./Functions.h
 	./Node.h
 	./Object.h
-	./OpenStreetMap.h
+	./OpenStreetMapFile.h
+	./OpenStreetMapXAPI.h
+	./TileVectorJob.h
 	./Way.h
 )
 			 
 # List the Sources
 SET (SOURCES
+	./Functions.cpp
 	./Node.cpp
 	./Object.cpp
-	./OpenStreetMap.cpp
+	./OpenStreetMapFile.cpp
+	./OpenStreetMapXAPI.cpp
+	./TileVectorJob.cpp
 	./Way.cpp
 )
 

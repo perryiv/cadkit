@@ -49,11 +49,18 @@ EditWmsLayerWidget::EditWmsLayerWidget ( RasterLayerNetwork *layer, QWidget * pa
     _name->setText( _layer->name().c_str() );
     _server->setText ( _layer->urlBase().c_str() );
     
+    // Disable counting of the number of files in the cache until this is threaded so that it doesn't take a long time to show the dialog.
+#if 0
     // Find the number of files.
     typedef std::list<std::string> Filenames;
     Filenames files;
     Usul::File::findFiles ( _layer->cacheDirectory(), _layer->cacheFileExtension(), files );
     _cacheInfoText->setText ( Usul::Strings::format ( files.size() ).c_str() );
+#else
+    _cacheInfoText->setVisible ( false );
+    _numberOfFilesLabel->setVisible ( false );
+#endif
+    
     _cacheDirectoryText->setText ( _layer->cacheDirectory().c_str() );
   }
   

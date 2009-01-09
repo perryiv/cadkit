@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+
 namespace VaporIntrusionDotNet
 {
-  class Component
+  public class Component
   {
     //*************************************************************************************
     //
@@ -14,6 +18,8 @@ namespace VaporIntrusionDotNet
 
     private string _name;
     private string _value;
+    private Color _color;
+    private Point _point;
 
     //*************************************************************************************
     //
@@ -25,6 +31,8 @@ namespace VaporIntrusionDotNet
     {
       _name = "";
       _value = "";
+      _point = new Point(0, 0);
+      _color = Color.Red;
     }
 
     //*************************************************************************************
@@ -45,7 +53,7 @@ namespace VaporIntrusionDotNet
     //
     //*************************************************************************
 
-    public string Name
+    public string name
     {
       get
       {
@@ -63,7 +71,7 @@ namespace VaporIntrusionDotNet
     //
     //*************************************************************************
 
-    public string Value
+    public string value
     {
       get
       {
@@ -74,6 +82,47 @@ namespace VaporIntrusionDotNet
         _value = value;
       }
     }
+
+
+    //*************************************************************************
+    // 
+    // Get/Set the color
+    //
+    //*************************************************************************
+
+    public Color color
+    {
+      get
+      {
+        return _color;
+      }
+      set
+      {
+        _color = value;
+      }
+    }
+
+
+    //*************************************************************************
+    // 
+    // Get/Set the point
+    //
+    //*************************************************************************
+
+    public Point point
+    {
+      get
+      {
+        return _point;
+      }
+      set
+      {
+        _point = value;
+      }
+    }
+
+
+
 
 
   }

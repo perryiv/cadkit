@@ -349,13 +349,15 @@ void Pool::_threadStarted ( Usul::Threads::Thread *thread )
         USUL_ASSERT ( false == _executing.empty() );
         _executing.erase ( task );
       }
+      
+      task = 0x0;
     }
-
-    // Dereference before sleep.
-    task = 0x0;
-
-    // Sleep so that this thread doesn't take over.
-    Usul::System::Sleep::milliseconds ( this->sleepDuration() );
+    
+    // Only sleep when the queue is empty (Task is null).  This gives a huge performance increase. (From 10% to 60% in some of the tests I ran.)
+    else
+    {
+      Usul::System::Sleep::milliseconds ( this->sleepDuration() );
+    }
   }
 }
 

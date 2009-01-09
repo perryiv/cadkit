@@ -14,8 +14,8 @@ namespace VaporIntrusionDotNet
     //*************************************************************************************
 
     private static List<Component> _gridSpace;
-    private static Helpers.Helper.Vector3 _dimensions;
-    private static Helpers.Helper.Vector3 _currentPositions;
+    private static Helper.Vector3 _dimensions;
+    private static Helper.Vector3 _currentPositions;
 
     //*************************************************************************************
     //
@@ -47,7 +47,7 @@ namespace VaporIntrusionDotNet
     //
     //*************************************************************************************
 
-    public Helpers.Helper.Vector3 dimensions
+    public Helper.Vector3 dimensions
     {
       get
       {
@@ -58,11 +58,8 @@ namespace VaporIntrusionDotNet
         // Set the dimensions
         _dimensions = value;
 
-        // calculate the max number of elements
-        int capacity = _dimensions.x * _dimensions.y * dimensions.z;
-
         // erase and set the max number of elements for the grid space
-        _gridSpace = new List<Component>(capacity);
+        _gridSpace = new List<Component>(_dimensions.x * _dimensions.y * dimensions.z);
 
       }
     }
@@ -74,7 +71,7 @@ namespace VaporIntrusionDotNet
     //
     //*************************************************************************************
 
-    public Helpers.Helper.Vector3 positions
+    public Helper.Vector3 positions
     {
       get
       {

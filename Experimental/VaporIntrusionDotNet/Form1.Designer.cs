@@ -28,48 +28,63 @@ namespace VaporIntrusionDotNet
     /// </summary>
     private void InitializeComponent()
     {
-      this.menuBar = new System.Windows.Forms.MenuStrip();
-      this.fileMenuBarItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.editMenuBarItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.menuBar.SuspendLayout();
+      this.MenuBar = new System.Windows.Forms.MenuStrip();
+      this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.MenuBar.SuspendLayout();
       this.SuspendLayout();
       // 
-      // menuBar
+      // MenuBar
       // 
-      this.menuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileMenuBarItem,
-            this.editMenuBarItem});
-      this.menuBar.Location = new System.Drawing.Point(0, 0);
-      this.menuBar.Name = "menuBar";
-      this.menuBar.Size = new System.Drawing.Size(952, 26);
-      this.menuBar.TabIndex = 0;
-      this.menuBar.Text = "MenuBar";
+      this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.viewToolStripMenuItem,
+            this.windowToolStripMenuItem});
+      this.MenuBar.Location = new System.Drawing.Point(0, 0);
+      this.MenuBar.Name = "MenuBar";
+      this.MenuBar.Size = new System.Drawing.Size(816, 26);
+      this.MenuBar.TabIndex = 1;
+      this.MenuBar.Text = "menuStrip1";
+      this.MenuBar.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MenuBar_ItemClicked_1);
       // 
-      // fileMenuBarItem
+      // fileToolStripMenuItem
       // 
-      this.fileMenuBarItem.Name = "fileMenuBarItem";
-      this.fileMenuBarItem.Size = new System.Drawing.Size(40, 22);
-      this.fileMenuBarItem.Text = "File";
+      this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+      this.fileToolStripMenuItem.Size = new System.Drawing.Size(40, 22);
+      this.fileToolStripMenuItem.Text = "File";
       // 
-      // editMenuBarItem
+      // editToolStripMenuItem
       // 
-      this.editMenuBarItem.Name = "editMenuBarItem";
-      this.editMenuBarItem.Size = new System.Drawing.Size(43, 22);
-      this.editMenuBarItem.Text = "Edit";
+      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+      this.editToolStripMenuItem.Size = new System.Drawing.Size(43, 22);
+      this.editToolStripMenuItem.Text = "Edit";
+      // 
+      // windowToolStripMenuItem
+      // 
+      this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
+      this.windowToolStripMenuItem.Size = new System.Drawing.Size(70, 22);
+      this.windowToolStripMenuItem.Text = "Window";
+      // 
+      // viewToolStripMenuItem
+      // 
+      this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+      this.viewToolStripMenuItem.Size = new System.Drawing.Size(49, 22);
+      this.viewToolStripMenuItem.Text = "View";
       // 
       // Form1
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(952, 678);
-      this.Controls.Add(this.menuBar);
+      this.ClientSize = new System.Drawing.Size(816, 613);
+      this.Controls.Add(this.MenuBar);
       this.IsMdiContainer = true;
-      this.MainMenuStrip = this.menuBar;
+      this.MainMenuStrip = this.MenuBar;
       this.Name = "Form1";
-      this.Text = "Vapor Intrusion Simulation Setup";
-      this.Load += new System.EventHandler(this.Form1_Load);
-      this.menuBar.ResumeLayout(false);
-      this.menuBar.PerformLayout();
+      this.Text = "Vapor Intrusion Simulation Interface";
+      this.Load += new System.EventHandler(this.Form1_Load_1);
+      this.MenuBar.ResumeLayout(false);
+      this.MenuBar.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -77,9 +92,11 @@ namespace VaporIntrusionDotNet
 
     #endregion
 
-    private System.Windows.Forms.MenuStrip menuBar;
-    private System.Windows.Forms.ToolStripMenuItem fileMenuBarItem;
-    private System.Windows.Forms.ToolStripMenuItem editMenuBarItem;
+    private System.Windows.Forms.MenuStrip MenuBar;
+    private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
   }
 }
 

@@ -2,9 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="lib: CadKit SQLiteWrap"
-	ProjectGUID="{35035460-93D8-4701-BF5F-884ABC3F295C}"
-	RootNamespace="lib: SQLiteWrap"
+	Name="lib: CadKit Database SQLite"
+	ProjectGUID="{85F49415-1665-4386-A3E8-BF2021FD5EB7}"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -239,6 +238,10 @@
 			</File>
 			<File
 				RelativePath=".\Result.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Transaction.h"
 				>
 			</File>
 		</Filter>

@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SQL_LITE_WRAP_EXPORT_H_
-#define _SQL_LITE_WRAP_EXPORT_H_
+#ifndef _SERIALIZE_XML_EXPORT_H_
+#define _SERIALIZE_XML_EXPORT_H_
 
 #ifdef _WIN32
 # pragma warning ( disable : 4275 ) // Irrelevant VC6 warning.
@@ -29,4 +29,4 @@
 # define SERIALIZE_XML_EXPORT
 #endif
 
-#endif // _SQL_LITE_WRAP_EXPORT_H_
+#endif // _SERIALIZE_XML_EXPORT_H_

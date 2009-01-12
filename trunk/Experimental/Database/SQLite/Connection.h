@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SQL_LITE_WRAP_DATABASE_H_
-#define _SQL_LITE_WRAP_DATABASE_H_
+#ifndef _SQL_LITE_WRAP_CONNECTION_H_
+#define _SQL_LITE_WRAP_CONNECTION_H_
 
 #include "Database/SQLite/Result.h"
 
@@ -77,4 +77,4 @@ private:
 } // namespace CadKit
 
 
-#endif // _SQL_LITE_WRAP_DATABASE_H_
+#endif // _SQL_LITE_WRAP_CONNECTION_H_

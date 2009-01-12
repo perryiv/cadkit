@@ -2,9 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: CadKit SQLiteWrap"
+	Name="lib: CadKit Database SQLite"
 	ProjectGUID="{35035460-93D8-4701-BF5F-884ABC3F295C}"
-	RootNamespace="lib: SQLiteWrap"
 	>
 	<Platforms>
 		<Platform

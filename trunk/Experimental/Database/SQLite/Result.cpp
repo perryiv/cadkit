@@ -36,10 +36,11 @@ USUL_IMPLEMENT_TYPE_ID ( Result );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Result::Result ( ::sqlite3 *db, ::sqlite3_stmt *s ) : BaseClass(),
+Result::Result ( const std::string &sql, ::sqlite3 *db, ::sqlite3_stmt *s ) : BaseClass(),
   _database ( db ),
   _statement ( s ),
-  _currentColumn ( 0 )
+  _currentColumn ( 0 ),
+  _sql ( sql )
 {
 }
 
@@ -64,15 +65,33 @@ Result::~Result()
 
 void Result::_destroy()
 {
+  this->finalize();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Finalize the statement now.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Result::finalize()
+{
   Guard guard ( this );
 
-  // Note: We do not own _database!
+  // Copy the statement and set member to null.
+  ::sqlite3_stmt *statement ( _statement );
+  _statement = 0x0;
 
-  if ( 0x0 != _statement )
+  // Is the statement valid?
+  if ( 0x0 != statement )
   {
-    if ( SQLITE_OK != ::sqlite3_finalize ( _statement ) )
+    const int result ( ::sqlite3_finalize ( statement ) );
+    if ( SQLITE_OK != result )
+    {
       throw std::runtime_error ( Usul::Strings::format 
-        ( "Error 1333604206: Failed to finalize statement, ", Helper::errorMessage ( _database ) ) );
+        ( "Error 1333604206: Failed to finalize statement, ", Helper::errorMessage ( _database ), ", SQL: ", _sql ) );
+    }
   }
 }
 
@@ -264,5 +283,36 @@ Result &Result::operator >> ( Usul::Types::Uint64 &value )
         " will not convert to ", sizeof ( Usul::Types::Uint64 ), "-byte unsigned integer" ) );
   }
   value = static_cast<Usul::Types::Uint64> ( temp );
+  return *this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( Blob &value )
+{
+  Guard guard ( this );
+
+  // According to http://www.sqlite.org/c3ref/column_blob.html, we should 
+  // get the data before we ask how big it is.
+  const void *temp ( 0x0 );
+  Helper::getValue ( _statement, ::sqlite3_column_blob, temp, _currentColumn );
+
+  // Have to rewind.
+  --_currentColumn;
+
+  int numBytes ( 0 );
+  Helper::getValue ( _statement, ::sqlite3_column_bytes, numBytes, _currentColumn );
+
+  if ( ( 0x0 != temp ) && ( numBytes > 0 ) )
+  {
+    const unsigned char *start ( reinterpret_cast < const unsigned char * > ( temp ) );
+    value.assign ( start, start + numBytes );
+  }
+
   return *this;
 }

@@ -14,8 +14,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SQL_LITE_WRAP_RESULTS_CALLBACK_H_
-#define _SQL_LITE_WRAP_RESULTS_CALLBACK_H_
+#ifndef _SQL_LITE_WRAP_RESULTS_H_
+#define _SQL_LITE_WRAP_RESULTS_H_
 
 #include "Database/SQLite/Export.h"
 
@@ -23,6 +23,7 @@
 #include "Usul/Types/Types.h"
 
 #include <string>
+#include <vector>
 
 struct sqlite3;
 struct sqlite3_stmt;
@@ -39,6 +40,7 @@ public:
 
   /// Typedefs.
   typedef Usul::Base::Object BaseClass;
+  typedef std::vector<unsigned char> Blob;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Result );
@@ -49,6 +51,9 @@ public:
   // Return the column name or empty string if index is out of range.
   // Valid range is [0,numColumns()-1].
   std::string             columnName ( unsigned int index ) const;
+
+  // Finalize the statement now. No need to call for ordinary usage.
+  void                    finalize();
 
   // Prepare the next row for data retrieval. 
   // Returns false if there are no more rows.
@@ -65,13 +70,14 @@ public:
   Result &                operator >> ( unsigned int & );
   Result &                operator >> ( Usul::Types::Int64 & );
   Result &                operator >> ( Usul::Types::Uint64 & );
+  Result &                operator >> ( Blob & );
 
 protected:
 
   friend class Connection;
 
   // Constructor
-  Result ( ::sqlite3 *, ::sqlite3_stmt * );
+  Result ( const std::string &sql, ::sqlite3 *, ::sqlite3_stmt * );
 
   // Use reference counting.
   virtual ~Result();
@@ -90,6 +96,7 @@ private:
   ::sqlite3 *_database;
   ::sqlite3_stmt *_statement;
   unsigned int _currentColumn;
+  std::string _sql;
 };
 
 
@@ -98,4 +105,4 @@ private:
 } // namespace CadKit
 
 
-#endif // _SQL_LITE_WRAP_RESULTS_CALLBACK_H_
+#endif // _SQL_LITE_WRAP_RESULTS_H_

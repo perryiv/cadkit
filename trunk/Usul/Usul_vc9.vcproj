@@ -2911,6 +2911,10 @@
 					RelativePath=".\Convert\Vector4.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Convert\WellKnownBinary.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Preprocess"

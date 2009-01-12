@@ -136,11 +136,13 @@ Result::RefPtr Connection::execute ( const std::string &sql )
     if ( SQLITE_OK != resultCode )
     {
       throw std::runtime_error ( Usul::Strings::format
-        ( "Error 1353976135: Result Code: ", resultCode, ", Message: '", Helper::errorMessage ( _db ), "'" ) );
+        ( "Error 1353976135: Result Code: ", resultCode, 
+          ", Message: '", Helper::errorMessage ( _db ), "'",
+          ", SQL: ", sql ) );
     }
 
     // Prepare the result.
-    Result::RefPtr result ( new Result ( _db, statement ) );
+    Result::RefPtr result ( new Result ( sql, _db, statement ) );
 
     // If the statement is not a select...
     if ( false == Helper::isSelectStatement ( sql ) )
@@ -148,6 +150,7 @@ Result::RefPtr Connection::execute ( const std::string &sql )
       // This will actually execute the statement. Since it's not a select 
       // statement the caller is likely to ignore the returned object.
       result->prepareNextRow();
+      result->finalize();
     }
 
     // Return the result.

@@ -353,7 +353,9 @@ void Pool::_threadStarted ( Usul::Threads::Thread *thread )
       task = 0x0;
     }
     
-    // Only sleep when the queue is empty (Task is null).  This vasty improves performace when processing tasks. (From 10 to 30 times faster in some of the tests I ran.)
+    // Only sleep when the queue is empty (Task is null).
+    // This vasty improves performace when processing tasks.
+    // (From 10 to 30 times faster in some of the tests I ran.)
     else
     {
       Usul::System::Sleep::milliseconds ( this->sleepDuration() );

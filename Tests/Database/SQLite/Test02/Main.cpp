@@ -49,11 +49,12 @@ void _test()
   Usul::File::remove ( file );
   Connection::ValidAccessRefPtr db ( new Connection ( file ) );
 
-  const std::string table ( "Points" );
+  const std::string table ( "SpatialTable" );
   const std::string column0 ( "Indices" );
   const std::string column1 ( "Geometry" );
 
-  db->execute ( Usul::Strings::format ( "create table ", table, " ( ", column0, " integer primary key autoincrement, ", column1, " blob not null )" ) );
+  std::string sql ( Usul::Strings::format ( "create table ", table, " ( ", column0, " integer primary key autoincrement, ", column1, " blob not null )" ) );
+  db->execute ( sql );
 
   Usul::Policies::TimeBased update ( 1000 );
   const unsigned int total ( 100000 );
@@ -69,7 +70,7 @@ void _test()
     const std::string y ( DoubleToString::convert ( i * 10.0 ) );
 
     // Make sql statement.
-    std::string sql ( Usul::Strings::format ( "insert into ", table, " ( ", column1, " ) values ( GeomFromText ( 'POINT ( ", x, ' ', y, " )' ) )" ) );
+    sql = Usul::Strings::format ( "insert into ", table, " ( ", column1, " ) values ( GeomFromText ( 'POINT ( ", x, ' ', y, " )' ) )" );
 
     // Feedback.
     if ( true == update() )

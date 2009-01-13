@@ -15,13 +15,7 @@
 
 #include "Usul/System/Clock.h"
 
-// TODO do we really need to include time.h on apple and ctime otherwise?
-// Should be able to pick one for all platforms.
-#ifdef __APPLE__
-# include "time.h"
-#else
-# include <ctime>
-#endif
+#include <ctime>
 
 #ifndef _MSC_VER
 # include <sys/time.h> // For gettimeofday
@@ -66,4 +60,3 @@ Usul::Types::Uint64 Usul::System::Clock::seconds()
   return t1.tv_sec;
 #endif
 }
-

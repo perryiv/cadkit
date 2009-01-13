@@ -106,11 +106,13 @@ private:
   typedef unsigned short IndexType;
   typedef std::vector<IndexType> Indices;
   typedef std::vector<Indices> Primitives;
+  typedef std::vector<Vertex> LatLonPoints;
 
   Mesh();
   Mesh ( const Mesh & );
   Mesh &operator = ( const Mesh & );
 
+  LatLonPoints _latLonPoints;
   Vectors _points;
   Vectors _normals;
   TexCoords _texCoords;

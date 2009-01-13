@@ -12,6 +12,7 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
+#include "Minerva/Core/TileEngine/Tile.h"
 
 #include "Usul/Math/Vector4.h"
 
@@ -22,9 +23,10 @@ namespace Minerva {
 namespace Core {
 namespace Algorithms {
 
+  typedef Minerva::Core::TileEngine::Tile Tile;
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
 
-  MINERVA_EXPORT osg::Image* resampleElevation ( const osg::Image& image, const Extents& extents, const Extents& request, const Usul::Math::Vec4d& region );
+  MINERVA_EXPORT osg::Image* resampleElevation ( Tile::RefPtr tile, const Extents& request );
 
 }
 }

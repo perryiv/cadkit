@@ -61,6 +61,7 @@ const unsigned int SKIRT_RENDER_BIN ( 0 );
 ///////////////////////////////////////////////////////////////////////////////
 
 Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const Extents& extents ) :
+  _latLonPoints ( rows * columns * 2 ),
   _points    ( rows * columns * 2 ),
   _normals   ( rows * columns * 2 ),
   _texCoords ( rows * columns * 2 ),
@@ -377,6 +378,10 @@ void Mesh::_setLocationData ( const Body& body, osg::BoundingSphere& boundingSph
   // Convert lat-lon coordinates to xyz.
   Vector &p ( _points.at ( index ) );
   body.latLonHeightToXYZ ( lat, lon, elevation, p );
+  
+  // Save the lat/lon value.  
+  // This value needs to be saved because going from x,y,z to lat,lon,height will not give us the same value due to inaccuracies in the conversion.
+  _latLonPoints.at ( index ) = Vertex ( lon, lat, elevation );
 
   // Expand the bounding sphere by the point.
   boundingSphere.expandBy ( p );
@@ -620,6 +625,11 @@ void Mesh::showSkirts ( bool show )
 
 double Mesh::elevation ( double lat, double lon, const LandModel& land ) const
 {
+  if ( false == _extents.contains ( Extents::Vertex ( lon, lat ) ) )
+  {
+    return 0.0;
+  }
+  
   // Shortcuts.
   Extents e ( _extents );
   const Extents::Vertex &mn ( e.minimum() );
@@ -642,18 +652,10 @@ double Mesh::elevation ( double lat, double lon, const LandModel& land ) const
   // Loop over the triangles of the tristrip.
   for ( unsigned int i = 0; i < triStrip.size() - 2; ++i )
   {
-    // Get the 3 points of the current triangle.
-    Vertex v0 ( _lowerLeft + _points.at ( triStrip.at ( i ) ) );
-    Vertex v1 ( _lowerLeft + _points.at ( triStrip.at ( i + 1 ) ) );
-    Vertex v2 ( _lowerLeft + _points.at ( triStrip.at ( i + 2 ) ) );
-
-    // 3 points in lat-lon coordinates.
-    Vertex t0, t1, t2;
-
-    // Do the conversion.
-    land.xyzToLatLonHeight ( v0, t0[1], t0[0], t0[2] );
-    land.xyzToLatLonHeight ( v1, t1[1], t1[0], t1[2] );
-    land.xyzToLatLonHeight ( v2, t2[1], t2[0], t2[2] );
+    // Get the 3 points of the current triangle in lat-lon coordinates.
+    Vertex t0 ( _latLonPoints.at ( triStrip.at ( i ) ) );
+    Vertex t1 ( _latLonPoints.at ( triStrip.at ( i + 1 ) ) );
+    Vertex t2 ( _latLonPoints.at ( triStrip.at ( i + 2 ) ) );
 
     // Weighted position.
     Vertex weights;

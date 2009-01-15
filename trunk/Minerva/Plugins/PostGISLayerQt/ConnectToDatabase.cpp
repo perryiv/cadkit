@@ -96,13 +96,13 @@ namespace Usul
 ///////////////////////////////////////////////////////////////////////////////
 
 ConnectToDatabase::ConnectToDatabase ( QWidget * widget ) :
-BaseClass ( widget ),
-_recentConnections ( new QComboBox ),
-_hostname ( new QLineEdit ),
-_database ( new QLineEdit ),
-_username ( new QLineEdit ),
-_password ( new QLineEdit ),
-_savedConnections ()
+  BaseClass ( widget ),
+  _recentConnections ( new QComboBox ),
+  _hostname ( new QLineEdit ),
+  _database ( new QLineEdit ),
+  _username ( new QLineEdit ),
+  _password ( new QLineEdit ),
+  _savedConnections ()
 {
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );

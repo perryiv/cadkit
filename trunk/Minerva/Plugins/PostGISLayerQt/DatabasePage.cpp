@@ -32,9 +32,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 DatabasePage::DatabasePage ( QWidget * parent ) : BaseClass ( parent ),
-_layer ( 0x0 ),
-_listView ( 0x0 ),
-_connection ( 0x0 )
+  _layer ( 0x0 ),
+  _listView ( 0x0 ),
+  _connection ( 0x0 )
 {
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );
@@ -104,7 +104,7 @@ void DatabasePage::_connectToDatabase ()
 
   _connection = dialog.exec();
 
-  if ( _connection.valid () )
+  if ( _connection.valid() )
     this->_listTables ();
 }
 

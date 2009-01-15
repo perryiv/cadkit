@@ -31,12 +31,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 GradientColorWidget::GradientColorWidget ( Layer *layer, QWidget *parent ) :
-BaseClass ( parent ),
-_layer ( layer ),
-_gradientColor ( 0x0 ),
-_minColorButton ( new QtTools::ColorButton ),
-_maxColorButton ( new QtTools::ColorButton ),
-_columns ( new QComboBox )
+  BaseClass ( parent ),
+  _layer ( layer ),
+  _gradientColor ( 0x0 ),
+  _minColorButton ( new QtTools::ColorButton ),
+  _maxColorButton ( new QtTools::ColorButton ),
+  _columns ( new QComboBox )
 {
   if ( _layer.valid() )
   {

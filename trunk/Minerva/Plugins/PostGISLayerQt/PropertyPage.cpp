@@ -30,10 +30,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PropertyPage::PropertyPage( Layer *layer, QWidget *parent  ) : BaseClass ( parent ),
-_layer ( layer ),
-_colorWidget ( 0x0 ),
-_primitiveWidget ( 0x0 )
+PropertyPage::PropertyPage( Layer *layer, QWidget *parent ) : BaseClass ( parent ),
+  _layer ( layer ),
+  _colorWidget ( 0x0 ),
+  _primitiveWidget ( 0x0 )
 {
   // Initialize code from Designer.
   this->setupUi ( this );
@@ -390,7 +390,7 @@ void PropertyPage::_labelColorChanged()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PropertyPage::_labelColumnChanged( int index )
+void PropertyPage::_labelColumnChanged ( int index )
 {
   if ( _layer.valid () )
     _layer->labelColumn ( _labelColumn->currentText().toStdString() );

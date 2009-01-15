@@ -23,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 UniqueColorWidget::UniqueColorWidget ( Layer *layer, QWidget *parent ) :
-BaseClass ( parent ),
-_layer ( layer )
+  BaseClass ( parent ),
+  _layer ( layer )
 {
 }

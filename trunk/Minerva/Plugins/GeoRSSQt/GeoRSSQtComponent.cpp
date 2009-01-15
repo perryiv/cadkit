@@ -178,7 +178,7 @@ bool GeoRSSQtComponent::handle ( Usul::Interfaces::IUnknown* layer ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void GeoRSSQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller )
+void GeoRSSQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller )
 {
   typedef Minerva::Layers::GeoRSS::GeoRSSLayer GeoRSSLayer;
   

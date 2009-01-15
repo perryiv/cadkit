@@ -13,13 +13,14 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "FlagsVisitor.h"
-#include "Menu.h"
-#include "Button.h"
+#include "MenuKit/FlagsVisitor.h"
+#include "MenuKit/Menu.h"
+#include "MenuKit/Button.h"
 
 #include "Usul/Bits/Bits.h"
 
 #include <stdexcept>
+
 using namespace MenuKit;
 
 
@@ -30,8 +31,8 @@ using namespace MenuKit;
 ///////////////////////////////////////////////////////////////////////////////
 
 FlagsVisitor::FlagsVisitor ( Action action, unsigned  int flags ): BaseClass ( BaseClass::ALL ),
-  _action ( action ),
-  _flags  ( flags )
+  _flags  ( flags ),
+  _action ( action )
 {
 }
 

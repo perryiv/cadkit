@@ -299,9 +299,6 @@ void Tile::updateMesh()
   // Set the ground's alpha.
   OsgTools::State::StateSet::setAlpha ( this, body->alpha() );
 
-  // Remove all the children.
-  this->removeChildren ( 0, this->getNumChildren() );
-
   osg::ref_ptr<osg::Group> group ( new osg::Group );
   group->addChild ( ground.get() );
   group->addChild ( Usul::Threads::Safe::get ( this->mutex(), _vector.get() ) );
@@ -312,8 +309,17 @@ void Tile::updateMesh()
     group->addChild ( this->_perTileVectorDataGet().buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
   }
 
-  // Add the group to us.
-  this->addChild ( group.get() );
+  // Add the low lod if there isn't currently one.
+  if ( 0 == this->getNumChildren() )
+  {
+    this->addChild ( group.get() );
+  }
+
+  // Replace the low lod.
+  else
+  {
+    this->setChild ( 0, group.get() );
+  }
 
   // Set needed variables.
   {

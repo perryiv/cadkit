@@ -150,7 +150,7 @@ bool PostGISLayerQtComponent::handle ( Usul::Interfaces::IUnknown* layer ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller ) 
+void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller ) 
 {
   Minerva::Interfaces::IFeature::QueryPtr f ( layer );
   Minerva::Core::Data::Feature::RefPtr feature ( f.valid() ? f->feature() : 0x0 );
@@ -182,7 +182,7 @@ void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer,
   topLayout->addWidget ( page );
   topLayout->addLayout ( hLayout );
   
-  hLayout->addStretch  ();
+  hLayout->addStretch();
   hLayout->addWidget ( ok );
   hLayout->addWidget ( cancel );
 
@@ -191,10 +191,10 @@ void PostGISLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer,
     // Remove the old one.
     Usul::Interfaces::IUnknown::QueryPtr unknown ( baseLayer );
     Minerva::Core::Commands::RemoveLayer::RefPtr removeLayer ( new Minerva::Core::Commands::RemoveLayer ( unknown.get() ) );
-    removeLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
+    removeLayer->execute ( parent );
 
     // Add the new one.
-    Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( caller, Usul::Interfaces::IUnknown::QueryPtr ( clonedLayer ) ) );
-    addLayer->execute ( Usul::Documents::Manager::instance().activeDocument() );
+    Minerva::Core::Commands::AddLayer::RefPtr addLayer ( new Minerva::Core::Commands::AddLayer ( parent, Usul::Interfaces::IUnknown::QueryPtr ( clonedLayer ) ) );
+    addLayer->execute ( caller );
   }
 }

@@ -168,7 +168,7 @@ bool WmsLayerQtComponent::handle ( Usul::Interfaces::IUnknown* layer ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller )
+void WmsLayerQtComponent::showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller )
 {
 	typedef Minerva::Core::Layers::RasterLayerWms RasterLayerWms;
 	typedef RasterLayerWms::Options Options;

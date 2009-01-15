@@ -51,7 +51,7 @@ protected:
   bool        _canRefreshLayer ( IUnknown *unknown ) const;
   void        _connectTreeViewSlots ();
   void        _addLayer ( IUnknown *parent );
-  void        _editLayerProperties ( IUnknown *unknown, IUnknown *editor );
+  void        _editLayerProperties ( IUnknown *unknown, IUnknown* parent, IUnknown *editor );
   void        _dirtyAndRedraw ( IUnknown *unknown );
   IUnknown*   _findEditor ( IUnknown* unknown );
   void        _moveLayerUp ( TreeNode *item );

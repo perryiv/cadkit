@@ -55,11 +55,11 @@ protected:
   virtual void                apply ( Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller );
 
   /// Return name of plugin.
-  virtual std::string           getPluginName() const;
+  virtual std::string         getPluginName() const;
 
   /// ILayerModifyQtGUI
   virtual bool                handle ( Usul::Interfaces::IUnknown* ) const;
-  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown*, Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown*, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   // Do not copy.
   PostGISLayerQtComponent ( const PostGISLayerQtComponent & );

@@ -328,7 +328,14 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
     return;
   
   TreeNode *currentItem ( _tree->currentNode() );
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != currentItem ? currentItem->node().get() : 0x0 );
+  
+  if ( 0x0 == currentItem )
+    return;
+  
+  TreeNode *parentItem ( currentItem->parent() );
+  
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( currentItem->node().get() );
+  Usul::Interfaces::IUnknown::QueryPtr parent ( 0x0 != parentItem ? parentItem->node().get() : 0x0 );
 
   QMenu menu;
   
@@ -362,7 +369,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   Usul::Interfaces::IUnknown::QueryPtr editor ( this->_findEditor ( unknown.get() ) );
   
   // Properties button.
-  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind2 ( unknown.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
+  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind3 ( unknown.get(), parent.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
   properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
   properties.setEnabled ( unknown.valid() && editor.valid() );
   
@@ -436,7 +443,7 @@ void LayersTree::_onAddLayerFavorites()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usul::Interfaces::IUnknown *editor )
+void LayersTree::_editLayerProperties ( IUnknown *unknown, IUnknown *parent, IUnknown *editor )
 {  
   Usul::Interfaces::ILayerModifyGUIQt::QueryPtr gui ( editor );
   
@@ -446,7 +453,7 @@ void LayersTree::_editLayerProperties ( Usul::Interfaces::IUnknown *unknown, Usu
   
   if ( gui->handle ( unknown ) )
   {
-    gui->showModifyGUI ( unknown, _document.get() );
+    gui->showModifyGUI ( unknown, parent, _document.get() );
     
 #if 0
     //TreeNode *item ( _tree->currentNode() );

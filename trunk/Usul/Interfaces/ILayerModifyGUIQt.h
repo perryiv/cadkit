@@ -26,7 +26,7 @@ struct ILayerModifyGUIQt : public Usul::Interfaces::IUnknown
   enum { IID = 1262894538u };
 
   virtual bool                handle ( Usul::Interfaces::IUnknown* layer ) const = 0;
-  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
+  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller = 0x0 ) = 0;
 
 }; // struct ILayerModifyGUIQt
 

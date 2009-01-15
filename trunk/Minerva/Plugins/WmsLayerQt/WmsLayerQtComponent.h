@@ -61,7 +61,7 @@ protected:
 
   /// ILayerModifyQtGUI
   virtual bool                handle ( Usul::Interfaces::IUnknown* ) const;
-  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* caller = 0x0 );
+  virtual void                showModifyGUI ( Usul::Interfaces::IUnknown* layer, Usul::Interfaces::IUnknown* parent, Usul::Interfaces::IUnknown* caller = 0x0 );
   
   // Do not copy.
   WmsLayerQtComponent ( const WmsLayerQtComponent & );

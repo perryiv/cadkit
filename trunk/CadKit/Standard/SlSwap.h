@@ -25,7 +25,7 @@ namespace CadKit
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void swap ( T &a, T &b, T &temp )
+template<class T> inline void swap_impl ( T &a, T &b, T &temp )
 {
   temp = a;
   a = b;
@@ -39,7 +39,7 @@ template<class T> inline void swap ( T &a, T &b, T &temp )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template<class T> inline void swap ( T &a, T &b )
+template<class T> inline void swap_impl ( T &a, T &b )
 {
   T temp ( a );
   a = b;
@@ -56,7 +56,7 @@ template<class T> inline void swap ( T &a, T &b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define SL_SWAP   CadKit::swap
+#define SL_SWAP   CadKit::swap_impl
 
 
 #endif // _CADKIT_STANDARD_LIBRARY_INLINE_SWAP_FUNCTIONS_H_

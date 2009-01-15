@@ -21,7 +21,6 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
@@ -32,9 +31,20 @@ INCLUDE_DIRECTORIES(
 		     )
 
 
+#List the headers
+SET (HEADERS
+./BinaryParser.h
+./LabelData.h
+./Layer.h
+./LineLayer.h
+./PointLayer.h
+./PolygonLayer.h
+)
+
 #List the Sources
 SET (SOURCES
 ./BinaryParser.cpp
+./LabelData.cpp
 ./Layer.cpp
 ./LineLayer.cpp
 ./PointLayer.cpp
@@ -42,7 +52,7 @@ SET (SOURCES
 )
 
 # Create a Shared Library
-ADD_LIBRARY(MinervaPostGIS SHARED ${SOURCES} )
+ADD_LIBRARY(MinervaPostGIS SHARED ${SOURCES} ${HEADERS} )
 
 CADKIT_ADD_LIBRARY ( MinervaPostGIS )
 

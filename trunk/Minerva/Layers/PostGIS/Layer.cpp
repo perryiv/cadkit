@@ -71,17 +71,12 @@ Layer::Layer() : BaseClass(),
   _labelColumn(),
   _query(),
   _renderBin ( 0 ),
-  _xOffset ( 0.0 ),
-  _yOffset ( 0.0 ),
-  _zOffset ( 0.0 ),
+  _offset ( 0.0, 0.0, 0.0 ),
   _connection(),
   _colorFunctor( 0x0 ),
   _legendText(),
   _showInLegend ( true ),
-  _showLabel ( false ),
-  _labelColor( 1.0, 1.0, 1.0, 1.0 ),
-  _labelZOffset( 1000.0 ),
-  _labelSize ( 25.0f ),
+  _labelData ( new LabelData ),
   _colorColumn(),
   _customQuery ( false ),
   _legendFlags ( 0 ),
@@ -114,17 +109,12 @@ Layer::Layer( const Layer& layer )  :
   _labelColumn( layer._labelColumn ),
   _query( layer._query ),
   _renderBin ( layer._renderBin ),
-  _xOffset ( layer._xOffset ),
-  _yOffset ( layer._yOffset ),
-  _zOffset ( layer._zOffset ),
+  _offset ( layer._offset ),
   _connection( layer._connection ),
   _colorFunctor( 0x0 ),
   _legendText( layer._legendText ),
   _showInLegend ( layer._showInLegend ),
-  _showLabel ( layer._showLabel ),
-  _labelColor( layer._labelColor ),
-  _labelZOffset( layer._labelZOffset ),
-  _labelSize ( layer._labelSize ),
+  _labelData ( new LabelData ( *layer._labelData ) ),
   _colorColumn( layer._colorColumn ),
   _customQuery( layer._customQuery ),
   _legendFlags ( layer._legendFlags ),
@@ -160,17 +150,12 @@ void Layer::_registerMembers()
   SERIALIZE_XML_ADD_MEMBER ( _labelColumn );
   SERIALIZE_XML_ADD_MEMBER ( _query );
   SERIALIZE_XML_ADD_MEMBER ( _renderBin );
-  SERIALIZE_XML_ADD_MEMBER ( _xOffset );
-  SERIALIZE_XML_ADD_MEMBER ( _yOffset );
-  SERIALIZE_XML_ADD_MEMBER ( _zOffset );
+  this->_addMember ( "offset", _offset );
   SERIALIZE_XML_ADD_MEMBER ( _connection );
   SERIALIZE_XML_ADD_MEMBER ( _colorFunctor );
   SERIALIZE_XML_ADD_MEMBER ( _legendText );
   SERIALIZE_XML_ADD_MEMBER ( _showInLegend );
-  SERIALIZE_XML_ADD_MEMBER ( _showLabel );
-  SERIALIZE_XML_ADD_MEMBER ( _labelColor );
-  SERIALIZE_XML_ADD_MEMBER ( _labelZOffset );
-  SERIALIZE_XML_ADD_MEMBER ( _labelSize );
+  this->_addMember ( "label", _labelData );
   SERIALIZE_XML_ADD_MEMBER ( _colorColumn );
   SERIALIZE_XML_ADD_MEMBER ( _customQuery );
   SERIALIZE_XML_ADD_MEMBER ( _legendFlags );
@@ -400,7 +385,7 @@ const Minerva::Core::Functors::BaseColorFunctor * Layer::colorFunctor() const
 void Layer::xOffset( double f )
 {
   Guard guard ( this->mutex() );
-  _xOffset = f;
+  _offset[0] = f;
 }
 
 
@@ -413,7 +398,7 @@ void Layer::xOffset( double f )
 double Layer::xOffset() const
 {
   Guard guard ( this->mutex() );
-  return _xOffset;
+  return _offset[0];
 }
 
 
@@ -426,7 +411,7 @@ double Layer::xOffset() const
 void Layer::yOffset ( double f )
 {
   Guard guard ( this->mutex() );
-  _yOffset = f;
+  _offset[1] = f;
 }
 
 
@@ -439,7 +424,7 @@ void Layer::yOffset ( double f )
 double Layer::yOffset() const
 {
   Guard guard ( this->mutex() );
-  return _yOffset;
+  return _offset[1];
 }
 
 
@@ -452,7 +437,7 @@ double Layer::yOffset() const
 void Layer::zOffset ( double f )
 {
   Guard guard ( this->mutex() );
-  _zOffset = f;
+  _offset[2] = f;
 }
 
 
@@ -465,7 +450,7 @@ void Layer::zOffset ( double f )
 double Layer::zOffset() const
 {
   Guard guard ( this->mutex() );
-  return _zOffset;
+  return _offset[2];
 }
 
 
@@ -504,7 +489,7 @@ const std::string& Layer::legendText() const
 void Layer::showLabel( bool b )
 {
   Guard guard ( this->mutex() );
-  _showLabel = b;
+  _labelData->show ( b );
 }
 
 
@@ -517,7 +502,7 @@ void Layer::showLabel( bool b )
 bool Layer::showLabel() const
 {
   Guard guard ( this->mutex() );
-  return _showLabel;
+  return _labelData->show();
 }
 
 
@@ -530,7 +515,7 @@ bool Layer::showLabel() const
 void Layer::labelColor ( const osg::Vec4& color )
 {
   Guard guard ( this->mutex() );
-  _labelColor = color;
+  _labelData->color ( Usul::Math::Vec4f ( color[0], color[1], color[2], color[3] ) );
 }
 
 
@@ -540,10 +525,11 @@ void Layer::labelColor ( const osg::Vec4& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& Layer::labelColor() const
+osg::Vec4 Layer::labelColor() const
 {
   Guard guard ( this->mutex() );
-  return _labelColor;
+  Usul::Math::Vec4f color ( _labelData->color() );
+  return osg::Vec4 ( color[0], color[1], color[2], color[3] );
 }
 
 
@@ -556,7 +542,7 @@ const osg::Vec4& Layer::labelColor() const
 void Layer::labelZOffset( float offset )
 {
   Guard guard ( this->mutex() );
-  _labelZOffset = offset;
+  _labelData->zOffset ( offset );
 }
 
 
@@ -569,7 +555,7 @@ void Layer::labelZOffset( float offset )
 float Layer::labelZOffset() const
 {
   Guard guard ( this->mutex() );
-  return _labelZOffset;
+  return _labelData->zOffset();
 }
 
 
@@ -627,7 +613,7 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
 
     // Build the query.
     std::ostringstream os;
-    os << "SELECT x(centroid(" << tablename << ".geom)) as x_c, y(centroid(" << tablename << ".geom)) as y_c, FROM " << tablename << " WHERE id = " << id;
+    os << "SELECT x(centroid(" << tablename << ".geom)) as x_c, y(centroid(" << tablename << ".geom)) as y_c FROM " << tablename << " WHERE id = " << id;
     
     osg::Vec3d center ( 0.0, 0.0, 0.0 );
     
@@ -663,7 +649,7 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
 void Layer::labelSize( float size )
 {
   Guard guard ( this->mutex() );
-  _labelSize = size;
+  _labelData->size ( size );
 }
 
 
@@ -676,7 +662,7 @@ void Layer::labelSize( float size )
 float Layer::labelSize() const
 {
   Guard guard( this->mutex() );
-  return _labelSize;
+  return _labelData->size();
 }
 
 

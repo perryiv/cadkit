@@ -8,10 +8,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_LAYER_H__
-#define __MINERVA_LAYERS_LAYER_H__
+#ifndef __MINERVA_LAYERS_POSTGIS_LAYER_H__
+#define __MINERVA_LAYERS_POSTGIS_LAYER_H__
 
 #include "Minerva/Layers/PostGIS/Export.h"
+#include "Minerva/Layers/PostGIS/LabelData.h"
 
 #include "Minerva/Core/Animate/Date.h"
 #include "Minerva/Core/Data/Container.h"
@@ -96,7 +97,7 @@ public:
   /// Get/Set First date column name.
   void                        firstDateColumn ( const std::string& );
   const std::string&          firstDateColumn() const;
-  
+
   /// Get/Set the tablename.
   void                        tablename ( const std::string& table );
   const std::string&          tablename() const;
@@ -111,7 +112,7 @@ public:
 
   /// Get/Set the label color.
   void                        labelColor ( const osg::Vec4& color );
-  const osg::Vec4&            labelColor() const;
+  osg::Vec4                   labelColor() const;
 
   /// Get/Set the label zOffset
   void                        labelZOffset ( float offset );
@@ -217,7 +218,7 @@ protected:
 
   /// Copy constructor.
   Layer ( const Layer& layer );
-  
+
   /// Build the data objects.
   virtual void                _buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
 
@@ -250,17 +251,11 @@ private:
   std::string _query;
   Usul::Types::Uint32 _renderBin;
   Usul::Math::Vec3d _offset;
-  double _xOffset;
-  double _yOffset;
-  double _zOffset;
   Connection::RefPtr _connection;
   Minerva::Core::Functors::BaseColorFunctor::RefPtr _colorFunctor;
   std::string                  _legendText;
   bool                         _showInLegend;
-  bool                         _showLabel;
-  osg::Vec4                    _labelColor;
-  float                        _labelZOffset;
-  float                        _labelSize;
+  LabelData::RefPtr            _labelData;
   std::string                  _colorColumn;
   bool                         _customQuery;
   unsigned int                 _legendFlags;
@@ -314,4 +309,4 @@ inline osg::Vec4 Layer::_color ( const pqxx::result::const_iterator& iter )
 }
 
 
-#endif //__MINERVA_LAYERS_LAYER_H__
+#endif //__MINERVA_LAYERS_POSTGIS_LAYER_H__

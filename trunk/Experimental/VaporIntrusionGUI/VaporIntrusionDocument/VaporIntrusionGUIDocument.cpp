@@ -398,7 +398,6 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
         group->addChild( this->_buildTestCube( p.get(), c, location ) );
 
         // set the material of the cube
-        // Set the material properties
         OsgTools::State::StateSet::setMaterial( group.get(), material.get() );
         OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
 

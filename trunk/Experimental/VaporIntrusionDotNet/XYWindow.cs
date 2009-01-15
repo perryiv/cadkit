@@ -12,15 +12,28 @@ namespace VaporIntrusionDotNet
   {
     //*************************************************************************************
     //
+    // Structs
+    //
+    //*************************************************************************************
+
+    public struct GridPoint
+    {
+      public Point point;
+      public Color color;
+    };
+
+    //*************************************************************************************
+    //
     // Member variables
     //
     //*************************************************************************************
 
-    private List<Component> _grid;
+    private List<GridPoint> _grid;
     private Helper.Vector2 _gridSize;
     private Rectangle _selectionRect;
     private Color _currentPointColor;
     private bool _selecting;
+    private System.Drawing.Brush _brush;
 
     //*************************************************************************************
     //
@@ -32,9 +45,12 @@ namespace VaporIntrusionDotNet
     {
       InitializeComponent();
 
+      // initialize the brush
+      _brush = new SolidBrush(Color.FromArgb(128,Color.Gray));
+
       // grid resolution
-      _gridSize.x = 5;
-      _gridSize.y = 3;
+      _gridSize.x = 50;
+      _gridSize.y = 50;
 
       _selecting = false;
 
@@ -42,7 +58,7 @@ namespace VaporIntrusionDotNet
       _gridCanvas.Hide();
 
       // initialize the grid
-      _grid = new List<Component>(_gridSize.x * _gridSize.y);
+      _grid = new List<GridPoint>(_gridSize.x * _gridSize.y);
 
       // Initialize the current point color
       _currentPointColor = Color.Red;
@@ -84,6 +100,8 @@ namespace VaporIntrusionDotNet
             _selectionRect = new Rectangle(mousePt, size);
             _currentPointColor = Color.Blue;
             _selecting = true;
+            // initialize the brush
+            _brush = new SolidBrush(Color.FromArgb(128, Color.Blue));
 
             break;
           }
@@ -94,6 +112,8 @@ namespace VaporIntrusionDotNet
             _selectionRect = new Rectangle(mousePt, size);
             _currentPointColor = Color.Red;
             _selecting = true;
+            // initialize the brush
+            _brush = new SolidBrush(Color.FromArgb(128, Color.Red));
             break;
           }
 
@@ -154,6 +174,30 @@ namespace VaporIntrusionDotNet
       Invalidate();
     }
 
+
+
+    //*************************************************************************************
+    //
+    // Handle mouse move events
+    //
+    //*************************************************************************************
+
+    protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
+    {
+      if ((e.Button == MouseButtons.Left || e.Button == MouseButtons.Right) && true == _selecting)
+      {
+        // get the original point
+        Point origin = _selectionRect.Location;
+        Size size = new Size(e.X - origin.X, e.Y - origin.Y);
+
+        // make a new rect with the final information
+        _selectionRect = new Rectangle(origin, size);
+
+        // Invalidate
+        this.Invalidate();
+
+      }
+    }
 
 
     //*************************************************************************************
@@ -223,7 +267,7 @@ namespace VaporIntrusionDotNet
         b.SetPixel(p.X + 1, p.Y + 1, color);
 
         // Make a component to store the point
-        Component c = new Component();
+        GridPoint c = new GridPoint();
 
         c.point = p;
         c.color = color;
@@ -281,7 +325,7 @@ namespace VaporIntrusionDotNet
           b.SetPixel(p.X + 1, p.Y + 1, Color.Red);
 
           // Make a component to store the point
-          Component c = new Component();
+          GridPoint c = new GridPoint();
 
           c.point = p;
           c.color = Color.Red;
@@ -317,9 +361,40 @@ namespace VaporIntrusionDotNet
         _gridSize = value;
 
         // (re)initialize the grid
-        _grid = new List<Component>(_gridSize.x * _gridSize.y);
+        _grid = new List<GridPoint>(_gridSize.x * _gridSize.y);
 
       }
-    } 
+    }
+
+
+    //*************************************************************************************
+    //
+    // 
+    //
+    //*************************************************************************************
+
+    private void _gridCanvas_Click(object sender, EventArgs e)
+    {
+
+    }
+
+
+    //*************************************************************************************
+    //
+    // Paint
+    //
+    //*************************************************************************************
+
+    protected override void  OnPaint(PaintEventArgs e)
+    {
+      if (true == _selecting)
+      {
+        e.Graphics.FillRectangle(_brush, _selectionRect);
+      }
+
+ 	     //base.OnPaint(e);
+    }
+    
+
   }
 }

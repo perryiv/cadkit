@@ -39,6 +39,7 @@ namespace VaporIntrusionDotNet
       this._gridCanvas.Size = new System.Drawing.Size(385, 379);
       this._gridCanvas.TabIndex = 0;
       this._gridCanvas.TabStop = false;
+      this._gridCanvas.Click += new System.EventHandler(this._gridCanvas_Click);
       // 
       // XYWindow
       // 

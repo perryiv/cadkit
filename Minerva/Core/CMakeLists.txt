@@ -140,7 +140,6 @@ SET ( HEADERS
 	./Utilities/Atmosphere.h
 	./Utilities/ClampNearFar.h
 	./Utilities/Compass.h
-	./Utilities/DirtyTiles.h
 	./Utilities/Download.h
 	./Utilities/ElevationGrid.h
 	./Utilities/GeoCode.h
@@ -230,7 +229,6 @@ SET (SOURCES
 ./Utilities/Atmosphere.cpp
 ./Utilities/Download.cpp
 ./Utilities/Compass.cpp
-./Utilities/DirtyTiles.cpp
 ./Utilities/GeoCode.cpp
 ./Utilities/Hud.cpp
 ./Utilities/SkyDome.cpp

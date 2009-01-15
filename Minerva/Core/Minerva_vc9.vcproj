@@ -826,14 +826,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Utilities\DirtyTiles.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Utilities\DirtyTiles.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Utilities\Download.cpp"
 						>
 					</File>

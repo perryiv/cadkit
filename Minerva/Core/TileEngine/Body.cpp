@@ -15,7 +15,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/TileEngine/Body.h"
-#include "Minerva/Core/Utilities/DirtyTiles.h"
 #include "Minerva/Core/Utilities/Atmosphere.h"
 #include "Minerva/Core/Visitor.h"
 
@@ -394,10 +393,7 @@ void Body::rasterChanged (  Usul::Interfaces::IRasterLayer *layer )
 
 void Body::dirtyTextures ( const Extents& e )
 {
-  // Dirty the tiles.
-  Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::IMAGE, e );
-  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-  _transform->accept ( *visitor );
+  this->_dirtyTiles ( Tile::IMAGE, e );
 }
 
 
@@ -409,10 +405,47 @@ void Body::dirtyTextures ( const Extents& e )
 
 void Body::dirtyVertices()
 {
-  // Dirty the tiles.
-  Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::VERTICES );
-  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-  _transform->accept ( *visitor );
+  this->_dirtyTiles ( Tile::VERTICES );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dirty the tiles.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::_dirtyTiles ( unsigned int flags )
+{
+  USUL_TRACE_SCOPE;
+  
+  Tiles tiles ( Usul::Threads::Safe::get ( this->mutex(), _topTiles ) );
+  for ( Tiles::iterator iter = tiles.begin(); iter != tiles.end(); ++iter )
+  {
+    Tile::RefPtr tile ( *iter );
+    if ( tile.valid() )
+      tile->dirty ( true, flags, true );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Dirty the tiles within extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::_dirtyTiles ( unsigned int flags, const Extents& extents )
+{
+  USUL_TRACE_SCOPE;
+  
+  Tiles tiles ( Usul::Threads::Safe::get ( this->mutex(), _topTiles ) );
+  for ( Tiles::iterator iter = tiles.begin(); iter != tiles.end(); ++iter )
+  {
+    Tile::RefPtr tile ( *iter );
+    if ( tile.valid() )
+      tile->dirty ( true, flags, true, extents );
+  }
 }
 
 
@@ -784,10 +817,7 @@ void Body::elevationAppend ( Usul::Interfaces::IRasterLayer * layer )
     // Get the extents.
     Extents e ( this->_buildExtents( layer ) );
 
-    // Dirty the tiles.
-    Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::VERTICES, e );
-    osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-    _transform->accept ( *visitor );
+    this->dirtyVertices();
   }
 }
 
@@ -864,10 +894,7 @@ void Body::scale( double s )
   Guard guard ( this );
   _scale = s;
 
-  // Dirty the tiles.
-  Minerva::Core::Utilities::DirtyTiles dirty ( true, Tile::VERTICES | Tile::CHILDREN, Extents( -180, -90, 180, 90 ) );
-  osg::ref_ptr<osg::NodeVisitor> visitor ( OsgTools::MakeVisitor<osg::Group>::make ( dirty ) );
-  _transform->accept ( *visitor );
+  this->_dirtyTiles ( Tile::VERTICES | Tile::CHILDREN, Extents( -180, -90, 180, 90 ) );
 
   _transform->dirtyBound();
 }

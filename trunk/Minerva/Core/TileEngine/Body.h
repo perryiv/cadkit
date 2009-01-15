@@ -291,6 +291,9 @@ private:
 
   void                      _destroy();
   void                      _textureAdded();
+  
+  void                      _dirtyTiles ( unsigned int flags );
+  void                      _dirtyTiles ( unsigned int flags, const Extents& extents );
 
   MatrixTransformPtr _transform;
   LandModel::RefPtr _landModel;

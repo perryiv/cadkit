@@ -31,11 +31,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 AddPostGISLayerWidget::AddPostGISLayerWidget( QWidget *parent ) : 
-BaseClass ( parent ),
-_databasePage ( 0x0 ),
-_propertyPage ( 0x0 ),
-_editButton ( new QPushButton ( "Edit Properties" ) ),
-_stackedWidget ( 0x0 )
+  BaseClass ( parent ),
+  _databasePage ( 0x0 ),
+  _propertyPage ( 0x0 ),
+  _editButton ( new QPushButton ( "Edit Properties" ) ),
+  _stackedWidget ( 0x0 )
 {
   QVBoxLayout *topLayout ( new QVBoxLayout );
   this->setLayout ( topLayout );

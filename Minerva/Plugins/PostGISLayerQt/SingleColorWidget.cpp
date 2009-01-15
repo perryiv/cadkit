@@ -24,10 +24,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 SingleColorWidget::SingleColorWidget ( Layer *layer, QWidget *parent ) :
-BaseClass ( parent ),
-_layer ( layer ),
-_colorButton ( new QtTools::ColorButton ),
-_functor ( 0x0 )
+  BaseClass ( parent ),
+  _layer ( layer ),
+  _colorButton ( new QtTools::ColorButton ),
+  _functor ( 0x0 )
 {
   QHBoxLayout *layout ( new QHBoxLayout );
   QLabel *label ( new QLabel ( "Choose Color" ) );

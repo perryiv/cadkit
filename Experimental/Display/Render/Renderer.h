@@ -20,9 +20,8 @@
 #include "Display/Export/Export.h"
 
 #include "Usul/Base/BaseObject.h"
-
-#include "osg/Node"
-#include "osg/ref_ptr"
+#include "Usul/Interfaces/ISceneGraph.h"
+#include "Usul/Math/Matrix44.h"
 
 
 namespace Display {
@@ -35,7 +34,8 @@ public:
 
   // Typedefs.
   typedef Usul::Base::BaseObject BaseClass;
-  typedef osg::ref_ptr<osg::Node> NodePtr;
+  typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Math::Matrix44d Matrix;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Renderer );
@@ -44,13 +44,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Renderer );
 
   // Render the scene.
-  void                      render();
-
-  // Call this when you want the viewport to resize.
-  virtual void              resize ( unsigned int width, unsigned int height );
-
-  // Set the scene.
-  virtual void              scene ( NodePtr );
+  void                      render ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
 
 protected:
 
@@ -60,13 +54,10 @@ protected:
   // Use reference counting.
   virtual ~Renderer();
 
-  NodePtr                   _getScene();
-  const NodePtr             _getScene() const;
+  virtual void              _preRender ( IUnknown::RefPtr scene );
+  virtual void              _postRender ( IUnknown::RefPtr scene );
 
-  virtual void              _preRender();
-  virtual void              _postRender();
-
-  virtual void              _render();
+  virtual void              _render ( IUnknown::RefPtr scene );
 
 private:
 
@@ -75,8 +66,6 @@ private:
   Renderer &operator = ( const Renderer & );
 
   void                      _destroy();
-
-  NodePtr _scene;
 };
 
 

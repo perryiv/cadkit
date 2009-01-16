@@ -15,16 +15,16 @@
 
 #include "Display/View/Canvas.h"
 
-#include "OsgTools/Convert/Matrix.h"
-#include "OsgTools/Group.h"
-
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Components/Manager.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
+
+#include <stdexcept>
 
 using namespace Display::View;
 
@@ -41,18 +41,28 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Canvas, Canvas::BaseClass );
 Canvas::Canvas ( IUnknown::RefPtr doc ) : BaseClass(),
   _flags ( 0 ),
   _renderers(),
-  _scene ( new osg::Group ),
-  _models ( new osg::MatrixTransform ),
-  _clipped ( new osg::ClipNode ),
-  _unclipped ( new osg::Group ),
-  _decoration ( new osg::Group ),
-  _document ( doc ),
-  _viewer ( new osgViewer::Viewer )
+  _scene(),
+  _models(),
+  _clipped(),
+  _unclipped(),
+  _decoration(),
+  _document ( doc )
 {
-  _scene->addChild ( _models.get() );
-  _scene->addChild ( _decoration.get() );
-  _models->addChild ( _clipped.get() );
-  _models->addChild ( _unclipped.get() );
+  typedef Usul::Interfaces::SceneGraph::IFactory IFactory;
+  IFactory::QueryPtr factory ( Usul::Components::Manager::instance().getInterface ( IFactory::IID ) );
+  if ( false == factory.valid() )
+    throw std::runtime_error ( "Error 2034597026: No scene-graph factory found" );
+
+  _scene  = factory->createObject ( IGroup::IID );
+  _models = factory->createObject ( ITransformGroup::IID );
+  _clipped = factory->createObject ( IClippedGroup::IID );
+  _unclipped = factory->createObject ( IGroup::IID );
+  _decoration = factory->createObject ( IGroup::IID );
+
+  _scene->appendChild ( _models.get() );
+  _scene->appendChild ( _decoration.get() );
+  _models->appendChild ( _clipped.get() );
+  _models->appendChild ( _unclipped.get() );
 }
 
 

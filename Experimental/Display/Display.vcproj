@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_DISPLAY_LIBRARY"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
@@ -79,11 +79,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib osgd.lib"
+				AdditionalDependencies="User32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Displayd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Displayd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Displayd.lib"
@@ -145,7 +144,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental;$(OSG_INC_DIR)"
+				AdditionalIncludeDirectories="$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)/Experimental"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_DISPLAY_LIBRARY"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -177,11 +176,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib osg.lib OpenThreads.lib"
+				AdditionalDependencies="User32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/Display.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/Display.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Display.lib"
 			/>
@@ -236,36 +234,6 @@
 					RelativePath=".\Render\Renderer.h"
 					>
 				</File>
-				<Filter
-					Name="OSG"
-					>
-					<File
-						RelativePath=".\Render\OSG\Renderer.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Render\OSG\Renderer.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="View"

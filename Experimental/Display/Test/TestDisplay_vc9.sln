@@ -11,7 +11,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Test Display", "TestDi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Display", "..\Display_vc9.vcproj", "{472F2157-D0BC-4B89-BC6A-0D2DDB8FEE53}"
 	ProjectSection(ProjectDependencies) = postProject
-		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
@@ -112,6 +111,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Matrix Animation", ".
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Scene Graph OSG", "..\..\SceneGraph\OpenSceneGraph\SceneGraphOSG_vc9.vcproj", "{FE8966FE-5DFC-4E02-8AF2-D3DA582CEA94}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF80D329-B72A-4964-9D76-9F16B5C0A9D0} = {AF80D329-B72A-4964-9D76-9F16B5C0A9D0}
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -190,6 +195,10 @@ Global
 		{B86DC845-053C-4EEA-B910-A4EB399C1343}.Debug|Win32.Build.0 = Debug|Win32
 		{B86DC845-053C-4EEA-B910-A4EB399C1343}.Release|Win32.ActiveCfg = Release|Win32
 		{B86DC845-053C-4EEA-B910-A4EB399C1343}.Release|Win32.Build.0 = Release|Win32
+		{FE8966FE-5DFC-4E02-8AF2-D3DA582CEA94}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FE8966FE-5DFC-4E02-8AF2-D3DA582CEA94}.Debug|Win32.Build.0 = Debug|Win32
+		{FE8966FE-5DFC-4E02-8AF2-D3DA582CEA94}.Release|Win32.ActiveCfg = Release|Win32
+		{FE8966FE-5DFC-4E02-8AF2-D3DA582CEA94}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

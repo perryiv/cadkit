@@ -46,7 +46,7 @@ template < class FactoryType, class CreatorType > struct ScopedRegistration
       throw std::invalid_argument ( "Error 4027331109: Null creator given" );
     }
 
-    if ( true == _name.empty() ) )
+    if ( true == _name.empty() )
     {
       throw std::invalid_argument ( "Error 3108874680: Empty name given when registering creator" );
     }

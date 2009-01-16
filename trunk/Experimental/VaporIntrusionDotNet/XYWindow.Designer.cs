@@ -28,35 +28,23 @@ namespace VaporIntrusionDotNet
     /// </summary>
     private void InitializeComponent()
     {
-      this._gridCanvas = new System.Windows.Forms.PictureBox();
-      ((System.ComponentModel.ISupportInitialize)(this._gridCanvas)).BeginInit();
       this.SuspendLayout();
-      // 
-      // _gridCanvas
-      // 
-      this._gridCanvas.Location = new System.Drawing.Point(-1, 0);
-      this._gridCanvas.Name = "_gridCanvas";
-      this._gridCanvas.Size = new System.Drawing.Size(385, 379);
-      this._gridCanvas.TabIndex = 0;
-      this._gridCanvas.TabStop = false;
-      this._gridCanvas.Click += new System.EventHandler(this._gridCanvas_Click);
       // 
       // XYWindow
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+      this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
       this.ClientSize = new System.Drawing.Size(381, 375);
-      this.Controls.Add(this._gridCanvas);
       this.Name = "XYWindow";
       this.Text = "XYWindow";
       this.Load += new System.EventHandler(this.XYWindow_Load);
-      ((System.ComponentModel.ISupportInitialize)(this._gridCanvas)).EndInit();
       this.ResumeLayout(false);
 
     }
 
     #endregion
 
-    private System.Windows.Forms.PictureBox _gridCanvas;
   }
 }

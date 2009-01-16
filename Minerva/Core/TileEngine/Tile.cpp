@@ -139,11 +139,12 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
 
 #if USE_MIP_MAPS == 1
   // Set filter parameters.
-  _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_NEAREST );
+  _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR );
   _texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
-  
+
+  _texture->setMaxAnisotropy ( ( 0x0 == _body ) ? _texture->getMaxAnisotropy() : _body->maxAnisotropy() );
   _texture->setUseHardwareMipMapGeneration ( true );
-  
+
   // Set texture coordinate wrapping parameters.
   _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );

@@ -57,11 +57,10 @@ namespace
 
 
 // Register creators.  "GdalLayer" is for backwards compatibilty.
-namespace { Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < RasterLayerGDAL > > _creator0 ( "GdalLayer" ); }
-namespace { Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < RasterLayerGDAL > > _creator1 ( "RasterLayerGDAL" ); }
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "GdalLayer", RasterLayerGDAL );
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "RasterLayerGDAL", RasterLayerGDAL );
 
-
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS( RasterLayerGDAL, RasterLayerGDAL::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( RasterLayerGDAL, RasterLayerGDAL::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -31,13 +31,10 @@ using namespace Minerva::Core::Data;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace
-{
-  Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < Container > > _creator_for_Container0 ( "Vector" );
-  Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < Container > > _creator_for_Container1 ( "Container" );
-}
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "Vector", Container );
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "Container", Container );
 
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Container, Container::BaseClass );
+USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Container, Container::BaseClass );
 
 
 ///////////////////////////////////////////////////////////////////////////////

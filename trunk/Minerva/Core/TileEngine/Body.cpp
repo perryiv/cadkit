@@ -30,6 +30,7 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -90,7 +91,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _log ( 0x0 ),
   _name( "Body" ),
   _imageSize ( 256, 256 ),
-  _alpha ( 1.0f )
+  _alpha ( 1.0f ),
+  _maxAnisotropy ( Usul::Registry::Database::instance()["default_max_anisotropy"].get<float> ( 16.0f, true ) )
 {
   USUL_TRACE_SCOPE;
 
@@ -111,7 +113,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   this->_addMember ( "name", _name );
   this->_addMember ( "image_size", _imageSize );
   this->_addMember ( "alpha", _alpha );
-  
+  this->_addMember ( "max_anisotropic_texture_filtering", _maxAnisotropy );
+
   // Set the names.
   _elevation->name ( "Elevation" );
   _rasters->name ( "Rasters" );
@@ -1669,4 +1672,19 @@ bool Body::intersectWithTiles ( const Usul::Math::Vec3d& point0, const Usul::Mat
   point = Usul::Convert::Type<osg::Vec3d,Usul::Math::Vec3d>::convert ( hit );
   
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the max degree of anisotropic filtering.
+//  See http://en.wikipedia.org/wiki/Anisotropic_filtering
+//
+///////////////////////////////////////////////////////////////////////////////
+
+float Body::maxAnisotropy() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _maxAnisotropy;
 }

@@ -23,11 +23,6 @@
 class GDALDataset;
 class OGRGeometry;
 
-namespace Usul {
-  namespace Factory {
-    template < class T > class TypeCreator;
-  }
-}
 
 namespace Minerva {
 
@@ -38,6 +33,7 @@ public:
   typedef Minerva::Layers::PostGIS::Layer Layer;
   typedef Minerva::Layers::PostGIS::PolygonLayer PolygonLayer;
   
+  RasterPolygonLayer();
   RasterPolygonLayer ( Layer* layer );
   
   /// Clone.
@@ -48,9 +44,9 @@ public:
   
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node &node );
+
 protected:
   
-  RasterPolygonLayer();
   virtual ~RasterPolygonLayer();
   
   RasterPolygonLayer ( const RasterPolygonLayer& );
@@ -73,8 +69,6 @@ private:
 
   RasterPolygonLayer& operator= ( const RasterPolygonLayer& );
   
-  friend class Usul::Factory::TypeCreator<RasterPolygonLayer>;
-
   typedef std::vector<OGRGeometry*> Geometries;
   typedef std::vector<double> BurnValues;
   

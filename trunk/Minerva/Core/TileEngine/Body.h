@@ -169,6 +169,10 @@ public:
   void                      logSet ( LogPtr );
   LogPtr                    logGet();
 
+  // Get the max degree of anisotropic filtering.
+  // See http://en.wikipedia.org/wiki/Anisotropic_filtering
+  float                     maxAnisotropy() const;
+
   // Set/get the maximum level.
   void                      maxLevel ( unsigned int level );
   unsigned int              maxLevel() const;
@@ -321,6 +325,7 @@ private:
   std::string _name;
   ImageSize _imageSize;
   float _alpha;
+  float _maxAnisotropy;
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;

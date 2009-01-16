@@ -69,7 +69,7 @@ public:
     if ( 0x0 != c )
     {
       Guard guard ( _mutex );
-      _creators.insert ( Creators::value_type ( c->name(), BaseCreatorPtr ( c ) ) );
+      _creators.insert ( typename Creators::value_type ( c->name(), BaseCreatorPtr ( c ) ) );
     }
   }
 
@@ -89,7 +89,7 @@ public:
   {
     Guard guard ( _mutex );
 
-    Creators::iterator i = _creators.find ( name );
+    typename Creators::iterator i = _creators.find ( name );
     if ( _creators.end() == i )
     {
       return 0x0;

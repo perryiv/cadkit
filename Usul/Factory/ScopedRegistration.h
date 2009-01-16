@@ -20,6 +20,7 @@
 #include "Usul/Export/Export.h"
 
 #include <string>
+#include <stdexcept>
 
 namespace Usul { namespace Factory { class ObjectFactory; class BaseCreator; } }
 
@@ -34,14 +35,33 @@ namespace Factory {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-struct USUL_EXPORT ScopedRegistration 
+template < class FactoryType, class CreatorType > struct ScopedRegistration 
 {
-  ScopedRegistration ( ObjectFactory &, BaseCreator * );
-  ~ScopedRegistration();
+  ScopedRegistration ( FactoryType &f, CreatorType *c ) :
+    _f ( f ),
+    _name ( ( 0x0 == c ) ? "" : c->name() )
+  {
+    if ( 0x0 == _c )
+    {
+      throw std::invalid_argument ( "Error 4027331109: Null creator given" );
+    }
+
+    if ( true == _name.empty() ) )
+    {
+      throw std::invalid_argument ( "Error 3108874680: Empty name given when registering creator" );
+    }
+
+    _factory.add ( _c );
+  }
+
+  ~ScopedRegistration()
+  {
+    _factory.remove ( _name );
+  }
 
 private:
 
-  ObjectFactory &_factory;
+  FactoryType &_f;
   std::string _name;
 };
 

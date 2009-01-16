@@ -34,21 +34,30 @@ namespace Factory {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-class USUL_EXPORT BaseCreator : public Usul::Base::Object
+template < class T > class BaseCreator : public Usul::Base::Object
 {
 public:
 
   typedef Usul::Base::Object BaseClass;
+  typedef T BaseType;
 
   USUL_DECLARE_REF_POINTERS ( BaseCreator );
 
-  virtual Usul::Base::Referenced *  operator()() = 0;
+  virtual BaseType *operator()()
+  {
+    return 0x0;
+  }
 
 protected:
 
-  BaseCreator ( const std::string &name );
+  BaseCreator ( const std::string &name ) : BaseClass()
+  {
+    this->name ( name );
+  }
 
-  virtual ~BaseCreator();
+  virtual ~BaseCreator()
+  {
+  }
 };
 
 

@@ -49,13 +49,10 @@ namespace VaporIntrusionDotNet
       _brush = new SolidBrush(Color.FromArgb(128,Color.Gray));
 
       // grid resolution
-      _gridSize.x = 50;
-      _gridSize.y = 50;
+      _gridSize.x = 5;
+      _gridSize.y = 5;
 
       _selecting = false;
-
-      // hide the picture box
-      _gridCanvas.Hide();
 
       // initialize the grid
       _grid = new List<GridPoint>(_gridSize.x * _gridSize.y);
@@ -63,8 +60,6 @@ namespace VaporIntrusionDotNet
       // Initialize the current point color
       _currentPointColor = Color.Red;
 
-      // resize the canvas
-      resizeCanvas();
     }
 
 
@@ -214,22 +209,6 @@ namespace VaporIntrusionDotNet
 
     //*************************************************************************************
     //
-    // resize grid canvas
-    //
-    //*************************************************************************************
-
-    public void resizeCanvas()
-    {
-      _gridCanvas.Left = (int)((float)this.Width * 0.0);
-      _gridCanvas.Top = (int)((float)this.Height * 0.0);
-
-      _gridCanvas.Width = (int)((float)this.Width * 1.0);
-      _gridCanvas.Height = (int)((float)this.Height * 1.0);
-    }
-
-
-    //*************************************************************************************
-    //
     // resize the grid
     //
     //*************************************************************************************
@@ -238,7 +217,7 @@ namespace VaporIntrusionDotNet
     {
       // get the current size of the screen
       int width = this.Width;
-      int height = (int)((float)this.Height * 0.75);
+      int height = this.Height;
 
       // find out how much space between rects
       int widthStep = width / _gridSize.x;
@@ -295,7 +274,7 @@ namespace VaporIntrusionDotNet
     {
       // get the current size of the screen
       int width = this.Width;
-      int height = (int)((float)this.Height * 0.75);      
+      int height = this.Height;    
 
       // find out how much space between rects
       int widthStep = width / _gridSize.x;
@@ -338,7 +317,6 @@ namespace VaporIntrusionDotNet
       }
 
       // set the image on the canvas
-      //_gridCanvas.Image = b;      
       this.BackgroundImage = b;
     }
 
@@ -378,6 +356,19 @@ namespace VaporIntrusionDotNet
 
     }
 
+    //*************************************************************************************
+    //
+    // Paint the canvas
+    //
+    //*************************************************************************************
+
+    private void _gridCanvas_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+    {
+      if (true == _selecting)
+      {
+        e.Graphics.FillRectangle(_brush, _selectionRect);
+      }
+    }
 
     //*************************************************************************************
     //

@@ -37,8 +37,6 @@ public:\
   typedef base_type BaseClass;\
   typedef Usul::Threads::Mutex Mutex;\
   typedef Usul::Threads::Guard<Mutex> Guard;\
-  singleton_type() : BaseClass(){}\
-  ~singleton_type(){}\
   static BaseClass &instance()\
   {\
     Guard guard ( _classMutex );\
@@ -58,6 +56,8 @@ public:\
     _instance = f;\
   }\
 private:\
+  singleton_type();\
+  ~singleton_type();\
   static Mutex _classMutex;\
   static BaseClass *_instance;\
 }

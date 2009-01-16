@@ -19,6 +19,7 @@
 
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Factory/TypeCreator.h"
+#include "Usul/Preprocess/UniqueName.h"
 
 
 namespace Usul {
@@ -31,11 +32,13 @@ namespace Factory {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class CreatorType > struct RegisterCreator
+template < class FactoryType, class CreatorType > struct RegisterCreator
 {
+  typedef typename CreatorType::BaseType BaseType;
+  typedef FactoryType Factory;
   RegisterCreator ( const std::string &name )
   {
-    Usul::Factory::ObjectFactory::instance().add ( new CreatorType ( name ) );
+    Factory::instance().add ( new CreatorType ( name ) );
   }
 };
 
@@ -46,8 +49,11 @@ template < class CreatorType > struct RegisterCreator
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#define USUL_FACTORY_REGISTER_CREATOR_WITH_NAME_AND_BASE_CLASS(factory_type,the_name,the_type,the_base_type)\
+  namespace { Usul::Factory::RegisterCreator < factory_type, Usul::Factory::TypeCreator < the_type, the_base_type > > USUL_UNIQUE_NAME ( the_name ); }
+
 #define USUL_FACTORY_REGISTER_CREATOR_WITH_NAME(the_name,the_type)\
-  namespace { Usul::Factory::RegisterCreator < Usul::Factory::TypeCreator < the_type > > _creator_for_##the_type ( the_name ); }
+  USUL_FACTORY_REGISTER_CREATOR_WITH_NAME_AND_BASE_CLASS ( Usul::Factory::ObjectFactory, the_name, the_type, Usul::Base::Referenced )
 
 #define USUL_FACTORY_REGISTER_CREATOR(the_type)\
   USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( #the_type, the_type )

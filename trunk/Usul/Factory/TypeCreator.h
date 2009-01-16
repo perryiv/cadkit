@@ -32,21 +32,23 @@ namespace Factory {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class T > class TypeCreator : public BaseCreator 
+template < class T, class BaseClassType > class TypeCreator : public BaseCreator < BaseClassType >
 {
 public:
 
   USUL_DECLARE_REF_POINTERS ( TypeCreator );
-  typedef BaseCreator BaseClass;
+  typedef BaseClassType BaseType;
+  typedef BaseCreator<BaseType> BaseClass;
   typedef T ObjectType;
+  typedef TypeCreator<ObjectType,BaseType> ThisType;
 
   TypeCreator ( const std::string &name ) : BaseClass ( name )
   {
   }
 
-  virtual Usul::Base::Referenced *operator()()
+  virtual BaseType *operator()()
   {
-    return new T;
+    return new ObjectType;
   }
 
 protected:

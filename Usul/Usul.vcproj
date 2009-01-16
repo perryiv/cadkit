@@ -2723,11 +2723,11 @@
 				Name="Factory"
 				>
 				<File
-					RelativePath=".\Factory\BaseCreator.cpp"
+					RelativePath=".\Factory\BaseCreator.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Factory\BaseCreator.h"
+					RelativePath=".\Factory\BaseFactory.h"
 					>
 				</File>
 				<File
@@ -2758,10 +2758,6 @@
 				</File>
 				<File
 					RelativePath=".\Factory\RegisterCreator.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Factory\ScopedRegistration.cpp"
 					>
 				</File>
 				<File

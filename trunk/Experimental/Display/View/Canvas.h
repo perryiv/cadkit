@@ -16,18 +16,14 @@
 #ifndef _DISPLAY_LIBRARY_CANVAS_CLASS_H_
 #define _DISPLAY_LIBRARY_CANVAS_CLASS_H_
 
-#include "Display/Render/Renderer.h"
+#include "Display/Export/Export.h"
 
+#include "Usul/Base/BaseObject.h"
+#include "Usul/Interfaces/ISceneGraph.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IView.h"
-#include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Math/Matrix44.h"
-
-#include "osg/MatrixTransform"
-#include "osg/ClipNode"
-#include "osg/ref_ptr"
-#include "osgViewer/Viewer"
 
 #include <string>
 #include <stack>
@@ -39,24 +35,20 @@ namespace View {
 
 class DISPLAY_LIBRARY_EXPORT Canvas : public Usul::Base::BaseObject,
                                       public Usul::Interfaces::IView,
-                                      public Usul::Interfaces::IViewMatrix,
                                       public Usul::Interfaces::IRedraw
 {
 public:
 
   // Typedefs.
   typedef Usul::Base::BaseObject BaseClass;
-  typedef osg::ref_ptr<osg::MatrixTransform> TransformPtr;
-  typedef osg::ref_ptr<osg::ClipNode> ClipNodePtr;
-  typedef osg::ref_ptr<osg::Group> GroupPtr;
-  typedef osg::ref_ptr<osg::Node> NodePtr;
-  typedef Display::Render::Renderer::RefPtr RendererPtr;
-  typedef std::stack<RendererPtr> Renderers;
   typedef Usul::Interfaces::IUnknown IUnknown;
-  typedef osg::ref_ptr<osgViewer::Viewer> ViewerPtr;
+  typedef Usul::Math::Matrix44d Matrix;
+  typedef Usul::Interfaces::SceneGraph::IGroup IGroup;
+  typedef Usul::Interfaces::SceneGraph::ITransformGroup ITransformGroup;
+  typedef Usul::Interfaces::SceneGraph::IClippedGroup IClippedGroup;
+  typedef std::stack<IUnknown::RefPtr> Renderers;
   typedef Usul::Interfaces::IView IView;
   typedef Usul::Interfaces::IDocument IDocument;
-  typedef Usul::Math::Matrix44d Matrix;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Canvas );
@@ -91,7 +83,7 @@ public:
   bool                      isRendering() const;
 
   // Add a model. Specify whether or not it can be clipped.
-  void                      modelAdd ( NodePtr, bool clipped = true );
+  void                      modelAdd ( IUnknown::RefPtr, bool clipped = true );
 
   // Set/get the navigation matrix.
   Matrix                    navigationMatrix() const;
@@ -101,22 +93,18 @@ public:
   Matrix                    navigationViewAll ( double zScale = 3.0 ) const;
 
   // Push/pop the renderer.
-  void                      pushRenderer ( RendererPtr );
+  void                      pushRenderer ( IUnknown::RefPtr );
   void                      popRenderer();
 
   // Get the current renderer.
-  RendererPtr               renderer();
-  const RendererPtr         renderer() const;
+  IUnknown::RefPtr          renderer();
+  const IUnknown::RefPtr    renderer() const;
 
   // Render the scene.
   void                      render();
 
   // Call this when you want the viewport to resize.
   void                      resize ( unsigned int width, unsigned int height );
-
-  // Usul::Interfaces::IViewMatrix
-  virtual void              setViewMatrix ( const osg::Matrixd & );
-  virtual osg::Matrixd      getViewMatrix() const;
 
   // Usul::Interfaces::IRedraw
   virtual void              redraw();
@@ -139,13 +127,12 @@ private:
 
   unsigned int _flags;
   Renderers _renderers;
-  GroupPtr _scene;
-  TransformPtr _models;
-  ClipNodePtr _clipped;
-  GroupPtr _unclipped;
-  GroupPtr _decoration;
+  IGroup::QueryPtr _scene;
+  IGroup::QueryPtr _models;
+  IGroup::QueryPtr _clipped;
+  IGroup::QueryPtr _unclipped;
+  IGroup::QueryPtr _decoration;
   IDocument::QueryPtr _document;
-  ViewerPtr _viewer;
 };
 
 

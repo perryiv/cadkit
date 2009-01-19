@@ -295,51 +295,84 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
     
     std::string command ( "/usr/bin/unzip -o " + name + " -d " + dir );
     ::system ( command.c_str() );
-#else
-    // Remove the directory if it exists.
-    if ( boost::filesystem::exists ( dir ) )
-      boost::filesystem::remove_all ( dir );
 
+    // The filenames to load.
+    std::vector<std::string> filenames;
+    Usul::File::findFiles ( dir, "kml", filenames );
+    for ( std::vector<std::string>::const_iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
+    {
+      USUL_TRY_BLOCK
+      {
+        this->_parseKml ( *iter, caller, progress );
+      }
+      USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "3815332372" );
+    }
+#else
     // Make sure the directory is created.
-    boost::filesystem::create_directory ( dir );
+    if ( false == boost::filesystem::exists ( dir ) )
+      boost::filesystem::create_directory ( dir );
 
     // Open the zip file.
     ZipFile zipFile;
     zipFile.open ( filename );
 
-    // Get the contents of the file.
+    // Get the all the filenames contained in the file.
     typedef ZipFile::Strings Strings;
     Strings contents;
     zipFile.contents ( contents );
 
+    typedef std::vector<std::string> FileContents;
+    FileContents kmlFiles;
+
     // Loop over the contents and write them to a temporary file.
     for ( Strings::const_iterator iter = contents.begin(); iter != contents.end(); ++iter )
     {
+      const std::string filename ( *iter );
+
       // Read the file into a buffer.
       std::string buffer;
-      zipFile.readFile ( *iter, buffer );
+      zipFile.readFile ( filename, buffer );
 
-      // Create the path.
-      const std::string path ( dir + "\\" + *iter );
+      if ( "kml" ==Usul::File::extension ( filename ) )
+      {
+        kmlFiles.push_back ( buffer );
+      }
+      else
+      {
+        // Create the path.
+        const std::string path ( dir + "\\" + filename );
 
-      // Make sure the directory is created.
-      boost::filesystem::create_directory ( Usul::File::directory ( path, true ) );
+        // Make sure the directory is created.
+        boost::filesystem::create_directory ( Usul::File::directory ( path, true ) );
 
-      // Write the buffer to file.
-      std::ofstream out ( path.c_str(), std::ios::binary );
-      out << buffer;
+        // Write the buffer to file.
+        std::ofstream out ( path.c_str(), std::ios::binary );
+        out << buffer;
+      }
     }
+
+    XmlTree::XercesLife life;
+    for ( FileContents::const_iterator iter = kmlFiles.begin(); iter != kmlFiles.end(); ++iter )
+    {
+      XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+      document->loadFromMemory ( *iter );
+  
+      USUL_TRY_BLOCK
+      {
+        this->_parseKml ( *document, caller, progress );
+      }
+      USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2567846007" );
+    }
+
 #endif
-    
-    // The filenames to load.
-    std::vector<std::string> filenames;
-    Usul::File::findFiles ( dir, "kml", filenames );
-    for ( std::vector<std::string>::const_iterator iter = filenames.begin(); iter != filenames.end(); ++iter )
-      Usul::Functions::safeCallR1R2R3 ( Usul::Adaptors::memberFunction ( this, &KmlLayer::_parseKml ), *iter, caller, progress, "3815332372" );
   }
   else if ( "kml" == ext )
   {
-    Usul::Functions::safeCallR1R2R3 ( Usul::Adaptors::memberFunction ( this, &KmlLayer::_parseKml ), filename, caller, progress, "3910186017" );
+    USUL_TRY_BLOCK
+    {
+      this->_parseKml ( filename, caller, progress );
+    }
+    USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "3910186017" );
   }
   
   // Our data is no longer dirty.
@@ -365,8 +398,20 @@ void KmlLayer::_parseKml ( const std::string& filename, Usul::Interfaces::IUnkno
   XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
   document->load ( filename );
   
+  this->_parseKml ( *document, caller, progress );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load a kml file using the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void KmlLayer::_parseKml ( const XmlTree::Node& node, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress )
+{
   // Loop over the children.
-  Children children ( document->children() );
+  Children children ( node.children() );
   for ( Children::iterator iter = children.begin(); iter != children.end(); ++iter )
   {
     XmlTree::Node::RefPtr node ( *iter );

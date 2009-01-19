@@ -9,7 +9,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Data/Point.h"
-#include "Minerva/Core/Utilities/ElevationGrid.h"
 
 #include "OsgTools/Callbacks/SortBackToFront.h"
 #include "OsgTools/State/StateSet.h"
@@ -17,7 +16,6 @@
 #include "OsgTools/Ray.h"
 #include "OsgTools/Convert.h"
 
-#include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Threads/Safe.h"
@@ -27,7 +25,6 @@
 #include "osg/Point"
 #include "osg/Geode"
 #include "osg/Material"
-#include "osg/MatrixTransform"
 #include "osg/Shape"
 #include "osg/ShapeDrawable"
 #include "osg/AutoTransform"
@@ -422,7 +419,7 @@ osg::Node* Point::_buildPoint ( const osg::Vec3d& earthLocation )
   
   geode->addDrawable ( geometry.get() );
 
-  MatrixTransform::RefPtr mt ( new MatrixTransform );
+  osg::ref_ptr<MatrixTransform> mt ( new MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( earthLocation ) );
   mt->addChild ( geode.get() );
   
@@ -461,7 +458,7 @@ osg::Node* Point::_buildSphere ( const osg::Vec3d& earthLocation )
     return autoTransform.release();
   }
 
-  MatrixTransform::RefPtr mt ( new MatrixTransform );
+  osg::ref_ptr<MatrixTransform> mt ( new MatrixTransform );
   mt->setMatrix ( osg::Matrix::translate ( earthLocation ) );
   mt->addChild ( geode.get() );
   
@@ -745,65 +742,4 @@ bool Point::isSemiTransparent() const
 {
   USUL_TRACE_SCOPE;
   return 1.0 != this->color()[3];
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the scene branch for the data object.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Point::elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller )
-{
-  USUL_TRACE_SCOPE;
-  
-  /// Get the center. from our data source.
-  Usul::Math::Vec3d point ( this->pointData() );
-  
-  if ( false == extents.contains ( Extents::Vertex ( point[0], point[1] ) ) )
-    return false;
-  
-  if ( false == this->autotransform() )
-  {
-    MatrixTransform::RefPtr transform ( Usul::Threads::Safe::get ( this->mutex(), _transform ) );
-    
-    if ( transform.valid() )
-    {
-      // Set the height.
-      Minerva::Core::Utilities::ElevationGrid grid ( elevationData, extents );
-      point[2] = this->_elevationFromGrid ( point, grid );
-    
-      //Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
-      //point[2] = this->_elevation ( point, elevation );
-      
-      // Save the center in lat/lon coordinates.
-      Vec3d location ( point [ 0 ], point [ 1 ], point [ 2 ] );
-      
-      // Convert to planet coordinates.
-      Detail::convertToPlanet ( location, caller );
-      
-      //const double height ( grid ( center ) );
-
-      transform->matrix ( osg::Matrix::translate ( osg::Vec3 ( location[0], location[1], location[2] ) ) );
-    }
-  }
-  else
-  {
-    // TODO: update auto transform.
-  }
-  
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  It is now safe to update.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Point::updateNotify ( Usul::Interfaces::IUnknown *caller )
-{
-  USUL_TRACE_SCOPE;
 }

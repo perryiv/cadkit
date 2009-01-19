@@ -434,10 +434,6 @@
 						RelativePath=".\Data\UserData.h"
 						>
 					</File>
-					<File
-						RelativePath=".\Data\Vector.h"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="Layers"
@@ -839,10 +835,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Utilities\ElevationGrid.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Utilities\GeoCode.cpp"
 						>
 					</File>
@@ -864,18 +856,6 @@
 					</File>
 					<File
 						RelativePath=".\Utilities\SkyDome.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="OSG"
-					>
-					<File
-						RelativePath=".\OSG\MatrixTransform.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\OSG\MatrixTransform.h"
 						>
 					</File>
 				</Filter>
@@ -920,14 +900,6 @@
 					</File>
 					<File
 						RelativePath=".\Functions\MakeBody.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Functions\ParameterizeExtents.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Functions\ParameterizeExtents.h"
 						>
 					</File>
 					<File
@@ -988,15 +960,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Interfaces\IPostgresqlConnection.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Interfaces\IRemoveLayer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Interfaces\IVectorLayer.h"
 					>
 				</File>
 			</Filter>

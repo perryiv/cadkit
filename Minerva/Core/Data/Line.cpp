@@ -333,15 +333,3 @@ Line::Color Line::lineColor() const
   LineStyle::RefPtr lineStyle ( this->lineStyle() );
   return ( lineStyle.valid() ? lineStyle->color() : Usul::Math::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Build the scene branch.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Line::_buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
-{
-  return 0x0;
-}

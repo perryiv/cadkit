@@ -107,6 +107,7 @@ protected:
   
   // Load a kml file.
   void                        _parseKml ( const std::string& filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
+  void                        _parseKml ( const XmlTree::Node& node, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
   
   // Parse xml nodes.
   void                        _parseNode         ( const XmlTree::Node& node );

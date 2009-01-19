@@ -18,6 +18,7 @@
 #include "Minerva/Core/Data/UserData.h"
 #include "Minerva/Core/Visitor.h"
 
+#include "OsgTools/Convert.h"
 #include "OsgTools/Font.h"
 #include "OsgTools/Widgets/Legend.h"
 #include "OsgTools/Widgets/LegendObject.h"
@@ -187,7 +188,7 @@ const std::string& DataObject::label() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::labelPosition ( const osg::Vec3& position )
+void DataObject::labelPosition ( const PositionType& position )
 {
   Guard guard ( this );
   _labelPosition = position;
@@ -201,7 +202,7 @@ void DataObject::labelPosition ( const osg::Vec3& position )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec3& DataObject::labelPosition () const
+DataObject::PositionType DataObject::labelPosition () const
 {
   Guard guard ( this );
   return _labelPosition;
@@ -227,7 +228,7 @@ DataObject::Geometries DataObject::geometries() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4& DataObject::labelColor () const
+DataObject::ColorType DataObject::labelColor() const
 {
   Guard guard ( this );
   return _labelColor;
@@ -240,7 +241,7 @@ const osg::Vec4& DataObject::labelColor () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::labelColor ( const osg::Vec4& color )
+void DataObject::labelColor ( const ColorType& color )
 {
   Guard guard ( this );
   // Set the lable color.
@@ -321,7 +322,7 @@ const DataObject::Unknown* DataObject::dataSource() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* DataObject::_buildLabel ( const osg::Vec3& position )
+osg::Node* DataObject::_buildLabel ( const PositionType& position )
 {
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
   
@@ -331,8 +332,8 @@ osg::Node* DataObject::_buildLabel ( const osg::Vec3& position )
   {
     osg::ref_ptr < osgText::Text > text ( new osgText::Text );
     text->setFont( OsgTools::Font::defaultFont() );
-    text->setColor( this->labelColor() );
-    text->setPosition ( position );
+    text->setColor( Usul::Convert::Type<ColorType,osg::Vec4f>::convert ( this->labelColor() ) );
+    text->setPosition ( Usul::Convert::Type<PositionType,osg::Vec3d>::convert ( position ) );
     text->setAutoRotateToScreen( true );
     text->setCharacterSizeMode( osgText::Text::SCREEN_COORDS );
     text->setCharacterSize( this->labelSize() );
@@ -437,7 +438,7 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
   // Do we have a label?
   if( this->showLabel() && !this->label().empty() )
   {
-    osg::Vec3 position ( this->labelPosition() );
+    PositionType position ( this->labelPosition() );
     Usul::Math::Vec3d p ( extents.center()[0], extents.center()[1], position[2] );
 
     Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
@@ -447,7 +448,7 @@ void DataObject::preBuildScene ( Usul::Interfaces::IUnknown* caller )
       planet->convertToPlanet( Usul::Math::Vec3d ( p ), p );
     }
 
-    group->addChild ( this->_buildLabel( osg::Vec3 ( p[0], p[1], p[2] ) ) );
+    group->addChild ( this->_buildLabel ( PositionType ( p[0], p[1], p[2] ) ) );
   }
 
   Guard guard ( this );

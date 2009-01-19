@@ -222,12 +222,17 @@ osg::Node* LoadModel::operator() ( const std::string& filename, ModelCache *cach
 
 void LoadModel::_preProcessCollada ( const std::string& filename )
 {
+  // Make sure only one thread reads at a time.
   Guard guard ( Detail::_readMutex );
   
   DAE dae;
 
   // Open the file.
   daeSmartRef<domCOLLADA> dom ( dae.open ( filename ) );
+
+  // Return if the file was not opened.
+  if ( 0x0 != dom )
+    return;
 
   typedef std::vector<daeElement*> Elements;
   

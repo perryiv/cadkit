@@ -190,12 +190,7 @@ inline BaseAddNetworkLayerWidget::LayerInfos AddNetworkLayerWidget<Layer>::_getC
 
 template < class Layer >
 inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents, const std::string& format, const std::string& layers, const std::string& styles ) const
-{
-  std::string server ( _server->text().toStdString() );
-  const std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
-  
-  typename Layer::RefPtr layer ( new Layer );
-  
+{  
   // Get the current options.
   Options options ( _options );
   
@@ -204,6 +199,9 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
   
   // Set the format.
   options[Usul::Network::Names::FORMAT] = format;
+
+  // Get the server.
+  std::string server ( _server->text().toStdString() ); 
 
   // Sometimes the '?' character is needed in the url to make the GetCapabilities 
   // query. It should not become part of the url; it's an option.
@@ -228,6 +226,9 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
     server = std::string ( server.begin(), i );
   }
 
+  // Make a new layer.
+  typename Layer::RefPtr layer ( new Layer );
+
   // Set the options.
   layer->options ( options );
   
@@ -238,6 +239,7 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
   layer->urlBase ( server );
   
   // Set the cache directory.
+  const std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
   layer->baseCacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
   
   return layer.release();

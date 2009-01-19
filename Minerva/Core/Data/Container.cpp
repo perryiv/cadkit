@@ -131,8 +131,6 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Minerva::Interfaces::IDirtyScene* > ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
-  case Minerva::Interfaces::IVectorLayer::IID:
-    return static_cast < Minerva::Interfaces::IVectorLayer* > ( this );
   case Minerva::Interfaces::IAddLayer::IID:
     return static_cast < Minerva::Interfaces::IAddLayer* > ( this );
   case Minerva::Interfaces::IRemoveLayer::IID:
@@ -662,32 +660,6 @@ void Container::deserialize ( const XmlTree::Node &node )
     // Add the builder.
     _builders.add ( *iter );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Elevation has changed within given extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Node* Container::buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller )
-{
-  USUL_TRACE_SCOPE;
-
-  osg::ref_ptr<osg::Group> group ( new osg::Group );
-
-  Unknowns unknowns ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
-  {
-    for ( Unknowns::iterator iter = unknowns.begin(); iter != unknowns.end(); ++iter )
-    {
-      Minerva::Interfaces::IVectorLayer::QueryPtr vl ( *iter );
-      if ( vl.valid() )
-        group->addChild ( vl->buildTiledScene ( extents, level, elevationData, caller ) );
-    }
-  }
-
-  return group.release();
 }
 
 

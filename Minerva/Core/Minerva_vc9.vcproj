@@ -834,10 +834,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Utilities\ElevationGrid.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Utilities\GeoCode.cpp"
 						>
 					</File>
@@ -859,18 +855,6 @@
 					</File>
 					<File
 						RelativePath=".\Utilities\SkyDome.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="OSG"
-					>
-					<File
-						RelativePath=".\OSG\MatrixTransform.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\OSG\MatrixTransform.h"
 						>
 					</File>
 				</Filter>
@@ -915,14 +899,6 @@
 					</File>
 					<File
 						RelativePath=".\Functions\MakeBody.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Functions\ParameterizeExtents.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Functions\ParameterizeExtents.h"
 						>
 					</File>
 					<File

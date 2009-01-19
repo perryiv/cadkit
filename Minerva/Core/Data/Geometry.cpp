@@ -368,16 +368,3 @@ void Geometry::updateNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Elevation has changed within the given extents.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Geometry::elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller )
-{
-  USUL_TRACE_SCOPE;
-  return false;
-}

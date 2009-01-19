@@ -34,6 +34,15 @@ SET (SOURCES
 ./AlphasDialog.cpp
 )
 
+# List the headers.
+SET ( HEADERS
+	AddNetworkLayerWidget.h
+	./WmsLayerItem.h
+	./OptionsDialog.h
+	./AddWmsLayerWidget.h
+	./AlphasDialog.h
+)
+
 # These need to be moc'd.
 SET(MOC_HDRS
   AddWmsLayerWidget.h
@@ -53,7 +62,7 @@ QT4_WRAP_UI(UIS_HDRS ${UIS})
 QT4_WRAP_CPP(MOC_SRCS ${MOC_HDRS} )
 
 # Create a Shared Library
-ADD_LIBRARY( MinervaQtWidgets SHARED ${SOURCES} ${MOC_SRCS} ${UIS} ${UIS_HDRS} )
+ADD_LIBRARY( MinervaQtWidgets SHARED ${SOURCES} ${MOC_SRCS} ${UIS} ${UIS_HDRS} ${HEADERS} )
 CADKIT_ADD_LIBRARY ( MinervaQtWidgets )
 
 # Link the Library	

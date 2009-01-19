@@ -17,6 +17,8 @@
 
 #include "Usul/Math/Vector3.h"
 
+namespace osg { class StateSet; }
+
 namespace Minerva {
 namespace Core {
 namespace Data {
@@ -62,9 +64,6 @@ protected:
 
   virtual osg::Node*    _buildScene ( Usul::Interfaces::IUnknown* caller );
   osg::Node*            _buildScene ( const Color& color, Usul::Interfaces::IUnknown* caller );
-
-  /// Build the scene branch.
-  virtual osg::Node*    _buildTiledScene ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller );
     
 private:
   

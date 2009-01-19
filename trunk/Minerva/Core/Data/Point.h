@@ -13,11 +13,12 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Data/Geometry.h"
-#include "Minerva/Core/OSG/MatrixTransform.h"
 
 #include "OsgTools/ShapeFactory.h"
 
 #include "Usul/Math/Vector3.h"
+
+#include "osg/MatrixTransform"
 
 namespace Minerva {
 namespace Core {
@@ -30,7 +31,7 @@ public:
   typedef Geometry BaseClass;
   typedef Usul::Math::Vec3d Vec3d;
   typedef Usul::Math::Vec4f Color;
-  typedef Minerva::Core::OSG::MatrixTransform MatrixTransform;
+  typedef osg::MatrixTransform MatrixTransform;
 
   USUL_DECLARE_TYPE_ID ( Point );
   USUL_DECLARE_QUERY_POINTERS ( Point );
@@ -54,9 +55,6 @@ public:
   /// Set/get the color.
   void                    color ( const Color& );
   Color                   color() const;
-  
-  /// Elevation has changed within the given extents.
-  virtual bool            elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller );
   
   /// Is this geometry transparent?
   virtual bool            isSemiTransparent() const;
@@ -88,9 +86,6 @@ public:
   /// Get the point data as WGS 84.
   Vec3d                   pointData() const;
   
-  /// Update.
-  virtual void            updateNotify ( Usul::Interfaces::IUnknown *caller );
-  
 protected:
   
   /// Use reference counting.
@@ -117,7 +112,7 @@ private:
   float        _quality;
   bool         _autotransform;
   Color        _color;
-  MatrixTransform::RefPtr _transform;
+  osg::ref_ptr<MatrixTransform> _transform;
   
   /// Shape Factory to share across all points.
   static OsgTools::ShapeFactory::Ptr _sf;

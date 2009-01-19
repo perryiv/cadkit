@@ -235,7 +235,7 @@ void PropertyPage::_initLabelProperties()
   if ( _layer.valid() )
   {
     _labelShown->setChecked ( _layer->showLabel () );
-    _labelColor->color ( QtTools::Color< osg::Vec4 >::convert ( _layer->labelColor() ) );
+    _labelColor->color ( QtTools::Color< Usul::Math::Vec4f >::convert ( _layer->labelColor() ) );
     
     // Get all columns.
     Connection::RefPtr connection ( _layer->connection() );
@@ -379,7 +379,7 @@ void PropertyPage::_labelColorChanged()
   if ( _layer.valid() )
   {
     QColor c ( _labelColor->color() );
-    _layer->labelColor ( QtTools::Color< osg::Vec4 >::convert ( c ) );
+    _layer->labelColor ( QtTools::Color< Usul::Math::Vec4f >::convert ( c ) );
   }
 }
 

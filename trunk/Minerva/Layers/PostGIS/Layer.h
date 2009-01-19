@@ -111,8 +111,8 @@ public:
   bool                        showLabel() const;
 
   /// Get/Set the label color.
-  void                        labelColor ( const osg::Vec4& color );
-  osg::Vec4                   labelColor() const;
+  void                        labelColor ( const Usul::Math::Vec4f& color );
+  Usul::Math::Vec4f           labelColor() const;
 
   /// Get/Set the label zOffset
   void                        labelZOffset ( float offset );

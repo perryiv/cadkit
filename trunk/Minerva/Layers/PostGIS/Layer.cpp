@@ -512,10 +512,10 @@ bool Layer::showLabel() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::labelColor ( const osg::Vec4& color )
+void Layer::labelColor ( const Usul::Math::Vec4f& color )
 {
   Guard guard ( this->mutex() );
-  _labelData->color ( Usul::Math::Vec4f ( color[0], color[1], color[2], color[3] ) );
+  _labelData->color ( color );
 }
 
 
@@ -525,11 +525,10 @@ void Layer::labelColor ( const osg::Vec4& color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec4 Layer::labelColor() const
+Usul::Math::Vec4f Layer::labelColor() const
 {
   Guard guard ( this->mutex() );
-  Usul::Math::Vec4f color ( _labelData->color() );
-  return osg::Vec4 ( color[0], color[1], color[2], color[3] );
+  return _labelData->color();
 }
 
 
@@ -615,7 +614,7 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
     std::ostringstream os;
     os << "SELECT x(centroid(" << tablename << ".geom)) as x_c, y(centroid(" << tablename << ".geom)) as y_c FROM " << tablename << " WHERE id = " << id;
     
-    osg::Vec3d center ( 0.0, 0.0, 0.0 );
+    Minerva::Core::Data::DataObject::PositionType center ( 0.0, 0.0, 0.0 );
     
     if( 0x0 != _connection.get() )
     {

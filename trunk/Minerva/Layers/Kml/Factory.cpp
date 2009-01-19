@@ -599,7 +599,7 @@ Minerva::Core::Data::DataObject* Factory::createPlaceMark ( const XmlTree::Node&
   Helper::setObjectDataMembers ( object.get(), node );
   
   // Set the data object members.
-  object->labelColor ( osg::Vec4 ( 1.0, 1.0, 1.0, 1.0 ) );
+  object->labelColor ( Minerva::Core::Data::DataObject::ColorType ( 1.0, 1.0, 1.0, 1.0 ) );
   object->showLabel ( true );
   
   return object.release();

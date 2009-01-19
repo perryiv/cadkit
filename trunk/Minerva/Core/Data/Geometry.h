@@ -14,7 +14,6 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Object.h"
-#include "Minerva/Interfaces/IVectorLayer.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -40,7 +39,6 @@ public:
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef Usul::Interfaces::IUnknown          Unknown;
   typedef Usul::Math::Vec3d                   Point;
-  typedef osg::ref_ptr<osg::Image>            ImagePtr;
 
   USUL_DECLARE_TYPE_ID ( Geometry );
   USUL_DECLARE_QUERY_POINTERS( Geometry );
@@ -64,9 +62,6 @@ public:
   /// Get/Set the dirty flag.
   void                  dirty ( bool b );
   bool                  dirty () const;
-  
-  /// Elevation has changed within the given extents.
-  virtual bool          elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller );
   
   /// Set/get the extents.
   void                  extents ( const Extents& e );
@@ -115,21 +110,6 @@ protected:
         return ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 );
       case RELATIVE_TO_GROUND:
         return ( point[2] + ( 0x0 != elevation ? elevation->elevationAtLatLong ( point[1], point[0] ) : 0.0 ) );
-      case ABSOLUTE_MODE:
-        return point[2];
-    }
-    return 0.0;
-  }
-
-  template<class Vertex,class Grid>
-  double                _elevationFromGrid ( const Vertex& point, const Grid& grid ) const
-  {
-    switch ( this->altitudeMode() )
-    {
-      case CLAMP_TO_GROUND:
-        return grid ( point );
-      case RELATIVE_TO_GROUND:
-        return point[2] + grid ( point );
       case ABSOLUTE_MODE:
         return point[2];
     }

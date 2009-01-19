@@ -878,13 +878,6 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     vector->elevationChangedNotify ( t1->extents(), t1->level(), t1->elevation(), unknown.get() );
     vector->elevationChangedNotify ( t2->extents(), t2->level(), t2->elevation(), unknown.get() );
     vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevation(), unknown.get() );
-    
-    // Add tiled vector data.
-    // TODO: Remove when you get per-tile vector data working.
-    t0->addVectorData ( vector->buildTiledScene ( t0->extents(), t0->level(), t0->elevation(), unknown.get() ) );
-    t1->addVectorData ( vector->buildTiledScene ( t1->extents(), t1->level(), t1->elevation(), unknown.get() ) );
-    t2->addVectorData ( vector->buildTiledScene ( t2->extents(), t2->level(), t2->elevation(), unknown.get() ) );
-    t3->addVectorData ( vector->buildTiledScene ( t3->extents(), t3->level(), t3->elevation(), unknown.get() ) );
 
     // Notify new children have been added.
     vector->tileAddNotify ( t0, Tile::RefPtr ( this ) );

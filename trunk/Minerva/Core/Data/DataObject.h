@@ -33,8 +33,6 @@
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 
-#include "osg/Vec3"
-#include "osg/Vec4"
 #include "osg/Node"
 
 #include <map>
@@ -86,6 +84,8 @@ public:
   typedef OsgTools::Widgets::Item             Item;
   typedef osg::ref_ptr<osg::Image>            ImagePtr;
   typedef ClickedCallback                     ClickedCB;
+  typedef Usul::Math::Vec3d PositionType;
+  typedef Usul::Math::Vec4f ColorType;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( DataObject );
@@ -136,12 +136,12 @@ public:
   const std::string&    label () const;
 
   /// Get/Set the label position.
-  void                  labelPosition ( const osg::Vec3& position );
-  const osg::Vec3&      labelPosition () const;
+  void                  labelPosition ( const PositionType& position );
+  PositionType          labelPosition () const;
 
   /// Get/Set the label color.
-  void                  labelColor ( const osg::Vec4& color );
-  const osg::Vec4&      labelColor () const;
+  void                  labelColor ( const ColorType& color );
+  ColorType             labelColor () const;
 
   /// Get/Set the label size.
   void                  labelSize ( float size );
@@ -162,7 +162,7 @@ protected:
   /// Use reference counting.
   virtual ~DataObject ();
 
-  osg::Node*            _buildLabel( const osg::Vec3& position );
+  osg::Node*            _buildLabel( const PositionType& position );
   
   // Return the pointer to this (IDataObject).
   virtual DataObject*         dataObject();
@@ -178,8 +178,8 @@ private:
 
   bool         _dirty;
   std::string  _label;
-  osg::Vec3    _labelPosition;
-  osg::Vec4    _labelColor;
+  PositionType _labelPosition;
+  ColorType _labelColor;
   float        _labelSize;
   bool         _showLabel;
   Unknown::QueryPtr _dataSource;

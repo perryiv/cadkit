@@ -236,6 +236,39 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Load xercesc document into a XmlTree document.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void loadFromXercesDocument ( xercesc::DOMDocument *dom, Document * document )
+  {
+    // Checks for null happened elsewhere.  Assert to let us know if this changes.
+    USUL_ASSERT ( 0x0 != dom );
+    USUL_ASSERT ( 0x0 != document );
+
+    // Handle no document element.
+    xercesc::DOMElement *element ( dom->getDocumentElement() );
+    if ( 0x0 == element )
+      return;
+
+    // Handle document's element not having a name. Only a header in the file?
+    const std::string name ( XmlTree::Functions::name ( element ) );
+    if ( name.empty() )
+      return;
+
+    // Set the name.
+    document->name ( name );
+
+    // Traverse the tree and make our nodes.
+    Helper::traverse ( element, document );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Load contents of file and build the document. 
 //  
 //  Note: in Xerces there is a "node" for all sections of the document, 
@@ -262,21 +295,8 @@ void Loader::load ( const std::string &file, Document *doc )
   if ( 0x0 == dom.get() )
     Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1221774659: Failed to create DOM document from XML file: ", file );
 
-  // Handle no document element.
-  xercesc::DOMElement *element ( dom.get()->getDocumentElement() );
-  if ( 0x0 == element )
-    return;
-
-  // Handle document's element not having a name. Only a header in the file?
-  const std::string name ( XmlTree::Functions::name ( element ) );
-  if ( name.empty() )
-    return;
-
-  // Set the name.
-  doc->name ( name );
-
-  // Traverse the tree and make our nodes.
-  Helper::traverse ( element, doc );
+  // Populate the XmlTree::Document from the loaded xercesc document.
+  Helper::loadFromXercesDocument ( dom.get(), doc );
 }
 
 
@@ -286,39 +306,36 @@ void Loader::load ( const std::string &file, Document *doc )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Loader::load ( const std::istream & stream, Document *doc ) const
+void Loader::load ( const std::istream& stream, Document *doc ) const
 {
   typedef std::string Container;
   typedef std::istreambuf_iterator < Container::value_type > Iterator;
 
   std::istream& in ( const_cast < std::istream& > ( stream ) );
-
-  Container contents;
-
   Iterator iter ( in );
 
+  Container contents;
   std::copy ( iter, Iterator (), std::back_inserter ( contents ) );
 
-  xercesc::MemBufInputSource input ( (const XMLByte*) contents.c_str(), contents.length(), "xml in memory parse", false  );
+  this->loadFromMemory ( contents, doc );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Load from a character buffer.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Loader::loadFromMemory ( const std::string& buffer, Document *doc ) const
+{
+  xercesc::MemBufInputSource input ( (const XMLByte*) buffer.c_str(), buffer.length(), "xml in memory parse", false  );
 
   // Load document.
   std::auto_ptr<xercesc::DOMDocument> dom ( Helper::load ( input ) );
   if ( 0x0 == dom.get() )
-    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1221774659: Failed to create DOM document from XML." );
+    Usul::Exceptions::Thrower<std::runtime_error> ( "Error 1390534932: Failed to create DOM document from XML." );
 
-  // Handle no document element.
-  xercesc::DOMElement *element ( dom.get()->getDocumentElement() );
-  if ( 0x0 == element )
-    return;
-
-  // Handle document's element not having a name. Only a header in the file?
-  const std::string name ( XmlTree::Functions::name ( element ) );
-  if ( name.empty() )
-    return;
-
-  // Set the name.
-  doc->name ( name );
-
-  // Traverse the tree and make our nodes.
-  Helper::traverse ( element, doc );
+  // Populate the XmlTree::Document from the loaded xercesc document.
+  Helper::loadFromXercesDocument ( dom.get(), doc );
 }

@@ -19,6 +19,7 @@
 #include "XmlTree/Export.h"
 
 #include <string>
+#include <vector>
 
 namespace XmlTree {
 
@@ -33,8 +34,11 @@ public:
   ~Loader();
 
   // Load contents of file and build the document.
-  void                    load ( const std::string &, Document * );
-  void                    load ( const std::istream &, Document * ) const;
+  void load ( const std::string &, Document * );
+  void load ( const std::istream &, Document * ) const;
+
+  // Load from a file already loaded in memory.
+  void loadFromMemory ( const std::string& buffer, Document * ) const;
 };
 
 

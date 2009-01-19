@@ -51,6 +51,9 @@ public:
   void                    load ( const std::string &file );
   void                    load ( const std::istream& in );
 
+  // Load from a file already loaded in memory.
+  void                    loadFromMemory ( const std::string& buffer );
+
   // Write document to file or stream.
   void                    write ( const std::string &file, bool includeHeader = true ) const;
   void                    write ( std::ostream &out, bool includeHeader = true ) const;

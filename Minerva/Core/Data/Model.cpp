@@ -66,7 +66,7 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );
   Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
   
-  osg::Vec3 location ( this->location() );
+  osg::Vec3d location ( this->location() );
 
   // Make new extents.
   Extents e ( osg::Vec2d ( location[0], location[1] ), osg::Vec2d ( location[0], location[1] ) );
@@ -79,14 +79,14 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
   const double heading ( hpr[0] ), tilt ( hpr[1] ), roll ( hpr[2] );
   
   osg::Matrixd R ( planet.valid() ? planet->planetRotationMatrix ( location[1], location[0], height, heading ) : osg::Matrixd() );
-  osg::Matrix S ( osg::Matrix::scale ( this->scale() * this->toMeters() ) );
+  osg::Matrixd S ( osg::Matrixd::scale ( this->scale() * this->toMeters() ) );
 
   mt->setMatrix ( S *
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
                   osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
 
   osgUtil::Optimizer optimizer;
-  optimizer.optimize ( mt.get(), osgUtil::Optimizer:: FLATTEN_STATIC_TRANSFORMS );
+  optimizer.optimize ( mt.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS );
 
   // If there is a scale, turn on normalize.
   if ( false == S.isIdentity() )
@@ -103,7 +103,7 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Model::location ( const osg::Vec3& location )
+void Model::location ( const osg::Vec3d& location )
 {
   Guard guard ( this->mutex() );
   _location = location;
@@ -117,7 +117,7 @@ void Model::location ( const osg::Vec3& location )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 Model::location() const
+osg::Vec3d Model::location() const
 {
   Guard guard ( this->mutex() );
   return _location;
@@ -130,7 +130,7 @@ osg::Vec3 Model::location() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Model::orientation( double  heading, double  tilt, double  roll )
+void Model::orientation( double heading, double  tilt, double  roll )
 {
   Guard guard ( this->mutex() );
   _heading = heading;
@@ -165,7 +165,7 @@ osg::Vec3d Model::orientation() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Model::scale ( const osg::Vec3& scale )
+void Model::scale ( const osg::Vec3d& scale )
 {
   Guard guard ( this->mutex() );
   _scale = scale;
@@ -179,7 +179,7 @@ void Model::scale ( const osg::Vec3& scale )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Vec3 Model::scale() const
+osg::Vec3d Model::scale() const
 {
   Guard guard ( this->mutex() );
   return _scale;

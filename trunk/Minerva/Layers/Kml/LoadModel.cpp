@@ -231,7 +231,7 @@ void LoadModel::_preProcessCollada ( const std::string& filename )
   daeSmartRef<domCOLLADA> dom ( dae.open ( filename ) );
 
   // Return if the file was not opened.
-  if ( 0x0 != dom )
+  if ( 0x0 == dom )
     return;
 
   typedef std::vector<daeElement*> Elements;

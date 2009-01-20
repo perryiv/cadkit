@@ -56,6 +56,10 @@ public:
   /// Set/get the scale to convert to meters.
   void                  toMeters ( double );
   double                toMeters() const;
+
+  /// Set/get the flags for optimizing the node.
+  void                  optimize ( bool );
+  bool                  optimize() const;
   
 protected:
   virtual ~Model();
@@ -70,6 +74,7 @@ private:
   double _toMeters;
   osg::Vec3d _scale;
   osg::ref_ptr<osg::Node> _model;
+  bool _optimize;
 };
 
 

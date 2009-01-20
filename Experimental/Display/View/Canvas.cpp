@@ -101,24 +101,19 @@ void Canvas::_destroy()
 void Canvas::clear()
 {
   USUL_TRACE_SCOPE;
-  // Do not lock up here because the mutex is not recursive and 
-  // popRenderer() locks it for writing.
+  WriteLock lock ( this );
 
-  // Call popRenderer() because it sets the renderer's scene to null.
-  while ( true == this->renderer().valid() )
-    this->popRenderer();
+  // Clear the renderers.
+  while ( false == _renderers.empty() )
+    _renderers.pop();
 
-  // Local scope not necessary but good practice.
-  {
-    WriteLock lock ( this );
-    _scene = 0x0;
-    _models = 0x0;
-    _clipped = 0x0;
-    _unclipped = 0x0;
-    _decoration = 0x0;
-    _document = Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
-    _viewer = 0x0;
-  }
+  // Clear these members.
+  _scene = IGroup::RefPtr ( 0x0 );
+  _models = IGroup::RefPtr ( 0x0 );
+  _clipped = IGroup::RefPtr ( 0x0 );
+  _unclipped = IGroup::RefPtr ( 0x0 );
+  _decoration = IGroup::RefPtr ( 0x0 );
+  _document = IDocument::RefPtr ( 0x0 );
 }
 
 
@@ -139,8 +134,6 @@ Usul::Interfaces::IUnknown * Canvas::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IRedraw* > ( this );
   case Usul::Interfaces::IView::IID:
     return static_cast < Usul::Interfaces::IView* > ( this );
-  case Usul::Interfaces::IViewMatrix::IID:
-    return static_cast < Usul::Interfaces::IViewMatrix* > ( this );
   default:
     return 0x0;
   }
@@ -180,7 +173,7 @@ bool Canvas::isRendering() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Canvas::modelAdd ( NodePtr model, bool clipped )
+void Canvas::modelAdd ( IUnknown::RefPtr model, bool clipped )
 {
   USUL_TRACE_SCOPE;
 
@@ -189,11 +182,11 @@ void Canvas::modelAdd ( NodePtr model, bool clipped )
     WriteLock lock ( this );
     if ( true == clipped )
     {
-      _clipped->addChild ( model.get() );
+      _clipped->appendChild ( model );
     }
     else
     {
-      _unclipped->addChild ( model.get() );
+      _unclipped->appendChild ( model );
     }
   }
 }
@@ -205,15 +198,14 @@ void Canvas::modelAdd ( NodePtr model, bool clipped )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Canvas::pushRenderer ( RendererPtr r )
+void Canvas::pushRenderer ( IUnknown::RefPtr renderer )
 {
   USUL_TRACE_SCOPE;
 
-  if ( true == r.valid() )
+  if ( true == renderer.valid() )
   {
     WriteLock lock ( this );
-    _renderers.push ( r );
-    r->scene ( _scene );
+    _renderers.push ( renderer );
   }
 }
 
@@ -229,14 +221,10 @@ void Canvas::popRenderer()
   USUL_TRACE_SCOPE;
   WriteLock lock ( this );
 
-  if ( true == _renderers.empty() )
-    return;
-
-  RendererPtr r ( _renderers.top() );
-  _renderers.pop();
-
-  if ( true == r.valid() )
-    r->scene ( 0x0 );
+  if ( false == _renderers.empty() )
+  {
+    _renderers.pop();
+  }
 }
 
 
@@ -246,11 +234,11 @@ void Canvas::popRenderer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Canvas::RendererPtr Canvas::renderer() const
+const Usul::Interfaces::IUnknown::RefPtr Canvas::renderer() const
 {
   USUL_TRACE_SCOPE;
   ReadLock lock ( this );
-  return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
+  return ( ( false == _renderers.empty() ) ? _renderers.top() : IUnknown::RefPtr ( 0x0 ) );
 }
 
 
@@ -260,11 +248,11 @@ const Canvas::RendererPtr Canvas::renderer() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Canvas::RendererPtr Canvas::renderer()
+Usul::Interfaces::IUnknown::RefPtr Canvas::renderer()
 {
   USUL_TRACE_SCOPE;
   ReadLock lock ( this );
-  return ( ( false == _renderers.empty() ) ? _renderers.top() : RendererPtr ( 0x0 ) );
+  return ( ( false == _renderers.empty() ) ? _renderers.top() : IUnknown::RefPtr ( 0x0 ) );
 }
 
 
@@ -282,18 +270,46 @@ void Canvas::render()
   if ( true == this->isRendering() )
     return;
 
+  // Handle no scene.
+  Usul::Interfaces::IUnknown::RefPtr scene ( this->_getScene() );
+  if ( false == scene.valid() )
+    return;
+
   // Always set and reset this state.
   Usul::Scope::Caller::RefPtr resetFlag ( Usul::Scope::makeCaller ( 
     Usul::Adaptors::bind2 ( Canvas::RENDERING, true,  Usul::Adaptors::memberFunction ( this, &Canvas::_setFlag ) ),
     Usul::Adaptors::bind2 ( Canvas::RENDERING, false, Usul::Adaptors::memberFunction ( this, &Canvas::_setFlag ) ) ) );
 
-  // Handle no renderer.
-  RendererPtr r ( this->renderer() );
-  if ( false == r.valid() )
-    return;
+  // Get the renderer.
+  Usul::Interfaces::IUnknown::RefPtr top ( this->renderer() );
 
-  // Render the scene.
-  r->render();
+  // Set the projection matrix.
+  Usul::Interfaces::SceneGraph::IProjectionMatrix::QueryPtr projection ( top );
+  if ( true == projection.valid() )
+  {
+    projection->setProjectionMatrix ( this->getProjectionMatrix() );
+  }
+
+  // Pre-render.
+  Usul::Interfaces::SceneGraph::IPreRender::QueryPtr pre ( top );
+  if ( true == pre.valid() )
+  {
+    pre->preRender ( scene );
+  }
+
+  // Render.
+  Usul::Interfaces::SceneGraph::IRender::QueryPtr renderer ( top );
+  if ( true == renderer.valid() )
+  {
+    renderer->render ( scene );
+  }
+
+  // Post-render.
+  Usul::Interfaces::SceneGraph::IPostRender::QueryPtr post ( top );
+  if ( true == post.valid() )
+  {
+    post->postRender ( scene );
+  }
 }
 
 

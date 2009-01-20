@@ -33,9 +33,10 @@ namespace Display {
 namespace View {
 
 
-class DISPLAY_LIBRARY_EXPORT Canvas : public Usul::Base::BaseObject,
-                                      public Usul::Interfaces::IView,
-                                      public Usul::Interfaces::IRedraw
+class DISPLAY_LIBRARY_EXPORT Canvas : 
+  public Usul::Base::BaseObject,
+  public Usul::Interfaces::IRedraw,
+  public Usul::Interfaces::IView
 {
 public:
 
@@ -114,6 +115,8 @@ protected:
 
   // Use reference counting.
   virtual ~Canvas();
+
+  IUnknown::RefPtr          _getScene() const;
 
   void                      _setFlag ( unsigned int, bool );
 

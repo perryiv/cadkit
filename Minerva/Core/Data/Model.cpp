@@ -36,7 +36,8 @@ Model::Model() :
   _roll ( 0.0 ),
   _toMeters ( 0.0254 ),
   _scale ( 1.0, 1.0, 1.0 ),
-  _model ( 0x0 )
+  _model ( 0x0 ),
+  _optimize ( true )
 {
 }
 
@@ -85,8 +86,11 @@ osg::Node* Model::_buildScene( Usul::Interfaces::IUnknown* caller )
                   osg::Matrix::rotate ( osg::DegreesToRadians ( tilt ), osg::Vec3 ( 1.0, 0.0, 0.0 ) ) * 
                   osg::Matrix::rotate ( osg::DegreesToRadians ( roll ), osg::Vec3 ( 0.0, 1.0, 0.0 ) ) * R );
 
-  osgUtil::Optimizer optimizer;
-  optimizer.optimize ( mt.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS );
+  if ( true == this->optimize() )
+  {
+    osgUtil::Optimizer optimizer;
+    optimizer.optimize ( mt.get(), osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS );
+  }
 
   // If there is a scale, turn on normalize.
   if ( false == S.isIdentity() )
@@ -237,4 +241,30 @@ double Model::toMeters() const
 {
   Guard guard ( this->mutex() );
   return _toMeters;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the optimization flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Model::optimize ( bool state )
+{
+  Guard guard ( this->mutex() );
+  _optimize = state;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the optimization flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Model::optimize() const
+{
+  Guard guard ( this->mutex() );
+  return _optimize;
 }

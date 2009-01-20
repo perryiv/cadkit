@@ -333,7 +333,7 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
       std::string buffer;
       zipFile.readFile ( filename, buffer );
 
-      if ( "kml" ==Usul::File::extension ( filename ) )
+      if ( "kml" == Usul::File::extension ( filename ) )
       {
         kmlFiles.push_back ( buffer );
       }
@@ -350,6 +350,9 @@ void KmlLayer::_read ( const std::string &filename, Usul::Interfaces::IUnknown *
         out << buffer;
       }
     }
+
+    // Set the directory to where the .kmz was expanded to.
+    Usul::Scope::Reset<std::string> reset ( _directory, dir, _directory );
 
     XmlTree::XercesLife life;
     for ( FileContents::const_iterator iter = kmlFiles.begin(); iter != kmlFiles.end(); ++iter )

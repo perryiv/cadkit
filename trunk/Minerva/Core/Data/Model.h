@@ -38,16 +38,16 @@ public:
   Model();
   
   /// Get/Set the location.
-  void                  location ( const osg::Vec3& );
-  osg::Vec3             location() const;
+  void                  location ( const osg::Vec3d& );
+  osg::Vec3d            location() const;
   
   /// Get/Set the orientation.
   void                  orientation( double  heading, double  tilt, double  roll );
   osg::Vec3d            orientation() const;
   
   /// Get/Set the scale.
-  void                  scale ( const osg::Vec3& );
-  osg::Vec3             scale() const;
+  void                  scale ( const osg::Vec3d& );
+  osg::Vec3d            scale() const;
   
   /// Get/Set the model.
   void                  model ( osg::Node* );
@@ -63,12 +63,12 @@ protected:
   virtual osg::Node*    _buildScene( Usul::Interfaces::IUnknown* caller );
 
 private:
-  osg::Vec3 _location;
+  osg::Vec3d _location;
   double _heading;
   double _tilt;
   double _roll;
   double _toMeters;
-  osg::Vec3 _scale;
+  osg::Vec3d _scale;
   osg::ref_ptr<osg::Node> _model;
 };
 

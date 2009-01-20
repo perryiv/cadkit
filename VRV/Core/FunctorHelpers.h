@@ -119,8 +119,8 @@ namespace Helper
 
 namespace Helper
 {
-  template < class Setter, class FunctorMap > 
-  void add ( const Setter &setter, Usul::Factory::ObjectFactory &factory, XmlTree::Node::Children &kids, FunctorMap &functors, Unknown *caller = 0x0 )
+  template < class Setter, class ObjectFactory, class FunctorMap > 
+  void add ( const Setter &setter, ObjectFactory &factory, XmlTree::Node::Children &kids, FunctorMap &functors, Unknown *caller = 0x0 )
   {
     typedef typename FunctorMap::mapped_type SmartPointerType;
     typedef typename SmartPointerType::element_type ObjectType;

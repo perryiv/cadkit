@@ -1024,7 +1024,8 @@ void Application::_init()
   _initialTime = _timer.tick();
 
   const std::string head ( this->preferences()->headNodeMachineName() );
-
+  std::cout << "Head: " << head << std::endl;
+  
   // Initialize the shared frame time data.
   {
     vpr::GUID guid ( "8297080d-c22c-41a6-91c1-188a331fabe5" );
@@ -1198,9 +1199,9 @@ void Application::_preFrame()
   this->_navigate ();
 
   // Write out the navigation matrix.
-  if ( _sharedMatrix.isLocal () )
+  if ( _sharedMatrix.isLocal() )
   {
-    _sharedMatrix->data ( _navBranch->getMatrix () );
+    _sharedMatrix->data ( _navBranch->getMatrix() );
   }
 
   // Update the progress bars.
@@ -2497,7 +2498,7 @@ bool Application::buttonPressNotify ( Usul::Interfaces::IUnknown * caller )
     unsigned int mask ( hideScene ? 0 : 0xffffffff );
 
     // Always set the mask.
-    this->modelsScene ( )->setNodeMask ( mask );
+    this->modelsScene()->setNodeMask ( mask );
 
     // Return now if the menu was handled.
     if ( menuHandled )
@@ -2652,7 +2653,7 @@ void Application::setViewMatrix ( const osg::Matrixd& m )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Matrixd& Application::getViewMatrix (  ) const
+osg::Matrixd Application::getViewMatrix() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -3033,28 +3034,28 @@ void Application::_readFunctorFile ()
   USUL_TRACE_SCOPE;
 
   // Local factory for functor creation.
-  Usul::Factory::ObjectFactory factory;
+  Usul::Factory::BaseFactory<Usul::Base::Referenced> factory;
 
   // Populate the factory.
-  factory.add ( new Usul::Factory::TypeCreator<JoystickHorizontal> ( "horizontal joystick" ) );
-  factory.add ( new Usul::Factory::TypeCreator<JoystickVertical>   ( "vertical joystick"   ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandPitch>          ( "wand pitch"          ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandYaw>            ( "wand yaw"            ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandRoll>           ( "wand roll"           ) );
+  factory.add ( new Usul::Factory::TypeCreator<JoystickHorizontal,Usul::Base::Referenced> ( "horizontal joystick" ) );
+  factory.add ( new Usul::Factory::TypeCreator<JoystickVertical,Usul::Base::Referenced>   ( "vertical joystick"   ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPitch,Usul::Base::Referenced>          ( "wand pitch"          ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandYaw,Usul::Base::Referenced>            ( "wand yaw"            ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRoll,Usul::Base::Referenced>           ( "wand roll"           ) );
 
-  factory.add ( new Usul::Factory::TypeCreator<IdentityMatrix>     ( "identity matrix"     ) );
-  factory.add ( new Usul::Factory::TypeCreator<InverseMatrix>      ( "inverse matrix"      ) );
-  factory.add ( new Usul::Factory::TypeCreator<MatrixPair>         ( "matrix pair"         ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandMatrix>         ( "wand matrix"         ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandPosition>       ( "wand position"       ) );
-  factory.add ( new Usul::Factory::TypeCreator<WandRotation>       ( "wand rotation"       ) );
+  factory.add ( new Usul::Factory::TypeCreator<IdentityMatrix,Usul::Base::Referenced>     ( "identity matrix"     ) );
+  factory.add ( new Usul::Factory::TypeCreator<InverseMatrix,Usul::Base::Referenced>      ( "inverse matrix"      ) );
+  factory.add ( new Usul::Factory::TypeCreator<MatrixPair,Usul::Base::Referenced>         ( "matrix pair"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandMatrix,Usul::Base::Referenced>         ( "wand matrix"         ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandPosition,Usul::Base::Referenced>       ( "wand position"       ) );
+  factory.add ( new Usul::Factory::TypeCreator<WandRotation,Usul::Base::Referenced>       ( "wand rotation"       ) );
 
-  factory.add ( new Usul::Factory::TypeCreator<DirectionFunctor>   ( "direction"           ) );
+  factory.add ( new Usul::Factory::TypeCreator<DirectionFunctor,Usul::Base::Referenced>   ( "direction"           ) );
 
-  factory.add ( new Usul::Factory::TypeCreator<TranslateFunctor>   ( "translate"           ) );
-  factory.add ( new Usul::Factory::TypeCreator<RotateFunctor>      ( "rotate"              ) );
+  factory.add ( new Usul::Factory::TypeCreator<TranslateFunctor,Usul::Base::Referenced>   ( "translate"           ) );
+  factory.add ( new Usul::Factory::TypeCreator<RotateFunctor,Usul::Base::Referenced>      ( "rotate"              ) );
 
-  factory.add ( new Usul::Factory::TypeCreator<FavoriteFunctor>    ( "sequence"            ) );
+  factory.add ( new Usul::Factory::TypeCreator<FavoriteFunctor,Usul::Base::Referenced>    ( "sequence"            ) );
 
   // Initialize and finalize use of xerces.
   XmlTree::XercesLife life;

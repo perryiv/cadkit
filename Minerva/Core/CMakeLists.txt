@@ -103,13 +103,11 @@ SET ( HEADERS
 	./Data/TimeStamp.h
 	./Data/Transform.h
 	./Data/UserData.h
-	./Data/Vector.h
 	./Export.h
 	./Extents.h
 	./Factory/Readers.h
 	./Functions/CacheString.h
 	./Functions/MakeBody.h
-	./Functions/ParameterizeExtents.h
 	./Functions/ReadFile.h
 	./Functions/SearchDirectory.h
 	./Functors/BaseColorFunctor.h
@@ -126,7 +124,6 @@ SET ( HEADERS
 	./Layers/RasterLayerNetwork.h
 	./Layers/RasterLayerWms.h
 	./Macros.h
-	./OSG/MatrixTransform.h
 	./Serialize.h
 	./TileEngine/Body.h
 	./TileEngine/Group.h
@@ -141,7 +138,6 @@ SET ( HEADERS
 	./Utilities/ClampNearFar.h
 	./Utilities/Compass.h
 	./Utilities/Download.h
-	./Utilities/ElevationGrid.h
 	./Utilities/GeoCode.h
 	./Utilities/Hud.h
 	./Utilities/SkyDome.h
@@ -203,7 +199,6 @@ SET (SOURCES
 ./Factory/Readers.cpp
 ./Functions/CacheString.cpp
 ./Functions/MakeBody.cpp
-./Functions/ParameterizeExtents.cpp
 ./Functions/ReadFile.cpp
 ./Functions/SearchDirectory.cpp
 ./Functors/GradientColorFunctor.cpp
@@ -217,7 +212,6 @@ SET (SOURCES
 ./Layers/RasterLayerArcIMS.cpp
 ./Layers/RasterLayerNetwork.cpp
 ./Layers/RasterLayerWms.cpp
-./OSG/MatrixTransform.cpp
 ./TileEngine/Body.cpp
 ./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp

@@ -536,7 +536,7 @@ protected:
 
   /// Get the view matrix ( Usul::Interfaces::IViewMatrix ).
   /// Note: In this implementation, the navigation matrix is set.
-  virtual const osg::Matrixd&   getViewMatrix (  ) const;
+  virtual osg::Matrixd          getViewMatrix() const;
 
   // Set the status bar text (IStatusBar).
   virtual void                  setStatusBarText ( const std::string &text, bool force );

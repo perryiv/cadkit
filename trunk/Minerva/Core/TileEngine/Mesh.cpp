@@ -311,8 +311,9 @@ osg::Node* Mesh::buildMesh ( const Body& body,
       const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
 
       // The osg::Image stores it's data as char*.  However, in this case the data of the image is float.
-      // The data function will calculate and return the pointer to the beginning of the float.  The pointer needs to be cast to a float pointer so the proper value is accessed.
-      const double heightAboveSeaLevel ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
+      // The data function will calculate and return the pointer to the beginning of the float.  
+      // The pointer needs to be cast to a float pointer so the proper value is accessed.
+      double heightAboveSeaLevel ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
 
       // Calculate texture coordinate.  Lower left corner should be (0,0).
       const float s ( static_cast<float> ( uRange[0] + ( u * deltaU ) ) );

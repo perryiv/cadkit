@@ -52,7 +52,7 @@
 #include <memory>
 
 namespace osg { class Node; class Group; class MatrixTransform; }
-namespace Usul { namespace Factory { class ObjectFactory; } }
+namespace Usul { namespace Factory { template<class T> class BaseFactory; } }
 namespace XmlTree { class Node; }
 namespace Modflow { namespace Readers { class BaseReader; } }
 class OGRSpatialReference; class OGRCoordinateTransformation;
@@ -86,7 +86,7 @@ public:
   typedef std::vector < GridInfo > GridVector;
   typedef Modflow::Model::Layer Layer;
   typedef std::vector < Layer::RefPtr > Layers;
-  typedef Usul::Factory::ObjectFactory Factory;
+  typedef Usul::Factory::BaseFactory<Usul::Base::Referenced> ObjectFactory;
   typedef Modflow::Readers::BaseReader BaseReader;
   typedef Usul::Interfaces::ITreeNode ITreeNode;
   typedef Usul::Interfaces::IBooleanState IBooleanState;
@@ -304,8 +304,8 @@ protected:
 
   void                                    _incrementProgress ( bool state, Unknown *progress, unsigned int &numerator, unsigned int denominator );
 
-  void                                    _read ( Factory &, XmlTree::Node *file, Unknown *progress );
-  void                                    _read ( Factory &, const std::string &type, const std::string &file, const std::string &noData, const FileAttributes &, Unknown *progress );
+  void                                    _read ( ObjectFactory &, XmlTree::Node *file, Unknown *progress );
+  void                                    _read ( ObjectFactory &, const std::string &type, const std::string &file, const std::string &noData, const FileAttributes &, Unknown *progress );
 
   void                                    _setCoordinateSystem ( XmlTree::Node * );
 

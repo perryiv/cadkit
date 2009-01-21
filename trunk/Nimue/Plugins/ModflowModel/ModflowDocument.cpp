@@ -331,19 +331,20 @@ void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *
 {
   USUL_TRACE_SCOPE;
   typedef XmlTree::Node::Children Children;
+  using Usul::Factory::TypeCreator;
 
   // Scope the directory change.
   Usul::Scope::CurrentDirectory cwd ( Usul::File::directory ( file, false ), false );
 
   // Add readers to a factory.
-  Usul::Factory::ObjectFactory factory;
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::Discretization>    ( Modflow::Readers::DISCRETIZATION      ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::BasicPackage>      ( Modflow::Readers::BASIC_PACKAGE       ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::Recharge>          ( Modflow::Readers::RECHARGE            ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::Pumping>           ( Modflow::Readers::PUMPING             ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::BlockCenteredFlow> ( Modflow::Readers::BLOCK_CENTERED_FLOW ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::HeadLevelOutput>   ( Modflow::Readers::HEAD_LEVEL_OUTPUT   ) );
-  factory.add ( new Usul::Factory::TypeCreator<Modflow::Readers::AuxiliaryData>     ( Modflow::Readers::AUXILIARY_DATA      ) );
+  ObjectFactory factory;
+  factory.add ( new TypeCreator<Modflow::Readers::Discretization,Usul::Base::Referenced>    ( Modflow::Readers::DISCRETIZATION      ) );
+  factory.add ( new TypeCreator<Modflow::Readers::BasicPackage,Usul::Base::Referenced>      ( Modflow::Readers::BASIC_PACKAGE       ) );
+  factory.add ( new TypeCreator<Modflow::Readers::Recharge,Usul::Base::Referenced>          ( Modflow::Readers::RECHARGE            ) );
+  factory.add ( new TypeCreator<Modflow::Readers::Pumping,Usul::Base::Referenced>           ( Modflow::Readers::PUMPING             ) );
+  factory.add ( new TypeCreator<Modflow::Readers::BlockCenteredFlow,Usul::Base::Referenced> ( Modflow::Readers::BLOCK_CENTERED_FLOW ) );
+  factory.add ( new TypeCreator<Modflow::Readers::HeadLevelOutput,Usul::Base::Referenced>   ( Modflow::Readers::HEAD_LEVEL_OUTPUT   ) );
+  factory.add ( new TypeCreator<Modflow::Readers::AuxiliaryData,Usul::Base::Referenced>     ( Modflow::Readers::AUXILIARY_DATA      ) );
 
   // Initialize and finalize use of xerces.
   XmlTree::XercesLife life;
@@ -400,7 +401,7 @@ void ModflowDocument::read ( const std::string &file, Unknown *caller, Unknown *
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDocument::_read ( Factory &factory, XmlTree::Node *file, Unknown *progress )
+void ModflowDocument::_read ( ObjectFactory &factory, XmlTree::Node *file, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   if ( 0x0 != file )
@@ -417,7 +418,7 @@ void ModflowDocument::_read ( Factory &factory, XmlTree::Node *file, Unknown *pr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ModflowDocument::_read ( Factory &factory, const std::string &type, const std::string &file, const std::string &noData, const FileAttributes &fa, Unknown *progress )
+void ModflowDocument::_read ( ObjectFactory &factory, const std::string &type, const std::string &file, const std::string &noData, const FileAttributes &fa, Unknown *progress )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

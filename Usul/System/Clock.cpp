@@ -30,7 +30,7 @@
 
 Usul::Types::Uint64 Usul::System::Clock::milliseconds() 
 {
-#ifndef __APPLE__
+#ifdef _WIN32
   return ::clock();
 #else
   struct timeval t1;

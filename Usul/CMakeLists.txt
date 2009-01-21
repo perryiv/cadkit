@@ -306,7 +306,6 @@ SET ( HEADERS
 ./Interfaces/IDatabasePager.h
 ./Interfaces/IDataChangedListener.h
 ./Interfaces/IDataChangedNotify.h
-./Interfaces/IDataSync.h
 ./Interfaces/IDecimateTriangles.h
 ./Interfaces/IDefaultGUIDelegate.h
 ./Interfaces/IDeleteAllConnected.h
@@ -613,7 +612,6 @@ SET (SOURCES
 ./Threads/Mutex.cpp
 ./Console/Feedback.cpp
 ./Shared/Preferences.cpp
-./Factory/BaseCreator.cpp
 ./Factory/ObjectFactory.cpp
 ./Scope/Timer.cpp
 ./Scope/CurrentDirectory.cpp

@@ -39,8 +39,8 @@ template < class T > class BaseFactory
 public:
 
   typedef T BaseType;
-  typedef BaseCreator<BaseType> BaseCreator;
-  typedef typename BaseCreator::ValidRefPtr BaseCreatorPtr;
+  typedef BaseCreator<BaseType> BaseCreatorType;
+  typedef typename BaseCreatorType::ValidRefPtr BaseCreatorPtr;
   typedef std::map < std::string, BaseCreatorPtr > Creators;
   typedef Usul::Threads::Mutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
@@ -64,7 +64,7 @@ public:
   //
   // Add a creator.
   //
-  void add ( BaseCreator *c )
+  void add ( BaseCreatorType *c )
   {
     if ( 0x0 != c )
     {
@@ -95,7 +95,7 @@ public:
       return 0x0;
     }
 
-    BaseCreator &creator = *(i->second);
+    BaseCreatorType &creator = *(i->second);
     return creator();
   }
 

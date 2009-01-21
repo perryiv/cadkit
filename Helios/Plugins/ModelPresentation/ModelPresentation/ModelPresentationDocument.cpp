@@ -2267,35 +2267,6 @@ void ModelPresentationDocument::_incrementTimeStep()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Load new files into the dynamic set at index <index>
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ModelPresentationDocument::validateDynamicSets()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this ); 
-
-  // Get needed interfaces.
-  IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
-  
-  for( MpdDynamicSets::iterator iter = _dynamicSets.begin(); iter < _dynamicSets.end(); ++iter )
-  {
-    for( unsigned int i = 0; i < (*iter).groups.size(); ++i )
-    {
-      std::string lockfile = Usul::File::base( (*iter).groups.at( i ).filename );
-      if( true == dataSync->queryDataState( lockfile ) )
-      {
-        (*iter).groups.at( i ).valid = true;
-
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Set the visibility state of a Dynamic Model at index <index>
 //
 ///////////////////////////////////////////////////////////////////////////////

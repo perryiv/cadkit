@@ -99,21 +99,7 @@ private:
 void MpdJob::_started ()
 {
   USUL_TRACE_SCOPE;
-  // Get needed interfaces.
-  IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
-
-  std::string hostname = Usul::System::Host::name();
-//  dataSync->setDataFlag( hostname, _lockfile );
-
-#if 0
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( _document );
-  nav->findFiles( _index, _caller );
-  //nav->validateDynamicSets();
-#else
   this->_findFiles();
-#endif
-//  dataSync->resetData( hostname, _lockfile );
-
 }
 
 
@@ -241,17 +227,6 @@ void MpdJob::_loadNewDynamicFiles( std::string filename, Usul::Interfaces::IUnkn
   USUL_TRACE_SCOPE;
  // Guard guard ( this ); 
   osg::ref_ptr< osg::Group > node = new osg::Group;
-
-  // Get needed interfaces.
-  //IDataSync::QueryPtr dataSync ( Usul::Components::Manager::instance().getInterface ( IDataSync::IID ) );
-  //if( false == dataSync.valid() )
-  //  throw std::runtime_error ( "Error 3960013514: Failed to find a valid interface to Usul::Interfaces::IDataSync " );
-
-  //std::string hostname = Usul::System::Host::name();
-  //std::string lockfile = Usul::File::base( filename );
-
-  // lock here
-  //dataSync->setDataFlag( hostname, lockfile );
   
   // load the new model
   node->addChild( this->_loadFile( filename, caller, progress ) );
@@ -261,12 +236,6 @@ void MpdJob::_loadNewDynamicFiles( std::string filename, Usul::Interfaces::IUnkn
     Guard guard ( this ); 
     _root.push_back( node.get() );
   }
- 
-  // unlock here
-  //dataSync->resetData( hostname, lockfile );
-
-  
-
 }
 
 

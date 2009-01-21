@@ -27,7 +27,6 @@
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
-#include "Usul/Interfaces/IDataSync.h"
 #include "Usul/Interfaces/ITextMatrix.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewport.h"
@@ -69,7 +68,6 @@ public:
   typedef Usul::Documents::Manager DocManager;
   typedef DocManager::DocumentInfo Info;
   typedef Usul::Jobs::Manager JobManager;
-  typedef Usul::Interfaces::IDataSync IDataSync;
   typedef Usul::Interfaces::ITextMatrix ITextMatrix;
   typedef Usul::Interfaces::IViewMatrix IViewMatrix;
   typedef Usul::Interfaces::IViewport IViewport;
@@ -147,7 +145,6 @@ public:
   void              isAnimating( bool value );
   void              dynamicModelState( unsigned int index, bool state );
   bool              dynamicModelState( unsigned int i );
-  void              validateDynamicSets();
   void              updateGlobalEndtime();
   void              firstSequenceStep();
   void              nextSequenceStep();

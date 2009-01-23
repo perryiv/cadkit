@@ -19,6 +19,7 @@
 
 using namespace Minerva::Core::Data;
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 //  Declare serialization wrappers.
@@ -31,6 +32,7 @@ SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( Feature::Extents );
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Feature, Feature::BaseClass );
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 //  Registry sections.
@@ -41,6 +43,7 @@ namespace Detail
 {
   const std::string RASTER_LAYER_CACHE_DIR ( "raster_layer_cache_dir" );
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

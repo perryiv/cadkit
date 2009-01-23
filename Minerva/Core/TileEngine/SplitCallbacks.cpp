@@ -22,6 +22,23 @@
 
 using namespace Minerva::Core::TileEngine::Callbacks;
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Declare serialization wrappers.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+USUL_IO_TEXT_DEFINE_READER_TYPE_VECTOR_4 ( SplitToLevel::Extents );
+USUL_IO_TEXT_DEFINE_WRITER_TYPE_VECTOR_4 ( SplitToLevel::Extents );
+SERIALIZE_XML_DECLARE_VECTOR_4_WRAPPER ( SplitToLevel::Extents );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Register factories.
+//
+///////////////////////////////////////////////////////////////////////////////
+
 USUL_FACTORY_REGISTER_CREATOR ( PassThrough );
 USUL_FACTORY_REGISTER_CREATOR ( SplitToLevel );
 USUL_FACTORY_REGISTER_CREATOR ( SplitIfLess );
@@ -94,13 +111,17 @@ bool PassThrough::shouldSplit ( bool suggestion, Tile * )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SplitToLevel::SplitToLevel ( unsigned int maxLevel ) : BaseClass(), 
-  _maxLevel ( maxLevel )
+SplitToLevel::SplitToLevel ( unsigned int level, const Extents &extents, bool canGoDeeper ) : BaseClass(), 
+  _level ( level ),
+  _extents ( extents ),
+  _canGoDeeper ( canGoDeeper )
 {
   USUL_TRACE_SCOPE;
 
   // Serialization glue.
-  this->_addMember ( "max_level", _maxLevel );
+  this->_addMember ( "level", _level );
+  this->_addMember ( "extents", _extents );
+  this->_addMember ( "allow_splitting_beyond_level", _canGoDeeper );
 }
 
 
@@ -124,7 +145,22 @@ SplitToLevel::~SplitToLevel()
 
 bool SplitToLevel::shouldSplit ( bool suggestion, Tile *tile )
 {
-  return ( ( 0x0 == tile ) ? suggestion : ( tile->level() < _maxLevel ) );
+  if ( 0x0 == tile )
+  {
+    return suggestion;
+  }
+
+  if ( false == _extents.intersects ( tile->extents() ) )
+  {
+    return suggestion;
+  }
+
+  if ( ( true == suggestion ) && ( true == _canGoDeeper ) )
+  {
+    return true;
+  }
+
+  return ( tile->level() < _level );
 }
 
 

@@ -328,7 +328,7 @@ void Container::clear()
   _builders.clear();
   _updateListeners.clear();
 
-  // Our scene needs rebuilt.
+  // Our scene needs to be rebuilt.
   this->dirtyScene ( true );
   
   // Notify any listeners that the data has changed.

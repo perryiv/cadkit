@@ -971,10 +971,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Interfaces\IPostgresqlConnection.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Interfaces\IRefreshData.h"
 					>
 				</File>

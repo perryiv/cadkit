@@ -18,10 +18,13 @@
 #define __MINERVA_CORE_SPLIT_CALLBACKS_H__
 
 #include "Minerva/Core/Export.h"
+#include "Minerva/Core/Extents.h"
 
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
+
+#include "osg/Vec2d"
 
 namespace Minerva { namespace Core { namespace TileEngine { class Tile; } } }
 
@@ -44,6 +47,7 @@ public:
 
   typedef Usul::Base::Object BaseClass;
   typedef Minerva::Core::TileEngine::Tile Tile;
+  typedef Minerva::Core::Extents < osg::Vec2d > Extents;
 
   USUL_DECLARE_REF_POINTERS ( SplitCallback );
 
@@ -113,7 +117,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( SplitToLevel );
 
   // Constructor
-  SplitToLevel ( unsigned int maxLevel = 2 );
+  SplitToLevel ( unsigned int level = 2, const Extents &extents = Extents ( -180, -90, 180, 90 ), bool canGoDeeper = false );
 
   // Return true if the tile should split.
   virtual bool shouldSplit ( bool suggestion, Tile * );
@@ -125,7 +129,9 @@ protected:
 
 private:
 
-  unsigned int _maxLevel;
+  unsigned int _level;
+  Extents _extents;
+  bool _canGoDeeper;
 
   SERIALIZE_XML_DEFINE_MEMBERS ( SplitToLevel );
 };

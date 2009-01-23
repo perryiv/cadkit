@@ -19,7 +19,9 @@
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
+#include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/TileEngine/Mesh.h"
+#include "Minerva/Interfaces/ITile.h"
 
 #include "Usul/Base/Typed.h"
 #include "Usul/Interfaces/IRasterLayer.h"
@@ -44,16 +46,16 @@
 namespace Usul { namespace Interfaces { struct IRasterLayer; } }
 namespace Usul { namespace Jobs { class Manager; } }
 namespace osgUtil { class CullVisitor; }
-namespace Minerva { namespace Core { namespace Data { class Container; } } }
+namespace Minerva { namespace Core { namespace TileEngine { class Body; } } }
 
 
 namespace Minerva {
 namespace Core {
 namespace TileEngine {
 
-class Body;
 
-class MINERVA_EXPORT Tile : public osg::Group
+class MINERVA_EXPORT Tile : public osg::Group,
+                            public Minerva::Interfaces::ITile
 {
 public:
 
@@ -65,6 +67,9 @@ public:
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Tile );
+
+  // Usul::Interfaces::IUnknown members.
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Indices for children
   enum Indices
@@ -108,6 +113,7 @@ public:
   typedef std::pair<std::string, Usul::Math::Vec4d> ImageCacheData;
   typedef std::map <IRasterLayer::RefPtr, ImageCacheData> ImageCache;
   typedef Minerva::Core::Data::Container TileVectorData;
+  typedef std::pair < TileVectorData::RefPtr, bool > TileVectorDataPair;
   typedef Usul::Interfaces::ITileVectorData::Jobs TileVectorJobs;
 
   // Constructors.
@@ -120,7 +126,8 @@ public:
          double splitDistance = 1,
          Body *body = 0x0,
          osg::Image * image = 0x0,
-         osg::Image * elevation = 0x0 );
+         osg::Image * elevation = 0x0,
+         TileVectorData::RefPtr tileVectorData = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
   // Add vector data.
@@ -195,6 +202,9 @@ public:
   // Set the texture data.
   void                      textureData ( osg::Image* image, const Usul::Math::Vec4d& coords );
 
+  // Minerva::Interfaces::ITile
+  virtual Tile *            tile();
+
   // Traverse the children.
   virtual void              traverse ( osg::NodeVisitor & );
   
@@ -234,7 +244,9 @@ protected:
   void                      _launchElevationRequest();
 
   void                      _perTileVectorDataClear();
-  TileVectorData &          _perTileVectorDataGet();
+  void                      _perTileVectorDataDelete();
+  bool                      _perTileVectorDataIsInherited() const;
+  TileVectorData::RefPtr    _perTileVectorDataGet();
 
   // Quarter the texture coordinates.
   void                      _quarterTextureCoordinates ( Usul::Math::Vec4d& ll, Usul::Math::Vec4d& lr, Usul::Math::Vec4d& ul, Usul::Math::Vec4d& ur ) const;
@@ -297,7 +309,7 @@ private:
   ImageSize _imageSize;
   WeakPtr _parent;
   Indices _index;
-  TileVectorData *_tileVectorData;
+  TileVectorDataPair _tileVectorData;
   TileVectorJobs _tileVectorJobs;
 };
 

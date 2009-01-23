@@ -19,7 +19,6 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
-#include "Minerva/Core/TileEngine/Tile.h"
 
 namespace Minerva {
 namespace Interfaces {
@@ -33,12 +32,9 @@ struct ITilesChangedListener : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 1809784420u };
   
-  typedef Minerva::Core::TileEngine::Tile Tile;
-
-  virtual void tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent ) = 0;
-  virtual void tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent ) = 0;
-  
-}; // struct ITilesChangedListener
+  virtual void tileAddNotify     ( Usul::Interfaces::IUnknown::RefPtr childTile, Usul::Interfaces::IUnknown::RefPtr parentTile ) = 0;
+  virtual void tileRemovedNotify ( Usul::Interfaces::IUnknown::RefPtr childTile, Usul::Interfaces::IUnknown::RefPtr parentTile ) = 0;
+};
 
 
 } // End namespace Interfaces

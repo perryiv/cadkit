@@ -47,6 +47,7 @@ public:
   typedef Usul::Interfaces::SceneGraph::IGroup IGroup;
   typedef Usul::Interfaces::SceneGraph::ITransformGroup ITransformGroup;
   typedef Usul::Interfaces::SceneGraph::IClippedGroup IClippedGroup;
+  typedef Usul::Interfaces::SceneGraph::IProjectionMatrix<Matrix> IProjectionMatrix;
   typedef std::stack<IUnknown::RefPtr> Renderers;
   typedef Usul::Interfaces::IView IView;
   typedef Usul::Interfaces::IDocument IDocument;
@@ -136,6 +137,7 @@ private:
   IGroup::QueryPtr _unclipped;
   IGroup::QueryPtr _decoration;
   IDocument::QueryPtr _document;
+  Matrix _projection; Not in initializer list yet. Probably need a Projection::RefPtr base class that is really a PerspectiveProjection class and has corresponding members.
 };
 
 

@@ -36,7 +36,7 @@ struct ITreeNode : public Usul::Interfaces::IUnknown
   virtual unsigned int                  getNumChildNodes() const = 0;
 
   // Get the child node.
-  virtual ITreeNode *                   getChildNode ( unsigned int which ) = 0;
+  virtual ITreeNode::RefPtr             getChildNode ( unsigned int which ) = 0;
 
   // Set/get the name.
   virtual void                          setTreeNodeName ( const std::string & ) = 0;

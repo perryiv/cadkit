@@ -344,7 +344,7 @@ protected:
   virtual unsigned int                     getNumChildNodes() const;
 
   // Get the child node (ITreeNode).
-  virtual ITreeNode *                      getChildNode ( unsigned int which );
+  virtual ITreeNode::RefPtr                getChildNode ( unsigned int which );
 
   // Set/get the name (ITreeNode).
   virtual void                             setTreeNodeName ( const std::string & );

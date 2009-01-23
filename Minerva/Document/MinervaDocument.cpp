@@ -2603,11 +2603,11 @@ unsigned int MinervaDocument::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::ITreeNode * MinervaDocument::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode::RefPtr MinervaDocument::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return Usul::Interfaces::ITreeNode::QueryPtr ( _bodies.at ( which ) );
+  return Usul::Interfaces::ITreeNode::RefPtr ( Usul::Interfaces::ITreeNode::QueryPtr ( _bodies.at ( which ) ) );
 }
 
 

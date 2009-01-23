@@ -158,29 +158,56 @@ Body::~Body()
 void Body::_destroy()
 {
   USUL_TRACE_SCOPE;
+  this->clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to safely clear and set to null.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  template < class SmartPointerType > void safeClear ( SmartPointerType ptr )
+  {
+    if ( true == ptr.valid() )
+    {
+      ptr->clear();
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the body.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::clear()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
 
   _transform = 0x0;
   _landModel = 0x0;
-  _rasters = 0x0;
-  _elevation = 0x0;
-  _vectorData = 0x0;
+
+  Helper::safeClear ( _rasters    ); _rasters    = 0x0;
+  Helper::safeClear ( _elevation  ); _elevation  = 0x0;
+  Helper::safeClear ( _vectorData ); _vectorData = 0x0;
+
   _splitCallback = 0x0;
 
-  // Clear all the tiles.
-  Usul::Functions::executeMemberFunctions ( _topTiles, &Tile::clear, true );
-
-  // Done with the list of top-level tiles.
-  _topTiles.clear();
-
-  // Purge all tiles.
-  this->purgeTiles();
-
-  // Should be ok now.
-  _deleteTiles.clear();
+  Usul::Functions::executeMemberFunctions ( _topTiles,    &Tile::clear, true ); _topTiles.clear();
+  Usul::Functions::executeMemberFunctions ( _deleteTiles, &Tile::clear, true ); _deleteTiles.clear();
 
   _updateListeners.clear();
+
   _sky = 0x0;
   _log = 0x0;
+
   _name.clear();
 }
 
@@ -989,7 +1016,7 @@ void Body::deserialize ( const XmlTree::Node &node )
   }
   
   // Add the vector data to the transform.
-  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options(), this->queryInterface ( IUnknown::IID ) ) );
 }
 
 
@@ -1264,16 +1291,24 @@ unsigned int Body::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::ITreeNode * Body::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode::RefPtr Body::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  if ( 0 == which )
-    return Usul::Interfaces::ITreeNode::QueryPtr ( _elevation.get() );
-  else if ( 1 == which )
-    return Usul::Interfaces::ITreeNode::QueryPtr ( _rasters.get() );
-  
-  return Usul::Interfaces::ITreeNode::QueryPtr ( _vectorData.get() );
+
+  typedef Usul::Interfaces::ITreeNode ITreeNode;
+
+  switch ( which )
+  {
+    case 0:
+      return ITreeNode::RefPtr ( ITreeNode::QueryPtr ( _elevation.get() ) );
+    case 1:
+      return ITreeNode::RefPtr ( ITreeNode::QueryPtr ( _rasters.get() ) );
+    case 2:
+      return ITreeNode::RefPtr ( ITreeNode::QueryPtr ( _vectorData.get() ) );
+    default:
+      return ITreeNode::RefPtr ( 0x0 );
+  }
 }
 
 
@@ -1611,20 +1646,6 @@ Body::Extents Body::extents() const
     }
   }
   return e;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Clear the body.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Body::clear()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Usul::Functions::executeMemberFunctions ( _topTiles, &Tile::clear, true );
 }
 
 

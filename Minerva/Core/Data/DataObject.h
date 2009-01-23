@@ -24,6 +24,7 @@
 #include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Interfaces/IDataObject.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
+#include "Minerva/Interfaces/IWithinExtents.h"
 
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -73,7 +74,8 @@ class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
                                   public Usul::Interfaces::IBooleanState,
                                   public Minerva::Interfaces::IDataObject,
                                   public Minerva::Interfaces::IElevationChangedListener,
-                                  public Usul::Interfaces::IUpdateListener
+                                  public Usul::Interfaces::IUpdateListener,
+                                  public Minerva::Interfaces::IWithinExtents
 {
 public:
   typedef Minerva::Core::Data::Feature        BaseClass;
@@ -84,8 +86,9 @@ public:
   typedef OsgTools::Widgets::Item             Item;
   typedef osg::ref_ptr<osg::Image>            ImagePtr;
   typedef ClickedCallback                     ClickedCB;
-  typedef Usul::Math::Vec3d PositionType;
-  typedef Usul::Math::Vec4f ColorType;
+  typedef Usul::Math::Vec3d                   PositionType;
+  typedef Usul::Math::Vec4f                   ColorType;
+  typedef Minerva::Interfaces::IWithinExtents IWithinExtents;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( DataObject );
@@ -128,6 +131,9 @@ public:
   /// Elevation has changed within given extents (IElevationChangedListnerer).
   bool                  elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller = 0x0 );
 
+  /// Is the data object empty?
+  bool                  empty() const;
+
   /// Get the geometries.
   Geometries            geometries() const;
 
@@ -156,6 +162,9 @@ public:
   
   // Set the visibilty.
   virtual void          visibility ( bool b );
+
+  /// Minerva::Interfaces::IWithinExtents
+  IUnknown::RefPtr      getItemsWithinExtents ( double minLon, double minLat, double maxLon, double maxLat, IUnknown::RefPtr caller = IUnknown::RefPtr ( 0x0 ) ) const;
   
 protected:
 
@@ -165,14 +174,14 @@ protected:
   osg::Node*            _buildLabel( const PositionType& position );
   
   // Return the pointer to this (IDataObject).
-  virtual DataObject*         dataObject();
+  virtual DataObject*   dataObject();
 
   // Get the name (ITreeNode).
-  virtual std::string         getTreeNodeName() const;
+  virtual std::string   getTreeNodeName() const;
   
   // Set/get the state (IBooleanState).
-  virtual void                setBooleanState ( bool );
-  virtual bool                getBooleanState() const;
+  virtual void          setBooleanState ( bool );
+  virtual bool          getBooleanState() const;
 
 private:
 

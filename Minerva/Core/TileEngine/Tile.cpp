@@ -101,7 +101,8 @@ namespace Helper
 
 Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &extents, 
              const MeshSize &meshSize, const ImageSize& imageSize, double splitDistance, 
-             Body *body, osg::Image* image, osg::Image * elevation ) : 
+             Body *body, osg::Image* image, osg::Image * elevation,
+             TileVectorData::RefPtr tileVectorData ) : 
   BaseClass(),
   _mutex ( new Tile::Mutex ),
   _body ( body ),
@@ -125,7 +126,7 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   _imageSize ( imageSize ),
   _parent ( parent ),
   _index ( index ),
-  _tileVectorData ( 0x0 ),
+  _tileVectorData ( tileVectorData, true ),
   _tileVectorJobs()
 {
   USUL_TRACE_SCOPE;
@@ -138,6 +139,7 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
     _texture->setImage ( _image.get() );
 
 #if USE_MIP_MAPS == 1
+
   // Set filter parameters.
   _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR );
   _texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
@@ -148,7 +150,9 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   // Set texture coordinate wrapping parameters.
   _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+
 #else
+
   // Set filter parameters.
   _texture->setFilter ( osg::Texture::MIN_FILTER, osg::Texture::LINEAR );
   _texture->setFilter ( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
@@ -156,6 +160,7 @@ Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &ext
   // Set texture coordinate wrapping parameters.
   _texture->setWrap ( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
   _texture->setWrap ( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+
 #endif
   
   _texture->setBorderWidth ( 0.0 );
@@ -195,7 +200,7 @@ Tile::Tile ( const Tile &tile, const osg::CopyOp &option ) :
   _imageSize ( tile._imageSize ),
   _parent ( tile._parent ),
   _index ( tile._index ),
-  _tileVectorData ( 0x0 ),
+  _tileVectorData ( 0x0, true ),
   _tileVectorJobs()
 {
   USUL_TRACE_SCOPE;
@@ -237,7 +242,7 @@ void Tile::_destroy()
 
   // At the moment this is redundant but safe.
   this->_cancelTileVectorJobs();
-  this->_perTileVectorDataClear();
+  this->_perTileVectorDataDelete();
 
   // Don't delete!
   _body = 0x0;
@@ -247,6 +252,25 @@ void Tile::_destroy()
 
   // Done with the mutex.
   delete _mutex; _mutex = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Query the interfaces
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown *Tile::queryInterface ( unsigned long iid )
+{
+  switch ( iid )
+  {
+  case Usul::Interfaces::IUnknown::IID:
+  case Minerva::Interfaces::ITile::IID:
+    return static_cast < Minerva::Interfaces::ITile * > ( this );
+  default:
+    return 0x0;
+  }
 }
 
 
@@ -307,7 +331,7 @@ void Tile::updateMesh()
   // This will add the root node of the container.
   {
     Guard guard ( this );
-    group->addChild ( this->_perTileVectorDataGet().buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+    group->addChild ( this->_perTileVectorDataGet()->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
   }
 
   // Add the low lod if there isn't currently one.
@@ -371,9 +395,17 @@ void Tile::updateTileVectorData()
         ITileVectorJob::Data data ( job->getVectorData() );
         for ( ITileVectorJob::Data::iterator d = data.begin(); d != data.end(); ++d )
         {
+          // The very first time we add new data we have to clear the 
+          // existing data that we inherited from the parent.
+          if ( true == this->_perTileVectorDataIsInherited() )
+          {
+            this->_perTileVectorDataClear();
+          }
+
+          // Add the new data.
           Usul::Interfaces::IUnknown::RefPtr layer ( *d );
-          TileVectorData &tileVectorData ( this->_perTileVectorDataGet() );
-          Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( &tileVectorData, &TileVectorData::add ), layer.get(), true, "1356847360" );
+          TileVectorData::RefPtr tileVectorData ( this->_perTileVectorDataGet() );
+          Usul::Functions::safeCallV1V2 ( Usul::Adaptors::memberFunction ( tileVectorData.get(), &TileVectorData::add ), layer.get(), true, "1356847360" );
           needToUpdate = true;
         }
       }
@@ -412,7 +444,7 @@ void Tile::updateTileVectorData()
 
     // Need to pass the body because it implements the necessary interfaces 
     // to convert the coordinates from lat-lon-elev to x-y-z.
-    this->_perTileVectorDataGet().updateNotify ( body );
+    this->_perTileVectorDataGet()->updateNotify ( body );
   }
 }
 
@@ -710,10 +742,11 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       Minerva::Core::Data::Container::RefPtr vector ( ( true == body.valid() ) ? body->vectorData() : 0x0 );
       if ( vector.valid() )
       {
-        vector->tileRemovedNotify ( this->childAt ( 0 ), Tile::RefPtr ( this ) );
-        vector->tileRemovedNotify ( this->childAt ( 1 ), Tile::RefPtr ( this ) );
-        vector->tileRemovedNotify ( this->childAt ( 2 ), Tile::RefPtr ( this ) );
-        vector->tileRemovedNotify ( this->childAt ( 3 ), Tile::RefPtr ( this ) );
+        IUnknown::QueryPtr me ( this );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 0 ) ), me );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 1 ) ), me );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 2 ) ), me );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 3 ) ), me );
       }
 
       // Clear all the children.
@@ -880,10 +913,11 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevation(), unknown.get() );
 
     // Notify new children have been added.
-    vector->tileAddNotify ( t0, Tile::RefPtr ( this ) );
-    vector->tileAddNotify ( t1, Tile::RefPtr ( this ) );
-    vector->tileAddNotify ( t2, Tile::RefPtr ( this ) );
-    vector->tileAddNotify ( t3, Tile::RefPtr ( this ) );
+    IUnknown::QueryPtr me ( this );
+    vector->tileAddNotify ( IUnknown::QueryPtr ( t0 ), me );
+    vector->tileAddNotify ( IUnknown::QueryPtr ( t1 ), me );
+    vector->tileAddNotify ( IUnknown::QueryPtr ( t2 ), me );
+    vector->tileAddNotify ( IUnknown::QueryPtr ( t3 ), me );
   }
   
   {
@@ -996,18 +1030,23 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
       elevation = Minerva::Core::Algorithms::resampleElevation ( Tile::RefPtr ( this ), extents );
     }
   }
-  
+
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
     job->cancel();
-  
+
+  // Get this tile's vector data that falls within the extents.
+  TileVectorData::RefPtr tvd ( new TileVectorData );
+  tvd->add ( this->_perTileVectorDataGet()->getItemsWithinExtents ( extents.minLon(), extents.minLat(), extents.maxLon(), extents.maxLat() ) );
+
   // Make the tile.
-  Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get() ) );
+  Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get(), tvd.get() ) );
 
 #if USE_TOP_DOWN_BUILD_RASTER == 0
   // Use the specified region of our image.
   tile->textureData ( this->image().get(), region );
 #else
+
   // Build the raster.  Make sure this is done before mesh is built and texture updated.
   tile->buildRaster ( job );
 
@@ -1451,9 +1490,9 @@ void Tile::clear ( bool children )
     _body = 0x0;
   }
 
-  // Clear the per-tile vector data and jobs.
+  // Delete the per-tile vector data and cancel the jobs.
   this->_cancelTileVectorJobs();
-  this->_perTileVectorDataClear();
+  this->_perTileVectorDataDelete();
 
   // Set dirty flags.
   this->dirty ( false, Tile::ALL, false );
@@ -2029,16 +2068,15 @@ void Tile::_setShowSkirts ( bool show )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::TileVectorData &Tile::_perTileVectorDataGet()
+Tile::TileVectorData::RefPtr Tile::_perTileVectorDataGet()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  if ( 0x0 == _tileVectorData )
+  if ( false == _tileVectorData.first.valid() )
   {
-    _tileVectorData = new TileVectorData;
-    Usul::Pointers::reference ( _tileVectorData );
+    _tileVectorData = TileVectorDataPair ( TileVectorData::RefPtr ( new TileVectorData ), false );
   }
-  return *_tileVectorData;
+  return _tileVectorData.first;
 }
 
 
@@ -2052,12 +2090,43 @@ void Tile::_perTileVectorDataClear()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  if ( 0x0 != _tileVectorData )
+  if ( true == _tileVectorData.first.valid() )
   {
-    _tileVectorData->clear();
-    Usul::Pointers::unreference ( _tileVectorData );
+    _tileVectorData.first->clear();
   }
-  _tileVectorData = 0x0;
+  _tileVectorData.second = false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Delete the per-tile vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::_perTileVectorDataDelete()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  if ( true == _tileVectorData.first.valid() )
+  {
+    _tileVectorData.first = TileVectorData::RefPtr ( 0x0 );
+  }
+  _tileVectorData.second = false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if the data is inherited.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Tile::_perTileVectorDataIsInherited() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return ( true == _tileVectorData.second );
 }
 
 
@@ -2073,14 +2142,11 @@ void Tile::_cancelTileVectorJobs()
 
   typedef Usul::Interfaces::ITileVectorJob ITileVectorJob;
 
-  // Copy jobs and clear member.
+  // Get the jobs and clear our member at the same time.
   TileVectorJobs jobs;
   {
-    // Instead of the code below, would jobs.swap ( _tileVectorJobs ) be better?
-    // It would avoid a copy, but would it introduce threading issues?
     Guard guard ( this );
-    jobs = _tileVectorJobs;
-    _tileVectorJobs.clear();
+    jobs.swap ( _tileVectorJobs );
   }
 
   // Loop through jobs.
@@ -2104,6 +2170,8 @@ void Tile::_cancelTileVectorJobs()
 
 double Tile::elevation ( double lat, double lon )
 {
+  USUL_TRACE_SCOPE;
+
   // Get the body and mesh.
   Body::RefPtr body;
   MeshPtr mesh;
@@ -2120,4 +2188,56 @@ double Tile::elevation ( double lat, double lon )
     return 0.0;
 
   return mesh->elevation ( lat, lon, *land );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get this tile.
+//
+//  Note: do not need to guard here because we're returning the pointer to 
+//  this object. The only thing to watch out for is this tile getting deleted 
+//  in another thread while this function is being executed. However, the 
+//  likely scenario is the caller already has an IUnknown::RefPtr to this 
+//  object when they query for ITile, so this object should not getd deleted.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Tile *Tile::tile()
+{
+  USUL_TRACE_SCOPE;
+  return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  IUnknown glue.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::ref()
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::ref();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  IUnknown glue.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::unref ( bool allowDelete )
+{
+  USUL_TRACE_SCOPE;
+  if ( true == allowDelete )
+  {
+    BaseClass::unref();
+  }
+  else
+  {
+    BaseClass::unref_nodelete();
+  }
 }

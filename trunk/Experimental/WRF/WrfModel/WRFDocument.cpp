@@ -1507,9 +1507,9 @@ unsigned int WRFDocument::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::ITreeNode * WRFDocument::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode::RefPtr WRFDocument::getChildNode ( unsigned int which )
 {
-  return 0x0;
+  return Usul::Interfaces::ITreeNode::RefPtr ( 0x0 );
 }
 
 

@@ -15,7 +15,6 @@
 
 #include "Usul/Math/Vector3.h"
 
-#include <string>
 
 namespace osg { class Matrixd; }
 

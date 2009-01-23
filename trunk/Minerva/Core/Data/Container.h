@@ -14,10 +14,12 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Interfaces/IAddLayer.h"
+#include "Minerva/Interfaces/IContainer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
 #include "Minerva/Interfaces/ITilesChangedListener.h"
+#include "Minerva/Interfaces/IWithinExtents.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IBooleanState.h"
@@ -48,10 +50,12 @@ class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
                                  public Usul::Interfaces::IBooleanState,
                                  public Minerva::Interfaces::IDirtyScene,
                                  public Minerva::Interfaces::IAddLayer,
+                                 public Minerva::Interfaces::IContainer,
                                  public Minerva::Interfaces::IRemoveLayer,
                                  public Minerva::Interfaces::IElevationChangedListener,
                                  public Minerva::Interfaces::ITilesChangedListener,
-                                 public Usul::Interfaces::ITileVectorData
+                                 public Usul::Interfaces::ITileVectorData,
+                                 public Minerva::Interfaces::IWithinExtents
 {
 public:
 
@@ -64,11 +68,12 @@ public:
   typedef osg::ref_ptr<osg::Image>                  ImagePtr;
   typedef Usul::Interfaces::ITileVectorData         ITileVectorData;
   typedef ITileVectorData::Jobs                     TileVectorJobs;
+  typedef Minerva::Interfaces::IWithinExtents       IWithinExtents;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Container );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
-  
+
   enum Flags
   {
     DATA_DIRTY    = 0x00000001,
@@ -143,15 +148,18 @@ public:
   virtual bool                showLayer() const;
   
   /// Notifications of change in tile state.
-  virtual void                tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent );
-  virtual void                tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent );
+  virtual void                tileAddNotify     ( IUnknown::RefPtr child, IUnknown::RefPtr parent );
+  virtual void                tileRemovedNotify ( IUnknown::RefPtr child, IUnknown::RefPtr parent );
 
   /// Traverse all DataObjects.
   virtual void                traverse ( Minerva::Core::Visitor& visitor );
   
   /// Update.
   virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
-  
+
+  /// Minerva::Interfaces::IWithinExtents
+  IUnknown::RefPtr            getItemsWithinExtents ( double minLon, double minLat, double maxLon, double maxLat, IUnknown::RefPtr caller = IUnknown::RefPtr ( 0x0 ) ) const;
+
 protected:
 
   virtual ~Container();
@@ -164,6 +172,9 @@ protected:
   // Add a layer (IAddLayer).
   virtual void                addLayer ( Usul::Interfaces::IUnknown *layer );
 
+  // Minerva::Interfaces::IContainer.
+  virtual Container *         container();
+
   /// Remove a layer (IRemoveLayer).
   virtual void                removeLayer ( Usul::Interfaces::IUnknown * layer );
   
@@ -171,7 +182,7 @@ protected:
   virtual unsigned int        getNumChildNodes() const;
   
   // Get the child node (ITreeNode).
-  virtual ITreeNode *         getChildNode ( unsigned int which );
+  virtual ITreeNode::RefPtr   getChildNode ( unsigned int which );
   
   // Set/get the state (IBooleanState).
   virtual void                setBooleanState ( bool );

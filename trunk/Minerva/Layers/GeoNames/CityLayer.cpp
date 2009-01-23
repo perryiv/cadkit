@@ -9,6 +9,7 @@
 
 #include "Minerva/Layers/GeoNames/CityLayer.h"
 #include "Minerva/Core/Functions/CacheString.h"
+#include "Minerva/Core/TileEngine/Tile.h"
 
 #include "XmlTree/Document.h"
 #include "XmlTree/XercesLife.h"
@@ -117,18 +118,20 @@ void CityLayer::serialize ( XmlTree::Node &parent ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CityLayer::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent )
+void CityLayer::tileAddNotify ( Usul::Interfaces::IUnknown::RefPtr child, Usul::Interfaces::IUnknown::RefPtr )
 {
-  if ( child.valid() )
-  {
-    Tile::Extents extents ( child->extents() );
+  Minerva::Interfaces::ITile::QueryPtr iTile ( child );
+  Minerva::Core::TileEngine::Tile::RefPtr tile ( ( true == iTile.valid() ) ? iTile->tile() : 0x0 );
+  if ( false == tile.valid() )
+    return;
 
-    // Get the cities that lay within this tile.
-    Cities cities ( this->citiesGet ( extents, child->level(), 10 ) );
+  Minerva::Core::TileEngine::Tile::Extents extents ( tile->extents() );
 
-    Guard guard ( this->mutex() );
-    _citiesToAdd.insert ( std::make_pair ( child, cities ) );
-  }
+  // Get the cities that lay within this tile.
+  Cities cities ( this->citiesGet ( extents, tile->level(), 10 ) );
+
+  Guard guard ( this->mutex() );
+  _citiesToAdd.insert ( std::make_pair ( child, cities ) );
 }
 
 
@@ -138,7 +141,7 @@ void CityLayer::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CityLayer::tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent )
+void CityLayer::tileRemovedNotify ( Usul::Interfaces::IUnknown::RefPtr child, Usul::Interfaces::IUnknown::RefPtr )
 {
   // Remove the node from the tile.
   this->_removeNode ( child );
@@ -207,12 +210,17 @@ CityLayer::Cities CityLayer::citiesGet ( const Extents& extents, unsigned int le
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CityLayer::_addNode ( Tile::RefPtr tile, osg::Node* node )
+void CityLayer::_addNode ( Usul::Interfaces::IUnknown::RefPtr unknown, osg::Node* node )
 {
-  if ( true == tile.valid() )
+  if ( 0x0 != node )
   {
-    // Add the node to the tile.
-    tile->addVectorData ( node );
+    Minerva::Interfaces::ITile::QueryPtr iTile ( unknown );
+    Minerva::Core::TileEngine::Tile::RefPtr tile ( ( true == iTile.valid() ) ? iTile->tile() : 0x0 );
+    if ( true == tile.valid() )
+    {
+      // Add the node to the tile.
+      tile->addVectorData ( node );
+    }
   }
 }
 
@@ -223,7 +231,7 @@ void CityLayer::_addNode ( Tile::RefPtr tile, osg::Node* node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CityLayer::_removeNode ( Tile::RefPtr tile )
+void CityLayer::_removeNode ( Usul::Interfaces::IUnknown::RefPtr tile )
 {
   // Cannot remove the node from the tile.  This causes a crash.
   // This should not cause a memory leak because the tiles are purged in the body.
@@ -279,8 +287,10 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* CityLayer::_buildScene ( Tile::RefPtr tile, const Cities& cities )
+osg::Node* CityLayer::_buildScene ( Usul::Interfaces::IUnknown::RefPtr unknown, const Cities& cities )
 {
+  Minerva::Interfaces::ITile::QueryPtr iTile ( unknown );
+  Minerva::Core::TileEngine::Tile::RefPtr tile ( ( true == iTile.valid() ) ? iTile->tile() : 0x0 );
   if ( false == tile.valid() )
     return 0x0;
 

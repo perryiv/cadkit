@@ -26,6 +26,7 @@
 
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Math/Vector3.h"
+#include "Usul/Threads/Safe.h"
 
 #include "osg/BlendFunc"
 #include "osg/Geode"
@@ -91,6 +92,8 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::IUpdateListener*> ( this );
   case Minerva::Interfaces::IDataObject::IID:
     return static_cast<Minerva::Interfaces::IDataObject*> ( this );
+  case Minerva::Interfaces::IWithinExtents::IID:
+    return static_cast<Minerva::Interfaces::IWithinExtents*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -715,5 +718,61 @@ void DataObject::updateNotify ( Usul::Interfaces::IUnknown* caller )
 
 DataObject* DataObject::dataObject()
 {
+  USUL_TRACE_SCOPE;
   return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Is the data object empty?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::empty() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _geometries.empty();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the items within the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown::RefPtr DataObject::getItemsWithinExtents ( double minLon, double minLat, double maxLon, double maxLat, IUnknown::RefPtr caller ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Initialize.
+  DataObject::RefPtr answer ( new DataObject );
+  Extents givenExtents ( minLon, minLat, maxLon, maxLat );
+
+  // Get a copy of the geometries.
+  const Geometries geometries ( Usul::Threads::Safe::get ( this->mutex(), _geometries ) );
+
+  // Loop through the geometries.
+  for ( Geometries::const_iterator i = geometries.begin(); i != geometries.end(); ++i )
+  {
+    // Does this layer have extents?
+    const Usul::Interfaces::ILayerExtents::QueryPtr e ( i->get() );
+    if ( true == e.valid() )
+    {
+      // Calculate the center.
+      const Extents layerExtents ( e->minLon(), e->minLat(), e->maxLon(), e->maxLat() );
+      const Extents::Vertex center ( layerExtents.center() );
+
+      // Is the center in the extents?
+      if ( true == givenExtents.contains ( center ) )
+      {
+        answer->addGeometry ( *i );
+      }
+    }
+  }
+
+  // Return the answer.
+  return IUnknown::QueryPtr ( ( false == answer->empty() ) ? answer : 0x0 );
 }

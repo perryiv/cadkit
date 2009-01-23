@@ -52,6 +52,7 @@ public:
   /// Typedefs.
   typedef Minerva::Core::Data::Feature    BaseClass;
   typedef std::vector<City>               Cities;
+  typedef Usul::Interfaces::IUnknown      IUnknown;
   
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( CityLayer );
@@ -69,21 +70,21 @@ public:
   virtual void                serialize ( XmlTree::Node &parent ) const;
 
   // Notification of tiles added or removed.
-  virtual void                tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent );
-  virtual void                tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent );
+  virtual void                tileAddNotify     ( IUnknown::RefPtr child, IUnknown::RefPtr parent );
+  virtual void                tileRemovedNotify ( IUnknown::RefPtr child, IUnknown::RefPtr parent );
 
   // Update.
-  virtual void                updateNotify ( Usul::Interfaces::IUnknown *caller );
+  virtual void                updateNotify ( IUnknown *caller );
 
 protected:
 
   virtual ~CityLayer();
 
   // Add the node to the tile.
-  void                        _addNode ( Tile::RefPtr tile, osg::Node* node );
+  void                        _addNode ( IUnknown::RefPtr tile, osg::Node* node );
 
   // Build the scene.
-  osg::Node*                  _buildScene ( Tile::RefPtr tile, const Cities& cities );
+  osg::Node*                  _buildScene ( IUnknown::RefPtr tile, const Cities& cities );
 
   // Get all the cities in the extents up to the maximum number allowed.
   void                        _citiesGet ( Cities& cities, const std::string& filename, const Extents& extents, unsigned int level, unsigned int maximumItems ) const;
@@ -92,11 +93,11 @@ protected:
   std::string                 _makeCacheDirectory ( const Extents& extents, unsigned int level ) const;
 
   // Remove the node that was added to the tile.
-  void                        _removeNode ( Tile::RefPtr tile );
+  void                        _removeNode ( IUnknown::RefPtr tile );
 
 private:
 
-  typedef std::map< Tile::RefPtr, Cities > CitiesToAdd;
+  typedef std::map < IUnknown::RefPtr, Cities > CitiesToAdd;
 
   CitiesToAdd _citiesToAdd;
   

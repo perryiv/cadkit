@@ -44,7 +44,7 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Container, Container::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 Container::Container() : 
-  BaseClass (),
+  BaseClass(),
   _layers(),
   _updateListeners(),
   _builders(),
@@ -133,6 +133,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
   case Minerva::Interfaces::IAddLayer::IID:
     return static_cast < Minerva::Interfaces::IAddLayer* > ( this );
+  case Minerva::Interfaces::IContainer::IID:
+    return static_cast < Minerva::Interfaces::IContainer* > ( this );
   case Minerva::Interfaces::IRemoveLayer::IID:
     return static_cast < Minerva::Interfaces::IRemoveLayer* > ( this );
   case Usul::Interfaces::IDataChangedNotify::IID:
@@ -143,6 +145,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast<Minerva::Interfaces::ITilesChangedListener*> ( this );
   case Usul::Interfaces::ITileVectorData::IID:
     return static_cast<Usul::Interfaces::ITileVectorData*> ( this );
+  case Minerva::Interfaces::IWithinExtents::IID:
+    return static_cast<Minerva::Interfaces::IWithinExtents*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
@@ -314,7 +318,7 @@ void Container::remove ( Usul::Interfaces::IUnknown* unknown )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::clear ()
+void Container::clear()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -595,11 +599,11 @@ unsigned int Container::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::ITreeNode * Container::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode::RefPtr Container::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return Usul::Interfaces::ITreeNode::QueryPtr ( _layers.at ( which ) );
+  return Usul::Interfaces::ITreeNode::RefPtr ( Usul::Interfaces::ITreeNode::QueryPtr ( _layers.at ( which ) ) );
 }
 
 
@@ -763,7 +767,7 @@ void Container::name ( const std::string& name )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent ) 
+void Container::tileAddNotify ( Usul::Interfaces::IUnknown::RefPtr child, Usul::Interfaces::IUnknown::RefPtr parent )
 {
   USUL_TRACE_SCOPE;
 
@@ -773,7 +777,9 @@ void Container::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent )
     {
       Minerva::Interfaces::ITilesChangedListener::QueryPtr tcl ( *iter );
       if ( tcl.valid() )
+      {
         tcl->tileAddNotify ( child, parent );
+      }
     }
   }
 }
@@ -785,7 +791,7 @@ void Container::tileAddNotify ( Tile::RefPtr child, Tile::RefPtr parent )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Container::tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent ) 
+void Container::tileRemovedNotify ( Usul::Interfaces::IUnknown::RefPtr child, Usul::Interfaces::IUnknown::RefPtr parent ) 
 {
   USUL_TRACE_SCOPE;
 
@@ -795,7 +801,9 @@ void Container::tileRemovedNotify ( Tile::RefPtr child, Tile::RefPtr parent )
     {
       Minerva::Interfaces::ITilesChangedListener::QueryPtr tcl ( *iter );
       if ( tcl.valid() )
+      {
         tcl->tileRemovedNotify ( child, parent );
+      }
     }
   }
 }
@@ -853,4 +861,71 @@ Usul::Interfaces::IUnknown::RefPtr Container::find ( const ObjectID& id ) const
   }
   
   return 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the items within the extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Usul::Interfaces::IUnknown::RefPtr Container::getItemsWithinExtents ( double minLon, double minLat, double maxLon, double maxLat, IUnknown::RefPtr caller ) const
+{
+  USUL_TRACE_SCOPE;
+
+  // Initialize.
+  Container::RefPtr answer ( new Container );
+  Extents givenExtents ( minLon, minLat, maxLon, maxLat );
+
+  // Get a copy of the layers.
+  const Unknowns layers ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+
+  // Loop through the layers.
+  for ( Unknowns::const_iterator i = layers.begin(); i != layers.end(); ++i )
+  {
+    // Does this layer contain items?
+    const Minerva::Interfaces::IWithinExtents::QueryPtr w ( i->get() );
+    if ( true == w.valid() )
+    {
+      IUnknown::RefPtr contained ( w->getItemsWithinExtents ( minLon, minLat, maxLon, maxLat, caller ) );
+      if ( true == contained.valid() )
+      {
+        answer->add ( contained.get(), false );
+      }
+    }
+    else
+    {
+      // Does this layer have extents?
+      const Usul::Interfaces::ILayerExtents::QueryPtr e ( i->get() );
+      if ( true == e.valid() )
+      {
+        // Calculate the center.
+        const Extents layerExtents ( e->minLon(), e->minLat(), e->maxLon(), e->maxLat() );
+        const Extents::Vertex center ( layerExtents.center() );
+
+        // Is the center in the extents?
+        if ( true == givenExtents.contains ( center ) )
+        {
+          answer->add ( e.get(), false );
+        }
+      }
+    }
+  }
+
+  // Return the answer.
+  return IUnknown::QueryPtr ( ( answer->size() > 0 ) ? answer : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get this tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Container *Container::container()
+{
+  USUL_TRACE_SCOPE;
+  return this;
 }

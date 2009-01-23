@@ -431,10 +431,10 @@ unsigned int RasterGroup::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::ITreeNode * RasterGroup::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode::RefPtr RasterGroup::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
-  return Usul::Interfaces::ITreeNode::QueryPtr ( this->layer ( which ) );
+  return Usul::Interfaces::ITreeNode::RefPtr ( Usul::Interfaces::ITreeNode::QueryPtr ( this->layer ( which ) ) );
 }
 
 

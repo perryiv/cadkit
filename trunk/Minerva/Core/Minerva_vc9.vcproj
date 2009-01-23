@@ -931,7 +931,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IContainer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IDatabaseConnection.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\IDataObject.h"
 					>
 				</File>
 				<File
@@ -979,11 +987,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\ITile.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\ITilesChangedListener.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Interfaces\IVectorLayer.h"
+					RelativePath="..\Interfaces\IWithinExtents.h"
 					>
 				</File>
 			</Filter>

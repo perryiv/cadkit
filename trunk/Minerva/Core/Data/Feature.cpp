@@ -507,10 +507,10 @@ unsigned int Feature::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::ITreeNode * Feature::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode::RefPtr Feature::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
-  return 0x0;
+  return Usul::Interfaces::ITreeNode::RefPtr ( 0x0 );
 }
 
 

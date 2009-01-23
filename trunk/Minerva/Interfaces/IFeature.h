@@ -18,7 +18,7 @@ namespace Minerva { namespace Core { namespace Data { class Feature; } } }
 
 namespace Minerva {
 namespace Interfaces {
-    
+
 struct IFeature : public Usul::Interfaces::IUnknown
 {
   /// Smart-pointer definitions.

@@ -175,6 +175,14 @@
 				RelativePath=".\Main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\ToFVUNS.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ToFVUNS.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Files"

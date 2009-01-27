@@ -275,21 +275,7 @@ osg::Group *Attribute::buildScene ( Modflow::ModflowDocument *, Modflow::Model::
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Interfaces::ITreeNode *Attribute::getChildNode ( unsigned int i ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return 0x0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the child at the position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ITreeNode *Attribute::getChildNode ( unsigned int which )
+Usul::Interfaces::ITreeNode::RefPtr Attribute::getChildNode ( unsigned int which )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

@@ -172,7 +172,7 @@ unsigned int ElevationLayerDirectory::getNumChildNodes() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ElevationLayerDirectory::ITreeNode * ElevationLayerDirectory::getChildNode ( unsigned int which )
+ElevationLayerDirectory::ITreeNode::RefPtr ElevationLayerDirectory::getChildNode ( unsigned int which )
 {
   return 0x0;
 }

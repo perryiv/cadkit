@@ -236,8 +236,7 @@ public:
 
   // Usul::Interfaces::ITreeNode.
   virtual unsigned int                    getNumChildNodes() const;
-  virtual const ITreeNode *               getChildNode ( unsigned int which ) const;
-  virtual ITreeNode *                     getChildNode ( unsigned int which );
+  virtual ITreeNode::RefPtr               getChildNode ( unsigned int which );
   virtual void                            setTreeNodeName ( const std::string & );
   virtual std::string                     getTreeNodeName() const;
 

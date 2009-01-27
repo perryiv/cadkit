@@ -723,21 +723,7 @@ void Layer::addAttribute ( Attribute *attribute )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Interfaces::ITreeNode *Layer::getChildNode ( unsigned int i ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return ( ( i >= _attributes.size() ) ? 0x0 : _attributes.at(i).get() );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the child at the position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ITreeNode *Layer::getChildNode ( unsigned int i )
+Usul::Interfaces::ITreeNode::RefPtr Layer::getChildNode ( unsigned int i )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

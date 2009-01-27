@@ -964,23 +964,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int i ) const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  typedef const Usul::Interfaces::ITreeNode TreeNodeType;
-  return Helper::getChildNode<TreeNodeType> ( i, _layers, _attributes, *this );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the child at the position.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Usul::Interfaces::ITreeNode *ModflowDocument::getChildNode ( unsigned int i )
+Usul::Interfaces::ITreeNode::RefPtr ModflowDocument::getChildNode ( unsigned int i )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

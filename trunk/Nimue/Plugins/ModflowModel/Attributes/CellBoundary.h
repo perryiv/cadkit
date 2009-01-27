@@ -53,8 +53,7 @@ public:
 
   // Usul::Interfaces::ITreeNode.
   virtual unsigned int        getNumChildNodes() const;
-  virtual const ITreeNode *   getChildNode ( unsigned int which ) const;
-  virtual ITreeNode *         getChildNode ( unsigned int which );
+  virtual ITreeNode::RefPtr   getChildNode ( unsigned int which );
 
   // Usul::Interfaces::IStringGridGet.
   virtual void                getStringGrid ( IStringGridGet::StringGrid & ) const;

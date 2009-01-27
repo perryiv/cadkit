@@ -280,6 +280,14 @@
 					RelativePath=".\Object.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Renderer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Renderer.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="DLL"

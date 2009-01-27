@@ -16,6 +16,8 @@
 #include "SceneGraph/OpenSceneGraph/Node.h"
 #include "SceneGraph/OpenSceneGraph/Factory.h"
 
+#include "OsgTools/Convert/Matrix.h"
+
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
@@ -82,52 +84,12 @@ Usul::Interfaces::IUnknown *Node::queryInterface ( unsigned long iid )
   switch ( iid )
   {
   case Usul::Interfaces::IUnknown::IID:
-  case Usul::Interfaces::SceneGraph::IAcceptVisitorModifier::IID:
-    return static_cast < Usul::Interfaces::SceneGraph::IAcceptVisitorModifier* > ( this );
-  case Usul::Interfaces::SceneGraph::IAcceptVisitorNonModifier::IID:
-    return static_cast < Usul::Interfaces::SceneGraph::IAcceptVisitorNonModifier* > ( this );
   case Usul::Interfaces::SceneGraph::IChild::IID:
     return static_cast < Usul::Interfaces::SceneGraph::IChild* > ( this );
+  case Usul::Interfaces::SceneGraph::IViewAllMatrix::IID:
+    return static_cast < Usul::Interfaces::SceneGraph::IViewAllMatrix* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Accept the visitor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Node::acceptVisitorModifier ( IUnknown::RefPtr unknown ) 
-{
-  USUL_TRACE_SCOPE;
-
-  IVisitorModifier::QueryPtr visitor ( unknown );
-  if ( true == visitor.valid() )
-  {
-    NodePtr node ( this->node() );
-    visitor->visitObject ( node.get() );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Accept the visitor.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Node::acceptVisitorNonModifier ( IUnknown::RefPtr unknown ) const
-{
-  USUL_TRACE_SCOPE;
-
-  IVisitorNonModifier::QueryPtr visitor ( unknown );
-  if ( true == visitor.valid() )
-  {
-    const NodePtr node ( this->node() );
-    visitor->visitObject ( node.get() );
   }
 }
 
@@ -185,4 +147,32 @@ const Node::NodePtr Node::node() const
   USUL_TRACE_SCOPE;
   ReadLock lock ( this );
   return _node;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the matrix that will view the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Node::Matrix Node::getViewAllMatrix ( double zScale ) const
+{
+  USUL_TRACE_SCOPE;
+
+  NodePtr n ( this->node() );
+  if ( false == n.valid() )
+    return Matrix::getIdentity();
+
+  // Get the bounding sphere of the group.
+  osg::BoundingSphere bs ( n->getBound() );
+  osg::Vec3d c ( bs.center() );
+
+  // Push it back so we can see it.
+  osg::Matrixd matrix;
+  osg::Matrixd::value_type z ( zScale * bs.radius() + c[2] );
+  matrix.makeTranslate ( -c[0], -c[1], -z );
+
+  // Return the matrix.
+  return Usul::Convert::Type<osg::Matrixd,Matrix>::convert ( matrix );
 }

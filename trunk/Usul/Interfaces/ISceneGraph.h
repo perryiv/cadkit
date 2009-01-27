@@ -17,6 +17,7 @@
 #define _USUL_INTERFACES_SCENE_GRAPH_H_
 
 #include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Math/Matrix44.h"
 
 namespace Usul {
 namespace Interfaces {
@@ -76,70 +77,6 @@ struct IFactory : public IUnknown
   enum { IID = 4016132368u };
 
   virtual IUnknown::RefPtr  createObject ( unsigned long iid ) const = 0;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modifying visitor interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class VisitedType > struct IVisitorModifier : public IUnknown
-{
-  typedef VisitedType Visited;
-
-  USUL_DECLARE_QUERY_POINTERS ( IVisitorModifier );
-  enum { IID = 2061177761u };
-
-  virtual void              visitObject ( Visited * ) = 0;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Modifying visitor interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-template < class VisitedType > struct IVisitorNonModifier : public IUnknown
-{
-  typedef VisitedType Visited;
-
-  USUL_DECLARE_QUERY_POINTERS ( IVisitorNonModifier );
-  enum { IID = 2981621883u };
-
-  virtual void              visitObject ( const Visited * ) = 0;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Object interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct IAcceptVisitorModifier : public IUnknown
-{
-  USUL_DECLARE_QUERY_POINTERS ( IAcceptVisitorModifier );
-  enum { IID = 2588866817u };
-
-  virtual void              acceptVisitorModifier ( IUnknown::RefPtr ) = 0;
-};
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Object interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-struct IAcceptVisitorNonModifier : public IUnknown
-{
-  USUL_DECLARE_QUERY_POINTERS ( IAcceptVisitorNonModifier );
-  enum { IID = 2058597607u };
-
-  virtual void              acceptVisitorNonModifier ( IUnknown::RefPtr ) const = 0;
 };
 
 
@@ -219,9 +156,9 @@ struct IClippedGroup : public IUnknown
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class MatrixType > struct ITransformMatrix : public IUnknown
+struct ITransformMatrix : public IUnknown
 {
-  typedef MatrixType Matrix;
+  typedef Usul::Math::Matrix44d Matrix;
 
   USUL_DECLARE_QUERY_POINTERS ( ITransformMatrix );
   enum { IID = 1273118550u };
@@ -233,19 +170,52 @@ template < class MatrixType > struct ITransformMatrix : public IUnknown
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Navigation matrix interface.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct INavigationMatrix : public IUnknown
+{
+  typedef Usul::Math::Matrix44d Matrix;
+
+  USUL_DECLARE_QUERY_POINTERS ( INavigationMatrix );
+  enum { IID = 2158510630u };
+
+  virtual Matrix            getNavigationMatrix() const = 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get matrix to view the node.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct IViewAllMatrix : public IUnknown
+{
+  typedef Usul::Math::Matrix44d Matrix;
+
+  USUL_DECLARE_QUERY_POINTERS ( IViewAllMatrix );
+  enum { IID = 1871371997u };
+
+  virtual Matrix            getViewAllMatrix ( double zScale = 3 ) const = 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Projection interface.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class MatrixType > struct IProjectionMatrix : public IUnknown
+struct IProjectionMatrix : public IUnknown
 {
-  typedef MatrixType Matrix;
+  typedef Usul::Math::Matrix44d Matrix;
 
   USUL_DECLARE_QUERY_POINTERS ( IProjectionMatrix );
   enum { IID = 4176345966u };
 
   virtual Matrix            getProjectionMatrix() const = 0;
-  virtual void              setProjectionMatrix ( const Matrix & ) = 0;
 };
 
 
@@ -255,18 +225,35 @@ template < class MatrixType > struct IProjectionMatrix : public IUnknown
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class MatrixType > struct IPerspectiveProjection : public IUnknown
+struct IPerspectiveProjection : public IUnknown
 {
-  typedef MatrixType Matrix;
-  typedef typename Matrix::value_type ValueType;
-
   USUL_DECLARE_QUERY_POINTERS ( IPerspectiveProjection );
   enum { IID = 1653183730u };
 
-  virtual Matrix            makePerspectiveProjection ( ValueType fieldOfViewDegrees, 
-                                                        ValueType aspectRatio, 
-                                                        ValueType zNear, 
-                                                        ValueType zFar ) const = 0;
+  virtual void              getPerspectiveProjection ( double &fieldOfViewDegrees, 
+                                                       double &aspectRatio, 
+                                                       double &zNear, 
+                                                       double &zFar ) const = 0;
+
+  virtual void              setPerspectiveProjection ( double fieldOfViewDegrees, 
+                                                       double aspectRatio, 
+                                                       double zNear, 
+                                                       double zFar ) = 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Viewport resizing.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct IViewportResize : public IUnknown
+{
+  USUL_DECLARE_QUERY_POINTERS ( IViewportResize );
+  enum { IID = 2282351597u };
+
+  virtual void              resizeViewport ( unsigned int width, unsigned int height ) = 0;
 };
 
 

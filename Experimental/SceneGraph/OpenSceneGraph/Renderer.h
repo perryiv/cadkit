@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Perry L Miller IV
+//  Copyright (c) 2009, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -14,30 +13,37 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _DISPLAY_LIBRARY_OSG_RENDERER_CLASS_H_
-#define _DISPLAY_LIBRARY_OSG_RENDERER_CLASS_H_
+#ifndef _SCENE_GRAPH_OSG_RENDERER_CLASS_H_
+#define _SCENE_GRAPH_OSG_RENDERER_CLASS_H_
 
-#include "Display/Render/Renderer.h"
-
+#include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IOpenGLContext.h"
+#include "Usul/Interfaces/ISceneGraph.h"
 
 #include "osgUtil/SceneView"
 
 
-namespace Display {
-namespace Render {
+namespace SceneGraph {
 namespace OSG {
 
 
-class DISPLAY_LIBRARY_EXPORT Renderer : public Display::Render::Renderer
+class Renderer :  :
+  public Usul::Base::Object,
+  public Usul::Interfaces::IOpenGLContext,
+  public Usul::Interfaces::SceneGraph::IPreRender,
+  public Usul::Interfaces::SceneGraph::IRender,
+  public Usul::Interfaces::SceneGraph::IPostRender
 {
 public:
 
   // Typedefs.
-  typedef Display::Render::Renderer BaseClass;
-  typedef osg::ref_ptr<osgUtil::SceneView> ViewerPtr;
+  typedef Usul::Base::Object BaseClass;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::SceneGraph::IPreRender IPreRender;
+  typedef Usul::Interfaces::SceneGraph::IRender IRender;
+  typedef Usul::Interfaces::SceneGraph::IPostRender IPostRender;
   typedef Usul::Interfaces::IOpenGLContext IContext;
+  typedef osg::ref_ptr<osgUtil::SceneView> ViewerPtr;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Renderer );
@@ -48,11 +54,16 @@ public:
   // Construction.
   Renderer ( IUnknown::RefPtr context, IUnknown::RefPtr caller );
 
-  // Call this when you want the viewport to resize.
-  virtual void              resize ( unsigned int width, unsigned int height );
+  // Usul::Interfaces::SceneGraph::IPostRender
+  virtual void              postRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
 
-  // Set the scene.
-  virtual void              scene ( NodePtr );
+  // Usul::Interfaces::SceneGraph::IPreRender
+  virtual void              preRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
+
+  // Usul::Interfaces::SceneGraph::IRender
+  virtual void              render ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
+
+here
 
 protected:
 
@@ -82,8 +93,7 @@ private:
 
 
 } // namespace OSG
-} // namespace Render
-} // namespace Display
+} // namespace SceneGraph
 
 
-#endif // _DISPLAY_LIBRARY_OSG_RENDERER_CLASS_H_
+#endif // _SCENE_GRAPH_OSG_RENDERER_CLASS_H_

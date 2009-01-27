@@ -774,5 +774,5 @@ Usul::Interfaces::IUnknown::RefPtr DataObject::getItemsWithinExtents ( double mi
   }
 
   // Return the answer.
-  return IUnknown::QueryPtr ( ( false == answer->empty() ) ? answer : 0x0 );
+  return IUnknown::QueryPtr ( ( false == answer->empty() ) ? answer.get() : 0x0 );
 }

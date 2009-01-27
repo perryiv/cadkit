@@ -914,7 +914,7 @@ Usul::Interfaces::IUnknown::RefPtr Container::getItemsWithinExtents ( double min
   }
 
   // Return the answer.
-  return IUnknown::QueryPtr ( ( answer->size() > 0 ) ? answer : 0x0 );
+  return IUnknown::QueryPtr ( ( answer->size() > 0 ) ? answer.get() : 0x0 );
 }
 
 

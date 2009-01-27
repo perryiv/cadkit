@@ -10,14 +10,12 @@
 
 #include "ToFVUNS.h"
 
-
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IPlugin.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Scope/CurrentDirectory.h"
-
 
 #include <fstream>
 #include <iomanip>
@@ -42,7 +40,9 @@ ToFVUNS::ToFVUNS ( int argc, char **argv ) :
   _args ( argv, argv + argc ),
   _files(),
   _dimensions( 0, 0, 0 ),
-  _grid( )
+  _grid( ),
+  _workingDirectory( "" ),
+  _baseFilename( "" )
 {
 }
 
@@ -95,6 +95,9 @@ void ToFVUNS::run()
 
   // Loop through files.
   this->_processFiles();
+
+  // write the converted file
+  this->_writeResultsFile( _workingDirectory + _baseFilename + ".results" );
 }
 
 
@@ -165,6 +168,12 @@ void ToFVUNS::_processFiles()
 
     // The file
     std::string file ( Usul::File::fullPath( *i ) );
+    
+    // set the working directory
+    _workingDirectory = Usul::File::directory( file, true );
+
+    // set the base filename
+    _baseFilename = Usul::File::base( file );
 
     try
     {
@@ -200,6 +209,9 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
   // make sure the file was opened
   if( false == ifs->is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + file );
+
+  // output info
+  std::cout << "Now reading file: " << file << std::endl;
 
   // temp values to store the header
   Usul::Types::Uint16 h1 ( 0 );
@@ -335,4 +347,162 @@ void ToFVUNS::_saveDocument ( const std::string &file, Usul::Documents::Document
 void ToFVUNS::updateProgressBar ( unsigned int value )
 {
   std::cout << std::setw ( 3 ) << value << '%' << '\r' << std::flush;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the results file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ToFVUNS::_writeResultsFile( const std::string &name )
+{
+
+  // output info
+  std::cout << "Writing results file: " << name << std::endl;
+  // create a file handle
+  std::ofstream* ofs ( new std::ofstream );
+
+  // open the file
+  ofs->open( name.c_str(), std::ofstream::out | std::ifstream::binary );
+
+  // make sure the file was opened
+  if( false == ofs->is_open() )
+    throw std::runtime_error ( "Error 1188374386: Failed to open file: " + name );
+
+  // Write the magic number
+  {    
+    Usul::Types::Int32 magicNumber( 66051 );
+    ofs->write ( reinterpret_cast< char* > ( &magicNumber ), sizeof( Usul::Types::Int32 ) );
+  }
+
+  // Write the fieldview header
+  {
+    char fvid[80] = "FIELDVIEW";
+    ofs->write ( &fvid[0], 80 );
+  }
+
+  // write the version number
+  {    
+    Usul::Types::Int32 vn1( 3 );
+    Usul::Types::Int32 vn2( 0 );
+    ofs->write ( reinterpret_cast< char* > ( &vn1 ), sizeof( Usul::Types::Int32 ) );
+    ofs->write ( reinterpret_cast< char* > ( &vn2 ), sizeof( Usul::Types::Int32 ) );
+  }
+
+  // Reserved
+  {
+    Usul::Types::Int32 reserved( 0 );
+    ofs->write ( reinterpret_cast< char* > ( &reserved ), sizeof( Usul::Types::Int32 ) );
+  }
+
+  // Number of grids
+  {
+    Usul::Types::Int32 nGrids( 1 );
+    ofs->write ( reinterpret_cast< char* > ( &nGrids ), sizeof( Usul::Types::Int32 ) );
+  }
+
+  // Write the data header
+  {
+    // write the number of columns
+    Usul::Types::Int32 numCols( 4 );
+    ofs->write ( reinterpret_cast< char* > ( &numCols ), sizeof( Usul::Types::Int32 ) );
+
+    // Pressure
+    char pValue[80] = "pressure";
+    ofs->write ( &pValue[0], 80 );
+
+    // U of Velocity
+    char uVel[80] = "u; Velocity";
+    ofs->write ( &uVel[0], 80 );
+
+    // V of Velocity
+    char vVel[80] = "v";
+    ofs->write ( &vVel[0], 80 );
+
+    // W of Velocity
+    char wVel[80] = "w";
+    ofs->write ( &wVel[0], 80 );
+  }
+
+  // Write boundary header information
+  {
+    // no boundary data for now
+    Usul::Types::Int32 numCols( 0 );
+    ofs->write ( reinterpret_cast< char* > ( &numCols ), sizeof( Usul::Types::Int32 ) );
+  }
+
+  // Node information
+  {
+    // header FV_NODES
+    Usul::Types::Int32 fvNodes( 1001 );
+    ofs->write ( reinterpret_cast< char* > ( &fvNodes ), sizeof( Usul::Types::Int32 ) );
+
+    // Number of nodes
+    Usul::Types::Int32 numNodes( _dimensions[0] * _dimensions[1] * _dimensions[2] );
+    ofs->write ( reinterpret_cast< char* > ( &numNodes ), sizeof( Usul::Types::Int32 ) );
+
+  }
+
+  // output the variables
+  {
+    // header FV_VARIABLES
+    Usul::Types::Int32 fvVars( 1004 );
+    ofs->write ( reinterpret_cast< char* > ( &fvVars ), sizeof( Usul::Types::Int32 ) );
+
+    // output the node data
+    this->_writeGrid( name, ofs );
+  }
+
+  // output the boundary variables
+  {
+    // header FV_BNDRY_VARS
+    Usul::Types::Int32 fvBndryVars( 1006 );
+    ofs->write ( reinterpret_cast< char* > ( &fvBndryVars ), sizeof( Usul::Types::Int32 ) );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Write the results file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ToFVUNS::_writeGrid( const std::string &name, std::ofstream* ofs )
+{
+  unsigned int denominator( _dimensions[2] );
+  for( unsigned int k = 0; k < _dimensions[2]; ++k )
+  {
+    // progress
+    float percentage ( static_cast< float > ( k ) / static_cast< float > ( denominator ) );
+    std::cout << "\rWrite function percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  k << " / " << denominator << " )" << std::flush;
+    
+    for( unsigned int j = 0; j < _dimensions[1]; ++j )
+    {
+      for( unsigned int i = 0; i < _dimensions[0]; ++i )
+      {
+        // current node index
+        unsigned int index ( j + ( i * _dimensions[1] ) );
+
+        // P value
+        Usul::Types::Float32 p ( static_cast< Usul::Types::Float32 > ( _grid.at( 3 ).at( k ).at( index ) ) );
+        ofs->write ( reinterpret_cast< char* > ( &p ), sizeof( Usul::Types::Float32 ) );
+
+        // U value
+        Usul::Types::Float32 u ( static_cast< Usul::Types::Float32 > ( _grid.at( 0 ).at( k ).at( index ) ) );
+        ofs->write ( reinterpret_cast< char* > ( &u ), sizeof( Usul::Types::Float32 ) );
+
+        // VU value
+        Usul::Types::Float32 v ( static_cast< Usul::Types::Float32 > ( _grid.at( 1 ).at( k ).at( index ) ) );
+        ofs->write ( reinterpret_cast< char* > ( &v ), sizeof( Usul::Types::Float32 ) );
+
+        // W value
+        Usul::Types::Float32 w ( static_cast< Usul::Types::Float32 > ( _grid.at( 2 ).at( k ).at( index ) ) );
+        ofs->write ( reinterpret_cast< char* > ( &w ), sizeof( Usul::Types::Float32 ) );
+
+      }
+    }
+  }
 }

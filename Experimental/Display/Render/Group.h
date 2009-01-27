@@ -17,7 +17,10 @@
 #ifndef _DISPLAY_LIBRARY_RENDERER_GROUP_CLASS_H_
 #define _DISPLAY_LIBRARY_RENDERER_GROUP_CLASS_H_
 
-#include "Display/Render/Renderer.h"
+#include "Display/Export/Export.h"
+
+#include "Usul/Base/Object.h"
+#include "Usul/Interfaces/ISceneGraph.h"
 
 #include <vector>
 
@@ -26,13 +29,21 @@ namespace Display {
 namespace Render {
 
 
-class DISPLAY_LIBRARY_EXPORT Group : public Display::Render::Renderer
+class DISPLAY_LIBRARY_EXPORT Group :
+  public Usul::Base::Object,
+  public Usul::Interfaces::SceneGraph::IPreRender,
+  public Usul::Interfaces::SceneGraph::IRender,
+  public Usul::Interfaces::SceneGraph::IPostRender
 {
 public:
 
   // Typedefs.
-  typedef Display::Render::Renderer BaseClass;
-  typedef std::vector<BaseClass::RefPtr> Renderers;
+  typedef Usul::Base::Object BaseClass;
+  typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Interfaces::SceneGraph::IPreRender IPreRender;
+  typedef Usul::Interfaces::SceneGraph::IRender IRender;
+  typedef Usul::Interfaces::SceneGraph::IPostRender IPostRender;
+  typedef std::vector<IUnknown::RefPtr> Renderers;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Group );
@@ -40,11 +51,20 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Group );
 
-  // Call this when you want the viewport to resize.
-  virtual void              resize ( unsigned int width, unsigned int height );
+  // Usul::Interfaces::IUnknown
+  USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  // Set the scene.
-  virtual void              scene ( NodePtr );
+  // Usul::Interfaces::SceneGraph::IPostRender
+  virtual void              postRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
+
+  // Usul::Interfaces::SceneGraph::IPreRender
+  virtual void              preRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
+
+  // Usul::Interfaces::SceneGraph::IRender
+  virtual void              render ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
+
+  // Set the renderers and return the existing ones.
+  Renderers                 renderers ( const Renderers &r = Renderers() );
 
 protected:
 
@@ -53,13 +73,6 @@ protected:
 
   // Use reference counting.
   virtual ~Group();
-
-  // Pre/post render notifications.
-  virtual void              _preRender();
-  virtual void              _postRender();
-
-  // Render the scene.
-  virtual void              _render();
 
 private:
 

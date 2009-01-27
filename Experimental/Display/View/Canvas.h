@@ -45,9 +45,7 @@ public:
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Usul::Math::Matrix44d Matrix;
   typedef Usul::Interfaces::SceneGraph::IGroup IGroup;
-  typedef Usul::Interfaces::SceneGraph::ITransformGroup ITransformGroup;
-  typedef Usul::Interfaces::SceneGraph::IClippedGroup IClippedGroup;
-  typedef Usul::Interfaces::SceneGraph::IProjectionMatrix<Matrix> IProjectionMatrix;
+  typedef Usul::Interfaces::SceneGraph::IProjectionMatrix IProjectionMatrix;
   typedef std::stack<IUnknown::RefPtr> Renderers;
   typedef Usul::Interfaces::IView IView;
   typedef Usul::Interfaces::IDocument IDocument;
@@ -94,6 +92,10 @@ public:
   // Return the matrix that will view all the models.
   Matrix                    navigationViewAll ( double zScale = 3.0 ) const;
 
+  // Set/get the projection.
+  void                      projection ( IUnknown::RefPtr );
+  IUnknown::RefPtr          projection();
+
   // Push/pop the renderer.
   void                      pushRenderer ( IUnknown::RefPtr );
   void                      popRenderer();
@@ -137,12 +139,12 @@ private:
   IGroup::QueryPtr _unclipped;
   IGroup::QueryPtr _decoration;
   IDocument::QueryPtr _document;
-  Matrix _projection; Not in initializer list yet. Probably need a Projection::RefPtr base class that is really a PerspectiveProjection class and has corresponding members.
+  IProjectionMatrix::QueryPtr _projection;
 };
 
 
-}; // namespace Scene
-}; // namespace MTR
+}; // namespace View
+}; // namespace Display
 
 
 #endif // _DISPLAY_LIBRARY_CANVAS_CLASS_H_

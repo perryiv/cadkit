@@ -15,21 +15,13 @@
 
 #include "Display/View/Viewer.h"
 
-#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Interfaces/IEventListener.h"
-#include "Usul/Registry/Constants.h"
-#include "Usul/Registry/Database.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
-#include <algorithm>
-
 using namespace Display::View;
-namespace Sections = Usul::Registry::Sections;
-namespace Keys = Usul::Registry::Keys;
-typedef Usul::Registry::Database Reg;
 
 USUL_IMPLEMENT_TYPE_ID ( Viewer );
 

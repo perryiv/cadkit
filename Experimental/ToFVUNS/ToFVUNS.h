@@ -48,6 +48,9 @@ protected:
   virtual void  updateProgressBar ( unsigned int value );
   virtual void  hideProgressBar(){}
 
+  void          _writeResultsFile( const std::string &name );
+  void          _writeGrid( const std::string &name, std::ofstream* ofs );
+
   virtual ~ToFVUNS();
 
 private:
@@ -62,9 +65,13 @@ private:
 
   void          _saveDocument ( const std::string &file, Usul::Documents::Document *document );
 
-  Args _args;
-  Files _files;
+ 
+
+  Args                        _args;
+  Files                       _files;
 
   Usul::Math::Vec3ui          _dimensions;
-  GridSpace _grid;
+  GridSpace                   _grid;
+  std::string                 _workingDirectory;
+  std::string                 _baseFilename;
 };

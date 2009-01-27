@@ -2291,11 +2291,11 @@ void MinervaDocument::_buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces
     const unsigned int number ( node->getNumChildNodes() );
     for ( unsigned int i = 0; i < number; ++i  )
     {
-      Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ) );
+      Usul::Interfaces::ITreeNode::QueryPtr child ( node->getChildNode ( i ).get() );
       if ( child.valid() )
         this->_buildLayerSubMenu ( *layerMenu, child.get() );
 
-      Usul::Interfaces::IMenuAdd::QueryPtr ma ( node->getChildNode ( i ) );
+      Usul::Interfaces::IMenuAdd::QueryPtr ma ( node->getChildNode ( i ).get() );
       if ( ma.valid() )
         ma->menuAdd ( *layerMenu );
     }

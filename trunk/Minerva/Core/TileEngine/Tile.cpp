@@ -743,10 +743,10 @@ void Tile::_cull ( osgUtil::CullVisitor &cv )
       if ( vector.valid() )
       {
         IUnknown::QueryPtr me ( this );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 0 ) ), me );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 1 ) ), me );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 2 ) ), me );
-        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 3 ) ), me );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 0 ).get() ), me );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 1 ).get() ), me );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 2 ).get() ), me );
+        vector->tileRemovedNotify ( IUnknown::QueryPtr ( this->childAt ( 3 ).get() ), me );
       }
 
       // Clear all the children.

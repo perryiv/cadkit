@@ -218,7 +218,7 @@
 			Name="Source"
 			>
 			<Filter
-				Name="Scene"
+				Name="Render"
 				>
 				<File
 					RelativePath=".\Render\Group.cpp"
@@ -226,14 +226,6 @@
 				</File>
 				<File
 					RelativePath=".\Render\Group.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Render\Renderer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Render\Renderer.h"
 					>
 				</File>
 			</Filter>
@@ -274,6 +266,18 @@
 				</File>
 				<File
 					RelativePath=".\Events\Events.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Projection"
+				>
+				<File
+					RelativePath=".\Projection\Perspective.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Projection\Perspective.h"
 					>
 				</File>
 			</Filter>

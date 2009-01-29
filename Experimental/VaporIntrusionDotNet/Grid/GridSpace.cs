@@ -1,3 +1,12 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2009, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,13 +18,27 @@ namespace VaporIntrusionDotNet
 
     //*************************************************************************************
     //
+    // Structs
+    //
+    //*************************************************************************************
+
+    public class GridComponent
+    {
+      public List<Component> component;
+      public GridComponent()
+      {
+        component = new List<Component>();
+      }
+    };
+
+    //*************************************************************************************
+    //
     // Member Variables
     //
     //*************************************************************************************
 
-    private static List<Component> _gridSpace;
+    private static List<GridComponent> _gridSpace;
     private static Helper.Vector3 _dimensions;
-    private static Helper.Vector3 _currentPositions;
 
     //*************************************************************************************
     //
@@ -26,17 +49,23 @@ namespace VaporIntrusionDotNet
     public static void initialize()
     {
       // set the initial dimensions
-      _dimensions.x = 10;
-      _dimensions.y = 10;
-      _dimensions.z = 10;
+      _dimensions.x = 100;
+      _dimensions.y = 100;
+      _dimensions.z = 100;
 
-      // set the initial positions
-      _currentPositions.x = 0;
-      _currentPositions.y = 0;
-      _currentPositions.z = 0;
-
+      // initialize the grid space
+      _gridSpace = new List<GridComponent>();     
+      
       // resize the grid space
-      _gridSpace = new List<Component>(_dimensions.x * _dimensions.y * _dimensions.z);     
+      int size = _dimensions.x * _dimensions.y * _dimensions.z;
+
+      // add the default <empty> component to the grid space
+      for (int i = 0; i < size; ++i)
+      {
+        GridComponent empty = new GridComponent();
+        _gridSpace.Add(empty);
+      }
+      
 
     }
 
@@ -47,7 +76,7 @@ namespace VaporIntrusionDotNet
     //
     //*************************************************************************************
 
-    public Helper.Vector3 dimensions
+    public static Helper.Vector3 dimensions
     {
       get
       {
@@ -59,7 +88,7 @@ namespace VaporIntrusionDotNet
         _dimensions = value;
 
         // erase and set the max number of elements for the grid space
-        _gridSpace = new List<Component>(_dimensions.x * _dimensions.y * dimensions.z);
+        _gridSpace = new List<GridComponent>(_dimensions.x * _dimensions.y * dimensions.z);
 
       }
     }
@@ -67,20 +96,22 @@ namespace VaporIntrusionDotNet
 
     //*************************************************************************************
     //
-    // Get/Set the current positions of the grid space
+    // Set the grid component at i,j,k to component <c>
     //
     //*************************************************************************************
 
-    public Helper.Vector3 positions
+    public static void setComponentAt( int i, int j, int k, Component c )
     {
-      get
+      // index ( j + ( i * d[1] ) + ( k * d[0] * d[1] ) );
+      int index =  i + ( j * _dimensions.x ) + ( k * _dimensions.x * _dimensions.y );
+
+      if (_gridSpace.Count > index)
       {
-        return _currentPositions;
+        _gridSpace[index].component.Add( c );
       }
-      set
+      else
       {
-        // Set the dimensions
-        _currentPositions = value;
+        // throw here
       }
     }
 

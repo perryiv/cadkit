@@ -15,6 +15,9 @@ namespace VaporIntrusionDotNet
     {
       InitializeComponent();
 
+      // Initialize the component manager
+      ComponentManager.initialize();
+
       // initialize the grid space
       GridSpace.initialize();
 

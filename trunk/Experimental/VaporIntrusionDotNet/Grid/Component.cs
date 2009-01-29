@@ -1,3 +1,12 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2009, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.Text;

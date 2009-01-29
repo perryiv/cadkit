@@ -1,3 +1,12 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2009, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author(s): Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,6 +43,7 @@ namespace VaporIntrusionDotNet
     private Color _currentPointColor;
     private bool _selecting;
     private System.Drawing.Brush _brush;
+    private int _currentGridDepth;
 
     //*************************************************************************************
     //
@@ -49,8 +59,8 @@ namespace VaporIntrusionDotNet
       _brush = new SolidBrush(Color.FromArgb(128,Color.Gray));
 
       // grid resolution
-      _gridSize.x = 5;
-      _gridSize.y = 5;
+      _gridSize.x = 100;
+      _gridSize.y = 100;
 
       _selecting = false;
 
@@ -59,6 +69,9 @@ namespace VaporIntrusionDotNet
 
       // Initialize the current point color
       _currentPointColor = Color.Red;
+
+      // Set the current depth of the grid
+      _currentGridDepth = 0;
 
     }
 
@@ -114,13 +127,6 @@ namespace VaporIntrusionDotNet
 
       }
 
-      //if (rectA.Contains(mousePt))
-      //{
-      //  isImageClicked = true;
-      //  imageClicked = 0;
-      //  this.Text = "You clicked image A";
-      //}
-
       Invalidate();
     }
 
@@ -155,16 +161,6 @@ namespace VaporIntrusionDotNet
         // we are no longer selecting
         _selecting = false;
       }
-
-
-      //if (rectA.Contains(mousePt))
-      //{
-      //  isImageClicked = true;
-      //  imageClicked = 0;
-      //  this.Text = "You clicked image A";
-      //}
-
-      //_selecting = false;
 
       Invalidate();
     }
@@ -233,7 +229,17 @@ namespace VaporIntrusionDotNet
 
         if (_selectionRect.Contains(_grid[i].point))
         {
+          // set the current color
           color = this._currentPointColor;
+
+          // y value for this point
+          int y = 0;
+
+          // x value for this point
+          int x = Math.DivRem( i, _gridSize.x, out y);
+
+          // add the current component to the grid point
+          GridSpace.setComponentAt( x, y, _currentGridDepth, ComponentManager.currentComponent() );
         }
         
         // Make a temp point
@@ -254,6 +260,10 @@ namespace VaporIntrusionDotNet
         // set the grid point
         _grid[i] = c;
 
+        
+        
+        
+        
 
       }
 

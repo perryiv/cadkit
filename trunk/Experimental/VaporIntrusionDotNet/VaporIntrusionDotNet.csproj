@@ -49,6 +49,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Grid\Component.cs" />
+    <Compile Include="Grid\ComponentManager.cs" />
     <Compile Include="Grid\GridSpace.cs" />
     <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Program.cs" />

@@ -38,7 +38,6 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
   
   RasterLayerGDAL();
-  RasterLayerGDAL ( ImagePtr image, const Extents& extents );
   
   /// Clone.
   virtual IUnknown*     clone() const;

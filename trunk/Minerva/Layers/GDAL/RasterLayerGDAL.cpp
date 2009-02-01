@@ -87,40 +87,6 @@ RasterLayerGDAL::RasterLayerGDAL () :
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Construct from an osg Image.  Assume WGS 84.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-RasterLayerGDAL::RasterLayerGDAL ( ImagePtr image, const Extents& extents ) : BaseClass(),
-  _data ( 0x0 ),
-  _filename()
-{
-  if ( image.valid() )
-  {
-    image->flipVertical();
-
-    const unsigned int width ( image->s() );
-    const unsigned int height ( image->t() );
-
-    // Create the dataset ( hack for now... )
-    _data = RasterLayerGDAL::_createDataset ( extents, width, height, 1, GDT_Float32 );
-
-    if ( 0x0 != _data )
-    {
-      GDALRasterBand* band ( _data->GetRasterBand ( 1 ) );
-      if ( 0x0 != band )
-      {
-        band->RasterIO( GF_Write, 0, 0, width, height, image->data(), width, height, GDT_Float32, 0, 0 );
-      }
-    }
-  }
-
-  this->extents ( extents );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Copy Constructor.
 //
 ///////////////////////////////////////////////////////////////////////////////

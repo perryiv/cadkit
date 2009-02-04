@@ -41,4 +41,5 @@ TARGET_LINK_LIBRARIES( ModelPresentationLib
    ${OSG_LIB}
    ${OSG_DB_LIB}
    ${OSG_TEXT_LIB}
+   ${OPENTHREADS_LIB}
 )

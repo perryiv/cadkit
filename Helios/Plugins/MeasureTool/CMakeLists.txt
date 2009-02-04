@@ -25,7 +25,8 @@ SET ( CADKIT_LIBRARIES Usul OsgTools MenuKit )
 SET ( OTHER_LIBRARIES ${OSG_LIB}
 					  ${OSG_UTIL_LIB}
 					  ${OSG_TEXT_LIB}
-					  ${OSG_GA_LIB} )
+					  ${OSG_GA_LIB} 
+					  ${OPENTHREADS_LIB} )
 
 # Add the plugin.
 CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

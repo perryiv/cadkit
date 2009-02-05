@@ -85,8 +85,8 @@ public:
   // Overload to return an accurate indication of success.
   virtual bool              success() const;
 
-  // Return this job's thread.
-  const Thread *            thread() const;
+  // Return this job's thread, which may be null.
+  const Thread::RefPtr      thread() const;
 
   // Wait for this job to finish. Calling from the job's thread will throw.
   void                      wait ( std::ostream *out = 0x0, unsigned int numLoops = 0xFFFFFFFF, unsigned int sleep = 500 );

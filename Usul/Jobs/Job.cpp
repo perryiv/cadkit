@@ -405,11 +405,11 @@ void Job::_setId ( unsigned int value )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Threads::Thread *Job::thread() const
+const Usul::Threads::Thread::RefPtr Job::thread() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  return _thread.get();
+  return _thread;
 }
 
 
@@ -543,15 +543,47 @@ void Job::wait ( std::ostream *out, unsigned int numLoops, unsigned int sleep )
 {
   USUL_TRACE_SCOPE;
 
-  // Do not call from the thread the job is running in.
-  if ( this->thread()->systemId() == Usul::Threads::currentThreadId() )
+  // See if we're already done.
+  if ( true == this->isDone() )
   {
-    throw std::runtime_error ( "Error 1534701658: cannot wait for job in its execution thread" );
+    return;
   }
 
-  // Loop while it's running.
+  // Have we been queued?
+  if ( 0 != this->id() )
+  {
+    return;
+  }
+
+  // When we get to here we know that:
+  // 1. We've been added to a job manager.
+  // 2. We're not done executing.
+
+  // Note: Moved the checking of thread ids into the loop because the job may 
+  // not have started yet, which means the thread is null. Nevertheless, we 
+  // need to wait for it, and we need to keep track of the time (loops) while 
+  // we wait.
+
+  // Used to make sure we check the thread id once.
+  bool needToCheckThreadId ( true );
+
+  // Loop until it's done or we reach the maximum number of loops allowed.
   for ( unsigned int i = 0; i < numLoops; ++i )
   {
+    if ( true == needToCheckThreadId )
+    {
+      // Do not call from the thread the job is running in.
+      Usul::Threads::Thread::RefPtr thread ( this->thread() );
+      if ( true == thread.valid() )
+      {
+        if ( thread->systemId() == Usul::Threads::currentThreadId() )
+        {
+          throw std::runtime_error ( "Error 1534701658: cannot wait for job in its execution thread" );
+        }
+        needToCheckThreadId = false;
+      }
+    }
+
     if ( true == this->isDone() )
     {
       break;

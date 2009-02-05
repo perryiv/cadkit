@@ -23,6 +23,7 @@
 #include "Usul/Threads/Guard.h"
 #include "Usul/Threads/Pool.h"
 
+#include <string>
 #include <vector>
 
 namespace Usul {
@@ -43,7 +44,7 @@ public:
   typedef ThreadPool::Strings Strings;
 
   // Constructor and destructor. Use as a singleton or as individual objects.
-  Manager ( unsigned int poolSize, bool lazyStart );
+  Manager ( const std::string &name, unsigned int poolSize, bool lazyStart );
   ~Manager();
 
   // Add a job to the list.
@@ -66,7 +67,7 @@ public:
   void                    executingNames ( Strings & ) const;
 
   // Initialize singleton with given thread-pool size.
-  static void             init ( unsigned int poolSize, bool lazyStart );
+  static void             init ( const std::string &name, unsigned int poolSize, bool lazyStart );
 
   // Get the singleton.
   static Manager &        instance();
@@ -77,6 +78,9 @@ public:
   // Set/get the log.
   void                    logSet ( LogPtr );
   LogPtr                  logGet();
+
+  // Get the name.
+  std::string             name() const;
 
   // Get the next job id. This will also increment the internal counter.
   unsigned long           nextJobId();

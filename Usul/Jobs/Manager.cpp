@@ -104,9 +104,9 @@ namespace Usul
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Manager::Manager ( unsigned int poolSize, bool lazyStart ) :
+Manager::Manager ( const std::string &name, unsigned int poolSize, bool lazyStart ) :
   _mutex     (),
-  _pool      ( new Usul::Threads::Pool ( poolSize, lazyStart ) ),
+  _pool      ( new Usul::Threads::Pool ( name, poolSize, lazyStart ) ),
   _jobFinishedListeners(),
   _log       ( 0x0 )
 {
@@ -138,7 +138,7 @@ Manager &Manager::instance()
   USUL_TRACE_SCOPE_STATIC;
   if ( 0x0 == _instance )
   {
-    Manager::init ( Usul::Threads::Pool::DEFAULT_NUM_THREADS, true );
+    Manager::init ( "Usul::Jobs::Manager::instance()", Usul::Threads::Pool::DEFAULT_NUM_THREADS, true );
   }
   return *_instance;
 }
@@ -150,11 +150,11 @@ Manager &Manager::instance()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::init ( unsigned int poolSize, bool lazyStart )
+void Manager::init ( const std::string &name, unsigned int poolSize, bool lazyStart )
 {
   USUL_TRACE_SCOPE_STATIC;
   Manager::destroy();
-  _instance = new Manager ( poolSize, lazyStart );
+  _instance = new Manager ( name, poolSize, lazyStart );
 }
 
 
@@ -599,4 +599,19 @@ bool Manager::isHigherPriorityJobWaiting ( int priority ) const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return ( ( true == _pool.valid() ) ? _pool->isHigherPriorityTaskWaiting ( priority ) : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string Manager::name() const
+{
+  USUL_TRACE_SCOPE;
+  Usul::Threads::Pool::RefPtr pool ( 0x0 );
+  Usul::Threads::Safe::set ( this->mutex(), _pool, pool );
+  return ( ( true == pool.valid() ) ? pool->name() : std::string() );
 }

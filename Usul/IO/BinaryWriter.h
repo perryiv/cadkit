@@ -77,9 +77,11 @@ template < class EndianPolicy_ > struct Writer
     // Only works properly when not converting to a particular endian.
     USUL_ASSERT_SAME_TYPE ( Usul::Endian::FromSystemToSystem, EndianPolicy );
 
+    typedef typename T::value_type ValueType;
+
     if ( false == v.empty() )
     {
-      stream.write ( reinterpret_cast < const char * > ( &v[0] ), sizeof ( T::value_type ) * v.size() );
+      stream.write ( reinterpret_cast < const char * > ( &v[0] ), sizeof ( ValueType ) * v.size() );
     }
   }
 };

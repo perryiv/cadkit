@@ -82,10 +82,12 @@ template < class EndianPolicy_ > struct Reader
     // Only works properly when not converting to a particular endian.
     USUL_ASSERT_SAME_TYPE ( Usul::Endian::FromSystemToSystem, EndianPolicy );
 
+    typedef typename T::value_type ValueType;
+
     // Vector must already be sized.
     if ( false == v.empty() )
     {
-      stream.read ( reinterpret_cast < char * > ( &v[0] ), v.size() * sizeof ( T::value_type ) );
+      stream.read ( reinterpret_cast < char * > ( &v[0] ), v.size() * sizeof ( ValueType ) );
     }
   }
 };

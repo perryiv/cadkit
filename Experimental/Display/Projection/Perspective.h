@@ -30,7 +30,8 @@ class DISPLAY_LIBRARY_EXPORT Perspective :
   public Usul::Base::Object,
   public Usul::Interfaces::SceneGraph::IProjectionMatrix,
   public Usul::Interfaces::SceneGraph::IPerspectiveProjection,
-  public Usul::Interfaces::SceneGraph::IViewportResize
+  public Usul::Interfaces::SceneGraph::IViewportSet,
+  public Usul::Interfaces::SceneGraph::IViewportGet
 {
 public:
 
@@ -59,8 +60,11 @@ public:
   // Usul::Interfaces::SceneGraph::IProjectionMatrix
   virtual Matrix            getProjectionMatrix() const;
 
-  // Usul::Interfaces::SceneGraph::IViewportResize
-  virtual void              resizeViewport ( unsigned int width, unsigned int height );
+  // Usul::Interfaces::SceneGraph::IViewportGet
+  virtual void              getViewport ( double &width, double &height ) const;
+
+  // Usul::Interfaces::SceneGraph::IViewportSet
+  virtual void              setViewport ( double width, double height );
 
 protected:
 
@@ -76,7 +80,8 @@ private:
   Perspective &operator = ( const Perspective & );
 
   double _fov;
-  double _aspect;
+  double _width;
+  double _height;
   double _zNear;
   double _zFar;
   Matrix _matrix;

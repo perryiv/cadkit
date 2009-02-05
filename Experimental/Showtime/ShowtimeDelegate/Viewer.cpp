@@ -16,7 +16,6 @@
 #include "Showtime/ShowtimeDelegate/Viewer.h"
 
 #include "Display/Events/Events.h"
-#include "Display/Render/OSG/Renderer.h"
 
 #include "OsgTools/Render/Defaults.h"
 
@@ -67,9 +66,6 @@ Viewer::Viewer ( IUnknown::RefPtr doc, const QGLFormat& format, QWidget* parent,
 
   // For convienence;
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
-
-  // Give the viewer a renderer.
-  _viewer->pushRenderer ( new Display::Render::OSG::Renderer ( me, me ) );
 
   // Set the focus policy.
   this->setFocusPolicy ( Qt::ClickFocus );

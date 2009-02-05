@@ -107,8 +107,8 @@ public:
   // Render the scene.
   void                      render();
 
-  // Call this when you want the viewport to resize.
-  void                      resize ( unsigned int width, unsigned int height );
+  // Call this when the window has resized.
+  void                      resize ( double width, double height );
 
   // Usul::Interfaces::IRedraw
   virtual void              redraw();

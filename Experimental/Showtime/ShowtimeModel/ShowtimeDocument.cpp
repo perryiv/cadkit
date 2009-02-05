@@ -28,7 +28,7 @@
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Components/Manager.h"
-#include "Usul/Factory/ObjectFactory.h"
+#include "Usul/Factory/BaseFactory.h"
 #include "Usul/Factory/TypeCreator.h"
 #include "Usul/File/Path.h"
 #include "Usul/Functions/SafeCall.h"
@@ -538,8 +538,9 @@ void ShowtimeDocument::_loadActions ( const XmlTree::Node *root )
   typedef XmlTree::Node::Children Children;
 
   // Register factories.
-  Usul::Factory::ObjectFactory factory;
-  factory.add ( new Usul::Factory::TypeCreator<Showtime::Actions::Fade> ( "fade" ) );
+  typedef Usul::Factory::BaseFactory<Usul::Base::Referenced> Factory;
+  Factory factory;
+  factory.add ( new Usul::Factory::TypeCreator<Showtime::Actions::Fade,Factory::BaseType> ( "fade" ) );
 
   // The last step.
   unsigned int lastStep ( 0 );

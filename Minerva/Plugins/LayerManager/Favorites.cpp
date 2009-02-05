@@ -35,6 +35,16 @@
 #include "QtGui/QHeaderView"
 #include "QtGui/QMenu"
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Typedefs with file scope.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef Usul::Threads::Guard<Usul::Threads::Mutex> Guard;
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -43,7 +53,10 @@
 
 Favorites::Favorites(Usul::Interfaces::IUnknown* caller, QWidget* parent ) : BaseClass( parent ),
   _caller ( caller ),
+  _serverFavorites(),
   _favoritesMap(),
+  _downloadJob ( 0x0 ),
+  _mutex(),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   this->setupUi( this );
@@ -66,10 +79,18 @@ Favorites::Favorites(Usul::Interfaces::IUnknown* caller, QWidget* parent ) : Bas
   //_favoritesTree->selectionMode ( QAbstractItemView::ExtendedSelection );
 
   // Read from server.
-  Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create ( Usul::Adaptors::memberFunction ( this, &Favorites::_readFavoritesFromServer ), caller ) );
-  
+  // Note: passing null for the caller because, if you pass the variable 
+  // "caller" then the job will get an interface to IProgressBar which points 
+  // to an CadKit::Helios::Core::ProgressBarDock::ProgressBar object. 
+  // However, if the user shuts down the app before this job gets set to 
+  // null, then it's likely the object will have a dangling pointer to 
+  // "_progressBar" to a Qt widget that was already destroyed. The progess 
+  // bar factor and supporting book-keeping code needs to be re-visited.
+  _downloadJob = Usul::Jobs::create ( Usul::Adaptors::memberFunction ( this, &Favorites::_readFavoritesFromServer ), 0x0 );
+  _downloadJob->name ( "Favorites Download Job" );
+
   // Add the job to the manager.
-  Usul::Jobs::Manager::instance().addJob ( job );
+  Usul::Jobs::Manager::instance().addJob ( _downloadJob );
 
   this->_buildTree();
 }
@@ -83,8 +104,76 @@ Favorites::Favorites(Usul::Interfaces::IUnknown* caller, QWidget* parent ) : Bas
 
 Favorites::~Favorites()
 {
+  this->clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Favorites::clear()
+{
+  // Copy the job pointer.
+  Usul::Jobs::Job::RefPtr job ( 0x0 );
+  Guard guard ( _mutex );
+  {
+    job = _downloadJob;
+  }
+
+  // Done with the job member.
+  _downloadJob = 0x0;
+
+  // Wait for the job.
+  if ( true == job.valid() )
+  {
+    Usul::Jobs::Manager::instance().cancel ( job );
+    job->wait();
+    job = 0x0;
+  }
+
   // Save favorites.
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Favorites::_saveState ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to check the cancelled state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  bool isCancelled ( Usul::Jobs::Job::RefPtr &job, Usul::Threads::Mutex &mutex )
+  {
+    Guard guard ( mutex );
+
+    // Has the job been cancelled in one way or another?
+    const bool invalid ( false == job.valid() );
+    const bool cancelled ( ( true == job.valid() ) ? job->canceled() : false );
+    return ( invalid || cancelled );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to throw if cancelled.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void checkCancelled ( Usul::Jobs::Job::RefPtr &job, Usul::Threads::Mutex &mutex )
+  {
+    if ( true == Helper::isCancelled ( job, mutex ) )
+    {
+      throw Usul::Exceptions::Canceled();
+    }
+  }
 }
 
 
@@ -353,26 +442,43 @@ void Favorites::_readFavoritesFromServer()
 {
   const std::string server ( "www.minerva-gis.org" );
   const std::string file ( "gis_favorites.xml" );
-
   const std::string url ( "http://" + server + "/" + file );
+
+  // Check for the cancelled state. This matters when the server is slow 
+  // and the user shuts down right away (before this job has finished).
+  Helper::checkCancelled ( _downloadJob, _mutex );
 
   // File to download to.
   std::string name ( Usul::File::Temp::file() );
   Usul::Scope::RemoveFile remove ( name );
 
+  Helper::checkCancelled ( _downloadJob, _mutex );
+
   // Attempt to download the file.
-  if ( Minerva::Core::Utilities::downloadToFile ( url, name ) )
+  if ( false == Minerva::Core::Utilities::downloadToFile ( url, name ) )
+    return;
+
+  Helper::checkCancelled ( _downloadJob, _mutex );
+
+  Serialize::XML::DataMemberMap map;
+  map.addMember ( "favorites", _serverFavorites );
+
+  XmlTree::XercesLife life;
+  XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
+  document->load ( name );
+
+  Helper::checkCancelled ( _downloadJob, _mutex );
+
+  map.deserialize ( *document );
+  
+  Helper::checkCancelled ( _downloadJob, _mutex );
+
+  // Make sure the tree is rebuilt.
+  QMetaObject::invokeMethod ( this, "_buildTree", Qt::QueuedConnection );
+
+  // We're done with this member.
   {
-	  Serialize::XML::DataMemberMap map;
-    map.addMember ( "favorites", _serverFavorites );
-
-    XmlTree::XercesLife life;
-    XmlTree::Document::ValidRefPtr document ( new XmlTree::Document );
-    document->load ( name );
-
-    map.deserialize ( *document );
-    
-    // Make sure the tree is rebuilt.
-    QMetaObject::invokeMethod ( this, "_buildTree", Qt::QueuedConnection );
+    Guard guard ( _mutex );
+    _downloadJob = 0x0;
   }
 }

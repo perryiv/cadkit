@@ -119,6 +119,18 @@ LayersTree::LayersTree ( Usul::Interfaces::IUnknown* caller, QWidget * parent ) 
 
 LayersTree::~LayersTree()
 {
+  this->clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the members.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void LayersTree::clear()
+{
   _caller = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
   _document = static_cast < Usul::Interfaces::IUnknown * > ( 0x0 );
 }

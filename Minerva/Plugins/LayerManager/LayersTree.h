@@ -38,6 +38,8 @@ public:
 
   void        buildTree ( IUnknown * document );
 
+  void        clear();
+
   /// Set/get the favorites.
   void        favorites ( Favorites* );
   Favorites*  favorites() const;

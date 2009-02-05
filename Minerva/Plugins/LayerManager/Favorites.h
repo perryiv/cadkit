@@ -17,6 +17,8 @@
 #include "ui_Favorites.h"
 
 #include "Usul/Interfaces/ILayer.h"
+#include "Usul/Jobs/Job.h"
+#include "Usul/Threads/Mutex.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -37,6 +39,8 @@ public:
   /// Construction/Destruction.
   Favorites( Usul::Interfaces::IUnknown* caller, QWidget* parent = 0x0 );
   virtual ~Favorites();
+
+  void             clear();
 
   MenuKit::Menu*   menu( Usul::Interfaces::IUnknown *caller );
 
@@ -73,6 +77,8 @@ private:
   Usul::Interfaces::IUnknown::RefPtr _caller;
   FavoritesMap _serverFavorites;
   FavoritesMap _favoritesMap;
+  Usul::Jobs::Job::RefPtr _downloadJob;
+  Usul::Threads::Mutex _mutex;
   
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_DEFINE_MEMBERS ( gis_favorites );

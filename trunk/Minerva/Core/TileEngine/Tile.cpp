@@ -268,6 +268,8 @@ Usul::Interfaces::IUnknown *Tile::queryInterface ( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Minerva::Interfaces::ITile::IID:
     return static_cast < Minerva::Interfaces::ITile * > ( this );
+  case Minerva::Interfaces::IIntersectNotify::IID:
+    return static_cast < Minerva::Interfaces::IIntersectNotify * > ( this );
   default:
     return 0x0;
   }
@@ -2239,5 +2241,28 @@ void Tile::unref ( bool allowDelete )
   else
   {
     BaseClass::unref_nodelete();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call to notify of an intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::intersectNotify ( double x, double y, double z, 
+                             double lon, double lat, double elev, 
+                             IUnknown::RefPtr tile, 
+                             IUnknown::RefPtr body, 
+                             IUnknown::RefPtr caller )
+{
+  USUL_TRACE_SCOPE;
+  typedef Minerva::Interfaces::IIntersectNotify IIntersectNotify;
+
+  IIntersectNotify::QueryPtr notify ( this->_perTileVectorDataGet() );
+  if ( true == notify.valid() )
+  {
+    notify->intersectNotify ( x, y, z, lon, lat, elev, tile, body, caller );
   }
 }

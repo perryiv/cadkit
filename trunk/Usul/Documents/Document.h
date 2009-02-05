@@ -21,7 +21,6 @@
 #include "Usul/Documents/FileInfo.h"
 
 #include "Usul/Base/Object.h"
-#include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
 #include "Usul/Interfaces/IDocument.h"
 #include "Usul/Interfaces/IRead.h"
@@ -35,6 +34,8 @@
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRedraw.h"
+#include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/Object.h"
 
 #include <string>
 #include <list>
@@ -267,7 +268,9 @@ protected:
 private:
 
   typedef Usul::Interfaces::IModifiedObserver::ValidRefPtr ModifiedObserverPtr;
-  typedef std::set < ModifiedObserverPtr > ModifiedObservers;
+  typedef std::set < ModifiedObserverPtr > ModifiedObserversSet;
+  typedef Usul::Threads::Object<bool> AllowRequestRedraw;
+  typedef Usul::Threads::Object<ModifiedObserversSet> ModifiedObservers;
 
   FileInfo _file;
   Windows _windows;
@@ -276,7 +279,7 @@ private:
   Delegate::RefPtr _delegate;
   Options _options;
   ModifiedObservers _modifiedObservers;
-  bool _allowRequestRedraw;
+  AllowRequestRedraw _allowRequestRedraw;
 };
 
 

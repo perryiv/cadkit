@@ -27,7 +27,7 @@ struct IProgressBarFactory : public Usul::Interfaces::IUnknown
   enum { IID = 1512701809u };
 
   // Create a progress bar.
-  virtual Usul::Interfaces::IUnknown*  createProgressBar ( bool waitIfNotGuiThread = false ) = 0;
+  virtual Usul::Interfaces::IUnknown::RefPtr  createProgressBar ( bool waitIfNotGuiThread = false ) = 0;
 
 }; // struct IProgressBarFactory
 

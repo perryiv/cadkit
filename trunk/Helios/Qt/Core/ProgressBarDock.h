@@ -40,7 +40,6 @@ namespace Core {
 
 class ProgressBarDock : public QObject,
                         public Usul::Base::Object
-                        
 {
   Q_OBJECT;
 public:
@@ -52,7 +51,7 @@ public:
 
   QWidget* operator () ( QDockWidget* parent );
 
-  Usul::Interfaces::IUnknown * createProgressBar ( bool waitIfNotGuiThread );
+  Usul::Interfaces::IUnknown::RefPtr      createProgressBar ( bool waitIfNotGuiThread );
 
 protected:
   virtual ~ProgressBarDock ();
@@ -88,7 +87,7 @@ private:
     bool     isCreated() const;
 
     // Set the progress bar.
-    void     progressBar ( QProgressBar * );
+    void     setProgressBar ( QProgressBar * );
 
   protected:
     virtual ~ProgressBar ();
@@ -109,11 +108,14 @@ private:
     bool _created;
   };
 
+  void              _destroy();
+
   typedef std::list < ProgressBar::RefPtr > ProgressBars;
 
   QScrollArea  *_scrollArea;
   QVBoxLayout  *_layout;
   ProgressBars  _progressBars;
+  bool _canCreate;
 };
 
 

@@ -49,6 +49,7 @@
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Components/Loader.h"
+#include "Usul/Config/Config.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Documents/Manager.h"
 #include "Usul/Errors/Stack.h"
@@ -61,7 +62,7 @@
 #include "Usul/File/Stats.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Jobs/Manager.h"
-#include "Usul/Interfaces/IUnknown.h"
+#include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/IDocumentCreate.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Interfaces/IMenuAdd.h"
@@ -78,6 +79,7 @@
 #include "Usul/Threads/Callback.h"
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Threads/ThreadId.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/User/Directory.h"
@@ -288,13 +290,20 @@ void MainWindow::_destroy()
   _menu = 0x0;
   _dockMenu = 0x0;
   _recentFilesMenu = 0x0;
-  _newDocumentMenu = 0x0;  
+  _newDocumentMenu = 0x0;
 
 	// Clear the tool bar.
 	this->_clearToolBar();
 
-  // Clear the progress bars.
-  _progressBars = 0x0;
+  // Clear the progress bars without blocking.
+  {
+    ProgressBarDock::RefPtr bars ( 0x0 );
+    {
+      Guard guard ( this );
+      bars = _progressBars;
+      _progressBars = 0x0;
+    }
+  }
 
   // Wait for jobs before plugins are released.
   // At least on OS X, using a pointer created in a shared object after it is released causes a crash.
@@ -917,12 +926,17 @@ void MainWindow::_buildProgressBarWindow()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1230652240" );
 
+  // Is there still a progress bar window?
+  ProgressBarDock::RefPtr pb ( Usul::Threads::Safe::get ( this->mutex(), _progressBars ) );
+  if ( false == pb.valid() )
+    return;
+
   // Build the docking window.
   QDockWidget *dock = new QDockWidget ( tr ( "Progress Bars" ), this );
   dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
   // Dock it.
-  dock->setWidget ( ( *_progressBars ) ( dock ) );
+  dock->setWidget ( ( *pb ) ( dock ) );
   this->addDockWidget ( Qt::BottomDockWidgetArea, dock );
 
   // Set the object name.
@@ -1467,6 +1481,51 @@ void MainWindow::updateTextWindow ( bool force )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Use when profiling.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef USUL_USING_PROFILER
+
+namespace Helper
+{
+  void autoQuit ( unsigned int maxCount )
+  {
+    static unsigned int count ( 0 );
+    bool print ( false );
+    Usul::Interfaces::IBusyState::QueryPtr busy ( Usul::Documents::Manager::instance().activeDocument() );
+    if ( true == busy.valid() )
+    {
+      if ( false == busy->busyStateGet() )
+      {
+        ++count;
+        print = true;
+      }
+      else
+      {
+        if ( count > 0 )
+        {
+          count = 0;
+          print = true;
+        }
+      }
+    }
+    if ( count >= maxCount )
+    {
+      QApplication::quit();
+    }
+    if ( true == print )
+    {
+      std::cout << Usul::Strings::format ( "Idle count: ", count, " of ", maxCount, '\n' ) << std::flush;
+    }
+  }
+}
+
+#endif // USUL_USING_PROFILER
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Called by the idle timer.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1476,16 +1535,20 @@ void MainWindow::_idleProcess()
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
   Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
-  
+
   // Tell window to refresh.
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), true );
-  
+
   // Update the timer server.
   if ( true == _timerServer.valid() )
   {
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _timerServer.get(), &TimerServer::purge ), "2332384530" );
     Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( _timerServer.get(), &TimerServer::addPendingTimers ), "1116658650" );
   }
+
+  #ifdef USUL_USING_PROFILER
+  Helper::autoQuit ( 10 );
+  #endif
 }
 
 
@@ -1853,10 +1916,11 @@ void MainWindow::_closeEvent ( QCloseEvent* event )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* MainWindow::createProgressBar ( bool waitIfNotGuiThread )
+Usul::Interfaces::IUnknown::RefPtr MainWindow::createProgressBar ( bool waitIfNotGuiThread )
 {
   USUL_TRACE_SCOPE;
-  return _progressBars->createProgressBar ( waitIfNotGuiThread );
+  ProgressBarDock::RefPtr pb ( Usul::Threads::Safe::get ( this->mutex(), _progressBars ) );
+  return ( ( true == pb.valid() ) ? ( pb->createProgressBar ( waitIfNotGuiThread ) ) : IUnknown::RefPtr ( 0x0 ) );
 }
 
 

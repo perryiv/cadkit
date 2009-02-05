@@ -26,7 +26,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="copy .\Config\Config.h.in.vc .\Config\Config.h /y"
+				CommandLine="xcopy .\Config\Config.h.in.vc .\Config\Config.h  /f /i /k /y /c /d"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -126,7 +126,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="copy .\Config\Config.h.in.vc .\Config\Config.h /y"
+				CommandLine="xcopy .\Config\Config.h.in.vc .\Config\Config.h  /f /i /k /y /c /d"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -2012,6 +2012,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Threads\Object.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Threads\Pool.cpp"
 					>
 				</File>
@@ -2073,6 +2077,10 @@
 				</File>
 				<File
 					RelativePath="Threads\ThreadId.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\ThreadName.h"
 					>
 				</File>
 				<File

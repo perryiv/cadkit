@@ -85,7 +85,8 @@ Document::Document ( const std::string &type ) : BaseClass(),
 Document::~Document()
 {
   // Note: the windows should already be destroyed, or will be by the GUI toolkit.
-  _modifiedObservers.clear();
+  ModifiedObservers::WriteLock lock ( &_modifiedObservers );
+  _modifiedObservers.getReference().clear();
 }
 
 
@@ -102,8 +103,8 @@ void Document::applicationClosing ( Usul::Interfaces::IUnknown *caller )
 
   // Clear the modified observers.
   {
-    Guard guard ( this );
-    _modifiedObservers.clear();
+    ModifiedObservers::WriteLock lock ( &_modifiedObservers );
+    _modifiedObservers.getReference().clear();
   }
 
   typedef std::list< Window * > Temp;
@@ -826,12 +827,11 @@ bool Document::hasOption ( const std::string &key, const std::string &value ) co
 
 void Document::addModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer )
 {
-  Guard guard ( this );
-
-  if ( 0x0 == observer )
-    return;
-
-  _modifiedObservers.insert ( observer );
+  if ( 0x0 != observer )
+  {
+    ModifiedObservers::WriteLock lock ( &_modifiedObservers );
+    _modifiedObservers.getReference().insert ( observer );
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -842,9 +842,9 @@ void Document::addModifiedObserver ( Usul::Interfaces::IModifiedObserver* observ
 
 void Document::removeModifiedObserver ( Usul::Interfaces::IModifiedObserver* observer )
 {
-  Guard guard ( this );
-  if ( false == _modifiedObservers.empty() )
-    _modifiedObservers.erase ( observer );
+  ModifiedObservers::WriteLock lock ( &_modifiedObservers );
+  if ( false == _modifiedObservers.getReference().empty() )
+    _modifiedObservers.getReference().erase ( observer );
 }
 
 
@@ -897,8 +897,8 @@ void Document::modified ( bool m )
 
 void Document::_notifyModifiedObservers()
 {
-  ModifiedObservers observers ( Usul::Threads::Safe::get ( this->mutex(), _modifiedObservers ) );
-  for ( ModifiedObservers::iterator iter = observers.begin(); iter != observers.end(); ++iter )
+  ModifiedObservers::ValueType observers ( _modifiedObservers.getCopy() );
+  for ( ModifiedObservers::ValueType::iterator iter = observers.begin(); iter != observers.end(); ++iter )
   {
     // Need to make gcc happy.
     Usul::Interfaces::IModifiedObserver::RefPtr temp ( iter->get() );
@@ -1128,7 +1128,6 @@ bool Document::_sortFilesBeforeInserting() const
 bool Document::allowRequestRedraw() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
   return _allowRequestRedraw;
 }
 
@@ -1142,6 +1141,5 @@ bool Document::allowRequestRedraw() const
 void Document::allowRequestRedraw ( bool state )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
   _allowRequestRedraw = state;
 }

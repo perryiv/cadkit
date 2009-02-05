@@ -29,7 +29,7 @@
 
 #ifdef USUL_WINDOWS
 # ifndef _WIN32_WINNT
-#   define _WIN32_WINNT 0x0400 // Needed for TryEnterCriticalSection.  See http://msdn.microsoft.com/en-us/library/ms686857(VS.85).aspx
+#  define _WIN32_WINNT 0x0400 // Needed for TryEnterCriticalSection.  See http://msdn.microsoft.com/en-us/library/ms686857(VS.85).aspx
 # endif
 # define WIN32_LEAN_AND_MEAN
 

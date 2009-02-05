@@ -38,9 +38,9 @@ using namespace Minerva::Core::TileEngine;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const float MESH_POLYGON_OFFSET_FACTOR ( 0.0f );
-const float MESH_POLYGON_OFFSET_UNITS  ( 14.0f );
-const float SKIRT_POLYGON_OFFSET_FACTOR ( 0.0f );
+const float MESH_POLYGON_OFFSET_FACTOR  (  0.0f );
+const float MESH_POLYGON_OFFSET_UNITS   ( 14.0f );
+const float SKIRT_POLYGON_OFFSET_FACTOR (  0.0f );
 const float SKIRT_POLYGON_OFFSET_UNITS  ( 16.0f );
 
 
@@ -50,8 +50,8 @@ const float SKIRT_POLYGON_OFFSET_UNITS  ( 16.0f );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const unsigned int MESH_RENDER_BIN ( 0 );
-const unsigned int SKIRT_RENDER_BIN ( 0 );
+const int MESH_RENDER_BIN ( 0 );
+const int SKIRT_RENDER_BIN ( 0 );
 
 
 ///////////////////////////////////////////////////////////////////////////////

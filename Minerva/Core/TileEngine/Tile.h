@@ -21,6 +21,7 @@
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/TileEngine/Mesh.h"
+#include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/ITile.h"
 
 #include "Usul/Base/Typed.h"
@@ -41,8 +42,6 @@
 
 #include "boost/shared_ptr.hpp"
 
-#include <typeinfo>
-
 namespace Usul { namespace Interfaces { struct IRasterLayer; } }
 namespace Usul { namespace Jobs { class Manager; } }
 namespace osgUtil { class CullVisitor; }
@@ -54,8 +53,10 @@ namespace Core {
 namespace TileEngine {
 
 
-class MINERVA_EXPORT Tile : public osg::Group,
-                            public Minerva::Interfaces::ITile
+class MINERVA_EXPORT Tile : 
+  public osg::Group,
+  public Minerva::Interfaces::ITile,
+  public Minerva::Interfaces::IIntersectNotify
 {
 public:
 
@@ -115,6 +116,7 @@ public:
   typedef Minerva::Core::Data::Container TileVectorData;
   typedef std::pair < TileVectorData::RefPtr, bool > TileVectorDataPair;
   typedef Usul::Interfaces::ITileVectorData::Jobs TileVectorJobs;
+  typedef Usul::Interfaces::IUnknown IUnknown;
 
   // Constructors.
   Tile ( Tile* parent = 0x0,
@@ -168,6 +170,9 @@ public:
 
   // Get the extents.
   Extents                   extents() const;
+
+  // Call to notify of an intersection.
+  virtual void              intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller );
 
   // Get the image.
   ImagePtr                  image();

@@ -63,7 +63,7 @@ LayerManagerComponent::~LayerManagerComponent()
   Usul::Interfaces::Qt::IMainWindow::QueryPtr mw ( _caller );
   QMainWindow *mainWindow ( ( mw.valid() ) ? mw->mainWindow() : 0x0 );
   
-  // Loop through the docking widgets.
+  // Loop through the docking widgets and clear them.
   for ( Docks::iterator i = _docks.begin(); i != _docks.end(); ++i )
   {
     QDockWidget *dockWidget ( *i );
@@ -77,17 +77,35 @@ LayerManagerComponent::~LayerManagerComponent()
       
       // Make sure there is no contained widget.
       dockWidget->setWidget ( 0x0 );
-      
-      // Delete the DockWidget.
-      delete dockWidget;
     }
   }
   
+  // This class has a reference to the main window.
+  if ( 0x0 != _layers )
+  {
+    _layers->clear();
+    _layers = 0x0;
+  }
+
+  // This class has a reference to the main window.
+  if ( 0x0 != _favorites )
+  {
+    _favorites->clear();
+    _favorites = 0x0;
+  }
+
+  // Loop through the docking widgets and delete them.
+  for ( Docks::iterator i = _docks.begin(); i != _docks.end(); ++i )
+  {
+    QDockWidget *dockWidget ( *i );
+    if ( 0x0 != dockWidget )
+    {
+      delete dockWidget;
+    }
+  }
+
   // Clear the vector.
   _docks.clear();
-
-  _layers = 0x0;
-  _favorites = 0x0;
 }
 
 

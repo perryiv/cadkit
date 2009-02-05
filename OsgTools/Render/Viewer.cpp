@@ -3656,7 +3656,7 @@ void Viewer::_handlePicking ( EventAdapter *ea )
       this->_findDragger ( hit );
     }
 
-    // Un ref the matrix transform
+    // Unref the matrix transform
     root = 0x0;
 
     // Regardless of the intersect test, return.

@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2007, Perry L Miller IV
+//  Copyright (c) 2009, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -14,21 +13,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Display/Render/OSG/Renderer.h"
+#include "SceneGraph/OpenSceneGraph/Renderer.h"
+#include "SceneGraph/OpenSceneGraph/Node.h"
 
-#include "OsgTools/Group.h"
+#include "OsgTools/Convert/Matrix.h"
 #include "OsgTools/Render/Defaults.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Adaptors/Bind.h"
-#include "Usul/Exceptions/Exception.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
-#include <limits>
-
-using namespace Display::Render::OSG;
+using namespace SceneGraph::OSG;
 
 USUL_IMPLEMENT_TYPE_ID ( Renderer );
 
@@ -60,16 +55,11 @@ namespace
 //
 /////////////////////////////////////////////////////////////////////////////
 
-Renderer::Renderer ( IUnknown::RefPtr context, IUnknown::RefPtr caller ) : BaseClass(),
+Renderer::Renderer() : BaseClass(),
   _viewer ( new osgUtil::SceneView ),
-  _context ( context ),
-  _caller ( caller )
+  _context ( 0x0 )
 {
   USUL_TRACE_SCOPE;
-
-  // We need this interface.
-  if ( false == _context.valid() )
-    throw Usul::Exceptions::Exception ( "Error 1335654694: context interface not available" );
 }
 
 
@@ -96,6 +86,19 @@ void Renderer::_destroy()
 {
   USUL_TRACE_SCOPE;
   _viewer = 0x0;
+  _context = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Pre-render the scene.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Renderer::preRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene )
+{
+  USUL_TRACE_SCOPE;
 }
 
 
@@ -105,12 +108,12 @@ void Renderer::_destroy()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Renderer::_render()
+void Renderer::render ( IUnknown::RefPtr projection, IUnknown::RefPtr scene )
 {
   USUL_TRACE_SCOPE;
 
   // Handle no context.
-  IContext::RefPtr context ( this->_getContext() );
+  IContext::QueryPtr context ( this->getOpenGLContext() );
   if ( false == context.valid() )
     return;
 
@@ -123,88 +126,57 @@ void Renderer::_render()
   if ( false == viewer.valid() )
     return;
 
-  // Need local scope.
+  // Set the projection.
+  typedef Usul::Interfaces::SceneGraph::IProjectionMatrix IProjectionMatrix;
+  IProjectionMatrix::QueryPtr pm ( projection );
+  if ( true == pm.valid() )
   {
-    WriteLock lock ( this->mutex() );
-
-    // Make this context current.
-    context->makeCurrent();
-
-    // Render a single frame.
-    viewer->cull();
-    viewer->draw();
-
-    // Swap the buffers.
-    context->swapBuffers();
+    const IProjectionMatrix::Matrix m1 ( pm->getProjectionMatrix() );
+    const osg::Matrixd m2 ( Usul::Convert::Type<IProjectionMatrix::Matrix,osg::Matrixd>::convert ( m1 ) );
+    viewer->setProjectionMatrix ( m2 );
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Call this when you want the viewport to resize.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::resize ( unsigned int w, unsigned int h )
-{
-  USUL_TRACE_SCOPE;
-
-  // Make sure it's in range.
-  const bool wIsGood ( w < static_cast < unsigned int > ( std::numeric_limits<int>::max() ) );
-  const bool hIsGood ( h < static_cast < unsigned int > ( std::numeric_limits<int>::max() ) );
-  if ( ( false == wIsGood ) || ( false == hIsGood ) )
-    return;
-
-  ViewerPtr viewer ( this->_getViewer() );
-  if ( false == viewer.valid() )
-    return;
-
-  // Set the projection matrix.
-  const double fovy  ( OsgTools::Render::Defaults::CAMERA_FOV_Y );
-  double zNear ( OsgTools::Render::Defaults::CAMERA_Z_NEAR );
-  double zFar  ( OsgTools::Render::Defaults::CAMERA_Z_FAR );
-  double width ( w ), height ( h );
-  double aspect ( width / height );
-  viewer->setProjectionMatrixAsPerspective ( fovy, aspect, zNear, zFar );
-
-Why not have a projection matrix member in the base renderer class?
-And/or the above members for creating it?
-How about the navigation matrix?
-Should the projection matrix be in the viewer/canvas?
-Should you use Usul::Math::Matrix44 or osg::Matrixd ?
 
   // Set the viewport.
-  osg::ref_ptr<osg::Viewport> vp ( new osg::Viewport ( 0, 0, static_cast < int > ( w ), static_cast < int > ( h ) ) );
-  viewer->setViewport ( vp );
+  typedef Usul::Interfaces::SceneGraph::IViewportGet IViewportGet;
+  IViewportGet::QueryPtr gvp ( projection );
+  if ( true == gvp.valid() )
+  {
+    double width ( 1 ), height ( 1 );
+    gvp->getViewport ( width, height );
+    if ( ( width > 0 ) && ( height > 0 ) )
+    {
+      viewer->setViewport ( 0, 0, static_cast < int > ( width ), static_cast < int > ( height ) );
+    }
+  }
+
+  // Set the scene.
+  typedef Usul::Interfaces::SceneGraph::IChild IChild;
+  IChild::QueryPtr child ( scene );
+  Node::RefPtr node ( dynamic_cast < Node * > ( child.get() ) );
+  Node::NodePtr n ( ( true == node.valid() ) ? node->node() : Node::NodePtr ( 0x0 ) );
+  viewer->setSceneData ( ( true == n.valid() ) ? n.get() : new osg::Group );
+
+  // Make this context current.
+  context->makeCurrent();
+
+  // Render a single frame.
+  viewer->cull();
+  viewer->draw();
+
+  // Swap the buffers.
+  context->swapBuffers();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the window.
+//  Post-render the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Renderer::GraphicsWindowPtr Renderer::_getWindow() const
+void Renderer::postRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene )
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
-  return _window;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the window.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Renderer::GraphicsWindowPtr Renderer::_getWindow()
-{
-  USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
-  return _window;
 }
 
 
@@ -217,7 +189,7 @@ Renderer::GraphicsWindowPtr Renderer::_getWindow()
 const Renderer::ViewerPtr Renderer::_getViewer() const
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  Guard guard ( this );
   return _viewer;
 }
 
@@ -231,79 +203,34 @@ const Renderer::ViewerPtr Renderer::_getViewer() const
 Renderer::ViewerPtr Renderer::_getViewer()
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  Guard guard ( this );
   return _viewer;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the camera.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Renderer::CameraPtr Renderer::_getCamera() const
-{
-  USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
-  return ( ( true == _viewer.valid() ) ? _viewer->getCamera() : 0x0 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the camera.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Renderer::CameraPtr Renderer::_getCamera()
-{
-  USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
-  return ( ( true == _viewer.valid() ) ? _viewer->getCamera() : 0x0 );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the context.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Renderer::IContext::RefPtr Renderer::_getContext() const
+Usul::Interfaces::IUnknown::RefPtr Renderer::getOpenGLContext() const
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
+  Guard guard ( this );
   return _context;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Get the context.
+//  Set the context.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Renderer::IContext::RefPtr Renderer::_getContext()
+void Renderer::setOpenGLContext ( IUnknown::RefPtr context )
 {
   USUL_TRACE_SCOPE;
-  ReadLock lock ( this->mutex() );
-  return _context;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the scene.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Renderer::scene ( NodePtr node )
-{
-  USUL_TRACE_SCOPE;
-  ViewerPtr viewer ( this->_getViewer() );
-  if ( true == viewer.valid() )
-  {
-    viewer->setSceneData ( node.get() );
-  }
+  Guard guard ( this );
+  _context = context;
 }

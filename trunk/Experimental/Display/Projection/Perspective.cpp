@@ -31,7 +31,8 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Perspective, Perspective::BaseClass );
 
 Perspective::Perspective() : BaseClass(),
   _fov ( 45 ),
-  _aspect ( 1 ),
+  _width ( 1 ),
+  _height ( 1 ),
   _zNear ( 1 ),
   _zFar ( 10000 ),
   _matrix ( Matrix::getIdentity() ),
@@ -70,8 +71,10 @@ Usul::Interfaces::IUnknown * Perspective::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::SceneGraph::IPerspectiveProjection* > ( this );
   case Usul::Interfaces::SceneGraph::IProjectionMatrix::IID:
     return static_cast < Usul::Interfaces::SceneGraph::IProjectionMatrix* > ( this );
-  case Usul::Interfaces::SceneGraph::IViewportResize::IID:
-    return static_cast < Usul::Interfaces::SceneGraph::IViewportResize* > ( this );
+  case Usul::Interfaces::SceneGraph::IViewportGet::IID:
+    return static_cast < Usul::Interfaces::SceneGraph::IViewportGet* > ( this );
+  case Usul::Interfaces::SceneGraph::IViewportSet::IID:
+    return static_cast < Usul::Interfaces::SceneGraph::IViewportSet* > ( this );
   default:
     return 0x0;
   }
@@ -114,7 +117,7 @@ void Perspective::getPerspectiveProjection ( double &fov, double &aspect, double
   Guard guard ( this );
 
   fov = _fov;
-  aspect = _aspect;
+  aspect = _width / _height;
   zNear = _zNear;
   zFar = _zFar;
 }
@@ -132,7 +135,7 @@ void Perspective::setPerspectiveProjection ( double fov, double aspect, double z
   Guard guard ( this );
 
   _fov = fov;
-  _aspect = aspect;
+  _height = _width / aspect;
   _zNear = zNear;
   _zFar = zFar;
   _dirty = true;
@@ -152,7 +155,8 @@ void Perspective::_updateMatrix()
 
   if ( true == _dirty )
   {
-    _matrix.perspective ( _fov, _aspect, _zNear, _zFar );
+    const double aspect ( _width / _height );
+    _matrix.perspective ( _fov, aspect, _zNear, _zFar );
     _dirty = false;
   }
 }
@@ -160,18 +164,40 @@ void Perspective::_updateMatrix()
 
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Update the viewport.
+//  Set the viewport.
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void Perspective::resizeViewport ( unsigned int width, unsigned int height )
+void Perspective::setViewport ( double width, double height )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
-  if ( ( width > 0 ) && ( height > 0 ) )
+  if ( width > 0 )
   {
-    _aspect = ( static_cast < double > ( width ) / static_cast < double > ( height ) );
+    _width = width;
     _dirty = true;
   }
+
+  if ( height > 0 )
+  {
+    _height = height;
+    _dirty = true;
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//  Get the viewport.
+//
+/////////////////////////////////////////////////////////////////////////////
+
+void Perspective::getViewport ( double &width, double &height ) const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  width = _width;
+  height = _height;
 }

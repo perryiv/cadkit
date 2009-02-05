@@ -22,6 +22,7 @@
 #include "Usul/Interfaces/IAnimateMatrices.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/Qt/IWorkspace.h"
+#include "Usul/Interfaces/ISceneGraph.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/Functions.h"
 #include "Usul/Registry/Constants.h"
@@ -132,9 +133,20 @@ void ShowtimeDelegateComponent::createDefaultGUI ( Usul::Documents::Document *do
   if ( false == build.valid() )
     return;
 
+  // Get the node factory.
+  typedef Usul::Interfaces::SceneGraph::IFactory IFactory;
+  IFactory::QueryPtr factory ( Usul::Components::Manager::instance().getInterface ( IFactory::IID ) );
+  if ( false == factory.valid() )
+    return;
+
   // Build the scene and add it to the internal viewer.
   Usul::Documents::Document::Options options ( ( 0x0 != document ) ? document->options() : Usul::Documents::Document::Options() );
   osg::ref_ptr<osg::Node> node ( build->buildScene ( options, caller ) );
+
+  // Wrap the node.
+  Need to query for Usul::Interfaces::SceneGraph::OSG::IFactory and call "createWrapperObject ( node )"
+
+  IUnkown::RefPtr wrapper ( factory->createObject (
   internalViewer->modelAdd ( node );
 
   // See if we can animate the view-all operation.

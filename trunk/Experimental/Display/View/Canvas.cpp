@@ -396,19 +396,19 @@ const Usul::Interfaces::IDocument *Canvas::document() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Call this when you want the viewport to resize.
+//  Call this when the window has resized.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Canvas::resize ( unsigned int width, unsigned int height )
+void Canvas::resize ( double width, double height )
 {
   USUL_TRACE_SCOPE;
+  typedef Usul::Interfaces::SceneGraph::IViewportSet IViewportSet;
 
-  typedef Usul::Interfaces::SceneGraph::IViewportResize IViewportResize;
-  IViewportResize::QueryPtr v ( this->projection() );
+  IViewportSet::QueryPtr v ( this->projection() );
   if ( true == v.valid() )
   {
-    v->resizeViewport ( width, height );
+    v->setViewport ( width, height );
   }
 }
 

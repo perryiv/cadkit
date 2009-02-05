@@ -27,12 +27,14 @@ namespace SceneGraph {
 namespace OSG {
 
 
-class Renderer :  :
+class Renderer :
   public Usul::Base::Object,
   public Usul::Interfaces::IOpenGLContext,
   public Usul::Interfaces::SceneGraph::IPreRender,
   public Usul::Interfaces::SceneGraph::IRender,
-  public Usul::Interfaces::SceneGraph::IPostRender
+  public Usul::Interfaces::SceneGraph::IPostRender,
+  public Usul::Interfaces::SceneGraph::IOpenGLContextGet,
+  public Usul::Interfaces::SceneGraph::IOpenGLContextSet
 {
 public:
 
@@ -42,6 +44,8 @@ public:
   typedef Usul::Interfaces::SceneGraph::IPreRender IPreRender;
   typedef Usul::Interfaces::SceneGraph::IRender IRender;
   typedef Usul::Interfaces::SceneGraph::IPostRender IPostRender;
+  typedef Usul::Interfaces::SceneGraph::IOpenGLContextGet IOpenGLContextGet;
+  typedef Usul::Interfaces::SceneGraph::IOpenGLContextSet IOpenGLContextSet;
   typedef Usul::Interfaces::IOpenGLContext IContext;
   typedef osg::ref_ptr<osgUtil::SceneView> ViewerPtr;
 
@@ -52,7 +56,7 @@ public:
   USUL_DECLARE_REF_POINTERS ( Renderer );
 
   // Construction.
-  Renderer ( IUnknown::RefPtr context, IUnknown::RefPtr caller );
+  Renderer();
 
   // Usul::Interfaces::SceneGraph::IPostRender
   virtual void              postRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
@@ -63,18 +67,17 @@ public:
   // Usul::Interfaces::SceneGraph::IRender
   virtual void              render ( IUnknown::RefPtr projection, IUnknown::RefPtr scene );
 
-here
+  // Usul::Interfaces::SceneGraph::IOpenGLContextGet
+  virtual IUnknown::RefPtr  getOpenGLContext() const;
+
+  // Usul::Interfaces::SceneGraph::IOpenGLContextSet
+  virtual void              setOpenGLContext ( IUnknown::RefPtr );
 
 protected:
 
   // Use reference counting.
   virtual ~Renderer();
 
-  // Render the scene.
-  virtual void              _render();
-
-  IContext::RefPtr          _getContext();
-  const IContext::RefPtr    _getContext() const;
   ViewerPtr                 _getViewer();
   const ViewerPtr           _getViewer() const;
 
@@ -87,8 +90,7 @@ private:
   void                      _destroy();
 
   ViewerPtr _viewer;
-  IContext::QueryPtr _context;
-  IUnknown::RefPtr _caller;
+  IUnknown::RefPtr _context;
 };
 
 

@@ -163,6 +163,7 @@ public:
   typedef IShadeModel::Mode                    ShadeModel;
   typedef Usul::Interfaces::IRotationCenterFloat  IRotationCenter;
   typedef IRotationCenter::Vector                 Vector;
+  typedef Usul::Interfaces::IUnknown              IUnknown
 
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;
@@ -499,7 +500,7 @@ protected:
   virtual void                  preMultiply ( const Matrix &M );
 
   /// Usul::Interfaces::IProgressBarFactory
-  virtual Usul::Interfaces::IUnknown*   createProgressBar ( bool waitIfNotGuiThread = false );
+  virtual IUnknown::RefPtr      createProgressBar ( bool waitIfNotGuiThread = false );
 
   // Get the wand's position (VRV::Interfaces::IWandStateFloat).
   virtual void                  wandPosition ( Usul::Math::Vec3d &p ) const;

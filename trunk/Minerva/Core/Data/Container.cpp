@@ -147,6 +147,8 @@ Usul::Interfaces::IUnknown* Container::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ITileVectorData*> ( this );
   case Minerva::Interfaces::IWithinExtents::IID:
     return static_cast<Minerva::Interfaces::IWithinExtents*> ( this );
+  case Minerva::Interfaces::IIntersectNotify::IID:
+    return static_cast<Minerva::Interfaces::IIntersectNotify*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   };
@@ -928,4 +930,34 @@ Container *Container::container()
 {
   USUL_TRACE_SCOPE;
   return this;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call to notify of an intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Container::intersectNotify ( double x, double y, double z, 
+                                  double lon, double lat, double elev, 
+                                  IUnknown::RefPtr tile, 
+                                  IUnknown::RefPtr body, 
+                                  IUnknown::RefPtr caller )
+{
+  USUL_TRACE_SCOPE;
+  typedef Minerva::Interfaces::IIntersectNotify IIntersectNotify;
+
+  // Get a copy of the layers.
+  Unknowns layers ( Usul::Threads::Safe::get ( this->mutex(), _layers ) );
+
+  // Loop through the layers.
+  for ( Unknowns::iterator i = layers.begin(); i != layers.end(); ++i )
+  {
+    IIntersectNotify::QueryPtr notify ( i->get() );
+    if ( true == notify.valid() )
+    {
+      notify->intersectNotify ( x, y, z, lon, lat, elev, tile, body, caller );
+    }
+  }
 }

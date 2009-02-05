@@ -94,6 +94,8 @@ Usul::Interfaces::IUnknown* DataObject::queryInterface ( unsigned long iid )
     return static_cast<Minerva::Interfaces::IDataObject*> ( this );
   case Minerva::Interfaces::IWithinExtents::IID:
     return static_cast<Minerva::Interfaces::IWithinExtents*> ( this );
+  case Minerva::Interfaces::IIntersectNotify::IID:
+    return static_cast<Minerva::Interfaces::IIntersectNotify*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -775,4 +777,34 @@ Usul::Interfaces::IUnknown::RefPtr DataObject::getItemsWithinExtents ( double mi
 
   // Return the answer.
   return IUnknown::QueryPtr ( ( false == answer->empty() ) ? answer.get() : 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call to notify of an intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::intersectNotify ( double x, double y, double z, 
+                                   double lon, double lat, double elev, 
+                                   IUnknown::RefPtr tile, 
+                                   IUnknown::RefPtr body, 
+                                   IUnknown::RefPtr caller )
+{
+  USUL_TRACE_SCOPE;
+  typedef Minerva::Interfaces::IIntersectNotify IIntersectNotify;
+
+  // Get a copy of the geometries.
+  Geometries geometries ( Usul::Threads::Safe::get ( this->mutex(), _geometries ) );
+
+  // Loop through the geometries.
+  for ( Geometries::iterator i = geometries.begin(); i != geometries.end(); ++i )
+  {
+    IIntersectNotify::QueryPtr notify ( i->get() );
+    if ( true == notify.valid() )
+    {
+      notify->intersectNotify ( x, y, z, lon, lat, elev, tile, body, caller );
+    }
+  }
 }

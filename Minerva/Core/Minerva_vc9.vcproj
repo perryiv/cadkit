@@ -955,6 +955,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IIntersectNotify.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\ILineLayer.h"
 					>
 				</File>

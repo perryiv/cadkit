@@ -133,7 +133,7 @@ GDALReadImageComponent::ImagePtr GDALReadImageComponent::readImageFile ( const s
   
 	// Open the file.
 	GDALDataset *data ( static_cast<GDALDataset*> ( ::GDALOpen ( filename.c_str(), GA_ReadOnly ) ) );
-  
+
 	// Return if no data.
   if ( 0x0 == data )
     return 0x0;

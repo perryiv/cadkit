@@ -1747,10 +1747,10 @@ const osg::Group* Application::_sceneRoot() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown* Application::createProgressBar ( bool waitIfNotGuiThread )
+Usul::Interfaces::IUnknown::RefPtr Application::createProgressBar ( bool waitIfNotGuiThread )
 {
   Guard guard ( this->mutex() );
-  return _progressBars->append();
+  return Usul::Interfaces::IUnknown::RefPtr ( _progressBars->append() );
 }
 
 

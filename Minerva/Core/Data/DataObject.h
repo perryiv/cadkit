@@ -24,6 +24,7 @@
 #include "Minerva/Core/Data/Feature.h"
 #include "Minerva/Interfaces/IDataObject.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
+#include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/IWithinExtents.h"
 
 #include "Usul/Pointers/Pointers.h"
@@ -69,13 +70,15 @@ public:
 
   
 
-class MINERVA_EXPORT DataObject : public Minerva::Core::Data::Feature,
-                                  public Usul::Interfaces::IBuildScene,
-                                  public Usul::Interfaces::IBooleanState,
-                                  public Minerva::Interfaces::IDataObject,
-                                  public Minerva::Interfaces::IElevationChangedListener,
-                                  public Usul::Interfaces::IUpdateListener,
-                                  public Minerva::Interfaces::IWithinExtents
+class MINERVA_EXPORT DataObject :
+  public Minerva::Core::Data::Feature,
+  public Usul::Interfaces::IBuildScene,
+  public Usul::Interfaces::IBooleanState,
+  public Minerva::Interfaces::IDataObject,
+  public Minerva::Interfaces::IElevationChangedListener,
+  public Usul::Interfaces::IUpdateListener,
+  public Minerva::Interfaces::IWithinExtents,
+  public Minerva::Interfaces::IIntersectNotify
 {
 public:
   typedef Minerva::Core::Data::Feature        BaseClass;
@@ -136,6 +139,9 @@ public:
 
   /// Get the geometries.
   Geometries            geometries() const;
+
+  /// Called when there is an intersection.
+  virtual void          intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller );
 
   /// Get/Set the label
   void                  label ( const std::string& label );

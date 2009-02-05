@@ -17,6 +17,7 @@
 #include "Minerva/Interfaces/IContainer.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/IElevationChangedListener.h"
+#include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/IRemoveLayer.h"
 #include "Minerva/Interfaces/ITilesChangedListener.h"
 #include "Minerva/Interfaces/IWithinExtents.h"
@@ -43,19 +44,21 @@ class Visitor;
 
 namespace Data {
 
-class MINERVA_EXPORT Container : public Minerva::Core::Data::Feature,
-                                 public Usul::Interfaces::IBuildScene,
-                                 public Usul::Interfaces::ILayer,
-                                 public Usul::Interfaces::IUpdateListener,
-                                 public Usul::Interfaces::IBooleanState,
-                                 public Minerva::Interfaces::IDirtyScene,
-                                 public Minerva::Interfaces::IAddLayer,
-                                 public Minerva::Interfaces::IContainer,
-                                 public Minerva::Interfaces::IRemoveLayer,
-                                 public Minerva::Interfaces::IElevationChangedListener,
-                                 public Minerva::Interfaces::ITilesChangedListener,
-                                 public Usul::Interfaces::ITileVectorData,
-                                 public Minerva::Interfaces::IWithinExtents
+class MINERVA_EXPORT Container : 
+  public Minerva::Core::Data::Feature,
+  public Usul::Interfaces::IBuildScene,
+  public Usul::Interfaces::ILayer,
+  public Usul::Interfaces::IUpdateListener,
+  public Usul::Interfaces::IBooleanState,
+  public Minerva::Interfaces::IDirtyScene,
+  public Minerva::Interfaces::IAddLayer,
+  public Minerva::Interfaces::IContainer,
+  public Minerva::Interfaces::IRemoveLayer,
+  public Minerva::Interfaces::IElevationChangedListener,
+  public Minerva::Interfaces::ITilesChangedListener,
+  public Usul::Interfaces::ITileVectorData,
+  public Minerva::Interfaces::IWithinExtents,
+  public Minerva::Interfaces::IIntersectNotify
 {
 public:
 
@@ -126,6 +129,9 @@ public:
 
   /// Get the guid (ILayer).
   virtual std::string         guid() const;
+
+  /// Call this when there is an intersection.
+  virtual void                intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller );
 
   /// See if the given level falls within this layer's range of levels.
   bool                        isInLevelRange ( unsigned int level ) const;

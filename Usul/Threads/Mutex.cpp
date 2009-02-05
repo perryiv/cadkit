@@ -9,9 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Mutex class.  Should this file be split into 2 implementation files?  MutexWin32.cpp and MutexPThreads.cpp?
-//  For critical section objects see http://msdn.microsoft.com/en-us/library/ms682530.aspx
-//  For pthreads see https://computing.llnl.gov/tutorials/pthreads/
+//  Mutex class.
+//
+//  Should this file be split into 2 implementation files?
+//  MutexWin32.cpp and MutexPThreads.cpp?
+//
+//  For critical section objects see:
+//  http://msdn.microsoft.com/en-us/library/ms682530.aspx
+//
+//  For pthreads see:
+//  https://computing.llnl.gov/tutorials/pthreads/
 //
 ///////////////////////////////////////////////////////////////////////////////
 

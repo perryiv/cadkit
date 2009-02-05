@@ -55,7 +55,7 @@ public:
   enum { DEFAULT_NUM_THREADS = 10 };
 
   // Constructor
-  Pool ( unsigned int numThreads = Pool::DEFAULT_NUM_THREADS, bool lazyStart = true );
+  Pool ( const std::string &name, unsigned int numThreads = Pool::DEFAULT_NUM_THREADS, bool lazyStart = true );
 
   // Add a task.
   TaskHandle              addTask ( int priority, Task *task );

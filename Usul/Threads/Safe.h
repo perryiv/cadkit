@@ -30,13 +30,21 @@ namespace Safe {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#if 0
+template < class MutexType, class T > T get ( MutexType &mutex, const T &t, bool copyFirst = false )
+{
+  typedef typename Usul::Threads::MutexTraits<MutexType>::ReadLock Lock;
+  Lock lock ( mutex );
+  return ( ( true == copyFirst ) ? T ( t ) : t );
+}
+#else
 template < class MutexType, class T > T get ( MutexType &mutex, const T &t )
 {
   typedef typename Usul::Threads::MutexTraits<MutexType>::ReadLock Lock;
   Lock lock ( mutex );
   return t;
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -49,6 +57,20 @@ template < class MutexType, class T1, class T2 > void set ( MutexType &mutex, co
   typedef typename Usul::Threads::MutexTraits<MutexType>::WriteLock Lock;
   Lock lock ( mutex );
   to = from;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convenience function to check if a smart-pointer is valid.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class MutexType, class T > bool valid ( MutexType &mutex, const T &ptr )
+{
+  typedef typename Usul::Threads::MutexTraits<MutexType>::WriteLock Lock;
+  Lock lock ( mutex );
+  return ptr.valid();
 }
 
 

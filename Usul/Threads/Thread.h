@@ -134,6 +134,7 @@ private:
   void                    _setResult ( Result );
   void                    _setState ( State );
   void                    _setSystemThreadId ( unsigned long id );
+  void                    _setSystemThreadName();
 
   // Data members.
   State _state;

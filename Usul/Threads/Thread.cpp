@@ -28,6 +28,7 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/ThreadId.h"
+#include "Usul/Threads/ThreadName.h"
 #include "Usul/Trace/Trace.h"
 
 #include <stdexcept>
@@ -296,7 +297,7 @@ void Thread::start()
 
 #ifdef _MSC_VER
 
-namespace Helper
+namespace Usul { namespace Threads { namespace Helper
 {
   int handleStructuredException ( DWORD code )
   {
@@ -306,7 +307,7 @@ namespace Helper
       ( ( false == message.empty() ) ? message : "" ) ) << std::endl;
     return EXCEPTION_EXECUTE_HANDLER;
   }
-}
+} } }
 
 #endif
 
@@ -335,7 +336,7 @@ void Thread::_execute()
       this->_executeThread();
     }
 
-    __except ( Helper::handleStructuredException ( ::GetExceptionCode() ) )
+    __except ( Usul::Threads::Helper::handleStructuredException ( ::GetExceptionCode() ) )
     {
       return;
     }
@@ -360,6 +361,9 @@ void Thread::_executeThread() throw()
 
   USUL_TRY_BLOCK
   {
+    // Name this thread.
+    this->_setSystemThreadName();
+
     // See if we've been cancelled.
     if ( Thread::CANCELLED == this->result() )
     {
@@ -674,6 +678,23 @@ void Thread::_setSystemThreadId ( unsigned long id )
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   _systemId = id;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the system thread name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Thread::_setSystemThreadName()
+{
+  USUL_TRACE_SCOPE;
+  const std::string n ( this->name() );
+  if ( false == n.empty() )
+  {
+    Usul::Threads::setSystemThreadName ( this->name(), Usul::Threads::currentThreadId() );
+  }
 }
 
 

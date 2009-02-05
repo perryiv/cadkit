@@ -71,7 +71,7 @@ public:
   //
   /////////////////////////////////////////////////////////////////////////////
 
-  bool empty()
+  bool empty() const
   {
     guard_type guard ( *_mutex );
     return _set.empty();

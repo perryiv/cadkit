@@ -46,24 +46,28 @@ USUL_IMPLEMENT_TYPE_ID ( Pool );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Pool::Pool ( unsigned int numThreads, bool lazyStart ) : BaseClass(),
+Pool::Pool ( const std::string &n, unsigned int numThreads, bool lazyStart ) : BaseClass(),
   _pool       (),
   _queue      (),
   _executing  (),
   _nextTaskId ( 0 ),
-  _sleep      ( 100 ),
+  _sleep      ( 10 ), // Was 100. Rational Quantify said it was a bottleneck.
   _runThreads ( true ),
   _started    ( false ),
   _log        ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 
+  // Set the name.
+  this->name ( n );
+
   // Populate pool. The threads are not started until the first task is added.
   _pool.reserve ( numThreads );
   for ( unsigned int i = 0; i < numThreads; ++i )
   {
     // Make thread.
-    const std::string name ( Usul::Strings::format ( "Thread_Pool_", this ) );
+    const std::string base ( ( true == n.empty() ) ? Usul::Strings::format ( "Usul::Thread::Pool ", this ) : n );
+    const std::string name ( Usul::Strings::format ( base, ' ', i ) );
     Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create ( name ) );
 
     // Add to our pool.

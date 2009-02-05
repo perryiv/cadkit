@@ -10,6 +10,8 @@
 
 #include "Helios/Qt/Core/ProgressBarDock.h"
 
+#include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Functions/SafeCall.h"
 #include "Usul/System/Sleep.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/Safe.h"
@@ -35,7 +37,8 @@ USUL_IMPLEMENT_TYPE_ID ( ProgressBarDock::ProgressBar );
 ProgressBarDock::ProgressBarDock() : BaseClass(),
   _scrollArea ( 0x0 ),
   _layout ( 0x0 ),
-  _progressBars()
+  _progressBars(),
+  _canCreate ( true )
 {
 }
 
@@ -48,9 +51,52 @@ ProgressBarDock::ProgressBarDock() : BaseClass(),
 
 ProgressBarDock::~ProgressBarDock()
 {
-  if ( 0x0 != _scrollArea )
-    delete _scrollArea;
-  _scrollArea = 0x0;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &ProgressBarDock::_destroy ), "2999505269" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ProgressBarDock::_destroy()
+{
+  // No more progress bars allowed.
+  {
+    Guard guard ( this );
+    _canCreate = false;
+  }
+
+  // Clean up the scroll area.
+  QScrollArea *sa ( 0x0 );
+  {
+    Guard guard ( this );
+    sa = _scrollArea;
+    _scrollArea = 0x0;
+  }
+  delete sa;
+
+  // Copy the progress bars proxy classes and clear the member.
+  ProgressBars bars;
+  {
+    Guard guard ( this );
+    bars = _progressBars;
+    _progressBars.clear();
+  }
+
+  // Tell all the pending progress-bar proxy classes that the real 
+  // progress bars, as well as their dock-bar, are going away.
+  while ( false == bars.empty() )
+  {
+    ProgressBars::value_type bar ( bars.front() );
+    if ( true == bar.valid() )
+    {
+      bar->setProgressBar ( 0x0 );
+    }
+    bars.pop_front();
+  }
 }
 
 
@@ -185,7 +231,7 @@ void ProgressBarDock::ProgressBar::operator() ( QVBoxLayout *vLayout )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ProgressBarDock::ProgressBar::progressBar ( QProgressBar * bar )
+void ProgressBarDock::ProgressBar::setProgressBar ( QProgressBar * bar )
 {
   Guard guard ( this );
   _progressBar = bar;
@@ -207,17 +253,25 @@ ProgressBarDock::ProgressBar::~ProgressBar()
   //  _parentLayout->removeItem ( _layout );
 
   // Defer this delete for the main thread to take care of.
-  if ( 0x0 != _progressBar )
   {
-    _progressBar->deleteLater();
+    Guard guard ( this );
+    QProgressBar *bar ( _progressBar );
     _progressBar = 0x0;
+    if ( 0x0 != bar )
+    {
+      bar->deleteLater();
+    }
   }
 
-  if ( 0x0 != _label )
   {
-    this->setStatusBarText ( "", true );
-    _label->deleteLater();
+    Guard guard ( this );
+    QLabel *label ( _label );
     _label = 0x0;
+    if ( 0x0 != label )
+    {
+      QMetaObject::invokeMethod ( label, "setText", Qt::AutoConnection, Q_ARG ( QString, "" ) );
+      label->deleteLater();
+    }
   }
 }
 
@@ -320,8 +374,13 @@ void ProgressBarDock::ProgressBar::setStatusBarText ( const std::string &text, b
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ( bool waitIfNotGuiThread )
+Usul::Interfaces::IUnknown::RefPtr ProgressBarDock::createProgressBar ( bool waitIfNotGuiThread )
 {
+  if ( false == Usul::Threads::Safe::get ( this->mutex(), _canCreate ) )
+  {
+    return Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
+  }
+
   ProgressBar::RefPtr progress ( new ProgressBar );
 
   // Progress bars can only be created in the gui thread.
@@ -340,13 +399,12 @@ Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ( bool waitIfNot
     {
       while ( false == progress->isCreated() )
       {
-        Usul::System::Sleep::milliseconds ( 1000 );
+        Usul::System::Sleep::milliseconds ( 100 );
       }
     }
 
-    // Return interface. Must release or else the progress bar may die when 
-    // the smart-pointer at the top of this function goes out of scope.
-    return progress.release()->queryInterface ( Usul::Interfaces::IUnknown::IID );
+    // Return as unknown interface.
+    return Usul::Interfaces::IUnknown::QueryPtr ( progress );
   }
 
   // We're in the gui thread.
@@ -356,9 +414,7 @@ Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ( bool waitIfNot
     if ( 0x0 != layout )
       (*progress) ( layout );
 
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( progress );
-    progress = 0x0;
-    return unknown.release();
+    return Usul::Interfaces::IUnknown::QueryPtr ( progress );
   }
 }
 
@@ -371,6 +427,11 @@ Usul::Interfaces::IUnknown * ProgressBarDock::createProgressBar ( bool waitIfNot
 
 void ProgressBarDock::_updateProgressBars()
 {
+  if ( false == Usul::Threads::Safe::get ( this->mutex(), _canCreate ) )
+  {
+    return;
+  }
+
   ProgressBar::RefPtr first ( 0x0 );
   {
     Guard guard ( this );

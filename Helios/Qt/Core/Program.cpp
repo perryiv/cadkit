@@ -231,7 +231,7 @@ void Program::run ( int argc, char **argv,
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
   
   // Make job manager.
-  Usul::Jobs::Manager::init ( poolSize, true );
+  Usul::Jobs::Manager::init ( Usul::Strings::format ( program, " Job Manager Singleton" ), poolSize, true );
 
   // Set splash image.
   Usul::App::Application::instance().splashImage ( splash );

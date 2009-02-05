@@ -244,16 +244,31 @@ struct IPerspectiveProjection : public IUnknown
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Viewport resizing.
+//  Set the viewport.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-struct IViewportResize : public IUnknown
+struct IViewportSet : public IUnknown
 {
-  USUL_DECLARE_QUERY_POINTERS ( IViewportResize );
+  USUL_DECLARE_QUERY_POINTERS ( IViewportSet );
   enum { IID = 2282351597u };
 
-  virtual void              resizeViewport ( unsigned int width, unsigned int height ) = 0;
+  virtual void              setViewport ( double width, double height ) = 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the viewport.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct IViewportGet : public IUnknown
+{
+  USUL_DECLARE_QUERY_POINTERS ( IViewportGet );
+  enum { IID = 4275607030u };
+
+  virtual void              getViewport ( double &width, double &height ) const = 0;
 };
 
 
@@ -299,6 +314,36 @@ struct IPostRender : public IUnknown
   enum { IID = 3994375470u };
 
   virtual void              postRender ( IUnknown::RefPtr projection, IUnknown::RefPtr scene ) = 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the OpenGL context.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct IOpenGLContextGet : public IUnknown
+{
+  USUL_DECLARE_QUERY_POINTERS ( IOpenGLContextGet );
+  enum { IID = 4107159078u };
+
+  virtual IUnknown::RefPtr  getOpenGLContext() const = 0;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the OpenGL context.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct IOpenGLContextSet : public IUnknown
+{
+  USUL_DECLARE_QUERY_POINTERS ( IOpenGLContextGet );
+  enum { IID = 2890418586u };
+
+  virtual void              setOpenGLContext ( IUnknown::RefPtr ) = 0;
 };
 
 

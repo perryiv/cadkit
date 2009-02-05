@@ -36,6 +36,7 @@
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
 #include "Minerva/Interfaces/IDataObject.h"
+#include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/IRefreshData.h"
 
 #include "MenuKit/Button.h"
@@ -98,6 +99,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
 using namespace Minerva::Document;
 
@@ -2366,16 +2368,40 @@ void MinervaDocument::_resizePoints ( double factor )
 void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller )
 {
   Body::RefPtr body ( this->activeBody() );
+  if ( false == body.valid() )
+    return;
 
-  // Set the intersection point.
-  if ( body.valid() )
+  // Get the point in lon-lat-elev.
+  osg::Vec3 world ( hit.getWorldIntersectPoint() );
+  Usul::Math::Vec3d point ( world[0], world[1], world[2] );
+  Usul::Math::Vec3d latLonPoint;
+  body->convertFromPlanet ( point, latLonPoint );
+
+  // Set the heads-up display.
+  _hud.position ( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+
+  // Notify the deepest tile.
+  typedef osg::ref_ptr<osg::Node> NodePtr;
+  typedef std::vector<NodePtr> Nodes;
+  Nodes path ( hit.nodePath.rbegin(), hit.nodePath.rend() );
+  IUnknown::RefPtr unknown ( caller );
+  for ( Nodes::iterator i = path.begin(); i != path.end(); ++i )
   {
-    osg::Vec3 world ( hit.getWorldIntersectPoint() );
-
-    Usul::Math::Vec3d point ( world[0], world[1], world[2] );
-    Usul::Math::Vec3d latLonPoint;
-    body->convertFromPlanet( point, latLonPoint );
-    _hud.position( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+    typedef Minerva::Core::TileEngine::Tile Tile;
+    Tile::RefPtr tile ( dynamic_cast < Tile * > ( i->get() ) );
+    if ( true == tile.valid() )
+    {
+      Minerva::Interfaces::IIntersectNotify::QueryPtr notify ( tile ); 
+      if ( true == notify.valid() )
+      {
+        notify->intersectNotify ( point[0], point[1], point[2], 
+                                  latLonPoint[1], latLonPoint[0], latLonPoint[2], 
+                                  Usul::Interfaces::IUnknown::QueryPtr ( this ),
+                                  Usul::Interfaces::IUnknown::QueryPtr ( body ),
+                                  unknown );
+        break;
+      }
+    }
   }
 }
 
@@ -2526,7 +2552,10 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
     Usul::Registry::Node &node ( Reg::instance()[Sections::DOCUMENT_SETTINGS][type]["job_manager_thread_pool_size"] );
     const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
 
-    _manager = new Usul::Jobs::Manager ( poolSize, true );
+    const std::string name ( Usul::Strings::format ( "Minerva ", this ) );
+    std::cout << Usul::Strings::format ( name, " thread pool size = ", poolSize, '\n' ) << std::flush;
+
+    _manager = new Usul::Jobs::Manager ( name, poolSize, true );
     _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
     _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }

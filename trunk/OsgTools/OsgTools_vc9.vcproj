@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(ProjectDir)\Widgets\Images $(CADKIT_BIN_DIR)\icons /f /i /k /y /c&#x0D;&#x0A;"
+				CommandLine="xcopy $(ProjectDir)\Widgets\Images $(CADKIT_BIN_DIR)\icons /f /i /k /y /c /d"
 			/>
 		</Configuration>
 		<Configuration
@@ -209,7 +209,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(ProjectDir)\Widgets\Images $(CADKIT_BIN_DIR)\icons /f /i /k /y /c&#x0D;&#x0A;"
+				CommandLine="xcopy $(ProjectDir)\Widgets\Images $(CADKIT_BIN_DIR)\icons /f /i /k /y /c /d"
 			/>
 		</Configuration>
 	</Configurations>

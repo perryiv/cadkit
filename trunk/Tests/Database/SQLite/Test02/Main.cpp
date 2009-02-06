@@ -36,6 +36,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Typedefs for this file.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef CadKit::Database::SQLite::Connection Connection;
+typedef CadKit::Database::SQLite::Result Result;
+typedef CadKit::Database::SQLite::Blob Blob;
+typedef Usul::Convert::Type<double,std::string> DoubleToString;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Check the boolean expression.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,6 +61,60 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  The blob data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+struct MyBlob
+{
+  typedef std::vector<double> Numbers;
+  MyBlob ( unsigned int size = 0 ) : _numbers ( size, 0 )
+  {
+    for ( unsigned int i = 0; i < _numbers.size(); ++i )
+    {
+      _numbers.at ( i ) = i;
+    }
+  }
+  ~MyBlob()
+  {
+  }
+  MyBlob &operator = ( const MyBlob &right )
+  {
+    _numbers = right._numbers;
+    return *this;
+  }
+  bool operator == ( const MyBlob &right ) const
+  {
+    return ( _numbers == right._numbers );
+  }
+private:
+  MyBlob ( const MyBlob & );
+  Numbers _numbers;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Populate a blob from the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &operator >> ( Result &result, MyBlob &blob )
+{
+  Blob data;
+  result >> data;
+  CHECK_EXPRESSION ( false == data.empty() );
+  CHECK_EXPRESSION ( sizeof ( MyBlob ) == ( data.size() * sizeof ( Blob::value_type ) ) );
+  const MyBlob *temp ( reinterpret_cast < MyBlob * > ( &data[0] ) );
+  CHECK_EXPRESSION ( false == ( (*temp) == blob ) );
+  blob = (*temp);
+  CHECK_EXPRESSION ( (*temp) == blob );
+  return result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Run a test.
 //  See: http://www.gaia-gis.it/spatialite/spatialite-2.2_tutorial.html
 //
@@ -56,11 +122,6 @@
 
 void _test()
 {
-  typedef CadKit::Database::SQLite::Connection Connection;
-  typedef CadKit::Database::SQLite::Result Result;
-  typedef CadKit::Database::SQLite::Blob Blob;
-  typedef Usul::Convert::Type<double,std::string> DoubleToString;
-
   const std::string file ( "test.sqlite" );
   Usul::Scope::RemoveFile removeFile ( file );
   Usul::File::remove ( file );
@@ -88,30 +149,6 @@ void _test()
   // See: http://www.sqlite.org/cvstrac/wiki?p=PerformanceTuning
   db->execute ( "begin transaction" );
 
-  // Used as the blob data.
-  struct MyBlob
-  {
-    typedef std::vector<double> Numbers;
-    MyBlob ( unsigned int size ) : _numbers ( size, 0 )
-    {
-      for ( unsigned int i = 0; i < _numbers.size(); ++i )
-      {
-        _numbers.at ( i ) = i;
-      }
-    }
-    ~MyBlob()
-    {
-    }
-    bool operator == ( const MyBlob &right ) const
-    {
-      return ( _numbers == right._numbers );
-    }
-  private:
-    MyBlob ( const MyBlob & );
-    MyBlob &operator = ( const MyBlob & );
-    Numbers _numbers;
-  };
-
   // Make blob data.
   const MyBlob blob ( 10 );
 
@@ -136,7 +173,7 @@ void _test()
     }
 
     // Execute the statement.
-    db->execute ( sql, Usul::Strings::format ( &blob ), blob );
+    db->execute ( sql, Usul::Strings::format ( "Blob ", i ), blob );
   }
 
   db->execute ( "commit transaction" );
@@ -150,8 +187,11 @@ void _test()
   std::cout << "Time for select statement = " << ( Usul::System::Clock::milliseconds() - start ) << " milliseconds" << std::endl;
 
   start = Usul::System::Clock::milliseconds();
-  Result::RefPtr result ( db->execute ( Usul::Strings::format ( "select TextData, BinaryData from ", table, " where MBRContains ( BuildMBR ( 30, 300, 70, 700 ), Geometry )" ) ) );
-  std::cout << "Time for select statement = " << ( Usul::System::Clock::milliseconds() - start ) << " milliseconds" << std::endl;
+  Result::RefPtr result ( db->execute ( Usul::Strings::format ( "select TextData, BinaryData from ", table, " where MBRContains ( BuildMBR ( 20, 200, 60, 600 ), Geometry )" ) ) );
+  Usul::Types::Uint64 duration ( Usul::System::Clock::milliseconds() - start );
+
+  // Count the rows.
+  unsigned int rows ( 0 );
 
   // Make sure data is accurate.
   if ( true == result.valid() )
@@ -160,14 +200,16 @@ void _test()
     while ( true == result->prepareNextRow() )
     {
       std::string text;
-      Blob data;
+      MyBlob data;
       *result >> text >> data;
-      CHECK_EXPRESSION ( false == data.empty() );
-      CHECK_EXPRESSION ( sizeof ( MyBlob ) == ( data.size() * sizeof ( Blob::value_type ) ) );
-      const MyBlob *temp ( reinterpret_cast < MyBlob * > ( &data[0] ) );
-      CHECK_EXPRESSION ( (*temp) == blob );
+      std::cout << "Text = '" << text << "'" << std::endl;
+      CHECK_EXPRESSION ( data == blob );
+      ++rows;
     }
   }
+
+  // Report the number of rows.
+  std::cout << "Selected " << rows << " rows in " << duration << " milliseconds" << std::endl;
 
   // Done with this.
   db = 0x0;

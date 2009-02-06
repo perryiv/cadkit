@@ -217,6 +217,14 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\Binder.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Binder.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Connection.cpp"
 				>
 			</File>
@@ -242,6 +250,10 @@
 			</File>
 			<File
 				RelativePath=".\Transaction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Types.h"
 				>
 			</File>
 		</Filter>

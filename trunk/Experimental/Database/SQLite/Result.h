@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Arizona State University
+//  Copyright (c) 2009, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +17,7 @@
 #define _SQL_LITE_WRAP_RESULTS_H_
 
 #include "Database/SQLite/Export.h"
+#include "Database/SQLite/Types.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Types/Types.h"
@@ -40,7 +40,6 @@ public:
 
   /// Typedefs.
   typedef Usul::Base::Object BaseClass;
-  typedef std::vector<unsigned char> Blob;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Result );

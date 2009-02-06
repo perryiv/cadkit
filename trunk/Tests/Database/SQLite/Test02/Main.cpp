@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Arizona State University
+//  Copyright (c) 2009, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -30,6 +29,23 @@
 
 #include <iostream>
 
+#ifdef _MSC_VER
+# pragma warning ( disable : 4822 ) // "local class member function does not have a body".
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Check the boolean expression.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#define CHECK_EXPRESSION(expression)\
+  if ( false == ( expression ) )\
+  {\
+    throw std::runtime_error ( Usul::Strings::format ( "Error 2543096340: Line: ", __LINE__, ", Expression: ", #expression ) );\
+  }
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -42,6 +58,7 @@ void _test()
 {
   typedef CadKit::Database::SQLite::Connection Connection;
   typedef CadKit::Database::SQLite::Result Result;
+  typedef CadKit::Database::SQLite::Blob Blob;
   typedef Usul::Convert::Type<double,std::string> DoubleToString;
 
   const std::string file ( "test.sqlite" );
@@ -52,8 +69,16 @@ void _test()
   const std::string table ( "SpatialTable" );
   const std::string column0 ( "Indices" );
   const std::string column1 ( "Geometry" );
+  const std::string column2 ( "TextData" );
+  const std::string column3 ( "BinaryData" );
 
-  std::string sql ( Usul::Strings::format ( "create table ", table, " ( ", column0, " integer primary key autoincrement, ", column1, " blob not null )" ) );
+  std::string sql ( Usul::Strings::format ( 
+    "create table ", table, " ( ", 
+    column0, " integer primary key autoincrement, ", 
+    column1, " blob not null, ", 
+    column2, " text not null, ", 
+    column3, " blob not null )" ) );
+
   db->execute ( sql );
 
   Usul::Policies::TimeBased update ( 1000 );
@@ -63,6 +88,33 @@ void _test()
   // See: http://www.sqlite.org/cvstrac/wiki?p=PerformanceTuning
   db->execute ( "begin transaction" );
 
+  // Used as the blob data.
+  struct MyBlob
+  {
+    typedef std::vector<double> Numbers;
+    MyBlob ( unsigned int size ) : _numbers ( size, 0 )
+    {
+      for ( unsigned int i = 0; i < _numbers.size(); ++i )
+      {
+        _numbers.at ( i ) = i;
+      }
+    }
+    ~MyBlob()
+    {
+    }
+    bool operator == ( const MyBlob &right ) const
+    {
+      return ( _numbers == right._numbers );
+    }
+  private:
+    MyBlob ( const MyBlob & );
+    MyBlob &operator = ( const MyBlob & );
+    Numbers _numbers;
+  };
+
+  // Make blob data.
+  const MyBlob blob ( 10 );
+
   for ( unsigned int i = 0; i < total; ++i )
   {
     // Convert to string this way because it does not like scientific notation.
@@ -70,7 +122,12 @@ void _test()
     const std::string y ( DoubleToString::convert ( i * 10.0 ) );
 
     // Make sql statement.
-    sql = Usul::Strings::format ( "insert into ", table, " ( ", column1, " ) values ( GeomFromText ( 'POINT ( ", x, ' ', y, " )' ) )" );
+    // See http://www.sqlite.org/cvstrac/wiki?p=BlobExample
+    sql = Usul::Strings::format ( 
+      "insert into ", table, 
+      " ( ", column1, ", ", column2, ", ", column3, " ) values (",
+      " GeomFromText ( 'POINT ( ", x, ' ', y, " )' ),", 
+      " ?, ? )" );
 
     // Feedback.
     if ( true == update() )
@@ -79,7 +136,7 @@ void _test()
     }
 
     // Execute the statement.
-    db->execute ( sql );
+    db->execute ( sql, Usul::Strings::format ( &blob ), blob );
   }
 
   db->execute ( "commit transaction" );
@@ -92,6 +149,27 @@ void _test()
   Helper::printResult ( db->execute ( Usul::Strings::format ( "select AsText ( Geometry ) from ", table, " where MBRContains ( BuildMBR ( 30, 300, 70, 700 ), Geometry )" ) ) );
   std::cout << "Time for select statement = " << ( Usul::System::Clock::milliseconds() - start ) << " milliseconds" << std::endl;
 
+  start = Usul::System::Clock::milliseconds();
+  Result::RefPtr result ( db->execute ( Usul::Strings::format ( "select TextData, BinaryData from ", table, " where MBRContains ( BuildMBR ( 30, 300, 70, 700 ), Geometry )" ) ) );
+  std::cout << "Time for select statement = " << ( Usul::System::Clock::milliseconds() - start ) << " milliseconds" << std::endl;
+
+  // Make sure data is accurate.
+  if ( true == result.valid() )
+  {
+    CHECK_EXPRESSION ( 2 == result->numColumns() );
+    while ( true == result->prepareNextRow() )
+    {
+      std::string text;
+      Blob data;
+      *result >> text >> data;
+      CHECK_EXPRESSION ( false == data.empty() );
+      CHECK_EXPRESSION ( sizeof ( MyBlob ) == ( data.size() * sizeof ( Blob::value_type ) ) );
+      const MyBlob *temp ( reinterpret_cast < MyBlob * > ( &data[0] ) );
+      CHECK_EXPRESSION ( (*temp) == blob );
+    }
+  }
+
+  // Done with this.
   db = 0x0;
 }
 
@@ -104,7 +182,7 @@ void _test()
 
 int main ( int argc, char **argv )
 {
-  Usul::Functions::safeCall ( _test, "3729532207" );
+  Usul::Functions::safeCall ( _test, "3667491933" );
   std::cout << "Press any key to exit" << std::endl;
   std::cin.get();
   return 0;

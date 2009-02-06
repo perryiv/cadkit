@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Input.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Internal.h"
 				>
 			</File>

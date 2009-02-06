@@ -17,6 +17,7 @@
 
 #include "Database/SQLite/Connection.h"
 #include "Database/SQLite/Result.h"
+#include "Database/SQLite/Input.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Convert/Convert.h"
@@ -95,26 +96,6 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Populate a blob from the result.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Result &operator >> ( Result &result, MyBlob &blob )
-{
-  Blob data;
-  result >> data;
-  CHECK_EXPRESSION ( false == data.empty() );
-  CHECK_EXPRESSION ( sizeof ( MyBlob ) == ( data.size() * sizeof ( Blob::value_type ) ) );
-  const MyBlob *temp ( reinterpret_cast < MyBlob * > ( &data[0] ) );
-  CHECK_EXPRESSION ( false == ( (*temp) == blob ) );
-  blob = (*temp);
-  CHECK_EXPRESSION ( (*temp) == blob );
-  return result;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Run a test.
 //  See: http://www.gaia-gis.it/spatialite/spatialite-2.2_tutorial.html
 //
@@ -150,7 +131,7 @@ void _test()
   db->execute ( "begin transaction" );
 
   // Make blob data.
-  const MyBlob blob ( 10 );
+  const MyBlob blob ( 1000 );
 
   for ( unsigned int i = 0; i < total; ++i )
   {

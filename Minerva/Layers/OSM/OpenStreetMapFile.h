@@ -41,20 +41,20 @@ public:
   
   // Read the file.
   virtual void                read ( const std::string &filename, Usul::Interfaces::IUnknown *caller = 0x0, Usul::Interfaces::IUnknown *progress = 0x0 );
-  
+
   // Deserialize.
   virtual void                deserialize ( const XmlTree::Node &node );
-  
+
   /// Serialize.
   virtual void                serialize ( XmlTree::Node &parent ) const;
-  
+
 protected:
 
   virtual ~OpenStreetMapFile();
 
   // Read.
   void                        _read ( const std::string &filename, Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
-  
+
   // Set the bounds.
   void                        _setBounds ( const XmlTree::Node& node );
 

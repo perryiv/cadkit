@@ -1,10 +1,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Arizona State University
+//  Copyright (c) 2009, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
-//  Author: Perry L Miller IV
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +114,18 @@ void Connection::_destroy()
 
 Result::RefPtr Connection::execute ( const std::string &sql )
 {
+  return this->_execute ( sql, Binders() );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute the given SQL string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result::RefPtr Connection::_execute ( const std::string &sql, const Binders &binders )
+{
   Guard guard ( this );
 
   // Handle bad state.
@@ -139,6 +150,16 @@ Result::RefPtr Connection::execute ( const std::string &sql )
         ( "Error 1353976135: Result Code: ", resultCode, 
           ", Message: '", Helper::errorMessage ( _db ), "'",
           ", SQL: ", sql ) );
+    }
+
+    // Execute the binders.
+    for ( unsigned int i = 0; i < binders.size(); ++i )
+    {
+      Binder::RefPtr binder ( binders.at ( i ) );
+      if ( true == binder.valid() )
+      {
+        binder->bind ( sql, i, statement, _db );
+      }
     }
 
     // Prepare the result.

@@ -30,21 +30,13 @@ namespace Safe {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#if 0
 template < class MutexType, class T > T get ( MutexType &mutex, const T &t, bool copyFirst = false )
 {
   typedef typename Usul::Threads::MutexTraits<MutexType>::ReadLock Lock;
   Lock lock ( mutex );
   return ( ( true == copyFirst ) ? T ( t ) : t );
 }
-#else
-template < class MutexType, class T > T get ( MutexType &mutex, const T &t )
-{
-  typedef typename Usul::Threads::MutexTraits<MutexType>::ReadLock Lock;
-  Lock lock ( mutex );
-  return t;
-}
-#endif
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -15,12 +15,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/TileEngine/Body.h"
+#include "Minerva/Core/Data/DataObject.h"
+#include "Minerva/Core/Data/Line.h"
 #include "Minerva/Core/Utilities/Atmosphere.h"
 #include "Minerva/Core/Visitor.h"
 
 #include "OsgTools/Convert.h"
 #include "OsgTools/Convert/MatrixTransform.h"
 #include "OsgTools/Group.h"
+#include "OsgTools/Ray.h"
 #include "OsgTools/Visitor.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -67,6 +70,7 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( osg::ref_ptr<osg::MatrixTransform> );
 
 Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, double splitDistance ) : BaseClass(),
   _transform ( new osg::MatrixTransform ),
+  _graphic ( new VectorGroup ),
   _landModel ( land ),
   _rasters ( new RasterGroup ),
   _elevation ( new ElevationGroup ),
@@ -122,6 +126,10 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   
   // Add the vector data to the transform.
   _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+
+  // Add the branch for intersection graphics.
+  _transform->addChild ( _graphic->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+
 #if 0
   // Make the sky.
   _sky = new Minerva::Core::Utilities::Atmosphere;
@@ -197,6 +205,7 @@ void Body::clear()
   Helper::safeClear ( _rasters    ); _rasters    = 0x0;
   Helper::safeClear ( _elevation  ); _elevation  = 0x0;
   Helper::safeClear ( _vectorData ); _vectorData = 0x0;
+  Helper::safeClear ( _graphic    ); _graphic    = 0x0;
 
   _splitCallback = 0x0;
 
@@ -259,7 +268,7 @@ void Body::addTile ( const Extents &extents )
   Tile::RefPtr tile ( new Tile ( 0x0, Tile::NONE, level, extents, meshSize, _imageSize, _splitDistance, this ) );
 
   // Build the raster.
-  // If a network layer timesout and throws an exception, the document won't load.
+  // If a network layer times out and throws an exception, the document won't load.
   // Wrap in a safe call to ensure the document still loads (but the top level tiles won't have textures).
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( tile.get(), &Tile::buildRaster ), Usul::Jobs::Job::RefPtr ( 0x0 ), "4827869570" );
 
@@ -589,10 +598,10 @@ void Body::convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Body::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const
+void Body::convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& lonLatPoint ) const
 {
   USUL_TRACE_SCOPE;
-  this->xyzToLatLonHeight ( osg::Vec3d ( planetPoint[0], planetPoint[1], planetPoint[2] ), latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+  this->xyzToLatLonHeight ( osg::Vec3d ( planetPoint[0], planetPoint[1], planetPoint[2] ), lonLatPoint[1], lonLatPoint[0], lonLatPoint[2] );
 }
 
 
@@ -1016,7 +1025,7 @@ void Body::deserialize ( const XmlTree::Node &node )
   }
   
   // Add the vector data to the transform.
-  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options(), this->queryInterface ( IUnknown::IID ) ) );
+  //_transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options(), this->queryInterface ( IUnknown::IID ) ) );
 }
 
 
@@ -1253,6 +1262,7 @@ void Body::updateNotify ( Usul::Interfaces::IUnknown *caller )
   
   // Update the vector group.
   _vectorData->updateNotify ( unknown );
+  _graphic->updateNotify ( unknown );
   
   // Update any other listeners.
   _updateListeners.for_each ( std::bind2nd ( std::mem_fun ( &IUpdateListener::updateNotify ), unknown.get() ) );
@@ -1708,4 +1718,50 @@ float Body::maxAnisotropy() const
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _maxAnisotropy;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::intersectionGraphicClear()
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _graphic->clear();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Body::intersectionGraphicSet ( double lonMouse, double latMouse, double elevMouse, 
+                                    double lonPoint, double latPoint, double elevPoint )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+
+  typedef Minerva::Core::Data::DataObject DataObject;
+  typedef Minerva::Core::Data::Line Line;
+  typedef Minerva::Core::Data::LineStyle LineStyle;
+
+  // Clear it first.
+  _graphic->clear();
+
+  Line::RefPtr line ( new Line );
+  Line::Vertices v;
+  v.push_back ( Line::Vertex ( lonMouse, latMouse, 0 ) );
+  v.push_back ( Line::Vertex ( lonPoint, latPoint, 0 ) );
+  line->line ( v );
+  line->lineStyle ( LineStyle::create ( Line::Color ( 1, 0, 0, 1 ), 3.0f ) );
+
+  DataObject::RefPtr data ( new DataObject );
+  data->addGeometry ( line.get() );
+  _graphic->add ( Usul::Interfaces::IUnknown::QueryPtr ( data ) );
 }

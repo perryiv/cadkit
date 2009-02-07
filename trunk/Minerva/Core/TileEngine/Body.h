@@ -157,7 +157,7 @@ public:
 
   /// Convert to planet coordinates.
   virtual void              convertToPlanet ( const Usul::Math::Vec3d& orginal, Usul::Math::Vec3d& planetPoint ) const;
-  virtual void              convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& latLonPoint ) const;
+  virtual void              convertFromPlanet ( const Usul::Math::Vec3d& planetPoint, Usul::Math::Vec3d& lonLatPoint ) const;
   
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
   virtual osg::Matrixd      planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;
@@ -219,6 +219,10 @@ public:
 
   // Serialize this instance.
   virtual void              serialize ( XmlTree::Node &parent ) const;
+
+  // Set the intersection.
+  void                      intersectionGraphicClear();
+  void                      intersectionGraphicSet ( double lonMouse, double latMouse, double elevMouse, double lonPoint, double latPoint, double elevPoint );
 
   // See if the tile should split.
   bool                      shouldSplit ( bool suggestion, Tile * );
@@ -300,6 +304,7 @@ private:
   void                      _dirtyTiles ( unsigned int flags, const Extents& extents );
 
   MatrixTransformPtr _transform;
+  VectorGroup::RefPtr _graphic;
   LandModel::RefPtr _landModel;
   RasterGroup::RefPtr _rasters;
   ElevationGroup::RefPtr _elevation;

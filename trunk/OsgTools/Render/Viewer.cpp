@@ -3153,6 +3153,83 @@ bool Viewer::intersect ( float x, float y, osgUtil::LineSegmentIntersector::Inte
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  See if event intersects the current scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::intersect ( double x, double y, osgUtil::PolytopeIntersector::Intersection &intersection, double w, double h, unsigned int dimensionMask )
+{
+  typedef osgUtil::PolytopeIntersector::Intersections Intersections;
+
+  // Get all the intersections.
+  Intersections intersections;
+  this->intersect ( x, y, intersections, w, h, dimensionMask );
+
+  // Return now if no intersections.
+  if ( intersections.empty() )
+    return false;
+
+  // Set the intersection.
+  intersection = *intersections.begin();
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  See if event intersects the current scene.
+//  Note: Could not get this to work from MinervaDocument::_intersectScene().
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Viewer::intersect ( double x, double y, osgUtil::PolytopeIntersector::Intersections &intersections, double w, double h, unsigned int dimensionMask )
+{
+  // Get the scene and viewer.
+  osg::ref_ptr<osg::Node> scene ( 0x0 );
+  osg::ref_ptr<osgUtil::SceneView> viewer ( 0x0 );
+  {
+    Guard guard ( this );
+    scene = this->scene();
+    viewer = this->viewer();
+  }
+
+  // Handle no scene or viewer.
+  if ( ( false == scene.valid() ) || ( false == viewer.valid() ) )
+    return false;
+
+  // Declare the event adapter.
+  EventAdapter::Ptr ea ( new EventAdapter );
+  ea->setWindowSize ( Usul::Math::Vec2ui ( static_cast < unsigned int > ( this->width() ), static_cast < unsigned int > ( this->height() ) ) );
+  ea->setMouse ( Usul::Math::Vec2f ( static_cast < float > ( x ), static_cast < float > ( y ) ) );
+
+  // Adjust the coordinates.
+  x = ea->getXnormalized();
+  y = ea->getYnormalized();
+
+  // Make the intersector.
+  osg::ref_ptr<osgUtil::PolytopeIntersector> intersector 
+    ( new osgUtil::PolytopeIntersector ( osgUtil::Intersector::PROJECTION, x - w, y - h, x + w, y + h ) );
+
+  // Intersect with everything.
+  intersector->setDimensionMask ( dimensionMask );
+
+  // Declare the visitor.
+  osgUtil::IntersectionVisitor visitor ( intersector.get() );
+  
+  // Intersect the scene.
+  scene->accept ( visitor );
+  
+  // Get the hit-list for our line-segment.
+  intersections = intersector->getIntersections();
+  if ( intersections.empty() )
+    return false;
+  
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Get the trackball's center.
 //
 ///////////////////////////////////////////////////////////////////////////////

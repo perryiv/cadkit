@@ -14,6 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Object.h"
+#include "Minerva/Interfaces/IIntersectNotify.h"
 
 #include "Usul/Base/Object.h"
 #include "Usul/Interfaces/IBuildScene.h"
@@ -32,13 +33,16 @@ namespace Core {
 namespace Data {
 
 class MINERVA_EXPORT Geometry : public Minerva::Core::Data::Object,
-                                public Usul::Interfaces::ILayerExtents
+                                public Usul::Interfaces::ILayerExtents,
+                                public Minerva::Interfaces::IIntersectNotify
 {
 public:
-  typedef Minerva::Core::Data::Object         BaseClass;
-  typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
-  typedef Usul::Interfaces::IUnknown          Unknown;
-  typedef Usul::Math::Vec3d                   Point;
+  typedef Minerva::Core::Data::Object               BaseClass;
+  typedef Minerva::Core::Extents<osg::Vec2d>        Extents;
+  typedef Usul::Interfaces::IUnknown                Unknown;
+  typedef Usul::Math::Vec3d                         Point;
+  typedef Minerva::Interfaces::IIntersectNotify     IIntersectNotify;
+  typedef IIntersectNotify::Closest                 Closest;
 
   USUL_DECLARE_TYPE_ID ( Geometry );
   USUL_DECLARE_QUERY_POINTERS( Geometry );
@@ -82,7 +86,10 @@ public:
   /// Get/Set the render bin
   unsigned int          renderBin() const;
   void                  renderBin ( unsigned int );
-  
+
+  /// Call this when there is an intersection.
+  virtual void          intersectNotify ( double x, double y, double z, double lon, double lat, double elev, Unknown::RefPtr tile, Unknown::RefPtr body, Unknown::RefPtr caller, Closest & );
+
   /// Is this geometry transparent?
   virtual bool          isSemiTransparent() const;
 

@@ -12,6 +12,8 @@
 
 #include "Usul/Interfaces/IUnknown.h"
 
+#include <vector>
+
 
 namespace Minerva {
 namespace Interfaces {
@@ -25,12 +27,19 @@ struct IIntersectNotify : public Usul::Interfaces::IUnknown
   /// Id for this interface.
   enum { IID = 2851728485u };
 
+  /// Typedefs for this interface.
+  typedef std::vector<Usul::Interfaces::IUnknown::RefPtr> Path;
+  typedef std::vector<double> Point;
+  typedef std::pair<Point,double> PointAndDistance;
+  typedef std::pair<Path,PointAndDistance> Closest;
+
   /// Call to notify about the intersection.
   virtual void                  intersectNotify ( double x, double y, double z, 
                                                   double lon, double lat, double elev, 
                                                   IUnknown::RefPtr tile, 
                                                   IUnknown::RefPtr body, 
-                                                  IUnknown::RefPtr caller ) = 0;
+                                                  IUnknown::RefPtr caller,
+                                                  Closest & ) = 0;
 };
 
 

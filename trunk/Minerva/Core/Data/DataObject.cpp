@@ -33,6 +33,8 @@
 #include "osg/Group"
 #include "osgText/Text"
 
+#include <limits>
+
 using namespace Minerva::Core::Data;
 
 USUL_IMPLEMENT_TYPE_ID ( DataObject );
@@ -56,7 +58,8 @@ DataObject::DataObject() :
   _showLabel ( false ),
   _dataSource ( static_cast < Usul::Interfaces::IUnknown* > ( 0x0 ) ),
   _geometries(),
-  _clickedCallback ( 0x0 )
+  _clickedCallback ( 0x0 ),
+  _propagateIntersections ( true )
 {
 }
 
@@ -786,14 +789,17 @@ Usul::Interfaces::IUnknown::RefPtr DataObject::getItemsWithinExtents ( double mi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DataObject::intersectNotify ( double x, double y, double z, 
-                                   double lon, double lat, double elev, 
-                                   IUnknown::RefPtr tile, 
-                                   IUnknown::RefPtr body, 
-                                   IUnknown::RefPtr caller )
+void DataObject::intersectNotify ( double x, double y, double z, double lon, double lat, double elev, 
+                                   IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller, Closest &answer )
 {
   USUL_TRACE_SCOPE;
-  typedef Minerva::Interfaces::IIntersectNotify IIntersectNotify;
+  typedef IIntersectNotify::Path Path;
+  typedef IIntersectNotify::Point Point;
+  typedef IIntersectNotify::PointAndDistance PointAndDistance;
+
+  // Should we pass this along?
+  if ( false == this->propagateIntersections() )
+    return;
 
   // Get a copy of the geometries.
   Geometries geometries ( Usul::Threads::Safe::get ( this->mutex(), _geometries ) );
@@ -804,7 +810,43 @@ void DataObject::intersectNotify ( double x, double y, double z,
     IIntersectNotify::QueryPtr notify ( i->get() );
     if ( true == notify.valid() )
     {
-      notify->intersectNotify ( x, y, z, lon, lat, elev, tile, body, caller );
+      Closest closest ( Path(), PointAndDistance ( Point(), std::numeric_limits<double>::max() ) );
+      notify->intersectNotify ( x, y, z, lon, lat, elev, tile, body, caller, closest );
+
+      if ( ( closest.second.second < answer.second.second ) && ( false == closest.first.empty() ) )
+      {
+        answer.first.insert ( answer.first.end(), Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+        answer.first.insert ( answer.first.end(), closest.first.begin(), closest.first.end() );
+        answer.second = closest.second;
+      }
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the flag that says to propagate intersection notifications.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool DataObject::propagateIntersections() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _propagateIntersections;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the flag that says to propagate intersection notifications.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::propagateIntersections ( bool state )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _propagateIntersections = state;
 }

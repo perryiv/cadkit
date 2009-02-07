@@ -98,6 +98,7 @@
 #include "osgUtil/CullVisitor"
 
 #include <algorithm>
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -2367,6 +2368,14 @@ void MinervaDocument::_resizePoints ( double factor )
 
 void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSegmentIntersector::Intersection &hit, Usul::Interfaces::IUnknown *caller )
 {
+  typedef osg::ref_ptr<osg::Node> NodePtr;
+  typedef std::vector<NodePtr> Nodes;
+  typedef Minerva::Interfaces::IIntersectNotify IIntersectNotify;
+  typedef IIntersectNotify::Closest Closest;
+  typedef IIntersectNotify::Path Path;
+  typedef IIntersectNotify::Point Point;
+  typedef IIntersectNotify::PointAndDistance PointAndDistance;
+
   Body::RefPtr body ( this->activeBody() );
   if ( false == body.valid() )
     return;
@@ -2374,17 +2383,19 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
   // Get the point in lon-lat-elev.
   osg::Vec3 world ( hit.getWorldIntersectPoint() );
   Usul::Math::Vec3d point ( world[0], world[1], world[2] );
-  Usul::Math::Vec3d latLonPoint;
-  body->convertFromPlanet ( point, latLonPoint );
+  Usul::Math::Vec3d lonLatPoint;
+  body->convertFromPlanet ( point, lonLatPoint );
 
   // Set the heads-up display.
-  _hud.position ( latLonPoint[1], latLonPoint[0], latLonPoint[2] );
+  {
+    Guard guard ( this );
+    _hud.position ( lonLatPoint[1], lonLatPoint[0], lonLatPoint[2] );
+  }
 
   // Notify the deepest tile.
-  typedef osg::ref_ptr<osg::Node> NodePtr;
-  typedef std::vector<NodePtr> Nodes;
   Nodes path ( hit.nodePath.rbegin(), hit.nodePath.rend() );
   IUnknown::RefPtr unknown ( caller );
+  Closest closest ( Path(), PointAndDistance ( Point(), std::numeric_limits<double>::max() ) );
   for ( Nodes::iterator i = path.begin(); i != path.end(); ++i )
   {
     typedef Minerva::Core::TileEngine::Tile Tile;
@@ -2395,13 +2406,23 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
       if ( true == notify.valid() )
       {
         notify->intersectNotify ( point[0], point[1], point[2], 
-                                  latLonPoint[1], latLonPoint[0], latLonPoint[2], 
+                                  lonLatPoint[0], lonLatPoint[1], lonLatPoint[2], 
                                   Usul::Interfaces::IUnknown::QueryPtr ( this ),
                                   Usul::Interfaces::IUnknown::QueryPtr ( body ),
-                                  unknown );
+                                  unknown, closest );
         break;
       }
     }
+  }
+
+  // Do we have a closest point?
+  if ( ( false == closest.first.empty() ) && ( 3 == closest.second.first.size() ) )
+  {
+    body->intersectionGraphicSet ( lonLatPoint[0], lonLatPoint[1], lonLatPoint[2], closest.second.first.at(0), closest.second.first.at(1), closest.second.first.at(2) );
+  }
+  else
+  {
+    body->intersectionGraphicClear();
   }
 }
 
@@ -2856,20 +2877,32 @@ namespace Helper
 {
   MinervaDocument::ObjectID findObjectID ( const osg::NodePath& path )
   {
-    // See if there is user data.
     osg::ref_ptr < Minerva::Core::Data::UserData > userdata ( 0x0 );
+
+    // See if there is user data.
     for( osg::NodePath::const_reverse_iterator iter = path.rbegin(); iter != path.rend(); ++iter )
     {
-      if( Minerva::Core::Data::UserData *ud = dynamic_cast < Minerva::Core::Data::UserData *> ( (*iter)->getUserData() ) )
+      osg::ref_ptr<osg::Node> node ( *iter );
+      if ( true == node.valid() )
       {
-        userdata = ud;
-        break;
+        osg::ref_ptr<osg::Referenced> data ( node->getUserData() );
+        if ( true == data.valid() )
+        {
+          osg::ref_ptr<Minerva::Core::Data::UserData> ud ( dynamic_cast < Minerva::Core::Data::UserData * > ( data.get() ) );
+          if ( true == ud.valid() )
+          {
+            userdata = ud;
+            break;
+          }
+        }
       }
     }
     
     if ( userdata.valid() )
-      return userdata->objectID;
-    
+    {
+      return userdata->objectID();
+    }
+
     return "";
   }
 }
@@ -2899,13 +2932,26 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
 {
   // Query for the interface.
   Usul::Interfaces::ISceneIntersect::QueryPtr si ( caller );
-  
+  if ( false == si.valid() )
+  {
+    this->_clearBalloon();
+    return false;
+  }
+
   osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
   osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
-  
+
+#if 0
+  typedef osgUtil::PolytopeIntersector::Intersections Intersections;
+  const unsigned int dimensions ( osgUtil::PolytopeIntersector::DimOne | osgUtil::PolytopeIntersector::DimZero );
+  const double size ( 0.5 );
+  Intersections intersections;
+  if ( true == si->intersect ( ea.getX(), ea.getY(), intersections, size, size, dimensions ) )
+#else
   typedef osgUtil::LineSegmentIntersector::Intersections Intersections;
   Intersections intersections;
-  if ( si.valid() && si->intersect ( ea.getX(), ea.getY(), intersections ) )
+  if ( true == si->intersect ( ea.getX(), ea.getY(), intersections ) )
+#endif
   {
     // List of objects that were intersected.
     std::vector<Minerva::Core::Data::DataObject::RefPtr> objects;
@@ -3181,14 +3227,14 @@ void MinervaDocument::contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Ve
         osg::Vec3 world ( hit.getWorldIntersectPoint() );
         
         Usul::Math::Vec3d point ( world[0], world[1], world[2] );
-        Usul::Math::Vec3d latLonPoint;
-        body->convertFromPlanet( point, latLonPoint );
+        Usul::Math::Vec3d lonLatPoint;
+        body->convertFromPlanet( point, lonLatPoint );
         
         // Namespace aliases to help shorten lines.
         namespace UA = Usul::Adaptors;
         namespace UC = Usul::Commands;
         
-        const std::string text ( Usul::Strings::format ( latLonPoint[1], ", ", latLonPoint[0] ) );
+        const std::string text ( Usul::Strings::format ( lonLatPoint[1], ", ", lonLatPoint[0] ) );
         menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", UA::bind1<void> ( text, Usul::System::ClipBoard::addToClipboard ), UC::TrueFunctor() ) ) );
       }
     }

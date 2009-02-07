@@ -117,6 +117,8 @@ public:
   typedef std::pair < TileVectorData::RefPtr, bool > TileVectorDataPair;
   typedef Usul::Interfaces::ITileVectorData::Jobs TileVectorJobs;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Minerva::Interfaces::IIntersectNotify IIntersectNotify;
+  typedef IIntersectNotify::Closest Closest;
 
   // Constructors.
   Tile ( Tile* parent = 0x0,
@@ -172,7 +174,7 @@ public:
   Extents                   extents() const;
 
   // Call to notify of an intersection.
-  virtual void              intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller );
+  virtual void              intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller, Closest & );
 
   // Get the image.
   ImagePtr                  image();

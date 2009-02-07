@@ -29,6 +29,8 @@
 #include "osg/MatrixTransform"
 #include "osg/Version"
 
+#include <limits>
+
 using namespace Minerva::Core::Data;
 
 USUL_IMPLEMENT_TYPE_ID ( Line );
@@ -332,4 +334,49 @@ Line::Color Line::lineColor() const
 {
   LineStyle::RefPtr lineStyle ( this->lineStyle() );
   return ( lineStyle.valid() ? lineStyle->color() : Usul::Math::Vec4f ( 1.0, 1.0, 1.0, 1.0 ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call to notify of an intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::intersectNotify ( double x, double y, double z, double lon, double lat, double elev, 
+                             Unknown::RefPtr tile, Unknown::RefPtr body, Unknown::RefPtr caller, Closest &answer )
+{
+  typedef IIntersectNotify::Path Path;
+  typedef IIntersectNotify::Point Point;
+  typedef IIntersectNotify::PointAndDistance PointAndDistance;
+
+  // Assuming that guarding is less expensive than copying.
+  Guard guard ( this );
+
+  // Initialize for the loop.
+  Vertex lle ( lon, lat, elev );
+  bool append ( false );
+
+  // Loop through the vertices.
+  for ( Vertices::const_iterator i = _line.begin(); i != _line.end(); ++i )
+  {
+    // Get the distance to the point.
+    Vertex point ( *i );
+    const double dist ( point.distanceSquared ( lle ) );
+    if ( dist < answer.second.second )
+    {
+      answer.second.first.resize ( 3 );
+      answer.second.first[0] = point[0];
+      answer.second.first[1] = point[1];
+      answer.second.first[2] = point[2];
+      answer.second.second = dist;
+      append = true;
+    }
+  }
+
+  // Append us to the answer if we should.
+  if ( true == append )
+  {
+    answer.first.push_back ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  }
 }

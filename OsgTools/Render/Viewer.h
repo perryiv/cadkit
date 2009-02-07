@@ -657,8 +657,10 @@ protected:
   virtual void               setRotation( const osg::Quat& );
 
   // Intersect with the scene (ISceneIntersect).
-  virtual bool               intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &hit );
-  virtual bool               intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersections &intersections );
+  virtual bool               intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersection &  );
+  virtual bool               intersect ( float x, float y, osgUtil::LineSegmentIntersector::Intersections & );
+  virtual bool               intersect ( double x, double y, osgUtil::PolytopeIntersector::Intersection &,  double width = 0.05, double height = 0.05, unsigned int dimensionMask = osgUtil::PolytopeIntersector::AllDims );
+  virtual bool               intersect ( double x, double y, osgUtil::PolytopeIntersector::Intersections &, double width = 0.05, double height = 0.05, unsigned int dimensionMask = osgUtil::PolytopeIntersector::AllDims );
 
   /////////////////////////////////////////////////////////////////////////////
   //

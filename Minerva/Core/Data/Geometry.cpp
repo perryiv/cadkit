@@ -66,6 +66,8 @@ Usul::Interfaces::IUnknown* Geometry::queryInterface( unsigned long iid )
   case Usul::Interfaces::IUnknown::IID:
   case Usul::Interfaces::ILayerExtents::IID:
     return static_cast<Usul::Interfaces::ILayerExtents*> ( this );
+  case Minerva::Interfaces::IIntersectNotify::IID:
+    return static_cast<Minerva::Interfaces::IIntersectNotify*> ( this );
   default:
     return 0x0;
   }
@@ -365,6 +367,19 @@ bool Geometry::dirty() const
 ///////////////////////////////////////////////////////////////////////////////
 
 void Geometry::updateNotify ( Usul::Interfaces::IUnknown *caller )
+{
+  USUL_TRACE_SCOPE;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Call to notify of an intersection.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Geometry::intersectNotify ( double x, double y, double z, double lon, double lat, double elev, 
+                                 Unknown::RefPtr tile, Unknown::RefPtr body, Unknown::RefPtr caller, Closest & )
 {
   USUL_TRACE_SCOPE;
 }

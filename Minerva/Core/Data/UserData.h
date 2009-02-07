@@ -23,11 +23,18 @@ namespace Data {
 struct MINERVA_EXPORT UserData : public osg::Referenced
 {
   UserData ( const DataObject::ObjectID & id ) : 
-    objectID ( id ) 
+    _id ( id ) 
   {
   }
   
-  DataObject::ObjectID objectID;
+  DataObject::ObjectID objectID() const
+  {
+    return _id;
+  }
+
+private:
+
+  DataObject::ObjectID _id;
 };
 
 }

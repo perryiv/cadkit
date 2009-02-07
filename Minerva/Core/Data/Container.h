@@ -72,6 +72,8 @@ public:
   typedef Usul::Interfaces::ITileVectorData         ITileVectorData;
   typedef ITileVectorData::Jobs                     TileVectorJobs;
   typedef Minerva::Interfaces::IWithinExtents       IWithinExtents;
+  typedef Minerva::Interfaces::IIntersectNotify     IIntersectNotify;
+  typedef IIntersectNotify::Closest                 Closest;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Container );
@@ -131,7 +133,7 @@ public:
   virtual std::string         guid() const;
 
   /// Call this when there is an intersection.
-  virtual void                intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller );
+  virtual void                intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller, Closest & );
 
   /// See if the given level falls within this layer's range of levels.
   bool                        isInLevelRange ( unsigned int level ) const;

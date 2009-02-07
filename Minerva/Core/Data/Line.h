@@ -36,7 +36,10 @@ public:
   USUL_DECLARE_QUERY_POINTERS ( Line );
 
   Line();
-  
+
+  /// Call this when there is an intersection.
+  virtual void          intersectNotify ( double x, double y, double z, double lon, double lat, double elev, Unknown::RefPtr tile, Unknown::RefPtr body, Unknown::RefPtr caller, Closest & );
+
   /// Is this geometry transparent?
   virtual bool          isSemiTransparent() const;
 

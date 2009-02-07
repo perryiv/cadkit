@@ -81,17 +81,19 @@ class MINERVA_EXPORT DataObject :
   public Minerva::Interfaces::IIntersectNotify
 {
 public:
-  typedef Minerva::Core::Data::Feature        BaseClass;
-  typedef Usul::Interfaces::IUnknown          Unknown;
-  typedef BaseClass::Extents                  Extents;
-  typedef Minerva::Core::Data::Geometry       Geometry;
-  typedef std::vector<Geometry::RefPtr>       Geometries;
-  typedef OsgTools::Widgets::Item             Item;
-  typedef osg::ref_ptr<osg::Image>            ImagePtr;
-  typedef ClickedCallback                     ClickedCB;
-  typedef Usul::Math::Vec3d                   PositionType;
-  typedef Usul::Math::Vec4f                   ColorType;
-  typedef Minerva::Interfaces::IWithinExtents IWithinExtents;
+  typedef Minerva::Core::Data::Feature              BaseClass;
+  typedef Usul::Interfaces::IUnknown                Unknown;
+  typedef BaseClass::Extents                        Extents;
+  typedef Minerva::Core::Data::Geometry             Geometry;
+  typedef std::vector<Geometry::RefPtr>             Geometries;
+  typedef OsgTools::Widgets::Item                   Item;
+  typedef osg::ref_ptr<osg::Image>                  ImagePtr;
+  typedef ClickedCallback                           ClickedCB;
+  typedef Usul::Math::Vec3d                         PositionType;
+  typedef Usul::Math::Vec4f                         ColorType;
+  typedef Minerva::Interfaces::IWithinExtents       IWithinExtents;
+  typedef Minerva::Interfaces::IIntersectNotify     IIntersectNotify;
+  typedef IIntersectNotify::Closest                 Closest;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( DataObject );
@@ -141,7 +143,7 @@ public:
   Geometries            geometries() const;
 
   /// Called when there is an intersection.
-  virtual void          intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller );
+  virtual void          intersectNotify ( double x, double y, double z, double lon, double lat, double elev, IUnknown::RefPtr tile, IUnknown::RefPtr body, IUnknown::RefPtr caller, Closest & );
 
   /// Get/Set the label
   void                  label ( const std::string& label );
@@ -158,6 +160,10 @@ public:
   /// Get/Set the label size.
   void                  labelSize ( float size );
   float                 labelSize () const;
+
+  /// Get/set the flag that says to propagate intersection notifications.
+  bool                  propagateIntersections() const;
+  void                  propagateIntersections ( bool );
 
   /// Get/Set the flag to show the label.
   void                  showLabel ( bool value );
@@ -202,6 +208,7 @@ private:
   osg::ref_ptr < osg::Node > _preBuiltScene;
   Geometries _geometries;
   ClickedCallback::RefPtr _clickedCallback;
+  bool _propagateIntersections;
 };
 
 }

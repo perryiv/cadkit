@@ -123,6 +123,7 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _elevation->name ( "Elevation" );
   _rasters->name ( "Rasters" );
   _vectorData->name ( "Vector" );
+  _graphic->name ( "Intersection Graphic" );
   
   // Add the vector data to the transform.
   _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
@@ -1024,8 +1025,10 @@ void Body::deserialize ( const XmlTree::Node &node )
     this->addTile ( Tile::Extents ( e[0], e[1], e[2], e[3] ) );
   }
   
-  // Add the vector data to the transform.
-  //_transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options(), this->queryInterface ( IUnknown::IID ) ) );
+  // Re-add these scenes to the transform because a new one was just created.
+  Usul::Interfaces::IUnknown::QueryPtr me ( this );
+  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options(), me.get() ) );
+  _transform->addChild ( _graphic->buildScene    ( Usul::Interfaces::IBuildScene::Options(), me.get() ) );
 }
 
 

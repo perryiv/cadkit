@@ -2294,6 +2294,8 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IRenderInfoOSG* > ( this );
   case Usul::Interfaces::IProjectionMatrix::IID:
     return static_cast<Usul::Interfaces::IProjectionMatrix*> ( this );
+  case Usul::Interfaces::IViewMode::IID:
+    return static_cast<Usul::Interfaces::IViewMode*> ( this );
   default:
     return ( _caller.valid() ? _caller->queryInterface ( iid ) : 0x0 );
   }

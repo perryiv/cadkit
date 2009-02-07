@@ -78,6 +78,7 @@
 #include "Usul/Interfaces/ITrackball.h"
 #include "Usul/Interfaces/IViewport.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Interfaces/IViewMode.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Registry/Constants.h"
@@ -2380,6 +2381,9 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
   if ( false == body.valid() )
     return;
 
+  // Call this every time.
+  body->intersectionGraphicClear();
+
   // Get the point in lon-lat-elev.
   osg::Vec3 world ( hit.getWorldIntersectPoint() );
   Usul::Math::Vec3d point ( world[0], world[1], world[2] );
@@ -2392,10 +2396,20 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
     _hud.position ( lonLatPoint[1], lonLatPoint[0], lonLatPoint[2] );
   }
 
-  // Notify the deepest tile.
+  // If we're in pick mode...
+  typedef Usul::Interfaces::IViewMode IViewMode;
+  IViewMode::QueryPtr mode ( caller );
+  if ( false == mode.valid() )
+    return;
+  if ( false == mode->isViewModeCurrent ( IViewMode::PICK ) )
+    return;
+
+  // Initialize up here.
+  Closest closest ( Path(), PointAndDistance ( Point(), std::numeric_limits<double>::max() ) );
+
+  // Find the deepest tile.
   Nodes path ( hit.nodePath.rbegin(), hit.nodePath.rend() );
   IUnknown::RefPtr unknown ( caller );
-  Closest closest ( Path(), PointAndDistance ( Point(), std::numeric_limits<double>::max() ) );
   for ( Nodes::iterator i = path.begin(); i != path.end(); ++i )
   {
     typedef Minerva::Core::TileEngine::Tile Tile;
@@ -2405,6 +2419,8 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
       Minerva::Interfaces::IIntersectNotify::QueryPtr notify ( tile ); 
       if ( true == notify.valid() )
       {
+        // Notify the tile about the intersection. It can optionally 
+        // return the closest point on any geometry.
         notify->intersectNotify ( point[0], point[1], point[2], 
                                   lonLatPoint[0], lonLatPoint[1], lonLatPoint[2], 
                                   Usul::Interfaces::IUnknown::QueryPtr ( this ),
@@ -2419,10 +2435,6 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
   if ( ( false == closest.first.empty() ) && ( 3 == closest.second.first.size() ) )
   {
     body->intersectionGraphicSet ( lonLatPoint[0], lonLatPoint[1], lonLatPoint[2], closest.second.first.at(0), closest.second.first.at(1), closest.second.first.at(2) );
-  }
-  else
-  {
-    body->intersectionGraphicClear();
   }
 }
 

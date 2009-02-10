@@ -33,16 +33,39 @@ public:
   /// Clone.
   virtual IUnknown*     clone() const;
 
+  /// Get the raster data as elevation data.
+  virtual IElevationData::RefPtr elevationData ( 
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+    unsigned int width,
+    unsigned int height,
+    unsigned int level,
+    Usul::Jobs::Job* job,
+    Usul::Interfaces::IUnknown* caller );
+
 protected:
 
   virtual ~ElevationGroup();
 
   ElevationGroup ( const ElevationGroup& );
-  
-  virtual ImagePtr                _createBlankImage ( unsigned int width, unsigned int height ) const;
-  virtual void                    _compositeImages ( osg::Image& result, const osg::Image& image, const RasterLayer::Alphas &alphas, float alpha, Usul::Jobs::Job * );
+
+  /// Get the raster data as elevation data.
+  IElevationData::RefPtr _elevationData ( 
+    const Layers& layers,
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+    unsigned int width,
+    unsigned int height,
+    unsigned int level,
+    Usul::Jobs::Job* job,
+    Usul::Interfaces::IUnknown* caller );
 
 private:
+
   ElevationGroup& operator= ( const ElevationGroup& );
   
   SERIALIZE_XML_DEFINE_MEMBERS ( ElevationGroup );

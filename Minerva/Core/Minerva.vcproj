@@ -222,6 +222,14 @@
 				Name="Core"
 				>
 				<File
+					RelativePath=".\ElevationData.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ElevationData.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Export.h"
 					>
 				</File>
@@ -444,6 +452,14 @@
 					</File>
 					<File
 						RelativePath=".\Layers\ElevationGroup.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\ElevationLayerDirectory.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Layers\ElevationLayerDirectory.h"
 						>
 					</File>
 					<File
@@ -715,6 +731,14 @@
 					Name="Jobs"
 					>
 					<File
+						RelativePath=".\Jobs\BuildElevation.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Jobs\BuildElevation.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Jobs\BuildRaster.cpp"
 						>
 					</File>
@@ -944,6 +968,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IElevationData.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\ILineLayer.h"
 					>
 				</File>
@@ -960,7 +988,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Interfaces\IRasterData.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Interfaces\IRemoveLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\ITileElevationData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Interfaces\ITileRasterData.h"
 					>
 				</File>
 			</Filter>

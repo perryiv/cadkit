@@ -228,6 +228,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Dataset.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Dataset.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>

@@ -54,6 +54,18 @@ public:
   
   virtual ImagePtr      texture ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
   
+  /// Get the raster data as elevation data.
+  virtual IElevationData::RefPtr elevationData ( 
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+    unsigned int width,
+    unsigned int height,
+    unsigned int level,
+    Usul::Jobs::Job* job,
+    Usul::Interfaces::IUnknown* caller );
+
 protected:
   
   virtual ~ElevationLayerDirectory();

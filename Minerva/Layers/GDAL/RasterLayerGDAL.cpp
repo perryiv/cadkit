@@ -19,13 +19,15 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Path.h"
-#include "Usul/File/Remove.h"
 #include "Usul/File/Temp.h"
 #include "Usul/MPL/StaticAssert.h"
 #include "Usul/Scope/Caller.h"
+#include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
+
+#include "boost/filesystem/operations.hpp"
 
 #include "gdal.h"
 #include "gdal_priv.h"
@@ -154,13 +156,95 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
 {
   USUL_TRACE_SCOPE;
 
-  // Let the base class go first.
+  // Get the filename for the cache.
+  std::string file;
+  CacheStatus status ( this->_getAndCheckCacheFilename ( extents, width, height, level, file ) );
+  if ( CACHE_STATUS_FILE_OK == status )
   {
-    ImagePtr answer ( BaseClass::texture ( extents, width, height, level, job, caller ) );
-    if ( true == answer.valid() )
-      return answer;
+    // Open the dataset.
+    GDALDataset* data = static_cast< GDALDataset* > ( ::GDALOpen ( file.c_str(), GA_ReadOnly ) );
+    if ( 0x0 != data )
+      return Minerva::convert ( data );
   }
 
+  const std::string tempFilename ( Usul::File::Temp::file() );
+  Usul::Scope::RemoveFile removeFile ( tempFilename );
+
+  // Create the dataset.
+  Dataset::RefPtr tile ( this->_createTile ( tempFilename, extents, width, height, level, job, caller ) );
+  if ( false == tile.valid() )
+    return 0x0;
+
+  // Convert to an osg image.
+  ImagePtr image ( Minerva::convert ( tile->dataset() ) );
+
+  // Close the file.  This makes sure the data is written to disk.
+  tile->close();
+
+  boost::filesystem::copy_file ( tempFilename, file );
+
+  return image;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the raster data as elevation data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayerGDAL::IElevationData::RefPtr RasterLayerGDAL::elevationData ( 
+  double minLon,
+  double minLat,
+  double maxLon,
+  double maxLat,
+  unsigned int width,
+  unsigned int height,
+  unsigned int level,
+  Usul::Jobs::Job* job,
+  Usul::Interfaces::IUnknown* caller )
+{
+  Extents extents ( minLon, minLat, maxLon, maxLat );
+
+  // Get the filename for the cache.
+  std::string file;
+  CacheStatus status ( this->_getAndCheckCacheFilename ( extents, width, height, level, file ) );
+  if ( CACHE_STATUS_FILE_OK == status )
+  {
+    // Open the dataset.
+    Dataset::RefPtr data ( new Dataset ( static_cast< GDALDataset* > ( ::GDALOpen ( file.c_str(), GA_ReadOnly ) ) ) );
+    return data->convertToElevationData();
+  }
+
+  const std::string tempFilename ( Usul::File::Temp::file() );
+  Usul::Scope::RemoveFile removeFile ( tempFilename );
+
+  // Create the dataset.
+  Dataset::RefPtr tile ( this->_createTile ( tempFilename, extents, width, height, level, job, caller ) );
+  if ( false == tile.valid() )
+    return 0x0;
+
+  // Convert to elevation data.
+  IElevationData::RefPtr elevationData ( tile->convertToElevationData() );
+
+  // Close the file.  This makes sure the data is written to disk.
+  tile->close();
+
+  boost::filesystem::copy_file ( tempFilename, file );
+  boost::filesystem::remove ( tempFilename );
+
+  return elevationData;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create dataset for the given extents.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Dataset::RefPtr RasterLayerGDAL::_createTile ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *job, IUnknown *caller )
+{
   Minerva::Detail::PushPopErrorHandler error;
   
   // Now guard.
@@ -184,13 +268,11 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   GDALDataType type ( data->GetRasterBand ( 1 )->GetRasterDataType() );
   
   // Create the dataset.
-  GDALDataset *tile ( RasterLayerGDAL::_createDataset ( extents, width, height, bands, type ) );
+  Dataset::RefPtr dataset ( new Dataset ( filename, extents, width, height, bands, type ) );
+  GDALDataset *tile ( dataset->dataset() );
   
   if ( 0x0 == tile )
     return 0x0;
-  
-  // Make sure data set is closed.
-  Usul::Scope::Caller::RefPtr closeDataSet ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( tile, GDALClose ) ) );
 
   // Create the options.  Make sure the options are destroyed.
   GDALWarpOptions *options ( RasterLayerGDAL::_createWarpOptions ( data, tile, bands ) );
@@ -217,19 +299,9 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   // Make sure the transformer is destroyed.
   Usul::Scope::Caller::RefPtr destroyTransformer ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( genImgTransformerArg, GDALDestroyGenImgProjTransformer ) ) );
 
-#if 1
   options->pTransformerArg = genImgTransformerArg;
   options->pfnTransformer = GDALGenImgProjTransform;
-#else
 
-  // Make an approximate image transformer.
-  void *approxImgTransformerArg = GDALCreateApproxTransformer( GDALGenImgProjTransform, genImgTransformerArg, 0.125 );
-  Usul::Scope::Caller::RefPtr destroyTransformer2 ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( approxImgTransformerArg, ::GDALDestroyApproxTransformer ) ) );
-  
-  options->pTransformerArg = approxImgTransformerArg;
-  options->pfnTransformer = GDALApproxTransform;
-
-#endif
   // Check for canceled before starting long running task below...
   BaseClass::_checkForCanceledJob ( job );
 
@@ -243,25 +315,8 @@ RasterLayerGDAL::ImagePtr RasterLayerGDAL::texture ( const Extents& extents, uns
   // Do the work.  Return 0x0 if fails.
   if ( CE_None != operation.ChunkAndWarpImage( 0, 0, width, height ) )
     return 0x0;
-  
-  // Convert to an osg image.
-  ImagePtr image ( Minerva::convert ( tile ) );
 
-  // Delete any temp files created.
-  char** files = tile->GetFileList();
-  Usul::Scope::Caller::RefPtr scopeFiles ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( files, ::CSLDestroy ) ) );
-  while ( 0x0 != files && 0x0 != *files )
-  {
-    Usul::File::remove ( *files );
-    ++files;
-  }
-
-  // Save the image to the cache.
-#ifndef __APPLE__
-  BaseClass::_writeImageToCache ( extents, width, height, level, image );
-#endif
-
-  return image;
+  return dataset;
 }
 
 
@@ -336,9 +391,9 @@ void RasterLayerGDAL::read ( const std::string& filename, Usul::Interfaces::IUnk
         
         Extents extents ( ll, ur );
         
-        std::cout << "Location of " << filename << std::endl;
-        std::cout << "Lower left: "  << ll[0] << " " << ll[1] << std::endl;
-        std::cout << "Upper right: " << ur[0] << " " << ur[1] << std::endl;
+        //std::cout << "Location of " << filename << std::endl;
+        //std::cout << "Lower left: "  << ll[0] << " " << ll[1] << std::endl;
+        //std::cout << "Upper right: " << ur[0] << " " << ur[1] << std::endl;
         
         this->extents ( extents );
       }
@@ -348,7 +403,7 @@ void RasterLayerGDAL::read ( const std::string& filename, Usul::Interfaces::IUnk
       const int width ( _data->GetRasterXSize() );
       const int height ( _data->GetRasterYSize() );
 
-      RasterLayerGDAL::_createGeoTransform( geoTransform, this->extents(), width, height );
+      Dataset::createGeoTransform( geoTransform, this->extents(), width, height );
 
       _data->SetGeoTransform ( &geoTransform[0] );
     }
@@ -430,86 +485,6 @@ std::string RasterLayerGDAL::_cacheFileExtension() const
 
   // Always save as tiff.
   return "tif";
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create an in memory dataset.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-GDALDataset * RasterLayerGDAL::_createDataset ( const Extents& e, unsigned int width, unsigned int height, int bands, unsigned int type )
-{
-  // Make an in memory raster.
-  const std::string format ( "MEM" );
-
-  // Find a driver for in memory raster.
-  GDALDriver *driver ( GetGDALDriverManager()->GetDriverByName ( format.c_str() ) );
-
-  // Return now if we didn't find a driver.
-  if ( 0x0 == driver )
-    return 0x0;
-
-  // Create the file.
-  GDALDataset *data ( driver->Create ( Usul::File::Temp::file().c_str(), width, height, bands, static_cast<GDALDataType> ( type ), 0x0 ) );
-
-  if ( 0x0 == data )
-    return 0x0;
-
-  // Make the transform.
-  OGRSpatialReference dst;
-  dst.SetWellKnownGeogCS ( "WGS84" );
-
-  // Create the geo transform.
-  std::vector<double> geoTransform ( 6 );
-  RasterLayerGDAL::_createGeoTransform ( geoTransform, e, width, height );
-
-  if ( CE_None != data->SetGeoTransform( &geoTransform[0] ) )
-    return 0x0;
-
-  char *wkt ( 0x0 );
-  if ( CE_None != dst.exportToWkt ( &wkt ) )
-    return 0x0;
-
-  if ( CE_None != data->SetProjection( wkt ) )
-    return 0x0;
-
-  return data;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a geo transform.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void RasterLayerGDAL::_createGeoTransform ( GeoTransform &transfrom, const Extents& extents, unsigned int width, unsigned int height )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  // Get the extents lower left and upper right.
-  Extents::Vertex ll ( extents.minimum() );
-  Extents::Vertex ur ( extents.maximum() );
-    
-  // Get the length in x and y.
-  const double xLength ( ur[0] - ll[0] );
-  const double yLength ( ur[1] - ll[1] );
-  
-  // Figure out the pixel resolution.
-  const double xResolution  ( xLength / width );
-  const double yResolution  ( yLength / height );
-
-  // Make sure there is enough room.
-  transfrom.resize ( 6 );
-  
-  transfrom[0] = ll[0];          // top left x
-  transfrom[1] = xResolution;    // w-e pixel resolution
-  transfrom[2] = 0;              // rotation, 0 if image is "north up"
-  transfrom[3] = ur[1];          // top left y
-  transfrom[4] = 0;              // rotation, 0 if image is "north up"
-  transfrom[5] = -yResolution;   // n-s pixel resolution
 }
 
 

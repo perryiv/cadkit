@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_KML_FEATURE_H__
-#define __MINERVA_LAYERS_KML_FEATURE_H__
+#ifndef __MINERVA_CORE_DATA_FEATURE_H__
+#define __MINERVA_CORE_DATA_FEATURE_H__
 
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Object.h"
@@ -147,4 +147,4 @@ private:
 }
 }
 
-#endif // __MINERVA_LAYERS_KML_FEATURE_H__
+#endif // __MINERVA_CORE_DATA_FEATURE_H__

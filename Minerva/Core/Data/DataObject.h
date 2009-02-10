@@ -134,7 +134,7 @@ public:
   void                  dirty ( bool );
   
   /// Elevation has changed within given extents (IElevationChangedListnerer).
-  bool                  elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller = 0x0 );
+  bool                  elevationChangedNotify ( const Extents& extents, unsigned int level, ElevationDataPtr elevationData, Unknown * caller = 0x0 );
 
   /// Is the data object empty?
   bool                  empty() const;

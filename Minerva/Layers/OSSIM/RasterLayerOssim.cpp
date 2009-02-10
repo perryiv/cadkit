@@ -45,7 +45,7 @@
 #include "ossim/projection/ossimProjectionFactoryRegistry.h"
 
 using namespace Minerva::Layers::Ossim;
-#if 0
+#if 1
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Register readers with the factory.

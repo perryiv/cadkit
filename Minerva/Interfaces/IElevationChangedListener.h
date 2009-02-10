@@ -20,6 +20,7 @@
 #include "Usul/Interfaces/IUnknown.h"
 
 #include "Minerva/Core/Extents.h"
+#include "Minerva/Interfaces/IElevationData.h"
 
 #include "osg/Image"
 #include "osg/ref_ptr"
@@ -38,10 +39,10 @@ struct IElevationChangedListener : public Usul::Interfaces::IUnknown
   enum { IID = 2421981627u };
 
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
-  typedef osg::ref_ptr<osg::Image> ImagePtr;
+  typedef Minerva::Interfaces::IElevationData::QueryPtr ElevationDataPtr;
 
   /// Elevation has changed within given extents.
-  virtual bool elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 ) = 0;
+  virtual bool elevationChangedNotify ( const Extents& extents, unsigned int level, ElevationDataPtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 ) = 0;
 
 }; // struct IElevationChangedListener
 

@@ -26,6 +26,7 @@
 #include "Minerva/Core/TileEngine/Tile.h"
 #include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/Data/Container.h"
+#include "Minerva/Core/Jobs/BuildElevation.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Algorithms/Composite.h"
 #include "Minerva/Core/Algorithms/SubRegion.h"
@@ -101,7 +102,7 @@ namespace Helper
 
 Tile::Tile ( Tile* parent, Indices index, unsigned int level, const Extents &extents, 
              const MeshSize &meshSize, const ImageSize& imageSize, double splitDistance, 
-             Body *body, osg::Image* image, osg::Image * elevation,
+             Body *body, osg::Image* image, ElevationDataPtr elevation,
              TileVectorData::RefPtr tileVectorData ) : 
   BaseClass(),
   _mutex ( new Tile::Mutex ),
@@ -293,7 +294,7 @@ void Tile::updateMesh()
   // Get needed variables.
   Extents extents ( this->extents() );
   MeshSize size ( this->meshSize() );
-  ImagePtr elevation ( 0x0 );
+  ElevationDataPtr elevation;
   Body::RefPtr body ( 0x0 );
   Usul::Math::Vec4d texCoords;
   {
@@ -577,13 +578,8 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     if ( elevationJob.valid() && elevationJob->isDone() )
     {
       Guard ( this );
-      _elevation = _elevationJob->image();
       _elevationJob = 0x0;
       elevationJob = 0x0;
-      
-      // Force vertices to be rebuilt.
-      _flags = Usul::Bits::set ( _flags, Tile::VERTICES, true );
-      flags = _flags;
     }
 #endif
     
@@ -909,10 +905,10 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     Usul::Interfaces::IUnknown::QueryPtr unknown ( body );
 
     // Notify that the elevation has changed.
-    vector->elevationChangedNotify ( t0->extents(), t0->level(), t0->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t1->extents(), t1->level(), t1->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t2->extents(), t2->level(), t2->elevation(), unknown.get() );
-    vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevation(), unknown.get() );
+    vector->elevationChangedNotify ( t0->extents(), t0->level(), t0->elevationData(), unknown.get() );
+    vector->elevationChangedNotify ( t1->extents(), t1->level(), t1->elevationData(), unknown.get() );
+    vector->elevationChangedNotify ( t2->extents(), t2->level(), t2->elevationData(), unknown.get() );
+    vector->elevationChangedNotify ( t3->extents(), t3->level(), t3->elevationData(), unknown.get() );
 
     // Notify new children have been added.
     IUnknown::QueryPtr me ( this );
@@ -991,47 +987,6 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
 
   // If our logic is correct, this should be true.
   USUL_ASSERT ( this->referenceCount() >= 1 );
-  
-  // Have we been cancelled?
-  if ( job.valid() && true == job->canceled() )
-    job->cancel();
-
-  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
-  
-  // Handle no body.
-  if ( false == body.valid() )
-    return 0x0;
-
-  // Width and height for the image.
-  const ImageSize imageSize ( Usul::Threads::Safe::get ( this->mutex(), _imageSize ) );
-
-  // Elevation data.
-  Minerva::Core::Layers::RasterLayer::RefPtr elevationData ( body->elevationData() );
-  
-  // Have we been cancelled?
-  if ( job.valid() && true == job->canceled() )
-    job->cancel();
-
-  // Expand the request by degreesPerPixel / 2.0 on each side.
-  const Extents request ( Helper::expandExtents ( extents, Helper::degreesPerPixel ( extents, size ) ) );
-
-  // Get the data for our elevation.
-  osg::ref_ptr < osg::Image > elevation ( Tile::_buildRaster ( request, size[0], size[1], level, elevationData.get(), job ) );
-  
-  // Have we been cancelled?
-  if ( job.valid() && true == job->canceled() )
-    job->cancel();
-
-  // See if we have valid elevation.
-  if ( false == elevation.valid() )
-  {
-    // Use a quarter of the parent's elevation for the child.
-    osg::ref_ptr<osg::Image> parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
-    if ( parentElevation.valid() && 0x0 != parentElevation->data() )
-    {
-      elevation = Minerva::Core::Algorithms::resampleElevation ( Tile::RefPtr ( this ), extents );
-    }
-  }
 
   // Have we been cancelled?
   if ( job.valid() && true == job->canceled() )
@@ -1042,7 +997,25 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   tvd->add ( this->_perTileVectorDataGet()->getItemsWithinExtents ( extents.minLon(), extents.minLat(), extents.maxLon(), extents.maxLat() ) );
 
   // Make the tile.
-  Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, elevation.get(), tvd.get() ) );
+  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
+  ImageSize imageSize ( Usul::Threads::Safe::get ( this->mutex(), _imageSize ) );
+  Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, static_cast<Minerva::Interfaces::IElevationData*> ( 0x0 ), tvd.get() ) );
+
+  tile->buildElevationData ( job );
+
+  // Use a quarter of the parent's elevation for the child.
+  if ( false == tile->elevationData().valid() )
+  {
+    ElevationDataPtr parentElevation ( Usul::Threads::Safe::get ( this->mutex(), _elevation ) );
+    if ( parentElevation.valid() )
+    {
+      tile->elevationData ( Minerva::Core::Algorithms::resampleElevation ( Tile::RefPtr ( this ), extents ) );
+    }
+  }
+
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
 
 #if USE_TOP_DOWN_BUILD_RASTER == 0
   // Use the specified region of our image.
@@ -1567,9 +1540,7 @@ void Tile::_launchElevationRequest()
   // Start the request to pull in texture.
   if ( ( 0x0 != _body ) && ( 0x0 != _body->jobManager() ) )
   {
-    MeshSize size ( this->meshSize() );
-    Usul::Interfaces::IUnknown::RefPtr caller ( 0x0 );
-    _elevationJob = new CutImageJob ( this->extents(), size[0], size[1], this->level(), _body->elevationData(), caller );
+    _elevationJob = new Minerva::Core::Jobs::BuildElevation ( this );
     _body->jobManager()->addJob ( _elevationJob.get() );
   }
 #endif
@@ -1914,11 +1885,26 @@ Tile::RefPtr Tile::childAt ( unsigned int i ) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Tile::ImagePtr Tile::elevation() const
+Tile::ElevationDataPtr Tile::elevationData() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   return _elevation;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the elevation data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::elevationData ( ElevationDataPtr data )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _elevation = data;
+  this->dirty ( true, Tile::VERTICES, false );
 }
 
 
@@ -2241,6 +2227,43 @@ void Tile::unref ( bool allowDelete )
   else
   {
     BaseClass::unref_nodelete();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the elevation data for this tile.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Tile::buildElevationData ( Usul::Jobs::Job::RefPtr job )
+{
+  // Have we been cancelled?
+  if ( job.valid() && true == job->canceled() )
+    job->cancel();
+
+  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _body ) );
+  const MeshSize size ( Usul::Threads::Safe::get ( this->mutex(), _meshSize ) );
+  const Extents extents ( this->extents() );
+
+  // Handle no body.
+  if ( false == body.valid() )
+    return;
+  
+  // Expand the request by degreesPerPixel / 2.0 on each side.
+  const Extents request ( Helper::expandExtents ( extents, Helper::degreesPerPixel ( extents, size ) ) );
+
+  // Elevation data.
+  Minerva::Core::Layers::RasterLayer::RefPtr elevationData ( body->elevationData() );
+
+  // Build the data for elevation.
+  if ( 0x0 != elevationData )
+  {
+    Minerva::Interfaces::IElevationData::RefPtr elevation ( elevationData->elevationData ( 
+      request.minLon(), request.minLat(), request.maxLon(), request.maxLat(), size[0], size[1], this->level(), job, 0x0 ) );
+
+    this->elevationData ( elevation );
   }
 }
 

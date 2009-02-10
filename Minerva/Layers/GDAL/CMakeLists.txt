@@ -31,6 +31,7 @@ INCLUDE_DIRECTORIES(
 
 #List the Sources
 SET (SOURCES
+./Dataset.cpp
 ./Init.cpp
 ./RasterPolygonLayer.cpp
 ./RasterLayerGDAL.cpp
@@ -47,6 +48,8 @@ CADKIT_ADD_LIBRARY ( ${TARGET_NAME} )
 LINK_CADKIT( ${TARGET_NAME} Usul OsgTools SerializeXML XmlTree Minerva MinervaPostgres MinervaPostGIS  )
 TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${Boost_LIBRARIES}
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
 	${GDAL_LIBRARY}
 	${PQXX_LIBRARY}
 	${OPENTHREADS_LIB}

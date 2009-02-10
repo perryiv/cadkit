@@ -103,6 +103,7 @@ SET ( HEADERS
 	./Data/TimeStamp.h
 	./Data/Transform.h
 	./Data/UserData.h
+	./ElevationData.h
 	./Export.h
 	./Extents.h
 	./Factory/Readers.h
@@ -196,6 +197,7 @@ SET (SOURCES
 ./Data/TimePrimitive.cpp
 ./Data/TimeSpan.cpp
 ./Data/TimeStamp.cpp
+./ElevationData.cpp
 ./Factory/Readers.cpp
 ./Functions/CacheString.cpp
 ./Functions/MakeBody.cpp

@@ -284,9 +284,6 @@ osg::Node* Mesh::buildMesh ( const Body& body,
   const unsigned int rows ( _rows );
   const unsigned int columns ( _columns );
 
-  // The number of expected bytes for our elevation data.
-  const unsigned int expectedBytes ( rows * columns * sizeof ( float ) );
-
   // Check to make sure our elevation data is valid.
   const bool elevationValid ( elevation.valid() && 
                               rows == elevation->height() && 

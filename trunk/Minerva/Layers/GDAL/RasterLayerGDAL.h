@@ -12,6 +12,7 @@
 #define __MINERVA_GDAL_LAYER_H__
 
 #include "Minerva/Layers/GDAL/Export.h"
+#include "Minerva/Layers/GDAL/Dataset.h"
 
 #include "Minerva/Core/Layers/RasterLayer.h"
 
@@ -51,18 +52,31 @@ public:
   /// Deserialize.
   virtual void          deserialize ( const XmlTree::Node &node );
   
+  /// Get the raster data as elevation data.
+  virtual IElevationData::RefPtr elevationData ( 
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+    unsigned int width,
+    unsigned int height,
+    unsigned int level,
+    Usul::Jobs::Job* job,
+    Usul::Interfaces::IUnknown* caller );
+
 protected:
   
   virtual ~RasterLayerGDAL();
   
   RasterLayerGDAL ( const RasterLayerGDAL& );
 
-  static GDALDataset *  _createDataset ( const Extents& e, unsigned int width, unsigned int height, int bands, unsigned int type );
-  static void           _createGeoTransform ( GeoTransform &transfrom, const Extents& e, unsigned int width, unsigned int height );
   static GDALWarpOptions* _createWarpOptions ( GDALDataset* src, GDALDataset* dst, int numBands );
 
   virtual std::string   _cacheDirectory() const;
   virtual std::string   _cacheFileExtension() const;
+
+  /// Create dataset for the given extents.
+  Dataset::RefPtr _createTile ( const std::string& filename, const Extents& extents, unsigned int width, unsigned int height, unsigned int level, Usul::Jobs::Job *, IUnknown *caller );
 
   void                  _print ( GDALDataset * data );
 

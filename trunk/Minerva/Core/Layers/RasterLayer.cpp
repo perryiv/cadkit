@@ -10,6 +10,7 @@
 
 #include "Minerva/Core/Layers/RasterLayer.h"
 #include "Minerva/Core/Functions/CacheString.h"
+#include "Minerva/Core/ElevationData.h"
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/App/Application.h"
@@ -221,6 +222,8 @@ Usul::Interfaces::IUnknown* RasterLayer::queryInterface( unsigned long iid )
     return static_cast<Usul::Interfaces::IClonable*> ( this );
   case Usul::Interfaces::IBooleanState::IID:
     return static_cast < Usul::Interfaces::IBooleanState* > ( this );
+  case Minerva::Interfaces::ITileElevationData::IID:
+    return static_cast<Minerva::Interfaces::ITileElevationData*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -337,10 +340,37 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
 {
   USUL_TRACE_SCOPE;
 
+  // See if the job has been cancelled.
+  RasterLayer::_checkForCanceledJob ( job );
+
+  // Make the file name.
+  std::string file;
+  if ( CACHE_STATUS_FILE_OK == this->_getAndCheckCacheFilename ( extents, width, height, level, file ) )
+  {
+    RasterLayer::_checkForCanceledJob ( job );
+
+    // Load the file, set the file name and return.
+    ImagePtr image ( this->_readImageFile ( file ) );
+    image->setFileName ( file );
+    return image;
+  }
+
+  return ImagePtr ( 0x0 );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the cache filename.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayer::CacheStatus RasterLayer::_getAndCheckCacheFilename ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, std::string& filename )
+{
   // Get the cache directory.
   const std::string cachDir ( this->_cacheDirectory() );
   if ( true == cachDir.empty() )
-    return ImagePtr ( 0x0 );
+    return CACHE_STATUS_FILE_NAME_ERROR;
 
   // Make the directory. Guard it so that it's atomic.
   const std::string baseDir ( this->_baseDirectory ( cachDir, width, height, level ) );
@@ -350,43 +380,21 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
   }
 
   // Make the file name.
-  std::string file ( Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), '.', this->_cacheFileExtension() ) );
-
-  // See if the job has been cancelled.
-  _checkForCanceledJob ( job );
+  filename = Usul::Strings::format ( baseDir, this->_baseFileName ( extents ), '.', this->_cacheFileExtension() );
 
   // If the file does not exist then return.
-  if ( false == Usul::Predicates::FileExists::test ( file ) )
-    return ImagePtr ( 0x0 );
-
-  // See if the job has been cancelled.
-  _checkForCanceledJob ( job );
+  if ( false == Usul::Predicates::FileExists::test ( filename ) )
+    return CACHE_STATUS_FILE_DOES_NOT_EXIST;
 
   // If the file is empty then remove it and return.
-  if ( 0 == Usul::File::size ( file ) )
+  if ( 0 == Usul::File::size ( filename ) )
   {
-    this->_logEvent ( Usul::Strings::format ( "Warning 3552986954: Removing empty cached file: ", file ) );
-    Usul::File::remove ( file, false, &std::cout );
-    return ImagePtr ( 0x0 );
+    this->_logEvent ( Usul::Strings::format ( "Warning 3552986954: Removing empty cached file: ", filename ) );
+    Usul::File::remove ( filename, false, &std::cout );
+    return CACHE_STATUS_FILE_EMPTY;
   }
 
-  // Load the file.
-  ImagePtr image ( this->_readImageFile ( file ) );
-
-  // See if the job has been cancelled.
-  _checkForCanceledJob ( job );
-
-  // If it failed to load...
-  if ( false == image.valid() )
-  {
-    this->_logEvent ( Usul::Strings::format ( "Error 4739433170: Failed to load file: ", file, ", Removing file." ) );
-    Usul::File::remove ( file, false, 0x0 );
-    return ImagePtr ( 0x0 );
-  }
-
-  // Set the file name and return.
-  image->setFileName ( file );
-  return image;
+  return CACHE_STATUS_FILE_OK;
 }
 
 
@@ -758,4 +766,82 @@ void RasterLayer::name ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
   BaseClass::name ( name );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create ElevationData from an osg::Image.  This is to support the legacy api and will be removed.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail {
+
+  template < class SrcType >
+  RasterLayer::IElevationData::RefPtr convertFromOsgImage ( const osg::Image& image )
+  {
+    const SrcType *src ( reinterpret_cast < const SrcType* > ( image.data()  ) );
+
+    // Make sure the pointers are valid.
+    if ( 0x0 == src )
+      return 0x0;
+
+    const unsigned int width ( image.s() );
+    const unsigned int height ( image.t() );
+    Minerva::Interfaces::IElevationData::RefPtr data ( new Minerva::Core::ElevationData ( width, height ) );
+    for ( unsigned int i = 0; i < width; ++i )
+    {
+      for ( unsigned int j = 0; j < height; ++j )
+      {
+        const SrcType value ( *reinterpret_cast < const SrcType * > ( image.data ( i, j ) ) );
+        data->value ( i, j, static_cast<float> ( value ) );
+      }
+    }
+    return data;
+  }
+
+  
+  RasterLayer::IElevationData::RefPtr convertFromOsgImage ( osg::Image *image )
+  {
+    if ( 0x0 != image )
+    {
+      switch ( image->getDataType() )
+      {
+      // Treat unsigned shorts as shorts.  Any number greater than max short will be treated as a negative number.
+      // This is a work around for one earth's wms server.
+      case GL_UNSIGNED_SHORT:
+      case GL_SHORT:
+        return Detail::convertFromOsgImage<Usul::Types::Int16> ( *image );
+      case GL_UNSIGNED_BYTE:
+        return Detail::convertFromOsgImage<Usul::Types::Uint8> ( *image );
+      case GL_FLOAT:
+        return Detail::convertFromOsgImage<Usul::Types::Float32> ( *image );
+      }
+    }
+
+    return 0x0;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the raster data as elevation data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RasterLayer::IElevationData::RefPtr RasterLayer::elevationData ( 
+  double minLon,
+  double minLat,
+  double maxLon,
+  double maxLat,
+  unsigned int width,
+  unsigned int height,
+  unsigned int level,
+  Usul::Jobs::Job* job,
+  Usul::Interfaces::IUnknown* caller )
+{
+  osg::ref_ptr<osg::Image> image ( this->texture ( Extents ( minLon, minLat, maxLon, maxLat ), width, height, level, job, caller ) );
+  Minerva::Interfaces::IElevationData::RefPtr data ( Detail::convertFromOsgImage ( image.get() ) );
+  return data;
 }

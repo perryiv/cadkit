@@ -19,6 +19,8 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 
+#include "Minerva/Interfaces/IElevationData.h"
+
 #include "OsgTools/Configure/OSG.h"
 
 #include "osg/BoundingSphere"
@@ -52,6 +54,7 @@ public:
   typedef Vectors::size_type size_type;
   typedef osg::ref_ptr<osg::Image> ImagePtr;
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
+  typedef Minerva::Interfaces::IElevationData::RefPtr ElevationDataPtr;
 
   Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const Extents& extents );
 
@@ -60,7 +63,7 @@ public:
 
   // Build the mesh.
   osg::Node*          buildMesh ( const Body&, 
-                                  ImagePtr elevation, 
+                                  ElevationDataPtr elevation, 
                                   const osg::Vec2d& uRange,
                                   const osg::Vec2d& vRange,
                                   osg::BoundingSphere& boundingSphere );
@@ -70,9 +73,6 @@ public:
 
   // Get the elevation value from the triangles at a given lat,lon.
   double              elevation ( double lat, double lon, const LandModel& land ) const;
-
-  // Access to a single point.
-  const_reference     point ( size_type row, size_type column ) const;
 
   // The number of rows.
   unsigned int        rows() const { return _rows; }
@@ -97,6 +97,9 @@ private:
   // Get the index for the row and column.
   inline size_type    _index ( size_type row, size_type column ) const { return row * _columns + column; }
   
+  // Access to a single point.
+  const_reference     _point ( size_type row, size_type column ) const;
+
   // Set the location data.
   void                _setLocationData ( const Body& body, osg::BoundingSphere& boundingSphere, unsigned int i, unsigned int j, double lat, double lon, double elevation, double s, double t );
 

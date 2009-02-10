@@ -599,7 +599,7 @@ OsgTools::Widgets::Item* DataObject::clicked ( Usul::Interfaces::IUnknown* calle
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool DataObject::elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Unknown * caller )
+bool DataObject::elevationChangedNotify ( const Extents& extents, unsigned int level, ElevationDataPtr elevationData, Unknown * caller )
 {
   Extents e ( this->extents() );
 

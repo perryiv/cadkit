@@ -120,7 +120,7 @@ public:
   virtual void                dirtyScene ( bool b, Usul::Interfaces::IUnknown* caller = 0x0 );
 
   /// Elevation has changed within given extents (IElevationChangeListener).
-  virtual bool                elevationChangedNotify ( const Extents& extents, unsigned int level, ImagePtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
+  virtual bool                elevationChangedNotify ( const Extents& extents, unsigned int level, ElevationDataPtr elevationData, Usul::Interfaces::IUnknown * caller = 0x0 );
   
   /// Find unknown with given id.  The function will return null if not found.
   IUnknown::RefPtr            find ( const ObjectID& id ) const;

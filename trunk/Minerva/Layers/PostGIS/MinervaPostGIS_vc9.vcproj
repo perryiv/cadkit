@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib libpqddll.lib $(GDAL_LIB_FILE_DEBUG) wsock32.lib"
+				AdditionalDependencies="osgd.lib osgTextd.lib libpqddll.lib $(PQXX_LIB_FILE_DEBUG) $(GDAL_LIB_FILE_DEBUG) wsock32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostGISd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib $(GDAL_LIB_FILE_RELEASE) libpqdll.lib wsock32.lib"
+				AdditionalDependencies="osg.lib osgText.lib $(GDAL_LIB_FILE_RELEASE) libpqdll.lib $(PQXX_LIB_FILE_RELEASE) wsock32.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostGIS.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -101,7 +101,7 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Mesh::const_reference Mesh::point ( size_type r, size_type c ) const
+Mesh::const_reference Mesh::_point ( size_type r, size_type c ) const
 {
   return _points.at ( this->_index ( r, c ) );
 }
@@ -274,7 +274,7 @@ void Mesh::_buildGeometry ( osg::Geode& mesh, osg::Geode& skirts ) const
 ///////////////////////////////////////////////////////////////////////////////
 
 osg::Node* Mesh::buildMesh ( const Body& body, 
-                             ImagePtr elevation, 
+                             ElevationDataPtr elevation, 
                              const osg::Vec2d& uRange,
                              const osg::Vec2d& vRange,
                              osg::BoundingSphere& boundingSphere )
@@ -289,10 +289,8 @@ osg::Node* Mesh::buildMesh ( const Body& body,
 
   // Check to make sure our elevation data is valid.
   const bool elevationValid ( elevation.valid() && 
-                              GL_FLOAT == elevation->getDataType() && 
-                              expectedBytes == elevation->getImageSizeInBytes() &&
-                              static_cast<int> ( rows ) == elevation->s() && 
-                              static_cast<int> ( columns ) == elevation->t() );
+                              rows == elevation->height() && 
+                              columns == elevation->width() );
 
   // Shortcuts.
   const Extents::Vertex &mn ( extents.minimum() );
@@ -310,10 +308,7 @@ osg::Node* Mesh::buildMesh ( const Body& body,
       const double lon ( mn[0] + u * ( mx[0] - mn[0] ) );
       const double lat ( mn[1] + v * ( mx[1] - mn[1] ) );
 
-      // The osg::Image stores it's data as char*.  However, in this case the data of the image is float.
-      // The data function will calculate and return the pointer to the beginning of the float.  
-      // The pointer needs to be cast to a float pointer so the proper value is accessed.
-      double heightAboveSeaLevel ( ( elevationValid ? ( *reinterpret_cast < const float * > ( elevation->data ( rows - i - 1, j ) ) ) : 0.0 ) );
+      const double heightAboveSeaLevel ( elevationValid ? elevation->value ( rows - i - 1, j ) : 0.0 );
 
       // Calculate texture coordinate.  Lower left corner should be (0,0).
       const float s ( static_cast<float> ( uRange[0] + ( u * deltaU ) ) );
@@ -443,15 +438,15 @@ osg::Node* Mesh::_buildBorder() const
   // Loop through the columns.
   for ( unsigned int j = 0; j < this->columns(); ++j )
   {
-    top->push_back    ( this->point (                0, j ) );
-    bottom->push_back ( this->point ( this->rows() - 1, j ) );
+    top->push_back    ( this->_point (                0, j ) );
+    bottom->push_back ( this->_point ( this->rows() - 1, j ) );
   }
 
   // Loop through the rows.
   for ( unsigned int i = 0; i < this->rows(); ++i )
   {
-    left->push_back  ( this->point ( i, 0 ) );
-    right->push_back ( this->point ( i, this->columns() - 1 ) );
+    left->push_back  ( this->_point ( i, 0 ) );
+    right->push_back ( this->_point ( i, this->columns() - 1 ) );
   }
 
   // Top
@@ -562,10 +557,10 @@ osg::Node* Mesh::_buildBorder() const
 
 double Mesh::getSmallestDistanceSquared ( const osg::Vec3d& point ) const
 {
-  osg::Vec3d p00 ( _lowerLeft + this->point ( 0, 0 ) );
-  osg::Vec3d p0N ( _lowerLeft + this->point ( 0, this->columns() - 1 ) );
-  osg::Vec3d pN0 ( _lowerLeft + this->point ( this->rows() - 1, 0 ) );
-  osg::Vec3d pNN ( _lowerLeft + this->point ( this->rows() - 1, this->columns() - 1 ) );
+  osg::Vec3d p00 ( _lowerLeft + this->_point ( 0, 0 ) );
+  osg::Vec3d p0N ( _lowerLeft + this->_point ( 0, this->columns() - 1 ) );
+  osg::Vec3d pN0 ( _lowerLeft + this->_point ( this->rows() - 1, 0 ) );
+  osg::Vec3d pNN ( _lowerLeft + this->_point ( this->rows() - 1, this->columns() - 1 ) );
   const osg::Vec3d& pBC ( _boundingSphere.center() );
   
   // Squared distances from the eye to the points.

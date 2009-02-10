@@ -195,3 +195,33 @@ ElevationLayerDirectory::ImagePtr ElevationLayerDirectory::texture ( const Exten
   // Create the texture from our layers.
   return this->_texture ( layers, extents, width, height, level, job, caller );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the raster data as elevation data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ElevationLayerDirectory::IElevationData::RefPtr ElevationLayerDirectory::elevationData ( 
+  double minLon,
+  double minLat,
+  double maxLon,
+  double maxLat,
+  unsigned int width,
+  unsigned int height,
+  unsigned int level,
+  Usul::Jobs::Job* job,
+  Usul::Interfaces::IUnknown* caller )
+{
+  Extents requestExtents ( minLon, minLat, maxLon, maxLat );
+
+  Layers layers;
+  
+  // Get all the layers within the requested extents.
+  Minerva::Core::Visitors::FindUnknowns<IRasterLayer>::RefPtr visitor ( new Minerva::Core::Visitors::FindUnknowns<IRasterLayer> ( requestExtents, layers ) );
+  this->accept ( *visitor );
+ 
+  // Create the elevation data from our layers.
+  return this->_elevationData ( layers, minLon, minLat, maxLon, maxLat, width, height, level, job, caller );
+}

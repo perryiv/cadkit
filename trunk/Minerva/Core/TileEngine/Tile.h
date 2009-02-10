@@ -21,6 +21,7 @@
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/TileEngine/Mesh.h"
+#include "Minerva/Interfaces/IElevationData.h"
 #include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/ITile.h"
 
@@ -116,6 +117,7 @@ public:
   typedef Minerva::Core::Data::Container TileVectorData;
   typedef std::pair < TileVectorData::RefPtr, bool > TileVectorDataPair;
   typedef Usul::Interfaces::ITileVectorData::Jobs TileVectorJobs;
+  typedef Minerva::Interfaces::IElevationData::QueryPtr ElevationDataPtr;
   typedef Usul::Interfaces::IUnknown IUnknown;
   typedef Minerva::Interfaces::IIntersectNotify IIntersectNotify;
   typedef IIntersectNotify::Closest Closest;
@@ -130,7 +132,7 @@ public:
          double splitDistance = 1,
          Body *body = 0x0,
          osg::Image * image = 0x0,
-         osg::Image * elevation = 0x0,
+         ElevationDataPtr elevation = static_cast<Minerva::Interfaces::IElevationData*> ( 0x0 ),
          TileVectorData::RefPtr tileVectorData = 0x0 );
   Tile ( const Tile &, const osg::CopyOp &copyop = osg::CopyOp::SHALLOW_COPY );
 
@@ -147,6 +149,7 @@ public:
   Tile::RefPtr              childAt ( unsigned int i ) const;
 
   // Build raster and vector data.
+  void                      buildElevationData ( Usul::Jobs::Job::RefPtr );
   void                      buildPerTileVectorData ( Usul::Jobs::Job::RefPtr );
   void                      buildRaster ( Usul::Jobs::Job::RefPtr );
 
@@ -167,8 +170,9 @@ public:
   // Get the elevation at lat, lon.
   double                    elevation ( double lat, double lon );
 
-  // Get the elevation data.
-  ImagePtr                  elevation() const;
+  // Set/get the elevation data.
+  void                      elevationData ( ElevationDataPtr data );
+  ElevationDataPtr          elevationData() const;
 
   // Get the extents.
   Extents                   extents() const;
@@ -304,7 +308,7 @@ private:
   unsigned int _flags;
   Children _children;
   ImagePtr _image;
-  ImagePtr _elevation;
+  ElevationDataPtr _elevation;
   osg::ref_ptr < osg::Texture2D > _texture;
   Usul::Math::Vec4d _texCoords;
   Usul::Jobs::Job::RefPtr _imageJob;

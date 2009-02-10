@@ -14,6 +14,7 @@
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Data/Feature.h"
+#include "Minerva/Interfaces/ITileElevationData.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -50,7 +51,8 @@ class MINERVA_EXPORT RasterLayer : public Minerva::Core::Data::Feature,
                                    public Usul::Interfaces::ILayer,
                                    public Usul::Interfaces::IRasterAlphas,
                                    public Usul::Interfaces::IRasterLayer,
-                                   public Usul::Interfaces::IBooleanState
+                                   public Usul::Interfaces::IBooleanState,
+                                   public Minerva::Interfaces::ITileElevationData
 {
 public:
 
@@ -62,6 +64,7 @@ public:
   typedef Usul::Interfaces::IReadImageFile IReadImageFile;
   typedef IReadImageFile::RefPtr ReaderPtr;
   typedef Usul::File::Log::RefPtr LogPtr;
+  typedef Minerva::Interfaces::IElevationData IElevationData;
 
   USUL_DECLARE_QUERY_POINTERS ( RasterLayer );
   
@@ -84,6 +87,18 @@ public:
 
   // Clone this layer.
   virtual IUnknown*     clone() const = 0;
+
+  /// Get the raster data as elevation data.
+  virtual IElevationData::RefPtr elevationData ( 
+    double minLon,
+    double minLat,
+    double maxLon,
+    double maxLat,
+    unsigned int width,
+    unsigned int height,
+    unsigned int level,
+    Usul::Jobs::Job* job,
+    Usul::Interfaces::IUnknown* caller );
 
   /// Get the guid for the layer.
   virtual std::string   guid() const;
@@ -116,6 +131,15 @@ protected:
   std::string           _baseFileName ( Extents extents ) const;
   static std::string    _buildCacheDir ( const std::string &rootDir, const std::string &mangledUrl, const std::size_t hashValue );
 
+  enum CacheStatus
+  {
+    CACHE_STATUS_FILE_OK,
+    CACHE_STATUS_FILE_DOES_NOT_EXIST,
+    CACHE_STATUS_FILE_NAME_ERROR,
+    CACHE_STATUS_FILE_EMPTY
+  };
+
+  CacheStatus           _getAndCheckCacheFilename ( const Extents& extents, unsigned int width, unsigned int height, unsigned int level, std::string& filename );
   virtual std::string   _cacheDirectory() const;
   virtual std::string   _cacheFileExtension() const;
   virtual std::string   _cacheFileName( const Extents& extents, unsigned int width, unsigned int height, unsigned int level ) const;

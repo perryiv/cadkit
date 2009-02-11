@@ -2283,7 +2283,7 @@ void Tile::intersectNotify ( double x, double y, double z, double lon, double la
   typedef IIntersectNotify::Point Point;
   typedef IIntersectNotify::PointAndDistance PointAndDistance;
 
-  IIntersectNotify::QueryPtr notify ( this->_perTileVectorDataGet() );
+  IIntersectNotify::QueryPtr notify ( this->_perTileVectorDataGet().get() );
   if ( true == notify.valid() )
   {
     Closest closest ( Path(), PointAndDistance ( Point(), std::numeric_limits<double>::max() ) );

@@ -61,7 +61,7 @@ Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClas
   Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( caller );
   if( factory.valid() )
   {
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar() );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar().get() );
     _progress = unknown.get();
     _label = unknown.get();
 

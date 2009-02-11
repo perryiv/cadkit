@@ -38,6 +38,7 @@ LINK_CADKIT( MinervaPostgres Usul SerializeXML XmlTree )
 TARGET_LINK_LIBRARIES(MinervaPostgres
 	${Boost_LIBRARIES}
 	${PQXX_LIBRARY}
+	${POSTGRESQL_LIBRARIES}
 )
 
 IF(WIN32)

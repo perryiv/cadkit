@@ -38,7 +38,7 @@ Usul::Interfaces::IUnknown* Minerva::Core::Functions::readFile ( const std::stri
   if ( read.valid() )
   {
     Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IProgressBarFactory::IID ) );
-    Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar() );
+    Usul::Interfaces::IUnknown::QueryPtr unknown ( factory->createProgressBar().get() );
     read->read ( filename, 0x0, unknown.get() );
   }
   

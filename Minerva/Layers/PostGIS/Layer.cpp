@@ -971,7 +971,7 @@ void Layer::updateNotify ( Usul::Interfaces::IUnknown *caller )
       ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IProgressBarFactory::IID ) );
 
     // Make the progress bar.
-    Usul::Interfaces::IUnknown::QueryPtr progress ( factory.valid() ? factory->createProgressBar() : 0x0 );
+    Usul::Interfaces::IUnknown::QueryPtr progress ( factory.valid() ? factory->createProgressBar().get() : 0x0 );
 
     // Create a job to update the file.
     Usul::Jobs::Job::RefPtr job ( Usul::Jobs::create 

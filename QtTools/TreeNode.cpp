@@ -416,7 +416,7 @@ void TreeNode::_addChildren()
   
   for ( unsigned int i = 0; i < numChildren; ++i )
   {
-    Usul::Interfaces::ITreeNode::QueryPtr tn ( _node->getChildNode ( i ) );
+    Usul::Interfaces::ITreeNode::QueryPtr tn ( _node->getChildNode ( i ).get() );
     TreeNode* child ( new TreeNode ( tn.get(), this ) );
     child->model ( this->model() );
     _children.push_back ( child );

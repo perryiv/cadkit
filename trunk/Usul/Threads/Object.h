@@ -18,13 +18,18 @@
 
 #include "Usul/Threads/ReadWriteMutex.h"
 #include "Usul/Threads/ReadWriteLocks.h"
+#include "Usul/Threads/MutexTraits.h"
 
 
 namespace Usul {
 namespace Threads {
 
 
-template < class ValueType_ > struct Object
+template < 
+  class ValueType_, 
+  class MutexTraits = Usul::Threads::MutexTraits<Usul::Threads::ReadWriteMutex> 
+  > 
+struct Object
 {
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -34,9 +39,9 @@ template < class ValueType_ > struct Object
 
   typedef ValueType_ ValueType;
   typedef ValueType value_type;
-  typedef Usul::Threads::ReadWriteMutex MutexType;
-  typedef Usul::Threads::ReadLock<MutexType> ReadLock;
-  typedef Usul::Threads::WriteLock<MutexType> WriteLock;
+  typedef typename MutexTraits::MutexType MutexType;
+  typedef typename MutexTraits::ReadLock ReadLock;
+  typedef typename MutexTraits::WriteLock WriteLock;
 
 
   /////////////////////////////////////////////////////////////////////////////

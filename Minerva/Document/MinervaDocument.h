@@ -60,6 +60,7 @@
 namespace Usul { namespace Interfaces { struct ICommand; } }
 
 namespace Minerva { namespace Core { class Visitor; } }
+namespace Minerva { namespace Core { namespace Data { class DataObject; } } }
 
 namespace Minerva {
 namespace Document {
@@ -297,6 +298,8 @@ protected:
   void                                     _buildTimeSpanMenu();
   void                                     _buildLayerMenu();
   void                                     _buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces::ITreeNode* node );
+  
+  bool                                     _displayInformationBallon ( Minerva::Core::Data::DataObject& );
   
   /// Find object.
   Usul::Interfaces::IUnknown::RefPtr       _findObject ( const ObjectID& objectID );

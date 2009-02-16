@@ -2445,7 +2445,7 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
     for ( Path::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
     {
       Minerva::Interfaces::IDataObject::QueryPtr ptr ( *i );
-      Minerva::Core::Data::DataObject::RefPtr ( ( true == ptr.valid() ) ? ptr->dataObject() : 0x0 );
+      Minerva::Core::Data::DataObject::RefPtr dataObject ( ( true == ptr.valid() ) ? ptr->dataObject() : 0x0 );
       if ( true == dataObject.valid() )
       {
         const std::string s ( dataObject->description() );

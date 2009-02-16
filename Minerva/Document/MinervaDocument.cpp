@@ -2416,7 +2416,7 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
     Tile::RefPtr tile ( dynamic_cast < Tile * > ( i->get() ) );
     if ( true == tile.valid() )
     {
-      Minerva::Interfaces::IIntersectNotify::QueryPtr notify ( tile ); 
+      IIntersectNotify::QueryPtr notify ( tile ); 
       if ( true == notify.valid() )
       {
         // Notify the tile about the intersection. It can optionally 
@@ -2431,10 +2431,36 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
     }
   }
 
+  // Get the path of unknown pointers.
+  Path unknowns ( closest.first );
+
   // Do we have a closest point?
-  if ( ( false == closest.first.empty() ) && ( 3 == closest.second.first.size() ) )
+  if ( ( false == unknowns.empty() ) && ( 3 == closest.second.first.size() ) )
   {
+    // Draw a line from under the mouse to the intersected point.
     body->intersectionGraphicSet ( lonLatPoint[0], lonLatPoint[1], lonLatPoint[2], closest.second.first.at(0), closest.second.first.at(1), closest.second.first.at(2) );
+
+    // Accumulate the description strings for the data objects.
+    std::ostringstream ds;
+    for ( Path::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
+    {
+      Minerva::Interfaces::IDataObject::QueryPtr ptr ( *i );
+      Minerva::Core::Data::DataObject::RefPtr ( ( true == ptr.valid() ) ? ptr->dataObject() : 0x0 );
+      if ( true == dataObject.valid() )
+      {
+        const std::string s ( dataObject->description() );
+        if ( false == s.empty() )
+        {
+          ds << s << '\n';
+        }
+      }
+    }
+
+    // Show the description string.
+    const std::string description ( ds.str() );
+    if ( false == description.empty() )
+    {
+    }
   }
 }
 
@@ -3020,13 +3046,12 @@ bool MinervaDocument::_displayInformationBalloon ( Minerva::Core::Data::DataObje
   // Remove what we have.
   this->_clearBalloon();
   
-  osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
   osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
   
   OsgTools::Widgets::Item::RefPtr item ( dataObject.clicked() );
   if ( camera.valid() && item.valid() )
   {
-    balloon = item->buildScene();
+    osg::ref_ptr<osg::Node> balloon ( item->buildScene() );
     camera->addChild ( balloon.get() );
     
     Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );

@@ -42,21 +42,6 @@ ENDMACRO(LINK_CADKIT TRGTNAME)
 
 #######################################################
 #
-#  Set variables for copy
-#
-#######################################################
-
-IF(WIN32)
-	SET ( CADKIT_COPY_COMMAND xcopy )
-	SET ( CADKIT_COPY_OPTIONS /f /i /k /y /c )
-ELSE(WIN32)
-	SET ( CADKIT_COPY_COMMAND cp )
-	SET ( CADKIT_COPY_OPTIONS )
-ENDIF(WIN32)
-
-
-#######################################################
-#
 #  Macro to change path containing '/' to '\' on Windows.
 #
 #######################################################
@@ -79,10 +64,10 @@ MACRO(CADKIT_COPY TARGET_NAME SOURCE DESTINATION)
 	CORRECT_PATH ( SOURCE_ ${SOURCE} )
 	CORRECT_PATH ( DESTINATION_ ${DESTINATION} )
 	ADD_CUSTOM_COMMAND(
-       SOURCE ${TARGET_NAME}
-      COMMAND ${CCOMMAND_COMMAND}
-       ARGS ${CADKIT_COPY_COMMAND} ${SOURCE_} ${DESTINATION_} ${CADKIT_COPY_OPTIONS}
-       TARGET ${TARGET_NAME} )
+      SOURCE ${TARGET_NAME}
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy ${SOURCE_} ${DESTINATION_}
+      TARGET ${TARGET_NAME} )
 ENDMACRO(CADKIT_COPY TARGET_NAME SOURCE DESTINATION)
 
 

@@ -299,7 +299,7 @@ protected:
   void                                     _buildLayerMenu();
   void                                     _buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces::ITreeNode* node );
   
-  bool                                     _displayInformationBallon ( Minerva::Core::Data::DataObject& );
+  bool                                     _displayInformationBalloon ( Minerva::Core::Data::DataObject& );
   
   /// Find object.
   Usul::Interfaces::IUnknown::RefPtr       _findObject ( const ObjectID& objectID );

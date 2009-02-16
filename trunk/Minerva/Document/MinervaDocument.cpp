@@ -2991,7 +2991,7 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
     if( false == objects.empty() && true == objects.front().valid() )
     {
       Minerva::Core::Data::DataObject::RefPtr dataObject ( objects.front() );
-      return this->_displayInformationBallon ( *dataObject );
+      return this->_displayInformationBalloon ( *dataObject );
     }
     else
     {
@@ -3015,7 +3015,7 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool MinervaDocument::_displayInformationBallon ( Minerva::Core::Data::DataObject& dataObject )
+bool MinervaDocument::_displayInformationBalloon ( Minerva::Core::Data::DataObject& dataObject )
 {
   // Remove what we have.
   this->_clearBalloon();

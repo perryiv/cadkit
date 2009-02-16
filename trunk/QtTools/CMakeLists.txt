@@ -78,7 +78,7 @@ TARGET_LINK_LIBRARIES( QtTools
 # Copy the generated header file to location client libraries can see.
 CADKIT_COPY(QtTools "${CMAKE_CURRENT_BINARY_DIR}/ui_AnimationControl.h" "${PROJECT_SOURCE_DIR}/ui_AnimationControl.h" )
 
-SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons )
+SET( IconDir ${EXECUTABLE_OUTPUT_PATH}/icons/ )
 FILE(GLOB PngFiles "${PROJECT_SOURCE_DIR}/Icons/*.png" )
 
 SET ( IconFiles ${PngFiles} )

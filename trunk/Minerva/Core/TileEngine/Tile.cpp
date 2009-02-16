@@ -1001,6 +1001,11 @@ Tile::RefPtr Tile::_buildTile ( unsigned int level,
   ImageSize imageSize ( Usul::Threads::Safe::get ( this->mutex(), _imageSize ) );
   Tile::RefPtr tile ( new Tile ( this, index, level, extents, size, imageSize, splitDistance, body.get(), 0x0, static_cast<Minerva::Interfaces::IElevationData*> ( 0x0 ), tvd.get() ) );
 
+  // Tell the vector data to update now. Otherwise, when the new tile draws it 
+  // will still be blank until the first vector job finishes.
+  tvd->updateNotify ( Usul::Interfaces::IUnknown::QueryPtr ( body.get() ) );
+
+  // Tell the tile to start building its elevation data.
   tile->buildElevationData ( job );
 
   // Use a quarter of the parent's elevation for the child.

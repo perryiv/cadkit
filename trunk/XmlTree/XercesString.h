@@ -33,10 +33,10 @@ namespace XmlTree
   //
   ///////////////////////////////////////////////////////////////////////////////
 
-  inline XercesString fromNative( const char *str )
+  inline XercesString fromNative ( const char *str )
   {
     boost::scoped_array < XMLCh > ptr ( xercesc::XMLString::transcode ( str ) );
-    return XercesString( ptr.get () );
+    return XercesString ( ptr.get() );
   }
 
 
@@ -46,9 +46,9 @@ namespace XmlTree
   //
   ///////////////////////////////////////////////////////////////////////////////
 
-  inline XercesString fromNative( const std::string& str )
+  inline XercesString fromNative ( const std::string& str )
   {
-    return XercesString( fromNative ( str.c_str() ) );
+    return XercesString ( fromNative ( str.c_str() ) );
   }
 
 
@@ -76,6 +76,12 @@ namespace XmlTree
     return toNative ( str.c_str() );
   }
 
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Compare two strings.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
 
   inline bool compare ( const XMLCh *str1, const char *str2 )
   {

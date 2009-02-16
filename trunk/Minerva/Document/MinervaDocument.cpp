@@ -2950,9 +2950,6 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
     return false;
   }
 
-  osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
-  osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
-
 #if 0
   typedef osgUtil::PolytopeIntersector::Intersections Intersections;
   const unsigned int dimensions ( osgUtil::PolytopeIntersector::DimOne | osgUtil::PolytopeIntersector::DimZero );
@@ -2990,23 +2987,11 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
       }
     }
 
+    // Get the first data object and display it.
     if( false == objects.empty() && true == objects.front().valid() )
     {
-      // Remove what we have.
-      this->_clearBalloon();
-
       Minerva::Core::Data::DataObject::RefPtr dataObject ( objects.front() );
-
-      OsgTools::Widgets::Item::RefPtr item ( dataObject->clicked() );
-      if ( item.valid() )
-      {
-        balloon = item->buildScene();
-        camera->addChild ( balloon.get() );
-
-        Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
-
-        return true;
-      }
+      return this->_displayInformationBallon ( *dataObject );
     }
     else
     {
@@ -3018,6 +3003,35 @@ bool MinervaDocument::_intersectScene ( osgGA::GUIEventAdapter& ea, Usul::Interf
   else
   {
     this->_clearBalloon();
+  }
+  
+  return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Clear the balloon
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::_displayInformationBallon ( Minerva::Core::Data::DataObject& dataObject )
+{
+  // Remove what we have.
+  this->_clearBalloon();
+  
+  osg::ref_ptr<osg::Node> balloon ( Usul::Threads::Safe::get ( this->mutex(), _balloon ) );
+  osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
+  
+  OsgTools::Widgets::Item::RefPtr item ( dataObject.clicked() );
+  if ( camera.valid() && item.valid() )
+  {
+    balloon = item->buildScene();
+    camera->addChild ( balloon.get() );
+    
+    Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
+    
+    return true;
   }
   
   return false;

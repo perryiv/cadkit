@@ -67,6 +67,7 @@ FIND_PACKAGE(OpenGL)
 
 INCLUDE( FindOSG )
 
+
 #########################################################
 #
 #  Find boost.
@@ -76,6 +77,18 @@ INCLUDE( FindOSG )
 SET ( BOOST_INCLUDEDIR $ENV{BOOST_INC_DIR} )
 SET ( BOOST_LIBRARYDIR $ENV{BOOST_LIB_DIR} )
 FIND_PACKAGE( Boost 1.36 COMPONENTS date_time filesystem regex threads system )
+
+
+#########################################################
+#
+#  Versions of boost prior to 1.35 had the system 
+#  library rolled into the file-system library.
+#
+#########################################################
+
+IF ( ${Boost_VERSION} LESS "103500" )
+SET ( Boost_SYSTEM_LIBRARY ${Boost_FILESYSTEM_LIBRARY} )
+ENDIF ( ${Boost_VERSION} LESS "103500" )
 
 
 #########################################################

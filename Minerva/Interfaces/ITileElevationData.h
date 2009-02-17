@@ -44,7 +44,7 @@ struct ITileElevationData : public Usul::Interfaces::IUnknown
     unsigned int height,
     unsigned int level,
     Usul::Jobs::Job* job,
-    Usul::Interfaces::IUnknown* caller ) = 0x0;
+    Usul::Interfaces::IUnknown* caller ) = 0;
 
 }; // struct ITileElevationData
 

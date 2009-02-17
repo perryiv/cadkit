@@ -104,7 +104,7 @@ public:
     Usul::Trace::Print::printing ( false );
 
     // Use 5 threads.
-    Usul::Jobs::Manager::init( 5, false );
+    Usul::Jobs::Manager::init( "Job Manager Singleton", 5, false );
   }
 
 

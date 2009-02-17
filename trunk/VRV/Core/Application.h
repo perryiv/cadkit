@@ -163,7 +163,7 @@ public:
   typedef IShadeModel::Mode                    ShadeModel;
   typedef Usul::Interfaces::IRotationCenterFloat  IRotationCenter;
   typedef IRotationCenter::Vector                 Vector;
-  typedef Usul::Interfaces::IUnknown              IUnknown
+  typedef Usul::Interfaces::IUnknown              IUnknown;
 
   typedef Usul::Functors::Interaction::Common::BaseFunctor   Navigator;
   typedef Usul::Functors::Interaction::Input::AnalogInput    AnalogInput;

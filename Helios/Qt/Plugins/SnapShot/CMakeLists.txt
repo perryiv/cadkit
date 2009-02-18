@@ -19,6 +19,7 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
                       ${QT_INCLUDE_DIR}
                       ${CMAKE_CURRENT_BINARY_DIR} )
 
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 SET (SOURCES
 ./SnapShotComponent.cpp

@@ -8,13 +8,14 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 FIND_PACKAGE(OpenGL)
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
 					 ${OSG_INC_DIR} 
                      ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../../../" 
                      ${QT_INCLUDE_DIR} )
+
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # Add definitions
 ADD_DEFINITIONS ("-D_COMPILING_HELIOS_QT_VIEWS_OSG")

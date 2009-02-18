@@ -244,7 +244,7 @@ namespace Detail
     return os.str();
   }
 
-  inline std::string buildShadingFunction ( const osg::Vec3& ambient, const osg::Vec3& diffuse, const osg::Vec3& specular, float shininess )
+  inline std::string buildShadingFunction ( const osg::Vec3f& ambient, const osg::Vec3f& diffuse, const osg::Vec3f& specular, float shininess )
   {
     std::ostringstream os;
 
@@ -354,7 +354,7 @@ namespace Detail
     if ( transferFunction )
     {
       if ( shading )
-        return buildShadingFunction ( osg::Vec3 ( 0.1, 0.1, 0.1 ), osg::Vec3 ( 0.6, 0.6, 0.6 ), osg::Vec3 ( 0.2, 0.2, 0.2 ), 50 ) + fragTransferFunctionSource;
+        return buildShadingFunction ( osg::Vec3f ( 0.1f, 0.1f, 0.1f ), osg::Vec3f ( 0.6f, 0.6f, 0.6f ), osg::Vec3f ( 0.2f, 0.2f, 0.2f ), 50 ) + fragTransferFunctionSource;
       
       return fragTransferFunctionSource;
     }

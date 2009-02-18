@@ -30,8 +30,7 @@ INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} ${OSG_INC_
 #
 #########################################################
 
-SET ( Headers
-	./Animate/AnimationCallback.h
+SET ( HEADERS
 	./Axes.h
 	./Box.h
 	./Builders/Arrow.h
@@ -172,7 +171,6 @@ SET ( Headers
 #########################################################
 
 SET (SOURCES
-  Animate/AnimationCallback.cpp
   Axes.cpp
   Builders/Arrow.cpp
   Builders/GradientBackground.cpp

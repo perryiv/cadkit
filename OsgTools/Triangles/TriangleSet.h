@@ -49,10 +49,6 @@
 #include <map>
 #include <string>
 
-#define TRY_NEW_HASH 1
-
-
-using namespace Usul::Types;
 
 namespace osgUtil { class Hit; }
 namespace osg { class Node; class Group; }
@@ -297,7 +293,6 @@ public:
   const osg::Vec3f &      vertexNormal ( unsigned int ) const;
 
   void                    loadColorFile( const std::string &filename, const HeaderInfo& header );
-
 
 protected:
 

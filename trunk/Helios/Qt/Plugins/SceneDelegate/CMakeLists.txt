@@ -15,6 +15,7 @@ INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR}
                      "${PROJECT_SOURCE_DIR}/../" 
                       ${QT_INCLUDE_DIR} )
 
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 set (SOURCES
   SceneDelegateComponent.cpp

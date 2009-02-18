@@ -109,7 +109,7 @@ namespace Detail
       float _t;
     };
 
-    T equal ( 0.000001 );
+    T equal ( 0.000001f );
 
     for ( Shared::iterator i = shared.begin(); i != shared.end(); ++i )
     {

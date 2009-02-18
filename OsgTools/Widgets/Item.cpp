@@ -33,8 +33,8 @@ Item::Item() : BaseClass(),
   _maximiumSize ( std::numeric_limits<SizeType>::max(), std::numeric_limits<SizeType>::max() ),
   _minimiumSize ( 0, 0 ),
   _position ( 0, 0 ),
-  _backgroundColor ( 0.5, 0.5, 0.5, 0.3 ),
-  _borderColor( 0.5, 0.5, 0.8, 1.0 ),
+  _backgroundColor ( 0.5f, 0.5f, 0.5f, 0.3f ),
+  _borderColor( 0.5f, 0.5f, 0.8f, 1.0f ),
   _styleFlags ( STYLE_BACKGROUND | STYLE_BORDER )
 {
 }

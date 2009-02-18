@@ -43,8 +43,8 @@ osg::Node* Sample::make_scene()
   // green torus
   osg::ref_ptr<osg::MatrixTransform> mttor = new osg::MatrixTransform();
   mtcbox->setName("OsgTools_Sample_scene_mttor");
-  OsgTools::Torus ctorus( 0.7,                            // inner radius
-                          1.0,                            // outer radius
+  OsgTools::Torus ctorus( 0.7f,                            // inner radius
+                          1.0f,                            // outer radius
                           osg::DegreesToRadians(   0.0 ), // start angle
                           osg::DegreesToRadians( 300.0 ), // end angle
                           50,                             // circle cuts
@@ -91,11 +91,11 @@ osg::Node* Sample::make_scene()
   OsgTools::MaterialBox mbox;
 
   // front side material properties
-  mbox.color_policy().ambient( osg::Vec4(0.6,0.6,0.6,1.0) );  // some light
-  mbox.color_policy().diffuse( osg::Vec4(0.0,0.0,0.7,1.0) );  // blue color
-  mbox.color_policy().emissive( osg::Vec4(0.0,0.0,0.0,1.0) ); // none
-  mbox.color_policy().shininess( 0.0 );                       // no shine
-  mbox.color_policy().specular( osg::Vec4(0.0,0.0,0.0,1.0) ); // no specular
+  mbox.color_policy().ambient( osg::Vec4(0.6f,0.6f,0.6f,1.0f) );  // some light
+  mbox.color_policy().diffuse( osg::Vec4(0.0f,0.0f,0.7f,1.0f) );  // blue color
+  mbox.color_policy().emissive( osg::Vec4(0.0f,0.0f,0.0f,1.0f) ); // none
+  mbox.color_policy().shininess( 0.0f );                       // no shine
+  mbox.color_policy().specular( osg::Vec4(0.0f,0.0f,0.0f,1.0f) ); // no specular
   mtmbox->addChild( mbox() );
 
   // mystery sphere
@@ -105,11 +105,11 @@ osg::Node* Sample::make_scene()
   msphere.radius(1.2*msphere.radius());
 
   // front side material properties
-  msphere.color_policy().ambient( osg::Vec4(0.8,0.8,0.8,1.0) );  // good light
-  msphere.color_policy().diffuse( osg::Vec4(0.0,1.0,0.0,1.0) );  // bright green
-  msphere.color_policy().emissive( osg::Vec4(0.0,0.0,0.0,1.0) ); // black
-  msphere.color_policy().shininess( 0.5 );                       // some shine
-  msphere.color_policy().specular( osg::Vec4(0.5,0.5,0.5,1.0) ); // some specular
+  msphere.color_policy().ambient( osg::Vec4(0.8f,0.8f,0.8f,1.0f) );  // good light
+  msphere.color_policy().diffuse( osg::Vec4(0.0f,1.0f,0.0f,1.0f) );  // bright green
+  msphere.color_policy().emissive( osg::Vec4(0.0f,0.0f,0.0f,1.0f) ); // black
+  msphere.color_policy().shininess( 0.5f );                       // some shine
+  msphere.color_policy().specular( osg::Vec4(0.5f,0.5f,0.5f,1.0f) ); // some specular
   mtmsph->addChild( msphere() );
 
   OsgTools::Circle circle(3.0f,variables);

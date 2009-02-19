@@ -47,13 +47,16 @@ public:
 
   // Set the date text.
   void          dateFeedback ( const std::string& text );
-  
+
   // Set the eye altitude.
   void          eyeAltitude ( double altitude );
   
   // Set heading, pitch, roll.
   void          hpr ( double heading, double pitch, double roll );
-  
+
+  // Set the meta-data string.
+  void          metaString ( const std::string & );
+
   // Set the pointer position.
   void          position ( double lat, double lon, double height );
   
@@ -80,10 +83,14 @@ public:
   // Show the date feedback.
   void          showDateFeedback ( bool b );
   bool          showDateFeedback() const;
-  
+
   // Show the eye altitude.
   void          showEyeAltitude ( bool b );
   bool          showEyeAltitude() const;
+
+  // Show the meta-string.
+  void          showMetaString ( bool b );
+  bool          showMetaString() const;
   
   // Update scene.
   void          updateScene ( unsigned int width, unsigned int height );
@@ -97,11 +104,13 @@ private:
     _SHOW_JOB_FEEDBACK     = 0x00000004,
     _SHOW_DATE_FEEDBACK    = 0x00000008,
     _SHOW_EYE_ALTITUDE     = 0x00000010,
+    _SHOW_META_STRING      = 0x00000020,
     _ALL                   = _SHOW_COMPASS | 
                              _SHOW_POINTER_POSITION | 
                              _SHOW_JOB_FEEDBACK | 
                              _SHOW_DATE_FEEDBACK |
-                             _SHOW_EYE_ALTITUDE
+                             _SHOW_EYE_ALTITUDE |
+                             _SHOW_META_STRING
   };
   
   osg::ref_ptr < osg::Camera > _camera;
@@ -115,6 +124,7 @@ private:
   osg::ref_ptr < Compass > _compass;
   unsigned int _flags;
   double _eyeAltitude;
+  std::string _metaString;
 };
 
   

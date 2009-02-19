@@ -16,6 +16,7 @@
 #include "osgText/Text"
 
 #include <iostream>
+#include <stdexcept>
 
 using namespace OsgTools::Widgets;
 
@@ -324,7 +325,12 @@ osgText::Text* Text::_makeText ( unsigned int depth ) const
 {
   const SizeType width  ( this->size()[0] );
   SizeType height ( this->size()[1] );
-  
+
+  if ( ( 0 == width ) || ( 0 == height ) )
+  {
+    throw std::runtime_error ( "Error 2114860216: Cannot make text with height or width of zero" );
+  }
+
   osg::ref_ptr < osgText::Text > text ( new osgText::Text );
   text->setFont( OsgTools::Font::defaultFont() );
   

@@ -52,10 +52,15 @@ Container::Container() :
   _builders(),
   _flags ( Container::ALL ),
   _root ( new osg::Group ),
-  _unknownMap()
+  _unknownMap(),
+  _comments()
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
+
+  // Default comments.
+  _comments.push_back ( "This comment will get read and written again" );
+  _comments.push_back ( "There can be more than one comment" );
 }
 
 
@@ -72,7 +77,8 @@ Container::Container( const Container& rhs ) :
   _builders ( rhs._builders ),
   _flags ( rhs._flags | Container::SCENE_DIRTY ), // Make sure scene gets rebuilt.
   _root ( new osg::Group ),
-  _unknownMap ( rhs._unknownMap )
+  _unknownMap ( rhs._unknownMap ),
+  _comments ( rhs._comments )
 {
   USUL_TRACE_SCOPE;
   this->_registerMembers();
@@ -93,6 +99,7 @@ Container::~Container()
   _updateListeners.clear();
   _builders.clear();
   _unknownMap.clear();
+  _comments.clear();
   _root = 0x0;
 }
 
@@ -107,6 +114,7 @@ void Container::_registerMembers()
 {
   USUL_TRACE_SCOPE;
   this->_addMember ( "layers", _layers );
+  this->_addMember ( "comments", _comments );
 }
 
 

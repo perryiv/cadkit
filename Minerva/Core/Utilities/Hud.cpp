@@ -84,7 +84,8 @@ Hud::Hud() :
   _running (),
   _compass ( new Compass ),
   _flags ( Hud::_ALL ),
-  _eyeAltitude ( 0.0 )
+  _eyeAltitude ( 0.0 ),
+  _metaString()
 {
   _camera->setRenderOrder ( osg::Camera::POST_RENDER );
   _camera->setReferenceFrame ( osg::Camera::ABSOLUTE_RF );
@@ -159,6 +160,17 @@ void Hud::updateScene ( unsigned int width, unsigned int height )
     out << "Queued: " << queued << ", Running: " << executing.size();
     for ( Strings::const_iterator i = executing.begin(); i != executing.end(); ++i )
       out << '\n' << *i;
+  }
+
+  // Append meta-string to the "feedback" text.
+  if ( ( true == this->showMetaString() ) && ( false == _metaString.empty() ) )
+  {
+    const std::string temp ( out.str() );
+    if ( false == temp.empty() )
+    {
+      out << "\n\n";
+    }
+    out << _metaString;
   }
   _feedback->setText ( out.str() );
   
@@ -278,6 +290,30 @@ void Hud::position ( double lat, double lon, double height )
   _latLonHeight[0] = lon;
   _latLonHeight[1] = lat;
   _latLonHeight[2] = height;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the meta-data string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::metaString ( const std::string &s )
+{
+  _metaString = s;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the eye altitude.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Hud::eyeAltitude ( double altitude )
+{
+  _eyeAltitude = altitude;
 }
 
 
@@ -431,11 +467,23 @@ bool Hud::showEyeAltitude() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set the eye altitude.
+//  Set the meta-string shown flag.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Hud::eyeAltitude ( double altitude )
+void Hud::showMetaString ( bool b )
 {
-  _eyeAltitude = altitude;
+  _flags = Usul::Bits::set ( _flags, _SHOW_META_STRING, b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the meta-string shown flag.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Hud::showMetaString() const
+{
+  return Usul::Bits::has ( _flags, _SHOW_META_STRING );
 }

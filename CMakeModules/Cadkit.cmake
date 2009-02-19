@@ -5,6 +5,26 @@
 #
 #######################################################
 
+# Set compile flags for Visual Studio.
+IF(MSVC)
+
+	# Set flag to translate structured exceptions into c++ exceptions.
+	STRING(REPLACE "EHsc" "EHa" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
+	
+	# Up the warning level.  This gives a ton of warnings and I'm not ready to fix them all.
+	#STRING(REPLACE "W3" "W4" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
+	
+	# Disable these warnings.
+	# 4127 is "conditional expression is constant".
+	#SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4127" )
+	
+	ADD_DEFINITIONS("-D_CRT_SECURE_NO_WARNINGS")
+	
+	# Treat warnings as errors.
+	SET ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX" )
+	
+ENDIF(MSVC)
+
 # Option for tracing.
 OPTION ( USUL_USE_TRACING "Should tracing be enabled?" OFF )
 

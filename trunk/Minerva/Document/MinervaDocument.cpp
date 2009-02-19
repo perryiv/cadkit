@@ -47,6 +47,7 @@
 #include "OsgTools/Convert/Matrix.h"
 #include "OsgTools/Font.h"
 #include "OsgTools/Group.h"
+#include "OsgTools/Widgets/Text.h"
 
 #include "Serialize/XML/Serialize.h"
 #include "Serialize/XML/Deserialize.h"
@@ -1663,6 +1664,10 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) ) );
 
+  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Meta-Data",
+                                                            UA::memberFunction<void> ( this, &MinervaDocument::showMetaString ),
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowMetaString ) ) ) );
+
   m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Date Feedback",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showDateFeedback ),
                                                             UA::memberFunction<bool> ( this, &MinervaDocument::isShowDateFeedback ) ) ) );
@@ -2383,6 +2388,7 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
 
   // Call this every time.
   body->intersectionGraphicClear();
+  _hud.metaString ( "" );
 
   // Get the point in lon-lat-elev.
   osg::Vec3 world ( hit.getWorldIntersectPoint() );
@@ -2435,32 +2441,42 @@ void MinervaDocument::intersectNotify ( float x, float y, const osgUtil::LineSeg
   Path unknowns ( closest.first );
 
   // Do we have a closest point?
-  if ( ( false == unknowns.empty() ) && ( 3 == closest.second.first.size() ) )
-  {
-    // Draw a line from under the mouse to the intersected point.
-    body->intersectionGraphicSet ( lonLatPoint[0], lonLatPoint[1], lonLatPoint[2], closest.second.first.at(0), closest.second.first.at(1), closest.second.first.at(2) );
+  const bool haveClosestPoint ( ( false == unknowns.empty() ) && ( 3 == closest.second.first.size() ) );
+  if ( false == haveClosestPoint )
+    return;
 
-    // Accumulate the description strings for the data objects.
-    std::ostringstream ds;
-    for ( Path::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
+  // Draw a line from under the mouse to the intersected point.
+  body->intersectionGraphicSet ( lonLatPoint[0], lonLatPoint[1], lonLatPoint[2], closest.second.first.at(0), closest.second.first.at(1), closest.second.first.at(2) );
+
+  // Show the description string?
+  if ( false == _hud.showMetaString() )
+    return;
+
+  // Accumulate the description strings for the data objects.
+  std::ostringstream ds;
+  for ( Path::iterator i = unknowns.begin(); i != unknowns.end(); ++i )
+  {
+    Minerva::Interfaces::IDataObject::QueryPtr ptr ( *i );
+    Minerva::Core::Data::DataObject::RefPtr dataObject ( ( true == ptr.valid() ) ? ptr->dataObject() : 0x0 );
+    if ( true == dataObject.valid() )
     {
-      Minerva::Interfaces::IDataObject::QueryPtr ptr ( *i );
-      Minerva::Core::Data::DataObject::RefPtr dataObject ( ( true == ptr.valid() ) ? ptr->dataObject() : 0x0 );
-      if ( true == dataObject.valid() )
+      const std::string s ( dataObject->description() );
+      if ( false == s.empty() )
       {
-        const std::string s ( dataObject->description() );
-        if ( false == s.empty() )
-        {
-          ds << s << '\n';
-        }
+        ds << s << '\n';
       }
     }
+  }
 
-    // Show the description string.
-    const std::string description ( ds.str() );
-    if ( false == description.empty() )
-    {
-    }
+  std::string description ( ds.str() );
+  if ( description.size() > 1 )
+  {
+    // Lose last newline.
+    description.erase ( description.size() - 1 );
+
+    // Display the info.
+    _hud.metaString ( description );
+    std::cout << Usul::Strings::format ( "\n\n", description, '\n' ) << std::flush;
   }
 }
 
@@ -3045,20 +3061,23 @@ bool MinervaDocument::_displayInformationBalloon ( Minerva::Core::Data::DataObje
 {
   // Remove what we have.
   this->_clearBalloon();
-  
-  osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera ) );
-  
+
+  osg::ref_ptr<osg::Camera> camera ( Usul::Threads::Safe::get ( this->mutex(), _camera, true ) );
   OsgTools::Widgets::Item::RefPtr item ( dataObject.clicked() );
+
   if ( camera.valid() && item.valid() )
   {
     osg::ref_ptr<osg::Node> balloon ( item->buildScene() );
-    camera->addChild ( balloon.get() );
-    
+    if ( true == balloon.valid() )
+    {
+      camera->addChild ( balloon.get() );
+    }
+
     Usul::Threads::Safe::set ( this->mutex(), balloon, _balloon );
-    
+
     return true;
   }
-  
+
   return false;
 }
 
@@ -3231,6 +3250,34 @@ void MinervaDocument::showEyeAltitude ( bool b )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Get showing of meta-string feedback state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool MinervaDocument::isShowMetaString() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  return _hud.showMetaString();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set showing of meta-string feedback state.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::showMetaString ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this->mutex() );
+  _hud.showMetaString ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Are we busy?
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -3284,8 +3331,10 @@ void MinervaDocument::contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Ve
         // Namespace aliases to help shorten lines.
         namespace UA = Usul::Adaptors;
         namespace UC = Usul::Commands;
-        
-        const std::string text ( Usul::Strings::format ( lonLatPoint[1], ", ", lonLatPoint[0] ) );
+
+        const std::string lon ( Usul::Convert::Type<double,std::string>::convert ( lonLatPoint[0] ) );
+        const std::string lat ( Usul::Convert::Type<double,std::string>::convert ( lonLatPoint[1] ) );
+        const std::string text ( Usul::Strings::format ( lat, ", ", lon ) );
         menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", UA::bind1<void> ( text, Usul::System::ClipBoard::addToClipboard ), UC::TrueFunctor() ) ) );
       }
     }

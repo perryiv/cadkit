@@ -35,6 +35,7 @@
 #include "osg/Group"
 
 #include <map>
+#include <string>
 #include <vector>
 
 namespace Minerva {
@@ -74,6 +75,7 @@ public:
   typedef Minerva::Interfaces::IWithinExtents       IWithinExtents;
   typedef Minerva::Interfaces::IIntersectNotify     IIntersectNotify;
   typedef IIntersectNotify::Closest                 Closest;
+  typedef std::vector<std::string> Comments;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Container );
@@ -214,6 +216,7 @@ private:
   unsigned int _flags;
   osg::ref_ptr<osg::Group> _root;
   UnknownMap _unknownMap;
+  Comments _comments;
   
   SERIALIZE_XML_CLASS_NAME( Container )
 };

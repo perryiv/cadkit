@@ -266,6 +266,10 @@ public:
   bool                                     isShowEyeAltitude() const;
   void                                     showEyeAltitude ( bool b );
   
+  /// Toggle showing of meta-string feedback.
+  bool                                     isShowMetaString() const;
+  void                                     showMetaString ( bool b );
+  
 protected:
 
   virtual ~MinervaDocument();

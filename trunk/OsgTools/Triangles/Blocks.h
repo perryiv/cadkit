@@ -82,49 +82,25 @@ public:
   /// Set the use material flag.
   void                      useMaterial ( bool b );
 
-  /// Usul::Interfaces::ISceneElement. Public for now.
+  /// Set/get the visiblity flag.
+  void                      setVisibility ( bool b );
+  bool                      getVisibility() const;
 
-  /// Set the visiblity flag.
-  virtual void                 setVisibility ( bool b );
+  /// Set/get the diffuse color.
+  void                      setDiffuseColor ( const osg::Vec4f& );
+  const osg::Vec4f&         getDiffuseColor() const;
 
-  /// Get the visiblity flag.
-  virtual bool                 getVisibility ( ) const;
+  /// Set/get the specular color.
+  void                      setSpecularColor ( const osg::Vec4f& );
+  const osg::Vec4f&         getSpecularColor() const;
 
-  /// Set the translation.
-  virtual void                 setTranslation ( const osg::Vec3f& translate );
+  /// Set/get the shininess value
+  void                      setShininess( float s );
+  float                     getShininess() const;
 
-  /// Get the translation.
-  virtual osg::Vec3f           getTranslation ( ) const;
-
-  /// Set the rotation.
-  virtual void                 setRotation ( const osg::Quat& rotation );
-
-  /// Get the rotation.
-  virtual osg::Quat            getRotation ( ) const;
-
-  /// Set the diffuse color
-  virtual void                 setDiffuseColor ( const osg::Vec4f& );
-
-  /// Get the diffuse color
-  virtual const osg::Vec4f&    getDiffuseColor ( ) const;
-
-  /// Set the specular color
-  virtual void                 setSpecularColor ( const osg::Vec4f& );
-
-  /// Get the specular color
-  virtual const osg::Vec4f&    getSpecularColor () const;
-
-  /// Set the shininess value
-  virtual void                 setShininess( float s );
-
-  /// Get the shininess value
-  virtual float                getShininess() const;
-
-  /// Set the transparency value
-  virtual void                 setTransparency ( float t );
-
-  /// Get the transparency value
-  virtual float                getTransparency () const;
+  /// Set/get the transparency value
+  void                      setTransparency ( float t );
+  float                     getTransparency() const;
 
 protected:
 

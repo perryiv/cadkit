@@ -246,7 +246,7 @@ public:
   void                    setVisited(Indices &keepers);
   
   // Returns the index of the first triangle flagged as visited=FALSE
-  Int32                   firstUnvisited();
+  Usul::Types::Int32      firstUnvisited();
 
   // Get the shared vertices. Be real careful when using this.
   const SharedVertices &  sharedVertices() const { return _shared; }

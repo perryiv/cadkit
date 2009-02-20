@@ -14,7 +14,6 @@
 #include "OsgTools/Configure/OSG.h"
 #include "OsgTools/Triangles/Triangle.h"
 
-#include "Usul/Types/Types.h"
 #include "Usul/Base/Referenced.h"
 
 #include "osg/BoundingBox"
@@ -25,7 +24,6 @@
 #include <map>
 #include <string>
 
-using namespace Usul::Types;
 
 namespace OsgTools {
 namespace Triangles {

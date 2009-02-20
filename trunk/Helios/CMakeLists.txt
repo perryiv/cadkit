@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION "2.6")
 
 PROJECT(HELIOS)
 
+INCLUDE(CPack)
+SET ( CPACK_PACKAGE_NAME Helios )
 
 #########################################################
 #

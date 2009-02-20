@@ -7,13 +7,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// Disable decorated name length exceeded, name was truncated warning in Visual Studio 8
-// This warning is coming from a header file provided with VS (iterator).
-// Hopefully this will be fixed for the final VS 8 release.
-#if defined ( _MSC_VER ) && _MSC_VER == 1400
-#pragma warning ( disable : 4503 )
-#endif
-
 #include "OsgTools/Triangles/Blocks.h"
 #include "OsgTools/Triangles/TriangleSet.h"
 #include "OsgTools/State/StateSet.h"
@@ -143,18 +136,19 @@ void Blocks::displayList ( bool state )
     _sequence[i]->displayList ( state );
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Sets the Display to dirty so it is rebuilt
+//  Dirty all display lists.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void Blocks::setDirtyDisplayList()
 {
-  unsigned int numDrawables = _geode->getNumDrawables();
+  const unsigned int numDrawables ( _geode->getNumDrawables() );
   for (unsigned int i = 0; i < numDrawables; ++i ) 
   {
-      _geode->getDrawable(i)->dirtyDisplayList();
+    _geode->getDrawable(i)->dirtyDisplayList();
   }
 }
 
@@ -181,6 +175,7 @@ osg::Geode *Blocks::buildScene ( const Options &options, TriangleSet *ts )
   // Check input.
   if ( 0x0 == ts )
     throw std::invalid_argument ( "Error 1098244047: null triangle-set given" );
+  
   // Remove all existing drawables.
   _geode->removeDrawables( 0, _geode->getNumDrawables() );
 
@@ -573,57 +568,9 @@ void Blocks::setVisibility ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Blocks::getVisibility ( ) const
+bool Blocks::getVisibility() const
 {
-  return _geode->getNodeMask (  ) != 0;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the translation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Blocks::setTranslation ( const osg::Vec3f& translate )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the translation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Vec3f Blocks::getTranslation ( ) const
-{
-  osg::Vec3f v;
-  return v;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the rotation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Blocks::setRotation ( const osg::Quat& rotation )
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the rotation.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-osg::Quat Blocks::getRotation ( ) const
-{
-  osg::Quat q;
-  return q;
+  return _geode->getNodeMask() != 0;
 }
 
 
@@ -645,7 +592,7 @@ void Blocks::setDiffuseColor ( const osg::Vec4f& diffuse )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4f& Blocks::getDiffuseColor ( ) const
+const osg::Vec4f& Blocks::getDiffuseColor() const
 {
   return _material->getDiffuse( osg::Material::FRONT );
 }
@@ -669,7 +616,7 @@ void Blocks::setSpecularColor ( const osg::Vec4f& specular )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const osg::Vec4f& Blocks::getSpecularColor () const
+const osg::Vec4f& Blocks::getSpecularColor() const
 {
   return _material->getSpecular ( osg::Material::FRONT );
 }
@@ -717,7 +664,7 @@ void Blocks::setTransparency ( float t )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-float Blocks::getTransparency () const
+float Blocks::getTransparency() const
 {
   //float ta ( _material->getAmbient( osg::Material::FRONT_AND_BACK ).w() );
   float td ( _material->getDiffuse( osg::Material::FRONT_AND_BACK ).w() );

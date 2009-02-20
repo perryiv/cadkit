@@ -17,6 +17,7 @@
 #ifndef __MINERVA_CORE_JOBS_BUILD_TILES_H__
 #define __MINERVA_CORE_JOBS_BUILD_TILES_H__
 
+#include "Minerva/Core/Export.h"
 #include "Minerva/Core/TileEngine/Tile.h"
 
 #include "Usul/Jobs/Job.h"
@@ -27,7 +28,7 @@ namespace Core {
 namespace Jobs {
   
 
-class BuildTiles : public Usul::Jobs::Job
+class MINERVA_EXPORT BuildTiles : public Usul::Jobs::Job
 {
 public:
 

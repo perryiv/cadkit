@@ -698,6 +698,11 @@ SET (SOURCES
 ./Components/Manager.cpp
 )
 
+# Process is only implemented on Windows.
+IF(WIN32)
+	SET ( HEADERS ${HEADERS} ./System/Process.h )
+	SET ( SOURCES ${SOURCES} ./System/Process.cpp )
+ENDIF(WIN32)
 
 SET(TARGET_NAME Usul)
 

@@ -67,7 +67,7 @@ namespace Helper
 {
   struct Data
   {
-    Data() : _pi(), _stdoutRead ( 0x0 ), _stdoutWrite ( 0x0 )
+    Data() : _pi()
     {
       ::ZeroMemory ( &_pi, sizeof ( PROCESS_INFORMATION ) );
     }
@@ -75,26 +75,13 @@ namespace Helper
     {
       Helper::closeHandle ( _pi.hProcess );
       Helper::closeHandle ( _pi.hThread );
-      Helper::closeHandle ( _stdoutRead );
-      Helper::closeHandle ( _stdoutWrite );
     }
     PROCESS_INFORMATION &processInfo()
     {
       return _pi;
     }
-    void standardOut ( HANDLE stdoutRead, HANDLE stdoutWrite )
-    {
-      _stdoutRead  = stdoutRead;
-      _stdoutWrite = stdoutWrite;
-    }
-    HANDLE standardOutRead()
-    {
-      return _stdoutRead;
-    }
   private:
     PROCESS_INFORMATION _pi;
-    HANDLE _stdoutRead;
-    HANDLE _stdoutWrite;
   };
 }
 
@@ -121,32 +108,6 @@ namespace Helper
       throw std::runtime_error ( "Error 3581526434: Process information in null" );
     }
     return data->processInfo();
-  }
-}
-
-#else
-TODO
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper function to return the process's stdout handle.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#ifdef _MSC_VER
-
-namespace Helper
-{
-  HANDLE getProcessStdout ( void *ptr )
-  {
-    Helper::Data *data ( reinterpret_cast < Helper::Data * > ( ptr ) );
-    if ( 0x0 == data )
-    {
-      throw std::runtime_error ( "Error 3446102113: Process information in null" );
-    }
-    return data->standardOutRead();
   }
 }
 

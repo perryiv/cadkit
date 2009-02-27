@@ -84,10 +84,9 @@ void _runParent()
   {
     for ( unsigned int i = 0; i < 10; ++i )
     {
-      ProcessPtr process ( new Usul::System::Process ( program, "500", true ) );
+      ProcessPtr process ( new Usul::System::Process ( program, "500" ) );
       std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
       processes.push_back ( process );
-      process->output ( std::cout );
     }
   }
 
@@ -98,7 +97,6 @@ void _runParent()
     while ( i != processes.end() )
     {
       ProcessPtr process ( *i );
-      process->output ( std::cout );
       if ( false == process->isRunning() )
       {
         Processes::iterator eraseMe ( i );
@@ -118,9 +116,8 @@ void _runParent()
   {
     for ( unsigned int i = 0; i < 5; ++i )
     {
-      ProcessPtr process ( new Usul::System::Process ( program, "100", true ) );
+      ProcessPtr process ( new Usul::System::Process ( program, "100" ) );
       std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
-      process->output ( std::cout );
       process->wait();
       std::cout << Usul::Strings::format ( "Child process ", process->id(), " exited" ) << std::endl;
     }
@@ -132,7 +129,7 @@ void _runParent()
     {
       for ( unsigned int i = 0; i < 10; ++i )
       {
-        ProcessPtr process ( new Usul::System::Process ( program, "10000", true ) );
+        ProcessPtr process ( new Usul::System::Process ( program, "10000" ) );
         std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
         processes.push_back ( process );
       }
@@ -141,7 +138,6 @@ void _runParent()
       for ( Processes::iterator i = processes.begin(); i != processes.end(); ++i )
       {
         ProcessPtr process ( *i );
-        process->output ( std::cout );
         process->stop();
         std::cout << Usul::Strings::format ( "Parent just stopped child ", process->id() ) << std::endl;
       }

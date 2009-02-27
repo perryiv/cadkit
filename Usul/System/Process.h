@@ -41,7 +41,6 @@ public:
   // but does not wait for it to actually start.
   Process ( const std::string &executable, 
             const std::string &arguments, 
-            bool captureStdOut,
             const std::string &dir = std::string() );
 
   // Get the current process's id.
@@ -52,10 +51,6 @@ public:
 
   // Is the process running?
   bool                    isRunning() const;
-
-  // Send any accumulated output to the given stream.
-  // Only has effect if process's stdout is being captured.
-  void                    output ( std::ostream &, bool appendNewLine = true, bool flushStream = true );
 
   // Stop the process.
   void                    stop();

@@ -2132,6 +2132,22 @@
 				Name="File"
 				>
 				<File
+					RelativePath=".\File\BaseFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\File\BaseFile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\File\BinaryInputFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\File\BinaryInputFile.h"
+					>
+				</File>
+				<File
 					RelativePath=".\File\Boost.h"
 					>
 				</File>
@@ -2141,6 +2157,10 @@
 				</File>
 				<File
 					RelativePath=".\File\Find.h"
+					>
+				</File>
+				<File
+					RelativePath=".\File\LineEnding.h"
 					>
 				</File>
 				<File
@@ -2333,6 +2353,10 @@
 				</File>
 				<File
 					RelativePath=".\Strings\Managed.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Strings\Mangle.h"
 					>
 				</File>
 				<File

@@ -23,6 +23,7 @@
 
 #include "windows.h"
 
+#include <fstream>
 #include <stdexcept>
 #include <vector>
 
@@ -210,7 +211,6 @@ TODO
 
 Process::Process ( const std::string &executable, 
                    const std::string &arguments, 
-                   bool captureStdOut,
                    const std::string &dir ) : BaseClass(),
   _executable ( executable ),
   _arguments ( arguments ),
@@ -219,6 +219,17 @@ Process::Process ( const std::string &executable,
 {
   USUL_TRACE_SCOPE;
 
+  // Need a writable buffer for command-line arguments.
+  // http://msdn.microsoft.com/en-us/library/ms682425(VS.85).aspx
+  std::vector<char> args ( arguments.begin(), arguments.end() );
+
+  // Make sure there is a space before the first argument.
+  if ( ' ' != args.front() )
+    args.insert ( args.begin(), ' ' );
+
+  // Make it a valid c-style string.
+  args.push_back ( '\0' );
+
 #ifdef _MSC_VER
 
   // Initialize startup and process info.
@@ -226,50 +237,14 @@ Process::Process ( const std::string &executable,
   ::ZeroMemory ( &si, sizeof ( STARTUPINFO ) );
   Helper::Data *data ( new Helper::Data );
 
-  // Are we piping the process's stdout to here?
-  // See http://msdn.microsoft.com/en-us/library/ms682499(VS.85).aspx
-  if ( true == captureStdOut )
-  {
-    SECURITY_ATTRIBUTES sa;
-    sa.nLength = sizeof ( SECURITY_ATTRIBUTES );
-    sa.bInheritHandle = TRUE;
-    sa.lpSecurityDescriptor = 0x0;
-
-    HANDLE childStdoutRead  ( 0x0 );
-    HANDLE childStdoutWrite ( 0x0 );
-
-    // Make a read and write handle for a pipe.
-    Usul::System::LastError::init();
-    if ( FALSE == ::CreatePipe ( &childStdoutRead, &childStdoutWrite, &sa, 0 ) ) 
-      Helper::throwException ( "Error 2712886592: Failed to create pipe for process", executable, arguments, 0 );
-
-    // Make sure the read side of the pipe is not inherited by the process we will launch.
-    Usul::System::LastError::init();
-    if ( FALSE == ::SetHandleInformation ( childStdoutRead, HANDLE_FLAG_INHERIT, 0 ) )
-      Helper::throwException ( "Error 3264436000: Failed to configure pipe for process", executable, arguments, 0 );
-
-    // Set startup flags.
-    si.hStdOutput = childStdoutWrite;
-    si.dwFlags |= STARTF_USESTDHANDLES;
-
-    // Save handle.
-    data->standardOut ( childStdoutRead, childStdoutWrite );
-  }
-
-  // Need a writable buffer for command-line arguments.
-  // http://msdn.microsoft.com/en-us/library/ms682425(VS.85).aspx
-  std::vector<char> args ( arguments.begin(), arguments.end() );
-  args.push_back ( '\0' );
-
-  // Make sure there is a space before the first argument.
-  if ( ' ' != args.front() )
-    args.insert ( args.begin(), ' ' );
+  // Flags for the process.
+  const unsigned int flags ( CREATE_NO_WINDOW );
 
   // Start the process. This immediately returns and does not 
   // wait for the new process to finish initialization.
   Usul::System::LastError::init();
   const BOOL result ( ::CreateProcessA ( executable.c_str(), &args[0], 
-                                        0x0, 0x0, FALSE, CREATE_NO_WINDOW, 0x0, 
+                                        0x0, 0x0, FALSE, flags, 0x0, 
                                         ( ( true == dir.empty() ) ? 0x0 : dir.c_str() ),
                                         &si, &(data->processInfo()) ) );
   if ( FALSE == result )
@@ -306,6 +281,7 @@ Process::~Process()
 void Process::_destroy()
 {
   USUL_TRACE_SCOPE;
+
   this->stop();
   Helper::deleteProcessInfo ( _data );
   _data = 0x0;
@@ -443,56 +419,6 @@ void Process::wait ( unsigned long milliseconds )
 
   PROCESS_INFORMATION &pi ( Helper::getProcessInfo ( _data ) );
   ::WaitForSingleObject ( pi.hProcess, milliseconds );
-
-#else
-  TODO
-#endif
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Send any accumulated output to the given stream.
-//  Only has effect if process's stdout is being captured.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Process::output ( std::ostream &out, bool appendNewLine, bool flushStream )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-#ifdef _MSC_VER
-
-  HANDLE stdoutHandle ( Helper::getProcessStdout ( _data ) );
-  if ( 0x0 == stdoutHandle )
-    return;
-
-  DWORD available ( 0 );
-  Usul::System::LastError::init();
-  if ( FALSE == ::PeekNamedPipe ( stdoutHandle, 0x0, 0, 0x0, &available, 0x0 ) )
-    Helper::throwException ( "Error 1610403124: Failed to see if pipe has data", _executable, _arguments, this->id() );
-
-  // Is there anything in the pipe?
-  if ( 0 == available )
-    return;
-
-  std::vector<char> buffer ( 1024, '\0' );
-  DWORD read ( 0 );
-  Usul::System::LastError::init();
-  if ( FALSE == ::ReadFile ( stdoutHandle, &buffer[0], buffer.size() - 1, &read, 0x0 ) )
-    Helper::throwException ( "Error 2905041806: Failed to read pipe", _executable, _arguments, this->id() );
-
-  if ( 0 == read )
-    return;
-
-  out << &buffer[0];
-
-  if ( true == appendNewLine )
-    out << '\n';
-
-  if ( true == flushStream )
-    out << std::flush;
 
 #else
   TODO

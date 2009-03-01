@@ -94,12 +94,10 @@ LandModelFlat::~LandModelFlat ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
+void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation, double& x, double& y, double& z ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-
-  typedef osg::Vec3d::value_type ValueType;
 
   if ( 0x0 != _projection )
   {
@@ -110,7 +108,9 @@ void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation
 #else
     ossimDpt p ( _projection->forward ( latLonPoint ) );
 #endif
-    point.set ( static_cast<ValueType> ( p.x ), static_cast<ValueType> ( p.y ), elevation );
+    x = p.x;
+    y = p.y;
+    z = elevation;
   }
 }
 
@@ -121,7 +121,7 @@ void LandModelFlat::latLonHeightToXYZ ( double lat, double lon, double elevation
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelFlat::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const
+void LandModelFlat::xyzToLatLonHeight ( double x, double y, double z, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -132,11 +132,11 @@ void LandModelFlat::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, do
     ossimGpt latLonPoint;
     _projection->lineSampleToWorld ( ossimDpt ( point.x(), point.y() ), latLonPoint );
 #else
-    ossimGpt latLonPoint ( _projection->inverse ( ossimDpt ( point.x(), point.y() ) ) );
+    ossimGpt latLonPoint ( _projection->inverse ( ossimDpt ( x, y ) ) );
 #endif
     lon = static_cast<double> ( latLonPoint.lon );
     lat = static_cast<double> ( latLonPoint.lat );
-    elevation = static_cast<double> ( point.z() );
+    elevation = static_cast<double> ( z );
   }
 }
 
@@ -201,7 +201,7 @@ void LandModelFlat::deserialize ( const XmlTree::Node &node )
 osg::Matrixd LandModelFlat::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
 {
   osg::Vec3d p;
-  this->latLonHeightToXYZ ( lat, lon, elevation, p );
+  this->latLonHeightToXYZ ( lat, lon, elevation, p.x(), p.y(), p.z() );
 
   return osg::Matrixd::rotate ( osg::DegreesToRadians ( heading ), osg::Vec3f ( 0.0, 0.0, 1.0 ) ) * osg::Matrixd::translate ( p );
 }

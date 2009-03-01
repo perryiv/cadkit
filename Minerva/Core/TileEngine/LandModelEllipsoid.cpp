@@ -62,7 +62,7 @@ LandModelEllipsoid::~LandModelEllipsoid()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const
+void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elevation, double& x, double& y, double& z ) const
 {
   USUL_TRACE_SCOPE;
 
@@ -70,7 +70,7 @@ void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elev
   lon *= Usul::Math::DEG_TO_RAD;
 
   Guard guard ( this );
-  _ellipsoid->convertLatLongHeightToXYZ ( lat, lon, elevation, point.x(), point.y(), point.z() );
+  _ellipsoid->convertLatLongHeightToXYZ ( lat, lon, elevation, x, y, z );
 }
 
 
@@ -80,13 +80,13 @@ void LandModelEllipsoid::latLonHeightToXYZ ( double lat, double lon, double elev
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LandModelEllipsoid::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const
+void LandModelEllipsoid::xyzToLatLonHeight ( double x, double y, double z, double& lat, double& lon, double& elevation ) const
 {
   USUL_TRACE_SCOPE;
 
   {
     Guard guard ( this );
-    _ellipsoid->convertXYZToLatLongHeight ( point.x(), point.y(), point.z(), lat, lon, elevation );
+    _ellipsoid->convertXYZToLatLongHeight ( x, y, z, lat, lon, elevation );
   }
 
   lat *= Usul::Math::RAD_TO_DEG;
@@ -234,7 +234,7 @@ osg::Matrixd LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, 
 
   // Get the position in earth-centered, earth-fixed (ECEF).
   osg::Vec3d p;
-  this->latLonHeightToXYZ ( lat, lon, elevation, p );
+  this->latLonHeightToXYZ ( lat, lon, elevation, p.x(), p.y(), p.z() );
 
   // Create a rotation matrix from the local space at (lat,lon) to ECEF system.
   Usul::Math::Matrix44d m

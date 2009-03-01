@@ -12,6 +12,7 @@
 #pragma warning ( disable : 4996 )
 #endif
 
+#include "Minerva/Core/ElevationData.h"
 #include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/TileEngine/Tile.h"
 #include "Minerva/Core/Functions/MakeBody.h"
@@ -56,13 +57,9 @@ protected:
     // Image size.
     Tile::ImageSize imageSize ( 256, 256 );
 
-    // Make the elevation.
-    Tile::ImagePtr elevation ( new osg::Image );
-    elevation->allocateImage ( meshSize[0], meshSize[1], 1, GL_LUMINANCE, GL_FLOAT );
-
-    // Size a constant value.
+    // Make the elevation with a constant value.
     std::vector<float> data ( meshSize[0] * meshSize[1], 100.0 );
-    std::copy ( data.begin(), data.end(), reinterpret_cast<float*> ( elevation->data() ) );
+    Minerva::Core::ElevationData::RefPtr elevation ( new Minerva::Core::ElevationData ( meshSize[0], meshSize[1], data ) );
 
     // Make a tile.
     _tile = new Tile ( 0x0, Tile::NONE, level, _extents, meshSize, imageSize, 1.0, _body.get(), 0x0, elevation.get() );

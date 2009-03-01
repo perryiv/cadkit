@@ -212,10 +212,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Minerva\Extents\ParameterizeTest.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Minerva\Core\TileEngine\TileTest.cpp"
 					>
 				</File>

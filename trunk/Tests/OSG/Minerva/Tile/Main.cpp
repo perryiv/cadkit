@@ -34,7 +34,7 @@ int main ( int argc, char** argv )
   Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
 
   // Initialize the thread pool.
-  Usul::Jobs::Manager::init ( 2, true );
+  Usul::Jobs::Manager::init ( "Job Manager", 2, true );
 
   // Make the viewer.
   osgViewer::Viewer viewer;

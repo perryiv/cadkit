@@ -546,7 +546,7 @@ void Body::latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Ve
 
   if ( true == _landModel.valid() )
   {
-    _landModel->latLonHeightToXYZ ( lat, lon, elevation, point );
+    _landModel->latLonHeightToXYZ ( lat, lon, elevation, point.x(), point.y(), point.z() );
 
     // Scale
     point *= _scale;
@@ -573,7 +573,7 @@ void Body::xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon
     // Restore scale
     p /= _scale;
 
-    _landModel->xyzToLatLonHeight ( p, lat, lon, elevation );
+    _landModel->xyzToLatLonHeight ( p.x(), p.y(), p.z(), lat, lon, elevation );
   }
 }
 

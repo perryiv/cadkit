@@ -50,8 +50,8 @@ public:
   virtual void        deserialize ( const XmlTree::Node &node );
 
   // Convert lat, lon, height to x,y,z.
-  virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, osg::Vec3d& point ) const;
-  virtual void        xyzToLatLonHeight ( const osg::Vec3d& point, double& lat, double& lon, double& elevation ) const;
+  virtual void        latLonHeightToXYZ ( double lat, double lon, double elevation, double& x, double& y, double& z ) const;
+  virtual void        xyzToLatLonHeight ( double x, double y, double z, double& lat, double& lon, double& elevation ) const;
   
   // Matrix to place items on the planet (i.e. local coordinates to world coordinates).
   virtual Matrix      planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const;

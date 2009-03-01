@@ -106,7 +106,7 @@ TEST_F(EllipsoidTest,Serialize)
 
 #define TEST_TO_XYZ(lat,lon,elevation,x,y,z) {\
   osg::Vec3d point;\
-  _land->latLonHeightToXYZ ( lat, lon, elevation, point );\
+  _land->latLonHeightToXYZ ( lat, lon, elevation, point[0], point[1], point[2] );\
   const osg::Vec3d result ( x, y, z );\
   ASSERT_PRED2 ( TestVec3d(), result, point );\
   }\
@@ -148,7 +148,7 @@ TEST_F(EllipsoidTest,ToLatLonElevation)
   // Convert
   const osg::Vec3d point ( -2005931.5194843430, 4964854.7327290708, -3454149.2647983050 );
   double lat ( 0.0 ), lon ( 0.0 ), elevation ( 0.0 );
-  _land->xyzToLatLonHeight ( point, lat, lon, elevation );
+  _land->xyzToLatLonHeight ( point[0], point[1], point[2], lat, lon, elevation );
 
   const osg::Vec3d answer ( lat, lon, elevation );
   const osg::Vec3d result ( -33.0, 112.0, 350.0 );

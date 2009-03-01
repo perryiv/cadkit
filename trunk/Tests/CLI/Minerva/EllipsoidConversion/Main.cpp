@@ -91,7 +91,7 @@ int main ( int argc, char** argv )
 
   // Calculate.
   osg::Vec3d point;
-  land->latLonHeightToXYZ ( lat, lon, elevation, point );
+  land->latLonHeightToXYZ ( lat, lon, elevation, point.x(), point.y(), point.z() );
 
   // Output the result.
   Usul::Print::vector ( "", point[0], point[1], point[2], std::cout, 30, 20 );

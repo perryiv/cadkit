@@ -9,12 +9,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class for reading a binary file.
+//  Class for reading an ascii file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_FILE_BINARY_INPUT_FILE_CLASS_H_
-#define _USUL_FILE_BINARY_INPUT_FILE_CLASS_H_
+#ifndef _USUL_FILE_ASCII_INPUT_FILE_CLASS_H_
+#define _USUL_FILE_ASCII_INPUT_FILE_CLASS_H_
 
 #include "Usul/File/InputFile.h"
 
@@ -23,7 +23,7 @@ namespace Usul {
 namespace File {
 
 
-class USUL_EXPORT BinaryInputFile : public Usul::File::InputFile
+class USUL_EXPORT AsciiInputFile : public Usul::File::InputFile
 {
 public:
 
@@ -31,33 +31,33 @@ public:
   typedef Usul::File::InputFile BaseClass;
 
   // Type information.
-  USUL_DECLARE_TYPE_ID ( BinaryInputFile );
+  USUL_DECLARE_TYPE_ID ( AsciiInputFile );
 
   // Smart-pointer definitions.
-  USUL_DECLARE_REF_POINTERS ( BinaryInputFile );
+  USUL_DECLARE_REF_POINTERS ( AsciiInputFile );
 
   // Constructor.
-  BinaryInputFile ( const std::string &name );
+  AsciiInputFile ( const std::string &name );
 
   // Input operator.
-  template < class T > BinaryInputFile &operator >> ( T &v )
+  template < class T > AsciiInputFile &operator >> ( T &v )
   {
-    this->_getFile().read ( &v, sizeof ( T ) );
+    this->_getFile() >> v;
     return *this;
   }
 
 protected:
 
   // Use reference counting.
-  virtual ~BinaryInputFile();
+  virtual ~AsciiInputFile();
 
   virtual void                _read ( Buffer &contents, SizeType size );
 
 private:
 
   // No copying or assignment.
-  BinaryInputFile ( const BinaryInputFile & );
-  BinaryInputFile &operator = ( const BinaryInputFile & );
+  AsciiInputFile ( const AsciiInputFile & );
+  AsciiInputFile &operator = ( const AsciiInputFile & );
 };
 
 
@@ -65,4 +65,4 @@ private:
 } // namespace Usul
 
 
-#endif // _USUL_FILE_BINARY_INPUT_FILE_CLASS_H_
+#endif // _USUL_FILE_ASCII_INPUT_FILE_CLASS_H_

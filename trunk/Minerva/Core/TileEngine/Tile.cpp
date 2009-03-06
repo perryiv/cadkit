@@ -446,7 +446,7 @@ void Tile::updateTileVectorData()
     Usul::Threads::Safe::set ( this->mutex(), _body, body );
 
     // Need to pass the body because it implements the necessary interfaces 
-    // to convert the coordinates from lat-lon-elev to x-y-z.
+    // to convert the coordinates from lon-lat-elev to x-y-z.
     this->_perTileVectorDataGet()->updateNotify ( body );
   }
 }
@@ -1245,8 +1245,9 @@ void Tile::buildPerTileVectorData ( Usul::Jobs::Job::RefPtr job )
   Extents e ( this->extents() );
 
   // Ask for the container of jobs that we later poll.
-  TileVectorJobs tileVectorJobs ( perTileVectorData->launchVectorJobs 
-    ( e.minLon(), e.minLat(), e.maxLon(), e.maxLat(), this->level(), body->jobManager(), 0x0 ) );
+  TileVectorJobs tileVectorJobs ( perTileVectorData->launchVectorJobs ( 
+    e.minLon(), e.minLat(), e.maxLon(), e.maxLat(), this->level(), body->jobManager(), 
+    Usul::Interfaces::IUnknown::QueryPtr ( body ) ) );
 
   // Have we been cancelled?
   if ( ( 0x0 != job ) && ( true == job->canceled() ) )

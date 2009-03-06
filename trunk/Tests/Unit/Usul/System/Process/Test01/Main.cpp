@@ -48,19 +48,21 @@ void _runChild()
   typedef Usul::CommandLine::Arguments::Args Args;
   Args args ( Usul::CommandLine::Arguments::instance().args() );
 
-  out << Usul::Strings::format ( "Running child ", id, " with command-line: " ) << std::flush;
+  std::ostringstream stream;
+  stream << Usul::Strings::format ( "Running child ", id, " with command-line: " );
   for ( Args::const_iterator i = args.begin(); i != args.end(); ++i )
-    out << *i << ' ';
-  out << std::endl;
+    stream << *i << ' ';
+  stream << '\n';
+  out << stream.str() << std::flush;
 
   for ( unsigned int i = 0; i < 10; ++i )
   {
-    out << Usul::Strings::format ( "Child process ", id, " going to sleep" ) << std::endl;
+    out << Usul::Strings::format ( "Child process ", id, " going to sleep", '\n' ) << std::flush;
     Usul::System::Sleep::milliseconds 
       ( Usul::Convert::Type<std::string,unsigned int>::convert ( args.at ( 1 ) ) );
   }
 
-  out << Usul::Strings::format ( "Exiting child ", id ) << std::endl;
+  out << Usul::Strings::format ( "Exiting child ", id, '\n' ) << std::flush;
 }
 
 
@@ -72,7 +74,7 @@ void _runChild()
 
 void _runParent()
 {
-  std::cout << "Running parent" << std::endl;
+  std::cout << "Running parent \n" << std::flush;
 
   const std::string program ( Usul::CommandLine::Arguments::instance().program() );
 
@@ -85,7 +87,7 @@ void _runParent()
     for ( unsigned int i = 0; i < 10; ++i )
     {
       ProcessPtr process ( new Usul::System::Process ( program, "500" ) );
-      std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
+      std::cout << Usul::Strings::format ( "Parent just started child ", process->id(), '\n' ) << std::flush;
       processes.push_back ( process );
     }
   }
@@ -100,7 +102,7 @@ void _runParent()
       if ( false == process->isRunning() )
       {
         Processes::iterator eraseMe ( i );
-        std::cout << Usul::Strings::format ( "Child process ", i->get()->id(), " exited" ) << std::endl;
+        std::cout << Usul::Strings::format ( "Child process ", i->get()->id(), " exited", '\n' ) << std::flush;
         ++i;
         processes.erase ( eraseMe );
       }
@@ -117,9 +119,9 @@ void _runParent()
     for ( unsigned int i = 0; i < 5; ++i )
     {
       ProcessPtr process ( new Usul::System::Process ( program, "100" ) );
-      std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
+      std::cout << Usul::Strings::format ( "Parent just started child ", process->id(), '\n' ) << std::flush;
       process->wait();
-      std::cout << Usul::Strings::format ( "Child process ", process->id(), " exited" ) << std::endl;
+      std::cout << Usul::Strings::format ( "Child process ", process->id(), " exited", '\n' ) << std::flush;
     }
   }
 
@@ -130,7 +132,7 @@ void _runParent()
       for ( unsigned int i = 0; i < 10; ++i )
       {
         ProcessPtr process ( new Usul::System::Process ( program, "10000" ) );
-        std::cout << Usul::Strings::format ( "Parent just started child ", process->id() ) << std::endl;
+        std::cout << Usul::Strings::format ( "Parent just started child ", process->id(), '\n' ) << std::flush;
         processes.push_back ( process );
       }
     }
@@ -139,12 +141,12 @@ void _runParent()
       {
         ProcessPtr process ( *i );
         process->stop();
-        std::cout << Usul::Strings::format ( "Parent just stopped child ", process->id() ) << std::endl;
+        std::cout << Usul::Strings::format ( "Parent just stopped child ", process->id(), '\n' ) << std::flush;
       }
     }
   }
 
-  std::cout << "Exiting parent" << std::endl;
+  std::cout << "Exiting parent \n" << std::flush;
 }
 
 
@@ -159,13 +161,12 @@ void _runTest()
   Usul::CommandLine::Arguments::Args args ( Usul::CommandLine::Arguments::instance().args() );
   if ( args.size() > 1 )
   {
-    std::ios::sync_with_stdio ( true );
     ::_runChild();
   }
   else
   {
     ::_runParent();
-    std::cout << "Press any key to exit" << std::endl;
+    std::cout << "Press any key to exit \n" << std::flush;
     std::cin.get();
   }
 }
@@ -179,6 +180,7 @@ void _runTest()
 
 int main ( int argc, char **argv )
 {
+  std::ios::sync_with_stdio ( true );
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
   Usul::Functions::safeCall ( &::_runTest );
   return 0;

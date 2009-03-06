@@ -61,6 +61,7 @@ public:
   // Input operator for copying the results.
   Result &                operator >> ( std::string & );
   Result &                operator >> ( double & );
+  Result &                operator >> ( int & );
   Result &                operator >> ( unsigned int & );
 
 protected:

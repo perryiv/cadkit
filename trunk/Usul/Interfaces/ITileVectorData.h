@@ -38,7 +38,7 @@ struct ITileVectorData : public Usul::Interfaces::IUnknown
                                                    double maxLat, 
                                                    unsigned int level, 
                                                    Usul::Jobs::Manager *manager,
-                                                   Usul::Interfaces::IUnknown *caller ) = 0;
+                                                   Usul::Interfaces::IUnknown::RefPtr caller ) = 0;
 };
     
     

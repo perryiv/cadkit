@@ -55,8 +55,6 @@ protected:
   // Use reference counting.
   virtual ~BaseFile();
 
-  void                        _handleError ( const std::string &message );
-
 private:
 
   // No copying or assignment.

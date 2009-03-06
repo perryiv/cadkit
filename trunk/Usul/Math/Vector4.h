@@ -215,11 +215,11 @@ public:
 
   Vector4 &operator /= ( T value )
   {
-    T reciprocal = static_cast < T > ( 1 ) / value;
-    _v[0] *= reciprocal;
-    _v[1] *= reciprocal;
-    _v[2] *= reciprocal;
-    _v[3] *= reciprocal;
+    // Do not multiply by reciprocal because T might be an integer type.
+    _v[0] /= value;
+    _v[1] /= value;
+    _v[2] /= value;
+    _v[3] /= value;
     return *this;
   }
 

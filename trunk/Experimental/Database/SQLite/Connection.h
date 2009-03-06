@@ -69,6 +69,8 @@ protected:
   // Destructor
   virtual ~Connection();
 
+  static int              _busyHandler ( void *, int );
+
   void                    _destroy();
 
   Result::RefPtr          _execute ( const std::string &sql, const Binders &binders = Binders() );

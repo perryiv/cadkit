@@ -9,11 +9,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Class for reading a binary file.
+//  Class for reading an ascii file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Usul/File/BinaryInputFile.h"
+#include "Usul/File/AsciiInputFile.h"
 #include "Usul/Exceptions/Exception.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
@@ -24,7 +24,7 @@
 
 using namespace Usul::File;
 
-USUL_IMPLEMENT_TYPE_ID ( BinaryInputFile );
+USUL_IMPLEMENT_TYPE_ID ( AsciiInputFile );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ USUL_IMPLEMENT_TYPE_ID ( BinaryInputFile );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BinaryInputFile::BinaryInputFile ( const std::string &name ) : BaseClass ( name, true )
+AsciiInputFile::AsciiInputFile ( const std::string &name ) : BaseClass ( name, false )
 {
 }
 
@@ -44,7 +44,7 @@ BinaryInputFile::BinaryInputFile ( const std::string &name ) : BaseClass ( name,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BinaryInputFile::~BinaryInputFile()
+AsciiInputFile::~AsciiInputFile()
 {
 }
 
@@ -55,14 +55,20 @@ BinaryInputFile::~BinaryInputFile()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BinaryInputFile::_read ( Buffer &buffer, SizeType size )
+void AsciiInputFile::_read ( Buffer &buffer, SizeType size )
 {
-  // Size the given buffer so that it can hold the file contents.
-  buffer.resize ( static_cast < Buffer::size_type > ( size ), '\0' );
+  // Reserve space in the buffer.
+  buffer.reserve ( static_cast < Buffer::size_type > ( size ) );
 
   // Read the entire file.
   {
     WriteLock lock ( this );
-    this->_getFile().read ( &buffer[0], buffer.size() );
+    while ( EOF != this->_getFile().peek() )
+    {
+      buffer.push_back ( this->_getFile().get() );
+    }
   }
+
+  // Important!
+  buffer.push_back ( '\0' );
 }

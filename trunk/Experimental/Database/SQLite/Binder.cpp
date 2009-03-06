@@ -16,6 +16,10 @@
 #include "Database/SQLite/Binder.h"
 #include "Database/SQLite/Internal.h"
 
+#include "Usul/Exceptions/Exception.h"
+
+#include "boost/bind.hpp"
+
 using namespace CadKit::Database::SQLite;
 
 USUL_IMPLEMENT_TYPE_ID ( Binder );
@@ -45,12 +49,8 @@ void BlobBinder::bind ( const std::string &sql, unsigned int which, sqlite3_stmt
   if ( ( 0x0 == statement ) || ( 0x0 == database ) )
     return;
 
-  const int result ( ::sqlite3_bind_blob ( statement, which + 1, _blob, _size, SQLITE_STATIC ) );
-  if ( SQLITE_OK != result )
-  {
-    throw std::runtime_error ( Usul::Strings::format 
-      ( "Error 2401614108: Failed to bind blob data, ", Helper::errorMessage ( database ), ", SQL: ", sql ) );
-  }
+  Helper::call ( boost::bind<int> ( ::sqlite3_bind_blob, statement, which + 1, _blob, _size, SQLITE_STATIC ), 
+    "Error 2401614108: Failed to bind blob data", sql, database );
 }
 
 
@@ -66,12 +66,8 @@ void TextBinder::bind ( const std::string &sql, unsigned int which, sqlite3_stmt
     return;
 
   const char *text ( ( false == _text.empty() ) ? _text.c_str() : "" );
-  const int result ( ::sqlite3_bind_text ( statement, which + 1, text, _text.size(), SQLITE_STATIC ) );
-  if ( SQLITE_OK != result )
-  {
-    throw std::runtime_error ( Usul::Strings::format 
-      ( "Error 2735904180: Failed to bind text data, ", Helper::errorMessage ( database ), ", SQL: ", sql ) );
-  }
+  Helper::call ( boost::bind<int> ( ::sqlite3_bind_text, statement, which + 1, text, _text.size(), SQLITE_STATIC ),
+    "Error 2735904180: Failed to bind text data", sql, database );
 }
 
 

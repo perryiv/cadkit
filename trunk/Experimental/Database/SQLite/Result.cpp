@@ -17,9 +17,12 @@
 #include "Database/SQLite/Internal.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Exceptions/Exception.h"
 #include "Usul/Functions/SafeCall.h"
 
 #include "sqlite3.h"
+
+#include "boost/bind.hpp"
 
 #include <limits>
 #include <stdexcept>
@@ -83,15 +86,12 @@ void Result::finalize()
   _statement = 0x0;
 
   // Is the statement valid?
-  if ( 0x0 != statement )
-  {
-    const int result ( ::sqlite3_finalize ( statement ) );
-    if ( SQLITE_OK != result )
-    {
-      throw std::runtime_error ( Usul::Strings::format 
-        ( "Error 1333604206: Failed to finalize statement, ", Helper::errorMessage ( _database ), ", SQL: ", _sql ) );
-    }
-  }
+  if ( 0x0 == statement )
+    return;
+
+  // Try to finalize the statement.
+  Helper::call ( boost::bind<int> ( ::sqlite3_finalize, statement ), 
+    "Error 1333604206: Failed to finalize statement", _sql, _database );
 }
 
 
@@ -205,7 +205,7 @@ Result &Result::operator >> ( float &value )
   if ( ( temp < static_cast<double> ( - std::numeric_limits<float>::max() ) ) ||
        ( temp > static_cast<double> (   std::numeric_limits<float>::max() ) ) )
   {
-    throw std::range_error ( Usul::Strings::format 
+    throw Usul::Exceptions::Exception ( Usul::Strings::format 
       ( "Error 2911940382: ", sizeof ( double ), " byte float ", temp, 
         " will not fit in a ", sizeof ( float ), " byte float" ) );
   }
@@ -241,7 +241,7 @@ Result &Result::operator >> ( unsigned int &value )
   *this >> temp;
   if ( temp < 0 )
   {
-    throw std::range_error ( Usul::Strings::format 
+    throw Usul::Exceptions::Exception ( Usul::Strings::format 
       ( "Error 3361492869: Negative ", sizeof ( int ), "-byte integer ", temp, 
         " will not convert to ", sizeof ( unsigned int ), "-byte unsigned integer" ) );
   }
@@ -277,7 +277,7 @@ Result &Result::operator >> ( Usul::Types::Uint64 &value )
   *this >> temp;
   if ( temp < 0 )
   {
-    throw std::range_error ( Usul::Strings::format 
+    throw Usul::Exceptions::Exception ( Usul::Strings::format 
       ( "Error 3361492869: Negative ", sizeof ( Usul::Types::Int64 ), "-byte integer ", temp, 
         " will not convert to ", sizeof ( Usul::Types::Uint64 ), "-byte unsigned integer" ) );
   }

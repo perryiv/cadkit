@@ -33,8 +33,6 @@
 
 #include "osg/Image"
 
-#include "boost/algorithm/string/trim.hpp"
-#include "boost/algorithm/string/replace.hpp"
 #include "boost/functional/hash.hpp"
 
 #include <algorithm>
@@ -557,42 +555,6 @@ void RasterLayer::_imageReaderFind ( const std::string &ext )
       break;
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return the mangled url.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-std::string RasterLayer::_mangledURL ( const std::string &url )
-{
-  USUL_TRACE_SCOPE_STATIC;
-
-  // Trim all characters left of the '@' character, if it's found.
-  // This will remove username and password pairs.
-  std::string::const_iterator i ( std::find ( url.begin(), url.end(), '@' ) );
-  std::string mangled ( ( ( url.end() == i ) ? url.begin() : i + 1 ), url.end() );
-
-  // Trim all characters right of the '?' character, if it's found.
-  // This will remove special arguments needed in the "base" url. 
-  // For example, a client ID needed to perform a WMS GetCapabilities request.
-  mangled = std::string ( mangled.begin(), std::find ( mangled.begin(), mangled.end(), '?' ) );
-
-  boost::replace_first ( mangled, "http://", " " );
-  boost::replace_first ( mangled, "https://", " " );
-  boost::trim_left ( mangled );
-
-  std::replace ( mangled.begin(), mangled.end(), '@',  '_' );
-  std::replace ( mangled.begin(), mangled.end(), ':',  '_' );
-  std::replace ( mangled.begin(), mangled.end(), '/',  '_' );
-  std::replace ( mangled.begin(), mangled.end(), '\\', '_' );
-  std::replace ( mangled.begin(), mangled.end(), '&',  '_' );
-  std::replace ( mangled.begin(), mangled.end(), '?',  '_' );
-  std::replace ( mangled.begin(), mangled.end(), '.',  '_' );
-
-  return mangled;
 }
 
 

@@ -629,7 +629,12 @@ osg::Matrixd Body::planetRotationMatrix ( double lat, double lon, double elevati
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   
-  return ( _landModel.valid() ? _landModel->planetRotationMatrix ( lat, lon, elevation, heading ) : osg::Matrixd() );
+  typedef LandModel::Matrix Matrix;
+  Matrix matrix ( _landModel.valid() ? _landModel->planetRotationMatrix ( lat, lon, elevation, heading ) : Matrix() );
+
+  osg::Matrixd result;
+  OsgTools::Convert::matrix ( matrix, result );
+  return result;
 }
 
 

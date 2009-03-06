@@ -17,12 +17,11 @@
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Math/Matrix44.h"
 #include "Usul/Math/Vector2.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include "osg/Vec2d"
-
-namespace osg { class Matrixd; }
 
 namespace Minerva {
 namespace Core {
@@ -36,7 +35,7 @@ public:
   typedef Usul::Base::Object BaseClass;
   typedef Minerva::Core::Extents < osg::Vec2d > Extents;
   typedef Usul::Math::Vec2ui MeshSize;
-  typedef osg::Matrixd Matrix;
+  typedef Usul::Math::Matrix44d Matrix;
 
   USUL_DECLARE_REF_POINTERS ( LandModel );
 

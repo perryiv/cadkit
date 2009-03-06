@@ -17,8 +17,6 @@
 
 #include "Minerva/Core/TileEngine/LandModel.h"
 
-#include "osg/Vec3d"
-
 namespace osg { class EllipsoidModel; }
 
 namespace Minerva {

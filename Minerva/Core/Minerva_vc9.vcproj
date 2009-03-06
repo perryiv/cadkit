@@ -256,6 +256,22 @@
 					Name="Data"
 					>
 					<File
+						RelativePath=".\Data\AbstractView.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\AbstractView.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Camera.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Camera.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\ColorStyle.cpp"
 						>
 					</File>

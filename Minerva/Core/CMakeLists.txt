@@ -81,6 +81,7 @@ SET ( HEADERS
 	./Commands/StartAnimation.h
 	./Commands/StopAnimation.h
 	./Commands/ToggleShown.h
+	./Data/Camera.h
 	./Data/ColorStyle.h
 	./Data/Container.h
 	./Data/DataObject.h
@@ -177,6 +178,7 @@ SET (SOURCES
 ./Commands/StartAnimation.cpp
 ./Commands/StopAnimation.cpp
 ./Commands/ToggleShown.cpp
+./Data/Camera.cpp
 ./Data/ColorStyle.cpp
 ./Data/Container.cpp
 ./Data/DataObject.cpp

@@ -11,6 +11,7 @@
 #include "Minerva/Layers/OSSIM/LandModelFlat.h"
 
 #include "Usul/Factory/RegisterCreator.h"
+#include "Usul/Math/Constants.h"
 #include "Usul/Trace/Trace.h"
 
 #include "ossim/base/ossimGpt.h"
@@ -198,10 +199,14 @@ void LandModelFlat::deserialize ( const XmlTree::Node &node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Matrixd LandModelFlat::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
+LandModelFlat::Matrix LandModelFlat::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
 {
-  osg::Vec3d p;
-  this->latLonHeightToXYZ ( lat, lon, elevation, p.x(), p.y(), p.z() );
+  Usul::Math::Vec3d p;
+  this->latLonHeightToXYZ ( lat, lon, elevation, p[0], p[1], p[2] );
 
-  return osg::Matrixd::rotate ( osg::DegreesToRadians ( heading ), osg::Vec3f ( 0.0, 0.0, 1.0 ) ) * osg::Matrixd::translate ( p );
+  Matrix m;
+  m.makeRotation ( heading * Usul::Math::DEG_TO_RAD, Usul::Math::Vec3d ( 0.0, 0.0, 1.0 ) );
+  m * Matrix::translation ( p );
+
+  return m;
 }

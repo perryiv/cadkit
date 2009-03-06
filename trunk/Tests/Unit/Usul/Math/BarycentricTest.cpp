@@ -13,12 +13,21 @@
 
 #include "gtest/gtest.h"
 
+
 inline bool operator== ( const Usul::Math::Vec3d& lhs, const Usul::Math::Vec3d& rhs )
 {
   return Usul::Predicates::CloseFloat<double>::compare ( lhs[0], rhs[0], 3 ) &&
          Usul::Predicates::CloseFloat<double>::compare ( lhs[1], rhs[1], 3 ) &&
          Usul::Predicates::CloseFloat<double>::compare ( lhs[2], rhs[2], 3 );
 }
+
+struct TestVec3d
+{
+  bool operator () ( const Usul::Math::Vec3d& lhs, const Usul::Math::Vec3d& rhs ) const
+  {
+    return lhs == rhs;
+  }
+};
 
 inline std::ostream& operator<< ( std::ostream& os, const Usul::Math::Vec3d& v )
 {
@@ -51,8 +60,8 @@ TEST(Barycentric,Test)
   const Usul::Math::Vec3d b2 ( 0.0,     0.0,     1.0     );
 
   // Conduct the tests.
-  EXPECT_EQ ( bc, Usul::Math::barycentric ( t0, t1, t2, pc ) );
-  EXPECT_EQ ( b0, Usul::Math::barycentric ( t0, t1, t2, p0 ) );
-  EXPECT_EQ ( b1, Usul::Math::barycentric ( t0, t1, t2, p1 ) );
-  EXPECT_EQ ( b2, Usul::Math::barycentric ( t0, t1, t2, p2 ) );
+  ASSERT_PRED2 ( TestVec3d(), bc, Usul::Math::barycentric ( t0, t1, t2, pc ) );
+  ASSERT_PRED2 ( TestVec3d(), b0, Usul::Math::barycentric ( t0, t1, t2, p0 ) );
+  ASSERT_PRED2 ( TestVec3d(), b1, Usul::Math::barycentric ( t0, t1, t2, p1 ) );
+  ASSERT_PRED2 ( TestVec3d(), b2, Usul::Math::barycentric ( t0, t1, t2, p2 ) );
 }

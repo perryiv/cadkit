@@ -169,6 +169,8 @@ private:
   Vector4 _v;
 };
 
+typedef Quaternion<float>  Quaternionf;
+typedef Quaternion<double> Quaterniond;
 
 }
 }

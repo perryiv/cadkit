@@ -42,6 +42,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Macro define Visual Studio code annotations.
+//  These macros ensures that the function signature is the same as in Microsoft provided headers.
+//  This is to fix a warning with Visual Studio 2008.
+//  See: http://msdn.microsoft.com/en-us/library/cc664879.aspx
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#if defined ( _MSC_VER ) && _MSC_VER > 1400
+#include <sal.h>
+#define _USUL_IN _In_
+#define _USUL_CHECK_RETURN_ _Check_return_
+#else
+#define _USUL_IN
+#define _USUL_CHECK_RETURN_
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Both cmath and math.h are a pain. 
 //
 //  Note: Needed to add 'throws()' so that Linux gcc would accept the 
@@ -53,7 +72,7 @@
 extern "C"
 {
 #ifdef _MSC_VER
-  _CRTIMP int __cdecl _isnan ( double );
+  _USUL_CHECK_RETURN_ _CRTIMP int __cdecl _isnan ( _USUL_IN double );
 #elif __APPLE__
   int isnan ( double ) _USUL_THROW;
 #elif __GNUC__

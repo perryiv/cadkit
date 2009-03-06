@@ -833,7 +833,7 @@ Container::TileVectorJobs Container::launchVectorJobs ( double minLon,
                                                         double maxLat, 
                                                         unsigned int level, 
                                                         Usul::Jobs::Manager *manager, 
-                                                        Usul::Interfaces::IUnknown *caller )
+                                                        Usul::Interfaces::IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
 

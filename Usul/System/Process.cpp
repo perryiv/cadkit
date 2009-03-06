@@ -171,8 +171,7 @@ TODO
 ///////////////////////////////////////////////////////////////////////////////
 
 Process::Process ( const std::string &executable, 
-                   const std::string &arguments, 
-                   const std::string &dir ) : BaseClass(),
+                   const std::string &arguments ) : BaseClass(),
   _executable ( executable ),
   _arguments ( arguments ),
   _data ( 0x0 ),
@@ -205,8 +204,7 @@ Process::Process ( const std::string &executable,
   // wait for the new process to finish initialization.
   Usul::System::LastError::init();
   const BOOL result ( ::CreateProcessA ( executable.c_str(), &args[0], 
-                                        0x0, 0x0, FALSE, flags, 0x0, 
-                                        ( ( true == dir.empty() ) ? 0x0 : dir.c_str() ),
+                                        0x0, 0x0, FALSE, flags, 0x0, 0x0,
                                         &si, &(data->processInfo()) ) );
   if ( FALSE == result )
     Helper::throwException ( "Error 1816237620: Failed to create process", executable, arguments, 0 );

@@ -176,9 +176,12 @@ namespace Usul \
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-USUL_CONVERT_DEFINE_STRING_CONVERTER ( char );
-USUL_CONVERT_DEFINE_STRING_CONVERTER ( short );
-USUL_CONVERT_DEFINE_STRING_CONVERTER ( int );
+// These are the same as the Usul::Types::IntXX below.
+//USUL_CONVERT_DEFINE_STRING_CONVERTER ( char );
+//USUL_CONVERT_DEFINE_STRING_CONVERTER ( short );
+//USUL_CONVERT_DEFINE_STRING_CONVERTER ( int );
+
+// This is needed because it is not otherwise defined below.
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( long );
 
 #if 0
@@ -193,6 +196,11 @@ USUL_CONVERT_DEFINE_STRING_CONVERTER ( float );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( double );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( long double );
 #else
+
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Int8 );
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Int16 );
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Int32 );
+USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Int64 );
 
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Uint8 );
 USUL_CONVERT_DEFINE_STRING_CONVERTER ( Usul::Types::Uint16 );

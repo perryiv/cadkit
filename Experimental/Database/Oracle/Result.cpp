@@ -195,3 +195,16 @@ Result &Result::operator >> ( unsigned int &value )
   Helper::getValue ( _result, &oracle::occi::ResultSet::getUInt, value, _currentColumn );
   return *this;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the result.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Result &Result::operator >> ( int &value )
+{
+  Helper::getValue ( _result, &oracle::occi::ResultSet::getInt, value, _currentColumn );
+  return *this;
+}

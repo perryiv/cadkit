@@ -49,9 +49,8 @@ using namespace Minerva::Core::TileEngine;
 
 USUL_FACTORY_REGISTER_CREATOR ( Body );
 MINERVA_IMPLEMENT_NODE_CLASS ( Body );
-
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Body, Body::BaseClass );
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -60,6 +59,15 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Body, Body::BaseClass );
 ///////////////////////////////////////////////////////////////////////////////
 
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( osg::ref_ptr<osg::MatrixTransform> );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The number for the renderbin used by the vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const int VECTOR_RENDER_BIN_NUMBER ( 10000 );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,11 +133,15 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _vectorData->name ( "Vector" );
   _graphic->name ( "Intersection Graphic" );
   
-  // Add the vector data to the transform.
-  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+  // Add the vector data to the transform. Make sure it is drawn last.
+  osg::ref_ptr<osg::Node> vectorData ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+  vectorData->getOrCreateStateSet()->setRenderBinDetails ( VECTOR_RENDER_BIN_NUMBER, "RenderBin" );
+  _transform->addChild ( vectorData.get() );
 
-  // Add the branch for intersection graphics.
-  _transform->addChild ( _graphic->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+  // Add the branch for intersection graphics. Make sure it is drawn last.
+  osg::ref_ptr<osg::Node> graphic ( _graphic->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+  graphic->getOrCreateStateSet()->setRenderBinDetails ( VECTOR_RENDER_BIN_NUMBER, "RenderBin" );
+  _transform->addChild ( graphic.get() );
 
 #if 0
   // Make the sky.
@@ -1027,8 +1039,16 @@ void Body::deserialize ( const XmlTree::Node &node )
   
   // Re-add these scenes to the transform because a new one was just created.
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
-  _transform->addChild ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options(), me.get() ) );
-  _transform->addChild ( _graphic->buildScene    ( Usul::Interfaces::IBuildScene::Options(), me.get() ) );
+
+  // Make sure the line is drawn last.
+  osg::ref_ptr<osg::Node> vectorData ( _vectorData->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+  vectorData->getOrCreateStateSet()->setRenderBinDetails ( VECTOR_RENDER_BIN_NUMBER, "RenderBin" );
+  _transform->addChild ( vectorData.get() );
+
+  // Make sure the line is drawn last.
+  osg::ref_ptr<osg::Node> graphic ( _graphic->buildScene ( Usul::Interfaces::IBuildScene::Options() ) );
+  graphic->getOrCreateStateSet()->setRenderBinDetails ( VECTOR_RENDER_BIN_NUMBER, "RenderBin" );
+  _transform->addChild ( graphic.get() );
 }
 
 

@@ -154,8 +154,6 @@ protected:
 
   void                  _logEvent ( const std::string &s );
 
-  static std::string    _mangledURL ( const std::string &url );
-
   virtual ImagePtr      _readImageFile ( const std::string & ) const;
   static ImagePtr       _readImageFile ( const std::string &, ReaderPtr );
 

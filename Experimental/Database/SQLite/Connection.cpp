@@ -18,6 +18,7 @@
 
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
+#include "Usul/Exceptions/Exception.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Scope/Caller.h"
 #include "Usul/Strings/Case.h"
@@ -64,13 +65,28 @@ Connection::Connection ( const std::string &file ) : BaseClass(),
   _file   ( file ),
   _db     ( 0x0 )
 {
-  const int code ( ::sqlite3_open ( file.c_str(), &_db ) );
-  if ( SQLITE_OK != code )
+  // Open the database.
   {
-    throw std::runtime_error ( Usul::Strings::format
-      ( "Error 2047343298: Failed to open SQLite database.",
-        " File: '", file, "', ",
-        " Message: '", Helper::errorMessage ( _db ), "'" ) );
+    const int code ( ::sqlite3_open ( file.c_str(), &_db ) );
+    if ( SQLITE_OK != code )
+    {
+      throw Usul::Exceptions::Exception ( Usul::Strings::format
+        ( "Error 2047343298: Failed to open SQLite database.",
+          " File: '", file, "', ",
+          " Message: '", Helper::errorMessage ( _db ), "'" ) );
+    }
+  }
+
+  // Register a busy handler.
+  {
+    const int code ( ::sqlite3_busy_handler ( _db, &Connection::_busyHandler, this ) );
+    if ( SQLITE_OK != code )
+    {
+      throw Usul::Exceptions::Exception ( Usul::Strings::format
+        ( "Error 5642419090: Failed to set busy-handler.",
+          " File: '", file, "', ",
+          " Message: '", Helper::errorMessage ( _db ), "'" ) );
+    }
   }
 }
 
@@ -130,7 +146,7 @@ Result::RefPtr Connection::_execute ( const std::string &sql, const Binders &bin
 
   // Handle bad state.
   if ( 0x0 == _db )
-    throw std::runtime_error ( "Error 3868552584: null database" );
+    throw Usul::Exceptions::Exception ( "Error 3868552584: null database" );
 
   // Local scope.
   {
@@ -146,7 +162,7 @@ Result::RefPtr Connection::_execute ( const std::string &sql, const Binders &bin
     resultCode = ::sqlite3_prepare_v2 ( _db, sql.c_str(), -1, &statement, &leftOver );
     if ( SQLITE_OK != resultCode )
     {
-      throw std::runtime_error ( Usul::Strings::format
+      throw Usul::Exceptions::Exception ( Usul::Strings::format
         ( "Error 1353976135: Result Code: ", resultCode, 
           ", Message: '", Helper::errorMessage ( _db ), "'",
           ", SQL: ", sql ) );
@@ -190,4 +206,20 @@ std::string Connection::file() const
 {
   Guard guard ( this );
   return _file;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The sqlite busy-handler. This gets called when there is a lock on the 
+//  database because another thread or process is writing to it. We return 
+//  non-zero to have sqlite continue to try.
+//  See http://www.sqlite.org/c3ref/busy_handler.html
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int Connection::_busyHandler ( void *, int )
+{
+  std::cout << "Database is busy \n" << std::flush;
+  return 1;
 }

@@ -40,8 +40,7 @@ public:
   // Constructor asks the system to start the process 
   // but does not wait for it to actually start.
   Process ( const std::string &executable, 
-            const std::string &arguments, 
-            const std::string &dir = std::string() );
+            const std::string &arguments );
 
   // Get the current process's id.
   static ID               currentProcessId();

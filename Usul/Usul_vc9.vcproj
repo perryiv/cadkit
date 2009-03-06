@@ -2132,6 +2132,14 @@
 				Name="File"
 				>
 				<File
+					RelativePath=".\File\AsciiInputFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\File\AsciiInputFile.h"
+					>
+				</File>
+				<File
 					RelativePath=".\File\BaseFile.cpp"
 					>
 				</File>
@@ -2157,6 +2165,14 @@
 				</File>
 				<File
 					RelativePath=".\File\Find.h"
+					>
+				</File>
+				<File
+					RelativePath=".\File\InputFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\File\InputFile.h"
 					>
 				</File>
 				<File

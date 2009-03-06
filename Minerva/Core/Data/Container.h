@@ -141,7 +141,7 @@ public:
   bool                        isInLevelRange ( unsigned int level ) const;
 
   /// Launch the jobs to fetch vector data.
-  virtual TileVectorJobs      launchVectorJobs ( double minLon, double minLat, double maxLon, double maxLat, unsigned int level, Usul::Jobs::Manager *manager, Usul::Interfaces::IUnknown *caller );
+  virtual TileVectorJobs      launchVectorJobs ( double minLon, double minLat, double maxLon, double maxLat, unsigned int level, Usul::Jobs::Manager *manager, Usul::Interfaces::IUnknown::RefPtr caller );
 
   /// Get/Set the name (ILayer).
   virtual std::string         name() const;

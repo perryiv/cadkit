@@ -30,6 +30,7 @@
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Strings/Mangle.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
@@ -331,7 +332,7 @@ std::string RasterLayerNetwork::_cacheDirectory() const
 {
   USUL_TRACE_SCOPE;
 
-  std::string urlProxy ( BaseClass::_mangledURL ( Usul::Threads::Safe::get ( this->mutex(), _url ) ) );
+  std::string urlProxy ( Usul::Strings::Mangle::url ( Usul::Threads::Safe::get ( this->mutex(), _url ) ) );
   const std::size_t hashValue ( BaseClass::_hashString ( this->_getAllOptions() ) );
   const std::string dir ( BaseClass::_buildCacheDir ( this->baseCacheDirectory(), urlProxy, hashValue ) );
   return dir;

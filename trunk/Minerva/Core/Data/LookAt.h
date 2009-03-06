@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_KML_LOOK_AT_H__
-#define __MINERVA_LAYERS_KML_LOOK_AT_H__
+#ifndef __MINERVA_CORE_DATA_LOOK_AT_H__
+#define __MINERVA_CORE_DATA_LOOK_AT_H__
 
 #include "Minerva/Core/Data/Object.h"
 
@@ -65,4 +65,4 @@ private:
 }
 
 
-#endif // __MINERVA_LAYERS_KML_LOOK_AT_H__
+#endif // __MINERVA_CORE_DATA_LOOK_AT_H__

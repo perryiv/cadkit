@@ -212,7 +212,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Matrixd LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
+LandModelEllipsoid::Matrix LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, double elevation, double heading ) const
 {
   USUL_TRACE_SCOPE;
 
@@ -243,9 +243,10 @@ osg::Matrixd LandModelEllipsoid::planetRotationMatrix ( double lat, double lon, 
         X[2], Y[2], Z[2], p[2],
         0.00, 0.00, 0.00, 1.00 );
 
-  osg::Matrixd result;
+  return m;
+  /*osg::Matrixd result;
   OsgTools::Convert::matrix ( m, result );
-  return result;
+  return result;*/
 }
 
 

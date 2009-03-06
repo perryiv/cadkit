@@ -26,7 +26,7 @@ namespace Layers {
 namespace Ossim {
 
 
-  class LandModelFlat : public Minerva::Core::TileEngine::LandModel
+class LandModelFlat : public Minerva::Core::TileEngine::LandModel
 {
 public:
 

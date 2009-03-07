@@ -11,9 +11,26 @@ INCLUDE ( ${CMakeModules}/FindXerces.cmake)
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} ${XERCESC_INCLUDE_DIR} "${PROJECT_SOURCE_DIR}/../../" )
 
+SET ( HEADERS
+./BuiltInType.h
+./DataMemberMap.h
+./Deserialize.h
+./Export.h
+./Macros.h
+./MemberBase.h
+./PointerMapMember.h
+./QueryPointerMember.h
+./SequenceMember.h
+./Serialize.h
+./SimpleDataMember.h
+./SmartPointer.h
+./SmartPointerMember.h
+./StandardString.h
+./TypeWrapper.h
+./ValueMapMember.h
+)
 
 #List the Sources
 SET (SOURCES
@@ -22,7 +39,7 @@ SET (SOURCES
 )
 
 # Create a Shared Library
-ADD_LIBRARY(SerializeXML SHARED ${SOURCES} )
+ADD_LIBRARY(SerializeXML SHARED ${SOURCES} ${HEADERS} )
 CADKIT_ADD_LIBRARY(SerializeXML)
 
 # Link the Library

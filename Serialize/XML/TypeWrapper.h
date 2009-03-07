@@ -80,18 +80,11 @@ template <> struct TypeWrapper < std::string >
   static void replaceIllegalCharacters ( std::string &s )
   {
     // Illegal characters will be removed when the file is written to xml.
-    //XmlTree::replaceIllegalCharacters ( s );
   }
   static std::string restoreIllegalCharacters ( const std::string &in )
   {
     // Illegal characters are restored when file is read.
-#if 0
-    std::string out ( in );
-    XmlTree::restoreIllegalCharacters ( out );
-    return out;
-#else
     return in;
-#endif
   }
   static void set ( const std::string &s, std::string &value )
   {
@@ -102,7 +95,6 @@ template <> struct TypeWrapper < std::string >
     node.value ( value );
   }
 };
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -287,9 +279,16 @@ template <> struct TypeWrapper < TheType >\
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( char  );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( short );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( int   );
+// These are the same as Usul::Types::IntXX below.
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( char  );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( short );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( int   );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Int8 );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Int16 );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Int32 );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Int64 );
+
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( long  );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( bool  );
 
@@ -298,8 +297,12 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint16 );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint32 );
 SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Uint64 );
 
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
-SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
+// These are the same as Usul::Types::FloatXX below.
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( float );
+//SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( double );
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Float32 );
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER ( Usul::Types::Float64 );
 
 
 /////////////////////////////////////////////////////////////////////////////

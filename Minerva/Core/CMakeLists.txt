@@ -81,6 +81,7 @@ SET ( HEADERS
 	./Commands/StartAnimation.h
 	./Commands/StopAnimation.h
 	./Commands/ToggleShown.h
+	./Data/AbstractView.h
 	./Data/Camera.h
 	./Data/ColorStyle.h
 	./Data/Container.h
@@ -178,6 +179,7 @@ SET (SOURCES
 ./Commands/StartAnimation.cpp
 ./Commands/StopAnimation.cpp
 ./Commands/ToggleShown.cpp
+./Data/AbstractView.cpp
 ./Data/Camera.cpp
 ./Data/ColorStyle.cpp
 ./Data/Container.cpp

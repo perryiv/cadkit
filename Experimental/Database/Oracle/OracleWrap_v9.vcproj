@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../../;../../../;&quot;$(ORACLE_OCI_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="../../;../../../;$(ORACLE_OCI_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../../;../../../;&quot;$(ORACLE_OCI_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="../../;../../../;$(ORACLE_OCI_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_ORACLE_WRAP"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -231,6 +231,14 @@
 			</File>
 			<File
 				RelativePath=".\Environment.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Execute.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Execute.h"
 				>
 			</File>
 			<File

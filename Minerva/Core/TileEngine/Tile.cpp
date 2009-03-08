@@ -637,12 +637,15 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       const unsigned int child ( ( false == allowSplit && false == keepDetail ) ? 0 : this->getNumChildren() - 1 );
       this->getChild ( child )->accept ( *cv );
     }
+
     // Spilt.
     else
     {
       this->_cull ( *cv );
     }
   }
+
+  // Not a cull visitor...
   else
   {
     if ( this->getNumChildren() > 0 )

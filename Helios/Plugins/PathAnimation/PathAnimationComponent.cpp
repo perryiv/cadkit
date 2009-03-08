@@ -603,7 +603,7 @@ bool PathAnimationComponent::_canClosePath() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned int steps, bool loop )
+void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned int steps, bool loop, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -621,7 +621,7 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned
   player->looping ( loop );
 
   // Play the animation forward.
-  player->playForward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
+  player->playForward ( path, _degree, caller );
 
   // Turn on timer.
   this->_timerStart();
@@ -634,7 +634,7 @@ void PathAnimationComponent::_playPathForward ( const CameraPath *path, unsigned
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_playPathBackward ( const CameraPath *path, unsigned int steps, bool loop )
+void PathAnimationComponent::_playPathBackward ( const CameraPath *path, unsigned int steps, bool loop, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -652,7 +652,7 @@ void PathAnimationComponent::_playPathBackward ( const CameraPath *path, unsigne
   player->looping ( loop );
 
   // Play the animation backward.
-  player->playBackward ( path, _degree, Usul::Documents::Manager::instance().activeView() );
+  player->playBackward ( path, _degree, caller );
 
   // Turn on timer.
   this->_timerStart();
@@ -669,7 +669,7 @@ void PathAnimationComponent::_playForward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathForward ( _currentPath.get(), _numSteps, this->_isLooping() );
+  this->_playPathForward ( _currentPath.get(), _numSteps, this->_isLooping(), Usul::Documents::Manager::instance().activeView() );
 }
 
 
@@ -683,7 +683,7 @@ void PathAnimationComponent::_playBackward()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
-  this->_playPathBackward ( _currentPath.get(), _numSteps, this->_isLooping() );
+  this->_playPathBackward ( _currentPath.get(), _numSteps, this->_isLooping(), Usul::Documents::Manager::instance().activeView() );
 }
 
 
@@ -911,7 +911,7 @@ void PathAnimationComponent::_updatePath ( IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::_writeMovieFile ( IUnknown *caller )
+void PathAnimationComponent::_writeMovieFile ( IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -952,12 +952,12 @@ void PathAnimationComponent::_writeMovieFile ( IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices )
+void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
 
   // Redirect with our current number of steps.
-  this->animatePath ( matrices, Usul::Threads::Safe::get ( this->mutex(), _numSteps ) );
+  this->animatePath ( matrices, Usul::Threads::Safe::get ( this->mutex(), _numSteps ), caller );
 }
 
 
@@ -967,7 +967,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices, unsigned int steps )
+void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &matrices, unsigned int steps, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -998,7 +998,7 @@ void PathAnimationComponent::animatePath ( const IAnimatePath::PackedMatrices &m
   }
 
   // Play this path forward.
-  this->_playPathForward ( path.get(), steps, false );
+  this->_playPathForward ( path.get(), steps, false, caller );
 }
 
 
@@ -1336,7 +1336,7 @@ void PathAnimationComponent::_exportMovie ( Usul::Interfaces::IUnknown::QueryPtr
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PathAnimationComponent::_canOpenPath ( Usul::Interfaces::IUnknown* caller ) const
+bool PathAnimationComponent::_canOpenPath ( Usul::Interfaces::IUnknown::RefPtr caller ) const
 {
   Usul::Interfaces::ILoadFileDialog::QueryPtr fd ( caller );
   return fd.valid();
@@ -1349,7 +1349,7 @@ bool PathAnimationComponent::_canOpenPath ( Usul::Interfaces::IUnknown* caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PathAnimationComponent::_canSavePath ( Usul::Interfaces::IUnknown* caller ) const
+bool PathAnimationComponent::_canSavePath ( Usul::Interfaces::IUnknown::RefPtr caller ) const
 {
   Usul::Interfaces::ISaveFileDialog::QueryPtr fd ( caller );
   return fd.valid();
@@ -1435,7 +1435,7 @@ void PathAnimationComponent::_setCameraPosition ( unsigned int num )
   matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
 
   // Animate through the path.
-  this->animatePath ( matrices );
+  this->animatePath ( matrices, Usul::Documents::Manager::instance().activeView() );
 
   // Make this the new current camera.
   _currentCamera = num;

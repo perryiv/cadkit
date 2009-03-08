@@ -39,6 +39,7 @@
 #include "Serialize/XML/Macros.h"
 
 #include "Usul/File/Log.h"
+#include "Usul/Interfaces/IAnimationNotify.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
@@ -66,6 +67,7 @@ namespace Minerva {
 namespace Document {
 
 class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document,
+                                                public Usul::Interfaces::IAnimationNotify,
                                                 public Usul::Interfaces::IBuildScene,
                                                 public Usul::Interfaces::IMatrixManipulator,
                                                 public Usul::Interfaces::IUpdateListener,
@@ -186,6 +188,11 @@ public:
 
   /// Get the busy state. (Usul::Interfaces::IBusyState).
   virtual bool                             busyStateGet() const;
+
+  /// Usul::Interfaces::IAnimationNotify. 
+  virtual void                             animationStarted(){}
+  virtual void                             animationStep ( unsigned int step, unsigned int totalSteps ){}
+  virtual void                             animationStopped();
 
   /// Have visitor visit all layes.
   void                                     accept ( Minerva::Core::Visitor& visitor );

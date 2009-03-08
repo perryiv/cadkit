@@ -32,8 +32,8 @@ struct IAnimatePath : public Usul::Interfaces::IUnknown
   enum { IID = 4103645503u };
 
   // Set an animation path from a vector of matrices.
-  virtual void                animatePath ( const PackedMatrices & ) = 0;
-  virtual void                animatePath ( const PackedMatrices &, unsigned int stepsPerSpan ) = 0;
+  virtual void                animatePath ( const PackedMatrices &, Usul::Interfaces::IUnknown::RefPtr notify ) = 0;
+  virtual void                animatePath ( const PackedMatrices &, unsigned int stepsPerSpan, Usul::Interfaces::IUnknown::RefPtr notify ) = 0;
 
   // Is there a path being played?
   virtual bool                isPlaying() const = 0;

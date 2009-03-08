@@ -54,13 +54,13 @@ public:
   CurvePlayer();
 
   // Build a curve.
-  static osg::Node *            buildCurve ( const CameraPath *, unsigned int degree, unsigned int steps, IUnknown *caller );
+  static osg::Node *            buildCurve ( const CameraPath *, unsigned int degree, unsigned int steps, IUnknown::RefPtr caller );
 
   // Clear the player.
   void                          clear();
 
   // Go to the current parameter.
-  void                          go ( Parameter u, IUnknown *caller );
+  void                          go ( Parameter u, IUnknown::RefPtr caller );
 
   // Interpolate the path.
   static void                   interpolate ( const CameraPath *, unsigned int degree, bool reverse, Curve &curve, IndependentSequence &params );
@@ -70,8 +70,8 @@ public:
   bool                          looping() const;
 
   // Play the path from the current paramater.
-  void                          playBackward ( const CameraPath *, unsigned int degree, IUnknown *caller );
-  void                          playForward  ( const CameraPath *, unsigned int degree, IUnknown *caller );
+  void                          playBackward ( const CameraPath *, unsigned int degree, IUnknown::RefPtr caller );
+  void                          playForward  ( const CameraPath *, unsigned int degree, IUnknown::RefPtr caller );
 
   // Get/set flag.
   void                          playing ( bool );
@@ -82,7 +82,7 @@ public:
   unsigned int                  numStepsPerSpan() const;
 
   // Update the player.
-  void                          update ( IUnknown *caller );
+  void                          update ( IUnknown::RefPtr caller );
 
 protected:
 
@@ -92,7 +92,11 @@ protected:
   static void                   _makePathParams ( const CurveData &, unsigned int stepsPerSpan, IndependentSequence & );
   void                          _makePathParams();
 
-  void                          _play ( const CameraPath *, unsigned int degree, IUnknown *caller, bool reverse );
+  void                          _notifyStarted();
+  void                          _notifyStep ( unsigned int step, unsigned int totalSteps );
+  void                          _notifyStopped();
+
+  void                          _play ( const CameraPath *, unsigned int degree, IUnknown::RefPtr caller, bool reverse );
 
 private:
 
@@ -102,6 +106,7 @@ private:
   unsigned int _currentStep;
   unsigned int _stepsPerSpan;
   bool _looping;
+  IUnknown::RefPtr _caller;
 };
 
 

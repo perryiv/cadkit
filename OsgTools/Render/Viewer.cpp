@@ -52,6 +52,7 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Convert/Vector2.h"
+#include "Usul/Helper/AnimationNotify.h"
 #include "Usul/Math/Constants.h"
 #include "Usul/Math/Functions.h"
 #include "Usul/Math/NaN.h"
@@ -3820,7 +3821,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
   osg::Vec3d axis2 ( c2 - eye );
   const double d2 ( axis2.length() );
 
-  // Find interface to animate, if one exists.
+  // Find interfaces to animate, if they exists.
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;
   IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
 
@@ -3837,11 +3838,13 @@ void Viewer::_handleSeek ( EventAdapter *ea )
     // Get step size.
     const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 10, true ) );
 
-    // Animate through the path.
-    animate->animatePath ( matrices, steps );
-
     // We do this also so that the trackball behaves well.
-    this->setTrackball ( c2, d2, r1, true, true );
+    typedef Usul::Helper::AnimationNotify AnimationNotify;
+    Usul::Interfaces::IUnknown::QueryPtr me ( this );
+    Usul::Interfaces::IUnknown::QueryPtr notify ( new AnimationNotify ( me.get(), c2, d2, r1, true, true ) );
+
+    // Animate through the path.
+    animate->animatePath ( matrices, steps, notify.get() );
   }
 
   // If no animation interface exists, just set the trackball

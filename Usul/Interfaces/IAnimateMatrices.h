@@ -33,7 +33,7 @@ struct IAnimateMatrices : public Usul::Interfaces::IUnknown
   enum { IID = 2715663365u };
 
   // Animate through the path of matrices.
-  virtual void      animateMatrices ( const Matrices &, unsigned int milliseconds, bool loop ) = 0;
+  virtual void      animateMatrices ( const Matrices &, unsigned int milliseconds, bool loop, Usul::Interfaces::IUnknown::RefPtr caller ) = 0;
 };
 
 

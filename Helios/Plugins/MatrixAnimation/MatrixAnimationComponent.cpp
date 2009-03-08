@@ -18,9 +18,11 @@
 #include "Usul/Components/Factory.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
+#include "Usul/Interfaces/IAnimationNotify.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/ITimerService.h"
 #include "Usul/Interfaces/IViewMatrix.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include "OsgTools/Convert/Matrix.h"
@@ -42,7 +44,8 @@ MatrixAnimationComponent::MatrixAnimationComponent() :
   _matrices(),
   _current ( 0 ),
   _timer ( 0 ),
-  _loop ( false )
+  _loop ( false ),
+  _caller ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -63,6 +66,12 @@ MatrixAnimationComponent::~MatrixAnimationComponent()
   
   // Remove paths.
   _matrices.clear();
+
+  // Should be true.
+  USUL_ASSERT ( false == _caller.valid() );
+
+  // Just in case... This is probably a viewer.
+  _caller = 0x0;
 }
 
 
@@ -95,7 +104,7 @@ Usul::Interfaces::IUnknown *MatrixAnimationComponent::queryInterface ( unsigned 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MatrixAnimationComponent::animateMatrices ( const Matrices &matrices, unsigned int milliSeconds, bool loop )
+void MatrixAnimationComponent::animateMatrices ( const Matrices &matrices, unsigned int milliSeconds, bool loop, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -103,16 +112,26 @@ void MatrixAnimationComponent::animateMatrices ( const Matrices &matrices, unsig
   // Stop current timer.
   this->_timerStop();
 
+  // Notify current caller, if any.
+  this->_notifyStopped();
+
   // Assign members.
   _matrices = matrices;
   _loop = loop;
+  _caller = caller;
 
   // We're now at the beginning.
   _current = 0;
 
-  // If we have matrices then start the timer.
+  // If we have matrices...
   if ( false == _matrices.empty() )
+  {
+    // Start the timer.
     this->_timerStart ( milliSeconds );
+
+    // Notify the caller.
+    this->_notifyStarted();
+  }
 }
 
 
@@ -141,6 +160,8 @@ void MatrixAnimationComponent::timerNotify ( TimerID )
     {
       this->_timerStop();
       _matrices.clear();
+      this->_notifyStopped();
+      _caller = 0x0;
       return;
     }
   }
@@ -151,6 +172,7 @@ void MatrixAnimationComponent::timerNotify ( TimerID )
     return;
 
   // Get next matrix.
+  const unsigned int current ( _current );
   const Matrices::value_type m ( _matrices.at ( _current++ ) );
 
   // Set the new matrix. The convention in Usul::Math::Matrix44
@@ -164,12 +186,15 @@ void MatrixAnimationComponent::timerNotify ( TimerID )
   {
     painter->redraw();
   }
+
+  // Notify the caller.
+  this->_notifyStep ( current, _matrices.size() );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Turn on the render loop. Save the current state if there is only one player.
+//  Start the timer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -196,7 +221,7 @@ void MatrixAnimationComponent::_timerStart ( unsigned int milliSeconds )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Restore the render loop.
+//  Stop the timer.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -219,4 +244,58 @@ void MatrixAnimationComponent::_timerStop()
   
   // This is important!
   _timer = 0;  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MatrixAnimationComponent::_notifyStarted()
+{
+  // Notify the caller.
+  typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  if ( true == notify.valid() )
+  {
+    notify->animationStarted();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MatrixAnimationComponent::_notifyStep ( unsigned int step, unsigned int totalSteps )
+{
+  // Notify the caller.
+  typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  if ( true == notify.valid() )
+  {
+    notify->animationStep ( step, totalSteps );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MatrixAnimationComponent::_notifyStopped()
+{
+  // Notify the caller.
+  typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  if ( true == notify.valid() )
+  {
+    notify->animationStopped();
+  }
 }

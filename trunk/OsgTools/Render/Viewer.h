@@ -21,6 +21,7 @@
 #include "OsgTools/Configure/OSG.h"
 
 #include "Usul/Base/Object.h"
+#include "Usul/Interfaces/IAnimationNotify.h"
 #include "Usul/Interfaces/IAxes.h"
 #include "Usul/Interfaces/ICamera.h"
 #include "Usul/Interfaces/IClippingDistance.h"

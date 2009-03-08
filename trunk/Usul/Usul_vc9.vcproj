@@ -818,6 +818,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IAnimationNotify.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IArcGenReaderWriter.h"
 					>
 				</File>
@@ -3037,6 +3041,14 @@
 				>
 				<File
 					RelativePath=".\Config\Config.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Helper"
+				>
+				<File
+					RelativePath=".\Helper\AnimationNotify.h"
 					>
 				</File>
 			</Filter>

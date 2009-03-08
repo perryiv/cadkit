@@ -253,6 +253,8 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
 {
   switch ( iid )
   {
+  case Usul::Interfaces::IAnimationNotify::IID:
+    return static_cast < Usul::Interfaces::IAnimationNotify* > ( this );
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
@@ -646,7 +648,8 @@ namespace Detail
                      const Usul::Math::Vec3d& llh2, 
                      double percentMidpointHeightAtTransition,
                      const Usul::Math::Vec3ui &numPoints,
-                     Minerva::Core::TileEngine::Body& body )
+                     Minerva::Core::TileEngine::Body& body,
+                     Usul::Interfaces::IUnknown::RefPtr notify )
   {
     // This is needed.
     Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
@@ -800,7 +803,7 @@ namespace Detail
     if ( true == animator.valid() )
     {
       const unsigned int milliSeconds ( Usul::Registry::Database::instance()[Usul::Registry::Sections::PATH_ANIMATION]["curve"]["milliseconds"].get<unsigned int> ( 15, true ) );
-      animator->animateMatrices ( matrices, milliSeconds, false );
+      animator->animateMatrices ( matrices, milliSeconds, false, notify );
     }
 
     // Otherwise, just slam in the last one.
@@ -815,6 +818,7 @@ namespace Detail
     // Ideally this should be done in some kind of "animation finished" 
     // callback because the tiles that we are flying to have not been created 
     // yet, and the intersection test with the tiles is not very accurate.
+#if 0
     Usul::Interfaces::ITrackball::QueryPtr tb ( vm );
     if ( tb.valid() )
     {
@@ -835,6 +839,7 @@ namespace Detail
         tb->setTrackball ( c, d, rot, true, true );
       }
     }
+#endif
   }
 }
 
@@ -883,7 +888,7 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
 
     const double percentMidpointHeightAtTransition ( 0.75 );
     const Usul::Math::Vec3ui numPoints ( 100, 100, 100 );
-    Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body );
+    Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body, Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
 }
 
@@ -913,7 +918,7 @@ void MinervaDocument::lookAtPoint ( const Usul::Math::Vec2d& location )
 
     const double percentMidpointHeightAtTransition ( 0.75 );
     const Usul::Math::Vec3ui numPoints ( 100, 100, 100 );
-    Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body );
+    Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body, Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
 }
 
@@ -1186,8 +1191,9 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
       body->postRender ( caller );
 
       // This is needed.  When a job finishes, the finished callback requests a redraw.
-      // In the subsequent cull traversal, the new texture will be added to the scene (which sets the Body's needs redraw flag).
-      // Sometimes another redraw is needed for the texture to appear on the screen (Not sure why this is true).
+      // In the subsequent cull traversal, the new texture will be added to the scene
+      // (which sets the Body's needs redraw flag). Sometimes another redraw is needed 
+      // for the texture to appear on the screen (Not sure why this is true).
       if ( body->needsRedraw() )
       {
         this->requestRedraw();
@@ -2835,13 +2841,12 @@ void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Inter
 
   if ( left && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
   {
-    // Stop any animation.
-    // Look for animation interface.
+    // Stop any animation. Look for animation interface.
     Usul::Interfaces::IAnimateMatrices::QueryPtr animator ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimateMatrices::IID ) );
     if ( true == animator.valid() )
     {
       // Send an empty vector of matrices to stop the animation.
-      animator->animateMatrices ( Usul::Interfaces::IAnimateMatrices::Matrices(), 0, false );
+      animator->animateMatrices ( Usul::Interfaces::IAnimateMatrices::Matrices(), 0, false, Usul::Interfaces::IUnknown::RefPtr ( 0x0 ) );
     }
     
     if ( this->_intersectBalloon ( ea, caller ) )
@@ -3339,4 +3344,44 @@ void MinervaDocument::contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Ve
       }
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Called when the animation stopped.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::animationStopped()
+{
+  Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
+  if ( false == vm.valid() )
+    return;
+
+  Usul::Interfaces::ITrackball::QueryPtr tb ( vm );
+  if ( false == tb.valid() )
+    return;
+
+  Body::RefPtr body ( Usul::Threads::Safe::get ( this->mutex(), _activeBody, true ) );
+  if ( false == body.valid() )
+    return;
+
+  // The translate portion of the matrix is where the eye position will be.
+  const osg::Matrixd mat ( osg::Matrixd::inverse ( vm->getViewMatrix() ) );
+  Usul::Math::Vec3d point ( mat ( 3, 0 ), mat ( 3, 1 ), mat ( 3, 2 ) );
+
+  // Find the intersection point from the eye to the center of the body.
+  // This will become the new center of the trackball.
+  Usul::Math::Vec3d center;
+  if ( false == body->intersectWithTiles ( point, Usul::Math::Vec3d ( 0.0, 0.0, 0.0 ), center ) )
+    return;
+
+  // Get the distance between the eye and the center.
+  const double d ( center.distance ( point ) );
+
+  // Get the rotation and set the trackball.
+  osg::Quat rot; mat.get ( rot );
+  const osg::Vec3d c ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( center ) );
+  tb->setTrackball ( c, d, rot, true, true );
 }

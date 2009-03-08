@@ -25,10 +25,12 @@
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/ShapeFactory.h"
 
+#include "Usul/Interfaces/IAnimationNotify.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Scope/Reset.h"
 #include "Usul/Math/MinMax.h"
 #include "Usul/Math/Transpose.h"
+#include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 
 #include "osg/AutoTransform"
@@ -53,7 +55,8 @@ CurvePlayer::CurvePlayer() : BaseClass(),
   _pathParams(),
   _currentStep ( 0 ),
   _stepsPerSpan ( 100 ),
-  _looping ( false )
+  _looping ( false ),
+  _caller ( 0x0 )
 {
   USUL_TRACE_SCOPE;
 }
@@ -68,6 +71,7 @@ CurvePlayer::CurvePlayer() : BaseClass(),
 CurvePlayer::~CurvePlayer()
 {
   USUL_TRACE_SCOPE;
+  _caller = 0x0;
 }
 
 
@@ -105,13 +109,16 @@ unsigned int CurvePlayer::numStepsPerSpan() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Interfaces::IUnknown *caller, bool reverseOrder )
+void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, IUnknown::RefPtr caller, bool reverseOrder )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
   // Set current step.
   _currentStep = 0;
+
+  // Save caller.
+  _caller = caller;
 
   // Initialize.
   this->playing ( false );
@@ -128,6 +135,9 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
 
   // We are now playing.
   this->playing ( true );
+
+  // Notify the caller.
+  this->_notifyStarted();
 }
 
 
@@ -137,7 +147,7 @@ void CurvePlayer::_play ( const CameraPath *path, unsigned int degree, Usul::Int
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::playForward ( const CameraPath *path, unsigned int degree, Usul::Interfaces::IUnknown *caller )
+void CurvePlayer::playForward ( const CameraPath *path, unsigned int degree, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -151,7 +161,7 @@ void CurvePlayer::playForward ( const CameraPath *path, unsigned int degree, Usu
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::playBackward ( const CameraPath *path, unsigned int degree, Usul::Interfaces::IUnknown *caller )
+void CurvePlayer::playBackward ( const CameraPath *path, unsigned int degree, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -301,7 +311,7 @@ void CurvePlayer::interpolate ( const CameraPath *path, unsigned int degree, boo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::go ( Parameter u, Usul::Interfaces::IUnknown *caller )
+void CurvePlayer::go ( Parameter u, IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -350,7 +360,7 @@ void CurvePlayer::go ( Parameter u, Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
+void CurvePlayer::update ( IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );
@@ -362,7 +372,8 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
   // If the curve is bad, stop playing and return.
   if ( false == _curve.first.valid() )
   {
-    playing ( false );
+    this->playing ( false );
+    this->_notifyStopped();
     return;
   }
 
@@ -374,6 +385,7 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
     {
       // No longer playing.
       this->playing ( false );
+      this->_notifyStopped();
       return;
     }
 
@@ -392,6 +404,9 @@ void CurvePlayer::update ( Usul::Interfaces::IUnknown *caller )
 
   // Go to the parametric position.
   this->go ( u, caller );
+
+  // Notify the caller.
+  this->_notifyStep ( _currentStep, _pathParams.size() );
 
   // Increment the current step.
   ++_currentStep;
@@ -600,7 +615,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree, unsigned int steps, Usul::Interfaces::IUnknown * )
+osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree, unsigned int steps, IUnknown::RefPtr )
 {
   USUL_TRACE_SCOPE_STATIC;
 
@@ -720,4 +735,58 @@ osg::Node *CurvePlayer::buildCurve ( const CameraPath *path, unsigned int degree
 
   // Return group.
   return group.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CurvePlayer::_notifyStarted()
+{
+  // Notify the caller.
+  typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  if ( true == notify.valid() )
+  {
+    notify->animationStarted();
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CurvePlayer::_notifyStep ( unsigned int step, unsigned int totalSteps )
+{
+  // Notify the caller.
+  typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  if ( true == notify.valid() )
+  {
+    notify->animationStep ( step, totalSteps );
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Notify the caller.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void CurvePlayer::_notifyStopped()
+{
+  // Notify the caller.
+  typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  if ( true == notify.valid() )
+  {
+    notify->animationStopped();
+  }
 }

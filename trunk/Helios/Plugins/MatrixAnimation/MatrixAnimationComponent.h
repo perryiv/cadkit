@@ -46,7 +46,7 @@ public:
   MatrixAnimationComponent();
 
   // Usul::Interfaces::IAnimateMatrices.
-  virtual void                  animateMatrices ( const Matrices &, unsigned int milliSeconds, bool loop );
+  virtual void                  animateMatrices ( const Matrices &, unsigned int milliSeconds, bool loop, IUnknown::RefPtr caller );
 
   // Usul::Interfaces::IPlugin
   virtual std::string           getPluginName() const { return "Matrix Animation"; }
@@ -58,6 +58,10 @@ protected:
 
   // Use reference counting.
   virtual ~MatrixAnimationComponent();
+
+  void                          _notifyStarted();
+  void                          _notifyStep ( unsigned int step, unsigned int totalSteps );
+  void                          _notifyStopped();
 
   void                          _timerStart ( unsigned int milliSeconds );
   void                          _timerStop();
@@ -72,6 +76,7 @@ private:
   unsigned int _current;
   TimerID _timer;
   bool _loop;
+  IUnknown::RefPtr _caller;
 };
 
 

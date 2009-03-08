@@ -83,8 +83,8 @@ public:
   virtual void                  animateNurbsCurve ( const ControlPoints &, const KnotVector &, unsigned int degree, unsigned int steps );
 
   // Usul::Interfaces::IAnimatePath.
-  virtual void                  animatePath ( const IAnimatePath::PackedMatrices & );
-  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, unsigned int steps );
+  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, IUnknown::RefPtr notify );
+  virtual void                  animatePath ( const IAnimatePath::PackedMatrices &, unsigned int steps, IUnknown::RefPtr notify );
   virtual bool                  isPlaying() const;
   virtual void                  stopPlaying();
 
@@ -92,7 +92,7 @@ public:
   virtual std::string           getPluginName() const { return "Path Animation"; }
 
   // Usul::Interfaces::IMenuAdd
-  virtual void                  menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller = 0x0 );
+  virtual void                  menuAdd ( MenuKit::Menu& menu, IUnknown *caller = 0x0 );
 
   // Called when the timer fires (ITimerNotify).
   virtual void                  timerNotify ( TimerID );
@@ -111,8 +111,8 @@ protected:
 
   bool                          _canClosePath() const;
   bool                          _canPlay() const;
-  bool                          _canOpenPath ( Usul::Interfaces::IUnknown * caller ) const;
-  bool                          _canSavePath ( Usul::Interfaces::IUnknown * caller ) const;
+  bool                          _canOpenPath ( IUnknown::RefPtr caller ) const;
+  bool                          _canSavePath ( IUnknown::RefPtr caller ) const;
   void                          _closeCameraPath();
   void                          _currentCameraAppend();
   void                          _currentCameraInsert();
@@ -120,7 +120,7 @@ protected:
   void                          _currentCameraRemove();
   void                          _currentCameraReplace();
 
-  void                          _exportMovie ( Usul::Interfaces::IUnknown::QueryPtr );
+  void                          _exportMovie ( IUnknown::QueryPtr );
 
   void                          _goToNextCamera();
   void                          _goToPrevCamera();
@@ -134,21 +134,21 @@ protected:
   bool                          _isNumSteps ( unsigned int steps ) const;
   bool                          _isShowingPath() const;
 
-  void                          _loadPath ( const std::string& name, Usul::Interfaces::IUnknown::QueryPtr caller );
+  void                          _loadPath ( const std::string& name, IUnknown::QueryPtr caller );
 
   void                          _newPath();
-  void                          _openPath ( Usul::Interfaces::IUnknown::QueryPtr );
+  void                          _openPath ( IUnknown::QueryPtr );
 
   void                          _playBackward();
   void                          _playForward();
-  void                          _playPathBackward ( const CameraPath *path, unsigned int steps, bool loop );
-  void                          _playPathForward ( const CameraPath *path, unsigned int steps, bool loop );
+  void                          _playPathBackward ( const CameraPath *path, unsigned int steps, bool loop, IUnknown::RefPtr caller );
+  void                          _playPathForward ( const CameraPath *path, unsigned int steps, bool loop, IUnknown::RefPtr caller );
 
   void                          _timerStart();
   void                          _timerStop();
 
-  void                          _saveCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
-  void                          _saveAsCurrentPath ( Usul::Interfaces::IUnknown::QueryPtr );
+  void                          _saveCurrentPath ( IUnknown::QueryPtr );
+  void                          _saveAsCurrentPath ( IUnknown::QueryPtr );
   void                          _setCameraPosition ( unsigned int );
   void                          _setCurrentPath ( CameraPath::RefPtr );
   void                          _setDegree ( unsigned int );
@@ -159,7 +159,7 @@ protected:
   void                          _updateScene();
   void                          _updatePath ( IUnknown *caller );
 
-  void                          _writeMovieFile ( Usul::Interfaces::IUnknown *caller );
+  void                          _writeMovieFile ( IUnknown::RefPtr caller );
 
 private:
 
@@ -175,8 +175,8 @@ private:
   unsigned int _degree;
   bool _writeMovie;
   std::string _movieFilename;
-  Usul::Interfaces::IUnknown::QueryPtr _movieWriter;
-  Usul::Interfaces::IUnknown::QueryPtr _caller;
+  IUnknown::QueryPtr _movieWriter;
+  IUnknown::QueryPtr _caller;
   unsigned int _numSteps;
   osg::ref_ptr<osg::Group> _root;
   bool _showPath;

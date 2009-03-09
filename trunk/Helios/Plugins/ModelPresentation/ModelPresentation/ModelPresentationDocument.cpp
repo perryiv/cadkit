@@ -2024,7 +2024,7 @@ void ModelPresentationDocument::setAnimationPath ( const std::string& name )
   matrices.push_back ( PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
 
   // Animate through these matrices.
-  path->animatePath ( matrices );
+  path->animatePath ( matrices, 0x0 );
 
 }
 

@@ -748,7 +748,7 @@ void CurvePlayer::_notifyStarted()
 {
   // Notify the caller.
   typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
-  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller.get() ) );
   if ( true == notify.valid() )
   {
     notify->animationStarted();
@@ -766,7 +766,7 @@ void CurvePlayer::_notifyStep ( unsigned int step, unsigned int totalSteps )
 {
   // Notify the caller.
   typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
-  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller.get() ) );
   if ( true == notify.valid() )
   {
     notify->animationStep ( step, totalSteps );
@@ -784,7 +784,7 @@ void CurvePlayer::_notifyStopped()
 {
   // Notify the caller.
   typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
-  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller.get() ) );
   if ( true == notify.valid() )
   {
     notify->animationStopped();

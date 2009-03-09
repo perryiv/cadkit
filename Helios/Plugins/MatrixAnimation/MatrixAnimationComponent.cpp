@@ -257,7 +257,7 @@ void MatrixAnimationComponent::_notifyStarted()
 {
   // Notify the caller.
   typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
-  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller.get() ) );
   if ( true == notify.valid() )
   {
     notify->animationStarted();
@@ -275,7 +275,7 @@ void MatrixAnimationComponent::_notifyStep ( unsigned int step, unsigned int tot
 {
   // Notify the caller.
   typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
-  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller.get() ) );
   if ( true == notify.valid() )
   {
     notify->animationStep ( step, totalSteps );
@@ -293,7 +293,7 @@ void MatrixAnimationComponent::_notifyStopped()
 {
   // Notify the caller.
   typedef Usul::Interfaces::IAnimationNotify IAnimationNotify;
-  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller ) );
+  IAnimationNotify::QueryPtr notify ( Usul::Threads::Safe::get ( this->mutex(), _caller.get() ) );
   if ( true == notify.valid() )
   {
     notify->animationStopped();

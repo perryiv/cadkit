@@ -40,6 +40,7 @@ public:
 
   // Typedefs.
   typedef Usul::Base::Object BaseClass;
+  typedef CadKit::Database::Oracle::Result Result;
 
   // Type information.
   USUL_DECLARE_TYPE_ID ( Connection );

@@ -243,6 +243,7 @@ SET ( HEADERS
 ./Headers/OpenGL.h
 ./Headers/Qt.h
 ./Headers/SStream.h
+./Helper/AnimationNotify.h
 ./ID/GUID.h
 ./Interfaces/GUI/IAboutString.h
 ./Interfaces/GUI/ICancelButton.h
@@ -266,7 +267,9 @@ SET ( HEADERS
 ./Interfaces/IAddSharedVertex.h
 ./Interfaces/IAddTriangle.h
 ./Interfaces/IAnimateNurbsCurve.h
+./Interfaces/IAnimationNotify.h
 ./Interfaces/IAnimatePath.h
+./Interfaces/IAnimateMatrices.h
 ./Interfaces/IArcGenReaderWriter.h
 ./Interfaces/IAxes.h
 ./Interfaces/IBackground.h
@@ -698,11 +701,13 @@ SET (SOURCES
 ./Components/Manager.cpp
 )
 
-# Process is only implemented on Windows.
-IF(WIN32)
-	SET ( HEADERS ${HEADERS} ./System/Process.h )
-	SET ( SOURCES ${SOURCES} ./System/Process.cpp )
-ENDIF(WIN32)
+SET ( HEADERS ${HEADERS} ./System/Process.h )
+SET ( SOURCES ${SOURCES} ./System/Process.cpp )
+	
+IF(NOT WIN32)
+	SET ( HEADERS ${HEADERS} ./System/ProcessUnix.h )
+	SET ( SOURCES ${SOURCES} ./System/ProcessUnix.cpp )
+ENDIF(NOT WIN32)
 
 SET(TARGET_NAME Usul)
 

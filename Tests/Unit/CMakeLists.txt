@@ -14,6 +14,7 @@ IF ( GOOGLE_TEST_FOUND )
 		Minerva/Ellipsoid/EllipsoidTest.cpp
 		Minerva/Extents/ExtentsTest.cpp
 		Usul/Math/BarycentricTest.cpp
+		./Usul/System/Process/ProcessTest.cpp
 	)
 
 	SET ( TARGET_NAME CadKitUnitTest )

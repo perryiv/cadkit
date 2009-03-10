@@ -21,13 +21,19 @@
 #include "Usul/System/LastError.h"
 #include "Usul/Trace/Trace.h"
 
+#if _MSC_VER
 #include "windows.h"
+#else
+#include "Usul/System/ProcessUnix.h"
+#endif
 
 #include <fstream>
 #include <stdexcept>
 #include <vector>
 
 using namespace Usul::System;
+
+USUL_IMPLEMENT_TYPE_ID ( Process );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,8 +56,6 @@ namespace Helper
   }
 }
 
-#else
-TODO
 #endif
 
 
@@ -85,8 +89,6 @@ namespace Helper
   };
 }
 
-#else
-TODO
 #endif
 
 
@@ -111,8 +113,6 @@ namespace Helper
   }
 }
 
-#else
-TODO
 #endif
 
 
@@ -122,23 +122,24 @@ TODO
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _MSC_VER
-
 namespace Helper
 {
   void deleteProcessInfo ( void *ptr )
   {
+    #ifdef _MSC_VER
     Helper::Data *data ( reinterpret_cast < Helper::Data * > ( ptr ) );
     if ( 0x0 != data )
     {
       delete data;
     }
+#else
+    Detail::ProcessImpl* impl ( reinterpret_cast< Detail::ProcessImpl*> ( ptr ) );
+    if ( 0x0 != impl )
+      delete impl;
+#endif
   }
 }
 
-#else
-TODO
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,8 +147,6 @@ TODO
 //  Helper function to throw informative exception.
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-#ifdef _MSC_VER
 
 namespace Helper
 {
@@ -158,10 +157,6 @@ namespace Helper
     throw std::runtime_error ( Usul::Strings::format ( message, ", Executable: ", executable, ", Arguments: ", arguments, idString, systemErrorMessage ) );
   }
 }
-
-#else
-TODO
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -213,7 +208,16 @@ Process::Process ( const std::string &executable,
   _data = data;
 
 #else
-  TODO
+  Usul::System::LastError::init();
+  
+  Usul::System::Detail::ProcessImpl *impl ( new Usul::System::Detail::ProcessImpl );
+  
+  const bool result ( impl->start ( executable, arguments ) );
+  
+  if ( false == result )
+    Helper::throwException ( "Error 1816237620: Failed to create process", executable, arguments, 0 );
+  
+  _data = impl;
 #endif
 }
 
@@ -260,7 +264,11 @@ Process::ID Process::id() const
 #ifdef _MSC_VER
   return ( Helper::getProcessInfo ( _data ).dwProcessId );
 #else
-  TODO
+  Detail::ProcessImpl* impl ( reinterpret_cast< Detail::ProcessImpl*> ( _data ) );
+  if ( 0x0 != impl )
+    return impl->id();
+  
+  return -1;
 #endif
 }
 
@@ -276,10 +284,10 @@ bool Process::isRunning() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
 
+#ifdef _MSC_VER
+  
   if ( true == _hasBeenStopped )
     return false;
-
-#ifdef _MSC_VER
 
   PROCESS_INFORMATION &pi ( Helper::getProcessInfo ( _data ) );
   DWORD exitCode ( 0 );
@@ -313,7 +321,10 @@ bool Process::isRunning() const
   }
 
 #else
-  TODO
+  Detail::ProcessImpl* impl ( reinterpret_cast< Detail::ProcessImpl*> ( _data ) );
+  if ( 0x0 != impl )
+    return impl->isRunning();
+  return false;
 #endif
 }
 
@@ -332,10 +343,10 @@ void Process::stop()
   if ( false == this->isRunning() )
     return;
 
+#ifdef _MSC_VER
+  
   // Set this now.
   _hasBeenStopped = true;
-
-#ifdef _MSC_VER
 
   PROCESS_INFORMATION &pi ( Helper::getProcessInfo ( _data ) );
 
@@ -355,7 +366,9 @@ void Process::stop()
   // process that made it. Just a hunch...
 
 #else
-  TODO
+  Detail::ProcessImpl* impl ( reinterpret_cast< Detail::ProcessImpl*> ( _data ) );
+  if ( 0x0 != impl )
+    _hasBeenStopped = impl->stop();
 #endif
 }
 
@@ -380,7 +393,9 @@ void Process::wait ( unsigned long milliseconds )
   ::WaitForSingleObject ( pi.hProcess, milliseconds );
 
 #else
-  TODO
+  Detail::ProcessImpl* impl ( reinterpret_cast< Detail::ProcessImpl*> ( _data ) );
+  if ( 0x0 != impl )
+    impl->wait ( milliseconds );
 #endif
 }
 
@@ -397,6 +412,6 @@ Process::ID Process::currentProcessId()
 #ifdef _MSC_VER
   return GetCurrentProcessId();
 #else
-  TODO
+  return Detail::ProcessImpl::currentProcessId();
 #endif
 }

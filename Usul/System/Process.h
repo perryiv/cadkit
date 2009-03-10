@@ -32,8 +32,15 @@ public:
 
   // Useful typedefs.
   typedef Usul::Base::Object BaseClass;
+#ifdef _MSC_VER
   typedef unsigned long ID;
+#else
+  typedef int ID;
+#endif
 
+  // Type information.
+  USUL_DECLARE_TYPE_ID ( Process );
+  
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Process );
 

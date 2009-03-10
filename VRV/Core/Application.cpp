@@ -5179,7 +5179,7 @@ void Application::_animate( const osg::Matrix& m1, const osg::Matrix& m2 )
     matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
 
     // Animate through the path.
-    animate->animatePath ( matrices );
+    animate->animatePath ( matrices, 0x0 );
   }
   else
     this->setViewMatrix ( m2 );

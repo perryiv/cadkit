@@ -44,10 +44,8 @@ public:
   /// Get the center of the extents.
   Vertex                center() const;
 
-  /// Expand by the extents.
+  /// Expand by the extents or vertex.
   void                  expand ( const Extents& extents );
-
-  /// Expand by the vertex.
   void                  expand ( const Vertex& v );
 
   /// Does the extent intersect this extent.

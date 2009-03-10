@@ -29,6 +29,7 @@
 #include "Minerva/Core/Jobs/BuildElevation.h"
 #include "Minerva/Core/Jobs/BuildTiles.h"
 #include "Minerva/Core/Algorithms/Composite.h"
+#include "Minerva/Core/Algorithms/Split.h"
 #include "Minerva/Core/Algorithms/SubRegion.h"
 #include "Minerva/Core/Algorithms/ResampleElevation.h"
 
@@ -867,28 +868,19 @@ void Tile::split ( Usul::Jobs::Job::RefPtr job )
     return;
   
   const double half ( this->splitDistance() * 0.5 );
-  
-  const Extents extents ( this->extents() );
-  
-  const Extents::Vertex &mn ( extents.minimum() );
-  const Extents::Vertex &mx ( extents.maximum() );
-  const Extents::Vertex md ( ( mx + mn ) * 0.5 );
-  
   const unsigned int level ( this->level() + 1 );
   
-  // Extents for children tiles.
-  const Extents ll ( Extents::Vertex ( mn[0], mn[1] ), Extents::Vertex ( md[0], md[1] ) );
-  const Extents lr ( Extents::Vertex ( md[0], mn[1] ), Extents::Vertex ( mx[0], md[1] ) );
-  const Extents ul ( Extents::Vertex ( mn[0], md[1] ), Extents::Vertex ( md[0], mx[1] ) );
-  const Extents ur ( Extents::Vertex ( md[0], md[1] ), Extents::Vertex ( mx[0], mx[1] ) );
+  // Extents for child tiles.
+  Extents ll, lr, ul, ur;
+  Minerva::Core::Algorithms::split ( this->extents(), ll, lr, ul, ur );
   
-  // Mesh sizes for children tiles.
+  // Mesh sizes for child tiles.
   const MeshSize mll ( body->meshSize ( ll ) );
   const MeshSize mlr ( body->meshSize ( lr ) );
   const MeshSize mul ( body->meshSize ( ul ) );
   const MeshSize mur ( body->meshSize ( ur ) );
   
-  // Texture coordinates for the children tiles.
+  // Texture coordinates for the child tiles.
   Usul::Math::Vec4d tll, tlr, tul, tur;
   this->_quarterTextureCoordinates ( tll, tlr, tul, tur );
 

@@ -918,6 +918,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Algorithms\Split.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Algorithms\SubRegion.h"
 						>
 					</File>

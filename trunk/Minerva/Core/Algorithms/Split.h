@@ -90,7 +90,7 @@ inline void split ( const ExtentsType &extents, ContainerType &answer, unsigned 
         Minerva::Core::Algorithms::split ( extents, quarters, 1 );
 
         // Loop through the extents from a single split.
-        for ( Container::const_iterator i = quarters.begin(); i != quarters.end(); ++i )
+        for ( typename Container::const_iterator i = quarters.begin(); i != quarters.end(); ++i )
         {
           // Split again.
           const Extents &quarter ( *i );

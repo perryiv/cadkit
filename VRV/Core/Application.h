@@ -78,6 +78,7 @@
 #include "plugins/ApplicationDataManager/UserData.h"
 
 #include "osg/Referenced"
+#include "osg/LightSource"
 #include "osg/Matrix"
 #include "osg/Timer"
 
@@ -93,7 +94,6 @@ namespace osg
   class FrameStamp;
   class MatrixTransform;
   class Node;
-  class Light;
 };
 
 namespace MenuKit { class Button; }
@@ -204,9 +204,6 @@ public:
   void                          cleanup();
 
   virtual void                  viewAll ( osg::Node *mt, osg::Matrix::value_type zScale=2 );
-
-  /// Add a light.
-  void                          addLight ( osg::Light* light );
 
   /// Get/Set the background color.
   virtual void                backgroundColor ( const Usul::Math::Vec4f& color );
@@ -724,6 +721,7 @@ private:
   std::string                            _menuNavigationAnalogID;
 	bool                                   _bodyCenteredRotation;
   ButtonCommandsMap                      _buttonCommandsMap;
+  osg::ref_ptr<osg::LightSource>         _lightSource;
 
 };
 

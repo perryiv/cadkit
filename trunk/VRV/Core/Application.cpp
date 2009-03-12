@@ -93,6 +93,7 @@
 #include "osg/Quat"
 #include "osg/Version"
 #include "osg/LightModel"
+#include "osg/LightSource"
 #include "osg/Material"
 
 #include "vrj/Kernel/Kernel.h"
@@ -182,7 +183,8 @@ Application::Application() :
 	_bodyCenteredRotation ( false ),
   _buttons           ( new VRV::Devices::ButtonGroup ),
   _tracker           ( new VRV::Devices::TrackerDevice ( "VJWand" ) ),
-  _analogs           ()
+  _analogs           (),
+  _lightSource ( new osg::LightSource )
 {
   USUL_TRACE_SCOPE;
 
@@ -241,9 +243,10 @@ void Application::_construct()
   osg::DisplaySettings::instance()->setMaxNumberOfGraphicsContexts ( 20 );
 
   // Hook up the branches
-  _root->addChild      ( _navBranch.get()    );
-  _navBranch->addChild ( _models.get()       );
-  _root->addChild      ( _auxiliary.get()    );
+  _root->addChild      ( _navBranch.get()   );
+  _navBranch->addChild ( _models.get()      );
+  _root->addChild      ( _auxiliary.get()   );
+  _root->addChild      ( _lightSource.get() );
 
   // Name the branches.
   _root->setName         ( "_root"         );
@@ -1420,19 +1423,6 @@ double Application::frameTime() const
   osg::ref_ptr < const osg::FrameStamp > fs ( this->frameStamp () );
 
   return ( this->timeBased () ? _frameTime : ( fs.valid() ? fs->getFrameNumber() : 0 ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a light.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::addLight ( osg::Light* light )
-{
-  USUL_TRACE_SCOPE;
-  _sceneManager->globalLight ( light );
 }
 
 
@@ -4272,11 +4262,6 @@ Usul::Interfaces::IDocument* Application::document()
 
 void Application::_initLight()
 {
-  {
-    Guard guard ( this->mutex () );
-    _sceneManager->globalLightClear ();
-  }
-
   osg::ref_ptr< osg::Light > light ( new osg::Light );
   osg::Vec3 ld;
   osg::Vec4 lp;
@@ -4296,9 +4281,12 @@ void Application::_initLight()
   light->setDiffuse ( diffuse );
   light->setSpecular ( specular );
 
+  Guard guard ( this );
   osg::ref_ptr<osg::StateSet> ss ( _root->getOrCreateStateSet() );
-  ss->setAttributeAndModes ( light.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
-  //this->addLight ( light.get() );
+  ss->setAssociatedModes ( light.get(), osg::StateAttribute::ON );
+
+  _lightSource->setLight ( light.get() );
+  _lightSource->setReferenceFrame ( osg::LightSource::ABSOLUTE_RF );
 }
 
 

@@ -24,6 +24,7 @@
 
 #include <errno.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 using namespace Usul::System::Detail;
 

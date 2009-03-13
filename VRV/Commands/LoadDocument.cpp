@@ -89,7 +89,7 @@ LoadDocument::LoadJob::LoadJob( const Filenames& filenames, Usul::Interfaces::IU
   Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( caller );
 
   if ( factory.valid() )
-    _secondProgressBar = factory->createProgressBar ();
+    _secondProgressBar = factory->createProgressBar().get();
 }
 
 

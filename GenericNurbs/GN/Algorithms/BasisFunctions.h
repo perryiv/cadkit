@@ -19,6 +19,7 @@
 #include "GN/Macros/ErrorCheck.h"
 #include "GN/Math/Matrix.h"
 #include "GN/MPL/TypeCheck.h"
+#include "GN/Traits/Arguments.h"
 
 
 namespace GN {
@@ -483,7 +484,7 @@ void basisFunctionsDerivatives ( const CurveType &curve,
         d += a ( s2, j ) * ndu ( rk + j, pk );
       }
 
-      if ( r <= pk )
+      if ( static_cast < int > ( r ) <= pk )
       {
         a ( s2, k ) = -a( s1, k - 1 ) / ndu ( pk + 1, r );
         d += a ( s2, k ) * ndu ( r, pk );

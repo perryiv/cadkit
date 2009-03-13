@@ -16,6 +16,7 @@
 #ifndef _GENERIC_NURBS_LIBRARY_BISECTION_TESSELLATION_H_
 #define _GENERIC_NURBS_LIBRARY_BISECTION_TESSELLATION_H_
 
+#include "GN/Evaluate/Point.h"
 #include "GN/Macros/ErrorCheck.h"
 #include "GN/MPL/TypeCheck.h"
 #include "GN/Math/Distance.h"

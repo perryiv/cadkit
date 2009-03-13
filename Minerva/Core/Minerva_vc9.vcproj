@@ -454,6 +454,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\TriStrip.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\TriStrip.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\UserData.h"
 						>
 					</File>

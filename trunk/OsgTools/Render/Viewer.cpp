@@ -594,7 +594,7 @@ void Viewer::camera ( CameraOption option )
   ActionAdapter aa ( this->queryInterface( Usul::Interfaces::IUnknown::IID ) );
 
   // See if we have a trackball...
-  Trackball *trackball = dynamic_cast < Trackball * > ( this->navManip ( ) );
+  Trackball *trackball = dynamic_cast < Trackball * > ( this->navManip() );
 
   // Try to save the distance.
   std::pair<bool,float> dist ( false, 0 );
@@ -3312,13 +3312,17 @@ void Viewer::setTrackball ( const osg::Vec3d& center, double distance, const osg
   if ( !this->viewer() )
     return;
 
+  // Only make a trackball if we don't have a manipulator of any kind.
+  if ( 0x0 == this->navManip() && makeTrackball )
+  {
+    this->navManip ( new Trackball );
+  }
+
   // Make sure we have a trackball.
   Trackball::Ptr trackball ( dynamic_cast < Trackball * > ( this->navManip() ) );
-  if ( !trackball.valid() && makeTrackball )
-  {
-    trackball = new Trackball;
-    this->navManip ( trackball.get() );
-  }
+
+  if ( false == trackball.valid() )
+    return;
 
   // Set the trackball.
   trackball->center ( center );

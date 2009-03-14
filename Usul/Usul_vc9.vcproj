@@ -1586,10 +1586,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IViewer.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IViewMatrix.h"
 					>
 				</File>

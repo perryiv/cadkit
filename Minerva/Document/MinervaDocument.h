@@ -28,6 +28,7 @@
 #include "Minerva/Core/Data/Container.h"
 #include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/Utilities/Hud.h"
+#include "Minerva/Core/Navigator.h"
 #include "Minerva/Interfaces/IAnimationControl.h"
 #include "Minerva/Interfaces/IDirtyScene.h"
 #include "Minerva/Interfaces/ILookAtLayer.h"
@@ -44,12 +45,14 @@
 #include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/ICommandExecuteListener.h"
 #include "Usul/Interfaces/IContextMenuAdd.h"
+#include "Usul/Interfaces/IHandleSeek.h"
 #include "Usul/Interfaces/IIntersectListener.h"
 #include "Usul/Interfaces/IJobFinishedListener.h"
 #include "Usul/Interfaces/ILayer.h"
 #include "Usul/Interfaces/IMatrixManipulator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IMouseEventListener.h"
+#include "Usul/Interfaces/IProjectionMatrix.h"
 #include "Usul/Interfaces/ITreeNode.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Jobs/Job.h"
@@ -81,7 +84,9 @@ class MINERVA_DOCUMENT_EXPORT MinervaDocument : public Usul::Documents::Document
                                                 public Usul::Interfaces::IMouseEventListener,
                                                 public Minerva::Interfaces::ILookAtLayer,
                                                 public Usul::Interfaces::IBusyState,
-                                                public Usul::Interfaces::IContextMenuAdd
+                                                public Usul::Interfaces::IContextMenuAdd,
+                                                public Usul::Interfaces::IProjectionMatrix,
+                                                public Usul::Interfaces::IHandleSeek
 {
 public:
   
@@ -370,6 +375,12 @@ protected:
   // Called when mouse event occurs.
   virtual void                             mouseEventNotify ( osgGA::GUIEventAdapter&, Usul::Interfaces::IUnknown * );
 
+  // Get the projection matrix for the active view.
+  virtual osg::Matrixd                     getProjectionMatrix() const;
+
+  /// Seek to intersection point.
+  virtual void                             handleSeek ( const Usul::Math::Vec3d& intersectionPoint );
+
 private:
   
   // Callback to get the eye position.  This is a bit of a hack and needs to be improved.
@@ -477,6 +488,8 @@ private:
   bool _allowSplit;
   bool _keepDetail;
   LogPtr _log;
+
+  Minerva::Core::Navigator::RefPtr _navigator;
 
   SERIALIZE_XML_DEFINE_MAP;
   SERIALIZE_XML_CLASS_NAME( MinervaDocument );

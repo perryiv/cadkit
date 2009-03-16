@@ -218,22 +218,6 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\CommandReceiver.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CommandReceiver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CommandSender.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CommandSender.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Export.h"
 				>
 			</File>
@@ -243,6 +227,14 @@
 			</File>
 			<File
 				RelativePath=".\KmlWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Manipulator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Manipulator.h"
 				>
 			</File>
 			<File

@@ -241,6 +241,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Navigator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Navigator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Serialize.h"
 					>
 				</File>

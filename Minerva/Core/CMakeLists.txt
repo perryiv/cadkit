@@ -127,6 +127,7 @@ SET ( HEADERS
 	./Layers/RasterLayerNetwork.h
 	./Layers/RasterLayerWms.h
 	./Macros.h
+	./Navigator.h
 	./Serialize.h
 	./TileEngine/Body.h
 	./TileEngine/Group.h
@@ -218,6 +219,7 @@ SET (SOURCES
 ./Layers/RasterLayerArcIMS.cpp
 ./Layers/RasterLayerNetwork.cpp
 ./Layers/RasterLayerWms.cpp
+./Navigator.cpp
 ./TileEngine/Body.cpp
 ./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp

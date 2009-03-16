@@ -30,6 +30,7 @@ INCLUDE_DIRECTORIES(
 SET (SOURCES
 #./CommandSender.cpp
 ./MinervaDocument.cpp
+./Manipulator.cpp
 ./KmlWriter.cpp
 #./CommandReceiver.cpp
 )

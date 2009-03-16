@@ -362,12 +362,12 @@ OGRVectorLayer::Geometry* OGRVectorLayer::_createPolygon ( OGRPolygon* geometry,
   
   LineStyle::RefPtr lineStyle ( new LineStyle );
   lineStyle->width ( 1.0f );
-  lineStyle->color ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ) );
+  lineStyle->color ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 1.0f ) );
   
   PolyStyle::RefPtr polyStyle ( new PolyStyle );
   polyStyle->fill ( true );
   polyStyle->outline ( true );
-  polyStyle->color ( Usul::Math::Vec4f ( 0.8, 0.8, 0.8, 1.0 ) );
+  polyStyle->color ( Usul::Math::Vec4f ( 0.8f, 0.8f, 0.8f, 1.0f ) );
   
   polygon->lineStyle ( lineStyle.get() );
   polygon->polyStyle ( polyStyle.get() );

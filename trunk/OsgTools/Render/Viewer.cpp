@@ -62,6 +62,7 @@
 #include "Usul/Interfaces/IAnimatePath.h"
 #include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/IGetBoundingBox.h"
+#include "Usul/Interfaces/IHandleSeek.h"
 #include "Usul/Interfaces/GUI/IUpdateTreeControls.h"
 #include "Usul/Interfaces/GUI/IStatusBar.h"
 #include "Usul/Interfaces/GUI/IMaterialEditor.h"
@@ -3797,7 +3798,7 @@ void Viewer::_handleSeek ( EventAdapter *ea )
   const bool left ( Usul::Bits::has ( ea->getButton(), EventAdapter::LEFT_MOUSE_BUTTON ) );
 
   // Retrun now if we aren't in seek mode.
-  if ( ( _currentMode != SEEK ) || ( false == left ) || ( 0x0 == dynamic_cast < Trackball * > ( this->navManip() ) ) )
+  if ( ( _currentMode != SEEK ) || ( false == left ) )
     return;
 
   // Return if the click didn't intersect the scene
@@ -3810,52 +3811,61 @@ void Viewer::_handleSeek ( EventAdapter *ea )
 #endif
     return;
 
-  // Make copy of trackball's current rotation
-  const osg::Quat r1 ( this->getRotation() );
-  const osg::Vec3d c1 ( this->getCenter() );
-  const double d1 ( this->getDistance() );
-
-  // Get the eye position.
-  osg::Vec3d eye, c, up;
-  osg::Matrix m ( osg::Matrixd::translate ( 0.0, 0.0, d1 ) * osg::Matrixd::rotate ( r1 ) * osg::Matrixd::translate ( c1 ) );
-  m.inverse( m ).getLookAt ( eye, c, up );
-
-  // Get the new center and distance.
-  const osg::Vec3d c2 ( hit.getWorldIntersectPoint() );
-  osg::Vec3d axis2 ( c2 - eye );
-  const double d2 ( axis2.length() );
-
-  // Find interfaces to animate, if they exists.
-  typedef Usul::Interfaces::IAnimatePath IAnimatePath;
-  IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
-
-  // Use the animation interface if we found a valid one.
-  if ( true == animate.valid() )
+  Usul::Interfaces::IHandleSeek::QueryPtr hs ( this->document() );
+  if ( hs.valid() )
   {
-    // Prepare path.
-    IAnimatePath::PackedMatrices matrices;
-    const osg::Matrixd m1 ( this->getViewMatrix() );
-    const osg::Matrixd m2 ( Trackball::matrix ( c2, r1, d2 ) );
-    matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
-    matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
-
-    // Get step size.
-    const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 10, true ) );
-
-    // We do this also so that the trackball behaves well.
-    typedef Usul::Helper::AnimationNotify AnimationNotify;
-    Usul::Interfaces::IUnknown::QueryPtr me ( this );
-    Usul::Interfaces::IUnknown::QueryPtr notify ( new AnimationNotify ( me.get(), c2, d2, r1, true, true ) );
-
-    // Animate through the path.
-    animate->animatePath ( matrices, steps, notify.get() );
+    osg::Vec3d point ( hit.getWorldIntersectPoint() );
+    hs->handleSeek ( Usul::Math::Vec3d ( point[0], point[1], point[2] ) );
   }
-
-  // If no animation interface exists, just set the trackball
-  else
+  else if ( 0x0 != dynamic_cast < Trackball * > ( this->navManip() ) )
   {
-    this->setTrackball ( c2, d2, r1, true, true );
-    this->render();
+    // Make copy of trackball's current rotation
+    const osg::Quat r1 ( this->getRotation() );
+    const osg::Vec3d c1 ( this->getCenter() );
+    const double d1 ( this->getDistance() );
+
+    // Get the eye position.
+    osg::Vec3d eye, c, up;
+    osg::Matrix m ( osg::Matrixd::translate ( 0.0, 0.0, d1 ) * osg::Matrixd::rotate ( r1 ) * osg::Matrixd::translate ( c1 ) );
+    m.inverse( m ).getLookAt ( eye, c, up );
+
+    // Get the new center and distance.
+    const osg::Vec3d c2 ( hit.getWorldIntersectPoint() );
+    osg::Vec3d axis2 ( c2 - eye );
+    const double d2 ( axis2.length() );
+
+    // Find interfaces to animate, if they exists.
+    typedef Usul::Interfaces::IAnimatePath IAnimatePath;
+    IAnimatePath::QueryPtr animate ( Usul::Components::Manager::instance().getInterface ( IAnimatePath::IID ) );
+
+    // Use the animation interface if we found a valid one.
+    if ( true == animate.valid() )
+    {
+      // Prepare path.
+      IAnimatePath::PackedMatrices matrices;
+      const osg::Matrixd m1 ( this->getViewMatrix() );
+      const osg::Matrixd m2 ( Trackball::matrix ( c2, r1, d2 ) );
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m1.ptr(), m1.ptr() + 16 ) );
+      matrices.push_back ( IAnimatePath::PackedMatrix ( m2.ptr(), m2.ptr() + 16 ) );
+
+      // Get step size.
+      const unsigned int steps ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::SEEK_NUM_STEPS].get<unsigned int> ( 10, true ) );
+
+      // We do this also so that the trackball behaves well.
+      typedef Usul::Helper::AnimationNotify AnimationNotify;
+      Usul::Interfaces::IUnknown::QueryPtr me ( this );
+      Usul::Interfaces::IUnknown::QueryPtr notify ( new AnimationNotify ( me.get(), c2, d2, r1, true, true ) );
+
+      // Animate through the path.
+      animate->animatePath ( matrices, steps, notify.get() );
+    }
+
+    // If no animation interface exists, just set the trackball
+    else
+    {
+      this->setTrackball ( c2, d2, r1, true, true );
+      this->render();
+    }
   }
 }
 

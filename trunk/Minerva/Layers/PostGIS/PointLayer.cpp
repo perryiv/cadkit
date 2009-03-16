@@ -34,9 +34,9 @@ PointLayer::PointLayer() :
   BaseClass(),
   _primitiveID( 2 ),
   _size( 5 ),
-  _secondarySize ( 0.00005 ),
+  _secondarySize ( 0.00005f ),
   _stackPoints ( false ),
-  _quality ( 0.80 ),
+  _quality ( 0.80f ),
   _primitiveSizeColumn(),
   _autotransform ( true )
 {

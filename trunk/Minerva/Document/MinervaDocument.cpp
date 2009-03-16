@@ -10,6 +10,7 @@
 
 #include "Minerva/Document/MinervaDocument.h"
 #include "Minerva/Document/KmlWriter.h"
+#include "Minerva/Document/Manipulator.h"
 #include "Minerva/Core/Commands/StopAnimation.h"
 #include "Minerva/Core/Commands/StartAnimation.h"
 #include "Minerva/Core/Commands/PauseAnimation.h"
@@ -34,6 +35,7 @@
 #include "Minerva/Core/Utilities/ClampNearFar.h"
 #include "Minerva/Core/Visitors/SetJobManager.h"
 #include "Minerva/Core/Extents.h"
+#include "Minerva/Core/Navigator.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
 #include "Minerva/Interfaces/IDataObject.h"
 #include "Minerva/Interfaces/IIntersectNotify.h"
@@ -159,6 +161,7 @@ MinervaDocument::MinervaDocument ( LogPtr log ) :
   _allowSplit ( true ),
   _keepDetail ( false ),
   _log ( log ),
+  _navigator ( new Minerva::Core::Navigator ( 0x0, 0x0 ) ),
   SERIALIZE_XML_INITIALIZER_LIST
 {
   // Serialization glue.
@@ -281,6 +284,14 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IBusyState * > ( this );
   case Usul::Interfaces::IContextMenuAdd::IID:
     return static_cast < Usul::Interfaces::IContextMenuAdd * > ( this );
+#if 1 == USE_PLANETARY_NAVIGATOR
+  case Usul::Interfaces::IMatrixManipulator::IID:
+    return static_cast < Usul::Interfaces::IMatrixManipulator * > ( this );
+  case Usul::Interfaces::IHandleSeek::IID:
+    return static_cast < Usul::Interfaces::IHandleSeek * > ( this );
+#endif
+  case Usul::Interfaces::IProjectionMatrix::IID:
+    return static_cast < Usul::Interfaces::IProjectionMatrix * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -434,6 +445,10 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
 
     if ( false == _bodies.empty() )
       this->activeBody ( _bodies.front() );
+
+    Guard guard ( this );
+    _navigator->body ( this->activeBody() );
+    _navigator->projectionMatrix ( Usul::Interfaces::IProjectionMatrix::QueryPtr ( this ).get() );
   }
 
   // Reset all the log pointers.
@@ -530,6 +545,11 @@ osg::Node * MinervaDocument::buildScene ( Unknown *caller )
 
   // Make sure we have at least one body.
   this->_makePlanet();
+
+  // Set needed navigator data.
+  _navigator->body ( this->activeBody() );
+  _navigator->projectionMatrix ( Usul::Interfaces::IProjectionMatrix::QueryPtr ( this ).get() );
+  _navigator->home();
 
   osg::ref_ptr<osg::Group> group ( new osg::Group );
   group->setName ( "Minerva document" );
@@ -957,7 +977,9 @@ Minerva::Interfaces::IAnimationControl::TimestepType MinervaDocument::timestepTy
 
 osgGA::MatrixManipulator * MinervaDocument::getMatrixManipulator ()
 {
-  return 0x0;
+  Guard guard ( this );
+  osg::ref_ptr<Manipulator> manipulator ( new Manipulator ( _navigator.get() ) );
+  return manipulator.release();
 }
 
 
@@ -1117,7 +1139,7 @@ void MinervaDocument::animateSpeed ( double speed )
 double MinervaDocument::animateSpeed () const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
+  Guard guard ( this->mutex() );
   return _animationSpeed;
 }
 
@@ -1131,8 +1153,8 @@ double MinervaDocument::animateSpeed () const
 void MinervaDocument::showPastEvents ( bool b )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  _animateSettings->showPastDays( b );
+  Guard guard ( this->mutex() );
+  _animateSettings->showPastDays ( b );
 }
 
 
@@ -1145,8 +1167,8 @@ void MinervaDocument::showPastEvents ( bool b )
 bool MinervaDocument::showPastEvents() const
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex () );
-  return _animateSettings->showPastDays( );
+  Guard guard ( this->mutex() );
+  return _animateSettings->showPastDays();
 }
 
 
@@ -2836,23 +2858,32 @@ void MinervaDocument::jobFinished ( Usul::Jobs::Job *job )
 
 void MinervaDocument::mouseEventNotify ( osgGA::GUIEventAdapter& ea, Usul::Interfaces::IUnknown * caller )
 {
-  // See if it's the left button.
-  const bool left ( Usul::Bits::has ( ea.getButton(), osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) );
-
-  if ( left && osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
+  if ( osgGA::GUIEventAdapter::PUSH == ea.getEventType() )
   {
-    // Stop any animation. Look for animation interface.
-    Usul::Interfaces::IAnimateMatrices::QueryPtr animator ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimateMatrices::IID ) );
-    if ( true == animator.valid() )
+    typedef Usul::Interfaces::IViewMode IViewMode;
+    IViewMode::QueryPtr vm ( caller );
+    IViewMode::ViewMode mode ( vm.valid() ? vm->getViewMode() : IViewMode::NAVIGATION );
+
+    // Stop any animation if we aren't in seek mode. Look for animation interface.
+    if ( IViewMode::SEEK != mode )
     {
-      // Send an empty vector of matrices to stop the animation.
-      animator->animateMatrices ( Usul::Interfaces::IAnimateMatrices::Matrices(), 0, false, Usul::Interfaces::IUnknown::RefPtr ( 0x0 ) );
+      Usul::Interfaces::IAnimateMatrices::QueryPtr animator ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimateMatrices::IID ) );
+      if ( true == animator.valid() )
+      {
+        // Send an empty vector of matrices to stop the animation.
+        animator->animateMatrices ( Usul::Interfaces::IAnimateMatrices::Matrices(), 0, false, Usul::Interfaces::IUnknown::RefPtr ( 0x0 ) );
+      }
     }
+  
+    // See if it's the left button.
+    const bool left ( Usul::Bits::has ( ea.getButton(), osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ) );
+    if ( left )
+    {
+      if ( this->_intersectBalloon ( ea, caller ) )
+        return;
     
-    if ( this->_intersectBalloon ( ea, caller ) )
-      return;
-    
-    this->_intersectScene ( ea, caller );
+      this->_intersectScene ( ea, caller );
+    }
   }
   else if ( osgGA::GUIEventAdapter::MOVE == ea.getEventType() )
   {
@@ -3384,4 +3415,69 @@ void MinervaDocument::animationStopped()
   osg::Quat rot; mat.get ( rot );
   const osg::Vec3d c ( Usul::Convert::Type<Usul::Math::Vec3d,osg::Vec3d>::convert ( center ) );
   tb->setTrackball ( c, d, rot, true, true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Return the projection matrix for the active view.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Matrixd MinervaDocument::getProjectionMatrix() const
+{
+  Usul::Interfaces::IProjectionMatrix::QueryPtr view ( Usul::Documents::Manager::instance().activeView() );
+  return view.valid() ? view->getProjectionMatrix() : osg::Matrixd();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Seek to intersection point.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::handleSeek ( const Usul::Math::Vec3d& intersectionPoint )
+{
+  Body::RefPtr body ( this->activeBody() );
+
+  if ( body.valid() )
+  {
+    Usul::Math::Vec3d lonLatPoint;
+    body->convertFromPlanet ( intersectionPoint, lonLatPoint );
+
+    Minerva::Core::Data::Camera::RefPtr start ( _navigator->copyCameraState() );
+
+    Minerva::Core::Data::Camera::RefPtr destination ( new Minerva::Core::Data::Camera );
+    destination->longitude ( lonLatPoint[0] );
+    destination->latitude ( lonLatPoint[1] );
+    destination->altitude ( Usul::Math::maximum ( start->altitude() * 0.50, 1000.0 ) );
+    destination->heading ( 0.0 );
+    destination->tilt ( 0.0 );
+    destination->roll ( 0.0 );
+
+    typedef Usul::Interfaces::IAnimateMatrices::Matrices Matrices;
+    Matrices matrices;
+    Minerva::Core::Data::Camera::generateAnimatePath ( start, destination, 0.50, 50, body->landModel(), matrices );
+    
+    // Look for animation interface.
+    Usul::Interfaces::IAnimateMatrices::QueryPtr animator ( Usul::Components::Manager::instance().getInterface ( Usul::Interfaces::IAnimateMatrices::IID ) );
+    if ( true == animator.valid() )
+    {
+      const unsigned int milliSeconds ( Usul::Registry::Database::instance()[Usul::Registry::Sections::PATH_ANIMATION]["curve"]["milliseconds"].get<unsigned int> ( 15, true ) );
+      animator->animateMatrices ( matrices, milliSeconds, false, 0x0 );
+    }
+
+    // Otherwise, just slam in the last one.
+    else
+    {
+      // Set the new matrix.
+      Usul::Interfaces::IViewMatrix::QueryPtr vm ( Usul::Documents::Manager::instance().activeView() );
+      if ( vm.valid() )
+      {
+        const Matrices::value_type mat ( matrices.back() );
+        vm->setViewMatrix ( Usul::Convert::Type<Usul::Math::Matrix44d,osg::Matrixd>::convert ( mat ) );
+      }
+    }
+  }
 }

@@ -79,6 +79,39 @@ public:
     _v[2] = ( m ( 1, 0 ) - m ( 0, 1 ) ) / ( 4 * _v[3] );
   }
 
+  /// See: http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm
+  Quaternion ( value_type yaw, value_type pitch, value_type roll )  : _v ( 0.0, 0.0, 0.0, 1.0 )
+  {
+    const double cy ( Usul::Math::cos ( yaw * 0.5 ) );
+		const double cp ( Usul::Math::cos ( pitch * 0.5 ) );
+		const double cr ( Usul::Math::cos ( roll * 0.5 ) );
+		const double sy ( Usul::Math::sin ( yaw * 0.5 ) );
+		const double sp ( Usul::Math::sin ( pitch * 0.5 ) );
+		const double sr ( Usul::Math::sin ( roll * 0.5 ) );
+
+		const double qw ( cy*cp*cr + sy*sp*sr );
+		const double qx ( sy*cp*cr - cy*sp*sr );
+		const double qy ( cy*sp*cr + sy*cp*sr );
+		const double qz ( cy*cp*sr - sy*sp*cr );
+
+		_v.set ( qx, qy, qz, qw );
+	}
+
+  /// See: http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
+	Vector3 toEuler() const
+	{
+		const double q0 ( _v[3] );
+		const double q1 ( _v[0] );
+		const double q2 ( _v[1] );
+		const double q3 ( _v[2] );
+
+		const double heading ( Usul::Math::atan2 ( 2 * (q2*q3 + q0*q1), (q0*q0 - q1*q1 - q2*q2 + q3*q3)) );
+		const double pitch ( Usul::Math::asin ( -2 * (q1*q3 - q0*q2)) );
+		const double roll ( Usul::Math::atan2 ( 2 * (q1*q2 + q0*q3), (q0*q0 + q1*q1 - q2*q2 - q3*q3)) );
+
+		return Vector3 ( heading, pitch, roll );
+	}
+
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Bracket operators.

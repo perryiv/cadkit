@@ -1142,6 +1142,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Interfaces\IHandleSeek.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Interfaces\IImageToGrayScale.h"
 					>
 				</File>

@@ -247,6 +247,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Manipulator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Manipulator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MinervaDocument.cpp"
 				>
 			</File>

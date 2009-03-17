@@ -242,6 +242,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Navigator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Navigator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Serialize.h"
 					>
 				</File>
@@ -256,6 +264,22 @@
 				<Filter
 					Name="Data"
 					>
+					<File
+						RelativePath=".\Data\AbstractView.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\AbstractView.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Camera.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\Camera.h"
+						>
+					</File>
 					<File
 						RelativePath=".\Data\ColorStyle.cpp"
 						>
@@ -382,6 +406,14 @@
 					</File>
 					<File
 						RelativePath=".\Data\PolyStyle.h"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\RegularMesh.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\RegularMesh.h"
 						>
 					</File>
 					<File

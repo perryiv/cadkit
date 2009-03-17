@@ -504,6 +504,13 @@ void MinervaDocument::_clear()
 
   if ( _legend.valid() ) _legend->clear();
 
+  // Clear the navigator.
+  if ( _navigator.valid() )
+  {
+    _navigator->body ( 0x0 );
+    _navigator->projectionMatrix ( 0x0 );
+  }
+
   // Clear the bodies.
   std::for_each ( _bodies.begin(), _bodies.end(), std::mem_fun ( &Minerva::Core::TileEngine::Body::clear ) );
 

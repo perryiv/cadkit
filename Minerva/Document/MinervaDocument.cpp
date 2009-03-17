@@ -108,8 +108,6 @@
 
 using namespace Minerva::Document;
 
-
-USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( MinervaDocument, MinervaDocument::BaseClass );
 USUL_IMPLEMENT_TYPE_ID ( MinervaDocument );
 
 
@@ -3480,4 +3478,30 @@ void MinervaDocument::handleSeek ( const Usul::Math::Vec3d& intersectionPoint )
       }
     }
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Increment the reference count.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::ref()
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::ref();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Decrement the reference count.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::unref ( bool allowDeletion )
+{
+  USUL_TRACE_SCOPE;
+  BaseClass::unref ( allowDeletion );
 }

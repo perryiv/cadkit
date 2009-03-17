@@ -1,7 +1,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2002, Perry L. Miller IV
+//  Copyright (c) 2009, Perry L Miller IV
 //  All rights reserved.
 //  BSD License: http://www.opensource.org/licenses/bsd-license.html
 //
@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _USUL_ALGORITHMS_TRI_STRIPPER_H_
-#define _USUL_ALGORITHMS_TRI_STRIPPER_H_
+#ifndef _USUL_ALGORITHMS_TRI_STRIP_H_
+#define _USUL_ALGORITHMS_TRI_STRIP_H_
 
 #include <stdexcept>
 
@@ -25,52 +25,37 @@ namespace Algorithms {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Assumes every three vertices are a triangle. Makes one or more tri-strips.
+//  Generates indices for rows of tri-strips given a mesh size.
+//  Use when you want to draw a grid of vertices.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template < class Vertices, class Indices > 
-void triStrip ( const Vertices &vertices, Indices &indices, Indices &strips )
+template < class SizeType, class TriStripIndices >
+inline void triStripIndices ( SizeType rows, SizeType columns, TriStripIndices &allStrips )
 {
-  typedef typename Vertices::value_type Vertex;
-  typedef typename Vertices::iterator VI;
-  typedef typename Indices::iterator II;
+  typedef typename TriStripIndices::value_type SingleStripIndices;
 
-  // Handle trivial case.
-  if ( vertices.empty() )
-    return;
-
-  // Make sure the vertex data is valid.
-  if ( vertices.size() % 3 )
-    throw std::runtime_error ( "Error 2366236208, number of vertices is not divisible by three" );
-
-  // Make a copy of the original vertices.
-  std::list<Vertex> original ( vertices.begin(), vertices.end() );
-
-  // Get original sizes. This handles repeated calls with the same containers.
-  unsigned int numVerts   ( vertices.size() );
-  unsigned int numIndices ( indices.size()  );
-  unsigned int numStrips  ( strips.size()   );
-
-  // Allocate some memory (for speed).
-  indices.reserve ( numVerts + numIndices );
-  strips.reserve  ( numVerts + numStrips  );
-
-  // Move the first triangle into the strip.
-  unsigned int count ( 0 );
-  indices.push_back ( original.front() ); original.pop_front();
-  indices.push_back ( original.front() ); original.pop_front();
-  indices.push_back ( original.front() ); original.pop_front();
-  is.at ( count     ) = 0;
-  is.at ( count + 1 ) = 3;
-
-  // Loop until we cannot remove any more.
-  while ( !ov.empty() )
+  if ( ( rows < 2 ) || ( columns < 2 ) )
   {
-    // Loop through the original vertices.
-    for ( TI i = ov.begin(); i != ov.end(); ++i )
-    {
+    throw std::invalid_argument ( "Error 1844606493: Minimum mesh size for tri-strip generation is 2x2" );
+  }
 
+  // Initialize the answer.
+  allStrips.clear();
+  allStrips.resize ( rows - 1 );
+
+  // Loop through the rows.
+  for ( SizeType i = 0; i < allStrips.size(); ++i )
+  {
+    SingleStripIndices &currentStrip ( allStrips.at ( i ) );
+    currentStrip.clear();
+    currentStrip.reserve ( 2 * columns );
+
+    // Loop through the columns of this row.
+    for ( SizeType j = 0; j < columns; ++j )
+    {
+      currentStrip.push_back ( ( ( i + 1 ) * columns ) + j );
+      currentStrip.push_back ( ( ( i     ) * columns ) + j );
     }
   }
 }
@@ -80,4 +65,4 @@ void triStrip ( const Vertices &vertices, Indices &indices, Indices &strips )
 } // namespace Usul
 
 
-#endif // _USUL_ALGORITHMS_TRI_STRIPPER_H_
+#endif // _USUL_ALGORITHMS_TRI_STRIP_H_

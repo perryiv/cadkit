@@ -408,6 +408,14 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Data\RegularMesh.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Data\RegularMesh.h"
+						>
+					</File>
+					<File
 						RelativePath=".\Data\Style.cpp"
 						>
 					</File>
@@ -459,14 +467,6 @@
 					</File>
 					<File
 						RelativePath=".\Data\Transform.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Data\TriStrip.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Data\TriStrip.h"
 						>
 					</File>
 					<File

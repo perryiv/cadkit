@@ -9,15 +9,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Represents a regular (N x M) mesh.
+//  Represents an N x M mesh.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Core/Data/TriStrip.h"
+#include "Minerva/Core/Data/RegularMesh.h"
 
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Convert.h"
 
+#include "Usul/Algorithms/TriStrip.h"
 #include "Usul/Interfaces/IElevationDatabase.h"
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 #include "Usul/Strings/Format.h"
@@ -31,7 +32,7 @@
 
 using namespace Minerva::Core::Data;
 
-USUL_IMPLEMENT_TYPE_ID ( TriStrip );
+USUL_IMPLEMENT_TYPE_ID ( RegularMesh );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,11 +41,12 @@ USUL_IMPLEMENT_TYPE_ID ( TriStrip );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TriStrip::TriStrip() : BaseClass(),
+RegularMesh::RegularMesh() : BaseClass(),
   _v(),
   _n(),
   _c(),
-  _m()
+  _m(),
+  _size ( 0, 0 )
 {
 }
 
@@ -55,7 +57,7 @@ TriStrip::TriStrip() : BaseClass(),
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TriStrip::~TriStrip()
+RegularMesh::~RegularMesh()
 {
   _v.clear();
   _n.clear();
@@ -65,11 +67,26 @@ TriStrip::~TriStrip()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Set the size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void RegularMesh::size ( unsigned int numRows, unsigned int numColumns )
+{
+  Guard guard ( this );
+  _size[0] = numRows;
+  _size[1] = numColumns;
+  this->dirty ( true );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set the vertices.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriStrip::vertices ( const Vertices &v )
+void RegularMesh::vertices ( const Vertices &v )
 {
   Guard guard ( this );
   _v = v;
@@ -83,7 +100,7 @@ void TriStrip::vertices ( const Vertices &v )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriStrip::normals ( const Normals &n )
+void RegularMesh::normals ( const Normals &n )
 {
   Guard guard ( this );
   _n = n;
@@ -97,7 +114,7 @@ void TriStrip::normals ( const Normals &n )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriStrip::colors ( const Colors &c )
+void RegularMesh::colors ( const Colors &c )
 {
   Guard guard ( this );
   _c = c;
@@ -111,7 +128,7 @@ void TriStrip::colors ( const Colors &c )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void TriStrip::material ( const Color &ambient, const Color &diffuse, const Color &specular, const Color &emissive, double shininess )
+void RegularMesh::material ( const Color &ambient, const Color &diffuse, const Color &specular, const Color &emissive, double shininess )
 {
   Guard guard ( this );
   _m.first[0] = ambient;
@@ -129,7 +146,7 @@ void TriStrip::material ( const Color &ambient, const Color &diffuse, const Colo
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Node* TriStrip::_buildScene ( Usul::Interfaces::IUnknown *caller )
+osg::Node* RegularMesh::_buildScene ( Usul::Interfaces::IUnknown *caller )
 {
   Guard guard ( this );
 
@@ -151,6 +168,13 @@ osg::Node* TriStrip::_buildScene ( Usul::Interfaces::IUnknown *caller )
   {
     throw std::runtime_error ( Usul::Strings::format
       ( "Error 2446056880: Number of vertices = ", _v.size(), " and number of colors = ", _c.size(), '\n' ) );
+  }
+
+  // Make sure given size will work.
+  if ( _v.size() != ( _size[0] * _size[1] ) )
+  {
+    throw std::runtime_error ( Usul::Strings::format
+      ( "Error 2491480094: Number of vertices is ", _v.size(), " and given mesh size is (", _size[0], ',', _size[1], ')', '\n' ) );
   }
 
   // Query for needed interfaces.
@@ -277,8 +301,29 @@ osg::Node* TriStrip::_buildScene ( Usul::Interfaces::IUnknown *caller )
     OsgTools::State::StateSet::setMaterial ( mt.get(), material.get() );
   }
 
-  // Add the primitive set.
-  geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
+  // If we have more than one row then use indices.
+  if ( _size[0] > 2 )
+  {
+    typedef unsigned short IndexType;
+    typedef std::vector<IndexType> Indices;
+    typedef std::vector<Indices> Primitives;
+
+    Primitives primitives;
+    Usul::Algorithms::triStripIndices ( _size[0], _size[1], primitives );
+
+    // Loop through the primitives.
+    for ( unsigned int i = 0; i < primitives.size(); ++i )
+    {
+      const Indices &strip ( primitives.at ( i ) );
+      geometry->addPrimitiveSet ( new osg::DrawElementsUShort ( osg::PrimitiveSet::TRIANGLE_STRIP, strip.size(), &strip[0] ) );
+    }
+  }
+
+  // Otherwise, just add a single tri-strip.
+  else
+  {
+    geometry->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
+  }
 
   // Set the render bin.
   mt->getOrCreateStateSet()->setRenderBinDetails ( this->renderBin(), "RenderBin" );
@@ -294,7 +339,7 @@ osg::Node* TriStrip::_buildScene ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool TriStrip::isSemiTransparent() const
+bool RegularMesh::isSemiTransparent() const
 {
   Guard guard ( this );
   if ( 0 == _c.size() )

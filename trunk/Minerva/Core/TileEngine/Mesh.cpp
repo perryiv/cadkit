@@ -16,6 +16,7 @@
 #include "Minerva/Core/TileEngine/Mesh.h"
 #include "Minerva/Core/TileEngine/Body.h"
 
+#include "Usul/Algorithms/TriStrip.h"
 #include "Usul/Math/Barycentric.h"
 #include "Usul/Predicates/Tolerance.h"
 
@@ -78,20 +79,7 @@ Mesh::Mesh ( unsigned int rows, unsigned int columns, double skirtHeight, const 
 {
   // Make the draw elements now because they are only dependent on the rows and columns.
   // There is one tri-strip for each adjacent pair of rows.
-  _meshPrimitives.resize ( _rows - 1 );
-  
-  // Loop through all the rows.
-  for ( unsigned int i = 0; i < _meshPrimitives.size(); ++i )
-  {
-    Indices& indices ( _meshPrimitives.at ( i ) );
-
-    // Loop through all the columns.
-    for ( unsigned int j = 0; j < _columns; ++j )
-    {
-      indices.push_back ( ( ( i + 1 ) * _columns ) + j );
-      indices.push_back ( ( ( i     ) * _columns ) + j );
-    }
-  }
+  Usul::Algorithms::triStripIndices ( _rows, _columns, _meshPrimitives );
 }
 
 

@@ -9,16 +9,17 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Represents a tri-strip.
+//  Represents an N x M mesh.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _MINERVA_CORE_DATA_TRI_STRIP_H_
-#define _MINERVA_CORE_DATA_TRI_STRIP_H_
+#ifndef _MINERVA_CORE_DATA_REGULAR_MESH_H_
+#define _MINERVA_CORE_DATA_REGULAR_MESH_H_
 
 #include "Minerva/Core/Export.h"
 #include "Minerva/Core/Data/Geometry.h"
 
+#include "Usul/Math/Vector2.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
 
@@ -30,7 +31,7 @@ namespace Core {
 namespace Data {
       
       
-class MINERVA_EXPORT TriStrip : public Geometry
+class MINERVA_EXPORT RegularMesh : public Geometry
 {
 public:
 
@@ -42,11 +43,12 @@ public:
   typedef Usul::Math::Vector4<Color> MaterialColors;
   typedef std::pair<MaterialColors,double> Material;
   typedef Usul::Interfaces::IUnknown IUnknown;
+  typedef Usul::Math::Vec2ui Vec2ui;
 
-  USUL_DECLARE_TYPE_ID ( TriStrip );
-  USUL_DECLARE_QUERY_POINTERS ( TriStrip );
+  USUL_DECLARE_TYPE_ID ( RegularMesh );
+  USUL_DECLARE_QUERY_POINTERS ( RegularMesh );
 
-  TriStrip();
+  RegularMesh();
 
   /// Set the colors.
   void                    colors ( const Colors & );
@@ -60,13 +62,16 @@ public:
   /// Set the normal vectors.
   void                    normals ( const Normals & );
 
+  /// Set the mesh size.
+  void                    size ( unsigned int numRows, unsigned int numColumns );
+
   /// Set the vertices.
   void                    vertices ( const Vertices & );
 
 protected:
   
   /// Use reference counting.
-  virtual ~TriStrip();
+  virtual ~RegularMesh();
   
   /// Build the scene branch.
   virtual osg::Node *     _buildScene ( IUnknown *caller );
@@ -77,6 +82,7 @@ private:
   Normals _n;
   Colors _c;
   Material _m;
+  Vec2ui _size;
 };
 
 
@@ -85,4 +91,4 @@ private:
 }
 
 
-#endif // _MINERVA_CORE_DATA_TRI_STRIP_H_
+#endif // _MINERVA_CORE_DATA_REGULAR_MESH_H_

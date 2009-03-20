@@ -225,21 +225,21 @@
 					>
 				</File>
 				<File
-					RelativePath=".\AddWmsLayerWidget.cpp"
+					RelativePath=".\BaseAddNetworkLayerWidget.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\AddWmsLayerWidget.h"
+					RelativePath=".\BaseAddNetworkLayerWidget.h"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							Description="Creating ui_AddWmsLayerWidget.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\WmsWidget.ui -o .\ui_WmsWidget.h&#x0D;&#x0A;$(QTDIR)\bin\moc.exe  &quot;.\AddWmsLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AnimationControl.ui;$(QTDIR)\bin\moc.exe;.\AddWmsLayerWidget.h"
-							Outputs=".\ui_WmsWidget.h;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp"
+							Description="Creating ui_BaseAddNetworkLayerWidget.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\BaseAddNetworkLayerWidget.ui -o .\ui_BaseAddNetworkLayerWidget.h&#x0D;&#x0A;$(QTDIR)\bin\moc.exe  &quot;.\BaseAddNetworkLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_BaseAddNetworkLayerWidget.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\AnimationControl.ui;$(QTDIR)\bin\moc.exe;.\BaseAddNetworkLayerWidget.h"
+							Outputs=".\ui_BaseAddNetworkLayerWidget.h;.\GeneratedFiles\moc_BaseAddNetworkLayerWidget.cpp"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -247,10 +247,10 @@
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							Description="Creating ui_AddWmsLayerWidget.h..."
-							CommandLine="$(QTDIR)\bin\uic.exe .\WmsWidget.ui -o .\ui_WmsWidget.h&#x0D;&#x0A;$(QTDIR)\bin\moc.exe  &quot;.\AddWmsLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp&quot;&#x0D;&#x0A;"
-							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\WmsWidget.ui;$(QTDIR)\bin\moc.exe;.\AddWmsLayerWidget.h"
-							Outputs=".\ui_WmsWidget.h;.\GeneratedFiles\moc_AddWmsLayerWidget.cpp"
+							Description="Creating ui_BaseAddNetworkLayerWidget.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\BaseAddNetworkLayerWidget.ui -o .\BaseAddNetworkLayerWidget.h&#x0D;&#x0A;$(QTDIR)\bin\moc.exe  &quot;.\BaseAddNetworkLayerWidget.h&quot; -o &quot;.\GeneratedFiles\moc_BaseAddNetworkLayerWidget.cpp&quot;&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\BaseAddNetworkLayerWidget.ui;$(QTDIR)\bin\moc.exe;.\BaseAddNetworkLayerWidget.h"
+							Outputs=".\ui_BaseAddNetworkLayerWidget.h;.\GeneratedFiles\moc_BaseAddNetworkLayerWidget.cpp"
 						/>
 					</FileConfiguration>
 				</File>
@@ -327,7 +327,7 @@
 				Name="GeneratedFiles"
 				>
 				<File
-					RelativePath=".\GeneratedFiles\moc_AddWmsLayerWidget.cpp"
+					RelativePath=".\GeneratedFiles\moc_BaseAddNetworkLayerWidget.cpp"
 					>
 				</File>
 				<File

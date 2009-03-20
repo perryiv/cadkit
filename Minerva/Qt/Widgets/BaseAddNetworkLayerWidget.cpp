@@ -8,7 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Minerva/Qt/Widgets/AddWmsLayerWidget.h"
+#include "Minerva/Qt/Widgets/BaseAddNetworkLayerWidget.h"
 #include "Minerva/Qt/Widgets/OptionsDialog.h"
 #include "Minerva/Qt/Widgets/WmsLayerItem.h"
 
@@ -92,6 +92,7 @@ BaseAddNetworkLayerWidget::BaseAddNetworkLayerWidget ( const Options& options, c
   // Connect the slots and signals.
   QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), getServiceNamesButton, SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), viewOptionsButton,  SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _jpegButton,        SLOT ( setEnabled ( bool ) ) );
   QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _pngButton,         SLOT ( setEnabled ( bool ) ) );
@@ -120,6 +121,8 @@ BaseAddNetworkLayerWidget::BaseAddNetworkLayerWidget ( const Options& options, c
   
   // Set the completer.
   _server->setCompleter ( completer );
+
+  this->_setServiceNameWidgetsVisible ( false );
 }
 
 
@@ -163,9 +166,9 @@ void BaseAddNetworkLayerWidget::on_capabilitiesButton_clicked()
   {
     const std::string server ( _server->text().toStdString() );
     
-    LayerInfos infos ( this->_getCapabilities() );
+    LayerInfoList infos ( this->_getCapabilities() );
     
-    for ( LayerInfos::const_iterator iter = infos.begin(); iter != infos.end(); ++iter )
+    for ( LayerInfoList::const_iterator iter = infos.begin(); iter != infos.end(); ++iter )
     {
       QTreeWidgetItem *item ( new WmsLayerItem ( iter->name, iter->title, iter->extents, _layersTree ) );
       _layersTree->addTopLevelItem( item );
@@ -221,6 +224,19 @@ std::string BaseAddNetworkLayerWidget::cacheDirectory() const
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string BaseAddNetworkLayerWidget::name() const
+{
+  return _name->text().toStdString();
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the server.
@@ -246,4 +262,150 @@ void BaseAddNetworkLayerWidget::_addRecentServer ( const std::string& server )
   recent.push_back ( server.c_str() );
   recent.erase ( std::unique ( recent.begin(), recent.end() ), recent.end() );
   Usul::Registry::Database::instance()[Detail::SECTION][Detail::KEY] = recent;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The get service names button has been clicked.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseAddNetworkLayerWidget::on_getServiceNamesButton_clicked()
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the visible state for all the service name widgets.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseAddNetworkLayerWidget::_setServiceNameWidgetsVisible ( bool b )
+{
+  getServiceNamesButton->setVisible ( b );
+  _serviceNameLabel->setVisible ( b );
+  _serviceNameLineEdit->setVisible ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Convert from a container of QTreeWidgetItems to container of LayerInfos.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  template<class LayerInfoList,class TreeWidgetItemList>
+  void convertFromTreeWidgetItemList ( const TreeWidgetItemList& items, LayerInfoList& layerInfos )
+  {
+    layerInfos.reserve ( items.size() );
+
+    for ( typename TreeWidgetItemList::const_iterator iter = items.begin(); iter != items.end(); ++iter )
+    {
+      if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
+      {
+        typename LayerInfoList::value_type info;
+        info.name = item->name();
+        info.style = item->style();
+        info.title = item->title();
+        info.extents = item->extents();
+        layerInfos.push_back ( info );
+      }
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all the layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseAddNetworkLayerWidget::layers ( LayerInfoList& layerInfos ) const
+{
+  typedef QList<QTreeWidgetItem *> Items;
+
+  // Get all the items.
+  Items items ( _layersTree->findItems ( "*", Qt::MatchWildcard ) );
+  Detail::convertFromTreeWidgetItemList ( items, layerInfos );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all the selected layers.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void BaseAddNetworkLayerWidget::selectedLayers ( LayerInfoList& layerInfos ) const
+{
+  typedef QList<QTreeWidgetItem *> Items;
+
+  Items items ( _layersTree->selectedItems() );
+  Detail::convertFromTreeWidgetItemList ( items, layerInfos );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the layers be added as a group?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool BaseAddNetworkLayerWidget::addAllAsGroup() const
+{
+  return Qt::Checked == _addAllAsGroup->checkState();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the selected layers be added as a group?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool BaseAddNetworkLayerWidget::addSelectedAsGroup() const
+{
+  return Qt::Checked == _addSelectedAsGroup->checkState();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Should the current cache directory be made the default one?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool BaseAddNetworkLayerWidget::makeCacheDirectoryDefault() const
+{
+  return Qt::Checked == _makeDefaultDirectory->checkState();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the image format.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string BaseAddNetworkLayerWidget::imageFormat() const
+{
+  QAbstractButton *button ( _imageTypes->checkedButton () );
+  return ( 0x0 != button ? button->text().toStdString() : "image/jpeg" );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the options.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+BaseAddNetworkLayerWidget::Options BaseAddNetworkLayerWidget::options() const
+{
+  return _options;
 }

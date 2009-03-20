@@ -104,7 +104,8 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _name( "Body" ),
   _imageSize ( 256, 256 ),
   _alpha ( 1.0f ),
-  _maxAnisotropy ( Usul::Registry::Database::instance()["default_max_anisotropy"].get<float> ( 16.0f, true ) )
+  _maxAnisotropy ( Usul::Registry::Database::instance()["default_max_anisotropy"].get<float> ( 16.0f, true ) ),
+  SERIALIZE_XML_INITIALIZER_LIST
 {
   USUL_TRACE_SCOPE;
 
@@ -675,7 +676,6 @@ void Body::jobManager ( Usul::Jobs::Manager *manager )
 void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  BaseClass::preRender ( caller );
   
   // Reset the number of new textures.
   Guard guard ( this->mutex() );
@@ -695,9 +695,6 @@ void Body::postRender ( Usul::Interfaces::IUnknown *caller )
 
   // Remove all tiles that are ready.
   this->purgeTiles();
-
-  // Pass along to base class.
-  BaseClass::postRender ( caller );
 }
 
 

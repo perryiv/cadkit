@@ -30,10 +30,7 @@ namespace Minerva
     
     namespace TileEngine
     {
-      class Node;
-      class Group;
       class Body;
-      class System;
     }
     
     namespace Layers
@@ -62,10 +59,7 @@ namespace Minerva
       virtual void visit ( Minerva::Core::Layers::RasterLayer & );
       virtual void visit ( Minerva::Core::Layers::RasterGroup & );
       
-      virtual void visit ( Minerva::Core::TileEngine::System & );
-      virtual void visit ( Minerva::Core::TileEngine::Group & );
       virtual void visit ( Minerva::Core::TileEngine::Body & );
-      virtual void visit ( Minerva::Core::TileEngine::Node & );
 
     protected:
       

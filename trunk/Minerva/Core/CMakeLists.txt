@@ -130,13 +130,10 @@ SET ( HEADERS
 	./Navigator.h
 	./Serialize.h
 	./TileEngine/Body.h
-	./TileEngine/Group.h
 	./TileEngine/LandModel.h
 	./TileEngine/LandModelEllipsoid.h
 	./TileEngine/Mesh.h
-	./TileEngine/Node.h
 	./TileEngine/SplitCallbacks.h
-	./TileEngine/System.h
 	./TileEngine/Tile.h
 	./Utilities/Atmosphere.h
 	./Utilities/ClampNearFar.h
@@ -147,13 +144,11 @@ SET ( HEADERS
 	./Utilities/SkyDome.h
 	./Visitor.h
 	./Visitors/BuildLegend.h
-	./Visitors/BuildScene.h
 	./Visitors/FindMinMaxDates.h
 	./Visitors/FindObject.h
 	./Visitors/FindUnknowns.h
 	./Visitors/ResizePoints.h
 	./Visitors/Scale.h
-	./Visitors/SetJobManager.h
 	./Visitors/StackPoints.h
 	./Visitors/TemporalAnimation.h
 )
@@ -221,12 +216,9 @@ SET (SOURCES
 ./Layers/RasterLayerWms.cpp
 ./Navigator.cpp
 ./TileEngine/Body.cpp
-./TileEngine/Group.cpp
 ./TileEngine/LandModelEllipsoid.cpp
 ./TileEngine/Mesh.cpp
-./TileEngine/Node.cpp
 ./TileEngine/SplitCallbacks.cpp
-./TileEngine/System.cpp
 ./TileEngine/Tile.cpp
 ./Utilities/Atmosphere.cpp
 ./Utilities/Download.cpp
@@ -236,12 +228,10 @@ SET (SOURCES
 ./Utilities/SkyDome.cpp
 ./Visitor.cpp
 ./Visitors/BuildLegend.cpp
-./Visitors/BuildScene.cpp
 ./Visitors/FindMinMaxDates.cpp
 ./Visitors/FindObject.cpp
 ./Visitors/ResizePoints.cpp
 ./Visitors/Scale.cpp
-./Visitors/SetJobManager.cpp
 ./Visitors/StackPoints.cpp
 ./Visitors/TemporalAnimation.cpp
 )

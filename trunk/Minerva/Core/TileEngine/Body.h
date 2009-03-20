@@ -18,7 +18,7 @@
 #define _MINERVA_CORE_TILE_ENGINE_BODY_CLASS_H_
 
 #include "Minerva/Core/Extents.h"
-#include "Minerva/Core/TileEngine/Node.h"
+#include "Minerva/Core/Macros.h"
 #include "Minerva/Core/TileEngine/LandModel.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
 #include "Minerva/Core/TileEngine/Tile.h"
@@ -53,7 +53,7 @@ namespace Core {
 namespace TileEngine {
 
 
-class MINERVA_EXPORT Body : public Node,
+class MINERVA_EXPORT Body : public Usul::Base::Object,
                             public Usul::Interfaces::IUpdateListener,
                             public Usul::Interfaces::IPlanetCoordinates,
                             public Usul::Interfaces::IElevationDatabase,
@@ -63,8 +63,7 @@ class MINERVA_EXPORT Body : public Node,
 public:
 
   // Useful typedefs.
-  typedef Node BaseClass;
-  typedef BaseClass::BuildOptions BuildOptions;
+  typedef Usul::Base::Object BaseClass;
   typedef Usul::Math::Vec2d Vec2d;
   typedef Usul::Math::Vec3d Vec3d;
   typedef Minerva::Core::Extents < osg::Vec2d > Extents;
@@ -334,6 +333,7 @@ private:
 
   SERIALIZE_XML_CLASS_NAME ( Body );
   SERIALIZE_XML_ADD_MEMBER_FUNCTION;
+  SERIALIZE_XML_DEFINE_MAP;
 };
 
 

@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Core/Visitor.h"
-#include "Minerva/Core/TileEngine/System.h"
+#include "Minerva/Core/TileEngine/Body.h"
 #include "Minerva/Core/Data/Container.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
@@ -106,18 +106,6 @@ void Visitor::visit ( Minerva::Core::Data::Container& vector )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Visitor::visit ( Minerva::Core::TileEngine::Node & )
-{
-  USUL_TRACE_SCOPE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Visit the node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
 void Visitor::visit ( Minerva::Core::TileEngine::Body & body )
 {
   USUL_TRACE_SCOPE;
@@ -135,63 +123,6 @@ void Visitor::visit ( Minerva::Core::TileEngine::Body & body )
   
   if ( elevation.valid() )
     this->visit ( *elevation );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Visit the node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Visitor::visit ( Minerva::Core::TileEngine::Group &group )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard1 ( this->mutex() );
-  Guard guard2 ( group.mutex() );
-
-  if ( false == group.nodes().empty() )
-  {
-    // Typedefs.
-    typedef Minerva::Core::TileEngine::Node  Node;
-    typedef Minerva::Core::TileEngine::Group Group;
-    
-    // Get all the nodes of the group.
-    Group::Nodes &nodes ( group.nodes() );
-    for ( Group::Nodes::iterator i = nodes.begin(); i != nodes.end(); ++i )
-    {
-      Node::RefPtr &node ( *i );
-      Guard guard3 ( node->mutex() );
-      if ( true == node.valid() )
-      {
-        node->accept ( *this );
-      }
-    }
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Visit the node.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Visitor::visit ( Minerva::Core::TileEngine::System &system )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard1 ( this->mutex() );
-  Guard guard2 ( system.mutex() );
-
-  if ( 0x0 != system.body() )
-  {
-    system.body()->accept ( *this );
-  }
-
-  if ( 0x0 != system.satellites() && false == system.satellites()->empty() )
-  {
-    system.satellites()->accept ( *this );
-  }
 }
 
 

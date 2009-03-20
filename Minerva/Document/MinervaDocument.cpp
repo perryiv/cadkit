@@ -33,7 +33,6 @@
 #include "Minerva/Core/Visitors/ResizePoints.h"
 #include "Minerva/Core/Visitors/BuildLegend.h"
 #include "Minerva/Core/Utilities/ClampNearFar.h"
-#include "Minerva/Core/Visitors/SetJobManager.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Navigator.h"
 #include "Minerva/Core/TileEngine/SplitCallbacks.h"
@@ -427,9 +426,6 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
       this->deserialize ( *document );
     }
 
-    // Make a visitor to set the job manager.
-    Minerva::Core::Visitors::SetJobManager::RefPtr setter ( new Minerva::Core::Visitors::SetJobManager ( this->_getJobManager() ) );
-
     // Loop through the bodies.
     for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
     {
@@ -437,7 +433,7 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
       if ( body.valid() )
       {
         // Set the job manager for each body.
-        body->accept ( *setter );
+        body->jobManager ( this->_getJobManager() );
       }
     }
 

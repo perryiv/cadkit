@@ -662,14 +662,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Visitors\BuildScene.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Visitors\BuildScene.h"
-						>
-					</File>
-					<File
 						RelativePath=".\Visitors\FindMinMaxDates.cpp"
 						>
 					</File>
@@ -699,14 +691,6 @@
 					</File>
 					<File
 						RelativePath=".\Visitors\Scale.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Visitors\SetJobManager.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Visitors\SetJobManager.h"
 						>
 					</File>
 					<File
@@ -798,14 +782,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\TileEngine\Group.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\TileEngine\Group.h"
-						>
-					</File>
-					<File
 						RelativePath=".\TileEngine\LandModel.h"
 						>
 					</File>
@@ -826,27 +802,11 @@
 						>
 					</File>
 					<File
-						RelativePath=".\TileEngine\Node.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\TileEngine\Node.h"
-						>
-					</File>
-					<File
 						RelativePath=".\TileEngine\SplitCallbacks.cpp"
 						>
 					</File>
 					<File
 						RelativePath=".\TileEngine\SplitCallbacks.h"
-						>
-					</File>
-					<File
-						RelativePath=".\TileEngine\System.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\TileEngine\System.h"
 						>
 					</File>
 					<File

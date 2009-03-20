@@ -25,6 +25,7 @@ struct LayerInfo
   typedef Minerva::Core::Extents<osg::Vec2d> Extents;
   
   std::string name;
+  std::string style;
   std::string title;
   Extents extents;
 };

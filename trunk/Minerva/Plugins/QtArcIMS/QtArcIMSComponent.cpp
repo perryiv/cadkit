@@ -17,16 +17,8 @@
 #include "Minerva/Plugins/QtArcIMS/QtArcIMSComponent.h"
 #include "Minerva/Qt/Widgets/AddNetworkLayerWidget.h"
 
-#include "Minerva/Interfaces/IDirtyScene.h"
-
 #include "Usul/Components/Factory.h"
-#include "Usul/Interfaces/IDocument.h"
-#include "Usul/Registry/Database.h"
-#include "Usul/Registry/Qt.h"
 
-#include "QtGui/QDialog"
-#include "QtGui/QDialogButtonBox"
-#include "QtGui/QVBoxLayout"
 
 USUL_DECLARE_COMPONENT_FACTORY ( QtArcIMSComponent );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( QtArcIMSComponent, QtArcIMSComponent::BaseClass );

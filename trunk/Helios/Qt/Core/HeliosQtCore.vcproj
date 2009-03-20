@@ -218,7 +218,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing MainWindow.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe  -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;.&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\moc_MainWindow.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -D_CRT_SECURE_NO_DEPRECATE -D_WINDLL  -I&quot;$(CADKIT_INC_DIR)\.&quot; -I&quot;$(CADKIT_INC_DIR)\Experimental\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(BOOST_INC_DIR)\.&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\moc_MainWindow.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\MainWindow.h"
 						Outputs="&quot;.\GeneratedFiles\moc_MainWindow.cpp&quot;"
 					/>
@@ -229,7 +229,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing MainWindow.h..."
-						CommandLine="$(QTDIR)\bin\moc.exe  -D_USUL_TRACE -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -I&quot;$(CADKIT_INC_DIR)&quot; -I&quot;$(QTDIR)\include&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\moc_MainWindow.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -D_CRT_SECURE_NO_DEPRECATE -D_WINDLL  -I&quot;$(CADKIT_INC_DIR)\.&quot; -I&quot;$(CADKIT_INC_DIR)\Experimental\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(BOOST_INC_DIR)\.&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\moc_MainWindow.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\MainWindow.h"
 						Outputs="&quot;.\GeneratedFiles\moc_MainWindow.cpp&quot;"
 					/>
@@ -256,7 +256,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing... ProgressBarDock.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -D_CRT_SECURE_NO_DEPRECATE -D_WINDLL  -I&quot;$(CADKIT_INC_DIR)\.&quot; -I&quot;$(CADKIT_INC_DIR)\Experimental\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(BOOST_INC_DIR)\.&quot; &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ProgressBarDock.h"
 						Outputs=".\GeneratedFiles\moc_ProgressBarDock.cpp"
 					/>
@@ -267,7 +267,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing... ProgressBarDock.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -D_CRT_SECURE_NO_DEPRECATE -D_WINDLL  -I&quot;$(CADKIT_INC_DIR)\.&quot; -I&quot;$(CADKIT_INC_DIR)\Experimental\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(BOOST_INC_DIR)\.&quot; &quot;.\ProgressBarDock.h&quot; -o &quot;.\GeneratedFiles\moc_ProgressBarDock.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\ProgressBarDock.h"
 						Outputs=".\GeneratedFiles\moc_ProgressBarDock.cpp"
 					/>
@@ -294,7 +294,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing... TimerCallback.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TimerCallback.h&quot; -o &quot;.\GeneratedFiles\moc_TimerCallback.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -D_CRT_SECURE_NO_DEPRECATE -D_WINDLL  -I&quot;$(CADKIT_INC_DIR)\.&quot; -I&quot;$(CADKIT_INC_DIR)\Experimental\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(BOOST_INC_DIR)\.&quot; &quot;.\TimerCallback.h&quot; -o &quot;.\GeneratedFiles\moc_TimerCallback.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TimerCallback.h"
 						Outputs=".\GeneratedFiles\moc_TimerCallback.cpp"
 					/>
@@ -305,7 +305,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing... TimerCallback.h"
-						CommandLine="$(QTDIR)\bin\moc.exe  &quot;.\TimerCallback.h&quot; -o &quot;.\GeneratedFiles\moc_TimerCallback.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_COMPILING_HELIOS_QT_CORE -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DCORE_LIB -D_CRT_SECURE_NO_DEPRECATE -D_WINDLL  -I&quot;$(CADKIT_INC_DIR)\.&quot; -I&quot;$(CADKIT_INC_DIR)\Experimental\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;$(BOOST_INC_DIR)\.&quot; &quot;.\TimerCallback.h&quot; -o &quot;.\GeneratedFiles\moc_TimerCallback.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\moc.exe;.\TimerCallback.h"
 						Outputs=".\GeneratedFiles\moc_TimerCallback.cpp"
 					/>
@@ -353,7 +353,11 @@
 		/>
 		<Global
 			Name="QtVersion"
-			Value="4.2.3"
+			Value="4.5.0"
+		/>
+		<Global
+			Name="QtVersion Win32"
+			Value="4.5.0"
 		/>
 		<Global
 			Name="RccDir"

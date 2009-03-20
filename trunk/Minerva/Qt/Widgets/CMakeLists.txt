@@ -30,28 +30,28 @@ ADD_DEFINITIONS ("-D_COMPILING_MINERVA_QT_WIDGETS")
 SET (SOURCES
 ./WmsLayerItem.cpp
 ./OptionsDialog.cpp
-./AddWmsLayerWidget.cpp
+./BaseAddNetworkLayerWidget.cpp
 ./AlphasDialog.cpp
 )
 
 # List the headers.
 SET ( HEADERS
-	AddNetworkLayerWidget.h
+	./AddNetworkLayerWidget.h
 	./WmsLayerItem.h
 	./OptionsDialog.h
-	./AddWmsLayerWidget.h
+	./BaseAddNetworkLayerWidget.h
 	./AlphasDialog.h
 )
 
 # These need to be moc'd.
 SET(MOC_HDRS
-  AddWmsLayerWidget.h
+  BaseAddNetworkLayerWidget.h
   AlphasDialog.h
   OptionsDialog.h
 )
 
 SET(UIS
-  ./WmsWidget.ui
+  ./BaseAddNetworkLayerWidget.ui
   ./OptionsDialog.ui
   ./AlphasDialog.ui
 )
@@ -72,6 +72,6 @@ TARGET_LINK_LIBRARIES( MinervaQtWidgets
    ${QT_LIBRARIES}
 )
 
-CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_WmsWidget.h" "${PROJECT_SOURCE_DIR}/ui_WmsWidget.h" )
+CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_BaseAddNetworkLayerWidget.h" "${PROJECT_SOURCE_DIR}/ui_BaseAddNetworkLayerWidget.h" )
 CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_OptionsDialog.h" "${PROJECT_SOURCE_DIR}/ui_OptionsDialog.h" )
 CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_AlphasDialog.h" "${PROJECT_SOURCE_DIR}/ui_AlphasDialog.h" )

@@ -11,8 +11,7 @@
 #ifndef __ADD_NETWORK_LAYER_WIDGET_H__
 #define __ADD_NETWORK_LAYER_WIDGET_H__
 
-#include "Minerva/Qt/Widgets/AddWmsLayerWidget.h"
-#include "Minerva/Qt/Widgets/WmsLayerItem.h"
+#include "Minerva/Qt/Widgets/BaseAddNetworkLayerWidget.h"
 
 #include "Minerva/Core/Layers/LayerInfo.h"
 #include "Minerva/Core/Layers/RasterGroup.h"
@@ -21,20 +20,12 @@
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Network/Names.h"
-#include "Usul/Registry/Convert.h"
-#include "Usul/Registry/Database.h"
-#include "Usul/Registry/Qt.h"
 #include "Usul/Strings/Split.h"
-
-#include "QtGui/QWidget"
-#include "QtGui/QStringListModel"
 
 #include <algorithm>
 #include <vector>
 #include <string>
 
-class QButtonGroup;
-class QStringListModel;
 
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
@@ -60,8 +51,8 @@ private:
   typedef QList<QTreeWidgetItem *> Items;
   typedef Minerva::Core::Layers::RasterLayer RasterLayer;
   
-  LayerInfos   _getCapabilities();
-  RasterLayer* _makeGroup ( const Items& items, const std::string& format ) const;
+  LayerInfoList _getCapabilities();
+  RasterLayer* _makeGroup ( const LayerInfoList& items, const std::string& format ) const;
   Layer*       _makeLayer ( const Extents& e, const std::string& format, const std::string& layers, const std::string& styles ) const;
 };
 
@@ -107,51 +98,51 @@ inline void AddNetworkLayerWidget<Layer>::apply ( Usul::Interfaces::IUnknown* pa
   
   const std::string server ( this->server() );
   const std::string cacheDirectory ( this->cacheDirectory() );
+  const std::string format ( this->imageFormat() );
   
   // Check for valid state...
-  if ( true == server.empty () || true == cacheDirectory.empty() )
+  if ( true == server.empty () || true == cacheDirectory.empty()|| true == format.empty() )
     return;
-  
-  // Get the checked button.
-  QAbstractButton *button ( _imageTypes->checkedButton () );
-  std::string format ( 0x0 != button ? button->text().toStdString() : "image/jpeg" );
-  
-  const bool addAllAsGroup      ( Qt::Checked == _addAllAsGroup->checkState() );
-  const bool addSelectedAsGroup ( Qt::Checked == _addSelectedAsGroup->checkState() );
-  
-  if ( addAllAsGroup || addSelectedAsGroup )
-  {    
-    // Get all the items.
-    Items items ( addAllAsGroup ? _layersTree->findItems ( "*", Qt::MatchWildcard ) : _layersTree->selectedItems() );
     
+  const bool addAllAsGroup      ( this->addAllAsGroup() );
+  const bool addSelectedAsGroup ( this->addSelectedAsGroup() );
+  
+  if ( addAllAsGroup )
+  {
+    LayerInfoList items;
+    this->layers ( items );
+    al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( this->_makeGroup ( items, format ) ) );
+  }
+  else if ( addSelectedAsGroup )
+  {    
+    LayerInfoList items;
+    this->selectedLayers ( items );
     al->addLayer ( Usul::Interfaces::IUnknown::QueryPtr ( this->_makeGroup ( items, format ) ) );
   }
   else
   {
     Extents extents ( 0, 0, 0, 0 );
     
-    Items items ( _layersTree->selectedItems() );
+    LayerInfoList items;
+    this->selectedLayers ( items );
     
     QStringList layers;
     QStringList styles;
     
     // Get the layers and styles.
-    for ( Items::const_iterator iter = items.begin(); iter != items.end(); ++iter )
+    for ( LayerInfoList::const_iterator iter = items.begin(); iter != items.end(); ++iter )
     {
-      if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
-      {
-        layers.push_back( item->name().c_str() );
-        styles.push_back( item->style().c_str() );
-        
-        extents.expand ( item->extents() );
-      }
+      layers.push_back( iter->name.c_str() );
+      styles.push_back( iter->style.c_str() );
+      
+      extents.expand ( iter->extents );
     }
     
     // Make the layer.
     typename Layer::ValidRefPtr layer ( this->_makeLayer ( extents, format, layers.join(",").toStdString(), styles.join(",").toStdString() ) );
     
     // Get the name
-    const std::string name ( _name->text().toStdString() );
+    const std::string name ( this->name() );
     
     // Set the name.
     layer->name ( false == name.empty() ? name : server );
@@ -171,9 +162,9 @@ inline void AddNetworkLayerWidget<Layer>::apply ( Usul::Interfaces::IUnknown* pa
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Layer >
-inline BaseAddNetworkLayerWidget::LayerInfos AddNetworkLayerWidget<Layer>::_getCapabilities()
+inline BaseAddNetworkLayerWidget::LayerInfoList AddNetworkLayerWidget<Layer>::_getCapabilities()
 {
-  const std::string server ( _server->text().toStdString() );
+  const std::string server ( this->server() );
   
   typedef typename Layer::LayerInfos LayerInfos;
   LayerInfos infos ( Layer::availableLayers ( server ) );
@@ -192,7 +183,7 @@ template < class Layer >
 inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents, const std::string& format, const std::string& layers, const std::string& styles ) const
 {  
   // Get the current options.
-  Options options ( _options );
+  Options options ( this->options() );
   
   options[Usul::Network::Names::LAYERS] = layers;
   options[Usul::Network::Names::STYLES] = styles;
@@ -201,7 +192,7 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
   options[Usul::Network::Names::FORMAT] = format;
 
   // Get the server.
-  std::string server ( _server->text().toStdString() ); 
+  std::string server ( this->server() ); 
 
   // Sometimes the '?' character is needed in the url to make the GetCapabilities 
   // query. It should not become part of the url; it's an option.
@@ -239,8 +230,8 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
   layer->urlBase ( server );
   
   // Set the cache directory.
-  const std::string cacheDirectory ( _cacheDirectory->text().toStdString() );
-  layer->baseCacheDirectory ( cacheDirectory, Qt::Checked == _makeDefaultDirectory->checkState() );
+  const std::string cacheDirectory ( this->cacheDirectory() );
+  layer->baseCacheDirectory ( cacheDirectory, this->makeCacheDirectoryDefault() );
   
   return layer.release();
 }
@@ -253,13 +244,13 @@ inline Layer* AddNetworkLayerWidget<Layer>::_makeLayer ( const Extents& extents,
 ///////////////////////////////////////////////////////////////////////////////
 
 template < class Layer >
-inline Minerva::Core::Layers::RasterLayer* AddNetworkLayerWidget<Layer>::_makeGroup ( const Items& items, const std::string& format ) const
+inline Minerva::Core::Layers::RasterLayer* AddNetworkLayerWidget<Layer>::_makeGroup ( const LayerInfoList& items, const std::string& format ) const
 {
   // Get the name
-  const std::string name ( _name->text().toStdString() );
+  const std::string name ( this->name() );
   
   // Get the server.
-  const std::string server ( _server->text().toStdString() );
+  const std::string server ( this->server() );
   
   // Make a group.
   Minerva::Core::Layers::RasterGroup::RefPtr group ( new Minerva::Core::Layers::RasterGroup );
@@ -268,28 +259,25 @@ inline Minerva::Core::Layers::RasterLayer* AddNetworkLayerWidget<Layer>::_makeGr
   // Possibly used below in the loop.
   unsigned int count ( 0 );
   
-  for ( Items::const_iterator iter = items.begin(); iter != items.end(); ++iter )
+  for ( LayerInfoList::const_iterator iter = items.begin(); iter != items.end(); ++iter )
   {
-    if ( WmsLayerItem *item = dynamic_cast<WmsLayerItem*> ( *iter ) )
+    typename Layer::ValidRefPtr layer ( this->_makeLayer ( iter->extents, format, iter->name, iter->style ) );
+
+    std::string t ( iter->title );
+    std::string n ( iter->name );
+    if ( ( false == t.empty() ) && ( false == n.empty() ) && ( t != n ) )
     {
-      typename Layer::ValidRefPtr layer ( this->_makeLayer ( item->extents(), format, item->name().c_str(), item->style().c_str()  ) );
-
-      std::string t ( item->title() );
-      std::string n ( item->name() );
-      if ( ( false == t.empty() ) && ( false == n.empty() ) && ( t != n ) )
-      {
-        n = Usul::Strings::format ( n, ": ", t );
-      }
-      else if ( false == t.empty() )
-      {
-        n = t;
-      }
-
-      layer->name ( ( false == n.empty() ) ? n : Usul::Strings::format ( group->name(), ": ", ++count ) );
-
-      layer->showLayer ( false );
-      group->append ( layer.get() );
+      n = Usul::Strings::format ( n, ": ", t );
     }
+    else if ( false == t.empty() )
+    {
+      n = t;
+    }
+
+    layer->name ( ( false == n.empty() ) ? n : Usul::Strings::format ( group->name(), ": ", ++count ) );
+
+    layer->showLayer ( false );
+    group->append ( layer.get() );
   }
 
   return group.release();

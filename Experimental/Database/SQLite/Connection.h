@@ -60,6 +60,10 @@ public:
   Result::RefPtr          execute ( const std::string &sql, const T1 &, const T2 & );
   template < class T1, class T2, class T3 > 
   Result::RefPtr          execute ( const std::string &sql, const T1 &, const T2 &, const T3 & );
+  template < class T1, class T2, class T3, class T4 > 
+  Result::RefPtr          execute ( const std::string &sql, const T1 &, const T2 &, const T3 &, const T4 & );
+  template < class T1, class T2, class T3, class T4, class T5 > 
+  Result::RefPtr          execute ( const std::string &sql, const T1 &, const T2 &, const T3 &, const T4 &, const T5 & );
 
   // Get the file name.
   std::string             file() const;
@@ -131,6 +135,43 @@ inline Result::RefPtr Connection::execute ( const std::string &sql, const T1 &t1
   binders.push_back ( CadKit::Database::SQLite::BinderTraits<T1>::makeBinder ( t1 ) );
   binders.push_back ( CadKit::Database::SQLite::BinderTraits<T2>::makeBinder ( t2 ) );
   binders.push_back ( CadKit::Database::SQLite::BinderTraits<T3>::makeBinder ( t3 ) );
+  return this->_execute ( sql, binders );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute the given SQL string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T1, class T2, class T3, class T4 > 
+inline Result::RefPtr Connection::execute ( const std::string &sql, const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4 )
+{
+  Binders binders;
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T1>::makeBinder ( t1 ) );
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T2>::makeBinder ( t2 ) );
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T3>::makeBinder ( t3 ) );
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T4>::makeBinder ( t4 ) );
+  return this->_execute ( sql, binders );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Execute the given SQL string.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template < class T1, class T2, class T3, class T4, class T5 > 
+inline Result::RefPtr Connection::execute ( const std::string &sql, const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4, const T5 &t5 )
+{
+  Binders binders;
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T1>::makeBinder ( t1 ) );
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T2>::makeBinder ( t2 ) );
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T3>::makeBinder ( t3 ) );
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T4>::makeBinder ( t4 ) );
+  binders.push_back ( CadKit::Database::SQLite::BinderTraits<T5>::makeBinder ( t5 ) );
   return this->_execute ( sql, binders );
 }
 

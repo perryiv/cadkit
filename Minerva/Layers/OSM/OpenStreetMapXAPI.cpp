@@ -15,24 +15,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/OSM/OpenStreetMapXAPI.h"
-#include "Minerva/Layers/OSM/TileVectorJob.h"
 
-#include "Minerva/Core/Data/DataObject.h"
-#include "Minerva/Core/Data/Line.h"
-#include "Minerva/Core/Data/Point.h"
-#include "Minerva/Core/Data/MultiPoint.h"
-#include "Minerva/Core/Data/TimeStamp.h"
-#include "Minerva/Core/Factory/Readers.h"
-
-#include "XmlTree/Document.h"
-#include "XmlTree/XercesLife.h"
-
-#include "Usul/Convert/Convert.h"
-#include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Safe.h"
-
-#include "boost/foreach.hpp"
 
 using namespace Minerva::Layers::OSM;
 

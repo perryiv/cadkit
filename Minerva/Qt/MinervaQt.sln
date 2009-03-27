@@ -377,10 +377,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva OSM", "..\Laye
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 	ProjectSection(ProjectDependencies) = postProject
+		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
+		{35035460-93D8-4701-BF5F-884ABC3F295C} = {35035460-93D8-4701-BF5F-884ABC3F295C}
 		{EB73CDEC-AA7D-43E7-8002-8A5D1D447F88} = {EB73CDEC-AA7D-43E7-8002-8A5D1D447F88}
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 		{1F0BC334-B3D3-4553-8025-DA8B50D2FA99} = {1F0BC334-B3D3-4553-8025-DA8B50D2FA99}
-		{2AFAFF2F-1967-4124-A178-5F1B703C016F} = {2AFAFF2F-1967-4124-A178-5F1B703C016F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva OSSIM", "..\Layers\OSSIM\MinervaOSSIM.vcproj", "{0672FD5B-4288-4478-8C5D-1F7CCBC1E3BD}"
@@ -416,6 +417,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Minerva QtArcIMS", ".
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: Minerva DataSources", "..\DataSources\MinervaDataSources.vcproj", "{643885EA-5730-45A3-83B2-5263611DE777}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib: CadKit Database SQLite", "..\..\Experimental\Database\SQLite\SQLiteWrap.vcproj", "{35035460-93D8-4701-BF5F-884ABC3F295C}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -578,6 +588,10 @@ Global
 		{643885EA-5730-45A3-83B2-5263611DE777}.Debug|Win32.Build.0 = Debug|Win32
 		{643885EA-5730-45A3-83B2-5263611DE777}.Release|Win32.ActiveCfg = Release|Win32
 		{643885EA-5730-45A3-83B2-5263611DE777}.Release|Win32.Build.0 = Release|Win32
+		{35035460-93D8-4701-BF5F-884ABC3F295C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{35035460-93D8-4701-BF5F-884ABC3F295C}.Debug|Win32.Build.0 = Debug|Win32
+		{35035460-93D8-4701-BF5F-884ABC3F295C}.Release|Win32.ActiveCfg = Release|Win32
+		{35035460-93D8-4701-BF5F-884ABC3F295C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

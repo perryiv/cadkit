@@ -24,7 +24,6 @@ INCLUDE_DIRECTORIES(
 		     "${CADKIT_INC_DIR}/Experimental"
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${PQXX_INCLUDE_DIR}
              ${GDAL_INCLUDE_DIR}
 		     )
 
@@ -51,7 +50,6 @@ TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_SYSTEM_LIBRARY}
 	${GDAL_LIBRARY}
-	${PQXX_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}

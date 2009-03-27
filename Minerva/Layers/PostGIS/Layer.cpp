@@ -10,6 +10,9 @@
 
 #include "Minerva/Layers/PostGIS/Layer.h"
 #include "Minerva/Layers/PostGIS/BinaryParser.h"
+
+#include "Minerva/DataSources/BinaryString.h"
+
 #include "Minerva/Core/Data/Transform.h"
 #include "Minerva/Core/Data/TimeSpan.h"
 
@@ -40,8 +43,6 @@
 #include "osg/MatrixTransform"
 
 #include "osgText/Text"
-
-#include "pqxx/pqxx"
 
 #include "boost/algorithm/string/erase.hpp"
 
@@ -618,12 +619,12 @@ void Layer::_setDataObjectMembers ( Minerva::Core::Data::DataObject* dataObject,
     
     if( 0x0 != _connection.get() )
     {
-      pqxx::result r ( _connection->executeQuery( os.str() ) );
+      Minerva::DataSources::Result::RefPtr r ( _connection->executeQuery( os.str() ) );
       
-      if( !r.empty() && !r[0][0].is_null() && !r[0][1].is_null() )
+      if( r->prepareNextRow() )
       {
-        Usul::Types::Float64 x ( r[0][0].as<double>() );
-        Usul::Types::Float64 y ( r[0][1].as<double>() );
+        Usul::Types::Float64 x ( !r->isNull ( 0 ) ? r->asDouble ( 0 ) : 0.0 );
+        Usul::Types::Float64 y ( !r->isNull ( 1 ) ? r->asDouble ( 1 ) : 0.0 );
         
         center.set ( static_cast<osg::Vec3d::value_type> ( this->xOffset() + x ), static_cast<osg::Vec3d::value_type> ( this->yOffset() + y ), this->zOffset() );
       }
@@ -1176,21 +1177,21 @@ Layer::Extents Layer::calculateExtents() const
   std::string query ( Usul::Strings::format ( "SELECT box2d(geom) FROM ", tablename ) );
   
   // Execute the query.
-  pqxx::result result ( connection->executeQuery ( query ) );
+  Minerva::DataSources::Result::RefPtr result ( connection->executeQuery ( query ) );
   
   // Return if we didn't get any results.
-  if ( result.empty() )
+  if ( result->empty() )
     return Extents();
   
   Extents::Vertex lowerLeft ( std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
   Extents::Vertex upperRight ( std::numeric_limits<double>::min(), std::numeric_limits<double>::min() );
   
   // Loop through the results.
-  for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
+  while ( result->prepareNextRow() )
   {
     Usul::Math::Vec2d ll, ur;
     
-    Detail::parseBox ( (*iter)[0].as<std::string>(), ll, ur );
+    Detail::parseBox ( result->asString ( 0 ), ll, ur );
     
     if ( ll[0] < lowerLeft[0] )
       lowerLeft[0] = ll[0];
@@ -1268,14 +1269,13 @@ int Layer::srid() const
   std::string query ( Usul::Strings::format ( "SELECT srid FROM ", Detail::GEOMETRY_COLUMNS, " WHERE f_table_name='", table, "' AND f_table_schema='", schema, "'" ) );
   
   // Execute the query.
-  pqxx::result result ( connection->executeQuery ( query ) );
+  Minerva::DataSources::Result::RefPtr result ( connection->executeQuery ( query ) );
   
-  // Return if we didn't get any results.
-  if ( result.empty() )
-    return -1;
+  // See if we got a result
+  if ( result->prepareNextRow() )
+    return result->asInt ( "srid" );
   
-  // Return the result.
-  return result[0]["srid"].as < int > ();
+  return -1;
 }
 
 
@@ -1300,7 +1300,7 @@ std::string Layer::projectionWKT() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Layer::projectionWKT( int srid ) const
+std::string Layer::projectionWKT ( int srid ) const
 {
   // Get the connection.
   Connection::RefPtr connection ( const_cast <Connection*> ( this->connection() ) );
@@ -1318,14 +1318,12 @@ std::string Layer::projectionWKT( int srid ) const
   std::string query ( Usul::Strings::format ( "SELECT srtext FROM ", Detail::SPATIAL_REF_SYS, " WHERE srid=", srid ) );
   
   // Execute the query.
-  pqxx::result result ( connection->executeQuery ( query ) );
+  Minerva::DataSources::Result::RefPtr result ( connection->executeQuery ( query ) );
   
-  // Return if we didn't get any results.
-  if ( result.empty() )
-    return std::string();
+  if ( result->prepareNextRow() )
+    return result->asString ( "srtext" );
   
-  // Return the result.
-  return result[0]["srtext"].as < std::string > ();
+  return std::string();
 }
 
 
@@ -1378,12 +1376,12 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
   this->extents ( this->calculateExtents() );
   
   // Execute the query.
-  pqxx::result geometryResult ( this->connection()->executeQuery ( this->query() ) );
+  Minerva::DataSources::Result::RefPtr geometryResult ( this->connection()->executeQuery ( this->query() ) );
   
   // Query for the progress bar.
   Usul::Interfaces::IProgressBar::QueryPtr progress ( p );
   if( progress.valid() )
-    progress->setTotalProgressBar( geometryResult.size() );
+    progress->setTotalProgressBar( geometryResult->numRows() );
   
   // The data table.
   std::string dataTable ( this->tablename() );
@@ -1392,12 +1390,13 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
   const std::string wkt ( this->projectionWKT() );
   
   // Loop through the results.
-  for ( pqxx::result::const_iterator iter = geometryResult.begin(); iter != geometryResult.end(); ++ iter )
+  unsigned int num ( 0 );
+  while ( geometryResult->prepareNextRow() )
   {
     try
     {
       // Get the id.
-      const int id ( iter["id"].as < int > () );
+      const int id ( geometryResult->asInt ( "id" ) );
       
       // Make the data object.
       Minerva::Core::Data::DataObject::RefPtr data ( new Minerva::Core::Data::DataObject );
@@ -1411,8 +1410,8 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
       if ( false == firstDateColumn.empty() && false == lastDateColumn.empty() )
       {
         // Get first and last date.
-        std::string firstDate ( iter[ firstDateColumn ].as < std::string > () );
-        std::string lastDate  ( iter[ lastDateColumn  ].as < std::string > () );
+        std::string firstDate ( geometryResult->asString ( firstDateColumn ) );
+        std::string lastDate  ( geometryResult->asString ( lastDateColumn  ) );
        
         // Update min max.
         this->_updateMinMaxDate ( firstDate, lastDate );
@@ -1428,9 +1427,9 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
       }
       
       // Make the parser.
-      pqxx::binarystring buffer ( iter["geom"] );
+      Minerva::DataSources::BinaryString::RefPtr buffer ( geometryResult->asBlob ( "geom" ) );
       BinaryParser parser;
-      BinaryParser::Geometries geometries ( parser ( &buffer.front(), wkt ) );
+      BinaryParser::Geometries geometries ( parser ( &buffer->byteBuffer()[0], wkt ) );
       
       for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
@@ -1441,7 +1440,7 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
         geometry->renderBin ( this->renderBin() );
         
         // Set primitive specific data members.
-        this->_setGeometryMembers( geometry, iter );
+        this->_setGeometryMembers ( geometry, *geometryResult );
         
         // Add the geometry to the data object.
         data->addGeometry( geometry );
@@ -1464,8 +1463,7 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
     
     if( progress.valid() )
     {
-      unsigned int num ( iter - geometryResult.begin() );
-      progress->updateProgressBar( num );
+      progress->updateProgressBar( num++ );
     }
   }
   
@@ -1646,7 +1644,7 @@ void Layer::_updateMinMaxDate ( const std::string& min, const std::string& max )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Layer::_setGeometryMembers   ( Geometry* geometry, const pqxx::result::const_iterator& iter )
+void Layer::_setGeometryMembers ( Geometry* geometry, const Minerva::DataSources::Result &result )
 {
 }
 
@@ -1666,4 +1664,39 @@ void Layer::serialize ( XmlTree::Node &parent ) const
   
   // Serialize.
   dataMemberMap.serialize ( parent );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the color.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec4 Layer::_color ( const Minerva::DataSources::Result &result )
+{
+  osg::Vec4 color ( 0.0, 0.0, 0.0, 1.0 );
+  
+  try
+  {
+    if( !this->colorColumn().empty() )
+    {
+      std::string column ( this->colorColumn() );
+      double fieldValue ( result.asDouble ( column ) );
+      color = ( *this->colorFunctor() ) ( fieldValue );
+    }
+    else
+    {
+      Minerva::Core::Functors::BaseColorFunctor::RefPtr functor ( this->colorFunctor() );
+      if ( functor.valid() )
+        color = (*functor)( 0.0 );
+    }
+  }
+  catch ( const std::exception& e )
+  {
+    std::cout << "Error 2909352868: " << e.what() << std::endl;
+  }
+  
+  color.w() = this->alpha();
+  return color;
 }

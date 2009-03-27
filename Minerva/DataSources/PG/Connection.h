@@ -12,6 +12,10 @@
 #define __DB_CONNECTION_H__
 
 #include "Minerva/DataSources/PG/Export.h"
+
+#include "Minerva/DataSources/Result.h"
+#include "Minerva/DataSources/Connection.h"
+
 #include "Minerva/Interfaces/IDatabaseConnection.h"
 
 #include "Usul/Base/Referenced.h"
@@ -21,35 +25,23 @@
 
 #include "Serialize/XML/Macros.h"
 
-#include "boost/shared_ptr.hpp"
-
-// Forward declarations.
-namespace pqxx
-{
-  class result;
-  template < typename T > class basic_connection;
-  class connect_direct;
-  class connect_lazy;
-  typedef basic_connection < connect_direct > connection;
-}
-
 #include <string>
+
+typedef struct pg_conn PGconn;
 
 namespace Minerva {
 namespace DataSources {
 namespace PG {
 
-class MINERVA_POSTGRES_EXPORT Connection : public Usul::Base::Referenced,
+class MINERVA_POSTGRES_EXPORT Connection : public Minerva::DataSources::Connection,
                                            public Minerva::Interfaces::IDatabaseConnection
 {
 public:
+
   /// Typedefs.
-  typedef Usul::Base::Referenced BaseClass;
+  typedef Minerva::DataSources::Connection BaseClass;
   typedef Usul::Threads::Mutex Mutex;
   typedef Usul::Threads::Guard < Mutex > Guard;
-  typedef std::pair< std::string, std::string > StringPair;
-  typedef std::vector < StringPair >  Values;
-  typedef pqxx::basic_connection < pqxx::connect_lazy > ConnectionType;
 
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( Connection );
@@ -87,20 +79,12 @@ public:
   /// Disconnect.
   void                 disconnect();
 
-  /// Activate.
-  void                 activate();
-
-  /// Deactivate
-  void                 deactivate();
-
   /// Execute the query.
-  pqxx::result         executeQuery( const std::string& ) const;
+  Minerva::DataSources::Result* executeQuery( const std::string& ) const;
 
-  /// Execute the query with a timeout value.
-  pqxx::result         executeQuery( const std::string& query, unsigned int seconds ) const;
-
-  /// Execute insert query.
-  int                  executeInsertQuery( const std::string& tableName, const Values& values );
+  /// Transaction functions.
+  void                 startTransaction() const;
+  void                 endTransaction() const;
 
   std::string          getColumnDataString ( const std::string& tableName, int id, const std::string& columnName );
   double               getColumnDataDouble ( const std::string& tableName, int id, const std::string& columnName );
@@ -120,6 +104,7 @@ public:
 	virtual void deserialize ( const XmlTree::Node &node );
 
 protected:
+  
   virtual ~Connection();
 
   /// Get the maximium primary id in the given table.
@@ -127,14 +112,12 @@ protected:
 
 private:
 
-  typedef boost::shared_ptr < ConnectionType >  ConnectionPtr;
-
   std::string _host;
   std::string _database;
   std::string _user;
   std::string _password;
 
-  ConnectionPtr _connection;
+  PGconn *_connection;
 
   mutable Mutex *_connectionMutex;
 

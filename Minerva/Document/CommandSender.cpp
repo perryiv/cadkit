@@ -10,6 +10,8 @@
 
 #include "Minerva/Document/CommandSender.h"
 
+#include "Minerva/DataSources/Result.h"
+
 #include "Minerva/Core/Serialize.h"
 
 #include "Usul/Interfaces/ICommand.h"
@@ -18,8 +20,6 @@
 #ifdef _MSC_VER
 # pragma warning ( disable : 4561 )
 #endif
-
-#include "pqxx/pqxx"
 
 #include <iostream>
 
@@ -43,7 +43,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CommandSender::CommandSender( ) :
+CommandSender::CommandSender() :
   BaseClass (),
   _connection ( 0x0 ),
   _sessionID( 0 ),
@@ -88,11 +88,11 @@ void CommandSender::connectToSession( const std::string& name )
   std::ostringstream query;
   query << "SELECT * FROM wnv_sessions WHERE name = '" << name << "'";
 
-  pqxx::result result ( _connection->executeQuery ( query.str() ) );
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery ( query.str() ) );
 
-  if ( !result.empty() )
+  if ( result->prepareNextRow() )
   {
-    _sessionID = result[0]["id"].as < unsigned int > ();
+    _sessionID = result->asUInt ( "id" );
     _connected = true;
   }
   else
@@ -136,13 +136,13 @@ CommandSender::Strings CommandSender::getAvailableSessions()
 
   std::string query ( "SELECT * FROM wnv_sessions ORDER BY name" );
 
-  pqxx::result result ( _connection->executeQuery ( query ) );
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery ( query ) );
 
   Strings sessions;
 
-  for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
+  while ( result->prepareNextRow() )
   {
-    sessions.push_back ( iter["name"].as < std::string > () );
+    sessions.push_back ( result->asString ( "name" ) );
   }
 
   return sessions;
@@ -155,7 +155,7 @@ CommandSender::Strings CommandSender::getAvailableSessions()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CommandSender::_clearTable( const std::string& tableName )
+void CommandSender::_clearTable ( const std::string& tableName )
 {
   Guard guard ( this->mutex() );
   
@@ -188,7 +188,7 @@ void CommandSender::sendCommand ( Usul::Interfaces::ICommand *command )
     std::string xml ( Minerva::Core::serialize < Usul::Interfaces::ISerialize > ( serialize.get() ) );
     
     // Enter the data into the database.
-    typedef Minerva::DataSources::PG::Connection::Values Values;
+    typedef Minerva::DataSources::Connection::Values Values;
     Values values;
     values.push_back( Values::value_type ( "session_id",  Detail::toString ( _sessionID ) ) );
     values.push_back( Values::value_type ( "xml_data",    xml ) );
@@ -204,7 +204,7 @@ void CommandSender::sendCommand ( Usul::Interfaces::ICommand *command )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CommandSender::connection ( Minerva::DataSources::PG::Connection * connection )
+void CommandSender::connection ( Minerva::DataSources::Connection * connection )
 {
   Guard guard ( this->mutex () );
   _connection = connection;

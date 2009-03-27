@@ -11,7 +11,7 @@
 #ifndef __MINERVA_COMMAND_SENDER_H__
 #define __MINERVA_COMMAND_SENDER_H__
 
-#include "Minerva/DataSources/PG/Connection.h"
+#include "Minerva/DataSources/Connection.h"
 
 #include "Serialize/XML/Macros.h"
 
@@ -34,10 +34,10 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( CommandSender );
 
-  CommandSender ();
+  CommandSender();
 
   /// Set the connection.
-  void             connection ( Minerva::DataSources::PG::Connection * connection );
+  void             connection ( Minerva::DataSources::Connection * connection );
 
   /// Are we connected to the session?
   bool             connected () const;
@@ -62,7 +62,7 @@ protected:
 
 private:
 
-  Minerva::DataSources::PG::Connection::RefPtr _connection;
+  Minerva::DataSources::Connection::RefPtr _connection;
   unsigned int _sessionID;
   bool _connected;
 };

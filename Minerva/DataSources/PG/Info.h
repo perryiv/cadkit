@@ -66,7 +66,7 @@ public:
 protected:
   virtual ~Info();
 
-  std::string                     _getGeometryType ( const std::string& table );
+  std::string                     _getGeometryType ( const std::string& table ) const;
   Strings                         _fillStringsFromQuery( const std::string& query ) const;
 
 private:

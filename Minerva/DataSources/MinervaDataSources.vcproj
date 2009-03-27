@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="lib: Minerva PostGIS"
-	ProjectGUID="{D5BF2795-F1F4-4868-95A9-0ABCCAA3CC63}"
-	RootNamespace="lib: Minerva PostGIS"
+	Name="lib: Minerva DataSources"
+	ProjectGUID="{643885EA-5730-45A3-83B2-5263611DE777}"
+	RootNamespace="lib: Minerva DataSources"
 	>
 	<Platforms>
 		<Platform
@@ -40,14 +40,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/MinervaPostGIS.tlb"
+				TypeLibraryName=".\Debug/MinervaDataSources.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_POSTGIS;_CRT_SECURE_NO_DEPRECATE;NOMINMAX"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_DATA_SOURCES;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -80,14 +80,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgTextd.lib $(GDAL_LIB_FILE_DEBUG) wsock32.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostGISd.dll"
+				AdditionalDependencies=""
+				OutputFile="$(CADKIT_BIN_DIR)/MinervaDataSourcesd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/MinervaPostGISd.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaPostGISd.lib"
+				ProgramDatabaseFile=".\Debug/MinervaDataSourcesd.pdb"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaDataSourcesd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/MinervaPostGIS.tlb"
+				TypeLibraryName=".\Release/MinervaDataSources.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(GDAL_INC_DIR)&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_POSTGIS;_CRT_SECURE_NO_DEPRECATE;NOMINMAX"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_DATA_SOURCES;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="2"
 				RuntimeLibrary="2"
@@ -178,13 +178,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osg.lib osgText.lib $(GDAL_LIB_FILE_RELEASE) wsock32.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostGIS.dll"
+				AdditionalDependencies=""
+				OutputFile="$(CADKIT_BIN_DIR)/MinervaDataSources.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
-				ProgramDatabaseFile=".\Release/MinervaPostGIS.pdb"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaPostGIS.lib"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);"
+				ProgramDatabaseFile=".\Release/MinervaDataSources.pdb"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaDataSources.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -219,11 +219,19 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\BinaryParser.cpp"
+				RelativePath=".\BinaryString.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\BinaryParser.h"
+				RelativePath=".\BinaryString.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Connection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Connection.h"
 				>
 			</File>
 			<File
@@ -231,43 +239,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LabelData.cpp"
+				RelativePath=".\Result.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\LabelData.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Layer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Layer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LineLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LineLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PointLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PointLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PolygonLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PolygonLayer.h"
+				RelativePath=".\Result.h"
 				>
 			</File>
 		</Filter>

@@ -10,26 +10,45 @@
 
 #include "Minerva/DataSources/PG/Connection.h"
 #include "Minerva/DataSources/PG/ConnectionPool.h"
+#include "Minerva/DataSources/PG/Result.h"
 
+#include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Functions/GUID.h"
 #include "Usul/Interfaces/IPasswordPrompt.h"
+#include "Usul/Scope/Caller.h"
+#include "Usul/Strings/Case.h"
 #include "Usul/Strings/Format.h"
-#include "Usul/System/Sleep.h"
-#include "Usul/System/Host.h"
 #include "Usul/Trace/Trace.h"
-#include "Usul/Threads/Thread.h"
-#include "Usul/Threads/Manager.h"
 
 #include "boost/algorithm/string/find.hpp"
 
-#include "pqxx/pqxx"
+#include "libpq-fe.h"
 
 #include <iostream>
 
 using namespace Minerva::DataSources::PG;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Throw an exception.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void throwException ( const std::string& id, const std::string& query, const std::string& error )
+  {
+    std::ostringstream message;
+    message << "Error " << id <<": Error occured while executing: " << query << std::endl <<
+      "Reason: " << error;
+    throw std::runtime_error ( message.str() );
+  }
+}
+
 
 USUL_FACTORY_REGISTER_CREATOR ( Connection );
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( Connection, Connection::BaseClass );
@@ -45,7 +64,7 @@ Connection::Connection() : BaseClass(),
 	_database (),
 	_user (),
 	_password(),
-	_connection ( static_cast < ConnectionType* > ( 0x0 ) ),
+	_connection ( 0x0 ),
 	_connectionMutex ( Mutex::create () ),
 	SERIALIZE_XML_INITIALIZER_LIST
 {
@@ -189,6 +208,9 @@ void Connection::connect()
 	const unsigned int maxTries ( 3 );
 	unsigned int tries ( 0 );
 
+  // Make sure we aren't connected.
+  this->disconnect();
+
 	do
 	{
 		// Increate the number of tries.
@@ -196,8 +218,14 @@ void Connection::connect()
 
 		try
 		{
-			// Set up a connection to the backend.
-			_connection = ConnectionPtr ( new ConnectionType( this->connectionString() ) );
+      // Set up a connection to the backend.
+      _connection = ::PQconnectdb ( this->connectionString().c_str() );
+
+      if ( CONNECTION_OK != ::PQstatus ( _connection ) )
+      {
+        std::cout << "Error 3671765373: Connection to database failed: " << ::PQerrorMessage ( _connection ) << std::endl;
+        this->disconnect();
+      }
 		}
 		catch ( const std::exception& e )
 		{
@@ -260,32 +288,9 @@ void Connection::disconnect()
 {
   if( _connection )
   {
-    _connection->disconnect();
+    ::PQfinish ( _connection );
+    _connection = 0x0;
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Activate.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Connection::activate()
-{
-  _connection->activate();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Deactivate.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Connection::deactivate()
-{
-  _connection->deactivate();
 }
 
 
@@ -297,10 +302,7 @@ void Connection::deactivate()
 
 Connection::ScopedConnection::ScopedConnection ( Connection &c ) : _c ( c )
 {
-  if ( 0x0 == _c._connection )
-    _c.connect ();
-
-  _c.activate();
+  _c.connect ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -311,194 +313,116 @@ Connection::ScopedConnection::ScopedConnection ( Connection &c ) : _c ( c )
 
 Connection::ScopedConnection::~ScopedConnection ( ) 
 {
-  _c.deactivate();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Execute a query.  Commit to ensure that it's executed now.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-pqxx::result Connection::executeQuery( const std::string& query ) const
-{
-  USUL_TRACE_SCOPE;
-
-  // Only one thread at a time can execute a query.
-  Guard guard ( *_connectionMutex );
-
-  pqxx::result result;
-
-  if( 0x0 != _connection )
-  {
-    pqxx::work transaction ( *_connection, Usul::Functions::GUID::generate() );
-
-    try
-    {
-      result = transaction.exec ( query );
-      transaction.commit();
-    }
-    catch ( const std::exception& e )
-    {
-      transaction.abort();
-      std::cout << "Query: " << query << " did not execute properly." << std::endl
-        << "Message: " << e.what() << std::endl;
-    }
-    catch ( ... )
-    {
-      transaction.abort();
-      std::cout << "Query: " << query << " did not execute properly." << std::endl;
-    }
-  }
-
-  return result;
+  _c.disconnect();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Execute a query.  Commit to ensure that it's executed now.
+//  Is the string a select statement?
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace Helper
 {
-  struct QueryHelper
+  inline bool isSelectStatement ( const std::string &sql )
   {
-    typedef Connection::ConnectionType ConnectionType;
-
-    QueryHelper ( ConnectionType &connection, pqxx::result& result, const std::string& query ) :
-      _done ( false ),
-      _connection ( connection ),
-      _result ( result ),
-      _query ( query )
+    const std::string s ( Usul::Strings::lowerCase ( sql ) );
+    if ( s.size() >= 6 )
     {
+      return ( ( 's' == s[0] ) && 
+               ( 'e' == s[1] ) && 
+               ( 'l' == s[2] ) && 
+               ( 'e' == s[3] ) && 
+               ( 'c' == s[4] ) && 
+               ( 't' == s[5] ) );
     }
-    
-    void start ( Usul::Threads::Thread* )
-    {
-      pqxx::work transaction ( _connection, Usul::Functions::GUID::generate() );
-
-      try
-      {
-	      _result = transaction.exec ( _query );
-    	  transaction.commit();
-      }
-      catch ( ... )
-      {
-	      transaction.abort();
-	      std::cerr << "Query: " << _query << " did not execute properly." << std::endl;
-      }
-    }
-
-    void end ( Usul::Threads::Thread* )
-    {
-      _done = true;
-    }
-  
-    bool done () const
-    {
-      return _done;
-    }
-
-  private:
-    bool              _done;
-    ConnectionType   &_connection;
-    pqxx::result     &_result;
-    std::string       _query;
-  };
+    return false;
+  }
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Execute a query.  
-//  Cancel query if it takes longer than given number of seconds.
+//  Execute a query.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-pqxx::result Connection::executeQuery ( const std::string& query, unsigned int timeout ) const
+Minerva::DataSources::Result* Connection::executeQuery ( const std::string& query ) const
 {
   USUL_TRACE_SCOPE;
 
   // Only one thread at a time can execute a query.
   Guard guard ( *_connectionMutex );
 
-  // The result.
-  pqxx::result result;
+  Minerva::DataSources::PG::Result::RefPtr result ( 0x0 );
 
-  // Helper struct.
-  Helper::QueryHelper helper ( *_connection, result, query );
-
-  Usul::Threads::Thread::RefPtr thread ( Usul::Threads::Manager::instance().create ( "Minerva::DataSources::PG::Connection::executeQuery" ) );
-  
-  typedef void (Helper::QueryHelper::*Function) ( Usul::Threads::Thread *s );
-  typedef Usul::Adaptors::MemberFunction < void, Helper::QueryHelper*, Function > MemFun;
-
-  thread->started  ( Usul::Threads::newFunctionCallback( MemFun ( &helper, &Helper::QueryHelper::start ) ) );
-  thread->finished ( Usul::Threads::newFunctionCallback( MemFun ( &helper, &Helper::QueryHelper::end ) ) );
-  thread->start();
-
-  unsigned int seconds ( 0 );
-
-  while ( 1 )
+  if ( 0x0 != _connection )
   {
-    Usul::System::Sleep::seconds ( 1 );
+    PGresult *pqResult ( ::PQexec ( _connection, query.c_str() ) );
+    
+    ExecStatusType status ( ::PQresultStatus ( pqResult ) );
 
-    seconds++;
-
-    // Break if we are done or the timeout has expired.
-    if ( helper.done() || seconds > timeout)
-      break;
+    // Check for a fatal error.
+    if ( PGRES_FATAL_ERROR == status )
+    {
+      Helper::throwException ( "4111576506", query, ::PQerrorMessage ( _connection ) );
+    }
+    
+    // Check for error depending on the query type.
+    if ( Helper::isSelectStatement ( query ) )
+    {
+      if ( PGRES_TUPLES_OK != status )
+        Helper::throwException ( "3115192614", query, ::PQerrorMessage ( _connection ) );
+    }
+    else if ( PGRES_COMMAND_OK != status )
+    {
+      Helper::throwException ( "1038329512", query, ::PQerrorMessage ( _connection ) );
+    }
+    
+    result = new Minerva::DataSources::PG::Result ( pqResult );
   }
 
-  // If the thread didn't finish, kill it.
-  if ( false == helper.done () )
-  {
-    std::cerr << "Killing thread" << thread->systemId() << std::endl;
-    //thread->kill();
-    thread->cancel();
-    throw std::runtime_error ( "Error 4205862221: Connection timed out." );
-  }
-
-  return result;
+  return result.release();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Execute an insert query.
+//  Start a transaction.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-int Connection::executeInsertQuery(const std::string &tableName, const Values &namesAndValues)
+void Connection::startTransaction() const
 {
-  if ( namesAndValues.size() == 0)
-    throw std::runtime_error ("Error 1978842812: No names or values in the query");
+  USUL_TRACE_SCOPE;
+  if ( 0x0 == _connection )
+    return;
 
-  std::string names ( "( " );
-  std::string values ( " VALUES ( " );
+  PGresult *result ( ::PQexec ( _connection, "BEGIN" ) );
+  Usul::Scope::Caller::RefPtr clear ( Usul::Scope::makeCaller ( Usul::Adaptors::bind1 ( result, ::PQclear ) ) );
 
-  for ( Values::const_iterator iter = namesAndValues.begin(); iter != namesAndValues.end(); ++iter )
+  if ( PGRES_COMMAND_OK != ::PQresultStatus ( result ) )
   {
-    names += iter->first;
-
-    values += " '" + iter->second + "' ";
-
-    if (iter != namesAndValues.end() - 1)
-    {
-      names += ",";
-      values += ",";
-    }
+    throw std::runtime_error ( "Error : BEGIN command failed: " + std::string ( ::PQerrorMessage ( _connection ) ) );
   }
+}
 
-  names += " )";
-  values += " )";
 
-  std::string query ( "INSERT INTO " + tableName + names + values );
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Start a transaction.
+//
+///////////////////////////////////////////////////////////////////////////////
 
-  this->executeQuery(query);
+void Connection::endTransaction() const
+{
+  USUL_TRACE_SCOPE;
+  if ( 0x0 == _connection )
+    return;
 
-  return this->_getMaxId( tableName );
+  PGresult *result ( ::PQexec ( _connection, "END" ) );
+  ::PQclear ( result );
 }
 
 
@@ -512,11 +436,11 @@ int Connection::_getMaxId( const std::string& table )
 {
   std::string query ( "SELECT MAX(id) as id FROM " + table );
 
-  pqxx::result result ( this->executeQuery( query ) );
+  Minerva::DataSources::Result::RefPtr result ( this->executeQuery ( query ) );
 
-  if( !result.empty() )
+  if ( result->prepareNextRow() )
   {
-    return result[0]["id"].as< int > ();
+    return result->asInt ( "id" );
   }
 
   throw std::runtime_error("Error 1172716358: Could not get id from the data base.");
@@ -534,15 +458,15 @@ std::string Connection::getColumnDataString ( const std::string& tableName, int 
   std::ostringstream query;
   query << "SELECT " << columnName << " FROM " << tableName << " WHERE id = " << id;
 
-  pqxx::result result ( this->executeQuery ( query.str() ) );
+  Minerva::DataSources::Result::RefPtr result ( this->executeQuery ( query.str() ) );
 
   // If we have a row retured.
-  if ( !result.empty() )
+  if ( result->prepareNextRow() )
   {
-    if( result[0][columnName].is_null() )
+    if( result->isNull ( columnName ) )
       return "";
 
-    return result[0][columnName].as< std::string > ();
+    return result->asString ( columnName );
   }
 
   return "";
@@ -560,12 +484,12 @@ double Connection::getColumnDataDouble ( const std::string& tableName, int id, c
 	std::ostringstream query;
   query << "SELECT " << columnName << " FROM " << tableName << " WHERE id = " << id;
 
-  pqxx::result result ( this->executeQuery ( query.str() ) );
+  Minerva::DataSources::Result::RefPtr result ( this->executeQuery ( query.str() ) );
 
   // If we have a row retured.
-  if ( !result.empty() )
+  if ( result->prepareNextRow() )
   {
-    return result[0][columnName].as< double > ();
+    return result->asDouble ( columnName );
   }
 
   return 0.0;
@@ -582,10 +506,13 @@ void Connection::getMinAndMax ( const std::string& tableName, const std::string&
 {
   std::string query ( "SELECT MAX(" + fieldName + ") as \"highest\", MIN(" + fieldName + ") as \"lowest\" FROM " + tableName );
 
-  pqxx::result r ( this->executeQuery ( query ) );
+  Minerva::DataSources::Result::RefPtr r ( this->executeQuery ( query ) );
 
-  min = r[0]["lowest"].as < double > ();
-  max = r[0]["highest"].as < double > ();
+  if ( r->prepareNextRow() )
+  {
+    min = r->asDouble ( "lowest" );
+    max = r->asDouble ( "highest" );
+  }
 }
 
 

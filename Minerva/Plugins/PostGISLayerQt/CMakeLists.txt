@@ -37,7 +37,6 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} 
                      ${QT_INCLUDE_DIR} 
                      ${OSG_INC_DIR}
-                     ${PQXX_INCLUDE_DIR}
                      )
 
 set (SOURCES

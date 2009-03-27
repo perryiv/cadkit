@@ -10,14 +10,14 @@
 
 #include "Minerva/Document/CommandReceiver.h"
 
+#include "Minerva/DataSources/Result.h"
+
 #include "Minerva/Core/Serialize.h"
 
 #include "Usul/Interfaces/ICommand.h"
 #include "Usul/Interfaces/ICommandQueueAdd.h"
 
 #include "Usul/Trace/Trace.h"
-
-#include "pqxx/pqxx"
 
 #include <sstream>
 #include <iostream>
@@ -31,7 +31,7 @@ using namespace Minerva::Document;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CommandReceiver::CommandReceiver( ) :
+CommandReceiver::CommandReceiver() :
   BaseClass (),
   _connection ( 0x0 ),
   _sessionID( 0 ),
@@ -59,7 +59,7 @@ CommandReceiver::~CommandReceiver()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void CommandReceiver::connection( Minerva::DataSources::PG::Connection *connection )
+void CommandReceiver::connection( Minerva::DataSources::Connection *connection )
 {
   _connection = connection;
 }
@@ -88,11 +88,11 @@ void CommandReceiver::connectToSession( const std::string& name )
   std::ostringstream query;
   query << "SELECT * FROM wnv_sessions WHERE name = '" << name << "'";
 
-  pqxx::result result ( _connection->executeQuery ( query.str() ) );
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery ( query.str() ) );
 
-  if ( !result.empty() )
+  if ( result->prepareNextRow() )
   {
-    _sessionID = result[0]["id"].as < unsigned int > ();
+    _sessionID = result->asUInt ( "id" );
     _connected = true;
   }
   else
@@ -151,21 +151,22 @@ void CommandReceiver::_processCommands ( Usul::Interfaces::IUnknown *caller )
   query << "SELECT * FROM commands WHERE id > " << _lastCommandID << " AND session_id = " << _sessionID;
 
   // Get the result.
-  pqxx::result result ( _connection->executeQuery ( query.str(), _timeout ) );
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery ( query.str() ) );
  
-  if ( result.size() > 0 )
-    std::cout << "Processing " << result.size() << " commands." << std::endl;
+  if ( result->numRows() > 0 )
+    std::cout << "Processing " << result->numRows() << " commands." << std::endl;
 
   // While we have more work to do...
-  for ( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
+  unsigned int current ( 0 );
+  while ( result->prepareNextRow() )
   {
-    std::cout << "Processing command " << iter - result.begin() << " of " << result.size() << " commands." << std::endl;
+    std::cout << "Processing command " << ++current << " of " << result->numRows() << " commands." << std::endl;
 
     // Get the id of the row we are processing.
-    unsigned int rowId ( iter["id"].as < unsigned int > () );
+    unsigned int rowId ( result->asUInt ( "id" ) );
 
     // Get the xml data.
-    std::string xml ( iter["xml_data"].as< std::string > () );
+    std::string xml ( result->asString ( "xml_data" ) );
 
     // Deserialize.
     Usul::Interfaces::ICommand::QueryPtr command ( Minerva::Core::deserializeCommand ( xml ) );
@@ -180,4 +181,3 @@ void CommandReceiver::_processCommands ( Usul::Interfaces::IUnknown *caller )
     _lastCommandID = rowId;
   }
 }
-

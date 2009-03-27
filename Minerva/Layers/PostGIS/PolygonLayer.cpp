@@ -115,7 +115,7 @@ PolygonLayer::~PolygonLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolygonLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
+void PolygonLayer::_setGeometryMembers( Geometry* geometry, const Minerva::DataSources::Result &result )
 {
   USUL_TRACE_SCOPE;
   typedef Minerva::Core::Data::Polygon Polygon;
@@ -127,7 +127,7 @@ void PolygonLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::
     PolyStyle::RefPtr polyStyle ( new PolyStyle );
     polyStyle->outline( this->showBorder() );
     polyStyle->fill ( this->showInterior() );
-    polyStyle->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
+    polyStyle->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( result ) ) );
     
     LineStyle::RefPtr lineStyle ( new LineStyle );
     lineStyle->color ( this->borderColor() );

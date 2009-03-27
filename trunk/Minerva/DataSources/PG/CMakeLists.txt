@@ -18,15 +18,20 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} )
 INCLUDE_DIRECTORIES( 
 			 ${Boost_INCLUDE_DIR}
 		     ${CADKIT_INC_DIR}
-		     ${PQXX_INCLUDE_DIR}
+		     ${POSTGRESQL_INCLUDE_DIR}
 		     )
 
 
 #List the Sources
 SET (SOURCES
+./Connection.h
 ./Connection.cpp
+./ConnectionPool.h
 ./ConnectionPool.cpp
+./Info.h
 ./Info.cpp
+./Result.h
+./Result.cpp
 )
 
 # Create a Shared Library
@@ -34,10 +39,9 @@ ADD_LIBRARY(MinervaPostgres SHARED ${SOURCES} )
 CADKIT_ADD_LIBRARY ( MinervaPostgres )
 
 # Link the Library	
-LINK_CADKIT( MinervaPostgres Usul SerializeXML XmlTree )
+LINK_CADKIT( MinervaPostgres Usul SerializeXML XmlTree MinervaDataSource )
 TARGET_LINK_LIBRARIES(MinervaPostgres
 	${Boost_LIBRARIES}
-	${PQXX_LIBRARY}
 	${POSTGRESQL_LIBRARIES}
 )
 

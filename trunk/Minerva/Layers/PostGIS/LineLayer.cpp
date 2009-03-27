@@ -16,8 +16,6 @@
 
 #include "Usul/Factory/RegisterCreator.h"
 
-#include "pqxx/pqxx"
-
 using namespace Minerva::Layers::PostGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( LineLayer, LineLayer::BaseClass );
@@ -109,7 +107,7 @@ float LineLayer::lineWidth() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
+void LineLayer::_setGeometryMembers( Geometry* geometry, const Minerva::DataSources::Result &result )
 {
   typedef Minerva::Core::Data::Line Line;
   typedef Minerva::Core::Data::LineStyle LineStyle;
@@ -117,7 +115,7 @@ void LineLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::con
   if ( Line* line = dynamic_cast<Line*> ( geometry ) )
   {
     LineStyle::RefPtr lineStyle ( new LineStyle );
-    lineStyle->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
+    lineStyle->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( result ) ) );
     lineStyle->width ( this->lineWidth() );
     
     line->lineStyle ( lineStyle.get() );

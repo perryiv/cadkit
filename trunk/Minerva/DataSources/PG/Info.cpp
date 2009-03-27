@@ -10,8 +10,6 @@
 
 #include "Minerva/DataSources/PG/Info.h"
 
-#include "pqxx/pqxx"
-
 using namespace Minerva::DataSources::PG;
 
 
@@ -159,13 +157,13 @@ Info::Strings Info::geometryTables()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Info::_getGeometryType ( const std::string& table )
+std::string Info::_getGeometryType ( const std::string& table ) const
 {
   std::string query ( "SELECT GeometryType(geom) FROM " + table + " WHERE IsEmpty(geom)=false LIMIT 1" );
-  pqxx::result result ( _connection->executeQuery ( query ) );
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery ( query ) );
 
-  if( false == result.empty() )
-    return result[0][0].as < std::string > ();
+  if( result->prepareNextRow() )
+    return result->asString ( 0 );
 
   return "";
 }
@@ -181,10 +179,10 @@ Info::Strings Info::_fillStringsFromQuery( const std::string& query ) const
 {
   Strings strings;
 
-  pqxx::result result ( _connection->executeQuery ( query ) );
-  for( pqxx::result::const_iterator iter = result.begin(); iter != result.end(); ++iter )
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery ( query ) );
+  while ( result->prepareNextRow() )
   {
-    strings.push_back( iter[0].as < std::string > () );
+    strings.push_back ( result->asString ( 0 ) );
   }
 
   return strings;
@@ -199,16 +197,8 @@ Info::Strings Info::_fillStringsFromQuery( const std::string& query ) const
 
 bool Info::isPointTable ( const std::string& table ) const
 {
-  std::string query ( "SELECT GeometryType(geom) FROM " + table + " WHERE IsEmpty(geom)=false LIMIT 1" );
-  pqxx::result result ( _connection->executeQuery ( query ) );
-
-  if( false == result.empty() )
-  {
-    std::string type ( result[0][0].as < std::string > () );
-    return ( ( type == "POINT" ) || ( type == "MULTIPOINT" ) );
-  }
-
-  return false;
+  const std::string type ( this->_getGeometryType ( table ) );
+  return ( ( type == "POINT" ) || ( type == "MULTIPOINT" ) );
 }
 
 
@@ -232,16 +222,8 @@ bool Info::isPointTimeTable ( const std::string& table ) const
 
 bool Info::isLineTable ( const std::string& table ) const
 {
-  std::string query ( "SELECT GeometryType(geom) FROM " + table + " WHERE IsEmpty(geom)=false LIMIT 1" );
-  pqxx::result result ( _connection->executeQuery ( query ) );
-
-  if( false == result.empty() )
-  {
-    std::string type ( result[0][0].as < std::string > () );
-    return ( ( type == "LINESTRING" ) || ( type == "MULTILINESTRING" ) );
-  }
-
-  return false;
+  const std::string type ( this->_getGeometryType ( table ) );
+  return ( ( type == "LINESTRING" ) || ( type == "MULTILINESTRING" ) );
 }
 
 
@@ -253,16 +235,9 @@ bool Info::isLineTable ( const std::string& table ) const
 
 bool Info::isPolygonTable ( const std::string& table ) const
 {
-  std::string query ( "SELECT GeometryType(geom) FROM " + table + " WHERE IsEmpty(geom)=false LIMIT 1" );
-  pqxx::result result ( _connection->executeQuery ( query ) );
+  const std::string type ( this->_getGeometryType ( table ) );
+  return ( ( type == "POLYGON" ) || ( type == "MULTIPOLYGON" ) );
 
-  if( false == result.empty() )
-  {
-    std::string type ( result[0][0].as < std::string > () );
-    return ( ( type == "POLYGON" ) || ( type == "MULTIPOLYGON" ) );
-  }
-
-  return false;
 }
 
 
@@ -316,8 +291,8 @@ bool Info::hasColumnType ( const std::string& table, const std::string& type ) c
 
   // Run the query.
   std::string query ( "SELECT column_name FROM information_schema.columns WHERE table_name='" + name + "' AND data_type='" + type + "'" );
-  pqxx::result result ( _connection->executeQuery( query ) );
-  return !result.empty();
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery ( query ) );
+  return !result->empty();
 }
 
 
@@ -365,10 +340,10 @@ void Info::getMinMaxValue( const std::string& query, const std::string& columnNa
 {
   std::string q ( "SELECT MAX(" + columnName + ") as max, MIN(" + columnName + ") FROM (" + query + ") temp" );
 
-  pqxx::result result ( _connection->executeQuery( q ) );
-  if( !result.empty() )
+  Minerva::DataSources::Result::RefPtr result ( _connection->executeQuery( q ) );
+  if( result->prepareNextRow() )
   {
-    min = result[0]["min"].as< double >();
-    max = result[0]["max"].as< double >();
+    min = result->asDouble ( "min" );
+    max = result->asDouble ( "max" );
   }
 }

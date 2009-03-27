@@ -17,8 +17,6 @@
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/Trace/Trace.h"
 
-#include "pqxx/pqxx"
-
 using namespace Minerva::Layers::PostGIS;
 
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS( PointLayer, PointLayer::BaseClass );
@@ -116,7 +114,7 @@ PointLayer::~PointLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::const_iterator& iter )
+void PointLayer::_setGeometryMembers( Geometry* geometry, const Minerva::DataSources::Result &result )
 {
   USUL_TRACE_SCOPE;
   typedef Minerva::Core::Data::Point Point;
@@ -124,7 +122,7 @@ void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::co
   // Set the point style.
   if ( Point* point = dynamic_cast<Point*> ( geometry ) )
   {
-    point->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( iter ) ) );
+    point->color ( Usul::Convert::Type<osg::Vec4f, Usul::Math::Vec4f>::convert ( this->_color ( result ) ) );
     point->size ( this->primitiveSize() );
     point->primitiveId ( this->primitiveID() );
     point->quality ( this->quality() );
@@ -133,7 +131,7 @@ void PointLayer::_setGeometryMembers( Geometry* geometry, const pqxx::result::co
 
     if( this->primitiveSizeColumn().size() > 0 )
     {
-      const float value ( iter [ this->primitiveSizeColumn() ].as < float > () );
+      const float value ( result.asFloat ( this->primitiveSizeColumn() ) );
       point->size( this->primitiveSize() * value );
       this->_updateMinMax( value );
     }

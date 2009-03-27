@@ -19,6 +19,7 @@
 #include "Minerva/Core/Functors/BaseColorFunctor.h"
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Geometry.h"
+
 #include "Minerva/DataSources/PG/Connection.h"
 
 #include "Serialize/XML/Macros.h"
@@ -30,8 +31,6 @@
 #include "Usul/Math/Vector2.h"
 
 #include "osg/Vec4"
-
-#include "pqxx/result"
 
 #ifdef _MSC_VER
 #  pragma warning ( disable : 4561 )
@@ -222,10 +221,10 @@ protected:
   /// Build the data objects.
   virtual void                _buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interfaces::IUnknown *progress );
 
-  osg::Vec4                   _color( const pqxx::result::const_iterator& iter );
+  osg::Vec4                   _color ( const Minerva::DataSources::Result &result );
 
   void                        _setDataObjectMembers ( DataObject* dataObject, Usul::Interfaces::IUnknown* caller );
-  virtual void                _setGeometryMembers   ( Geometry* geometry, const pqxx::result::const_iterator& iter );
+  virtual void                _setGeometryMembers   ( Geometry* geometry, const Minerva::DataSources::Result &result );
 
   /// Register members for serialization.
   void                        _registerMembers();
@@ -270,39 +269,6 @@ private:
   SERIALIZE_XML_CLASS_NAME ( Layer );
 };
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the color.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-inline osg::Vec4 Layer::_color ( const pqxx::result::const_iterator& iter )
-{
-  osg::Vec4 color( 0.0, 0.0, 0.0, 1.0 );
-
-  try
-  {
-    if( !this->colorColumn().empty() )
-    {
-      std::string column ( this->colorColumn() );
-      double fieldValue = iter[ column.c_str() ].as( static_cast < double > ( 0 ) );
-      color = ( *this->colorFunctor() ) ( fieldValue );
-    }
-    else
-    {
-      Minerva::Core::Functors::BaseColorFunctor::RefPtr functor ( this->colorFunctor() );
-      if ( functor.valid() )
-        color = (*functor)( 0.0 );
-    }
-  }
-  catch ( const std::exception& e )
-  {
-    std::cout << "Error 2909352868: " << e.what() << std::endl;
-  }
-
-  color.w() = this->alpha();
-  return color;
-}
 
 }
 }

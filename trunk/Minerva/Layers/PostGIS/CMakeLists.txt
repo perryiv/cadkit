@@ -26,9 +26,8 @@ INCLUDE_DIRECTORIES(
 		     ${CADKIT_INC_DIR}
 		     ${OSG_INC_DIR} 
 		     ${OT_INC_DIR} 
-		     ${PQXX_INCLUDE_DIR}
-             ${GDAL_INCLUDE_DIR}
-		     )
+         ${GDAL_INCLUDE_DIR}
+      )
 
 
 #List the headers
@@ -60,7 +59,6 @@ CADKIT_ADD_LIBRARY ( MinervaPostGIS )
 LINK_CADKIT( MinervaPostGIS Usul OsgTools SerializeXML XmlTree Minerva MinervaPostgres )
 TARGET_LINK_LIBRARIES(MinervaPostGIS
 	${Boost_LIBRARIES}
-	${PQXX_LIBRARY}
 	${OPENTHREADS_LIB}
 	${OSG_LIB}
 	${OSG_DB_LIB}

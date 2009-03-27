@@ -67,7 +67,7 @@ protected:
 
   PointLayer( const PointLayer& layer );
 
-  virtual void            _setGeometryMembers ( Geometry* geometry, const pqxx::result::const_iterator& iter );
+  virtual void            _setGeometryMembers ( Geometry* geometry, const Minerva::DataSources::Result &result );
 
   /// Clone the this layer.
   virtual Usul::Interfaces::IUnknown*              clone() const;

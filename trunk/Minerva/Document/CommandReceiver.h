@@ -11,7 +11,7 @@
 #ifndef __MINERVA_COMMAND_RECEIVER_H__
 #define __MINERVA_COMMAND_RECEIVER_H__
 
-#include "Minerva/DataSources/PG/Connection.h"
+#include "Minerva/DataSources/Connection.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IUnknown.h"
@@ -31,10 +31,10 @@ public:
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( CommandReceiver );
 
-  CommandReceiver ( );
+  CommandReceiver();
 
   // Set the application connection.
-  void connection ( Minerva::DataSources::PG::Connection * );
+  void connection ( Minerva::DataSources::Connection * );
 
   /// Are we connected to the session?
   bool connected () const;
@@ -52,7 +52,7 @@ protected:
   void _processCommands( Usul::Interfaces::IUnknown *caller );
 
 private:
-  Minerva::DataSources::PG::Connection::RefPtr _connection;
+  Minerva::DataSources::Connection::RefPtr _connection;
   unsigned int _sessionID;
   unsigned int _lastCommandID;
   unsigned int _timeout;

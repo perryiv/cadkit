@@ -14,20 +14,22 @@ IF(QT_FOUND AND BUILD_HELIOS_QT)
 ENDIF(QT_FOUND AND BUILD_HELIOS_QT)
 
 # Build this project only if Boost regex library is found.
-IF ( Boost_REGEX_LIBRARY_FOUND )
+#IF ( Boost_REGEX_LIBRARY_FOUND )
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/GeoRSS )
-ENDIF ( Boost_REGEX_LIBRARY_FOUND )
+#ENDIF ( Boost_REGEX_LIBRARY_FOUND )
+
+SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/DataSources )
 
 # Build this project if pqxx is found.
-IF ( PQXX_FOUND )
+IF ( POSTGRESQL_FOUND )
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/DataSources/PG )
-ENDIF ( PQXX_FOUND )
+ENDIF ( POSTGRESQL_FOUND )
 
-# Build these projects if we found GDAL and pqxx.
-IF(GDAL_FOUND AND PQXX_FOUND )
+# Build these projects if we found GDAL and libpq.
+IF(GDAL_FOUND AND POSTGRESQL_FOUND)
 	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/PostGIS
 			  ${CADKIT_INC_DIR}/Minerva/Layers/GDAL )
-ENDIF(GDAL_FOUND AND PQXX_FOUND)
+ENDIF(GDAL_FOUND AND POSTGRESQL_FOUND)
 
 # Build these projects if we found Ossim
 IF(OSSIM_FOUND)

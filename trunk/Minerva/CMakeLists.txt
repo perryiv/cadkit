@@ -4,8 +4,14 @@ PROJECT(MinervaAll)
 SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Core
 		  ${CADKIT_INC_DIR}/Minerva/Layers/Kml
 		  ${CADKIT_INC_DIR}/Minerva/Layers/GeoNames
-		  ${CADKIT_INC_DIR}/Minerva/Layers/OSM
+		  
 		  ${CADKIT_INC_DIR}/Minerva/Document )
+		
+
+IF ( SPATIALITE_FOUND )
+	SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Layers/OSM )
+ENDIF ( SPATIALITE_FOUND )	
+
 
 # Add these projects if Qt was found.
 IF(QT_FOUND AND BUILD_HELIOS_QT)

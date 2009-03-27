@@ -155,6 +155,9 @@ osg::Node* MultiPoint::_buildScene ( Usul::Interfaces::IUnknown * caller )
   
   // Get the point data.
   Vertices data ( this->points() );
+
+  if ( true == data.empty() )
+    return 0x0;
   
   // Query for needed interfaces.
   Usul::Interfaces::IElevationDatabase::QueryPtr elevation ( caller );

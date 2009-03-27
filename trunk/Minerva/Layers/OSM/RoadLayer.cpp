@@ -127,18 +127,16 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Launch the jobs to fetch vector data.
+//  Launch a job for the predicate.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RoadLayer::Jobs RoadLayer::launchVectorJobs ( 
-  double minLon, 
-  double minLat, 
-  double maxLon, 
-  double maxLat, 
-  unsigned int level, 
-  Usul::Jobs::Manager *manager,
-  Usul::Interfaces::IUnknown::RefPtr caller )
+RoadLayer::JobPtr RoadLayer::_launchJob ( 
+    const Predicate& predicate, 
+    const Extents& extents, 
+    unsigned int level, 
+    Usul::Jobs::Manager *manager, 
+    Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return this->_launchVectorJobs<RoadLayerJob> ( _cache, minLon, minLat, maxLon, maxLat, level, manager, caller );
+  return new RoadLayerJob ( _cache, this->url(), extents, predicate );
 }

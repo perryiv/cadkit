@@ -36,6 +36,8 @@ public:
   void makeWaysQuery ( Ways& ways );
 
 private:
+
+  std::string _buildRequestUrl ( const std::string& requestType ) const;
   
   Cache::RefPtr _cache;
   const std::string& _url;

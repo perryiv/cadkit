@@ -37,14 +37,13 @@ protected:
 
   virtual ~CityNameLayer();
 
-  /// Launch the jobs to fetch vector data.
-  virtual Jobs                launchVectorJobs ( double minLon, 
-                                                 double minLat, 
-                                                 double maxLon, 
-                                                 double maxLat, 
-                                                 unsigned int level, 
-                                                 Usul::Jobs::Manager *manager,
-                                                 Usul::Interfaces::IUnknown::RefPtr caller );
+  /// Launch a job for the predicate.
+  virtual JobPtr _launchJob ( 
+    const Predicate& predicate, 
+    const Extents& extents, 
+    unsigned int level, 
+    Usul::Jobs::Manager *manager, 
+    Usul::Interfaces::IUnknown::RefPtr caller );
 
 private:
 

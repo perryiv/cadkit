@@ -16,6 +16,7 @@
 #ifndef __MINERVA_LAYERS_OPEN_STREET_MAP_TILE_VECTOR_JOB_H__
 #define __MINERVA_LAYERS_OPEN_STREET_MAP_TILE_VECTOR_JOB_H__
 
+#include "Minerva/Layers/OSM/Cache.h"
 #include "Minerva/Layers/OSM/Common.h"
 
 #include "Usul/Jobs/Job.h"
@@ -36,13 +37,13 @@ public:
   USUL_DECLARE_REF_POINTERS ( TileVectorJob );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
-  TileVectorJob ( const std::string& url, const Extents& extents, const Predicate& predicate );
+  TileVectorJob ( Cache::RefPtr cache, const std::string& url, const Extents& extents, const Predicate& predicate );
 
 protected:
 
   virtual ~TileVectorJob();
 
-  virtual void                  _started();
+  virtual void                  _started() = 0;
 
   /// Cancel the job (ITileVectorJob).
   virtual void                  cancelVectorJob();
@@ -53,8 +54,7 @@ protected:
   /// Is the job done (ITileVectorJob)?
   virtual bool                  isVectorJobDone() const;
 
-private:
-
+  Cache::RefPtr _cache;
   std::string _url;
   Extents _extents;
   Predicate _predicate;

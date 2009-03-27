@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(POSTGRES_INC_DIR)&quot;;&quot;$(LIBPQ_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_POSTGRES;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
@@ -81,11 +81,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libpqddll.lib wsock32.lib"
+				AdditionalDependencies="wsock32.lib $(LIBPQ_LIB_FILE_DEBUG)"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostgresd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(BOOST_LIB_DIR)&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/MinervaPostgresd.pdb"
 				RandomizedBaseAddress="1"
@@ -146,7 +146,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(PQXX_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(POSTGRES_INC_DIR)&quot;;&quot;$(LIBPQ_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_POSTGRES;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libpqdll.lib wsock32.lib"
+				AdditionalDependencies="wsock32.lib $(LIBPQ_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaPostgres.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(BOOST_LIB_DIR)&quot;;&quot;$(PQXX_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="&quot;$(BOOST_LIB_DIR)&quot;"
 				ProgramDatabaseFile=".\Release/MinervaPostgres.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -239,6 +239,14 @@
 			</File>
 			<File
 				RelativePath=".\Info.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Result.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Result.h"
 				>
 			</File>
 		</Filter>

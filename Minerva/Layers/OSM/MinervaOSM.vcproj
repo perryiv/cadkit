@@ -219,6 +219,30 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\AdminBoundaryLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AdminBoundaryLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Cache.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Cache.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CityNameLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CityNameLayer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Common.h"
 				>
 			</File>
@@ -267,6 +291,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RoadLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RoadLayer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TileVectorJob.cpp"
 				>
 			</File>
@@ -280,6 +312,14 @@
 			</File>
 			<File
 				RelativePath=".\Way.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XAPIMapQuery.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XAPIMapQuery.h"
 				>
 			</File>
 		</Filter>

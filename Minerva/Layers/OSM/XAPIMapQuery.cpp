@@ -75,9 +75,7 @@ void XAPIMapQuery::makeNodesAndWaysQuery ( Nodes& nodes, Ways& ways )
     return;
 
   // Build the string for the request.
-  const std::string predicateString ( "[" + _predicate.first + "=" + _predicate.second + "]" );
-  const std::string bbox ( Usul::Strings::format ( "[bbox=", _extents.minLon(), ",", _extents.minLat(), ",", _extents.maxLon(), ",", _extents.maxLat(), "]" ) );
-  const std::string request ( _url + "/api/0.5/*" + bbox + predicateString );
+  const std::string request ( this->_buildRequestUrl ( "*" ) );
 
   // Download to a temp file.
   const std::string filename ( Usul::File::Temp::file() );
@@ -114,9 +112,7 @@ void XAPIMapQuery::makeNodesQuery ( Nodes& nodes )
   }
 
   // Build the string for the request.
-  const std::string predicateString ( "[" + _predicate.first + "=" + _predicate.second + "]" );
-  const std::string bbox ( Usul::Strings::format ( "[bbox=", _extents.minLon(), ",", _extents.minLat(), ",", _extents.maxLon(), ",", _extents.maxLat(), "]" ) );
-  const std::string request ( _url + "/api/0.5/node" + bbox + predicateString );
+  const std::string request ( this->_buildRequestUrl ( "node" ) );
 
   // Download to a temp file.
   const std::string filename ( Usul::File::Temp::file() );
@@ -159,9 +155,7 @@ void XAPIMapQuery::makeWaysQuery ( Ways& ways )
   }
 
   // Build the string for the request.
-  const std::string predicateString ( "[" + _predicate.first + "=" + _predicate.second + "]" );
-  const std::string bbox ( Usul::Strings::format ( "[bbox=", _extents.minLon(), ",", _extents.minLat(), ",", _extents.maxLon(), ",", _extents.maxLat(), "]" ) );
-  const std::string request ( _url + "/api/0.5/*" + bbox + predicateString );
+  const std::string request ( this->_buildRequestUrl ( "way" ) );
 
   // Download to a temp file.
   const std::string filename ( Usul::File::Temp::file() );
@@ -180,3 +174,17 @@ void XAPIMapQuery::makeWaysQuery ( Ways& ways )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Build the request url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string XAPIMapQuery::_buildRequestUrl ( const std::string& requestType ) const
+{
+  const std::string predicateString ( "[" + _predicate.first + "=" + _predicate.second + "]" );
+  const std::string bbox ( Usul::Strings::format ( "[bbox=", _extents.minLon(), ",", _extents.minLat(), ",", _extents.maxLon(), ",", _extents.maxLat(), "]" ) );
+  const std::string request ( Usul::Strings::format ( _url, "/api/0.5/", requestType, bbox, predicateString ) );
+  return request;
+}

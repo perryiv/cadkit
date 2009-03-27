@@ -48,10 +48,6 @@ OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
   _requestMap()
 {
   this->extents ( Extents ( -180, -90, 180, 90 ) );
-
-  // Populate the requests to make.
-  // See http://wiki.openstreetmap.org/wiki/Map_Features for key, value pairs.
-  //_requestMap[5].push_back ( Predicate ( "highway", "motorway" ) );
 }
 
 
@@ -81,6 +77,48 @@ void OpenStreetMapXAPI::serialize ( XmlTree::Node &parent ) const
   
   // Serialize.
   dataMemberMap.serialize ( parent );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Launch the jobs to fetch vector data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenStreetMapXAPI::Jobs OpenStreetMapXAPI::launchVectorJobs ( 
+  double minLon, 
+  double minLat, 
+  double maxLon, 
+  double maxLat, 
+  unsigned int level, 
+  Usul::Jobs::Manager *manager,
+  Usul::Interfaces::IUnknown::RefPtr caller )
+{
+  // Return now if there is no manager.
+  if ( 0x0 == manager )
+    return Jobs();
+
+  // Don't make any requests if we aren't visible.
+  if ( false == this->visibility() )
+    return Jobs();
+
+  // Get all the predicates.
+  Predicates predicates;
+  this->_getAllPredicates ( level, predicates );
+
+  Jobs jobs;
+
+  // Create a job for each predicate.
+  for ( Predicates::const_iterator iter = predicates.begin(); iter != predicates.end(); ++iter )
+  {
+    JobPtr job ( this->_launchJob ( *iter, Extents ( minLon, minLat, maxLon, maxLat ), level, manager, caller ) );
+    jobs.push_back ( Usul::Interfaces::IUnknown::QueryPtr ( job ) );
+
+    manager->addJob ( job.get() );
+  }
+
+  return jobs;
 }
 
 
@@ -130,5 +168,6 @@ std::string OpenStreetMapXAPI::url() const
 
 void OpenStreetMapXAPI::addRequest ( unsigned int level, const Predicate& predicate )
 {
+  Guard guard ( this );
   _requestMap[level].push_back ( predicate );
 }

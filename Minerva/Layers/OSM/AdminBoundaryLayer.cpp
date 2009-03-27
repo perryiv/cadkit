@@ -123,18 +123,16 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Launch the jobs to fetch vector data.
+//  Launch a job for the predicate.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AdminBoundaryLayer::Jobs AdminBoundaryLayer::launchVectorJobs ( 
-  double minLon, 
-  double minLat, 
-  double maxLon, 
-  double maxLat, 
-  unsigned int level, 
-  Usul::Jobs::Manager *manager,
-  Usul::Interfaces::IUnknown::RefPtr caller )
+AdminBoundaryLayer::JobPtr AdminBoundaryLayer::_launchJob ( 
+    const Predicate& predicate, 
+    const Extents& extents, 
+    unsigned int level, 
+    Usul::Jobs::Manager *manager, 
+    Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return this->_launchVectorJobs<AdminBoundaryJob> ( _cache, minLon, minLat, maxLon, maxLat, level, manager, caller );
+  return new AdminBoundaryJob ( _cache, this->url(), extents, predicate );
 }

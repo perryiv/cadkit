@@ -123,18 +123,16 @@ protected:
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Launch the jobs to fetch vector data.
+//  Launch a job for the predicate.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CityNameLayer::Jobs CityNameLayer::launchVectorJobs ( 
-  double minLon, 
-  double minLat, 
-  double maxLon, 
-  double maxLat, 
-  unsigned int level, 
-  Usul::Jobs::Manager *manager,
-  Usul::Interfaces::IUnknown::RefPtr caller )
+CityNameLayer::JobPtr CityNameLayer::_launchJob ( 
+    const Predicate& predicate, 
+    const Extents& extents, 
+    unsigned int level, 
+    Usul::Jobs::Manager *manager, 
+    Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return this->_launchVectorJobs<CityNameJob> ( _cache, minLon, minLat, maxLon, maxLat, level, manager, caller );
+  return new CityNameJob ( _cache, this->url(), extents, predicate );
 }

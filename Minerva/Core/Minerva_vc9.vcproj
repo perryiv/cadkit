@@ -473,6 +473,10 @@
 						RelativePath=".\Data\UserData.h"
 						>
 					</File>
+					<File
+						RelativePath=".\Data\WKBParsers.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Layers"

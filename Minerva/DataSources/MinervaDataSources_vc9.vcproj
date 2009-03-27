@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="lib: Minerva Document"
-	ProjectGUID="{0EC3F7B0-CAEC-47A6-8894-195C7BD09C5A}"
-	RootNamespace="lib: Minerva Document"
+	Name="lib: Minerva DataSources"
+	ProjectGUID="{643885EA-5730-45A3-83B2-5263611DE777}"
+	RootNamespace="lib: Minerva DataSources"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -41,14 +41,14 @@
 				PreprocessorDefinitions="_DEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/Minerva.tlb"
+				TypeLibraryName=".\Debug/MinervaDataSources.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/Experimental&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_DOCUMENT;_CRT_SECURE_NO_DEPRECATE;NOMINMAX"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;"
+				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_MINERVA_DATA_SOURCES;_CRT_SECURE_NO_DEPRECATE"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -81,16 +81,16 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="wsock32.lib osgd.lib osgDBd.lib osgTextd.lib osgUtild.lib osgGAd.lib OpenThreadsd.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaDocumentd.dll"
+				AdditionalDependencies=""
+				OutputFile="$(CADKIT_BIN_DIR)/MinervaDataSourcesd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/MinervaDocumentd.pdb"
+				ProgramDatabaseFile=".\Debug/MinervaDataSourcesd.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaDocumentd.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaDataSourcesd.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -140,14 +140,14 @@
 				PreprocessorDefinitions="NDEBUG"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/MinervaDocument.tlb"
+				TypeLibraryName=".\Release/MinervaDataSources.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;;&quot;$(OSG_INC_DIR)&quot;;&quot;$(BOOST_INC_DIR)&quot;;&quot;$(CADKIT_INC_DIR)/Experimental&quot;;&quot;$(CADKIT_INC_DIR)/GenericNurbs&quot;"
-				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_DOCUMENT;_CRT_SECURE_NO_DEPRECATE;NOMINMAX"
+				AdditionalIncludeDirectories="&quot;$(CADKIT_INC_DIR)&quot;"
+				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_MINERVA_DATA_SOURCES;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				ExceptionHandling="2"
 				RuntimeLibrary="2"
@@ -178,15 +178,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="wsock32.lib osg.lib osgDB.lib osgText.lib osgUtil.lib osgGA.lib OpenThreads.lib"
-				OutputFile="$(CADKIT_BIN_DIR)/MinervaDocument.dll"
+				AdditionalDependencies=""
+				OutputFile="$(CADKIT_BIN_DIR)/MinervaDataSources.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(BOOST_LIB_DIR)&quot;"
-				ProgramDatabaseFile=".\Release/MinervaDocument.pdb"
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR);"
+				ProgramDatabaseFile=".\Release/MinervaDataSources.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaDocument.lib"
+				ImportLibrary="$(CADKIT_BIN_DIR)/MinervaDataSources.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -218,31 +218,31 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\BinaryString.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BinaryString.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Connection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Connection.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>
 			<File
-				RelativePath=".\KmlWriter.cpp"
+				RelativePath=".\Result.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\KmlWriter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Manipulator.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Manipulator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MinervaDocument.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MinervaDocument.h"
+				RelativePath=".\Result.h"
 				>
 			</File>
 		</Filter>

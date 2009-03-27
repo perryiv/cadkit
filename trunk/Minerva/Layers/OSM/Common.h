@@ -25,6 +25,10 @@ namespace Minerva {
 namespace Layers {
 namespace OSM {
 
+  /// Forward declarations.
+  class Cache;
+
+  /// Typedefs.
   typedef Minerva::Layers::OSM::Node::RefPtr  OSMNodePtr;
   typedef Minerva::Layers::OSM::Way::RefPtr   OSMWayPtr;
   typedef std::vector<OSMNodePtr>             Nodes;
@@ -32,7 +36,6 @@ namespace OSM {
   typedef Minerva::Core::Data::DataObject     DataObject;
   typedef Minerva::Core::Extents<osg::Vec2d>  Extents;
   typedef std::pair<std::string,std::string>  Predicate;
-
 }
 }
 }

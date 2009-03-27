@@ -44,7 +44,32 @@ public:
   {
     // Make the transform.
     OGRSpatialReference src ( from.c_str() ), dst ( to.c_str() );
-    _transform = OGRCreateCoordinateTransformation( &src, &dst );
+    _transform = ::OGRCreateCoordinateTransformation ( &src, &dst );
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Copy Constructor.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  Transform ( const Transform& rhs ) :
+    _transform ( Transform::_clone ( rhs._transform ) )
+  {
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Assignment.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+
+  Transform& operator= ( const Transform& rhs )
+  {
+    _transform = Transform::_clone ( rhs._transform );
+    return *this;
   }
   
   ///////////////////////////////////////////////////////////////////////////////
@@ -114,6 +139,22 @@ public:
   }
 
 private:
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  Clone the transform.
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+  
+  static OGRCoordinateTransformation * _clone ( OGRCoordinateTransformation * rhs )
+  {
+    if ( 0x0 != rhs )
+    {
+      return ::OGRCreateCoordinateTransformation ( rhs->GetSourceCS(), rhs->GetTargetCS() );
+    }
+
+    return 0x0;
+  }
 
   OGRCoordinateTransformation *_transform;
 

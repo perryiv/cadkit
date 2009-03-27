@@ -10,6 +10,8 @@
 #ifndef __MINERVA_LAYERS_OPEN_STREET_MAP_OBJECT_H__
 #define __MINERVA_LAYERS_OPEN_STREET_MAP_OBJECT_H__
 
+#include "Minerva/Layers/OSM/Export.h"
+
 #include "Minerva/Core/Animate/Date.h"
 
 #include "Usul/Base/Referenced.h"
@@ -23,7 +25,7 @@ namespace Layers {
 namespace OSM {
   
   
-class Object : public Usul::Base::Referenced
+class MINERVA_OSM_EXPORT Object : public Usul::Base::Referenced
 {
 public:
   
@@ -40,6 +42,9 @@ public:
   // Get a tag.
   template<typename T>
   T                   tag ( const std::string& key ) const;
+
+  // Get all the tags.
+  const Tags&         tags() const;
 
   // Get the timestamp.
   const Date&         timestamp() const;

@@ -70,3 +70,38 @@ Node* Way::node ( unsigned int i ) const
 {
   return _nodes.at ( i ).get();
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the nodes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Way::Nodes& Way::nodes() const
+{
+  return _nodes;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the extents of this way.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Way::Extents Way::extents() const
+{
+  Extents extents;
+  
+  for ( Nodes::const_iterator iter = _nodes.begin(); iter != _nodes.end(); ++iter )
+  {
+    Node::RefPtr node ( *iter );
+    if ( node.valid() )
+    {
+      extents.expand ( Extents::Vertex ( node->location()[0], node->location()[1] ) );
+    }
+  }
+
+  return extents;
+}

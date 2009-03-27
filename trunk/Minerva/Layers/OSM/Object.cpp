@@ -9,6 +9,7 @@
 
 #include "Minerva/Layers/OSM/Object.h"
 
+
 using namespace Minerva::Layers::OSM;
 
 
@@ -62,6 +63,18 @@ Object::~Object()
 Object::IdType Object::id() const
 {
   return _id;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get all the tags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+const Object::Tags& Object::tags() const
+{
+  return _tags;
 }
 
 

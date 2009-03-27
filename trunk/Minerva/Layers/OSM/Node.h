@@ -26,7 +26,7 @@ namespace Layers {
 namespace OSM {
   
   
-class Node : public Minerva::Layers::OSM::Object
+class MINERVA_OSM_EXPORT Node : public Minerva::Layers::OSM::Object
 {
 public:
   

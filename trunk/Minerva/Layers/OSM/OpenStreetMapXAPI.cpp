@@ -37,9 +37,6 @@
 using namespace Minerva::Layers::OSM;
 
 
-USUL_FACTORY_REGISTER_CREATOR ( OpenStreetMapXAPI );
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Constructor.
@@ -54,7 +51,7 @@ OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
 
   // Populate the requests to make.
   // See http://wiki.openstreetmap.org/wiki/Map_Features for key, value pairs.
-  _requestMap[5].push_back ( Predicate ( "highway", "motorway" ) );
+  //_requestMap[5].push_back ( Predicate ( "highway", "motorway" ) );
 }
 
 
@@ -89,50 +86,14 @@ void OpenStreetMapXAPI::serialize ( XmlTree::Node &parent ) const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Launch the jobs to fetch vector data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-OpenStreetMapXAPI::Jobs OpenStreetMapXAPI::launchVectorJobs ( 
-  double minLon, 
-  double minLat, 
-  double maxLon, 
-  double maxLat, 
-  unsigned int level, 
-  Usul::Jobs::Manager *manager,
-  Usul::Interfaces::IUnknown *caller )
-{
-  // Return now if there is no manager.
-  if ( 0x0 == manager )
-    return Jobs();
-
-  // Get all the predicates.
-  Predicates predicates;
-  this->_getAllPredicates ( level, predicates );
-
-  Jobs jobs;
-
-  // Create a job for each predicate.
-  for ( Predicates::const_iterator iter = predicates.begin(); iter != predicates.end(); ++iter )
-  {
-    TileVectorJob::RefPtr job ( new TileVectorJob ( _url, Extents ( minLon, minLat, maxLon, maxLat ), *iter ) );
-    jobs.push_back ( Usul::Interfaces::IUnknown::QueryPtr ( job ) );
-
-    manager->addJob ( job.get() );
-  }
-
-  return jobs;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get all the predicates to use at a given level.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 void OpenStreetMapXAPI::_getAllPredicates ( unsigned int level, Predicates& predicates ) const
 {
+  Guard guard ( this );
+
   // Find all predicates for levels greater than or equal to the level.
   RequestMap::const_iterator iterator ( _requestMap.begin() );
   while ( iterator != _requestMap.end() )
@@ -145,4 +106,29 @@ void OpenStreetMapXAPI::_getAllPredicates ( unsigned int level, Predicates& pred
 
     ++iterator;
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the url.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string OpenStreetMapXAPI::url() const
+{
+  Guard guard ( this );
+  return _url;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a predicate request.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenStreetMapXAPI::addRequest ( unsigned int level, const Predicate& predicate )
+{
+  _requestMap[level].push_back ( predicate );
 }

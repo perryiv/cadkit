@@ -1426,17 +1426,12 @@ void Layer::_buildDataObjects ( Usul::Interfaces::IUnknown *caller, Usul::Interf
         data->timePrimitive ( span.get() );
       }
       
-      // Transform to wgs 84.
-      typedef Minerva::Core::Data::Transform Transform;
-      Transform transform ( wkt, Transform::wgs84AsWellKnownText() );
-
       // Make the parser.
       Minerva::DataSources::BinaryString::RefPtr buffer ( geometryResult->asBlob ( "geom" ) );
-      typedef BinaryParser<Minerva::DataSources::BinaryString::const_iterator,Transform> WellKnownBinaryParser;
-      WellKnownBinaryParser parser ( buffer->begin(), buffer->end(), transform );
-      WellKnownBinaryParser::Geometries geometries ( parser.createGeometry() );
+      BinaryParser parser;
+      BinaryParser::Geometries geometries ( parser ( &buffer->byteBuffer()[0], wkt ) );
       
-      for ( WellKnownBinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
+      for ( BinaryParser::Geometries::iterator geom = geometries.begin(); geom != geometries.end(); ++geom )
       {
         Minerva::Core::Data::Geometry::RefPtr geometry ( *geom );
         

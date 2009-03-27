@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../;$(SQLITE_INC_DIR)"
+				AdditionalIncludeDirectories="../../;../../../;$(SQLITE_INC_DIR);$(SPATIALITE_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_SQL_LITE_WRAP"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
@@ -79,11 +79,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib SQLite3d.lib"
+				AdditionalDependencies="$(SPATIALITE_LIB_FILE_DEBUG) $(SQLITE_LIB_FILE_DEBUG)"
 				OutputFile="$(CADKIT_BIN_DIR)/SQLiteWrapd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(SQLITE_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/SQLiteWrapd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/SQLiteWrapd.lib"
@@ -145,7 +145,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../;$(SQLITE_INC_DIR)"
+				AdditionalIncludeDirectories="../../;../../../;$(SQLITE_INC_DIR);$(SPATIALITE_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_SQL_LITE_WRAP"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -177,11 +177,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="User32.lib SQLite3.lib"
+				AdditionalDependencies="$(SPATIALITE_LIB_FILE_RELEASE) $(SQLITE_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/SQLiteWrap.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(SQLITE_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/SQLiteWrap.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/SQLiteWrap.lib"
 			/>
@@ -218,19 +218,19 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\Callback.cpp"
+				RelativePath=".\Binder.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Callback.h"
+				RelativePath=".\Binder.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Database.cpp"
+				RelativePath=".\Connection.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Database.h"
+				RelativePath=".\Connection.h"
 				>
 			</File>
 			<File
@@ -238,11 +238,27 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Results.cpp"
+				RelativePath=".\Input.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Results.h"
+				RelativePath=".\Internal.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Result.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Result.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Transaction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Types.h"
 				>
 			</File>
 		</Filter>

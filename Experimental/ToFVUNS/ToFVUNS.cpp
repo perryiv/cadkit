@@ -270,9 +270,6 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
                                      static_cast< Usul::Types::Uint32 > ( nj ) - 1, 
                                      static_cast< Usul::Types::Uint32 > ( nk ) - 1 );
 
-  // size of the grid array
-  Usul::Types::Uint64 size ( _dimensions[0] * _dimensions[1] * _dimensions[2] * sizeof( GridType ) );
-      
   for( unsigned int k = 0; k < nk; ++k )
   {
     // temp 2d grid
@@ -426,11 +423,7 @@ void ToFVUNS::_writeResultsFile( const std::string &name )
   {
     // write the number of columns
     Usul::Types::Int32 numCols( 4 );
-    ofs->write ( reinterpret_cast< char* > ( &numCols ), sizeof( Usul::Types::Int32 ) );
-
-    // Pressure
-    char pValue[80] = "pressure";
-    ofs->write ( &pValue[0], 80 );
+    ofs->write ( reinterpret_cast< char* > ( &numCols ), sizeof( Usul::Types::Int32 ) ); 
 
     // U of Velocity
     char uVel[80] = "u; Velocity";
@@ -443,6 +436,10 @@ void ToFVUNS::_writeResultsFile( const std::string &name )
     // W of Velocity
     char wVel[80] = "w";
     ofs->write ( &wVel[0], 80 );
+
+    // Pressure
+    char pValue[80] = "pressure";
+    ofs->write ( &pValue[0], 80 );
   }
 
   // Write boundary header information
@@ -495,35 +492,40 @@ void ToFVUNS::_writeResultsFile( const std::string &name )
 void ToFVUNS::_writeResults( const std::string &name, std::ofstream* ofs )
 {
   unsigned int denominator( _dimensions[1] );
-  for( unsigned int j = 0; j < _dimensions[1]; ++j )
+
+  for( unsigned int valueNumber = 0; valueNumber < _values.size(); ++valueNumber )
   {
-    // progress
-    float percentage ( static_cast< float > ( j ) / static_cast< float > ( denominator ) );
-    std::cout << "\rWrite function percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  j << " / " << denominator << " )" << std::flush;
-    
-    for( unsigned int k = 0; k < _dimensions[2]; ++k )
+
+    for( unsigned int j = 0; j < _dimensions[1]; ++j )
     {
-      for( unsigned int i = 0; i < _dimensions[0]; ++i )
+      // progress
+      float percentage ( static_cast< float > ( j ) / static_cast< float > ( denominator ) );
+      std::cout << "\rWrite function for value " << valueNumber << " -- percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  j << " / " << denominator << " )" << std::flush;
+      
+      for( unsigned int k = 0; k < _dimensions[2]; ++k )
       {
-        // current node index
-        unsigned int index ( j + ( i * _dimensions[1] ) );
+        for( unsigned int i = 0; i < _dimensions[0]; ++i )
+        {
+          // current node index
+          unsigned int index ( j + ( i * _dimensions[1] ) );
 
-        // P value
-        Usul::Types::Float32 p ( static_cast< Usul::Types::Float32 > ( _values.at( 3 ).at( k ).at( index ) ) );
-        ofs->write ( reinterpret_cast< char* > ( &p ), sizeof( Usul::Types::Float32 ) );
+          // P value
+          Usul::Types::Float32 value ( static_cast< Usul::Types::Float32 > ( _values.at( valueNumber ).at( k ).at( index ) ) );
+          ofs->write ( reinterpret_cast< char* > ( &value ), sizeof( Usul::Types::Float32 ) );
 
-        // U value
-        Usul::Types::Float32 u ( static_cast< Usul::Types::Float32 > ( _values.at( 0 ).at( k ).at( index ) ) );
-        ofs->write ( reinterpret_cast< char* > ( &u ), sizeof( Usul::Types::Float32 ) );
+          //// U value
+          //Usul::Types::Float32 u ( static_cast< Usul::Types::Float32 > ( _values.at( 0 ).at( k ).at( index ) ) );
+          //ofs->write ( reinterpret_cast< char* > ( &u ), sizeof( Usul::Types::Float32 ) );
 
-        // VU value
-        Usul::Types::Float32 v ( static_cast< Usul::Types::Float32 > ( _values.at( 1 ).at( k ).at( index ) ) );
-        ofs->write ( reinterpret_cast< char* > ( &v ), sizeof( Usul::Types::Float32 ) );
+          //// VU value
+          //Usul::Types::Float32 v ( static_cast< Usul::Types::Float32 > ( _values.at( 1 ).at( k ).at( index ) ) );
+          //ofs->write ( reinterpret_cast< char* > ( &v ), sizeof( Usul::Types::Float32 ) );
 
-        // W value
-        Usul::Types::Float32 w ( static_cast< Usul::Types::Float32 > ( _values.at( 2 ).at( k ).at( index ) ) );
-        ofs->write ( reinterpret_cast< char* > ( &w ), sizeof( Usul::Types::Float32 ) );
+          //// W value
+          //Usul::Types::Float32 w ( static_cast< Usul::Types::Float32 > ( _values.at( 2 ).at( k ).at( index ) ) );
+          //ofs->write ( reinterpret_cast< char* > ( &w ), sizeof( Usul::Types::Float32 ) );
 
+        }
       }
     }
   }
@@ -532,7 +534,7 @@ void ToFVUNS::_writeResults( const std::string &name, std::ofstream* ofs )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write the results file.
+//  Process the Grid Files
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -577,7 +579,7 @@ void ToFVUNS::_procesGridFile( const std::string &file, Grid1D &grid )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Write the results file.
+//  Write the Grid file.
 //
 ///////////////////////////////////////////////////////////////////////////////
 

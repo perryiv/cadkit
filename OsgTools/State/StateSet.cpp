@@ -16,7 +16,6 @@
 
 #include "Usul/Adaptors/Random.h"
 #include "Usul/Bits/Bits.h"
-#include "Usul/Pointers/Pointers.h"
 
 #include "osg/Node"
 #include "osg/StateSet"
@@ -106,7 +105,7 @@ void StateSet::setNormalize ( osg::Node *node, bool on )
     return;
 
   // Get the state set, or make one.
-  USUL_VALID_REF_POINTER(osg::StateSet) ss ( node->getOrCreateStateSet() );
+  osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
 
   // Set the mode.
   ss->setMode ( GL_NORMALIZE, ( ( on ) ? osg::StateAttribute::ON : osg::StateAttribute::OFF ) | osg::StateAttribute::PROTECTED );
@@ -167,10 +166,10 @@ namespace Helper
       return;
 
     // Get the state set, or make one.
-    USUL_VALID_REF_POINTER(osg::StateSet) ss ( node->getOrCreateStateSet() );
+    osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
 
     // Make a polygon-mode.
-    USUL_VALID_REF_POINTER(osg::PolygonMode) pm ( new osg::PolygonMode );
+    osg::ref_ptr<osg::PolygonMode> pm ( new osg::PolygonMode );
 
     // Set the face.
     osg::PolygonMode::Face face ( ( twoSided ) ? 
@@ -244,10 +243,10 @@ namespace Helper
       return;
 
     // Get the state set, or make one.
-    USUL_VALID_REF_POINTER(osg::StateSet) ss ( node->getOrCreateStateSet() );
+    osg::ref_ptr<osg::StateSet> ss ( node->getOrCreateStateSet() );
 
     // Make a shade-model.
-    USUL_VALID_REF_POINTER(osg::ShadeModel) sm ( new osg::ShadeModel );
+    osg::ref_ptr<osg::ShadeModel> sm ( new osg::ShadeModel );
 
     // Set the mode.
     sm->setMode ( mode );

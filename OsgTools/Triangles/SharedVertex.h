@@ -16,6 +16,8 @@
 #ifndef _OPEN_SCENE_GRAPH_TOOLS_SHARED_VERTEX_H_
 #define _OPEN_SCENE_GRAPH_TOOLS_SHARED_VERTEX_H_
 
+#include "Usul/Config/Config.h"
+
 #include "OsgTools/Triangles/Triangle.h"
 
 #include <vector>

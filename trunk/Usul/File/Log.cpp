@@ -20,6 +20,8 @@
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Strings/Format.h"
 
+#include "Usul/Config/Config.h"
+
 using namespace Usul::File;
 
 USUL_IMPLEMENT_TYPE_ID ( Log );
@@ -102,6 +104,7 @@ void Log::_open()
 
 void Log::write ( const std::string &s, bool appendNewLine, bool prependEventCount )
 {
+#ifdef USUL_USE_LOG_FILES
   Guard guard ( this );
 
   // Make sure it's open.
@@ -120,4 +123,5 @@ void Log::write ( const std::string &s, bool appendNewLine, bool prependEventCou
 
   // Increment the event count.
   ++_count;
+#endif
 }

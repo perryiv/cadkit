@@ -36,10 +36,10 @@ public:
 
   /// Default Constructor.
   /// This is for Q_DECLARE_METATYPE.  Do not use.
-  DocumentProxy ();
+  DocumentProxy();
 
   /// Constructor.
-  DocumentProxy ( Document * doc );
+  DocumentProxy ( Document::RefPtr doc );
 
   /// Copy Constructor.
   DocumentProxy ( const DocumentProxy& rhs );
@@ -48,14 +48,15 @@ public:
   DocumentProxy& operator = ( const DocumentProxy &rhs );
 
   /// Destructor.
-  ~DocumentProxy ();
+  ~DocumentProxy();
 
   /// Get/Set the document.
-  Document*                getDocument();
-  void                     setDocument ( Document* document );
+  Document::RefPtr         getDocument() const;
+  void                     setDocument ( Document::RefPtr document );
 
 private:
-  Document* _document;
+
+  Document *_document;
 };
 
 }

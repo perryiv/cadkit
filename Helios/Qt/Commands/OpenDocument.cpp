@@ -99,7 +99,7 @@ OpenDocument::~OpenDocument()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OpenDocument::Job::Job ( Document *doc, const std::string &name, IUnknown *caller ) : 
+OpenDocument::Job::Job ( Document::RefPtr doc, const std::string &name, IUnknown::RefPtr caller ) : 
   OpenDocument::Job::BaseClass( caller ),
   _document ( doc ),
   _name     ( name ),
@@ -198,7 +198,7 @@ void OpenDocument::_startJob ( const std::string& file )
   // If the document is loaded, pop the windows of the document forward.
   if ( info.loaded )
   {
-    info.document->windowsForward ( );
+    info.document->windowsForward();
     return;
   }
 
@@ -206,7 +206,7 @@ void OpenDocument::_startJob ( const std::string& file )
   info.document->delegate ( info.delegate );
 
   // Create and add the job to the job manager.
-  Usul::Jobs::Manager::instance().addJob ( new OpenDocument::Job ( info.document.get(), file, this->caller() ) );
+  Usul::Jobs::Manager::instance().addJob ( Usul::Jobs::Job::RefPtr ( new OpenDocument::Job ( info.document, file, this->caller() ) ) );
 }
 
 

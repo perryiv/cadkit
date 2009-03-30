@@ -28,7 +28,6 @@
 #include "Usul/Errors/PureVirtualCall.h"
 #include "Usul/Errors/UnhandledException.h"
 #include "Usul/Exceptions/Exception.h"
-#include "Usul/Exceptions/Thrower.h"
 #include "Usul/File/Contents.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"

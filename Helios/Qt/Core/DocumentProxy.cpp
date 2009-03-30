@@ -10,6 +10,7 @@
 
 #include "Helios/Qt/Core/DocumentProxy.h"
 
+#include "Usul/Pointers/Functions.h"
 #include "Usul/Errors/Assert.h"
 
 using namespace CadKit::Helios::Core;
@@ -21,7 +22,7 @@ using namespace CadKit::Helios::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DocumentProxy::DocumentProxy () : 
+DocumentProxy::DocumentProxy() : 
   _document ( 0x0 )
 {
   USUL_ASSERT ( false );
@@ -34,9 +35,10 @@ DocumentProxy::DocumentProxy () :
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-DocumentProxy::DocumentProxy ( Document * doc ) : 
-  _document ( doc )
+DocumentProxy::DocumentProxy ( Document::RefPtr doc ) : 
+  _document ( doc.get() )
 {
+  Usul::Pointers::reference ( _document );
 }
 
 
@@ -49,6 +51,7 @@ DocumentProxy::DocumentProxy ( Document * doc ) :
 DocumentProxy::DocumentProxy ( const DocumentProxy& rhs ) :
   _document ( rhs._document )
 {
+  Usul::Pointers::reference ( _document );
 }
 
 
@@ -60,7 +63,7 @@ DocumentProxy::DocumentProxy ( const DocumentProxy& rhs ) :
 
 DocumentProxy& DocumentProxy::operator = ( const DocumentProxy &rhs )
 {
-  this->_document = rhs._document;
+  this->setDocument ( rhs.getDocument() );
   return *this;
 }
 
@@ -73,6 +76,7 @@ DocumentProxy& DocumentProxy::operator = ( const DocumentProxy &rhs )
 
 DocumentProxy::~DocumentProxy()
 {
+  Usul::Pointers::unreference ( _document );
   _document = 0x0;
 }
 
@@ -83,9 +87,9 @@ DocumentProxy::~DocumentProxy()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Documents::Document* DocumentProxy::getDocument()
+Usul::Documents::Document::RefPtr DocumentProxy::getDocument() const
 {
-  return _document;
+  return Usul::Documents::Document::RefPtr ( _document );
 }
 
 
@@ -95,7 +99,9 @@ Usul::Documents::Document* DocumentProxy::getDocument()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void DocumentProxy::setDocument ( Document* document )
+void DocumentProxy::setDocument ( Document::RefPtr document )
 {
-  _document = document;
+  Usul::Pointers::unreference ( _document );
+  _document = document.get();
+  Usul::Pointers::reference ( _document );
 }

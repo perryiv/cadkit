@@ -67,7 +67,7 @@ protected:
   {
   public:
     typedef Usul::Jobs::Job BaseClass;
-    Job ( Document *doc, const std::string &name, IUnknown *caller );
+    Job ( Document::RefPtr doc, const std::string &name, IUnknown::RefPtr caller );
   protected:
     virtual ~Job();
     virtual void _started();

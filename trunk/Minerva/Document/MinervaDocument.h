@@ -301,6 +301,9 @@ protected:
   /// Distributed functions.
   void                                     _connectToDistributedSession();
 
+  /// Destroy.
+  void                                     _destroy();
+
   /// Animate.
   void                                     _animate ( Usul::Interfaces::IUnknown *caller );
 
@@ -488,7 +491,6 @@ private:
   bool _allowSplit;
   bool _keepDetail;
   LogPtr _log;
-
   Minerva::Core::Navigator::RefPtr _navigator;
 
   SERIALIZE_XML_DEFINE_MAP;

@@ -236,10 +236,7 @@ MinervaDocument::~MinervaDocument()
   _receiver = 0x0;
 #endif
 
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_clear ), "1582439358" );
-
-  _root = 0x0;
-  _log = 0x0;
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_destroy ), "1582439358" );
 }
 
 
@@ -442,7 +439,7 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
 
     Guard guard ( this );
     _navigator->body ( this->activeBody() );
-    _navigator->projectionMatrix ( Usul::Interfaces::IProjectionMatrix::QueryPtr ( this ).get() );
+    _navigator->projectionMatrix ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
 
   // Reset all the log pointers.
@@ -492,6 +489,8 @@ void MinervaDocument::clear ( Unknown *caller )
 
 void MinervaDocument::_clear()
 {
+  Guard guard ( this );
+
   this->_connectToDistributedSession();
 
 #if USE_DISTRIBUTED == 1
@@ -535,6 +534,34 @@ void MinervaDocument::_clear()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Destroy this instance.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void MinervaDocument::_destroy()
+{
+  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &MinervaDocument::_clear ), "3972867384" );
+
+  // Set other members.
+  _layersMenu = 0x0;
+  _root = 0x0;
+  _camera = 0x0;
+  _balloon = 0x0;
+  _activeBody = 0x0;
+  _callback = 0x0;
+  _animateSettings = 0x0;
+  _global = 0x0;
+  _current = 0x0;
+  _timeSpans.clear();
+  _timeSpanMenu = 0x0;
+  _legend = 0x0;
+  _log = 0x0;
+  _navigator = 0x0;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Build the scene.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -549,7 +576,7 @@ osg::Node * MinervaDocument::buildScene ( Unknown *caller )
 
   // Set needed navigator data.
   _navigator->body ( this->activeBody() );
-  _navigator->projectionMatrix ( Usul::Interfaces::IProjectionMatrix::QueryPtr ( this ).get() );
+  _navigator->projectionMatrix ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   _navigator->home();
 
   osg::ref_ptr<osg::Group> group ( new osg::Group );

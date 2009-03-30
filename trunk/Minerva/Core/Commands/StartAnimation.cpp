@@ -25,7 +25,7 @@ USUL_FACTORY_REGISTER_CREATOR ( StartAnimation );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-StartAnimation::StartAnimation ( ) : 
+StartAnimation::StartAnimation() : 
   BaseClass( 0x0 )
 {
   this->text ( "Start Animation" );
@@ -62,7 +62,7 @@ StartAnimation::~StartAnimation()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StartAnimation::_execute ()
+void StartAnimation::_execute()
 {
   Minerva::Interfaces::IAnimationControl::QueryPtr control ( this->caller() );
 

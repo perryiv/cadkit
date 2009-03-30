@@ -149,7 +149,6 @@ Usul::Interfaces::IUnknown* RasterLayerOssim::clone() const
 void RasterLayerOssim::_destroy()
 {
   USUL_TRACE_SCOPE;
-
   Usul::Pointers::unreference ( _handler ); _handler = 0x0;
 }
 

@@ -217,6 +217,10 @@
 		<Filter
 			Name="Source"
 			>
+			<File
+				RelativePath="..\Config.h"
+				>
+			</File>
 			<Filter
 				Name="Core"
 				>

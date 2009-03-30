@@ -137,6 +137,6 @@ Usul::Interfaces::IUnknown* ChangeTimestepType::queryInterface( unsigned long ii
 bool ChangeTimestepType::updateCheck() const
 {
   Guard guard ( this );
-  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller() ) );
+  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller().get() ) );
   return ( ac.valid() ? _type == ac->timestepType() : false );
 }

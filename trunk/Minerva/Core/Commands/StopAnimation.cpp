@@ -25,7 +25,7 @@ USUL_FACTORY_REGISTER_CREATOR ( StopAnimation );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-StopAnimation::StopAnimation ( ) : 
+StopAnimation::StopAnimation() : 
   BaseClass( 0x0 )
 {
   this->text ( "Stop Animation" );
@@ -62,7 +62,7 @@ StopAnimation::~StopAnimation()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void StopAnimation::_execute ()
+void StopAnimation::_execute()
 {
   Minerva::Interfaces::IAnimationControl::QueryPtr control ( this->caller() );
 

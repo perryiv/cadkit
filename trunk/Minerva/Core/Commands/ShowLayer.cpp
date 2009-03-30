@@ -28,7 +28,7 @@ USUL_FACTORY_REGISTER_CREATOR ( ShowLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-ShowLayer::ShowLayer ( ) : 
+ShowLayer::ShowLayer() : 
   BaseClass( 0x0 )
 {
   this->_addMember ( "layer", _layer );
@@ -66,16 +66,16 @@ ShowLayer::~ShowLayer()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ShowLayer::_execute ()
+void ShowLayer::_execute()
 {
-  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().activeDocument () );
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().activeDocument() );
   
   // Hide the layer.
-  if ( _layer.valid () )
+  if ( _layer.valid() )
     _layer->showLayer ( true );
 
   // Dirty the scene.
-  if ( dirty.valid () )
+  if ( dirty.valid() )
     dirty->dirtyScene ( true );
   
   Usul::Interfaces::IDocument::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );

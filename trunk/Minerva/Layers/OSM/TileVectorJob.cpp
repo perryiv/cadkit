@@ -52,16 +52,17 @@ TileVectorJob::TileVectorJob ( Usul::Jobs::Manager* manager,
   _data(),
   _reAdd ( false )
 {
-  typedef Usul::Convert::Type<float,std::string> Converter;
+  typedef float FormatType;
+  typedef Usul::Convert::Type<FormatType,std::string> Converter;
 
   this->name ( Usul::Strings::format ( 
     "OSM Map Query: ", 
     _predicate.first, "=", _predicate.second, 
     "Extents: [", 
-      Converter::convert ( extents.minimum()[0] ), ", ", 
-      Converter::convert ( extents.minimum()[1] ), ", ", 
-      Converter::convert ( extents.maximum()[0] ), ", ", 
-      Converter::convert ( extents.maximum()[1] ), "]" ) );
+    Converter::convert ( static_cast<FormatType> ( extents.minimum()[0] ) ), ", ", 
+    Converter::convert ( static_cast<FormatType> ( extents.minimum()[1] ) ), ", ", 
+    Converter::convert ( static_cast<FormatType> ( extents.maximum()[0] ) ), ", ", 
+    Converter::convert ( static_cast<FormatType> ( extents.maximum()[1] ) ), "]" ) );
 
   // Check the predicate.  If a key or value is empty, use the wildcard (*).
   if ( _predicate.first.empty() )

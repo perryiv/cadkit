@@ -35,7 +35,7 @@ _passes ( passes )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RenderingPasses::~RenderingPasses ()
+RenderingPasses::~RenderingPasses()
 {
 }
 
@@ -46,11 +46,11 @@ RenderingPasses::~RenderingPasses ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RenderingPasses::_execute ()
+void RenderingPasses::_execute()
 {
-  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( this->caller () );
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( this->caller() );
 
-  if ( rp.valid () )
+  if ( rp.valid() )
     rp->renderingPasses ( _passes );
 }
 
@@ -61,10 +61,10 @@ void RenderingPasses::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool RenderingPasses::updateCheck () const
+bool RenderingPasses::updateCheck() const
 {
-  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
-  return rp.valid () ? _passes == rp->renderingPasses () : false;
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
+  return rp.valid() ? _passes == rp->renderingPasses() : false;
 }
 
 
@@ -74,8 +74,8 @@ bool RenderingPasses::updateCheck () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool RenderingPasses::updateEnable () const
+bool RenderingPasses::updateEnable() const
 {
-  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
-  return rp.valid ();
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
+  return rp.valid();
 }

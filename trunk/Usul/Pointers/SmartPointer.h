@@ -328,6 +328,7 @@ struct SmartPointer
 
 protected:
 
+
   /////////////////////////////////////////////////////////////////////////////
   //
   //  Set the internal pointer.
@@ -346,7 +347,7 @@ protected:
     }
 
     // Make a copy of the current one.
-    T *old = _p;
+    T *old ( _p );
 
     // Copy the given pointer.
     _p = p;

@@ -151,7 +151,7 @@ Manager::Documents Manager::create ( const std::string &ext, Unknown *caller, bo
       // If the document qualifies...
       if ( true == addMe )
       {
-        documentList.push_back ( doc.get() );
+        documentList.push_back ( DocumentPtr ( doc.get() ) );
       }
     }
   }

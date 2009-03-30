@@ -128,6 +128,24 @@ public:
 
     return *this;
   }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  //  Assignment from another query-pointer. 
+  //  This is needed so the compiler does not generate this function.
+  //
+  /////////////////////////////////////////////////////////////////////////////
+
+  template < class OldInterface_, class ConfigType_ >
+  QueryPointer &operator = ( QueryPointer < OldInterface_, ConfigType_ > &ptr )
+  {
+    // Set this instance from the result of the safe query (which may be null).
+    BaseClass::operator = ( static_cast<NewInterface *> 
+      ( ( ptr ) ? ptr->queryInterface ( NewInterface::IID ) : 0x0 ) );
+
+    return *this;
+  }
 };
 
 

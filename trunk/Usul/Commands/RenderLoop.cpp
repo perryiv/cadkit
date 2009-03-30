@@ -34,7 +34,7 @@ BaseClass ( caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RenderLoop::~RenderLoop ()
+RenderLoop::~RenderLoop()
 {
 }
 
@@ -45,12 +45,12 @@ RenderLoop::~RenderLoop ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void RenderLoop::_execute ()
+void RenderLoop::_execute()
 {
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller () );
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller() );
 
-  if ( rl.valid () )
-    rl->renderLoop ( !rl->renderLoop () );
+  if ( rl.valid() )
+    rl->renderLoop ( !rl->renderLoop() );
 }
 
 
@@ -60,10 +60,10 @@ void RenderLoop::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool RenderLoop::updateCheck () const
+bool RenderLoop::updateCheck() const
 {
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
-  return rl.valid () ? rl->renderLoop () : false;
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
+  return rl.valid() ? rl->renderLoop() : false;
 }
 
 
@@ -73,8 +73,8 @@ bool RenderLoop::updateCheck () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool RenderLoop::updateEnable () const
+bool RenderLoop::updateEnable() const
 {
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
-  return rl.valid ();
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
+  return rl.valid();
 }

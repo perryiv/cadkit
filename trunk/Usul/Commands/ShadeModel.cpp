@@ -60,8 +60,8 @@ void ShadeModel::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ShadeModel::updateCheck () const
+bool ShadeModel::updateCheck() const
 {
-  Usul::Interfaces::IShadeModel::QueryPtr sm ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  Usul::Interfaces::IShadeModel::QueryPtr sm ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
   return sm.valid () ? _mode == sm->shadeModel () : false;
 }

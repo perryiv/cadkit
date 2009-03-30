@@ -34,7 +34,7 @@ _mode ( mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-PolygonMode::~PolygonMode ()
+PolygonMode::~PolygonMode()
 {
 }
 
@@ -45,11 +45,11 @@ PolygonMode::~PolygonMode ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void PolygonMode::_execute ()
+void PolygonMode::_execute()
 {
-  Usul::Interfaces::IPolygonMode::QueryPtr pm ( this->caller () );
+  Usul::Interfaces::IPolygonMode::QueryPtr pm ( this->caller() );
 
-  if ( pm.valid () )
+  if ( pm.valid() )
     pm->polygonMode ( _mode );
 }
 
@@ -60,12 +60,12 @@ void PolygonMode::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool PolygonMode::updateCheck () const
+bool PolygonMode::updateCheck() const
 {
-  Usul::Interfaces::IPolygonMode::QueryPtr pm ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  Usul::Interfaces::IPolygonMode::QueryPtr pm ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
 
-  if ( pm.valid () )
-    return _mode == pm->polygonMode ();
+  if ( pm.valid() )
+    return _mode == pm->polygonMode();
 
   return false;
 }

@@ -29,12 +29,12 @@ public:
   RenderingPasses ( const std::string& name, unsigned int passes, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
-  virtual ~RenderingPasses ();
+  virtual ~RenderingPasses();
 
-  virtual void _execute ();
+  virtual void _execute();
 
-  virtual bool updateEnable () const;
-  virtual bool updateCheck () const;
+  virtual bool updateEnable() const;
+  virtual bool updateCheck() const;
 
 private:
   unsigned int _passes;

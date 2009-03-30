@@ -428,7 +428,8 @@ namespace Usul {
 namespace Jobs {
 namespace Helper
 {
-  template < class Listeners, class MutexType > void removeListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  template < class Listeners, class MutexType >
+  inline void removeListener ( Listeners &listeners, Usul::Interfaces::IUnknown::RefPtr caller, MutexType &mutex )
   {
     typedef typename Listeners::value_type::element_type InterfaceType;
     typedef Usul::Threads::Guard<MutexType> Guard;
@@ -440,7 +441,7 @@ namespace Helper
     if ( true == listener.valid() )
     {
       Guard guard ( mutex );
-      typename InterfaceType::RefPtr value ( listener.get() );
+      typename InterfaceType::RefPtr value ( listener );
       Itr end ( std::remove ( listeners.begin(), listeners.end(), value ) );
       listeners.erase ( end, listeners.end() );
     }
@@ -460,7 +461,8 @@ namespace Usul {
 namespace Jobs {
 namespace Helper
 {
-  template < class Listeners, class MutexType > void addListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  template < class Listeners, class MutexType >
+  inline void addListener ( Listeners &listeners, Usul::Interfaces::IUnknown::RefPtr caller, MutexType &mutex )
   {
     typedef typename Listeners::value_type::element_type InterfaceType;
     typedef Usul::Threads::Guard<MutexType> Guard;
@@ -476,7 +478,7 @@ namespace Helper
     {
       // Block while we add the listener.
       Guard guard ( mutex );
-      listeners.push_back ( typename InterfaceType::RefPtr ( listener.get() ) );
+      listeners.push_back ( typename InterfaceType::RefPtr ( listener ) );
     }
   }
 }
@@ -490,7 +492,7 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::addJobFinishedListener ( Usul::Interfaces::IUnknown *caller )
+void Manager::addJobFinishedListener ( Usul::Interfaces::IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Helper::addListener ( _jobFinishedListeners, caller, this->mutex() );
@@ -503,7 +505,7 @@ void Manager::addJobFinishedListener ( Usul::Interfaces::IUnknown *caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Manager::removeJobFinishedListener ( Usul::Interfaces::IUnknown *caller )
+void Manager::removeJobFinishedListener ( Usul::Interfaces::IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   Helper::removeListener ( _jobFinishedListeners, caller, this->mutex() );

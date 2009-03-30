@@ -16,6 +16,7 @@
 #ifndef _USUL_COMPONENTS_FACTORY_CLASS_H_
 #define _USUL_COMPONENTS_FACTORY_CLASS_H_
 
+#include "Usul/Config/Config.h"
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IClassFactory.h"
 
@@ -42,9 +43,9 @@ public:
   }
 
   /// Reference.
-  void ref ()
+  void ref()
   {
-    BaseClass::ref ();
+    BaseClass::ref();
   }
 
   /// Dereference.

@@ -32,11 +32,11 @@ public:
   ShadeModel ( const std::string& name, Mode mode, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
-  virtual ~ShadeModel ();
+  virtual ~ShadeModel();
 
-  virtual void _execute ();
+  virtual void _execute();
 
-  virtual bool updateCheck () const;
+  virtual bool updateCheck() const;
 
 private:
   Mode _mode;

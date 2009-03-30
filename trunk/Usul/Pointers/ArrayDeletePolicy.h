@@ -16,6 +16,7 @@
 #ifndef _USUL_POINTERS_ARRAY_DELETE_POLICY_H_
 #define _USUL_POINTERS_ARRAY_DELETE_POLICY_H_
 
+#include "Usul/Config/Config.h"
 #include "Usul/Pointers/ArrayDelete.h"
 
 

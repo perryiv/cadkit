@@ -150,9 +150,6 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
   
   // Make new extents.
   Extents e;
-
-  //osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array );
-  //normals->reserve ( sampledPoints.size() );
   
   if ( planet.valid() )
   {
@@ -169,9 +166,6 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
       Usul::Math::Vec3d point;
       planet->convertToPlanet ( v, point );
       convertedPoints.push_back ( point );
-
-      //point.normalize();
-      //normals->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
     }
   }
   else
@@ -207,7 +201,6 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
     osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
     colors->reserve ( vertices->size() );
     colors->assign ( vertices->size(), osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
-    //colors->push_back ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
     geometry->setColorArray( colors.get() );
     geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
   }

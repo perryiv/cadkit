@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/OSM/XAPIMapQuery.h"
-#include "Minerva/Layers/OSM/Functions.h"
+#include "Minerva/Layers/OSM/Parser.h"
 
 #include "Minerva/Core/Utilities/Download.h"
 
@@ -63,34 +63,6 @@ XAPIMapQuery::~XAPIMapQuery()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Gets the nodes and ways.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void XAPIMapQuery::makeNodesAndWaysQuery ( Nodes& nodes, Ways& ways )
-{
-  // Get the area of the extents.  XAPI only allows requests of a 100 square degrees.
-  const double area ( ( _extents.maxLon() - _extents.minLon() ) * ( _extents.maxLat() - _extents.minLat() ) );
-  if ( area > 100.0 )
-    return;
-
-  // Build the string for the request.
-  const std::string request ( this->_buildRequestUrl ( "*" ) );
-
-  // Download to a temp file.
-  const std::string filename ( Usul::File::Temp::file() );
-  Usul::Scope::RemoveFile remove ( filename );
-
-  if ( Minerva::Core::Utilities::downloadToFile ( request, filename ) )
-  {
-    // Parse modes and ways.
-    Minerva::Layers::OSM::parseNodesAndWays ( filename, nodes, ways );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Gets the nodes.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,7 +94,7 @@ void XAPIMapQuery::makeNodesQuery ( Nodes& nodes )
   {
     // Parse modes and ways.
     Ways ways;
-    Minerva::Layers::OSM::parseNodesAndWays ( filename, nodes, ways );
+    Parser::parseNodesAndWays ( filename, nodes, ways );
 
     if ( _cache.valid() )
     {
@@ -138,7 +110,7 @@ void XAPIMapQuery::makeNodesQuery ( Nodes& nodes )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void XAPIMapQuery::makeWaysQuery ( Ways& ways )
+void XAPIMapQuery::makeLinesQuery ( Lines& lines )
 {
   // Get the area of the extents.  XAPI only allows requests of a 100 square degrees.
   const double area ( ( _extents.maxLon() - _extents.minLon() ) * ( _extents.maxLat() - _extents.minLat() ) );
@@ -148,9 +120,9 @@ void XAPIMapQuery::makeWaysQuery ( Ways& ways )
   std::string cacheKey ( _predicate.first + "_" + _predicate.second );
   std::replace ( cacheKey.begin(), cacheKey.end(), '*', '_' );
 
-  if ( _cache.valid() && _cache->hasWayData ( cacheKey, _extents ) )
+  if ( _cache.valid() && _cache->hasLineData ( cacheKey, _extents ) )
   {
-    _cache->getWayData ( cacheKey, _extents, ways );
+    _cache->getLineData ( cacheKey, _extents, lines );
     return;
   }
 
@@ -160,16 +132,28 @@ void XAPIMapQuery::makeWaysQuery ( Ways& ways )
   // Download to a temp file.
   const std::string filename ( Usul::File::Temp::file() );
   Usul::Scope::RemoveFile remove ( filename );
+  const bool success ( Minerva::Core::Utilities::downloadToFile ( request, filename ) );
 
-  if ( Minerva::Core::Utilities::downloadToFile ( request, filename ) )
+  if ( success )
   {
     // Parse modes and ways.
     Nodes nodes;
-    Minerva::Layers::OSM::parseNodesAndWays ( filename, nodes, ways );
+    Ways ways;
+    Parser::parseNodesAndWays ( filename, nodes, ways );
+
+    lines.reserve ( ways.size() );
+    for ( Ways::const_iterator iter = ways.begin(); iter != ways.end(); ++iter )
+    {
+      OSMWayPtr way ( *iter );
+      if ( way.valid() )
+      {
+        lines.push_back ( LineString::create ( way ) );
+      }
+    }
 
     if ( _cache.valid() )
     {
-      _cache->addWayData ( cacheKey, _extents, ways );
+      _cache->addLineData ( cacheKey, _extents, lines );
     }
   }
 }

@@ -15,8 +15,8 @@
 
 #include "Minerva/Layers/OSM/CityNameLayer.h"
 #include "Minerva/Layers/OSM/TileVectorJob.h"
-#include "Minerva/Layers/OSM/XAPIMapQuery.h"
 #include "Minerva/Layers/OSM/Functions.h"
+#include "Minerva/Layers/OSM/Parser.h"
 
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Point.h"
@@ -36,12 +36,9 @@ USUL_FACTORY_REGISTER_CREATOR ( CityNameLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CityNameLayer::CityNameLayer() : BaseClass(),
-  _cache ( 0x0 )
+CityNameLayer::CityNameLayer() : BaseClass()
 {
-  const std::string filename ( Usul::Strings::format ( Usul::User::Directory::program ( true ), "city_names.db" ) );
-  CadKit::Database::SQLite::Connection::RefPtr connection ( new CadKit::Database::SQLite::Connection ( filename ) );
-  _cache = new Cache ( connection );
+  this->_initializeCache ( "city_names" );
 
   /// Possible place values: http://wiki.openstreetmap.org/wiki/Key:place
   this->addRequest ( 5, Predicate ( "place", "city" ) );
@@ -71,9 +68,16 @@ class CityNameJob : public TileVectorJob
 public:
   typedef TileVectorJob BaseClass;
 
-  CityNameJob ( Cache::RefPtr cache, const std::string& url, const Extents& extents, const Predicate& predicate ) : 
-    BaseClass ( cache, url, extents, predicate )
+  CityNameJob ( Usul::Jobs::Manager* manager, 
+    Usul::Jobs::Manager* downloadManager,
+    Cache::RefPtr cache, 
+    const std::string& url, 
+    const Extents& extents, 
+    unsigned int level,
+    const Predicate& predicate ) : 
+    BaseClass ( manager, downloadManager, cache, url, extents, predicate )
   {
+    this->priority ( static_cast<int> ( level ) );
   }
 
 protected:
@@ -82,14 +86,46 @@ protected:
   {
   }
 
-  virtual void _started()
+  /// Make the request.  Check the cache first.
+  void _makeRequest()
   {
-    XAPIMapQuery query ( _cache, _url, _predicate, _extents );
-  
-    // Get modes and ways.
-    Nodes nodes;
-    query.makeNodesQuery ( nodes );
+    std::string cacheKey ( this->cacheKey() );
+    Cache::RefPtr cache ( this->cache() );
 
+    bool isCached ( cache.valid() && cache->hasNodeData ( cacheKey, this->extents() ) );
+    if ( isCached )
+    {
+      Nodes nodes;
+      cache->getNodeData ( cacheKey, this->extents(), nodes );
+      this->_buildDataObjects ( nodes );
+
+      return;
+    }
+
+    this->_startDownload ( this->_buildRequestUrl ( "node" ) );
+  }
+
+
+  /// The downloading has finished.
+  void _downloadFinished ( const std::string& filename )
+  {
+    // Parse modes and ways.
+    Nodes nodes;
+    Ways ways;
+    Parser::parseNodesAndWays ( filename, nodes, ways );
+
+    Cache::RefPtr cache ( this->cache() );
+    std::string cacheKey ( this->cacheKey() );
+    if ( cache.valid() )
+    {
+      cache->addNodeData ( cacheKey, this->extents(), nodes );
+    }
+
+    this->_buildDataObjects ( nodes );
+  }
+  
+  void _buildDataObjects ( const Nodes& nodes )
+  {
     // Add all the nodes.
     for ( Nodes::const_iterator iter = nodes.begin(); iter != nodes.end(); ++iter )
     {
@@ -114,7 +150,7 @@ protected:
         object->showLabel ( true );
 
         Usul::Interfaces::IUnknown::QueryPtr unknown ( object );
-        _data.push_back ( unknown );
+        this->_addData ( unknown );
       }
     }
   }
@@ -132,7 +168,8 @@ CityNameLayer::JobPtr CityNameLayer::_launchJob (
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
+    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return new CityNameJob ( _cache, this->url(), extents, predicate );
+  return new CityNameJob ( manager, downloadManager, this->_getCache(), this->url(), extents, level, predicate );
 }

@@ -18,10 +18,13 @@
 #define __MINERVA_LAYERS_OPEN_STREET_MAP_X_API_H__
 
 #include "Minerva/Layers/OSM/Common.h"
+#include "Minerva/Layers/OSM/Cache.h"
 
 #include "Minerva/Core/Data/Container.h"
 
-#include "Usul/Jobs/Manager.h"
+#include "Usul/Jobs/Job.h"
+
+namespace Usul { namespace Jobs { class Manager; } }
 
 namespace Minerva {
 namespace Layers {
@@ -67,17 +70,26 @@ protected:
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
+    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller ) = 0;
 
   /// Get all the predicates to use at a given level.
   void _getAllPredicates ( unsigned int level, Predicates& predicates ) const;
 
+  /// Initialize the cache.
+  void _initializeCache ( const std::string& name );
+
+  /// Get the cache.
+  Cache::RefPtr _getCache() const;
+
 private:
   
   typedef std::map<unsigned int, Predicates> RequestMap;
 
+  Cache::RefPtr _cache;
   std::string _url;
   RequestMap _requestMap;
+  Usul::Jobs::Manager *_downloadManager;
 
   SERIALIZE_XML_CLASS_NAME ( OpenStreetMapXAPI );
 };

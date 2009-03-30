@@ -19,6 +19,7 @@
 
 #include "Minerva/Layers/OSM/Cache.h"
 #include "Minerva/Layers/OSM/Common.h"
+#include "Minerva/Layers/OSM/LineString.h"
 
 namespace Minerva {
 namespace Layers {
@@ -28,12 +29,14 @@ namespace OSM {
 class XAPIMapQuery
 {
 public:
+
+  typedef std::vector<LineString::RefPtr> Lines;
+
   XAPIMapQuery ( Cache::RefPtr cache, const std::string& url, const Predicate& pred, const Extents& extents );
   ~XAPIMapQuery();
 
-  void makeNodesAndWaysQuery ( Nodes& nodes, Ways& ways );
   void makeNodesQuery ( Nodes& nodes );
-  void makeWaysQuery ( Ways& ways );
+  void makeLinesQuery ( Lines& lines );
 
 private:
 

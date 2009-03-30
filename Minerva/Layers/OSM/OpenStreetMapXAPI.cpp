@@ -18,6 +18,8 @@
 
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Safe.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/User/Directory.h"
 
 using namespace Minerva::Layers::OSM;
 
@@ -29,8 +31,10 @@ using namespace Minerva::Layers::OSM;
 ///////////////////////////////////////////////////////////////////////////////
 
 OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
+  _cache ( 0x0 ),
   _url ( "http://osmxapi.hypercube.telascience.org" ), // Default url.
-  _requestMap()
+  _requestMap(),
+  _downloadManager ( new Usul::Jobs::Manager ( "OSM Download Manager", 1, true ) )
 {
   this->extents ( Extents ( -180, -90, 180, 90 ) );
 }
@@ -44,6 +48,8 @@ OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
 
 OpenStreetMapXAPI::~OpenStreetMapXAPI()
 {
+  delete _downloadManager;
+  _downloadManager = 0x0;
 }
 
 
@@ -97,7 +103,7 @@ OpenStreetMapXAPI::Jobs OpenStreetMapXAPI::launchVectorJobs (
   // Create a job for each predicate.
   for ( Predicates::const_iterator iter = predicates.begin(); iter != predicates.end(); ++iter )
   {
-    JobPtr job ( this->_launchJob ( *iter, Extents ( minLon, minLat, maxLon, maxLat ), level, manager, caller ) );
+    JobPtr job ( this->_launchJob ( *iter, Extents ( minLon, minLat, maxLon, maxLat ), level, manager, _downloadManager, caller ) );
     jobs.push_back ( Usul::Interfaces::IUnknown::QueryPtr ( job ) );
 
     manager->addJob ( job.get() );
@@ -155,4 +161,33 @@ void OpenStreetMapXAPI::addRequest ( unsigned int level, const Predicate& predic
 {
   Guard guard ( this );
   _requestMap[level].push_back ( predicate );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Initialize the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenStreetMapXAPI::_initializeCache ( const std::string& name )
+{
+  const std::string filename ( Usul::Strings::format ( Usul::User::Directory::program ( true ), name, ".db" ) );
+  CadKit::Database::SQLite::Connection::RefPtr connection ( new CadKit::Database::SQLite::Connection ( filename ) );
+
+  Guard guard ( this );
+  _cache = new Cache ( connection );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the cache.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+Cache::RefPtr OpenStreetMapXAPI::_getCache() const
+{
+  Guard guard ( this );
+  return _cache;
 }

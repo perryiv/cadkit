@@ -16,6 +16,7 @@
 #include "Minerva/Layers/OSM/Common.h"
 #include "Minerva/Layers/OSM/Node.h"
 #include "Minerva/Layers/OSM/Way.h"
+#include "Minerva/Layers/OSM/LineString.h"
 
 #include "Database/SQLite/Connection.h"
 
@@ -32,6 +33,7 @@ public:
 
   typedef Usul::Base::Object BaseClass;
   typedef Minerva::Layers::OSM::Object OSMObject;
+  typedef std::vector<LineString::RefPtr> Lines;
 
   USUL_DECLARE_REF_POINTERS ( Cache );
 
@@ -41,9 +43,9 @@ public:
   void getNodeData ( const std::string& key, const Extents& extents, Nodes& nodes ) const;
   bool hasNodeData ( const std::string& key, const Extents& extents ) const;
 
-  void addWayData ( const std::string& key, const Extents& extents, const Ways& ways );
-  void getWayData ( const std::string& key, const Extents& extents, Ways& ways ) const;
-  bool hasWayData ( const std::string& key, const Extents& extents ) const;
+  void addLineData ( const std::string& key, const Extents& extents, const Lines& line );
+  void getLineData ( const std::string& key, const Extents& extents, Lines& lines ) const;
+  bool hasLineData ( const std::string& key, const Extents& extents ) const;
 
 protected:
 
@@ -52,13 +54,11 @@ protected:
   void _addNodeData ( const std::string& key, const Extents& extents, const Nodes& nodes );
   Node* _createNode ( CadKit::Database::SQLite::Result& result ) const;
 
-  void _addWay ( const std::string& key, const Extents& extents, const Way& way );
-  Way* _createWay ( Way::IdType id ) const;
-
   void _createTagsTable ( const std::string& tableName );
   void _addTags ( const std::string& tableName, OSMObject::IdType id, const OSMObject::Tags& tags );
   void _getTags ( const std::string& tableName, OSMObject::IdType id, OSMObject::Tags& tags ) const;
 
+  static std::string _createLineText ( const LineString::Vertices& vertices );
   static std::string _createPointText ( const Node::Location& location );
   static std::string _createMBRText ( const Extents& extents );
 

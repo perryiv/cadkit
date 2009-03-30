@@ -9,28 +9,37 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Helper functions to parse xml and create DataObjects.
+//  Class to parse xml.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __MINERVA_LAYERS_OPEN_STREET_MAP_FUNCTIONS_H__
-#define __MINERVA_LAYERS_OPEN_STREET_MAP_FUNCTIONS_H__
+#ifndef __MINERVA_LAYERS_OPEN_STREET_MAP_PARSER_H__
+#define __MINERVA_LAYERS_OPEN_STREET_MAP_PARSER_H__
 
 #include "Minerva/Layers/OSM/Common.h"
 
 #include <string>
 
+namespace XmlTree { class Node; }
+
 namespace Minerva {
 namespace Layers {
 namespace OSM {
 
-// Create a data object.
-DataObject*          createForAllNodes ( const Nodes& nodes );
-DataObject*          createForNode ( const Minerva::Layers::OSM::Node& node );
-DataObject*          createForWay  ( const Minerva::Layers::OSM::Way&  way  );
+class Parser
+{
+public:
+
+  // Parse the xml into ways and nodes.
+  static void    parseNodesAndWays ( const std::string& filename, Nodes& nodes, Ways& ways );
+  static void    parseNodesAndWays ( const XmlTree::Node& node, Nodes& nodes, Ways& ways );
+
+  static Extents parseExtents ( const XmlTree::Node& node );
+};
+
 
 }
 }
 }
 
-#endif // __MINERVA_LAYERS_OPEN_STREET_MAP_FUNCTIONS_H__
+#endif // __MINERVA_LAYERS_OPEN_STREET_MAP_PARSER_H__

@@ -45,7 +45,8 @@ USUL_IMPLEMENT_TYPE_ID ( Line );
 Line::Line() : BaseClass(),
   _line(),
   _tessellate ( false ),
-  _lineStyle ( 0x0 )
+  _lineStyle ( 0x0 ),
+  _useShader ( false )
 {
   // Default render bin.
   this->renderBin ( 3 );
@@ -149,6 +150,9 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
   
   // Make new extents.
   Extents e;
+
+  //osg::ref_ptr<osg::Vec3Array> normals ( new osg::Vec3Array );
+  //normals->reserve ( sampledPoints.size() );
   
   if ( planet.valid() )
   {
@@ -165,6 +169,9 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
       Usul::Math::Vec3d point;
       planet->convertToPlanet ( v, point );
       convertedPoints.push_back ( point );
+
+      //point.normalize();
+      //normals->push_back ( osg::Vec3 ( point[0], point[1], point[2] ) );
     }
   }
   else
@@ -194,24 +201,29 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
   // Set the vertices.
   geometry->setVertexArray ( vertices.get() );
 
-  // Set the colors.
-  osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-  colors->push_back ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
-  geometry->setColorArray( colors.get() );
-  geometry->setColorBinding( osg::Geometry::BIND_OVERALL );
-  
-  // Get the state set.
-  osg::ref_ptr < osg::StateSet > ss ( geometry->getOrCreateStateSet() );
-  
-  // Set needed state.
-  this->_setState ( ss.get() );
-  
+  if ( false == this->useShader() )
+  {
+    // Set the colors.
+    osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
+    colors->reserve ( vertices->size() );
+    colors->assign ( vertices->size(), osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
+    //colors->push_back ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
+    geometry->setColorArray( colors.get() );
+    geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
+  }
+    
   // Set our new extents.
   this->extents ( e );
   
   // Make the geode.
   osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
   geode->addDrawable ( geometry.get() );
+
+  // Get the state set.
+  osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet() );
+  
+  // Set needed state.
+  this->_setState ( ss.get(), color );
 
   // Make the MatrixTransform.
   osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
@@ -224,11 +236,38 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Simple shaders to work around problems in per-tile lighting issues.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Detail
+{
+  static const char* VERTEX_SHADER_SOURCE = 
+  { 
+    "void main(void)\n"
+    "{\n"
+    "   gl_Position = ftransform();\n"
+    "}\n"
+  };
+
+  static const char* FRAGMENT_SHADER_SOURCE = 
+  {
+    "uniform vec4 Color;\n"
+    "void main(void)\n"
+    "{\n"
+    "   gl_FragColor = vec4( Color );\n"
+    "}\n"
+  };
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Set proper state.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Line::_setState ( osg::StateSet* ss ) const
+void Line::_setState ( osg::StateSet* ss, const Color& color ) const
 {
   // Return now if state isn't valid.
   if ( 0x0 == ss )
@@ -238,22 +277,33 @@ void Line::_setState ( osg::StateSet* ss ) const
   OsgTools::State::StateSet::setLighting  ( ss, false );
   OsgTools::State::StateSet::setLineWidth ( ss, this->width() );
   
-  // Set depth parameters.
-  osg::ref_ptr<osg::Depth> depth ( new osg::Depth ( osg::Depth::LEQUAL, 0.0, 1.0, false ) );
-  ss->setAttributeAndModes ( depth.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  
-  // Set the line parameters.
-  ss->setMode ( GL_LINE_SMOOTH, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  ss->setMode ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  
-  // Add a blend function.
-  osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
-  ss->setAttributeAndModes ( blend.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  
-  // Set the hint.
-  osg::ref_ptr<osg::Hint> hint ( new osg::Hint ( GL_LINE_SMOOTH_HINT, GL_NICEST ) );
-  ss->setAttributeAndModes ( hint.get(), osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
-  
+  const osg::StateAttribute::GLModeValue on ( osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::ON );
+  const osg::StateAttribute::GLModeValue off ( osg::StateAttribute::OVERRIDE | osg::StateAttribute::PROTECTED | osg::StateAttribute::OFF );
+
+  if ( this->useShader() )
+  {
+    osg::ref_ptr< osg::Program > program ( new osg::Program ); 
+    ss->setAttribute ( program.get() );
+    ss->addUniform ( new osg::Uniform ( "Color", osg::Vec4 ( color[0], color[1], color[2], color[3] ) ) );
+
+    program->addShader ( new osg::Shader ( osg::Shader::VERTEX, Detail::VERTEX_SHADER_SOURCE ) );
+    program->addShader ( new osg::Shader ( osg::Shader::FRAGMENT, Detail::FRAGMENT_SHADER_SOURCE )  );
+  }
+  else
+  {
+    // Set the line parameters.
+    ss->setMode ( GL_LINE_SMOOTH, on );
+    ss->setMode ( GL_BLEND, on );
+    
+    // Add a blend function.
+    osg::ref_ptr<osg::BlendFunc> blend ( new osg::BlendFunc ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+    ss->setAttributeAndModes ( blend.get(), on );
+    
+    // Set the hint.
+    osg::ref_ptr<osg::Hint> hint ( new osg::Hint ( GL_LINE_SMOOTH_HINT, GL_NICEST ) );
+    ss->setAttributeAndModes ( hint.get(), on );
+  }
+
   // Set the render bin.
   ss->setRenderBinDetails ( this->renderBin(), "RenderBin" );
 }
@@ -379,4 +429,32 @@ void Line::intersectNotify ( double x, double y, double z, double lon, double la
   {
     answer.first.push_back ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get flag to use a shader.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Line::useShader() const
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  return _useShader;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set flag to use a shader.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Line::useShader ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _useShader = b;
 }

@@ -60,6 +60,10 @@ public:
   
   /// Get the width.
   float                 width() const;
+
+  /// Get/set flag to use a shader.
+  bool                  useShader() const;
+  void                  useShader ( bool b );
   
 protected:
 
@@ -71,11 +75,12 @@ protected:
 private:
   
   // Set proper state.
-  void                  _setState ( osg::StateSet* ) const;
+  void                  _setState ( osg::StateSet*, const Color& color ) const;
 
   Vertices   _line;
   bool       _tessellate;
   LineStyle::RefPtr _lineStyle;
+  bool _useShader;
 };
 
 }

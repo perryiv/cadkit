@@ -19,10 +19,61 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Strings/Format.h"
+#include "Usul/Strings/Split.h"
 #include "Usul/User/Directory.h"
 
 using namespace Minerva::Layers::OSM;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  String conversion for Predicate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Usul
+{ 
+  namespace Convert
+  {
+    template <> struct Type < Predicate, std::string >
+    {
+      typedef Type < Predicate, std::string > ThisType;
+      static void convert ( Predicate from, std::string &to )
+      {
+        to = Usul::Strings::format ( from.first, "=", from.second );
+      }
+      static std::string convert ( Predicate from )
+      {
+        std::string to;
+        ThisType::convert ( from, to );
+        return to;
+      }
+    };
+    template <> struct Type < std::string, Predicate >
+    {
+      typedef Type < std::string, Predicate > ThisType;
+      static void convert ( const std::string &from, Predicate &to )
+      {
+        std::vector<std::string> parts;
+        Usul::Strings::split ( from, "=", false, parts );
+
+        if ( 2 == parts.size() )
+        {
+          to.first = parts[0];
+          to.second = parts[1];
+        }
+      }
+      static Predicate convert ( const std::string &from )
+      {
+        Predicate to;
+        ThisType::convert ( from, to );
+        return to;
+      }
+    };
+  }
+}
+
+
+SERIALIZE_XML_DECLARE_TYPE_WRAPPER_CONTAINER ( std::vector, Predicate );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,10 +84,11 @@ using namespace Minerva::Layers::OSM;
 OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
   _cache ( 0x0 ),
   _url ( "http://osmxapi.hypercube.telascience.org" ), // Default url.
-  _requestMap(),
-  _downloadManager ( new Usul::Jobs::Manager ( "OSM Download Manager", 1, true ) )
+  _requestMap()
 {
   this->extents ( Extents ( -180, -90, 180, 90 ) );
+
+  this->_addMember ( "request_map", _requestMap );
 }
 
 
@@ -48,8 +100,6 @@ OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
 
 OpenStreetMapXAPI::~OpenStreetMapXAPI()
 {
-  delete _downloadManager;
-  _downloadManager = 0x0;
 }
 
 
@@ -103,7 +153,7 @@ OpenStreetMapXAPI::Jobs OpenStreetMapXAPI::launchVectorJobs (
   // Create a job for each predicate.
   for ( Predicates::const_iterator iter = predicates.begin(); iter != predicates.end(); ++iter )
   {
-    JobPtr job ( this->_launchJob ( *iter, Extents ( minLon, minLat, maxLon, maxLat ), level, manager, _downloadManager, caller ) );
+    JobPtr job ( this->_launchJob ( *iter, Extents ( minLon, minLat, maxLon, maxLat ), level, manager, caller ) );
     jobs.push_back ( Usul::Interfaces::IUnknown::QueryPtr ( job ) );
 
     manager->addJob ( job.get() );

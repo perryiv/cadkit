@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/OSM/LineJob.h"
+#include "Minerva/Layers/OSM/XAPIMapQuery.h"
 
 #include "Minerva/Layers/OSM/Parser.h"
 
@@ -29,8 +30,15 @@ using namespace Minerva::Layers::OSM;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-LineJob::LineJob ( Usul::Jobs::Manager* manager, Usul::Jobs::Manager* downloadManager, Cache::RefPtr cache, const std::string& url, const Extents& extents, unsigned int level, const Predicate& predicate ) : 
-  BaseClass ( manager, downloadManager, cache, url, extents, predicate )
+LineJob::LineJob ( Usul::Jobs::Manager* manager, 
+                  Cache::RefPtr cache, 
+                  const std::string& url, 
+                  const Extents& extents, 
+                  unsigned int level, 
+                  const Predicate& predicate,
+                  Usul::Interfaces::IUnknown::RefPtr caller ) : 
+  BaseClass ( manager, cache, url, extents, predicate ),
+  _caller ( caller )
 {
   this->priority ( static_cast<int> ( level ) );
 }
@@ -53,55 +61,12 @@ LineJob::~LineJob()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void LineJob::_makeRequest()
+void LineJob::_started()
 {
-  std::string cacheKey ( this->cacheKey() );
-  Cache::RefPtr cache ( this->cache() );
-
-  bool isCached ( cache.valid() && cache->hasLineData ( cacheKey, this->extents() ) );
-  if ( isCached )
-  {
-    Lines lines;
-    cache->getLineData ( cacheKey, this->extents(), lines );
-    this->_buildDataObjects ( lines );
-
-    return;
-  }
-
-  this->_startDownload ( this->_buildRequestUrl ( "way" ) );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  The downloading has finished.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void LineJob::_downloadFinished ( const std::string& filename )
-{
-  // Parse modes and ways.
-  Nodes nodes;
-  Ways ways;
-  Parser::parseNodesAndWays ( filename, nodes, ways );
+  XAPIMapQuery query ( this->_makeQuery() );
 
   Lines lines;
-  lines.reserve ( ways.size() );
-  for ( Ways::const_iterator iter = ways.begin(); iter != ways.end(); ++iter )
-  {
-    OSMWayPtr way ( *iter );
-    if ( way.valid() )
-    {
-      lines.push_back ( LineString::create ( way ) );
-    }
-  }
-
-  Cache::RefPtr cache ( this->cache() );
-  std::string cacheKey ( this->cacheKey() );
-  if ( cache.valid() )
-  {
-    cache->addLineData ( cacheKey, this->extents(), lines );
-  }
+  query.makeLinesQuery ( lines );
 
   this->_buildDataObjects ( lines );
 }
@@ -128,8 +93,9 @@ void LineJob::_buildDataObjects ( const Lines& lines )
       typedef Minerva::Core::Data::LineStyle LineStyle;
 
       DataObject::RefPtr object ( new DataObject );
-      object->addGeometry ( line->buildGeometry ( LineStyle::create ( Usul::Math::Vec4f ( 1.0, 1.0, 0.0, 1.0 ), 2.0 ) ) );
+      object->addGeometry ( line->buildGeometry ( LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 1.0f ), 2.0 ) ) );
       object->name ( Usul::Strings::format ( line->tag<std::string> ( "ref" ) ) );
+      object->preBuildScene ( _caller );
 
       Usul::Interfaces::IUnknown::QueryPtr unknown ( object );
       this->_addData ( unknown );

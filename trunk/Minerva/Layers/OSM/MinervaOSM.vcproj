@@ -247,6 +247,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DownloadJob.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DownloadJob.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Export.h"
 				>
 			</File>
@@ -256,6 +264,22 @@
 			</File>
 			<File
 				RelativePath=".\Functions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LineJob.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LineJob.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LineString.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LineString.h"
 				>
 			</File>
 			<File
@@ -288,6 +312,14 @@
 			</File>
 			<File
 				RelativePath=".\OpenStreetMapXAPI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Parser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Parser.h"
 				>
 			</File>
 			<File

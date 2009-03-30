@@ -29,24 +29,25 @@ public:
 
   LineJob ( 
     Usul::Jobs::Manager* manager, 
-    Usul::Jobs::Manager* downloadManager, 
     Cache::RefPtr cache, 
     const std::string& url, 
     const Extents& extents, 
     unsigned int level,
-    const Predicate& predicate );
+    const Predicate& predicate,
+    Usul::Interfaces::IUnknown::RefPtr caller );
 
 protected:
 
   virtual ~LineJob();
 
   /// Make the request.  Check the cache first.
-  virtual void _makeRequest();
-
-  /// The downloading has finished.
-  virtual void _downloadFinished ( const std::string& filename );
+  virtual void _started();
 
   void _buildDataObjects ( const Lines& lines );
+
+private:
+
+  Usul::Interfaces::IUnknown::RefPtr _caller;
 };
 
 }

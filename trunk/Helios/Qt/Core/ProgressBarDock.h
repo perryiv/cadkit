@@ -75,7 +75,7 @@ private:
 
     ProgressBar ();
 
-    void ref ();
+    void ref();
     void unref ( bool allowDeletion = true );
 
     Usul::Interfaces::IUnknown* queryInterface ( unsigned long iid );
@@ -90,7 +90,8 @@ private:
     void     setProgressBar ( QProgressBar * );
 
   protected:
-    virtual ~ProgressBar ();
+
+    virtual ~ProgressBar();
 
     virtual void showProgressBar();
     virtual void setTotalProgressBar ( unsigned int value );

@@ -1651,7 +1651,7 @@ const QWorkspace* MainWindow::workspace() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::notifyDocumentFinishedLoading ( Usul::Documents::Document* document )
+void MainWindow::notifyDocumentFinishedLoading ( Usul::Documents::Document *document )
 {
   USUL_TRACE_SCOPE;
 
@@ -1659,7 +1659,7 @@ void MainWindow::notifyDocumentFinishedLoading ( Usul::Documents::Document* docu
   {
     // Reference the document.  Some care will have to be taken since the proxy has a raw pointer.
     // The proxies aren't being deleted, which is why a raw pointer needs to be used.
-    document->ref();
+    //document->ref(); I don't think the above comment is true anymore. -- Perry, 30-Mar-2009
 
     DocumentProxy proxy ( document );
 
@@ -1684,11 +1684,11 @@ void MainWindow::_notifyDocumentFinishedLoading ( DocumentProxy proxy  )
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
 
   // Safely call the notification function.
-  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::_notifyFinishedLoading ), proxy.getDocument(), "3741587952" );
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::_notifyFinishedLoading ), proxy.getDocument().get(), "3741587952" );
 
   // Safely set the proxy's document to null.
   typedef Usul::Documents::Document Document;
-  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &proxy, &DocumentProxy::setDocument ), static_cast<Document *> ( 0x0 ), "2091388641" );
+  Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( &proxy, &DocumentProxy::setDocument ), Document::RefPtr ( 0x0 ), "2091388641" );
 }
 
 
@@ -1737,7 +1737,8 @@ void MainWindow::_notifyFinishedLoading ( Usul::Documents::Document *document )
   }
 
   // Unreference.
-  document->unref();
+  // The reason for this is no longer true. -- Perry, 30-Mar-2009.
+  //document->unref();
 }
 
 

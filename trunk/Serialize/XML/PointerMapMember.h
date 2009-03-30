@@ -94,8 +94,10 @@ public:
         {
           if ( elementKey->name() == "key" && elementValue->name() == "value" && elementValue->children().size() > 0 )
           {
-            const std::string keyString ( elementKey->value() );
-            if ( false == keyString.empty() )
+            typedef Serialize::XML::TypeWrapper<T::key_type> KeyTypeWrapper;
+            T::key_type key;
+            KeyTypeWrapper::deserialize ( *elementKey, key );
+
             {
               std::string typeName ( "" );
               TypeWrapper::getAttribute ( "TypeName", *elementValue, typeName );
@@ -106,11 +108,11 @@ public:
                 TypeWrapper::deserialize ( *elementValue, object );
 
                 // Erase existing value so that insert statement always works.
-                _value.erase ( keyString );
+                _value.erase ( key );
 
                 // Use insert statement instead of [] operator because the 
                 // smart-pointer may be a ValidRefPtr.
-                _value.insert ( ValueType ( keyString, object ) );
+                _value.insert ( ValueType ( key, object ) );
               }
             }
           }

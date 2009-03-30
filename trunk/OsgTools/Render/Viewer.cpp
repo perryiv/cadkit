@@ -4514,7 +4514,7 @@ osg::Group* Viewer::projectionGroupGet ( const std::string& key )
 
 namespace Helper
 {
-  template < class Listeners, class MutexType > void removeListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  template < class Listeners, class MutexType > void removeListener ( Listeners &listeners, Usul::Interfaces::IUnknown::RefPtr caller, MutexType &mutex )
   {
     typedef typename Listeners::value_type::element_type InterfaceType;
     typedef Usul::Threads::Guard<MutexType> Guard;
@@ -4542,7 +4542,7 @@ namespace Helper
 
 namespace Helper
 {
-  template < class Listeners, class MutexType > void addListener ( Listeners &listeners, Usul::Interfaces::IUnknown *caller, MutexType &mutex )
+  template < class Listeners, class MutexType > void addListener ( Listeners &listeners, Usul::Interfaces::IUnknown::RefPtr caller, MutexType &mutex )
   {
     typedef typename Listeners::value_type::element_type InterfaceType;
     typedef Usul::Threads::Guard<MutexType> Guard;

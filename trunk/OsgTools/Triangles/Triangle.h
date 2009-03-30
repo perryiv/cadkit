@@ -18,6 +18,7 @@
 
 #include "OsgTools/Export.h"
 
+#include "Usul/Config/Config.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include <list>

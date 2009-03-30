@@ -63,13 +63,13 @@ ShowPastEvents::~ShowPastEvents()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ShowPastEvents::_execute ()
+void ShowPastEvents::_execute()
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( this->caller () );
+  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( this->caller() );
   
   // Toggle shown.
-  if ( ac.valid () )
-    ac->showPastEvents ( !ac->showPastEvents ()  );
+  if ( ac.valid() )
+    ac->showPastEvents ( !ac->showPastEvents()  );
 }
 
 
@@ -98,8 +98,8 @@ Usul::Interfaces::IUnknown* ShowPastEvents::queryInterface( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ShowPastEvents::updateCheck () const
+bool ShowPastEvents::updateCheck() const
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller () ) );
-  return ac.valid () ? ac->showPastEvents () : false;
+  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller().get() ) );
+  return ac.valid() ? ac->showPastEvents() : false;
 }

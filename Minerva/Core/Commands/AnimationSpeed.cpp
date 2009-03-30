@@ -111,7 +111,7 @@ void AnimationSpeed::_execute ()
 
 bool AnimationSpeed::updateCheck() const
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr control ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller() ) );
+  Minerva::Interfaces::IAnimationControl::QueryPtr control ( const_cast < Usul::Interfaces::IUnknown* > ( this->caller().get() ) );
   return control.valid() ? Usul::Predicates::CloseFloat<double>::compare ( _speed, control->animateSpeed(), 10 ) : false;
 }
 

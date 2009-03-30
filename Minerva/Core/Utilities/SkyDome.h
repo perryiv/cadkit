@@ -19,7 +19,6 @@
 
 #include "Minerva/Core/Export.h"
 
-#include "Usul/Pointers/Pointers.h"
 #include "Usul/Threads/RecursiveMutex.h"
 #include "Usul/Threads/Guard.h"
 
@@ -37,10 +36,8 @@ public:
   typedef osg::Geode BaseClass;
   typedef Usul::Threads::RecursiveMutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef osg::ref_ptr<SkyDome> RefPtr;
 
-  // Declare smart pointers.
-  USUL_DECLARE_REF_POINTERS ( SkyDome );
-  
   /// Constructor.
   SkyDome();
   

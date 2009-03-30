@@ -34,16 +34,16 @@ public:
 
   USUL_DECLARE_REF_POINTERS ( Navigator );
 
-  Navigator ( Body* body, Usul::Interfaces::IProjectionMatrix* projection );
+  Navigator ( Body::RefPtr body, Usul::Interfaces::IUnknown::RefPtr projection );
 
   /// Set the body.
-  void                  body ( Body* body );
+  void                  body ( Body::RefPtr body );
 
   /// Get a copy of the camera.
   Camera*               copyCameraState() const;
 
   /// Set the projection matrix.
-  void                  projectionMatrix ( Usul::Interfaces::IProjectionMatrix* projection );
+  void                  projectionMatrix ( Usul::Interfaces::IUnknown::RefPtr projection );
 
   /// Set/get the view matrix.
   void                  viewMatrix ( const osg::Matrixd& m );
@@ -108,8 +108,8 @@ private:
   double _pitchSpeed;
   double _yawSpeed;
 
-  Body::RefPtr   _body;
-  Usul::Interfaces::IProjectionMatrix::RefPtr _projectionMatrix;
+  Body::RefPtr _body;
+  Usul::Interfaces::IProjectionMatrix::QueryPtr _projectionMatrix;
 };
 
 

@@ -552,14 +552,14 @@ void Tile::traverse ( osg::NodeVisitor &nv )
         this->_launchImageRequest();
     }
   }
-  
+
   // If we don't have a job, see if we need to create one.
   else
   {
     if ( Usul::Bits::has ( flags, Tile::IMAGE ) )
       this->_launchImageRequest();
   }
-  
+
   // For runtime re-scale, etc... not working but flag never true.
   if ( Usul::Bits::has ( flags, Tile::CHILDREN ) )
   {
@@ -583,13 +583,13 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       elevationJob = 0x0;
     }
 #endif
-    
+
     // Get cull visitor.
     osgUtil::CullVisitor *cv ( dynamic_cast < osgUtil::CullVisitor * > ( &nv ) );
-    
+
     // Make sure the mesh is updated.
     this->updateMesh();
-    
+
     // Make sure our texture is updated.
     this->updateTexture();
 
@@ -632,7 +632,7 @@ void Tile::traverse ( osg::NodeVisitor &nv )
       // Do not traverse further.
       return;
     }
-    
+
     if ( false == splitIfNeeded )
     {
       const unsigned int child ( ( false == allowSplit && false == keepDetail ) ? 0 : this->getNumChildren() - 1 );
@@ -2218,10 +2218,10 @@ void Tile::ref()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Tile::unref ( bool allowDelete )
+void Tile::unref ( bool allowDeletion )
 {
   USUL_TRACE_SCOPE;
-  if ( true == allowDelete )
+  if ( true == allowDeletion )
   {
     BaseClass::unref();
   }

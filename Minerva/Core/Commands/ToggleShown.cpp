@@ -69,18 +69,18 @@ ToggleShown::~ToggleShown()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void ToggleShown::_execute ()
+void ToggleShown::_execute()
 {
-  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().activeDocument () );
+  Minerva::Interfaces::IDirtyScene::QueryPtr dirty ( Usul::Documents::Manager::instance().activeDocument() );
   
   // Toggle shown.
   Usul::Interfaces::IBooleanState::QueryPtr state ( _layer );
-  if ( state.valid () )
+  if ( state.valid() )
   {
     state->setBooleanState ( !state->getBooleanState() );
 
     // Dirty the scene.
-    if ( dirty.valid () )
+    if ( dirty.valid() )
       dirty->dirtyScene ( true, Usul::Interfaces::IUnknown::QueryPtr ( _layer ) );
   }
 }
@@ -111,8 +111,8 @@ Usul::Interfaces::IUnknown* ToggleShown::queryInterface( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ToggleShown::updateCheck () const
+bool ToggleShown::updateCheck() const
 {
   Usul::Interfaces::IBooleanState::QueryPtr state ( const_cast<Usul::Interfaces::IUnknown*> ( _layer.get() ) );
-  return state.valid () ? state->getBooleanState() : false;
+  return state.valid() ? state->getBooleanState() : false;
 }

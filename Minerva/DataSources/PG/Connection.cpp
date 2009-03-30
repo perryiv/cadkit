@@ -23,8 +23,6 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Trace/Trace.h"
 
-#include "boost/algorithm/string/find.hpp"
-
 #include "libpq-fe.h"
 
 #include <iostream>

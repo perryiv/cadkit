@@ -30,7 +30,7 @@ using namespace Minerva::Core;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Navigator::Navigator ( Body* body, Usul::Interfaces::IProjectionMatrix* projection ) : BaseClass(),
+Navigator::Navigator ( Body::RefPtr body, Usul::Interfaces::IUnknown::RefPtr projection ) : BaseClass(),
   _camera ( new Minerva::Core::Data::Camera ),
   _elevationSpeed ( 1e7 ),
   _pitchSpeed ( 0.5 ),
@@ -50,7 +50,9 @@ Navigator::Navigator ( Body* body, Usul::Interfaces::IProjectionMatrix* projecti
 
 Navigator::~Navigator()
 {
+  _camera = 0x0;
   _body = 0x0;
+  _projectionMatrix = Usul::Interfaces::IUnknown::RefPtr ( 0x0 );
 }
 
 
@@ -422,7 +424,7 @@ bool Navigator::_intersectionPoint ( const Usul::Math::Vec2d& mouse, Usul::Math:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Navigator::body ( Body* body )
+void Navigator::body ( Body::RefPtr body )
 {
   _body = body;
 }
@@ -434,7 +436,7 @@ void Navigator::body ( Body* body )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Navigator::projectionMatrix ( Usul::Interfaces::IProjectionMatrix* projection )
+void Navigator::projectionMatrix ( Usul::Interfaces::IUnknown::RefPtr projection )
 {
   _projectionMatrix = projection;
 }

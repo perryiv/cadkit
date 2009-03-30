@@ -18,7 +18,6 @@
 
 using namespace Minerva::Layers::OSM;
 
-#define USE_WAY_EXTENTS 0
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,9 +28,8 @@ using namespace Minerva::Layers::OSM;
 const std::string NODE_TABLE_NAME ( "node_cache" );
 const std::string NODE_TAGS_TABLE_NAME ( "tags" );
 
-const std::string WAY_TABLE_NAME ( "way_cache" );
-const std::string WAY_TAGS_TABLE_NAME ( "way_tags" );
-const std::string WAY_NODES_TABLE_NAME ( "way_nodes" );
+const std::string LINE_STRING_TABLE_NAME ( "line_string_cache" );
+const std::string LINE_STRING_TAGS_TABLE_NAME ( "line_string_tags" );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,6 +46,9 @@ const std::string DATE_COLUMN ( "timestamp" );
 const std::string TAGS_COLUMN ( "tags" );
 const std::string NODE_ID_COLUMN ( "node_id" );
 const std::string EXTENTS_COLUMN ( "extents" );
+const std::string GEOMETRY_COLUMN ( "geometry" );
+const std::string NUM_NODES_COLUMN ( "num_nodes" );
+const std::string NODE_IDS_COLUMN ( "node_ids" );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,29 +65,15 @@ const std::string CREATE_NODE_TABLE
     OBJECT_ID_COLUMN, " integer not null, ",
     DATE_COLUMN, " text not null )" ) );
 
-
-#if USE_WAY_EXTENTS == 1
-const std::string CREATE_WAY_TABLE 
+const std::string CREATE_LINE_STRING_TABLE 
   ( Usul::Strings::format ( 
-    "CREATE TABLE IF NOT EXISTS ", WAY_TABLE_NAME, " ( id integer primary key autoincrement, ",
+    "CREATE TABLE IF NOT EXISTS ", LINE_STRING_TABLE_NAME, " ( id integer primary key autoincrement, ",
     KEY_COLUMN, " text not null, ",
     OBJECT_ID_COLUMN, " integer not null, ",
     DATE_COLUMN, " text not null, ",
-    EXTENTS_COLUMN, " blob not null )" ) );
-#else
-const std::string CREATE_WAY_TABLE 
-  ( Usul::Strings::format ( 
-    "CREATE TABLE IF NOT EXISTS ", WAY_TABLE_NAME, " ( id integer primary key autoincrement, ",
-    KEY_COLUMN, " text not null, ",
-    OBJECT_ID_COLUMN, " integer not null, ",
-    DATE_COLUMN, " text not null )" ) );
-#endif
-
-const std::string CREATE_WAY_NODES_TABLE 
-  ( Usul::Strings::format ( 
-    "CREATE TABLE IF NOT EXISTS ", WAY_NODES_TABLE_NAME, " ( id integer primary key autoincrement, ",
-    OBJECT_ID_COLUMN, " integer not null, ",
-    NODE_ID_COLUMN, " text not null )" ) );
+    NUM_NODES_COLUMN, " integer not null, ",
+    NODE_IDS_COLUMN, " blob not null, ",
+    GEOMETRY_COLUMN, " blob not null )" ) );
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,11 +89,13 @@ Cache::Cache ( CadKit::Database::SQLite::Connection *connection ) : BaseClass(),
   if ( _connection.valid() )
   {
     _connection->execute ( CREATE_NODE_TABLE );
-    _connection->execute ( CREATE_WAY_TABLE );
-    _connection->execute ( CREATE_WAY_NODES_TABLE );
+    _connection->execute ( CREATE_LINE_STRING_TABLE );
+
+    _connection->execute ( Usul::Strings::format ( "SELECT CreateSpatialIndex('", NODE_TABLE_NAME, "' , '", LOCACTION_COLUMN, "')" ) );
+    _connection->execute ( Usul::Strings::format ( "SELECT CreateSpatialIndex('", LINE_STRING_TABLE_NAME, "' , '", GEOMETRY_COLUMN, "')" ) );
 
     this->_createTagsTable ( NODE_TAGS_TABLE_NAME );
-    this->_createTagsTable ( WAY_TAGS_TABLE_NAME );
+    this->_createTagsTable ( LINE_STRING_TAGS_TABLE_NAME );
   }
 }
 
@@ -226,8 +215,8 @@ Node* Cache::_createNode ( CadKit::Database::SQLite::Result& result ) const
   Node::Date timestamp ( sTimestamp );
   Node::Tags tags;
   Node::Location location ( Usul::Convert::Type<Blob,Node::Location>::convert ( geometry ) );
-  location[0] -= 180.0;
-  location[1] -= 90.0;
+  //location[0] -= 180.0;
+  //location[1] -= 90.0;
 
   this->_getTags ( NODE_TAGS_TABLE_NAME, id, tags );
 
@@ -358,223 +347,26 @@ void Cache::_getTags ( const std::string& tableName, OSMObject::IdType id, OSMOb
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Cache the way data.
+//  Create sql for creating a line.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Cache::addWayData ( const std::string& key, const Extents& extents, const Ways& ways )
+std::string Cache::_createLineText ( const LineString::Vertices& vertices )
 {
-  if ( false == _connection.valid() )
-    return;
+  std::string sql ( "GeomFromText ( 'LINESTRING ( " );
 
-  CadKit::Database::SQLite::Transaction<CadKit::Database::SQLite::Connection::RefPtr> transaction ( _connection );
-  for ( Ways::const_iterator iter = ways.begin(); iter != ways.end(); ++iter )
+  if ( vertices.size() > 0 )
   {
-    OSMWayPtr way ( *iter );
-    if ( way.valid() )
+    for ( LineString::Vertices::const_iterator iter = vertices.begin(); iter != vertices.end() - 1; ++iter )
     {
-      USUL_TRY_BLOCK
-      {
-        this->_addWay ( key, extents, *way );
-      }
-      USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2450737445" );
+      sql = Usul::Strings::format ( sql, (*iter)[0], " ", (*iter)[1], ", " );
     }
+
+    sql = Usul::Strings::format ( sql, vertices.back()[0], " ", vertices.back()[1] );
   }
-  transaction.commit();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Add a single way.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Cache::_addWay ( const std::string& key, const Extents& extents, const Way& way )
-{
-  Way::IdType id ( way.id() );
-  Way::Date timestamp ( way.timestamp() );
-  Way::Tags tags ( way.tags() );
-  Nodes nodes ( way.nodes() );
-
-#if USE_WAY_EXTENTS == 1
-  const std::string sql ( Usul::Strings::format ( 
-    "INSERT INTO ", WAY_TABLE_NAME, 
-    " ( ", KEY_COLUMN, ", ", OBJECT_ID_COLUMN, ", ", DATE_COLUMN, ", ", EXTENTS_COLUMN, " ) values (",
-    " \"", key, "\", ",
-    " \"", id, "\", ",
-    " \"", timestamp.toString(), "\", "
-    " ", Cache::_createMBRText ( way.extents() ), " )" ) );
-#else
-  const std::string sql ( Usul::Strings::format ( 
-    "INSERT INTO ", WAY_TABLE_NAME, 
-    " ( ", KEY_COLUMN, ", ", OBJECT_ID_COLUMN, ", ", DATE_COLUMN, " ) values (",
-    " \"", key, "\", ",
-    " \"", id, "\", ",
-    " \"", timestamp.toString(), "\" )" ) );
-#endif
-
-  _connection->execute ( sql );
-
-  this->_addNodeData ( key, extents, nodes );
-
-  for ( Nodes::const_iterator iter = nodes.begin(); iter != nodes.end(); ++iter )
-  {
-    OSMNodePtr node ( *iter );
-    if ( node.valid() )
-    {
-      const std::string sql2 ( Usul::Strings::format ( 
-        "INSERT INTO ", WAY_NODES_TABLE_NAME, 
-        " ( ", OBJECT_ID_COLUMN, ", ", NODE_ID_COLUMN, " ) values (",
-        " \"", id, "\", ",
-        " \"", node->id(), "\" )" ) );
-
-      _connection->execute ( sql2 );
-    }
-  }
-
-  this->_addTags ( WAY_TAGS_TABLE_NAME, id, tags );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the way data.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Cache::getWayData ( const std::string& key, const Extents& extents, Ways& ways ) const
-{
-  if ( false == _connection.valid() )
-    return;
-
-#if USE_WAY_EXTENTS == 0
-  const std::string innerSql ( Usul::Strings::format (
-    "SELECT ", OBJECT_ID_COLUMN, " FROM ", NODE_TABLE_NAME,
-    " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"",
-    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", LOCACTION_COLUMN, " )" ) );
-
-  const std::string sql ( Usul::Strings::format (
-    "SELECT DISTINCT ", OBJECT_ID_COLUMN, " FROM ", WAY_NODES_TABLE_NAME,
-    " WHERE \"", NODE_ID_COLUMN, "\" IN (", innerSql, " );" ) );
-#else
-
-  const std::string sql ( Usul::Strings::format (
-    "SELECT ", OBJECT_ID_COLUMN, " FROM ", WAY_TABLE_NAME,
-    " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"",
-    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", EXTENTS_COLUMN, " )" ) );
-
-#endif
-
-  USUL_TRY_BLOCK
-  {
-    CadKit::Database::SQLite::Result::RefPtr result ( _connection->execute ( sql ) );
-    while ( result->prepareNextRow() )
-    {
-      std::string sId;
-      *result >> sId;
-
-      Way::IdType id ( Usul::Convert::Type<std::string,Way::IdType>::convert ( sId ) );
-
-      Way::RefPtr way ( this->_createWay ( id ) );
-      if ( way.valid() )
-      {
-        ways.push_back ( way );
-      }
-    }
-  }
-  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "2699100931" )
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Create a way.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-Way* Cache::_createWay ( Way::IdType id ) const
-{
-  Way::Date timestamp;
-  Way::Tags tags;
-  Nodes nodes;
-
-  {
-    const std::string sql ( Usul::Strings::format ( 
-      "SELECT ", DATE_COLUMN,  " FROM ", WAY_TABLE_NAME, 
-      " WHERE ", OBJECT_ID_COLUMN, "=", id ) );
-
-    CadKit::Database::SQLite::Result::RefPtr result ( _connection->execute ( sql ) );
-    if ( result->prepareNextRow() )
-    {
-      std::string date;
-      *result >> date;
-
-      timestamp = Way::Date ( date );
-    }
-  }
-
-  this->_getTags ( WAY_TAGS_TABLE_NAME, id, tags );
-
-  {
-    const std::string innerSql ( Usul::Strings::format (
-      "SELECT ", NODE_ID_COLUMN, " FROM ", WAY_NODES_TABLE_NAME,
-      " WHERE \"", OBJECT_ID_COLUMN, "\"=\"", id, "\" " ) );
-
-    const std::string sql ( Usul::Strings::format (
-      "SELECT asBinary(", LOCACTION_COLUMN, "), ", OBJECT_ID_COLUMN, ",", DATE_COLUMN, "  FROM ", NODE_TABLE_NAME, 
-      " WHERE \"", OBJECT_ID_COLUMN , "\" IN (", innerSql, ") " ) );
-
-    CadKit::Database::SQLite::Result::RefPtr result ( _connection->execute ( sql ) );
-    while ( result->prepareNextRow() )
-    {
-      nodes.push_back ( Cache::_createNode ( *result ) );
-    }
-  }
-
-  return Way::create ( id, timestamp, tags, nodes );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Does the cache contain way data?
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Cache::hasWayData ( const std::string& key, const Extents& extents ) const
-{
-  if ( false == _connection.valid() )
-    return false;
-
-#if USE_WAY_EXTENTS == 0
-  const std::string innerSql ( Usul::Strings::format (
-    "SELECT ", OBJECT_ID_COLUMN, " FROM ", NODE_TABLE_NAME,
-    " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"",
-    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", LOCACTION_COLUMN, " )" ) );
-
-  const std::string sql ( Usul::Strings::format (
-    "SELECT * FROM ", WAY_NODES_TABLE_NAME,
-    " WHERE \"", NODE_ID_COLUMN, "\" IN (", innerSql, " ) LIMIT 1;" ) );
-#else
-
-  const std::string sql ( Usul::Strings::format (
-    "SELECT ", OBJECT_ID_COLUMN, " FROM ", WAY_TABLE_NAME,
-    " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"",
-    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", EXTENTS_COLUMN, " ) LIMIT 1" ) );
-
-#endif
-  try
-  {
-    CadKit::Database::SQLite::Result::RefPtr result ( _connection->execute ( sql ) );
-    return result->prepareNextRow();
-  }
-  catch ( ... )
-  {
-    // Eat all exceptions.  If an error happened, then we don't have the data in the cache.
-  }
-
-  return false;
+  
+  sql = Usul::Strings::format ( sql, " )' )" );
+  return sql;
 }
 
 
@@ -586,7 +378,7 @@ bool Cache::hasWayData ( const std::string& key, const Extents& extents ) const
 
 std::string Cache::_createPointText ( const Node::Location& location )
 {
-  return Usul::Strings::format ( "GeomFromText ( 'POINT ( ", location[0] + 180.0, ' ', location[1] + 90.0, " )' )" );
+  return Usul::Strings::format ( "GeomFromText ( 'POINT ( ", location[0] /*+ 180.0*/, ' ', location[1] /*+ 90.0*/, " )' )" );
 }
 
 
@@ -600,9 +392,164 @@ std::string Cache::_createMBRText ( const Extents& extents )
 {
   const std::string buildMBR ( 
     Usul::Strings::format ( "BuildMBR ( ", 
-      extents.minLon() + 180.0, ",", 
-      extents.minLat() + 90.0, ",", 
-      extents.maxLon() + 180.0, ",", 
-      extents.maxLat() + 90.0, " )" ) );
+      extents.minLon() /*+ 180.0*/, ",", 
+      extents.minLat() /*+ 90.0*/, ",", 
+      extents.maxLon() /*+ 180.0*/, ",", 
+      extents.maxLat() /*+ 90.0*/, " )" ) );
   return buildMBR;
+}
+
+
+SQL_LITE_WRAP_DEFINE_VECTOR_BINDER ( LineString::NodeIds );
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add line data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Cache::addLineData ( const std::string& key, const Extents& extents, const Lines& lines )
+{
+  if ( false == _connection.valid() )
+    return;
+
+  CadKit::Database::SQLite::Transaction<CadKit::Database::SQLite::Connection::RefPtr> transaction ( _connection );
+  for ( Lines::const_iterator iter = lines.begin(); iter != lines.end(); ++iter )
+  {
+    LineString::RefPtr line ( *iter );
+    if ( line.valid() )
+    {
+      LineString::IdType id ( line->id() );
+      LineString::Date timestamp ( line->timestamp() );
+      LineString::Tags tags ( line->tags() );
+      
+      const std::string geometry ( Cache::_createLineText ( line->vertices() ) );
+
+      LineString::NodeIds ids ( line->ids() );
+      unsigned int numNodes ( ids.size() );
+
+      const std::string columns ( 
+        Usul::Strings::format ( 
+          KEY_COLUMN, ", ", 
+          OBJECT_ID_COLUMN, ", ", 
+          DATE_COLUMN, ", ", 
+          NUM_NODES_COLUMN, ", ", 
+          NODE_IDS_COLUMN, ", ", 
+          GEOMETRY_COLUMN ) );
+
+      const std::string values ( 
+        Usul::Strings::format ( 
+          "\"", key, "\", ", 
+          id, ", ", 
+          "\"", timestamp.toString(), "\", ", 
+          numNodes, ", ", 
+          "?", ", ", 
+          "", geometry, "" ) );
+
+      const std::string sql ( Usul::Strings::format ( 
+        "INSERT INTO ", LINE_STRING_TABLE_NAME, 
+        " ( ", columns, " ) values (",
+        values, " )" ) );
+      
+      USUL_TRY_BLOCK
+      {
+        _connection->execute ( sql, ids );
+      }
+      USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "6077392060" );
+
+      this->_addTags ( LINE_STRING_TAGS_TABLE_NAME, id, tags ); 
+    } 
+  }
+  transaction.commit();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the line data.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Cache::getLineData ( const std::string& key, const Extents& extents, Lines& lines ) const
+{
+  if ( false == _connection.valid() )
+    return;
+
+  const std::string columns ( 
+    Usul::Strings::format ( 
+      "asBinary(", GEOMETRY_COLUMN, "), ",
+      OBJECT_ID_COLUMN, ", ", 
+      DATE_COLUMN, ", ", 
+      NUM_NODES_COLUMN, ", ", 
+      NODE_IDS_COLUMN, " "  ) );
+
+  const std::string sql ( Usul::Strings::format (
+    "SELECT ", columns, "  FROM ", LINE_STRING_TABLE_NAME, 
+    " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"", 
+    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", GEOMETRY_COLUMN, " )" ) );
+
+  USUL_TRY_BLOCK
+  {
+    CadKit::Database::SQLite::Result::RefPtr result ( _connection->execute ( sql ) );
+    if ( false == result.valid() )
+      return;
+    
+    while ( result->prepareNextRow() )
+    {
+      std::string sId, sTimestamp, sNumNodes;
+
+      typedef CadKit::Database::SQLite::Blob Blob;
+      Blob geometry;
+      Blob bNodeIds;
+
+      *result >> geometry >> sId >> sTimestamp >> sNumNodes >> bNodeIds;
+
+      LineString::IdType id ( Usul::Convert::Type<std::string,Node::IdType>::convert ( sId ) );
+      LineString::Date timestamp ( sTimestamp );
+      LineString::Tags tags;
+      LineString::Vertices vertices ( Usul::Convert::Type<Blob,LineString::Vertices>::convert ( geometry ) );
+
+      unsigned int numNodes ( Usul::Convert::Type<std::string,unsigned int>::convert ( sNumNodes ) );
+      LineString::NodeIds nodeIds;
+
+      if ( bNodeIds.size() == ( numNodes * sizeof ( OSMObject::IdType ) ) )
+      {
+        OSMObject::IdType *idPtr ( reinterpret_cast<OSMObject::IdType *> ( &bNodeIds[0] ) );
+        nodeIds.assign ( idPtr, idPtr + numNodes );
+      }
+      
+      this->_getTags ( LINE_STRING_TAGS_TABLE_NAME, id, tags );
+
+      lines.push_back ( LineString::create ( id, timestamp, tags, vertices, nodeIds ) );
+    }
+  }
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "1740155461" )
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Does the line data exist in the cache?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool Cache::hasLineData ( const std::string& key, const Extents& extents ) const
+{
+  if ( false == _connection.valid() )
+    return false;
+
+  const std::string sql ( Usul::Strings::format (
+    "SELECT * FROM ", LINE_STRING_TABLE_NAME, 
+    " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"", 
+    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", GEOMETRY_COLUMN, " ) LIMIT 1;" ) );
+
+  USUL_TRY_BLOCK
+  {
+    CadKit::Database::SQLite::Result::RefPtr result ( _connection->execute ( sql ) );
+    return result->prepareNextRow();
+  }
+  USUL_DEFINE_SAFE_CALL_CATCH_BLOCKS ( "3950041208" );
+
+  return false;
 }

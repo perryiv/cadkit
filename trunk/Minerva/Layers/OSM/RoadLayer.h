@@ -16,7 +16,6 @@
 #ifndef __MINERVA_LAYERS_OSM_XAPI_ROAD_LAYER_H__
 #define __MINERVA_LAYERS_OSM_XAPI_ROAD_LAYER_H__
 
-#include "Minerva/Layers/OSM/Cache.h"
 #include "Minerva/Layers/OSM/Common.h"
 #include "Minerva/Layers/OSM/OpenStreetMapXAPI.h"
 
@@ -43,6 +42,7 @@ protected:
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
+    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller );
 
 private:

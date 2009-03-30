@@ -218,27 +218,11 @@
 			Name="Source"
 			>
 			<File
-				RelativePath=".\AdminBoundaryLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AdminBoundaryLayer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Cache.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Cache.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CityNameLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CityNameLayer.h"
 				>
 			</File>
 			<File
@@ -255,6 +239,14 @@
 			</File>
 			<File
 				RelativePath=".\Functions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LineString.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LineString.h"
 				>
 			</File>
 			<File
@@ -290,19 +282,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RoadLayer.cpp"
+				RelativePath=".\Parser.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\RoadLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TileVectorJob.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TileVectorJob.h"
+				RelativePath=".\Parser.h"
 				>
 			</File>
 			<File
@@ -321,6 +305,62 @@
 				RelativePath=".\XAPIMapQuery.h"
 				>
 			</File>
+			<Filter
+				Name="Jobs"
+				>
+				<File
+					RelativePath=".\DownloadJob.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DownloadJob.h"
+					>
+				</File>
+				<File
+					RelativePath=".\LineJob.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LineJob.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TileVectorJob.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TileVectorJob.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Layers"
+				>
+				<File
+					RelativePath=".\AdminBoundaryLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AdminBoundaryLayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CityNameLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CityNameLayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RoadLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\RoadLayer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

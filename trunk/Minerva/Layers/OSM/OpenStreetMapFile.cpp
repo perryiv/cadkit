@@ -9,6 +9,7 @@
 
 #include "Minerva/Layers/OSM/OpenStreetMapFile.h"
 #include "Minerva/Layers/OSM/Functions.h"
+#include "Minerva/Layers/OSM/Parser.h"
 
 #include "Minerva/Core/Data/DataObject.h"
 #include "Minerva/Core/Data/Line.h"
@@ -122,7 +123,7 @@ void OpenStreetMapFile::_read ( const std::string &filename, Usul::Interfaces::I
   Ways ways;
 
   // Parse.
-  Minerva::Layers::OSM::parseNodesAndWays ( *doc, nodes, ways );
+  Parser::parseNodesAndWays ( *doc, nodes, ways );
 
   Usul::Interfaces::IUnknown::QueryPtr allNodes ( Minerva::Layers::OSM::createForAllNodes ( nodes ) );
   this->add ( allNodes );
@@ -190,6 +191,6 @@ void OpenStreetMapFile::serialize ( XmlTree::Node &parent ) const
 
 void OpenStreetMapFile::_setBounds ( const XmlTree::Node& node )
 {
-  Extents extents ( Minerva::Layers::OSM::parseExtents ( node ) );
+  Extents extents ( Parser::parseExtents ( node ) );
   this->extents ( extents );
 }

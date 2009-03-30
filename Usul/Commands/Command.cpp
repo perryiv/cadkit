@@ -149,7 +149,7 @@ Usul::Interfaces::IUnknown *Command::queryInterface ( unsigned long iid )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Command::execute ( Usul::Interfaces::IUnknown * caller )
+void Command::execute ( Usul::Interfaces::IUnknown::RefPtr caller )
 {
   USUL_TRACE_SCOPE;
   // No need to guard, should be re-entrant.
@@ -157,7 +157,7 @@ void Command::execute ( Usul::Interfaces::IUnknown * caller )
   // If we don't already have a caller, and we are given a valid one, set our internal caller.
   {
     Guard guard ( this );
-    if ( false == _caller.valid() && 0x0 != caller )
+    if ( ( false == _caller.valid() ) && ( true == caller.valid() ) )
       _caller = caller;
   }
 
@@ -177,7 +177,7 @@ void Command::execute ( Usul::Interfaces::IUnknown * caller )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-const Usul::Interfaces::IUnknown *Command::caller() const
+const Usul::Interfaces::IUnknown::RefPtr Command::caller() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -191,11 +191,11 @@ const Usul::Interfaces::IUnknown *Command::caller() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Usul::Interfaces::IUnknown *Command::caller()
+Usul::Interfaces::IUnknown::RefPtr Command::caller()
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
-  return _caller.get();
+  return _caller;
 }
 
 

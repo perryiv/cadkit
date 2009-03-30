@@ -16,10 +16,9 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Base/InstanceManager.h"
 #include "Usul/Errors/Assert.h"
-#include "Usul/Exceptions/Thrower.h"
+#include "Usul/Strings/Format.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Guard.h"
-#include "Usul/Components/Exceptions.h"
 
 using namespace Usul;
 using namespace Usul::Base;
@@ -63,7 +62,7 @@ namespace Detail { Usul::Base::InstanceManager im; }
 Referenced::Referenced() : BaseClass(),
   _refCount ( 0 ),
   _rcMutex ( Mutex::create() )
-{
+  {
 #if _DEBUG
   Detail::im.add ( this );
 #endif
@@ -186,20 +185,20 @@ void Referenced::unref ( bool allowDeletion )
       catch ( std::exception &e )
       {
         USUL_ASSERT ( 0 == 1078343250u ); // FYI
-        Usul::Exceptions::Thrower<std::runtime_error>
-          ( "Error 1078343241: deleting this instance caused an exception.",
-            "\n\tMessage: ", e.what(),
-            "\n\tAddress: ", this,
-            "\n\tClass:   ", name );
+        throw std::runtime_error ( Usul::Strings::format (
+          "Error 1078343241: deleting this instance caused an exception.",
+          "\n\tMessage: ", e.what(),
+          "\n\tAddress: ", this,
+          "\n\tClass:   ", name ) );
       }
 
       catch ( ... )
       {
         USUL_ASSERT ( 0 == 1078340966u ); // FYI
-        Usul::Exceptions::Thrower<std::runtime_error>
-          ( "Error 1078340800: deleting this instance caused an exception.",
-            "\n\tAddress: ", this,
-            "\n\tClass:   ", name );
+        throw std::runtime_error ( Usul::Strings::format (
+          "Error 1078340800: deleting this instance caused an exception.",
+          "\n\tAddress: ", this,
+          "\n\tClass:   ", name ) );
       }
 
     #else

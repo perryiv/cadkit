@@ -16,6 +16,8 @@
 #ifndef _USUL_INTRUSIVE_POINTER_FUNCTIONS_H_
 #define _USUL_INTRUSIVE_POINTER_FUNCTIONS_H_
 
+#include "Usul/Config/Config.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //

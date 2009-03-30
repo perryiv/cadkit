@@ -176,7 +176,7 @@ template <> struct Type < std::string, QByteArray >
 };
 
 
-} // namespace Registry
+} // namespace Convert
 } // namespace Usul
 
 

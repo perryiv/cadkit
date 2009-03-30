@@ -49,12 +49,11 @@ struct AnimationNotify : public Usul::Base::Referenced,
   {
   }
 
-  virtual void ref()
+  void ref()
   {
     BaseClass::ref();
   }
-
-  virtual void unref ( bool allowDeletion )
+  void unref ( bool allowDeletion = true )
   {
     BaseClass::unref ( allowDeletion );
   }

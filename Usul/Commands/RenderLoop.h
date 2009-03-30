@@ -29,12 +29,12 @@ public:
   RenderLoop ( const std::string& name, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
-  virtual ~RenderLoop ();
+  virtual ~RenderLoop();
 
-  virtual void _execute ();
+  virtual void _execute();
 
-  virtual bool updateEnable () const;
-  virtual bool updateCheck () const;
+  virtual bool updateEnable() const;
+  virtual bool updateCheck() const;
 
 };
 

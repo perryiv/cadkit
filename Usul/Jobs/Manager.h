@@ -51,7 +51,7 @@ public:
   void                    addJob ( Job::RefPtr );
   
   // Add a job finished listener.
-  void                    addJobFinishedListener ( Usul::Interfaces::IUnknown * );
+  void                    addJobFinishedListener ( Usul::Interfaces::IUnknown::RefPtr );
 
   // Cancel the job(s).
   void                    cancel();
@@ -97,7 +97,7 @@ public:
   unsigned int            poolSize() const;
   
   // Remove a job finished listener.
-  void                    removeJobFinishedListener ( Usul::Interfaces::IUnknown * );
+  void                    removeJobFinishedListener ( Usul::Interfaces::IUnknown::RefPtr );
 
   // Remove the queued job. Has no effect on running jobs.
   void                    removeQueuedJob ( Job::RefPtr );

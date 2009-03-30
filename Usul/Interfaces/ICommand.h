@@ -32,7 +32,7 @@ struct ICommand : public Usul::Interfaces::IUnknown
   enum { IID = 3572469257u };
 
   /// Execute the command.
-  virtual void execute ( Usul::Interfaces::IUnknown *caller ) = 0;
+  virtual void execute ( Usul::Interfaces::IUnknown::RefPtr caller ) = 0;
 };
 
 

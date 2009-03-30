@@ -16,6 +16,8 @@
 #ifndef _USUL_INTRUSIVE_POINTER_INTRUSIVE_H_
 #define _USUL_INTRUSIVE_POINTER_INTRUSIVE_H_
 
+#include "Usul/Config/Config.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -45,6 +47,5 @@ template < class T > inline void ptr_release_no_delete ( T *ptr )
     ptr->unref ( false );
   }
 }
-
 
 #endif // _USUL_INTRUSIVE_POINTER_INTRUSIVE_H_

@@ -49,14 +49,14 @@ public:
   USUL_DECLARE_IUNKNOWN_MEMBERS;
 
   // Get the caller.
-  const IUnknown *            caller() const;
-  IUnknown *                  caller();
+  const IUnknown::RefPtr      caller() const;
+  IUnknown::RefPtr            caller();
 
   // Clone this command.
-  virtual Command*            clone () const = 0;
+  virtual Command *           clone() const = 0;
 
   // Execute the command.
-  virtual void                execute ( Usul::Interfaces::IUnknown * );
+  virtual void                execute ( Usul::Interfaces::IUnknown::RefPtr );
 
   // Get/Set the icon path.
   void                        iconPath ( const std::string& value );
@@ -91,10 +91,10 @@ protected:
   virtual void                _execute() = 0;
 
   /// Update the enabled state.
-  virtual bool                updateEnable () const;
+  virtual bool                updateEnable() const;
 
   /// Update the checked state.
-  virtual bool                updateCheck () const;
+  virtual bool                updateCheck() const;
 
 private:
 

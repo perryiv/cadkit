@@ -24,7 +24,6 @@
 
 #include "Usul/Jobs/Job.h"
 
-namespace Usul { namespace Jobs { class Manager; } }
 
 namespace Minerva {
 namespace Layers {
@@ -70,7 +69,6 @@ protected:
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
-    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller ) = 0;
 
   /// Get all the predicates to use at a given level.
@@ -89,7 +87,6 @@ private:
   Cache::RefPtr _cache;
   std::string _url;
   RequestMap _requestMap;
-  Usul::Jobs::Manager *_downloadManager;
 
   SERIALIZE_XML_CLASS_NAME ( OpenStreetMapXAPI );
 };

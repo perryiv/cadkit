@@ -31,12 +31,9 @@ USUL_FACTORY_REGISTER_CREATOR ( AdminBoundaryLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-AdminBoundaryLayer::AdminBoundaryLayer() : BaseClass(),
-  _cache ( 0x0 )
+AdminBoundaryLayer::AdminBoundaryLayer() : BaseClass()
 {
-  const std::string filename ( Usul::Strings::format ( Usul::User::Directory::program ( true ), "admin_boundaries.db" ) );
-  CadKit::Database::SQLite::Connection::RefPtr connection ( new CadKit::Database::SQLite::Connection ( filename ) );
-  _cache = new Cache ( connection );
+  this->_initializeCache ( "admin_boundaries" );
 
   /// Possible place values: http://wiki.openstreetmap.org/wiki/Key:boundary
   this->addRequest ( 0, Predicate ( "boundary", "administrative" ) );
@@ -65,8 +62,7 @@ AdminBoundaryLayer::JobPtr AdminBoundaryLayer::_launchJob (
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
-    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return new LineJob ( manager, downloadManager, this->_getCache(), this->url(), extents, level, predicate );
+  return new LineJob ( manager, this->_getCache(), this->url(), extents, level, predicate, caller );
 }

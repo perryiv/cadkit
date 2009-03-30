@@ -487,7 +487,7 @@ void Cache::getLineData ( const std::string& key, const Extents& extents, Lines&
   const std::string sql ( Usul::Strings::format (
     "SELECT ", columns, "  FROM ", LINE_STRING_TABLE_NAME, 
     " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"", 
-    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", GEOMETRY_COLUMN, " )" ) );
+    " AND MBROverlaps ( ", Cache::_createMBRText ( extents ), ", ", GEOMETRY_COLUMN, " )" ) );
 
   USUL_TRY_BLOCK
   {
@@ -542,7 +542,7 @@ bool Cache::hasLineData ( const std::string& key, const Extents& extents ) const
   const std::string sql ( Usul::Strings::format (
     "SELECT * FROM ", LINE_STRING_TABLE_NAME, 
     " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"", 
-    " AND MBRContains ( ", Cache::_createMBRText ( extents ), ", ", GEOMETRY_COLUMN, " ) LIMIT 1;" ) );
+    " AND MBROverlaps ( ", Cache::_createMBRText ( extents ), ", ", GEOMETRY_COLUMN, " ) LIMIT 1;" ) );
 
   USUL_TRY_BLOCK
   {

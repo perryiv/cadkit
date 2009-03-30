@@ -42,12 +42,9 @@ protected:
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
-    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller );
 
 private:
-
-  Cache::RefPtr _cache;
 
   SERIALIZE_XML_CLASS_NAME ( RoadLayer );
 };

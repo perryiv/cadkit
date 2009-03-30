@@ -69,13 +69,12 @@ public:
   typedef TileVectorJob BaseClass;
 
   CityNameJob ( Usul::Jobs::Manager* manager, 
-    Usul::Jobs::Manager* downloadManager,
     Cache::RefPtr cache, 
     const std::string& url, 
     const Extents& extents, 
     unsigned int level,
     const Predicate& predicate ) : 
-    BaseClass ( manager, downloadManager, cache, url, extents, predicate )
+    BaseClass ( manager, cache, url, extents, predicate )
   {
     this->priority ( static_cast<int> ( level ) );
   }
@@ -87,43 +86,16 @@ protected:
   }
 
   /// Make the request.  Check the cache first.
-  void _makeRequest()
+  void _started()
   {
-    std::string cacheKey ( this->cacheKey() );
-    Cache::RefPtr cache ( this->cache() );
+    XAPIMapQuery query ( this->_makeQuery() );
 
-    bool isCached ( cache.valid() && cache->hasNodeData ( cacheKey, this->extents() ) );
-    if ( isCached )
-    {
-      Nodes nodes;
-      cache->getNodeData ( cacheKey, this->extents(), nodes );
-      this->_buildDataObjects ( nodes );
-
-      return;
-    }
-
-    this->_startDownload ( this->_buildRequestUrl ( "node" ) );
-  }
-
-
-  /// The downloading has finished.
-  void _downloadFinished ( const std::string& filename )
-  {
-    // Parse modes and ways.
     Nodes nodes;
-    Ways ways;
-    Parser::parseNodesAndWays ( filename, nodes, ways );
-
-    Cache::RefPtr cache ( this->cache() );
-    std::string cacheKey ( this->cacheKey() );
-    if ( cache.valid() )
-    {
-      cache->addNodeData ( cacheKey, this->extents(), nodes );
-    }
+    query.makeNodesQuery ( nodes );
 
     this->_buildDataObjects ( nodes );
   }
-  
+
   void _buildDataObjects ( const Nodes& nodes )
   {
     // Add all the nodes.
@@ -168,8 +140,7 @@ CityNameLayer::JobPtr CityNameLayer::_launchJob (
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
-    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return new CityNameJob ( manager, downloadManager, this->_getCache(), this->url(), extents, level, predicate );
+  return new CityNameJob ( manager, this->_getCache(), this->url(), extents, level, predicate );
 }

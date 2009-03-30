@@ -31,8 +31,7 @@ USUL_FACTORY_REGISTER_CREATOR ( RoadLayer );
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-RoadLayer::RoadLayer() : BaseClass(),
-  _cache ( 0x0 )
+RoadLayer::RoadLayer() : BaseClass()
 {
   this->_initializeCache ( "road_layer" );
 
@@ -63,8 +62,7 @@ RoadLayer::JobPtr RoadLayer::_launchJob (
     const Extents& extents, 
     unsigned int level, 
     Usul::Jobs::Manager *manager, 
-    Usul::Jobs::Manager *downloadManager, 
     Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return new LineJob ( manager, downloadManager, this->_getCache(), this->url(), extents, level, predicate );
+  return new LineJob ( manager, this->_getCache(), this->url(), extents, level, predicate, caller );
 }

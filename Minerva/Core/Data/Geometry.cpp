@@ -113,7 +113,7 @@ osg::Node* Geometry::buildScene( Usul::Interfaces::IUnknown* caller )
   if ( node.valid() )
   {
     osg::ref_ptr < osg::StateSet > ss ( node->getOrCreateStateSet () );
-    
+
     // Set the render bin.
     ss->setRenderBinDetails( this->renderBin(), "RenderBin" );
     

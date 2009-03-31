@@ -619,6 +619,10 @@ void Tile::traverse ( osg::NodeVisitor &nv )
     // Check to see if we are culled.
     if ( 0x0 == cv || cv->isCulled ( *this ) )
     {
+      // We are culled, so cancel these jobs.
+      this->_cancelTileVectorJobs();
+      this->_cancelTileJob();
+
       // Do not clear children if we are suppose to keep detail.
       if ( false == keepDetail && false == body->cacheTiles() )
       {

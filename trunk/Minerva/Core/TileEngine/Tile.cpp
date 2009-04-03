@@ -396,7 +396,8 @@ void Tile::updateTileVectorData()
         removeMe.push_back ( *i );
 
         // Add the data to our container.
-        ITileVectorJob::Data data ( job->getVectorData() );
+        ITileVectorJob::Data data;
+        job->takeVectorData ( data );
         for ( ITileVectorJob::Data::iterator d = data.begin(); d != data.end(); ++d )
         {
           // The very first time we add new data we have to clear the 

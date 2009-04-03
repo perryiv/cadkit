@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/OSM/Cache.h"
+#include "Minerva/Layers/OSM/LineString.h"
 
 #include "Usul/File/Remove.h"
 
@@ -38,6 +39,7 @@ typedef Minerva::Layers::OSM::Node Node;
 typedef Minerva::Layers::OSM::Ways Ways;
 typedef Minerva::Layers::OSM::Way Way;
 typedef Node::Location Location;
+typedef Minerva::Layers::OSM::LineString LineString;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,10 +96,10 @@ protected:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(OSMCacheTest,Test01)
+TEST_F(OSMCacheTest,TestEmptyCache)
 {
   EXPECT_FALSE ( cache->hasNodeData ( key, extents ) );
-  EXPECT_FALSE ( cache->hasWayData ( key, extents ) );
+  EXPECT_FALSE ( cache->hasLineData ( key, extents ) );
 }
 
 
@@ -107,7 +109,7 @@ TEST_F(OSMCacheTest,Test01)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(OSMCacheTest,Test02)
+TEST_F(OSMCacheTest,TestNodes)
 {
   cache->addNodeData ( key, extents, nodes );
 
@@ -123,20 +125,21 @@ TEST_F(OSMCacheTest,Test02)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Make sure way data can be retrieved after saving.
+//  Make sure line string data can be retrieved after saving.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST_F(OSMCacheTest,Test03)
+TEST_F(OSMCacheTest,LineString)
 {
-  cache->addWayData ( key, extents, ways );
+  std::vector<LineString::RefPtr> lines;
+  lines.push_back ( LineString::create ( ways[0] ) );
 
-  EXPECT_TRUE ( cache->hasNodeData ( key, extents ) );
-  EXPECT_TRUE ( cache->hasWayData ( key, extents ) );
+  cache->addLineData ( key, extents, lines );
 
-  Ways cachedWays;
-  cache->getWayData ( key, extents, cachedWays );
+  EXPECT_TRUE ( cache->hasLineData ( key, extents ) );
 
-  EXPECT_TRUE ( ways.size() == cachedWays.size() );
-  EXPECT_TRUE ( cachedWays[0]->tags().size() == tags.size() );
+  std::vector<LineString::RefPtr> cachedLines;
+  cache->getLineData ( key, extents, cachedLines );
+
+  EXPECT_TRUE ( lines.size() == cachedLines.size() );
 }

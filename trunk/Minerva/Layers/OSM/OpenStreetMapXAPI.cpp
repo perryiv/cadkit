@@ -88,6 +88,7 @@ OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
 {
   this->extents ( Extents ( -180, -90, 180, 90 ) );
 
+  this->_addMember ( "url", _url );
   this->_addMember ( "request_map", _requestMap );
 }
 

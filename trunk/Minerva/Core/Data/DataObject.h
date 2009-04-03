@@ -165,6 +165,9 @@ public:
   bool                  propagateIntersections() const;
   void                  propagateIntersections ( bool );
 
+  /// Reserve geometry size.
+  void                  reserveGeometry ( unsigned int size );
+
   /// Get/Set the flag to show the label.
   void                  showLabel ( bool value );
   bool                  showLabel() const;

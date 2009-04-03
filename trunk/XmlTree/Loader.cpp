@@ -58,14 +58,15 @@ Loader::Loader()
 
 Loader::~Loader()
 {
-  try
+  // Calling this is not thread-safe.
+  /*try
   {
     XercesLife::terminate();
   }
   catch ( const std::exception &e )
   {
     std::cout << e.what() << std::endl;
-  }
+  }*/
 }
 
 

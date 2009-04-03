@@ -14,6 +14,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Layers/OSM/Parser.h"
+#include "Minerva/Layers/OSM/LineStringParser.h"
 
 #include "Minerva/Core/Data/TimeStamp.h"
 
@@ -24,7 +25,27 @@
 
 #include "boost/foreach.hpp"
 
+#include "xercesc/sax2/SAX2XMLReader.hpp"
+#include "xercesc/sax2/XMLReaderFactory.hpp"
+
+using namespace Minerva::Layers::OSM;
 using Minerva::Layers::OSM::Extents;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Typedefs.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+typedef Minerva::Layers::OSM::Object OSMObject;
+typedef OSMObject::IdType IdType;
+typedef OSMObject::Date DateType;
+typedef OSMObject::Tags Tags;
+typedef Node::Location LocationType;
+typedef std::map<IdType,Node::RefPtr> NodeMap;
+typedef XmlTree::Node::Children Children;
+typedef XmlTree::Node::Attributes Attributes;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -33,7 +54,7 @@ using Minerva::Layers::OSM::Extents;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Extents Minerva::Layers::OSM::Parser::parseExtents ( const XmlTree::Node& node )
+Extents Parser::parseExtents ( const XmlTree::Node& node )
 {
   const std::string minlat ( node.attribute ( "minlat" ) );
   const std::string minlon ( node.attribute ( "minlon" ) );
@@ -57,19 +78,8 @@ Extents Minerva::Layers::OSM::Parser::parseExtents ( const XmlTree::Node& node )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Minerva::Layers::OSM::Parser::parseNodesAndWays ( const XmlTree::Node& xmlNode, Nodes& nodes, Ways& ways )
+void Parser::parseNodesAndWays ( const XmlTree::Node& xmlNode, Nodes& nodes, Ways& ways )
 {
-  // Typedefs.
-  typedef Minerva::Layers::OSM::Object OSMObject;
-  typedef OSMObject::IdType IdType;
-  typedef OSMObject::Date DateType;
-  typedef OSMObject::Tags Tags;
-  typedef Node::Location LocationType;
-  typedef Way::Nodes Nodes;
-  typedef std::map<IdType,Node::RefPtr> NodeMap;
-  typedef XmlTree::Node::Children Children;
-  typedef XmlTree::Node::Attributes Attributes;
-
   // Get all the children.
   const Children& children ( xmlNode.children() );
 
@@ -88,25 +98,9 @@ void Minerva::Layers::OSM::Parser::parseNodesAndWays ( const XmlTree::Node& xmlN
     // Get the date.
     DateType date ( DateType::createFromKml ( attributes["timestamp"] ) );
 
-#ifdef _DEBUG
-    const std::string temp ( date.toString() );
-#endif
-
     // Tags for the node.
     Tags tags;
-
-    // Parse the tags.
-    BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, xmlNode->children() )
-    {
-      if ( "tag" == child->name() )
-      {
-        // Get the attributes.
-        Attributes a ( child->attributes() );
-
-        // Add the tag's key and value.
-        tags.insert ( std::make_pair ( a["k"], a["v"] ) );
-      }
-    }
+    Parser::_parseTags ( *xmlNode, tags );
 
     // Is the xml element a node?
     if ( "node" == xmlNode->name() )
@@ -159,7 +153,7 @@ void Minerva::Layers::OSM::Parser::parseNodesAndWays ( const XmlTree::Node& xmlN
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Minerva::Layers::OSM::Parser::parseNodesAndWays ( const std::string& filename, Nodes& nodes, Ways& ways )
+void Parser::parseNodesAndWays ( const std::string& filename, Nodes& nodes, Ways& ways )
 {
   XmlTree::XercesLife life;
   XmlTree::Document::RefPtr doc ( new XmlTree::Document );
@@ -167,4 +161,48 @@ void Minerva::Layers::OSM::Parser::parseNodesAndWays ( const std::string& filena
 
   // Redirect
   parseNodesAndWays ( *doc, nodes, ways );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse the tags.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::_parseTags ( const XmlTree::Node& node, Tags& tags )
+{
+  // Parse the tags.
+  const Children& children ( node.children() );
+  BOOST_FOREACH ( XmlTree::Node::ValidRefPtr child, children )
+  {
+    if ( "tag" == child->name() )
+    {
+      // Get the attributes.
+      Attributes a ( child->attributes() );
+
+      // Add the tag's key and value.
+      tags.insert ( std::make_pair ( a["k"], a["v"] ) );
+    }
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse file into lines.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void Parser::parseLines ( const std::string& filename, Lines& lines )
+{
+  XmlTree::XercesLife life;
+
+  xercesc::SAX2XMLReader* parser ( xercesc::XMLReaderFactory::createXMLReader() );
+
+  Detail::LineStringParser handler ( lines );
+  parser->setContentHandler ( &handler );
+  parser->setErrorHandler ( &handler );
+
+  parser->parse ( filename.c_str() );
 }

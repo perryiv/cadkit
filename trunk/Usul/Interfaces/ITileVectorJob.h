@@ -33,7 +33,7 @@ struct ITileVectorJob : public Usul::Interfaces::IUnknown
   virtual void                  cancelVectorJob() = 0;
   
   /// Get the container of data.
-  virtual Data                  getVectorData() const = 0;
+  virtual void                  takeVectorData ( Data& ) = 0;
 
   /// Is the job done?
   virtual bool                  isVectorJobDone() const = 0;

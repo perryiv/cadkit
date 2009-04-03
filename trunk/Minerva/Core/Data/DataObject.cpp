@@ -850,3 +850,17 @@ void DataObject::propagateIntersections ( bool state )
   Guard guard ( this );
   _propagateIntersections = state;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Reserve geometry size.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void DataObject::reserveGeometry ( unsigned int size )
+{
+  USUL_TRACE_SCOPE;
+  Guard guard ( this );
+  _geometries.reserve ( size );
+}

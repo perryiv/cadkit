@@ -88,12 +88,18 @@ protected:
   /// Make the request.  Check the cache first.
   void _started()
   {
+    this->_setStatus ( "Started" );
+
     XAPIMapQuery query ( this->_makeQuery() );
 
     Nodes nodes;
-    query.makeNodesQuery ( nodes );
+    query.makeNodesQuery ( nodes, this );
+
+    this->_setStatus ( "Building data objects" );
 
     this->_buildDataObjects ( nodes );
+
+    this->_setStatus ( "Finished" );
   }
 
   void _buildDataObjects ( const Nodes& nodes )

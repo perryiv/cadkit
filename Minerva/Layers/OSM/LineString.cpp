@@ -96,7 +96,7 @@ LineString* LineString::create ( Way::IdType id, const Date& timestamp, const Ta
 {
   return new LineString ( id, timestamp, tags, vertices, ids );
 }
- 
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -104,16 +104,22 @@ LineString* LineString::create ( Way::IdType id, const Date& timestamp, const Ta
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Minerva::Core::Data::Line* LineString::buildGeometry ( Minerva::Core::Data::LineStyle* style ) const
+Minerva::Core::Data::Line* LineString::buildGeometry ( Minerva::Core::Data::LineStyle* style, unsigned int stride ) const
 {
   // Make a line.
   Minerva::Core::Data::Line::RefPtr line ( new Minerva::Core::Data::Line );
   Minerva::Core::Data::Line::Vertices vertices;
   vertices.reserve ( _vertices.size() );
 
-  for ( unsigned int i = 0; i < _vertices.size(); ++i )
+  for ( unsigned int i = 0; i < _vertices.size(); i += stride )
   {
     Node::Location location ( _vertices.at ( i ) );
+    vertices.push_back ( Usul::Math::Vec3d ( location[0], location[1], 0.0 ) );
+  }
+
+  if ( ( false == _vertices.empty() ) && ( 0 != ( _vertices.size() % stride ) ) )
+  {
+    Node::Location location ( _vertices.back() );
     vertices.push_back ( Usul::Math::Vec3d ( location[0], location[1], 0.0 ) );
   }
 

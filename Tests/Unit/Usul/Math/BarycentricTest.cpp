@@ -14,18 +14,13 @@
 #include "gtest/gtest.h"
 
 
-inline bool operator== ( const Usul::Math::Vec3d& lhs, const Usul::Math::Vec3d& rhs )
-{
-  return Usul::Predicates::CloseFloat<double>::compare ( lhs[0], rhs[0], 3 ) &&
-         Usul::Predicates::CloseFloat<double>::compare ( lhs[1], rhs[1], 3 ) &&
-         Usul::Predicates::CloseFloat<double>::compare ( lhs[2], rhs[2], 3 );
-}
-
 struct TestVec3d
 {
   bool operator () ( const Usul::Math::Vec3d& lhs, const Usul::Math::Vec3d& rhs ) const
   {
-    return lhs == rhs;
+    return Usul::Predicates::CloseFloat<double>::compare ( lhs[0], rhs[0], 3 ) &&
+         Usul::Predicates::CloseFloat<double>::compare ( lhs[1], rhs[1], 3 ) &&
+         Usul::Predicates::CloseFloat<double>::compare ( lhs[2], rhs[2], 3 );
   }
 };
 

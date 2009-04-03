@@ -22,13 +22,15 @@
 
 #include "Usul/Jobs/Job.h"
 #include "Usul/Interfaces/ITileVectorJob.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
 
 namespace Minerva {
 namespace Layers {
 namespace OSM {
 
 class TileVectorJob : public Usul::Jobs::Job,
-                      public Usul::Interfaces::ITileVectorJob
+                      public Usul::Interfaces::ITileVectorJob,
+                      public Usul::Interfaces::IStatusBar
 {
 public:
 
@@ -54,6 +56,9 @@ protected:
 
   virtual ~TileVectorJob();
 
+  /// Set the status.
+  void _setStatus ( const std::string& status );
+
   /// Job status functions.
   virtual void              _started() = 0;
   virtual void              _cancelled();
@@ -70,10 +75,13 @@ protected:
   virtual void                  cancelVectorJob();
 
   /// Get the container of data (ITileVectorJob).
-  virtual Data                  getVectorData() const;
+  virtual void                  takeVectorData ( Data& data );
 
   /// Is the job done (ITileVectorJob)?
   virtual bool                  isVectorJobDone() const;
+
+  /// Set the "status bar" text (IStatusBar).
+  virtual void setStatusBarText ( const std::string &text, bool force );
 
 private:
 

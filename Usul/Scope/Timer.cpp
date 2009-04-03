@@ -21,8 +21,8 @@ using namespace Usul::Scope;
 ///////////////////////////////////////////////////////////////////////////////
 
 Timer::Timer ( const std::string & message ) :
-_start ( static_cast < double > ( Usul::System::Clock::milliseconds() ) ),
-_message ( message )
+  _start ( static_cast < double > ( Usul::System::Clock::milliseconds() ) ),
+  _message ( message )
 {
 }
 

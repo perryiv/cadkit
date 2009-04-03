@@ -16,6 +16,8 @@
 
 #include "Helios/Qt/Core/Program.h"
 
+#include "XmlTree/XercesLife.h"
+
 #include "Threads/OpenThreads/Thread.h"
 
 #include "Usul/Functions/SafeCall.h"
@@ -52,6 +54,9 @@ int main ( int argc, char **argv )
 
   try
   {
+    // We make heavy use of xerces, so initialize now.
+    XmlTree::XercesLife life;
+
     // Default trace behavior.
     Usul::Trace::Print::printing ( false );
 

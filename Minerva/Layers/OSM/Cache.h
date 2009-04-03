@@ -39,6 +39,9 @@ public:
 
   Cache ( CadKit::Database::SQLite::Connection *connection );
 
+  void initialize();
+  bool isInitialized();
+
   void addNodeData ( const std::string& key, const Extents& extents, const Nodes& nodes );
   void getNodeData ( const std::string& key, const Extents& extents, Nodes& nodes ) const;
   bool hasNodeData ( const std::string& key, const Extents& extents ) const;
@@ -51,8 +54,13 @@ protected:
 
   virtual ~Cache();
 
+  void _addGeometryColumn ( const std::string& table, const std::string& column, const std::string& type );
+  void _addSpatialIndex ( const std::string& table, const std::string& column );
+
   void _addNodeData ( const std::string& key, const Extents& extents, const Nodes& nodes );
   Node* _createNode ( CadKit::Database::SQLite::Result& result ) const;
+
+  int _addLineEntry ( const std::string& key, const Extents& extents );
 
   void _createTagsTable ( const std::string& tableName );
   void _addTags ( const std::string& tableName, OSMObject::IdType id, const OSMObject::Tags& tags );
@@ -60,7 +68,10 @@ protected:
 
   static std::string _createLineText ( const LineString::Vertices& vertices );
   static std::string _createPointText ( const Node::Location& location );
-  static std::string _createMBRText ( const Extents& extents );
+  static std::string _createIndexQuery ( const std::string& tableName, const std::string& columnName, const Extents& extents );
+
+  static void _translate ( Node::Location& location );
+  static void _unTranslate ( Node::Location& location );
 
 private:
 

@@ -46,17 +46,7 @@ TileVectorJob::TileVectorJob ( Usul::Jobs::Manager* manager,
   _data(),
   _reAdd ( false )
 {
-  typedef float FormatType;
-  typedef Usul::Convert::Type<FormatType,std::string> Converter;
-
-  this->name ( Usul::Strings::format ( 
-    "OSM Map Query: ", 
-    _predicate.first, "=", _predicate.second, 
-    " Extents: [", 
-    Converter::convert ( static_cast<FormatType> ( extents.minimum()[0] ) ), ", ", 
-    Converter::convert ( static_cast<FormatType> ( extents.minimum()[1] ) ), ", ", 
-    Converter::convert ( static_cast<FormatType> ( extents.maximum()[0] ) ), ", ", 
-    Converter::convert ( static_cast<FormatType> ( extents.maximum()[1] ) ), "]" ) );
+  this->_setStatus ( "Created" );
 }
 
 
@@ -83,6 +73,8 @@ Usul::Interfaces::IUnknown *TileVectorJob::queryInterface ( unsigned long iid )
   {
   case Usul::Interfaces::ITileVectorJob::IID:
     return static_cast < Usul::Interfaces::ITileVectorJob * > ( this );
+  case Usul::Interfaces::IStatusBar::IID:
+    return static_cast < Usul::Interfaces::IStatusBar * > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -117,9 +109,9 @@ void TileVectorJob::cancelVectorJob()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-TileVectorJob::Data TileVectorJob::getVectorData() const
+void TileVectorJob::takeVectorData ( Data& data )
 {
-  return _data;
+  _data.swap ( data );
 }
 
 
@@ -211,4 +203,39 @@ XAPIMapQuery TileVectorJob::_makeQuery() const
 {
   Guard guard ( this );
   return XAPIMapQuery ( _cache, _url, _predicate, _extents );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the status.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TileVectorJob::_setStatus ( const std::string& status )
+{
+  typedef float FormatType;
+  typedef Usul::Convert::Type<FormatType,std::string> Converter;
+
+  this->name ( Usul::Strings::format ( 
+    "OSM Map Query: ", 
+    _predicate.first, "=", _predicate.second, 
+    " Extents: [", 
+    Converter::convert ( static_cast<FormatType> ( _extents.minimum()[0] ) ), ", ", 
+    Converter::convert ( static_cast<FormatType> ( _extents.minimum()[1] ) ), ", ", 
+    Converter::convert ( static_cast<FormatType> ( _extents.maximum()[0] ) ), ", ", 
+    Converter::convert ( static_cast<FormatType> ( _extents.maximum()[1] ) ), "] ",
+    " Status: ", status ) );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the "status bar" text (IStatusBar).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void TileVectorJob::setStatusBarText ( const std::string &text, bool force )
+{
+  this->_setStatus ( text );
 }

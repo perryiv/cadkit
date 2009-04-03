@@ -63,12 +63,18 @@ LineJob::~LineJob()
 
 void LineJob::_started()
 {
+  this->_setStatus ( "Started" );
+
   XAPIMapQuery query ( this->_makeQuery() );
 
   Lines lines;
-  query.makeLinesQuery ( lines );
+  query.makeLinesQuery ( lines, this );
+
+  this->_setStatus ( "Building data objects" );
 
   this->_buildDataObjects ( lines );
+
+  this->_setStatus ( "Finished" );
 }
 
 
@@ -80,7 +86,19 @@ void LineJob::_started()
 
 void LineJob::_buildDataObjects ( const Lines& lines )
 {
-  this->_reserveDataSize ( lines.size() );
+  //this->_reserveDataSize ( lines.size() );
+
+  typedef Minerva::Core::Data::LineStyle LineStyle;
+  LineStyle::RefPtr style ( LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 1.0f ), 2.0 ) );
+
+  DataObject::RefPtr object ( new DataObject );
+
+  // TODO: change the stride based of the current level. (Or interpolate a NURBS curve and evaluate the desired number of points.)
+#ifdef _DEBUG
+  const unsigned int stride ( 8 );
+#else
+  const unsigned int stride ( 2 );
+#endif
 
   // Add all the nodes.
   for ( Lines::const_iterator iter = lines.begin(); iter != lines.end(); ++iter )
@@ -89,16 +107,11 @@ void LineJob::_buildDataObjects ( const Lines& lines )
     if ( line.valid() )
     {
       // Make a line.
-      typedef Minerva::Core::Data::Line Line;
-      typedef Minerva::Core::Data::LineStyle LineStyle;
-
-      DataObject::RefPtr object ( new DataObject );
-      object->addGeometry ( line->buildGeometry ( LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 1.0f ), 2.0 ) ) );
-      object->name ( Usul::Strings::format ( line->tag<std::string> ( "ref" ) ) );
-      object->preBuildScene ( _caller );
-
-      Usul::Interfaces::IUnknown::QueryPtr unknown ( object );
-      this->_addData ( unknown );
+      object->addGeometry ( line->buildGeometry ( style, stride ) );
     }
   }
+
+  object->preBuildScene ( _caller );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( object );
+  this->_addData ( unknown );
 }

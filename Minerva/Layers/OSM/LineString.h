@@ -40,7 +40,7 @@ public:
   static LineString* create ( IdType id, const Date& timestamp, const Tags& tags, const Vertices& vertices, const NodeIds& ids );
   
   /// Build the geometry.
-  Minerva::Core::Data::Line* buildGeometry ( Minerva::Core::Data::LineStyle* style ) const;
+  Minerva::Core::Data::Line* buildGeometry ( Minerva::Core::Data::LineStyle* style, unsigned int stride ) const;
 
   const NodeIds& ids() const;
   const Vertices& vertices() const;

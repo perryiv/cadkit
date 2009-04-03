@@ -19,6 +19,8 @@
 #include "Minerva/Core/Utilities/Download.h"
 
 #include "Usul/File/Temp.h"
+#include "Usul/Interfaces/GUI/IStatusBar.h"
+#include "Usul/Registry/Database.h"
 #include "Usul/Scope/RemoveFile.h"
 #include "Usul/Strings/Format.h"
 
@@ -67,18 +69,22 @@ XAPIMapQuery::~XAPIMapQuery()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void XAPIMapQuery::makeNodesQuery ( Nodes& nodes )
+void XAPIMapQuery::makeNodesQuery ( Nodes& nodes, Usul::Interfaces::IUnknown::QueryPtr unknown )
 {
   // Get the area of the extents.  XAPI only allows requests of a 100 square degrees.
   const double area ( ( _extents.maxLon() - _extents.minLon() ) * ( _extents.maxLat() - _extents.minLat() ) );
   if ( area > 100.0 )
     return;
 
+  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( unknown.get() );
+
   std::string cacheKey ( _predicate.first + "_" + _predicate.second );
   std::replace ( cacheKey.begin(), cacheKey.end(), '*', '_' );
 
+  status ( "Checking cache" );
   if ( _cache.valid() && _cache->hasNodeData ( cacheKey, _extents ) )
   {
+    status ( "Reading cache" );
     _cache->getNodeData ( cacheKey, _extents, nodes );
     return;
   }
@@ -90,14 +96,18 @@ void XAPIMapQuery::makeNodesQuery ( Nodes& nodes )
   const std::string filename ( Usul::File::Temp::file() );
   Usul::Scope::RemoveFile remove ( filename );
 
+  status ( "Downloading" );
   if ( Minerva::Core::Utilities::downloadToFile ( request, filename ) )
   {
-    // Parse modes and ways.
+    status ( "Parsing" );
+
+    // Parse nodes and ways.
     Ways ways;
     Parser::parseNodesAndWays ( filename, nodes, ways );
 
     if ( _cache.valid() )
     {
+      status ( "Caching data" );
       _cache->addNodeData ( cacheKey, _extents, nodes );
     }
   }
@@ -110,18 +120,22 @@ void XAPIMapQuery::makeNodesQuery ( Nodes& nodes )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void XAPIMapQuery::makeLinesQuery ( Lines& lines )
+void XAPIMapQuery::makeLinesQuery ( Lines& lines, Usul::Interfaces::IUnknown::QueryPtr unknown )
 {
   // Get the area of the extents.  XAPI only allows requests of a 100 square degrees.
   const double area ( ( _extents.maxLon() - _extents.minLon() ) * ( _extents.maxLat() - _extents.minLat() ) );
   if ( area > 100.0 )
     return;
 
+  Usul::Interfaces::IStatusBar::UpdateStatusBar status ( unknown.get() );
+
   std::string cacheKey ( _predicate.first + "_" + _predicate.second );
   std::replace ( cacheKey.begin(), cacheKey.end(), '*', '_' );
 
+  status ( "Checking cache" );
   if ( _cache.valid() && _cache->hasLineData ( cacheKey, _extents ) )
   {
+    status ( "Reading cache" );
     _cache->getLineData ( cacheKey, _extents, lines );
     return;
   }
@@ -132,27 +146,21 @@ void XAPIMapQuery::makeLinesQuery ( Lines& lines )
   // Download to a temp file.
   const std::string filename ( Usul::File::Temp::file() );
   Usul::Scope::RemoveFile remove ( filename );
-  const bool success ( Minerva::Core::Utilities::downloadToFile ( request, filename ) );
+
+  status ( "Downloading" );
+  const unsigned int timeout ( Usul::Registry::Database::instance()["osm_download"]["timeout_milliseconds"].get<unsigned int> ( 60000000, true ) );
+  const bool success ( Minerva::Core::Utilities::downloadToFile ( request, filename, timeout ) );
 
   if ( success )
   {
-    // Parse modes and ways.
-    Nodes nodes;
-    Ways ways;
-    Parser::parseNodesAndWays ( filename, nodes, ways );
+    status ( "Parsing" );
 
-    lines.reserve ( ways.size() );
-    for ( Ways::const_iterator iter = ways.begin(); iter != ways.end(); ++iter )
-    {
-      OSMWayPtr way ( *iter );
-      if ( way.valid() )
-      {
-        lines.push_back ( LineString::create ( way ) );
-      }
-    }
+    // Parse lines
+    Parser::parseLines ( filename, lines );
 
     if ( _cache.valid() )
     {
+      status ( "Caching data" );
       _cache->addLineData ( cacheKey, _extents, lines );
     }
   }

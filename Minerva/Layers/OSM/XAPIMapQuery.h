@@ -21,6 +21,8 @@
 #include "Minerva/Layers/OSM/Common.h"
 #include "Minerva/Layers/OSM/LineString.h"
 
+#include "Usul/Interfaces/IUnknown.h"
+
 namespace Minerva {
 namespace Layers {
 namespace OSM {
@@ -35,8 +37,8 @@ public:
   XAPIMapQuery ( Cache::RefPtr cache, const std::string& url, const Predicate& pred, const Extents& extents );
   ~XAPIMapQuery();
 
-  void makeNodesQuery ( Nodes& nodes );
-  void makeLinesQuery ( Lines& lines );
+  void makeNodesQuery ( Nodes& nodes, Usul::Interfaces::IUnknown::QueryPtr unknown );
+  void makeLinesQuery ( Lines& lines, Usul::Interfaces::IUnknown::QueryPtr unknown );
 
 private:
 

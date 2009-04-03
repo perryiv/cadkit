@@ -382,7 +382,7 @@ RasterLayerArcIMS::LayerInfos RasterLayerArcIMS::availableLayers ( const std::st
 	}
   
   // Open the xml document.
-	XmlTree::XercesLife life;
+  XmlTree::XercesLife life;
   XmlTree::Document::RefPtr document ( new XmlTree::Document );
   document->load ( name );
   

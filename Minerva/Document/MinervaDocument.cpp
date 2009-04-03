@@ -439,7 +439,7 @@ void MinervaDocument::read ( const std::string &filename, Unknown *caller, Unkno
 
     Guard guard ( this );
     _navigator->body ( this->activeBody() );
-    _navigator->projectionMatrix ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+    _navigator->projectionMatrix ( Usul::Interfaces::IProjectionMatrix::QueryPtr ( this ) );
   }
 
   // Reset all the log pointers.
@@ -576,7 +576,7 @@ osg::Node * MinervaDocument::buildScene ( Unknown *caller )
 
   // Set needed navigator data.
   _navigator->body ( this->activeBody() );
-  _navigator->projectionMatrix ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+  _navigator->projectionMatrix ( Usul::Interfaces::IProjectionMatrix::QueryPtr ( this ) );
   _navigator->home();
 
   osg::ref_ptr<osg::Group> group ( new osg::Group );

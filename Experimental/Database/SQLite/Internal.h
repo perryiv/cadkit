@@ -54,14 +54,18 @@ struct Guard
   {
     if ( 0x0 != _db )
     {
+#if SQLITE_THREADSAFE == 1
       ::sqlite3_mutex_enter ( ::sqlite3_db_mutex ( _db ) );
+#endif
     }
   }
   ~Guard()
   {
     if ( 0x0 != _db )
     {
+#if SQLITE_THREADSAFE == 1
       ::sqlite3_mutex_leave ( ::sqlite3_db_mutex ( _db ) );
+#endif
     }
   }
 private:

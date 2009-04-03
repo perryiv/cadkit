@@ -253,8 +253,8 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
   Usul::Types::Uint32 nv ( 0 );
 
   // read the header
-  ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
-  ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+  //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+  //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
 
   ifs->read ( reinterpret_cast< char* > ( &ni ), sizeof( Usul::Types::Int32 ) );
   ifs->read ( reinterpret_cast< char* > ( &nj ), sizeof( Usul::Types::Int32 ) );
@@ -262,14 +262,14 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
   ifs->read ( reinterpret_cast< char* > ( &nv ), sizeof( Usul::Types::Int32 ) );
 
   // read the footer
-  ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
-  ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+  //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+  //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
 
   // set the dimensions
-  _dimensions = Usul::Math::Vec3ui ( static_cast< Usul::Types::Uint32 > ( ni ) - 1, 
-                                     static_cast< Usul::Types::Uint32 > ( nj ) - 1, 
-                                     static_cast< Usul::Types::Uint32 > ( nk ) - 1 );
-
+  _dimensions = Usul::Math::Vec3ui ( static_cast< Usul::Types::Uint32 > ( ni ), 
+                                     static_cast< Usul::Types::Uint32 > ( nj ), 
+                                     static_cast< Usul::Types::Uint32 > ( nk ) );
+#if 0
   for( unsigned int k = 0; k < nk; ++k )
   {
     // temp 2d grid
@@ -295,7 +295,87 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
     // add to the 3d grid
     grid.push_back( grid1d );
   }
+#else
+#if 0
+  for( unsigned int k = 0; k < nk; ++k )
+  {
+    // temp 2d grid
+    Grid1D grid1d;
 
+    // resize the grid
+    grid1d.resize( nj * ni );
+
+    for( unsigned int j = 0; j < nj; ++j )
+    {
+      h1 = 0;h2 = 0;h3 = 0;h4 = 0;
+
+      // read the header
+      ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+      ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+
+      for( unsigned int i = 0; i < ni; ++i )
+      {
+
+        unsigned int index ( j + ( i * _dimensions[1] ) );
+
+        h1 = 0;h2 = 0;h3 = 0;h4 = 0;
+
+        // read the header
+        //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+        //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );  
+        
+        // read the 2d grid
+        GridType value ( 0 );
+        ifs->read( reinterpret_cast< char * > ( &value ), sizeof( GridType ) );
+      
+        //ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+        //ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+      
+        grid1d.at( index ) = value;
+        
+      }
+      
+      ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+      ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+      
+    }
+
+    // add to the 3d grid
+    grid.push_back( grid1d );
+  }
+#else
+
+  unsigned int isize ( ni + 1 );
+  unsigned int jsize ( nj + 1 );
+  unsigned int ksize ( nk + 1 );
+  for( unsigned int k = 0; k < ksize; ++k )
+  {
+    // temp 2d grid
+    Grid1D grid1d;
+    h1 = 0;h2 = 0;h3 = 0;h4 = 0;
+
+    // read the header
+    //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+    //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+    
+    // set the size
+    Usul::Types::Uint32 size ( jsize * isize * sizeof( GridType ) );
+
+    // resize the grid
+    grid1d.resize( jsize * isize );
+
+    // read the 2d grid
+    ifs->read( reinterpret_cast< char * > ( &grid1d[0] ), size );
+
+    //ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+    //ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+  
+    // add to the 3d grid
+    grid.push_back( grid1d );
+  }
+#endif
+
+#endif
 }
 
 
@@ -491,29 +571,45 @@ void ToFVUNS::_writeResultsFile( const std::string &name )
 
 void ToFVUNS::_writeResults( const std::string &name, std::ofstream* ofs )
 {
-  unsigned int denominator( _dimensions[1] );
+  // debug
+  std::cout << "Results dimensions are: ( " << _dimensions[0] << " x " << _dimensions[1] << " x " << _dimensions[2] << " )" << std::endl;
 
+  unsigned int xsize( _dimensions[0] );
+  unsigned int ysize( _dimensions[1] );
+  unsigned int zsize( _dimensions[2] );
+
+  unsigned int denominator( ysize );
   for( unsigned int valueNumber = 0; valueNumber < _values.size(); ++valueNumber )
   {
-
-    for( unsigned int j = 0; j < _dimensions[1]; ++j )
+    for( unsigned int j = 0; j < ysize; ++j )  
     {
       // progress
-      float percentage ( static_cast< float > ( j ) / static_cast< float > ( denominator ) );
-      std::cout << "\rWrite function for value " << valueNumber << " -- percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  j << " / " << denominator << " )" << std::flush;
+      unsigned int numerator = j;
+      float percentage ( static_cast< float > ( numerator ) / static_cast< float > ( denominator ) );
       
-      for( unsigned int k = 0; k < _dimensions[2]; ++k )
-      {
-        for( unsigned int i = 0; i < _dimensions[0]; ++i )
+      std::cout << "\rWrite function for value " << valueNumber << " -- percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  numerator << " / " << denominator << " )" << std::flush;
+      
+      for( unsigned int k = 0; k < zsize; ++k )
+      {        
+        for( unsigned int i = 0; i < xsize; ++i )
         {
+          //std::cout << "\rTrying i=" << i << " -- j=" << j << "  -- k=" << k << std::flush;
           // current node index
-          unsigned int index ( j + ( i * _dimensions[1] ) );
-
+          unsigned int index ( j + ( i * ( ysize ) ) );
+          //unsigned int index ( ( i * ( xsize - 1 ) ) + j );
+          try
+          {
           // P value
           Usul::Types::Float32 value ( static_cast< Usul::Types::Float32 > ( _values.at( valueNumber ).at( k ).at( index ) ) );
           ofs->write ( reinterpret_cast< char* > ( &value ), sizeof( Usul::Types::Float32 ) );
+          }
+          catch( ... )
+          {
+            std::cout << "Failed on i=" << i << " -- j=" << j << "  -- k=" << k << std::endl;
+            std::cout << "Index is: " << index << "Size of values at k=" << k << " is: " << _values.at( k ).size() << std::endl;
 
-          //// U value
+          }
+          // U value
           //Usul::Types::Float32 u ( static_cast< Usul::Types::Float32 > ( _values.at( 0 ).at( k ).at( index ) ) );
           //ofs->write ( reinterpret_cast< char* > ( &u ), sizeof( Usul::Types::Float32 ) );
 
@@ -550,14 +646,14 @@ void ToFVUNS::_procesGridFile( const std::string &file, Grid1D &grid )
   if( false == ifs.is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + file );
 
-  // output info
-  std::cout << "Now reading file: " << file << std::endl;
-
   // read the number of points
   Usul::Types::Uint32 numPoints ( 0 );
 
   // Read
   ifs >> numPoints;
+
+  // output info
+  std::cout << "Now reading file: " << file << "  -- # of points is " << numPoints << std::endl;
 
   for( unsigned int i = 0; i < numPoints; ++i )
   {
@@ -735,6 +831,16 @@ void ToFVUNS::_writeGridFile( const std::string &name )
       }
     }
 
+    // add the last grid point
+    //GridType xvalue ( xValues.at( xValues.size() - 1 ) + ( xValues.at( xValues.size() - 1 ) - xValues.at( xValues.size() - 2 ) ) );
+    //xValues.push_back( xvalue );
+
+    //GridType yvalue ( yValues.at( yValues.size() - 1 ) + ( yValues.at( yValues.size() - 1 ) - yValues.at( yValues.size() - 2 ) ) );
+    //xValues.push_back( yvalue );
+
+    //GridType zvalue ( zValues.at( zValues.size() - 1 ) + ( zValues.at( zValues.size() - 1 ) - zValues.at( zValues.size() - 2 ) ) );
+    //xValues.push_back( zvalue );
+
     // Grid size in bytes
     Usul::Types::Uint32 sizeInBytes( count * sizeof( Float32 ) );
 
@@ -791,7 +897,7 @@ void ToFVUNS::_writeGridFile( const std::string &name )
     ofs->write ( reinterpret_cast< char* > ( &numTetrahedrons ), sizeof( Usul::Types::Int32 ) );
 
     // Hexahedron count
-    Usul::Types::Uint32 hexaHedronCount ( ( _dimensions[0] - 2 ) * ( _dimensions[1] - 2 ) * ( _dimensions[2] - 2 ) );
+    Usul::Types::Uint32 hexaHedronCount ( ( _dimensions[0] - 1 ) * ( _dimensions[1] - 1 ) * ( _dimensions[2] - 1 ) );
     Usul::Types::Int32 numHexahedrons( hexaHedronCount );
     ofs->write ( reinterpret_cast< char* > ( &numHexahedrons ), sizeof( Usul::Types::Int32 ) );
 
@@ -884,19 +990,19 @@ void ToFVUNS::_writeElementNodes( std::ofstream* ofs )
  // useful typedef
   typedef Usul::Types::Uint32 Uint32;
 
-  float denominator ( static_cast< float > ( _dimensions[1] - 2 ) );
+  float denominator ( static_cast< float > ( _dimensions[1] - 1 ) );
 
   // Write out the actual elements, which are hexahedral cells
-  for( unsigned int j = 0; j < _dimensions[1] - 2; ++j )
+  for( unsigned int j = 0; j < _dimensions[1] - 1; ++j )
   {
     float numerator ( static_cast< float >( j ) );
 
     // Feedback
     std::cout << "\rWriting Element Nodes -- " << ( ( numerator * 100 ) / denominator ) << "% complete" << std::flush;
 
-    for( unsigned int k = 0; k < _dimensions[2] - 2; ++k )
+    for( unsigned int k = 0; k < _dimensions[2] - 1; ++k )
     {
-      for( unsigned int i = 0; i < _dimensions[0] - 2; ++i )
+      for( unsigned int i = 0; i < _dimensions[0] - 1; ++i )
       {
         // vertex 1
         Uint32 v1 ( _indexGrid.at( j ).at( k ).at( i ) );
@@ -938,31 +1044,5 @@ void ToFVUNS::_writeElementNodes( std::ofstream* ofs )
       }
     }
   }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Write the results file.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ToFVUNS::_calculateYGrid()
-{
-  // temp value
-  Grid1D grid;
-
-  // size the grid
-  grid.resize( 65 );
-
-  // set the grid values
-  for( unsigned int i = 0; i < 65; ++i )
-  {
-    grid.at( i ) = static_cast< float > ( i );
-  }
-
-  // add to the list of grid points
-  _grid.push_back( grid );
-
 }
 

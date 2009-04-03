@@ -51,8 +51,6 @@ protected:
   virtual void  updateProgressBar ( unsigned int value );
   virtual void  hideProgressBar(){}
 
-  void          _calculateYGrid();
-
   void          _processArguments();
   void          _processFiles();
   void          _processFile ( const std::string &file, Grid2D &grid );

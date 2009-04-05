@@ -18,6 +18,8 @@
 
 #include "Minerva/Layers/OSM/TileVectorJob.h"
 
+#include "Minerva/Core/Data/LineStyle.h"
+
 namespace Minerva {
 namespace Layers {
 namespace OSM {
@@ -26,6 +28,9 @@ class LineJob : public TileVectorJob
 {
 public:
   typedef TileVectorJob BaseClass;
+  typedef Minerva::Core::Data::LineStyle LineStyle;
+
+  USUL_DECLARE_REF_POINTERS ( LineJob );
 
   LineJob ( 
     Usul::Jobs::Manager* manager, 
@@ -35,6 +40,10 @@ public:
     unsigned int level,
     const Predicate& predicate,
     Usul::Interfaces::IUnknown::RefPtr caller );
+
+  /// Set/get the line style.
+  void lineStyle ( LineStyle::RefPtr );
+  LineStyle::RefPtr lineStyle() const;
 
 protected:
 
@@ -48,6 +57,7 @@ protected:
 private:
 
   Usul::Interfaces::IUnknown::RefPtr _caller;
+  LineStyle::RefPtr _lineStyle;
 };
 
 }

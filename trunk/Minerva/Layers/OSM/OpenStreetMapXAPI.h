@@ -21,6 +21,7 @@
 #include "Minerva/Layers/OSM/Cache.h"
 
 #include "Minerva/Core/Data/Container.h"
+#include "Minerva/Core/Data/Style.h"
 
 #include "Usul/Jobs/Job.h"
 
@@ -37,11 +38,16 @@ public:
   typedef Minerva::Core::Data::Container BaseClass;
   typedef std::vector<Predicate> Predicates;
   typedef Usul::Jobs::Job::RefPtr JobPtr;
+  typedef Minerva::Core::Data::Style Style;
 
   OpenStreetMapXAPI();
 
   /// Add a predicate request.
   void addRequest ( unsigned int level, const Predicate& predicate );
+
+  /// Add a style for a predicate.  TODO: Add level parameter for selecting style.
+  void addStyle ( const Predicate& predicate, Style::RefPtr );
+  Style::RefPtr getStyle ( const Predicate& predicate ) const;
   
   /// Serialize.
   virtual void                serialize ( XmlTree::Node &parent ) const;
@@ -83,10 +89,12 @@ protected:
 private:
   
   typedef std::map<unsigned int, Predicates> RequestMap;
+  typedef std::map<Predicate,Style::RefPtr> StyleMap;
 
   Cache::RefPtr _cache;
   std::string _url;
   RequestMap _requestMap;
+  StyleMap _styleMap;
 
   SERIALIZE_XML_CLASS_NAME ( OpenStreetMapXAPI );
 };

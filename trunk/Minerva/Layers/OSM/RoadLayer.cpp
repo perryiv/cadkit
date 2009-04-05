@@ -36,7 +36,43 @@ RoadLayer::RoadLayer() : BaseClass()
   this->_initializeCache ( "road_layer" );
 
   // See http://wiki.openstreetmap.org/wiki/Map_Features for key, value pairs.
-  this->addRequest ( 5, Predicate ( "highway", "motorway" ) );
+  const Predicate motorway ( Predicate ( "highway", "motorway" ) );
+  const Predicate motorwayLink ( Predicate ( "highway", "motorway_link" ) );
+  const Predicate primary ( Predicate ( "highway", "primary" ) );
+  const Predicate secondary ( Predicate ( "highway", "secondary" ) );
+  const Predicate tertiary ( Predicate ( "highway", "tertiary" ) );
+  const Predicate unclassified ( Predicate ( "highway", "unclassified" ) );
+  const Predicate road ( Predicate ( "highway", "road" ) );
+  const Predicate residential ( Predicate ( "highway", "residential" ) );
+
+  // Add the request starting at given level.
+  this->addRequest ( 5, motorway );
+  
+  this->addRequest ( 10, motorwayLink );
+  this->addRequest ( 10, primary );
+  this->addRequest ( 10, secondary );
+
+  this->addRequest ( 15, tertiary );
+  this->addRequest ( 15, unclassified );
+  this->addRequest ( 15, road );
+  this->addRequest ( 15, residential );
+
+  Style::RefPtr orange ( new Style );
+  orange->linestyle ( Minerva::Core::Data::LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 0.6f, 0.0f, 0.7f ), 2.0f ) );
+  this->addStyle ( motorway, orange );
+
+  Style::RefPtr yellow ( new Style );
+  yellow->linestyle ( Minerva::Core::Data::LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 0.7f ), 2.0f ) );
+  this->addStyle ( motorwayLink, orange );
+  this->addStyle ( primary, yellow );
+  this->addStyle ( secondary, yellow );
+
+  Style::RefPtr white ( new Style );
+  white->linestyle ( Minerva::Core::Data::LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 1.0f, 0.7f ), 2.0f ) );
+  this->addStyle ( tertiary, white );
+  this->addStyle ( unclassified, white );
+  this->addStyle ( road, white );
+  this->addStyle ( residential, white );
 }
 
 
@@ -64,5 +100,9 @@ RoadLayer::JobPtr RoadLayer::_launchJob (
     Usul::Jobs::Manager *manager, 
     Usul::Interfaces::IUnknown::RefPtr caller )
 {
-  return new LineJob ( manager, this->_getCache(), this->url(), extents, level, predicate, caller );
+  LineJob::RefPtr job ( new LineJob ( manager, this->_getCache(), this->url(), extents, level, predicate, caller ) );
+
+  Style::RefPtr style ( this->getStyle ( predicate ) );
+  job->lineStyle ( ( style.valid() ) ? style->linestyle() : 0x0 );
+  return job.get();
 }

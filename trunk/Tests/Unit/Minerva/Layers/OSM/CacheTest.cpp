@@ -10,6 +10,8 @@
 #include "Minerva/Layers/OSM/Cache.h"
 #include "Minerva/Layers/OSM/LineString.h"
 
+#include "Minerva/Core/Algorithms/Split.h"
+
 #include "Usul/File/Remove.h"
 
 #include "gtest/gtest.h"
@@ -137,6 +139,14 @@ TEST_F(OSMCacheTest,LineString)
   cache->addLineData ( key, extents, lines );
 
   EXPECT_TRUE ( cache->hasLineData ( key, extents ) );
+
+  Extents ll, lr, ul, ur;
+  Minerva::Core::Algorithms::split ( extents, ll, lr, ul, ur );
+
+  EXPECT_TRUE ( cache->hasLineData ( key, ll ) );
+  EXPECT_TRUE ( cache->hasLineData ( key, lr ) );
+  EXPECT_TRUE ( cache->hasLineData ( key, ul ) );
+  EXPECT_TRUE ( cache->hasLineData ( key, ur ) );
 
   std::vector<LineString::RefPtr> cachedLines;
   cache->getLineData ( key, extents, cachedLines );

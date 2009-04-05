@@ -37,11 +37,13 @@ TileVectorJob::TileVectorJob ( Usul::Jobs::Manager* manager,
                                Cache::RefPtr cache, 
                                const std::string& url, 
                                const Extents& extents, 
+                               unsigned int level,
                                const Predicate& predicate ) : BaseClass(),
   _manager ( manager ),
   _cache ( cache ),
   _url ( url ),
   _extents ( extents ),
+  _level ( level ),
   _predicate ( predicate ),
   _data(),
   _reAdd ( false )
@@ -238,4 +240,16 @@ void TileVectorJob::_setStatus ( const std::string& status )
 void TileVectorJob::setStatusBarText ( const std::string &text, bool force )
 {
   this->_setStatus ( text );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the level.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+unsigned int TileVectorJob::level() const
+{
+  return _level;
 }

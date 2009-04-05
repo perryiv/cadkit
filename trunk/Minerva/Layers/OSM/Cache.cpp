@@ -465,6 +465,8 @@ void Cache::_getTags ( const std::string& tableName, OSMObject::IdType id, OSMOb
 
 std::string Cache::_createLineText ( const LineString::Vertices& vertices )
 {
+  typedef Usul::Convert::Type<double,std::string> ToString;
+
   std::string sql ( "GeomFromText ( 'LINESTRING ( " );
 
   if ( vertices.size() > 0 )
@@ -473,12 +475,12 @@ std::string Cache::_createLineText ( const LineString::Vertices& vertices )
     {
       Node::Location translated ( *iter );
       Cache::_translate ( translated );
-      sql = Usul::Strings::format ( sql, translated[0], " ", translated[1], ", " );
+      sql = Usul::Strings::format ( sql, ToString::convert ( translated[0] ), " ", ToString::convert ( translated[1] ), ", " );
     }
 
     Node::Location translated ( vertices.back() );
     Cache::_translate ( translated );
-    sql = Usul::Strings::format ( sql, translated[0], " ", translated[1] );
+    sql = Usul::Strings::format ( sql, ToString::convert ( translated[0] ), " ", ToString::convert ( translated[1] ) );
   }
   
   sql = Usul::Strings::format ( sql, " )', 4326 )" );
@@ -494,9 +496,10 @@ std::string Cache::_createLineText ( const LineString::Vertices& vertices )
 
 std::string Cache::_createPointText ( const Node::Location& location )
 {
+  typedef Usul::Convert::Type<double,std::string> ToString;
   Node::Location translated ( location );
   Cache::_translate ( translated );
-  return Usul::Strings::format ( "GeomFromText ( 'POINT ( ", translated[0], ' ', translated[1], " )', 4326 )" );
+  return Usul::Strings::format ( "GeomFromText ( 'POINT ( ", ToString::convert ( translated[0] ), ' ', ToString::convert ( translated[1] ), " )', 4326 )" );
 }
 
 
@@ -534,19 +537,13 @@ void Cache::_unTranslate ( Node::Location& location )
 
 std::string Cache::_createIndexQuery ( const std::string& tableName, const std::string& columnName, const Extents& extents )
 {
-#if 1
-  const std::string sql ( Usul::Strings::format ( "SELECT pkid FROM idx_", tableName, "_", columnName, " WHERE ",
-    "MAX ( xmin, ", extents.minLon() + 180.0, " ) <= MIN ( xmax, ", extents.maxLon() + 180.0, " ) AND ",
-    "MAX ( ymin, ", extents.minLat() + 90.0,  " ) <= MIN ( ymax, ", extents.maxLat() + 90.0, " )" ) );
+  typedef Usul::Convert::Type<double,std::string> ToString;
+  Extents e ( extents.minLon() + 180.0, extents.minLat() + 90.0, extents.maxLon() + 180.0, extents.maxLat() + 90.0 );
 
-  /*const std::string sql ( Usul::Strings::format ( "SELECT pkid FROM idx_", tableName, "_", columnName, " WHERE MBRIntersects ( ",
-      "BuildMBR ( ", extents.minLon() + 180.0, ", ", extents.minLat() + 90.0, ", ", extents.maxLon() + 180.0, ", ", extents.maxLat() + 90.0, " ),",
-      "BuildMBR ( xmin, ymin, xmax, ymax ) )" ) );*/
-#else
-  const std::string sql ( Usul::Strings::format ( "SELECT pkid FROM idx_", tableName, "_", columnName, " WHERE ",
-                " xmin >= ", extents.minLon() + 180.0, " AND xmax <= ", extents.maxLon() + 180.0, 
-            " AND ymin >= ", extents.minLat() + 90.0 , " AND ymax <= ", extents.maxLat() + 90.0 ) );
-#endif
+  const std::string sql ( Usul::Strings::format ( "SELECT pkid FROM idx_", tableName, "_", columnName, " WHERE MBRIntersects ( ",
+    "BuildMBR ( ", ToString::convert ( e.minLon() ), ", ", ToString::convert ( e.minLat() ), ", ", ToString::convert ( e.maxLon() ), ", ", ToString::convert ( e.maxLat() ), " ),",
+    "BuildMBR ( xmin, ymin, xmax, ymax ) )" ) );
+
   return sql;
 }
 
@@ -700,10 +697,17 @@ bool Cache::hasLineData ( const std::string& key, const Extents& extents ) const
   if ( false == _connection.valid() )
     return false;
 
-  const std::string sql ( Usul::Strings::format (
-    "SELECT * FROM ", LINE_STRING_CACHE_ENTRIES, " WHERE \"", KEY_COLUMN, "\"=\"", key, "\"", " AND \"", 
-    MIN_LON, "\" >= ", extents.minLon(), " AND \"", MIN_LAT, "\" >= ", extents.minLat(), " AND \"",
-    MAX_LON, "\" <= ", extents.maxLon(), " AND \"", MAX_LAT, "\" <= ", extents.maxLat(), " LIMIT 1" ) );
+  typedef Usul::Convert::Type<double,std::string> ToString;
+
+  const std::string mbr1 ( Usul::Strings::format ( 
+    "BuildMBR ( ", 
+      ToString::convert ( extents.minLon() ), ", ", 
+      ToString::convert ( extents.minLat() ), ", ", 
+      ToString::convert ( extents.maxLon() ), ", ", 
+      ToString::convert ( extents.maxLat() ), " )" ) );
+  const std::string mbr2 ( Usul::Strings::format ( "BuildMBR ( ", MIN_LON, ", ", MIN_LAT, ", ", MAX_LON, ",", MAX_LAT, " )" ) );
+  const std::string sql ( Usul::Strings::format ( "SELECT 1 FROM ", LINE_STRING_CACHE_ENTRIES, 
+    " WHERE MBRIntersects ( ", mbr1, ",", mbr2, " ) AND \"", KEY_COLUMN, "\"=\"", key, "\" LIMIT 1" ) );
 
   USUL_TRY_BLOCK
   {
@@ -732,9 +736,10 @@ int Cache::_addLineEntry ( const std::string& key, const Extents& extents )
     MIN_LON, ", ", MIN_LAT, ", ", 
     MAX_LON, ", ", MAX_LAT ) );
 
+  typedef Usul::Convert::Type<double,std::string> ToString;
   const std::string values ( Usul::Strings::format ( "\"", key, "\", ", 
-      extents.minLon(), ", ", extents.minLat(), ", ", 
-      extents.maxLon(), ", ", extents.maxLat() ) );
+    ToString::convert ( extents.minLon() ), ", ", ToString::convert ( extents.minLat() ), ", ", 
+    ToString::convert ( extents.maxLon() ), ", ", ToString::convert ( extents.maxLat() ) ) );
 
   const std::string sql ( Usul::Strings::format ( 
     "INSERT INTO ", LINE_STRING_CACHE_ENTRIES, " ( ", columns, " ) values (", values, " )" ) );

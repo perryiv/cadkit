@@ -317,14 +317,6 @@
 				Name="Jobs"
 				>
 				<File
-					RelativePath=".\DownloadJob.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\DownloadJob.h"
-					>
-				</File>
-				<File
 					RelativePath=".\LineJob.cpp"
 					>
 				</File>

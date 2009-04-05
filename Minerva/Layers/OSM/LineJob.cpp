@@ -37,8 +37,9 @@ LineJob::LineJob ( Usul::Jobs::Manager* manager,
                   unsigned int level, 
                   const Predicate& predicate,
                   Usul::Interfaces::IUnknown::RefPtr caller ) : 
-  BaseClass ( manager, cache, url, extents, predicate ),
-  _caller ( caller )
+  BaseClass ( manager, cache, url, extents, level, predicate ),
+  _caller ( caller ),
+  _lineStyle ( LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 1.0f ), 2.0 ) )
 {
   this->priority ( static_cast<int> ( level ) );
 }
@@ -86,10 +87,7 @@ void LineJob::_started()
 
 void LineJob::_buildDataObjects ( const Lines& lines )
 {
-  //this->_reserveDataSize ( lines.size() );
-
-  typedef Minerva::Core::Data::LineStyle LineStyle;
-  LineStyle::RefPtr style ( LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 1.0f ), 2.0 ) );
+  LineStyle::RefPtr style ( this->lineStyle() );
 
   DataObject::RefPtr object ( new DataObject );
 
@@ -97,7 +95,11 @@ void LineJob::_buildDataObjects ( const Lines& lines )
 #ifdef _DEBUG
   const unsigned int stride ( 8 );
 #else
-  const unsigned int stride ( 2 );
+
+  unsigned int stride ( 1 );
+
+  if ( this->level() < 10 )
+    stride = 5;
 #endif
 
   // Add all the nodes.
@@ -114,4 +116,18 @@ void LineJob::_buildDataObjects ( const Lines& lines )
   object->preBuildScene ( _caller );
   Usul::Interfaces::IUnknown::QueryPtr unknown ( object );
   this->_addData ( unknown );
+}
+
+
+/// Set/get the line style.
+void LineJob::lineStyle ( LineStyle::RefPtr style )
+{
+  Guard guard ( this );
+  _lineStyle = style;
+}
+
+LineJob::LineStyle::RefPtr LineJob::lineStyle() const
+{
+  Guard guard ( this );
+  return _lineStyle;
 }

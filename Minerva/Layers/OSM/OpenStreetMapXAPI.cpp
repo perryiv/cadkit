@@ -84,7 +84,8 @@ SERIALIZE_XML_DECLARE_TYPE_WRAPPER_CONTAINER ( std::vector, Predicate );
 OpenStreetMapXAPI::OpenStreetMapXAPI() : BaseClass(),
   _cache ( 0x0 ),
   _url ( "http://osmxapi.hypercube.telascience.org" ), // Default url.
-  _requestMap()
+  _requestMap(),
+  _styleMap()
 {
   this->extents ( Extents ( -180, -90, 180, 90 ) );
 
@@ -241,4 +242,42 @@ Cache::RefPtr OpenStreetMapXAPI::_getCache() const
 {
   Guard guard ( this );
   return _cache;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add a style for a predicate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void OpenStreetMapXAPI::addStyle ( const Predicate& predicate, Style::RefPtr style )
+{
+  Guard guard ( this );
+  _styleMap[predicate] = style;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the style for a predicate.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+OpenStreetMapXAPI::Style::RefPtr OpenStreetMapXAPI::getStyle ( const Predicate& predicate ) const
+{
+  {
+    Guard guard ( this );
+    StyleMap::const_iterator iter ( _styleMap.find ( predicate ) );
+    if ( iter != _styleMap.end() )
+      return iter->second;
+  }
+
+  // Return a default style if we didn't find one.
+  Style::RefPtr style ( new Style );
+
+  typedef Minerva::Core::Data::LineStyle LineStyle;
+  style->linestyle ( LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 1.0f ), 2.0 ) );
+  
+  return style;
 }

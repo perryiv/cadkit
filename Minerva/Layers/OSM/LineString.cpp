@@ -117,7 +117,7 @@ Minerva::Core::Data::Line* LineString::buildGeometry ( Minerva::Core::Data::Line
     vertices.push_back ( Usul::Math::Vec3d ( location[0], location[1], 0.0 ) );
   }
 
-  if ( ( false == _vertices.empty() ) && ( 0 != ( _vertices.size() % stride ) ) )
+  if ( ( 1 != stride ) && ( false == _vertices.empty() ) && ( 0 != ( _vertices.size() % stride ) ) )
   {
     Node::Location location ( _vertices.back() );
     vertices.push_back ( Usul::Math::Vec3d ( location[0], location[1], 0.0 ) );

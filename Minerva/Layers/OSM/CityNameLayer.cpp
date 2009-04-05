@@ -74,7 +74,7 @@ public:
     const Extents& extents, 
     unsigned int level,
     const Predicate& predicate ) : 
-    BaseClass ( manager, cache, url, extents, predicate )
+    BaseClass ( manager, cache, url, extents, level, predicate )
   {
     this->priority ( static_cast<int> ( level ) );
   }

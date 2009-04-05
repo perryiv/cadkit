@@ -46,11 +46,14 @@ public:
     Cache::RefPtr cache, 
     const std::string& url, 
     const Extents& extents, 
+    unsigned int level,
     const Predicate& predicate );
 
   Cache::RefPtr cache() const;
 
   Extents extents() const;
+
+  unsigned int level() const;
 
 protected:
 
@@ -89,7 +92,8 @@ private:
 
   Cache::RefPtr _cache;
   std::string _url;
-  Extents _extents;
+  const Extents _extents;
+  const unsigned int _level;
   Predicate _predicate;
   Data _data;
   bool _reAdd;

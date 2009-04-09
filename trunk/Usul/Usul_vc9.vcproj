@@ -240,10 +240,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Algorithms\MarchingCubes.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Algorithms\Sphere.h"
 					>
 				</File>
@@ -251,26 +247,6 @@
 					RelativePath=".\Algorithms\TriStrip.h"
 					>
 				</File>
-				<Filter
-					Name="Detail"
-					>
-					<File
-						RelativePath=".\Algorithms\Detail\Configurations.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Algorithms\Detail\ConfigurationTable.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Algorithms\Detail\Corners.h"
-						>
-					</File>
-					<File
-						RelativePath=".\Algorithms\Detail\Rotations.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Base"
@@ -2425,10 +2401,6 @@
 				>
 				<File
 					RelativePath=".\Loops\Direction.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Loops\FillLoop.h"
 					>
 				</File>
 				<File

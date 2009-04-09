@@ -27,8 +27,7 @@
 
 using namespace Minerva::Layers::OSM;
 
-USUL_FACTORY_REGISTER_CREATOR ( CityNameLayer );
-
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "OSM:CityNameLayer", CityNameLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -32,6 +32,8 @@ public:
 
   CityNameLayer();
 
+  virtual const char *className() const { return "OSM:CityNameLayer"; }
+
 protected:
 
   virtual ~CityNameLayer();
@@ -44,9 +46,6 @@ protected:
     Usul::Jobs::Manager *manager, 
     Usul::Interfaces::IUnknown::RefPtr caller );
 
-private:
-
-  SERIALIZE_XML_CLASS_NAME ( CityNameLayer );
 };
 
 }

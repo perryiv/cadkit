@@ -22,8 +22,7 @@
 
 using namespace Minerva::Layers::OSM;
 
-USUL_FACTORY_REGISTER_CREATOR ( AdminBoundaryLayer );
-
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "OSM:AdminBoundaryLayer", AdminBoundaryLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //

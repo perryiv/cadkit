@@ -49,9 +49,6 @@ SET ( HEADERS
 	./Declarations.h
 	./Dimension.h
 	./DisplayLists.h
-	./Drawables/VoxelGeometry.h
-	./Examples/utilities/Display.h
-	./Examples/utilities/FindGeodeVisitor.h
 	./Export.h
 	./FlipNormals.h
 	./Font.h
@@ -64,9 +61,6 @@ SET ( HEADERS
 	./Images/DownSample.h
 	./Images/Image3d.h
 	./Index.h
-	./Intersect/Frustum.h
-	./Intersect/FrustumFunctor.h
-	./Intersect/FrustumVisitor.h
 	./IO/GLFeedback.h
 	./IO/Reader.h
 	./IO/STLPrintVisitor.h
@@ -185,7 +179,6 @@ SET (SOURCES
   Group.cpp
   Images/DownSample.cpp
   Images/Image3d.cpp
-  Intersect/FrustumVisitor.cpp
   IO/GLFeedback.cpp
   IO/Reader.cpp
   IO/STLWriter.cpp
@@ -239,6 +232,7 @@ SET (SOURCES
   Widgets/Legend.cpp
   Widgets/LegendObject.cpp
   Widgets/Text.cpp
+  Volume/GPURayCasting.cpp
   Volume/PlanarProxyGeometry.cpp
   Volume/Texture3DVolume.cpp
   Volume/TransferFunction.cpp

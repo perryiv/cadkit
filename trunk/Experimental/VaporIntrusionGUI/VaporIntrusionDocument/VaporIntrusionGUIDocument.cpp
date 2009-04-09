@@ -177,11 +177,7 @@ void VaporIntrusionGUIDocument::write ( const std::string &name, Unknown *caller
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
   
-  //std::string filename = Usul::File::directory( name, true );
-  //filename = filename + Usul::File::base( name );
-  //std::cout << "Writing file " << filename << "..." << std::endl;
-  //osgDB::writeNodeFile( *_root.get(), filename+ ".ive" );
-
+  this->_write( name, caller, progress );
 }
 
 
@@ -311,7 +307,9 @@ void VaporIntrusionGUIDocument::_initCubes()
 {
   Guard guard( this );
 
-  // Clear the cubes
+ 
+#if 0
+   // Clear the cubes
   _cubes.clear();
 
   // Set the X size to the proper dimensions
@@ -329,11 +327,60 @@ void VaporIntrusionGUIDocument::_initCubes()
         Cell cell;
 
         cell.position = Usul::Math::Vec3f( float( x ), float( y ), float( z ) );
+        cell.dimensions = Usul::Math::Vec3f( 1.0f, 1.0f, 1.0f );
+
         // Add a default cube
         _cubes.at( x ).at( y ).at( z ) = cell;
       }
     }
   }
+#else
+  // size the x values
+  _xValues.resize( _dimensions[0] );
+
+  // set the initial value and width
+  _xValues.at( 0 ).first = 0.0f;
+  _xValues.at( 0 ).second = 1.0f;
+
+  // set the x values to defaults
+  for( unsigned int i = 1; i < _dimensions[0]; ++i )
+  {
+    double position ( _xValues.at( i - 1 ).first + _xValues.at( i - 1 ).second );
+    _xValues.at( i ).first = position;
+    _xValues.at( i ).second = 1.0f;
+  }
+
+  // size the y values
+  _yValues.resize( _dimensions[1] );
+
+  // set the initial value and width
+  _yValues.at( 0 ).first = 0.0f;
+  _yValues.at( 0 ).second = 1.0f;
+
+  // set the x values to defaults
+  for( unsigned int j = 1; j < _dimensions[1]; ++j )
+  {
+    double position ( _yValues.at( j - 1 ).first + _xValues.at( j - 1 ).second );
+    _yValues.at( j ).first = position;
+    _yValues.at( j ).second = 1.0f;
+  }
+
+   // size the x values
+  _zValues.resize( _dimensions[2] );
+
+  // set the initial value and width
+  _zValues.at( 0 ).first = 0.0f;
+  _zValues.at( 0 ).second = 1.0f;
+
+  // set the x values to defaults
+  for( unsigned int k = 1; k < _dimensions[2]; ++k )
+  {
+    double position ( _zValues.at( k - 1 ).first + _zValues.at( k - 1 ).second );
+    _zValues.at( k ).first = position;
+    _zValues.at( k ).second = 1.0f;
+  }
+
+#endif
 
 }
 
@@ -355,40 +402,47 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
   // Remove all the children
   _root->removeChildren( 0, _root->getNumChildren() );
 
-  // Loop through the dimensions and build the cube
-  for( unsigned int x = 0; x < _dimensions[0]; ++x )
-  {
+  // get the size of the x domain
+  unsigned int xsize ( _xValues.size() );
 
-    for( unsigned int y = 0; y < _dimensions[1]; ++y )
+  // Loop through the dimensions and build the cube
+  for( unsigned int x = 0; x < xsize; ++x )
+  {
+    // get the size of the y domain at x
+    unsigned int ysize ( _yValues.size() );
+
+    for( unsigned int y = 0; y < ysize; ++y )
     {
-      for( unsigned int z = 0; z < _dimensions[2]; ++z )
+      // get the size of the z domain at xy
+      unsigned int zsize ( _zValues.size() );
+
+      for( unsigned int z = 0; z < zsize; ++z )
       {
         // Set the default ValueType
         Color c ( 0.5, 0.5, 0.5, 0.1 );
         osg::ref_ptr< osg::Material > material ( new osg::Material );
         material->setAmbient( osg::Material::FRONT_AND_BACK, c );
         material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
-        _cubes.at( x ).at ( y ).at ( z ).color = c;
+        //_cubes.at( x ).at ( y ).at ( z ).color = c;
         
         // Position of the (0,0,0) corner
-        Usul::Math::Vec3f pos ( _cubes.at( x ).at( y ).at( z ).position );
+        Usul::Math::Vec3f pos ( _xValues.at( x ).first, _yValues.at( y ).first, _zValues.at( z ).first );
 
         // Offset
-        Usul::Math::Vec3f offset ( _cubes.at( x ).at( y ).at( z ).dimensions );
+        Usul::Math::Vec3f offset ( _xValues.at( x ).second, _yValues.at( y ).second, _zValues.at( z ).second );
 
         // Points
-        float px( pos[0] + offset[0] ), py( pos[1] + offset[1] ), pz( pos[2] + offset[2] );
         
         // create the points for the cube
         osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
-        p->push_back( osg::Vec3( float( px )    , float( py )    , float( pz ) ) );
-        p->push_back( osg::Vec3( float( px + 1 ), float( py )    , float( pz ) ) );
-        p->push_back( osg::Vec3( float( px )    , float( py + 1 ), float( pz ) ) );
-        p->push_back( osg::Vec3( float( px + 1 ), float( py + 1 ), float( pz ) ) );
-        p->push_back( osg::Vec3( float( px )    , float( py )    , float( pz + 1 ) ) );
-        p->push_back( osg::Vec3( float( px + 1 ), float( py )    , float( pz + 1 ) ) );
-        p->push_back( osg::Vec3( float( px )    , float( py + 1 ), float( pz + 1 ) ) );
-        p->push_back( osg::Vec3( float( px + 1 ), float( py + 1 ), float( pz + 1 ) ) );
+        p->push_back( osg::Vec3( float( pos[0] )            , float( pos[1] )            , float( pos[2]             ) ) );
+        p->push_back( osg::Vec3( float( pos[0] + offset[0] ), float( pos[1] )            , float( pos[2]             ) ) );
+        p->push_back( osg::Vec3( float( pos[0] )            , float( pos[1] + offset[1] ), float( pos[2]            ) ) );
+        p->push_back( osg::Vec3( float( pos[0] + offset[0] ), float( pos[1] + offset[1] ), float( pos[2]             ) ) );
+        p->push_back( osg::Vec3( float( pos[0] )            , float( pos[1] )            , float( pos[2] + offset[2] ) ) );
+        p->push_back( osg::Vec3( float( pos[0] + offset[0] ), float( pos[1] )            , float( pos[2] + offset[2] ) ) );
+        p->push_back( osg::Vec3( float( pos[0] )            , float( pos[1] + offset[1] ), float( pos[2] + offset[2] ) ) );
+        p->push_back( osg::Vec3( float( pos[0] + offset[0] ), float( pos[1] + offset[1] ), float( pos[2] + offset[2] ) ) );
 
         // build the sub cube
         osg::ref_ptr< osg::Group > group ( new osg::Group );
@@ -402,10 +456,10 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
         OsgTools::State::StateSet::setAlpha( group.get(), c.a() );
 
         // Set the cube
-        _cubes.at( x ).at ( y ).at ( z ).group = group.get();
+        //_cubes.at( x ).at ( y ).at ( z ).group = group.get();
 
         // Add the cubre to the scene
-        _root->addChild( _cubes.at( x ).at( y ).at( z ).group.get() );
+        _root->addChild( group.get() );
       }
 
     }
@@ -416,6 +470,14 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
    
 }
 
+void VaporIntrusionGUIDocument::rebuildScene()
+{
+  // rebuild the scene
+  this->_buildScene();
+
+  // request a redraw
+  this->requestRedraw();
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -572,10 +634,11 @@ Usul::Math::Vec3ui VaporIntrusionGUIDocument::dimensions()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::setValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value )
+void VaporIntrusionGUIDocument::setValueAt( unsigned int x, unsigned int y, unsigned int z, unsigned int index, const std::string& value )
 {
   Guard guard( this );
-  _cubes.at( x ).at( y ).at( z ).value = value;
+  
+  _cubes.at( x ).at( y ).at( z ).values.at( index ).value = value;
 }
 
 
@@ -586,10 +649,46 @@ void VaporIntrusionGUIDocument::setValueAt( unsigned int x, unsigned int y, unsi
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::setNameAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name )
+void VaporIntrusionGUIDocument::setNameAt( unsigned int x, unsigned int y, unsigned int z, unsigned int index, const std::string& name )
 {
   Guard guard( this );
-  _cubes.at( x ).at( y ).at( z ).name = name;
+  _cubes.at( x ).at( y ).at( z ).values.at( index ).name = name;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add a value to cell at xyz with <name> <value>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name, const std::string& value )
+{
+  Guard guard( this );
+  
+  // Create a value to add
+  Value v ( name, value );
+
+  // add to the vector of values for the cube at xyz
+  _cubes.at( x ).at( y ).at( z ).values.push_back( v );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add a value to cell at xyz with default name and <value>
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value )
+{
+  Guard guard( this );
+
+  // Create a value to add
+  Value v ( "default", value );
+
+  // add to the vector of values for the cube at xyz
+  _cubes.at( x ).at( y ).at( z ).values.push_back( v );
 }
 
 
@@ -631,4 +730,102 @@ Usul::Math::Vec4f VaporIntrusionGUIDocument::getMaterial( unsigned int x, unsign
 void VaporIntrusionGUIDocument::requestRedraw()
 {
   BaseClass::requestRedraw();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Write the necessary files for the Vapor Intrusion Process
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_write( const std::string &filename, Unknown *caller, Unknown *progress ) const
+{
+  Guard guard( this );
+
+  // get the directory
+  std::string directory ( Usul::File::directory( filename, true ) );
+
+  // get the base
+  std::string base ( Usul::File::base( filename ) );
+
+  
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the x grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::GridPoints VaporIntrusionGUIDocument::getXGrid()
+{
+  Guard guard( this );
+  return _xValues;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the y grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::GridPoints VaporIntrusionGUIDocument::getYGrid()
+{
+  Guard guard( this );
+  return _yValues;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the z grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::GridPoints VaporIntrusionGUIDocument::getZGrid()
+{
+  Guard guard( this );
+  return _zValues;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the x grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setXGrid( GridPoints points )
+{
+  Guard guard( this );
+  _xValues = points;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the y grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setYGrid( GridPoints points )
+{
+  Guard guard( this );
+  _yValues = points;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the z grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::setZGrid( GridPoints points )
+{
+  Guard guard( this );
+  _zValues = points;
 }

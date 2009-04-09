@@ -21,6 +21,7 @@
 #include "MaterialContainer.h"
 #include "MaterialDialog.h"
 #include "NewVaporIntrusion.h"
+#include "GridEditorDialog.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -84,6 +85,9 @@ public:
   // Usul::Interfaces::IInitNewDocument.
   virtual bool                handlesDocumentType ( Unknown *document );
   virtual void                initNewDocument ( Unknown *document, Unknown *caller );
+
+  // edit the grid
+  void                        editGrid();
 
 protected: 
 

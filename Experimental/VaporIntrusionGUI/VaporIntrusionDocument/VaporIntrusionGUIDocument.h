@@ -62,29 +62,47 @@ public:
   typedef DocManager::DocumentInfo Info;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef osg::Vec4 Color;
+  typedef std::vector< std::pair< double, double > > GridPoints;
+  
+  struct Value
+  {
+    std::string name;
+    std::string value;
+
+    Value():
+      name( "default" ),
+      value( "0" )
+      {};
+
+    Value( const std::string& n, const std::string& v ) :
+      name( n ),
+      value( v )
+      {};
+  };
+  typedef std::vector< Value > Values;
 
   struct Cell
   {
     osg::Vec4 color;
     GroupPtr group;
     std::string name;
-    std::string value;
+    Values values;
     Usul::Math::Vec3f position, dimensions;
 
     Cell() : 
       color( 0.5, 0.5, 0.5, 0.5 ), 
       group ( new osg::Group ),
       name(),
-      value(),
+      values(),
       position( 0.0f, 0.0f, 0.0f ),
       dimensions( 1.0f, 1.0f, 1.0f )
       {};
 
-      Cell( osg::Vec4 c, GroupPtr g, std::string n, std::string v, Usul::Math::Vec3f pos, Usul::Math::Vec3f dim ) :
+      Cell( osg::Vec4 c, GroupPtr g, std::string n, Values v, Usul::Math::Vec3f pos, Usul::Math::Vec3f dim ) :
         color( c), 
         group ( g ),
         name( n ),
-        value( v ),
+        values( v ),
         position( pos ),
         dimensions( dim )
         {};
@@ -93,6 +111,7 @@ public:
   typedef Cell Cube;
   //typedef std::pair< ValueType, GroupPtr > Cube;
   typedef std::vector< std::vector< std::vector< Cube > > > Cubes;
+
 
 
   /// Smart-pointer definitions.
@@ -137,8 +156,17 @@ public:
   virtual void                setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c );
   virtual Usul::Math::Vec4f   getMaterial( unsigned int x, unsigned int y, unsigned int z );
   virtual void                requestRedraw();
-  virtual void                setValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value );
-  virtual void                setNameAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name );
+  virtual void                setValueAt( unsigned int x, unsigned int y, unsigned int z, unsigned int index, const std::string& value );
+  virtual void                setNameAt( unsigned int x, unsigned int y, unsigned int z, unsigned int index, const std::string& name );
+  virtual void                addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name, const std::string& value );
+  virtual void                addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value );
+  virtual GridPoints          getXGrid();
+  virtual GridPoints          getYGrid();
+  virtual GridPoints          getZGrid();
+  virtual void                setXGrid( GridPoints points );
+  virtual void                setYGrid( GridPoints points );
+  virtual void                setZGrid( GridPoints points );
+  virtual void                rebuildScene();
 
 protected:
 
@@ -160,11 +188,20 @@ protected:
 
   void                        _initCubes();
 
+  // Write the necessary files for the Vapor Intrusion Process
+  void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
+
+  // read layer file
+  void                        _readLayerFile( const std::string& filename );
+
 
 private:
     GroupPtr                  _root;
     Usul::Math::Vec3ui        _dimensions;
     Cubes                     _cubes;
+    GridPoints                _xValues;
+    GridPoints                _yValues;
+    GridPoints                _zValues;
     
     
   

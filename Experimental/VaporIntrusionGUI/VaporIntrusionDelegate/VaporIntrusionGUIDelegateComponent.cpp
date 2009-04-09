@@ -209,9 +209,9 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
 
     // Show the windows
     _xyzView->show();
-    _xyView->show();
-    _xzView->show();
-    _yzView->show();
+    //_xyView->show();
+    //_xzView->show();
+    //_yzView->show();
 
     // Start with all windows tiled
     parent->tile();
@@ -228,13 +228,15 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
 void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller)
 {
   // Make the menu.
-  //MenuKit::Menu::RefPtr windowMenu ( new MenuKit::Menu ( "Window" ) );
+  MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Variables" ) );
   
   // Add Window arrange button
-  //windowMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Arrange", Usul::Adaptors::bind1<void> ( caller,  Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::tile )  ), Usul::Commands::TrueFunctor() ) ) );
-  
+  //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::bind1<void> ( caller,  Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid )  ), Usul::Commands::TrueFunctor() ) ) );
+  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ), Usul::Commands::TrueFunctor() ) ) );
+  //Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::memberFunction<void> ( object, fun ), Usul::Commands::TrueFunctor() )
+
   // Add the window menu to the main menu
-  //menu.append( windowMenu.get() );
+  menu.append( variableMenu.get() );
 }
 
 
@@ -319,4 +321,22 @@ bool VaporIntrusionGUIDelegateComponent::handlesDocumentType ( Usul::Interfaces:
 
   Usul::Interfaces::IDocument::QueryPtr doc ( document );
   return ( ( true == doc.valid() ) ? this->doesHandle ( doc->typeName() ) : false );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the grid space
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editGrid()
+{
+  
+  // Make the dialog.
+  GridEditorDialog gridEditor;
+
+  // Show the dialog.
+  if ( QDialog::Accepted != gridEditor.exec() )
+    throw Usul::Exceptions::Canceled();
 }

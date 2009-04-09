@@ -165,6 +165,7 @@ void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsign
   osg::Vec4 osgColor ( 1.0, 0.0, 0.0, 1.0 );
   std::string name;
   std::string value;
+
   if( 0x0 != _materialContainer )
   {
     osgColor = _materialContainer->getCurrentColor();
@@ -184,11 +185,8 @@ void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsign
    // Set the material for the cube
     document->setMaterial( x, y, z, color ); 
 
-    // Set the name
-    document->setNameAt( x, y, z, name );
-
-    // Set the value
-    document->setValueAt( x, y, z, value ); 
+    // add the value
+    document->addValueAt( x, y, z, name, value );
 
   }
 
@@ -198,11 +196,8 @@ void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsign
     // Set the material for the cube
     document->setMaterial( x, y, z, color );
 
-    // Set the name
-    document->setNameAt( x, y, z, name );
-
-    // Set the value
-    document->setValueAt( x, y, z, value ); 
+    // add the value
+    document->addValueAt( x, y, z, name, value ); 
 
   }
 
@@ -212,11 +207,8 @@ void VaporIntrusionGUIViewer::_colorCube( unsigned int x, unsigned int y, unsign
     // Set the material for the cube
     document->setMaterial( x, y, z, color );
 
-    // Set the name
-    document->setNameAt( x, y, z, name );
-
-    // Set the value
-    document->setValueAt( x, y, z, value ); 
+    // add the value
+    document->addValueAt( x, y, z, name, value );
   }
 
 }
@@ -257,7 +249,7 @@ void VaporIntrusionGUIViewer::wheelEvent ( QWheelEvent * event )
     return;
 
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument()->queryInterface( Usul::Interfaces::IVaporIntrusionGUI::IID ) );
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
   if( false == document.valid() )
     return;
 

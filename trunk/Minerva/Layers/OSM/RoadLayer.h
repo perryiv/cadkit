@@ -32,6 +32,8 @@ public:
 
   RoadLayer();
 
+  virtual const char *className() const { return "OSM:RoadLayer"; }
+
 protected:
 
   virtual ~RoadLayer();
@@ -44,9 +46,6 @@ protected:
     Usul::Jobs::Manager *manager, 
     Usul::Interfaces::IUnknown::RefPtr caller );
 
-private:
-
-  SERIALIZE_XML_CLASS_NAME ( RoadLayer );
 };
 
 }

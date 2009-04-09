@@ -22,8 +22,7 @@
 
 using namespace Minerva::Layers::OSM;
 
-USUL_FACTORY_REGISTER_CREATOR ( RoadLayer );
-
+USUL_FACTORY_REGISTER_CREATOR_WITH_NAME ( "OSM:RoadLayer", RoadLayer );
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -36,14 +35,14 @@ RoadLayer::RoadLayer() : BaseClass()
   this->_initializeCache ( "road_layer" );
 
   // See http://wiki.openstreetmap.org/wiki/Map_Features for key, value pairs.
-  const Predicate motorway ( Predicate ( "highway", "motorway" ) );
-  const Predicate motorwayLink ( Predicate ( "highway", "motorway_link" ) );
-  const Predicate primary ( Predicate ( "highway", "primary" ) );
-  const Predicate secondary ( Predicate ( "highway", "secondary" ) );
-  const Predicate tertiary ( Predicate ( "highway", "tertiary" ) );
-  const Predicate unclassified ( Predicate ( "highway", "unclassified" ) );
-  const Predicate road ( Predicate ( "highway", "road" ) );
-  const Predicate residential ( Predicate ( "highway", "residential" ) );
+  const Predicate motorway ( "highway", "motorway" );
+  const Predicate motorwayLink ( "highway", "motorway_link" );
+  const Predicate primary ( "highway", "primary" );
+  const Predicate secondary ( "highway", "secondary" );
+  const Predicate tertiary ( "highway", "tertiary" );
+  const Predicate unclassified ( "highway", "unclassified" );
+  const Predicate road ( "highway", "road" );
+  const Predicate residential ( "highway", "residential" );
 
   // Add the request starting at given level.
   this->addRequest ( 5, motorway );

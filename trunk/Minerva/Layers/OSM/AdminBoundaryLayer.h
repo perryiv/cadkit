@@ -33,6 +33,8 @@ public:
 
   AdminBoundaryLayer();
 
+  virtual const char *className() const { return "OSM:AdminBoundaryLayer"; }
+
 protected:
 
   virtual ~AdminBoundaryLayer();
@@ -45,9 +47,6 @@ protected:
     Usul::Jobs::Manager *manager, 
     Usul::Interfaces::IUnknown::RefPtr caller );
 
-private:
-
-  SERIALIZE_XML_CLASS_NAME ( AdminBoundaryLayer );
 };
 
 }

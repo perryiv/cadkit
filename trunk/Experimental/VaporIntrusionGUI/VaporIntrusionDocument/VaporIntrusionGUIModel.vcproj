@@ -228,10 +228,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\VaporIntrusionDefs.h"
-					>
-				</File>
-				<File
 					RelativePath=".\VaporIntrusionGUIComponent.cpp"
 					>
 				</File>

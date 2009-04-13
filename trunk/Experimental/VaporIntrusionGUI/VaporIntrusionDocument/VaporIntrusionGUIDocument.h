@@ -63,6 +63,7 @@ public:
   typedef osg::ref_ptr< osg::Group > GroupPtr;
   typedef osg::Vec4 Color;
   typedef std::vector< std::pair< double, double > > GridPoints;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::ParameterList ParameterList;
   
   struct Value
   {
@@ -167,6 +168,9 @@ public:
   virtual void                setYGrid( GridPoints points );
   virtual void                setZGrid( GridPoints points );
   virtual void                rebuildScene();
+  virtual void                readParamaterFile( const std::string& filename );
+  virtual ParameterList       parameters();
+  virtual void                parameters( ParameterList plist );
 
 protected:
 
@@ -202,6 +206,8 @@ private:
     GridPoints                _xValues;
     GridPoints                _yValues;
     GridPoints                _zValues;
+    ParameterList             _inputParameters;
+
     
     
   

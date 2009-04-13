@@ -317,3 +317,5 @@ void GridEditorDialog::on_applyButton_clicked()
   // rebuild the scene
   document->rebuildScene();
 }
+
+

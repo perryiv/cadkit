@@ -233,6 +233,8 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   // Add Window arrange button
   //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::bind1<void> ( caller,  Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid )  ), Usul::Commands::TrueFunctor() ) ) );
   variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ), Usul::Commands::TrueFunctor() ) ) );
+  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ), Usul::Commands::TrueFunctor() ) ) );
+  
   //Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::memberFunction<void> ( object, fun ), Usul::Commands::TrueFunctor() )
 
   // Add the window menu to the main menu
@@ -338,5 +340,23 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
 
   // Show the dialog.
   if ( QDialog::Accepted != gridEditor.exec() )
+    throw Usul::Exceptions::Canceled();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the input parameters
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editInputParameters()
+{
+  
+  // Make the dialog.
+  InputParameterDialog dialog;
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
 }

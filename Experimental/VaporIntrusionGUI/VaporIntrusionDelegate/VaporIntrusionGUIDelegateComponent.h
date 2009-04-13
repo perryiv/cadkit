@@ -22,6 +22,7 @@
 #include "MaterialDialog.h"
 #include "NewVaporIntrusion.h"
 #include "GridEditorDialog.h"
+#include "InputParameterDialog.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -88,6 +89,9 @@ public:
 
   // edit the grid
   void                        editGrid();
+
+  // edit the input parameters
+  void                        editInputParameters();
 
 protected: 
 

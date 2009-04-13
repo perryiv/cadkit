@@ -68,7 +68,11 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDocument, VaporIntrusionGUIDo
 VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor Intrusion GUI" ),
   _root( 0x0 ),
   _dimensions( 10, 10, 10 ),
-  _cubes()
+  _cubes(),
+  _xValues(),
+  _yValues(),
+  _zValues(),
+  _inputParameters()
 {
   USUL_TRACE_SCOPE;
 
@@ -828,4 +832,127 @@ void VaporIntrusionGUIDocument::setZGrid( GridPoints points )
 {
   Guard guard( this );
   _zValues = points;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the parameter file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::readParamaterFile( const std::string& filename )
+{
+  Guard guard( this );
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+    throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    // index of the start of the first value
+    unsigned int index ( 0 );
+
+    // find the first value
+    for( unsigned int i = 0; i < tStr.size(); ++i )
+    {
+      // count indices until we find something besides a space
+      if( tStr.at( i ) == ' ' )
+      {
+        ++index;
+      }
+      else
+      {
+        // exit loop when we find a non-space character
+        break;
+      }
+    }
+
+    // temp string for the first value
+    std::string value ( "" );
+
+    // grab the first value
+    for( unsigned int i = index; i < tStr.size(); ++i )
+    {
+      // count indices until we find something besides a space
+      if( tStr.at( i ) <= ' ' )
+      {
+        value += tStr.at( i );
+
+        ++index;
+      }
+      else
+      {
+        // exit loop when we find a non-space character
+        break;
+      }
+    }
+
+    // skip spaces until we find the start of the description
+    for( unsigned int i = index; i < tStr.size(); ++i )
+    {
+      // count indices until we find something besides a space
+      if( tStr.at( i ) == ' ' )
+      {
+        ++index;
+      }
+      else
+      {
+        // exit loop when we find a non-space character
+        break;
+      }
+    }
+
+    // temp value for the description
+    std::string description ( tStr.substr( index, tStr.size() ) );
+
+  }// end while loop for file reading
+
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the parameter file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::ParameterList VaporIntrusionGUIDocument::parameters()
+{
+  Guard guard( this );
+  return _inputParameters;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the parameter file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::parameters( ParameterList plist )
+{
+  Guard guard( this );
+  _inputParameters = plist;
 }

@@ -14,8 +14,6 @@
 
 #include "Experimental/WRF/WrfModel/Parser.h"
 
-#include "OsgTools/Images/Matrix.h"
-
 #include "Usul/Exceptions/Thrower.h"
 #include "Usul/Strings/Format.h"
 #include "Usul/System/LastError.h"
@@ -28,8 +26,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Parser::Parser(  ) : 
-  _filename       ( ),
+Parser::Parser() : 
+  _filename       (),
   _fp             ( 0x0 ),
   _xSize          ( 0 ),
   _ySize          ( 0 ),

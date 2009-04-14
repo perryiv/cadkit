@@ -37,8 +37,11 @@ RoadLayer::RoadLayer() : BaseClass()
   // See http://wiki.openstreetmap.org/wiki/Map_Features for key, value pairs.
   const Predicate motorway ( "highway", "motorway" );
   const Predicate motorwayLink ( "highway", "motorway_link" );
+  const Predicate trunk ( "highway", "trunk" );
   const Predicate primary ( "highway", "primary" );
+  const Predicate primaryLink ( "highway", "primary_link" );
   const Predicate secondary ( "highway", "secondary" );
+  const Predicate secondaryLink ( "highway", "secondary_link" );
   const Predicate tertiary ( "highway", "tertiary" );
   const Predicate unclassified ( "highway", "unclassified" );
   const Predicate road ( "highway", "road" );
@@ -48,8 +51,11 @@ RoadLayer::RoadLayer() : BaseClass()
   this->addRequest ( 5, motorway );
   
   this->addRequest ( 10, motorwayLink );
+  this->addRequest ( 10, trunk );
   this->addRequest ( 10, primary );
+  this->addRequest ( 10, primaryLink );
   this->addRequest ( 10, secondary );
+  this->addRequest ( 10, secondaryLink );
 
   this->addRequest ( 15, tertiary );
   this->addRequest ( 15, unclassified );
@@ -63,8 +69,11 @@ RoadLayer::RoadLayer() : BaseClass()
   Style::RefPtr yellow ( new Style );
   yellow->linestyle ( Minerva::Core::Data::LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 0.0f, 0.7f ), 2.0f ) );
   this->addStyle ( motorwayLink, orange );
+  this->addStyle ( trunk, yellow );
   this->addStyle ( primary, yellow );
+  this->addStyle ( primaryLink, yellow );
   this->addStyle ( secondary, yellow );
+  this->addStyle ( secondaryLink, yellow );
 
   Style::RefPtr white ( new Style );
   white->linestyle ( Minerva::Core::Data::LineStyle::create ( Usul::Math::Vec4f ( 1.0f, 1.0f, 1.0f, 0.7f ), 2.0f ) );

@@ -706,8 +706,8 @@ bool Cache::hasLineData ( const std::string& key, const Extents& extents ) const
       ToString::convert ( extents.maxLon() ), ", ", 
       ToString::convert ( extents.maxLat() ), " )" ) );
   const std::string mbr2 ( Usul::Strings::format ( "BuildMBR ( ", MIN_LON, ", ", MIN_LAT, ", ", MAX_LON, ",", MAX_LAT, " )" ) );
-  const std::string sql ( Usul::Strings::format ( "SELECT 1 FROM ", LINE_STRING_CACHE_ENTRIES, 
-    " WHERE MBRIntersects ( ", mbr1, ",", mbr2, " ) AND \"", KEY_COLUMN, "\"=\"", key, "\" LIMIT 1" ) );
+  const std::string sql ( Usul::Strings::format ( "SELECT * FROM ", LINE_STRING_CACHE_ENTRIES, 
+    " WHERE MBRWithin ( ", mbr1, ",", mbr2, " ) AND \"", KEY_COLUMN, "\"=\"", key, "\" LIMIT 1" ) );
 
   USUL_TRY_BLOCK
   {

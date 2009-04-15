@@ -65,7 +65,7 @@ void ExportImage::_execute ()
 
   // Get the interfaces
   Usul::Interfaces::IExportImage::QueryPtr imageExport ( Usul::Documents::Manager::instance().activeView() );
-  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller() );
+  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller().get() );
 
   // If the interfaces are valid...
   if( imageExport.valid() && saveDialog.valid() )

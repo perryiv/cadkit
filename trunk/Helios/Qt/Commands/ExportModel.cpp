@@ -65,7 +65,7 @@ void ExportModel::_execute ()
 
   // Get the interfaces
   Usul::Interfaces::IExportModel::QueryPtr modelExport ( Usul::Documents::Manager::instance().activeView() );
-  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller() );
+  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller().get() );
 
   // If the interfaces are valid...
   if( modelExport.valid() && saveDialog.valid() )

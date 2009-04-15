@@ -51,7 +51,7 @@ void MpdPrevTimestep::_execute ()
 {
   USUL_TRACE_SCOPE;
 #if 1
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller().get() );
   if ( nav.valid () )
   {
     nav->prevStep();

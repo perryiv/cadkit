@@ -222,7 +222,7 @@ OpenDocument::FileNames OpenDocument::_askForFileNames ( const std::string &titl
   // Do not lock the mutex. This function is re-entrant.
 
   // Get the needed interface.
-  ILoadFileDialog::QueryPtr dialog ( this->caller() );
+  ILoadFileDialog::QueryPtr dialog ( this->caller().get() );
   if ( false == dialog.valid() )
     return FileNames();
 

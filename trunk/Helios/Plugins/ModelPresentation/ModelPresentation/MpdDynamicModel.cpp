@@ -54,7 +54,7 @@ void MpdDynamicModel::_execute ()
   USUL_TRACE_SCOPE;
   
 #if 1
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller().get() );
 
   if ( nav.valid () )
   {
@@ -82,7 +82,7 @@ bool MpdDynamicModel::updateCheck () const
   USUL_TRACE_SCOPE;
 
   // Implement me to update radio state.
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
 
   
   if( true == nav->dynamicModelState( _set ) )

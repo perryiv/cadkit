@@ -55,7 +55,7 @@ void MpdMenuCommand::_execute ()
   USUL_TRACE_SCOPE;
   
 #if 1
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller().get() );
 
   if ( nav.valid () )
   {
@@ -76,7 +76,7 @@ bool MpdMenuCommand::updateCheck () const
   USUL_TRACE_SCOPE;
 
   // Implement me to update radio state.
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
 
   unsigned int currentGroup = nav->getCurrentGroupFromSet( _set );
   if( currentGroup == _group )

@@ -65,7 +65,7 @@ void ExportScene::_execute ()
 
   // Get the interfaces
   Usul::Interfaces::IExportScene::QueryPtr sceneExport ( Usul::Documents::Manager::instance().activeView() );
-  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller() );
+  Usul::Interfaces::ISaveFileDialog::QueryPtr saveDialog ( this->caller().get() );
 
   // If the interfaces are valid...
   if( sceneExport.valid() && saveDialog.valid() )

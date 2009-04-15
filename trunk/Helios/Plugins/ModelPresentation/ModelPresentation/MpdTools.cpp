@@ -54,7 +54,7 @@ void MpdTools::_execute ()
   
 if( "ShowMatrix" == this->_text )
 {
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller().get() );
   if ( nav.valid () )
   {
     nav->displayViewMatrix();

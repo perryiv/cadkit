@@ -162,7 +162,7 @@ void Command::execute ( Usul::Interfaces::IUnknown::RefPtr caller )
   }
 
   // Notify that we are executing.
-  Usul::Interfaces::ICommandExecuteListener::QueryPtr cel ( this->caller () );
+  Usul::Interfaces::ICommandExecuteListener::QueryPtr cel ( this->caller ().get() );
   if ( cel.valid () )
     cel->commandExecuteNotify ( this );
   

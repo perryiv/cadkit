@@ -47,7 +47,7 @@ RenderLoop::~RenderLoop()
 
 void RenderLoop::_execute()
 {
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller() );
+  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller().get() );
 
   if ( rl.valid() )
     rl->renderLoop ( !rl->renderLoop() );

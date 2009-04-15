@@ -17,6 +17,9 @@
 #define _USUL_REFERENCED_BASE_CLASS_H_
 
 #include "Usul/Base/Typed.h"
+#include "Usul/Strings/Format.h"
+
+#include <stdexcept>
 
 namespace Usul { namespace Threads { class Mutex; } }
 namespace Usul { namespace Interfaces { struct IUnknown; } }
@@ -97,7 +100,7 @@ template < class ReferencersType > inline void decrementReferencer ( Referencers
   {
     WriteLock lock ( referencers.mutex() );
     ReferencersMap &r ( referencers.getReference() );
-    ReferencersMap::iterator i ( r.find ( caller ) );
+    typename ReferencersMap::iterator i ( r.find ( caller ) );
     if ( r.end() == i )
     {
       throw std::runtime_error ( Usul::Strings::format 
@@ -126,11 +129,11 @@ template < class ReferencersType, class StreamType > inline void checkReferencer
   typedef typename Referencers::ValueType ReferencersMap;
   typedef typename ReferencersMap::mapped_type MappedType;
 
-  Referencers::ReadLock lock ( referencers.mutex() );
+  typename Referencers::ReadLock lock ( referencers.mutex() );
   ReferencersMap &r ( referencers.getReference() );
   if ( false == r.empty() )
   {
-    typedef ReferencersMap::const_iterator Itr;
+    typedef typename ReferencersMap::const_iterator Itr;
     std::ostringstream out;
     out << "Objects referencing " << object << ": ";
     for ( Itr i = r.begin(); i != r.end(); ++i )

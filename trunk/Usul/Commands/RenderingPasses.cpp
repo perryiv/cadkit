@@ -48,7 +48,7 @@ RenderingPasses::~RenderingPasses()
 
 void RenderingPasses::_execute()
 {
-  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( this->caller() );
+  Usul::Interfaces::IRenderingPasses::QueryPtr rp ( this->caller().get() );
 
   if ( rp.valid() )
     rp->renderingPasses ( _passes );

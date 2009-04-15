@@ -106,13 +106,8 @@ SET ( HEADERS
 ./Algorithms/ConvexHullSort.h
 ./Algorithms/CopyIf.h
 ./Algorithms/Cylinder.h
-./Algorithms/Detail/Configurations.h
-./Algorithms/Detail/ConfigurationTable.h
-./Algorithms/Detail/Corners.h
-./Algorithms/Detail/Rotations.h
 ./Algorithms/Extract.h
 ./Algorithms/FindAllConnected.h
-./Algorithms/MarchingCubes.h
 ./Algorithms/Sphere.h
 ./Algorithms/TriStrip.h
 ./App/Application.h
@@ -458,7 +453,6 @@ SET ( HEADERS
 ./Jobs/Job.h
 ./Jobs/Manager.h
 ./Loops/Direction.h
-./Loops/FillLoop.h
 ./Loops/FindLoops.h
 ./Math/Absolute.h
 ./Math/Angle.h

@@ -47,7 +47,7 @@ PolygonMode::~PolygonMode()
 
 void PolygonMode::_execute()
 {
-  Usul::Interfaces::IPolygonMode::QueryPtr pm ( this->caller() );
+  Usul::Interfaces::IPolygonMode::QueryPtr pm ( this->caller().get() );
 
   if ( pm.valid() )
     pm->polygonMode ( _mode );

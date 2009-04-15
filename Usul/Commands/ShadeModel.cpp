@@ -47,7 +47,7 @@ ShadeModel::~ShadeModel ()
 
 void ShadeModel::_execute ()
 {
-  Usul::Interfaces::IShadeModel::QueryPtr sm ( this->caller () );
+  Usul::Interfaces::IShadeModel::QueryPtr sm ( this->caller().get() );
 
   if ( sm.valid () )
     sm->shadeModel ( _mode );

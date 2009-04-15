@@ -52,7 +52,7 @@ void MpdNextCommand::_execute ()
   USUL_TRACE_SCOPE;
   //this->_dummy();
 #if 1
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller().get() );
   if ( nav.valid () )
   {
     nav->nextStep();

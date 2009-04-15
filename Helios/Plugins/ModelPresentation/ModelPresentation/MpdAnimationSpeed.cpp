@@ -52,7 +52,7 @@ void MpdAnimationSpeed::_execute ()
 {
   USUL_TRACE_SCOPE;
 #if 1
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller().get() );
   if ( nav.valid () )
   {
     nav->setAnimationSpeed( _speed );
@@ -72,7 +72,7 @@ bool MpdAnimationSpeed::updateCheck () const
   USUL_TRACE_SCOPE;
 
   // Implement me to update radio state.
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
 
   unsigned int speed = nav->getAnimationSpeed();
   if( speed == _speed )

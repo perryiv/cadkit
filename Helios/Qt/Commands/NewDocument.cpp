@@ -124,7 +124,7 @@ void NewDocument::_execute()
   NewDocument::_initNewDocument ( IUnknown::QueryPtr ( document ), this->caller() );
 
   // See if the caller wants to be notified when the document finishes loading.
-  Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( this->caller() );
+  Usul::Interfaces::IGUIDelegateNotify::QueryPtr notify ( this->caller().get() );
 
   // Notify.
   if ( notify.valid() )

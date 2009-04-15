@@ -52,7 +52,7 @@ void MpdAnimation::_execute ()
   USUL_TRACE_SCOPE;
   //this->_dummy();
 #if 1
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller() );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( this->caller().get() );
   if ( nav.valid () )
   {
     if( true == nav->animate() )
@@ -79,7 +79,7 @@ bool MpdAnimation::updateCheck () const
   USUL_TRACE_SCOPE;
 
   // Implement me to update radio state.
-  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller() ) );
+  Usul::Interfaces::IMpdNavigator::QueryPtr nav ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
 
   if ( nav.valid () )
   {

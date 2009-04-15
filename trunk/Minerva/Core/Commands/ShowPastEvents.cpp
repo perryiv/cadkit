@@ -65,7 +65,7 @@ ShowPastEvents::~ShowPastEvents()
 
 void ShowPastEvents::_execute()
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( this->caller() );
+  Minerva::Interfaces::IAnimationControl::QueryPtr ac ( this->caller().get() );
   
   // Toggle shown.
   if ( ac.valid() )

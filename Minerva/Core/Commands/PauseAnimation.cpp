@@ -64,7 +64,7 @@ PauseAnimation::~PauseAnimation()
 
 void PauseAnimation::_execute ()
 {
-  Minerva::Interfaces::IAnimationControl::QueryPtr control ( this->caller() );
+  Minerva::Interfaces::IAnimationControl::QueryPtr control ( this->caller().get() );
 
   if ( control.valid() )
     control->pauseAnimation();

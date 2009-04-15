@@ -69,7 +69,8 @@ RemoveLayer::~RemoveLayer()
 void RemoveLayer::_execute()
 {
   // Use the caller if we have one, if not fall back on the active document.
-  Usul::Interfaces::IUnknown::QueryPtr unknown ( 0x0 != this->caller() ? this->caller() : Usul::Documents::Manager::instance().activeDocument() );
+  Usul::Interfaces::IUnknown::QueryPtr caller ( this->caller().get() );
+  Usul::Interfaces::IUnknown::QueryPtr unknown ( true == caller.valid() ? caller : Usul::Documents::Manager::instance().activeDocument() );
   
   // Query for the interface.
   Minerva::Interfaces::IRemoveLayer::QueryPtr remove ( unknown );

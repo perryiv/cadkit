@@ -24,6 +24,7 @@
 #include "Usul/Jobs/Job.h"
 #include "Usul/Jobs/Manager.h"
 
+#include "Usul/Interfaces/IBooleanState.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IBusyState.h"
 #include "Usul/Interfaces/ILayer.h"
@@ -60,7 +61,8 @@ class WRFDocument : public Usul::Documents::Document,
                     public Usul::Interfaces::ILayer,
                     public Usul::Interfaces::ITreeNode,
                     public Usul::Interfaces::ISerialize,
-                    public Usul::Interfaces::IBusyState
+                    public Usul::Interfaces::IBusyState,
+                    public Usul::Interfaces::IBooleanState
 {
 public:
 
@@ -213,6 +215,10 @@ protected:
   // Set/get the name (ITreeNode).
   virtual void                setTreeNodeName ( const std::string & );
   virtual std::string         getTreeNodeName() const;
+
+  // Set/get the state (IBooleanState).
+  virtual void                setBooleanState ( bool );
+  virtual bool                getBooleanState() const;
 
   /// Do not copy.
   WRFDocument ( const WRFDocument & );

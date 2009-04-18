@@ -172,6 +172,8 @@ Usul::Interfaces::IUnknown *WRFDocument::queryInterface ( unsigned long iid )
     return static_cast<Usul::Interfaces::ISerialize*> ( this );
   case Usul::Interfaces::IBusyState::IID:
     return static_cast<Usul::Interfaces::IBusyState*> ( this );
+  case Usul::Interfaces::IBooleanState::IID:
+    return static_cast<Usul::Interfaces::IBooleanState*> ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1317,11 +1319,18 @@ void WRFDocument::_buildDefaultTransferFunctions ()
   Colors grayscale ( size );
   Colors hsv       ( size );
   Colors hsv2      ( size );
+  Colors greenToRed ( size );
+
+  const Colors::size_type RED_CHANNEL   ( 0 );
+  const Colors::size_type GREEN_CHANNEL ( 1 );
+  const Colors::size_type BLUE_CHANNEL  ( 2 );
+  const Colors::size_type ALPHA_CHANNEL ( 3 );
 
   // Don't draw voxels with a value of zero.
   grayscale.at ( 0 ) [ 3 ] = 0;
   hsv.at ( 0 ) [ 3 ] = 0;
   hsv2.at ( 0 ) [ 3 ] = 0;
+  greenToRed.at ( 0 )[3] = 0;
 
   for ( unsigned int i = 1; i < size; ++i )
   {
@@ -1329,30 +1338,56 @@ void WRFDocument::_buildDefaultTransferFunctions ()
     unsigned int alpha ( 35 );
 
     unsigned char c ( 120 - ( static_cast < unsigned int > ( value * 120 ) ) );
-    grayscale.at ( i ) [ 0 ] = c;
-    grayscale.at ( i ) [ 1 ] = c;
-    grayscale.at ( i ) [ 2 ] = c;
-    grayscale.at ( i ) [ 3 ] = alpha;
+    grayscale.at ( i )[RED_CHANNEL] = c;
+    grayscale.at ( i )[GREEN_CHANNEL] = c;
+    grayscale.at ( i )[BLUE_CHANNEL] = c;
+    grayscale.at ( i )[ALPHA_CHANNEL] = alpha;
 
     float r ( 0.0 ), g ( 0.0 ), b ( 0.0 );
     Usul::Functions::Color::hsvToRgb ( r, g, b, 300 - ( value * 300 ), 1.0f, 1.0f );
-    hsv.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
-    hsv.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
-    hsv.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
-    hsv.at ( i ) [ 3 ] = alpha;
+    hsv.at ( i )[RED_CHANNEL] = static_cast < unsigned char > ( r * 255 );
+    hsv.at ( i )[GREEN_CHANNEL] = static_cast < unsigned char > ( g * 255 );
+    hsv.at ( i )[BLUE_CHANNEL] = static_cast < unsigned char > ( b * 255 );
+    hsv.at ( i )[ALPHA_CHANNEL] = alpha;
 
-    hsv2.at ( i ) [ 0 ] = static_cast < unsigned char > ( r * 255 );
-    hsv2.at ( i ) [ 1 ] = static_cast < unsigned char > ( g * 255 );
-    hsv2.at ( i ) [ 2 ] = static_cast < unsigned char > ( b * 255 );
+    hsv2.at ( i )[RED_CHANNEL] = static_cast < unsigned char > ( r * 255 );
+    hsv2.at ( i )[GREEN_CHANNEL] = static_cast < unsigned char > ( g * 255 );
+    hsv2.at ( i )[BLUE_CHANNEL] = static_cast < unsigned char > ( b * 255 );
     if ( value < .25 || value > .75 )
-      hsv2.at ( i ) [ 3 ] = static_cast < unsigned char > ( Usul::Math::absolute ( ( value - 0.5 ) * ( alpha * 2 ) ) );
+      hsv2.at ( i )[ALPHA_CHANNEL] = static_cast < unsigned char > ( Usul::Math::absolute ( ( value - 0.5 ) * ( alpha * 2 ) ) );
     else
-      hsv2.at ( i ) [ 3 ] = 0;
+      hsv2.at ( i )[ALPHA_CHANNEL] = 0;
+
+    const double orginalValue ( value );
+    const double startValue ( 0.7 );
+    const double range ( 1.0 - startValue );
+    value = startValue + ( value * range );
+
+    const float hue ( 320 - ( value * 320 ) );
+    const float saturation ( 1.0f );
+    const float v ( 1.0 );
+
+    Usul::Functions::Color::hsvToRgb ( r, g, b, hue, saturation, v );
+    greenToRed.at ( i )[RED_CHANNEL] = static_cast < unsigned char > ( r * 255 );
+    greenToRed.at ( i )[GREEN_CHANNEL] = static_cast < unsigned char > ( g * 255 );
+    greenToRed.at ( i )[BLUE_CHANNEL] = static_cast < unsigned char > ( b * 255 );
+    if ( value < 0.9 )
+    {
+      greenToRed.at ( i )[ALPHA_CHANNEL] = 15;
+    }
+    else
+    {
+      greenToRed.at ( i )[ALPHA_CHANNEL] = alpha;
+    }
+
+    if ( r > 0.8 )
+      greenToRed.at ( i )[ALPHA_CHANNEL] = 127;
   }
 
   _transferFunctions.push_back ( new TransferFunction1D ( grayscale ) );
   _transferFunctions.push_back ( new TransferFunction1D ( hsv ) );
   _transferFunctions.push_back ( new TransferFunction1D ( hsv2 ) );
+  _transferFunctions.push_back ( new TransferFunction1D ( greenToRed ) );
 }
 
 
@@ -1574,4 +1609,32 @@ bool WRFDocument::isInLevelRange ( unsigned int level ) const
 {
   USUL_TRACE_SCOPE;
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Set the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void WRFDocument::setBooleanState ( bool b )
+{
+  USUL_TRACE_SCOPE;
+  const unsigned int nodeMask ( b ? 0xffffffff : 0x0 );
+  if ( true == _root.valid() )
+    _root->setNodeMask ( b );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the state (IBooleanState).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool WRFDocument::getBooleanState() const
+{
+  USUL_TRACE_SCOPE;
+  return ( _root.valid() ? 0x0 != _root->getNodeMask() : false );
 }

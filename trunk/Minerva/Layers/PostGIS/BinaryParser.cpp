@@ -214,8 +214,6 @@ namespace Detail
 template < class Convert >
 void BinaryParser::_createGeometryEndian ( const unsigned char*& buffer, Geometries &geometries, const Transform& transform )
 {
-  
-
   Usul::Types::Uint32 polygonType ( Detail::convert < Usul::Types::Uint32, Convert > ( buffer ) );
 
 	switch ( polygonType )

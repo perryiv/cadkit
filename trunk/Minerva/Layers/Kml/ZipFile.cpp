@@ -247,7 +247,7 @@ bool ZipFileImpl::_readFile ( std::string& buffer )
   std::vector<std::string::value_type> fileData ( numBytes );
 
   // Read the file data into the buffer.
-  if ( numBytes == ::unzReadCurrentFile ( _unzfile, &fileData[0], numBytes ) )
+  if ( numBytes > 0 && numBytes == ::unzReadCurrentFile ( _unzfile, &fileData[0], numBytes ) )
   {
     buffer.assign ( &fileData[0], numBytes );
     return true;

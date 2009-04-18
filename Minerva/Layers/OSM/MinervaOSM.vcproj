@@ -247,14 +247,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DownloadJob.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DownloadJob.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Export.h"
 				>
 			</File>

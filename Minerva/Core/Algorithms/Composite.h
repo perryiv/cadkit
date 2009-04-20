@@ -62,7 +62,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
   
   const bool hasAlpha ( GL_RGBA == format );
   const unsigned int offset ( ( hasAlpha ) ? 4 : 3 );
-  
+
   for ( unsigned int i = 0; i < size; ++i )
   {
     // Have we been cancelled?
@@ -71,20 +71,20 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
       if ( ( 0x0 != job ) && ( true == job->canceled() ) )
         job->cancel();
     }
-    
+
     // Copy the color channels. Multiply by the overall (normalized) brightness.
     // The order of the variables is important; the float has to come first.
     unsigned char r ( static_cast<unsigned char> ( brightness * src[0] ) );
     unsigned char g ( static_cast<unsigned char> ( brightness * src[1] ) );
     unsigned char b ( static_cast<unsigned char> ( brightness * src[2] ) );
-    
+
     // Is the color in the alpha table?
     if ( false == alphaMapEmpty )
     {
       iter = alphas.find ( Usul::Functions::Color::pack ( r, g, b, 0 ) );
       hasExtraAlpha = ( alphas.end() != iter );
     }
-    
+
     // If the image is competely opaque then set the values.
     if ( ( false == hasAlpha ) && ( false == hasExtraAlpha ) && ( false == hasOverallAlpha ) )
     {
@@ -114,7 +114,7 @@ inline void raster ( osg::Image& result, const osg::Image& image, const Alphas &
       if ( a > 0.0 )
         dst[3] = 255;
     }
-    
+
     dst += 4;
     src += offset;
   }

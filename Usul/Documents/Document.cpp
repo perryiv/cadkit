@@ -192,7 +192,7 @@ void Document::removeView ( View *view )
   }
 
   // If the view the active view, set the active view to null.
-  if( view == Usul::Documents::Manager::instance().activeView () )
+  if( view == Usul::Documents::Manager::instance().activeView() )
     Usul::Documents::Manager::instance().activeView ( 0x0 );
 }
 

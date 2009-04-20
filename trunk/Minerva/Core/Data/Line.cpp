@@ -195,14 +195,17 @@ osg::Node* Line::_buildScene ( const Color& color, Usul::Interfaces::IUnknown* c
   // Set the vertices.
   geometry->setVertexArray ( vertices.get() );
 
+  // Display lists seems to be the fastest.
+  geometry->setUseDisplayList ( true );
+  geometry->setUseVertexBufferObjects ( false );
+
   if ( false == this->useShader() )
   {
-    // Set the colors.
+    // Set the color.
     osg::ref_ptr < osg::Vec4Array > colors ( new osg::Vec4Array );
-    colors->reserve ( vertices->size() );
-    colors->assign ( vertices->size(), osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
-    geometry->setColorArray( colors.get() );
-    geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
+    colors->push_back ( osg::Vec4 ( color[0], color[1], color[2], color[3] ) );
+    geometry->setColorArray ( colors.get() );
+    geometry->setColorBinding ( osg::Geometry::BIND_OVERALL );
   }
     
   // Set our new extents.

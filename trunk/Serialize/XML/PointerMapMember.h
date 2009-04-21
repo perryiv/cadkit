@@ -72,6 +72,7 @@ public:
   {
     typedef typename XmlTree::Node::Children::const_iterator Itr;
     typedef typename T::value_type ValueType;
+    typedef typename T::key_type KeyType;
     typedef typename T::mapped_type PointerType;
     typedef Serialize::XML::TypeWrapper< PointerType > TypeWrapper;
 
@@ -94,8 +95,8 @@ public:
         {
           if ( elementKey->name() == "key" && elementValue->name() == "value" && elementValue->children().size() > 0 )
           {
-            typedef Serialize::XML::TypeWrapper<T::key_type> KeyTypeWrapper;
-            T::key_type key;
+            typedef Serialize::XML::TypeWrapper<KeyType> KeyTypeWrapper;
+            KeyType key;
             KeyTypeWrapper::deserialize ( *elementKey, key );
 
             {

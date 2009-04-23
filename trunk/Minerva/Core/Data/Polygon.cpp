@@ -130,7 +130,7 @@ namespace Detail
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller )
+osg::Node* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller )
 {
   // Make sure we have vertices.
   if ( inVertices.empty() )
@@ -150,6 +150,9 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
   vertices->reserve( inVertices.size() );
   normals->reserve( inVertices.size() );
   
+  Vertices convertedPoints;
+  convertedPoints.reserve ( inVertices.size() );
+
   for ( Vertices::const_iterator iter = inVertices.begin(); iter != inVertices.end(); ++iter )
   {
     Vertices::value_type v0 ( *iter ), p0;
@@ -163,11 +166,23 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
     if ( planet.valid() )
       planet->convertToPlanet ( v0, p0 );
     
-    vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
-    
-    Vertices::value_type n0 ( p0 ); n0.normalize();
-    
+    convertedPoints.push_back ( p0 );
+  }
+
+  // Subtract the first point from all vertices.
+  const Vertices::value_type offset ( convertedPoints.front() );
+  for ( Vertices::const_iterator iter = convertedPoints.begin(); iter != convertedPoints.end(); ++iter )
+  {
+    const Vertices::value_type value ( *iter );
+
+    // Add the normal.
+    Vertices::value_type n0 ( value );
+    n0.normalize();
     normals->push_back ( osg::Vec3 ( n0[0], n0[1], n0[2] ) );
+
+    // Add the vertex.
+    const Vertices::value_type vertex ( value - offset );
+    vertices->push_back ( osg::Vec3f ( vertex[0], vertex[1], vertex[2] ) );    
   }
   
   osg::ref_ptr < osg::Geometry > geom ( new osg::Geometry );
@@ -187,7 +202,14 @@ osg::Geometry* Polygon::_buildGeometry ( const Vertices& inVertices, Extents& e,
   // Make normals.
   osgUtil::SmoothingVisitor::smooth ( *geom );
   
-  return geom.release();
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geom.get() );
+
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrixd::translate ( osg::Vec3d ( offset[0], offset[1], offset[2] ) ) );
+  mt->addChild ( geode.get() );
+
+  return mt.release();
 }
 
 
@@ -217,7 +239,7 @@ Polygon::Vertex Polygon::_convertToPlanetCoordinates ( const Polygon::Vertex& v,
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-osg::Geometry* Polygon::_extrudeToGround ( const Vertices& inVertices, Usul::Interfaces::IUnknown *caller )
+osg::Node* Polygon::_extrudeToGround ( const Vertices& inVertices, Usul::Interfaces::IUnknown *caller )
 {
   Usul::Interfaces::IPlanetCoordinates::QueryPtr planet ( caller );
   Usul::Interfaces::IElevationDatabase::QueryPtr elevationDatabase ( caller );
@@ -236,6 +258,9 @@ osg::Geometry* Polygon::_extrudeToGround ( const Vertices& inVertices, Usul::Int
   vertices->reserve( numVertices );
   normals->reserve( numVertices );
 
+  Vertices convertedPoints;
+  convertedPoints.reserve ( numVertices );
+
   // Loop over the vertices.
   for ( Vertices::const_iterator iter = inVertices.begin(); iter != inVertices.end(); ++iter )
   {
@@ -245,14 +270,23 @@ osg::Geometry* Polygon::_extrudeToGround ( const Vertices& inVertices, Usul::Int
     Vertex p0 ( this->_convertToPlanetCoordinates ( top, planet, elevationDatabase ) );
     Vertex p1 ( this->_convertToPlanetCoordinates ( bottom, planet, elevationDatabase ) );
 
-    vertices->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
-    vertices->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
+    convertedPoints.push_back ( p0 );
+    convertedPoints.push_back ( p1 );
 
     p0.normalize();
     p1.normalize();
 
     normals->push_back ( osg::Vec3 ( p1[0], p1[1], p1[2] ) );
     normals->push_back ( osg::Vec3 ( p0[0], p0[1], p0[2] ) );
+  }
+
+  // Subtract the first point from all vertices.
+  const Vertices::value_type offset ( convertedPoints.front() );
+  for ( Vertices::const_iterator iter = convertedPoints.begin(); iter != convertedPoints.end(); ++iter )
+  {
+    const Vertices::value_type value ( *iter );
+    const Vertices::value_type vertex ( value - offset );
+    vertices->push_back ( osg::Vec3f ( vertex[0], vertex[1], vertex[2] ) );
   }
   
   // Make the geometry.
@@ -268,8 +302,15 @@ osg::Geometry* Polygon::_extrudeToGround ( const Vertices& inVertices, Usul::Int
     
   // Make normals.
   osgUtil::SmoothingVisitor::smooth ( *geom );
-  
-  return geom.release();
+
+  osg::ref_ptr<osg::Geode> geode ( new osg::Geode );
+  geode->addDrawable ( geom.get() );
+
+  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
+  mt->setMatrix ( osg::Matrixd::translate ( osg::Vec3d ( offset[0], offset[1], offset[2] ) ) );
+  mt->addChild ( geode.get() );
+
+  return mt.release();
 }
 
 
@@ -293,11 +334,21 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
 
   // TODO: Handle inner boundaries.
   //Boundaries innerBoundaries ( polygon->innerBoundaries() );
+
+  osg::ref_ptr<osg::Group> group ( new osg::Group );
   
-  osg::ref_ptr < osg::Geode > geode ( new osg::Geode );
-  geode->addDrawable( this->_buildGeometry ( outerBoundary, e, caller ) );
+  group->addChild ( this->_buildGeometry ( outerBoundary, e, caller ) );
+
+  // Extrude if we are suppose to.
+  if ( true == this->extrude() )
+  {
+    group->addChild ( this->_extrudeToGround ( outerBoundary, caller ) );
+  }
   
-  osg::ref_ptr < osg::StateSet > ss ( geode->getOrCreateStateSet () );
+  this->extents ( e );
+
+  // Set the state.
+  osg::ref_ptr < osg::StateSet > ss ( group->getOrCreateStateSet () );
   
   // Make a polygon offset.
   osg::ref_ptr< osg::PolygonOffset > po ( new osg::PolygonOffset( 1.0f, 4.0f ) );
@@ -307,27 +358,7 @@ osg::Node* Polygon::_buildPolygons( Usul::Interfaces::IUnknown* caller )
   // Turn off lighting.
   OsgTools::State::StateSet::setLighting  ( ss.get(), false );
   
-  osg::Vec3 offset ( geode->getBound().center() );
-  osg::ref_ptr<OsgTools::Utilities::TranslateGeometry> tg ( new OsgTools::Utilities::TranslateGeometry ( offset ) );
-  tg->apply ( *geode );
-
-  osg::ref_ptr<osg::MatrixTransform> mt ( new osg::MatrixTransform );
-  mt->setMatrix ( osg::Matrix::translate ( offset ) );
-  mt->addChild ( geode.get() );
-
-  // Extrude if we are suppose to.
-  if ( true == this->extrude() )
-  {
-    osg::ref_ptr < osg::Geode > g ( new osg::Geode );
-    g->addDrawable( this->_extrudeToGround ( outerBoundary, caller ) );
-    tg->apply ( *g );
-
-    mt->addChild ( g.get() );
-  }
-  
-  this->extents ( e );
-  
-  return mt.release();
+  return group.release();
 }
 
 

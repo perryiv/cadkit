@@ -14,7 +14,6 @@ LINK_DIRECTORIES( ${CADKIT_BIN_DIR} "$ENV{VJ_DEPS_DIR}/lib" )
 ADD_DEFINITIONS("-D_COMPILING_VRV")
 
 # ------------ Set Include Folders ----------------------
-#Include the Top Level Directory
 INCLUDE_DIRECTORIES( 
 		     ${CADKIT_INC_DIR}
              "${CADKIT_INC_DIR}/GenericNurbs"
@@ -24,6 +23,7 @@ INCLUDE_DIRECTORIES(
 		     "$ENV{VJ_DEPS_DIR}/include"
 		     ${CPPDOM_INC_DIR}
 		     ${GMTL_INC_DIR}
+		     ${Boost_INCLUDE_DIR}
 		     )
 
 #########################################################

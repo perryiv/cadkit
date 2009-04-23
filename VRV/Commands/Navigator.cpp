@@ -23,11 +23,11 @@ USUL_IMPLEMENT_COMMAND ( Navigator );
 ///////////////////////////////////////////////////////////////////////////////
 
 Navigator::Navigator ( BaseFunctor *functor, Usul::Interfaces::IUnknown *caller ) : 
-BaseClass ( caller ),
-_functor ( functor )
+  BaseClass ( caller ),
+  _functor ( functor )
 {
-  if ( _functor.valid () )
-    this->text ( _functor->name () );
+  if ( _functor.valid() )
+    this->text ( _functor->name() );
 }
 
 
@@ -48,16 +48,16 @@ Navigator::~Navigator ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Navigator::_execute ()
+void Navigator::_execute()
 {
-  Usul::Interfaces::INavigationFunctor::QueryPtr nf ( this->caller () );
+  Usul::Interfaces::INavigationFunctor::QueryPtr nf ( this->caller().get() );
 
-  if ( nf.valid () )
+  if ( nf.valid() )
   {
-    if ( this->updateCheck () )
+    if ( this->updateCheck() )
       nf->navigator ( 0x0 );
     else
-      nf->navigator ( _functor.get () );
+      nf->navigator ( _functor.get() );
   }
 }
 
@@ -68,14 +68,14 @@ void Navigator::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Navigator::updateCheck () const
+bool Navigator::updateCheck() const
 {
-  Usul::Interfaces::INavigationFunctor::QueryPtr nf ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
+  Usul::Interfaces::INavigationFunctor::QueryPtr nf ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
 
-  if ( nf.valid () )
+  if ( nf.valid() )
   {
-    BaseFunctor::RefPtr functor ( nf->navigator () );
-    return ( functor.valid () && _functor.valid( ) ) ? functor->name() == _functor->name() : false;
+    BaseFunctor::RefPtr functor ( nf->navigator() );
+    return ( functor.valid() && _functor.valid() ) ? functor->name() == _functor->name() : false;
   }
 
   return false;

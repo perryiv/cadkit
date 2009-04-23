@@ -35,7 +35,7 @@ _color ( color )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-BackgroundColor::~BackgroundColor ()
+BackgroundColor::~BackgroundColor()
 {
 }
 
@@ -46,11 +46,11 @@ BackgroundColor::~BackgroundColor ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void BackgroundColor::_execute ()
+void BackgroundColor::_execute()
 {
-  Usul::Interfaces::IBackgroundColor::QueryPtr bc ( this->caller () );
+  Usul::Interfaces::IBackgroundColor::QueryPtr bc ( this->caller().get() );
 
-  if ( bc.valid () )
+  if ( bc.valid() )
     bc->backgroundColor ( _color );
 }
 
@@ -61,8 +61,8 @@ void BackgroundColor::_execute ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool BackgroundColor::updateCheck () const
+bool BackgroundColor::updateCheck() const
 {
-  Usul::Interfaces::IBackgroundColor::QueryPtr bc ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller () ) );
-  return bc.valid () ? _color.equal( bc->backgroundColor () ) : false;
+  Usul::Interfaces::IBackgroundColor::QueryPtr bc ( const_cast < Usul::Interfaces::IUnknown * > ( this->caller().get() ) );
+  return bc.valid() ? _color.equal ( bc->backgroundColor() ) : false;
 }

@@ -75,8 +75,8 @@ protected:
   
   osg::Node*            _buildPolygons( Usul::Interfaces::IUnknown* caller );
   
-  osg::Geometry*        _buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller );
-  osg::Geometry*        _extrudeToGround ( const Vertices& inVertices, Usul::Interfaces::IUnknown *caller );
+  osg::Node*            _buildGeometry ( const Vertices& inVertices, Extents& e, Usul::Interfaces::IUnknown *caller );
+  osg::Node*            _extrudeToGround ( const Vertices& inVertices, Usul::Interfaces::IUnknown *caller );
 
   Vertex                _convertToPlanetCoordinates ( const Polygon::Vertex& v, IPlanetCoordinates* planet, IElevationDatabase* elevation ) const;
 

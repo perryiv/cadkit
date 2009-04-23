@@ -21,8 +21,8 @@ USUL_IMPLEMENT_COMMAND ( Camera );
 ///////////////////////////////////////////////////////////////////////////////
 
 Camera::Camera ( const std::string& name, CameraOption option, Usul::Interfaces::IUnknown *caller ) : 
-BaseClass ( caller ),
-_option ( option )
+  BaseClass ( caller ),
+  _option ( option )
 {
   this->text ( name );
 }
@@ -45,9 +45,9 @@ Camera::~Camera ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Camera::_execute ()
+void Camera::_execute()
 {
-  Usul::Interfaces::ICamera::QueryPtr c ( this->caller () );
+  Usul::Interfaces::ICamera::QueryPtr c ( this->caller().get() );
 
   if ( c.valid () )
     c->camera ( _option );

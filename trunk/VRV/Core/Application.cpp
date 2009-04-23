@@ -1299,7 +1299,11 @@ void Application::_latePreFrame()
     _databasePager->signalBeginFrame( _framestamp.get() );
 
     // syncronize changes required by the DatabasePager thread to the scene graph
+#if OPENSCENEGRAPH_MAJOR_VERSION >= 2 && OPENSCENEGRAPH_MINOR_VERSION >= 7
+    _databasePager->updateSceneGraph( *_framestamp );
+#else
     _databasePager->updateSceneGraph( _framestamp->getReferenceTime() );
+#endif
   }
 }
 

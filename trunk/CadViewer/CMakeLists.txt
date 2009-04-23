@@ -21,6 +21,7 @@ INCLUDE_DIRECTORIES(
 		     "$ENV{VJ_DEPS_DIR}/include"
 		     ${CPPDOM_INC_DIR}
 		     ${GMTL_INC_DIR}
+		     ${Boost_INCLUDE_DIR}
 		     )
 
 #List the Sources

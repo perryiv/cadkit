@@ -32,6 +32,7 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 
+#include <algorithm>
 #include <vector>
 
 using namespace Minerva::Layers::Kml;
@@ -237,22 +238,45 @@ namespace Helper
 {
   inline void parseCoordinates ( const XmlTree::Node& node, Vertices& vertices, Extents& extents )
   {
-    std::istringstream in ( node.value() );
-    std::string vertex;
-    
-    while ( in >> vertex )
+    // Copy the value and remove any commas.
+    std::string value ( node.value() );
+    std::replace ( value.begin(), value.end(), ',', ' ' );
+
+    // The line buffer.
+    std::vector<char> buffer ( 1024 );
+
+    // Read the numbers from the stream.
+    std::istringstream in ( value );
+    while ( EOF != in.peek() )
     {
+      // Get the line.
+      std::fill ( buffer.begin(), buffer.end(), '\0' );
+      in.getline ( &buffer[0], buffer.size() - 1 );
+      const std::string line ( &buffer[0] );
+
+      // Split the line.
+      typedef std::vector<std::string> Parts;
+      Parts parts;
+      Usul::Strings::split ( line, ' ', false, parts );
+      
+      // Convert the strings to a vertex.
       Vertex v;
-      
-      std::vector<std::string> strings;
-      Usul::Strings::split ( vertex, ",", false, strings );
-      
-      // Convert vertex.
-      for ( unsigned int i = 0; i < strings.size(); ++i )
-        v[i] = ToDouble::convert ( strings[i] );
-      
-      vertices.push_back ( v );
-      extents.expand ( Extents::Vertex ( v[0], v[1] ) );
+      if ( parts.size() >= 2 )
+      {
+        v[0] = ToDouble::convert ( parts[0] );
+        v[1] = ToDouble::convert ( parts[1] );
+      }
+      if ( parts.size() >= 3 )
+      {
+        v[2] = ToDouble::convert ( parts[2] );
+      }
+
+      // Append the vertex if it is at least 2D.
+      if ( parts.size() >= 2 )
+      {
+        vertices.push_back ( v );
+        extents.expand ( Extents::Vertex ( v[0], v[1] ) );
+      }
     }
   }
 }

@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy .\Icons\*.png $(CADKIT_BIN_DIR)\icons /f /i /k /y /c&#x0D;&#x0A;xcopy .\Icons\*.svg $(CADKIT_BIN_DIR)\icons /f /i /k /y /c&#x0D;&#x0A;"
+				CommandLine="xcopy .\Icons\*.png $(CADKIT_BIN_DIR)\icons /f /i /k /y /c /d&#x0D;&#x0A;xcopy .\Icons\*.svg $(CADKIT_BIN_DIR)\icons /f /i /k /y /c /d"
 			/>
 		</Configuration>
 		<Configuration
@@ -209,7 +209,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy .\Icons\*.png $(CADKIT_BIN_DIR)\icons /f /i /k /y /c&#x0D;&#x0A;xcopy .\Icons\*.svg $(CADKIT_BIN_DIR)\icons /f /i /k /y /c&#x0D;&#x0A;"
+				CommandLine="xcopy .\Icons\*.png $(CADKIT_BIN_DIR)\icons /f /i /k /y /c /d&#x0D;&#x0A;xcopy .\Icons\*.svg $(CADKIT_BIN_DIR)\icons /f /i /k /y /c /d"
 			/>
 		</Configuration>
 	</Configurations>

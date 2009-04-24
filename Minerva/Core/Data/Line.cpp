@@ -14,7 +14,6 @@
 #include "OsgTools/Configure/OSG.h"
 #include "OsgTools/State/StateSet.h"
 #include "OsgTools/Font.h"
-#include "OsgTools/Utilities/TranslateGeometry.h"
 
 #include "Usul/Components/Manager.h"
 #include "Usul/Interfaces/IElevationDatabase.h"

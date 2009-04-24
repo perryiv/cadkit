@@ -935,7 +935,7 @@ void MinervaDocument::lookAtLayer ( Usul::Interfaces::IUnknown * layer )
     Usul::Math::Vec3d to ( center[0], center[1], altitude );
 
     const double percentMidpointHeightAtTransition ( 0.75 );
-    const Usul::Math::Vec3ui numPoints ( 100, 100, 100 );
+    const Usul::Math::Vec3ui numPoints ( 30, 30, 30 );
     Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body, Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
 }
@@ -965,7 +965,7 @@ void MinervaDocument::lookAtPoint ( const Usul::Math::Vec2d& location )
     Usul::Math::Vec3d to ( location[0], location[1], 2500.0 /*altitude*/ );
 
     const double percentMidpointHeightAtTransition ( 0.75 );
-    const Usul::Math::Vec3ui numPoints ( 100, 100, 100 );
+    const Usul::Math::Vec3ui numPoints ( 30, 30, 30 );
     Detail::animatePath ( from, to, percentMidpointHeightAtTransition, numPoints, *body, Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }
 }

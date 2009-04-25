@@ -14,7 +14,6 @@
 #include "OsgTools/Convert.h"
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/State/StateSet.h"
-#include "OsgTools/Utilities/TranslateGeometry.h"
 
 #include "Usul/Interfaces/IPlanetCoordinates.h"
 
@@ -299,7 +298,7 @@ osg::Node* Polygon::_extrudeToGround ( const Vertices& inVertices, Usul::Interfa
   geom->setColorBinding ( osg::Geometry::BIND_PER_VERTEX );
   
   geom->addPrimitiveSet ( new osg::DrawArrays ( osg::PrimitiveSet::TRIANGLE_STRIP, 0, vertices->size() ) );
-    
+
   // Make normals.
   osgUtil::SmoothingVisitor::smooth ( *geom );
 

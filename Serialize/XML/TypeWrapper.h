@@ -231,7 +231,7 @@ template <class T> struct TypeWrapper < Usul::Threads::Atomic<T> >
   }
   static ThisType create ( const std::string &typeName )
   {
-    return ThisType;
+    return ThisType();
   }
   static void deserialize ( const XmlTree::Node &node, AtomicType &value )
   {

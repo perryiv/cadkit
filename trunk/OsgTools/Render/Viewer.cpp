@@ -44,7 +44,6 @@
 #include "OsgTools/Utilities/Intersect.h"
 #include "OsgTools/Builders/Arrow.h"
 #include "OsgTools/Widgets/Axes.h"
-#include "OsgTools/Callbacks/HiddenLines.h"
 #include "OsgTools/Font.h"
 
 #include "Usul/Adaptors/MemberFunction.h"

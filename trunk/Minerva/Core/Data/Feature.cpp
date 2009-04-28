@@ -56,13 +56,14 @@ Feature::Feature() :
   _description(),
   _name(),
 	_styleUrl(),
-  _visibility ( true ),
+  _visibility(),
   _lookAt ( 0x0 ),
   _timePrimitive ( 0x0 ),
   _extents(),
   _dataChangedListeners()
 {
-  this->_addMember ( "name", _name );
+  _visibility.fetch_and_store ( true );
+  this->_addMember ( "name", _name.getReference() );
   this->_addMember ( "visibility", _visibility );
   this->_addMember ( "extents", _extents );
 }
@@ -84,7 +85,7 @@ Feature::Feature ( const Feature& rhs ) : BaseClass ( rhs ),
   _extents ( rhs._extents ),
   _dataChangedListeners ( rhs._dataChangedListeners )
 {
-  this->_addMember ( "name", _name );
+  this->_addMember ( "name", _name.getReference() );
   this->_addMember ( "visibility", _visibility );
   this->_addMember ( "extents", _extents );
 }
@@ -137,7 +138,6 @@ void Feature::accept ( Minerva::Core::Visitor& visitor )
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Get the name.
@@ -146,7 +146,6 @@ void Feature::accept ( Minerva::Core::Visitor& visitor )
 
 std::string Feature::name() const
 {
-  Guard guard ( this->mutex() );
   return _name;
 }
 
@@ -178,9 +177,7 @@ void Feature::name ( const std::string& name )
 void Feature::_nameSet ( const std::string& name )
 {
   USUL_TRACE_SCOPE;
-
-  // Set the name.
-  Usul::Threads::Safe::set ( this->mutex(), name, _name );
+  _name = name;
 }
 
 
@@ -192,7 +189,6 @@ void Feature::_nameSet ( const std::string& name )
 
 bool Feature::visibility() const
 {
-  Guard guard ( this->mutex() );
   return _visibility;
 }
 
@@ -205,8 +201,7 @@ bool Feature::visibility() const
 
 void Feature::visibility ( bool b )
 {
-  Guard guard ( this->mutex() );
-  _visibility = b;
+  _visibility.fetch_and_store ( b );
 }
 
 

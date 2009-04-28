@@ -7,8 +7,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_POLYGONS_TRIANGLES_H__
-#define __USUL_POLYGONS_TRIANGLES_H__
+#ifndef __OSG_TOOLS_TRIANGLES_TRIANGLE_FUNCTOR_H__
+#define __OSG_TOOLS_TRIANGLES_TRIANGLE_FUNCTOR_H__
 
 
 namespace Usul {
@@ -157,4 +157,4 @@ struct TriangleTest
 } // namespace Usul
 
 
-#endif // __USUL_POLYGONS_TRIANGLES_H__
+#endif // __OSG_TOOLS_TRIANGLES_TRIANGLE_FUNCTOR_H__

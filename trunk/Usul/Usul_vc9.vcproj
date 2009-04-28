@@ -1930,6 +1930,18 @@
 				Name="Threads"
 				>
 				<File
+					RelativePath=".\Threads\Atomic.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\AtomicMutex.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\AtomicTBB.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Threads\Callback.cpp"
 					>
 				</File>
@@ -2321,18 +2333,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Polygons"
-				>
-				<File
-					RelativePath=".\Polygons\Predicates.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Polygons\Triangle.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Strings"
 				>
 				<File
@@ -2393,18 +2393,6 @@
 				</File>
 				<File
 					RelativePath=".\Mpl\TypeWrap.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Loops"
-				>
-				<File
-					RelativePath=".\Loops\Direction.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Loops\FindLoops.h"
 					>
 				</File>
 			</Filter>
@@ -3013,6 +3001,14 @@
 				>
 				<File
 					RelativePath=".\Config\Config.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Config\Config.h.in.cmake"
+					>
+				</File>
+				<File
+					RelativePath=".\Config\Config.h.in.vc"
 					>
 				</File>
 			</Filter>

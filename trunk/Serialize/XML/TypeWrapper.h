@@ -18,7 +18,6 @@
 #define _SERIALIZE_XML_SET_VALUE_H_
 
 #include "XmlTree/Node.h"
-#include "XmlTree/ReplaceIllegalCharacters.h"
 
 #include "Usul/Convert/Convert.h"
 #include "Usul/Convert/Vector2.h"
@@ -28,6 +27,7 @@
 #include "Usul/Factory/ObjectFactory.h"
 #include "Usul/Interfaces/ISerialize.h"
 #include "Usul/Pointers/Pointers.h"
+#include "Usul/Threads/Atomic.h"
 #include "Usul/Types/Types.h"
 
 #include <sstream>
@@ -210,6 +210,54 @@ template < class T, class C > struct TypeWrapper < Usul::Pointers::SmartPointer 
 };
   
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Specialization for strings.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+template <class T> struct TypeWrapper < Usul::Threads::Atomic<T> >
+{
+  typedef T ValueType;
+  typedef Usul::Threads::Atomic<T> AtomicType;
+  typedef TypeWrapper < AtomicType > ThisType;
+
+  static void addAtribute ( const std::string &name, const std::string &value, XmlTree::Node &node )
+  {
+  }
+  static const char *className ( const std::string &value )
+  {
+    return "Usul::Threads::Atomic";
+  }
+  static ThisType create ( const std::string &typeName )
+  {
+    return ThisType;
+  }
+  static void deserialize ( const XmlTree::Node &node, AtomicType &value )
+  {
+    ThisType::set ( node.value(), value );
+  }
+  static void getAttribute ( const std::string &name, const XmlTree::Node &node, ThisType &value )
+  {
+  }
+  static bool isValid ( const std::string &value )
+  {
+    return true;
+  }
+  static void set ( const std::string &s, AtomicType &value )
+  {
+    if ( false == s.empty() )
+    {
+      value.fetch_and_store ( Usul::Convert::Type<std::string,ValueType>::convert ( s ) );
+    }
+  }
+  static void serialize ( const AtomicType &value, XmlTree::Node &node )
+  {
+    node.value ( Usul::Convert::Type<ValueType,std::string>::convert ( value ) );
+  }
+};
+
+
 } // namespace Serialize
 } // namespace XML
 
@@ -249,13 +297,6 @@ template <> struct TypeWrapper < TheType >\
   static bool isValid ( const TheType &value )\
   {\
     return true;\
-  }\
-  static void replaceIllegalCharacters ( TheType &in )\
-  {\
-  }\
-  static std::string restoreIllegalCharacters ( const std::string &in )\
-  {\
-    return in;\
   }\
   static void serialize ( const TheType &value, XmlTree::Node &node )\
   {\

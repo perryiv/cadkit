@@ -35,7 +35,6 @@
 #include "Minerva/Core/Utilities/ClampNearFar.h"
 #include "Minerva/Core/Extents.h"
 #include "Minerva/Core/Navigator.h"
-#include "Minerva/Core/TileEngine/SplitCallbacks.h"
 #include "Minerva/Interfaces/IDataObject.h"
 #include "Minerva/Interfaces/IIntersectNotify.h"
 #include "Minerva/Interfaces/IRefreshData.h"

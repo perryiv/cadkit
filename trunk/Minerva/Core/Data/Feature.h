@@ -22,6 +22,8 @@
 #include "Usul/Interfaces/IDataChangedNotify.h"
 #include "Usul/Interfaces/ILayerExtents.h"
 #include "Usul/Interfaces/ITreeNode.h"
+#include "Usul/Threads/Atomic.h"
+#include "Usul/Threads/Object.h"
 
 #include "osg/Vec2d"
 
@@ -131,11 +133,13 @@ private:
 
   typedef Usul::Interfaces::IDataChangedListener      IDataChangedListener;
   typedef Usul::Containers::Unknowns<IDataChangedListener> DataChangedListeners;
+  typedef Usul::Threads::Object<std::string,Usul::Threads::MutexTraits<Usul::Threads::Mutex> > String;
+  typedef Usul::Threads::Atomic<bool> Boolean;
 
   std::string _description;
-  std::string _name;
+  String _name;
 	std::string _styleUrl;
-  bool _visibility;
+  Boolean _visibility;
   LookAt::RefPtr _lookAt;
   TimePrimitive::RefPtr _timePrimitive;
   Extents _extents;

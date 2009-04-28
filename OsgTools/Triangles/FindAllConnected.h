@@ -7,13 +7,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
-#define __USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
+#ifndef __OSG_TOOLS_TRIANGLES_KEEP_ALL_CONNECTED_H__
+#define __OSG_TOOLS_TRIANGLES_KEEP_ALL_CONNECTED_H__
 
 #include "Usul/Exceptions/Thrower.h"
 
-namespace Usul {
-namespace Algorithms {
+namespace OsgTools {
+namespace Triangles {
 
 
 template
@@ -73,8 +73,8 @@ inline void findAllConnected ( Polygons& polygons, IndexSequence& answer, unsign
     }
 }
 
-}
-    
+
+}    
 }
 
-#endif //__USUL_ALGORITHMS_KEEP_ALL_CONNECTED_H__
+#endif //__OSG_TOOLS_TRIANGLES_KEEP_ALL_CONNECTED_H__

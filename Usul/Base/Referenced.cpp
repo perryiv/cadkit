@@ -17,29 +17,11 @@
 #include "Usul/Base/InstanceManager.h"
 #include "Usul/Errors/Assert.h"
 #include "Usul/Strings/Format.h"
-#include "Usul/Threads/Mutex.h"
-#include "Usul/Threads/Guard.h"
 
 using namespace Usul;
 using namespace Usul::Base;
 
 USUL_IMPLEMENT_TYPE_ID ( Referenced );
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Local typedefs.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Usul
-{
-  namespace Base
-  {
-    typedef Usul::Threads::Mutex Mutex;
-    typedef Usul::Threads::Guard<Mutex> Guard;
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -60,9 +42,10 @@ namespace Detail { Usul::Base::InstanceManager im; }
 ///////////////////////////////////////////////////////////////////////////////
 
 Referenced::Referenced() : BaseClass(),
-  _refCount ( 0 ),
-  _rcMutex ( Mutex::create() )
-  {
+  _refCount()
+{
+  _refCount.fetch_and_store ( 0 );
+
 #if _DEBUG
   Detail::im.add ( this );
 #endif
@@ -76,9 +59,10 @@ Referenced::Referenced() : BaseClass(),
 ///////////////////////////////////////////////////////////////////////////////
 
 Referenced::Referenced ( const Referenced &r ) : BaseClass ( r ),
-  _refCount ( 0 ),
-  _rcMutex ( Mutex::create() )
+  _refCount()
 {
+  _refCount.fetch_and_store ( 0 );
+
 #if _DEBUG
   Detail::im.add ( this );
 #endif
@@ -99,9 +83,6 @@ Referenced::~Referenced()
 
   // Should be true.
   USUL_ASSERT ( 0 == _refCount );
-  USUL_ASSERT ( 0x0 != _rcMutex );
-
-  delete _rcMutex;
 }
 
 
@@ -128,9 +109,6 @@ Referenced &Referenced::operator = ( const Referenced &r )
 
 void Referenced::ref()
 {
-  // One thread at a time.
-  Guard guard ( *_rcMutex );
-
 #ifdef _DEBUG
   // If this is the first time, update the entry in the instance-manager. 
   // When the entry is first made in the constructor, the virtual table 
@@ -139,25 +117,8 @@ void Referenced::ref()
     Detail::im.update ( this );
 #endif
 
-  ++_refCount;
+  _refCount.fetch_and_increment();
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Decrement the reference count.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Detail
-{
-  inline unsigned long threadSafeDecrement ( unsigned long &num, Usul::Threads::Mutex &mutex )
-  {
-    Guard guard ( mutex );
-    USUL_ASSERT ( num >= 1 );
-    return ( --num );
-  }
-};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -168,9 +129,8 @@ namespace Detail
 
 void Referenced::unref ( bool allowDeletion )
 {
-  // We decrement in a separate function because we cannot delete with the 
-  // mutex locked. Hopefully there is only one thread in here when we delete.
-  unsigned long count ( Detail::threadSafeDecrement ( _refCount, *_rcMutex ) );
+  // Hopefully there is only one thread in here when we delete.
+  const unsigned int count ( --_refCount );
   if ( 0 == count && allowDeletion )
   {
     #ifdef _DEBUG
@@ -218,7 +178,6 @@ void Referenced::unref ( bool allowDeletion )
 
 unsigned long Referenced::refCount() const
 {
-  Guard guard ( *_rcMutex );
   return _refCount;
 }
 

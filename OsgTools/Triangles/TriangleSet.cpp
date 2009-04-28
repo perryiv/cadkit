@@ -15,6 +15,9 @@
 
 #include "OsgTools/Triangles/TriangleSet.h"
 #include "OsgTools/Triangles/Constants.h"
+#include "OsgTools/Triangles/FindAllConnected.h"
+#include "OsgTools/Triangles/TriangleFunctor.h"
+
 #include "OsgTools/GlassBoundingBox.h"
 #include "OsgTools/HasOption.h"
 #include "OsgTools/State/StateSet.h"
@@ -31,8 +34,6 @@
 #include "Usul/Types/Types.h"
 #include "Usul/Adaptors/Random.h"
 #include "Usul/Shared/Preferences.h"
-#include "Usul/Algorithms/FindAllConnected.h"
-#include "Usul/Polygons/Triangle.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector2.h"
@@ -2086,12 +2087,12 @@ void TriangleSet::findAllConnected ( Usul::Interfaces::IUnknown* caller, Connect
     Detail::Update update ( this );
     
     // Run algorithm.
-    Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::Update > ( _triangles, connected, seed, update, showProgress );
+    OsgTools::Triangles::findAllConnected < TriangleVector, Connected, Functor, Detail::Update > ( _triangles, connected, seed, update, showProgress );
   }
   else
   {
     Detail::NoUpdate update;
-    Usul::Algorithms::findAllConnected < TriangleVector, Connected, Functor, Detail::NoUpdate > ( _triangles, connected, seed, update, showProgress );
+    OsgTools::Triangles::findAllConnected < TriangleVector, Connected, Functor, Detail::NoUpdate > ( _triangles, connected, seed, update, showProgress );
   }
 }
 

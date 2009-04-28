@@ -459,14 +459,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ReadModel.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ReadModel.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Utilities\ReferenceFrame.h"
 					>
 				</File>
@@ -548,94 +540,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Triangles"
-				>
-				<File
-					RelativePath=".\Triangles\Block.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Block.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Blocks.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Blocks.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\ColorFunctor.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\ColorFunctor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Constants.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Enum.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Exceptions.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Factory.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Factory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Loop.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Loop.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\LoopSplitter.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\LoopSplitter.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\SharedVertex.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\SharedVertex.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Triangle.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\Triangle.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\TriangleSet.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Triangles\TriangleSet.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Images"
 				>
 				<File
@@ -654,30 +558,10 @@
 					RelativePath=".\Images\Image3d.h"
 					>
 				</File>
-				<File
-					RelativePath=".\Images\Matrix.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Callbacks"
 				>
-				<File
-					RelativePath=".\Callbacks\BoundingBox.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Callbacks\BoundingSphere.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Callbacks\BoundingSphere.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Callbacks\HiddenLines.h"
-					>
-				</File>
 				<File
 					RelativePath=".\Callbacks\SortBackToFront.cpp"
 					>
@@ -1066,46 +950,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Objects"
-				>
-				<File
-					RelativePath=".\Objects\Cylinder.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\Cylinder.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\Macros.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\Object.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\Object.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\RegularGrid.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\RegularGrid.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\VertexSequence.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Objects\VertexSequence.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Configure"
 				>
 				<File
@@ -1114,34 +958,110 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Points"
+				Name="Triangles"
 				>
 				<File
-					RelativePath=".\Points\OctTree.cpp"
+					RelativePath=".\Triangles\Block.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Points\OctTree.h"
+					RelativePath=".\Triangles\Block.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Points\OctTreeNode.cpp"
+					RelativePath=".\Triangles\Blocks.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Points\OctTreeNode.h"
+					RelativePath=".\Triangles\Blocks.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Points\PointSet.cpp"
+					RelativePath=".\Triangles\ColorFunctor.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Points\PointSet.h"
+					RelativePath=".\Triangles\ColorFunctor.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Points\PointSetRecords.h"
+					RelativePath=".\Triangles\Constants.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Direction.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Enum.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Exceptions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Factory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Factory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\FindAllConnected.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\FindLoops.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Loop.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Loop.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\LoopSplitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\LoopSplitter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Predicates.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\SharedVertex.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\SharedVertex.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Triangle.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\Triangle.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\TriangleFunctor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\TriangleSet.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Triangles\TriangleSet.h"
 					>
 				</File>
 			</Filter>

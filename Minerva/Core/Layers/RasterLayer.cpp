@@ -349,7 +349,7 @@ RasterLayer::ImagePtr RasterLayer::texture ( const Extents& extents, unsigned in
 
     // Load the file, set the file name and return.
     ImagePtr image ( this->_readImageFile ( file ) );
-    image->setFileName ( file );
+    //image->setFileName ( file );
     return image;
   }
 

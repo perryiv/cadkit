@@ -19,9 +19,10 @@
 #include "Usul/Base/Typed.h"
 #include "Usul/Strings/Format.h"
 
+#include "Usul/Threads/Atomic.h"
+
 #include <stdexcept>
 
-namespace Usul { namespace Threads { class Mutex; } }
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 
@@ -56,8 +57,7 @@ protected:
 
 private:
 
-  unsigned long _refCount;
-  Usul::Threads::Mutex *_rcMutex;
+  Usul::Threads::Atomic<unsigned long> _refCount;
 };
 
 

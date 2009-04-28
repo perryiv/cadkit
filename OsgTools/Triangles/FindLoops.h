@@ -7,20 +7,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __USUL_ALGORITHMS_CAP_POLYGONS_H__
-#define __USUL_ALGORITHMS_CAP_POLYGONS_H__
+#ifndef __OSG_TOOLS_TRIANGLES_FIND_LOOPS__
+#define __OSG_TOOLS_TRIANGLES_FIND_LOOPS__
 
-#include "Usul/Polygons/Predicates.h"
-#include "Usul/Polygons/Triangle.h"
 #include "Usul/Types/Types.h"
+
+#include "OsgTools/Triangles/Predicates.h"
+#include "OsgTools/Triangles/TriangleFunctor.h"
 
 #include <iostream>
 #include <vector>
 
 using namespace Usul::Types;
 
-namespace Usul {
-namespace Loops {
+namespace OsgTools {
+namespace Triangles {
 namespace Detail {
 
   std::vector< unsigned int > cache;
@@ -484,9 +485,8 @@ inline void capPolygons ( Polygons& polygons, Loops& loops, const AdjacencyTest&
     Detail::cache.clear();
 }
 
-}
 
 }
+}
 
-#endif //__USUL_ALGORITHMS_CAP_POLYGONS_H__
-
+#endif //__OSG_TOOLS_TRIANGLES_FIND_LOOPS__

@@ -22,8 +22,6 @@
 #include "Usul/Bits/Bits.h"
 #include "Usul/Pointers/Functions.h"
 
-#include "Usul/Polygons/Predicates.h"
-
 #include <limits>
 #include <algorithm>
 

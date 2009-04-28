@@ -26,7 +26,9 @@
 #include "TriangleReaderOFF.h"
 #include "TriangleReaderFieldViewAscii.h"
 
+#include "OsgTools/Triangles/FindAllConnected.h"
 #include "OsgTools/Triangles/LoopSplitter.h"
+#include "OsgTools/Triangles/FindLoops.h"
 
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/GUI/ICancelButton.h"
@@ -36,26 +38,18 @@
 #include "Usul/Interfaces/IDecimateTriangles.h"
 #include "Usul/Interfaces/ISubdivideTriangles.h"
 
-
+#include "Usul/Adaptors/Random.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
-
+#include "Usul/Errors/Assert.h"
 #include "Usul/File/Path.h"
-#include "Usul/Strings/Case.h"
 #include "Usul/Policies/Update.h"
-
-#include "Usul/Loops/FindLoops.h"
-#include "Usul/Types/Types.h"
-
-#include "Usul/Algorithms/FindAllConnected.h"
-#include "Usul/Adaptors/Random.h"
-
 #include "Usul/Resources/ProgressBar.h"
 #include "Usul/Resources/StatusBar.h"
 #include "Usul/Resources/CancelButton.h"
-#include "Usul/Errors/Assert.h"
-
+#include "Usul/Strings/Case.h"
 #include "Usul/Trace/Trace.h"
+#include "Usul/Types/Types.h"
 
 #include "osg/Group"
 #include "osg/Geode"
@@ -513,7 +507,7 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
   _uncapped.clear();
 
   // Find the loops that need to be triangulated.
-  Usul::Loops::capPolygons ( triangles, _uncapped, adjacent, 3, updateLoops );
+  OsgTools::Triangles::capPolygons ( triangles, _uncapped, adjacent, 3, updateLoops );
 
   // Interface to flush event queue
   Usul::Interfaces::IFlushEvents::ValidQueryPtr flush ( caller );
@@ -528,7 +522,6 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
   OsgTools::Triangles::LoopSplitter ls ( _triangles->getBoundingBox(), me );
   Loops copy ( _uncapped );
   _uncapped.clear();
-  
  
   for( Loops::iterator i = copy.begin(); i != copy.end(); ++ i )
   {

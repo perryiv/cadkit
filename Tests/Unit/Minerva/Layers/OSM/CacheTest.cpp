@@ -61,7 +61,7 @@ protected:
     cache = new Cache ( connection );
 
     key = "test_key";
-    extents = Extents ( -180.0, -90.0, 180.0, 90.0 );
+    extents = Extents ( -10.0, -10.0, 10.0, 10.0 );
 
     tags.insert ( std::make_pair ( "key0", "value0" ) );
     tags.insert ( std::make_pair ( "key1", "value1" ) );
@@ -147,6 +147,18 @@ TEST_F(OSMCacheTest,LineString)
   EXPECT_TRUE ( cache->hasLineData ( key, lr ) );
   EXPECT_TRUE ( cache->hasLineData ( key, ul ) );
   EXPECT_TRUE ( cache->hasLineData ( key, ur ) );
+
+  Extents right ( 10.0, -10.0, 30.0, 10.0 );
+  EXPECT_FALSE ( cache->hasLineData ( key, right ) );
+
+  Extents left ( -30.0, -10.0, -10.0, 10.0 );
+  EXPECT_FALSE ( cache->hasLineData ( key, left ) );
+
+  Extents bottom ( -10.0, -30.0, 30.0, -10.0 );
+  EXPECT_FALSE ( cache->hasLineData ( key, bottom ) );
+
+  Extents top ( -10.0, 10.0, 30.0, 30.0 );
+  EXPECT_FALSE ( cache->hasLineData ( key, top ) );
 
   std::vector<LineString::RefPtr> cachedLines;
   cache->getLineData ( key, extents, cachedLines );

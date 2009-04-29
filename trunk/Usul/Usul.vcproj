@@ -85,7 +85,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(XERCES_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Usuld.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Usuld.lib"
@@ -185,7 +185,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(XERCES_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/Usul.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Usul.lib"
 			/>
@@ -234,10 +234,6 @@
 				</File>
 				<File
 					RelativePath="Algorithms\Extract.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Algorithms\FindAllConnected.h"
 					>
 				</File>
 				<File
@@ -2190,18 +2186,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Polygons"
-				>
-				<File
-					RelativePath=".\Polygons\Predicates.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Polygons\Triangle.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Strings"
 				>
 				<File
@@ -2258,18 +2242,6 @@
 				</File>
 				<File
 					RelativePath=".\Mpl\TypeWrap.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Loops"
-				>
-				<File
-					RelativePath=".\Loops\Direction.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Loops\FindLoops.h"
 					>
 				</File>
 			</Filter>

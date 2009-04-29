@@ -460,14 +460,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\ReadModel.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ReadModel.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Utilities\ReferenceFrame.h"
 					>
 				</File>
@@ -663,22 +655,6 @@
 			<Filter
 				Name="Callbacks"
 				>
-				<File
-					RelativePath=".\Callbacks\BoundingBox.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Callbacks\BoundingSphere.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Callbacks\BoundingSphere.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Callbacks\HiddenLines.h"
-					>
-				</File>
 				<File
 					RelativePath=".\Callbacks\SortBackToFront.cpp"
 					>

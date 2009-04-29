@@ -107,7 +107,6 @@ SET ( HEADERS
 ./Algorithms/CopyIf.h
 ./Algorithms/Cylinder.h
 ./Algorithms/Extract.h
-./Algorithms/FindAllConnected.h
 ./Algorithms/Sphere.h
 ./Algorithms/TriStrip.h
 ./App/Application.h
@@ -452,8 +451,6 @@ SET ( HEADERS
 ./IO/Vector4.h
 ./Jobs/Job.h
 ./Jobs/Manager.h
-./Loops/Direction.h
-./Loops/FindLoops.h
 ./Math/Absolute.h
 ./Math/Angle.h
 ./Math/Barycentric.h
@@ -496,8 +493,6 @@ SET ( HEADERS
 ./Pointers/SmartPointer.h
 ./Pointers/WeakPointer.h
 ./Policies/Update.h
-./Polygons/Predicates.h
-./Polygons/Triangle.h
 ./Predicates/CanWrite.h
 ./Predicates/CloseFloat.h
 ./Predicates/CompareCoordinate.h
@@ -559,8 +554,6 @@ SET ( HEADERS
 ./System/Screen.h
 ./System/Sleep.h
 ./System/Socket.h
-./Tests/Network/Test01/WmsJob.h
-./Tests/Threads/Test03/TestJob.h
 ./Threads/Callback.h
 ./Threads/Guard.h
 ./Threads/Manager.h

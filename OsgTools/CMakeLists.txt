@@ -35,9 +35,6 @@ SET ( HEADERS
 	./Box.h
 	./Builders/Arrow.h
 	./Builders/GradientBackground.h
-	./Callbacks/BoundingBox.h
-	./Callbacks/BoundingSphere.h
-	./Callbacks/HiddenLines.h
 	./Callbacks/SortBackToFront.h
 	./Circle.h
 	./ColorPolicyFunctor.h
@@ -83,7 +80,6 @@ SET ( HEADERS
 	./Points/PointSet.h
 	./Points/PointSetRecords.h
 	./Ray.h
-	./ReadModel.h
 	./Render/ActionAdapter.h
 	./Render/Animation.h
 	./Render/ClampProjection.h
@@ -168,7 +164,6 @@ SET (SOURCES
   Axes.cpp
   Builders/Arrow.cpp
   Builders/GradientBackground.cpp
-  Callbacks/BoundingSphere.cpp
   Callbacks/SortBackToFront.cpp
   Circle.cpp
   ColorSetter.cpp
@@ -188,7 +183,6 @@ SET (SOURCES
   MaterialSetter.cpp
   Mesh.cpp
   Ray.cpp
-  ReadModel.cpp
   Render/ActionAdapter.cpp
   Render/Animation.cpp
   Render/EventAdapter.cpp

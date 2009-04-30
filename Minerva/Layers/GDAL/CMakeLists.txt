@@ -34,6 +34,7 @@ SET (SOURCES
 ./Init.cpp
 ./RasterPolygonLayer.cpp
 ./RasterLayerGDAL.cpp
+./OGRVectorLayer.cpp
 )
 
 SET ( TARGET_NAME MinervaGDAL )

@@ -20,6 +20,7 @@
 
 #include "Usul/Strings/Convert.h"
 #include "Usul/Strings/Case.h"
+#include "Usul/Strings/Split.h"
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/File/Path.h"
@@ -28,6 +29,7 @@
 #include "Usul/Print/Matrix.h"
 #include "Usul/Math/Matrix44.h"
 #include "Usul/Math/MinMax.h"
+#include "Usul/CommandLine/Arguments.h"
 
 #include "OsgTools/DisplayLists.h"
 #include "OsgTools/Group.h"
@@ -78,8 +80,9 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
 
   // Setup the cubes
   this->_initCubes();
-}
 
+}
+ 
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -753,7 +756,185 @@ void VaporIntrusionGUIDocument::_write( const std::string &filename, Unknown *ca
   // get the base
   std::string base ( Usul::File::base( filename ) );
 
+  // Make sure it exists.
+  // Usul::File::make ( directory );
+
+  // write the Layers.txt file
+  this->_writeLayerFile( directory );
+
+  // write the coordinates files
+  this->_writeCoordinatesFiles( directory );
   
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the x grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeLayerFile( const std::string& directory ) const
+{
+  // create the filename
+  std::string filename ( directory + "/Layer.txt" );
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+   throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // current index for the input parameters
+  unsigned int index( 0 );
+
+  ofs << "**************  Model domain ***********************\n";
+  ofs << "\n";
+  ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+  ++index;
+  ofs << "\n";
+  ofs << "***********  Grid Size  *****************************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 3; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+  ofs << "************** Building Parameters *******************************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 18; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+  ofs << "******************** Soil Physical Characteristics ***************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 11; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+  ofs << "**************  Constituents Properties  **************************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 41; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+  ofs << "******************** Pressure input ************************************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 24; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+  ofs << "**************** Pressure boundary *************************************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 2; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+  ofs << "**************** Algorithm parameters ***********************************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 78; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+  ofs << "**************** name of files to output data ***************************\n";
+  ofs << "\n";
+  for( unsigned int i = 0; i < 25; ++ i )
+  {
+    ofs << Usul::Strings::format( _inputParameters.at( index ).second.first, "\t", _inputParameters.at( index ).second.second, "\n" );
+    ++index;
+  }
+  ofs << "\n";
+
+  // end of output...close the file
+  ofs.close();
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the x grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeCoordinatesFiles( const std::string& directory ) const
+{
+  // create the filenames
+  std::string filenameX ( directory + "/COORDx.txt" );
+  std::string filenameY ( directory + "/COORDy.txt" );
+  std::string filenameZ ( directory + "/COORDz.txt" );
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filenameX.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+   throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filenameX );
+
+  // write the x coords
+  for( unsigned int i = 0; i < _xValues.size(); ++ i )
+  {
+    ofs << Usul::Strings::format( _xValues.at( i ).first, "\t", _xValues.at( i ).second, "\n" );
+  }
+
+  // close the file
+  ofs.close();
+
+  //------------------------------------------------------------
+
+  // open the file
+  ofs.open( filenameY.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+   throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filenameY );
+
+  // write the x coords
+  for( unsigned int i = 0; i < _yValues.size(); ++ i )
+  {
+    ofs << Usul::Strings::format( _yValues.at( i ).first, "\t", _yValues.at( i ).second, "\n" );
+  }
+
+  // close the file
+  ofs.close();
+
+  //------------------------------------------------------------
+
+   // open the file
+  ofs.open( filenameZ.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+   throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filenameZ );
+
+  // write the x coords
+  for( unsigned int i = 0; i < _zValues.size(); ++ i )
+  {
+    ofs << Usul::Strings::format( _zValues.at( i ).first, "\t", _zValues.at( i ).second, "\n" );
+  }
+
+  // close the file
+  ofs.close();
 }
 
 
@@ -837,11 +1018,113 @@ void VaporIntrusionGUIDocument::setZGrid( GridPoints points )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Read the parameter file
+// Read the config file
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::readParamaterFile( const std::string& filename )
+void VaporIntrusionGUIDocument::_readConfigFile( const std::string& name, const std::string& filename )
+{
+  // useful typedef
+  typedef std::vector< std::string > StringVec;
+
+  // Create a category for this input file
+  Category category( name, filename );
+
+  // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+    throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // Temp string
+    std::string tStr;
+
+    do
+    {
+      // get a line
+      ifs.getline ( buffer, bufSize );
+
+      // grab the string
+      tStr = buffer;
+    }
+    while( tStr.at( 0 ) == '#' );
+
+    // separate the strings
+    
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+    // assign the headers
+    category.columnNames = sv;
+  }
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];
+
+    // get a line
+    ifs.getline ( buffer, bufSize );
+
+    // create a string from the buffer
+    std::string tStr ( buffer );
+
+    if( tStr.at( 0 ) != '#' )
+    {
+
+      // separate the strings
+      typedef std::vector< std::string > StringVec;
+      StringVec sv;
+      Usul::Strings::split( tStr, ",", false, sv );
+      
+      // make sure all the columns are there
+      if( sv.size() >= 7 )
+      {
+        // temp column to hold the input line
+        // #Name,Value,Description,Type,Activator,ActivatedBy,Activation_Value
+        InputColumn column( sv.at( 0 ), sv.at( 1 ), sv.at ( 2 ), sv.at( 3 ), sv.at( 4 ), sv.at( 5 ), sv.at( 6 ) ); 
+
+        // check whether or not the item is an activator or not and place in the appropriate object
+        if( column.activator == "1" )
+        {
+          category.activators.push_back( column );
+        }
+        else
+        {
+          category.activatees.push_back( column );
+        }
+
+      }
+      
+    }
+  }
+
+  // add the category to the list of categories
+  _categories.push_back( category );
+}
+
+#if 0
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the config file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readConfigFile( const std::string& filename )
 {
   Guard guard( this );
 
@@ -858,17 +1141,32 @@ void VaporIntrusionGUIDocument::readParamaterFile( const std::string& filename )
   // buffer size
   const unsigned long int bufSize ( 4095 );
 
+  // line number
+  unsigned int lineNumber ( 0 );
+
   // parse the file
   while( EOF != ifs.peek() )
   {
     // create a buffer
-    char buffer[bufSize+1];
-
-    // get a line
-    ifs.getline ( buffer, bufSize );
+    char buffer[bufSize+1];   
 
     // create a string from the buffer
-    std::string tStr ( buffer );
+    std::string tStr;
+    
+    do
+    {
+      // get a line
+      ifs.getline ( buffer, bufSize );
+
+      // grab the string
+      tStr = buffer;
+    }
+    while( tStr.at( 0 ) == '#' );
+
+    // separate the strings
+    typedef std::vector< std::string > StringVec;
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
 
     // index of the start of the first value
     unsigned int index ( 0 );
@@ -876,6 +1174,12 @@ void VaporIntrusionGUIDocument::readParamaterFile( const std::string& filename )
     // find the first value
     for( unsigned int i = 0; i < tStr.size(); ++i )
     {
+      if( tStr.at( i ) == '*' )
+      {
+        index = tStr.size();
+        break;
+      }
+
       // count indices until we find something besides a space
       if( tStr.at( i ) == ' ' )
       {
@@ -895,7 +1199,7 @@ void VaporIntrusionGUIDocument::readParamaterFile( const std::string& filename )
     for( unsigned int i = index; i < tStr.size(); ++i )
     {
       // count indices until we find something besides a space
-      if( tStr.at( i ) <= ' ' )
+      if( tStr.at( i ) != ' ' )
       {
         value += tStr.at( i );
 
@@ -922,16 +1226,36 @@ void VaporIntrusionGUIDocument::readParamaterFile( const std::string& filename )
         break;
       }
     }
-
+     
     // temp value for the description
     std::string description ( tStr.substr( index, tStr.size() ) );
+
+    if( value.length() > 0 )
+    {
+      // create a temp parameter
+      Usul::Interfaces::IVaporIntrusionGUI::Parameter parameter;
+
+      // set the values
+      parameter.first = value;
+      parameter.second = description;
+
+      Usul::Interfaces::IVaporIntrusionGUI::ParameterPair parameterPair;
+
+      parameterPair.first = lineNumber;
+      parameterPair.second = parameter;
+
+      // add the parameter
+      _inputParameters.push_back( parameterPair );
+    }
+
+    ++lineNumber;
 
   }// end while loop for file reading
 
 
 }
 
-
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Read the parameter file
@@ -956,3 +1280,139 @@ void VaporIntrusionGUIDocument::parameters( ParameterList plist )
   Guard guard( this );
   _inputParameters = plist;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the categories for the input file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::Categories VaporIntrusionGUIDocument::categories()
+{
+  Guard guard( this );
+  return _categories;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the categories for the input file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::categories( Categories c )
+{
+  Guard guard( this );
+  _categories = c;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the initialization file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::initialize()
+{
+  Guard guard( this );
+
+  // set up the input variables
+  _configFileName = Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "vpi_config.vpi";
+  this->_readInitializationFile( _configFileName );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the initialization file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_readInitializationFile( const std::string& filename )
+{
+    // create a file handle
+  std::ifstream ifs;
+
+  // open the file
+  ifs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ifs.is_open() )
+    throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // buffer size
+  const unsigned long int bufSize ( 4095 );
+
+  // line number
+  unsigned int lineNumber ( 0 );
+
+  // parse the file
+  while( EOF != ifs.peek() )
+  {
+    // create a buffer
+    char buffer[bufSize+1];   
+
+    // create a string from the buffer
+    std::string tStr;
+    
+    do
+    {
+      // get a line
+      ifs.getline ( buffer, bufSize );
+
+      // grab the string
+      tStr = buffer;
+    }
+    while( tStr.at( 0 ) == '#' );
+
+    // separate the strings
+    typedef std::vector< std::string > StringVec;
+    StringVec sv;
+    Usul::Strings::split( tStr, ",", false, sv );
+
+    if( sv.size() >=2 )
+    {
+      this->_readConfigFile( sv.at( 0 ), sv.at( 1 ) );
+    }
+
+  }// end of while loop
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the config file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::readConfigFile( const std::string& name, const std::string& filename )
+{
+  Guard guard( this );
+
+  // read the file
+  this->_readConfigFile( name, filename );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Update the list of categories with the supplied category
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::updateCategory( Category category )
+{
+  Guard guard( this );
+
+  for( unsigned int i = 0; i < _categories.size(); ++i )
+  {
+    if( _categories.at( i ).name == category.name )
+    {
+      _categories.at( i ) = category;
+      break;
+    }
+  }
+}
+

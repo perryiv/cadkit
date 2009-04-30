@@ -51,20 +51,22 @@ class VaporIntrusionGUIDocument : public Usul::Documents::Document,
                                   
 {
 public:
-
-  
-  
   /// Useful typedefs.
-  typedef Usul::Documents::Document BaseClass;
-  typedef Usul::Documents::Document Document;
-  typedef Usul::Documents::Document::RefPtr DocumentPtr;
-  typedef Usul::Documents::Manager DocManager;
-  typedef DocManager::DocumentInfo Info;
-  typedef osg::ref_ptr< osg::Group > GroupPtr;
-  typedef osg::Vec4 Color;
-  typedef std::vector< std::pair< double, double > > GridPoints;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::ParameterList ParameterList;
+  typedef Usul::Documents::Document                             BaseClass;
+  typedef Usul::Documents::Document                             Document;
+  typedef Usul::Documents::Document::RefPtr                     DocumentPtr;
+  typedef Usul::Documents::Manager                              DocManager;
+  typedef DocManager::DocumentInfo                              Info;
+  typedef osg::ref_ptr< osg::Group >                            GroupPtr;
+  typedef osg::Vec4                                             Color;
+  typedef std::vector< std::pair< double, double > >            GridPoints;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::ParameterList   ParameterList;
+  typedef IVaporIntrusionGUI::InputColumns                      InputColumns;
+  typedef IVaporIntrusionGUI::InputColumn                       InputColumn;
+  typedef IVaporIntrusionGUI::Category                          Category;
+  typedef IVaporIntrusionGUI::Categories                        Categories;
   
+  // structs and typedefs for structs
   struct Value
   {
     std::string name;
@@ -168,9 +170,14 @@ public:
   virtual void                setYGrid( GridPoints points );
   virtual void                setZGrid( GridPoints points );
   virtual void                rebuildScene();
-  virtual void                readParamaterFile( const std::string& filename );
+  //virtual void                readParamaterFile( const std::string& filename );
   virtual ParameterList       parameters();
   virtual void                parameters( ParameterList plist );
+  virtual Categories          categories();
+  virtual void                categories( Categories c );
+  virtual void                readConfigFile( const std::string& name, const std::string& filename );
+  virtual void                initialize();
+  virtual void                updateCategory( Category category );
 
 protected:
 
@@ -194,9 +201,13 @@ protected:
 
   // Write the necessary files for the Vapor Intrusion Process
   void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
+  void                        _writeLayerFile( const std::string& directory ) const;
+  void                        _writeCoordinatesFiles( const std::string& directory ) const;
 
   // read layer file
-  void                        _readLayerFile( const std::string& filename );
+  void                        _readConfigFile( const std::string& name, const std::string& filename );
+  void                        _readInitializationFile( const std::string& filename );
+  //void                      _readConfig( const std::string& filename );
 
 
 private:
@@ -207,9 +218,8 @@ private:
     GridPoints                _yValues;
     GridPoints                _zValues;
     ParameterList             _inputParameters;
-
-    
-    
+    std::string               _configFileName;
+    Categories                _categories;
   
 };
 

@@ -330,17 +330,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Field View Reader Del
 		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app: Minerva Qt App", "..\..\Minerva\Application\MinervaApp.vcproj", "{226C849E-90C3-48D8-86BC-19B3252F3FAE}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-	ProjectSection(ProjectDependencies) = postProject
-		{113E80BC-F9F9-45F0-BE8F-E5C22A2CB599} = {113E80BC-F9F9-45F0-BE8F-E5C22A2CB599}
-		{F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98} = {F7BCD74C-ADEE-4E99-A3DA-5FF03653BD98}
-		{A4610909-A555-40C5-87A8-B95FEFF45CF5} = {A4610909-A555-40C5-87A8-B95FEFF45CF5}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plug: Measure Tool", "..\Plugins\MeasureTool\MeasureTool.vcproj", "{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -608,10 +597,6 @@ Global
 		{F703C423-C614-4E13-9DC4-FF9A78929D0B}.Debug|Win32.Build.0 = Debug|Win32
 		{F703C423-C614-4E13-9DC4-FF9A78929D0B}.Release|Win32.ActiveCfg = Release|Win32
 		{F703C423-C614-4E13-9DC4-FF9A78929D0B}.Release|Win32.Build.0 = Release|Win32
-		{226C849E-90C3-48D8-86BC-19B3252F3FAE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{226C849E-90C3-48D8-86BC-19B3252F3FAE}.Debug|Win32.Build.0 = Debug|Win32
-		{226C849E-90C3-48D8-86BC-19B3252F3FAE}.Release|Win32.ActiveCfg = Release|Win32
-		{226C849E-90C3-48D8-86BC-19B3252F3FAE}.Release|Win32.Build.0 = Release|Win32
 		{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}.Debug|Win32.Build.0 = Debug|Win32
 		{A4AAAE7A-AFBA-4253-8743-911FC2853DEF}.Release|Win32.ActiveCfg = Release|Win32

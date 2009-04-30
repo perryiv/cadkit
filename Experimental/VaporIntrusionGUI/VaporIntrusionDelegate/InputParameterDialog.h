@@ -33,7 +33,7 @@ public:
   typedef QDialog BaseClass;
   
 
-  InputParameterDialog ( QWidget *parent = 0x0 );
+  InputParameterDialog ( Usul::Interfaces::IVaporIntrusionGUI::Category category, QWidget *parent = 0x0 );
   virtual ~InputParameterDialog();
 
 
@@ -42,9 +42,12 @@ protected:
   void            _initializeList();
 
 private:
-
+  Usul::Interfaces::IVaporIntrusionGUI::Category _category;
 
 private slots:
+
+  void on_resetButton_clicked();
+  void on_applyButton_clicked();
   
 };
 

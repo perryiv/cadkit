@@ -60,6 +60,11 @@ public:
   typedef Usul::Pointers::SmartPointer < QtViewer, Policy > QtViewerPtr;
   typedef Usul::Pointers::SmartPointer < VIGUIViewer, Policy > VIGUIViewerPtr;
 
+  // IVaporIntrusionGUI typedefs
+  typedef Usul::Interfaces::IVaporIntrusionGUI IVaporIntrusionGUI;
+  typedef IVaporIntrusionGUI::Category Category;
+  typedef IVaporIntrusionGUI::Categories Categories;
+
 
   /// Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( VaporIntrusionGUIDelegateComponent );
@@ -91,7 +96,7 @@ public:
   void                        editGrid();
 
   // edit the input parameters
-  void                        editInputParameters();
+  void                        editInputParameters( const std::string& menuName );
 
 protected: 
 
@@ -111,6 +116,8 @@ private:
   QDockWidget         *_dock;
   MaterialContainer   *_materialContainer;
   IUnknown::QueryPtr  _caller;
+
+  Usul::Interfaces::IVaporIntrusionGUI::Categories _categories;
 
 
 };

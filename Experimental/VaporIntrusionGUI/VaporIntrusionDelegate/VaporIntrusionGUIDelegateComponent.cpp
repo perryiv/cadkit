@@ -58,7 +58,8 @@ _xzView ( 0x0 ),
 _yzView ( 0x0 ),
 _dock   ( 0x0 ),
 _materialContainer( 0x0 ),
-_caller()
+_caller(),
+_categories()
 {
 }
 
@@ -228,15 +229,34 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
 void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * caller)
 {
   // Make the menu.
-  MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Variables" ) );
+  MenuKit::Menu::RefPtr variableMenu ( new MenuKit::Menu ( "Parameters" ) );
   
   // Add Window arrange button
-  //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::bind1<void> ( caller,  Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid )  ), Usul::Commands::TrueFunctor() ) ) );
   variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ), Usul::Commands::TrueFunctor() ) ) );
-  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ), Usul::Commands::TrueFunctor() ) ) );
+  //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ), Usul::Commands::TrueFunctor() ) ) );
   
-  //Usul::Commands::genericCommand ( name, icon, Usul::Adaptors::memberFunction<void> ( object, fun ), Usul::Commands::TrueFunctor() )
+   // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
+  // Check for a valid document
+  if( true == document.valid() )
+  {
+    // get the categories
+    Categories categories = document->categories();
+    
+    for( unsigned int i = 0; i < categories.size(); ++i )
+    {
+      // get the menu name
+      std::string menuName ( categories.at( i ).name );
+
+      // add the sub menu to the main menu
+      //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ), Usul::Commands::TrueFunctor() ) ) );
+
+      // add the sub menu to the main menu
+      variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( menuName, Usul::Adaptors::bind1<void> ( menuName, Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ) ), Usul::Commands::TrueFunctor() ) ) ); 
+    }
+
+  }
   // Add the window menu to the main menu
   menu.append( variableMenu.get() );
 }
@@ -299,13 +319,19 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
   
+  // Get and store the dimensions
   Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
 
+  // get the document
   Usul::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
 
   if( true == doc.valid() )
   {
+    // set the dimensions
     doc->dimensions( d );
+
+    // initialize the document
+    doc->initialize();
   }
   
 }
@@ -350,13 +376,39 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDelegateComponent::editInputParameters()
+void VaporIntrusionGUIDelegateComponent::editInputParameters( const std::string& menuName )
 {
-  
-  // Make the dialog.
-  InputParameterDialog dialog;
+   // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
-  // Show the dialog.
-  if ( QDialog::Accepted != dialog.exec() )
-    throw Usul::Exceptions::Canceled();
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+  // get the categories
+  Categories categories( document->categories() );
+
+  // find the proper category that matches menuName
+  for( unsigned int i = 0; i < categories.size(); ++i )
+  {
+    // get the category name
+    std::string name( categories.at( i ).name );
+
+    if( name == menuName )
+    {
+      // Make the dialog.
+      InputParameterDialog dialog( categories.at( i ) );
+
+      // Show the dialog.
+      if ( QDialog::Accepted != dialog.exec() )
+        throw Usul::Exceptions::Canceled();
+
+      break;
+    }
+  }
+
+  
+
+  
+      
 }

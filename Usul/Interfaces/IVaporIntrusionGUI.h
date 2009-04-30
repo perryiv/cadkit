@@ -19,35 +19,131 @@ namespace Interfaces {
 
 struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 {
+
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IVaporIntrusionGUI );
 
   /// Id for this interface.
   enum { IID = 1235852807u };
 
+  // structs
+  struct InputColumn
+  {
+    // #Name,Value,Description,Type,Activator,ActivatedBy,Activation_Value
+    std::string name;
+    std::string value;
+    std::string description;
+    std::string type;
+    std::string activator;
+    std::string activatedBy;
+    std::string activationValue;
+
+    InputColumn():
+      name (),
+      value(),
+      description(),
+      type(),
+      activator(),
+      activatedBy(),
+      activationValue()
+      {}
+    InputColumn( const std::string& n, const std::string& v, const std::string& d, const std::string& t, 
+      const std::string& a, const std::string& ab, const std::string& av ) :
+      name ( n ),
+      value( v ),
+      description( d ),
+      type( t ),
+      activator( a ),
+      activatedBy( ab ),
+      activationValue( av )
+      {}
+  };
+
+  // vector of InputColumn
+  typedef std::vector< InputColumn > InputColumns;
+
+  // Menu holders
+  struct Category
+  {
+    std::string name;
+    std::string filename;
+    std::vector< std::string > columnNames;
+    InputColumns activators;
+    InputColumns activatees;
+
+    Category( const std::string& n, const std::string& fn ):
+      name( n ),
+      filename( fn ),
+      columnNames(),
+      activators(),
+      activatees()
+      {}
+
+      Category():
+      name(),
+      filename(),
+      columnNames(),
+      activators(),
+      activatees()
+      {}
+  };
+
+  typedef std::vector< Category > Categories;
+
   // Highlight the set of cubes at depth <depth>
-  virtual void highlightCells( Usul::Math::Vec3ui set, unsigned int depth ) = 0;
+  virtual void                  highlightCells( Usul::Math::Vec3ui set, unsigned int depth ) = 0;
   
   // Set the transparency
-  virtual void setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha ) = 0;
+  virtual void                  setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha ) = 0;
 
   // Set the transparency
-  virtual void setAlpha( float alpha ) = 0;
+  virtual void                  setAlpha( float alpha ) = 0;
 
   // Get/set the dimensions of the space
-  virtual Usul::Math::Vec3ui dimensions() = 0;
-  virtual void dimensions( Usul::Math::Vec3ui ) = 0;
+  virtual Usul::Math::Vec3ui    dimensions() = 0;
+  virtual void                  dimensions( Usul::Math::Vec3ui ) = 0;
 
   // Get/Set the material
-  virtual void              setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c ) = 0;
-  virtual Usul::Math::Vec4f getMaterial( unsigned int x, unsigned int y, unsigned int z ) = 0;
+  virtual void                  setMaterial( unsigned int x, unsigned int y, unsigned int z, Usul::Math::Vec4f c ) = 0;
+  virtual Usul::Math::Vec4f     getMaterial( unsigned int x, unsigned int y, unsigned int z ) = 0;
 
   // Request redraw
-  virtual void              requestRedraw() = 0;
+  virtual void                  requestRedraw() = 0;
 
-  virtual void              setValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value ) = 0;
-  virtual void              setNameAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name ) = 0;
+  virtual void                  setValueAt( unsigned int x, unsigned int y, unsigned int z, unsigned int index, const std::string& value ) = 0;
+  virtual void                  setNameAt( unsigned int x, unsigned int y, unsigned int z, unsigned int index ,  const std::string& name ) = 0;
+  virtual void                  addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& name, const std::string& value ) = 0;
+  virtual void                  addValueAt( unsigned int x, unsigned int y, unsigned int z, const std::string& value ) = 0;
 
+  typedef std::vector< std::pair< double, double > > GridPoints;
+
+  virtual GridPoints            getXGrid() = 0;
+  virtual GridPoints            getYGrid() = 0;
+  virtual GridPoints            getZGrid() = 0;
+
+  virtual void                  setXGrid( GridPoints points ) = 0;
+  virtual void                  setYGrid( GridPoints points ) = 0;
+  virtual void                  setZGrid( GridPoints points ) = 0;
+
+  virtual void                  rebuildScene() = 0;
+
+  typedef std::pair< std::string, std::string > Parameter;
+  typedef std::pair< unsigned int, Parameter > ParameterPair;
+  typedef std::vector< ParameterPair > ParameterList;
+
+  //virtual void                  readParamaterFile( const std::string& filename ) = 0;
+  virtual ParameterList         parameters() = 0;
+  virtual void                  parameters( ParameterList plist ) = 0;
+
+  virtual Categories            categories() = 0;
+  virtual void                  categories( Categories c ) = 0;
+
+  virtual void                  initialize() = 0;
+
+  virtual void                  readConfigFile( const std::string& name, const std::string& filename ) = 0;
+  virtual void                  updateCategory( Category category ) = 0;
+  
+    
 }; // struct IVaporIntrusionGUI
 
 }

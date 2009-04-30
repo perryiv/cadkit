@@ -69,9 +69,6 @@ InputParameterDialog::~InputParameterDialog()
 
 void InputParameterDialog::_initializeList ()
 {
-  // flush the list
-  _inputList->clear();
-
   // Query the active document for IVaporIntrusionGUI
   Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
@@ -125,7 +122,8 @@ void InputParameterDialog::_initializeList ()
 
     for( unsigned int j = 0; j < _category.activatees.size(); ++j )
     {
-      if( _category.activatees.at( j ).activatedBy == _category.activators.at( 0 ).name )
+      if( _category.activatees.at( j ).activatedBy == _category.activators.at( 0 ).name &&
+          _category.activators.at( 0 ).value == "1" )
       {
         // insert a row
         _inputList->insertRow( rowCount );
@@ -187,7 +185,8 @@ void InputParameterDialog::_initializeList ()
 
     for( unsigned int j = 0; j < _category.activatees.size(); ++j )
     {
-      if( _category.activatees.at( j ).activatedBy == _category.activators.at( i ).name )
+      if( _category.activatees.at( j ).activatedBy == _category.activators.at( i ).name &&
+          _category.activators.at( i ).value == "1" )
       {
         // insert a row
        _inputList->insertRow( rowCount );
@@ -336,6 +335,14 @@ void InputParameterDialog::on_applyButton_clicked()
   // update the category in the document
   document->updateCategory( _category );
 
+  // remove all the rows
+  //_inputList->clearContents();
+
+  for( int i = _inputList->rowCount() - 1; i >= 0 ; --i )
+  {
+    _inputList->removeRow( i );
+  }
+  
   this->_initializeList();
 
   //// get the parameter list from the document

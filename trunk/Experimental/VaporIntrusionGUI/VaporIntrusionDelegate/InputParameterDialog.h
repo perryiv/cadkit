@@ -36,6 +36,8 @@ public:
   InputParameterDialog ( Usul::Interfaces::IVaporIntrusionGUI::Category category, QWidget *parent = 0x0 );
   virtual ~InputParameterDialog();
 
+  void            okClicked();
+
 
 protected:
   
@@ -48,7 +50,6 @@ private slots:
 
   void on_resetButton_clicked();
   void on_applyButton_clicked();
-  
 };
 
 

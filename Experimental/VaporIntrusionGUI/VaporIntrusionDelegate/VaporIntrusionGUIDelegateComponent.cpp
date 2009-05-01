@@ -402,6 +402,11 @@ void VaporIntrusionGUIDelegateComponent::editInputParameters( const std::string&
       // Show the dialog.
       if ( QDialog::Accepted != dialog.exec() )
         throw Usul::Exceptions::Canceled();
+      else
+      {
+        dialog.okClicked();
+      }
+
 
       break;
     }

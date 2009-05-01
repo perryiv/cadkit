@@ -264,7 +264,7 @@ void InputParameterDialog::on_resetButton_clicked()
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Reset button was pushed
+//  Apply button was pushed
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -336,27 +336,24 @@ void InputParameterDialog::on_applyButton_clicked()
   document->updateCategory( _category );
 
   // remove all the rows
-  //_inputList->clearContents();
-
   for( int i = _inputList->rowCount() - 1; i >= 0 ; --i )
   {
     _inputList->removeRow( i );
   }
   
+  // reinitialize the list
   this->_initializeList();
 
-  //// get the parameter list from the document
-  //Usul::Interfaces::IVaporIntrusionGUI::ParameterList pList ( document->parameters() );
+}
 
-  //for( int row = 0; row < _inputList->rowCount(); ++ row )
-  //{
-  //  // get the value from the list
-  //  std::string value ( _inputList->item( row, 0 )->text().toStdString() );
 
-  //  // set the new value
-  //  pList.at( row ).second.first = value;
-  //}
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Apply button was pushed
+//
+///////////////////////////////////////////////////////////////////////////////
 
-  //// update the parameter list on the document
-  //document->parameters( pList );
+void InputParameterDialog::okClicked()
+{
+  this->on_applyButton_clicked();
 }

@@ -760,11 +760,88 @@ void VaporIntrusionGUIDocument::_write( const std::string &filename, Unknown *ca
   // Usul::File::make ( directory );
 
   // write the Layers.txt file
-  this->_writeLayerFile( directory );
+  this->_writeLayerFile2( directory );
 
   // write the coordinates files
   this->_writeCoordinatesFiles( directory );
   
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the x grid points
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_writeLayerFile2( const std::string& directory ) const
+{
+  Guard guard( this );
+
+  // create the filename
+  std::string filename ( directory + "/Layer.txt" );
+
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+   throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // current index for the input parameters
+  unsigned int index( 0 );
+
+  for( unsigned int i = 0; i < _categories.size(); ++i )
+  {
+    //get the category
+    Category category = _categories.at( i );
+  
+    // write the category name header
+    ofs << "************** " << category.name <<  " ***********************\n\n"; 
+
+    // write the columns in this category
+    for( unsigned int j = 0; j < category.activators.size(); ++j )
+    {
+      // get the activator column
+      InputColumn column ( category.activators.at( j ) );
+
+      // get the activator name
+      std::string activatorName( category.activators.at( j ).name );
+
+      // output the activator column
+      ofs << Usul::Strings::format( column.value, "\t", column.description, "\n" );
+
+      // find all the activatees for this activator and output their information
+      for( unsigned int k = 0; k < category.activatees.size(); ++k )
+      {
+        // get the activatee name
+        std::string activatedBy( category.activatees.at( k ).activatedBy );
+
+        // if the activatee belongs to the activator, output the column
+        if( activatorName == activatedBy )
+        {
+          // get the activatee column
+          InputColumn activateeColumn( category.activatees.at( k ) );
+
+          // output the activator column
+          ofs << Usul::Strings::format( activateeColumn.value, "\t", activateeColumn.description, "\n" );
+        }// end if( activatorName == activateeName )
+
+      }// end for( unsigned int k = 0; k < category.activatees.size(); ++k )      
+
+    }// end for( unsigned int j = 0; j < category.activators.size(); ++j )
+    
+    // output a newline for formating
+    ofs << "\n";
+
+  }// end for( unsigned int i = 0; i < _categories.size(); ++i )
+
+
+  // close the output file
+  ofs.close();
 }
 
 

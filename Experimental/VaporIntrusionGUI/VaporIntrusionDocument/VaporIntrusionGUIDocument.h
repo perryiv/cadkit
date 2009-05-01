@@ -202,6 +202,7 @@ protected:
   // Write the necessary files for the Vapor Intrusion Process
   void                        _write( const std::string &filename, Unknown *caller = 0x0, Unknown *progress = 0x0  ) const;
   void                        _writeLayerFile( const std::string& directory ) const;
+  void                        _writeLayerFile2( const std::string& directory ) const;
   void                        _writeCoordinatesFiles( const std::string& directory ) const;
 
   // read layer file

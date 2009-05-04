@@ -21,6 +21,7 @@ else(POSTGRESQL_INCLUDE_DIR AND POSTGRESQL_LIBRARIES)
       /usr/include/server
       /usr/include/pgsql/server
       /usr/local/include/pgsql/server
+      /usr/include/postgresql
       /usr/include/postgresql/server
       /usr/include/postgresql/*/server
       /usr/local/include/postgresql/server

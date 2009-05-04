@@ -7,10 +7,6 @@ INCLUDE ( ${CMakeModules}/Cadkit.cmake)
 # ------------ Find OpenSceneGraph Libraries ----------------------
 INCLUDE(${CMakeModules}/FindOSG.cmake)
 
-# ------------ Find PQXX Library ----------------------
-FIND_LIBRARY(PQXX_LIB pqxx $ENV{PQXX_LIB_DIR} )
-
-
 LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 # Add definitions
@@ -55,3 +51,4 @@ TARGET_LINK_LIBRARIES( ${TARGET_NAME}
 	${OSG_LIB}
 	${OSG_DB_LIB}
 )
+

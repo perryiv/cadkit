@@ -122,11 +122,10 @@ INCLUDE( FindHDF )
 
 #########################################################
 #
-#  Find pqxx.
+#  Find postgres.
 #
 #########################################################
 
-INCLUDE( FindPQXX )
 INCLUDE( FindPostgreSQL )
 
 

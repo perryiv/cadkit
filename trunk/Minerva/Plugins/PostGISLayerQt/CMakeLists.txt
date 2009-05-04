@@ -21,7 +21,7 @@ INCLUDE ( ${QT_USE_FILE} )
 #
 #########################################################
 
-LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} $ENV{PQXX_LIB_DIR} )
+LINK_DIRECTORIES( ${CADKIT_BIN_DIR} ${Boost_LIBRARY_DIRS} )
 
 
 #########################################################
@@ -84,7 +84,7 @@ SET ( PLUGIN_NAME "PostGISLayerQt" )
 SET ( SOURCES ${SOURCES} ${MOC_SRCS} ${UIS_HDRS} )
 SET ( COMPILE_GUARD "_COMPILING_POSTGIS_LAYER_QT" )
 SET ( CADKIT_LIBRARIES Usul Minerva QtTools MinervaPostGIS MinervaPostgres MinervaGDAL )
-SET ( OTHER_LIBRARIES ${QT_LIBRARIES} ${Boost_LIBRARIES} )
+SET ( OTHER_LIBRARIES ${QT_LIBRARIES} ${Boost_LIBRARIES} ${POSTGRESQL_LIBRARIES} )
 
 # Add the plugin.
 CADKIT_ADD_PLUGIN ( ${PLUGIN_NAME} )

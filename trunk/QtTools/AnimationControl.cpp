@@ -14,6 +14,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "ui_AnimationControl.h" // Cannot have path here.
 #include "QtTools/AnimationControl.h"
 #include "QtTools/Image.h"
 #include "QtTools/ScopedSignals.h"
@@ -52,7 +53,8 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   _state        ( 0 ),
   _timer        ( 0 ),
   _milliSeconds ( 1000 ),
-  _loop         ( false )
+  _loop         ( false ),
+  _animationControl ( new Ui::AnimationControl )
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "1692127533" );
@@ -61,39 +63,39 @@ AnimationControl::AnimationControl ( Unknown *caller, QWidget *parent  ) : BaseC
   Usul::Documents::Manager::instance().addActiveDocumentListener ( this );
 
   // Initialize code from Designer.
-  this->setupUi ( this );
+  _animationControl->setupUi ( this );
   
   // Set icon buttons.
-  QtTools::Image::icon ( "animation_control_play_forward.png",  _playForwardButton );
-  QtTools::Image::icon ( "animation_control_play_backward.png", _playBackwardButton );
-  QtTools::Image::icon ( "animation_control_step_forward.png",  _stepForwardButton );
-  QtTools::Image::icon ( "animation_control_step_backward.png", _stepBackwardButton );
-  QtTools::Image::icon ( "animation_control_stop.png",          _stopButton );
+  QtTools::Image::icon ( "animation_control_play_forward.png",  _animationControl->_playForwardButton );
+  QtTools::Image::icon ( "animation_control_play_backward.png", _animationControl->_playBackwardButton );
+  QtTools::Image::icon ( "animation_control_step_forward.png",  _animationControl->_stepForwardButton );
+  QtTools::Image::icon ( "animation_control_step_backward.png", _animationControl->_stepBackwardButton );
+  QtTools::Image::icon ( "animation_control_stop.png",          _animationControl->_stopButton );
 
   // Set icon sizes.
   QSize size ( 32, 32 );
-  _playForwardButton->setIconSize ( size );
-  _playBackwardButton->setIconSize ( size );
-  _stepForwardButton->setIconSize ( size );
-  _stepBackwardButton->setIconSize ( size );
-  _stopButton->setIconSize ( size );
+  _animationControl->_playForwardButton->setIconSize ( size );
+  _animationControl->_playBackwardButton->setIconSize ( size );
+  _animationControl->_stepForwardButton->setIconSize ( size );
+  _animationControl->_stepBackwardButton->setIconSize ( size );
+  _animationControl->_stopButton->setIconSize ( size );
 
   // Set gui members before attaching slots.
-  _loopCheckBox->setChecked ( _loop );
-  _speedSpinBox->setValue ( _milliSeconds / 1000.0 );
+  _animationControl->_loopCheckBox->setChecked ( _loop );
+  _animationControl->_speedSpinBox->setValue ( _milliSeconds / 1000.0 );
 
 	// Set the enabled state.
 	this->_setEnabledState();
 
   // Connect slots.
-  QObject::connect ( _playForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onPlayForward()  ) );
-  QObject::connect ( _playBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onPlayBackward() ) );
-  QObject::connect ( _stepForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onStepForward()  ) );
-  QObject::connect ( _stepBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onStepBackward() ) );
-  QObject::connect ( _stopButton,         SIGNAL ( clicked() ), this, SLOT ( _onStopPlaying()  ) );
-  QObject::connect ( _loopCheckBox, SIGNAL ( toggled ( bool ) ), this, SLOT ( _onLoop ( bool ) ) );
-  QObject::connect ( _speedSpinBox, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _onSpeedChanged ( double ) ) );
-  QObject::connect ( _sliderSlider, SIGNAL ( valueChanged ( int ) ), this, SLOT ( _onSliderChanged( int ) ) );
+  QObject::connect ( _animationControl->_playForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onPlayForward()  ) );
+  QObject::connect ( _animationControl->_playBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onPlayBackward() ) );
+  QObject::connect ( _animationControl->_stepForwardButton,  SIGNAL ( clicked() ), this, SLOT ( _onStepForward()  ) );
+  QObject::connect ( _animationControl->_stepBackwardButton, SIGNAL ( clicked() ), this, SLOT ( _onStepBackward() ) );
+  QObject::connect ( _animationControl->_stopButton,         SIGNAL ( clicked() ), this, SLOT ( _onStopPlaying()  ) );
+  QObject::connect ( _animationControl->_loopCheckBox, SIGNAL ( toggled ( bool ) ), this, SLOT ( _onLoop ( bool ) ) );
+  QObject::connect ( _animationControl->_speedSpinBox, SIGNAL ( valueChanged ( double ) ), this, SLOT ( _onSpeedChanged ( double ) ) );
+  QObject::connect ( _animationControl->_sliderSlider, SIGNAL ( valueChanged ( int ) ), this, SLOT ( _onSliderChanged( int ) ) );
 }
 
 
@@ -138,6 +140,8 @@ void AnimationControl::_destroy()
     // Should be true.
     USUL_ASSERT ( 0 == _refCount );
   }
+  
+  delete _animationControl; _animationControl = 0x0;
 
   // Do this now.
   USUL_THREADS_ENSURE_GUI_THREAD_OR_THROW ( "2023346938" );
@@ -273,8 +277,8 @@ void AnimationControl::_setState()
   {
     const unsigned int num ( _data->getNumberOfTimeSteps() );
     
-    _sliderSlider->setRange ( 0, ( 0 != num ? num - 1 : 0 ) );
-    _sliderSlider->setValue ( _data->getCurrentTimeStep() );
+    _animationControl->_sliderSlider->setRange ( 0, ( 0 != num ? num - 1 : 0 ) );
+    _animationControl->_sliderSlider->setValue ( _data->getCurrentTimeStep() );
   }
   
   // Set the enabled state.
@@ -564,8 +568,8 @@ void AnimationControl::_stepForward()
 
     // Set the slider value.
     {
-      QtTools::ScopedSignals scoped ( *_sliderSlider );
-      _sliderSlider->setValue( next );
+      QtTools::ScopedSignals scoped ( *_animationControl->_sliderSlider );
+      _animationControl->_sliderSlider->setValue( next );
     }
 
     // Render the views now.
@@ -613,8 +617,8 @@ void AnimationControl::_stepBackward()
     
     // Set the slider value.
     {
-      QtTools::ScopedSignals scoped ( *_sliderSlider );
-      _sliderSlider->setValue( next );
+      QtTools::ScopedSignals scoped ( *_animationControl->_sliderSlider );
+      _animationControl->_sliderSlider->setValue ( next );
     }
 
     // Render the views now.
@@ -691,13 +695,13 @@ void AnimationControl::_setEnabledState()
   
 	// Set the values.
   const bool enabled ( true == _data.valid() );
-  _playForwardButton->setEnabled ( enabled );
-  _playBackwardButton->setEnabled ( enabled );
-  _stepForwardButton->setEnabled ( enabled );
-  _stepBackwardButton->setEnabled ( enabled );
-  _stopButton->setEnabled ( enabled );
-  _loopCheckBox->setEnabled ( enabled );
-  _sliderSlider->setEnabled ( enabled );
+  _animationControl->_playForwardButton->setEnabled ( enabled );
+  _animationControl->_playBackwardButton->setEnabled ( enabled );
+  _animationControl->_stepForwardButton->setEnabled ( enabled );
+  _animationControl->_stepBackwardButton->setEnabled ( enabled );
+  _animationControl->_stopButton->setEnabled ( enabled );
+  _animationControl->_loopCheckBox->setEnabled ( enabled );
+  _animationControl->_sliderSlider->setEnabled ( enabled );
 }
 
 

@@ -19,8 +19,6 @@
 
 #include "QtTools/Export.h"
 
-#include "ui_AnimationControl.h" // Cannot have path here.
-
 #include "Usul/Interfaces/IActiveDocumentListener.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
 #include "Usul/Interfaces/ITimeVaryingData.h"
@@ -30,12 +28,12 @@
 
 #include "QtGui/QWidget"
 
+namespace Ui { class AnimationControl; }
 
 namespace QtTools {
 
 
 class QT_TOOLS_EXPORT AnimationControl : public QWidget,
-                                         private Ui::AnimationControl,
                                          public Usul::Interfaces::IActiveDocumentListener,
                                          public Usul::Interfaces::IModifiedObserver,
                                          public Usul::Interfaces::ITimerNotify
@@ -126,6 +124,7 @@ protected:
   TimerID _timer;
   double _milliSeconds;
   bool _loop;
+  Ui::AnimationControl *_animationControl;
 };
 
 

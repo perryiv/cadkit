@@ -15,7 +15,7 @@ IF(QT_FOUND AND BUILD_HELIOS_QT)
 			 ${CADKIT_INC_DIR}/Minerva/Plugins/QtCustomGeometry )
 			 
 	# Build this project if pqxx is found.
-	IF ( PQXX_FOUND )
+	IF ( POSTGRESQL_FOUND )
 		SUBDIRS ( ${CADKIT_INC_DIR}/Minerva/Plugins/PostGISLayerQt )
-	ENDIF ( PQXX_FOUND )
+	ENDIF ( POSTGRESQL_FOUND )
 ENDIF(QT_FOUND AND BUILD_HELIOS_QT)

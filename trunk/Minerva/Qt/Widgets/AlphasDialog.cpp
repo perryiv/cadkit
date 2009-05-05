@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Qt/Widgets/AlphasDialog.h"
+#include "ui_AlphasDialog.h"
 
 #include "Usul/Functions/Color.h"
 #include "Usul/Math/Vector4.h"
@@ -31,9 +32,12 @@ using namespace Minerva::Widgets;
 AlphasDialog::AlphasDialog ( const Alphas& alphas, QWidget *parent ) : BaseClass ( parent ),
   _alphas ( alphas ),
   _model ( new AlphasItemModel ( alphas ) ),
-  _delegate ( new AlphasItemDelegate )
+  _delegate ( new AlphasItemDelegate ),
+  _alphasDialog ( new Ui::AlphasDialog ),
+  _alphasTreeView ( 0x0 )
 {
-  this->setupUi ( this );
+  _alphasDialog->setupUi ( this );
+  _alphasTreeView = _alphasDialog->_alphasTreeView;
   
   this->setWindowTitle ( "Edit Alphas" );
   
@@ -52,6 +56,9 @@ AlphasDialog::~AlphasDialog()
 {
   delete _model;
   delete _delegate;
+  
+  _alphasTreeView = 0x0;
+  delete _alphasDialog;
 }
 
 

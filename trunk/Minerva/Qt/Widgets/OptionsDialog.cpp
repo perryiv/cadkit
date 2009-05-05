@@ -9,8 +9,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Minerva/Qt/Widgets/OptionsDialog.h"
+#include "ui_OptionsDialog.h"
 
-#include "QtGui/QLineEdit"
 
 using namespace Minerva::Widgets;
 
@@ -20,13 +20,21 @@ using namespace Minerva::Widgets;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-OptionsDialog::OptionsDialog ( const Options& options, QWidget* parent ) : BaseClass ( parent )
+OptionsDialog::OptionsDialog ( const Options& options, QWidget* parent ) : BaseClass ( parent ),
+  _optionsDialog ( new Ui::OptionsDialog ),
+  _optionsTreeWidget ( 0x0 )
 {
-  this->setupUi( this );
+  _optionsDialog->setupUi( this );
   
-  for ( Options::const_iterator iter = options.begin(); iter != options.end(); ++iter )
+  // Save a handle to the widget.
+  _optionsTreeWidget = _optionsDialog->_optionsTreeWidget;
+  
+  if ( 0x0 != _optionsTreeWidget )
   {
-    _optionsTreeWidget->addItem ( iter->first, iter->second );
+    for ( Options::const_iterator iter = options.begin(); iter != options.end(); ++iter )
+    {
+      _optionsTreeWidget->addItem ( iter->first, iter->second );
+    }
   }
 }
 
@@ -39,6 +47,9 @@ OptionsDialog::OptionsDialog ( const Options& options, QWidget* parent ) : BaseC
 
 OptionsDialog::~OptionsDialog()
 {
+  _optionsTreeWidget = 0x0;
+  delete _optionsDialog;
+  _optionsDialog = 0x0;
 }
 
 

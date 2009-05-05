@@ -21,27 +21,34 @@
 #include "Usul/Threads/Manager.h"
 #include "Usul/Registry/Database.h"
 
+#include "Usul/Exceptions/Exception.h"
+
+#include "Usul/Signals/Actions.h"
+#include "Usul/Signals/Handler.h"
+
+
 int main ( int argc, char** argv )
 {
   testing::InitGoogleTest(&argc, argv);
 
-  const int result ( RUN_ALL_TESTS() );
+  // Trapping signals.
+  typedef Usul::Signals::Actions::PrintMessage PrintMessage;
+  typedef Usul::Signals::Actions::PrintStackTrace PrintStackTrace;
+  typedef Usul::Signals::Actions::Pair<PrintMessage,PrintStackTrace> PrintPair;
+  typedef Usul::Signals::Actions::Exit Exit;
+  typedef Usul::Signals::Actions::Pair<PrintPair,Exit> SignalAction;
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SegmentationViolation );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, AbortSignal );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, FloatingPointException  );
+  USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, BusError  );
 
-  // Wait for all threads.
-  //Usul::Jobs::Manager::instance().cancel();
-  //Usul::Jobs::Manager::instance().wait();
+  const int result ( RUN_ALL_TESTS() );
 
   // Clear the registry.
   Usul::Registry::Database::destroy();
 
   // Clear the ObjectFactory.
   Usul::Factory::ObjectFactory::instance().clear();
-
-  // Destroy the job manager.
-  //Usul::Jobs::Manager::destroy();
-
-  // Destroy the thread manager.
-  //Usul::Threads::Manager::destroy();
 
   // Return the result.
   return result;

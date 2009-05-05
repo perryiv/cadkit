@@ -13,19 +13,19 @@
 
 #include "Minerva/Qt/Widgets/Export.h"
 
-#include "ui_OptionsDialog.h"
-
 #include "QtGui/QDialog"
 
 #include <map>
 #include <string>
 
+namespace Ui { class OptionsDialog; }
+namespace QtTools { class StringsView; }
+
 namespace Minerva {
 namespace Widgets {
       
       
-class MINERVA_QT_WIDGETS_EXPORT OptionsDialog : public QDialog,
-                                                private Ui::OptionsDialog
+class MINERVA_QT_WIDGETS_EXPORT OptionsDialog : public QDialog
 {
   Q_OBJECT;
 public:
@@ -41,6 +41,11 @@ protected slots:
   
   void on_addRowButton_clicked();
   void on_removeRowButton_clicked();
+  
+private:
+  
+  Ui::OptionsDialog *_optionsDialog;
+  QtTools::StringsView *_optionsTreeWidget;
 };
 
 

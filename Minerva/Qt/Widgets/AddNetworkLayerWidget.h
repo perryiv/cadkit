@@ -22,6 +22,8 @@
 #include "Usul/Network/Names.h"
 #include "Usul/Strings/Split.h"
 
+#include "QtGui/QTreeWidgetItem"
+
 #include <algorithm>
 #include <vector>
 #include <string>

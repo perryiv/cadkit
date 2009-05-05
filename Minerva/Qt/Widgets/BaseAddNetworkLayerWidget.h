@@ -13,18 +13,19 @@
 
 #include "Minerva/Qt/Widgets/Export.h"
 
-#include "ui_BaseAddNetworkLayerWidget.h"
-
 #include "Minerva/Core/Layers/LayerInfo.h"
 
 #include "QtGui/QWidget"
 
 #include <vector>
 #include <string>
+#include <map>
 
 class QButtonGroup;
 class QStringListModel;
+class QTreeWidget;
 
+namespace Ui { class BaseAddNetworkLayerWidget; }
 namespace Usul { namespace Interfaces { struct IUnknown; } }
 
 
@@ -32,8 +33,7 @@ namespace Minerva {
 namespace Widgets {
 
 
-class MINERVA_QT_WIDGETS_EXPORT BaseAddNetworkLayerWidget : public QWidget,
-                                                            private Ui::BaseAddNetworkLayerWidget
+class MINERVA_QT_WIDGETS_EXPORT BaseAddNetworkLayerWidget : public QWidget
 {
   Q_OBJECT;
 public:
@@ -97,6 +97,8 @@ private:
   QButtonGroup *_imageTypes;
   QStringListModel *_recentServers;
   Options _options;
+  Ui::BaseAddNetworkLayerWidget *_baseAddNetworkLayerWidget;
+  QTreeWidget *_layersTree;
 };
 
   

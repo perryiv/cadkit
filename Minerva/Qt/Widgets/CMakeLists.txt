@@ -71,7 +71,3 @@ LINK_CADKIT( MinervaQtWidgets Usul Minerva QtTools )
 TARGET_LINK_LIBRARIES( MinervaQtWidgets
    ${QT_LIBRARIES}
 )
-
-CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_BaseAddNetworkLayerWidget.h" "${PROJECT_SOURCE_DIR}/ui_BaseAddNetworkLayerWidget.h" )
-CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_OptionsDialog.h" "${PROJECT_SOURCE_DIR}/ui_OptionsDialog.h" )
-CADKIT_COPY( MinervaQtWidgets "${CMAKE_CURRENT_BINARY_DIR}/ui_AlphasDialog.h" "${PROJECT_SOURCE_DIR}/ui_AlphasDialog.h" )

@@ -11,6 +11,7 @@
 #include "Minerva/Qt/Widgets/BaseAddNetworkLayerWidget.h"
 #include "Minerva/Qt/Widgets/OptionsDialog.h"
 #include "Minerva/Qt/Widgets/WmsLayerItem.h"
+#include "ui_BaseAddNetworkLayerWidget.h"
 
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
@@ -66,17 +67,20 @@ namespace Detail
 BaseAddNetworkLayerWidget::BaseAddNetworkLayerWidget ( const Options& options, const std::string& defaultCacheDirectory, QWidget *parent ) : BaseClass ( parent ),
   _imageTypes ( 0x0 ),
   _recentServers ( new QStringListModel ),
-  _options ( options )
+  _options ( options ),
+  _baseAddNetworkLayerWidget ( new Ui::BaseAddNetworkLayerWidget ),
+  _layersTree ( 0x0 )
 {
-  this->setupUi ( this );
+  _baseAddNetworkLayerWidget->setupUi ( this );
+  _layersTree = _baseAddNetworkLayerWidget->_layersTree;
 
   _imageTypes = new QButtonGroup;
 
-  _imageTypes->addButton ( _jpegButton );
-  _imageTypes->addButton ( _pngButton );
-  _imageTypes->addButton ( _tifButton );
+  _imageTypes->addButton ( _baseAddNetworkLayerWidget->_jpegButton );
+  _imageTypes->addButton ( _baseAddNetworkLayerWidget->_pngButton );
+  _imageTypes->addButton ( _baseAddNetworkLayerWidget->_tifButton );
 
-  _layersTree->setColumnCount( 2 );
+  _layersTree->setColumnCount ( 2 );
 
   QStringList titles;
   titles.push_back( "Name" );
@@ -87,16 +91,16 @@ BaseAddNetworkLayerWidget::BaseAddNetworkLayerWidget ( const Options& options, c
   _layersTree->setSelectionMode ( QAbstractItemView::ExtendedSelection );
 
   // Set the cache directory.
-  _cacheDirectory->setText ( defaultCacheDirectory.c_str() );
+  _baseAddNetworkLayerWidget->_cacheDirectory->setText ( defaultCacheDirectory.c_str() );
   
   // Connect the slots and signals.
-  QObject::connect ( _server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), getServiceNamesButton, SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), viewOptionsButton,  SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _jpegButton,        SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _pngButton,         SLOT ( setEnabled ( bool ) ) );
-  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _layersTree,        SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( _baseAddNetworkLayerWidget->_server, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( _onServerTextChanged ( const QString& ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _baseAddNetworkLayerWidget->capabilitiesButton, SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _baseAddNetworkLayerWidget->getServiceNamesButton, SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _baseAddNetworkLayerWidget->viewOptionsButton,  SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _baseAddNetworkLayerWidget->_jpegButton,        SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _baseAddNetworkLayerWidget->_pngButton,         SLOT ( setEnabled ( bool ) ) );
+  QObject::connect ( this, SIGNAL ( serverValid ( bool ) ), _baseAddNetworkLayerWidget->_layersTree,        SLOT ( setEnabled ( bool ) ) );
   
   emit serverValid ( false );
 
@@ -120,7 +124,7 @@ BaseAddNetworkLayerWidget::BaseAddNetworkLayerWidget ( const Options& options, c
   completer->setModel ( _recentServers );
   
   // Set the completer.
-  _server->setCompleter ( completer );
+  _baseAddNetworkLayerWidget->_server->setCompleter ( completer );
 
   this->_setServiceNameWidgetsVisible ( false );
 }
@@ -134,6 +138,8 @@ BaseAddNetworkLayerWidget::BaseAddNetworkLayerWidget ( const Options& options, c
 
 BaseAddNetworkLayerWidget::~BaseAddNetworkLayerWidget()
 {
+  _layersTree = 0x0;
+  delete _baseAddNetworkLayerWidget;
 }
 
 
@@ -146,11 +152,11 @@ BaseAddNetworkLayerWidget::~BaseAddNetworkLayerWidget()
 void BaseAddNetworkLayerWidget::on_browseDirectory_clicked()
 {
   QString dir ( QFileDialog::getExistingDirectory ( this, tr ( "Cache Directory" ),
-                                                    _cacheDirectory->text(),
+                                                    _baseAddNetworkLayerWidget->_cacheDirectory->text(),
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks ) );
 
   if ( dir.size() >  0 )
-    _cacheDirectory->setText ( dir );
+    _baseAddNetworkLayerWidget->_cacheDirectory->setText ( dir );
 }
 
 
@@ -164,7 +170,7 @@ void BaseAddNetworkLayerWidget::on_capabilitiesButton_clicked()
 {
   try
   {
-    const std::string server ( _server->text().toStdString() );
+    const std::string server ( this->server() );
     
     LayerInfoList infos ( this->_getCapabilities() );
     
@@ -220,7 +226,7 @@ void BaseAddNetworkLayerWidget::on_viewOptionsButton_clicked()
 
 std::string BaseAddNetworkLayerWidget::cacheDirectory() const
 {
-  return _cacheDirectory->text().toStdString();
+  return _baseAddNetworkLayerWidget->_cacheDirectory->text().toStdString();
 }
 
 
@@ -233,7 +239,7 @@ std::string BaseAddNetworkLayerWidget::cacheDirectory() const
 
 std::string BaseAddNetworkLayerWidget::name() const
 {
-  return _name->text().toStdString();
+  return _baseAddNetworkLayerWidget->_name->text().toStdString();
 }
 
 
@@ -245,7 +251,7 @@ std::string BaseAddNetworkLayerWidget::name() const
 
 std::string BaseAddNetworkLayerWidget::server() const
 {
-  return _server->text().toStdString();
+  return _baseAddNetworkLayerWidget->_server->text().toStdString();
 }
 
 
@@ -284,9 +290,9 @@ void BaseAddNetworkLayerWidget::on_getServiceNamesButton_clicked()
 
 void BaseAddNetworkLayerWidget::_setServiceNameWidgetsVisible ( bool b )
 {
-  getServiceNamesButton->setVisible ( b );
-  _serviceNameLabel->setVisible ( b );
-  _serviceNameLineEdit->setVisible ( b );
+  _baseAddNetworkLayerWidget->getServiceNamesButton->setVisible ( b );
+  _baseAddNetworkLayerWidget->_serviceNameLabel->setVisible ( b );
+  _baseAddNetworkLayerWidget->_serviceNameLineEdit->setVisible ( b );
 }
 
 
@@ -358,7 +364,7 @@ void BaseAddNetworkLayerWidget::selectedLayers ( LayerInfoList& layerInfos ) con
 
 bool BaseAddNetworkLayerWidget::addAllAsGroup() const
 {
-  return Qt::Checked == _addAllAsGroup->checkState();
+  return Qt::Checked == _baseAddNetworkLayerWidget->_addAllAsGroup->checkState();
 }
 
 
@@ -370,7 +376,7 @@ bool BaseAddNetworkLayerWidget::addAllAsGroup() const
 
 bool BaseAddNetworkLayerWidget::addSelectedAsGroup() const
 {
-  return Qt::Checked == _addSelectedAsGroup->checkState();
+  return Qt::Checked == _baseAddNetworkLayerWidget->_addSelectedAsGroup->checkState();
 }
 
 
@@ -382,7 +388,7 @@ bool BaseAddNetworkLayerWidget::addSelectedAsGroup() const
 
 bool BaseAddNetworkLayerWidget::makeCacheDirectoryDefault() const
 {
-  return Qt::Checked == _makeDefaultDirectory->checkState();
+  return Qt::Checked == _baseAddNetworkLayerWidget->_makeDefaultDirectory->checkState();
 }
 
 

@@ -13,8 +13,6 @@
 
 #include "Minerva/Qt/Widgets/Export.h"
 
-#include "ui_AlphasDialog.h"
-
 #include "Usul/Interfaces/IRasterAlphas.h"
 
 #include "QtGui/QDialog"
@@ -22,13 +20,14 @@
 #include "QtCore/QAbstractItemModel"
 #include "QtGui/QItemDelegate"
 
+namespace Ui { class AlphasDialog; }
+class QTreeView;
 
 namespace Minerva {
 namespace Widgets {
       
       
-class MINERVA_QT_WIDGETS_EXPORT AlphasDialog : public QDialog,
-                                               public Ui::AlphasDialog
+class MINERVA_QT_WIDGETS_EXPORT AlphasDialog : public QDialog
 {
   Q_OBJECT;
 public:
@@ -104,6 +103,8 @@ private:
   Alphas _alphas;
   AlphasItemModel *_model;
   AlphasItemDelegate *_delegate;
+  Ui::AlphasDialog *_alphasDialog;
+  QTreeView *_alphasTreeView;
 };
 
   

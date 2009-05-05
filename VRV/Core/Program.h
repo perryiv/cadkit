@@ -62,6 +62,15 @@ namespace Core {
 
 namespace Helper
 {
+  // Struct to remove abort handler to avoid a infinite loop.
+  struct RemoveAbortHandler
+  {
+    void operator () ( const std::string& )
+    {
+      Usul::Signals::restoreDefault ( Usul::Signals::ID::AbortSignal );
+    }
+  };
+
   // Trapping errors.
   typedef Usul::Errors::ThrowingPolicy < std::runtime_error > ThrowingPolicy;
   typedef Usul::Errors::CompositePolicy < Usul::Errors::AssertPolicy, ThrowingPolicy > CompositePolicy;
@@ -72,11 +81,16 @@ namespace Helper
   typedef Usul::Signals::Actions::PrintMessage PrintMessage;
   typedef Usul::Signals::Actions::PrintStackTrace PrintStackTrace;
   typedef Usul::Signals::Actions::Pair<PrintMessage,PrintStackTrace> PrintPair;
-  typedef Usul::Signals::Actions::Abort Throw;
-  typedef Usul::Signals::Actions::Pair<PrintPair,Throw> SignalAction;
+  typedef Usul::Signals::Actions::Abort Abort;
+  typedef Usul::Signals::Actions::Pair<RemoveAbortHandler,Abort> AbortAction;
+  typedef Usul::Signals::Actions::Pair<PrintPair,AbortAction> SignalAction;
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, SegmentationViolation );
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, AbortSignal );
   USUL_DECLARE_SIGNAL_HANDLER ( SignalAction, FloatingPointException  );
+
+  // I think abort is used above because there isn't an unhandled exception handler registered.
+  // A handler should be registered and then the abort should be changed to a throw 
+  // -Adam.
 }
 
 

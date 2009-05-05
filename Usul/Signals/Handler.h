@@ -52,6 +52,28 @@ namespace ID
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Restore the default signal handler for the given id.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+inline void restoreDefault ( int signalId )
+{
+  #ifdef __GNUC__
+  #ifndef __APPLE__
+    
+  struct sigaction sa;
+  ::sigemptyset ( &sa.sa_mask );
+  sa.sa_flags = 0;
+  sa.sa_handler = SIG_DFL; // Restore default handler.
+  ::sigaction ( signalId, &sa, 0x0 );
+
+  #endif
+  #endif
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Signal handler.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,17 +98,7 @@ template < class ActionType > struct Handler
 
   ~Handler()
   {
-    #ifdef __GNUC__
-    #ifndef __APPLE__
-    
-    struct sigaction sa;
-    ::sigemptyset ( &sa.sa_mask );
-    sa.sa_flags = 0;
-    sa.sa_handler = SIG_DFL; // Restore default handler.
-    ::sigaction ( _id, &sa, 0x0 );
-
-    #endif
-    #endif
+    Usul::Signals::restoreDefault ( _id );
   }
 
 private:

@@ -301,17 +301,11 @@ bool ProcessImpl::stop()
 void ProcessImpl::wait ( unsigned long milliseconds )
 {
   USUL_TRACE_SCOPE;
+
   const Usul::Types::Uint64 startTime ( Usul::System::Clock::milliseconds() );
   do
   {
-    int status ( -1 );
-    ::waitpid ( _id, &status, WUNTRACED | WNOHANG );
-    
-    // Exit the loop if the child isn't running.
-    if ( WIFEXITED ( status ) || WIFSIGNALED ( status ) || WIFSTOPPED ( status ) )
-    {
-      break;
-    }
-    
+    if ( false == this->isRunning() )
+      return;
   } while ( ( Usul::System::Clock::milliseconds() - startTime ) < milliseconds );
 }

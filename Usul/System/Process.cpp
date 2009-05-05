@@ -179,7 +179,7 @@ Process::Process ( const std::string &executable,
   std::vector<char> args ( arguments.begin(), arguments.end() );
 
   // Make sure there is a space before the first argument.
-  if ( ' ' != args.front() )
+  if ( true == args.empty() || ' ' != args.front() )
     args.insert ( args.begin(), ' ' );
 
   // Make it a valid c-style string.

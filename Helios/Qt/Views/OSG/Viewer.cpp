@@ -89,7 +89,7 @@ Viewer::Viewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnkno
   _threadId ( Usul::Threads::currentThreadId() ),
   _mutex ( new Viewer::Mutex ),
   _mouseWheelPosition ( 0 ),
-  _mouseWheelSensitivity ( 10.0f )
+  _mouseWheelSensitivity ( Reg::instance()[Sections::VIEWER_SETTINGS]["mouse_wheel_sensitivity"].get<float> ( 5.0f, true ) )
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this );

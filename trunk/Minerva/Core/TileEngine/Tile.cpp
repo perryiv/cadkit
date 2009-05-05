@@ -1845,14 +1845,16 @@ void Tile::splitDistance ( double distance, bool children )
 void Tile::_cacheImage ( IRasterLayer::RefPtr raster, osg::Image* image, const Usul::Math::Vec4d& tCoords )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
   
   if ( 0x0 != image )
   {
     std::string filename ( image->getFileName() );
     
     if ( false == filename.empty() )
+    {
+      Guard guard ( this );
       _textureMap[raster] = ImageCacheData ( filename, tCoords );
+    }
   }
 }
 

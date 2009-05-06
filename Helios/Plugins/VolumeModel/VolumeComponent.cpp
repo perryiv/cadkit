@@ -56,8 +56,6 @@ Usul::Interfaces::IUnknown *VolumeComponent::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IDocumentCreate*>(this);
   case Usul::Interfaces::IPlugin::IID:
     return static_cast < Usul::Interfaces::IPlugin*>(this);
-  case Usul::Interfaces::INewDocumentCreate::IID:
-    return static_cast < Usul::Interfaces::INewDocumentCreate* > ( this );
   default:
     return 0x0;
   }
@@ -74,17 +72,4 @@ Usul::Documents::Document *VolumeComponent::createDocument ( Unknown *caller )
 {
   VolumeDocument::ValidRefPtr document ( new VolumeDocument );
   return document.release();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  Get name of Document that is created
-//
-/////////////////////////////////////////////////////////////////////////////
-
-std::string VolumeComponent::documentTypeName()
-{
-  VolumeDocument::ValidRefPtr document ( new VolumeDocument );
-  return document->typeName();
 }

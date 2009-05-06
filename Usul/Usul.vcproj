@@ -1795,6 +1795,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\System\Process.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\System\Process.h"
+					>
+				</File>
+				<File
 					RelativePath=".\System\Screen.cpp"
 					>
 				</File>

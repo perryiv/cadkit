@@ -21,12 +21,12 @@ class Atomic
 {
 public:
 
-  Atomic() : _mutex(),
+  Atomic() : _mutex ( new Mutex ),
     _value()
   {
   }
 
-  Atomic ( const Atomic& rhs ) : _mutex(),
+  Atomic ( const Atomic& rhs ) : _mutex ( new Mutex ),
     _value()
   {
     _value = rhs;
@@ -34,37 +34,39 @@ public:
 
   Atomic& operator= ( const Atomic& rhs )
   {
+    _mutex = new Mutex;
     _value = rhs;
   }
 
   ~Atomic()
   {
+    delete _mutex;
   }
 
   T fetch_and_store ( T value )
   {
-    Guard guard ( _mutex );
+    Guard guard ( *_mutex );
     _value = value;
     return _value;
   }
 
   T fetch_and_increment()
   {
-    Guard guard ( _mutex );
+    Guard guard ( *_mutex );
     ++_value;
     return _value;
   }
 
   T fetch_and_decrement()
   {
-    Guard guard ( _mutex );
+    Guard guard ( *_mutex );
     --_value;
     return _value;
   }
 
   operator T() const
   {
-    Guard guard ( _mutex );
+    Guard guard ( *_mutex );
     return _value;
   }
 
@@ -78,7 +80,7 @@ private:
   typedef Usul::Threads::Mutex Mutex;
   typedef Usul::Threads::Guard<Mutex> Guard;
 
-  mutable Mutex _mutex;
+  mutable Mutex *_mutex;
   T _value;
 };
 

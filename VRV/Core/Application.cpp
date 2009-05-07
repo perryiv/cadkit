@@ -411,15 +411,10 @@ void Application::cleanup()
     // Get the directory.
     std::string directory ( _sharedScreenShotDirectory->data() );
 
-    // Get the contents of the directory.
-    std::list<std::string> names;
-    Usul::File::find ( directory, "*", names );
-
-    // Is the directory empty?
-    if ( false == names.empty() )
+    if ( boost::filesystem::is_empty ( directory ) )
     {
       // Delete the directory.
-      Usul::File::remove ( directory );
+      boost::filesystem::remove_all ( directory );
     }
   }
 
@@ -3627,7 +3622,7 @@ void Application::_initMenu()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_initFileMenu     ( MenuKit::Menu* menu )
+void Application::_initFileMenu ( MenuKit::Menu* menu )
 {
   USUL_TRACE_SCOPE;
 
@@ -3835,7 +3830,7 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
+void Application::_initOptionsMenu ( MenuKit::Menu* menu )
 {
   USUL_TRACE_SCOPE;
 
@@ -3916,7 +3911,7 @@ void Application::_initOptionsMenu  ( MenuKit::Menu* menu )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportWorld ( )
+void Application::exportWorld()
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3932,7 +3927,7 @@ void Application::exportWorld ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportWorldBinary ( )
+void Application::exportWorldBinary()
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3948,7 +3943,7 @@ void Application::exportWorldBinary ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportScene ()
+void Application::exportScene()
 {
   static unsigned int count ( 0 );
   std::string number ( this->_counter ( ++count ) );
@@ -3963,7 +3958,7 @@ void Application::exportScene ()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::exportSceneBinary ( )
+void Application::exportSceneBinary()
 {
   USUL_TRACE_SCOPE;
   static unsigned int count ( 0 );
@@ -3979,7 +3974,7 @@ void Application::exportSceneBinary ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::viewWorld ( )
+void Application::viewWorld()
 {
   USUL_TRACE_SCOPE;
 
@@ -4006,7 +4001,7 @@ void Application::viewWorld ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::viewScene ( )
+void Application::viewScene()
 {
   USUL_TRACE_SCOPE;
   this->viewAll ( this->navigationScene(), this->preferences()->viewAllScaleZ() );
@@ -4048,7 +4043,7 @@ void Application::_statusBarVis ( MenuKit::Message m, MenuKit::Item *item )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_increaseSpeed ( )
+void Application::_increaseSpeed()
 {
   this->translationSpeed ( this->translationSpeed () * 2.0 );
 }
@@ -4060,7 +4055,7 @@ void Application::_increaseSpeed ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_decreaseSpeed ( )
+void Application::_decreaseSpeed()
 {
   this->translationSpeed ( this->translationSpeed () / 2.0 );
 }
@@ -4072,7 +4067,7 @@ void Application::_decreaseSpeed ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_increaseSpeedTen  ( )
+void Application::_increaseSpeedTen()
 {
   this->translationSpeed ( this->translationSpeed () * 10.0 );
 }
@@ -4084,7 +4079,7 @@ void Application::_increaseSpeedTen  ( )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_decreaseSpeedTen ( )
+void Application::_decreaseSpeedTen()
 {
   this->translationSpeed ( this->translationSpeed () / 10.0 );
 }
@@ -4165,7 +4160,7 @@ void Application::setComputeNearFar ( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Application::getComputeNearFar () const
+bool Application::getComputeNearFar() const
 {
   USUL_TRACE_SCOPE;
   Guard guard ( this->mutex() );
@@ -4200,7 +4195,7 @@ bool Application::isComputeNearFar ( osg::CullSettings::ComputeNearFarMode mode 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Application::x () const
+double Application::x() const
 {
   osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
   return vp.valid() ? vp->x () : 0;
@@ -4213,7 +4208,7 @@ double Application::x () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Application::y () const
+double Application::y() const
 {
   osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
   return vp.valid() ? vp->y () : 0;
@@ -4226,7 +4221,7 @@ double Application::y () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Application::height () const
+double Application::height() const
 {
   osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
   return vp.valid() ? vp->height() : 0;
@@ -4239,7 +4234,7 @@ double Application::height () const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-double Application::width () const
+double Application::width() const
 {
   osg::ref_ptr < const osg::Viewport > vp ( this->viewport() );
   return vp.valid() ? vp->width () : 0;
@@ -4300,7 +4295,7 @@ void Application::_initLight()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string Application::_documentSection () const
+std::string Application::_documentSection() const
 {
   // Get the active document.
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument () );
@@ -4355,7 +4350,7 @@ void Application::removeText ( unsigned int x, unsigned int y )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Application::FileResult Application::getSaveFileName  ( const std::string &title, const Filters &filters )
+Application::FileResult Application::getSaveFileName ( const std::string &title, const Filters &filters )
 {
   std::cout << "In getSaveFilename" << std::endl;
 
@@ -5156,7 +5151,7 @@ bool Application::isSeekMode() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::_animate( const osg::Matrix& m1, const osg::Matrix& m2 )
+void Application::_animate ( const osg::Matrix& m1, const osg::Matrix& m2 )
 {
   // Find interface to animate, if one exists.
   typedef Usul::Interfaces::IAnimatePath IAnimatePath;

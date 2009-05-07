@@ -407,10 +407,10 @@ protected:
   void                          _initOptionsMenu  ( MenuKit::Menu* menu );
 
   /// Translation speed controls.
-  void                          _increaseSpeed ();
-  void                          _decreaseSpeed ();
-  void                          _increaseSpeedTen ();
-  void                          _decreaseSpeedTen ();
+  void                          _increaseSpeed();
+  void                          _decreaseSpeed();
+  void                          _increaseSpeedTen();
+  void                          _decreaseSpeedTen();
 
   // Handle the events, if any.
   bool                          _handleMenuEvent ( unsigned long id );

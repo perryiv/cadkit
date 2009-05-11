@@ -68,7 +68,7 @@ protected:
   
 private:
   
-  void     _initBoudingBoxes ( H5File& file );
+  void     _initBoundingBoxes ( H5File& file );
   void     _initLeafFlags    ( H5File& file );
   void     _initLevels       ( H5File& file );
   void     _initHierarchy    ( H5File& file );

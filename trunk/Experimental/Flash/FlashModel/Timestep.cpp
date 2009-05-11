@@ -73,7 +73,7 @@ void Timestep::init()
     throw std::runtime_error ( "Error 1747059583: Could not open file: " + _filename );
   
   // Initialize the bounding boxes.
-  this->_initBoudingBoxes ( file );
+  this->_initBoundingBoxes ( file );
   
   // Initialize the level numbers.
   this->_initLevels ( file );
@@ -89,7 +89,7 @@ void Timestep::init()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Timestep::_initBoudingBoxes ( H5File& file )
+void Timestep::_initBoundingBoxes ( H5File& file )
 {
   // Open the data set.
   Dataset::RefPtr boundingBox ( file.openDataset( "bounding box" ) );

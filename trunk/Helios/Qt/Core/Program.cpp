@@ -185,6 +185,8 @@ namespace Helper
     // Abort if this is the main thread, otherwise just exit the thread.
     if ( Usul::Threads::Named::instance().is ( Usul::Threads::Names::MAIN ) )
     {
+      // Restore the default signal handler so we don't get an infinite loop.
+      Usul::Signals::restoreDefault ( Usul::Signals::ID::AbortSignal );
       ::abort();
     }
     else

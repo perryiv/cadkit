@@ -24,6 +24,11 @@
 # include <windows.h>
 #endif
 
+#ifdef __GNUC__
+# include <cxxabi.h>
+# include <cstdlib>
+#endif
+
 #include <iostream>
 #include <sstream>
 
@@ -90,6 +95,36 @@ namespace Helper
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Helper function to demangle name.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  inline std::string demangle ( const std::string &s )
+  {
+#ifdef __GNUC__
+    std::string result ( s );
+
+    int status ( -1 );
+    char *demangledName ( abi::__cxa_demangle ( s.c_str(), 0x0, 0x0, &status ) );
+    if ( 0 == status && 0x0 != demangledName )
+    {
+      result = std::string ( demangledName );
+      ::free ( demangledName );
+    }
+
+    return result;
+
+#else
+    return s;
+#endif
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Destructor.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,7 +153,7 @@ InstanceManager::~InstanceManager()
         std::ostringstream out;
         out << "\taddress = " << address;
         out << ", number = " << value.second.first;
-        out << ", name = " << value.second.second;
+        out << ", name = " << Helper::demangle ( value.second.second );
         out << '\n';
 
         Helper::print ( out.str() );

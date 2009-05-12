@@ -284,7 +284,6 @@ SET ( HEADERS
 ./Interfaces/ICanInsert.h
 ./Interfaces/ICanRedo.h
 ./Interfaces/ICanUndo.h
-./Interfaces/ICFDCommands.h
 ./Interfaces/IClassFactory.h
 ./Interfaces/ICleanUp.h
 ./Interfaces/IClippingDistance.h
@@ -309,7 +308,6 @@ SET ( HEADERS
 ./Interfaces/IDeletePrimitive.h
 ./Interfaces/IDirtyState.h
 ./Interfaces/IDisplaylists.h
-./Interfaces/IDldNavigator.h
 ./Interfaces/IDocument.h
 ./Interfaces/IDocumentCreate.h
 ./Interfaces/IDocumentSelect.h
@@ -363,7 +361,6 @@ SET ( HEADERS
 ./Interfaces/IMpdNavigator.h
 ./Interfaces/IMpdWriter.h
 ./Interfaces/INavigationFunctor.h
-./Interfaces/INewDocumentCreate.h
 ./Interfaces/INotify.h
 ./Interfaces/INotifyClose.h
 ./Interfaces/IOpenGLContext.h

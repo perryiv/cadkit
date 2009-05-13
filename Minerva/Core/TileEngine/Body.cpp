@@ -98,7 +98,6 @@ Body::Body ( LandModel *land, Usul::Jobs::Manager *manager, const MeshSize &ms, 
   _allowSplit ( true ),
   _keepDetail ( false ),
   _sky ( 0x0 ),
-  _newTexturesLastFrame ( 0 ),
   _needsRedraw ( false ),
   _log ( 0x0 ),
   _name( "Body" ),
@@ -676,10 +675,6 @@ void Body::jobManager ( Usul::Jobs::Manager *manager )
 void Body::preRender ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  
-  // Reset the number of new textures.
-  Guard guard ( this->mutex() );
-  _newTexturesLastFrame = 0;
 }
 
 
@@ -1471,34 +1466,6 @@ bool Body::allowSplit() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _allowSplit;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get the number of new textures last frame.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Body::newTexturesLastFrame() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _newTexturesLastFrame;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  A texture has been added.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Body::_textureAdded()
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  ++_newTexturesLastFrame;
 }
 
 

@@ -219,6 +219,10 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\Export.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Factory.cpp"
 				>
 			</File>

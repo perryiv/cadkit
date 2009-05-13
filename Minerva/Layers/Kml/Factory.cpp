@@ -28,12 +28,10 @@
 #include "XmlTree/Node.h"
 
 #include "Usul/Convert/Convert.h"
-#include "Usul/Math/Vector3.h"
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 
 #include <algorithm>
-#include <vector>
 
 using namespace Minerva::Layers::Kml;
 
@@ -48,9 +46,6 @@ typedef XmlTree::Node::Children                 Children;
 typedef Usul::Convert::Type<std::string,float>  ToFloat;
 typedef Usul::Convert::Type<std::string,double> ToDouble;
 typedef Minerva::Core::Data::Geometry           Geometry;
-typedef Geometry::Extents                       Extents;
-typedef Usul::Math::Vec3d                       Vertex;
-typedef std::vector < Vertex >                  Vertices;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -234,49 +229,46 @@ namespace Helper
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace Helper 
+void Factory::parseCoordinates ( const XmlTree::Node& node, Vertices& vertices, Extents& extents ) const
 {
-  inline void parseCoordinates ( const XmlTree::Node& node, Vertices& vertices, Extents& extents )
+  // Copy the value and remove any commas.
+  std::string value ( node.value() );
+  std::replace ( value.begin(), value.end(), ',', ' ' );
+
+  // The line buffer.
+  std::vector<char> buffer ( 1024 );
+
+  // Read the numbers from the stream.
+  std::istringstream in ( value );
+  while ( EOF != in.peek() )
   {
-    // Copy the value and remove any commas.
-    std::string value ( node.value() );
-    std::replace ( value.begin(), value.end(), ',', ' ' );
+    // Get the line.
+    std::fill ( buffer.begin(), buffer.end(), '\0' );
+    in.getline ( &buffer[0], buffer.size() - 1 );
+    const std::string line ( &buffer[0] );
 
-    // The line buffer.
-    std::vector<char> buffer ( 1024 );
-
-    // Read the numbers from the stream.
-    std::istringstream in ( value );
-    while ( EOF != in.peek() )
+    // Split the line.
+    typedef std::vector<std::string> Parts;
+    Parts parts;
+    Usul::Strings::split ( line, ' ', false, parts );
+    
+    // Convert the strings to a vertex.
+    Vertex v;
+    if ( parts.size() >= 2 )
     {
-      // Get the line.
-      std::fill ( buffer.begin(), buffer.end(), '\0' );
-      in.getline ( &buffer[0], buffer.size() - 1 );
-      const std::string line ( &buffer[0] );
+      v[0] = ToDouble::convert ( parts[0] );
+      v[1] = ToDouble::convert ( parts[1] );
+    }
+    if ( parts.size() >= 3 )
+    {
+      v[2] = ToDouble::convert ( parts[2] );
+    }
 
-      // Split the line.
-      typedef std::vector<std::string> Parts;
-      Parts parts;
-      Usul::Strings::split ( line, ' ', false, parts );
-      
-      // Convert the strings to a vertex.
-      Vertex v;
-      if ( parts.size() >= 2 )
-      {
-        v[0] = ToDouble::convert ( parts[0] );
-        v[1] = ToDouble::convert ( parts[1] );
-      }
-      if ( parts.size() >= 3 )
-      {
-        v[2] = ToDouble::convert ( parts[2] );
-      }
-
-      // Append the vertex if it is at least 2D.
-      if ( parts.size() >= 2 )
-      {
-        vertices.push_back ( v );
-        extents.expand ( Extents::Vertex ( v[0], v[1] ) );
-      }
+    // Append the vertex if it is at least 2D.
+    if ( parts.size() >= 2 )
+    {
+      vertices.push_back ( v );
+      extents.expand ( Extents::Vertex ( v[0], v[1] ) );
     }
   }
 }
@@ -375,7 +367,7 @@ Factory::Point* Factory::createPoint ( const XmlTree::Node& node ) const
     {
       Vertices vertices;
       Extents extents;
-      Helper::parseCoordinates ( *node, vertices, extents );
+      this->parseCoordinates ( *node, vertices, extents );
       if ( false == vertices.empty() )
       {
         point->point ( vertices.front() );
@@ -416,7 +408,7 @@ Factory::Line* Factory::createLine ( const XmlTree::Node& node ) const
     {
       Vertices vertices;
       Extents extents;
-      Helper::parseCoordinates( *node, vertices, extents );
+      this->parseCoordinates( *node, vertices, extents );
       if ( false == vertices.empty() )
       {
         line->line ( vertices );
@@ -463,7 +455,7 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
       if ( coordinates.valid() )
       {
         Vertices vertices;
-        Helper::parseCoordinates( *coordinates, vertices, extents );
+        this->parseCoordinates( *coordinates, vertices, extents );
         polygon->outerBoundary ( vertices );
       }
     }
@@ -474,7 +466,7 @@ Factory::Polygon* Factory::createPolygon ( const XmlTree::Node& node ) const
       if ( coordinates.valid() )
       {
         Vertices vertices;
-        Helper::parseCoordinates( *coordinates, vertices, extents );
+        this->parseCoordinates( *coordinates, vertices, extents );
         polygon->addInnerBoundary ( vertices );
       }
     }

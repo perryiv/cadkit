@@ -11,6 +11,16 @@
 #ifndef __MINERVA_LAYERS_KML_FACTORY_H__
 #define __MINERVA_LAYERS_KML_FACTORY_H__
 
+#include "Minerva/Layers/Kml/Export.h"
+
+#include "Usul/Math/Vector3.h"
+
+#include "Minerva/Core/Extents.h"
+
+#include "osg/Vec2d"
+
+#include <vector>
+
 namespace XmlTree { class Node; }
 
 namespace Minerva {
@@ -37,7 +47,7 @@ namespace Kml {
   class NetworkLink;
   class Link;
   
-class Factory
+class MINERVA_KML_EXPORT Factory
 {
 public:
   typedef Minerva::Core::Data::Point      Point;
@@ -51,6 +61,9 @@ public:
   typedef Minerva::Core::Data::IconStyle  IconStyle;
   typedef Minerva::Core::Data::PolyStyle  PolyStyle;
   typedef Minerva::Core::Data::LineStyle  LineStyle;
+  typedef Usul::Math::Vec3d               Vertex;
+  typedef std::vector < Vertex >          Vertices;
+  typedef Minerva::Core::Extents<osg::Vec2d> Extents;
   
   static Factory& instance();
   
@@ -73,6 +86,8 @@ public:
   PolyStyle*    createPolyStyle ( const XmlTree::Node& ) const;
   IconStyle*    createIconStyle ( const XmlTree::Node& ) const;
   
+  void          parseCoordinates ( const XmlTree::Node& node, Vertices& vertices, Extents& extents ) const;
+
 private:
   
   Factory();

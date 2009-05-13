@@ -31,6 +31,8 @@
 #include "Usul/Strings/Case.h"
 #include "Usul/Strings/Split.h"
 
+#include "boost/algorithm/string/trim.hpp"
+
 #include <algorithm>
 
 using namespace Minerva::Layers::Kml;
@@ -223,6 +225,75 @@ namespace Helper
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Helper function to skip over white space.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  void skipWhiteSpace ( char*& pointer )
+  {
+    while ( ::isspace ( *pointer ) )
+    {
+      ++pointer;
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Parse a vec3.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace Helper
+{
+  bool parseVec3 ( const char* start, char** next, Factory::Vertex& v )
+  {
+    if ( 0x0 == start )
+      return false;
+
+    char *current ( const_cast<char*> ( start ) );
+
+    // strtod will skip white space and stop at a character that is doesn't reconize as part of a number.
+    // See: http://msdn.microsoft.com/en-us/library/53b7b72e.aspx
+    const double longitude ( ::strtod ( current, &current ) );
+    v[0] = longitude;
+
+    // Eat white space up to the next comma
+    while ( ::isspace ( *current ) || ',' != *current )
+    {
+      // Check for bad string.
+      if ( *current == '\0' )
+      {
+        *next = current;
+        return false;
+      }
+
+      ++current;
+    }
+
+    const double latitude ( ::strtod ( current + 1, &current ) );
+    v[1] = latitude;
+
+    // Eat all white space.
+    Helper::skipWhiteSpace ( current );
+
+    const double altitude ( ',' == *current ? ::strtod ( current + 1, &current ) : 0.0 );
+    v[2] = altitude;
+
+    // Eat remaining white space.
+    Helper::skipWhiteSpace ( current );
+
+    *next = current;
+    return true;
+  }
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  Parse coordinates.
@@ -233,42 +304,21 @@ void Factory::parseCoordinates ( const XmlTree::Node& node, Vertices& vertices, 
 {
   // Copy the value and remove any commas.
   std::string value ( node.value() );
-  std::replace ( value.begin(), value.end(), ',', ' ' );
 
-  // The line buffer.
-  std::vector<char> buffer ( 1024 );
+  if ( true == value.empty() )
+    return;
 
-  // Read the numbers from the stream.
-  std::istringstream in ( value );
-  while ( EOF != in.peek() )
+  const char* characters ( value.c_str() );
+  const char* end ( characters + value.size() );
+  char* next ( const_cast<char*> ( characters ) );
+
+  while ( next != end )
   {
-    // Get the line.
-    std::fill ( buffer.begin(), buffer.end(), '\0' );
-    in.getline ( &buffer[0], buffer.size() - 1 );
-    const std::string line ( &buffer[0] );
-
-    // Split the line.
-    typedef std::vector<std::string> Parts;
-    Parts parts;
-    Usul::Strings::split ( line, ' ', false, parts );
-    
-    // Convert the strings to a vertex.
-    Vertex v;
-    if ( parts.size() >= 2 )
+    Vertex vertex;
+    if ( Helper::parseVec3 ( next, &next, vertex ) )
     {
-      v[0] = ToDouble::convert ( parts[0] );
-      v[1] = ToDouble::convert ( parts[1] );
-    }
-    if ( parts.size() >= 3 )
-    {
-      v[2] = ToDouble::convert ( parts[2] );
-    }
-
-    // Append the vertex if it is at least 2D.
-    if ( parts.size() >= 2 )
-    {
-      vertices.push_back ( v );
-      extents.expand ( Extents::Vertex ( v[0], v[1] ) );
+      vertices.push_back ( vertex );
+      extents.expand ( Extents::Vertex ( vertex[0], vertex[1] ) );
     }
   }
 }

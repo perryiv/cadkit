@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)\Experimental;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -64,7 +64,7 @@
 				AdditionalDependencies="$(GTEST_LIB_FILE_DEBUG) osgd.lib"
 				OutputFile="$(CADKIT_BIN_DIR)\CadkitUnitTestsd.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(OSG_INC_DIR);$(BOOST_INC_DIR)"
+				AdditionalIncludeDirectories="$(GTEST_INC_DIR);$(CADKIT_INC_DIR);$(CADKIT_INC_DIR)\Experimental;$(OSG_INC_DIR);$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -143,7 +143,7 @@
 				AdditionalDependencies="$(GTEST_LIB_FILE_RELEASE) osg.lib"
 				OutputFile="$(CADKIT_BIN_DIR)\CadkitUnitTests.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OSG_LIB_DIR)"
+				AdditionalLibraryDirectories="$(OSG_LIB_DIR);$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -215,6 +215,26 @@
 					RelativePath=".\Minerva\Core\TileEngine\TileTest.cpp"
 					>
 				</File>
+				<Filter
+					Name="Layers"
+					>
+					<Filter
+						Name="OSM"
+						>
+						<File
+							RelativePath=".\Minerva\Layers\OSM\CacheTest.cpp"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Kml"
+						>
+						<File
+							RelativePath=".\Minerva\Layers\Kml\ParseTest.cpp"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

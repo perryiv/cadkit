@@ -109,10 +109,6 @@ protected:
 
 private:
   QtViewerPtr         _xyzView;
-  VIGUIViewerPtr      _xyView;
-  VIGUIViewerPtr      _xzView;
-  VIGUIViewerPtr      _yzView;
-
   QDockWidget         *_dock;
   MaterialContainer   *_materialContainer;
   IUnknown::QueryPtr  _caller;

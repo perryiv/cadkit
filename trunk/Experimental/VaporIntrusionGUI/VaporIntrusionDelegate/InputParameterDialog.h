@@ -31,6 +31,11 @@ class InputParameterDialog : public QDialog,
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
+
+  // Useful typedefs
+  typedef Usul::Interfaces::IVaporIntrusionGUI::InputColumn InputColumn;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::InputColumns InputColumns;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::ActivatorPairs ActivatorPairs;
   
 
   InputParameterDialog ( Usul::Interfaces::IVaporIntrusionGUI::Category category, QWidget *parent = 0x0 );

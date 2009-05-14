@@ -20,6 +20,7 @@
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
+#include "Usul/Interfaces/IKeyListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IVaporIntrusionGUI.h"
@@ -47,6 +48,7 @@ namespace osg { class Node; }
 class VaporIntrusionGUIDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
+                                  public Usul::Interfaces::IKeyListener,
                                   public Usul::Interfaces::IVaporIntrusionGUI
                                   
 {
@@ -178,6 +180,10 @@ public:
   virtual void                readConfigFile( const std::string& name, const std::string& filename );
   virtual void                initialize();
   virtual void                updateCategory( Category category );
+
+  //Usul::Interfaces::IKeyListener
+  virtual bool keyPressed ( int code );
+  virtual bool keyReleased ( int code );
 
 protected:
 

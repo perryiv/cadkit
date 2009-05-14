@@ -80,6 +80,9 @@ void GridEditorDialog::_initializeGridData()
   // get the x values
   _xValues = document->getXGrid();
 
+  // first pass through x values?
+  bool xFirstPass( true );
+
   // set the Grid values
   for( unsigned int i = 0; i < _xValues.size(); ++i )
   {
@@ -98,16 +101,27 @@ void GridEditorDialog::_initializeGridData()
     _xList->setItem( i, 0, item0 );
     _xList->setItem( i, 1, item1 );
 
-    // set the current item
-    _xList->setCurrentItem( item0 );
+    if( true == xFirstPass )
+    {
+      // set the current item
+      _xList->setCurrentItem( item0 );
+
+      // no longer the first pass
+      xFirstPass = false;
+    }
 
     // set the values of the row
     _xList->item( i, 0 )->setText( QString::number( _xValues.at( i ).first ) );
     _xList->item( i, 1 )->setText( QString::number( _xValues.at( i ).second ) );
   }
 
+  // -------------------------------------------------------------------------------------
+
   // get the y values
   _yValues = document->getYGrid();
+
+  // first pass through y values?
+  bool yFirstPass( true );
 
   // set the Grid values
   for( unsigned int j = 0; j < _yValues.size(); ++j )
@@ -127,16 +141,27 @@ void GridEditorDialog::_initializeGridData()
     _yList->setItem( j, 0, item0 );
     _yList->setItem( j, 1, item1 );
 
-    // set the current item
-    _yList->setCurrentItem( item0 );
+    if( true == yFirstPass )
+    {
+      // set the current item
+      _yList->setCurrentItem( item0 );
+
+      // no longer the first pass
+      yFirstPass = false;
+    }
 
     // set the values of the row
     _yList->item( j, 0 )->setText( QString::number( _yValues.at( j ).first ) );
     _yList->item( j, 1 )->setText( QString::number( _yValues.at( j ).second ) );
   }
 
+  // -------------------------------------------------------------------------------------
+
   // get the z values
   _zValues = document->getZGrid();
+
+  // first pass through z values?
+  bool zFirstPass( true );
 
   // set the Grid values
   for( unsigned int k = 0; k < _zValues.size(); ++k )
@@ -156,8 +181,14 @@ void GridEditorDialog::_initializeGridData()
     _zList->setItem( k, 0, item0 );
     _zList->setItem( k, 1, item1 );
 
-    // set the current item
-    _zList->setCurrentItem( item0 );
+    if( true == zFirstPass )
+    {
+      // set the current item
+      _zList->setCurrentItem( item0 );
+
+      // no longer the first pass
+      zFirstPass = false;
+    }
 
     // set the values of the row
     _zList->item( k, 0 )->setText( QString::number( _zValues.at( k ).first ) );

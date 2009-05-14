@@ -58,7 +58,6 @@
 #include <fstream>
 #include <iostream>
 
-
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDocument, VaporIntrusionGUIDocument::BaseClass );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -426,7 +425,7 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
       for( unsigned int z = 0; z < zsize; ++z )
       {
         // Set the default ValueType
-        Color c ( 0.5, 0.5, 0.5, 0.1 );
+        Color c ( 0.5, 0.5, 0.5, 0.3 );
         osg::ref_ptr< osg::Material > material ( new osg::Material );
         material->setAmbient( osg::Material::FRONT_AND_BACK, c );
         material->setDiffuse( osg::Material::FRONT_AND_BACK, c );
@@ -437,8 +436,6 @@ void VaporIntrusionGUIDocument::_buildScene ( Unknown *caller )
 
         // Offset
         Usul::Math::Vec3f offset ( _xValues.at( x ).second, _yValues.at( y ).second, _zValues.at( z ).second );
-
-        // Points
         
         // create the points for the cube
         osg::ref_ptr< osg::Vec3Array > p ( new osg::Vec3Array );
@@ -776,6 +773,7 @@ void VaporIntrusionGUIDocument::_write( const std::string &filename, Unknown *ca
 
 void VaporIntrusionGUIDocument::_writeLayerFile2( const std::string& directory ) const
 {
+  /*
   Guard guard( this );
 
   // create the filename
@@ -803,7 +801,7 @@ void VaporIntrusionGUIDocument::_writeLayerFile2( const std::string& directory )
     ofs << "************** " << category.name <<  " ***********************\n\n"; 
 
     // write the columns in this category
-    for( unsigned int j = 0; j < category.activators.size(); ++j )
+    for( unsigned int j = 0; j < category.columns.size(); ++j )
     {
       // get the activator column
       InputColumn column ( category.activators.at( j ) );
@@ -842,6 +840,7 @@ void VaporIntrusionGUIDocument::_writeLayerFile2( const std::string& directory )
 
   // close the output file
   ofs.close();
+  */
 }
 
 
@@ -1169,170 +1168,55 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& name, const 
       Usul::Strings::split( tStr, ",", false, sv );
       
       // make sure all the columns are there
-      if( sv.size() >= 7 )
+      if( sv.size() >= 4 )
       {
         // temp column to hold the input line
-        // #Name,Value,Description,Type,Activator,ActivatedBy,Activation_Value
-        InputColumn column( sv.at( 0 ), sv.at( 1 ), sv.at ( 2 ), sv.at( 3 ), sv.at( 4 ), sv.at( 5 ), sv.at( 6 ) ); 
+        // #Name,Value,Description,Type,Activators
+        std::string name          ( sv.at( 0 ) );
+        std::string value         ( sv.at( 1 ) );
+        std::string description   ( sv.at( 2 ) );
+        std::string type          ( sv.at( 3 ) );
 
-        // check whether or not the item is an activator or not and place in the appropriate object
-        if( column.activator == "1" )
-        {
-          category.activators.push_back( column );
-        }
-        else
-        {
-          category.activatees.push_back( column );
+        InputColumn column( name, value, description, type ); 
+
+        // read the activators
+        for( unsigned int i = 4; i < sv.size(); i+=2 )
+        { 
+          if( ( i + 1 ) < sv.size() )
+          {
+            // get the activator name and value
+            std::string aName = sv.at( i );
+            std::string aValue = sv.at( i + 1 );
+
+            // create a activator pair and add it to the activator list on the columnx
+            ActivatorPair aPair ( aName, aValue );
+            column.activators.push_back( aPair );
+          }
+          else
+          {
+            // There is a mismatch in number of remaining values
+            // Should probably throw an invalid input error here
+
+            // TODO: throw here instead of warning message
+            std::cout << "Warning: invalid number of activator pair combination(s)!" << std::endl;
+            break;
+          }
         }
 
-      }
-      
-    }
-  }
+        // add the column to the list of columns for this category
+        category.columns[ name ] =  column;          
+
+      }// end for for activators read   
+
+    }// end if for valid entry found
+
+  }// end while read for file parsing
 
   // add the category to the list of categories
   _categories.push_back( category );
 }
 
-#if 0
-///////////////////////////////////////////////////////////////////////////////
-//
-// Read the config file
-//
-///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_readConfigFile( const std::string& filename )
-{
-  Guard guard( this );
-
-  // create a file handle
-  std::ifstream ifs;
-
-  // open the file
-  ifs.open( filename.c_str() );
-
-  // make sure the file was opened
-  if( false == ifs.is_open() )
-    throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
-
-  // buffer size
-  const unsigned long int bufSize ( 4095 );
-
-  // line number
-  unsigned int lineNumber ( 0 );
-
-  // parse the file
-  while( EOF != ifs.peek() )
-  {
-    // create a buffer
-    char buffer[bufSize+1];   
-
-    // create a string from the buffer
-    std::string tStr;
-    
-    do
-    {
-      // get a line
-      ifs.getline ( buffer, bufSize );
-
-      // grab the string
-      tStr = buffer;
-    }
-    while( tStr.at( 0 ) == '#' );
-
-    // separate the strings
-    typedef std::vector< std::string > StringVec;
-    StringVec sv;
-    Usul::Strings::split( tStr, ",", false, sv );
-
-    // index of the start of the first value
-    unsigned int index ( 0 );
-
-    // find the first value
-    for( unsigned int i = 0; i < tStr.size(); ++i )
-    {
-      if( tStr.at( i ) == '*' )
-      {
-        index = tStr.size();
-        break;
-      }
-
-      // count indices until we find something besides a space
-      if( tStr.at( i ) == ' ' )
-      {
-        ++index;
-      }
-      else
-      {
-        // exit loop when we find a non-space character
-        break;
-      }
-    }
-
-    // temp string for the first value
-    std::string value ( "" );
-
-    // grab the first value
-    for( unsigned int i = index; i < tStr.size(); ++i )
-    {
-      // count indices until we find something besides a space
-      if( tStr.at( i ) != ' ' )
-      {
-        value += tStr.at( i );
-
-        ++index;
-      }
-      else
-      {
-        // exit loop when we find a non-space character
-        break;
-      }
-    }
-
-    // skip spaces until we find the start of the description
-    for( unsigned int i = index; i < tStr.size(); ++i )
-    {
-      // count indices until we find something besides a space
-      if( tStr.at( i ) == ' ' )
-      {
-        ++index;
-      }
-      else
-      {
-        // exit loop when we find a non-space character
-        break;
-      }
-    }
-     
-    // temp value for the description
-    std::string description ( tStr.substr( index, tStr.size() ) );
-
-    if( value.length() > 0 )
-    {
-      // create a temp parameter
-      Usul::Interfaces::IVaporIntrusionGUI::Parameter parameter;
-
-      // set the values
-      parameter.first = value;
-      parameter.second = description;
-
-      Usul::Interfaces::IVaporIntrusionGUI::ParameterPair parameterPair;
-
-      parameterPair.first = lineNumber;
-      parameterPair.second = parameter;
-
-      // add the parameter
-      _inputParameters.push_back( parameterPair );
-    }
-
-    ++lineNumber;
-
-  }// end while loop for file reading
-
-
-}
-
-#endif
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Read the parameter file
@@ -1493,3 +1377,37 @@ void VaporIntrusionGUIDocument::updateCategory( Category category )
   }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Keyboard key was pressed (Implementation of IKeyListener::keyPressed)
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::keyPressed ( int code )
+{
+
+  /*switch( code )
+  {
+    case Qt::Key_M:
+      break;
+    default:
+      break;
+  }*/
+  // keep checking
+  return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Keyboard key was released (Implementation of IKeyListener::keyReleased)
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+bool VaporIntrusionGUIDocument::keyReleased ( int code )
+{
+  // keep checking
+  return true;
+}

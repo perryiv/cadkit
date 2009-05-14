@@ -53,9 +53,9 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDelegateComponent, VaporIntru
 
 VaporIntrusionGUIDelegateComponent::VaporIntrusionGUIDelegateComponent() : BaseClass(),
 _xyzView( 0x0 ),
-_xyView ( 0x0 ),
-_xzView ( 0x0 ),
-_yzView ( 0x0 ),
+//_xyView ( 0x0 ),
+//_xzView ( 0x0 ),
+//_yzView ( 0x0 ),
 _dock   ( 0x0 ),
 _materialContainer( 0x0 ),
 _caller(),
@@ -152,61 +152,61 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     _xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
     parent->addWindow ( _xyzView.get() );
 
-    // Add XY window
-    _xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
-    parent->addWindow ( _xyView.get() );
+    //// Add XY window
+    //_xyView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
+    //parent->addWindow ( _xyView.get() );
 
-    // Add XZ window
-    _xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
-    parent->addWindow ( _xzView.get() );
+    //// Add XZ window
+    //_xzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
+    //parent->addWindow ( _xzView.get() );
 
-    // Add YZ window
-    _yzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
-    parent->addWindow ( _yzView.get() );
+    //// Add YZ window
+    //_yzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer  );
+    //parent->addWindow ( _yzView.get() );
 
     // Build the scene.
     Usul::Interfaces::IBuildScene::QueryPtr build ( document );
     if ( build.valid () )
     {
       _xyzView->viewer()->scene ( build->buildScene ( document->options(), caller ) );
-      _xyView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
-      _xzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
-      _yzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
+      //_xyView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
+      //_xzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
+      //_yzView->viewer()->scene  ( build->buildScene ( document->options(), caller ) );
     }
 
     // Set the titles
     _xyzView->setTitle( "XYZ -- 3D View" );
 
-    _xyView->setTitle ( "XY -- Front View" );
-    _xyView->camera( OsgTools::Render::Viewer::FRONT );
-    _xyView->set( Usul::Math::Vec3ui( 1, 1, 0 ) );
-    _xyView->id( 1 );
+    //_xyView->setTitle ( "XY -- Front View" );
+    //_xyView->camera( OsgTools::Render::Viewer::FRONT );
+    //_xyView->set( Usul::Math::Vec3ui( 1, 1, 0 ) );
+    //_xyView->id( 1 );
 
-    _xzView->setTitle ( "XZ -- Top View" );
-    _xzView->camera( OsgTools::Render::Viewer::TOP );
-    _xzView->set( Usul::Math::Vec3ui( 1, 0, 1 ) );
-    _xzView->id( 2 );
+    //_xzView->setTitle ( "XZ -- Top View" );
+    //_xzView->camera( OsgTools::Render::Viewer::TOP );
+    //_xzView->set( Usul::Math::Vec3ui( 1, 0, 1 ) );
+    //_xzView->id( 2 );
 
-    _yzView->setTitle ( "YZ -- Left View" );
-    _yzView->camera( OsgTools::Render::Viewer::LEFT );
-    _yzView->set( Usul::Math::Vec3ui( 0, 1, 1 ) );
-    _yzView->id( 3 );
+    //_yzView->setTitle ( "YZ -- Left View" );
+    //_yzView->camera( OsgTools::Render::Viewer::LEFT );
+    //_yzView->set( Usul::Math::Vec3ui( 0, 1, 1 ) );
+    //_yzView->id( 3 );
 
     // Get the bounds of the parent window
     int w ( parent->width()  * 0.5 );
     int h ( parent->height() * 0.5 );
 
-    // XYZ window is the top left window
-    _xyzView->resize ( w, h );
+    //// XYZ window is the top left window
+    //_xyzView->resize ( w, h );
 
-    // XY window is the bottom right window
-    _xyView->resize  ( w, h );
+    //// XY window is the bottom right window
+    //_xyView->resize  ( w, h );
 
-    // XZ window is the bottom left window
-    _xzView->resize  ( w, h );
+    //// XZ window is the bottom left window
+    //_xzView->resize  ( w, h );
 
-    // XY window is the top right window
-    _yzView->resize  ( w, h );
+    //// XY window is the top right window
+    //_yzView->resize  ( w, h );
 
     // Show the windows
     _xyzView->show();

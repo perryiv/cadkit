@@ -23,44 +23,44 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   /// Smart-pointer definitions.
   USUL_DECLARE_QUERY_POINTERS ( IVaporIntrusionGUI );
 
+  // useful typedefs
+  typedef std::pair < std::string, std::string > ActivatorPair;
+  typedef std::vector< ActivatorPair > ActivatorPairs;
+
   /// Id for this interface.
   enum { IID = 1235852807u };
 
   // structs
   struct InputColumn
   {
-    // #Name,Value,Description,Type,Activator,ActivatedBy,Activation_Value
+    // #Name,Value,Description,Type,Activators
     std::string name;
     std::string value;
     std::string description;
     std::string type;
-    std::string activator;
-    std::string activatedBy;
-    std::string activationValue;
+    ActivatorPairs activators;
+    bool active;
 
     InputColumn():
       name (),
       value(),
       description(),
       type(),
-      activator(),
-      activatedBy(),
-      activationValue()
+      activators(),
+      active( false )
       {}
-    InputColumn( const std::string& n, const std::string& v, const std::string& d, const std::string& t, 
-      const std::string& a, const std::string& ab, const std::string& av ) :
+    InputColumn( const std::string& n, const std::string& v, const std::string& d, const std::string& t ) :
       name ( n ),
       value( v ),
       description( d ),
       type( t ),
-      activator( a ),
-      activatedBy( ab ),
-      activationValue( av )
+      activators(),
+      active( false )
       {}
   };
 
   // vector of InputColumn
-  typedef std::vector< InputColumn > InputColumns;
+  typedef std::map< std::string, InputColumn > InputColumns;
 
   // Menu holders
   struct Category
@@ -68,23 +68,20 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
     std::string name;
     std::string filename;
     std::vector< std::string > columnNames;
-    InputColumns activators;
-    InputColumns activatees;
+    InputColumns columns;
 
     Category( const std::string& n, const std::string& fn ):
       name( n ),
       filename( fn ),
       columnNames(),
-      activators(),
-      activatees()
+      columns()
       {}
 
       Category():
       name(),
       filename(),
       columnNames(),
-      activators(),
-      activatees()
+      columns()
       {}
   };
 

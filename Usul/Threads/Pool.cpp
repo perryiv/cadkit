@@ -139,7 +139,6 @@ void Pool::_destroy()
 Pool::TaskHandle Pool::addTask ( int priority, Task *task )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
 
   // Check input.
   if ( 0x0 == task )
@@ -149,7 +148,10 @@ Pool::TaskHandle Pool::addTask ( int priority, Task *task )
   TaskHandle key ( priority, task->id() );
 
   // Add task. Local reference may help with stability.
-  _queue[key] = Task::RefPtr ( task );
+  {
+    Guard guard ( this );
+    _queue[key] = Task::RefPtr ( task );
+  }
 
   // Make sure the threads are started.
   this->_startThreads();
@@ -168,7 +170,6 @@ Pool::TaskHandle Pool::addTask ( int priority, Task *task )
 Pool::TaskHandle Pool::addTask ( int priority, Callback *started, Callback *finished, Callback *cancelled, Callback *error )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
   return this->addTask ( priority, new Task ( this->nextTaskId(), started, finished, cancelled, error ) );
 }
 

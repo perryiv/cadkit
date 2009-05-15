@@ -35,6 +35,10 @@ public:
 
   typedef Usul::Types::Uint32 IndexValue;
   typedef std::vector < std::vector < std::vector < IndexValue > > > IndexGrid;
+  
+  typedef Usul::Types::Float32 Float32;
+  typedef std::vector< Float32 > FloatVector;
+
 
   USUL_DECLARE_QUERY_POINTERS ( ToFVUNS );
   USUL_DECLARE_IUNKNOWN_MEMBERS;
@@ -62,6 +66,9 @@ protected:
   void          _writeElementNodes( std::ofstream* ofs );
   void          _writeElementNodeHeader( std::ofstream* ofs );
 
+  //Debug method to write the results in ascii for visual validation
+  void          _writeDebugFile( const std::string& filename );
+
   virtual ~ToFVUNS();
 
 private:
@@ -85,5 +92,8 @@ private:
   std::string                 _baseFilename;
   std::vector< Grid1D >       _grid;
   IndexGrid                   _indexGrid;
+  FloatVector                 _xValues;
+  FloatVector                 _yValues;
+  FloatVector                 _zValues;
   
 };

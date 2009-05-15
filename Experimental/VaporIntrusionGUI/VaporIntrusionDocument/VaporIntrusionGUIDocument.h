@@ -180,6 +180,8 @@ public:
   virtual void                readConfigFile( const std::string& name, const std::string& filename );
   virtual void                initialize();
   virtual void                updateCategory( Category category );
+  virtual bool                checkValue( int comparitor, const std::string& value1, const std::string& value2 );
+
 
   //Usul::Interfaces::IKeyListener
   virtual bool keyPressed ( int code );
@@ -214,8 +216,9 @@ protected:
   // read layer file
   void                        _readConfigFile( const std::string& name, const std::string& filename );
   void                        _readInitializationFile( const std::string& filename );
-  //void                      _readConfig( const std::string& filename );
-
+  
+  int                         _getComparitor( const std::string& comparitor );
+  
 
 private:
     GroupPtr                  _root;

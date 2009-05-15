@@ -24,11 +24,23 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   USUL_DECLARE_QUERY_POINTERS ( IVaporIntrusionGUI );
 
   // useful typedefs
-  typedef std::pair < std::string, std::string > ActivatorPair;
+  typedef std::pair < int, std::string > ActivatorValue; // expected < comparison enumeration, value >
+  typedef std::pair < std::string, ActivatorValue > ActivatorPair; // expected < activator name, activator value >
   typedef std::vector< ActivatorPair > ActivatorPairs;
 
   /// Id for this interface.
   enum { IID = 1235852807u };
+
+  // comparison enumerations
+  enum
+  {
+    EQUAL,
+    NOT_EQUAL,
+    LESS_THAN,
+    GREATER_THAN,
+    GREATER_THAN_OR_EQUAL,
+    LESS_THAN_OR_EQUAL
+  };
 
   // structs
   struct InputColumn
@@ -139,6 +151,8 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   virtual void                  readConfigFile( const std::string& name, const std::string& filename ) = 0;
   virtual void                  updateCategory( Category category ) = 0;
+
+  virtual bool                  checkValue( int comparitor, const std::string& value1, const std::string& value2 ) = 0;
   
     
 }; // struct IVaporIntrusionGUI

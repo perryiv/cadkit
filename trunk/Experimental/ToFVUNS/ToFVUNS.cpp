@@ -17,6 +17,8 @@
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Scope/CurrentDirectory.h"
 #include "Usul/Math/Constants.h"
+#include "Usul/Strings/Format.h"
+#include "Usul/Convert/Convert.h"
 
 #include <fstream>
 #include <iomanip>
@@ -47,7 +49,10 @@ ToFVUNS::ToFVUNS ( int argc, char **argv ) :
   _values( ),
   _workingDirectory( "" ),
   _baseFilename( "" ),
-  _indexGrid()
+  _indexGrid(),
+  _xValues(),
+  _yValues(),
+  _zValues()
 {
 }
 
@@ -109,6 +114,9 @@ void ToFVUNS::run()
 
   // Write the grid file
   this->_writeGridFile( _workingDirectory + _baseFilename + ".grid" );
+
+  // write debug file
+  // this->_writeDebugFile( _workingDirectory + _baseFilename + ".debug.txt" );
 }
 
 
@@ -261,6 +269,9 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
   ifs->read ( reinterpret_cast< char* > ( &nk ), sizeof( Usul::Types::Int32 ) );
   ifs->read ( reinterpret_cast< char* > ( &nv ), sizeof( Usul::Types::Int32 ) );
 
+  // debugging
+  std::cout << "Resolution of: " << Usul::File::base( file ) << "." << Usul::File::extension( file ) << " is ( " << ni << " x " << nj << " x " << nk << " ) last number is: " << nv << std::endl;
+
   // read the footer
   //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
   //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
@@ -297,26 +308,30 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
   }
 #else
 #if 0
-  for( unsigned int k = 0; k < nk; ++k )
+  unsigned int isize ( ni );
+  unsigned int jsize ( nj );
+  unsigned int ksize ( nk );
+
+  for( unsigned int k = 0; k < ksize; ++k )
   {
     // temp 2d grid
     Grid1D grid1d;
 
     // resize the grid
-    grid1d.resize( nj * ni );
+    grid1d.resize( jsize * isize );
 
-    for( unsigned int j = 0; j < nj; ++j )
+    for( unsigned int i = 0; i < isize; ++i )    
     {
       h1 = 0;h2 = 0;h3 = 0;h4 = 0;
 
       // read the header
-      ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
-      ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
+      //ifs->read ( reinterpret_cast< char* > ( &h1 ), sizeof( Usul::Types::Uint16 ) );
+      //ifs->read ( reinterpret_cast< char* > ( &h2 ), sizeof( Usul::Types::Uint16 ) );
 
-      for( unsigned int i = 0; i < ni; ++i )
+      for( unsigned int j = 0; j < jsize; ++j )  
       {
 
-        unsigned int index ( j + ( i * _dimensions[1] ) );
+        unsigned int index ( j + ( i * jsize ) );
 
         h1 = 0;h2 = 0;h3 = 0;h4 = 0;
 
@@ -335,8 +350,8 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
         
       }
       
-      ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
-      ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
+      //ifs->read ( reinterpret_cast< char* > ( &h3 ), sizeof( Usul::Types::Uint16 ) );
+      //ifs->read ( reinterpret_cast< char* > ( &h4 ), sizeof( Usul::Types::Uint16 ) );
       
     }
 
@@ -345,9 +360,9 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
   }
 #else
 
-  unsigned int isize ( ni + 1 );
-  unsigned int jsize ( nj + 1 );
-  unsigned int ksize ( nk + 1 );
+  unsigned int isize ( ni );
+  unsigned int jsize ( nj );
+  unsigned int ksize ( nk );
   for( unsigned int k = 0; k < ksize; ++k )
   {
     // temp 2d grid
@@ -377,41 +392,6 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
 
 #endif
 }
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Open the document.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ToFVUNS::_openDocument ( const std::string &file, Usul::Documents::Document *document )
-{
-  /*if ( 0x0 == document )
-    return;
-
-  std::cout << "Opening file: " << file << " ... " << std::endl;
-  document->open ( file, this );
-  std::cout << "Done" << std::endl;*/
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Save the document.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void ToFVUNS::_saveDocument ( const std::string &file, Usul::Documents::Document *document )
-{
-  //if ( 0x0 == document )
-  //  return;
-
-  //std::cout << "Saving file: " << file << " ... " << std::endl;
-  //document->saveAs ( file, this, 0x0 );
-  //std::cout << "Done" << std::endl;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -578,25 +558,32 @@ void ToFVUNS::_writeResults( const std::string &name, std::ofstream* ofs )
   unsigned int ysize( _dimensions[1] );
   unsigned int zsize( _dimensions[2] );
 
-  unsigned int denominator( ysize );
+  unsigned int denominator( zsize );
   for( unsigned int valueNumber = 0; valueNumber < _values.size(); ++valueNumber )
   {
-    for( unsigned int j = 0; j < ysize; ++j )  
+
+    for( unsigned int k = 0; k < zsize; ++k )
     {
       // progress
-      unsigned int numerator = j;
+      unsigned int numerator = k;
       float percentage ( static_cast< float > ( numerator ) / static_cast< float > ( denominator ) );
       
       std::cout << "\rWrite function for value " << valueNumber << " -- percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  numerator << " / " << denominator << " )" << std::flush;
       
-      for( unsigned int k = 0; k < zsize; ++k )
+      for( unsigned int j = 0; j < ysize; ++j )
       {        
         for( unsigned int i = 0; i < xsize; ++i )
-        {
-          //std::cout << "\rTrying i=" << i << " -- j=" << j << "  -- k=" << k << std::flush;
+        {          
           // current node index
+#if 0
+          // read by row
           unsigned int index ( j + ( i * ( ysize ) ) );
+#else
+          // read by column
+          unsigned int index ( i + ( j * ( xsize ) ) );
+#endif
           //unsigned int index ( ( i * ( xsize - 1 ) ) + j );
+
           try
           {
           // P value
@@ -772,9 +759,6 @@ void ToFVUNS::_writeGridFile( const std::string &name )
 
   // write the grid nodes
   {
-    typedef Usul::Types::Float32 Float32;
-    typedef std::vector< Float32 > FloatVector;
-    
     // Hold the X values
     FloatVector xValues;
     xValues.resize( count );
@@ -789,40 +773,41 @@ void ToFVUNS::_writeGridFile( const std::string &name )
 
     Usul::Types::Uint32 index ( 0 );
 
-    unsigned int denominator( yGridSize );
+    unsigned int denominator( zGridSize );
 
     // resize the index grid
-    _indexGrid.resize( yGridSize );
+    _indexGrid.resize( zGridSize );
   
     // loop through the values in the grid(s)
-    for( unsigned int j = 0; j < yGridSize; ++j )
+    for( unsigned int k = 0; k < zGridSize; ++k )    
     {
-      // yvalue calculation X(I)=REAL(I-1)/REAL(NX-2)*2.*PI
-      float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 2 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
-         
+       
       // progress
-      float percentage ( static_cast< float > ( j ) / static_cast< float > ( denominator ) );
-      std::cout << "\rWrite function percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  j << " / " << denominator << " )" << std::flush;
+      float percentage ( static_cast< float > ( k ) / static_cast< float > ( denominator ) );
+      std::cout << "\rWrite function percent complete ( " << percentage * 100.0f << "% ) -- ( " <<  k << " / " << denominator << " )" << std::flush;
 
       // resize the index grid at j
-      _indexGrid.at( j ).resize( zGridSize );
+      _indexGrid.at( k ).resize( yGridSize );
 
-      for( unsigned int k = 0; k < zGridSize; ++k )
+      for( unsigned int j = 0; j < yGridSize; ++j )
       {
+        // yvalue calculation X(I)=REAL(I-1)/REAL(NX-2)*2.*PI
+      float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 1 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
+        
         // resize the index grid at jk
-        _indexGrid.at( j ).at( k ).resize( xGridSize );
+        _indexGrid.at( k ).at( j ).resize( xGridSize );
         for( unsigned int i = 0; i < xGridSize; ++i )
         {
           // Set the xgrid
           float xGridValue = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
 
           // Set the final grid values for this iteration
-          xValues.at( index ) = xGridValue * static_cast< float > ( cos( static_cast< double > ( yGridValue ) ) );
-          yValues.at( index ) = xGridValue * static_cast< float > ( sin( static_cast< double > ( yGridValue ) ) );
+          xValues.at( index ) = xGridValue * static_cast< Float32 > ( cos( static_cast< double > ( yGridValue ) ) );
+          yValues.at( index ) = xGridValue * static_cast< Float32 > ( sin( static_cast< double > ( yGridValue ) ) );
           zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );
 
           // push back the index counter
-          _indexGrid.at( j ).at( k ).at( i ) = index + 1;
+          _indexGrid.at( k ).at( j ).at( i ) = index + 1;
 
           // increment the index
           ++index;
@@ -830,16 +815,6 @@ void ToFVUNS::_writeGridFile( const std::string &name )
         }
       }
     }
-
-    // add the last grid point
-    //GridType xvalue ( xValues.at( xValues.size() - 1 ) + ( xValues.at( xValues.size() - 1 ) - xValues.at( xValues.size() - 2 ) ) );
-    //xValues.push_back( xvalue );
-
-    //GridType yvalue ( yValues.at( yValues.size() - 1 ) + ( yValues.at( yValues.size() - 1 ) - yValues.at( yValues.size() - 2 ) ) );
-    //xValues.push_back( yvalue );
-
-    //GridType zvalue ( zValues.at( zValues.size() - 1 ) + ( zValues.at( zValues.size() - 1 ) - zValues.at( zValues.size() - 2 ) ) );
-    //xValues.push_back( zvalue );
 
     // Grid size in bytes
     Usul::Types::Uint32 sizeInBytes( count * sizeof( Float32 ) );
@@ -852,6 +827,11 @@ void ToFVUNS::_writeGridFile( const std::string &name )
 
     // write the z grid    
     ofs->write ( reinterpret_cast< char* > ( &zValues[0] ), sizeInBytes );
+
+    // debug
+    _xValues = xValues;
+    _yValues = yValues;
+    _zValues = zValues;
   }  
 
   // Faces section
@@ -990,43 +970,71 @@ void ToFVUNS::_writeElementNodes( std::ofstream* ofs )
  // useful typedef
   typedef Usul::Types::Uint32 Uint32;
 
-  float denominator ( static_cast< float > ( _dimensions[1] - 1 ) );
+  float denominator ( static_cast< float > ( _dimensions[2] - 1 ) );
 
   // Write out the actual elements, which are hexahedral cells
-  for( unsigned int j = 0; j < _dimensions[1] - 1; ++j )
+  for( unsigned int k = 0; k < _dimensions[2] - 1; ++k )
   {
-    float numerator ( static_cast< float >( j ) );
+    float numerator ( static_cast< float >( k ) );
 
     // Feedback
     std::cout << "\rWriting Element Nodes -- " << ( ( numerator * 100 ) / denominator ) << "% complete" << std::flush;
 
-    for( unsigned int k = 0; k < _dimensions[2] - 1; ++k )
+    for( unsigned int j = 0; j < _dimensions[1] - 1; ++j )
     {
       for( unsigned int i = 0; i < _dimensions[0] - 1; ++i )
       {
+
+#if 1
         // vertex 1
-        Uint32 v1 ( _indexGrid.at( j ).at( k ).at( i ) );
+        Uint32 v1 ( _indexGrid.at( k ).at( j ).at( i ) );
 
         // vertex 2
-        Uint32 v2 ( _indexGrid.at( j ).at( k ).at( i + 1 ) );
+        Uint32 v2 ( _indexGrid.at( k ).at( j ).at( i + 1 ) );
 
         // vertex 3
-        Uint32 v3 ( _indexGrid.at( j + 1 ).at( k ).at( i ) );
+        Uint32 v3 ( _indexGrid.at( k + 1 ).at( j ).at( i ) );
 
         // vertex 4
-        Uint32 v4 ( _indexGrid.at( j + 1 ).at( k ).at( i + 1 ) );
+        Uint32 v4 ( _indexGrid.at( k + 1 ).at( j ).at( i + 1 ) );
 
         // vertex 5
-        Uint32 v5 ( _indexGrid.at( j ).at( k + 1 ).at( i ) );
+        Uint32 v5 ( _indexGrid.at( k ).at( j + 1 ).at( i ) );
 
         // vertex 6
-        Uint32 v6 ( _indexGrid.at( j ).at( k + 1 ).at( i + 1 ) );
+        Uint32 v6 ( _indexGrid.at( k ).at( j + 1 ).at( i + 1 ) );
 
         // vertex 7
-        Uint32 v7 ( _indexGrid.at( j + 1 ).at( k + 1 ).at( i ) );
+        Uint32 v7 ( _indexGrid.at( k + 1 ).at( j + 1 ).at( i ) );
 
         // vertex 8
-        Uint32 v8 ( _indexGrid.at( j + 1 ).at( k + 1 ).at( i + 1 ) );
+        Uint32 v8 ( _indexGrid.at( k + 1 ).at( j + 1 ).at( i + 1 ) );
+#else
+                // vertex 1
+        Uint32 v1 ( _indexGrid.at( k ).at( j ).at( i ) );
+
+        // vertex 2
+        Uint32 v2 ( _indexGrid.at( k + 1 ).at( j ).at( i ) );
+
+        // vertex 3
+        Uint32 v3 ( _indexGrid.at( k  ).at( j + 1 ).at( i ) );
+
+        // vertex 4
+        Uint32 v4 ( _indexGrid.at( k + 1  ).at( j + 1 ).at( i) );
+
+        // vertex 5
+        Uint32 v5 ( _indexGrid.at( k ).at( j ).at( i + 1  ) );
+
+        // vertex 6
+        Uint32 v6 ( _indexGrid.at( k + 1 ).at( j ).at( i + 1 ) );
+
+        // vertex 7
+        Uint32 v7 ( _indexGrid.at( k ).at( j + 1 ).at( i + 1  ) );
+
+        // vertex 8
+        Uint32 v8 ( _indexGrid.at( k + 1 ).at( j + 1 ).at( i + 1 ) );
+#endif
+
         
         // Write the header
         this->_writeElementNodeHeader( ofs );
@@ -1046,3 +1054,83 @@ void ToFVUNS::_writeElementNodes( std::ofstream* ofs )
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Debug method to write the results in ascii for visual validation
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ToFVUNS::_writeDebugFile( const std::string& filename )
+{
+  // create a file handle
+  std::ofstream ofs;
+
+  // open the file
+  ofs.open( filename.c_str() );
+
+  // make sure the file was opened
+  if( false == ofs.is_open() )
+    throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // output the grid dimensions
+  std::string gridMessage( Usul::Strings::format( "Grid Dimensions ( ", _dimensions[0], " x " , _dimensions[1] , " x " , _dimensions[2] , " )\n" ) );
+  ofs << gridMessage.c_str();
+
+  // grid file information
+  ofs << "************* Grid Information *****************\n";
+  ofs << "X\tY\tZ\n";
+
+  unsigned int size( _xValues.size() );
+
+  for( unsigned int i = 0; i < size; ++i )
+  {
+    std::string gridline ( Usul::Strings::format( _xValues.at( i ), "\t", _yValues.at( i ), "\t", _zValues.at( i ), "\n" ) );
+    ofs << gridline.c_str();
+  }
+     
+  ofs << "-------------- End of Grid Information ------------------\n\n\n";
+
+  // results file information
+  ofs << "****************** Results File Information **********************\n";
+  ofs << "X\tY\tZ\tU\tV\tW\tP\n";
+
+  for( unsigned int k = 0; k < _dimensions[2]; ++k )
+  {
+    for( unsigned int j = 0; j < _dimensions[1]; ++j )
+    {
+      for( unsigned int i = 0; i < _dimensions[0]; ++i )
+      {
+        unsigned int index ( i + ( j * _dimensions[0] ) );
+        std::string result ( Usul::Strings::format( i+1, "\t", j+1, "\t", k+1, "\t" ) );
+        result = Usul::Strings::format( result, _values.at( 0 ).at( k ).at( index ), "\t", 
+                                                _values.at( 1 ).at( k ).at( index ), "\t", 
+                                                _values.at( 2 ).at( k ).at( index ), "\t", 
+                                                _values.at( 3 ).at( k ).at( index ), "\n" );
+        ofs << result.c_str();
+      }
+    }
+  }
+
+  ofs << "------------------- End of Results Data ------------------\n\n\n";
+
+  // Index data for elements
+  ofs << "******************* Element Node Index Data **********************";
+  ofs << "I\tJ\tK\tIndex\n";
+
+  for( unsigned int k = 0; k < _dimensions[2]; ++k )
+  {
+    for( unsigned int j = 0; j < _dimensions[1]; ++j )
+    {
+      for( unsigned int i = 0; i < _dimensions[0]; ++i )
+      {
+        std::string indexMessage ( Usul::Strings::format( i+1, "\t", j+1, "\t", k+1, "\t", _indexGrid.at( k ).at( j ).at( i ), "\n" ) );
+        ofs << indexMessage.c_str();
+      }
+    }
+  }
+  ofs << "------------------- End of Element Node Data ---------------------\n";
+
+  // close the file
+  ofs.close();
+
+}

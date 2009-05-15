@@ -1180,16 +1180,18 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& name, const 
         InputColumn column( name, value, description, type ); 
 
         // read the activators
-        for( unsigned int i = 4; i < sv.size(); i+=2 )
+        for( unsigned int i = 4; i < sv.size(); i+=3 )
         { 
-          if( ( i + 1 ) < sv.size() )
+          if( ( i + 2 ) < sv.size() )
           {
             // get the activator name and value
-            std::string aName = sv.at( i );
-            std::string aValue = sv.at( i + 1 );
+            std::string aName ( sv.at( i ) );
+            std::string aComp ( sv.at( i + 1 ) );
+            std::string aValue ( sv.at( i + 2 ) );
 
-            // create a activator pair and add it to the activator list on the columnx
-            ActivatorPair aPair ( aName, aValue );
+            // create a activator pair and add it to the activator list on the column
+            ActivatorValue aV ( _getComparitor( aComp ), aValue );
+            ActivatorPair aPair ( aName, aV );
             column.activators.push_back( aPair );
           }
           else
@@ -1410,4 +1412,157 @@ bool VaporIntrusionGUIDocument::keyReleased ( int code )
 {
   // keep checking
   return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Get the int value of the comparitor
+//
+///////////////////////////////////////////////////////////////////////////////
+
+int VaporIntrusionGUIDocument::_getComparitor( const std::string& comparitor )
+{
+  // useful typedef
+  typedef Usul::Interfaces::IVaporIntrusionGUI IV;
+
+  if( comparitor == "LESS_THAN" )
+  {
+    return IV::LESS_THAN;
+  }
+
+  if( comparitor == "GREATER_THAN" )
+  {
+    return IV::GREATER_THAN;
+  }
+
+  if( comparitor == "LESS_THAN_OR_EQUAL" )
+  {
+    return IV::LESS_THAN_OR_EQUAL;
+  }
+
+  if( comparitor == "GREATER_THAN_OR_EQUAL" )
+  {
+    return IV::GREATER_THAN_OR_EQUAL;
+  }
+
+  if( comparitor == "NOT_EQUAL" )
+  {
+    return IV::NOT_EQUAL;
+  }
+
+  // default return equal
+  return IV::EQUAL;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// check to see if the given value matches
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::checkValue( int comparitor, const std::string& value1, const std::string& value2 )
+{
+  // useful typedef
+  typedef Usul::Interfaces::IVaporIntrusionGUI IV;
+
+  switch( comparitor )
+  {
+    // values should be equal
+    case IV::EQUAL:
+    {
+      if( value1 == value2 )
+      {
+        return true;
+      }
+      break;
+    }    
+
+    // values should not be equal
+    case IV::NOT_EQUAL:
+    {
+      if( value1 != value2 )
+      {
+        return true;
+      }
+      break;
+    }    
+
+    // value1 is greater than value2
+    case IV::GREATER_THAN:
+    {
+      // convert value1 to a double
+      double v1 ( Usul::Convert::Type< std::string, double >::convert( value1 ) );
+
+      // convert value2 to a double
+      double v2 ( Usul::Convert::Type< std::string, double >::convert( value2 ) );
+
+      if( v1 > v2 )
+      {
+        return true;
+      }
+
+      break;
+    }    
+
+    // values should not be equal
+    case IV::LESS_THAN:
+    {
+      // convert value1 to a double
+      double v1 ( Usul::Convert::Type< std::string, double >::convert( value1 ) );
+
+      // convert value2 to a double
+      double v2 ( Usul::Convert::Type< std::string, double >::convert( value2 ) );
+
+      if( v1 < v2 )
+      {
+        return true;
+      }
+      break;
+    }    
+
+    // values should not be equal
+    case IV::GREATER_THAN_OR_EQUAL:
+    {
+      // convert value1 to a double
+      double v1 ( Usul::Convert::Type< std::string, double >::convert( value1 ) );
+
+      // convert value2 to a double
+      double v2 ( Usul::Convert::Type< std::string, double >::convert( value2 ) );
+
+      if( v1 >= v2 )
+      {
+        return true;
+      }
+
+      break;
+    }
+
+    // values should not be equal
+    case IV::LESS_THAN_OR_EQUAL:
+    {
+
+      // convert value1 to a double
+      double v1 ( Usul::Convert::Type< std::string, double >::convert( value1 ) );
+
+      // convert value2 to a double
+      double v2 ( Usul::Convert::Type< std::string, double >::convert( value2 ) );
+
+      if( v1 <= v2 )
+      {
+        return true;
+      }
+
+      break;
+    }
+      
+    // default behavior -- do nothing
+    default:
+      break;
+
+
+  };
+
+  return false;
 }

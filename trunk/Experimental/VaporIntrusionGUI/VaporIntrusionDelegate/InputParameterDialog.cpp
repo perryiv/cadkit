@@ -100,14 +100,17 @@ void InputParameterDialog::_initializeList ()
         // get the activator name
         std::string name ( (*aPairs).first );
 
-        // get the activator value
-        std::string value ( (*aPairs).second );
+        // get the expected activator value
+        std::string value ( (*aPairs).second.second );
 
-        // get the corresponding column
-        InputColumn aColumn ( _category.columns[ name ] );
+        // get the current activator value
+        std::string aCurrentValue ( _category.columns[ name ].value );
+
+        // get the comparitor
+        int aComp ( (*aPairs).second.first );
 
         // check the activation value
-        if( value != aColumn.value )
+        if( false == document->checkValue( aComp, aCurrentValue, value ) )
         {
           // if the values don't agree then de-activate this row
           isActive = false;
@@ -209,43 +212,11 @@ void InputParameterDialog::on_applyButton_clicked()
     // get the column
     InputColumn column ( _category.columns[ name ] );
 
-     // verify that the column is active
-    bool isActive( true );
+    // change the value
+    column.value = value;
 
-    // check the activators
-    if( column.activators.size() > 0 )
-    {
-      for( ActivatorPairs::iterator aPairs = column.activators.begin();
-           aPairs != column.activators.end();
-           ++aPairs )
-      {
-        // get the activator name
-        std::string aName ( (*aPairs).first );
-
-        // get the activator value
-        std::string aValue ( (*aPairs).second );
-
-        // get the corresponding column
-        InputColumn aColumn ( _category.columns[ aName ] );
-
-        // check the activation value
-        if( aValue != aColumn.value )
-        {
-          // if the values don't agree then de-activate this row
-          isActive = false;
-
-          // stop checking
-          break;
-        }
-      }// end internal for loop through activators
-    }
-
-    if( true == isActive )
-    {
-      column.value = value;
-
-      _category.columns[ name ] = column;
-    }
+    // set the column
+    _category.columns[ name ] = column;
 
   }
 

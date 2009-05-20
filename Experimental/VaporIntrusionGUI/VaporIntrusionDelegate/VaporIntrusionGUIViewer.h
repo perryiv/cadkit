@@ -35,15 +35,6 @@ public:
   VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainer* matContainer );
   //virtual ~VaporIntrusionGUIViewer ();
 
-  void                            camera( CameraOption option );
-  CameraOption                    camera();
-
-  void                            set( Usul::Math::Vec3ui s );
-  Usul::Math::Vec3ui              set();
-
-  void                            id( Usul::Types::Uint32 i );
-  Usul::Types::Uint32             id();
-
 protected:
 
   // Override these events.
@@ -57,20 +48,11 @@ protected:
 
   void                            _initializeViewDirection();
 
-  void                            _colorCube( unsigned int x, unsigned int y, unsigned int z, Usul::Interfaces::IVaporIntrusionGUI* document );
-
-  // Slide the current focal area
-  void                            _focusChange( int delta, Usul::Math::Vec3ui dimensions, Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document );
-
-private:
-  CameraOption                    _cameraDirection;          
-  Usul::Math::Vec3ui              _set;
-  unsigned int                    _depth;
+ private:
+ 
+  IUnknown*                       _caller;
   int                             _mouseWheelPosition;
   float                           _mouseWheelSensitivity;
-  Usul::Types::Uint32             _id;
-
-  static Usul::Types::Uint32      _selectedViewID;
   MaterialContainer*              _materialContainer;
 
 };

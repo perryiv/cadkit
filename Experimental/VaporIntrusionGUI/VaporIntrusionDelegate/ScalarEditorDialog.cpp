@@ -1,0 +1,107 @@
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (c) 2009, Arizona State University
+//  All rights reserved.
+//  BSD License: http://www.opensource.org/licenses/bsd-license.html
+//  Author: Jeff Conner
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Input dialog for files.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "ScalarEditorDialog.h"
+#include "ShowScalarDialog.h"
+
+#include "Usul/Exceptions/Canceled.h"
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Constructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ScalarEditorDialog::ScalarEditorDialog ( QWidget *parent ) : 
+BaseClass ( parent )
+{
+  // Initialize code from Designer.
+  this->setupUi ( this );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Destructor.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+ScalarEditorDialog::~ScalarEditorDialog()
+{
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Add button was clicked
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ScalarEditorDialog::on_addButton_clicked()
+{
+  // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Remove button was clicked
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ScalarEditorDialog::on_removeButton_clicked()
+{
+  // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Show button was clicked
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ScalarEditorDialog::on_showButton_clicked()
+{
+  // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
+    // Make the dialog.
+  ShowScalarDialog dialog;
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
+    throw Usul::Exceptions::Canceled();
+
+}

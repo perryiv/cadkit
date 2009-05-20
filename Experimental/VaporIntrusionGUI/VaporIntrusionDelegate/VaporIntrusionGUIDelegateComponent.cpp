@@ -149,7 +149,7 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     QWorkspace *parent ( workspace->workspace() );
 
     // Add XYZ window
-    _xyzView = new QtViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller );
+    _xyzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer );
     parent->addWindow ( _xyzView.get() );
 
     //// Add XY window
@@ -233,6 +233,10 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   
   // Add Window arrange button
   variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Grid", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editGrid ), Usul::Commands::TrueFunctor() ) ) );
+ 
+  // Add Scalar Editor button
+  variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Scalar Editor", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editScalar ), Usul::Commands::TrueFunctor() ) ) );
+
   //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ), Usul::Commands::TrueFunctor() ) ) );
   
    // Query the active document for IVaporIntrusionGUI
@@ -366,6 +370,23 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
 
   // Show the dialog.
   if ( QDialog::Accepted != gridEditor.exec() )
+    throw Usul::Exceptions::Canceled();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Edit the scalar values
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::editScalar()
+{  
+  // Make the dialog.
+  ScalarEditorDialog dialog;
+
+  // Show the dialog.
+  if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
 }
 

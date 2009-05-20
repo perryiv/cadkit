@@ -413,6 +413,66 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath=".\ScalarEditorDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ScalarEditorDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ScalarEditorDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ScalarEditorDialog.ui -o .\ui_ScalarEditorDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ScalarEditorDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ScalarEditorDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ScalarEditorDialog.ui;$(QTDIR)\bin\moc.exe;.\ScalarEditorDialog.h"
+							Outputs=".\ui_ScalarEditorDialog.h;.\GeneratedFiles\moc_ScalarEditorDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ScalarEditorDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ScalarEditorDialog.ui -o .\ui_ScalarEditorDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ScalarEditorDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ScalarEditorDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ScalarEditorDialog.ui;$(QTDIR)\bin\moc.exe;.\ScalarEditorDialog.h"
+							Outputs=".\ui_ScalarEditorDialog.h;.\GeneratedFiles\moc_ScalarEditorDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\ShowScalarDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ShowScalarDialog.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ShowScalarDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ShowScalarDialog.ui -o .\ui_ShowScalarDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ShowScalarDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ShowScalarDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ShowScalarDialog.ui;$(QTDIR)\bin\moc.exe;.\ShowScalarDialog.h"
+							Outputs=".\ui_ShowScalarDialog.h;.\GeneratedFiles\moc_ShowScalarDialog.cpp"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Creating ui_ShowScalarDialog.h..."
+							CommandLine="$(QTDIR)\bin\uic.exe .\ShowScalarDialog.ui -o .\ui_ShowScalarDialog.h&#x0D;&#x0A;;$(QTDIR)\bin\moc.exe  &quot;.\ShowScalarDialog.h&quot; -o &quot;.\GeneratedFiles\moc_ShowScalarDialog.cpp&#x0D;&#x0A;"
+							AdditionalDependencies="$(QTDIR)\bin\uic.exe;.\ShowScalarDialog.ui;$(QTDIR)\bin\moc.exe;.\ShowScalarDialog.h"
+							Outputs=".\ui_ShowScalarDialog.h;.\GeneratedFiles\moc_ShowScalarDialog.cpp"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="Generated"
@@ -435,6 +495,14 @@
 				</File>
 				<File
 					RelativePath=".\generatedfiles\moc_NewVaporIntrusion.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_ScalarEditorDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generatedfiles\moc_ShowScalarDialog.cpp"
 					>
 				</File>
 			</Filter>

@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib  qtmaind.lib QtCored4.lib QtGuid4.lib"
+				AdditionalDependencies="osgManipulator.lib osgGAd.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib  qtmaind.lib QtCored4.lib QtGuid4.lib"
 				OutputFile="$(CADKIT_BIN_DIR)/VaporIntrusionGUI.plugd"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"

@@ -153,6 +153,10 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   virtual void                  updateCategory( Category category ) = 0;
 
   virtual bool                  checkValue( int comparitor, const std::string& value1, const std::string& value2 ) = 0;
+
+  //dragger stuff
+  virtual bool                  draggerActive() = 0;
+  virtual void                  draggerActive( bool value ) = 0; 
   
     
 }; // struct IVaporIntrusionGUI

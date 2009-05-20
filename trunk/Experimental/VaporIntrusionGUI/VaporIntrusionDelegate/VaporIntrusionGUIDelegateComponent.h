@@ -23,6 +23,7 @@
 #include "NewVaporIntrusion.h"
 #include "GridEditorDialog.h"
 #include "InputParameterDialog.h"
+#include "ScalarEditorDialog.h"
 
 #include "Usul/Base/Referenced.h"
 #include "Usul/Interfaces/IPlugin.h"
@@ -94,6 +95,9 @@ public:
 
   // edit the grid
   void                        editGrid();
+
+  // edit the scalar values
+  void                        editScalar();
 
   // edit the input parameters
   void                        editInputParameters( const std::string& menuName );

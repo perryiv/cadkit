@@ -128,15 +128,15 @@ void InputParameterDialog::_initializeList ()
 
       // create an item widget for the first column
       QTableWidgetItem *item0 = new QTableWidgetItem;
-      item0->setTextAlignment( Qt::AlignRight | Qt::AlignVCenter );
+      item0->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
       // create an item widget for the second column
       QTableWidgetItem *item1 = new QTableWidgetItem;
-      item1->setTextAlignment( Qt::AlignRight | Qt::AlignVCenter );
+      item1->setTextAlignment( Qt::AlignCenter | Qt::AlignVCenter );
 
       // create an item widget for the third column
       QTableWidgetItem *item2 = new QTableWidgetItem;
-      item2->setTextAlignment( Qt::AlignRight | Qt::AlignVCenter );
+      item2->setTextAlignment( Qt::AlignLeft | Qt::AlignVCenter );
 
       if( true == firstpass )
       {

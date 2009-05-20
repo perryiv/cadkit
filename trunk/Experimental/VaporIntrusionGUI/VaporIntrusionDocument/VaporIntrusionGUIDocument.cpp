@@ -52,6 +52,7 @@
 #include "osg/StateSet"
 #include "osg/Texture2D"
 #include "osg/BoundingBox"
+#include "osgManipulator/TabBoxDragger"
 
 #include <iterator>
 #include <vector>
@@ -73,7 +74,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _xValues(),
   _yValues(),
   _zValues(),
-  _inputParameters()
+  _inputParameters(),
+  _draggerState( false )
 {
   USUL_TRACE_SCOPE;
 
@@ -1382,47 +1384,14 @@ void VaporIntrusionGUIDocument::updateCategory( Category category )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Keyboard key was pressed (Implementation of IKeyListener::keyPressed)
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool VaporIntrusionGUIDocument::keyPressed ( int code )
-{
-
-  /*switch( code )
-  {
-    case Qt::Key_M:
-      break;
-    default:
-      break;
-  }*/
-  // keep checking
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Keyboard key was released (Implementation of IKeyListener::keyReleased)
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
-bool VaporIntrusionGUIDocument::keyReleased ( int code )
-{
-  // keep checking
-  return true;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 // Get the int value of the comparitor
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 int VaporIntrusionGUIDocument::_getComparitor( const std::string& comparitor )
 {
+  Guard guard( this );
+
   // useful typedef
   typedef Usul::Interfaces::IVaporIntrusionGUI IV;
 
@@ -1464,6 +1433,8 @@ int VaporIntrusionGUIDocument::_getComparitor( const std::string& comparitor )
 
 bool VaporIntrusionGUIDocument::checkValue( int comparitor, const std::string& value1, const std::string& value2 )
 {
+  Guard guard( this );
+
   // useful typedef
   typedef Usul::Interfaces::IVaporIntrusionGUI IV;
 
@@ -1565,4 +1536,63 @@ bool VaporIntrusionGUIDocument::checkValue( int comparitor, const std::string& v
   };
 
   return false;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Is the dragger active?
+//
+///////////////////////////////////////////////////////////////////////////////
+
+bool VaporIntrusionGUIDocument::draggerActive()
+{
+  return _draggerState;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Set the dragger activation state
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::draggerActive( bool value )
+{
+  Guard guard( this );
+
+  //if( true == value )
+  //{
+  //  this->_activateDragger();
+  //}
+  //else
+  //{
+  //  this->_buildScene( 0x0 );
+  //}
+
+  _draggerState = value;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create and add the dragger to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_activateDragger()
+{
+  Guard guard( this );
+  
+  //re-build the scene
+  this->_buildScene( 0x0 );
+
+  // create a dragger temp
+  osg::ref_ptr< osgManipulator::TabBoxDragger > dragger ( new osgManipulator::TabBoxDragger );
+  dragger->setupDefaultGeometry();
+
+  //add the dragger to the scene
+  _root->addChild( dragger.get() );
+
+
 }

@@ -48,7 +48,6 @@ namespace osg { class Node; }
 class VaporIntrusionGUIDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
-                                  public Usul::Interfaces::IKeyListener,
                                   public Usul::Interfaces::IVaporIntrusionGUI
                                   
 {
@@ -181,11 +180,9 @@ public:
   virtual void                initialize();
   virtual void                updateCategory( Category category );
   virtual bool                checkValue( int comparitor, const std::string& value1, const std::string& value2 );
-
-
-  //Usul::Interfaces::IKeyListener
-  virtual bool keyPressed ( int code );
-  virtual bool keyReleased ( int code );
+  //dragger stuff
+  virtual bool                draggerActive();
+  virtual void                draggerActive( bool value );                
 
 protected:
 
@@ -218,6 +215,9 @@ protected:
   void                        _readInitializationFile( const std::string& filename );
   
   int                         _getComparitor( const std::string& comparitor );
+
+  
+  void                        _activateDragger();
   
 
 private:
@@ -230,6 +230,7 @@ private:
     ParameterList             _inputParameters;
     std::string               _configFileName;
     Categories                _categories;
+    bool                      _draggerState;
   
 };
 

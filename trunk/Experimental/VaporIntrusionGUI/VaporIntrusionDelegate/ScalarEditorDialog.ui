@@ -1,0 +1,283 @@
+<ui version="4.0" >
+ <class>ScalarEditorDialog</class>
+ <widget class="QDialog" name="ScalarEditorDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>434</width>
+    <height>262</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Scalar Editor</string>
+  </property>
+  <widget class="QDialogButtonBox" name="okCancelButtons" >
+   <property name="geometry" >
+    <rect>
+     <x>340</x>
+     <y>30</y>
+     <width>77</width>
+     <height>64</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="xMin" >
+   <property name="geometry" >
+    <rect>
+     <x>50</x>
+     <y>40</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="xMax" >
+   <property name="geometry" >
+    <rect>
+     <x>200</x>
+     <y>40</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label" >
+   <property name="geometry" >
+    <rect>
+     <x>150</x>
+     <y>10</y>
+     <width>51</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>X Range</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2" >
+   <property name="geometry" >
+    <rect>
+     <x>170</x>
+     <y>40</y>
+     <width>21</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>To</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>31</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>From</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="yMin" >
+   <property name="geometry" >
+    <rect>
+     <x>50</x>
+     <y>110</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="yMax" >
+   <property name="geometry" >
+    <rect>
+     <x>200</x>
+     <y>110</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>31</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>From</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5" >
+   <property name="geometry" >
+    <rect>
+     <x>170</x>
+     <y>110</y>
+     <width>21</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>To</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6" >
+   <property name="geometry" >
+    <rect>
+     <x>150</x>
+     <y>80</y>
+     <width>51</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Y Range</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="zMax" >
+   <property name="geometry" >
+    <rect>
+     <x>200</x>
+     <y>180</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="zMin" >
+   <property name="geometry" >
+    <rect>
+     <x>50</x>
+     <y>180</y>
+     <width>113</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7" >
+   <property name="geometry" >
+    <rect>
+     <x>170</x>
+     <y>180</y>
+     <width>21</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>To</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8" >
+   <property name="geometry" >
+    <rect>
+     <x>150</x>
+     <y>150</y>
+     <width>51</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Z Range</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>180</y>
+     <width>31</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>From</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="addButton" >
+   <property name="geometry" >
+    <rect>
+     <x>340</x>
+     <y>100</y>
+     <width>77</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Add</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="removeButton" >
+   <property name="geometry" >
+    <rect>
+     <x>340</x>
+     <y>140</y>
+     <width>77</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Remove</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="showButton" >
+   <property name="geometry" >
+    <rect>
+     <x>340</x>
+     <y>180</y>
+     <width>77</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Show</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>accepted()</signal>
+   <receiver>ScalarEditorDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>okCancelButtons</sender>
+   <signal>rejected()</signal>
+   <receiver>ScalarEditorDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgTextd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib xerces-c_2D.lib"
+				AdditionalDependencies="OpenThreadsd.lib osgd.lib osgDBd.lib osgTextd.lib $(CURL_LIB_FILE_DEBUG) Ws2_32.lib wldap32.lib $(XERCES_LIB_FILE_DEBUG)"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaOSMd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(CADKIT_BIN_DIR)&quot;;$(BOOST_LIB_DIR);$(XERCES_LIB_DIR)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(CADKIT_BIN_DIR)&quot;;$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/OSMd.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/OSMd.lib"
@@ -178,11 +178,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgText.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib xerces-c_2.lib"
+				AdditionalDependencies="OpenThreads.lib osg.lib osgDB.lib osgText.lib $(CURL_LIB_FILE_RELEASE) Ws2_32.lib wldap32.lib $(XERCES_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/MinervaOSM.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(CADKIT_BIN_DIR)&quot;;$(BOOST_LIB_DIR);$(XERCES_LIB_DIR)"
+				AdditionalLibraryDirectories="&quot;$(OSG_LIB_DIR)&quot;;&quot;$(CADKIT_BIN_DIR)&quot;;$(BOOST_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/OSM.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/OSM.lib"
 			/>

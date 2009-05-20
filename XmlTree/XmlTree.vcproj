@@ -80,11 +80,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="xerces-c_2D.lib"
+				AdditionalDependencies="$(XERCES_LIB_FILE_DEBUG)"
 				OutputFile="$(CADKIT_BIN_DIR)/XmlTreed.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(XERCES_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/XmlTreed.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/XmlTreed.lib"
@@ -179,11 +179,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="xerces-c_2.lib"
+				AdditionalDependencies="$(XERCES_LIB_FILE_RELEASE)"
 				OutputFile="$(CADKIT_BIN_DIR)/XmlTree.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(XERCES_LIB_DIR)"
+				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile=".\Release/XmlTree.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/XmlTree.lib"
 			/>

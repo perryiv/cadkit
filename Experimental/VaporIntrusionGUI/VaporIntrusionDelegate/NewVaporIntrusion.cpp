@@ -67,7 +67,15 @@ std::string NewVaporIntrusion::name()
 
 unsigned int NewVaporIntrusion::x()
 {
-  unsigned int x ( Usul::Convert::Type< std::string, unsigned int >::convert( xValue->text().toStdString() ) );
+  std::string value ( xValue->text().toStdString() );
+
+  // x value
+  unsigned int x ( 5 );
+
+  if( value.length() > 0 )
+  {
+    x = Usul::Convert::Type< std::string, unsigned int >::convert( value );
+  }
 
   return x;
 }
@@ -81,7 +89,15 @@ unsigned int NewVaporIntrusion::x()
 
 unsigned int NewVaporIntrusion::y()
 {
-  unsigned int y ( Usul::Convert::Type< std::string, unsigned int >::convert( yValue->text().toStdString() ) );
+  std::string value ( yValue->text().toStdString() );
+
+  // y value
+  unsigned int y ( 5 );
+
+  if( value.length() > 0 )
+  {
+    y = Usul::Convert::Type< std::string, unsigned int >::convert( value );
+  }
 
   return y;
 
@@ -96,7 +112,15 @@ unsigned int NewVaporIntrusion::y()
 
 unsigned int NewVaporIntrusion::z()
 {
-  unsigned int z ( Usul::Convert::Type< std::string, unsigned int >::convert( zValue->text().toStdString() ) );
+  std::string value ( zValue->text().toStdString() );
+
+  // z value
+  unsigned int z ( 5 );
+
+  if( value.length() > 0 )
+  {
+    z = Usul::Convert::Type< std::string, unsigned int >::convert( value );
+  }
 
   return z;
 

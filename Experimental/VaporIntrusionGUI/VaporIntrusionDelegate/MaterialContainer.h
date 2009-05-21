@@ -19,12 +19,14 @@
 
 #include "ui_MaterialContainer.h"
 #include "MaterialDialog.h"
+#include "Usul/Interfaces/IVaporIntrusionGUI.h"
 
 #include "Usul/Convert/Convert.h"
 #include "Usul/Properties/Attribute.h"
 
 #include "QtGui/QWidget"
 #include "QtGui/QRadioButton"
+#include "QtGui/QCheckBox"
 
 #include "osg/Vec4"
 
@@ -38,7 +40,8 @@ public:
   typedef QWidget BaseClass;
   typedef Usul::Pointers::Configs::NoRefCountingNullOk Config;
   typedef Usul::Properties::Attribute< MaterialDialog, QObjectUserData, Config > UserData;
-  typedef std::map< QRadioButton*, MaterialDialog* > Materials;
+  typedef std::map< QCheckBox*, MaterialDialog* > Materials;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
   
 
   MaterialContainer ( QWidget *parent = 0x0 );
@@ -47,11 +50,13 @@ public:
   osg::Vec4                     getCurrentColor();
   std::string                   getCurrentName();
   std::string                   getCurrentValue();
+  MaterialsMap                  getCheckedMaterials();
+
 
 private:
   Materials                      _materials;
   QVBoxLayout*                   _layout;
-  QButtonGroup*                  _radioButtons;
+  QButtonGroup*                  _buttons;
   osg::Vec4                      _color;
   std::string                    _name;
   std::string                    _value;

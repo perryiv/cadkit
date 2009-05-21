@@ -99,6 +99,24 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
 
   typedef std::vector< Category > Categories;
 
+  typedef std::map< std::string, std::string > MaterialsMap;
+
+  struct GridMaterial
+  {
+    unsigned int x,y,z;
+    MaterialsMap materials;
+
+    GridMaterial() :
+    x( 0 ), y( 0 ), z( 0 ), materials()
+    {};
+
+    GridMaterial( unsigned int ix, unsigned int iy, unsigned int iz ) :
+    x( ix ), y( iy ), z( iz ), materials()
+    {};
+  };
+
+  typedef std::map< std::string, GridMaterial > GridMaterials;
+
   // Highlight the set of cubes at depth <depth>
   virtual void                  highlightCells( Usul::Math::Vec3ui set, unsigned int depth ) = 0;
   
@@ -157,6 +175,9 @@ struct IVaporIntrusionGUI : public Usul::Interfaces::IUnknown
   //dragger stuff
   virtual bool                  draggerActive() = 0;
   virtual void                  draggerActive( bool value ) = 0; 
+
+  virtual GridMaterials         gridMaterials() = 0;
+  virtual void                  gridMaterials( GridMaterials gm ) = 0;
   
     
 }; // struct IVaporIntrusionGUI

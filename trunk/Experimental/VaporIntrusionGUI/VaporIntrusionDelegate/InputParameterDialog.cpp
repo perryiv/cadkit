@@ -22,7 +22,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-InputParameterDialog::InputParameterDialog ( Usul::Interfaces::IVaporIntrusionGUI::Category category, QWidget *parent ) : 
+InputParameterDialog::InputParameterDialog ( VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::Category category, QWidget *parent ) : 
 BaseClass ( parent ),
 _category( category )
 {
@@ -70,7 +70,7 @@ InputParameterDialog::~InputParameterDialog()
 void InputParameterDialog::_initializeList ()
 {
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )
@@ -195,7 +195,7 @@ void InputParameterDialog::on_applyButton_clicked()
 {
   
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )

@@ -21,7 +21,7 @@
 #include "Helios/Qt/Views/OSG/Viewer.h"
 
 #include "Usul/Math/Vector3.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "OsgTools/Render/Viewer.h"
 

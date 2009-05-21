@@ -113,8 +113,8 @@ Usul::Interfaces::IUnknown *VaporIntrusionGUIDocument::queryInterface ( unsigned
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
   case Usul::Interfaces::IUpdateListener::IID:
     return static_cast < Usul::Interfaces::IUpdateListener* > ( this );
-  case Usul::Interfaces::IVaporIntrusionGUI::IID:
-    return static_cast < Usul::Interfaces::IVaporIntrusionGUI* > ( this );
+  case VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::IID:
+    return static_cast < VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -1427,7 +1427,7 @@ int VaporIntrusionGUIDocument::_getComparitor( const std::string& comparitor )
   Guard guard( this );
 
   // useful typedef
-  typedef Usul::Interfaces::IVaporIntrusionGUI IV;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IV;
 
   if( comparitor == "LESS_THAN" )
   {
@@ -1470,7 +1470,7 @@ bool VaporIntrusionGUIDocument::checkValue( int comparitor, const std::string& v
   Guard guard( this );
 
   // useful typedef
-  typedef Usul::Interfaces::IVaporIntrusionGUI IV;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IV;
 
   switch( comparitor )
   {

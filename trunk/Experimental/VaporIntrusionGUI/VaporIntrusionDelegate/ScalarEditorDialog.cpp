@@ -36,7 +36,7 @@ _dimensions( dimensions )
   this->setupUi ( this );
 
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )
@@ -68,7 +68,7 @@ ScalarEditorDialog::~ScalarEditorDialog()
 void ScalarEditorDialog::on_addButton_clicked()
 {
   // useful typedefs
-  typedef Usul::Interfaces::IVaporIntrusionGUI::GridMaterial GridMaterial;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::GridMaterial GridMaterial;
   
   // get the min max
   MinMaxPair minMax ( this->_getMinMax() );  
@@ -120,10 +120,10 @@ void ScalarEditorDialog::on_addButton_clicked()
 void ScalarEditorDialog::on_removeButton_clicked()
 {
   // useful typedefs
-  typedef Usul::Interfaces::IVaporIntrusionGUI::GridMaterial GridMaterial;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::GridMaterial GridMaterial;
 
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )
@@ -230,7 +230,7 @@ void ScalarEditorDialog::materials( MaterialsMap m )
 void ScalarEditorDialog::onOkClicked()
 {
    // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )
@@ -254,7 +254,7 @@ ScalarEditorDialog::MinMaxPair ScalarEditorDialog::_getMinMax()
   Usul::Math::Vec3ui Vec3ui;
 
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )

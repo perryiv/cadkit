@@ -17,8 +17,9 @@
 #ifndef __VAPORINTRUSION_SHOW_SCALAR_DIALOG_H__
 #define __VAPORINTRUSION_SHOW_SCALAR_DIALOG_H__
 
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
+
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
 #include "Usul/Math/Vector3.h"
 
 #include "ui_ShowScalarDialog.h"
@@ -34,8 +35,8 @@ public:
   typedef QDialog BaseClass;
 
   // Useful typedefs
-  typedef Usul::Interfaces::IVaporIntrusionGUI::GridMaterials GridMaterials;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::GridMaterials GridMaterials;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
   typedef Usul::Math::Vec3ui Vec3ui;
   
 

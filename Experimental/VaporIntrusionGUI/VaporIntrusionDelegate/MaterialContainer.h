@@ -19,7 +19,7 @@
 
 #include "ui_MaterialContainer.h"
 #include "MaterialDialog.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "Usul/Convert/Convert.h"
 #include "Usul/Properties/Attribute.h"
@@ -41,7 +41,7 @@ public:
   typedef Usul::Pointers::Configs::NoRefCountingNullOk Config;
   typedef Usul::Properties::Attribute< MaterialDialog, QObjectUserData, Config > UserData;
   typedef std::map< QCheckBox*, MaterialDialog* > Materials;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
   
 
   MaterialContainer ( QWidget *parent = 0x0 );

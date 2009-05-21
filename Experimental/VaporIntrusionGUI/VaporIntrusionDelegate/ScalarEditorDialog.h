@@ -18,7 +18,7 @@
 #define __VAPORINTRUSION_SCALAR_EDITOR_DIALOG_H__
 
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 #include "Usul/Math/Vector3.h"
 
 #include "ui_ScalarEditorDialog.h"
@@ -32,9 +32,9 @@ class ScalarEditorDialog : public QDialog,
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::GridPoints GridPoint;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::GridMaterials GridMaterials;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::GridPoints GridPoint;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::GridMaterials GridMaterials;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
   typedef std::pair< Usul::Math::Vec3ui, Usul::Math::Vec3ui > MinMaxPair;
   
 

@@ -9,7 +9,7 @@
 #include "VaporIntrusionGUIViewer.h"
 
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 #include "Usul/Interfaces/IViewMode.h"
 
 #include "OsgTools/State/StateSet.h"
@@ -141,7 +141,7 @@ void VaporIntrusionGUIViewer::keyPressEvent ( QKeyEvent * event )
     return;
 
    // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )

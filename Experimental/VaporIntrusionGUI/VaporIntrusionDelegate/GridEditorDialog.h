@@ -18,7 +18,7 @@
 #define __VAPORINTRUSION_GRID_EDITOR_DIALOG_H__
 
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "ui_GridEditorDialog.h"
 
@@ -31,7 +31,7 @@ class GridEditorDialog : public QDialog,
   Q_OBJECT;
 public:
   typedef QDialog BaseClass;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::GridPoints GridPoint;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::GridPoints GridPoint;
   
 
   GridEditorDialog ( QWidget *parent = 0x0 );

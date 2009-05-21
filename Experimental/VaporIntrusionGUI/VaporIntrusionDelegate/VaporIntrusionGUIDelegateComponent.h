@@ -62,7 +62,7 @@ public:
   typedef Usul::Pointers::SmartPointer < VIGUIViewer, Policy > VIGUIViewerPtr;
 
   // IVaporIntrusionGUI typedefs
-  typedef Usul::Interfaces::IVaporIntrusionGUI IVaporIntrusionGUI;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI IVaporIntrusionGUI;
   typedef IVaporIntrusionGUI::Category Category;
   typedef IVaporIntrusionGUI::Categories Categories;
   typedef IVaporIntrusionGUI::MaterialsMap MaterialsMap;

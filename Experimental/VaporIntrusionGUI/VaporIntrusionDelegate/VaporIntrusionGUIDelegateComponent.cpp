@@ -241,7 +241,7 @@ void VaporIntrusionGUIDelegateComponent::menuAdd ( MenuKit::Menu& menu, Usul::In
   //variableMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Input", Usul::Adaptors::memberFunction<void> ( this, &VaporIntrusionGUIDelegateComponent::editInputParameters ), Usul::Commands::TrueFunctor() ) ) );
   
    // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( true == document.valid() )
@@ -328,7 +328,7 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
   Usul::Math::Vec3ui d ( dialog.x(), dialog.y(), dialog.z() );
 
   // get the document
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr doc ( document );
 
   if( true == doc.valid() )
   {
@@ -385,7 +385,7 @@ void VaporIntrusionGUIDelegateComponent::editScalar()
 {  
 
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )
@@ -418,7 +418,7 @@ void VaporIntrusionGUIDelegateComponent::editScalar()
 void VaporIntrusionGUIDelegateComponent::editInputParameters( const std::string& menuName )
 {
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )

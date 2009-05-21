@@ -17,13 +17,16 @@
 #ifndef _VAPOR_INTRUSION_GUI_DOCUMENT_H_
 #define _VAPOR_INTRUSION_GUI_DOCUMENT_H_
 
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
+
+#include "XmlTree/Document.h"
+
 #include "Usul/Documents/Document.h"
 #include "Usul/Interfaces/IBuildScene.h"
 #include "Usul/Interfaces/IUpdateListener.h"
 #include "Usul/Interfaces/IKeyListener.h"
 #include "Usul/Interfaces/IMpdNavigator.h"
 #include "Usul/Interfaces/IMenuAdd.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
 
 #include "Usul/Jobs/Job.h"
 #include "Usul/Documents/Manager.h"
@@ -31,8 +34,6 @@
 #include "Usul/Math/Vector3.h"
 #include "Usul/Math/Vector4.h"
 #include "Usul/Policies/Update.h"
-
-#include "XmlTree/Document.h"
 
 #include "osg/Image"
 #include "osg/LineSegment"
@@ -48,7 +49,7 @@ namespace osg { class Node; }
 class VaporIntrusionGUIDocument : public Usul::Documents::Document,
                                   public Usul::Interfaces::IBuildScene,
                                   public Usul::Interfaces::IUpdateListener,
-                                  public Usul::Interfaces::IVaporIntrusionGUI
+                                  public VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI
                                   
 {
 public:
@@ -61,7 +62,7 @@ public:
   typedef osg::ref_ptr< osg::Group >                            GroupPtr;
   typedef osg::Vec4                                             Color;
   typedef std::vector< std::pair< double, double > >            GridPoints;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::ParameterList   ParameterList;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::ParameterList   ParameterList;
   typedef IVaporIntrusionGUI::InputColumns                      InputColumns;
   typedef IVaporIntrusionGUI::InputColumn                       InputColumn;
   typedef IVaporIntrusionGUI::Category                          Category;
@@ -154,7 +155,7 @@ public:
   /// Clear any existing data.
   virtual void                clear ( Unknown *caller = 0x0 );
 
-  /// Usul::Interfaces::IVaporIntrusionGUI
+  /// VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI
   virtual void                highlightCells( Usul::Math::Vec3ui set, unsigned int depth );
   virtual void                setAlpha( unsigned int x, unsigned int y, unsigned int z, float alpha );
   virtual void                setAlpha( float alpha );

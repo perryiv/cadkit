@@ -70,11 +70,11 @@ ShowScalarDialog::~ShowScalarDialog()
 void ShowScalarDialog::_initialize()
 {
   // useful typedefs
-  typedef Usul::Interfaces::IVaporIntrusionGUI::GridMaterial GridMaterial;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::GridMaterial GridMaterial;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
 
    // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )

@@ -18,7 +18,7 @@
 #define __VAPORINTRUSION_INPUT_PARAMETER_DIALOG_H__
 
 #include "Usul/Documents/Manager.h"
-#include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "VaporIntrusionGUI/Interfaces/IVaporIntrusionGUI.h"
 
 #include "ui_InputParameterDialog.h"
 
@@ -33,12 +33,12 @@ public:
   typedef QDialog BaseClass;
 
   // Useful typedefs
-  typedef Usul::Interfaces::IVaporIntrusionGUI::InputColumn InputColumn;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::InputColumns InputColumns;
-  typedef Usul::Interfaces::IVaporIntrusionGUI::ActivatorPairs ActivatorPairs;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::InputColumn InputColumn;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::InputColumns InputColumns;
+  typedef VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::ActivatorPairs ActivatorPairs;
   
 
-  InputParameterDialog ( Usul::Interfaces::IVaporIntrusionGUI::Category category, QWidget *parent = 0x0 );
+  InputParameterDialog ( VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::Category category, QWidget *parent = 0x0 );
   virtual ~InputParameterDialog();
 
   void            okClicked();
@@ -49,7 +49,7 @@ protected:
   void            _initializeList();
 
 private:
-  Usul::Interfaces::IVaporIntrusionGUI::Category _category;
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::Category _category;
 
 private slots:
 

@@ -66,7 +66,7 @@ GridEditorDialog::~GridEditorDialog()
 void GridEditorDialog::_initializeGridData()
 {
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )
@@ -241,7 +241,7 @@ void GridEditorDialog::on_resetButton_clicked()
 void GridEditorDialog::on_applyButton_clicked()
 {
   // Query the active document for IVaporIntrusionGUI
-  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+  VaporIntrusionGUI::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document
   if( false == document.valid() )

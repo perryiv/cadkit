@@ -13,8 +13,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FIELD_VIEW_READER_DELEGATE_COMPONENT_CLASS_H_
-#define _FIELD_VIEW_READER_DELEGATE_COMPONENT_CLASS_H_
+#ifndef _VAPOR_INTRUSION_GUI_DELEGATE_COMPONENT_CLASS_H_
+#define _VAPOR_INTRUSION_GUI_DELEGATE_COMPONENT_CLASS_H_
 
 #include "CompileGuard.h"
 #include "VaporIntrusionGUIViewer.h"
@@ -65,6 +65,7 @@ public:
   typedef Usul::Interfaces::IVaporIntrusionGUI IVaporIntrusionGUI;
   typedef IVaporIntrusionGUI::Category Category;
   typedef IVaporIntrusionGUI::Categories Categories;
+  typedef IVaporIntrusionGUI::MaterialsMap MaterialsMap;
 
 
   /// Smart-pointer definitions.
@@ -112,15 +113,16 @@ protected:
   virtual ~VaporIntrusionGUIDelegateComponent();
 
 private:
-  QtViewerPtr         _xyzView;
-  QDockWidget         *_dock;
-  MaterialContainer   *_materialContainer;
-  IUnknown::QueryPtr  _caller;
+  QtViewerPtr                         _xyzView;
+  QDockWidget*                        _dock;
+  MaterialContainer*                  _materialContainer;
+  IUnknown::QueryPtr                  _caller;
 
-  Usul::Interfaces::IVaporIntrusionGUI::Categories _categories;
+  IVaporIntrusionGUI::Categories      _categories;
+  IVaporIntrusionGUI::GridMaterials   _gridMaterials;
 
 
 };
 
 
-#endif // _FIELD_VIEW_READER_DELEGATE_COMPONENT_CLASS_H_
+#endif // _VAPOR_INTRUSION_GUI_DELEGATE_COMPONENT_CLASS_H_

@@ -19,6 +19,7 @@
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "Usul/Math/Vector3.h"
 
 #include "ui_ShowScalarDialog.h"
 
@@ -33,16 +34,26 @@ public:
   typedef QDialog BaseClass;
 
   // Useful typedefs
+  typedef Usul::Interfaces::IVaporIntrusionGUI::GridMaterials GridMaterials;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
+  typedef Usul::Math::Vec3ui Vec3ui;
   
 
-  ShowScalarDialog ( QWidget *parent = 0x0 );
+  ShowScalarDialog ( Vec3ui min, Vec3ui max, Vec3ui dim, GridMaterials gm, QWidget *parent = 0x0 );
   virtual ~ShowScalarDialog();
+
+  GridMaterials         gridMaterials();
+  void                  gridMaterials( GridMaterials gm );
 
 
 protected:
-  
+  void                  _initialize();
 
 private:
+  GridMaterials      _gridMaterials;
+  Vec3ui            _min;
+  Vec3ui            _max;
+  Vec3ui            _dimensions;
 
 private slots:
 

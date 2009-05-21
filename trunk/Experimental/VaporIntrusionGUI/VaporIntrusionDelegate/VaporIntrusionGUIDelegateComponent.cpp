@@ -59,7 +59,8 @@ _xyzView( 0x0 ),
 _dock   ( 0x0 ),
 _materialContainer( 0x0 ),
 _caller(),
-_categories()
+_categories(),
+_gridMaterials()
 {
 }
 
@@ -382,12 +383,29 @@ void VaporIntrusionGUIDelegateComponent::editGrid()
 
 void VaporIntrusionGUIDelegateComponent::editScalar()
 {  
+
+  // Query the active document for IVaporIntrusionGUI
+  Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
+
+  // Check for a valid document
+  if( false == document.valid() )
+    return;
+
   // Make the dialog.
-  ScalarEditorDialog dialog;
+  ScalarEditorDialog dialog( document->dimensions() );
+
+  // get the currently checked materials
+  MaterialsMap mmap ( _materialContainer->getCheckedMaterials() );
+
+  dialog.materials( mmap );
 
   // Show the dialog.
   if ( QDialog::Accepted != dialog.exec() )
     throw Usul::Exceptions::Canceled();
+
+  // ok button was clicked...handle it
+  dialog.onOkClicked();
+
 }
 
 
@@ -399,7 +417,7 @@ void VaporIntrusionGUIDelegateComponent::editScalar()
 
 void VaporIntrusionGUIDelegateComponent::editInputParameters( const std::string& menuName )
 {
-   // Query the active document for IVaporIntrusionGUI
+  // Query the active document for IVaporIntrusionGUI
   Usul::Interfaces::IVaporIntrusionGUI::QueryPtr document ( Usul::Documents::Manager::instance().activeDocument() );
 
   // Check for a valid document

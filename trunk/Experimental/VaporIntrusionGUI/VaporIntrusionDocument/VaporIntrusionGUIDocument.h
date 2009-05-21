@@ -66,6 +66,9 @@ public:
   typedef IVaporIntrusionGUI::InputColumn                       InputColumn;
   typedef IVaporIntrusionGUI::Category                          Category;
   typedef IVaporIntrusionGUI::Categories                        Categories;
+  typedef IVaporIntrusionGUI::MaterialsMap                      MaterialsMap;
+  typedef IVaporIntrusionGUI::GridMaterial                      GridMaterial;
+  typedef IVaporIntrusionGUI::GridMaterials                     GridMaterials; 
   
   // structs and typedefs for structs
   struct Value
@@ -182,7 +185,10 @@ public:
   virtual bool                checkValue( int comparitor, const std::string& value1, const std::string& value2 );
   //dragger stuff
   virtual bool                draggerActive();
-  virtual void                draggerActive( bool value );                
+  virtual void                draggerActive( bool value );   
+
+  virtual GridMaterials       gridMaterials();
+  virtual void                gridMaterials( GridMaterials gm );
 
 protected:
 
@@ -218,6 +224,8 @@ protected:
 
   
   void                        _activateDragger();
+
+  void                        _initializeGridMaterials();
   
 
 private:
@@ -231,6 +239,8 @@ private:
     std::string               _configFileName;
     Categories                _categories;
     bool                      _draggerState;
+    GridMaterials             _gridMaterials;
+
   
 };
 

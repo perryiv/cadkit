@@ -75,7 +75,8 @@ VaporIntrusionGUIDocument::VaporIntrusionGUIDocument() :   BaseClass ( "Vapor In
   _yValues(),
   _zValues(),
   _inputParameters(),
-  _draggerState( false )
+  _draggerState( false ),
+  _gridMaterials()
 {
   USUL_TRACE_SCOPE;
 
@@ -1275,7 +1276,7 @@ void VaporIntrusionGUIDocument::categories( Categories c )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Read the initialization file
+// Initialize the document
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1283,9 +1284,42 @@ void VaporIntrusionGUIDocument::initialize()
 {
   Guard guard( this );
 
+  // initialize the grid materials
+  this->_initializeGridMaterials();
+
   // set up the input variables
   _configFileName = Usul::CommandLine::Arguments::instance().directory() + "/../configs/" + "vpi_config.vpi";
   this->_readInitializationFile( _configFileName );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Read the initialization file
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_initializeGridMaterials()
+{
+  Guard guard ( this );
+
+  for( unsigned int i = 0; i < _dimensions[0]; ++i )
+  {
+    for( unsigned int j = 0; j < _dimensions[1]; ++j )
+    {
+      for( unsigned int k = 0; k < _dimensions[2]; ++k )
+      {
+        // map key string
+        std::string key ( Usul::Strings::format( "x", i, "y", j, "z",k ) );
+
+        // empty material at grid point ijk
+        GridMaterial material ( i, j, k );
+
+        // add the material to the grid map
+        _gridMaterials[key] = material;
+      }
+    }
+  }  
 }
 
 
@@ -1595,4 +1629,32 @@ void VaporIntrusionGUIDocument::_activateDragger()
   _root->addChild( dragger.get() );
 
 
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create and add the dragger to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+VaporIntrusionGUIDocument::GridMaterials VaporIntrusionGUIDocument::gridMaterials()
+{
+  Guard guard ( this );
+
+  return _gridMaterials;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create and add the dragger to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::gridMaterials( GridMaterials gm )
+{
+  Guard guard ( this );
+
+  _gridMaterials = gm;
 }

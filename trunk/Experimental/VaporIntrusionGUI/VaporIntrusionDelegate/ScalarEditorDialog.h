@@ -19,6 +19,7 @@
 
 #include "Usul/Documents/Manager.h"
 #include "Usul/Interfaces/IVaporIntrusionGUI.h"
+#include "Usul/Math/Vector3.h"
 
 #include "ui_ScalarEditorDialog.h"
 
@@ -32,15 +33,28 @@ class ScalarEditorDialog : public QDialog,
 public:
   typedef QDialog BaseClass;
   typedef Usul::Interfaces::IVaporIntrusionGUI::GridPoints GridPoint;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::GridMaterials GridMaterials;
+  typedef Usul::Interfaces::IVaporIntrusionGUI::MaterialsMap MaterialsMap;
+  typedef std::pair< Usul::Math::Vec3ui, Usul::Math::Vec3ui > MinMaxPair;
   
 
-  ScalarEditorDialog ( QWidget *parent = 0x0 );
+  ScalarEditorDialog ( Usul::Math::Vec3ui dimensions, QWidget *parent = 0x0 );
   virtual ~ScalarEditorDialog();
+
+  MaterialsMap        materials();
+  void                materials( MaterialsMap m );
+
+  void                onOkClicked();
 
 
 protected:
 
+   MinMaxPair         _getMinMax();
+
 private:
+  MaterialsMap        _materials;
+  Usul::Math::Vec3ui  _dimensions;
+  GridMaterials       _gridMaterials;
 
 private slots:
   void on_addButton_clicked();

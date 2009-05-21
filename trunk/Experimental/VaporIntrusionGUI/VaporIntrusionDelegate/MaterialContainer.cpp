@@ -28,7 +28,7 @@
 MaterialContainer::MaterialContainer ( QWidget *parent ) : BaseClass ( parent ),
 _materials(),
 _layout( new QVBoxLayout() ),
-_radioButtons( new QButtonGroup ),
+_buttons( new QButtonGroup ),
 _color( 0.5, 0.5, 0.5, 0.5 ),
 _name(),
 _value()
@@ -61,7 +61,10 @@ _value()
   widget->setLayout ( _layout );
 
   // Hook up the signal function
-  QObject::connect ( _radioButtons, SIGNAL ( buttonClicked ( QAbstractButton* ) ), this, SLOT ( radioClicked( QAbstractButton*) ) );
+  QObject::connect ( _buttons, SIGNAL ( buttonClicked ( QAbstractButton* ) ), this, SLOT ( radioClicked( QAbstractButton*) ) );
+
+  // make the button group non-exclusive
+  _buttons->setExclusive( false );
 
 
 }
@@ -86,8 +89,8 @@ MaterialContainer::~MaterialContainer()
   }*/
   _materials.clear();
 
-  delete _radioButtons;
-  _radioButtons = 0x0;
+  delete _buttons;
+  _buttons = 0x0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -121,12 +124,12 @@ std::string MaterialContainer::getCurrentValue()
 
 void MaterialContainer::radioClicked( QAbstractButton * button )
 {
-  QRadioButton* radio ( dynamic_cast< QRadioButton* > ( button ) );
+  QCheckBox* box ( dynamic_cast< QCheckBox* > ( button ) );
 
-  if( 0x0 == radio )
+  if( 0x0 == box )
     return;
 
-  MaterialDialog* material (  _materials[radio] );
+  MaterialDialog* material (  _materials[box] );
 
   if( 0x0 == material )
     return;
@@ -148,21 +151,21 @@ void MaterialContainer::on_addButton_clicked()
 {
   MaterialDialog* a ( new MaterialDialog );
 
-  QRadioButton* radio ( new QRadioButton );
-  _radioButtons->addButton ( radio );
+  QCheckBox* box ( new QCheckBox );
+  _buttons->addButton ( box );
 
   QGridLayout *grid ( new QGridLayout );
-  grid->addWidget ( radio, 0, 0 );
+  grid->addWidget ( box, 0, 0 );
   grid->addWidget ( a, 0, 1 );
 
   //_layout->addWidget ( a );
   _layout->insertLayout ( 0, grid );
 
-  _materials[radio] = a ;
+  _materials[box] = a ;
 
   UserData::RefPtr data ( dynamic_cast< UserData* > ( a ) );
 
-  radio->setUserData( 0, data );
+  box->setUserData( 0, data );
 
   this->update(); // ?
 }
@@ -177,4 +180,37 @@ void MaterialContainer::on_addButton_clicked()
 osg::Vec4 MaterialContainer::getCurrentColor()
 {
   return _color;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Get the checked materials
+//
+///////////////////////////////////////////////////////////////////////////////
+
+MaterialContainer::MaterialsMap MaterialContainer::getCheckedMaterials()
+{
+  // create a materials list to hold the checked items
+  MaterialsMap mmap;
+
+  for( Materials::iterator iter = _materials.begin(); iter != _materials.end(); ++iter )
+  {
+    // get the checkbox object
+    QCheckBox* checkBox ( (*iter).first );
+
+    // get the materials object
+    MaterialDialog* material( (*iter).second );
+
+    if( checkBox->isChecked() )
+    {
+      // add the checked materialt to the materials map
+      std::string name ( material->name() );
+      std::string value ( material->type() );
+      mmap[name] = value;
+    }
+
+  }
+
+  return mmap;
 }

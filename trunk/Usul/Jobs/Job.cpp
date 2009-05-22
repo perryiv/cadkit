@@ -39,11 +39,6 @@ USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( Job, Job::BaseClass );
 
 Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClass(),
   _id          ( 0 ),
-  _cancelledCB ( 0x0 ),
-  _errorCB     ( 0x0 ),
-  _finishedCB  ( 0x0 ),
-  _startedCB   ( 0x0 ),
-  _thread      ( 0x0 ),
   _done        ( false ),
   _canceled    ( false ),
   _progress    ( static_cast < ProgressBar * > ( 0x0 ) ),
@@ -51,11 +46,6 @@ Job::Job ( Usul::Interfaces::IUnknown *caller, bool showProgressBar ) : BaseClas
   _priority    ( 0 )
 {
   USUL_TRACE_SCOPE;
-
-  _cancelledCB = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadCancelled ) );
-  _errorCB     = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadError     ) );
-  _finishedCB  = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadFinished  ) );
-  _startedCB   = Usul::Threads::newFunctionCallback ( Usul::Adaptors::memberFunction ( this, &Job::_threadStarted   ) );
 
   // Check to see if our caller can create our progress bar.
   Usul::Interfaces::IProgressBarFactory::QueryPtr factory ( caller );
@@ -94,12 +84,6 @@ void Job::_destroy()
 {
   USUL_TRACE_SCOPE;
 
-  _cancelledCB = 0x0;
-  _errorCB     = 0x0;
-  _finishedCB  = 0x0;
-  _startedCB   = 0x0;
-  _thread      = 0x0;
-
   if ( _progress.valid() )
     _progress->hideProgressBar();
 }
@@ -122,38 +106,6 @@ Usul::Interfaces::IUnknown *Job::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::ICanceledStateGet * > ( this );
   default:
     return 0x0;
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Helper class to set the thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-namespace Usul
-{
-  namespace Jobs
-  {
-    namespace Helper
-    {
-      class ScopedThread
-      {
-      public:
-        ScopedThread ( Job &job, Usul::Threads::Thread *during, Usul::Threads::Thread *after ) : _job ( job ), _after ( after )
-        {
-          _job._setThread ( during );
-        }
-        ~ScopedThread()
-        {
-          _job._setThread ( _after.get() );
-        }
-      private:
-        Job &_job;
-        Usul::Threads::Thread::RefPtr _after;
-      };
-    }
   }
 }
 
@@ -195,10 +147,9 @@ namespace Usul
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Job::_threadCancelled ( Thread *thread )
+void Job::_threadCancelled()
 {
   USUL_TRACE_SCOPE;
-  ScopedThread scoped ( *this, thread, 0x0 );
   ScopedDone done ( *this, true );
   this->_cancelled();
 }
@@ -222,10 +173,9 @@ void Job::_cancelled()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Job::_threadError ( Thread *thread )
+void Job::_threadError()
 {
   USUL_TRACE_SCOPE;
-  ScopedThread scoped ( *this, thread, 0x0 );
   ScopedDone done ( *this, true );
   this->_error();
 }
@@ -249,12 +199,11 @@ void Job::_error()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Job::_threadFinished ( Thread *thread )
+void Job::_threadFinished()
 {
   USUL_TRACE_SCOPE;
 
   // Declare up here.
-  ScopedThread scoped ( *this, thread, 0x0 );
   ScopedDone done ( *this, true );
 
   // See if we've been cancelled.
@@ -284,11 +233,9 @@ void Job::_finished()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Job::_threadStarted ( Thread *thread )
+void Job::_threadStarted()
 {
   USUL_TRACE_SCOPE;
-
-  this->_setThread ( thread );
 
   if ( true == this->canceled() )
     this->cancel();
@@ -306,20 +253,6 @@ void Job::_threadStarted ( Thread *thread )
 void Job::_started()
 {
   USUL_TRACE_SCOPE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the thread.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Job::_setThread ( Thread *thread )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  _thread = thread;
 }
 
 
@@ -349,11 +282,6 @@ void Job::cancel()
   Guard guard ( this );
 
   _canceled = true;
-
-  if ( true == _thread.valid() )
-  {
-    _thread->cancel();
-  }
 }
 
 
@@ -396,20 +324,6 @@ void Job::_setId ( unsigned int value )
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   _id = value;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Return this job's thread, which will be null unless the job is running.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-const Usul::Threads::Thread::RefPtr Job::thread() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this );
-  return _thread;
 }
 
 
@@ -530,72 +444,6 @@ int Job::priority() const
   USUL_TRACE_SCOPE;
   Guard guard ( this );
   return _priority;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Wait for this job to finish. Calling from the job's thread will throw.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Job::wait ( std::ostream *out, unsigned int numLoops, unsigned int sleep )
-{
-  USUL_TRACE_SCOPE;
-
-  // See if we're already done.
-  if ( true == this->isDone() )
-  {
-    return;
-  }
-
-  // Have we been queued?
-  if ( 0 != this->id() )
-  {
-    return;
-  }
-
-  // When we get to here we know that:
-  // 1. We've been added to a job manager.
-  // 2. We're not done executing.
-
-  // Note: Moved the checking of thread ids into the loop because the job may 
-  // not have started yet, which means the thread is null. Nevertheless, we 
-  // need to wait for it, and we need to keep track of the time (loops) while 
-  // we wait.
-
-  // Used to make sure we check the thread id once.
-  bool needToCheckThreadId ( true );
-
-  // Loop until it's done or we reach the maximum number of loops allowed.
-  for ( unsigned int i = 0; i < numLoops; ++i )
-  {
-    if ( true == needToCheckThreadId )
-    {
-      // Do not call from the thread the job is running in.
-      Usul::Threads::Thread::RefPtr thread ( this->thread() );
-      if ( true == thread.valid() )
-      {
-        if ( thread->systemId() == Usul::Threads::currentThreadId() )
-        {
-          throw std::runtime_error ( "Error 1534701658: cannot wait for job in its execution thread" );
-        }
-        needToCheckThreadId = false;
-      }
-    }
-
-    if ( true == this->isDone() )
-    {
-      break;
-    }
-
-    if ( 0x0 != out )
-    {
-      (*out) << Usul::Strings::format ( "Waiting for job ", this->id(), ", loop ", i, " of ", numLoops, ", sleeping for ", sleep, " ms" ) << std::endl;
-    }
-
-    Usul::System::Sleep::milliseconds ( sleep );
-  }
 }
 
 

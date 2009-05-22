@@ -76,8 +76,6 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Strings/Qt.h"
 #include "Usul/System/Environment.h"
-#include "Usul/Threads/Callback.h"
-#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Threads/ThreadId.h"
@@ -319,17 +317,6 @@ void MainWindow::_destroy()
   // It is unlikely that a plugin will create a job in its destructor, but leaving this here to make sure.
   MainWindow::_waitForJobs();
   Usul::Jobs::Manager::destroy();
-
-  // Wait here until all threads are done.
-  std::cout << "Purging all finished threads..." << std::endl;
-  Usul::Threads::Manager::instance().purge();
-  std::cout << "Canceling all remaining threads..." << std::endl;
-  Usul::Threads::Manager::instance().cancel();
-  std::cout << "Waiting for all threads to finish..." << std::endl;
-  Usul::Threads::Manager::instance().wait();
-  std::cout << "Destroying thread manager..." << std::endl;
-  Usul::Threads::Manager::destroy();
-  std::cout << "All threads have finished" << std::endl;
 
   // Unset the text window resource.
   Usul::Resources::textWindow ( 0x0 );
@@ -1534,7 +1521,6 @@ void MainWindow::_idleProcess()
 {
   USUL_TRACE_SCOPE;
   USUL_THREADS_ENSURE_GUI_THREAD ( return );
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( &(Usul::Threads::Manager::instance()), &Usul::Threads::Manager::purge ) );
 
   // Tell window to refresh.
   Usul::Functions::safeCallV1 ( Usul::Adaptors::memberFunction ( this, &MainWindow::updateTextWindow ), true );

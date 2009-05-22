@@ -267,8 +267,6 @@ Usul::Interfaces::IUnknown *MinervaDocument::queryInterface ( unsigned long iid 
     return static_cast < Usul::Interfaces::IIntersectListener * > ( this );
   case Usul::Interfaces::ITreeNode::IID:
     return static_cast < Usul::Interfaces::ITreeNode* > ( this );
-  case Usul::Interfaces::IJobFinishedListener::IID:
-    return static_cast < Usul::Interfaces::IJobFinishedListener* > ( this );
   case Usul::Interfaces::IMouseEventListener::IID:
     return static_cast < Usul::Interfaces::IMouseEventListener* > ( this );
   case Minerva::Interfaces::ILookAtLayer::IID:
@@ -1306,7 +1304,7 @@ void MinervaDocument::removeView ( Usul::Interfaces::IView *view )
   if ( 0 == this->numViews() )
   {
     Usul::Jobs::Manager *manager ( this->_getJobManager() );
-    manager->removeJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+    manager->removeJobFinishedListener ( boost::bind ( &MinervaDocument::_jobFinished, this, _1 ) );
   }
 }
 
@@ -2685,9 +2683,9 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
     const std::string name ( Usul::Strings::format ( "Minerva ", this ) );
     std::cout << Usul::Strings::format ( name, " thread pool size = ", poolSize, '\n' ) << std::flush;
 
-    _manager = new Usul::Jobs::Manager ( name, poolSize, true );
+    _manager = new Usul::Jobs::Manager ( name, poolSize );
     _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
-    _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
+    _manager->addJobFinishedListener ( boost::bind ( &MinervaDocument::_jobFinished, this, _1 ) );
   }
 
   return _manager;
@@ -2871,7 +2869,7 @@ void MinervaDocument::keepDetail( bool b )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void MinervaDocument::jobFinished ( Usul::Jobs::Job *job )
+void MinervaDocument::_jobFinished ( Usul::Jobs::Job *job )
 {
   this->requestRedraw();
 }

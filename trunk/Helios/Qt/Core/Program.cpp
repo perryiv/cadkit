@@ -42,7 +42,6 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/System/Environment.h"
 #include "Usul/System/Host.h"
-#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Mutex.h"
 #include "Usul/Threads/Named.h"
 #include "Usul/Trace/Print.h"
@@ -100,9 +99,6 @@ namespace Helper
   {
     // Release all plugins.
     Usul::Components::Manager::instance().clear ( &std::cout );
-
-    // Destroy the thread manager.
-    Usul::Threads::Manager::destroy();
 
     // Clear the map of named threads.
     Usul::Threads::Named::clear();
@@ -210,7 +206,6 @@ namespace Helper
 ///////////////////////////////////////////////////////////////////////////////
 
 void Program::run ( int argc, char **argv,
-                    Usul::Threads::Manager::FactoryFunction *threadFactory,
                     const std::string &program, 
                     const std::string &version, 
                     const std::string &vendor, 
@@ -225,14 +220,11 @@ void Program::run ( int argc, char **argv,
   // Set the handler for unhandled exceptions.
   std::set_terminate ( &Helper::_unhandledException );
 
-  // Set thread factories.
-  Usul::Threads::Manager::instance().factory ( threadFactory );
-
   // Set command-line arguments.
   Usul::CommandLine::Arguments::instance().set ( argc, argv );
   
   // Make job manager.
-  Usul::Jobs::Manager::init ( Usul::Strings::format ( program, " Job Manager Singleton" ), poolSize, true );
+  Usul::Jobs::Manager::init ( Usul::Strings::format ( program, " Job Manager Singleton" ), poolSize );
 
   // Set splash image.
   Usul::App::Application::instance().splashImage ( splash );

@@ -130,7 +130,7 @@ void Favorites::clear()
   if ( true == job.valid() )
   {
     Usul::Jobs::Manager::instance().cancel ( job );
-    job->wait();
+    while ( false == job->isDone() ){}
     job = 0x0;
   }
 

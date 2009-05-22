@@ -51,7 +51,6 @@
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IPluginInitialize.h"
 #include "Usul/Jobs/Manager.h"
-#include "Usul/Threads/Manager.h"
 #include "Usul/Threads/Safe.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Math/Constants.h"
@@ -1205,9 +1204,6 @@ void Application::_preFrame()
   // Update the progress bars.
   _progressBars->removeFinishedProgressBars();
   _progressBars->buildScene();
-
-  // Purge any threads that may be finished.
-  Usul::Threads::Manager::instance().purge();
 
   // Intersect.
   this->_intersect();

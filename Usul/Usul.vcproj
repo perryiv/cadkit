@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../"
+				AdditionalIncludeDirectories="../;$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
@@ -85,7 +85,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Usuld.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Usuld.lib"
@@ -149,7 +149,7 @@
 				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="false"
-				AdditionalIncludeDirectories="../"
+				AdditionalIncludeDirectories="../;$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_USUL"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -185,7 +185,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/Usul.pdb"
 				ImportLibrary="$(CADKIT_BIN_DIR)/Usul.lib"
 			/>
@@ -851,10 +851,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ICFDCommands.h"
-					>
-				</File>
-				<File
 					RelativePath="Interfaces\IClassFactory.h"
 					>
 				</File>
@@ -939,10 +935,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IDldNavigator.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IDocument.h"
 					>
 				</File>
@@ -976,10 +968,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IFindLoops.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IFitLineTerrain.h"
 					>
 				</File>
 				<File
@@ -1076,10 +1064,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IIntersectNotify.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IJobFinishedListener.h"
 					>
 				</File>
 				<File
@@ -1847,41 +1831,19 @@
 				Name="Threads"
 				>
 				<File
-					RelativePath=".\Threads\Callback.cpp"
+					RelativePath=".\Threads\Atomic.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Threads\Callback.h"
+					RelativePath=".\Threads\AtomicMutex.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\AtomicTBB.h"
 					>
 				</File>
 				<File
 					RelativePath="Threads\Guard.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Threads\Manager.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)2.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)2.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\Threads\Manager.h"
 					>
 				</File>
 				<File
@@ -1949,10 +1911,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Threads\SetThreadFactory.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Threads\Task.cpp"
 					>
 				</File>
@@ -1961,15 +1919,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Threads\Thread.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Threads\Thread.h"
-					>
-				</File>
-				<File
 					RelativePath="Threads\ThreadId.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Threads\ThreadName.h"
 					>
 				</File>
 				<File
@@ -2030,6 +1984,10 @@
 				</File>
 				<File
 					RelativePath=".\File\Find.h"
+					>
+				</File>
+				<File
+					RelativePath=".\File\LineEnding.h"
 					>
 				</File>
 				<File

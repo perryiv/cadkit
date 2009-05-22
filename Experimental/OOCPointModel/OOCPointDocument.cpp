@@ -1050,7 +1050,7 @@ Usul::Jobs::Manager *OOCPointDocument::_getJobManager()
     Usul::Registry::Node &node ( Reg::instance()[Sections::DOCUMENT_SETTINGS][type]["job_manager_thread_pool_size"] );
     const unsigned int poolSize ( node.get<unsigned int> ( 5, true ) );
     
-    _manager = new Usul::Jobs::Manager ( "Point Document Job Manager", poolSize, true );
+    _manager = new Usul::Jobs::Manager ( "Point Document Job Manager", poolSize );
     _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
     _manager->addJobFinishedListener ( Usul::Interfaces::IUnknown::QueryPtr ( this ) );
   }

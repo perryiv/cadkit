@@ -19,26 +19,29 @@
 #include "Usul/Base/Object.h"
 #include "Usul/File/Log.h"
 #include "Usul/Threads/Task.h"
-#include "Usul/Threads/Thread.h"
+#include "Usul/Threads/RecursiveMutex.h"
+#include "Usul/Threads/Guard.h"
 #include "Usul/Pointers/Pointers.h"
 
 #include <map>
 #include <set>
 #include <vector>
 
+namespace boost { class thread; }
 
 namespace Usul {
 namespace Threads {
 
 
-class USUL_EXPORT Pool : public Usul::Base::Object
+class USUL_EXPORT Pool
 {
 public:
 
   // Useful typedefs.
-  typedef Usul::Base::Object BaseClass;
-  typedef std::vector < Thread::RefPtr > ThreadPool;
-  typedef Usul::Threads::Callback Callback;
+  typedef Usul::Threads::RecursiveMutex Mutex;
+  typedef Usul::Threads::Guard<Mutex> Guard;
+  typedef boost::thread Thread;
+  typedef std::vector < Thread* > ThreadPool;
   typedef std::pair < int, unsigned long > TaskHandle;
   typedef std::map < TaskHandle, Task::RefPtr > TaskMap;
   typedef std::set < Task::RefPtr > TaskSet;
@@ -51,19 +54,12 @@ public:
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Pool );
 
-  // Enumerations.
-  enum { DEFAULT_NUM_THREADS = 10 };
-
   // Constructor
-  Pool ( const std::string &name, unsigned int numThreads = Pool::DEFAULT_NUM_THREADS, bool lazyStart = true );
+  Pool ( const std::string &name, unsigned int numThreads );
+  ~Pool();
 
   // Add a task.
   TaskHandle              addTask ( int priority, Task *task );
-  TaskHandle              addTask ( int priority,
-                                    Callback *started, 
-                                    Callback *finished = 0x0,
-                                    Callback *cancelled = 0x0,
-                                    Callback *error = 0x0 );
 
   // Cancel all running threads and remove all queued tasks.
   void                    cancel();
@@ -83,6 +79,12 @@ public:
   // Set/get the log.
   void                    logSet ( LogPtr );
   LogPtr                  logGet();
+
+  // Get the mutex.
+  Mutex &                 mutex() const;
+
+  // Get the name.
+  std::string             name() const;
 
   // Get the next task id. This will also increment the internal counter.
   unsigned long           nextTaskId();
@@ -110,41 +112,37 @@ public:
   // Wait for all tasks to complete.
   void                    waitForTasks();
 
-protected:
-
-  // Use reference counting.
-  virtual ~Pool();
-
 private:
 
   // No copying or assigning.
   Pool ( const Pool & );
   Pool &operator = ( const Pool & );
 
-  void                    _cancelThreads();
-
   void                    _destroy();
 
-  void                    _logEvent ( const std::string &s, Thread::RefPtr thread = Thread::RefPtr ( 0x0 ), std::ostream *optional = 0x0 );
+  void                    _logEvent ( const std::string &s, std::ostream *optional = 0x0 );
 
   Task::RefPtr            _nextTask();
 
   void                    _startThreads();
 
-  void                    _threadProcessTasks ( Usul::Threads::Task *task, Usul::Threads::Thread * );
-  void                    _threadStarted ( Usul::Threads::Thread * );
+  void                    _threadProcessTask ( Usul::Threads::Task *task );
+  void                    _threadStarted();
 
   void                    _waitForThreads();
 
   // Data members.
+  mutable Mutex _mutex;
   ThreadPool _pool;
   TaskMap _queue;
   TaskSet _executing;
   unsigned long _nextTaskId;
   unsigned long _sleep;
+  unsigned int _numThreads;
   bool _runThreads;
   bool _started;
   LogPtr _log;
+  const std::string _name;
 };
 
 

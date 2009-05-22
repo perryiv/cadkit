@@ -17,8 +17,8 @@
 #define _USUL_THREADS_POOL_TASK_CLASS_H_
 
 #include "Usul/Base/Object.h"
-#include "Usul/Threads/Callback.h"
 
+#include "boost/function.hpp"
 
 namespace Usul {
 namespace Threads {
@@ -30,19 +30,19 @@ public:
 
   // Useful typedefs.
   typedef Usul::Base::Object BaseClass;
-  typedef Usul::Threads::Callback Callback;
+  typedef boost::function<void ()> Callback;
 
   // Smart-pointer definitions.
   USUL_DECLARE_REF_POINTERS ( Task );
 
   // Constructor
-  Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error );
+  Task ( unsigned long id, Callback started, Callback finished, Callback cancelled, Callback error );
 
-  unsigned long             id() const;
-  Callback *                cancelledCB();
-  Callback *                errorCB();
-  Callback *                finishedCB();
-  Callback *                startedCB();
+  unsigned long id() const;
+  void cancelled();
+  void error();
+  void finished();
+  void started();
 
   virtual std::string       name() const;
   void                      name ( const std::string & );
@@ -53,18 +53,16 @@ protected:
   virtual ~Task();
 
 	unsigned long _id;
-  Callback::RefPtr _cancelledCB;
-  Callback::RefPtr _errorCB;
-  Callback::RefPtr _finishedCB;
-  Callback::RefPtr _startedCB;
+  Callback _cancelledCB;
+  Callback _errorCB;
+  Callback _finishedCB;
+  Callback _startedCB;
 
 private:
 
   // No copying or assignment.
   Task ( const Task & );
   Task &operator = ( const Task & );
-
-  void                      _destroy();
 
 };
 

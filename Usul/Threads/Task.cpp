@@ -28,7 +28,7 @@ using namespace Usul::Threads;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Task::Task ( unsigned long id, Callback *started, Callback *finished, Callback *cancelled, Callback *error ) : BaseClass(),
+Task::Task ( unsigned long id, Callback started, Callback finished, Callback cancelled, Callback error ) : BaseClass(),
   _id          ( id ),
   _cancelledCB ( cancelled ),
   _errorCB     ( error ),
@@ -48,24 +48,6 @@ Task::Task ( unsigned long id, Callback *started, Callback *finished, Callback *
 Task::~Task()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Task::_destroy ), "3978096206" );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Destroy
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Task::_destroy()
-{
-  USUL_TRACE_SCOPE;
-
-  _cancelledCB = 0x0;
-  _errorCB = 0x0;
-  _finishedCB = 0x0;
-  _startedCB = 0x0;
 }
 
 
@@ -89,12 +71,11 @@ unsigned long Task::id() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Task::Callback *Task::cancelledCB()
+void Task::cancelled()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Callback *cb ( _cancelledCB.get() );
-  return cb;
+  if ( _cancelledCB )
+    _cancelledCB();
 }
 
 
@@ -104,12 +85,11 @@ Task::Callback *Task::cancelledCB()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Task::Callback *Task::errorCB()
+void Task::error()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Callback *cb ( _errorCB.get() );
-  return cb;
+  if ( _errorCB )
+    _errorCB();
 }
 
 
@@ -119,12 +99,11 @@ Task::Callback *Task::errorCB()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Task::Callback *Task::finishedCB()
+void Task::finished()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Callback *cb ( _finishedCB.get() );
-  return cb;
+  if ( _finishedCB )
+    _finishedCB();
 }
 
 
@@ -134,12 +113,11 @@ Task::Callback *Task::finishedCB()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Task::Callback *Task::startedCB()
+void Task::started()
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-  Callback *cb ( _startedCB.get() );
-  return cb;
+  if ( _startedCB )
+    _startedCB();
 }
 
 

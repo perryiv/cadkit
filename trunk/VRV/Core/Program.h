@@ -13,8 +13,6 @@
 
 #include "VRV/Core/Exceptions.h"
 
-#include "Threads/OpenThreads/Thread.h"
-
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/CommandLine/Arguments.h"
@@ -34,7 +32,6 @@
 #include "Usul/Jobs/Manager.h"
 #include "Usul/Predicates/FileExists.h"
 #include "Usul/Registry/Database.h"
-#include "Usul/Threads/Manager.h"
 #include "Usul/Trace/Trace.h"
 #include "Usul/Signals/Actions.h"
 #include "Usul/Signals/Handler.h"
@@ -108,9 +105,6 @@ public:
     Usul::App::Application::instance().vendor ( "CadKit" );
     Usul::App::Application::instance().program ( program );
 
-    // Set the Thread factory.
-    Usul::Threads::Manager::instance().factory ( &Threads::OT::newOpenThreadsThread );
-
     // Set the trace output file.
     Usul::Trace::Print::stream ( _trace );
 
@@ -118,7 +112,7 @@ public:
     Usul::Trace::Print::printing ( false );
 
     // Use 5 threads.
-    Usul::Jobs::Manager::init( "Job Manager Singleton", 5, false );
+    Usul::Jobs::Manager::init( "Job Manager Singleton", 5 );
   }
 
 
@@ -129,12 +123,6 @@ public:
 
     // Delete the job manager.
     Usul::Jobs::Manager::destroy();
-
-    // There should not be any threads running.
-    Usul::Threads::Manager::instance().wait();
-
-    // Delete all thread objects.
-    Usul::Threads::Manager::instance().purge();
 
     // Clear the object factory.
     Usul::Factory::ObjectFactory::instance().clear();
@@ -149,9 +137,6 @@ public:
 
     // Clear the registry.
     Usul::Registry::Database::destroy();
-
-    // Clean up the thread manager.
-    Usul::Threads::Manager::destroy();
 
     // Delete ostream.
     if ( 0x0 != _trace )

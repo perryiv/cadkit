@@ -110,12 +110,12 @@ TriangleSet::TriangleSet ( unsigned int unitsInLastPlace ) : BaseClass(),
   _blocks    ( ),
   _progress  ( 0, 1 ),
   _color     ( new ColorFunctor ),
-                                                             _root      ( new osg::Group ),
-                                                             _useMaterial ( false )
+  _root      ( new osg::Group ),
+  _useMaterial ( false )
 {
 #ifdef _MSC_VER
   // Keeping tabs on memory consumption...
-  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) < 204 );
+  USUL_STATIC_ASSERT ( sizeof ( TriangleSet ) < 209 );
 #endif
 }
 

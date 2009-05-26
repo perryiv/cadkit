@@ -513,7 +513,7 @@ void Viewer::mouseMoveEvent ( QMouseEvent * event )
   viewer->mouseMove ( ea.get() );
   this->updateCursor ( left, middle, right );
 
-  // Resetting this every mouse-move makes it not not very effective.
+  // Resetting this every mouse-move makes it not very effective.
   // Keeping this here as a reminder.
   //_mouseWheelPosition = 0;
 }

@@ -27,7 +27,7 @@ SET (EXECUTABLE_OUTPUT_PATH
 )
 
 #Include the Top Level Directory
-INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" )
+INCLUDE_DIRECTORIES( "${PROJECT_SOURCE_DIR}/../" ${Boost_INCLUDE_DIR} )
 
 ADD_DEFINITIONS("-D_COMPILING_USUL")
 
@@ -338,7 +338,6 @@ SET ( HEADERS
 ./Interfaces/IInitNewDocument.h
 ./Interfaces/IIntersectListener.h
 ./Interfaces/IIntersectNotify.h
-./Interfaces/IJobFinishedListener.h
 ./Interfaces/IJoystick.h
 ./Interfaces/IKeepAllConnected.h
 ./Interfaces/IKeyListener.h
@@ -424,7 +423,6 @@ SET ( HEADERS
 ./Interfaces/IUpdateListener.h
 ./Interfaces/IUpdateSceneVisitor.h
 ./Interfaces/IUpdateSubject.h
-./Interfaces/IVaporIntrusionGUI.h
 ./Interfaces/IVertices.h
 ./Interfaces/IView.h
 ./Interfaces/IViewMatrix.h
@@ -551,9 +549,7 @@ SET ( HEADERS
 ./System/Screen.h
 ./System/Sleep.h
 ./System/Socket.h
-./Threads/Callback.h
 ./Threads/Guard.h
-./Threads/Manager.h
 ./Threads/Map.h
 ./Threads/Mutex.h
 ./Threads/MutexTraits.h
@@ -565,9 +561,7 @@ SET ( HEADERS
 ./Threads/RecursiveMutex.h
 ./Threads/Safe.h
 ./Threads/Set.h
-./Threads/SetThreadFactory.h
 ./Threads/Task.h
-./Threads/Thread.h
 ./Threads/ThreadId.h
 ./Threads/Variable.h
 ./Trace/Print.h
@@ -589,13 +583,10 @@ SET ( HEADERS
 
 SET (SOURCES
 ./Threads/Named.cpp
-./Threads/Callback.cpp
 ./Threads/ReadWriteMutex.cpp
 ./Threads/RecursiveMutex.cpp
 ./Threads/Task.cpp
 ./Threads/Pool.cpp
-./Threads/Manager.cpp
-./Threads/Thread.cpp
 ./Threads/Mutex.cpp
 ./Console/Feedback.cpp
 ./Shared/Preferences.cpp
@@ -712,7 +703,8 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 # Link the Library
-TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${SYSTEM_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${TARGET_NAME} ${SYSTEM_LIBRARIES} ${Boost_THREAD_LIBRARY} )
 
 # Create the config file.
 CONFIGURE_FILE ( ${CMAKE_CURRENT_SOURCE_DIR}/Config/Config.h.in.cmake ${CMAKE_CURRENT_SOURCE_DIR}/Config/Config.h )
+

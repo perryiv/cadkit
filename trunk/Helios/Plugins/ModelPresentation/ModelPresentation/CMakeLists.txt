@@ -13,7 +13,11 @@ INCLUDE ( Cadkit.plugin )
 INCLUDE ( FindOSG )
 
 # ------------ Set Include Folders ----------------------
-INCLUDE_DIRECTORIES( ${CADKIT_INC_DIR} "${PROJECT_SOURCE_DIR}/../" ${OSG_INC_DIR} )
+INCLUDE_DIRECTORIES( 
+  ${CADKIT_INC_DIR} 
+  "${PROJECT_SOURCE_DIR}/../" 
+  ${OSG_INC_DIR} 
+  ${Boost_INCLUDE_DIR} )
 
 LINK_DIRECTORIES ( ${LINK_DIRECTORIES} ${CADKIT_BIN_DIR} )
 

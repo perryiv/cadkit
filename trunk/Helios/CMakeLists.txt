@@ -78,7 +78,7 @@ INCLUDE( FindOSG )
 
 SET ( BOOST_INCLUDEDIR $ENV{BOOST_INC_DIR} )
 SET ( BOOST_LIBRARYDIR $ENV{BOOST_LIB_DIR} )
-FIND_PACKAGE( Boost 1.36 COMPONENTS date_time filesystem regex threads system )
+FIND_PACKAGE( Boost 1.39 COMPONENTS date_time filesystem regex thread system )
 
 
 #########################################################
@@ -170,7 +170,6 @@ SUBDIRS(
 
 # include base libraries.
 ${PROJECT_SOURCE_DIR}/../Usul 
-${PROJECT_SOURCE_DIR}/../Threads/OpenThreads
 ${PROJECT_SOURCE_DIR}/../OsgTools 
 ${PROJECT_SOURCE_DIR}/../XmlTree 
 ${PROJECT_SOURCE_DIR}/../Serialize/XML

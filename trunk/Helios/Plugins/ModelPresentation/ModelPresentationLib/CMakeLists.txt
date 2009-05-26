@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES( ${OSG_INC_DIR}
                      ${CADKIT_INC_DIR} 
                      "${CADKIT_INC_DIR}/Experimental"
                      "${PROJECT_SOURCE_DIR}/../../../" 
+		     ${Boost_INCLUDE_DIR}
                       )
 
 

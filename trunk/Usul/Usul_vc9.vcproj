@@ -48,7 +48,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
 				Optimization="0"
-				AdditionalIncludeDirectories="../"
+				AdditionalIncludeDirectories="../;$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;_DEBUG;_WINDOWS;_COMPILING_USUL"
 				ExceptionHandling="2"
 				BasicRuntimeChecks="3"
@@ -86,7 +86,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usuld.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR)"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/Usuld.pdb"
 				RandomizedBaseAddress="1"
@@ -149,7 +149,7 @@
 				AdditionalOptions="/Zm200 /Oy-"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="false"
-				AdditionalIncludeDirectories="../"
+				AdditionalIncludeDirectories="../;$(BOOST_INC_DIR)"
 				PreprocessorDefinitions="WIN32;_USRDLL;NDEBUG;_WINDOWS;_COMPILING_USUL"
 				StringPooling="true"
 				ExceptionHandling="2"
@@ -185,7 +185,7 @@
 				OutputFile="$(CADKIT_BIN_DIR)/Usul.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(BOOST_LIB_DIR)"
 				ProgramDatabaseFile=".\Release/Usul.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -1942,41 +1942,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Threads\Callback.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Threads\Callback.h"
-					>
-				</File>
-				<File
 					RelativePath="Threads\Guard.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Threads\Manager.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)2.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)2.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\Threads\Manager.h"
 					>
 				</File>
 				<File
@@ -2057,14 +2023,6 @@
 				</File>
 				<File
 					RelativePath=".\Threads\Task.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Threads\Thread.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Threads\Thread.h"
 					>
 				</File>
 				<File

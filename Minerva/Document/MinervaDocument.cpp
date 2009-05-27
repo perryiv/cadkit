@@ -1304,7 +1304,7 @@ void MinervaDocument::removeView ( Usul::Interfaces::IView *view )
   if ( 0 == this->numViews() )
   {
     Usul::Jobs::Manager *manager ( this->_getJobManager() );
-    manager->removeJobFinishedListener ( boost::bind ( &MinervaDocument::_jobFinished, this, _1 ) );
+    manager->removeJobFinishedListener ( boost::bind ( &MinervaDocument::_jobFinished, MinervaDocument::RefPtr ( this ), _1 ) );
   }
 }
 
@@ -2685,7 +2685,7 @@ Usul::Jobs::Manager * MinervaDocument::_getJobManager()
 
     _manager = new Usul::Jobs::Manager ( name, poolSize );
     _manager->logSet ( Usul::Jobs::Manager::instance().logGet() );
-    _manager->addJobFinishedListener ( boost::bind ( &MinervaDocument::_jobFinished, this, _1 ) );
+    _manager->addJobFinishedListener ( boost::bind ( &MinervaDocument::_jobFinished, MinervaDocument::RefPtr ( this ), _1 ) );
   }
 
   return _manager;

@@ -42,6 +42,8 @@
 #include "QtGui/QMainWindow"
 #include "QtGui/QTreeWidget"
 
+#include <algorithm>
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( VaporIntrusionGUIDelegateComponent, VaporIntrusionGUIDelegateComponent::BaseClass );
 
 
@@ -409,7 +411,26 @@ void VaporIntrusionGUIDelegateComponent::editScalar()
   ScalarEditorDialog dialog( document->dimensions() );
 
   // get the currently checked materials
-  MaterialsMap mmap ( _materialContainers["Materials Container"]->getCheckedMaterials() );
+  MaterialsMap mmap;// ( _materialContainers["Materials Container"]->getCheckedMaterials() );
+
+  //loop through the map of material containers and grab all the checked scalars
+  for( MaterialContainers::iterator iter = _materialContainers.begin(); iter != _materialContainers.end(); ++iter )
+  {
+    // get the checked items from the current material dialog
+    MaterialsMap imap ( (*iter).second->getCheckedMaterials() );
+
+    for( MaterialsMap::iterator iter2 = imap.begin(); iter2 != imap.end(); ++iter2 )
+    {
+      // get the name
+      std::string name ( (*iter2).first );
+
+      // get the value
+      std::string value ( (*iter2).second );
+
+      mmap[name] = value;
+    }
+
+  }
 
   dialog.materials( mmap );
 

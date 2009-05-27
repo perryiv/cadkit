@@ -40,11 +40,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-VaporIntrusionGUIViewer::VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainer* matContainer ) :
+VaporIntrusionGUIViewer::VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainers matContainers ) :
 BaseClass( doc, format, parent, caller ),
 _mouseWheelPosition( 0 ),
 _mouseWheelSensitivity( 10.0f ),
-_materialContainer( matContainer )
+_materialContainers( matContainers )
 {
   
 }

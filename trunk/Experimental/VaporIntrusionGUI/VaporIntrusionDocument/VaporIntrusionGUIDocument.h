@@ -218,7 +218,7 @@ protected:
   void                        _writeCoordinatesFiles( const std::string& directory ) const;
 
   // read layer file
-  void                        _readConfigFile( const std::string& name, const std::string& filename );
+  void                        _readConfigFile( const std::string& catName, const std::string& filename );
   void                        _readInitializationFile( const std::string& filename );
   
   int                         _getComparitor( const std::string& comparitor );
@@ -227,6 +227,9 @@ protected:
   void                        _activateDragger();
 
   void                        _initializeGridMaterials();
+
+  void                        _createDock( const std::string& name );
+  void                        _addMaterialToDock( const std::string& dock, const std::string& name, const std::string& value );
   
 
 private:

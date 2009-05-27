@@ -56,8 +56,8 @@ _xyzView( 0x0 ),
 //_xyView ( 0x0 ),
 //_xzView ( 0x0 ),
 //_yzView ( 0x0 ),
-_dock   ( 0x0 ),
-_materialContainer( 0x0 ),
+_docks   (),
+_materialContainers(),
 _caller(),
 _categories(),
 _gridMaterials()
@@ -77,14 +77,21 @@ VaporIntrusionGUIDelegateComponent::~VaporIntrusionGUIDelegateComponent()
 
   if( mainWindow.valid() )
   {
-    // Remove the DockWidget from the MainWindow.
+    // get a handle to the main window
     QMainWindow * main  ( mainWindow->mainWindow() );
-    main->removeDockWidget ( _dock );
-  }
 
-  // Delete the DockWidget.
-  delete _dock;
-  _dock = 0x0;
+    // Delete the DockWidgets.
+    for( Docks::iterator iter = _docks.begin(); iter != _docks.end(); ++iter )
+    {
+      // Remove the DockWidget from the MainWindow.
+      main->removeDockWidget ( (*iter).second );
+
+      // Delete the dock and clear
+      delete (*iter).second;
+      (*iter).second = 0x0;
+    }
+
+  }
 
 }
 
@@ -110,6 +117,8 @@ Usul::Interfaces::IUnknown *VaporIntrusionGUIDelegateComponent::queryInterface (
     return static_cast < Usul::Interfaces::IPluginInitialize*>(this);
   case Usul::Interfaces::IInitNewDocument::IID:
     return static_cast < Usul::Interfaces::IInitNewDocument*>(this);
+  case VaporIntrusionGUI::Interfaces::IVPIDelegate::IID:
+    return static_cast < VaporIntrusionGUI::Interfaces::IVPIDelegate*>(this);
   default:
     return 0x0;
   }
@@ -150,7 +159,7 @@ void VaporIntrusionGUIDelegateComponent::createDefaultGUI ( Usul::Documents::Doc
     QWorkspace *parent ( workspace->workspace() );
 
     // Add XYZ window
-    _xyzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainer );
+    _xyzView = new VIGUIViewer ( document, CadKit::Helios::Views::OSG::defaultFormat(), parent, caller, _materialContainers );
     parent->addWindow ( _xyzView.get() );
 
     //// Add XY window
@@ -277,31 +286,35 @@ void VaporIntrusionGUIDelegateComponent::initializePlugin ( Usul::Interfaces::IU
 {
   _caller = caller;
 
-  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
+  //Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( caller );
 
-  if ( mainWindow.valid() )
-  {
-    QMainWindow * main ( mainWindow->mainWindow() );
+  //if ( mainWindow.valid() )
+  //{
+  //  QMainWindow * main ( mainWindow->mainWindow() );
 
-    // Build the docking window.
-    _dock = new QDockWidget ( QObject::tr ( "Materials Container" ), main );
-    _dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
+  //  // Build the docking window.
+  //  QDockWidget* dock = new QDockWidget ( QObject::tr ( "Materials Container" ), main );
+  //  dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
 
-    // Create the widget
-    _materialContainer = new MaterialContainer ( _dock );
+  //  // Create the widget
+  //  MaterialContainer* materialContainer = new MaterialContainer ( dock );
 
-    // Add the dock to the main window.
-    _dock->setWidget( _materialContainer );
-    main->addDockWidget ( Qt::LeftDockWidgetArea, _dock );
+  //  // Add the dock to the main window.
+  //  dock->setWidget( materialContainer );
+  //  main->addDockWidget ( Qt::LeftDockWidgetArea, dock );
 
-    // Set the object name.
-    _dock->setObjectName ( "MaterialsContainerWidget" );
+  //  // Set the object name.
+  //  dock->setObjectName ( "MaterialsContainerWidget" );
 
-    // Add toggle to the menu.
-    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
-    if ( dwm.valid () )
-      dwm->addDockWidgetMenu ( _dock );
-  }
+  //  // Add toggle to the menu.
+  //  Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( caller );
+  //  if ( dwm.valid () )
+  //    dwm->addDockWidgetMenu ( dock );
+
+  //  // add the dock to the map of docks
+  //  _docks["Materials Container"] = dock;
+  //  _materialContainers["Materials Container"] = materialContainer;
+  //}
 }
 
 
@@ -332,6 +345,7 @@ void VaporIntrusionGUIDelegateComponent::initNewDocument ( Unknown *document, Un
 
   if( true == doc.valid() )
   {
+
     // set the dimensions
     doc->dimensions( d );
 
@@ -395,7 +409,7 @@ void VaporIntrusionGUIDelegateComponent::editScalar()
   ScalarEditorDialog dialog( document->dimensions() );
 
   // get the currently checked materials
-  MaterialsMap mmap ( _materialContainer->getCheckedMaterials() );
+  MaterialsMap mmap ( _materialContainers["Materials Container"]->getCheckedMaterials() );
 
   dialog.materials( mmap );
 
@@ -450,9 +464,65 @@ void VaporIntrusionGUIDelegateComponent::editInputParameters( const std::string&
       break;
     }
   }
-
-  
-
-  
       
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Add a dock to the main window
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDelegateComponent::addDock( const std::string& name )
+{
+  Guard guard ( this );
+
+  Usul::Interfaces::Qt::IMainWindow::QueryPtr mainWindow ( _caller );
+
+  if ( mainWindow.valid() )
+  {
+    QMainWindow * main ( mainWindow->mainWindow() );
+
+    // Build the docking window.
+    QDockWidget* dock = new QDockWidget ( QObject::tr ( name.c_str() ), main );
+    dock->setAllowedAreas ( Qt::AllDockWidgetAreas );
+
+    // Create the widget
+    MaterialContainer* materialContainer = new MaterialContainer ( dock );
+
+    // Add the dock to the main window.
+    dock->setWidget( materialContainer );
+    main->addDockWidget ( Qt::LeftDockWidgetArea, dock );
+
+    // Set the object name.
+    dock->setObjectName ( "MaterialsContainerWidget" );
+
+    // Add toggle to the menu.
+    Usul::Interfaces::IQtDockWidgetMenu::QueryPtr dwm ( _caller );
+    if ( dwm.valid () )
+      dwm->addDockWidgetMenu ( dock );
+
+    // add the dock to the map of docks
+    _docks[name] = dock;
+    _materialContainers[name] = materialContainer;
+
+    if( _docks.size() > 1 )
+    {
+      main->tabifyDockWidget( (*_docks.begin()).second, dock );
+    }
+      
+  }
+  
+}
+
+
+void VaporIntrusionGUIDelegateComponent::addToDock( const std::string& dockName, const std::string& name, const std::string& value )
+{
+  // check for validity
+  if( 0x0 == _materialContainers[dockName] )
+    return;
+
+  // add the material to the dock
+  _materialContainers[dockName]->add( name, value );
 }

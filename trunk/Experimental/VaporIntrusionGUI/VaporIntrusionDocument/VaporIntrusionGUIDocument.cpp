@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "VaporIntrusionGUIDocument.h"
+#include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
 #include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
@@ -1101,13 +1102,13 @@ void VaporIntrusionGUIDocument::setZGrid( GridPoints points )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void VaporIntrusionGUIDocument::_readConfigFile( const std::string& name, const std::string& filename )
+void VaporIntrusionGUIDocument::_readConfigFile( const std::string& catName, const std::string& filename )
 {
   // useful typedef
   typedef std::vector< std::string > StringVec;
 
   // Create a category for this input file
-  Category category( name, filename );
+  Category category( catName, filename );
 
   // create a file handle
   std::ifstream ifs;
@@ -1118,6 +1119,9 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& name, const 
   // make sure the file was opened
   if( false == ifs.is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
+
+  // create a dock for this category
+  this->_createDock( catName );
 
   // buffer size
   const unsigned long int bufSize ( 4095 );
@@ -1180,36 +1184,44 @@ void VaporIntrusionGUIDocument::_readConfigFile( const std::string& name, const 
         std::string description   ( sv.at( 2 ) );
         std::string type          ( sv.at( 3 ) );
 
-        InputColumn column( name, value, description, type ); 
-
-        // read the activators
-        for( unsigned int i = 4; i < sv.size(); i+=3 )
-        { 
-          if( ( i + 2 ) < sv.size() )
-          {
-            // get the activator name and value
-            std::string aName ( sv.at( i ) );
-            std::string aComp ( sv.at( i + 1 ) );
-            std::string aValue ( sv.at( i + 2 ) );
-
-            // create a activator pair and add it to the activator list on the column
-            ActivatorValue aV ( _getComparitor( aComp ), aValue );
-            ActivatorPair aPair ( aName, aV );
-            column.activators.push_back( aPair );
-          }
-          else
-          {
-            // There is a mismatch in number of remaining values
-            // Should probably throw an invalid input error here
-
-            // TODO: throw here instead of warning message
-            std::cout << "Warning: invalid number of activator pair combination(s)!" << std::endl;
-            break;
-          }
+        // if the type is a scalar then add it to the dock instead of the dialog
+        if( type == "scalar" )
+        {
+          this->_addMaterialToDock( catName, name, value );
         }
+        else
+        {
+          InputColumn column( name, value, description, type ); 
 
-        // add the column to the list of columns for this category
-        category.columns[ name ] =  column;          
+          // read the activators
+          for( unsigned int i = 4; i < sv.size(); i+=3 )
+          { 
+            if( ( i + 2 ) < sv.size() )
+            {
+              // get the activator name and value
+              std::string aName ( sv.at( i ) );
+              std::string aComp ( sv.at( i + 1 ) );
+              std::string aValue ( sv.at( i + 2 ) );
+
+              // create a activator pair and add it to the activator list on the column
+              ActivatorValue aV ( _getComparitor( aComp ), aValue );
+              ActivatorPair aPair ( aName, aV );
+              column.activators.push_back( aPair );
+            }
+            else
+            {
+              // There is a mismatch in number of remaining values
+              // Should probably throw an invalid input error here
+
+              // TODO: throw here instead of warning message
+              std::cout << "Warning: invalid number of activator pair combination(s)!" << std::endl;
+              break;
+            }
+          }
+
+          // add the column to the list of columns for this category
+          category.columns[ name ] =  column;   
+        }
 
       }// end for for activators read   
 
@@ -1628,7 +1640,6 @@ void VaporIntrusionGUIDocument::_activateDragger()
   //add the dragger to the scene
   _root->addChild( dragger.get() );
 
-
 }
 
 
@@ -1657,4 +1668,50 @@ void VaporIntrusionGUIDocument::gridMaterials( GridMaterials gm )
   Guard guard ( this );
 
   _gridMaterials = gm;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create and add the dragger to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_createDock( const std::string& name )
+{
+  Guard guard ( this );
+
+  // query for the delegate interface
+  VaporIntrusionGUI::Interfaces::IVPIDelegate::QueryPtr delegatePtr ( this->delegate() );
+  
+  // check for valid
+  if( false == delegatePtr.valid() )
+    return;
+
+  // add the dock
+  delegatePtr->addDock( name );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Create and add the dragger to the scene
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void VaporIntrusionGUIDocument::_addMaterialToDock( const std::string& dock, const std::string& name, const std::string& value )
+{
+  Guard guard ( this );
+
+   // query for the delegate interface
+  VaporIntrusionGUI::Interfaces::IVPIDelegate::QueryPtr delegatePtr ( this->delegate() );
+  
+  // check for valid
+  if( false == delegatePtr.valid() )
+    return;
+
+  // add to the dock
+  delegatePtr->addToDock( dock, name, value );
+
 }

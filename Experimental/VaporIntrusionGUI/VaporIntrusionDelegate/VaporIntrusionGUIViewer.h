@@ -32,7 +32,9 @@ public:
   typedef CadKit::Helios::Views::OSG::Viewer BaseClass;
   typedef OsgTools::Render::Viewer::CameraOption CameraOption;
   typedef OsgTools::Render::Viewer RenderViewer;
-  VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainer* matContainer );
+  typedef std::map< std::string, MaterialContainer* > MaterialContainers;
+
+  VaporIntrusionGUIViewer ( Document *doc, const QGLFormat& format, QWidget* parent, IUnknown* caller, MaterialContainers matContainers );
   //virtual ~VaporIntrusionGUIViewer ();
 
 protected:
@@ -53,7 +55,7 @@ protected:
   IUnknown*                       _caller;
   int                             _mouseWheelPosition;
   float                           _mouseWheelSensitivity;
-  MaterialContainer*              _materialContainer;
+  MaterialContainers              _materialContainers;
 
 };
 

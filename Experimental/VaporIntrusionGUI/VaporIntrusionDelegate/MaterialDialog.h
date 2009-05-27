@@ -37,7 +37,11 @@ public:
   virtual ~MaterialDialog();
 
   std::string         name();
+  void                name( const std::string& n );
+
   std::string         type();
+  void                type( const std::string& t );
+
   osg::Vec4           color();
 
 private:

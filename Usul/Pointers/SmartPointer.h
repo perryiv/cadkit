@@ -405,4 +405,18 @@ template < class T, class C > bool operator != ( T *p1, const Usul::Pointers::Sm
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  boost::get_pointer implementation for compatibility with boost::bind.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace boost 
+{
+  template < class T, class C >  T * get_pointer ( const Usul::Pointers::SmartPointer < T, C > &  p )
+  {
+    return p.get();
+  }
+}
+
 #endif // _USUL_POINTERS_SMART_POINTER_H_

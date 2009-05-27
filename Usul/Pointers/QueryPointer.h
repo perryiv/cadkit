@@ -153,4 +153,18 @@ public:
 } // namespace Usul
 
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  boost::get_pointer implementation for compatibility with boost::bind.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+namespace boost 
+{
+  template < class T, class C >  T * get_pointer ( const Usul::Pointers::QueryPointer < T, C > &  p )
+  {
+    return p.get();
+  }
+}
+
 #endif // _USUL_QUERY_INTERFACE_POINTER_CLASS_H_

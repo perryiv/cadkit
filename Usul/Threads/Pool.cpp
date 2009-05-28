@@ -14,15 +14,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Usul/Threads/Pool.h"
-#include "Usul/Adaptors/MemberFunction.h"
-#include "Usul/Cast/Cast.h"
-#include "Usul/Convert/Convert.h"
 #include "Usul/Errors/Assert.h"
-#include "Usul/Errors/Stack.h"
 #include "Usul/Exceptions/Canceled.h"
-#include "Usul/Exceptions/Thrower.h"
 #include "Usul/Functions/SafeCall.h"
-#include "Usul/System/Clock.h"
 #include "Usul/System/Sleep.h"
 #include "Usul/Threads/ThreadName.h"
 #include "Usul/Threads/Safe.h"
@@ -76,7 +70,7 @@ Pool::Pool ( const std::string &n, unsigned int numThreads ) :
 Pool::~Pool()
 {
   USUL_TRACE_SCOPE;
-  Usul::Functions::safeCall ( Usul::Adaptors::memberFunction ( this, &Pool::_destroy ), "4142774520" );
+  Usul::Functions::safeCall ( boost::bind ( &Pool::_destroy, this ), "4142774520" );
 }
 
 
@@ -330,10 +324,10 @@ void Pool::_threadStarted()
       task = 0x0;
     }
     
-    // We have no work to do, yield the rest of our time slice.
+    // We have no work to do, so sleep.
     else
     {
-      boost::this_thread::yield();
+      boost::this_thread::sleep ( boost::posix_time::milliseconds ( this->sleepDuration() ) );
     }
   }
 }

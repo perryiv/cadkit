@@ -14,6 +14,8 @@
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
 
+#include <osg/Vec3>
+
 #include <vector>
 #include <string>
 #include <list>
@@ -69,6 +71,12 @@ protected:
   //Debug method to write the results in ascii for visual validation
   void          _writeDebugFile( const std::string& filename );
 
+  // write an osg file for debugging
+  void          _writeOsgSlice( unsigned int y, const std::string& filename );
+  void          _findMinMax( float& min, float& max );
+  osg::Vec3     _getInterpolatedValue( unsigned int x, unsigned int y, unsigned int z, float min, float max );
+  void          _intializeColorRamp();
+
   virtual ~ToFVUNS();
 
 private:
@@ -95,5 +103,6 @@ private:
   FloatVector                 _xValues;
   FloatVector                 _yValues;
   FloatVector                 _zValues;
+  Vec3uiArray                _colorRamp;
   
 };

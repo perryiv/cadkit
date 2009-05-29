@@ -20,6 +20,13 @@
 #include "Usul/Strings/Format.h"
 #include "Usul/Convert/Convert.h"
 
+#include "osg/Geode"
+#include "osg/Group"
+#include "osg/Geometry"
+#include "osg/Array"
+
+#include "osgDB/WriteFile"
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -52,7 +59,8 @@ ToFVUNS::ToFVUNS ( int argc, char **argv ) :
   _indexGrid(),
   _xValues(),
   _yValues(),
-  _zValues()
+  _zValues(),
+  _colorRamp()
 {
 }
 
@@ -115,8 +123,18 @@ void ToFVUNS::run()
   // Write the grid file
   this->_writeGridFile( _workingDirectory + _baseFilename + ".grid" );
 
+  // Write the osg file
+  unsigned int y ( _dimensions[1] / 2 );
+  this->_writeOsgSlice( y, _workingDirectory + _baseFilename + ".osg" );
+
   // write debug file
-  // this->_writeDebugFile( _workingDirectory + _baseFilename + ".debug.txt" );
+//#ifdef _DEBUG
+//  this->_writeDebugFile( _workingDirectory + _baseFilename + ".debug.txt" );
+//#endif
+//
+//#ifdef _RELEASE
+//  this->_writeDebugFile( _workingDirectory + _baseFilename + ".debug.txt" );
+//#endif
 }
 
 
@@ -331,7 +349,7 @@ void ToFVUNS::_processFile ( const std::string &file, Grid2D &grid )
       for( unsigned int j = 0; j < jsize; ++j )  
       {
 
-        unsigned int index ( j + ( i * jsize ) );
+        unsigned int index ( i + ( j * isize ) );
 
         h1 = 0;h2 = 0;h3 = 0;h4 = 0;
 
@@ -587,13 +605,13 @@ void ToFVUNS::_writeResults( const std::string &name, std::ofstream* ofs )
           try
           {
           // P value
-          Usul::Types::Float32 value ( static_cast< Usul::Types::Float32 > ( _values.at( valueNumber ).at( k ).at( index ) ) );
+          Usul::Types::Float32 value ( static_cast< Usul::Types::Float32 > ( _values.at( valueNumber ).at( zsize - 1 - k ).at( index ) ) );
           ofs->write ( reinterpret_cast< char* > ( &value ), sizeof( Usul::Types::Float32 ) );
           }
           catch( ... )
           {
             std::cout << "Failed on i=" << i << " -- j=" << j << "  -- k=" << k << std::endl;
-            std::cout << "Index is: " << index << "Size of values at k=" << k << " is: " << _values.at( k ).size() << std::endl;
+            std::cout << "Index is: " << index << "Size of values at k=" << k << " is: " << _values.at( valueNumber ).size() << std::endl;
 
           }
           // U value
@@ -792,18 +810,22 @@ void ToFVUNS::_writeGridFile( const std::string &name )
       for( unsigned int j = 0; j < yGridSize; ++j )
       {
         // yvalue calculation X(I)=REAL(I-1)/REAL(NX-2)*2.*PI
-      float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 1 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
+      //float yGridValue = ( static_cast< float > ( j ) / static_cast< float > ( yGridSize - 1 ) ) * 2 * static_cast< float > ( Usul::Math::PIE );
         
         // resize the index grid at jk
         _indexGrid.at( k ).at( j ).resize( xGridSize );
         for( unsigned int i = 0; i < xGridSize; ++i )
         {
           // Set the xgrid
-          float xGridValue = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
+          //float xGridValue = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
 
           // Set the final grid values for this iteration
-          xValues.at( index ) = xGridValue * static_cast< Float32 > ( cos( static_cast< double > ( yGridValue ) ) );
-          yValues.at( index ) = xGridValue * static_cast< Float32 > ( sin( static_cast< double > ( yGridValue ) ) );
+          //xValues.at( index ) = xGridValue * static_cast< Float32 > ( cos( static_cast< double > ( yGridValue ) ) );
+          //yValues.at( index ) = xGridValue * static_cast< Float32 > ( sin( static_cast< double > ( yGridValue ) ) );
+          //zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );
+
+          xValues.at( index ) = static_cast< Float32 > ( _grid.at( 0 ).at( i ) );
+          yValues.at( index ) = static_cast< Float32 > ( _grid.at( 2 ).at( j ) );
           zValues.at( index ) = static_cast< Float32 > ( _grid.at( 1 ).at( k ) );
 
           // push back the index counter
@@ -985,7 +1007,7 @@ void ToFVUNS::_writeElementNodes( std::ofstream* ofs )
       for( unsigned int i = 0; i < _dimensions[0] - 1; ++i )
       {
 
-#if 1
+#if 0
         // vertex 1
         Uint32 v1 ( _indexGrid.at( k ).at( j ).at( i ) );
 
@@ -1072,6 +1094,9 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
   if( false == ofs.is_open() )
     throw std::runtime_error ( "Error 1188374386: Failed to open file: " + filename );
 
+  // output debug file write notification
+  std::cout << "\nWriting debug file: " << filename << std::endl;
+
   // output the grid dimensions
   std::string gridMessage( Usul::Strings::format( "Grid Dimensions ( ", _dimensions[0], " x " , _dimensions[1] , " x " , _dimensions[2] , " )\n" ) );
   ofs << gridMessage.c_str();
@@ -1114,7 +1139,7 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
   ofs << "------------------- End of Results Data ------------------\n\n\n";
 
   // Index data for elements
-  ofs << "******************* Element Node Index Data **********************";
+  ofs << "******************* Element Node Index Data **********************\n";
   ofs << "I\tJ\tK\tIndex\n";
 
   for( unsigned int k = 0; k < _dimensions[2]; ++k )
@@ -1133,4 +1158,187 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
   // close the file
   ofs.close();
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// write an osg file for debugging
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ToFVUNS::_findMinMax( float& min, float& max )
+{
+  unsigned int xsize( _dimensions[0] );
+  unsigned int ysize( _dimensions[1] );
+  unsigned int zsize( _dimensions[2] );
+  
+  min = ( static_cast< float > ( _values.at( 2 ).at( 0 ).at( 0 ) ) );
+  max = min;
+
+  for( unsigned int k = 0; k < zsize; ++k )
+  {     
+    for( unsigned int j = 0; j < ysize; ++j )
+    {        
+      for( unsigned int i = 0; i < xsize; ++i )
+      {  
+        unsigned int index ( i + ( j * ( xsize ) ) );
+        float value ( static_cast< float > ( _values.at( 2 ).at( k ).at( index ) ) );
+
+        if( value < min )
+        {
+          min = value;
+        }
+        if( value > max )
+        {
+          max = value;
+        }
+      }
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Initialize the color ramp
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ToFVUNS::_intializeColorRamp()
+{
+  unsigned int r ( 0 ), g( 0 ), b( 0 );
+
+  for( b = 254; b != 0; b-=1 )
+  {
+    Usul::Math::Vec3ui color ( r, g, b );
+    _colorRamp.push_back( color );
+
+    g+= 1;
+  }
+  for( r = 0; r < 255; r+=1 )
+	{
+    Usul::Math::Vec3ui color ( r, g, b );
+    _colorRamp.push_back( color );
+
+    g -= 1;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// write an osg file for debugging
+//
+///////////////////////////////////////////////////////////////////////////////
+
+osg::Vec3 ToFVUNS::_getInterpolatedValue( unsigned int x, unsigned int y, unsigned int z, float min, float max )
+{
+  osg::Vec3 color ( 0.0, 0.0, 0.0 );
+
+  unsigned int index ( ( x ) + ( ( y ) * ( _dimensions[0] ) ) );
+  float value ( static_cast< float > ( _values.at( 2 ).at( z ).at( index ) ) );
+
+  float percentage ( ( value - min ) / ( max - min ) );
+
+  unsigned int colorIndex ( percentage * _colorRamp.size() );
+
+  if( colorIndex < _colorRamp.size() && colorIndex >= 0 )
+  {
+    Usul::Math::Vec3ui colorAtIndex( _colorRamp.at( colorIndex ) );
+    color = osg::Vec3( colorAtIndex[0], colorAtIndex[1], colorAtIndex[2] );
+  }
+
+  return color;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// write an osg file for debugging
+//
+///////////////////////////////////////////////////////////////////////////////
+
+void ToFVUNS::_writeOsgSlice( unsigned int y, const std::string& filename )
+{ 
+  // useful typedefs
+  typedef osg::ref_ptr< osg::Group > GroupPtr;
+  typedef osg::ref_ptr< osg::Geometry > GeometryPtr;
+  typedef osg::ref_ptr< osg::Geode > GeodePtr;
+  typedef osg::ref_ptr< osg::Vec3Array > Vec3ArrayPtr;
+
+  // grab the grid points
+  Grid1D xGrid ( _grid.at( 0 ) );
+  Grid1D yGrid ( _grid.at( 2 ) );
+  Grid1D zGrid ( _grid.at( 1 ) ) ;
+
+  // initialize the color ramp
+  this->_intializeColorRamp();
+
+  // get the min and max of the w values
+  float min ( 0 );
+  float max( 0 );
+  this->_findMinMax( min, max );
+
+  // create the points array
+  Vec3ArrayPtr points ( new osg::Vec3Array );
+
+  // create the color array
+  Vec3ArrayPtr colors ( new osg::Vec3Array );
+
+  // create the normals array
+  Vec3ArrayPtr normals ( new osg::Vec3Array );
+
+  for( unsigned int i = 0; i < xGrid.size() - 1; ++i )
+  {
+    for( unsigned int k = 0; k < zGrid.size() - 1; ++k )
+    {
+      osg::Vec3f p0 ( xGrid.at( i     ), yGrid.at( y ), zGrid.at( k     ) );
+      osg::Vec3f p1 ( xGrid.at( i + 1 ), yGrid.at( y ), zGrid.at( k     ) );
+      osg::Vec3f p2 ( xGrid.at( i     ), yGrid.at( y ), zGrid.at( k + 1 ) );
+      osg::Vec3f p3 ( xGrid.at( i + 1 ), yGrid.at( y ), zGrid.at( k + 1 ) );
+
+      osg::Vec3f c0 ( this->_getInterpolatedValue( i    , y, k    , min, max ) );
+      osg::Vec3f c1 ( this->_getInterpolatedValue( i + 1, y, k    , min, max ) );
+      osg::Vec3f c2 ( this->_getInterpolatedValue( i    , y, k + 1, min, max ) );
+      osg::Vec3f c3 ( this->_getInterpolatedValue( i + 1, y, k + 1, min, max ) );
+
+      points->push_back( p0 );points->push_back( p1 );points->push_back( p3 );
+      points->push_back( p0 );points->push_back( p3 );points->push_back( p2 );
+
+      colors->push_back( c0 );colors->push_back( c1 );colors->push_back( c3 );
+      colors->push_back( c0 );colors->push_back( c3 );colors->push_back( c2 );
+
+      for( unsigned int n = 0; n < 6; ++n )
+      {
+        normals->push_back( osg::Vec3f( 0.0f, 1.0f, 0.0f ) );
+      }
+
+    }
+  }
+
+  // create the geometry
+  GeometryPtr geometry ( new osg::Geometry );
+
+  // set the normal array and binding
+  geometry->setNormalArray( normals.get() );
+  geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+
+  // set the color array and binding
+  geometry->setColorArray( colors.get() );
+  geometry->setColorBinding( osg::Geometry::BIND_PER_VERTEX );
+
+  // set the vertices and create the primitives
+  geometry->setVertexArray( points.get() );
+  geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, 0, points->size() ) );
+
+  // create the geode and add the geometry
+  GeodePtr geode ( new osg::Geode );
+  geode->addDrawable( geometry.get() );
+
+  // create the group and add the geode
+  GroupPtr scene ( new osg::Group );
+  scene->addChild( geode.get() );
+
+  // write the osg file
+  std::cout << "Writing OSG file for: " << filename << "..." << std::endl;
+  osgDB::writeNodeFile( *scene.get(), filename );
 }

@@ -1160,6 +1160,8 @@ void ToFVUNS::_writeDebugFile( const std::string& filename )
 
 }
 
+#define CHANNEL_TO_TEST 0
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // write an osg file for debugging
@@ -1172,8 +1174,8 @@ void ToFVUNS::_findMinMax( float& min, float& max )
   unsigned int ysize( _dimensions[1] );
   unsigned int zsize( _dimensions[2] );
   
-  min = ( static_cast< float > ( _values.at( 2 ).at( 0 ).at( 0 ) ) );
-  max = min;
+  min = std::numeric_limits<float>::max(); //( static_cast< float > ( _values.at( 2 ).at( 0 ).at( 0 ) ) );
+  max = std::numeric_limits<float>::min();
 
   for( unsigned int k = 0; k < zsize; ++k )
   {     
@@ -1182,7 +1184,7 @@ void ToFVUNS::_findMinMax( float& min, float& max )
       for( unsigned int i = 0; i < xsize; ++i )
       {  
         unsigned int index ( i + ( j * ( xsize ) ) );
-        float value ( static_cast< float > ( _values.at( 2 ).at( k ).at( index ) ) );
+        float value ( static_cast< float > ( _values.at( CHANNEL_TO_TEST ).at( k ).at( index ) ) );
 
         if( value < min )
         {
@@ -1235,7 +1237,7 @@ osg::Vec3 ToFVUNS::_getInterpolatedValue( unsigned int x, unsigned int y, unsign
   osg::Vec3 color ( 0.0, 0.0, 0.0 );
 
   unsigned int index ( ( x ) + ( ( y ) * ( _dimensions[0] ) ) );
-  float value ( static_cast< float > ( _values.at( 2 ).at( z ).at( index ) ) );
+  float value ( static_cast< float > ( _values.at( CHANNEL_TO_TEST ).at( z ).at( index ) ) );
 
   float percentage ( ( value - min ) / ( max - min ) );
 

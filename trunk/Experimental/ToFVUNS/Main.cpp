@@ -30,12 +30,9 @@ int main ( int argc, char **argv )
 {
   try
   {
-    // Single threaded execution.
-    // Usul::Threads::Mutex::createFunction ( &Usul::Threads::newSingleThreadedMutexStub );
-
     // Declare and execute the program.
-    ToFVUNS::RefPtr program ( new ToFVUNS ( argc, argv ) );
-    program->run();
+    ToFVUNS program ( argc, argv );
+    program.run();
 
     // It worked.
     return 0;

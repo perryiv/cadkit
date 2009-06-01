@@ -1304,8 +1304,8 @@ void ToFVUNS::_writeOsgSlice( unsigned int y, const std::string& filename )
       points->push_back( p0 );points->push_back( p1 );points->push_back( p3 );
       points->push_back( p0 );points->push_back( p3 );points->push_back( p2 );
 
-      colors->push_back( c0 );colors->push_back( c1 );colors->push_back( c3 );
-      colors->push_back( c0 );colors->push_back( c3 );colors->push_back( c2 );
+      colors->push_back( c0 / 255 );colors->push_back( c1 / 255 );colors->push_back( c3 / 255 );
+      colors->push_back( c0 / 255 );colors->push_back( c3 / 255 );colors->push_back( c2 / 255 );
 
       for( unsigned int n = 0; n < 6; ++n )
       {

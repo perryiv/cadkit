@@ -32,7 +32,6 @@
 #include "Usul/Base/Referenced.h"
 #include "Usul/Pointers/Pointers.h"
 #include "Usul/Interfaces/IUnknown.h"
-#include "Usul/Interfaces/ILoadColorFile.h"
 #include "Usul/Predicates/CloseFloat.h"
 #include "Usul/Predicates/LessVector.h"
 #include "Usul/Types/Types.h"
@@ -89,7 +88,6 @@ public:
   typedef std::vector< unsigned int > Connected;
   typedef std::vector < Connected > Subsets;
   typedef osg::ref_ptr< osg::Group > GroupPtr;
-  //typedef ILoadColorFile::HeaderInfo HeaderInfo;
   typedef std::vector< float > HeaderInfo;
 
   // Type information.

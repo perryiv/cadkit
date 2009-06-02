@@ -13,7 +13,6 @@
 #include "Experimental/GeneralShader/GeneralShader/Commands/SetShaderCommand.h"
 #include "Experimental/GeneralShader/GeneralShader/Commands/ReadSettingsCommand.h"
 
-#include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
 #include "Usul/Interfaces/IClippingDistance.h"

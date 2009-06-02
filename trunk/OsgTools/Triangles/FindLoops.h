@@ -11,6 +11,7 @@
 #define __OSG_TOOLS_TRIANGLES_FIND_LOOPS__
 
 #include "Usul/Types/Types.h"
+#include "Usul/System/Clock.h"
 
 #include "OsgTools/Triangles/Predicates.h"
 #include "OsgTools/Triangles/TriangleFunctor.h"

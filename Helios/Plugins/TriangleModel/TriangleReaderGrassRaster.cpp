@@ -531,20 +531,19 @@ void TriangleReaderGrassRaster::_loadTexture ( const std::string& filename )
   }
   std::cout << "Texture file: " << filename << " found.  Loading texture file..." << std::endl;
 
-  // Get interface to triangle set for loading a color file
-  Usul::Interfaces::ILoadColorFile::QueryPtr colorFile ( _document );
+  if ( true == _document.valid() )
+  {
+    // Create header vector from header information
+    std::vector< float > header ( 0 );
 
-
-  // Create header vector from header information
-  std::vector< float > header ( 0 );
-
-  header.push_back( _header.rows );
-  header.push_back( _header.cols );
-  header.push_back( _header.west );
-  header.push_back( _header.south );
-  header.push_back( _header.ns_resol );
-  
-  colorFile->loadColorFile( filename, header );
+    header.push_back( _header.rows );
+    header.push_back( _header.cols );
+    header.push_back( _header.west );
+    header.push_back( _header.south );
+    header.push_back( _header.ns_resol );
+    
+    _document->loadColorFile ( filename, header );
+  }
 }
 
 

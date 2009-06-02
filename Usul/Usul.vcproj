@@ -907,23 +907,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IDatabaseConnection.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IDatabasePager.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Interfaces\IDecimateTriangles.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IDeleteAllConnected.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IDeletePrimitive.h"
 					>
 				</File>
 				<File
@@ -1015,10 +1003,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IGetLoops.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IGetOptions.h"
 					>
 				</File>
@@ -1036,10 +1020,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IGroup.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IGroupPrimitives.h"
 					>
 				</File>
 				<File
@@ -1071,10 +1051,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IKeepAllConnected.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IKeyListener.h"
 					>
 				</File>
@@ -1092,10 +1068,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\ILayerModifyGUIQt.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ILoadColorFile.h"
 					>
 				</File>
 				<File
@@ -1267,10 +1239,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\IRenderingPasses.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\IRenderListener.h"
 					>
 				</File>
@@ -1316,10 +1284,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\IShadeModel.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IShowNewPrimitives.h"
 					>
 				</File>
 				<File
@@ -1395,14 +1359,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Interfaces\ITriangle.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\ITriangleSV.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Interfaces\ITriangulate.h"
 					>
 				</File>
@@ -1452,14 +1408,6 @@
 				</File>
 				<File
 					RelativePath=".\Interfaces\GUI\IUpdateTreeControls.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IVaporIntrusionGUI.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Interfaces\IVertices.h"
 					>
 				</File>
 				<File

@@ -105,52 +105,20 @@ Usul::Interfaces::IUnknown *TriangleDocument::queryInterface ( unsigned long iid
   {
   case Usul::Interfaces::IFlipNormals::IID:
     return static_cast < Usul::Interfaces::IFlipNormals * > ( this );
-  case Usul::Interfaces::IFlipNormal::IID:
-    return static_cast < Usul::Interfaces::IFlipNormal * > ( this );
   case Usul::Interfaces::IAddTriangleWithSharedVertex::IID:
     return static_cast < Usul::Interfaces::IAddTriangleWithSharedVertex* > ( this );
   case Usul::Interfaces::IAddTrangleWithOsgVec3f::IID:
     return static_cast < Usul::Interfaces::IAddTrangleWithOsgVec3f* > ( this );
-  case Usul::Interfaces::IFindLoops::IID:
-    return static_cast < Usul::Interfaces::IFindLoops* > ( this );
-  case Usul::Interfaces::IGetLoops::IID:
-    return static_cast < Usul::Interfaces::IGetLoops* > ( this );
   case Usul::Interfaces::IGetVertex::IID:
     return static_cast < Usul::Interfaces::IGetVertex* > ( this );
-  case Usul::Interfaces::IDeletePrimitive::IID:
-    return static_cast < Usul::Interfaces::IDeletePrimitive* > ( this );
-  case Usul::Interfaces::IKeepAllConnected::IID:
-    return static_cast < Usul::Interfaces::IKeepAllConnected* > ( this );
-  case Usul::Interfaces::IDeleteAllConnected::IID:
-    return static_cast < Usul::Interfaces::IDeleteAllConnected* > ( this );
-  case Usul::Interfaces::IGroupPrimitives::IID:
-      return static_cast < Usul::Interfaces::IGroupPrimitives* > ( this );
   case Usul::Interfaces::IBuildScene::IID:
     return static_cast < Usul::Interfaces::IBuildScene* > ( this );
-  case Usul::Interfaces::IGetVertexNormal::IID:
-    return static_cast < Usul::Interfaces::IGetVertexNormal* > ( this );
-  case Usul::Interfaces::IGetTriangleNormal::IID:
-    return static_cast < Usul::Interfaces::IGetTriangleNormal* > ( this );
   case Usul::Interfaces::IAddSharedVertex::IID:
     return static_cast < Usul::Interfaces::IAddSharedVertex* > ( this );
   case Usul::Interfaces::IGetBoundingBox::IID:
     return static_cast < Usul::Interfaces::IGetBoundingBox* > ( this );
-  case Usul::Interfaces::ITriangle::IID:
-    return static_cast < Usul::Interfaces::ITriangle* > ( this );
-  case Usul::Interfaces::ITriangleSV::IID:
-    return static_cast < Usul::Interfaces::ITriangleSV* > ( this );
-  case Usul::Interfaces::IVertices::IID:
-    return static_cast < Usul::Interfaces::IVertices* > ( this );
-  case Usul::Interfaces::IColorsPerVertex::IID:
-    return static_cast < Usul::Interfaces::IColorsPerVertex* > ( this );
   case Usul::Interfaces::IMemoryPool::IID:
     return static_cast < Usul::Interfaces::IMemoryPool* > ( this );
-  case Usul::Interfaces::IMaterials::IID:
-    return static_cast < Usul::Interfaces::IMaterials* > ( this );
-  case Usul::Interfaces::IDisplaylists::IID:
-    return static_cast < Usul::Interfaces::IDisplaylists* > ( this );
-    case Usul::Interfaces::ILoadColorFile::IID:
-    return static_cast < Usul::Interfaces::ILoadColorFile* > ( this );
   default:
     return BaseClass::queryInterface ( iid );
   }
@@ -485,11 +453,8 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
   // Show the cancel button
   Usul::Interfaces::ICancelButton::ShowHide cancel ( caller );
 
-  // Update functor for finding loops
-  Usul::Interfaces::IFindLoops::UpdateFindingLoops updateLoops ( 0.0, 0.90, caller );
-
   // Update for finding inner loops
-  Usul::Interfaces::IProgressBar::UpdateProgressBar updateProgress ( 0.90, 1.0, caller );
+  Usul::Interfaces::IProgressBar::UpdateProgressBar updateProgress ( 0.0, 1.0, caller );
 
   // Need to make sure all triangles and shared vertices are unvisited
   _triangles->setAllUnvisited();
@@ -507,7 +472,7 @@ void TriangleDocument::findLoops ( Usul::Interfaces::IUnknown* caller )
   _uncapped.clear();
 
   // Find the loops that need to be triangulated.
-  OsgTools::Triangles::capPolygons ( triangles, _uncapped, adjacent, 3, updateLoops );
+  OsgTools::Triangles::capPolygons ( triangles, _uncapped, adjacent, 3, updateProgress );
 
   // Interface to flush event queue
   Usul::Interfaces::IFlushEvents::ValidQueryPtr flush ( caller );

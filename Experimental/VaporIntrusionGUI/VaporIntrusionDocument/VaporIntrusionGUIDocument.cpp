@@ -11,7 +11,6 @@
 #include "VaporIntrusionGUIDocument.h"
 #include "VaporIntrusionGUI/Interfaces/IVPIDelegate.h"
 
-#include "Usul/Interfaces/IDisplaylists.h"
 #include "Usul/Interfaces/IViewMatrix.h"
 #include "Usul/Interfaces/IViewPort.h"
 #include "Usul/Adaptors/MemberFunction.h"

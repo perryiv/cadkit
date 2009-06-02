@@ -47,6 +47,8 @@
 
 #include "osgUtil/GLObjectsVisitor"
 
+#include "boost/bind.hpp"
+
 USUL_IMPLEMENT_IUNKNOWN_MEMBERS ( FlashDocument, FlashDocument::BaseClass );
 USUL_FACTORY_REGISTER_CREATOR ( FlashDocument );
 
@@ -873,20 +875,9 @@ void FlashDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
     if ( view->items().size() > 0 )
       view->addSeparator();
     
-    view->append ( new ToggleButton ( 
-                                     UC::genericToggleCommand ( "Draw Bounding Boxes", 
-                                                             UA::memberFunction<void> ( this, &FlashDocument::drawBBox ), 
-                                                             UA::memberFunction<bool> ( this, &FlashDocument::isDrawBBox ) ) ) );
-    
-    view->append ( new ToggleButton ( 
-                                     UC::genericToggleCommand ( "Draw Points", 
-                                                                UA::memberFunction<void> ( this, &FlashDocument::drawPoints ), 
-                                                                UA::memberFunction<bool> ( this, &FlashDocument::isDrawPoints ) ) ) );
-    
-    view->append ( new ToggleButton ( 
-                                     UC::genericToggleCommand ( "Draw Volume", 
-                                                                UA::memberFunction<void> ( this, &FlashDocument::drawVolume ), 
-                                                                UA::memberFunction<bool> ( this, &FlashDocument::isDrawVolume ) ) ) );
+    view->append ( ToggleButton::create ( "Draw Bounding Boxes", boost::bind ( &FlashDocument::drawBBox, this, _1 ), boost::bind ( &FlashDocument::isDrawBBox, this ) ) );
+    view->append ( ToggleButton::create ( "Draw Points", boost::bind ( &FlashDocument::drawPoints, this, _1 ), boost::bind ( &FlashDocument::isDrawPoints, this ) ) );
+    view->append ( ToggleButton::create ( "Draw Volume", boost::bind ( &FlashDocument::drawVolume, this, _1 ), boost::bind ( &FlashDocument::isDrawVolume, this ) ) );
     
     MenuKit::Menu::RefPtr tf ( new MenuKit::Menu ( "Transfer Functions" ) );
     view->append ( tf.get() );
@@ -895,10 +886,8 @@ void FlashDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown * 
     for ( ConstIterator iter = _transferFunctions.begin(); iter != _transferFunctions.end(); ++iter )
     {
       const long num ( std::distance<ConstIterator> ( _transferFunctions.begin(), iter ) );
-      tf->append ( new MenuKit::RadioButton ( 
-                                    Usul::Commands::genericCheckCommand ( Usul::Strings::format ( num ), 
-                                                                         Usul::Adaptors::bind1<void> ( num, Usul::Adaptors::memberFunction<void> ( this, &FlashDocument::transferFunction ) ), 
-                                                                         Usul::Adaptors::bind1<bool> ( num, Usul::Adaptors::memberFunction<bool> ( this, &FlashDocument::isTransferFunction ) ) ) ) );
+      tf->append ( MenuKit::RadioButton::create ( Usul::Strings::format ( num ), 
+        boost::bind ( &FlashDocument::transferFunction, this, num ), boost::bind ( &FlashDocument::isTransferFunction, this, num ) ) );
     }
   }
 }

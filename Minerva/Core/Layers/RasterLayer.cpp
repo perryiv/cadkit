@@ -65,7 +65,7 @@ RasterLayer::RasterLayer() :
   // Initialize the reader.
   this->_imageReaderFind ( "png" );
   
-  // Set an inital guid.
+  // Set an initial guid.
   this->objectId ( Usul::Functions::GUID::generate() );
 }
 

@@ -690,13 +690,8 @@ void MainWindow::_initRecentFilesMenu()
 
   _recentFilesMenu->addSeparator();
 
-  // Useful typedefs.
-  typedef void (MainWindow::*Function)();
-  typedef Usul::Adaptors::MemberFunction < void, MainWindow*, Function > MemFun;
-  typedef Usul::Commands::GenericCommand < MemFun > GenericCommand;
-
   // Add a clear button.
-  _recentFilesMenu->append ( new MenuKit::Button ( new GenericCommand ( "Clear", MemFun ( this, &MainWindow::_clearRecentFiles ) ) ) );
+  _recentFilesMenu->append ( new MenuKit::Button ( Usul::Commands::genericCommand ( "Clear", boost::bind ( &MainWindow::_clearRecentFiles, this ) ) ) );
 
   // Enable the menu only if there are recent files.
   _recentFilesMenu->enabled ( false == _recentFiles.empty() );

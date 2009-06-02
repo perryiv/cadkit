@@ -22,7 +22,6 @@
 #include "Usul/Interfaces/ITimeoutAnimate.h"
 #include "Usul/Interfaces/ITimeoutSpin.h"
 #include "Usul/Interfaces/IModifiedObserver.h"
-#include "Usul/Interfaces/IRenderLoop.h"
 #include "Usul/Interfaces/IRedraw.h"
 #include "Usul/Interfaces/IMenuAdd.h"
 #include "Usul/Interfaces/IToolBarAdd.h"
@@ -50,7 +49,6 @@ class HELIOS_QT_VIEWS_OSG_EXPORT Viewer : public QGLWidget,
                                           public Usul::Interfaces::ITimeoutAnimate,
                                           public Usul::Interfaces::ITimeoutSpin,
                                           public Usul::Interfaces::IModifiedObserver,
-                                          public Usul::Interfaces::IRenderLoop,
                                           public Usul::Interfaces::IRedraw,
                                           public Usul::Interfaces::IMenuAdd,
                                           public Usul::Interfaces::IQuestion,

@@ -358,7 +358,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   add.setEnabled( al.valid() );
   
   // Remove button.
-  QtTools::Action remove ( USUL_MAKE_COMMAND ( "Remove", "", this, &LayersTree::_removeSelectedLayers ) );
+  QtTools::Action remove ( Usul::Commands::genericCommand ( "Remove", boost::bind ( &LayersTree::_removeSelectedLayers, this ) ) );
   remove.setText ( "Remove" );
   remove.setToolTip ( "Remove selected layers." );
   
@@ -381,7 +381,7 @@ void LayersTree::_onContextMenuShow ( const QPoint& pos )
   Usul::Interfaces::IUnknown::QueryPtr editor ( this->_findEditor ( unknown.get() ) );
   
   // Properties button.
-  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", Usul::Adaptors::bind3 ( unknown.get(), parent.get(), editor.get(), Usul::Adaptors::memberFunction ( this, &LayersTree::_editLayerProperties ) ), Usul::Commands::TrueFunctor() ) );
+  QtTools::Action properties ( Usul::Commands::genericCommand ( "Properties...", boost::bind ( &LayersTree::_editLayerProperties, this, unknown.get(), parent.get(), editor.get() ) ) );
   properties.setToolTip ( tr ( "Show the property dialog for this layer" ) );
   properties.setEnabled ( unknown.valid() && editor.valid() );
   

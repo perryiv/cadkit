@@ -16,8 +16,6 @@
 #include "MenuKit/MenuCommands.h"
 
 #include "Usul/Commands/Command.h"
-#include "Usul/Interfaces/IUpdateEnable.h"
-#include "Usul/Interfaces/IUpdateCheck.h"
 
 #include "boost/algorithm/string/erase.hpp"
 

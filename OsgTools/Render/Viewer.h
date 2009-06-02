@@ -49,8 +49,6 @@
 #include "Usul/Interfaces/IRenderInfoOSG.h"
 #include "Usul/Interfaces/IRenderListener.h"
 #include "Usul/Interfaces/IRenderNotify.h"
-#include "Usul/Interfaces/IRenderLoop.h"
-#include "Usul/Interfaces/IRenderingPasses.h"
 #include "Usul/Interfaces/IScreenCapture.h"
 #include "Usul/Interfaces/ISnapShot.h"
 #include "Usul/Interfaces/ISpin.h"
@@ -136,8 +134,6 @@ class OSG_TOOLS_EXPORT Viewer : public Usul::Base::Object,
                                 public Usul::Interfaces::IMouseEventSubject,
                                 public Usul::Interfaces::IClippingDistance,
                                 public Usul::Interfaces::IViewport,
-                                public Usul::Interfaces::IRenderLoop,
-                                public Usul::Interfaces::IRenderingPasses,
                                 public Usul::Interfaces::IViewMode,
 																public Usul::Interfaces::IModelsScene,
                                 public Usul::Interfaces::IRenderInfoOSG,
@@ -373,6 +369,10 @@ public:
   // Render the scene.
   void                  render();
 
+  /// Get/Set the number of rendering passes (IRenderingPasses).
+  virtual void                  renderingPasses ( unsigned int number );
+  virtual unsigned int          renderingPasses () const;
+
   // Resize the viewer
   void                  resize ( unsigned int width, unsigned int height );
 
@@ -429,7 +429,7 @@ public:
 
   // Set/Get two sided lighting
   void                  twoSidedLightingSet ( bool twoSided );
-  bool                  twoSidedLightingGet () const;
+  bool                  twoSidedLightingGet() const;
 
   // Get the light.
   osg::Light *          light();
@@ -442,6 +442,10 @@ public:
   // Set/get the scatter scale.
   double                scatterScale() const;
   void                  scatterScale ( double );
+
+  /// Usul::Interfaces::IShadeModel
+  virtual void                      shadeModel ( IShadeModel::Mode mode );
+  virtual IShadeModel::Mode         shadeModel() const;
 
   // Get/set the stereo mode
   void                  stereoMode ( unsigned int );
@@ -571,11 +575,7 @@ protected:
 
   /// Usul::Interfaces::IViewMatrix
   virtual void                      setViewMatrix ( const osg::Matrixd& );
-  virtual osg::Matrixd              getViewMatrix ( ) const;
-
-  /// Usul::Interfaces::IShadeModel
-  virtual void                      shadeModel ( IShadeModel::Mode mode );
-  virtual IShadeModel::Mode         shadeModel() const;
+  virtual osg::Matrixd              getViewMatrix() const;
 
   /// Usul::Interfaces::IOpenSceneGraph
   /// Get the pointer to the base class for all OSG objects.
@@ -715,14 +715,6 @@ protected:
 
   // Usul::Interfaces::IUpdateSceneVisitor.
   virtual NodeVisitor *         getUpdateSceneVisitor ( Usul::Interfaces::IUnknown *caller );
-
-  /// Get/Set render loop flag (IRenderLoop).
-  virtual void                  renderLoop ( bool b );
-  virtual bool                  renderLoop () const;
-
-  /// Get/Set the number of rendering passes (IRenderingPasses).
-  virtual void                  renderingPasses ( unsigned int number );
-  virtual unsigned int          renderingPasses () const;
 
 	// Get the model's scene (IModelsScene).
   virtual const osg::Group *    modelsScene() const;

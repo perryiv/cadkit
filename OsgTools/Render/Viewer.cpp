@@ -2281,10 +2281,6 @@ Usul::Interfaces::IUnknown *Viewer::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::IClippingDistance * > ( this );
   case Usul::Interfaces::IViewport::IID:
     return static_cast < Usul::Interfaces::IViewport * > ( this );
-  case Usul::Interfaces::IRenderLoop::IID:
-    return static_cast < Usul::Interfaces::IRenderLoop * > ( this );
-  case Usul::Interfaces::IRenderingPasses::IID:
-    return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
   case Usul::Interfaces::IAxes::IID:
     return static_cast < Usul::Interfaces::IAxes * > ( this );
   case Usul::Interfaces::IMouseEventSubject::IID:
@@ -4958,35 +4954,6 @@ void Viewer::setClippingDistances ( double nearDist, double farDist )
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  Set render loop flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Viewer::renderLoop ( bool b )
-{
-  // Redirect to the caller.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( this->caller() );
-  if ( rl.valid() )
-    rl->renderLoop ( b );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Get render loop flag.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-bool Viewer::renderLoop() const
-{
-  // Redirect to the caller.
-  Usul::Interfaces::IRenderLoop::QueryPtr rl ( const_cast < IUnknown * > ( this->caller() ) );
-  return rl.valid() ? rl->renderLoop ( ) : false ;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  Get the caller.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -5046,11 +5013,6 @@ void Viewer::stateSave() const
     reg["bottom_right"] = this->backgroundColor ( Corners::BOTTOM_RIGHT );
   }
   {
-    // Save properties in registry.
-    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
-    reg["state"] = this->renderLoop();
-  }
-  {
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS] );
     reg[Keys::LOW_LODS ][doc] = this->useLowLodsGet();
     reg[Keys::HIGH_LODS][doc] = this->useHighLodsGet();
@@ -5094,11 +5056,6 @@ void Viewer::stateLoad()
     this->backgroundColor ( reg["top_right"].get<osg::Vec4>    ( this->backgroundColor ( Corners::TOP_RIGHT    ) ), Corners::TOP_RIGHT    );
     this->backgroundColor ( reg["bottom_left"].get<osg::Vec4>  ( this->backgroundColor ( Corners::BOTTOM_LEFT  ) ), Corners::BOTTOM_LEFT  );
     this->backgroundColor ( reg["bottom_right"].get<osg::Vec4> ( this->backgroundColor ( Corners::BOTTOM_RIGHT ) ), Corners::BOTTOM_RIGHT );
-  }
-  {
-    // Get properties from registry.
-    Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS][Keys::RENDER_LOOP][doc] );
-    this->renderLoop ( reg["state"].get<bool> ( this->renderLoop() ) );
   }
   {
     Usul::Registry::Node &reg ( Reg::instance()[Sections::VIEWER_SETTINGS] );

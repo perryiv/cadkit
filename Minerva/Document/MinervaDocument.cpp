@@ -62,6 +62,7 @@
 #include "Usul/Adaptors/Bind.h"
 #include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Documents/Manager.h"
@@ -1206,15 +1207,6 @@ bool MinervaDocument::showPastEvents() const
 void MinervaDocument::preRenderNotify ( Usul::Interfaces::IUnknown *caller )
 {
   USUL_TRACE_SCOPE;
-  Guard guard ( this );
-
-  for ( Bodies::iterator iter = _bodies.begin(); iter != _bodies.end(); ++iter )
-  {
-    Body::RefPtr body ( *iter );
-    if ( body.valid() )
-      body->preRender ( caller );
-  }
-
   BaseClass::preRenderNotify ( caller );
 }
 
@@ -1235,7 +1227,8 @@ void MinervaDocument::postRenderNotify ( Usul::Interfaces::IUnknown *caller )
     Body::RefPtr body ( *iter );
     if ( body.valid() )
     {
-      body->postRender ( caller );
+      // Remove all tiles that are ready.
+      body->purgeTiles();
 
       // This is needed.  When a job finishes, the finished callback requests a redraw.
       // In the subsequent cull traversal, the new texture will be added to the scene
@@ -1267,6 +1260,8 @@ void MinervaDocument::addView ( Usul::Interfaces::IView *view )
 
   // Call the base class' on first.
   BaseClass::addView ( view );
+
+  // Should the code below be moved to the delegate?
 
   // Hide the axes.
   Usul::Interfaces::IAxes::QueryPtr axes ( view );
@@ -1687,59 +1682,59 @@ void MinervaDocument::menuAdd ( MenuKit::Menu& menu, Usul::Interfaces::IUnknown 
 
   // Points sub menu.
   MenuKit::Menu::RefPtr points ( new MenuKit::Menu ( "Points" ) );
-  points->append ( new Button ( UC::genericCommand ( "Size * 2", UA::bind1<void> ( 2.0, UA::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), UC::TrueFunctor() ) ) );
-  points->append ( new Button ( UC::genericCommand ( "Size / 2", UA::bind1<void> ( 0.5, UA::memberFunction<void> ( this, &MinervaDocument::_resizePoints ) ), UC::TrueFunctor() ) ) );
+  points->append ( new Button ( UC::genericCommand ( "Size * 2", boost::bind ( &MinervaDocument::_resizePoints, this, 2.0 ) ) ) );
+  points->append ( new Button ( UC::genericCommand ( "Size / 2", boost::bind ( &MinervaDocument::_resizePoints, this, 0.5 ) ) ) );
   m->append ( points.get() );
 
   MenuKit::Menu::RefPtr split ( new MenuKit::Menu ( "Split" ) );
-  split->append ( new Button ( UC::genericCommand ( "Increase Split", UA::memberFunction<void> ( this, &MinervaDocument::_increaseSplitDistance ), UC::TrueFunctor() ) ) );
-  split->append ( new Button ( UC::genericCommand ( "Decrease Split", UA::memberFunction<void> ( this, &MinervaDocument::_decreaseSplitDistance ), UC::TrueFunctor() ) ) );
+  split->append ( new Button ( UC::genericCommand ( "Increase Split", boost::bind ( &MinervaDocument::_increaseSplitDistance, this ) ) ) );
+  split->append ( new Button ( UC::genericCommand ( "Decrease Split", boost::bind ( &MinervaDocument::_decreaseSplitDistance, this ) ) ) );
 
   m->append ( split.get() );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Legend",
+  m->append ( ToggleButton::create ( "Show Legend",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showLegend ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowLegend ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowLegend ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Compass",
+  m->append ( ToggleButton::create ( "Show Compass",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showCompass ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowCompass ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowCompass ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Position",
+  m->append ( ToggleButton::create ( "Show Position",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showLatLonText ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowLatLonText ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowLatLonText ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Eye Altitude",
+  m->append ( ToggleButton::create ( "Show Eye Altitude",
                                                            UA::memberFunction<void> ( this, &MinervaDocument::showEyeAltitude ),
-                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isShowEyeAltitude ) ) ) );
+                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isShowEyeAltitude ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Job Feedback",
+  m->append ( ToggleButton::create( "Show Job Feedback",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showJobFeedback ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowJobFeedback ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Meta-Data",
+  m->append ( ToggleButton::create( "Show Meta-Data",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showMetaString ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowMetaString ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowMetaString ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Date Feedback",
+  m->append ( ToggleButton::create( "Show Date Feedback",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showDateFeedback ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowDateFeedback ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowDateFeedback ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Borders",
+  m->append ( ToggleButton::create( "Show Borders",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showBorders ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowBorders ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowBorders ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Show Skirts",
+  m->append ( ToggleButton::create( "Show Skirts",
                                                             UA::memberFunction<void> ( this, &MinervaDocument::showSkirts ),
-                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowSkirts ) ) ) );
+                                                            UA::memberFunction<bool> ( this, &MinervaDocument::isShowSkirts ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Allow Splitting",
+  m->append ( ToggleButton::create( "Allow Splitting",
                                                            UA::memberFunction<void> ( this, &MinervaDocument::allowSplit ),
-                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isAllowSplit ) ) ) );
+                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isAllowSplit ) ) );
 
-  m->append ( new ToggleButton ( UC::genericToggleCommand ( "Keep Detail",
+  m->append ( ToggleButton::create( "Keep Detail",
                                                            UA::memberFunction<void> ( this, &MinervaDocument::keepDetail ),
-                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isKeepDetail ) ) ) );
+                                                           UA::memberFunction<bool> ( this, &MinervaDocument::isKeepDetail ) ) );
 
 	this->_buildLayerMenu();
   menu.append ( _layersMenu.get() );
@@ -1784,15 +1779,15 @@ void MinervaDocument::_buildTimeSpanMenu()
   _timeSpanMenu->clear();
 
   if ( _global.valid() )
-    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( Detail::buildName ( _global.get() ),
-                                                                        UA::bind1<void> ( _global, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ),
-                                                                        UA::bind1<bool> ( _global, UA::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
+    _timeSpanMenu->append ( RadioButton::create ( Detail::buildName ( _global.get() ),
+      boost::bind ( &MinervaDocument::currentTimeSpan, this, _global ),
+      boost::bind ( &MinervaDocument::isCurrentTimeSpan, this, _global ) ) );
 
   for ( TimeSpans::iterator iter = _timeSpans.begin(); iter != _timeSpans.end(); ++iter )
   {
-    _timeSpanMenu->append ( new RadioButton ( UC::genericCheckCommand ( Detail::buildName ( (*iter).get() ),
-                                                                        UA::bind1<void> ( *iter, UA::memberFunction<void> ( this, &MinervaDocument::currentTimeSpan ) ),
-                                                                        UA::bind1<bool> ( *iter, UA::memberFunction<bool> ( this, &MinervaDocument::isCurrentTimeSpan ) ) ) ) );
+    _timeSpanMenu->append ( RadioButton::create ( Detail::buildName ( (*iter).get() ),
+      boost::bind ( &MinervaDocument::currentTimeSpan, this, *iter ),
+      boost::bind ( &MinervaDocument::isCurrentTimeSpan, this, *iter ) ) );
   }
 }
 
@@ -2366,12 +2361,14 @@ void MinervaDocument::_buildLayerSubMenu ( MenuKit::Menu& menu, Usul::Interfaces
       layerMenu->addSeparator();
 
     layerMenu->append ( new MenuKit::ToggleButton ( new Minerva::Core::Commands::ToggleShown ( node, "This Layer" ) ) );
-    layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Goto This Layer", UA::bind1<void> ( Usul::Interfaces::IUnknown::QueryPtr ( node ).get(), UA::memberFunction<void> ( this, &MinervaDocument::lookAtLayer ) ), UC::TrueFunctor() ) ) );
+    layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Goto This Layer", 
+      boost::bind ( &MinervaDocument::lookAtLayer, this, Usul::Interfaces::IUnknown::QueryPtr ( node ).get() ) ) ) );
 
     Minerva::Interfaces::IRefreshData::QueryPtr rd ( node );
     if ( rd.valid() )
     {
-      layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh This Layer", UA::memberFunction<void> ( rd, &Minerva::Interfaces::IRefreshData::refreshData ), UC::TrueFunctor() ) ) );
+      layerMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh This Layer", 
+        boost::bind ( &Minerva::Interfaces::IRefreshData::refreshData, rd ) ) ) );
     }
 
     menu.append ( layerMenu.get() );
@@ -2401,7 +2398,8 @@ void MinervaDocument::_buildLayerMenu()
   namespace UC = Usul::Commands;
 
   _layersMenu->addSeparator();
-  _layersMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh Sub-Menu", UA::memberFunction<void> ( this, &MinervaDocument::_buildLayerMenu ), UC::TrueFunctor() ) ) );
+  _layersMenu->append ( new MenuKit::Button ( UC::genericCommand ( "Refresh Sub-Menu", 
+    boost::bind ( &MinervaDocument::_buildLayerMenu, this ) ) ) );
 }
 
 
@@ -3396,7 +3394,8 @@ void MinervaDocument::contextMenuAdd ( MenuKit::Menu& menu, const Usul::Math::Ve
         const std::string lon ( Usul::Convert::Type<double,std::string>::convert ( lonLatPoint[0] ) );
         const std::string lat ( Usul::Convert::Type<double,std::string>::convert ( lonLatPoint[1] ) );
         const std::string text ( Usul::Strings::format ( lat, ", ", lon ) );
-        menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", UA::bind1<void> ( text, Usul::System::ClipBoard::addToClipboard ), UC::TrueFunctor() ) ) );
+        menu.append ( new MenuKit::Button ( UC::genericCommand ( "Copy lat/lon to clipboard", 
+          UA::bind1<void> ( text, Usul::System::ClipBoard::addToClipboard ) ) ) );
       }
     }
   }

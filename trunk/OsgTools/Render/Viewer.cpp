@@ -2564,7 +2564,7 @@ osg::Matrixd Viewer::getViewMatrix() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::shadeModel ( IShadeModel::Mode mode )
+void Viewer::shadeModelSet ( IShadeModel::Mode mode )
 {
   if( mode == IShadeModel::NONE )
     this->removeShadeModel();
@@ -2582,7 +2582,7 @@ void Viewer::shadeModel ( IShadeModel::Mode mode )
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Viewer::IShadeModel::Mode Viewer::shadeModel() const
+Viewer::IShadeModel::Mode Viewer::shadeModelGet() const
 {
   if ( this->hasShadeModel ( osg::ShadeModel::FLAT ) )
     return IShadeModel::FLAT;
@@ -2600,7 +2600,7 @@ Viewer::IShadeModel::Mode Viewer::shadeModel() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Viewer::polygonMode ( IPolygonMode::Mode mode )
+void Viewer::polygonModeSet ( IPolygonMode::Mode mode )
 {
   if( this->hasHiddenLines() )
       this->removeHiddenLines();
@@ -2626,7 +2626,7 @@ void Viewer::polygonMode ( IPolygonMode::Mode mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Viewer::IPolygonMode::Mode Viewer::polygonMode() const
+Viewer::IPolygonMode::Mode Viewer::polygonModeGet() const
 {
   if( this->hasHiddenLines() )
     return IPolygonMode::HIDDEN_LINES;

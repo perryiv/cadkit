@@ -15,7 +15,6 @@
 
 #include "Usul/Commands/Command.h"
 #include "Usul/Functors/Interaction/Common/BaseFunctor.h"
-#include "Usul/Interfaces/IUpdateCheck.h"
 
 namespace VRV {
 namespace Commands {
@@ -31,11 +30,11 @@ public:
   Navigator ( BaseFunctor* functor, Usul::Interfaces::IUnknown *caller = 0x0 );
 
 protected:
-  virtual ~Navigator ();
+  virtual ~Navigator();
 
-  virtual void _execute ();
+  virtual void _execute();
 
-  virtual bool updateCheck () const;
+  virtual bool updateCheck() const;
 
 private:
   BaseFunctor::RefPtr _functor;

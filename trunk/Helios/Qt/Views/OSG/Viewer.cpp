@@ -660,13 +660,13 @@ namespace Helper
   inline void togglePolygonMode ( OsgTools::Render::Viewer &v, const Usul::Interfaces::IPolygonMode::Mode &mode )
   {
     USUL_TRACE_SCOPE_STATIC;
-    if ( mode == v.polygonMode() )
+    if ( mode == v.polygonModeGet() )
     {
-      v.polygonMode ( Usul::Interfaces::IPolygonMode::NONE );
+      v.polygonModeSet ( Usul::Interfaces::IPolygonMode::NONE );
     }
     else
     {
-      v.polygonMode ( mode );
+      v.polygonModeSet ( mode );
     }
   }
 }
@@ -1194,17 +1194,17 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     menu.append ( polygons.get() );
 
     polygons->append ( RadioButton::create ( "&Filled",
-      boost::bind ( &OsgViewer::polygonMode, viewer.get(), IPolygonMode::FILLED ), 
-      boost::bind ( static_cast<IPolygonMode::Mode ( OsgViewer::*) () const> ( &OsgViewer::polygonMode ), viewer.get() ) == IPolygonMode::FILLED ) );
+      boost::bind ( &OsgViewer::polygonModeSet, viewer.get(), IPolygonMode::FILLED ), 
+      boost::bind ( &OsgViewer::polygonModeGet, viewer.get() ) == IPolygonMode::FILLED ) );
     polygons->append ( RadioButton::create ( "&Hidden Lines",
-      boost::bind ( &OsgViewer::polygonMode, viewer.get(), IPolygonMode::HIDDEN_LINES ), 
-      boost::bind ( static_cast<IPolygonMode::Mode ( OsgViewer::*) () const> ( &OsgViewer::polygonMode ), viewer.get() ) == IPolygonMode::HIDDEN_LINES ) );
+      boost::bind ( &OsgViewer::polygonModeSet, viewer.get(), IPolygonMode::HIDDEN_LINES ), 
+      boost::bind ( &OsgViewer::polygonModeGet, viewer.get() ) == IPolygonMode::HIDDEN_LINES ) );
     polygons->append ( RadioButton::create ( "&Wireframe",
-      boost::bind ( &OsgViewer::polygonMode, viewer.get(), IPolygonMode::WIRE_FRAME ), 
-      boost::bind ( static_cast<IPolygonMode::Mode ( OsgViewer::*) () const> ( &OsgViewer::polygonMode ), viewer.get() ) == IPolygonMode::WIRE_FRAME ) );
+      boost::bind ( &OsgViewer::polygonModeSet, viewer.get(), IPolygonMode::WIRE_FRAME ), 
+      boost::bind ( &OsgViewer::polygonModeGet, viewer.get() ) == IPolygonMode::WIRE_FRAME ) );
     polygons->append ( RadioButton::create ( "&Points",
-      boost::bind ( &OsgViewer::polygonMode, viewer.get(), IPolygonMode::POINTS ), 
-      boost::bind ( static_cast<IPolygonMode::Mode ( OsgViewer::*) () const> ( &OsgViewer::polygonMode ), viewer.get() ) == IPolygonMode::POINTS ) );
+      boost::bind ( &OsgViewer::polygonModeSet, viewer.get(), IPolygonMode::POINTS ), 
+      boost::bind ( &OsgViewer::polygonModeGet, viewer.get() ) == IPolygonMode::POINTS ) );
   }
 
   // Shading menu.
@@ -1213,11 +1213,11 @@ void Viewer::_menuAdd( MenuKit::Menu &menu, Usul::Interfaces::IUnknown * caller 
     menu.append ( shading.get() );
 
     shading->append ( RadioButton::create ( "&Smooth",
-      boost::bind ( &OsgViewer::shadeModel, viewer.get(), IShadeModel::SMOOTH ), 
-      boost::bind ( static_cast<IShadeModel::Mode ( OsgViewer::*) () const> ( &OsgViewer::shadeModel ), viewer.get() ) == IShadeModel::SMOOTH ) );
+      boost::bind ( &OsgViewer::shadeModelSet, viewer.get(), IShadeModel::SMOOTH ), 
+      boost::bind ( &OsgViewer::shadeModelGet, viewer.get() ) == IShadeModel::SMOOTH ) );
     shading->append ( RadioButton::create ( "&Flat",
-      boost::bind ( &OsgViewer::shadeModel, viewer.get(), IShadeModel::FLAT ), 
-      boost::bind ( static_cast<IShadeModel::Mode ( OsgViewer::*) () const> ( &OsgViewer::shadeModel ), viewer.get() ) == IShadeModel::FLAT ) );
+      boost::bind ( &OsgViewer::shadeModelSet, viewer.get(), IShadeModel::FLAT ), 
+      boost::bind ( &OsgViewer::shadeModelGet, viewer.get() ) == IShadeModel::FLAT ) );
   }
   
   // Lods menu.

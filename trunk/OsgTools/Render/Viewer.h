@@ -361,10 +361,9 @@ public:
   // Get the number of clipping planes in the scene
   unsigned int          planes() const;
 
-  /// Usul::Interfaces::IPolygonMode
-  // Get/Set the polygon mode.
-  virtual void                    polygonMode ( IPolygonMode::Mode mode );
-  virtual IPolygonMode::Mode      polygonMode() const;
+  // Get/Set the polygon mode (IPolygonMode).
+  virtual void                    polygonModeSet ( IPolygonMode::Mode mode );
+  virtual IPolygonMode::Mode      polygonModeGet() const;
 
   // Render the scene.
   void                  render();
@@ -444,8 +443,8 @@ public:
   void                  scatterScale ( double );
 
   /// Usul::Interfaces::IShadeModel
-  virtual void                      shadeModel ( IShadeModel::Mode mode );
-  virtual IShadeModel::Mode         shadeModel() const;
+  virtual void                      shadeModelSet ( IShadeModel::Mode mode );
+  virtual IShadeModel::Mode         shadeModelGet() const;
 
   // Get/set the stereo mode
   void                  stereoMode ( unsigned int );

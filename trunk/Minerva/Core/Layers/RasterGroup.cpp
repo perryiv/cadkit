@@ -12,7 +12,6 @@
 #include "Minerva/Core/Algorithms/Composite.h"
 #include "Minerva/Core/Visitor.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
 #include "Usul/Jobs/Job.h"

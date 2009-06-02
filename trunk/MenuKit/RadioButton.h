@@ -13,6 +13,8 @@
 
 #include "MenuKit/Button.h"
 
+#include "Usul/Commands/GenericCheckCommand.h"
+
 namespace MenuKit {
 
 
@@ -22,15 +24,22 @@ public:
 
   // Typedefs and smart-pointers.
   typedef Button BaseClass;
+  typedef Usul::Commands::GenericCheckCommand CheckCommand;
+  typedef CheckCommand::ExecuteFunctor ExecuteFunction;
+  typedef CheckCommand::CheckFunctor CheckFunction;
+  typedef CheckCommand::EnableFunctor EnableFunction;
   USUL_DECLARE_REF_POINTERS ( RadioButton );
 
   // Construction.
-  RadioButton ();
+  RadioButton();
   RadioButton ( Usul::Commands::Command * );
   RadioButton ( const RadioButton & );
 
   // Assignment.
   RadioButton& operator = ( const RadioButton & );
+
+  static RadioButton* create ( const std::string &name, ExecuteFunction f, CheckFunction c );
+  static RadioButton* create ( const std::string &name, ExecuteFunction f, CheckFunction c, EnableFunction e );
 
   // Accept the visitor.
   virtual void        accept ( Visitor &v );

@@ -17,7 +17,6 @@
 #include "Minerva/Core/Layers/RasterGroup.h"
 #include "Minerva/Interfaces/IAddLayer.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Functions/SafeCall.h"
 #include "Usul/Network/Names.h"
 #include "Usul/Strings/Split.h"

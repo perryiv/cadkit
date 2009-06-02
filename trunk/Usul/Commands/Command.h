@@ -21,17 +21,13 @@
 #include "Usul/Base/Object.h"
 
 #include "Usul/Interfaces/ICommand.h"
-#include "Usul/Interfaces/IUpdateEnable.h"
-#include "Usul/Interfaces/IUpdateCheck.h"
 
 namespace Usul {
 namespace Commands {
 
 
 class USUL_EXPORT Command : public Usul::Base::Object,
-                            public Usul::Interfaces::ICommand,
-                            public Usul::Interfaces::IUpdateEnable,
-                            public Usul::Interfaces::IUpdateCheck
+                            public Usul::Interfaces::ICommand
 {
 public:
 
@@ -78,6 +74,12 @@ public:
   void                        toolTip ( const std::string& value );
   std::string                 toolTip() const;
 
+  /// Update the enabled state.
+  virtual bool                updateEnable() const;
+
+  /// Update the checked state.
+  virtual bool                updateCheck() const;
+
 protected:
 
   // Constructor.
@@ -89,12 +91,6 @@ protected:
   virtual ~Command();
 
   virtual void                _execute() = 0;
-
-  /// Update the enabled state.
-  virtual bool                updateEnable() const;
-
-  /// Update the checked state.
-  virtual bool                updateCheck() const;
 
 private:
 

@@ -84,3 +84,31 @@ void RadioButton::accept ( Visitor &v )
 {
   v.apply ( *this );
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a RadioButton.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RadioButton* RadioButton::create ( const std::string &name, ExecuteFunction f, CheckFunction c )
+{
+  Usul::Commands::Command::RefPtr command ( new CheckCommand ( name, f, c ) );
+  RadioButton::RefPtr button ( new RadioButton ( command.get() ) );
+  return button.release();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Create a RadioButton.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+RadioButton* RadioButton::create ( const std::string &name, ExecuteFunction f, CheckFunction c, EnableFunction e )
+{
+  Usul::Commands::Command::RefPtr command ( new CheckCommand ( name, f, c, e ) );
+  RadioButton::RefPtr button ( new RadioButton ( command.get() ) );
+  return button.release();
+}

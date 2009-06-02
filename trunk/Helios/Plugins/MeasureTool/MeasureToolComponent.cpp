@@ -58,6 +58,8 @@
 
 #include "osgUtil/IntersectVisitor"
 
+#include "boost/bind.hpp"
+
 #include <algorithm>
 #include <iostream>
 
@@ -352,18 +354,20 @@ void MeasureToolComponent::menuAdd ( MenuKit::Menu& m, Usul::Interfaces::IUnknow
 
   MenuKit::Menu::RefPtr measure ( new MenuKit::Menu ( "Measurement" ) );
 
-  measure->append ( new ToggleButton ( Usul::Commands::genericToggleCommand ( "On", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::measureOn ), Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::isMeasureOn ) ) ) );
+  measure->append ( ToggleButton::create ( "On", 
+    Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::measureOn ), 
+    Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::isMeasureOn ) ) );
 
-  measure->append ( new Button ( Usul::Commands::genericCommand ( "Clear", Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_clear ), Usul::Commands::TrueFunctor() ) ) );
+  measure->append ( new Button ( Usul::Commands::genericCommand ( "Clear", boost::bind ( &MeasureToolComponent::_clear, this ) ) ) );
   
   measure->append ( new Button ( Usul::Commands::genericCommand ( "Export Line", 
-      Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportLine ) ),
-      Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
+    boost::bind ( &MeasureToolComponent::_exportLine, this, caller ),
+    boost::bind ( &MeasureToolComponent::enableExportButton, this ) ) ) );
 
 	measure->append ( new Button ( Usul::Commands::genericCommand ( "Export Line Segments", 
-      Usul::Adaptors::bind1<void> ( caller, Usul::Adaptors::memberFunction<void> ( this, &MeasureToolComponent::_exportLineSegments ) ),
-      Usul::Adaptors::memberFunction<bool> ( this, &MeasureToolComponent::enableExportButton ) ) ) );
-  
+    boost::bind ( &MeasureToolComponent::_exportLineSegments, this, caller ),
+    boost::bind ( &MeasureToolComponent::enableExportButton, this ) ) ) );
+
   menu->append ( measure );
 }
 

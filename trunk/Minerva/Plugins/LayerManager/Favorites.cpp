@@ -400,7 +400,7 @@ MenuKit::Menu* Favorites::_buildMenu ( const FavoritesMap& map, const std::strin
   // Add buttons to the menu.
   for ( FavoritesMap::const_iterator iter = map.begin(); iter != map.end(); ++iter )
   {
-    menu->append ( new Button ( UC::genericCommand ( iter->first, UA::bind2<void> ( caller, iter->second.get(), UA::memberFunction<void> ( this, &Favorites::_addLayer ) ), UC::TrueFunctor() ) ) );
+    menu->append ( new Button ( UC::genericCommand ( iter->first, boost::bind ( &Favorites::_addLayer, this, caller, iter->second.get() ) ) ) );
   }
 
   return menu.release();

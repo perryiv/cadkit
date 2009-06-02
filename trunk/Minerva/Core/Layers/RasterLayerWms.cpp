@@ -22,7 +22,6 @@
 
 #include "Minerva/Core/Layers/RasterLayerWms.h"
 
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/Factory/RegisterCreator.h"
 #include "Usul/File/Make.h"
 #include "Usul/File/Path.h"

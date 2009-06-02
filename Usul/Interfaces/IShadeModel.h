@@ -34,8 +34,8 @@ struct IShadeModel : public Usul::Interfaces::IUnknown
   enum Mode { NONE, FLAT, SMOOTH };
 
   /// Set/get the shade model.
-  virtual void                    shadeModel ( Mode mode ) = 0;
-  virtual Mode                    shadeModel() const = 0;
+  virtual void                    shadeModelSet ( Mode mode ) = 0;
+  virtual Mode                    shadeModelGet() const = 0;
 
 }; // class IShadeModel
 

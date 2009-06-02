@@ -21,19 +21,14 @@
 #include "VRV/Commands/Navigator.h"
 #include "VRV/Commands/BackgroundColor.h"
 
-#include "Usul/Adaptors/Bind.h"
-#include "Usul/Adaptors/MemberFunction.h"
 #include "Usul/App/Application.h"
 #include "Usul/Bits/Bits.h"
+#include "Usul/Commands/Command.h"
 #include "Usul/Commands/GenericCommand.h"
 #include "Usul/Commands/GenericCheckCommand.h"
 #include "Usul/CommandLine/Arguments.h"
 #include "Usul/CommandLine/Parser.h"
 #include "Usul/CommandLine/Options.h"
-#include "Usul/Commands/Command.h"
-#include "Usul/Commands/PolygonMode.h"
-#include "Usul/Commands/RenderingPasses.h"
-#include "Usul/Commands/ShadeModel.h"
 #include "Usul/Components/Manager.h"
 #include "Usul/Convert/Convert.h"
 #include "Usul/Convert/Matrix44.h"
@@ -99,6 +94,7 @@
 #include "vrj/Draw/OGL/GlWindow.h"
 
 #include "boost/filesystem/operations.hpp"
+#include "boost/bind.hpp"
 #include "Usul/File/Boost.h"
 
 #include <stdexcept>
@@ -519,8 +515,6 @@ Usul::Interfaces::IUnknown* Application::queryInterface ( unsigned long iid )
     return static_cast < Usul::Interfaces::INavigationFunctor * > ( this );
   case Usul::Interfaces::IBackgroundColor::IID:
     return static_cast < Usul::Interfaces::IBackgroundColor * > ( this );
-  case Usul::Interfaces::IRenderingPasses::IID:
-    return static_cast < Usul::Interfaces::IRenderingPasses * > ( this );
   case Usul::Interfaces::IViewport::IID:
     return static_cast < Usul::Interfaces::IViewport * > ( this );
   case Usul::Interfaces::IView::IID:
@@ -764,13 +758,13 @@ void Application::draw()
   Renderer* renderer ( *(_renderer) );
 
   // Drawing is about to happen.
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_preDraw ), renderer, "3501390015" );
+  Usul::Functions::safeCallR1 ( boost::bind ( &Application::_preDraw, this, _1 ), renderer, "3501390015" );
 
   // Draw.
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_draw ), renderer, "1173048910" );
+  Usul::Functions::safeCallR1 ( boost::bind ( &Application::_draw, this, _1 ), renderer, "1173048910" );
 
   // Drawing has finished.
-  Usul::Functions::safeCallR1 ( Usul::Adaptors::memberFunction<void> ( this, &Application::_postDraw ), renderer, "2286306551" );
+  Usul::Functions::safeCallR1 ( boost::bind ( &Application::_postDraw, this, _1 ), renderer, "2286306551" );
 }
 
 
@@ -786,16 +780,8 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   Menu::RefPtr menu ( this->menu() );
 
-  // Only use one pass if the menu is shown.
-  const unsigned int currentPasses ( renderer->getNumRenderPasses() );
-  const unsigned int passesForFrame  ( menu.valid() && menu->menu()->expanded() ? 1 : currentPasses );
-
-  typedef OsgTools::Render::Renderer Renderer;
-
-  // Scope the number of rendering passes.
-  Usul::Scope::Caller::RefPtr scopedRenderPasses ( Usul::Scope::makeCaller ( 
-      Usul::Adaptors::bind1 ( passesForFrame, Usul::Adaptors::memberFunction<void> ( renderer, &Renderer::setNumRenderPasses ) ), 
-      Usul::Adaptors::bind1 ( currentPasses, Usul::Adaptors::memberFunction<void> ( renderer, &Renderer::setNumRenderPasses ) ) ) );
+  // Make sure we always use one until multipass is fixed (It would probably be better to use multi-sampling instead).
+  renderer->setNumRenderPasses ( 1 );
 
   vrj::GlDrawManager* mgr ( vrj::GlDrawManager::instance() );
   USUL_ASSERT ( 0x0 != mgr );
@@ -827,8 +813,8 @@ void Application::_draw ( OsgTools::Render::Renderer *renderer )
 
   // Notify the listeners.
   Usul::Scope::Caller::RefPtr preAndPostCall ( Usul::Scope::makeCaller ( 
-    Usul::Adaptors::bind1<void> ( renderer, Usul::Adaptors::memberFunction<void> ( this, &Application::_preRenderNotify ) ), 
-    Usul::Adaptors::bind1<void> ( renderer, Usul::Adaptors::memberFunction<void> ( this, &Application::_postRenderNotify ) ) ) );
+    boost::bind ( &Application::_preRenderNotify, this, renderer ), 
+    boost::bind ( &Application::_postRenderNotify, this, renderer ) ) );
 
   // Do the drawing.
   renderer->render();
@@ -1063,7 +1049,7 @@ void Application::_init()
     _sharedScreenShotDirectory->data ( directory );
 
     // Make sure the directory exists..
-    Usul::Functions::safeCall ( Usul::Adaptors::bind1 ( directory, Usul::File::make ), "2725212336" );
+    Usul::Functions::safeCall ( boost::bind ( Usul::File::make, directory ), "2725212336" );
   }
 
   // Initialize plugins that need to.
@@ -1869,42 +1855,6 @@ unsigned int Application::getBackgroundCorners() const
 bool Application::isBackgroundCorners( unsigned int corner ) const
 {
   return corner == this->getBackgroundCorners();
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of rendering passes.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-void Application::renderingPasses ( unsigned int num )
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  for( Renderers::iterator iter = _renderers.begin(); iter != _renderers.end(); ++iter )
-  {
-    (*iter)->setNumRenderPasses ( num );
-  }
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Set the number of rendering passes.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-unsigned int Application::renderingPasses() const
-{
-  USUL_TRACE_SCOPE;
-  Guard guard ( this->mutex() );
-
-  if ( false == _renderers.empty () )
-    return _renderers.front()->getNumRenderPasses ();
-  
-  return 0;
 }
 
 
@@ -3327,7 +3277,7 @@ void Application::_setHome()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::polygonMode ( PolygonMode mode )
+void Application::polygonModeSet ( PolygonMode mode )
 {
   switch ( mode )
   {
@@ -3352,7 +3302,7 @@ void Application::polygonMode ( PolygonMode mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Application::PolygonMode Application::polygonMode() const
+Application::PolygonMode Application::polygonModeGet() const
 {
   if ( OsgTools::State::StateSet::getPolygonsFilled ( this->models(), false ) )
     return IPolygonMode::FILLED;
@@ -3373,7 +3323,7 @@ Application::PolygonMode Application::polygonMode() const
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-void Application::shadeModel ( ShadeModel mode )
+void Application::shadeModelSet ( ShadeModel mode )
 {
   switch ( mode )
   {
@@ -3395,7 +3345,7 @@ void Application::shadeModel ( ShadeModel mode )
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-Application::ShadeModel Application::shadeModel() const
+Application::ShadeModel Application::shadeModelGet() const
 {
   // Is there smooth shading?
   if ( OsgTools::State::StateSet::getPolygonsSmooth ( this->models() ) )
@@ -3593,23 +3543,8 @@ void Application::_initMenu()
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#define VRV_MAKE_COMMAND(text,func_name)\
-  USUL_MAKE_COMMAND(text,"",this,&Application::func_name)
-
 #define VRV_MAKE_COMMAND_ARG0(text,func_name,arg0)\
   USUL_MAKE_COMMAND_ARG0(text,"",this,&Application::func_name,arg0)
-
-#define VRV_MAKE_TOGGLE_COMMAND(text,set_func,check_func)\
- Usul::Commands::genericToggleCommand (text,\
-                                       Usul::Adaptors::memberFunction<void> ( this, &Application::set_func ), \
-                                       Usul::Adaptors::memberFunction<bool> ( this, &Application::check_func ) )
-
-#define VRV_MAKE_CHECK_COMMAND(text,set_func,set_arg,check_func,check_arg)\
- Usul::Commands::genericCheckCommand (text,\
-                                       Usul::Adaptors::bind1<void> ( set_arg,  \
-                                                                     Usul::Adaptors::memberFunction<void> ( this, &Application::set_func ) ), \
-                                       Usul::Adaptors::bind1<bool> ( check_arg, \
-                                                                     Usul::Adaptors::memberFunction<bool> ( this, &Application::check_func ) ) )
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3628,11 +3563,11 @@ void Application::_initFileMenu ( MenuKit::Menu* menu )
   MenuKit::Menu::RefPtr exportMenu ( new MenuKit::Menu ( "Export", MenuKit::Menu::VERTICAL ) );
   menu->append ( exportMenu.get() );
 
-  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Image", exportNextFrame ) ) );
-  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Models ASCII", exportWorld ) ) );
-  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Models Binary", exportWorldBinary ) ) );
-  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Scene ASCII", exportScene ) ) );
-  exportMenu->append ( new Button ( VRV_MAKE_COMMAND ( "Scene Binary", exportSceneBinary ) ) );
+  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Image", boost::bind ( &Application::exportNextFrame, this ) ) ) );
+  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Models ASCII", boost::bind ( &Application::exportWorld, this ) ) ) );
+  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Models Binary", boost::bind ( &Application::exportWorldBinary, this ) ) ) );
+  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Scene ASCII", boost::bind ( &Application::exportScene, this ) ) ) );
+  exportMenu->append ( new Button ( Usul::Commands::genericCommand ( "Scene Binary", boost::bind ( &Application::exportSceneBinary, this ) ) ) );
 
   Usul::Interfaces::IDocument::RefPtr document ( Usul::Documents::Manager::instance().activeDocument() );
   if ( document.valid() )
@@ -3655,7 +3590,7 @@ void Application::_initFileMenu ( MenuKit::Menu* menu )
   }
 
   menu->addSeparator();
-  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Exit", quit ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Exit", boost::bind ( &Application::quit, this ) ) ) );
 }
 
 
@@ -3695,37 +3630,22 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::RadioButton  RadioButton;
 
-  // Namespace aliases to help shorten lines.
-  namespace UA = Usul::Adaptors;
-
-  menu->append ( new ToggleButton ( new CheckCommand ( "Frame Dump", BoolFunctor ( this, &Application::frameDump ), CheckFunctor ( this, &Application::frameDump ) ) ) );
-  menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Reset Clipping", _setNearAndFarClippingPlanes ) ) );
-  menu->append ( new Button       ( VRV_MAKE_COMMAND ( "Set Home",       _setHome ) ) );
-  menu->append ( new Button       ( VRV_MAKE_COMMAND ( "View All",       viewScene ) ) );
-  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Seek", seekMode, isSeekMode ) ) );
+  menu->append ( ToggleButton::create ( "Frame Dump", boost::bind ( &Application::frameDump, this, _1 ), boost::bind ( &Application::frameDump, this ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Reset Clipping", boost::bind ( &Application::_setNearAndFarClippingPlanes, this ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Set Home", boost::bind ( &Application::_setHome, this ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "View All", boost::bind ( &Application::viewScene, this ) ) ) );
+  menu->append ( ToggleButton::create ( "Seek", boost::bind ( &Application::seekMode, this, _1 ), boost::bind ( &Application::isSeekMode, this ) ) );
 
   MenuKit::Menu::RefPtr nearFar ( new MenuKit::Menu ( "Compute Near Far" ) );
   menu->append ( nearFar );
 
-  nearFar->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "On",  setComputeNearFar, true,  isComputeNearFar, osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES ) ) );
-  nearFar->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "Off", setComputeNearFar, false, isComputeNearFar, osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR ) ) );
-
+  nearFar->append ( RadioButton::create ( "On", boost::bind ( &Application::setComputeNearFar, this, true ), 
+    boost::bind ( &Application::isComputeNearFar, this, osg::CullSettings::COMPUTE_NEAR_FAR_USING_BOUNDING_VOLUMES ) ) );
+  nearFar->append ( RadioButton::create ( "Off", boost::bind ( &Application::setComputeNearFar, this, false ), 
+    boost::bind ( &Application::isComputeNearFar, this, osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR ) ) );
   menu->addSeparator();
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
-
-  // Rendering passes menu.
-  {
-    MenuKit::Menu::RefPtr passes ( new MenuKit::Menu ( "Rendering Passes",  MenuKit::Menu::VERTICAL ) );
-    menu->append ( passes.get() );
-
-    typedef Usul::Commands::RenderingPasses RenderingPasses;
-
-    passes->append ( new RadioButton ( new RenderingPasses ( "1", 1, me.get () ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "3", 3, me.get () ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "9", 9, me.get () ) ) );
-    passes->append ( new RadioButton ( new RenderingPasses ( "12", 12, me.get () ) ) );
-  }
 
   // Goto menu.
   {
@@ -3752,25 +3672,31 @@ void Application::_initViewMenu ( MenuKit::Menu* menu )
     polygons->text ( "Polygons" );
     menu->append ( polygons.get() );
 
-    typedef Usul::Commands::PolygonMode PolygonMode;
-
-    polygons->append ( new RadioButton ( new PolygonMode ( "Filled",    IPolygonMode::FILLED, me.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Wireframe", IPolygonMode::WIRE_FRAME, me.get() ) ) );
-    polygons->append ( new RadioButton ( new PolygonMode ( "Points",    IPolygonMode::POINTS, me.get() ) ) );
+    polygons->append ( RadioButton::create ( "&Filled",
+      boost::bind ( &Application::polygonModeSet, this, IPolygonMode::FILLED ), 
+      boost::bind ( &Application::polygonModeGet, this ) == IPolygonMode::FILLED ) );
+    polygons->append ( RadioButton::create ( "&Wireframe",
+      boost::bind ( &Application::polygonModeSet, this, IPolygonMode::WIRE_FRAME ), 
+      boost::bind ( &Application::polygonModeGet, this ) == IPolygonMode::WIRE_FRAME ) );
+    polygons->append ( RadioButton::create ( "&Points",
+      boost::bind ( &Application::polygonModeSet, this, IPolygonMode::POINTS ), 
+      boost::bind ( &Application::polygonModeGet, this ) == IPolygonMode::POINTS ) );
   }
 
   // Shading menu.
   {
     MenuKit::Menu::RefPtr shading ( new MenuKit::Menu ( "Shading", MenuKit::Menu::VERTICAL ) );
     menu->append ( shading.get() );
-
-    typedef Usul::Commands::ShadeModel ShadeModel;
-
-    shading->append ( new RadioButton ( new ShadeModel ( "Smooth", IShadeModel::SMOOTH, me.get() ) ) );
-    shading->append ( new RadioButton ( new ShadeModel ( "Flat",   IShadeModel::FLAT, me.get() ) ) );
+    shading->append ( RadioButton::create ( "Smooth",
+      boost::bind ( &Application::shadeModelSet, this, IShadeModel::SMOOTH ), 
+      boost::bind ( &Application::shadeModelGet, this ) == IShadeModel::SMOOTH ) );
+    shading->append ( RadioButton::create ( "Flat",
+      boost::bind ( &Application::shadeModelSet, this, IShadeModel::FLAT ), 
+      boost::bind ( &Application::shadeModelGet, this ) == IShadeModel::FLAT ) );
   }
 
-  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Show Back Faces", showBackFaces, isBackFacesShowing ) ) );
+  menu->append ( ToggleButton::create ( "Show Back Faces", boost::bind ( &Application::showBackFaces, this, _1 ), 
+    boost::bind ( &Application::isBackFacesShowing, this ) ) );
 }
 
 
@@ -3787,10 +3713,6 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
   typedef MenuKit::Button       Button;
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::RadioButton  RadioButton;
-
-  // Namespace aliases to help shorten lines.
-  namespace UA = Usul::Adaptors;
-	namespace UC = Usul::Commands;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
   
@@ -3810,13 +3732,13 @@ void Application::_initNavigateMenu ( MenuKit::Menu* menu )
 
   menu->addSeparator();
   
-	menu->append ( new ToggleButton ( UC::genericToggleCommand ( "Body Centered Rotation", UA::memberFunction<void> ( this, &Application::bodyCenteredRotation ), UA::memberFunction<bool> ( this, &Application::isBodyCenteredRotation ) ) ) );
-  menu->append ( new ToggleButton ( new CheckCommand ( "Time Based", BoolFunctor ( this, &Application::timeBased ), CheckFunctor ( this, &Application::timeBased ) ) ) );
+  menu->append ( ToggleButton::create ( "Body Centered Rotation", boost::bind ( &Application::bodyCenteredRotation, this, _1 ), boost::bind ( &Application::isBodyCenteredRotation, this ) ) );
+  menu->append ( ToggleButton::create ( "Time Based", boost::bind ( &Application::timeBased, this, _1 ), boost::bind ( &Application::timeBased, this ) ) );
 
-	menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 10", _increaseSpeedTen ) ) );
-  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed x 2",  _increaseSpeed    ) ) );
-  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed / 2",  _decreaseSpeed    ) ) );
-  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Translate Speed / 10", _decreaseSpeedTen ) ) );
+	menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed x 10", boost::bind ( &Application::_increaseSpeedTen, this ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed x 2",  boost::bind ( &Application::_increaseSpeed, this    ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed / 2",  boost::bind ( &Application::_decreaseSpeed, this    ) ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Translate Speed / 10", boost::bind ( &Application::_decreaseSpeedTen, this ) ) ) );
 }
 
 
@@ -3833,9 +3755,6 @@ void Application::_initOptionsMenu ( MenuKit::Menu* menu )
   typedef MenuKit::Button       Button;
   typedef MenuKit::ToggleButton ToggleButton;
   typedef MenuKit::RadioButton  RadioButton;
-
-  // Namespace aliases to help shorten lines.
-  namespace UA = Usul::Adaptors;
 
   Usul::Interfaces::IUnknown::QueryPtr me ( this );
 
@@ -3857,9 +3776,12 @@ void Application::_initOptionsMenu ( MenuKit::Menu* menu )
     const unsigned int ALL    ( static_cast<unsigned int> ( Corners::ALL ) );
     const unsigned int TOP    ( static_cast<unsigned int> ( Corners::TOP ) );
     const unsigned int BOTTOM ( static_cast<unsigned int> ( Corners::BOTTOM ) );
-    corners->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "All", setBackgroundCorners, ALL, isBackgroundCorners, ALL ) ) );
-    corners->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "Top", setBackgroundCorners, TOP, isBackgroundCorners, TOP ) ) );
-    corners->append ( new RadioButton ( VRV_MAKE_CHECK_COMMAND ( "Bottom", setBackgroundCorners, BOTTOM, isBackgroundCorners, BOTTOM ) ) );
+    corners->append ( RadioButton::create ( "All", boost::bind ( &Application::setBackgroundCorners, this, ALL ),
+      boost::bind ( &Application::isBackgroundCorners, this, ALL ) ) );
+    corners->append ( RadioButton::create ( "Top", boost::bind ( &Application::setBackgroundCorners, this, TOP ),
+      boost::bind ( &Application::isBackgroundCorners, this, TOP ) ) );
+    corners->append ( RadioButton::create ( "Bottom", boost::bind ( &Application::setBackgroundCorners, this, BOTTOM ),
+      boost::bind ( &Application::isBackgroundCorners, this, BOTTOM ) ) );
     background->append ( corners.get() );
   }
 
@@ -3883,21 +3805,27 @@ void Application::_initOptionsMenu ( MenuKit::Menu* menu )
     
     buttons->append ( assign );
 
-    buttons->append ( new Button ( VRV_MAKE_COMMAND ( "Clear button assignments", _clearAssignedButtonCommands ) ) );
+    buttons->append ( new Button ( Usul::Commands::genericCommand ( "Clear button assignments", boost::bind ( &Application::_clearAssignedButtonCommands, this ) ) ) );
 
     menu->append ( buttons );
   }
 
-  menu->append ( new Button       ( new BasicCommand ( "Calibrate Joystick", ExecuteFunctor ( this, &Application::analogsCalibrate ) ) ) );
-  menu->append ( new ToggleButton ( new CheckCommand ( "Hide Scene", BoolFunctor ( this, &Application::menuSceneShowHide ), CheckFunctor ( this, &Application::menuSceneShowHide ) ) ) );
+  menu->append ( new Button       ( Usul::Commands::genericCommand ( "Calibrate Joystick", boost::bind ( &Application::analogsCalibrate, this ) ) ) );
+  menu->append ( ToggleButton::create ( "Hide Scene", boost::bind ( &Application::menuSceneShowHide, this, _1 ), boost::bind ( &Application::menuSceneShowHide, this ) ) );
 
-  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Update", _setAllowUpdate, _isUpdateOn ) ) );
-  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Intersect", allowIntersections, isAllowIntersections ) ) );
-  menu->append ( new ToggleButton ( VRV_MAKE_TOGGLE_COMMAND ( "Memory Usage", setShowMemory, getShowMemory ) ) );
+  menu->append ( ToggleButton::create  ( "Update", 
+    boost::bind ( &Application::_setAllowUpdate, this, _1 ), 
+    boost::bind ( &Application::_isUpdateOn, this ) ) );
+  menu->append ( ToggleButton::create  ( "Intersect", 
+    boost::bind ( &Application::allowIntersections, this, _1 ), 
+    boost::bind ( &Application::isAllowIntersections, this ) ) );
+  menu->append ( ToggleButton::create ( "Memory Usage", 
+    boost::bind ( &Application::setShowMemory, this, _1 ), 
+    boost::bind ( &Application::getShowMemory, this ) ) );
 
   menu->append ( new MenuKit::Separator );
 
-  menu->append ( new Button ( VRV_MAKE_COMMAND ( "Reinitialize", reinitialize ) ) );
+  menu->append ( new Button ( Usul::Commands::genericCommand ( "Reinitialize", boost::bind ( &Application::reinitialize, this ) ) ) );
 }
 
 

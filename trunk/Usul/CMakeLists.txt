@@ -464,7 +464,6 @@ SET ( HEADERS
 ./Predicates/CanWrite.h
 ./Predicates/CloseFloat.h
 ./Predicates/CompareCoordinate.h
-./Predicates/DirExists.h
 ./Predicates/EndsWith.h
 ./Predicates/EqualVector.h
 ./Predicates/FileExists.h
